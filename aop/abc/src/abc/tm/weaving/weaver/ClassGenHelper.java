@@ -3169,19 +3169,19 @@ public class ClassGenHelper {
                 // We need to construct an array Local[] keys that holds the indexing variables
                 // bound by the current symbol
                 Local[] keys = new Local[depth];
-                int keyIndex = 0;
-                for(Iterator indexIt = indices.iterator(); indexIt.hasNext(); keyIndex++) {
-                    String var = (String)indexIt.next();
-                    if(variables.contains(var)) {
-                        // since the first parameterLocals are the source and target state 
-                        // number, we need keyIndex+2. However, if the variable is primitive,
-                		// we need to box it using getWeakRef() before using as a key
-                		if(curTraceMatch.isPrimitive(var)) {
-                			keys[keyIndex] = getWeakRef((Local)parameterLocals.get(keyIndex + 2), var);
-                		} else {
-                			keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 2);
+                
+                int paramIndex = 2; // Parameters 0 and 1 are the source and target state number.
+                for(Iterator varIt = variables.iterator(); varIt.hasNext(); paramIndex++) {
+                		String var = (String)varIt.next();
+                		int keyIndex = indices.indexOf(var);
+                		if(keyIndex >= 0) {
+                			// if the variable is primitive, it must be boxed.
+                			if(curTraceMatch.isPrimitive(var)) {
+                				keys[keyIndex] = getWeakRef((Local)parameterLocals.get(paramIndex), var);
+                			} else {
+                				keys[keyIndex] = (Local)parameterLocals.get(paramIndex);
+                			}
                 		}
-                    }
                 }
                 
                 // keys[] now contains sufficient information to construct the IterationContext
