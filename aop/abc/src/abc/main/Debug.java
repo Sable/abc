@@ -175,6 +175,7 @@ public class Debug {
 
     public boolean countCflowStacks = false;
 
+    public boolean noContainsPointcut = false; //when enabled, disabled contains-pointcut 
     
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
