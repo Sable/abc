@@ -103,9 +103,11 @@ aspect ASTGrammar {
     List bodyDeclList = new List();
     int index;
     index = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
       child.addAccessors(bodyDeclList, index);
+      if(!(child instanceof ASTTokenChild))
+        index++;
     }
 
     // add constructor with children as arguments
@@ -124,6 +126,7 @@ aspect ASTGrammar {
     }
     List statements = new List();
     index = 0;
+    int nextChildIndex = 0;
     for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
       ASTChild child = (ASTChild)iter.next();
       if(!child.isNTA()) {
@@ -147,13 +150,15 @@ aspect ASTGrammar {
                 new List().add(
                   new VarAccess("p" + index)
                 ).add(
-                  new IntegerLiteral(index)
+                  new IntegerLiteral(nextChildIndex)
                 )
               )
             )
           );
         }
       }
+      if(!(child instanceof ASTTokenChild))
+        nextChildIndex++;
     }
     /*
     if(isRootNode()) {
@@ -183,7 +188,7 @@ aspect ASTGrammar {
     //if(list.getNumChild() > 0) {
     statements = new List();
     index = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
       if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
         statements.add(
@@ -199,6 +204,8 @@ aspect ASTGrammar {
           )
         );
       }
+      if(!(child instanceof ASTTokenChild))
+        index++;
     }
     
     /*
@@ -249,7 +256,8 @@ aspect ASTGrammar {
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild c = (ASTChild)iter.next();
       c.addForceNTAEvaluation(statements, i);
-      i++;
+      if(!(c instanceof ASTTokenChild))
+        i++;
     }
     if(statements.getNumChild() != 0) {
       statements.add(
@@ -266,7 +274,7 @@ aspect ASTGrammar {
             )
           )
         );
-      addBodyDecl(
+      addMemberMethod(
         new MethodDecl(
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
           new TypeAccess("ASTNode"),

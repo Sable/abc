@@ -7,9 +7,9 @@ aspect IntertypeMethodCodegeneration {
   public void IntertypeMethodDecl.generateIntertypeDecls() {
     super.generateIntertypeDecls();
     MethodDecl aspectMethod = createAspectMethod();
-    hostAspect().addBodyDecl(aspectMethod);
+    hostAspect().addMemberMethod(aspectMethod);
     MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
-    introducedType().addBodyDecl(delegateMethod);
+    introducedType().addMemberMethod(delegateMethod);
   }
 
   private MethodDecl IntertypeMethodDecl.createAspectMethod() {
@@ -23,7 +23,7 @@ aspect IntertypeMethodCodegeneration {
     if(!isStatic())
     	parameterList.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
     for(int i = 0; i < getNumParameter(); i++)
-      parameterList.add(getParameter(i).fullCopy());
+      parameterList.add(getParameter(i).qualifiedCopy());
       
     return new IntroducedMethodDecl(
       new Modifiers(modifierList),
@@ -37,6 +37,10 @@ aspect IntertypeMethodCodegeneration {
       ),
       introducedType()
     );
+  }
+
+  public Parameter Parameter.qualifiedCopy() {
+    return new ParameterDeclaration(type().createQualifiedAccess(), name());
   }
 
 
@@ -127,7 +131,7 @@ aspect IntertypeMethodCodegeneration {
       (List)getExceptionList().fullCopy(),
       new Opt(new Block(statements))
     );
-    hostType().addBodyDecl(m);
+    hostType().addMemberMethod(m);
     hostType().getBodyDecl(hostType().getNumBodyDecl()-1);
     return m;
   }

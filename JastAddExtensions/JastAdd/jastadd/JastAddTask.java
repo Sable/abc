@@ -1,0 +1,82 @@
+package jastadd;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.FileSet;
+import java.util.*;
+import java.io.*;
+
+public class JastAddTask extends Task {
+  public JastAddTask() {
+    super();
+  }
+  public void init() {
+    super.init();
+  }
+  
+  private LinkedHashSet files = new LinkedHashSet();
+  public void addConfiguredFileSet(FileSet fileset) {
+    DirectoryScanner s = fileset.getDirectoryScanner(getProject());
+    String[] files = s.getIncludedFiles();
+    String baseDir = s.getBasedir().getPath();
+    for(int i = 0; i < files.length; i++)
+      this.files.add(baseDir + File.separator + files[i]);
+  }
+  
+  // place the generated files in this directory
+  private String outdir = null;
+  public void setOutdir(String dir) { outdir = dir; }
+  
+  private String classpath = null;
+  public void setClasspath(String dir) { classpath = dir; }
+  
+  private boolean verbose = false;
+  public void setVerbose(boolean b) { verbose = b;}
+  
+  // generate check for detection of circular evaluation of non circular attributes
+  private boolean novisitcheck = false;
+  public void setNovisitcheck(boolean b) { novisitcheck = b;}
+  
+  // generate last cycle cache optimization for circular attributes
+  private boolean noCacheCycle = false;
+  public void setNoCacheCycle(boolean b) { noCacheCycle = b; }
+  
+  public void execute() throws BuildException {
+    if(files.size() == 0)
+      throw new BuildException("JastAdd requires grammar and aspect files");
+    /*
+    File generated = new File((packageName == null ? "" : (packageName + "/")) + "ASTNode.class");
+    if(generated.exists()) {
+      boolean changed = false;
+      for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+        String fileName = (String)iter.next();
+        File file = new File(fileName);
+        if(!file.exists() || file.lastModified() > generated.lastModified())
+          changed = true;
+      }
+      if(!changed) {
+        return;
+      }
+    }
+    */
+    ArrayList args = new ArrayList();
+    if(outdir != null)      args.add("-o=" + outdir);
+    if(novisitcheck)        args.add("-novisitcheck");
+    if(noCacheCycle)        args.add("-noCacheCycle");
+    if(classpath != null) {
+      args.add("-classpath");
+      args.add(classpath);
+    }
+    if(verbose)             args.add("-verbose");
+
+    args.addAll(files);
+
+    int i = 0;
+    String[] argsArray = new String[args.size()];
+    for(Iterator iter = args.iterator(); iter.hasNext(); i++)
+      argsArray[i] = ((String)iter.next()).trim();
+    System.err.println("generating node types and weaving aspects");
+    JastAdd.main(argsArray);
+    System.err.println("done");
+  }
+}

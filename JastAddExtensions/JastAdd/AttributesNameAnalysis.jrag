@@ -1,4 +1,6 @@
 aspect JastAdd {
+  
+  eq AttributeDecl.isPublic() = true;
 
   eq AttributeDecl.getBlock().hostType() = getTargetType().type();
   eq AttributeDecl.getParameter().hostType() = getTargetType().type();

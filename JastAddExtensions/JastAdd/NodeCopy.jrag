@@ -26,7 +26,7 @@ aspect ASTNodeCopy {
       )
     );
     // public Object clone() throws CloneNotSupportedException { ... }
-    addBodyDecl(
+    addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("Object"),

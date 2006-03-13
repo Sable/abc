@@ -32,7 +32,7 @@ aspect CircularAttributes {
     addReturnStmt(statements, typeDecl);
 
     // public type name(p0, ... , pN-1) { ... }
-    typeDecl.addBodyDecl(
+    typeDecl.addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
@@ -76,7 +76,7 @@ aspect CircularAttributes {
     addReturnStmt(statements, typeDecl);
 
     // public type name(p0, ... , pN-1) { ... }
-    typeDecl.addBodyDecl(
+    typeDecl.addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
@@ -305,7 +305,7 @@ aspect CircularAttributes {
             ).add(
               AssignExpr.asStmt(
                 fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-                (Expr)getBottomValue().fullCopy()
+                accessBottomValue()
               )
             )
           )
@@ -342,7 +342,7 @@ aspect CircularAttributes {
                     new List().add(
                       new VarAccess("parameters$")
                     ).add(
-                      getBottomValue().type().box((Expr)getBottomValue().fullCopy())
+                      getBottomValue().type().box(accessBottomValue())
                     )
                   )
                 )
@@ -353,6 +353,32 @@ aspect CircularAttributes {
       );
     }
     
+  }
+
+  protected Access AttributeDecl.accessBottomValue() {
+    List parameters = new List();
+    parameters.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).qualifiedCopy());
+    
+    List statements = new List();
+    statements.add(new ReturnStmt((Expr)getBottomValue().fullCopy()));
+    MethodDecl m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
+      getBottomValue().type().createQualifiedAccess(),
+      new IdDecl(name() + "$bottom"),
+      parameters,
+      new List(),
+      new List(),
+      new Opt(new Block(statements))
+    );
+    hostAspect().addMemberMethod(m);
+    
+    List args = new List();
+    args.add(new ThisAccess("this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      args.add(getParameter(i).createAccess());
+    return m.createBoundAccess(args);
   }
 
 
@@ -704,7 +730,7 @@ aspect CircularAttributes {
       initializedFlagName(),
       fieldInit
     );
-    typeDecl.addBodyDecl(f);
+    typeDecl.addMemberField(f);
     fieldInitializedFlagAdded.put(typeDecl, f);
     return f;
   }

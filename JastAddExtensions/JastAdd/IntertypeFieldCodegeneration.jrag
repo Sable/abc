@@ -1,6 +1,6 @@
 aspect IntertypeFieldCodegeneration {
   public void IntertypeFieldDeclaration.generateIntertypeDecls() {
-    introducedType().addBodyDecl(
+    introducedType().addMemberField(
       new IntroducedFieldDeclaration(
         (Modifiers)getModifiers().fullCopy(),
         type().createQualifiedAccess(),

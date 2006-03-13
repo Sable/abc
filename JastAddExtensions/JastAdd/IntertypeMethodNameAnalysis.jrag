@@ -1,4 +1,9 @@
 aspect IntertypeMethodNameAnalysis {
+
+  eq AspectDecl.isPublic() = true;
+  eq IntertypeMethodDecl.isPublic() = true;
+  eq ASTDecl.isPublic() = true;
+  
   eq IntertypeMethodDecl.getTargetType().nameType() = NameType.TYPE_NAME;
   
   // hostAspect is the aspect the declares the intertype method decl

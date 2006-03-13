@@ -58,8 +58,8 @@ aspect Rewrite {
       );
     duringCounter = field;
     TypeDecl typeDecl = extractSingleType(lookupType("ASTNode"));
-    typeDecl.addBodyDecl(field);
-    typeDecl.addBodyDecl(
+    typeDecl.addMemberField(field);
+    typeDecl.addMemberMethod(
       // protected static boolean duringAspectName() {
       //   if(duringAspectName == 0)
       //     return false;
@@ -156,7 +156,7 @@ aspect Rewrite {
   eq ASTDecl.mayHaveRewriteRule() = !rewrites().isEmpty() || superclass().mayHaveRewriteRule();
 
   private void ASTDecl.addMayHaveRewrite() {
-    addBodyDecl(
+    addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("boolean"),
@@ -199,7 +199,7 @@ aspect Rewrite {
       if(!(c instanceof ASTTokenChild))
         n++;
     }
-    addBodyDecl(
+    addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("int"),
@@ -403,7 +403,7 @@ aspect Rewrite {
   }
   private void ASTDecl.addRewriteMethodDecl(List statements) {
     // public ASTNode rewriteTo() { statements }
-    addBodyDecl(
+    addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("ASTNode"),

@@ -18,13 +18,13 @@ aspect GenerateSynCode {
             ),
             introducedType()
           );
-      hostAspect().addBodyDecl(aspectMethod);
+      hostAspect().addMemberMethod(aspectMethod);
       int lineNum = getParameterList().sourceLineNumber();
       generateAttributeDecl(introducedType(), aspectMethod, lineNum);
     }
     else if(introducedType() instanceof ASTDecl && !((ASTDecl)introducedType()).hasEquation(this)) {
       // public abstract type name(p0, ..., PN-1);
-      introducedType().addBodyDecl(
+      introducedType().addMemberMethod(
         new MethodDecl(
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))),
           type().createQualifiedAccess(),
@@ -62,7 +62,7 @@ aspect GenerateSynCode {
         ),
         introducedType()
       );
-    hostType().addBodyDecl(aspectMethod);
+    hostType().addMemberMethod(aspectMethod);
     int lineNum = getParameterList().sourceLineNumber();
     synDecl.generateAttributeDecl(introducedType(), aspectMethod, lineNum);
   }
@@ -73,7 +73,7 @@ aspect GenerateSynCode {
     List list = new List();
     list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
     for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).fullCopy());
+      list.add(getParameter(i).qualifiedCopy());
     return list;
   }
   
@@ -81,7 +81,7 @@ aspect GenerateSynCode {
     List list = new List();
     list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
     for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).fullCopy());
+      list.add(getParameter(i).qualifiedCopy());
     return list;
   }
 
@@ -130,7 +130,7 @@ aspect GenerateSynCode {
     //statements.getChildNoTransform(0).setSourceLineNumber(lineNum);
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
     // public type name(p0, ... , pN-1) { ... }
-    typeDecl.addBodyDecl(
+    typeDecl.addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
@@ -304,7 +304,7 @@ aspect GenerateSynCode {
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
 
     // public type name(p0, ... , pN-1) { ... }
-    typeDecl.addBodyDecl(
+    typeDecl.addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
@@ -378,7 +378,7 @@ aspect GenerateSynCode {
       visitedFlagName(),
       fieldInit
     );
-    typeDecl.addBodyDecl(f);
+    typeDecl.addMemberField(f);
     fieldVisitedFlagAdded.put(typeDecl, f);
     return f;
   }
@@ -405,7 +405,7 @@ aspect GenerateSynCode {
           new List().add(new IntegerLiteral(4))
         )
       );
-    typeDecl.addBodyDecl(f);
+    typeDecl.addMemberField(f);
     fieldComputedFlagAdded.put(typeDecl, f);
     return f;
   }
@@ -431,7 +431,7 @@ aspect GenerateSynCode {
           new List().add(new IntegerLiteral(4))
         )
       );
-    typeDecl.addBodyDecl(f);
+    typeDecl.addMemberField(f);
     fieldComputedValueAdded.put(typeDecl, f);
     return f;
   }
@@ -823,7 +823,7 @@ aspect GenerateSynCode {
     if(addMethod.containsKey(name))
       return (MethodDecl)addMethod.get(name);
     addMethod.put(name, m);
-    addBodyDecl(m);
+    addMemberMethod(m);
     return (MethodDecl)getBodyDecl(getNumBodyDecl()-1);
   }
   
@@ -891,7 +891,7 @@ aspect GenerateSynCode {
             );
           
           methodDecl = inhEq.hostType().addMethod(name() + "$" + inhEq.childName(), methodDecl);
-          //inhEq.hostType().addBodyDecl(methodDecl);
+          //inhEq.hostType().addMemberMethod(methodDecl);
 
           // Add conditional delegation 
           List args = new List();
@@ -1000,7 +1000,7 @@ aspect GenerateSynCode {
     list.add(new ParameterDeclaration(typeASTNode().createQualifiedAccess(), "caller"));
     list.add(new ParameterDeclaration(typeASTNode().createQualifiedAccess(), "child"));
     for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).fullCopy());
+      list.add(getParameter(i).qualifiedCopy());
     return list;
   }
   
@@ -1009,7 +1009,6 @@ aspect GenerateSynCode {
   protected void InhDecl.addDefiningInterface() {
     if(typeASTNode().firstDefiningInterfaceQuery(definingInterfaceName()))
     typeASTNode().addBodyDecl(
-    //hostAspect().addBodyDecl(
       new MemberInterfaceDecl(
         new InterfaceDecl(
           new Modifiers(new List().add(new Modifier("public"))),
