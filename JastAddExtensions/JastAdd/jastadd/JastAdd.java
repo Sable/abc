@@ -10,8 +10,13 @@ import AST.List;
 
 public class JastAdd {
   public static void main(String args[]) {
-    if(!compile(args))
-      System.exit(1);
+	try {
+		if(!compile(args))
+			System.exit(1);
+	} catch (Error e) {
+		e.printStackTrace();
+		
+	}
   }
 
   public static boolean compile(String args[]) {

@@ -355,7 +355,7 @@ aspect CircularAttributes {
     
   }
 
-  protected Access AttributeDecl.accessBottomValue() {
+  syn lazy MethodDecl AttributeDecl.bottomValueInitMethod() {
     List parameters = new List();
     parameters.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
     for(int i = 0; i < getNumParameter(); i++)
@@ -373,12 +373,14 @@ aspect CircularAttributes {
       new Opt(new Block(statements))
     );
     hostAspect().addMemberMethod(m);
-    
-    List args = new List();
+    return m;
+  }
+  public Access AttributeDecl.accessBottomValue() {
+   List args = new List();
     args.add(new ThisAccess("this"));
     for(int i = 0; i < getNumParameter(); i++)
       args.add(getParameter(i).createAccess());
-    return m.createBoundAccess(args);
+    return bottomValueInitMethod().createBoundAccess(args);
   }
 
 

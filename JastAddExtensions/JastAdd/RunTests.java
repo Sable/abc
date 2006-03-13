@@ -39,7 +39,7 @@ public class RunTests {
 		  System.setOut(ps);
     
     // run JastAdd to build .class files for test case
-		JastAdd.main(buildArgs(testName));
+		jastadd.JastAdd.main(buildArgs(testName));
     
     // load test class in a separate class loader and invoke main method
     String className = testName.replace('/', '.');

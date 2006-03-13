@@ -37,6 +37,12 @@ public class JastAddTask extends Task {
   private boolean novisitcheck = false;
   public void setNovisitcheck(boolean b) { novisitcheck = b;}
   
+  private boolean componentCheck = true;
+  public void setComponentCheck(boolean b) { componentCheck = b; } 
+
+  private boolean cacheCycle = true;
+  public void setCacheCycle(boolean b) { cacheCycle = b; } 
+
   // generate last cycle cache optimization for circular attributes
   private boolean noCacheCycle = false;
   public void setNoCacheCycle(boolean b) { noCacheCycle = b; }
@@ -68,7 +74,8 @@ public class JastAddTask extends Task {
       args.add(classpath);
     }
     if(verbose)             args.add("-verbose");
-
+    	if(!componentCheck)	  args.add("-no_component_check");
+    if(!cacheCycle) args.add("-no_cache_cycle");
     args.addAll(files);
 
     int i = 0;
