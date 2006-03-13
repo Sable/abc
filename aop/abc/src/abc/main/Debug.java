@@ -83,7 +83,7 @@ public class Debug {
     public boolean thisJoinPointObject = false; 
 
     // Make thisJoinPoint be constructed using new DummyJP() (you must supply an implementation of
-    // this class), again making it useful only for comparing identity, but with less type safety.
+    // this class as part of the compile, or you will get an exception during compilation), again making it useful only for comparing identity, but with less type safety.
     public boolean thisJoinPointDummy = false; 
 
     // Weaver
