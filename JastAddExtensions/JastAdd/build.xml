@@ -29,6 +29,7 @@
     <include name ="AST/*.java"/>
     <include name ="bytecode/**/*.java"/>
     <include name ="parser/**/*.java"/>
+    <include name ="beaver/**/*.java"/>
   </javac>
 </target>
 
