@@ -47,6 +47,13 @@ $Added two new pointcuts to the EAJ (Extended AspectJ) extension.
 ;The first, let(var, expr) binds the variable var to the result of
 ;the expression expr. The second takes the form 'contains(pc())'.
 ;It matches shadows which contain shadows matching pc().
+$Changes to open module precedence. First, the order induced 
+;by friend and module inclusion is now consistent with 
+;declare precedence (i.e. first declared is executed first).
+;Second, added a constraint that preserves the precedence
+;coherence of friend aspects in a module (i.e. an external aspect 
+;may no longer be inserted between two internal aspects 
+;using declare precedence).
 $Various bugfixes.
 !You can now customise inlining behaviour by overriding the
 ;makeAdviceInliner method in abcExtension. An example can be
