@@ -29,6 +29,25 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.1.1 1142686670
+$Implemented various tracematch optimisations, as described in tech
+;report abc-2006-1, available from our website 
+;(http://aspectbench.org). Some of them can be disabled via debug
+;flags, which is how we took some of the numbers given in the tech
+;report. Of interest is '-nodebug useIndexing', which disables the
+;indexing data structures and algorithms, and '-debug
+;onlyStrongRefs', which disables our leak analyses.
+$Currently, if you use tracematches with indexing, there will be
+;an extra compile-time and run-time dependency on the Apache
+;Commons Collections library. This is because the indexing data
+;structures make internal use of it. We plan to implement the
+;data structures fully in abc and so avoid this dependency for
+;our 1.2.0 release.
+$Added two new pointcuts to the EAJ (Extended AspectJ) extension.
+;The first, let(var, expr) binds the variable var to the result of
+;the expression expr. The second takes the form 'contains(pc())'.
+;It matches shadows which contain shadows matching pc().
+$Various bugfixes.
 !You can now customise inlining behaviour by overriding the
 ;makeAdviceInliner method in abcExtension. An example can be
 ;found in the EAJ extension.
