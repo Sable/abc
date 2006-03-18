@@ -53,7 +53,7 @@ $Changes to open module precedence. First, the order induced
 ;coherence of friend aspects in a module (i.e. an external aspect 
 ;may no longer be inserted between two internal aspects 
 ;using declare precedence).
-$Various bugfixes.
+$Various bugfixes; see Bugzilla for details.
 !You can now customise inlining behaviour by overriding the
 ;makeAdviceInliner method in abcExtension. An example can be
 ;found in the EAJ extension.
