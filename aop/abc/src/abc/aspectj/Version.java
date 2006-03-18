@@ -33,7 +33,7 @@ public class Version extends polyglot.main.Version {
 
     public int major() { return 1; }
     public int minor() { return 1; }
-    public int patch_level() { return 0; }
+    public int patch_level() { return 1; }
 
     protected String properties_file() {
 	return "/abc/main/version.properties";

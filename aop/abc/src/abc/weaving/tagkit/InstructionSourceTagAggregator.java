@@ -15,9 +15,8 @@
  * License along with this compiler, in the file LESSER-GPL;
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * Created on 17-Mar-2005
  */
+
 package abc.weaving.tagkit;
 
 import soot.tagkit.Tag;
