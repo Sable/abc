@@ -2,15 +2,15 @@
 
 # Version of the package-body.shtml file to target; update this if you
 # make an incompatible change in that file
-PACKAGE='4'
+PACKAGE='5'
 # The Jedd runtime version
-JEDD='0.3pre'
+JEDD='snapshot'
 # The Xact version
 XACT='1.0-1'
 # The JavaBDD version
 JAVABDD='0.6'
 # The Paddle version
-PADDLE='0.1pre'
+PADDLE='snapshot'
 
 # these will potentially be out of sync slightly, but never mind
 UNIXTIME=`date +%s`
