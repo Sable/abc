@@ -186,11 +186,11 @@ public class Main {
                 new polyglot.ext.jl.Version());
         G.v().out.println("For usage,  abc -help");
         G.v().out.println("-------------------------------------------------------------------------------");
-        G.v().out.println("Copyright (C) 2004 The abc development team. All rights reserved.");
+        G.v().out.println("Copyright (C) 2004-2006 The abc development team. All rights reserved.");
         G.v().out.println("See the file CREDITS for a list of contributors.");
         G.v().out.println("See individual source files for details.");
         G.v().out.println("");
-        G.v().out.println("Soot is Copyright (C) 1997-2004 Raja Vallee-Rai and others.");
+        G.v().out.println("Soot is Copyright (C) 1997-2006 Raja Vallee-Rai and others.");
         G.v().out.println("Polyglot is Copyright (C) 2000-2004 Polyglot project group, Cornell University.");
         G.v().out.println("");
         G.v().out.println("abc is distributed in the hope that it will be useful, and comes with");
