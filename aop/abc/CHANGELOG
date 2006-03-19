@@ -29,6 +29,7 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.1.1 1142785477
 $Implemented various tracematch optimisations, as described in tech
 ;report abc-2006-1, available from our website 
 ;(http://aspectbench.org). Some of them can be disabled via debug
