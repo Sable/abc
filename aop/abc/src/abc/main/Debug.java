@@ -189,4 +189,6 @@ public class Debug {
     public boolean useIndexing = true;              // made useIndexing the default
     public boolean onlyStrongRefs = false; 			//makes all references strong references 
     public boolean noCollectableWeakRefs = false;	//makes all collectable weak refs "normal" weak refs
+    public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or
+    												// the maps from the commons collections for TM indexing
 }
