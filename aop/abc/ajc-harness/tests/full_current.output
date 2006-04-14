@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@2e9f41
+creating: A@15828f
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1dcca9e, [Ljava.lang.Object;@7a6ee7, TwoAnonymous$3@1dcca9e
+calling run: TwoAnonymous$3@1379c1, [Ljava.lang.Object;@9ead8a, TwoAnonymous$3@1379c1
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@9e42ca.foo calls Outer$Inner@32ee8e.mi
+Outer@eaa3d9.foo calls Outer$Inner@ab0a63.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@32ee8e.mi calls java.io.PrintStream@1cbb5f7.println
+Outer$Inner@ab0a63.mi calls java.io.PrintStream@137235e.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@9e42ca.foo calls Outer$InnerRandom@b5eeac.nextHook
+Outer@eaa3d9.foo calls Outer$InnerRandom@1dd4663.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@b5eeac.nextHook calls Outer$InnerRandom@b5eeac.next
+Outer$InnerRandom@1dd4663.nextHook calls Outer$InnerRandom@1dd4663.next
 Outer.foo() calls Random.nextInt(..)
-Outer@9e42ca.foo calls X.nextInt
+Outer@eaa3d9.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@605621.foo calls Outer$Inner@b6a850.mi
+Outer@1e95713.foo calls Outer$Inner@53b3d6.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@b6a850.mi calls java.io.PrintStream@1e43840.println
+Outer$Inner@53b3d6.mi calls java.io.PrintStream@143e558.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@605621.foo calls Outer$InnerRandom@71ed13.nextHook
+Outer@1e95713.foo calls Outer$InnerRandom@2f8822.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@71ed13.nextHook calls Outer$InnerRandom@71ed13.next
+Outer$InnerRandom@2f8822.nextHook calls Outer$InnerRandom@2f8822.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@605621.foo calls X.nextInt
+Outer@1e95713.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$27$around$1601(AroundAll.java:199)
+	at A.inline$29$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4074,7 +4074,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@4e62d6.x:=-3
+test.Test3@15501b7.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4157,8 +4157,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@3698de
-o: Bar@3698de, i: 10
+o: Bar@1d5144f
+o: Bar@1d5144f, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4309,13 +4309,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$7$around$2689(Trace.aj:92)
+	at aspects.Trace.inline$6$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
-	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
-	at cap.OptionList.shadow$47(OptionList.java:135)
 	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
+	at cap.OptionList.createListHtmlFromApi(OptionList.java)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
+	at cap.OptionList.shadow$47(OptionList.java:135)
+	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4349,13 +4349,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$19$around$2689(Trace.aj:119)
+	at aspects.Trace.inline$18$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
-	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
-	at cap.OptionList.shadow$47(OptionList.java:135)
 	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
+	at cap.OptionList.createListHtmlFromApi(OptionList.java)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
+	at cap.OptionList.shadow$47(OptionList.java:135)
+	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4750,7 +4750,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@9eb1c9
+LibraryAspect-defined run() for C@99bbf
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5076,7 +5076,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@b0bb01
+? Util.read() obj=Test@330d1d
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5096,7 +5096,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@c57941
+? Util.read() obj=ClinitTest@fcc6be
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5106,7 +5106,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1df8f65
+? Util.read() obj=SuidTest@935d3e
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5309,12 +5309,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@14732ad
-Invoking command bean:  Command@14fff96
-hello(Command@14fff96)
-Created a PerThis aspect : Testcase2@114fb95
-Invoking command bean:  Command@910845
-hello again(Command@910845)
+Created a PerThis aspect : Testcase2@1172115
+Invoking command bean:  Command@17d24ba
+hello(Command@17d24ba)
+Created a PerThis aspect : Testcase2@f66a92
+Invoking command bean:  Command@1cea618
+hello again(Command@1cea618)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5604,420 +5604,102 @@ PASS: Test 1018: "abctests/bugs/internal around weaver error when trying to capt
 
 Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Basic.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed.
+PASS: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" passed.
 
 
 Running test 1020: abctests/tracematches/Tracematches: Plus and Star
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PlusStar.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed.
+PASS: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" passed.
 
 
 Running test 1021: abctests/tracematches/Tracematches: Alternation
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Alternation.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed.
+PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed.
+PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
 Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
 Commandline: abc -d abctests/tracematches/failsafe -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe/leaktest/LeakTest.java abctests/tracematches/failsafe/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed.
+PASS: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" passed.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
 Commandline: abc -d abctests/tracematches/failsafe3 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe3/leaktest/LeakTest.java abctests/tracematches/failsafe3/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed.
+PASS: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" passed.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
 Commandline: abc -d abctests/tracematches/failsafe4 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe4/leaktest/LeakTest.java abctests/tracematches/failsafe4/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed.
+PASS: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" passed.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Test.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed.
+MATCHED
+MATCHED
+PASS: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" passed.
 
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NegBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed.
+PASS: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." passed.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MoreBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed.
+PASS: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" passed.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/BasicAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed.
+PASS: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" passed.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MultipleBindingsForAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed.
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
+PASS: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." passed.
 
 
 Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PerThread.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed.
+PASS: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" passed.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/AdviseSelf.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed.
+PASS: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" passed.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IfTest.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed.
+PASS: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" passed.
 
 
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NoUpdates.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed.
+PASS: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" passed.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimitiveVariables.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed.
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
+PASS: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" passed.
 
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IntVariable.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed.
+PASS: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." passed.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimNegBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed.
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
+PASS: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." passed.
 
 
 Running test 1101: om/simple/Simple module compile
@@ -6070,15 +5752,15 @@ PASS: Test 1108: "om/duplicateclassinclude/Class included in multiple modules" p
 Running test 1109: om/matchtest/Basic matching test
 Commandline: abc -d om/matchtest -warn-unused-advice:off -ext abc.om om/matchtest/Module1.java om/matchtest/Module2.java om/matchtest/MatchTestA.java om/matchtest/MatchTestB.java om/matchtest/MatchTestMain.java om/matchtest/AspectA.aj om/matchtest/AspectB.aj om/matchtest/AspectC.aj 
 Compilation succeeded with 3 warnings, which were matched and verified against the expected warnings.
-Before MatchTestA.a() from AspectC
 Before MatchTestA.a() from AspectA
 Before MatchTestA.a() from AspectB
+Before MatchTestA.a() from AspectC
 MatchTestA.a
 Before MatchTestA.b() from AspectA
 MatchTestA.b
-Before MatchTestB.a() from AspectC
 Before MatchTestB.a() from AspectA
 Before MatchTestB.a() from AspectB
+Before MatchTestB.a() from AspectC
 MatchTestB.a
 Before MatchTestB.b() from AspectA
 Before MatchTestB.b() from AspectB
@@ -6541,8 +6223,8 @@ PASS: Test 1121: "om/multimodtest/Multiple modules in a single file" passed.
 Running test 1122: om/iftest/If pointcut signatures
 Commandline: abc -d om/iftest -warn-unused-advice:off -ext abc.om om/iftest/Module.java om/iftest/AspectA.java om/iftest/AspectB.java om/iftest/IfTest.java 
 Test
-AspectA
 AspectB
+AspectA
 Test
 PASS: Test 1122: "om/iftest/If pointcut signatures" passed.
 
@@ -6724,24 +6406,7 @@ FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpat
 
 Running test 1209: abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/TracematchAndIfAndPPVs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:653)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: 
-Aborting: can't find classfile org.apache.commons.collections.map.ReferenceIdentityMap
-	at soot.Scene.getSootClass(Scene.java:374)
-	at abc.tm.weaving.weaver.ClassGenHelper.<init>(ClassGenHelper.java:162)
-	at abc.tm.weaving.weaver.TraceMatchCodeGen.fillInTraceMatch(TraceMatchCodeGen.java:160)
-	at abc.tm.weaving.weaver.TMWeaver.weaveGenerateAspectMethods(TMWeaver.java:55)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:127)
-	at abc.tm.weaving.weaver.TMWeaver.weave(TMWeaver.java:61)
-	at abc.main.Main.weave(Main.java:1064)
-	at abc.main.Main.run(Main.java:531)
-	... 3 more
-FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed.
+PASS: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" passed.
 
 
 Running test 1210: abctests/bugs/thisJoinPoint maintains object identity for an entire join point
