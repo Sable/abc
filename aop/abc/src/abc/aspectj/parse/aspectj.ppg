@@ -811,8 +811,8 @@ simple_name_pattern ::=
    | aspectj_reserved_identifier:a
         {: Grm.parserTrace("name_pattern is aspectj_reserved_identifier");
 	   String token = a.toString();
-           String keyword = token.substring(8,token.length()-1);
-           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),keyword);
+           // String keyword = token.substring(8,token.length()-1);
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),token);
         :}
    ;
 

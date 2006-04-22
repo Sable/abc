@@ -33,6 +33,9 @@ import polyglot.types.Flags;
 import polyglot.util.*;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
+import polyglot.types.Named;
+import polyglot.types.TypeObject;
+import polyglot.types.TypeSystem;
 
 /**
  * Represents the entire module declarations. Contains the module
@@ -72,6 +75,33 @@ public class ModuleDecl_c extends Node_c implements ModuleDecl {
     
     public boolean isRoot() {
         return isRoot;
+    }
+    
+    /* Required by Polyglot 1.3.2 */
+    public Named declaration() {
+    	return new Named() {
+    		public String name() {
+    			return name;
+    		}
+    		public String fullName() {
+    			return namePos.file();
+    		}
+    		public TypeSystem typeSystem() {
+    			return null;
+    		}
+    	    public Object copy() {
+    	    	return null;
+    	    }
+    	    public boolean isCanonical() {
+    	    	return false;
+    	    }
+    	    public boolean equalsImpl(TypeObject t) {
+    	    	return false;
+    	    }
+    	    public Position position() {
+    	    	return namePos();
+    	    }
+    	};
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {

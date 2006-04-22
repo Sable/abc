@@ -1639,7 +1639,6 @@
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
             <message kind="error"/>
-            <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -1922,7 +1921,6 @@
       keywords="from-errors">
         <compile files="MismatchedParens.java">
             <ajcmessage kind="error" line="16"/>
-            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="17"/>
 	    <message kind="error" line="17"/>
@@ -2240,7 +2238,6 @@
                options="!eclipse">
             <ajcmessage kind="error" line="11"/>
             <message kind="error" />
-            <message kind="error" />
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
@@ -2373,7 +2370,6 @@
     <ajc-test num="261" dir="errors" title="Missing ;" keywords="from-errors,purejava"
          abccomment="Extra error with no line number for parser complaint in abc. PA/AGS">
         <compile files="PR405.java">
-            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="15"/>
         </compile>
@@ -2921,7 +2917,6 @@
             <ajcmessage kind="error" line="2"/>
             <ajcmessage kind="error" line="3"/>
             <ajcmessage kind="error" line="6"/>
-            <message kind="error"/>
             <message kind="error" line="2"/> 
        </compile>
     </ajc-test>
@@ -2949,7 +2944,6 @@
         <compile files="BadSynchronized.java"
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
-            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
@@ -5491,7 +5485,6 @@
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
 	    <message kind="error"/>
-            <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -7919,7 +7912,6 @@
 		-->
 		  <ajcmessage line="12" kind="error" />		
 		  <ajcmessage line="13" kind="error" />
-                  <message kind="error" />
                   <message kind="error" />
                   <message line="13" kind="error" />
 		</compile>
