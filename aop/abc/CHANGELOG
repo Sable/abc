@@ -29,6 +29,14 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+$The 'indexing' optimisation for tracematches now doesn't introduce a
+further dependency by default, but uses classes provided in the abc
+runtime. The old behaviour can be restored by passing abc the flag
+'-debug useCommonsCollections'; doing this will of course require a
+Commons Collections jar on the classpath. Our preliminary experiments
+suggest that our implementation is slightly slower than the Commons
+Collections on 1.4 JVMs, but slightly faster on 1.5 JVMs.
+
 %1.1.1 1142785477
 $Implemented various tracematch optimisations, as described in tech
 ;report abc-2006-1, available from our website 
