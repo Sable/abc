@@ -844,7 +844,6 @@
         <compile options="!eclipse" files="TryNoCatchCE.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message kind="error"></message>
-            <message kind="error"></message>
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
@@ -1014,7 +1013,6 @@
 <ajc-test title="mismatched parens on advice (wasn't binding Tester)" pr="213" num="215" keywords="from-errors" dir="errors" abccomment="difference in line number between abc and ajc message. ODM July 5, 2004                   abc parser throws additional errors when giving up. PA/AGS">
         <compile files="MismatchedParens.java">
             <ajcmessage line="16" kind="error"></ajcmessage>
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="17" kind="error"></message>
 	    <message line="17" kind="error"></message>
@@ -1220,7 +1218,6 @@
         <compile options="!eclipse" files="ClosingBrace.java">
             <ajcmessage line="11" kind="error"></ajcmessage>
             <message kind="error"></message>
-            <message kind="error"></message>
             <message line="12" kind="error"></message>
         </compile>
     </ajc-test>
@@ -1312,7 +1309,6 @@
     </ajc-test>
 <ajc-test title="Missing ;" num="261" keywords="from-errors,purejava" dir="errors" abccomment="Extra error with no line number for parser complaint in abc. PA/AGS">
         <compile files="PR405.java">
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="15" kind="error"></message>
         </compile>
@@ -1687,7 +1683,6 @@
             <ajcmessage line="2" kind="error"></ajcmessage>
             <ajcmessage line="3" kind="error"></ajcmessage>
             <ajcmessage line="6" kind="error"></ajcmessage>
-            <message kind="error"></message>
             <message line="2" kind="error"></message> 
        </compile>
     </ajc-test>
@@ -1707,7 +1702,6 @@
 <ajc-test title="illegal synchronized stmts" num="309" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="Parser throws extra error when giving up. PA/AGS">
         <compile options="!eclipse" files="BadSynchronized.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="6" kind="error"></message>
         </compile>
@@ -3173,7 +3167,6 @@
         <compile options="!eclipse" files="TryBlockRequiredCE.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
 	    <message kind="error"></message>
-            <message kind="error"></message>
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
@@ -4241,7 +4234,6 @@
 		
 		  <ajcmessage line="12" kind="error"></ajcmessage>		
 		  <ajcmessage line="13" kind="error"></ajcmessage>
-                  <message kind="error"></message>
                   <message kind="error"></message>
                   <message line="13" kind="error"></message>
 		</compile>

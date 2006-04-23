@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$26$around$1601(AroundAll.java:199)
+	at A.inline$25$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -149,8 +149,8 @@ Running test 986: abctests/bugs/Matching int[].clone()
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/IntArray.java 
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
-Syntax Error at IntArray.java:14,28-31: Syntax error.
-Syntax Error at IntArray.java:15,3-4: Syntax error.
+Syntax Error at IntArray.java:14,28-31: Syntax error: unexpected int.
+Syntax Error at IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
 FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
 
 
