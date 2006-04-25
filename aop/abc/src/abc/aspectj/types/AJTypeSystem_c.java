@@ -19,11 +19,15 @@
 
 package abc.aspectj.types;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Iterator;
+
 
 import polyglot.frontend.ExtensionInfo;
 import polyglot.frontend.Source;
@@ -713,6 +717,90 @@ public class AJTypeSystem_c
 			result.addAll(rs);
 		}
 		return result;
+	}
+	
+	 /**
+     * Class to handle the comparisons; dispatches to moreSpecific method.
+     * put here to fix a bug in Polyglot 1.3.2
+     */
+	
+    protected class MostSpecificComparator2 implements Comparator {
+	public int compare(Object o1, Object o2) {
+	    ProcedureInstance p1 = (ProcedureInstance) o1;
+	    ProcedureInstance p2 = (ProcedureInstance) o2;
+
+	    if (moreSpecific(p1, p2)) return -1;
+	    if (moreSpecific(p2, p1)) return 1;
+	    // JLS2 15.12.2.2 "two or more maximally specific methods"
+	    // if both abstract or not abstract, equally applicable
+	    // otherwise the non-abstract is more applicable
+	    if (p1.flags().isAbstract() == p2.flags().isAbstract()) return 0;
+	    if (p1.flags().isAbstract()) return 1;
+	    return -1;
+         
+	}
+    }
+    
+    protected Collection findMostSpecificProcedures(List acceptable,
+            ReferenceType container,                                                    List argTypes,
+            ClassType currClass)
+			throws SemanticException {
+
+		assert_(container);
+		assert_(argTypes);
+
+		// now, use JLS 15.11.2.2
+		// First sort from most- to least-specific.
+
+		MostSpecificComparator2 msc = new MostSpecificComparator2();
+		Collections.sort(acceptable, msc);
+
+		List maximal = new ArrayList(acceptable.size());
+
+		Iterator i = acceptable.iterator();
+
+		ProcedureInstance first = (ProcedureInstance) i.next();
+		maximal.add(first);
+
+		// Now check to make sure that we have a maximal most-specific method.
+		while (i.hasNext()) {
+			ProcedureInstance p = (ProcedureInstance) i.next();
+
+			if (msc.compare(first, p) >= 0)
+				maximal.add(p);
+		}
+
+		if (maximal.size() > 1) {
+			// If exactly one method is not abstract, it is the most specific.
+			List notAbstract = new ArrayList(maximal.size());
+			for (Iterator j = maximal.iterator(); j.hasNext();) {
+				ProcedureInstance p = (ProcedureInstance) j.next();
+				if (!p.flags().isAbstract()) {
+					notAbstract.add(p);
+				}
+			}
+			
+			
+			if (notAbstract.size() == 1) {
+				maximal = notAbstract;
+			} else if (notAbstract.size() == 0) {
+				// all are abstract; if all signatures match, any will do.
+				Iterator j = maximal.iterator();
+				first = (ProcedureInstance) j.next();
+				while (j.hasNext()) {
+					ProcedureInstance p = (ProcedureInstance) j.next();
+					if (!first.hasFormals(p.formalTypes())) {
+						// not all signatures match; must be ambiguous
+						return maximal;
+					}
+				}
+
+				// all signatures match, just take the first
+				maximal = Collections.singletonList(first);
+			}
+		}
+
+		return maximal;
 	}
 
 }
