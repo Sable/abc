@@ -45,7 +45,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
         if( cim.inlinee() != container ) throw new InternalCompilerError(
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
         ret = new ConstructorCallShadowMatch(cim.target(), cim.map(stmt),
-                cim.map(next), invoke );
+                cim.map(next), invoke, isSuperCall );
         cim.add(this, ret);
         if(sp != null) ret.sp = sp.inline(cim);
         return ret;
@@ -53,11 +53,14 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 
     private Stmt next;
     private SpecialInvokeExpr invoke;
+    private boolean isSuperCall;
         
-    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,Stmt next,SpecialInvokeExpr invoke) {
+    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,
+    		                           Stmt next,SpecialInvokeExpr invoke,boolean issuper) {
 	super(container,stmt);
 	this.next=next;
         this.invoke=invoke;
+        this.isSuperCall = issuper;
     }
 
     public SootMethodRef getMethodRef() {
@@ -67,9 +70,25 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     public List/*<SootClass>*/ getExceptions() {
 	return invoke.getMethodRef().resolve().getExceptions();
     }
+    
+    
+    public static ConstructorCallShadowMatch matchesAt2(MethodPosition pos) {
+    	if(abc.main.Debug.v().ajcCompliance) return null;
+    	if(!(pos instanceof StmtMethodPosition)) return null;
+    	Stmt current = ((StmtMethodPosition) pos).getStmt();
+    	if(!(current instanceof InvokeStmt)) return null;
+    	InvokeExpr iexpr=((InvokeStmt) current).getInvokeExpr();
+    	if(!(iexpr instanceof SpecialInvokeExpr)) return null;
+    	SpecialInvokeExpr siexpr=(SpecialInvokeExpr) (((InvokeStmt) current).getInvokeExpr());
+    	if((siexpr.getMethodRef().declaringClass())!=(pos.getContainer().getDeclaringClass().getSuperclass())) return null;
+    	if(!(siexpr.getMethodRef().name().equals("<init>"))) return null;
+    	StmtShadowMatch.makeArgumentsUniqueLocals(pos.getContainer(), current);
+    	
+    	return new ConstructorCallShadowMatch(pos.getContainer(),current,current,siexpr,true);
+    }
 
     public static ConstructorCallShadowMatch matchesAt(MethodPosition pos) {
-	if(!(pos instanceof NewStmtMethodPosition)) return null;
+	if(!(pos instanceof NewStmtMethodPosition)) return matchesAt2(pos);
 	if(abc.main.Debug.v().traceMatcher) System.err.println("ConstructorCall");
 
 	NewStmtMethodPosition stmtMP=(NewStmtMethodPosition) pos;
@@ -98,7 +117,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
-	return new ConstructorCallShadowMatch(pos.getContainer(),current,next,siexpr);
+	return new ConstructorCallShadowMatch(pos.getContainer(),current,next,siexpr,false);
     }
 
     public Host getHost() {
@@ -124,6 +143,15 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     public ContextValue getTargetContextValue() {
 	return null;
     }
+    
+    public ContextValue getThisContextValue() {
+    	if (isSuperCall)
+    		return null;
+    	else
+    		return super.getThisContextValue();
+    }
+    
+    
 
     public ContextValue getReturningContextValue() {
 	return new JimpleValue((Immediate) invoke.getBase());
