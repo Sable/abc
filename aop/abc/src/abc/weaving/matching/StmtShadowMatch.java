@@ -30,6 +30,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.tagkit.Host;
 import soot.util.Chain;
+import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.ContextValue;
@@ -63,7 +64,8 @@ public abstract class StmtShadowMatch extends ShadowMatch {
     }
 
     public ShadowMatch getEnclosing() {
-        if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
+        if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)
+           && abc.main.Debug.v().ajcCompliance) return this;
         return ExecutionShadowMatch.construct(container);
     }
 

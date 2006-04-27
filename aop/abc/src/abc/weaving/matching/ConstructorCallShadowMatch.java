@@ -54,7 +54,13 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     private Stmt next;
     private SpecialInvokeExpr invoke;
     private boolean isSuperCall;
+    private static Set newcalls = new HashSet();
         
+    
+    public static void reset() {
+    	newcalls = new HashSet();
+    }
+    
     private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,
     		                           Stmt next,SpecialInvokeExpr invoke,boolean issuper) {
 	super(container,stmt);
@@ -76,6 +82,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     	if(abc.main.Debug.v().ajcCompliance) return null;
     	if(!(pos instanceof StmtMethodPosition)) return null;
     	Stmt current = ((StmtMethodPosition) pos).getStmt();
+    	if(newcalls.contains(current)) return null;
     	if(!(current instanceof InvokeStmt)) return null;
     	InvokeExpr iexpr=((InvokeStmt) current).getInvokeExpr();
     	if(!(iexpr instanceof SpecialInvokeExpr)) return null;
@@ -112,6 +119,8 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 		("Invoke statement "+next+" after a new statement "+current+" in method "
 		 +pos.getContainer()+" wasn't a special invoke");
 	SpecialInvokeExpr siexpr=(SpecialInvokeExpr) (((InvokeStmt) next).getInvokeExpr());
+	
+	newcalls.add(next);
 	
 	StmtShadowMatch.makeArgumentsUniqueLocals(stmtMP.getContainer(), next);
 	
