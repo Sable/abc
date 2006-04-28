@@ -84,6 +84,7 @@ import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.ConstructorCallShadowMatch;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.tagkit.InstructionInlineCountTagAggregator;
 import abc.weaving.tagkit.InstructionInlineTagsAggregator;
@@ -155,6 +156,7 @@ public class Main {
         abc.weaving.aspectinfo.AbcFactory.reset();
         abc.weaving.weaver.around.AroundWeaver.reset();
         abc.weaving.matching.StmtShadowMatch.reset();
+        abc.weaving.matching.ConstructorCallShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
         abc.soot.util.SwitchFolder.reset();

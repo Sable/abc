@@ -58,7 +58,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
         
     
     public static void reset() {
-    	newcalls = new HashSet();
+    	newcalls.clear();
     }
     
     private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,
