@@ -87,7 +87,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     	InvokeExpr iexpr=((InvokeStmt) current).getInvokeExpr();
     	if(!(iexpr instanceof SpecialInvokeExpr)) return null;
     	SpecialInvokeExpr siexpr=(SpecialInvokeExpr) (((InvokeStmt) current).getInvokeExpr());
-    	if((siexpr.getMethodRef().declaringClass())!=(pos.getContainer().getDeclaringClass().getSuperclass())) return null;
+    	// if((siexpr.getMethodRef().declaringClass())!=(pos.getContainer().getDeclaringClass().getSuperclass())) return null;
     	if(!(siexpr.getMethodRef().name().equals("<init>"))) return null;
     	StmtShadowMatch.makeArgumentsUniqueLocals(pos.getContainer(), current);
     	
