@@ -35,6 +35,7 @@ import soot.SootMethod;
 import soot.Trap;
 import soot.VoidType;
 import soot.jimple.InvokeStmt;
+import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.util.Chain;
@@ -247,7 +248,9 @@ public class ShadowPointsSetter {
 			units.insertAfter(endnop, startnop);
 			debug("Inserting nop after identity stmt " + targetstmt);
 			return new RebindingShadowPoints(method, startnop, endnop);
-		} else if (sm instanceof ConstructorCallShadowMatch) { // expecting a new, followed by an <init> (treat these as one unit)
+		} else if (sm instanceof ConstructorCallShadowMatch &&
+				   !((ConstructorCallShadowMatch) sm).isSpecial()) 
+				   { // expecting a new, followed by an <init> (treat these as one unit)
 			debug("Inserting nops around pair of stmts " + targetstmt + " ; " + nextstmt);
 			units.insertBefore(startnop, targetstmt);
 			targetstmt.redirectJumpsToThisTo(startnop);

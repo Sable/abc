@@ -77,6 +77,9 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	return invoke.getMethodRef().resolve().getExceptions();
     }
     
+    public boolean isSpecial() {
+    	return isSuperCall;
+    }
     
     public static ConstructorCallShadowMatch matchesAt2(MethodPosition pos) {
     	if(abc.main.Debug.v().ajcCompliance) return null;
@@ -87,11 +90,9 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     	InvokeExpr iexpr=((InvokeStmt) current).getInvokeExpr();
     	if(!(iexpr instanceof SpecialInvokeExpr)) return null;
     	SpecialInvokeExpr siexpr=(SpecialInvokeExpr) (((InvokeStmt) current).getInvokeExpr());
-    	// if((siexpr.getMethodRef().declaringClass())!=(pos.getContainer().getDeclaringClass().getSuperclass())) return null;
     	if(!(siexpr.getMethodRef().name().equals("<init>"))) return null;
     	StmtShadowMatch.makeArgumentsUniqueLocals(pos.getContainer(), current);
-    	
-    	return new ConstructorCallShadowMatch(pos.getContainer(),current,current,siexpr,true);
+    	return new ConstructorCallShadowMatch(pos.getContainer(),current,null,siexpr,true);
     }
 
     public static ConstructorCallShadowMatch matchesAt(MethodPosition pos) {
@@ -130,7 +131,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     public Host getHost() {
-	if(stmt.hasTag("SourceLnPosTag") || stmt.hasTag("LineNumberTag")) return stmt;
+	if(stmt.hasTag("SourceLnPosTag") || stmt.hasTag("LineNumberTag") || isSuperCall) return stmt;
 	return next;
     }
 
