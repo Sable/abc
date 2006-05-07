@@ -86,7 +86,7 @@ public class AJTypeSystem_c
 	}
     
     // weeding out the wrong flags on aspects
-	protected final Flags ASPECT_FLAGS = AJFlags.privilegedaspect(AJFlags.aspectclass(TOP_LEVEL_CLASS_FLAGS));
+	protected Flags ASPECT_FLAGS = AJFlags.privilegedaspect(AJFlags.aspectclass(TOP_LEVEL_CLASS_FLAGS));
  
 	public void checkTopLevelClassFlags(Flags f) throws SemanticException {
 		    if (AJFlags.isAspectclass(f)) {
@@ -369,7 +369,7 @@ public class AJTypeSystem_c
 	}
 	
 	/** All flags allowed for a member class. */
-	 protected final Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AJFlags.ASPECTCLASS).set(AJFlags.PRIVILEGEDASPECT);
+	 protected Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AJFlags.ASPECTCLASS).set(AJFlags.PRIVILEGEDASPECT);
 	 public void checkMemberClassFlags(Flags f) throws SemanticException {
 			if (! f.clear(MEMBER_CLASS_FLAGS).equals(Flags.NONE)) {
 			throw new SemanticException(
@@ -613,7 +613,7 @@ public class AJTypeSystem_c
 	   }	
 		
 	/** All flags allowed for a method. */
-	protected final Flags AJ_METHOD_FLAGS = AJFlags.intertype(AJFlags.interfaceorigin(METHOD_FLAGS));
+	protected Flags AJ_METHOD_FLAGS = AJFlags.intertype(AJFlags.interfaceorigin(METHOD_FLAGS));
 
 	public void checkMethodFlags(Flags f) throws SemanticException {
 		  if (! f.clear(AJ_METHOD_FLAGS).equals(Flags.NONE)) {
@@ -656,7 +656,7 @@ public class AJTypeSystem_c
 			  
 		  }
 		  
-	protected final Flags POINTCUT_FLAGS = ACCESS_FLAGS.Abstract().Final();
+	protected Flags POINTCUT_FLAGS = ACCESS_FLAGS.Abstract().Final();
 	
 	public void checkPointcutFlags(Flags f) throws SemanticException {
 		if (! f.clear(POINTCUT_FLAGS).equals(Flags.NONE)) {
