@@ -68,6 +68,14 @@ public class AJNodeFactory_c
         this.delFactory = nextDelFactory;
     }
 
+    protected ExtFactory extFactory() {
+        return extFactory;
+    }
+
+    protected DelFactory delFactory() {
+        return delFactory;
+    }
+    
     public ClassnamePatternExpr constructClassnamePatternFromTypePattern(TypePatternExpr tpe) throws SemanticException {
 	return tpe.transformToClassnamePattern(this);
     }
