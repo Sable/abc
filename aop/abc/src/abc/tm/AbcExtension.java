@@ -40,8 +40,6 @@ import soot.*;
  */
 public class AbcExtension extends abc.eaj.AbcExtension
 {
-    private GlobalAspectInfo globalAspectInfo = null;
-    private Weaver weaver = null;
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -58,20 +56,14 @@ public class AbcExtension extends abc.eaj.AbcExtension
         return new abc.tm.ExtensionInfo(jar_classes, aspect_sources);
     }
  
-    public GlobalAspectInfo getGlobalAspectInfo()
+    protected GlobalAspectInfo createGlobalAspectInfo()
     {
-        if (globalAspectInfo == null)
-            globalAspectInfo = new TMGlobalAspectInfo();
-
-        return globalAspectInfo;
+        return new TMGlobalAspectInfo();
     }
 
-    public Weaver getWeaver()
+    public Weaver createWeaver()
     {
-        if (weaver == null)
-            weaver = new TMWeaver();
-
-        return weaver;
+        return new TMWeaver();
     }
 
     public void initLexerKeywords(AbcLexer lexer)

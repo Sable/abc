@@ -92,7 +92,6 @@ import abc.weaving.weaver.Weaver;
  */
 public class AbcExtension
 {
-    private ExtensionInfo extInfo = null;
     private GlobalAspectInfo globalAspectInfo = null;
     private Weaver weaver = null;
 
@@ -134,24 +133,38 @@ public class AbcExtension
      * AspectJ-specific information from the frontend for use in the
      * backend.
      */
-    public GlobalAspectInfo getGlobalAspectInfo()
+    final public GlobalAspectInfo getGlobalAspectInfo()
     {
         if (globalAspectInfo == null)
-            globalAspectInfo = new GlobalAspectInfo();
+            globalAspectInfo = createGlobalAspectInfo();
 
         return globalAspectInfo;
+    }
+
+    /**
+     * Override this to create a custom global aspect info.
+     */
+    protected GlobalAspectInfo createGlobalAspectInfo() {
+        return new GlobalAspectInfo();
     }
 
     /**
      * Returns the Weaver object, which co-ordinates everything that
      * happens in the backend.
      */
-    public Weaver getWeaver()
+    final public Weaver getWeaver()
     {
         if (weaver == null)
-            weaver = new Weaver();
+            weaver = createWeaver();
 
         return weaver;
+    }
+
+    /**
+     * Override this to create a custom weaver.
+     */
+    protected Weaver createWeaver() {
+        return new Weaver();
     }
 
     /**

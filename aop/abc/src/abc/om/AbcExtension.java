@@ -56,7 +56,6 @@ public class AbcExtension extends abc.eaj.AbcExtension {
     //debug
     public static final boolean debug = false;
     private static boolean isLoaded = false;
-    private GlobalAspectInfo globalAspectInfo = null;
 
     public static Position generated = new Position("openmod_generated:0");
     
@@ -74,11 +73,8 @@ public class AbcExtension extends abc.eaj.AbcExtension {
         return new abc.om.ExtensionInfo(jar_classes, aspect_sources,this);
     }
 
-    public GlobalAspectInfo getGlobalAspectInfo() {
-        if (globalAspectInfo == null) {
-            globalAspectInfo = new OMGlobalAspectInfo();
-        }
-        return globalAspectInfo;
+    protected GlobalAspectInfo createGlobalAspectInfo() {
+        return new OMGlobalAspectInfo();
     }
     
     public void initLexerKeywords(AbcLexer lexer) {
