@@ -60,7 +60,7 @@ public class Contains extends Pointcut {
     public void getFreeVars(Set result) {
     }
 
-    protected void registerSetupAdvice(Aspect context, Hashtable typeEnv) {
+    public void registerSetupAdvice(Aspect context, Hashtable typeEnv) {
     }
 
     public Pointcut inline(Hashtable renameEnv, Hashtable typeEnv,

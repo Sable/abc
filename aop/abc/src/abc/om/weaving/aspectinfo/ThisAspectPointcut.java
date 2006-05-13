@@ -74,7 +74,7 @@ public class ThisAspectPointcut extends Pointcut {
         return this;
     }
 
-    protected void registerSetupAdvice(Aspect context, Hashtable typeEnv) {}
+    public void registerSetupAdvice(Aspect context, Hashtable typeEnv) {}
 
     public void getFreeVars(Set result) {}
 
