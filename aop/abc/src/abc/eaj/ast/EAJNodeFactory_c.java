@@ -36,26 +36,43 @@ import java.util.*;
 public class EAJNodeFactory_c extends AJNodeFactory_c
                               implements EAJNodeFactory
 {
-    // TODO:  Implement factory methods for new AST nodes.
-    // TODO:  Override factory methods for overriden AST nodes.
-    // TODO:  Override factory methods for AST nodes with new extension nodes.
+
+    public EAJNodeFactory_c() {
+        super(new EAJExtFactory_c(), new EAJDelFactory_c());
+    }
+    
+    public EAJNodeFactory_c(EAJExtFactory_c nextExtFactory) {
+        super(nextExtFactory, new EAJDelFactory_c());
+    }
+    
+    public EAJNodeFactory_c(EAJExtFactory_c nextExtFactory, EAJDelFactory_c nextDelFactory) {
+        super(nextExtFactory, nextDelFactory);
+    }
 
     public PCCast PCCast(Position pos, TypePatternExpr type_pattern)
     {
-        return new PCCast_c(pos, type_pattern);
+        PCCast n = new PCCast_c(pos, type_pattern);
+        n = (PCCast)n.ext(((EAJExtFactory)extFactory()).extPCCast());
+        n = (PCCast)n.del(((EAJDelFactory)delFactory()).delPCCast());
+        return n;
     }
     
     public PCThrow PCThrow(Position pos, TypePatternExpr type_pattern)
     {
-    	
-    	return new PCThrow_c(pos, type_pattern);
+        PCThrow n = new PCThrow_c(pos, type_pattern);
+        n = (PCThrow)n.ext(((EAJExtFactory)extFactory()).extPCThrow());
+        n = (PCThrow)n.del(((EAJDelFactory)delFactory()).delPCThrow());
+        return n;
     }
 
     public PCLocalVars PCLocalVars(Position pos,
                                    List varlist,
                                    Pointcut pc)
     {
-        return new PCLocalVars_c(pos, varlist, pc);
+        PCLocalVars n = new PCLocalVars_c(pos, varlist, pc);
+        n = (PCLocalVars)n.ext(((EAJExtFactory)extFactory()).extPCLocalVars());
+        n = (PCLocalVars)n.del(((EAJDelFactory)delFactory()).delPCLocalVars());
+        return n;
     }
 
     public GlobalPointcutDecl GlobalPointcutDecl(
@@ -63,30 +80,48 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
                                     ClassnamePatternExpr aspect_pattern,
                                     Pointcut pc)
     {
-        return new GlobalPointcutDecl_c(pos, aspect_pattern,pc);
+        GlobalPointcutDecl n = new GlobalPointcutDecl_c(pos, aspect_pattern,pc);
+        n = (GlobalPointcutDecl)n.ext(((EAJExtFactory)extFactory()).extGlobalPointcutDecl());
+        n = (GlobalPointcutDecl)n.del(((EAJDelFactory)delFactory()).delGlobalPointcutDecl());
+        return n;
     }
 
     public AdviceDecl AdviceDecl(Position pos, Flags flags,
                                  AdviceSpec spec, List throwTypes,
                                  Pointcut pc, Block body)
     {
-        return new EAJAdviceDecl_c(pos, flags, spec, throwTypes, pc, body);
+        EAJAdviceDecl n = new EAJAdviceDecl_c(pos, flags, spec, throwTypes, pc, body);
+        n = (EAJAdviceDecl)n.ext(((EAJExtFactory)extFactory()).extEAJAdviceDecl());
+        n = (EAJAdviceDecl)n.del(((EAJDelFactory)delFactory()).delEAJAdviceDecl());
+        return n;
     }
 
     public PCCflowDepth PCCflowDepth(Position pos, Local var, Pointcut pc) {
-        return new PCCflowDepth_c(pos,pc,var);
+        PCCflowDepth n = new PCCflowDepth_c(pos,pc,var);
+        n = (PCCflowDepth)n.ext(((EAJExtFactory)extFactory()).extPCCflowDepth());
+        n = (PCCflowDepth)n.del(((EAJDelFactory)delFactory()).delPCCflowDepth());
+        return n;
     }
 
     public PCCflowBelowDepth PCCflowBelowDepth(Position pos, Local var, Pointcut pc) {
-        return new PCCflowBelowDepth_c(pos,pc,var);
+        PCCflowBelowDepth n = new PCCflowBelowDepth_c(pos,pc,var);
+        n = (PCCflowBelowDepth)n.ext(((EAJExtFactory)extFactory()).extPCCflowBelowDepth());
+        n = (PCCflowBelowDepth)n.del(((EAJDelFactory)delFactory()).delPCCflowBelowDepth());
+        return n;
     }
 
     public PCLet PCLet(Position pos, Local var, Expr expr)
     {
-        return new PCLet_c(pos, var, expr);
+        PCLet n = new PCLet_c(pos,var,expr);
+        n = (PCLet)n.ext(((EAJExtFactory)extFactory()).extPCLet());
+        n = (PCLet)n.del(((EAJDelFactory)delFactory()).delPCLet());
+        return n;
     }
     
     public PCContains PCContains(Position pos, Pointcut param) {
-        return new PCContains_c(pos, param);
+        PCContains n = new PCContains_c(pos,param);
+        n = (PCContains)n.ext(((EAJExtFactory)extFactory()).extPCContains());
+        n = (PCContains)n.del(((EAJDelFactory)delFactory()).delPCContains());
+        return n;
     }
 }
