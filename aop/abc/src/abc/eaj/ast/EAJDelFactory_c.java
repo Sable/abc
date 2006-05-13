@@ -66,7 +66,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delGlobalPointcutDeclImpl() {
-        return delPointcutDecl();
+        return delPointcutDeclImpl();
     }
 
     protected JL postDelGlobalPointcutDecl(JL del) {
@@ -84,7 +84,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCCastImpl() {
-        return delPointcutDecl();
+        return delPointcutDeclImpl();
     }
 
     protected JL postDelPCCast(JL del) {
@@ -102,7 +102,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCCflowBelowDepthImpl() {
-        return delPCCflowBelow();
+        return delPCCflowBelowImpl();
     }
 
     protected JL postDelPCCflowBelowDepth(JL del) {
@@ -120,7 +120,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCCflowDepthImpl() {
-        return delPCCflow();
+        return delPCCflowImpl();
     }
 
     protected JL postDelPCCflowDepth(JL del) {
@@ -138,7 +138,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCContainsImpl() {
-        return delPointcut();
+        return delPointcutImpl();
     }
 
     protected JL postDelPCContains(JL del) {
@@ -156,7 +156,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCLetImpl() {
-        return delPCIf();
+        return delPCIfImpl();
     }
 
     protected JL postDelPCLet(JL del) {
@@ -174,7 +174,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCLocalVarsImpl() {
-        return delPointcut();
+        return delPointcutImpl();
     }
 
     protected JL postDelPCLocalVars(JL del) {
@@ -192,7 +192,7 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     }
     
     protected JL delPCThrowImpl() {
-        return delPointcut();
+        return delPointcutImpl();
     }
 
     protected JL postDelPCThrow(JL del) {

@@ -49,7 +49,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCCastImpl() {
-        return extPointcut();
+        return extPointcutImpl();
     }
 
     protected Ext postExtPCCast(Ext e) {
@@ -67,7 +67,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCThrowImpl() {
-        return extPointcut();
+        return extPointcutImpl();
     }
 
     protected Ext postExtPCThrow(Ext e) {
@@ -85,7 +85,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCLocalVarsImpl() {
-        return extPointcut();
+        return extPointcutImpl();
     }
 
     protected Ext postExtPCLocalVars(Ext e) {
@@ -103,7 +103,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extGlobalPointcutDeclImpl() {
-        return extPointcutDecl();
+        return extPointcutDeclImpl();
     }
 
     protected Ext postExtGlobalPointcutDecl(Ext e) {
@@ -121,7 +121,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extEAJAdviceDeclImpl() {
-        return extAdviceDecl();
+        return extAdviceDeclImpl();
     }
 
     protected Ext postExtEAJAdviceDecl(Ext e) {
@@ -139,7 +139,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCCflowDepthImpl() {
-        return extPCCflow();
+        return extPCCflowImpl();
     }
 
     protected Ext postExtPCCflowDepth(Ext e) {
@@ -157,7 +157,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCCflowBelowDepthImpl() {
-        return extPCCflowBelow();
+        return extPCCflowBelowImpl();
     }
 
     protected Ext postExtPCCflowBelowDepth(Ext e) {
@@ -175,7 +175,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCLetImpl() {
-        return extPCIf();
+        return extPCIfImpl();
     }
 
     protected Ext postExtPCLet(Ext e) {
@@ -193,7 +193,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     }
 
     protected Ext extPCContainsImpl() {
-        return extPointcut();
+        return extPointcutImpl();
     }
 
     protected Ext postExtPCContains(Ext e) {
