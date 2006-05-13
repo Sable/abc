@@ -37,10 +37,10 @@ import java.io.*;
  *  @author Aske Simon Christensen
  */
 public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
-    private Collection/*<String>*/ source_files;
-    private Map class_to_ast;
+	protected Collection/*<String>*/ source_files;
+    protected Map class_to_ast;
 
-    private Node current_ast;
+    protected Node current_ast;
 
     public CollectJimplifyVisitor(Job job, TypeSystem ts, NodeFactory nf,
                                   Collection/*<String>*/ source_files,
