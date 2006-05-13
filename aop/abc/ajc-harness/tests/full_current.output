@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@15828f
+creating: A@d9a418
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2280,7 +2280,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1c585e4, [Ljava.lang.Object;@d943d2, TwoAnonymous$3@1c585e4
+calling run: TwoAnonymous$3@1f3c9df, [Ljava.lang.Object;@4a7460, TwoAnonymous$3@1f3c9df
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2711,7 +2711,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$31$around$1601(AroundAll.java:199)
+	at A.inline$27$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4060,7 +4060,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@10abe6a.x:=-3
+test.Test3@12f69de.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4143,8 +4143,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@1a7f0d8
-o: Bar@1a7f0d8, i: 10
+o: Bar@868b83
+o: Bar@868b83, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4295,13 +4295,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$7$around$2689(Trace.aj:92)
+	at aspects.Trace.inline$6$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4335,13 +4335,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$19$around$2689(Trace.aj:119)
+	at aspects.Trace.inline$18$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4736,7 +4736,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@177a201
+LibraryAspect-defined run() for C@1c0056a
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5060,7 +5060,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@c95fed
+? Util.read() obj=Test@118a222
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5293,12 +5293,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@463504
-Invoking command bean:  Command@142ba93
-hello(Command@142ba93)
-Created a PerThis aspect : Testcase2@1e72a5e
-Invoking command bean:  Command@18e8352
-hello again(Command@18e8352)
+Created a PerThis aspect : Testcase2@14f9c10
+Invoking command bean:  Command@18f0b38
+hello(Command@18f0b38)
+Created a PerThis aspect : Testcase2@299fdf
+Invoking command bean:  Command@bf0854
+hello again(Command@bf0854)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5767,66 +5767,66 @@ PASS: Test 1109: "om/matchtest/Basic matching test" passed.
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibAspect: Before fib(5)
 In FibExtAspect: Before fib(5)
-In FibAspect: Before getPrevX
+In FibAspect: Before fib(5)
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(5)
 In FibAspect: Before fib(4)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(4)
 In FibAspect: Before fib(3)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(1)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(3)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(1)
 5
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 9
 1
 10
@@ -6250,13 +6250,13 @@ PASS: Test 1125: "om/roottest/Root module test" passed.
 Running test 1126: om/totest/To test
 Commandline: abc -d om/totest -warn-unused-advice:off -ext abc.om om/totest/Module.java om/totest/ToTestMain.java om/totest/A.java om/totest/ExtAspectA.java om/totest/ExtAspectB.java 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-ExtAspectB void A.f1()
 ExtAspectA void A.f1()
+ExtAspectB void A.f1()
 f1
 ExtAspectA void A.f2()
 f2
-ExtAspectB void A.f3()
 ExtAspectA void A.f3()
+ExtAspectB void A.f3()
 f3
 ExtAspectB void A.f4()
 f4
