@@ -108,7 +108,7 @@ public abstract class Pointcut extends Syntax {
      *  do not have any name clashes (the pointcuts returned by the inline
      *  method have this property).
      */
-    protected final static class DNF {
+    public final static class DNF {
         private List/*<Formal>*/ formals;
         private List/*<List<Pointcut>>*/ disjuncts;
 
@@ -249,7 +249,7 @@ public abstract class Pointcut extends Syntax {
      *  @param typeEnv A mapping from formal name to {@link AbcType} for
      *                 all the formal parameters to the pointcut
      */
-    protected abstract void registerSetupAdvice
+    public abstract void registerSetupAdvice
         (Aspect context,Hashtable/*<String,AbcType>*/ typeEnv);
 
     /** Get a list of free variables bound by this pointcut
