@@ -12,33 +12,30 @@
 
 package abc.testing;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.lang.String;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.FileReader;
 import java.io.FileWriter;
-import java.lang.reflect.*;
-import polyglot.util.ErrorInfo;
-import polyglot.util.Position;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.aspectj.bridge.AbortException;
 import org.aspectj.testing.Tester;
-import java.lang.String;
 
+import polyglot.util.ErrorInfo;
+import polyglot.util.Position;
 import abc.main.CompilerAbortedException;
 import abc.main.CompilerFailedException;
-
-import soot.G;
-
-import dk.brics.xact.*;
+import dk.brics.xact.XML;
 
 
 /**
@@ -703,7 +700,6 @@ public class TestCase {
     	String[] args;
     	public CompilationArgs(String[] args, String cp) {
 			ArrayList currentArgs = new ArrayList();
-			boolean cpFound = false;
 			String currentCP = null;;
 			for (int i=0; i<args.length; i++) {
 				currentArgs.add(args[i]);

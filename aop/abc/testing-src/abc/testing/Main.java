@@ -65,7 +65,6 @@ public class Main {
         }
 
         public static void main(String[] args) {
-                int arg = 0;
 //              String xmlprefix = "<!DOCTYPE suite SYSTEM \"../tests/abcTestSuite.dtd\">\n<suite>\n";
 //              String xmlsuffix = "</suite>\n";
 
