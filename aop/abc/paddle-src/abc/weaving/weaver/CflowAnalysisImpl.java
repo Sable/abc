@@ -18,25 +18,47 @@
  */
 
 package abc.weaving.weaver;
-import abc.weaving.matching.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.residues.*;
-import java.util.*;
-import soot.*;
-import soot.jimple.*;
-import soot.jimple.paddle.*;
-import soot.options.PaddleOptions;
-import soot.tagkit.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import soot.PackManager;
+import soot.SootMethod;
+import soot.jimple.Stmt;
+import soot.jimple.paddle.BDDCflow;
+import soot.jimple.paddle.BDDCflowStack;
+import soot.jimple.paddle.PaddleScene;
+import soot.tagkit.StringTag;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.CflowSetup;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.AndResidue;
+import abc.weaving.residues.AssertResidue;
+import abc.weaving.residues.CflowResidue;
+import abc.weaving.residues.JoinPointInfo;
+import abc.weaving.residues.Load;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.OrResidue;
+import abc.weaving.residues.ResidueBox;
 
 /** Bridge between abc and Soot Paddle cflow analysis.
  *  @author Ondrej Lhotak
+ *  @author Eric Bodden
  */
 
-public class CflowAnalysisImpl implements CflowAnalysis {
+public class CflowAnalysisImpl implements ReweavingAnalysis {
+    
     private static void debug(String message) {
         if (abc.main.Debug.v().cflowAnalysis) 
             System.err.println("CFLOW ANALYSIS ***** " + message);
     }   
+    
     private static void stats(String message) {
         if (abc.main.Debug.v().cflowAnalysisStats) 
             System.err.println("CFLOW STATS ***** " + message);
@@ -61,7 +83,7 @@ public class CflowAnalysisImpl implements CflowAnalysis {
     private Map/*CflowSetup, StackInfo*/ stackInfoMap = new HashMap();
     private Map/*Local, Load*/ joinPointLocalMap = new HashMap();
 
-    public void run() {
+    public boolean analyze() {
 
         debug("processing advices");
         for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
@@ -192,7 +214,14 @@ public class CflowAnalysisImpl implements CflowAnalysis {
 
 
         debug("done cflow analysis");
+        
+        //optimize the residues
+        abc.main.Main.v().getAbcExtension().getWeaver().optimizeResidues();
+        
+        //return whether we want to reweave
+        return !abc.main.Debug.v().dontWeaveAfterAnalysis;
     }
+    
     private StackInfo stackInfo( CflowSetup cfs ) {
         StackInfo ret = (StackInfo) stackInfoMap.get(cfs);
         if(ret == null)
@@ -200,6 +229,7 @@ public class CflowAnalysisImpl implements CflowAnalysis {
                     ret = new StackInfo(!cfs.getFormals().isEmpty()));
         return ret;
     }
+    
     private void processAdvices(List/*AdviceApplication*/ adviceList) {
         for( Iterator aaIt = adviceList.iterator(); aaIt.hasNext(); ) {
             final AdviceApplication aa = (AdviceApplication) aaIt.next();
@@ -234,5 +264,42 @@ public class CflowAnalysisImpl implements CflowAnalysis {
             public AdviceApplication aa() { return aa; }
         };
         si.shadows.add(sh);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void defaultSootArgs(List sootArgs) {
+        // The following Soot args need to go at the beginning, so that they
+        // may be overridden by explicit command-line options.
+        sootArgs.add("-p");
+        sootArgs.add("cg");
+        sootArgs.add("enabled:true");
+        sootArgs.add("-p");
+        sootArgs.add("cg.paddle");
+        sootArgs.add("enabled:true");
+        sootArgs.add("-p");
+        sootArgs.add("cg.paddle");
+        sootArgs.add("backend:javabdd");
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    public void enforceSootArgs(List sootArgs) {
+        //we override no arguments
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void setupWeaving() {
+        //nothing to do here
+    }
+    /** 
+     * {@inheritDoc}
+     */
+    public void tearDownWeaving() {
+        //nothing to do here
     }
 }

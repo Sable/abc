@@ -29,13 +29,23 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+$abc now supports mutiple reweaving analyses. Those analyses are
+;executed on the woven program and may change e.g. the residues
+;in order to produce a different (e.g. more efficient) woven
+;program. See abc.main.AbcExtension.createReweavingPasses(List) for an
+;example integration of our CFlow optimization.
+;Custom analyses need to implement the
+;abc.weaving.weaver.ReweavingAnalysis interface.
+;They are scheduled via instances of ReweavingPass.
+;Passes can also be annotated with a timeout so that abc stops them
+;automatically when exceeding this timeframe.
 $The 'indexing' optimisation for tracematches now doesn't introduce a
-further dependency by default, but uses classes provided in the abc
-runtime. The old behaviour can be restored by passing abc the flag
-'-debug useCommonsCollections'; doing this will of course require a
-Commons Collections jar on the classpath. Our preliminary experiments
-suggest that our implementation is slightly slower than the Commons
-Collections on 1.4 JVMs, but slightly faster on 1.5 JVMs.
+;further dependency by default, but uses classes provided in the abc
+;runtime. The old behaviour can be restored by passing abc the flag
+;'-debug useCommonsCollections'; doing this will of course require a
+;Commons Collections jar on the classpath. Our preliminary experiments
+;suggest that our implementation is slightly slower than the Commons
+;Collections on 1.4 JVMs, but slightly faster on 1.5 JVMs.
 
 %1.1.1 1142785477
 $Implemented various tracematch optimisations, as described in tech

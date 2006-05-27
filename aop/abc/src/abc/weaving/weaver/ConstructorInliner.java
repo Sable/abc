@@ -27,7 +27,6 @@ import java.util.Iterator;
 import soot.SootClass;
 import soot.SootMethod;
 import abc.soot.util.Restructure;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 

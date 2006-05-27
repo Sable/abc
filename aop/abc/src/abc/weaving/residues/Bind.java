@@ -20,16 +20,19 @@
 
 package abc.weaving.residues;
 
-import java.util.Vector;
-import polyglot.util.InternalCompilerError;
-import soot.*;
-import soot.util.Chain;
-import soot.jimple.Stmt;
+import soot.FastHierarchy;
+import soot.Local;
+import soot.PrimType;
+import soot.Scene;
+import soot.SootMethod;
+import soot.Type;
+import soot.Value;
 import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.residues.Residue.Bindings;
+import abc.weaving.weaver.ConstructorInliningMap;
 import abc.weaving.weaver.WeavingContext;
-import abc.weaving.weaver.*;
 
 /** Bind a context value to a local or argument
  *  @author Ganesh Sittampalam

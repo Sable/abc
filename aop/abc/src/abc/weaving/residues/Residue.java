@@ -108,7 +108,7 @@ public abstract class Residue {
     public Residue resetForReweaving() { 
     	//System.out.println("resetForWeaving: " + this.getClass().getName());
     	return this;
-    	}
+    }
     
     /**
      * Fills the Bindings object with information of possible

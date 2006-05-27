@@ -54,7 +54,6 @@ import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
 import polyglot.util.InternalCompilerError;
-import soot.CompilationDeathException;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
@@ -83,8 +82,6 @@ import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.matching.ConstructorCallShadowMatch;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.tagkit.InstructionInlineCountTagAggregator;
 import abc.weaving.tagkit.InstructionInlineTagsAggregator;
@@ -97,8 +94,8 @@ import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.InterprocConstantPropagator;
 import abc.weaving.weaver.IntertypeAdjuster;
+import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.UnusedMethodsRemover;
-import abc.weaving.weaver.Weaver;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -234,18 +231,6 @@ public class Main {
         ArgList args = new ArgList(argArray);
         boolean noArguments = args.isEmpty();
         OptionsParser.v().set_classpath(System.getProperty("java.class.path"));
-
-        // The following Soot args need to go at the beginning, so that they
-        // may be overridden by explicit command-line options.
-        soot_args.add("-p");
-        soot_args.add("cg");
-        soot_args.add("enabled:true");
-        soot_args.add("-p");
-        soot_args.add("cg.paddle");
-        soot_args.add("enabled:true");
-        soot_args.add("-p");
-        soot_args.add("cg.paddle");
-        soot_args.add("backend:javabdd");
 
         while(!args.isEmpty())
         { 
@@ -487,7 +472,27 @@ public class Main {
 	    throw new IllegalArgumentException("Interprocedural analyses (-O3 " +
 		  "and above) require specifying the main class for the control-flow " +
 					       "analysis with the -main-class option.");
-	}
+        }
+        
+        //let reweaving analyses add their own soot arguments
+        List sootArgsFromCommandline = soot_args;        
+        soot_args = new ArrayList();
+        
+        //set default soot args
+        final List reweavingAnalyses = getAbcExtension().getReweavingPasses();
+        for (Iterator iter = reweavingAnalyses.iterator(); iter.hasNext();) {
+            ReweavingPass analysis = (ReweavingPass) iter.next();
+            analysis.defaultSootArgs(soot_args);            
+        }
+
+        //set the args from the commandline
+        soot_args.addAll(sootArgsFromCommandline);
+        
+        //override soot args if necessary
+        for (Iterator iter = reweavingAnalyses.iterator(); iter.hasNext();) {
+            ReweavingPass analysis = (ReweavingPass) iter.next();
+            analysis.enforceSootArgs(soot_args);
+        }
     }
 
     
@@ -1142,15 +1147,6 @@ public class Main {
         } catch (Exception e) {
             throw new IllegalArgumentException(
                 "Cannot load AbcExtension from " + abcExtensionPackage);
-        }
-    }
-
-    /** Parse a path.separator separated path into the separate directories. */
-    private void parsePath(String path, Collection paths) {
-        String[] jars = path.split(System.getProperty("path.separator"));
-        for(int j = 0; j < jars.length; j++) {
-            // Do we need a sanity check here? !jars[j].equals("") or something like that?
-            paths.add(jars[j]);
         }
     }
 

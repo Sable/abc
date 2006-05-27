@@ -106,6 +106,9 @@ public class Debug {
                                          // to help with debugging
     public boolean instructionTagger = false; // print info about instruction
                                               // tagging
+    public boolean printReweavingAnalysisTimeouts = true;   //print error message when
+                                                            //a reweaving anslysis times out
+    public boolean disableReweavingAnalysisTimeouts = false;//disable timeouts for reweaving analyses
 
     // Cleans up code (copy propagation, nop removal, dead code removal, etc) 
     // immediately after weaving advice
@@ -145,7 +148,7 @@ public class Debug {
 
     public boolean debugCflowSharing=false;
     public boolean debugPointcutUnification=false;
-    public boolean debugUnweaver=false;
+    public boolean debugUnweaver=false; 
     public boolean dontWeaveAfterAnalysis=false;
     public boolean checkCflowOpt=false;
     public boolean dontRemovePushPop=false;

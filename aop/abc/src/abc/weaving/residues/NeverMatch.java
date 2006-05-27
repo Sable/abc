@@ -42,6 +42,7 @@ public class NeverMatch extends Residue {
     public Residue inline(ConstructorInliningMap cim) {
         return this;
     }
+    
     public static boolean neverMatches(Residue r) {
         if(r==null) throw new InternalCompilerError("null residue found");
         // using null for NeverMatch is now deprecated

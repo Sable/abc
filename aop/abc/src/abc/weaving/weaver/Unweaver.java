@@ -35,7 +35,6 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.Jimple;
 import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /** Saves all method bodies so that they can be unwoven after weaving.
  * @author Ondrej Lhotak

@@ -22,14 +22,10 @@
 package abc.weaving.weaver;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.Scene;
 import soot.SootClass;
@@ -46,26 +42,44 @@ import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.DeclareMessage;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.ResidueBox;
 import abc.weaving.weaver.around.AroundWeaver;
 
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
  * @author Ondrej Lhotak
  * @author Laurie Hendren
+ * @author Eric Bodden
  * @date April 24, 2004
  */
 
 public class Weaver {
 
+    protected final AspectCodeGen ag;
+    
+    Map unitBindings = new HashMap();
+
+    /**
+     * Creates a new Weaver with a default aspect code generator.
+     */
+    public Weaver() {
+        this(new AspectCodeGen());
+    }
+    
+    /**
+     * Creates a new Weaver with a custom aspect code generator.
+     */
+    public Weaver(AspectCodeGen aspectCodeGen) {
+        ag = aspectCodeGen;
+    }
+
     private void debug(String message)
-      { if (abc.main.Debug.v().weaverDriver)
+      { if (Debug.v().weaverDriver)
           System.err.println("WEAVER DRIVER ***** " + message);
       }
-    Map unitBindings = new HashMap();
 
     public Map getUnitBindings() {
         return unitBindings;
@@ -77,6 +91,10 @@ public class Weaver {
         else
                 return ut;
     }
+    
+    /**
+     * Optimizes residues, i.e. we exchange for example AlwaysMatch &amp;&amp; R by just R. 
+     */
     public void optimizeResidues() {
         for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
@@ -94,6 +112,10 @@ public class Weaver {
             }
         }
     }
+    
+    /**
+     * Resets the (hopefully) complete state of the weaver and inliner.
+     */
     public void resetForReweaving() {
         WeavingState.reset();
     	AroundWeaver.reset();
@@ -109,8 +131,7 @@ public class Weaver {
                     Iterator appIt=adviceList.allAdvice().iterator();
                     while (appIt.hasNext()) {
                         AdviceApplication appl=(AdviceApplication)appIt.next();
-                        appl.setResidue(
-                                        appl.getResidue().resetForReweaving());
+                        appl.setResidue(appl.getResidue().resetForReweaving());
                     }
                 }
             }
@@ -122,60 +143,82 @@ public class Weaver {
         }
     }
 
+        /**
+         * High level routine which performs the whole weaving.
+         */
         public void weave() {
             // add aspectOf(), hasAspect(), ...
             weaveGenerateAspectMethods();
+            //inline preinitialization etc.
             inlineConstructors();
 
-            if( OptionsParser.v().O() >= 3 ) {
+            final List reweavingPasses = abc.main.Main.v().getAbcExtension().getReweavingPasses();
+                        
+            if( abc.main.Debug.v().optimizeResidues ) {
+                //optimize residues, i.e. AlwaysMatch && R -> R, etc.
+                optimizeResidues();
+            }
+            
+            //if we do reweaving
+            if(reweavingPasses.size() > 0) {
+                //store the unwoven state first
                 Unweaver unweaver = new Unweaver();
                 unweaver.save();
                 unitBindings = unweaver.restore();
+                //then do the initial weaving
+                weaveAdvice();
+                
+                //for all reweaving passes
+                for (Iterator iter = reweavingPasses.iterator(); iter.hasNext();) {                    
+                    ReweavingPass pass = (ReweavingPass) iter.next();                    
+                    //perform the reweaving analysis
+                    boolean reweaveNow = pass.analyze();
 
-                // We could do several passes, but for now, just do one.
-                weaveAdvice();
-                runCflowAnalysis();
-                optimizeResidues();
-                reportMessages();
-                if( !abc.main.Debug.v().dontWeaveAfterAnalysis ) {
-                    unitBindings = unweaver.restore();
-                    
-                    resetForReweaving();
-                    removeDeclareWarnings();
-                    if(abc.main.Debug.v().countCflowStacks) {
-                        new CflowStackCounter().count();
+                    if(ResidueBox.wasAnyResidueChanged()) {
+                        //optimize the residues is any was changed
+                        optimizeResidues();
                     }
-                    weaveAdvice();
-                }
-            } else {
-                if(abc.main.Debug.v().debugUnweaver) {
-                    Unweaver unweaver = new Unweaver();
-                    unweaver.save();
-                    debug("unweaver saved state");
-                    unitBindings = unweaver.restore();
-                    debug("unweaver restored state");
                     
-                    resetForReweaving();
-                    weaveAdvice();
-                    debug("after weaveAdvice");
-                    //if (true==true) return; ///
-                    unitBindings = unweaver.restore();
-                    debug("unweaver restored state (2)");
-                    
-                    resetForReweaving();
-                    //throw new RuntimeException("just a test");
+                    //we need to reweave now
+                    if(reweaveNow) { 
+                        
+                        //restore the weaving state again (analysis could have tampered with it?)
+                        unitBindings = unweaver.restore();
+                        //reset weaver for reweaving
+                        resetForReweaving();
+                        //do stuff immediately prior to reweaving
+                        pass.setupWeaving();
+                        //reweave
+                        weaveAdvice();
+                        //do stuff immediately prior after reweaving
+                        pass.tearDownWeaving();
+
+                    }
                 }
-                if( abc.main.Debug.v().optimizeResidues ) {
-                    optimizeResidues();
-                }
-                reportMessages();
-                removeDeclareWarnings();
-                if(abc.main.Debug.v().countCflowStacks) {
-                    new CflowStackCounter().count();
-                }
-                weaveAdvice();
-                debug("after weaveAdvice (2)");
+                
+                //restore the weaving state again (analysis could have tampered with it?)
+                unitBindings = unweaver.restore();
+                
+                //reset for the final weaving step
+                resetForReweaving();
             }
+            
+            if( abc.main.Debug.v().optimizeResidues ) {
+                optimizeResidues();
+            }
+
+            //don't forget to process declare warning/errors;
+            //we don't do this earlier, cause the analyses can possibly
+            //support declare warning/error through static analysis
+            reportMessages();
+            
+            //remove declare warnings/errors;
+            //this must be done before the last weaving to get
+            //the right bytecode
+            removeDeclareWarnings();
+            
+            //do the final weaving
+            weaveAdvice();            
         }
         
         public void doInlining() {
@@ -186,6 +229,7 @@ public class Weaver {
 
             
         }
+        
         public void runInliner() {
         	AdviceInliner.v().run();
         	/*InterprocConstantPropagator.inlineConstantArguments();
@@ -195,14 +239,15 @@ public class Weaver {
         		AroundInliner.v().transform(m.getActiveBody(), 1);
         	}*/
         	
-        }
-        
+        }        
 
         public void runBoxingRemover() {
         	AdviceInliner.v().runBoxingRemover();
-        }
+        }        
         
-       
+        /**
+         * Inlines constructors of all weavable classes with initialization and preinitialization advice. 
+         */
         public void inlineConstructors() {
             ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
             for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
@@ -213,11 +258,14 @@ public class Weaver {
                 sg.setShadowPointsPass2(scl);
             }
         }
+        
+        /**
+         * Fills in stubs for aspect methods generated by the frontend. (e.g. aspectOf)  
+         */
         public void weaveGenerateAspectMethods() {
                 // Generate methods inside aspects needed for code gen and bodies of
                 //   methods not filled in by front-end (i.e. aspectOf())
                 debug("Generating extra code in aspects");
-                AspectCodeGen ag = new AspectCodeGen();
                 for( Iterator asIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspects().iterator(); asIt.hasNext(); ) {
                     final Aspect as = (Aspect) asIt.next();
                         ag.fillInAspect(as);
@@ -227,6 +275,11 @@ public class Weaver {
                 abc.main.Main.phaseDebug("Add aspect code");
 
         }
+        
+        /**
+         * Adds the error and warning messages generated by "declare error" and "declare warning"
+         * to the error queue.
+         */
         public void reportMessages() {
             for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                 final AbcClass cl = (AbcClass) clIt.next();
@@ -242,6 +295,11 @@ public class Weaver {
                 }
             }
         }
+        
+        /**
+         * Changes the residues of all "declare warnings" and "declare errors" to NeverMatch.
+         * TODO why do we actually need this? 
+         */
         public void removeDeclareWarnings() {
             if(Debug.v().weaveDeclareWarning) return;
             for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
@@ -261,6 +319,10 @@ public class Weaver {
                 }
             }
         }
+        
+        /**
+         * Performs the actual advice weaving.
+         */
         public void weaveAdvice() {
                 PointcutCodeGen pg = new PointcutCodeGen();
                 GenStaticJoinPoints gsjp = new GenStaticJoinPoints();
@@ -309,13 +371,5 @@ public class Weaver {
                 AbcTimer.mark("Weaving advice");
                 abc.main.Main.phaseDebug("Weaving advice");
         } // method weave
-    private void runCflowAnalysis() {
-        CflowAnalysis cfab = null;
-        try {
-            cfab = (CflowAnalysis) Class.forName("abc.weaving.weaver.CflowAnalysisImpl").newInstance();
-        } catch( Exception e ) {
-            throw new InternalCompilerError("Couldn't load interprocedural analysis plugin. "+e);
-        }
-        cfab.run();
-    }
+
 } // class Weaver

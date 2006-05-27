@@ -21,14 +21,22 @@ package abc.weaving.residues;
 
 /** A box holding a residue.
  *  @author Ondrej Lhotak
+ *  @author Eric Bodden
  *  @date 3-Aug-04
  */ 
 
 public class ResidueBox {
     private Residue residue;
+    
+    protected static boolean residueBoxesChanged = false;
 
      /** Sets the residue contained in this box as given. */
     public void setResidue(Residue residue) {
+        //note that a residue box was changed
+        if(this.residue!=residue) {
+            residueBoxesChanged = true;
+        }
+        //perform the change
         this.residue = residue;
     }
 
@@ -41,4 +49,16 @@ public class ResidueBox {
         return residue.toString();
     }
 
-}
+    /**
+     * Tells whether any residue was set since the last time this method was called
+     * (or since startup of the program).
+     * @return <code>true</code> is any residue box was changed since the last
+     * call to {@link #resetResiduesChanged()}.
+     */
+    public static boolean wasAnyResidueChanged() {
+        boolean val = residueBoxesChanged;
+        residueBoxesChanged = false;
+        return val;
+    }
+
+ }

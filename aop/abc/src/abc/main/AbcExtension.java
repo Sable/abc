@@ -19,13 +19,13 @@
 
 package abc.main;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import polyglot.util.InternalCompilerError;
-
 import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
@@ -80,7 +80,10 @@ import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.CflowCodeGenUtils;
+import abc.weaving.weaver.ReweavingAnalysis;
+import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
+import abc.weaving.weaver.ReweavingPass.ID;
 
 /**
  * This class should be sub-classed to extend the behaviour of abc
@@ -89,11 +92,16 @@ import abc.weaving.weaver.Weaver;
  * can be loaded at runtime by using the "-ext" switch to abc.
  *
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class AbcExtension
 {
+    private static final ID PASS_CFLOW_ANALYSIS = new ID("CFlow analysis");
+    private static final ID PASS_DEBUG_UNWEAVER = new ID("Debug Unweaver");
+    
     private GlobalAspectInfo globalAspectInfo = null;
     private Weaver weaver = null;
+    private List reweavingPasses;
 
     /**
      * Constructs a version string for all loaded extensions
@@ -600,5 +608,57 @@ public class AbcExtension
 												 final abc.weaving.matching.WeavingEnv we) {
             return abc.weaving.matching.AdviceApplication.residueConjuncts(ad,pc,sm,method,cls,we);	
 		}
+
+    /**
+     * Adds a new reweaving passes to the pass list.
+     * @param passes the current list of reweaving passes; add your analysis passes
+     * here as needed; do not forget to call <code>super</code>
+     */
+    protected void createReweavingPasses(List passes) {
+        if( OptionsParser.v().O() >= 3 ) {
+            try {
+                ReweavingAnalysis ana = (ReweavingAnalysis) Class.forName("abc.weaving.weaver.CflowAnalysisImpl").newInstance();                
+                passes.add( new ReweavingPass( PASS_CFLOW_ANALYSIS, ana ) );
+            } catch( Exception e ) {
+                throw new InternalCompilerError("Couldn't load interprocedural analysis plugin 'CflowAnalysisImpl'.",e);
+            }
+        }
+        
+        if(Debug.v().debugUnweaver) {
+            //to debug the unweaver, add an empty reweaving analysis
+            passes.add( new ReweavingPass(PASS_DEBUG_UNWEAVER,new ReweavingAnalysis() {
+    
+                public boolean analyze() {
+                    return true;
+                }
+    
+                public void defaultSootArgs(List sootArgs) {
+                }
+    
+                public void enforceSootArgs(List sootArgs) {
+                }
+    
+                public void setupWeaving() {
+                }
+    
+                public void tearDownWeaving() {
+                }
+                
+                
+            }));
+        }
+    }
+    
+    /**
+     * Returns the reweaving passes for this extension.
+     * @return the reweaving passes
+     */
+    public final List getReweavingPasses() {
+        if(reweavingPasses == null) {
+            reweavingPasses = new ArrayList();
+            createReweavingPasses(reweavingPasses);
+        }
+        return reweavingPasses;
+    }
 
 }
