@@ -128,7 +128,7 @@ public class GlobalAspectInfo {
      *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
      */
     public Set getWeavableClasses() {
-        return classes;
+        return Collections.unmodifiableSet(classes);
     }
 
     /** Returns the list of all aspects.
