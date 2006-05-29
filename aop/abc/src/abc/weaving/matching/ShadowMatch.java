@@ -20,20 +20,19 @@
 
 package abc.weaving.matching;
 
-import java.util.*;
-import soot.*;
-import soot.jimple.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import soot.SootMethod;
+import soot.jimple.NullConstant;
 import soot.tagkit.Host;
-import soot.util.*;
-
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.residues.*;
-import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
-
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.MethodCategory;
-import abc.weaving.weaver.*;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.JimpleValue;
+import abc.weaving.residues.Residue;
+import abc.weaving.weaver.ConstructorInliningMap;
 
 /** A specific join point shadow
  *  @author Ganesh Sittampalam
@@ -41,7 +40,7 @@ import abc.weaving.weaver.*;
  */
 public abstract class ShadowMatch {
     private static int nextId = 1;
-    public int shadowId;
+    public final int shadowId;
     protected SootMethod container;
 
     public abstract ShadowMatch inline(ConstructorInliningMap cim);
