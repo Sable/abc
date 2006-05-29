@@ -33,9 +33,9 @@ import java.util.*;
  */
 public class TMAdviceDecl extends AdviceDecl
 {
-    private String tm_id;
-    private Position tm_pos;
-    private int kind;
+    protected String tm_id;
+    protected Position tm_pos;
+    protected int kind;
 
     public TMAdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl,
                         Aspect aspct, int jp, int jpsp, int ejp,

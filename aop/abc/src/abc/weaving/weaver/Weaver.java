@@ -175,7 +175,7 @@ public class Weaver {
                     boolean reweaveNow = pass.analyze();
 
                     if(ResidueBox.wasAnyResidueChanged()) {
-                        //optimize the residues is any was changed
+                        //optimize the residues if any was changed
                         optimizeResidues();
                     }
                     

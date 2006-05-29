@@ -19,16 +19,19 @@
 
 package abc.tm.weaving.matching;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
-import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
-import polyglot.util.ErrorQueue;
 import abc.main.Debug;
-import abc.polyglot.util.ErrorInfoFactory;
+import abc.tm.weaving.aspectinfo.TraceMatch;
 
 /**
  * Implementation of the StateMachine interface for tracematch matching
@@ -206,7 +209,6 @@ public class TMStateMachine implements StateMachine {
      */
     protected void addSelfLoops(Collection/*<String>*/ declaredSymbols) {
         SMNode cur;
-        String l;
         Iterator it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
@@ -667,6 +669,33 @@ public class TMStateMachine implements StateMachine {
     			((SMNode)nodeMap.get(curSet)).setFinal(isFinal);
     		}
 		return result;
+    }
+    
+      /**
+       * Minimizes by the well-known (?)
+       * reverse/determinize/reverse/determinize method.
+       * @return the minimized automaton 
+       */
+      protected TMStateMachine getMinimized() {
+          //reverse
+          reverse();
+          //create determinized copy
+          TMStateMachine det = determinise();
+          //restore original
+          reverse();
+          //do second iteration on copy
+          det.reverse();
+          return det.determinise();
+      }
+      
+    /**
+     * Minimizes by the well-known (?)
+     * reverse/determinize/reverse/determinize method.
+     */
+    protected void minimize() {
+        TMStateMachine minimized = getMinimized();
+        this.nodes = minimized.nodes;
+        this.edges = minimized.edges;
     }
     
     /**

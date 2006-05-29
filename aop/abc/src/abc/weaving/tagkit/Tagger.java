@@ -77,6 +77,8 @@ public class Tagger {
             debug("Not overwriting " + oldTag.getName() + ": " + tag.value
                 + " with " + tag.value + " on " + s);
             return;
+        } else {
+            debug("Adding new tag " + tag.getName() + "("+ tag.value + ") to " + s);
         }
         s.addTag(tag);
     }

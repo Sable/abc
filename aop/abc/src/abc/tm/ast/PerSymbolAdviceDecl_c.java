@@ -25,7 +25,6 @@ import polyglot.util.*;
 import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
-import abc.aspectj.visit.*;
 
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
@@ -46,14 +45,17 @@ public class PerSymbolAdviceDecl_c extends AdviceDecl_c
 {
     protected String tm_id;
     protected Position tm_pos;
+    protected SymbolDecl sym;
 
     public PerSymbolAdviceDecl_c(Position pos, Flags flags, AdviceSpec spec,
                                 List throwTypes, Pointcut pc, Block body,
-                                String tm_id, Position tm_pos)
+                                String tm_id, SymbolDecl sym, Position tm_pos)
     {
         super(pos, flags, spec, throwTypes, pc, body);
         this.tm_id = tm_id;
         this.tm_pos = tm_pos;
+        assert sym != null;
+        this.sym = sym;
         if (tm_pos == null)
         	System.err.println("gen advice decl with null tm pos");
     }
@@ -109,14 +111,14 @@ public class PerSymbolAdviceDecl_c extends AdviceDecl_c
             methods.add(AbcFactory.MethodSig((ConstructorInstance)ci));
         }
 
-        abc.tm.weaving.aspectinfo.TMAdviceDecl ad =
-	        new abc.tm.weaving.aspectinfo.TMAdviceDecl
+        abc.tm.weaving.aspectinfo.TMPerSymbolAdviceDecl ad =
+	        new abc.tm.weaving.aspectinfo.TMPerSymbolAdviceDecl
 	            (spec.makeAIAdviceSpec(),
 	            pc.makeAIPointcut(),
 	            AbcFactory.MethodSig(this),
 	            current_aspect,
 	            jp, jpsp, ejp, methods,
-	            position(), tm_id, tm_pos, TMAdviceDecl.OTHER);
+	            position(), tm_id, tm_pos, sym.name(), TMAdviceDecl.OTHER);
 
         gai.addAdviceDecl(ad);
 	

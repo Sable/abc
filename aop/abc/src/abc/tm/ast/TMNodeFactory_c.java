@@ -107,10 +107,10 @@ public class TMNodeFactory_c extends EAJNodeFactory_c
 
     public TMAdviceDecl PerSymbolAdviceDecl(Position pos, Flags flags,
                             AdviceSpec spec, List throwTypes, Pointcut pc,
-                            Block body, String tm_id, Position tm_pos)
+                            Block body, String tm_id, SymbolDecl sym, Position tm_pos)
     {
         return new PerSymbolAdviceDecl_c(pos, flags, spec, throwTypes,
-                                            pc, body, tm_id, tm_pos);
+                                            pc, body, tm_id, sym, tm_pos);
     }
 
     public TMAdviceDecl PerEventAdviceDecl(Position pos, Flags flags,

@@ -194,4 +194,9 @@ public class Debug {
     public boolean noCollectableWeakRefs = false;	//makes all collectable weak refs "normal" weak refs
     public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or
     												// the maps from the commons collections for TM indexing
+    
+    //static tm analysis
+    public boolean tmAnalysis = false;               //static TM optimization
+    public boolean useMinimizedDFA = false;         //uses for each method a minimized DFA instead of
+                                                    //an NFA; should have performance impacts only
 }

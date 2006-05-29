@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2005 Chris Goard
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,55 +16,41 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
-package abc.weaving.tagkit;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+package abc.tm.weaving.weaver.tmanalysis;
 
 import soot.tagkit.AttributeValueException;
-import soot.tagkit.Tag;
+import soot.tagkit.StringTag;
 
 /**
- * @author Chris Goard
+ * A tag holding a unit graph state machine.
+ * @author Eric Bodden
  */
-public abstract class InstructionTag implements Tag {
-
-    private String name;
-    protected int value;
+public class UGStateMachineTag extends StringTag {
     
-    public int value() {
-        return value;
-    }
+    public final static String NAME = "UGStateMachineTag";
+    
+    protected final UGStateMachine sm;
 
-    public InstructionTag(String name, int value) {
-        super();
-        this.name = name;
-        this.value = value;
+    /**
+     * @param sm
+     */
+    public UGStateMachineTag(UGStateMachine sm) {
+        super(sm.toString());
+        this.sm = sm;
     }
 
     public String getName() {
-        return name;
+        return NAME;
     }
 
     public byte[] getValue() throws AttributeValueException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
-        DataOutputStream dos = new DataOutputStream(baos);
-        try {
-            dos.writeInt(value);
-            dos.flush();
-        } catch(IOException e) {
-            // XXX: Handle Exception!!
-        }
-        return baos.toByteArray();
+        throw new RuntimeException("No binary representation for this tag.");
     }
-    
-    /** 
-     * {@inheritDoc}
+
+    /**
+     * @return the state machine
      */
-    public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
+    public UGStateMachine getStateMachine() {
+        return sm;
     }
 }

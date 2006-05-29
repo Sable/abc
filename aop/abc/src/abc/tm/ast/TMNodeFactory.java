@@ -59,7 +59,7 @@ public interface TMNodeFactory extends EAJNodeFactory
     TMAdviceDecl PerSymbolAdviceDecl(Position pos, Flags flags,
                                     AdviceSpec spec, List throwTypes,
                                     Pointcut pc, Block body,
-                                    String tm_id, Position tm_pos);
+                                    String tm_id, SymbolDecl sym, Position tm_pos);
 
     TMAdviceDecl PerEventAdviceDecl(Position pos, Flags flags,
                                     AdviceSpec before_spec, Pointcut before_pc,

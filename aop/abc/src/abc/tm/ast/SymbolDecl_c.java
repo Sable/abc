@@ -91,7 +91,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
     {
         Node n = super.typeCheck(tc);
 
-        if (kind.kind() == kind.AROUND)
+        if (kind.kind() == SymbolKind.AROUND)
         {
             Iterator vars = kind.aroundVars().iterator();
             Collection pc_binds = getPointcut().mustBind();
@@ -169,7 +169,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         // Generate the TMAdviceDecl
         return nf.PerSymbolAdviceDecl(position(), Flags.NONE, spec,
                                 tlist, pc, body(nf, name, voidn),
-                                tm_id, tm_pos);
+                                tm_id, this, tm_pos);
     }
 
     /**

@@ -23,9 +23,13 @@ package abc.tm;
 import abc.aspectj.parse.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.weaver.*;
+import abc.weaving.weaver.ReweavingPass.ID;
 
+import abc.main.Debug;
+import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.weaver.*;
+import abc.tm.weaving.weaver.tmanalysis.TracematchAnalysis;
 
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
@@ -40,6 +44,8 @@ import soot.*;
  */
 public class AbcExtension extends abc.eaj.AbcExtension
 {
+
+    private static final ID PASS_TM_ANALYSIS = new ID("Tracematch analysis");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -262,4 +268,15 @@ public class AbcExtension extends abc.eaj.AbcExtension
 		   throw new InternalCompilerError
 			   ("case not handled when comparing "+a+" and "+b);
 	   }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    protected void createReweavingPasses(List passes) {
+        super.createReweavingPasses(passes);
+        if(Debug.v().tmAnalysis) {
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS, new TracematchAnalysis() ) );
+            OptionsParser.v().set_tag_instructions(true);            
+        }
+    }
 }
