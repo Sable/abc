@@ -3,11 +3,18 @@ package abc.tm.weaving.weaver.tmanalysis;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
+import soot.MethodOrMethodContext;
 import soot.Unit;
+import soot.jimple.InvokeStmt;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.UnitGraph;
 import abc.main.Debug;
+import abc.tm.weaving.matching.SMEdge;
+import abc.tm.weaving.matching.SMNode;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.tmanalysis.util.IdentityHashSet;
@@ -25,7 +32,7 @@ import abc.tm.weaving.weaver.tmanalysis.util.IdentityHashSet;
  *
  * @author Eric Bodden
  */
-public class UGStateMachine extends TMStateMachine {
+public class UGStateMachine extends TMStateMachine implements Cloneable {
 	
     /**
      * Epsilon is represented by <code>null</code>.
@@ -36,7 +43,7 @@ public class UGStateMachine extends TMStateMachine {
      * A mapping from a unit to a state representing the program state
      * immediately before executing the unit. 
      */
-    protected final IdentityHashMap unitToState;
+    protected /*final*/ IdentityHashMap unitToState; //cannot be final cause we set it within clone()
 			
 	/**
 	 * The associated unit graph. 
@@ -46,7 +53,7 @@ public class UGStateMachine extends TMStateMachine {
 	/**
 	 * The unique stating state / end state.
 	 */
-	protected final State uniqueInitialState, uniqueEndState;
+	protected State uniqueInitialState, uniqueEndState;
 	
     /**
      * Temporary set, only used internally.
@@ -68,6 +75,7 @@ public class UGStateMachine extends TMStateMachine {
 		
         //build initial state
 		uniqueInitialState = newState();
+		uniqueInitialState.setInitial(true);
 		
         //add epsilon transitions from initial state to a successor state for each
         //entry unit; then adds states for their whole "tail"
@@ -82,6 +90,7 @@ public class UGStateMachine extends TMStateMachine {
 			
         //construct unique end state
 		uniqueEndState = newState();
+		uniqueEndState.setFinal(true);
 
         //create epsilon transitions for all states representing a tail
         //unit to the unique end state
@@ -94,45 +103,57 @@ public class UGStateMachine extends TMStateMachine {
         //do not need this any more
 		processedUnits = null;
         
-        ////clean up - those must be all equivalent transformations
-        //fold epsilon transitions
-        eliminateEpsilonTransitions();
-        //delete unreachable states
-        compressStates();
+        //clean up
+		cleanup();		
+		
         if(Debug.v().useMinimizedDFA) {
             //build a minimized DFA
             minimize();
+            //clean up
+    		cleanup();		
         }
-        //number states in increasing order 
-        renumberStates();
+        
+	}
+	
+    /**
+	 * Eliminates epsilon transitions (except the ones we need to
+	 * maintain a unique starting state and end state) and unreachable states,
+	 * then renumbers the states.
+	 */
+	public void cleanup() {
+		eliminateEpsilonTransitions();
+		compressStates();
+		uniqueStartEndStates();
+		renumberStates();		
 	}
 	
     /** 
-     * {@inheritDoc}
+     * Generates unique start/end states. 
      */
-    protected void eliminateEpsilonTransitions() {
-        //temporarily mark initial state as initial and final state as final
-        uniqueInitialState.setInitial(true);
-        uniqueEndState.setFinal(true);
-        //do the elimination
-        super.eliminateEpsilonTransitions();
-        //reset; cause in the big picture things look different
-        uniqueInitialState.setInitial(false);
-        uniqueEndState.setFinal(false);
-    }
-    
-    /** 
-     * {@inheritDoc}
-     */
-    protected void compressStates() {
-        //temporarily mark initial state as initial and final state as final
-        uniqueInitialState.setInitial(true);
-        uniqueEndState.setFinal(true);
-        //do the compression
-        super.compressStates();
-        //reset; cause in the big picture things look different
-        uniqueInitialState.setInitial(false);
-        uniqueEndState.setFinal(false);
+    protected void uniqueStartEndStates() {
+
+    	//add fresh start node
+    	uniqueInitialState = newState();
+    	uniqueInitialState.setInitial(true);
+    	
+    	//add fresh end node
+    	uniqueEndState = newState();
+    	uniqueEndState.setFinal(true);    	
+    	
+        //restore again the uniqueness of start/end nodes
+        for (Iterator iter = nodes.iterator(); iter.hasNext();) {
+			State state = (State) iter.next();
+			
+			if(state.isInitialNode() && state!=uniqueInitialState) {
+				newTransition(uniqueInitialState,state,EPSILON);
+				state.setInitial(false);
+			}
+			if(state.isFinalNode() && state!=uniqueEndState) {
+				newTransition(state,uniqueEndState,EPSILON);
+				state.setFinal(false);
+			}
+		}
+
     }
     
 	/**
@@ -159,13 +180,39 @@ public class UGStateMachine extends TMStateMachine {
 			for (Iterator iter = ug.getSuccsOf(u).iterator(); iter.hasNext();) {
 				Unit succ = (Unit) iter.next();
 				
-				newTransition(stateFor(u), stateFor(succ), labelFor(u));
+				newTransition(stateFor(u), stateFor(succ), u);
 				
 				addStatesFor(succ);			
 			}
 		}
 	}
 
+    /** 
+     * Generates a new transition. The label depends on the kind of unit.
+     * @param from the starting state
+     * @param to the end state
+     * @param u the unit whose execution triggers the transition
+     */
+    public void newTransition(State from, State to, Unit u) {
+        if(u instanceof InvokeStmt) {
+        	//for invoke statements we generate a special edge,
+        	//cause we need to treat them in a special way during interprocedural
+        	//analysis
+            InvokeStmt invokeStmt = (InvokeStmt) u;
+			SMNode f = (SMNode)from;
+            SMNode t = (SMNode)to;
+            //in particular, the invoke edge holds a reference to the invoke statement
+            SMEdge edge = new InvokeEdge(f, t, invokeStmt);
+            f.addOutgoingEdge(edge);
+            t.addIncomingEdge(edge);
+            edges.add(edge);
+        } else {
+            //else, just add a transition labelled
+            //with the symbols matching u
+            super.newTransition(from, to, labelFor(u));
+        }
+    }
+    
 	/**
      * Returns the unique state for u.
 	 * @param u a unit
@@ -220,81 +267,166 @@ public class UGStateMachine extends TMStateMachine {
 		return Collections.EMPTY_LIST;
 	}
 
-//	/**
-//	 * @param cg 
-//	 */
-//	public void join(CallGraph cg) {
-//		for (Iterator iter = ug.getBody().getUnits().iterator(); iter.hasNext();) {
-//			Unit u = (Unit) iter.next();			
-//			
-//			if(u instanceof InvokeStmt) {
-//				InvokeStmt stmt = (InvokeStmt) u;
-//				
-//				for (Iterator edgeIter = cg.edgesOutOf(stmt); edgeIter.hasNext();) {
-//					Edge edge = (Edge) edgeIter.next();
-//					SootMethod callee = edge.getTgt().method();
-//					assert callee!=null;
-//					
-//					UGStateMachineTag tag = (UGStateMachineTag) callee.getTag(UGStateMachineTag.NAME);
-//					if(tag!=null) {
-//					
-//						UGStateMachine calleeSM = tag.getStateMachine();
-//						State calleesInitialState = calleeSM.getInitialState();
-//						
-//						edges.addAll(calleeSM.edges);
-//						nodes.addAll(calleeSM.nodes);	
-//						newTransition(stateFor(stmt), calleesInitialState, labelFor(stmt));
-//						
-//						//add back edges from callee return statement
-//						State retState = calleeSM.getEndState();
-//						
-//						for (Iterator iterator = ug.getSuccsOf(stmt).iterator(); iterator
-//								.hasNext();) {
-//							Unit succ = (Unit) iterator.next();
-//							
-//							//TODO is that always gonna by epsilon? Probably...
-//							newTransition(retState, stateFor(succ), EPSILON);
-//						}
-//					}
-//				}
-//			}
-//		}	
-//		
-//		uniqueInitialState.setInitial(true);
-//		uniqueEndState.setFinal(true);
-//		eliminateEpsilonTransitions();
-//		compressStates();
-//        //TODO reenable
-//		//minimize();        
-//		renumberStates();		
-//
-//		for (Iterator iter = getStateIterator(); iter.hasNext();) {
-//			State s = (State) iter.next();
-//			s.setInitial(false);
-//			s.setFinal(false);
-//		}
-//	}
+	/**
+	 * Creates a "folded" copy of this state machine, where invoke edges
+	 * have been inlined to edged to each corresponding callee and back from the
+	 * callee to the target node of the invoke edge.
+	 * <b>Note that the copy does not hold deep copies of nodes and edges!</b>
+	 * @param cg a (possibly abstracted) call graph
+	 * @return a folded shallow copy of this state machine 
+	 */
+	public UGStateMachine fold(CallGraph cg) {
+		UGStateMachine clone;
+		try {
+			//create a copy
+			clone = (UGStateMachine) clone();
+			//fold this copy
+			clone.foldThis(cg);
+			//and return
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("A problem occurred when trying to clone" +
+					" a UGStateMachine.",e);
+		}
+	}
+		
+	/**
+	 * Folds this state machine, i.e. inlines invoke edges.
+	 * @param cg a (possibly abstracted) call graph
+	 */
+	protected void foldThis(CallGraph cg) {
+		//we have to use copies here to avoid concurrent modification exceptions
+		//TODO could be easiert to actually use a fresh automaton instance here
+		LinkedHashSet newNodes = new LinkedHashSet();
+		LinkedHashSet newEdges = new LinkedHashSet();
+		
+		//over all transitions
+		for (Iterator transIter = edges.iterator(); transIter.hasNext();) {
+			SMEdge outTrans = (SMEdge) transIter.next();
+			
+			//if we have an invoke transition, "inline" it
+			if(outTrans instanceof InvokeEdge) {
+				InvokeEdge invokeEdge = (InvokeEdge) outTrans;
+
+				//get all outgoing call edges
+				Iterator callEdgeIter = cg.edgesOutOf(invokeEdge.getInvokeStmt());
+				
+				if(callEdgeIter.hasNext()) {
+					//if we have any outgoing call edges, add for each such edge
+					//epsilon transitions to the state machine of the call target
+				
+					//for each call graph edge going out from the invoke statement
+					while(callEdgeIter.hasNext()) {
+						Edge callEdge = (Edge) callEdgeIter.next();						
+						MethodOrMethodContext target = callEdge.getTgt();
+						
+						//each method should by now have an associated state machine
+						assert target.method().hasTag(UGStateMachineTag.NAME);
 	
-//	/**
-//	 * Minimizes by the well-known (?)
-//	 * reverse/determinize/reverse/determinize/ method.
-//	 * 
-//	 * May be expensive for larger automata.
-//	 * Assumes that 
-//	 */
-//	protected void minimize() {
-//		//reverse
-//		reverse();
-//		//create determinized copy
-//		TMStateMachine det = determinise();
-//		//restore original
-//	    reverse();
-//	    //do second iteration on copy
-//	    det.reverse();
-//	    det = det.determinise();
-//	    this.edges = det.edges;
-//	    this.nodes = det.nodes;
-//	}
+						//get the state machine of the target method
+						UGStateMachineTag smTag =
+							(UGStateMachineTag) target.method().getTag(UGStateMachineTag.NAME);
+						UGStateMachine targetStateMachine = smTag.getStateMachine();
+	
+						//recurse for this state machine
+						targetStateMachine = targetStateMachine.fold(cg);
+						
+						//add an epsilon transition from the start node of the
+						//invoke transition to the start node of the target state machine
+						SMNode targetState = (SMNode) targetStateMachine.getInitialState();
+						SMEdge newOutEdge = new SMEdge(invokeEdge.getSource(),targetState,EPSILON);
+						newEdges.add(newOutEdge);
+						invokeEdge.getSource().addOutgoingEdge(newOutEdge);
+						targetState.addIncomingEdge(newOutEdge);
+						
+						
+						//add an epsilon transition from the end node of the
+						//target state machine to the end node of the invoke statement
+						SMNode sourceState = (SMNode) targetStateMachine.getEndState();
+						SMEdge newInEdge = new SMEdge(sourceState,invokeEdge.getTarget(),EPSILON);
+						newEdges.add(newInEdge);
+						sourceState.addOutgoingEdge(newInEdge);
+						invokeEdge.getTarget().addIncomingEdge(newInEdge);
+						
+						//copy over all edges from the target state machine;
+						//cannot directly copy into nodes/edges lists cause we are
+						//iterating over those (would give ConcurrentModificationException)
+						newNodes.addAll(targetStateMachine.nodes);
+						newEdges.addAll(targetStateMachine.edges);
 
+					}
+					
+					//remove the original invoke edge
+					invokeEdge.getSource().removeOutEdge(invokeEdge);
+					invokeEdge.getTarget().removeInEdge(invokeEdge);
 
+				} else {
+					
+					//if we have no outgoing call edges then retain the original edge
+					//but make it an epsilon transition
+					invokeEdge.setLabel(EPSILON);
+					newEdges.add(invokeEdge);
+					
+				}
+
+			} else {
+				//simply copy the edge
+				newEdges.add(outTrans);
+			}
+			//and copy the nodes
+			newNodes.add(outTrans.getSource());
+			newNodes.add(outTrans.getTarget());
+		}
+		
+		//copy over all nodes and edges
+		nodes = newNodes;
+		edges = newEdges;
+		//clean up after us
+		cleanup();		
+	}
+	
+	/**
+	 * Special edge in the automaton which reflects an invoke expression.
+	 * We have to retain those for the interprocedural analysis.
+	 * @author Eric Bodden
+	 */
+	protected class InvokeEdge extends SMEdge {
+
+        protected InvokeStmt invokeStmt; 
+        
+        /**
+         * @param from
+         * @param to
+         * @param stmt
+         */
+        public InvokeEdge(SMNode from, SMNode to, InvokeStmt stmt) {            
+            super(from, to, stmt.toString());
+            assert stmt.toString()!=null; //must not be null cause null here means epsilon
+            invokeStmt = stmt;
+        }
+
+		/**
+		 * @return the associated invoke statement
+		 */
+		public InvokeStmt getInvokeStmt() {
+			return invokeStmt;
+		}
+        
+    }
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	protected Object clone() throws CloneNotSupportedException {		
+		UGStateMachine clone = (UGStateMachine) super.clone();
+		
+		//make deep copies of the most important
+		//structures
+		clone.edges = (LinkedHashSet) edges.clone();
+		clone.nodes = (LinkedHashSet) nodes.clone();
+		clone.unitToState = (IdentityHashMap) unitToState.clone();
+	
+		return clone;
+	}
+    
 }

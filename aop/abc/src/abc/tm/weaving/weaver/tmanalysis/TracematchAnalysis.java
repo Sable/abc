@@ -31,7 +31,8 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.queue.QueueReader;
-
+import abc.tm.weaving.matching.State;
+import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.NodePredicate;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -75,8 +76,38 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
      */
     protected transient CallGraph abstractedCallGraph;
 
+	/**
+	 * The state machine reflecting the transition structure
+	 * of the complete program.
+	 */
+	protected TMStateMachine completeStateMachine;
+    
     /** 
-     * TODO comment
+     * Performs the static analysis for tracematches. This currently consists of the following
+     * steps:
+     * <ol>
+     * <li> Tag each first unit that is matched by a tracematch symbol at each shadow with
+     *      the symbols that match it.
+     * <li> Build an abstracted call graph. This graph holds only nodes (i.e. methods) which
+     *      hold at least one unit that was tagged in the previous step. Edges are over-
+     *      approximated in a sound way.
+     * <li> For each method in the abstracted call graph and for each entry point build
+     *      a finite state machine reflecting its transition structure w.r.t. all tracematches.
+     *      This means that in the state machine there exists an edge <i>(q,l,p)</i> if
+     *      the program can move from its global state <i>q</i> to <i>p</i> by causing
+     *      an event that is matched by the symbol <i>l</i>.
+     *      Further they hold a special edge <i>(q,i,p)</i> for each invoke statment <i>i</i>
+     *      that leads from a program state <i>q</i> before the invocation to a state
+     *      <i>p</i> after the invocation.
+     *      Those state machines further have the special form that they have a unique
+     *      starting and end state. (by means of epsilon transitions)
+     * <li> Using the abstracted call graph, interprocedurally combine those automata by
+     *      inlining the invoke edges: An edge <i>(q,i,p)</i> is replaced by epsilon edges
+     *      leading from <i>q</i> to the unique starting nodes of the automata of 
+     *      all possible callees of <i>i</i> plus epsilon transitions leading from all
+     *      final states in those callee automata to <i>p</i>.
+     * </ol>
+     * Epsilon transitions and unreachable states are removed immediately whenever appropriate.
      */
     public boolean analyze() {
         
@@ -92,9 +123,46 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
         //structure of a method for each method
         buildUnitGraphStateMachines();
         
+        //fold all state machines interprocedurally
+        buildInterproceduralAbstraction();
+        
         //we do not need to reweave right away
         return false;
     }
+
+	/**
+	 * Folds/inlines all state machines interprocedurally.
+	 */
+	protected void buildInterproceduralAbstraction() {
+		completeStateMachine = new TMStateMachine();
+		//create an initial state; this reflects the initial
+		//program state
+		State initialState = completeStateMachine.newState();
+		initialState.setInitial(true);
+		
+		//and a final state; this reflects the final program state
+		State finalState = completeStateMachine.newState();
+		finalState.setFinal(true);
+		
+		//for all entry points
+		for (Iterator iter = Scene.v().getEntryPoints().iterator(); iter.hasNext();) {
+			MethodOrMethodContext entryPoint = (MethodOrMethodContext) iter.next();
+			
+			//at this point every method should have an associated state machine
+			assert entryPoint.method().hasTag(UGStateMachineTag.NAME);
+			//get the state machine
+			UGStateMachineTag smTag = (UGStateMachineTag) entryPoint.method().getTag(UGStateMachineTag.NAME);
+			UGStateMachine stateMachine = smTag.getStateMachine();
+			
+			//fold it, using the call graph for context information
+			stateMachine = stateMachine.fold(abstractedCallGraph);
+
+			//insert the state machine into the one for the complete program
+			completeStateMachine.insertStateMachine(initialState, stateMachine, finalState);			
+		}
+		
+		completeStateMachine.cleanup();
+	}
 
     /**
      * Builds an abstracted call graph holding only nodes which
@@ -115,12 +183,26 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
      * to the method with a tag.
      */
     protected void buildUnitGraphStateMachines() {
-        QueueReader reader = abstractedCallGraph.listener();        
+        QueueReader reader = abstractedCallGraph.listener();
+        //for all edges in the abstracted call graph
         while(reader.hasNext()) {
             Edge edge = (Edge) reader.next();
-            abstractUnitGraph(edge.getSrc().method());
-            abstractUnitGraph(edge.getTgt().method());
+            //build state machine for source method
+            buildUnitGraphStateMachine(edge.getSrc().method());
+            //build state machine for target method
+            buildUnitGraphStateMachine(edge.getTgt().method());
         }
+        
+        //also have to build those for all entry points due
+        //to peculiarities of the call graph abstraction
+        //algorithm
+        
+		//for all entry points
+		for (Iterator iter = Scene.v().getEntryPoints().iterator(); iter.hasNext();) {
+			MethodOrMethodContext entryPoint = (MethodOrMethodContext) iter.next();
+			//build state machine
+			buildUnitGraphStateMachine(entryPoint.method());
+		}        
     }
 
     /**
@@ -130,8 +212,9 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
      * to the method with a tag.
      * @param method the method to process
      */
-    protected void abstractUnitGraph(SootMethod method) {
+    protected void buildUnitGraphStateMachine(SootMethod method) {
         //TODO check can be speeded up by using a set of methods
+    	//if no state machine is associated yet
         if(!method.hasTag(UGStateMachineTag.NAME)) {
             //build an initial unit graph
             UnitGraph eg = new ExceptionalUnitGraph(method.getActiveBody());
