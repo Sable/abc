@@ -38,4 +38,14 @@ public interface State {
      */
     public void setFinal(boolean b);
 
+	/**
+	 * @return <code>true</code> is this is a final node
+	 */
+	public boolean isFinalNode();
+
+	/**
+	 * @return <code>true</code> is this is an initial node
+	 */
+	public boolean isInitialNode();
+
 }
