@@ -69,6 +69,75 @@ public class TMStateMachine implements StateMachine {
     }
 
     /**
+     * Creates a new transition but based on a clone of <code>toClone</code>.
+     */
+    public void newTransitionFromClone(State from, State to, String s, SMEdge toClone) {
+        try {
+    		SMEdge copiedEdge = (SMEdge) toClone.clone();
+        	SMNode f = (SMNode)from;
+            SMNode t = (SMNode)to;
+    		copiedEdge.setSource(f);
+    		copiedEdge.setTarget(t);
+    		copiedEdge.setLabel(s);
+    		f.addOutgoingEdge(copiedEdge);
+    		t.addIncomingEdge(copiedEdge);
+    		edges.add(copiedEdge);
+    	} catch (CloneNotSupportedException e) {
+    		throw new RuntimeException(e);
+    	}
+    }
+
+    /**
+	 * Eliminates epsilon transitions and unreachable states,
+	 * then renumbers the states.
+	 */
+	public void cleanup() {
+		eliminateEpsilonTransitions();
+		compressStates();
+		renumberStates();
+	}
+	
+	/**
+	 * Inserts another state machine into this one between the states
+	 * source and target, such that from <code>source</code> there exists
+	 * an epsilon transition to each initial node of <code>toInsert</code>
+	 * and from each final state of <code>toInsert</code> to <code>target</code>.
+	 * The resulting automaton also contains all edges and nodes of <code>toInsert</code>.
+	 * Note that those are not copied deeply!
+	 * Also, make whether you want to set <code>source</code> initial or not resp.
+	 * <code>target</code> final or not.
+	 * @param source the source node to insert the automaton at
+	 * @param toInsert the automaton to insert
+	 * @param target the target node to insert the automaton at; may be <code>null</code>,
+	 * in which case no epsilon transitions are added from final nodes of the inserted automaton
+	 */
+	public void insertStateMachine(State source, TMStateMachine toInsert, State target) {
+		//add epsilon transitions from source to all initial states
+		//and from all final states to target
+		boolean addedSomething = false;
+		for (Iterator iter = toInsert.nodes.iterator(); iter.hasNext();) {
+			State state = (State) iter.next();
+			if(state.isInitialNode()) {
+				newTransition(source, state, null);
+				//the state is now not initial any more
+				state.setInitial(false);
+				addedSomething = true;
+			}
+			if(target!=null && state.isFinalNode()) {
+				newTransition(state, target, null);
+				//the state is now not final any more
+				state.setFinal(false);
+			}
+		}
+		//if this fails, this means that the state machine to be inserted
+		//has no initial state
+		assert addedSomething;
+		//copy all edges and nodes into this machine
+		nodes.addAll(toInsert.nodes);
+		edges.addAll(toInsert.edges);
+	}
+    
+    /**
      * Transforms the NFA into an NFA without epsilon transitions. Here the algorithm:
      * 
      * Define the 'closure' of a node N, closure(N), to be the set of all nodes which can
@@ -109,7 +178,7 @@ public class TMStateMachine implements StateMachine {
             			edge = (SMEdge)edgeIt.next();
             			// .. copy that edge onto the node from the closure if it isn't an epsilon transition
             			if(edge.getLabel() != null && !edge.getSource().hasEdgeTo(next, edge.getLabel())) {
-            				newTransition(edge.getSource(), next, edge.getLabel());
+            				newTransitionFromClone(edge.getSource(), next, edge.getLabel(), edge);
             			}
             		}
             		// Any node in the closure of an initial node is initial.

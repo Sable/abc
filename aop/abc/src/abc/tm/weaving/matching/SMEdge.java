@@ -27,7 +27,7 @@ package abc.tm.weaving.matching;
  *  @author Pavel Avgustinov
  */
 
-public class SMEdge {
+public class SMEdge implements Cloneable {
 
     protected SMNode source, target;
     // TODO: Is SymbolDecl really the type to choose?
@@ -94,5 +94,12 @@ public class SMEdge {
         SMEdge edge = (SMEdge) o;
         return (edge.getSource() == this.source && edge.getTarget() == this.target &&
                 edge.getLabel() == this.label);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    protected Object clone() throws CloneNotSupportedException {
+    	return super.clone();
     }
 }
