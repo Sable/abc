@@ -21,6 +21,7 @@ package abc.tm.weaving.aspectinfo;
 import java.util.List;
 
 import polyglot.util.Position;
+import abc.tm.ast.SymbolDecl_c;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.MethodSig;
@@ -53,8 +54,11 @@ public class TMPerSymbolAdviceDecl extends TMAdviceDecl {
         this.symbolId = symId;
     }
     
+    /**
+     * Returns a unique id for this symbol.
+     */
     public String getUniqueSymbolId() {
-        return (tm_id + "$" + symbolId).intern(); 
+    	return SymbolDecl_c.uniqueSymbolID(tm_id, symbolId);
     }
 
 }

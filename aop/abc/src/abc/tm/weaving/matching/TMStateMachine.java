@@ -283,7 +283,7 @@ public class TMStateMachine implements StateMachine {
             cur = (SMNode)it.next();
 	    // Initial states always have 'true' constraints anyway.
 	    if(!cur.isInitialNode()) 
-		newTransition(cur, cur, ""); // add skip loop
+		newTransition(cur, cur, SMEdge.SKIP_LABEL); // add skip loop
         }
     }
     
@@ -334,7 +334,7 @@ public class TMStateMachine implements StateMachine {
 	    Iterator edgeIt = cur.getOutEdgeIterator();
 	    while(edgeIt.hasNext()) {
 		edge = (SMEdge)edgeIt.next();
-		if(!edge.getLabel().equals("") || (edge.getTarget() != cur)) {
+		if(!edge.getLabel().equals(SMEdge.SKIP_LABEL) || (edge.getTarget() != cur)) {
 		    suitable = false;
 		    break;
 		}
@@ -361,7 +361,7 @@ public class TMStateMachine implements StateMachine {
                 Iterator edgeIt = cur.getInEdgeIterator();
                 while(edgeIt.hasNext()) {
                     edge = (SMEdge)edgeIt.next();
-                    if(!edge.getLabel().equals("") && !edge.getSource().hasEdgeTo(newFinalNode, edge.getLabel())) { 
+                    if(!edge.getLabel().equals(SMEdge.SKIP_LABEL) && !edge.getSource().hasEdgeTo(newFinalNode, edge.getLabel())) { 
                     	// i.e. if not a skip-edge and not a duplicate
                         newTransition(edge.getSource(), newFinalNode, edge.getLabel());
                     }
@@ -816,7 +816,11 @@ public class TMStateMachine implements StateMachine {
     public Iterator getStateIterator() {
         return nodes.iterator();
     }
- 
+
+    public Iterator getEdgeIterator() {
+        return edges.iterator();
+    }
+
     public SMNode getStateByNumber(int n) {
         Iterator i = getStateIterator();
         while (i.hasNext()) {
@@ -854,7 +858,7 @@ public class TMStateMachine implements StateMachine {
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();
-                result += "  -->[" + (edge.getLabel() == "" ? "SKIP" : edge.getLabel()) 
+                result += "  -->[" + (edge.getLabel() == SMEdge.SKIP_LABEL ? "SKIP" : edge.getLabel()) 
                         + "] to State " + stateNumbers.get(edge.getTarget()) + "\n";
             }
         }

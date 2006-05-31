@@ -31,6 +31,9 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.queue.QueueReader;
+import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
@@ -126,9 +129,35 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
         //fold all state machines interprocedurally
         buildInterproceduralAbstraction();
         
+        //specialize the state machine w.r.t. the interprocedural abstraction
+        specializeStateMachines();
+        
         //we do not need to reweave right away
         return false;
     }
+
+	/**
+	 * Specializes all state machines with respect to the global analysis information.
+	 */
+	protected void specializeStateMachines() {		
+		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		
+		//for all tracematches
+		for (Iterator iter = gai.getTraceMatches().iterator(); iter.hasNext();) {
+			TraceMatch tm = (TraceMatch) iter.next();
+
+			//perform a may-flow analysis 
+			TMMayFlowAnalysis mayFlowAnalysis =
+				new TMMayFlowAnalysis(tm, completeStateMachine);
+			
+			//FIXME complete this here
+			throw new RuntimeException("Not implemented.");
+//			for (Iterator iterator = mayFlowAnalysis.unusedEdgeIterator(); iterator.hasNext();) {
+//				SMEdge edge = (SMEdge) iterator.next();
+//				System.out.println("UNUSED: " + edge.getLabel());
+//			}
+		}
+	}
 
 	/**
 	 * Folds/inlines all state machines interprocedurally.

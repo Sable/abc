@@ -29,8 +29,11 @@ package abc.tm.weaving.matching;
 
 public class SMEdge implements Cloneable {
 
+	public final static String SKIP_LABEL = ""; 
+	
     protected SMNode source, target;
     // TODO: Is SymbolDecl really the type to choose?
+    //-> Yeah, String is not very extensible, really. (Eric)
     protected String label;
     
     public SMEdge(SMNode from, SMNode to, String l) {
@@ -94,6 +97,17 @@ public class SMEdge implements Cloneable {
         SMEdge edge = (SMEdge) o;
         return (edge.getSource() == this.source && edge.getTarget() == this.target &&
                 edge.getLabel() == this.label);
+    }
+    
+    /**
+     * Tells whether this edge is a skip edge.
+     * @return <code>true</code> if this edge is a skip edge
+     */
+    public boolean isSkipEdge() {
+    	boolean isSkipEdge = getLabel().equals(SKIP_LABEL);
+    	//assert that if this is a skip edge, then it is on fact a loop
+    	assert !isSkipEdge || getSource() == getTarget();
+    	return isSkipEdge;
     }
     
     /** 

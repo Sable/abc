@@ -127,7 +127,7 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
 		renumberStates();		
 	}
 	
-    /** 
+	/** 
      * Generates unique start/end states. 
      */
     protected void uniqueStartEndStates() {
@@ -207,9 +207,23 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
             t.addIncomingEdge(edge);
             edges.add(edge);
         } else {
-            //else, just add a transition labelled
-            //with the symbols matching u
-            super.newTransition(from, to, labelFor(u));
+        	//XXX the following is only sound as long as we do not have 
+        	//    "sets ob symbols" as a symbol, cause in that case
+        	//you might not wanna lose the information that those symbols
+        	//all matched at the same spot
+        	
+            //else get the matching symbols
+        	Iterator iter = matchingSymbols(u).iterator();
+        	if(iter.hasNext()) {
+        		//if there are any, create an edge labeled with each symbol
+	        	while(iter.hasNext()) {
+					String symbolId = (String) iter.next();				
+		            super.newTransition(from, to, symbolId);
+				}
+        	} else {
+        		//else just add an epsilon transition
+	            super.newTransition(from, to, EPSILON);
+        	}
         }
     }
     
@@ -385,6 +399,21 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
 		cleanup();		
 	}
 	
+	/** 
+	 * {@inheritDoc}
+	 */
+	protected Object clone() throws CloneNotSupportedException {		
+		UGStateMachine clone = (UGStateMachine) super.clone();
+		
+		//make deep copies of the most important
+		//structures
+		clone.edges = (LinkedHashSet) edges.clone();
+		clone.nodes = (LinkedHashSet) nodes.clone();
+		clone.unitToState = (IdentityHashMap) unitToState.clone();
+	
+		return clone;
+	}
+    
 	/**
 	 * Special edge in the automaton which reflects an invoke expression.
 	 * We have to retain those for the interprocedural analysis.
@@ -414,19 +443,4 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
         
     }
 	
-	/** 
-	 * {@inheritDoc}
-	 */
-	protected Object clone() throws CloneNotSupportedException {		
-		UGStateMachine clone = (UGStateMachine) super.clone();
-		
-		//make deep copies of the most important
-		//structures
-		clone.edges = (LinkedHashSet) edges.clone();
-		clone.nodes = (LinkedHashSet) nodes.clone();
-		clone.unitToState = (IdentityHashMap) unitToState.clone();
-	
-		return clone;
-	}
-    
 }
