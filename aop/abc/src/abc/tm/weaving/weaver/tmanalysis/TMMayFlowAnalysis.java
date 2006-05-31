@@ -31,25 +31,46 @@ import abc.tm.weaving.matching.SMNode;
 import abc.tm.weaving.matching.TMStateMachine;
 
 /**
+ * TODO explain
  * @author Eric Bodden
  */
 public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 
-	protected final TMStateMachine stateMachine;
-	protected final Collection ENTRY_EDGES;
-	protected final TMStateMachine programGraph;
-	protected final String tracematchID;
+	/**
+	 * The state machine to interpret.
+	 */
+	protected final TMStateMachine stateMachine;	
 	
+	/**
+	 * The program graph to interpret over.
+	 */
+	protected final TMStateMachine programGraph;
 
 	/**
-	 * @param programGraph
+	 * A list of artificial entry edges. 
+	 */
+	protected final Collection ENTRY_EDGES;
+	
+	/**
+	 * The tracematch id. Used to identify the correct labels in the global analysis information.
+	 */
+	protected final String tracematchID;
+	
+	/**
+	 * Constructs a new analysis, which is run immediately.
+	 * @param tm a tracematch to interpret
+	 * @param programGraph the program abstraction
 	 */
 	public TMMayFlowAnalysis(TraceMatch tm, TMStateMachine programGraph) {
 		super(new TMStateMachineAsGraph(programGraph));
 		this.stateMachine = (TMStateMachine) tm.getStateMachine();
 		this.tracematchID = tm.getName();
 		this.programGraph = programGraph;
-		//
+		
+		//generate entry edges to all initial states of the state machine;
+		//those represent the initial flow information for the entry points;
+		//the edges should not (!) become part of the state machine
+		//TODO should we use flow sets here?
 		Collection entryEdges = new HashSet();
 		for (Iterator iter = stateMachine.getStateIterator(); iter.hasNext();) {
 			SMNode state = (SMNode) iter.next();
@@ -64,7 +85,7 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 	}
 
 	/** 
-	 * {@inheritDoc}
+	 * TODO comment
 	 */
 	protected void flowThrough(Object in, Object d, Object out) {
 		Collection cin = (Collection) in;

@@ -35,6 +35,10 @@ import abc.tm.weaving.matching.TMStateMachine;
 import soot.toolkits.graph.DirectedGraph;
 
 /**
+ * This is an adaptor that shows a tracematch state machine as directed graph,
+ * so that it can be used in Soot's flow analysis framework.
+ * <i>Note that the <b>edges</b> of the state machine are interpreted as
+ * <b>nodes</b> in the directed graph and vice versa!</i> 
  * @author Eric Bodden
  */
 public class TMStateMachineAsGraph implements DirectedGraph {
@@ -43,11 +47,12 @@ public class TMStateMachineAsGraph implements DirectedGraph {
 	protected final List HEADS, TAILS, ALL;
 	
 	/**
-	 * @param delegate
+	 * Constructs a new adapter.
+	 * @param delegate the state machine to adapt
 	 */
 	public TMStateMachineAsGraph(TMStateMachine delegate) {
 		this.delegate = delegate;
-		//
+		//construct a list of heads
 		List heads = new ArrayList();
 		for (Iterator iter = delegate.getStateIterator(); iter.hasNext();) {
 			SMNode state = (SMNode) iter.next();
@@ -58,7 +63,7 @@ public class TMStateMachineAsGraph implements DirectedGraph {
 			}
 		}
 		HEADS = Collections.unmodifiableList(heads);
-		//
+		//constuct a list of tails
 		List tails = new ArrayList();
 		for (Iterator iter = delegate.getStateIterator(); iter.hasNext();) {
 			SMNode state = (SMNode) iter.next();
@@ -69,7 +74,7 @@ public class TMStateMachineAsGraph implements DirectedGraph {
 			}
 		}		
 		TAILS = Collections.unmodifiableList(tails);
-		//
+		//construct a reference to all edges
 		List all = new ArrayList();
 		all.addAll(getHeads());
 		all.addAll(getTails());
@@ -79,6 +84,8 @@ public class TMStateMachineAsGraph implements DirectedGraph {
 		ALL = Collections.unmodifiableList(all);
 	}
 
+	//the following methods implement the adaptor
+	
 	/** 
 	 * {@inheritDoc}
 	 */
@@ -139,6 +146,8 @@ public class TMStateMachineAsGraph implements DirectedGraph {
 		return size;
 	}
 
+	//only delegate methods follow
+	
 	/**
 	 * 
 	 * @see abc.tm.weaving.matching.TMStateMachine#cleanup()

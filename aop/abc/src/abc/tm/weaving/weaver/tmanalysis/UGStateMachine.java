@@ -59,6 +59,11 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
      * Temporary set, only used internally.
      */
     protected transient IdentityHashSet processedUnits;
+        
+    /**
+     * Caches the interprocedurally folded instance of this state machine. 
+     */
+    protected transient UGStateMachine cachedFoldedInstance;
 
     /**
      * Creates a new unit graph state machine
@@ -195,6 +200,9 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
      */
     public void newTransition(State from, State to, Unit u) {
         if(u instanceof InvokeStmt) {
+        	//TODO we could actually filter out calls to TM advice methods here, cause we know
+        	//that we can never match on those
+        	
         	//for invoke statements we generate a special edge,
         	//cause we need to treat them in a special way during interprocedural
         	//analysis
@@ -290,18 +298,19 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
 	 * @return a folded shallow copy of this state machine 
 	 */
 	public UGStateMachine fold(CallGraph cg) {
-		UGStateMachine clone;
-		try {
-			//create a copy
-			clone = (UGStateMachine) clone();
-			//fold this copy
-			clone.foldThis(cg);
-			//and return
-			return clone;
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException("A problem occurred when trying to clone" +
-					" a UGStateMachine.",e);
+		if(cachedFoldedInstance == null) {	
+			try {
+				//create a copy and cache it
+				cachedFoldedInstance = (UGStateMachine) clone();
+				//fold this copy
+				cachedFoldedInstance.foldThis(cg);
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException("A problem occurred when trying to clone" +
+						" a UGStateMachine.",e);
+			}
 		}
+		//and return
+		return cachedFoldedInstance;
 	}
 		
 	/**
@@ -344,7 +353,7 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
 	
 						//recurse for this state machine
 						targetStateMachine = targetStateMachine.fold(cg);
-						
+		
 						//add an epsilon transition from the start node of the
 						//invoke transition to the start node of the target state machine
 						SMNode targetState = (SMNode) targetStateMachine.getInitialState();
@@ -371,6 +380,7 @@ public class UGStateMachine extends TMStateMachine implements Cloneable {
 					}
 					
 					//remove the original invoke edge
+					//FIXME this is wring cause we do not clone states!!!
 					invokeEdge.getSource().removeOutEdge(invokeEdge);
 					invokeEdge.getTarget().removeInEdge(invokeEdge);
 
