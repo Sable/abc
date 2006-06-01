@@ -119,13 +119,18 @@ public class MatchingTMSymbolTagger {
      */
     protected List getMatchingSymbolIDs(Unit u, SootMethod m) {
         if(u.hasTag(InstructionShadowTag.NAME)) {
+            //if u has a shadow tag
             
-            InstructionShadowTag tag = (InstructionShadowTag) u.getTag(InstructionShadowTag.NAME);
+        	//get the tag
+        	InstructionShadowTag tag = (InstructionShadowTag) u.getTag(InstructionShadowTag.NAME);
             
+        	//get the advice lists for the surrounding method
             MethodAdviceList adviceList = Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(m);
             List adviceApplications = adviceList.allAdvice();        
             List res = new ArrayList(); 
             
+            //add the symbols IDs for all TMPerSymbolAdviceDecl whose shadow id
+            //matches the one of the tag
             for (Iterator iter = adviceApplications.iterator(); iter.hasNext();) {
                 AdviceApplication aa = (AdviceApplication) iter.next();
                 
