@@ -20,24 +20,50 @@
 
 package abc.tm.weaving.aspectinfo;
 
-import polyglot.util.InternalCompilerError;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import polyglot.util.Position;
-
-import abc.weaving.aspectinfo.*;
+import soot.Body;
+import soot.BooleanType;
+import soot.ByteType;
+import soot.CharType;
+import soot.DoubleType;
+import soot.FloatType;
+import soot.IntType;
+import soot.Local;
+import soot.LongType;
+import soot.RefLikeType;
+import soot.Scene;
+import soot.ShortType;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
+import soot.jimple.IdentityStmt;
+import soot.jimple.ParameterRef;
 import abc.soot.util.UnUsedParams;
-
-import abc.tm.weaving.matching.*;
-import abc.tm.weaving.weaver.*;
-
-import soot.*;
-
-import java.util.*;
+import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.matching.StateMachine;
+import abc.tm.weaving.matching.TMStateMachine;
+import abc.tm.weaving.weaver.CodeGenHelper;
+import abc.tm.weaving.weaver.IndexedCodeGenHelper;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.Formal;
 
 /** 
  * Represents a TraceMatch.
  *
  *  @author Julian Tibble
  *  @author Pavel Avgustinov
+ *  @author Eric Bodden
  */
 public class TraceMatch
 {
@@ -73,6 +99,8 @@ public class TraceMatch
     protected Position position;
 
     protected Collection unused_formals = null;
+	   
+    protected Map symbolname_to_variablename_to_local;
 
     public TraceMatch(String name, List formals, List new_advice_body_formals,
                         StateMachine state_machine, boolean per_thread,
@@ -195,7 +223,7 @@ public class TraceMatch
 
         non_around_formals = formals.size() - offset;
     }
-
+    
     public int getBodyParameterIndex(String name)
     {
         if (!param_name_to_body_pos.containsKey(name))
@@ -462,4 +490,93 @@ public class TraceMatch
 
         return constructed.getMethod(init_name, type_list);
     }
+    
+    /**
+     * Returns for a given symbol name and the name of a variable bound by that symbol
+     * the Soot local representing this variable in the bytecode.
+     * @param symbolName a symbol of this tracematch
+     * @param variableName a variable bound by this symbol
+     * @return
+     */
+    public Local getLocalsForVariable(String symbolName, String variableName) {
+    	//assert that this tracematch contains such a symbol at all
+    	assert getSymbols().contains(symbolName);
+    	//assert that the symbol given binds such a variable at all
+    	assert getVariableOrder(symbolName).contains(variableName);
+    	
+    	if(symbolname_to_variablename_to_local==null) {
+    		initVariableNameToLocal();
+    	}
+    	
+    	Map variableToLocal = (Map) symbolname_to_variablename_to_local.get(symbolName);
+    	return (Local) variableToLocal.get(variableName);    	
+    }
+
+	/**
+	 * Initializes {@link #variableNameToLocal} by inspecting the woven advice
+	 * corresponding to each symbol, searching for the corresponding locals
+	 * in that advice definition.
+	 */
+	protected void initVariableNameToLocal() {
+		symbolname_to_variablename_to_local = new HashMap();
+		
+		//for each symbol in the tracematch
+		for (Iterator symbolIter = getSymbols().iterator(); symbolIter.hasNext();) {
+			
+			//get the name of the symbol,
+			String symbolName = (String) symbolIter.next();
+			
+			//get the "variablename->local" mapping for this symbol
+			//and initialize it if necessary
+			Map variableNameToLocal = (Map) symbolname_to_variablename_to_local.get(symbolName);
+			if(variableNameToLocal==null) {
+				variableNameToLocal = new HashMap();
+				symbolname_to_variablename_to_local.put(symbolName, variableNameToLocal);
+			}
+
+			//get the variables it binds (in well-defined order)
+			List variableOrder = getVariableOrder(symbolName);
+			
+			//get its advice method and the body of that method
+			SootMethod symbolAdviceMethod = getSymbolAdviceMethod(symbolName);
+			Body body = symbolAdviceMethod.getActiveBody();
+			
+			int identityStatementCount = 0;
+			//iterate over all units
+			for (Iterator unitIter = body.getUnits().iterator(); unitIter.hasNext();) {
+				Unit unit = (Unit) unitIter.next();
+				
+				//if this unit is an identity statement
+				//(a statement which assigns "this = @this" or "v0 = @param0", etc. ...)
+				if(unit instanceof IdentityStmt) {
+					IdentityStmt istmt = (IdentityStmt) unit;
+					
+					//if the right operand is a parameter reference
+					if(istmt.getRightOp() instanceof ParameterRef) {
+						//get the local which the parameter is assigned to
+						Local local = (Local) istmt.getLeftOp();
+						//add a mapping from the variable name to that local
+						String tmVariableName = (String) variableOrder.get(identityStatementCount);
+						
+						variableNameToLocal.put(tmVariableName, local);
+						
+						//if this breaks, we are most likely mixing up tracematch variables
+						//and corresponding Jimple variables
+						assert tmVariableName.equals(local.getName()); 
+						
+						identityStatementCount++;
+					}
+				} else {
+					//we are only interested in identity statements
+					break;
+				}					
+			}				
+			
+			//if this fails, this means that the symbol advice method
+			//breaks the assumption of having n arguments when the symbol binds
+			//n values, an assumption under which we operate here
+			assert identityStatementCount == variableOrder.size();				
+
+		}
+	}
 }
