@@ -19,6 +19,7 @@
 package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.Iterator;
+import java.util.List;
 
 import soot.Body;
 import soot.MethodOrMethodContext;
@@ -33,7 +34,6 @@ import soot.toolkits.graph.UnitGraph;
 import soot.util.queue.QueueReader;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
@@ -114,6 +114,15 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
      */
     public boolean analyze() {
         
+    	//this performs a quick test that can always be applied:
+    	//we see if actually all of the per-symbol matched at some point;
+    	//if one of them did not match, we remove all edges that
+    	//hold this symbol; also, if then the final state becomes unreachable,
+    	//we remove the tracematch entirely
+    	//TODO maybe we should actually immediately reweave, when edges were eliminated
+    	//that way in order to speed up the subsequent analysis
+    	removeNonMatchingSymbols();
+    	
         //for convenience, in a first step, add tags to all "first" units
         //at which at least tracematch symbol matches;
         //the tag holds IDs for all symbols that match this unit
@@ -130,12 +139,33 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
         buildInterproceduralAbstraction();
         
         //specialize the state machine w.r.t. the interprocedural abstraction
+        //FIXME Reenable
         specializeStateMachines();
+        
+        //TODO needs still some work
+        //freeVariables();
         
         //we do not need to reweave right away
         return false;
     }
 
+	/**
+	 * For all tracematches, checks if all their symbols actually applied anywhere.
+	 * If not, edges with that symbol are removed and if by doing so the final states
+	 * become unreachable, we remove the tracematch entirely.
+	 */
+	protected void removeNonMatchingSymbols() {		
+		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		
+		//for all tracematches
+		for (Iterator iter = gai.getTraceMatches().iterator(); iter.hasNext();) {
+			TraceMatch tm = (TraceMatch) iter.next();
+
+			//remove non matching symbols
+			tm.removeNonMatchingSymbols();			
+		}
+	}
+	
 	/**
 	 * Specializes all state machines with respect to the global analysis information.
 	 */
@@ -146,19 +176,48 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
 		for (Iterator iter = gai.getTraceMatches().iterator(); iter.hasNext();) {
 			TraceMatch tm = (TraceMatch) iter.next();
 
-			//perform a may-flow analysis 
-			TMMayFlowAnalysis mayFlowAnalysis =
-				new TMMayFlowAnalysis(tm, completeStateMachine);
-			
-			//FIXME complete this here
-			throw new RuntimeException("Not implemented.");
-//			for (Iterator iterator = mayFlowAnalysis.unusedEdgeIterator(); iterator.hasNext();) {
-//				SMEdge edge = (SMEdge) iterator.next();
-//				System.out.println("UNUSED: " + edge.getLabel());
-//			}
+			tm.removeUnusedEdges(completeStateMachine);			
 		}
 	}
 
+//	/**
+//	 * TODO move the computation of this mapping to TraceMatch itself;
+//	 * also store the mapping there.
+//	 */
+//	private void freeVariables() {
+//		
+//		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+//		
+//		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
+//
+//		//for all advice applications of all methods in all weavable classes...
+//		for (Iterator classIter = gai.getWeavableClasses().iterator(); classIter.hasNext();) {
+//			SootClass clazz = ((AbcClass) classIter.next()).getSootClass();
+//			
+//			for (Iterator methodIter = clazz.getMethods().iterator(); methodIter.hasNext();) {
+//				SootMethod method = (SootMethod) methodIter.next();
+//				
+//				MethodAdviceList adviceList = gai.getAdviceList(method);
+//				if(adviceList!=null) {
+//					for (Iterator iter = gai.getAdviceList(method).allAdvice().iterator(); iter.hasNext();) {
+//						AdviceApplication aa = (AdviceApplication) iter.next();
+//						//TODO filter for TM advice?
+//						Set weavingVariables = aa.getFreeVariablesAsSootLocals();
+//						
+//						for (Iterator varIter = weavingVariables.iterator(); varIter
+//								.hasNext();) {
+//							Local local = (Local) varIter.next();
+//							
+//							System.out.println("LOCAL: " + local.getName());
+//							System.out.println(pta.reachingObjects(local));
+//							
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+	
 	/**
 	 * Folds/inlines all state machines interprocedurally.
 	 */
@@ -254,6 +313,22 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
             //UnitGraph ag = new AbstractedUnitGraph(eg, pred);
             method.addTag(new UGStateMachineTag(sm));
         }
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void defaultSootArgs(List sootArgs) {
+    	//enable paddle points-to analysis
+//        sootArgs.add("-p");
+//        sootArgs.add("cg");
+//        sootArgs.add("enabled:true");
+//        sootArgs.add("-p");
+//        sootArgs.add("cg.paddle");
+//        sootArgs.add("enabled:true");
+//        sootArgs.add("-p");
+//        sootArgs.add("cg.paddle");
+//        sootArgs.add("backend:javabdd");
     }
 
 }

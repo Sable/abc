@@ -20,8 +20,11 @@ package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import soot.toolkits.scalar.ArraySparseSet;
 import soot.toolkits.scalar.FlowSet;
@@ -67,7 +70,14 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 	/**
 	 * The tracematch id. Used to identify the correct labels in the global analysis information.
 	 */
-	protected final String tracematchID;
+	protected final String tracematchID;	
+	
+	/**
+	 * Maps skip loops to symbols. In the fixed point, a mapping <i>(l,{s})</i> is in
+	 * the map if when reading <i>s</i> at any time in the program, this may cause
+	 * <i>l</i> to be triggered.
+	 */
+	protected final Map /*<SMEdge> -> Set<<String>>*/ mayBeCausedBySymbol;
 	
 	/**
 	 * Constructs a new analysis, which is run immediately.
@@ -79,6 +89,7 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 		this.stateMachine = (TMStateMachine) tm.getStateMachine();
 		this.tracematchID = tm.getName();
 		this.programGraph = programGraph;
+		this.mayBeCausedBySymbol = new HashMap();
 		
 		//generate entry edges to all initial states of the state machine;
 		//those represent the initial flow information for the entry points;
@@ -119,6 +130,7 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 				SMEdge transition = (SMEdge) iter.next();
 				SMNode state = transition.getTarget();
 				
+				SMEdge currSkipLoop = null;				
 				//for each automaton-transition q --> r
 				for (Iterator iterator = state.getOutEdgeIterator(); iterator.hasNext();) {
 					SMEdge outTransition = (SMEdge) iterator.next();
@@ -127,15 +139,39 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 					String transitionLabel = SymbolDecl_c.uniqueSymbolID(tracematchID, outTransition.getLabel());
 					
 					//check whether the two strings are properly interned
-					//so that we can quickly compare them by reference comparison
+					//so that String comparison runs faster
 					assert transitionLabel == transitionLabel.intern();
 					assert edge.getLabel()== null || edge.getLabel() == edge.getLabel().intern();
 					
 					//if it is the same as for the current edge, this means, we can take this
 					//transition; hence add it to the out-set; all other transitions cannot be taken
-					if(transitionLabel==edge.getLabel()) {
+					if(transitionLabel.equals(edge.getLabel())) {
 						cout.add(outTransition);
+					} else if(outTransition.isSkipEdge()) {
+						//assert that we see only one outgoing skip loop for this state
+						assert currSkipLoop == null;
+						currSkipLoop = outTransition;
 					}
+				}				
+				if(cout.isEmpty() && currSkipLoop!=null) {
+					//if we cannot take any "labeled" edge in the trace match automaton,
+					//this means we take the skip loop
+					cout.add(currSkipLoop);
+					
+					//memorize that this skip loop was triggered by reading that symbol
+					
+					//TODO this all would be unnecessary if just SKIP loops could store
+					//the label that they skip; we should do that at some point!
+
+					//get the currently known set of symbols that may trigger this loop
+					Set symbolsTriggeringThisLoop = (Set) mayBeCausedBySymbol.get(currSkipLoop);
+					//initialize if necessary
+					if(symbolsTriggeringThisLoop==null) {
+						symbolsTriggeringThisLoop = new HashSet();
+						mayBeCausedBySymbol.put(currSkipLoop, symbolsTriggeringThisLoop);
+					}
+					//add the mapping
+					symbolsTriggeringThisLoop.add(edge.getLabel());
 				}
 				
 			}
@@ -204,15 +240,40 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 		Collection unusedEdges = allEdges;
 		unusedEdges.removeAll(usedEdges);
 		
-		//remove skip edges for now
-		//TODO this it the place where skip loops should be handled I guess 
-		for (Iterator iter = unusedEdges.iterator(); iter.hasNext();) {
-			SMEdge edge = (SMEdge) iter.next();
-			if(edge.isSkipEdge()) {
-				iter.remove();
-			}
-		}
-
 		return Collections.unmodifiableCollection(unusedEdges).iterator();
 	}
+	
+	/**
+	 * Returns the set of all symbols which may trigger a skip loop
+	 * during runtime. 
+	 * @return the set of string labels for symbols which could cause a skip loop to be triggered 
+	 */
+	public Set/*<String>*/ symbolsWhichMayTriggerSkipLoops() {
+		Set result = new HashSet();
+		
+		for (Iterator iter = mayBeCausedBySymbol.values().iterator(); iter.hasNext();) {
+			Set currSet = (Set) iter.next();
+			result.addAll(currSet);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Returns <code>true</code> if the given symbol may trigger the given skip loop.
+	 * @param symbol a symbol of the tracematch of the associated state machine
+	 * @param skipLoop a skip loop of the associated state machine 
+	 * @return
+	 */
+	public boolean mayThisSymbolTriggerThisSkipLoop(String symbol, SMEdge skipLoop) {
+		assert skipLoop.isSkipEdge();
+		assert symbol != UGStateMachine.EPSILON && symbol != SMEdge.SKIP_LABEL;
+		
+		Set symbolsWhichMayTriggerThisLoop = (Set) mayBeCausedBySymbol.get(skipLoop);
+		if(symbolsWhichMayTriggerThisLoop!=null) {
+			return symbolsWhichMayTriggerThisLoop.contains(symbol);
+		}
+		return false;
+	}
+	
 }

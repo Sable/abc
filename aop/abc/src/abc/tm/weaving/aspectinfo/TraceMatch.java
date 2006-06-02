@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 import soot.Body;
 import soot.BooleanType;
@@ -49,14 +50,25 @@ import soot.Type;
 import soot.Unit;
 import soot.jimple.IdentityStmt;
 import soot.jimple.ParameterRef;
+import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
+import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.SMNode;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.CodeGenHelper;
 import abc.tm.weaving.weaver.IndexedCodeGenHelper;
+import abc.tm.weaving.weaver.tmanalysis.TMMayFlowAnalysis;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.Formal;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.ResidueBox;
 
 /** 
  * Represents a TraceMatch.
@@ -578,5 +590,224 @@ public class TraceMatch
 			assert identityStatementCount == variableOrder.size();				
 
 		}
+	}
+
+	/**
+	 * Removes all the symbols from the tracematch alphabet for which
+	 * the related per-symbol advice never matched during the last weaving phase.
+	 */
+	public void removeNonMatchingSymbols() {
+		GlobalAspectInfo gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		TMStateMachine sm = (TMStateMachine) getStateMachine();
+		
+		//determine the symbols that do not match;
+		//those can be removed
+		Set symbolsToRemove = new HashSet();
+		
+		//for all advice declarations
+		for (Iterator iter = gai.getAdviceDecls().iterator(); iter.hasNext();) {
+			AdviceDecl ad = (AdviceDecl) iter.next();
+
+			//of kind "per-symbol advice declaration"
+			if(ad instanceof TMPerSymbolAdviceDecl) {
+				TMPerSymbolAdviceDecl psad = (TMPerSymbolAdviceDecl) ad;
+				
+				//for this tracematch
+				if(psad.getTraceMatchID().equals(name)) {
+					
+					//if this advice was never applied
+					if(psad.getApplCount()==0) {
+
+						//mark symbol as a symbol that can be removed
+						symbolsToRemove.add(psad.getSymbolId());
+					}
+				}
+			}
+		}
+		
+		if(symbolsToRemove.size()>0 && Debug.v().debugTmAnalysis) {
+			System.err.println("The following symbols do not match and will be removed" +
+					"in "+name+": "+symbolsToRemove);
+		}
+		
+		//remove all edges for those symbols
+		Set edgesToRemove = new HashSet();
+		for (Iterator symIter = symbolsToRemove.iterator(); symIter.hasNext();) {
+			String symbolName = (String) symIter.next();
+
+			//for all edges in the state machine
+			for (Iterator iterator = sm.getEdgeIterator(); iterator.hasNext();) {
+				SMEdge edge = (SMEdge) iterator.next();
+				
+				//with the same symbol name as the advice that never applied 
+				if(edge.getLabel().equals(symbolName)) {
+					//mark the edge as to remove
+					edgesToRemove.add(edge);
+				}
+			}
+		}
+		sm.removeEdges(edgesToRemove.iterator());
+
+		if(Debug.v().debugTmAnalysis && symbolsToRemove.size()>0 && !sm.isEmpty()) {
+			System.err.println("Remaining state machine:");
+			System.err.println(sm);
+		}
+
+		if(sm.isEmpty()) {
+			//if the state machine is now empty, remove this tracematch entirely
+			
+			if(Debug.v().debugTmAnalysis) {
+				System.err.println("State machine now empty. Removing "+name+".");
+			}
+			
+			removeThisTracematchEntirely();
+		} else {
+			//and remove all the symbols which don't match from the tracematch;
+			//this will also remove the handling for skip loops for those symbols,
+			//which is safe cause we know the symbol can never occur anyway
+
+			for (Iterator symIter = symbolsToRemove.iterator(); symIter.hasNext();) {
+				String symbolName = (String) symIter.next();
+				sym_to_advice_name.remove(symbolName);
+				sym_to_vars.remove(symbolName);
+			}
+
+			if(Debug.v().debugTmAnalysis && symbolsToRemove.size()>0) {
+				System.err.println("Remaining alphabet of "+name+": "+getSymbols());
+			}
+		}
+	}
+	
+	/**
+	 * Removes this tracematch entirely so that when performing reweaving,
+	 * it should have zero effect on the weaving.
+	 */
+	protected void removeThisTracematchEntirely() {
+		//give message
+		abc.main.Main.v().error_queue.enqueue(
+				ErrorInfo.WARNING,
+				"This tracematch was proven to never apply in this program. It will not be woven.",
+				getPosition()
+		);
+		//TODO remove tracematch altogether; i.e. no code generation, no weaving
+		System.err.println("!!! NOT IMPLEMENTED !!!");
+	}
+
+	/**
+	 * @param completeStateMachine
+	 */
+	public void removeUnusedEdges(TMStateMachine completeStateMachine) {
+		//perform the abstract interpretation
+		TMMayFlowAnalysis mayFlowAnalysis =
+			new TMMayFlowAnalysis(this, completeStateMachine);
+		
+		//remove unused edges from the state machine
+		TMStateMachine sm = (TMStateMachine) getStateMachine();
+		sm.removeEdges(mayFlowAnalysis.unusedEdgeIterator());
+		
+		if(sm.isEmpty()) {
+			removeThisTracematchEntirely();			
+		} else {
+			//else, we can at least remove all per-symbol advice for
+			//symbols for which there exists no edge any more
+
+			disableAdviceForUnreferencedSymbols(mayFlowAnalysis);
+		}	
+	}
+
+	/**
+	 * @param mayFlowAnalysis 
+	 * @param sm
+	 */
+	protected void disableAdviceForUnreferencedSymbols(TMMayFlowAnalysis mayFlowAnalysis) {
+		//FIXME: this is probably not sound, because when a symbol is not referenced by any edge,
+		//this could also just be the case because it is not mentioned in the pattern
+		//(i.e. the symbol is implicitly referenced by skip loops only)
+		
+		GlobalAspectInfo gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		
+		//for all weavable classes
+		for (Iterator iter = gai.getWeavableClasses().iterator(); iter.hasNext();) {
+			AbcClass clazz = (AbcClass) iter.next();
+			SootClass sc = clazz.getSootClass();
+			
+			//for all methods in those classes
+			for (Iterator methodIter = sc.getMethods().iterator(); methodIter.hasNext();) {
+				SootMethod method = (SootMethod) methodIter.next();
+				
+				MethodAdviceList adviceList = gai.getAdviceList(method);
+				if(adviceList!=null) {
+					
+					//for all advice applications in those methods
+					for (Iterator aaIter = adviceList.allAdvice().iterator(); aaIter.hasNext();) {
+						AdviceApplication aa = (AdviceApplication) aaIter.next();
+						
+						AbstractAdviceDecl ad = aa.advice;
+						//where the advice is of kind "per-symbol advice declaration"
+						if(ad instanceof TMPerSymbolAdviceDecl) {
+							TMPerSymbolAdviceDecl psad = (TMPerSymbolAdviceDecl) ad;
+							
+							//for this tracematch
+							if(psad.getTraceMatchID().equals(name)) {
+								String symbolName = psad.getSymbolId();
+
+								//look if there exists an edge with that symbol
+								boolean foundSymbol = stateMachineHasEdgeWithSymbol(symbolName);
+								
+								//if the symbol is not contained in an edge and we also know
+								//for sure that this symbol cannot trigger any skip loop,
+								//then remove it from the alphabet
+								if(!foundSymbol && !mayFlowAnalysis.symbolsWhichMayTriggerSkipLoops().contains(symbolName)) {
+									//set the residue of this advice to NeverMatch
+									ResidueBox residueBox = (ResidueBox) aa.getResidueBoxes().get(0);
+									residueBox.setResidue(NeverMatch.v());
+									
+									if(Debug.v().debugTmAnalysis) {
+										System.err.println(name+": Symbol '"+symbolName+"' not longer referenced in state machine" +
+												"and cannot cause any skip loop.");
+										System.err.println(name+": Disabling advice application:\n"+aa);
+									}
+									
+									//if we have not yet removed the symbol from the tracematch,
+									//remove it
+									if(getSymbols().contains(symbolName)) {
+										sym_to_advice_name.remove(symbolName);
+										sym_to_vars.remove(symbolName);
+										if(Debug.v().debugTmAnalysis) {
+											System.err.println(name+": Removing symbol '"+symbolName+"' from tracematch alphabet." +
+													" Remaining symbols: "+getSymbols());
+										}
+									}
+								} else if(Debug.v().debugTmAnalysis && !foundSymbol) {
+									System.err.println(name+": There is no edge labeled with symbol "+symbolName+" any" +
+											" more but the symbol may trigger a skip loop. Hence we don't remove it from" +
+											" the alphabet.");
+								}						
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns <code>true</code> if the associated state machine has any
+	 * edge with the given symbol name.
+	 * @param symbolName a symbol name
+	 * @return whether the associated state machine contains an edge with that label
+	 */
+	protected boolean stateMachineHasEdgeWithSymbol(String symbolName) {
+		TMStateMachine sm = (TMStateMachine) getStateMachine();
+		boolean foundSymbol = false;						
+		for (Iterator edgeIter = sm.getEdgeIterator(); edgeIter.hasNext();) {
+			SMEdge edge = (SMEdge) edgeIter.next();
+			
+			if(edge.getLabel().equals(symbolName)) {
+				foundSymbol = true;
+				break;
+			}							
+		}
+		return foundSymbol;
 	}
 }
