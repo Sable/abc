@@ -104,10 +104,7 @@ public class SMEdge implements Cloneable {
      * @return <code>true</code> if this edge is a skip edge
      */
     public boolean isSkipEdge() {
-    	boolean isSkipEdge = getLabel().equals(SKIP_LABEL);
-    	//assert that if this is a skip edge, then it is on fact a loop
-    	assert !isSkipEdge || getSource() == getTarget();
-    	return isSkipEdge;
+    	return getLabel().equals(SKIP_LABEL) && this.getSource() == this.getTarget();
     }
     
     /** 
