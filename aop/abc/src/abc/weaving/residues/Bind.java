@@ -76,7 +76,7 @@ public class Bind extends Residue {
                   new Box(temp,temp2)),
                  new Copy(temp2,variable));
         }
-        if(variable.maybeBox()) { // && value.getSootType() instanceof PrimType) {
+        if(variable.maybeBox()) {
             PolyLocalVar temp=new PolyLocalVar("box");
             PolyLocalVar temp2=new PolyLocalVar("boxed");
             return AndResidue.construct
