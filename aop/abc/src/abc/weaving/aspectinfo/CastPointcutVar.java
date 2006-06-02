@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,10 +31,12 @@ import abc.weaving.residues.*;
 /** Cast from one pointcut variable to another. 
  *  This can appear after inlining
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public class CastPointcutVar extends Pointcut {
-    private Var from;
-    private Var to;
+	protected Var from;
+    protected Var to;
+	protected WeavingVar weavingVarTo;
 
     public CastPointcutVar(Var from,Var to,Position pos) {
 	super(pos);
@@ -56,18 +59,16 @@ public class CastPointcutVar extends Pointcut {
 
     public Residue matchesAt(MatchingContext mc) {
     WeavingEnv we = mc.getWeavingEnv();
-	SootClass cls = mc.getSootClass();
-	SootMethod method = mc.getSootMethod();
-	ShadowMatch sm = mc.getShadowMatch();
 	
 	Type fromType=we.getAbcType(from).getSootType();
 	Type toType=we.getAbcType(to).getSootType();
+	weavingVarTo = we.getWeavingVar(to);
 	if(fromType instanceof PrimType && 
 	   toType.equals(Scene.v().getSootClass("java.lang.Object").getType()))
-	    return new Box(we.getWeavingVar(from),we.getWeavingVar(to));
+	    return new Box(we.getWeavingVar(from),weavingVarTo);
 	
 	// no need to cast, because the rules guarantee this is an upcast...
-	return new Copy(we.getWeavingVar(from),we.getWeavingVar(to));
+	return new Copy(we.getWeavingVar(from),weavingVarTo);
     }
 
     public Pointcut inline(Hashtable renameEnv,
@@ -90,6 +91,13 @@ public class CastPointcutVar extends Pointcut {
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {}
     public void getFreeVars(Set/*<String>*/ result) {
 	result.add(to.getName());
+    }
+    
+    public void getFreeVarInstances(Map/*<Var>*/ result) {
+    	if(weavingVarTo==null) {
+    		throw new RuntimeException("WeavingVar not yet set.");
+    	}
+    	result.put(to, weavingVarTo);
     }
 
 	/* (non-Javadoc)

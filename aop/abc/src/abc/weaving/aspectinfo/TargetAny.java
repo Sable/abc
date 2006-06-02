@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +24,6 @@ package abc.weaving.aspectinfo;
 
 import java.util.*;
 
-import soot.*;
 import polyglot.util.Position;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
@@ -32,6 +32,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class TargetAny extends DynamicValuePointcut {
 
@@ -41,8 +42,6 @@ public class TargetAny extends DynamicValuePointcut {
 
     public final Residue matchesAt(MatchingContext mc) {
         WeavingEnv we = mc.getWeavingEnv();
-        SootClass cls = mc.getSootClass();
-        SootMethod method = mc.getSootMethod();
         ShadowMatch sm = mc.getShadowMatch();
         
         ContextValue cv=sm.getTargetContextValue();
@@ -59,7 +58,8 @@ public class TargetAny extends DynamicValuePointcut {
     }
     public void registerSetupAdvice
         (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
-    public void getFreeVars(Set/*<Var>*/ result) {}
+    public void getFreeVars(Set/*<String>*/ result) {}
+    public void getFreeVarInstances(Map/*<Var>*/ result) {}
 
         /* (non-Javadoc)
          * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)

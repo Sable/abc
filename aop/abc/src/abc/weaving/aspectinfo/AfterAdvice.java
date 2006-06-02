@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,16 +21,14 @@
 
 package abc.weaving.aspectinfo;
 
+import java.util.Map;
+
 import polyglot.util.Position;
-
-import soot.*;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
-import abc.weaving.residues.AlwaysMatch;
-import abc.weaving.weaver.AfterBeforeInliner;
-import abc.weaving.weaver.WeavingContext;
+import soot.SootMethod;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.residues.Residue;
+import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for after advice. 
  *  @author Aske Simon Christensen
@@ -62,5 +61,13 @@ public class AfterAdvice extends AbstractAfterAdvice {
 	throwing.doWeave(method,localgen,adviceappl,residue,wc);
 	returning.doWeave(method,localgen,adviceappl,residue,wc);
     }
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void getFreeVarInstances(Map result) {
+		//a plain after advice binds neither
+		//return value nor exception
+	}
 
 }

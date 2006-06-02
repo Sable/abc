@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +26,6 @@ import java.util.*;
 
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
-import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
@@ -33,6 +33,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class CflowBelow extends CflowPointcut {
     public int depth=-1;
@@ -87,9 +88,6 @@ public class CflowBelow extends CflowPointcut {
 
     public Residue matchesAt(MatchingContext mc) {
     WeavingEnv env = mc.getWeavingEnv();
-	SootClass cls = mc.getSootClass();
-	SootMethod method = mc.getSootMethod();
-	ShadowMatch sm = mc.getShadowMatch();
 
 	List/*<Var>*/ actuals=getCfs().getActuals();
 	// List of actuals for the Cflow setup advice
@@ -118,7 +116,11 @@ public class CflowBelow extends CflowPointcut {
     	getPointcut().getFreeVars(result);
     }
 	
-	/* (non-Javadoc)
+    public void getFreeVarInstances(Map result) {
+    	getPointcut().getFreeVarInstances(result);
+    }
+
+    /* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
 	public boolean unify(Pointcut otherpc, Unification unification) {

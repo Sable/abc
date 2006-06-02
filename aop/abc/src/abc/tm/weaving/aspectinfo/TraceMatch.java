@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
  * Copyright (C) 2005 Pavel Avgustinov
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -68,7 +69,6 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.NeverMatch;
-import abc.weaving.residues.ResidueBox;
 
 /** 
  * Represents a TraceMatch.
@@ -730,10 +730,6 @@ public class TraceMatch
 	 * 	program currently being woven
 	 */
 	protected void disableAdviceForUnreferencedSymbols(TMMayFlowAnalysis mayFlowAnalysis) {
-		//FIXME is this really always sound? I guess there might be problems when
-		//a skip loop is taken due to non-matching bindings (not due to a wrong symbol).
-		//Have to check this!
-		
 		GlobalAspectInfo gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
 		
 		//for all weavable classes
@@ -769,8 +765,7 @@ public class TraceMatch
 								//then remove it from the alphabet
 								if(!foundSymbol && !mayFlowAnalysis.symbolsWhichMayTriggerSkipLoops().contains(symbolName)) {
 									//set the residue of this advice to NeverMatch
-									ResidueBox residueBox = (ResidueBox) aa.getResidueBoxes().get(0);
-									residueBox.setResidue(NeverMatch.v());
+									aa.setResidue(NeverMatch.v());
 									
 									if(Debug.v().debugTmAnalysis) {
 										System.err.println(name+": Symbol '"+symbolName+"' not longer referenced in state machine" +

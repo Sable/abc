@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +20,14 @@
 
 package abc.weaving.aspectinfo;
 
+import java.util.Map;
+
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 
 import soot.*;
-import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.Restructure;
 import abc.weaving.matching.*;
@@ -35,6 +37,7 @@ import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for around advice.
  *  @author Aske Simon Christensen
+ *  @author Eric Bodden
  */
 public class AroundAdvice extends AbstractAdviceSpec {
     private AbcType rtype;
@@ -153,4 +156,11 @@ public class AroundAdvice extends AbstractAdviceSpec {
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
         AroundWeaver.v().doWeave(method.getDeclaringClass(),method,localgen,adviceappl);
     }
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void getFreeVarInstances(Map result) {
+		//this advice kind binds no free variables
+	}
 }

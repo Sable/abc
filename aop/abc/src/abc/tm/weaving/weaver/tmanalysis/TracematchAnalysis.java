@@ -20,11 +20,15 @@ package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import soot.Body;
 import soot.MethodOrMethodContext;
 import soot.PackManager;
+import soot.PointsToAnalysis;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.toolkits.callgraph.CallGraph;
@@ -38,6 +42,9 @@ import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.NodePredicate;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
 /**
@@ -139,7 +146,6 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
         buildInterproceduralAbstraction();
         
         //specialize the state machine w.r.t. the interprocedural abstraction
-        //FIXME Reenable
         specializeStateMachines();
         
         //TODO needs still some work
@@ -180,43 +186,42 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
 		}
 	}
 
-//	/**
-//	 * TODO move the computation of this mapping to TraceMatch itself;
-//	 * also store the mapping there.
-//	 */
-//	private void freeVariables() {
-//		
-//		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
-//		
-//		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
-//
-//		//for all advice applications of all methods in all weavable classes...
-//		for (Iterator classIter = gai.getWeavableClasses().iterator(); classIter.hasNext();) {
-//			SootClass clazz = ((AbcClass) classIter.next()).getSootClass();
-//			
-//			for (Iterator methodIter = clazz.getMethods().iterator(); methodIter.hasNext();) {
-//				SootMethod method = (SootMethod) methodIter.next();
-//				
-//				MethodAdviceList adviceList = gai.getAdviceList(method);
-//				if(adviceList!=null) {
-//					for (Iterator iter = gai.getAdviceList(method).allAdvice().iterator(); iter.hasNext();) {
-//						AdviceApplication aa = (AdviceApplication) iter.next();
-//						//TODO filter for TM advice?
-//						Set weavingVariables = aa.getFreeVariablesAsSootLocals();
-//						
-//						for (Iterator varIter = weavingVariables.iterator(); varIter
-//								.hasNext();) {
-//							Local local = (Local) varIter.next();
-//							
-//							System.out.println("LOCAL: " + local.getName());
-//							System.out.println(pta.reachingObjects(local));
-//							
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
+	/**
+	 * TODO move the computation of this mapping to TraceMatch itself;
+	 * also store the mapping there.
+	 */
+	private void freeVariables() {
+		
+		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		
+		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
+
+		//for all advice applications of all methods in all weavable classes...
+		for (Iterator classIter = gai.getWeavableClasses().iterator(); classIter.hasNext();) {
+			SootClass clazz = ((AbcClass) classIter.next()).getSootClass();
+			
+			for (Iterator methodIter = clazz.getMethods().iterator(); methodIter.hasNext();) {
+				SootMethod method = (SootMethod) methodIter.next();
+				
+				MethodAdviceList adviceList = gai.getAdviceList(method);
+				if(adviceList!=null) {
+					for (Iterator iter = gai.getAdviceList(method).allAdvice().iterator(); iter.hasNext();) {
+						AdviceApplication aa = (AdviceApplication) iter.next();
+						//TODO filter for TM advice?
+						Map weavingVariables = aa.getFreeVariables();
+						
+						for (Iterator varIter = weavingVariables.entrySet().iterator(); varIter
+								.hasNext();) {
+							Entry entry = (Entry) varIter.next();
+							
+							
+							
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Folds/inlines all state machines interprocedurally.
@@ -320,15 +325,15 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
      */
     public void defaultSootArgs(List sootArgs) {
     	//enable paddle points-to analysis
-//        sootArgs.add("-p");
-//        sootArgs.add("cg");
-//        sootArgs.add("enabled:true");
-//        sootArgs.add("-p");
-//        sootArgs.add("cg.paddle");
-//        sootArgs.add("enabled:true");
-//        sootArgs.add("-p");
-//        sootArgs.add("cg.paddle");
-//        sootArgs.add("backend:javabdd");
+        sootArgs.add("-p");
+        sootArgs.add("cg");
+        sootArgs.add("enabled:true");
+        sootArgs.add("-p");
+        sootArgs.add("cg.paddle");
+        sootArgs.add("enabled:true");
+        sootArgs.add("-p");
+        sootArgs.add("cg.paddle");
+        sootArgs.add("backend:javabdd");
     }
 
 }

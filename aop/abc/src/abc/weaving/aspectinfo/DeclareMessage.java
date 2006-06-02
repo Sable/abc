@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,34 +21,47 @@
 
 package abc.weaving.aspectinfo;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import polyglot.util.ErrorQueue;
-import polyglot.util.Position;
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
 import polyglot.util.StdErrorQueue;
-
-import soot.*;
-import soot.jimple.*;
-import soot.util.*;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import soot.Body;
+import soot.Local;
+import soot.RefType;
+import soot.Scene;
+import soot.SootMethod;
+import soot.VoidType;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
+import soot.util.Chain;
+import soot.util.HashChain;
+import abc.polyglot.util.ErrorInfoFactory;
+import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.EmptyFormals;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
 import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
-import abc.weaving.weaver.Weaver;
-import abc.main.Debug;
-import abc.polyglot.util.ErrorInfoFactory;
-import abc.soot.util.LocalGeneratorEx;
 
 
 /** A <code>declare warning</code> or <code>declare error</code> declaration.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public class DeclareMessage extends AbstractAdviceDecl {
     public static final int WARNING = 0;
@@ -131,7 +145,7 @@ public class DeclareMessage extends AbstractAdviceDecl {
             Stmt failpoint = Jimple.v().newNopStmt();
             units.insertBefore(failpoint,followingstmt);
             debug("Weaving in residue: "+residue);
-            Stmt endresidue=residue.codeGen
+            residue.codeGen
                 (method,localgen,units,beginshadow,failpoint,true,wc);
 
             debug("Weaving in advice execution statements");
@@ -142,6 +156,12 @@ public class DeclareMessage extends AbstractAdviceDecl {
                 units.insertBefore(nextstmt,failpoint);
             }
         }
+		/** 
+		 * {@inheritDoc}
+		 */
+		public void getFreeVarInstances(Map result) {
+			//this kind of advice binds no free variables
+		}
     }
 
     public Residue postResidue(ShadowMatch sm) {

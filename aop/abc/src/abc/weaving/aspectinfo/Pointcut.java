@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,23 +20,26 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import soot.*;
-import soot.jimple.*;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
-
-import polyglot.util.Position;
-import polyglot.util.InternalCompilerError;
 import polyglot.types.SemanticException;
+import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.residues.Residue;
 
 /** This is the base class for pointcut designators; it is constructed by the frontend.
  *  A pointcut designator is primarily responsible for calculating the residue for itself
  *  at a given join point shadow.
  *
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public abstract class Pointcut extends Syntax {
 
@@ -252,13 +256,21 @@ public abstract class Pointcut extends Syntax {
     public abstract void registerSetupAdvice
         (Aspect context,Hashtable/*<String,AbcType>*/ typeEnv);
 
-    /** Get a list of free variables bound by this pointcut
+    /** Get a list of free variable names bound by this pointcut.
      *   @param result The results should be placed in this set
      *                 (having it as a parameter allows it to be built up
      *                 incrementally, which is more efficient than 
      *                 repeatedly taking the union of sets)
      */
     public abstract void getFreeVars(Set/*<String>*/ result);
+
+    /** 
+     * Constructs a mapping Var to WeavingVar which holds an entry (v,w) if
+     * v is a free pointcut variable in this pointcut and w is the weaving variable
+     * used to weave v. Note that w is only available after matching/residue code generation,
+     * so do not call this method prior to matching.
+     */
+    public abstract void getFreeVarInstances(Map/*<abc.weaving.aspectinfo.Var --> WeavingVar >*/ result);
 
     /** Attempt to unify two pointcuts. pc.unify(pc', unification)
      *  should return true if the pointcuts can be unified, and 

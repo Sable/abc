@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +27,6 @@ import polyglot.util.Position;
 import polyglot.types.SemanticException;
 
 import soot.*;
-import soot.jimple.*;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
@@ -35,6 +35,7 @@ import abc.weaving.residues.*;
  *  after inlining
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class LocalPointcutVars extends Pointcut {
     private Pointcut pc;
@@ -114,12 +115,28 @@ public class LocalPointcutVars extends Pointcut {
     }
 
     public void getFreeVars(Set/*<String>*/ result) {
-	pc.getFreeVars(result);
-	Iterator it=formals.iterator();
-	while(it.hasNext()) result.remove(((Formal) (it.next())).getName());
+    	pc.getFreeVars(result);
+    	Iterator it=formals.iterator();
+    	while(it.hasNext()) result.remove(((Formal) (it.next())).getName());
     }
 
-	public boolean unify(Pointcut otherpc, Unification unification) {
+    public void getFreeVarInstances(Map/*<Var>*/ result) {
+    	pc.getFreeVarInstances(result);
+    	Iterator it=formals.iterator();
+    	//remove all variables which are formal variables
+    	//(identified by the name)
+    	while(it.hasNext()) {
+    		Formal formal = (Formal) it.next();
+    		for (Iterator resultIter = result.keySet().iterator(); resultIter.hasNext();) {
+				Var var = (Var) resultIter.next();
+				if(var.getName().equals(formal.getName())) {
+					resultIter.remove();
+				}
+    		}
+    	}
+    }
+
+    public boolean unify(Pointcut otherpc, Unification unification) {
 		// Try to unify this.pc with otherpc
 		
 		// SPECIAL CASE: restricted unification

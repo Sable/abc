@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Neil Ongkingco
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,12 +21,11 @@
 package abc.om.weaving.aspectinfo;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
-import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.aspectj.visit.PCStructure;
 import abc.om.weaving.matching.OMMatchingContext;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.ClassnamePattern;
@@ -36,8 +36,9 @@ import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.Residue;
 
 /**
- * @author Neil Ongkingco
  * Internal representation of the thisAspect pointcut.
+ * @author Neil Ongkingco
+ * @author Eric Bodden
  */
 public class ThisAspectPointcut extends Pointcut {
 
@@ -78,4 +79,5 @@ public class ThisAspectPointcut extends Pointcut {
 
     public void getFreeVars(Set result) {}
 
+    public void getFreeVarInstances(Map result) {}
 }

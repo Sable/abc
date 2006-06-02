@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Ondrej Lhotak
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,8 +26,6 @@ import polyglot.util.InternalCompilerError;
 
 import soot.*;
 import soot.jimple.*;
-import soot.util.*;
-import soot.tagkit.SourceLnPosTag;
 
 import abc.soot.util.InPreinitializationTag;
 import abc.soot.util.Restructure;
@@ -35,12 +34,12 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
 import java.util.*;
-import abc.weaving.weaver.*;
 
 /** The data structure the pointcut matcher computes. One of these is
  *  constructed for each piece of advice at each shadow where it might apply.
  *  @author Ganesh Sittampalam
  *  @author Ondrej Lhotak
+ *  @author Eric Bodden
  */
 public abstract class AdviceApplication {
 
@@ -333,4 +332,23 @@ public abstract class AdviceApplication {
     /** Create a new AdviceApplication that's just like this one, but applies
      * to an inlined version of the code. */
     public abstract AdviceApplication inline( ConstructorInliningMap cim );
+    
+    /**
+     * Returns a mapping of type {@link Var} to {@link WeavingVar}, which maps
+     * each free pointcut variable in the attached pointcut to the weaving variable
+     * that was used to weave it. This also includes variables bound by after
+     * returning/throwing advice.
+     * Weaving variables are not set before matching/residue code generation.
+     * Hence, the method must not called before.
+     * @return a mapping of free pointcut variables to the weaving variables
+     *  used to weave it 
+     */
+    public Map getFreeVariables() {
+    	Map freeVars = new HashMap();
+    	//add variables bound by pointcut
+    	advice.getPointcut().getFreeVarInstances(freeVars);
+    	//add the ones bound by after-returning/thowing specs
+    	advice.getAdviceSpec().getFreeVarInstances(freeVars);
+    	return freeVars;
+    }
 }

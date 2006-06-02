@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,9 +32,11 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class ThisVar extends ThisAny {
-    private Var var;
+	protected Var var;
+	protected WeavingVar weavingVar;
 
     public ThisVar(Var var,Position pos) {
 	super(pos);
@@ -52,8 +55,9 @@ public class ThisVar extends ThisAny {
     }
 
     protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
+	weavingVar = we.getWeavingVar(var);
 	return Bind.construct
-	    (cv,we.getAbcType(var).getSootType(),we.getWeavingVar(var));
+	    (cv,we.getAbcType(var).getSootType(),weavingVar);
     }
 
     public Pointcut inline(Hashtable renameEnv,
@@ -65,8 +69,16 @@ public class ThisVar extends ThisAny {
 	if(var==this.var) return this;
 	else return new ThisVar(var,getPosition());
     }
+    
     public void getFreeVars(Set/*<String>*/ result) {
 	result.add(var.getName());
+    }
+    
+    public void getFreeVarInstances(Map/*<Var -> WeavingVar> */ result) {
+    	if(weavingVar==null) {
+    		throw new RuntimeException("WeavingVar not yet set.");
+    	}
+    	result.put(var, weavingVar);
     }
 
 	/* (non-Javadoc)

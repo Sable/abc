@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +20,12 @@
 
 package abc.weaving.aspectinfo;
 
+import java.util.Map;
+
 import polyglot.util.Position;
 
 import soot.*;
 import soot.jimple.*;
-import soot.util.Chain;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
@@ -33,6 +35,7 @@ import abc.soot.util.LocalGeneratorEx;
 /** Advice specification for advice that applies both before and after
  *  a joinpoint.
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public class BeforeAfterAdvice extends AbstractAdviceSpec {
     private BeforeAdvice before;
@@ -71,11 +74,6 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec {
                AdviceApplication adviceappl,Residue residue,
                WeavingContext wc) {
 
-        Body b = method.getActiveBody();
-        // this non patching chain is needed so that Soot doesn't "Fix"
-        // the traps.
-        Chain units = b.getUnits().getNonPatchingChain();
-
         ChoosePhase cp=(ChoosePhase) wc;
 
         Residue beforeResidue,afterResidue;
@@ -99,8 +97,16 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec {
         after.doWeave(method,localgen,adviceappl,afterResidue,wc);
 
         cp.setBefore();
-        before.doWeave(method,localgen,adviceappl,beforeResidue,wc);
+        BeforeAdvice.doWeave(method,localgen,adviceappl,beforeResidue,wc);
 
     } // method doWeave
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void getFreeVarInstances(Map result) {
+		before.getFreeVarInstances(result);
+		after.getFreeVarInstances(result);
+	}
 
 }

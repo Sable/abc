@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +26,6 @@ import java.util.*;
 
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
-import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 
@@ -33,6 +33,7 @@ import abc.weaving.residues.Residue;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class PointcutRef extends Pointcut {
     private Object decl_key;
@@ -146,6 +147,10 @@ public class PointcutRef extends Pointcut {
     public void getFreeVars(Set s) {
 	throw new InternalCompilerError
 	    ("PointcutRef should have been inlined by now",getPosition());
+    }
+    public void getFreeVarInstances(Map s) {
+    	throw new InternalCompilerError
+    	    ("PointcutRef should have been inlined by now",getPosition());
     }
 
 	/* (non-Javadoc)

@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +35,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class Args extends DynamicValuePointcut {
     private List/*<ArgPattern>*/ args;
@@ -89,7 +91,6 @@ public class Args extends DynamicValuePointcut {
         throws SemanticException
     {
         WeavingEnv we = mc.getWeavingEnv();
-        SootClass cls = mc.getSootClass();
         SootMethod method = mc.getSootMethod();
         ShadowMatch sm = mc.getShadowMatch();
         
@@ -174,7 +175,13 @@ public class Args extends DynamicValuePointcut {
             ((ArgPattern) (it.next())).getFreeVars(result);
     }
 
-        /* (non-Javadoc)
+    public void getFreeVarInstances(Map/*<Var>*/ result) {
+        Iterator it=args.iterator();
+        while(it.hasNext())
+            ((ArgPattern) (it.next())).getFreeVarInstances(result);
+    }
+
+    /* (non-Javadoc)
          * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
          */
         public boolean unify(Pointcut otherpc, Unification unification) {

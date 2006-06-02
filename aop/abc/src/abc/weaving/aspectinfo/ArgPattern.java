@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +23,8 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
-import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
@@ -31,6 +32,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public abstract class ArgPattern extends Syntax {
     public ArgPattern(Position pos) {
@@ -51,6 +53,8 @@ public abstract class ArgPattern extends Syntax {
 
     public abstract void getFreeVars(Set/*<String>*/ result);
 
+	public abstract void getFreeVarInstances(Map result);
+
 	/** Attempts to unify two pointcuts, creating another pointcut that has enough variables
 	 *  to encompass both if possible. Variables are only unified if they have the same type,
 	 *  as stored in the unification typemaps. If unification.unifyWithFirst(), then restricted
@@ -67,5 +71,5 @@ public abstract class ArgPattern extends Syntax {
 	 */
 
 	public abstract boolean unify(ArgPattern other, Unification unification);
-	
+
 }

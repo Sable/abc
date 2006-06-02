@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,9 +27,6 @@ import java.util.*;
 import polyglot.util.Position;
 import polyglot.types.SemanticException;
 
-import soot.*;
-import soot.jimple.*;
-
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
@@ -36,6 +34,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class NotPointcut extends Pointcut {
     private Pointcut pc;
@@ -88,7 +87,11 @@ public class NotPointcut extends Pointcut {
 	pc.getFreeVars(result);
     }
 
-	/* (non-Javadoc)
+    public void getFreeVarInstances(Map result) {
+    	pc.getFreeVarInstances(result);
+    }
+
+    /* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
 	public boolean unify(Pointcut otherpc, Unification unification) {

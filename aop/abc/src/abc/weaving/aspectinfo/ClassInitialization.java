@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,19 +22,18 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
-
-import soot.*;
-
 import polyglot.util.Position;
-
-import abc.weaving.residues.*;
-import abc.weaving.matching.*;
+import abc.weaving.matching.ClassInitializationShadowMatch;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
 
 /** Handler for <code>initialization</code> shadow pointcut.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class ClassInitialization extends ShadowPointcut {
 

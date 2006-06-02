@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import polyglot.util.Position;
 
@@ -39,6 +41,7 @@ import abc.soot.util.LocalGeneratorEx;
 /** Advice specification for before advice.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public class BeforeAdvice extends AbstractAdviceSpec {
     public BeforeAdvice(Position pos) {
@@ -103,7 +106,7 @@ public class BeforeAdvice extends AbstractAdviceSpec {
         wc.setShadowTag(new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
         wc.setSourceTag(new InstructionSourceTag(adviceappl.advice.sourceId));
         
-        Stmt endresidue=residue.codeGen
+        residue.codeGen
             (method,localgen,units,beginshadow,failpoint,true,wc);
 
         debug("Weaving in advice execution statements");
@@ -118,4 +121,11 @@ public class BeforeAdvice extends AbstractAdviceSpec {
             units.insertBefore(nextstmt,failpoint);
         }
     }
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void getFreeVarInstances(Map result) {
+		//this advice kind binds no free variables
+	}
 }

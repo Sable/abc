@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,23 +21,27 @@
 
 package abc.weaving.aspectinfo;
 
+import java.util.Map;
+
 import polyglot.util.Position;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-import soot.*;
-
 /** Advice specification for after returning advice with return variable binding. 
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public class AfterReturningArgAdvice extends AfterReturningAdvice {
-    private Formal formal;
+    protected Formal formal;
+	protected Var var;
+	protected WeavingVar weavingVar;
 
     public AfterReturningArgAdvice(Formal formal, Position pos) {
 	super(pos);
 	this.formal = formal;
+	this.var=new Var(formal.getName(),formal.getPosition());
     }
 
     public Formal getFormal() {
@@ -50,9 +55,18 @@ public class AfterReturningArgAdvice extends AfterReturningAdvice {
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
 	if(super.matchesAt(we,sm,ad)==null) return null;
 	ContextValue cv=sm.getReturningContextValue();
-	Var v=new Var(formal.getName(),formal.getPosition());
+	weavingVar = we.getWeavingVar(var);
 	return Bind.construct
-	    (cv,we.getAbcType(v).getSootType(),we.getWeavingVar(v));
+	    (cv,we.getAbcType(var).getSootType(),weavingVar);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void getFreeVarInstances(Map result) {
+    	super.getFreeVarInstances(result);
+    	//an after returning advice binds Var to the return value using the weaving variable weavingVar
+    	result.put(var, weavingVar);
     }
 
 }

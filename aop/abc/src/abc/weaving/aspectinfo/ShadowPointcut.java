@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,12 +23,7 @@ package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
-import soot.*;
-import soot.jimple.*;
-
 import java.util.*;
-
-import polyglot.util.Position;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
@@ -36,6 +32,7 @@ import abc.weaving.residues.Residue;
  *  at which the pointcut will match.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public abstract class ShadowPointcut extends Pointcut {
     public final Residue matchesAt(MatchingContext mc) {
@@ -58,5 +55,8 @@ public abstract class ShadowPointcut extends Pointcut {
 
     public void registerSetupAdvice
         (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
-    public void getFreeVars(Set/*<Var>*/ result) {}
+    
+    public void getFreeVars(Set/*<String>*/ result) {}
+    
+    public void getFreeVarInstances(Map/*<Var>*/ result) {}
 }

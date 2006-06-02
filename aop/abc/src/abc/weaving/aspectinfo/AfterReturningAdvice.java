@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import polyglot.util.Position;
 import soot.Body;
@@ -33,7 +35,6 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.Residue;
 import abc.weaving.tagkit.InstructionShadowTag;
 import abc.weaving.tagkit.InstructionSourceTag;
-import abc.weaving.tagkit.TagContainer;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
@@ -41,6 +42,7 @@ import abc.weaving.weaver.WeavingContext;
 /** Advice specification for after returning advice without return variable binding. 
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  */
 public class AfterReturningAdvice extends AbstractAfterAdvice {
     public AfterReturningAdvice(Position pos) {
@@ -87,7 +89,7 @@ public class AfterReturningAdvice extends AbstractAfterAdvice {
     // store shadow/source tag for this residue in weaving context
     wc.setShadowTag(new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
     wc.setSourceTag(new InstructionSourceTag(adviceappl.advice.sourceId));
-	Stmt endresidue=residue.codeGen
+	residue.codeGen
 	    (method,localgen,units,prevstmt,failpoint,true,wc);
 
 	debug("making advice execution statements");
@@ -102,5 +104,13 @@ public class AfterReturningAdvice extends AbstractAfterAdvice {
 	  }
 	debug("after returning weaver finished");
       } // method doWeave 
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void getFreeVarInstances(Map result) {
+		//a after-returning advice without formal
+		//binds no free variable
+	}
 
 }

@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +25,6 @@ package abc.weaving.aspectinfo;
 import java.util.*;
 
 import polyglot.util.Position;
-import soot.*;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.*;
 
@@ -33,6 +33,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class ArgFill extends ArgPattern {
     public ArgFill(Position pos) {
@@ -53,8 +54,10 @@ public class ArgFill extends ArgPattern {
 	throw new RuntimeException("Internal error: Shouldn't have a ArgFill in a PointcutRef");
     }
 
-    public void getFreeVars(Set/*<Var>*/ result) {}
+    public void getFreeVars(Set/*<String>*/ result) {}
 
+    public void getFreeVarInstances(Map/*<Var>*/ result) {}
+    
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
 	 */

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,18 +20,20 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+
 import polyglot.util.Position;
-
-import soot.*;
-import soot.jimple.*;
-
-import abc.weaving.matching.*;
+import soot.SootClass;
+import soot.SootMethod;
+import abc.weaving.matching.MatchingContext;
 import abc.weaving.residues.Residue;
 
 /** A pointcut designator representing a condition on the
  *  lexical context
  *  @author Ganesh Sittampalam
+ *  @author Eric Bodden
  *  @date 30-Apr-04
  */
 public abstract class LexicalPointcut extends Pointcut {
@@ -58,5 +61,6 @@ public abstract class LexicalPointcut extends Pointcut {
 
     public void getFreeVars(Set/*<String>*/ result) {}
 
+    public void getFreeVarInstances(Map/*<Var>*/ result) {}
 
 }

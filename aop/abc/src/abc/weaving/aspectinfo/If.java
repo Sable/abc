@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +33,7 @@ import abc.weaving.residues.*;
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Eric Bodden
  */
 public class If extends Pointcut {
     private List/*<Var>*/ vars;
@@ -154,10 +156,14 @@ public class If extends Pointcut {
     }
 
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {}
+    
     public void getFreeVars(Set/*<String>*/ result) {
         // just want binding occurrences, so do nothing
     }
 
+    public void getFreeVarInstances(Map/*<Var>*/ result) {
+        // just want binding occurrences, so do nothing
+    }
         /* (non-Javadoc)
          * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
          */

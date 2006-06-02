@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +21,8 @@
 
 package abc.weaving.aspectinfo;
 
+import java.util.Map;
+
 import soot.*;
 
 import abc.weaving.matching.*;
@@ -29,6 +32,7 @@ import abc.soot.util.LocalGeneratorEx;
 
 /** An advice specification.
  *  @author Aske Simon Christensen
+ *  @author Eric Bodden
  */
 public interface AdviceSpec {
     
@@ -53,4 +57,13 @@ public interface AdviceSpec {
     public void weave(SootMethod method,
 		      LocalGeneratorEx localgen,
 		      AdviceApplication adviceappl);
+
+    /** 
+     * Constructs a mapping Var to WeavingVar which holds an entry (v,w) if
+     * v is a free variable bound by this advice (e.g. after returning/throwing)
+     * and w is the weaving variable  used to weave v.
+     * Note that w is only available after matching/residue code generation,
+     * so do not call this method prior to matching.
+     */
+    public abstract void getFreeVarInstances(Map/*<abc.weaving.aspectinfo.Var --> WeavingVar >*/ result);
 }

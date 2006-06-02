@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2006 Neil Ongkingco
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,7 @@ package abc.eaj.weaving.aspectinfo;
 
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
@@ -43,7 +45,7 @@ import abc.weaving.residues.Residue;
 
 /**
  * @author Neil Ongkingco
- *  
+ * @author Eric Bodden
  */
 //Would have just extended ShadowPointcut, but Contains needs the entire
 //MatchingContext, not just the ShadowMatch
@@ -58,6 +60,9 @@ public class Contains extends Pointcut {
     }
 
     public void getFreeVars(Set result) {
+    }
+
+    public void getFreeVarInstances(Map result) {
     }
 
     public void registerSetupAdvice(Aspect context, Hashtable typeEnv) {
