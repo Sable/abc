@@ -20,15 +20,16 @@
 
 package abc.tm.weaving.weaver;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
-import soot.SootMethod;
-import abc.main.Debug;
-import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.matching.SMEdge;
-import abc.tm.weaving.matching.SMNode;
-import abc.tm.weaving.matching.TMStateMachine;
+import soot.*;
+import soot.util.*;
+import soot.jimple.*;
+
+import abc.soot.util.LocalGeneratorEx;
+import abc.tm.weaving.aspectinfo.*;
+import abc.tm.weaving.matching.*;
+import abc.weaving.aspectinfo.*;
 
 
 /**
@@ -98,46 +99,11 @@ public class TraceMatchCodeGen {
             }
 
             helper.genNullChecksJumpTarget(method);
-            
+
             if (to.hasEdgeTo(to, "") // (skip-loop)
                     && !to.hasEdgeTo(to, symbol)
-                    && !abc.main.Debug.v().noNegativeBindings) {
-            	
-
-            	boolean generateSkipEdge;
-                if(Debug.v().tmAnalysis) {
-                	//if we use interprocedural static analysis, we can find out
-                	//if this particular symbol can trigger this particular skip loop
-                	//at all; so let's that that
-
-                	//get the skip edge
-                	SMEdge skipLoop = null;
-                	for (Iterator iter = to.getOutEdgeIterator(); iter.hasNext();) {
-						SMEdge edge = (SMEdge) iter.next();
-						if(edge.isSkipEdge()) {
-							skipLoop = edge;
-							break;
-						}
-					}
-                	assert skipLoop != null;
-                	
-                	//ask the analysis if this skip symbol may at all ever be triggered by
-                	//this symbol in this particular program
-                	generateSkipEdge =
-                		tm.getMayFlowAnalysis().mayThisSymbolTriggerThisSkipLoop(symbol, skipLoop);
-                	
-                	if(Debug.v().debugTmAnalysis && !generateSkipEdge) {
-                		debug( "Not generating skip loop for state "+to+ " with " +
-                			   "number "+to.getNumber()+" since the static analysis found " +
-                			   "that this edge can never be taken." );
-                	}
-                } else {
-                	//else, we generate it in any case
-                	generateSkipEdge = true;
-                }
-                if(generateSkipEdge)
-                	helper.genSkipLabelUpdate(to.getNumber(), symbol, method);
-            }
+                    && !abc.main.Debug.v().noNegativeBindings)
+                helper.genSkipLabelUpdate(to.getNumber(), symbol, method);
         }
     }
 
