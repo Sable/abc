@@ -130,7 +130,8 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 				SMEdge transition = (SMEdge) iter.next();
 				SMNode state = transition.getTarget();
 				
-				SMEdge currSkipLoop = null;				
+				SMEdge currSkipLoop = null;	
+				boolean hasLoopWithThisSymbol = false;
 				//for each automaton-transition q --> r
 				for (Iterator iterator = state.getOutEdgeIterator(); iterator.hasNext();) {
 					SMEdge outTransition = (SMEdge) iterator.next();
@@ -147,15 +148,23 @@ public class TMMayFlowAnalysis extends ForwardFlowAnalysis {
 					//transition; hence add it to the out-set; all other transitions cannot be taken
 					if(transitionLabel.equals(edge.getLabel())) {
 						cout.add(outTransition);
+						
+						//if the out transition is a loop, memorize that we have a found a loop
+						//with this symbol; in this case we do not need to take the skip loop
+						if(outTransition.getTarget() == state) {
+							hasLoopWithThisSymbol = true;
+						}
 					} else if(outTransition.isSkipEdge()) {
+						//store the skip transition
+						
 						//assert that we see only one outgoing skip loop for this state
 						assert currSkipLoop == null;
 						currSkipLoop = outTransition;
 					}
 				}				
-				if(cout.isEmpty() && currSkipLoop!=null) {
-					//if we cannot take any "labeled" edge in the trace match automaton,
-					//this means we take the skip loop
+				if(currSkipLoop!=null && !hasLoopWithThisSymbol) {
+					//if we see a skip loop and the current state has no loop labelled
+					//with this symbol, then we would indeed take the skip loop for this symbol
 					cout.add(currSkipLoop);
 					
 					//memorize that this skip loop was triggered by reading that symbol
