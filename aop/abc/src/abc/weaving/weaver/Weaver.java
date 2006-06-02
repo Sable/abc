@@ -177,6 +177,7 @@ public class Weaver {
                     if(ResidueBox.wasAnyResidueChanged()) {
                         //optimize the residues if any was changed
                         optimizeResidues();
+                        //TODO should we recompute the advice lists here?
                     }
                     
                     //we need to reweave now
