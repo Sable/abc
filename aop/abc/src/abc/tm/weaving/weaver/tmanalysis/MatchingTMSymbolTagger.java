@@ -137,7 +137,7 @@ public class MatchingTMSymbolTagger {
                 if((aa.shadowmatch.shadowId == tag.value())
                     && (aa.advice instanceof TMPerSymbolAdviceDecl)) {
                     TMPerSymbolAdviceDecl tmAdvice = (TMPerSymbolAdviceDecl) aa.advice;
-                    res.add(tmAdvice.getUniqueSymbolId());                                 
+                    res.add(tmAdvice.getQualifiedSymbolId());                                 
                 }
             }
             
