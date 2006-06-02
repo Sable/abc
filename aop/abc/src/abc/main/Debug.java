@@ -197,6 +197,7 @@ public class Debug {
     
     //static tm analysis
     public boolean tmAnalysis = false;               //static TM optimization
+    public boolean debugTmAnalysis = false;          //issue debug info for static TM optimization
     public boolean useMinimizedDFA = false;         //uses for each method a minimized DFA instead of
                                                     //an NFA; should have performance impacts only
 }
