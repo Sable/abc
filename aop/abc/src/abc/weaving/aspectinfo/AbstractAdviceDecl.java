@@ -20,7 +20,6 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
-import soot.*;
 import soot.util.Chain;
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
@@ -151,6 +150,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     public abstract WeavingContext makeWeavingContext();
 
     public void resetForReweaving() {
+    	applcount = 0;
     };
 
     // All this JoinPoint stuff ought to move to a residue or something.
@@ -203,6 +203,14 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
                               : null;
     }
 
+    /**
+     * Returns how often this advice was applied during weaving.
+     * @return the number of times this advice was applied during
+     * the last weaving process
+     */
+    public int getApplCount() {
+    	return applcount;
+    }
     
 
     /** Return a string describing the current piece of advice, for use in
