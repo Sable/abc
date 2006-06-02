@@ -113,6 +113,8 @@ public class TraceMatch
     protected Collection unused_formals = null;
 	   
     protected Map symbolname_to_variablename_to_local;
+    
+    protected TMMayFlowAnalysis mayFlowAnalysis = null;
 
     public TraceMatch(String name, List formals, List new_advice_body_formals,
                         StateMachine state_machine, boolean per_thread,
@@ -697,8 +699,11 @@ public class TraceMatch
 	 * @param completeStateMachine
 	 */
 	public void removeUnusedEdges(TMStateMachine completeStateMachine) {
+		//assert that the analysis is performed only once (makes no sense IMHO to call it multiple times)
+		assert mayFlowAnalysis == null;
+		
 		//perform the abstract interpretation
-		TMMayFlowAnalysis mayFlowAnalysis =
+		mayFlowAnalysis =
 			new TMMayFlowAnalysis(this, completeStateMachine);
 		
 		//remove unused edges from the state machine
@@ -716,13 +721,18 @@ public class TraceMatch
 	}
 
 	/**
-	 * @param mayFlowAnalysis 
-	 * @param sm
+	 * This removes symbols from the alphabet, which are no longer referenced in the state machine,
+	 * i.e. there exists no edge in the automaton, that has this symbol as label and the
+	 * static analysis determined that no skip loop may be triggered by this symbol.
+	 * If this is the case, we disable all per-symbol advice for this symbol and also
+	 * removde the symbol from the alphabet of this tracematch.
+	 * @param mayFlowAnalysis the static analysis for the associate state machine and the
+	 * 	program currently being woven
 	 */
 	protected void disableAdviceForUnreferencedSymbols(TMMayFlowAnalysis mayFlowAnalysis) {
-		//FIXME: this is probably not sound, because when a symbol is not referenced by any edge,
-		//this could also just be the case because it is not mentioned in the pattern
-		//(i.e. the symbol is implicitly referenced by skip loops only)
+		//FIXME is this really always sound? I guess there might be problems when
+		//a skip loop is taken due to non-matching bindings (not due to a wrong symbol).
+		//Have to check this!
 		
 		GlobalAspectInfo gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
 		
@@ -810,4 +820,15 @@ public class TraceMatch
 		}
 		return foundSymbol;
 	}
+
+	/**
+	 * Returns the may-flow analysis for this tracematch.
+	 * This is only available after calling {@link #removeUnusedEdges(TMStateMachine)}
+	 * @return the may-flow analysis for this tracematch
+	 */
+	public TMMayFlowAnalysis getMayFlowAnalysis() {
+		assert mayFlowAnalysis!=null;
+		return mayFlowAnalysis;
+	}
+		
 }
