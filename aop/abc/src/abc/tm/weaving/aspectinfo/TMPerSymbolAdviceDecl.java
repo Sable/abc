@@ -55,9 +55,17 @@ public class TMPerSymbolAdviceDecl extends TMAdviceDecl {
     }
     
     /**
+     * Returns the symbol id/name for which this advice is generated.
+	 * @return the symbol id
+	 */
+	public String getSymbolId() {
+		return symbolId;
+	}
+    
+    /**
      * Returns a unique id for this symbol.
      */
-    public String getUniqueSymbolId() {
+    public String getQualifiedSymbolId() {
     	return SymbolDecl_c.uniqueSymbolID(tm_id, symbolId);
     }
 
