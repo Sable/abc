@@ -864,4 +864,54 @@ public class TMStateMachine implements StateMachine {
         }
         return result;
     }
+
+	/**
+	 * Removes the edges enumerated by the iterator from this state machine
+	 * and after that removes unrechable states and edges.
+	 * @param edgeIterator an iterator over edges from this state machine
+	 */
+	public void removeEdges(Iterator/*<SMEdge>*/ edgeIterator) {
+		while(edgeIterator.hasNext()) {
+			SMEdge edge = (SMEdge) edgeIterator.next();
+
+			assert edges.contains(edge);
+			
+			//remove the edge p-->q from the list
+			edges.remove(edge);
+			
+			//remove it as outedge from p 
+			boolean foundOutEdge = false;
+			for (Iterator outEdgeIter = edge.getSource().getOutEdgeIterator(); outEdgeIter.hasNext();) {
+				if(outEdgeIter.next() == edge) {
+					outEdgeIter.remove();
+					foundOutEdge = true;
+				}				
+			}
+			assert foundOutEdge;
+			
+			//remove it as inedge from q
+			boolean foundInEdge = false;
+			for (Iterator inEdgeIter = edge.getTarget().getInEdgeIterator(); inEdgeIter.hasNext();) {
+				if(inEdgeIter.next() == edge) {
+					inEdgeIter.remove();
+					foundInEdge = true;
+				}				
+			}
+			assert foundInEdge;
+		}
+		
+		//remove unreachable states
+		compressStates();
+	}	
+	
+	/**
+	 * Returns <code>true</code> is this state machine holds no states.
+	 * @return <code>true</code> is this state machine holds no states
+	 */
+	public boolean isEmpty() {
+		//this should certainly always hold for our state machines
+		assert nodes.isEmpty() == edges.isEmpty(); 
+		
+		return nodes.isEmpty();
+	}
 }
