@@ -186,9 +186,15 @@ public class MethodCategory {
     }
 
     public static boolean weaveCalls(SootMethodRef mr)
-    { return weaveCalls(getCategory(mr)); }
+    { return weaveCalls(mr.resolve()); }
+
     public static boolean weaveCalls(SootMethod m)
-    { return weaveCalls(getCategory(m)); }
+    {
+        if (m.hasTag("SyntheticTag"))
+            return false;
+        return weaveCalls(getCategory(m));
+    }
+
     public static boolean weaveCalls(MethodSig m)
     { return weaveCalls(getCategory(m)); }
 
