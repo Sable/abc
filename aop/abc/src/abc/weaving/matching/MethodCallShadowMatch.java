@@ -93,11 +93,11 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	} else return null;
 	SootMethodRef methodref=invoke.getMethodRef();
 
-	if(!MethodCategory.weaveCalls(methodref)) return null;
-
 	if(methodref.name().equals(SootMethod.constructorName)) return null;
 	// The next one really ought not to happen...
 	if(methodref.name().equals(SootMethod.staticInitializerName)) return null;
+
+	if(!MethodCategory.weaveCalls(methodref)) return null;
 
 	if(abc.main.Debug.v().ajcCompliance) {
 	    // eliminate super calls, following the specification for such
