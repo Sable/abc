@@ -22,11 +22,17 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
-import abc.weaving.matching.*;
+import polyglot.util.Position;
+import abc.weaving.matching.MatchingContext;
 import abc.weaving.residues.Residue;
 
 /** Handler for a pointcut reference. 
@@ -147,10 +153,6 @@ public class PointcutRef extends Pointcut {
     public void getFreeVars(Set s) {
 	throw new InternalCompilerError
 	    ("PointcutRef should have been inlined by now",getPosition());
-    }
-    public void getFreeVarInstances(Map s) {
-    	throw new InternalCompilerError
-    	    ("PointcutRef should have been inlined by now",getPosition());
     }
 
 	/* (non-Javadoc)

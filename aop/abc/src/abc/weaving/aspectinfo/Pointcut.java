@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
@@ -263,14 +262,6 @@ public abstract class Pointcut extends Syntax {
      *                 repeatedly taking the union of sets)
      */
     public abstract void getFreeVars(Set/*<String>*/ result);
-
-    /** 
-     * Constructs a mapping Var to WeavingVar which holds an entry (v,w) if
-     * v is a free pointcut variable in this pointcut and w is the weaving variable
-     * used to weave v. Note that w is only available after matching/residue code generation,
-     * so do not call this method prior to matching.
-     */
-    public abstract void getFreeVarInstances(Map/*<abc.weaving.aspectinfo.Var --> WeavingVar >*/ result);
 
     /** Attempt to unify two pointcuts. pc.unify(pc', unification)
      *  should return true if the pointcuts can be unified, and 

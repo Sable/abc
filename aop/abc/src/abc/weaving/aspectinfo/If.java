@@ -22,12 +22,26 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import polyglot.util.Position;
-import soot.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import soot.RefType;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.AndResidue;
+import abc.weaving.residues.IfResidue;
+import abc.weaving.residues.JoinPointInfo;
+import abc.weaving.residues.Load;
+import abc.weaving.residues.LocalVar;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.StaticJoinPointInfo;
+import abc.weaving.residues.WeavingVar;
 
 /** Handler for <code>if</code> condition pointcut.
  *  @author Aske Simon Christensen
@@ -161,9 +175,6 @@ public class If extends Pointcut {
         // just want binding occurrences, so do nothing
     }
 
-    public void getFreeVarInstances(Map/*<Var>*/ result) {
-        // just want binding occurrences, so do nothing
-    }
         /* (non-Javadoc)
          * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
          */

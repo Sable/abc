@@ -21,19 +21,10 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Map;
-
 import polyglot.util.Position;
 import soot.Local;
 import soot.RefType;
-import soot.Type;
-import soot.Value;
-import soot.jimple.Stmt;
-import soot.util.Chain;
-import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.residues.WeavingVar;
 import abc.weaving.weaver.AdviceWeavingContext;
-import abc.weaving.weaver.ConstructorInliningMap;
 import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for after throwing advice with exception variable binding.
@@ -70,45 +61,5 @@ public class AfterThrowingArgAdvice extends AfterThrowingAdvice {
     	local = exception;    	
 	((AdviceWeavingContext) wc).arglist.setElementAt
 	    (exception,((AdviceDecl) ad).getFormalIndex(formal.getName()));
-    }
-    
-    /** 
-     * {@inheritDoc}
-     */
-    public void getFreeVarInstances(Map result) {
-    	super.getFreeVarInstances(result);
-    	//an after-throwing advice *does* bind the exception; opposed to after returning advice,
-    	//things are a bit tricky here, however:
-    	//we don't have a pointcut variable or a weaving variable; so let's just make some up
-    	Var var = new Var(formal.getName(),formal.getPosition());
-    	WeavingVar weavingVar = new WeavingVar() {
-
-			public Local get() {
-				return local;
-			}
-
-			public Type getType() {
-				return local.getType();
-			}
-
-			public boolean hasType() {
-				return true;
-			}
-
-			public WeavingVar inline(ConstructorInliningMap cim) {
-				return this;
-			}
-
-			public void resetForReweaving() {
-				//nothing to do
-			}
-
-			public Stmt set(LocalGeneratorEx localgen, Chain units, Stmt begin, WeavingContext wc, Value val) {
-				throw new RuntimeException("Not implemented - just a dummy variable!");
-			}
-    		
-    	};
-    	
-    	result.put(var, weavingVar);
     }
 }

@@ -22,21 +22,26 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import polyglot.util.Position;
-
-import soot.*;
-import soot.jimple.*;
+import soot.Body;
+import soot.SootMethod;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
 import soot.util.Chain;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
 import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.InstructionShadowTag;
 import abc.weaving.tagkit.InstructionSourceTag;
-import abc.weaving.weaver.*;
-import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.weaver.AdviceInliner;
+import abc.weaving.weaver.ShadowPoints;
+import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for before advice.
  *  @author Aske Simon Christensen
@@ -121,11 +126,4 @@ public class BeforeAdvice extends AbstractAdviceSpec {
             units.insertBefore(nextstmt,failpoint);
         }
     }
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void getFreeVarInstances(Map result) {
-		//this advice kind binds no free variables
-	}
 }

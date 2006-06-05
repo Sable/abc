@@ -26,7 +26,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
@@ -156,12 +155,6 @@ public class DeclareMessage extends AbstractAdviceDecl {
                 units.insertBefore(nextstmt,failpoint);
             }
         }
-		/** 
-		 * {@inheritDoc}
-		 */
-		public void getFreeVarInstances(Map result) {
-			//this kind of advice binds no free variables
-		}
     }
 
     public Residue postResidue(ShadowMatch sm) {

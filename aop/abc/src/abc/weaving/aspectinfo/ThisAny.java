@@ -22,11 +22,17 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Set;
 
 import polyglot.util.Position;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
 
 /** Handler for <code>this</code> condition pointcut with a
  *  universal pattern argument.
@@ -60,7 +66,6 @@ public class ThisAny extends DynamicValuePointcut {
     public void registerSetupAdvice
         (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<String>*/ result) {}
-    public void getFreeVarInstances(Map/*<Var>*/ result) {}
 
         /* (non-Javadoc)
          * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)

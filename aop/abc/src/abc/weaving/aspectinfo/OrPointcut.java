@@ -22,13 +22,14 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Set;
 
-import polyglot.util.Position;
 import polyglot.types.SemanticException;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import polyglot.util.Position;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.residues.OrResidue;
+import abc.weaving.residues.Residue;
 
 /** Pointcut disjunction. 
  *  @author Aske Simon Christensen
@@ -96,11 +97,6 @@ public class OrPointcut extends Pointcut {
 	pc2.getFreeVars(result);
     }
 
-    public void getFreeVarInstances(Map result) {
-    	pc1.getFreeVarInstances(result);
-    	pc2.getFreeVarInstances(result);
-    }
-    
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */

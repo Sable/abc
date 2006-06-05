@@ -22,11 +22,15 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Set;
 
 import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
-import abc.weaving.residues.*;
+import abc.weaving.residues.Bind;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.WeavingVar;
 
 /** Handler for <code>target</code> condition pointcut with a variable argument. 
  *  @author Aske Simon Christensen
@@ -72,13 +76,6 @@ public class TargetVar extends TargetAny {
 
     public void getFreeVars(Set/*<String>*/ result) {
 	result.add(var.getName());
-    }
-
-    public void getFreeVarInstances(Map/*<Var>*/ result) {
-    	if(weavingVar==null) {
-    		throw new RuntimeException("WeavingVar not yet set.");
-    	}
-    	result.put(var, weavingVar);
     }
 
     /* (non-Javadoc)

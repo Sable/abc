@@ -22,14 +22,25 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
-import polyglot.util.Position;
 import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
-import soot.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import polyglot.util.Position;
+import soot.SootMethod;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.AndResidue;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
 
 /** Handler for <code>args</code> condition pointcut.
  *  @author Aske Simon Christensen
@@ -173,12 +184,6 @@ public class Args extends DynamicValuePointcut {
         Iterator it=args.iterator();
         while(it.hasNext())
             ((ArgPattern) (it.next())).getFreeVars(result);
-    }
-
-    public void getFreeVarInstances(Map/*<Var>*/ result) {
-        Iterator it=args.iterator();
-        while(it.hasNext())
-            ((ArgPattern) (it.next())).getFreeVarInstances(result);
     }
 
     /* (non-Javadoc)

@@ -22,11 +22,14 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 
 import polyglot.util.Position;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.Residue;
 
 /** A pattern for a single argument. 
  *  @author Aske Simon Christensen
@@ -52,8 +55,6 @@ public abstract class ArgPattern extends Syntax {
 	 Position pos);
 
     public abstract void getFreeVars(Set/*<String>*/ result);
-
-	public abstract void getFreeVarInstances(Map result);
 
 	/** Attempts to unify two pointcuts, creating another pointcut that has enough variables
 	 *  to encompass both if possible. Variables are only unified if they have the same type,

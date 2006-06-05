@@ -20,15 +20,11 @@ package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import soot.Body;
 import soot.MethodOrMethodContext;
 import soot.PackManager;
-import soot.PointsToAnalysis;
 import soot.Scene;
-import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.toolkits.callgraph.CallGraph;
@@ -36,15 +32,13 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.queue.QueueReader;
+import abc.main.Debug;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.NodePredicate;
-import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.matching.AdviceApplication;
-import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
 /**
@@ -130,10 +124,14 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
     	//that way in order to speed up the subsequent analysis
     	removeNonMatchingSymbols();
     	
-        //for convenience, in a first step, add tags to all "first" units
+		//for convenience, in a first step, add tags to all "first" units
         //at which at least tracematch symbol matches;
         //the tag holds IDs for all symbols that match this unit
-        new MatchingTMSymbolTagger().performTagging();
+        MatchingTMSymbolTagger tagger =
+        	Debug.v().treatVariables ?	//shall we take free variables into account?
+        			new MatchingTMSymbolWithVarsTagger() :
+        			new MatchingTMSymbolTagger();
+        tagger.performTagging();
         
         //build the abstracted call graph
         buildAbstractedCallGraph();
@@ -147,9 +145,6 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
         
         //specialize the state machine w.r.t. the interprocedural abstraction
         specializeStateMachines();
-        
-        //TODO needs still some work
-        //freeVariables();
         
         //we do not need to reweave right away
         return false;
@@ -186,43 +181,6 @@ public class TracematchAnalysis extends AbstractReweavingAnalysis {
 		}
 	}
 
-	/**
-	 * TODO move the computation of this mapping to TraceMatch itself;
-	 * also store the mapping there.
-	 */
-	private void freeVariables() {
-		
-		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
-		
-		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
-
-		//for all advice applications of all methods in all weavable classes...
-		for (Iterator classIter = gai.getWeavableClasses().iterator(); classIter.hasNext();) {
-			SootClass clazz = ((AbcClass) classIter.next()).getSootClass();
-			
-			for (Iterator methodIter = clazz.getMethods().iterator(); methodIter.hasNext();) {
-				SootMethod method = (SootMethod) methodIter.next();
-				
-				MethodAdviceList adviceList = gai.getAdviceList(method);
-				if(adviceList!=null) {
-					for (Iterator iter = gai.getAdviceList(method).allAdvice().iterator(); iter.hasNext();) {
-						AdviceApplication aa = (AdviceApplication) iter.next();
-						//TODO filter for TM advice?
-						Map weavingVariables = aa.getFreeVariables();
-						
-						for (Iterator varIter = weavingVariables.entrySet().iterator(); varIter
-								.hasNext();) {
-							Entry entry = (Entry) varIter.next();
-							
-							
-							
-						}
-					}
-				}
-			}
-		}
-	}
-	
 	/**
 	 * Folds/inlines all state machines interprocedurally.
 	 */

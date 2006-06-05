@@ -20,17 +20,21 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Map;
-
 import polyglot.util.Position;
-
-import soot.*;
-import soot.jimple.*;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
-import abc.weaving.weaver.WeavingContext;
+import soot.BooleanType;
+import soot.Local;
+import soot.SootMethod;
+import soot.jimple.IntConstant;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.SeqResidue;
+import abc.weaving.residues.SetResidue;
+import abc.weaving.residues.TestResidue;
+import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for advice that applies both before and after
  *  a joinpoint.
@@ -38,7 +42,7 @@ import abc.soot.util.LocalGeneratorEx;
  *  @author Eric Bodden
  */
 public class BeforeAfterAdvice extends AbstractAdviceSpec {
-    private BeforeAdvice before;
+    private BeforeAdvice before; //FIXME is it correct that this variable is never read?
     private AfterAdvice after;
 
     public BeforeAfterAdvice(Position pos) {
@@ -100,13 +104,5 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec {
         BeforeAdvice.doWeave(method,localgen,adviceappl,beforeResidue,wc);
 
     } // method doWeave
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void getFreeVarInstances(Map result) {
-		before.getFreeVarInstances(result);
-		after.getFreeVarInstances(result);
-	}
 
 }

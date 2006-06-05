@@ -21,12 +21,13 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Map;
-
 import polyglot.util.Position;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.Bind;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.WeavingVar;
 
 /** Advice specification for after returning advice with return variable binding. 
  *  @author Aske Simon Christensen
@@ -58,15 +59,6 @@ public class AfterReturningArgAdvice extends AfterReturningAdvice {
 	weavingVar = we.getWeavingVar(var);
 	return Bind.construct
 	    (cv,we.getAbcType(var).getSootType(),weavingVar);
-    }
-    
-    /** 
-     * {@inheritDoc}
-     */
-    public void getFreeVarInstances(Map result) {
-    	super.getFreeVarInstances(result);
-    	//an after returning advice binds Var to the return value using the weaving variable weavingVar
-    	result.put(var, weavingVar);
     }
 
 }

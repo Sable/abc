@@ -21,13 +21,12 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Map;
-
-import soot.*;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
+import soot.SootMethod;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.Residue;
 
 
 /** An advice specification.
@@ -57,13 +56,4 @@ public interface AdviceSpec {
     public void weave(SootMethod method,
 		      LocalGeneratorEx localgen,
 		      AdviceApplication adviceappl);
-
-    /** 
-     * Constructs a mapping Var to WeavingVar which holds an entry (v,w) if
-     * v is a free variable bound by this advice (e.g. after returning/throwing)
-     * and w is the weaving variable  used to weave v.
-     * Note that w is only available after matching/residue code generation,
-     * so do not call this method prior to matching.
-     */
-    public abstract void getFreeVarInstances(Map/*<abc.weaving.aspectinfo.Var --> WeavingVar >*/ result);
 }

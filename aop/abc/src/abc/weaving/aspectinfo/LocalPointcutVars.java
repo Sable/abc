@@ -21,15 +21,23 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import polyglot.util.Position;
 import polyglot.types.SemanticException;
-
-import soot.*;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import polyglot.util.Position;
+import soot.SootClass;
+import soot.SootMethod;
+import abc.weaving.matching.LocalsDecl;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.Residue;
 
 /** Declare local pointcut variables. These can appear
  *  after inlining
@@ -118,22 +126,6 @@ public class LocalPointcutVars extends Pointcut {
     	pc.getFreeVars(result);
     	Iterator it=formals.iterator();
     	while(it.hasNext()) result.remove(((Formal) (it.next())).getName());
-    }
-
-    public void getFreeVarInstances(Map/*<Var>*/ result) {
-    	pc.getFreeVarInstances(result);
-    	Iterator it=formals.iterator();
-    	//remove all variables which are formal variables
-    	//(identified by the name)
-    	while(it.hasNext()) {
-    		Formal formal = (Formal) it.next();
-    		for (Iterator resultIter = result.keySet().iterator(); resultIter.hasNext();) {
-				Var var = (Var) resultIter.next();
-				if(var.getName().equals(formal.getName())) {
-					resultIter.remove();
-				}
-    		}
-    	}
     }
 
     public boolean unify(Pointcut otherpc, Unification unification) {

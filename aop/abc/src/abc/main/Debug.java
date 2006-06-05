@@ -200,4 +200,6 @@ public class Debug {
     public boolean debugTmAnalysis = false;          //issue debug info for static TM optimization
     public boolean useMinimizedDFA = false;         //uses for each method a minimized DFA instead of
                                                     //an NFA; should have performance impacts only
+    public boolean treatVariables = true;           //if true, the analysis takes variables into account
+    												//using points-to information
 }

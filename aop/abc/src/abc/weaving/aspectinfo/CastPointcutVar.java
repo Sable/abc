@@ -20,12 +20,19 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Set;
 
 import polyglot.util.Position;
-import soot.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import soot.PrimType;
+import soot.Scene;
+import soot.Type;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.Box;
+import abc.weaving.residues.Copy;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.WeavingVar;
 
 
 /** Cast from one pointcut variable to another. 
@@ -93,13 +100,6 @@ public class CastPointcutVar extends Pointcut {
 	result.add(to.getName());
     }
     
-    public void getFreeVarInstances(Map/*<Var>*/ result) {
-    	if(weavingVarTo==null) {
-    		throw new RuntimeException("WeavingVar not yet set.");
-    	}
-    	result.put(to, weavingVarTo);
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */

@@ -22,7 +22,6 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import polyglot.util.Position;
 import soot.Body;
@@ -104,13 +103,5 @@ public class AfterReturningAdvice extends AbstractAfterAdvice {
 	  }
 	debug("after returning weaver finished");
       } // method doWeave 
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void getFreeVarInstances(Map result) {
-		//a after-returning advice without formal
-		//binds no free variable
-	}
 
 }

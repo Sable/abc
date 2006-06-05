@@ -23,7 +23,6 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
@@ -95,11 +94,6 @@ public class AndPointcut extends Pointcut {
     public void getFreeVars(Set result) {
 	pc1.getFreeVars(result);
 	pc2.getFreeVars(result);
-    }
-
-    public void getFreeVarInstances(Map result) {
-    	pc1.getFreeVarInstances(result);
-    	pc2.getFreeVarInstances(result);
     }
 
     /* (non-Javadoc)

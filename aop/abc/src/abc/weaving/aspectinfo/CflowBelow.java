@@ -22,12 +22,18 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import polyglot.util.Position;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.CflowResidue;
+import abc.weaving.residues.Residue;
 
 /** Handler for <code>cflowbelow</code> condition pointcut. 
  *  @author Aske Simon Christensen
@@ -116,10 +122,6 @@ public class CflowBelow extends CflowPointcut {
     	getPointcut().getFreeVars(result);
     }
 	
-    public void getFreeVarInstances(Map result) {
-    	getPointcut().getFreeVarInstances(result);
-    }
-
     /* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */

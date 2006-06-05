@@ -18,16 +18,17 @@
  */
 package abc.tm.weaving.weaver.tmanalysis;
 
+import java.util.Collections;
 import java.util.List;
 
 import soot.tagkit.AttributeValueException;
-import soot.tagkit.StringTag;
+import soot.tagkit.Tag;
 
 /**
  * A tag which holds IDs for matching tracematch symbols.
  * @author Eric Bodden
  */
-public class MatchingTMSymbolTag extends StringTag {
+public class MatchingTMSymbolTag implements Tag {
 
     public final static String NAME = "MatchingTMSymbolTag";   
     
@@ -38,7 +39,6 @@ public class MatchingTMSymbolTag extends StringTag {
      * @param matchingSymbolIDs a list of ID strings
      */
     public MatchingTMSymbolTag(List matchingSymbolIDs) {
-        super(matchingSymbolIDs.toString());
         this.matchingSymbolIDs = matchingSymbolIDs;
     }
 
@@ -53,7 +53,7 @@ public class MatchingTMSymbolTag extends StringTag {
      * @return the IDs of symbols matching the tagged unit
      */
     public List getMatchingSymbolIDs() {
-        return matchingSymbolIDs;
+        return Collections.unmodifiableList(matchingSymbolIDs);
     }
 
     /** 
@@ -61,5 +61,12 @@ public class MatchingTMSymbolTag extends StringTag {
      */
     public byte[] getValue() throws AttributeValueException {
         throw new RuntimeException("Not implemented!");
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public String toString() {
+    	return matchingSymbolIDs.toString();
     }
 }

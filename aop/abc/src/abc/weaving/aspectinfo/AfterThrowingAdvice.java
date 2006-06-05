@@ -22,7 +22,6 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Iterator;
-import java.util.Map;
 
 import polyglot.util.Position;
 import soot.Body;
@@ -246,12 +245,5 @@ public class AfterThrowingAdvice extends AbstractAfterAdvice {
 	//         from begincode upto idStmt handlewith idStmt
 
       } // method doWeave 
-
-    /** 
-     * {@inheritDoc}
-     */
-    public void getFreeVarInstances(Map result) {
-    	//an after-throwing advice without formal binds no variable
-    }
 
 }

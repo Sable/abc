@@ -47,6 +47,11 @@ public class MatchingTMSymbolTagger {
      * Temporary set only used internally.
      */
     protected transient Set processedShadows = new HashSet();
+    
+    /**
+     * A tag for units which are matched by no symbol.
+     */
+    protected static final MatchingTMSymbolTag EMPTY_TAG = new MatchingTMSymbolTag(Collections.EMPTY_LIST);
 
     /**
      * Adds tags to each unit which is matched by at least one tracematch symbol but only
@@ -82,42 +87,42 @@ public class MatchingTMSymbolTagger {
      * @param m the surrounding method
      */
     protected void addMatchingSymbolsTag(Unit u, SootMethod m) {
-        List matchingSymbolIDs = getMatchingSymbolIDsIfFirst(u, m);
-        if(!matchingSymbolIDs.isEmpty()) {
-            u.addTag(new MatchingTMSymbolTag(matchingSymbolIDs));
+        MatchingTMSymbolTag tag = getTagIfFirstUnit(u, m);
+        if(tag != EMPTY_TAG) {
+            u.addTag(tag);
         }
     }
     
     /**
-     * Returns the list of matching symbols but only if <code>u</code> is the
+     * Returns a tag holding the list of matching symbols for a unit but only if <code>u</code> is the
      * first matched unit at that shadow.
      * @param u a unit
      * @param m the surrounding method
-     * @return IDs of symbols matching the given unit, but only if
+     * @return a tag holding the list of matching symbols for a unit, but only if
      * <code>u</code> is the first matched unit for the given shadow;
      * the empty set otherwise
-     */
-    protected List getMatchingSymbolIDsIfFirst(Unit u, SootMethod m) {
+     */ 
+    protected MatchingTMSymbolTag getTagIfFirstUnit(Unit u, SootMethod m) {
         if(u.hasTag(InstructionShadowTag.NAME)) {
             
             InstructionShadowTag tag = (InstructionShadowTag) u.getTag(InstructionShadowTag.NAME);
             Integer shadowId = new Integer(tag.value());
             if(!processedShadows.contains(shadowId)) {                
                 processedShadows.add(shadowId);
-                return getMatchingSymbolIDs(u, m);
+                return getMatchingSymbolIDsTag(u, m);
             }
                 
         }
-        return Collections.EMPTY_LIST;
+        return EMPTY_TAG;
     }
     
     /**
-     * Returns the list of matching symbols for a unit.
+     * Returns a tag holding the list of matching symbols for a unit.
      * @param u a unit
      * @param m the surrounding method
-     * @return IDs of symbols matching the given unit
+     * @return a tag holding the list of matching symbols for a unit.
      */
-    protected List getMatchingSymbolIDs(Unit u, SootMethod m) {
+    protected MatchingTMSymbolTag getMatchingSymbolIDsTag(Unit u, SootMethod m) {
         if(u.hasTag(InstructionShadowTag.NAME)) {
             //if u has a shadow tag
             
@@ -127,27 +132,37 @@ public class MatchingTMSymbolTagger {
         	//get the advice lists for the surrounding method
             MethodAdviceList adviceList = Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(m);
             List adviceApplications = adviceList.allAdvice();        
-            List res = new ArrayList(); 
-            
-            //add the symbols IDs for all TMPerSymbolAdviceDecl whose shadow id
-            //matches the one of the tag
-            for (Iterator iter = adviceApplications.iterator(); iter.hasNext();) {
-                AdviceApplication aa = (AdviceApplication) iter.next();
-                
-                if((aa.shadowmatch.shadowId == tag.value())
-                    && (aa.advice instanceof TMPerSymbolAdviceDecl)) {
-                    TMPerSymbolAdviceDecl tmAdvice = (TMPerSymbolAdviceDecl) aa.advice;
-                    res.add(tmAdvice.getQualifiedSymbolId());                                 
-                }
-            }
-            
-            return res;
+            return createTag(tag, adviceApplications);
             
         } else {
             
-            return Collections.EMPTY_LIST;
+            return EMPTY_TAG;
             
         }
     }
+
+
+	/**
+	 * @param tag
+	 * @param adviceApplications
+	 * @return
+	 */
+	protected MatchingTMSymbolTag createTag(InstructionShadowTag tag, List adviceApplications) {
+		List res = new ArrayList(); 
+		
+		//add the symbols IDs for all TMPerSymbolAdviceDecl whose shadow id
+		//matches the one of the tag
+		for (Iterator iter = adviceApplications.iterator(); iter.hasNext();) {
+		    AdviceApplication aa = (AdviceApplication) iter.next();
+		    
+		    if((aa.shadowmatch.shadowId == tag.value())
+		        && (aa.advice instanceof TMPerSymbolAdviceDecl)) {
+		        TMPerSymbolAdviceDecl tmAdvice = (TMPerSymbolAdviceDecl) aa.advice;
+		        res.add(tmAdvice.getQualifiedSymbolId());                                 
+		    }
+		}
+		
+		return new MatchingTMSymbolTag(res);
+	}
 
 }

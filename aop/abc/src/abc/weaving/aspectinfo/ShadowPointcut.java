@@ -21,11 +21,12 @@
 
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+import java.util.Set;
+
 import polyglot.util.Position;
-
-import java.util.*;
-
-import abc.weaving.matching.*;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.Residue;
 
 /** A pointcut designator representing a set of joinpoint shadows
@@ -57,6 +58,4 @@ public abstract class ShadowPointcut extends Pointcut {
         (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
     
     public void getFreeVars(Set/*<String>*/ result) {}
-    
-    public void getFreeVarInstances(Map/*<Var>*/ result) {}
 }

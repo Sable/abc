@@ -20,20 +20,27 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Map;
-
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
-
-import soot.*;
+import soot.FastHierarchy;
+import soot.NullType;
+import soot.PrimType;
+import soot.Scene;
+import soot.SootMethod;
+import soot.Type;
+import soot.VoidType;
 import abc.polyglot.util.ErrorInfoFactory;
-import abc.soot.util.Restructure;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
-import abc.weaving.weaver.around.AroundWeaver;
 import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.Restructure;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
+import abc.weaving.weaver.around.AroundWeaver;
 
 /** Advice specification for around advice.
  *  @author Aske Simon Christensen
@@ -156,11 +163,4 @@ public class AroundAdvice extends AbstractAdviceSpec {
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
         AroundWeaver.v().doWeave(method.getDeclaringClass(),method,localgen,adviceappl);
     }
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void getFreeVarInstances(Map result) {
-		//this advice kind binds no free variables
-	}
 }

@@ -22,11 +22,15 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 
 import polyglot.util.Position;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.Residue;
 
 /** An argument pattern denoting any type.
  *  @author Aske Simon Christensen
@@ -65,9 +69,7 @@ public class ArgAny extends ArgPattern {
 
     public void getFreeVars(Set/*<String>*/ result) {}
 
-    public void getFreeVarInstances(Map/*<Var>*/ result) {}
-
-        /* (non-Javadoc)
+    /* (non-Javadoc)
          * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
          */
         public boolean unify(ArgPattern other, Unification unification) {

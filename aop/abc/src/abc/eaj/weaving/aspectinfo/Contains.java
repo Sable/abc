@@ -22,7 +22,6 @@ package abc.eaj.weaving.aspectinfo;
 
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
@@ -51,18 +50,13 @@ import abc.weaving.residues.Residue;
 //MatchingContext, not just the ShadowMatch
 public class Contains extends Pointcut {
     Pointcut param = null;
-    protected Position position; //TODO: Workaround. aspectinfo.pos should be protected, not private
 
     public Contains(Position pos, Pointcut param) {
         super(pos);
         this.param = param;
-        this.position = pos;
     }
 
     public void getFreeVars(Set result) {
-    }
-
-    public void getFreeVarInstances(Map result) {
     }
 
     public void registerSetupAdvice(Aspect context, Hashtable typeEnv) {
@@ -74,7 +68,7 @@ public class Contains extends Pointcut {
         if (newParam == param) {
             return this;
         }
-        return new Contains(this.position, newParam);
+        return new Contains(getPosition(), newParam);
     }
 
     public String toString() {

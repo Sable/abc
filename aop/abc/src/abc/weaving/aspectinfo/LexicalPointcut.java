@@ -21,7 +21,6 @@
 package abc.weaving.aspectinfo;
 
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.Position;
@@ -60,7 +59,4 @@ public abstract class LexicalPointcut extends Pointcut {
         (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
 
     public void getFreeVars(Set/*<String>*/ result) {}
-
-    public void getFreeVarInstances(Map/*<Var>*/ result) {}
-
 }

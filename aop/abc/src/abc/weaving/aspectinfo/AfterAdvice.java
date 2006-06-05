@@ -21,8 +21,6 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.Map;
-
 import polyglot.util.Position;
 import soot.SootMethod;
 import abc.soot.util.LocalGeneratorEx;
@@ -61,13 +59,5 @@ public class AfterAdvice extends AbstractAfterAdvice {
 	throwing.doWeave(method,localgen,adviceappl,residue,wc);
 	returning.doWeave(method,localgen,adviceappl,residue,wc);
     }
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void getFreeVarInstances(Map result) {
-		//a plain after advice binds neither
-		//return value nor exception
-	}
 
 }

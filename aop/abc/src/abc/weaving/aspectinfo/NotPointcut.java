@@ -22,13 +22,14 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Set;
 
-import polyglot.util.Position;
 import polyglot.types.SemanticException;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+import polyglot.util.Position;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.residues.NotResidue;
+import abc.weaving.residues.Residue;
 
 /** Pointcut negation. 
  *  @author Aske Simon Christensen
@@ -85,10 +86,6 @@ public class NotPointcut extends Pointcut {
 
     public void getFreeVars(Set result) {
 	pc.getFreeVars(result);
-    }
-
-    public void getFreeVarInstances(Map result) {
-    	pc.getFreeVarInstances(result);
     }
 
     /* (non-Javadoc)

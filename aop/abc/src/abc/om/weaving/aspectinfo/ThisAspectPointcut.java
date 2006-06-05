@@ -21,7 +21,6 @@
 package abc.om.weaving.aspectinfo;
 
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
@@ -78,6 +77,4 @@ public class ThisAspectPointcut extends Pointcut {
     public void registerSetupAdvice(Aspect context, Hashtable typeEnv) {}
 
     public void getFreeVars(Set result) {}
-
-    public void getFreeVarInstances(Map result) {}
 }

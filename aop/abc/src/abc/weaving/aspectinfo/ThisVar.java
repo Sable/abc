@@ -22,11 +22,15 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Set;
 
 import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
-import abc.weaving.residues.*;
+import abc.weaving.residues.Bind;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.Residue;
+import abc.weaving.residues.WeavingVar;
 
 /** Handler for <code>this</code> condition pointcut with a variable argument. 
  *  @author Aske Simon Christensen
@@ -74,13 +78,6 @@ public class ThisVar extends ThisAny {
 	result.add(var.getName());
     }
     
-    public void getFreeVarInstances(Map/*<Var -> WeavingVar> */ result) {
-    	if(weavingVar==null) {
-    		throw new RuntimeException("WeavingVar not yet set.");
-    	}
-    	result.put(var, weavingVar);
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
