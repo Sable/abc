@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$27$around$1601(AroundAll.java:199)
+	at A.inline$31$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -94,32 +94,6 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
-
-
-Running test 653: new/nolang/Compiling java.lang.Object with ajc yields non-verifying bytecode
-Commandline: abc -d new/nolang -warn-unused-advice:off new/nolang/java/lang/Object.java new/nolang/java/lang/String.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: String.java:792: Error while looking for join point shadow
-polyglot.util.InternalCompilerError: String.java:792: Error while looking for join point shadow
-	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:148)
-	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:518)
-	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:263)
-	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:300)
-	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:463)
-	at abc.main.Main.weave(Main.java:1022)
-	at abc.main.Main.run(Main.java:538)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
-Caused by: soot.AbstractSootMethodRef$ClassResolutionFailedException: Class java.lang.String$CaseInsensitiveComparator doesn't have method <init>([java.lang.String$1]) : void; failed to resolve in superclasses and interfacesLooking in java.lang.String$CaseInsensitiveComparator which has methods []
-
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:135)
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:95)
-	at abc.weaving.aspectinfo.MethodCategory.weaveCalls(MethodCategory.java:189)
-	at abc.weaving.matching.MethodCallShadowMatch.matchesAt(MethodCallShadowMatch.java:96)
-	at abc.weaving.matching.MethodCallShadowType.matchesAt(MethodCallShadowType.java:28)
-	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:139)
-	... 9 more
-FAIL: Test 653: "new/nolang/Compiling java.lang.Object with ajc yields non-verifying bytecode" failed.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
