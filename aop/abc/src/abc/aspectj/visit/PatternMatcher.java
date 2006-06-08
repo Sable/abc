@@ -469,9 +469,7 @@ public class PatternMatcher {
 		matchesModifiers(pattern.getModifiers(), method.getModifiers()) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	    if (Modifier.isStatic(method.getModifiers())) {
-		matches = matches && matchesClassSubclassOf(pattern.getName().base(),
-							    methodref.declaringClass(),
-							    method.getDeclaringClass());
+		matches = matches && matchesClass(pattern.getName().base(), method.getDeclaringClass());
 	    } else {
 		matches = matches && matchesClassWithMethodMatching(pattern.getName().base(),
 								    methodref.declaringClass(),
