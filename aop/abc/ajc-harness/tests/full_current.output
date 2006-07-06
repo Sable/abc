@@ -4143,8 +4143,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@e9faa2
-o: Bar@e9faa2, i: 10
+o: Bar@145bac4
+o: Bar@145bac4, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4736,7 +4736,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@d5c4f3
+LibraryAspect-defined run() for C@7552e0
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5060,7 +5060,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@11de468
+? Util.read() obj=Test@17e9aae
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5080,7 +5080,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@f09328
+? Util.read() obj=ClinitTest@4d31d5
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5090,7 +5090,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1b4788a
+? Util.read() obj=SuidTest@15edd78
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5293,12 +5293,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1771869
-Invoking command bean:  Command@1e3b3ff
-hello(Command@1e3b3ff)
-Created a PerThis aspect : Testcase2@3e2e64
-Invoking command bean:  Command@57e3e1
-hello again(Command@57e3e1)
+Created a PerThis aspect : Testcase2@b4d222
+Invoking command bean:  Command@14fb897
+hello(Command@14fb897)
+Created a PerThis aspect : Testcase2@e000c0
+Invoking command bean:  Command@51554a
+hello again(Command@51554a)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5736,15 +5736,15 @@ PASS: Test 1108: "om/duplicateclassinclude/Class included in multiple modules" p
 Running test 1109: om/matchtest/Basic matching test
 Commandline: abc -d om/matchtest -warn-unused-advice:off -ext abc.om om/matchtest/Module1.java om/matchtest/Module2.java om/matchtest/MatchTestA.java om/matchtest/MatchTestB.java om/matchtest/MatchTestMain.java om/matchtest/AspectA.aj om/matchtest/AspectB.aj om/matchtest/AspectC.aj 
 Compilation succeeded with 3 warnings, which were matched and verified against the expected warnings.
-Before MatchTestA.a() from AspectC
 Before MatchTestA.a() from AspectA
 Before MatchTestA.a() from AspectB
+Before MatchTestA.a() from AspectC
 MatchTestA.a
 Before MatchTestA.b() from AspectA
 MatchTestA.b
-Before MatchTestB.a() from AspectC
 Before MatchTestB.a() from AspectA
 Before MatchTestB.a() from AspectB
+Before MatchTestB.a() from AspectC
 MatchTestB.a
 Before MatchTestB.b() from AspectA
 Before MatchTestB.b() from AspectB
@@ -5767,66 +5767,66 @@ PASS: Test 1109: "om/matchtest/Basic matching test" passed.
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibAspect: Before fib(5)
 In FibExtAspect: Before fib(5)
-In FibAspect: Before getPrevX
+In FibAspect: Before fib(5)
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(5)
 In FibAspect: Before fib(4)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(4)
 In FibAspect: Before fib(3)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(1)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(3)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(1)
 5
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 9
 1
 10
@@ -6136,37 +6136,37 @@ PASS: Test 1118: "om/privatesigtest/Private signature test" passed.
 Running test 1119: om/constraintest/Constrained module inclusion test
 Commandline: abc -d om/constraintest -warn-unused-advice:off -ext abc.om om/constraintest/ModuleA.java om/constraintest/ModuleB.java om/constraintest/ModuleC.java om/constraintest/A.java om/constraintest/B.java om/constraintest/C.java om/constraintest/AspectA.java om/constraintest/AspectB.java om/constraintest/AspectC.java om/constraintest/ConstrainTestMain.java om/constraintest/ExtAspectA.aj 
 Compilation succeeded with 9 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
 AspectA
 AspectB
 AspectC
-Before void A.f1()
 a.f1
 AspectA
 a.f2
 AspectA
 a.f3
-AspectA
-AspectB
-AspectC
 Before void B.f1()
-b.f1
 AspectA
 AspectB
 AspectC
+b.f1
 Before void B.f2()
+AspectA
+AspectB
+AspectC
 b.f2
 AspectA
 AspectB
 b.f3
-AspectA
-AspectB
-AspectC
 Before void C.f1()
-c.f1
 AspectA
 AspectB
 AspectC
+c.f1
 Before void C.f2()
+AspectA
+AspectB
+AspectC
 c.f2
 AspectA
 AspectB
@@ -6207,8 +6207,8 @@ PASS: Test 1121: "om/multimodtest/Multiple modules in a single file" passed.
 Running test 1122: om/iftest/If pointcut signatures
 Commandline: abc -d om/iftest -warn-unused-advice:off -ext abc.om om/iftest/Module.java om/iftest/AspectA.java om/iftest/AspectB.java om/iftest/IfTest.java 
 Test
-AspectB
 AspectA
+AspectB
 Test
 PASS: Test 1122: "om/iftest/If pointcut signatures" passed.
 
@@ -6403,6 +6403,8 @@ Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/PCInh.java
 advice 2
 advice 1
 foo
+advice 2
+advice 1
 baz
 PASS: Test 1211: "abctests/new/concrete pointcuts in abstract aspects can be overridden" passed.
 
