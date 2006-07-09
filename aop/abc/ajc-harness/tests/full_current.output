@@ -5293,12 +5293,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1591a67
-Invoking command bean:  Command@d4787a
-hello(Command@d4787a)
-Created a PerThis aspect : Testcase2@1319309
-Invoking command bean:  Command@1ac5a70
-hello again(Command@1ac5a70)
+Created a PerThis aspect : Testcase2@103c70c
+Invoking command bean:  Command@101106e
+hello(Command@101106e)
+Created a PerThis aspect : Testcase2@dddca4
+Invoking command bean:  Command@1c09ca9
+hello again(Command@1c09ca9)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -6136,37 +6136,37 @@ PASS: Test 1118: "om/privatesigtest/Private signature test" passed.
 Running test 1119: om/constraintest/Constrained module inclusion test
 Commandline: abc -d om/constraintest -warn-unused-advice:off -ext abc.om om/constraintest/ModuleA.java om/constraintest/ModuleB.java om/constraintest/ModuleC.java om/constraintest/A.java om/constraintest/B.java om/constraintest/C.java om/constraintest/AspectA.java om/constraintest/AspectB.java om/constraintest/AspectC.java om/constraintest/ConstrainTestMain.java om/constraintest/ExtAspectA.aj 
 Compilation succeeded with 9 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
 AspectA
 AspectB
 AspectC
-Before void A.f1()
 a.f1
 AspectA
 a.f2
 AspectA
 a.f3
-AspectA
-AspectB
-AspectC
 Before void B.f1()
-b.f1
 AspectA
 AspectB
 AspectC
+b.f1
 Before void B.f2()
+AspectA
+AspectB
+AspectC
 b.f2
 AspectA
 AspectB
 b.f3
-AspectA
-AspectB
-AspectC
 Before void C.f1()
-c.f1
 AspectA
 AspectB
 AspectC
+c.f1
 Before void C.f2()
+AspectA
+AspectB
+AspectC
 c.f2
 AspectA
 AspectB
@@ -6207,8 +6207,8 @@ PASS: Test 1121: "om/multimodtest/Multiple modules in a single file" passed.
 Running test 1122: om/iftest/If pointcut signatures
 Commandline: abc -d om/iftest -warn-unused-advice:off -ext abc.om om/iftest/Module.java om/iftest/AspectA.java om/iftest/AspectB.java om/iftest/IfTest.java 
 Test
-AspectA
 AspectB
+AspectA
 Test
 PASS: Test 1122: "om/iftest/If pointcut signatures" passed.
 
@@ -6403,6 +6403,8 @@ Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/PCInh.java
 advice 2
 advice 1
 foo
+advice 2
+advice 1
 baz
 PASS: Test 1211: "abctests/new/concrete pointcuts in abstract aspects can be overridden" passed.
 
