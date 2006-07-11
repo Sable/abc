@@ -26,43 +26,28 @@ public class PrettyPrintTest58 {
     files.add("test/List.java");
     files.add("test/Test58.java");
     
-    JavaParser parser = new JavaParser();
     for(Iterator iter = files.iterator(); iter.hasNext(); ) {
       String name = (String)iter.next();
-      try {
-        Reader reader = new FileReader(name);
-        JavaScanner scanner = new JavaScanner(new UnicodeEscapes(new BufferedReader(reader)));
-        CompilationUnit unit = ((Program)parser.parse(scanner)).getCompilationUnit(0);
-        unit.setFromSource(true);
-        unit.setRelativeName(name);
-        unit.setPathName(".");
-      	reader.close();
-        program.addCompilationUnit(unit);
-      } catch (Error e) {
-        System.err.println(name + ": " + e.getMessage());
-        System.exit(1);
-      } catch (RuntimeException e) {
-        System.err.println(name + ": " + e.getMessage());
-      } catch (IOException e) {
-      } catch (Exception e) {
-        System.err.println(e);
-        e.printStackTrace();
-      }
+      if(name.endsWith(".java") || name.endsWith(".jrag") || name.endsWith(".jadd") || name.endsWith(".ast"))
+        program.addSourceFile(name);
     }
-    program.updateRemoteAttributeCollections(files.size());
-    if(program.errorCheck(files.size())) {
+
+    // Force loading of all classes and aspects prior to analysis
+    // Inter type declarations may be declared in any aspect
+    // and need to be loaded prior to name analysis
+    for(Iterator iter = program.compilationUnitIterator(); iter.hasNext();  ) {
+      iter.next();
+    }
+
+    if(program.errorCheck()) {
       if(Program.verbose())
-        program.prettyPrint(files.size());
+        System.out.println(program);
     }
     else {
-      program.generateIntertypeDecls(files.size());
-      StringBuffer s = new StringBuffer();
-      program.getCompilationUnit(3).getTypeDecl(0).toString(s);
-      System.out.println(s.toString());
-      //if(Program.verbose())
-      //  program.prettyPrint(files.size());
-      //program.updateRemoteAttributeCollections(files.size());
-      //program.generateClassfile(files.size());
+      program.generateIntertypeDecls();
+      program.java2Transformation();
+      System.out.println(program.getCompilationUnit(3).getTypeDecl(0));
     }
+
   }
 }
