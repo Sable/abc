@@ -81,28 +81,28 @@ ASTChild ast_child =
     {: return new ASTElementChild(IDENTIFIER, new Opt()); :}
   | DIV IDENTIFIER DIV
     {: return new NTAElementChild(IDENTIFIER, new Opt()); :}
-  | IDENTIFIER COLON type
-    {: return new ASTElementChild(IDENTIFIER, new Opt(type)); :}
-  | DIV IDENTIFIER COLON type DIV
-    {: return new NTAElementChild(IDENTIFIER, new Opt(type)); :}
+  | IDENTIFIER COLON name
+    {: return new ASTElementChild(IDENTIFIER, new Opt(name)); :}
+  | DIV IDENTIFIER COLON name DIV
+    {: return new NTAElementChild(IDENTIFIER, new Opt(name)); :}
     
   | LBRACK IDENTIFIER RBRACK
     {: return new ASTOptionalChild(IDENTIFIER, new Opt()); :}
   | DIV LBRACK IDENTIFIER RBRACK DIV
     {: return new NTAOptionalChild(IDENTIFIER, new Opt()); :}
-  | LBRACK IDENTIFIER COLON type RBRACK
-    {: return new ASTOptionalChild(IDENTIFIER, new Opt(type)); :}
-  | DIV LBRACK IDENTIFIER COLON type RBRACK DIV
-    {: return new NTAOptionalChild(IDENTIFIER, new Opt(type)); :}
+  | LBRACK IDENTIFIER COLON name RBRACK
+    {: return new ASTOptionalChild(IDENTIFIER, new Opt(name)); :}
+  | DIV LBRACK IDENTIFIER COLON name RBRACK DIV
+    {: return new NTAOptionalChild(IDENTIFIER, new Opt(name)); :}
     
   | IDENTIFIER MULT
     {: return new ASTListChild(IDENTIFIER, new Opt()); :}
   | DIV IDENTIFIER MULT DIV
     {: return new NTAListChild(IDENTIFIER, new Opt()); :}
-  | IDENTIFIER COLON type MULT
-    {: return new ASTListChild(IDENTIFIER, new Opt(type)); :}
-  | DIV IDENTIFIER COLON type MULT DIV
-    {: return new NTAListChild(IDENTIFIER, new Opt(type)); :}
+  | IDENTIFIER COLON name MULT
+    {: return new ASTListChild(IDENTIFIER, new Opt(name)); :}
+  | DIV IDENTIFIER COLON name MULT DIV
+    {: return new NTAListChild(IDENTIFIER, new Opt(name)); :}
     
   | LT IDENTIFIER GT
     {: return new ASTTokenChild(IDENTIFIER, new Opt()); :}

@@ -17,7 +17,7 @@ aspect IntertypeFieldNameAnalysis {
   //eq IntertypeFieldDeclaration.getInit().hostType() = hostType();
   
   eq IntertypeFieldDeclaration.getInit().lookupVariable(String name) {
-    SimpleSet set = introducedType().lookupMemberField(name);
+    SimpleSet set = introducedType().memberFields(name);
     if(!set.isEmpty())
       return set;
     return lookupVariable(name);

@@ -1,6 +1,34 @@
 import java.util.*;
 
 aspect ASTGrammar {
+
+  public void Program.loadASTFile(String name) {
+    try {
+      FileInputStream is = new FileInputStream(name);
+      parser.JavaScanner scanner = new parser.JavaScanner(new parser.Unicode(is));
+      scanner.enterJastAdd();
+      CompilationUnit cu = (CompilationUnit)PathPart.parser().parse(scanner, JavaParser.AltGoals.ast_file);
+      scanner.previousState();
+      is.close();
+      List packageList = cu.getPackageDeclList();
+      List importList = cu.getImportDeclList();
+      for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+        TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
+        CompilationUnit unit = new CompilationUnit(
+            (List)packageList.fullCopy(),
+            (List)importList.fullCopy(),
+            new List().add(typeDecl)
+            );
+        unit.setFromSource(true);
+        unit.setRelativeName(name);
+        unit.setPathName(".");
+        addCompilationUnit(unit);
+      }
+    } catch (Exception e) {
+      throw new Error(e.getMessage());
+    }
+  }
+
   eq ASTDecl.isStatic() = !isTopLevelType();
 
   syn String ASTChild.name() = getName();

@@ -37,13 +37,11 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>      
-      <exclude name="UpdateRemoteAttributeCollections.jadd"/>
 		</fileset>
 		<fileset dir="../BytecodeBackend">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-      <!--exclude name="GenerateClassfile.jrag"/-->
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
@@ -53,8 +51,6 @@
   </jastadd>
   <!-- generate the scanner -->
 	<jflex file="JastAdd.flex" outdir="parser" nobak="yes"/>
-  <!-- generate the scanner -->
-	<jflex file="../Java1.4Frontend/parser/unicode.flex" outdir="parser" nobak="yes"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
   <concat destfile="parser/JavaParser.all" force="no">
     <fileset dir="../Java1.4Frontend">
@@ -77,6 +73,7 @@
   <copy todir="bytecode" preservelastmodified="true">
     <fileset dir="../Java1.4Frontend/bytecode"/>
   </copy>
+  <copy todir="parser" file="../Java1.4Frontend/parser/Unicode.java" preservelastmodified="true"/>
 </target>
 
 <!-- remove generated source files and .class files -->

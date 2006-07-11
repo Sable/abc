@@ -10,13 +10,12 @@ import AST.List;
 
 public class JastAdd {
   public static void main(String args[]) {
-	try {
-		if(!compile(args))
-			System.exit(1);
-	} catch (Error e) {
-		e.printStackTrace();
-		
-	}
+    try {
+      if(!compile(args))
+        System.exit(1);
+    } catch (Error e) {
+      e.printStackTrace();
+    }
   }
 
   public static boolean compile(String args[]) {
@@ -48,75 +47,40 @@ public class JastAdd {
       return false;
     }
 
-    int numFiles = 0;
-    JavaParser parser = new JavaParser();
     for(Iterator iter = files.iterator(); iter.hasNext(); ) {
       String name = (String)iter.next();
-      try {
-        Reader reader = new FileReader(name);
-        JavaScanner scanner = new JavaScanner(new UnicodeEscapes(new BufferedReader(reader)));
-        if(name.endsWith(".java") || name.endsWith(".jrag") || name.endsWith(".jadd")) {
-          CompilationUnit unit = ((Program)parser.parse(scanner)).getCompilationUnit(0);
-          unit.setFromSource(true);
-          unit.setRelativeName(name);
-          unit.setPathName(".");
-          program.addCompilationUnit(unit);
-          numFiles++;
-        }
-        else if(name.endsWith(".ast")) {
-          scanner.enterJastAdd();
-          CompilationUnit cu = (CompilationUnit)parser.parse(scanner, JavaParser.AltGoals.ast_file);
-          scanner.previousState();
-          List packageList = cu.getPackageDeclList();
-          List importList = cu.getImportDeclList();
-          for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
-            TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
-            CompilationUnit unit = new CompilationUnit(
-              (List)packageList.fullCopy(),
-              (List)importList.fullCopy(),
-              new List().add(typeDecl)
-            );
-            unit.setFromSource(true);
-            unit.setRelativeName(name);
-            unit.setPathName(".");
-            program.addCompilationUnit(unit);
-            numFiles++;
-          }
-        }
-        reader.close();
-      } catch (Error e) {
-        System.err.println(name + ": " + e.getMessage());
-        e.printStackTrace();
-        return false;
-      } catch (RuntimeException e) {
-        System.err.println(name + ": " + e.getMessage());
-        e.printStackTrace();
-        return false;
-      } catch (IOException e) {
-        System.err.println("error: " + e.getMessage());
-        return false;
-      } catch (Exception e) {
-        System.err.println(e);
-        e.printStackTrace();
+      if(name.endsWith(".java") || name.endsWith(".jrag") || name.endsWith(".jadd"))
+        program.addSourceFile(name);
+      else if(name.endsWith(".ast")) {
+        program.loadASTFile(name);
       }
     }
-    program.updateRemoteAttributeCollections(numFiles);
-    if(Program.verbose())
-        program.prettyPrint(numFiles);
-    if(program.errorCheck(numFiles)) {
-      if(Program.verbose())
-        program.prettyPrint(numFiles);
+
+    // Force loading of all classes and aspects prior to analysis
+    // Inter type declarations may be declared in any aspect
+    // and need to be loaded prior to name analysis
+    for(Iterator iter = program.compilationUnitIterator(); iter.hasNext();  ) {
+      iter.next();
     }
-    else {
-      program.java2Transformation(numFiles);
-      program.generateIntertypeDecls(numFiles);
-      if(Program.verbose())
-        program.prettyPrint(numFiles);
-      program.updateRemoteAttributeCollections(numFiles);
-      program.generateClassfile(numFiles);
-      return true;
+
+    if(Program.verbose()) {
+      System.out.println("**** Before ErrorCheck and Transformation ****");
+      System.out.println(program.toString());
     }
-    return false;
+
+    if(program.errorCheck())
+      return false;
+    
+    program.generateIntertypeDecls();
+    program.java2Transformation();
+
+    if(Program.verbose()) {
+      System.out.println("**** After Transformation ****");
+      System.out.println(program.toString());
+    }
+
+    program.generateClassfile();
+    return true;
   }
   
   protected static void printUsage() {

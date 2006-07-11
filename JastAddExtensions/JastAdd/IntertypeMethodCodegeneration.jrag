@@ -187,7 +187,7 @@ aspect IntertypeMethodCodegeneration {
   inh Collection BodyDecl.lookupMethod(String name);
   
   eq IntroducedMethodDecl.getBlock().lookupVariable(String name) {
-    SimpleSet set = introducedType().lookupMemberField(name);
+    SimpleSet set = introducedType().memberFields(name);
     if(!set.isEmpty())
       return set;
     SimpleSet v = parameterDeclaration(name);

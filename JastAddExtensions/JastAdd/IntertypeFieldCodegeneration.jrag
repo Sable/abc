@@ -23,7 +23,7 @@ aspect IntertypeFieldCodegeneration {
     SimpleSet set = lookupVariable(name);
     if(!set.isEmpty())
       return set;
-    return aspectType().lookupMemberField(name); // TODO: Does this work for fields in nested aspects/classes?
+    return aspectType().memberFields(name); // TODO: Does this work for fields in nested aspects/classes?
   }
 
   eq IntertypeFieldDeclaration.isBytecodeField() = false;
