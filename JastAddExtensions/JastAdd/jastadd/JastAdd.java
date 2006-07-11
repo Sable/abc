@@ -49,11 +49,8 @@ public class JastAdd {
 
     for(Iterator iter = files.iterator(); iter.hasNext(); ) {
       String name = (String)iter.next();
-      if(name.endsWith(".java") || name.endsWith(".jrag") || name.endsWith(".jadd"))
+      if(name.endsWith(".java") || name.endsWith(".jrag") || name.endsWith(".jadd") || name.endsWith(".ast"))
         program.addSourceFile(name);
-      else if(name.endsWith(".ast")) {
-        program.loadASTFile(name);
-      }
     }
 
     // Force loading of all classes and aspects prior to analysis

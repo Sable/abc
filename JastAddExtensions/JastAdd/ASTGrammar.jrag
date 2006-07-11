@@ -2,7 +2,14 @@ import java.util.*;
 
 aspect ASTGrammar {
 
-  public void Program.loadASTFile(String name) {
+  refine ClassPath public void Program.addSourceFile(String name) {
+    if(name.endsWith(".ast"))
+      loadASTFile(name);
+    else
+      ClassPath.Program.addSourceFile(name);
+  }
+
+  private void Program.loadASTFile(String name) {
     try {
       FileInputStream is = new FileInputStream(name);
       parser.JavaScanner scanner = new parser.JavaScanner(new parser.Unicode(is));
