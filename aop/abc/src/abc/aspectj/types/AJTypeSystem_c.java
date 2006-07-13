@@ -499,7 +499,7 @@ public class AJTypeSystem_c
 		* correctly.
 		*/
 	   public void checkClassConformance(ClassType ct) throws SemanticException {
-		   if (ct.flags().isInterface()) {
+		   if (ct.flags().isAbstract()) {
 			   // don't need to check interfaces            
 			   return;
 		   }
