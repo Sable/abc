@@ -39,7 +39,7 @@ aspect IntertypeMethodCodegeneration {
     );
   }
 
-  public Parameter Parameter.qualifiedCopy() {
+  public ParameterDeclaration ParameterDeclaration.qualifiedCopy() {
     return new ParameterDeclaration(type().createQualifiedAccess(), name());
   }
 

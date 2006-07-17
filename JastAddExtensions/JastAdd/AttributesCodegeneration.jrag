@@ -357,13 +357,14 @@ aspect GenerateSynCode {
   }
 
   inh lazy TypeDecl AttributeDecl.typeObject();
+  inh lazy TypeDecl AttributeDecl.typeBoolean();
 
   private HashMap AttributeDecl.fieldVisitedFlagAdded = new HashMap();
   protected FieldDeclaration AttributeDecl.fieldVisitedFlag(TypeDecl typeDecl) {
     if(fieldVisitedFlagAdded.containsKey(typeDecl))
       return (FieldDeclaration)fieldVisitedFlagAdded.get(typeDecl);
     TypeDecl fieldType = getNumParameter() == 0 ?
-      lookupType("primitive", "boolean") : lookupType("java.util", "HashSet");
+      typeBoolean() : lookupType("java.util", "HashSet");
     Expr fieldInit;
     if(getNumParameter() == 0)
       fieldInit = new BooleanLiteral(false);
@@ -391,7 +392,7 @@ aspect GenerateSynCode {
     if(getNumParameter() == 0)
       f = new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("private"))),
-        lookupType("primitive", "boolean").createQualifiedAccess(),
+        typeBoolean().createQualifiedAccess(),
         computedFlagName(),
         new BooleanLiteral(false)
       );
@@ -607,7 +608,7 @@ aspect GenerateSynCode {
     }
   }
 
-  public Access Parameter.createAccess() {
+  public Access ParameterDeclaration.createAccess() {
     return new VarAccess(getIdDecl().getID());
   }
 
@@ -1216,8 +1217,8 @@ aspect GenerateSynCode {
     if(getNumParameter() > 0)
       s.append("_");
     for(int i = 0; i < getNumParameter(); i++) {
-      Parameter p = getParameter(i);
-      s.append(p.type().fullName().replace('.', '$'));
+      ParameterDeclaration p = getParameter(i);
+      s.append(p.type().fullName().replace('.', '$').replace('@', '_'));
     }
     return s.toString();
   }

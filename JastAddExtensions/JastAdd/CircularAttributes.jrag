@@ -717,7 +717,7 @@ aspect CircularAttributes {
     if(fieldInitializedFlagAdded.containsKey(typeDecl))
       return (FieldDeclaration)fieldInitializedFlagAdded.get(typeDecl);
     TypeDecl fieldType = getNumParameter() == 0 ?
-      lookupType("primitive", "boolean") : lookupType("java.util", "HashSet");
+      typeBoolean() : lookupType("java.util", "HashSet");
     Expr fieldInit;
     if(getNumParameter() == 0)
       fieldInit = new BooleanLiteral(false);
