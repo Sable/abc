@@ -37,7 +37,7 @@ aspect IntertypeMethodNameAnalysis {
       addBodyDecl(
           new ConstructorDecl(
             m,
-            new IdDecl(name()),
+            name(),
             new List(),
             new List(),
             new Opt(),

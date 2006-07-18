@@ -8,8 +8,7 @@ aspect JastAddPrettyPrint {
     getTypeAccess().toString(s);
     s.append(" ");
     getTargetType().toString(s);
-    s.append(".");
-    getIdDecl().toString(s);
+    s.append("." + getID());
     s.append("(");
     if(getNumParameter() > 0) {
       getParameter(0).toString(s);
@@ -78,8 +77,7 @@ aspect JastAddPrettyPrint {
     getTypeAccess().toString(s);
     s.append(" ");
     getTargetType().toString(s);
-    s.append(".");
-    getIdDecl().toString(s);
+    s.append("." + getID());
     s.append("(");
     if(getNumParameter() > 0) {
       getParameter(0).toString(s);
@@ -94,8 +92,7 @@ aspect JastAddPrettyPrint {
 
   public void AspectDecl.toString(StringBuffer s) {
     getModifiers().toString(s);
-    s.append("aspect ");
-    getIdDecl().toString(s);
+    s.append("aspect " + getID());
     s.append(" {\n");
     indent++;
     for(int i=0; i < getNumBodyDecl(); i++) {
@@ -108,8 +105,7 @@ aspect JastAddPrettyPrint {
 
   public void ASTDecl.toString(StringBuffer s) {
     getModifiers().toString(s);
-    s.append("ast ");
-    getIdDecl().toString(s);
+    s.append("ast " + getID());
     if(hasSuperClassAccess()) {
       s.append(" : ");
       getSuperClassAccess().toString(s);

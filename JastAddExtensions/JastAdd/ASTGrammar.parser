@@ -12,14 +12,14 @@ BodyDecl aspect_body_declaration =
   ;
 
 CompilationUnit ast_file =
-    package_declaration.p import_declarations.i ast_declarations.t {: return new CompilationUnit(p, i, t); :}
-  |                       import_declarations.i ast_declarations.t {: return new CompilationUnit(new List(), i, t); :}
-  | package_declaration.p                       ast_declarations.t {: return new CompilationUnit(p, new List(), t); :}
-  |                                             ast_declarations.t {: return new CompilationUnit(new List(), new List(), t); :}
-  | package_declaration.p import_declarations.i                     {: return new CompilationUnit(p, i, new List()); :}
-  |                       import_declarations.i                     {: return new CompilationUnit(new List(), i, new List()); :}
-  | package_declaration.p                                           {: return new CompilationUnit(p, new List(), new List()); :}
-  |                                                                 {: return new CompilationUnit(new List(), new List(), new List()); :}
+    package_declaration.p import_declarations.i ast_declarations.t {: return new CompilationUnit(p.getID(), i, t); :}
+  |                       import_declarations.i ast_declarations.t {: return new CompilationUnit("", i, t); :}
+  | package_declaration.p                       ast_declarations.t {: return new CompilationUnit(p.getID(), new List(), t); :}
+  |                                             ast_declarations.t {: return new CompilationUnit("", new List(), t); :}
+  | package_declaration.p import_declarations.i                     {: return new CompilationUnit(p.getID(), i, new List()); :}
+  |                       import_declarations.i                     {: return new CompilationUnit("", i, new List()); :}
+  | package_declaration.p                                           {: return new CompilationUnit(p.getID(), new List(), new List()); :}
+  |                                                                 {: return new CompilationUnit("", new List(), new List()); :}
   ;
 
 List ast_declarations =
@@ -29,41 +29,41 @@ List ast_declarations =
 
 ASTDecl ast_declaration =
     IDENTIFIER SEMICOLON 
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(), new List()); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), IDENTIFIER, new Opt(), new List()); :}
   | IDENTIFIER COLON name SEMICOLON 
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), IDENTIFIER, new Opt(name), new List()); :}
   | IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), IDENTIFIER, new Opt(), ast_child_list_opt); :}
   | IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), IDENTIFIER, new Opt(name), ast_child_list_opt); :}
   | ABSTRACT IDENTIFIER SEMICOLON 
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(), new List()); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), IDENTIFIER, new Opt(), new List()); :}
   | ABSTRACT IDENTIFIER COLON name SEMICOLON 
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), IDENTIFIER, new Opt(name), new List()); :}
   | ABSTRACT IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), IDENTIFIER, new Opt(), ast_child_list_opt); :}
   | ABSTRACT IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), IDENTIFIER, new Opt(name), ast_child_list_opt); :}
   ;
   
 
 ASTDecl tree_node_declaration =
     modifiers AST IDENTIFIER SEMICOLON 
-    {: return new ASTDecl(modifiers, new IdDecl(IDENTIFIER), new Opt(), new List()); :}
+    {: return new ASTDecl(modifiers, IDENTIFIER, new Opt(), new List()); :}
   | modifiers AST IDENTIFIER COLON name SEMICOLON 
-    {: return new ASTDecl(modifiers, new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
+    {: return new ASTDecl(modifiers, IDENTIFIER, new Opt(name), new List()); :}
   | modifiers AST IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(modifiers, new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
+    {: return new ASTDecl(modifiers, IDENTIFIER, new Opt(), ast_child_list_opt); :}
   | modifiers AST IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(modifiers, new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
+    {: return new ASTDecl(modifiers, IDENTIFIER, new Opt(name), ast_child_list_opt); :}
   | AST IDENTIFIER SEMICOLON 
-    {: return new ASTDecl(new Modifiers(new List()), new IdDecl(IDENTIFIER), new Opt(), new List()); :}
+    {: return new ASTDecl(new Modifiers(new List()), IDENTIFIER, new Opt(), new List()); :}
   | AST IDENTIFIER COLON name SEMICOLON 
-    {: return new ASTDecl(new Modifiers(new List()), new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
+    {: return new ASTDecl(new Modifiers(new List()), IDENTIFIER, new Opt(name), new List()); :}
   | AST IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(new Modifiers(new List()), new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
+    {: return new ASTDecl(new Modifiers(new List()), IDENTIFIER, new Opt(), ast_child_list_opt); :}
   | AST IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(new Modifiers(new List()), new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
+    {: return new ASTDecl(new Modifiers(new List()), IDENTIFIER, new Opt(name), ast_child_list_opt); :}
   ;
 
 List ast_child_list_opt =

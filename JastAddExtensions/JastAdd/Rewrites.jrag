@@ -71,11 +71,8 @@ aspect Rewrite {
       // }
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("static"))),
-        new TypeAccess(
-          new List(),
-          new IdUse("boolean")
-        ),
-        new IdDecl("during" + name()),
+        new PrimitiveTypeAccess("boolean"),
+        "during" + name(),
         new List(),
         new List(),
         new List(),
@@ -160,7 +157,7 @@ aspect Rewrite {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("boolean"),
-        new IdDecl("mayHaveRewrite"),
+        "mayHaveRewrite",
         new List(),
         new List(),
         new List(),
@@ -203,7 +200,7 @@ aspect Rewrite {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("int"),
-        new IdDecl("getNumChild"),
+        "getNumChild",
         new List(),
         new List(),
         new List(),
@@ -376,7 +373,7 @@ aspect Rewrite {
               ).qualifiesAccess(
                 new MethodAccess(
                   "getIndexOfChild",
-                  new List().add(new ThisAccess(new IdUse("this")))
+                  new List().add(new ThisAccess("this"))
                 )
               )
             )
@@ -391,7 +388,7 @@ aspect Rewrite {
     statements.add(
       new ReturnStmt(
         new SuperAccess(
-          new IdUse("super")
+          "super"
         ).qualifiesAccess(
           new MethodAccess(
             "rewriteTo",
@@ -407,7 +404,7 @@ aspect Rewrite {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("ASTNode"),
-        new IdDecl("rewriteTo"),
+        "rewriteTo",
         new List(),
         new List(),
         new List(),

@@ -4,7 +4,7 @@ aspect IntertypeFieldCodegeneration {
       new IntroducedFieldDeclaration(
         (Modifiers)getModifiers().fullCopy(),
         type().createQualifiedAccess(),
-        new IdDecl(name()),
+        name(),
         (Opt)getInitOpt().fullCopy(),
         hostType()
       )
@@ -13,7 +13,7 @@ aspect IntertypeFieldCodegeneration {
 
   
   // change name binding to search for methods in introducedType in IntroducedMethodDecl body
-  public IntroducedFieldDeclaration.IntroducedFieldDeclaration(Modifiers m, Access t, IdDecl d, Opt init, TypeDecl aspectType) {
+  public IntroducedFieldDeclaration.IntroducedFieldDeclaration(Modifiers m, Access t, String d, Opt init, TypeDecl aspectType) {
     this(m, t, d, init);
     this.aspectType = aspectType;
   }

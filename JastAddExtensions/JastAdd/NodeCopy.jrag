@@ -9,7 +9,7 @@ aspect ASTNodeCopy {
         new CastExpr(
           createQualifiedAccess(),
           new SuperAccess(
-            new IdUse("super")
+            "super"
           ).qualifiesAccess(
             new MethodAccess(
               "clone",
@@ -30,7 +30,7 @@ aspect ASTNodeCopy {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("Object"),
-        new IdDecl("clone"),
+        "clone",
         new List(), // ParameterList
         new List(), 
         new List().add(

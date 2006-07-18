@@ -22,20 +22,20 @@ BodyDecl intertype_member_declaration =
 
 BodyDecl syn_decl =
     modifiers_opt.mod SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
-    {: return new SynDecl(mod, false, type, hostType, new IdDecl(id), p, b); :}
+    {: return new SynDecl(mod, false, type, hostType, id, p, b); :}
   | modifiers_opt.mod SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
-    {: return new SynDecl(mod, true, type, hostType, new IdDecl(id), p, b); :}
+    {: return new SynDecl(mod, true, type, hostType, id, p, b); :}
   | modifiers_opt.mod SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(mod, false, type, hostType, new IdDecl(id), p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+    {: return new SynDecl(mod, false, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
   | modifiers_opt.mod SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(mod, true, type, hostType, new IdDecl(id), p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+    {: return new SynDecl(mod, true, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
   ;
 
 BodyDecl inh_decl =
     modifiers_opt.mod INH type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
-                                                         {: return new InhDecl(mod, false, type, hostType, new IdDecl(id), p); :}
+                                                         {: return new InhDecl(mod, false, type, hostType, id, p); :}
   | modifiers_opt.mod INH LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
-                                                         {: return new InhDecl(mod, true, type, hostType, new IdDecl(id), p); :}
+                                                         {: return new InhDecl(mod, true, type, hostType, id, p); :}
   ;
 
 BodyDecl syn_eq =

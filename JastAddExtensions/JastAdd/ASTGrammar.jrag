@@ -17,12 +17,11 @@ aspect ASTGrammar {
       CompilationUnit cu = (CompilationUnit)PathPart.parser().parse(scanner, JavaParser.AltGoals.ast_file);
       scanner.previousState();
       is.close();
-      List packageList = cu.getPackageDeclList();
       List importList = cu.getImportDeclList();
       for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
         TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
         CompilationUnit unit = new CompilationUnit(
-            (List)packageList.fullCopy(),
+            cu.getPackageDecl(),
             (List)importList.fullCopy(),
             new List().add(typeDecl)
             );
@@ -208,7 +207,7 @@ aspect ASTGrammar {
     bodyDeclList.add(
       new ConstructorDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-        new IdDecl(name()),
+        name(),
         list,
         new List(),
         new Opt(),
@@ -256,7 +255,7 @@ aspect ASTGrammar {
     bodyDeclList.add(
       new ConstructorDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-        new IdDecl(name()),
+        name(),
         new List().add(new ParameterDeclaration(new TypeAccess("int"), "kind")),
         new List(),
         new Opt(),
@@ -269,7 +268,7 @@ aspect ASTGrammar {
       bodyDeclList.add(
         new ConstructorDecl(
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-          new IdDecl(name()),
+          name(),
           new List(),
           new List(),
           new Opt(),
@@ -298,7 +297,7 @@ aspect ASTGrammar {
       statements.add(
           new ReturnStmt(
             new SuperAccess(
-              new IdUse("super")
+              "super"
             ).qualifiesAccess(
               new MethodAccess(
                 "getChild",
@@ -313,7 +312,7 @@ aspect ASTGrammar {
         new MethodDecl(
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
           new TypeAccess("ASTNode"),
-          new IdDecl("getChild"),
+          "getChild",
           new List().add(
             new ParameterDeclaration(
               new TypeAccess("int"),
@@ -363,7 +362,7 @@ aspect ASTGrammar {
     return new MethodDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
         returnType,
-        new IdDecl(name),
+        name,
         parameters,
         new List(),
         new List(),

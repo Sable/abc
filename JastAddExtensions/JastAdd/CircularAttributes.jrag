@@ -36,7 +36,7 @@ aspect CircularAttributes {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
-        new IdDecl(name()),
+        name(),
         copyParameterList(getParameterList()),
         new List(),
         new List(),
@@ -80,7 +80,7 @@ aspect CircularAttributes {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
-        new IdDecl(name()),
+        name(),
         copyParameterList(getParameterList()),
         new List(),
         new List(),
@@ -93,7 +93,7 @@ aspect CircularAttributes {
     List parameterList = new List();
     parameterList.add(
       new ThisAccess(
-        new IdUse("this")
+        "this"
       )
     );
     parameterList.add(new StringLiteral(name()));
@@ -209,7 +209,7 @@ aspect CircularAttributes {
     List paramList = new List();
     paramList.add(
       new ThisAccess(
-        new IdUse("this")
+        "this"
       )
     );
     paramList.add(new StringLiteral(name()));
@@ -366,7 +366,7 @@ aspect CircularAttributes {
     MethodDecl m = new MethodDecl(
       new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
       getBottomValue().type().createQualifiedAccess(),
-      new IdDecl(name() + "$bottom"),
+      name() + "$bottom",
       parameters,
       new List(),
       new List(),

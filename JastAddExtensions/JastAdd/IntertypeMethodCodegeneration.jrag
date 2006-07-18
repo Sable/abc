@@ -28,7 +28,7 @@ aspect IntertypeMethodCodegeneration {
     return new IntroducedMethodDecl(
       new Modifiers(modifierList),
       type().createQualifiedAccess(),
-      new IdDecl(name()),
+      name(),
       parameterList,
       new List(),
       new List(),
@@ -117,7 +117,7 @@ aspect IntertypeMethodCodegeneration {
     List args = new List();
     for(int i = 0; i < getNumParameter(); i++)
       args.add(getParameter(i).createAccess());
-    Expr e = new SuperAccess(new IdUse("super")).qualifiesAccess(new MethodAccess(name(), args));
+    Expr e = new SuperAccess("super").qualifiesAccess(new MethodAccess(name(), args));
     if(type().isVoid())
       statements.add(new ExprStmt(e));
     else
@@ -125,7 +125,7 @@ aspect IntertypeMethodCodegeneration {
     MethodDecl m = new MethodDecl(
       new Modifiers(new List().add(new Modifier("public"))),
       type().createQualifiedAccess(),
-      new IdDecl(name),
+      name,
       copyParameterList(getParameterList()),
       new List(),
       (List)getExceptionList().fullCopy(),
@@ -144,7 +144,7 @@ aspect IntertypeMethodCodegeneration {
     // make arguments from this and method parameters
     List args = new List();
     if(!isStatic())
-      args.add(new ThisAccess(new IdUse("this")));
+      args.add(new ThisAccess("this"));
     for(int i = 0; i < getNumParameter(); i++) {
       args.add(getParameter(i).createAccess());
     }
@@ -159,7 +159,7 @@ aspect IntertypeMethodCodegeneration {
     return new MethodDecl(
       (Modifiers)getModifiers().fullCopy(),
       type().createQualifiedAccess(),
-      new IdDecl(name()),
+      name(),
       copyParameterList(getParameterList()),
       new List(),
       new List(),
