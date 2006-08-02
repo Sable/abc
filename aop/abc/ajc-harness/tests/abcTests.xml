@@ -9530,6 +9530,12 @@
 	</compile>
 	<run class="NCWeakRefs2"/>
     </ajc-test>
+    <ajc-test num="1040" dir="abctests/tracematches"
+        title="Tracematches: Collectable weak bindings work correctly (Strings)">
+        <compile files="CollWeakRefs.java" options="-ext,abc.tm">
+	</compile>
+	<run class="CollWeakRefs"/>
+    </ajc-test>
 
 
 
