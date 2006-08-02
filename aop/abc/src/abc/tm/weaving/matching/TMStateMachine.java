@@ -650,10 +650,10 @@ public class TMStateMachine implements StateMachine {
 
             // index by collectable weak-references first, so that whole
             // subtrees of the index will be automatically thrown away
-            cur.indices.addAll(collectable);
-            cur.indices.addAll(primitive);
-            cur.indices.addAll(weak);
-            cur.indices.addAll(indices);
+            cur.indices.addAll(collectable); cur.nCollectable = collectable.size();
+            cur.indices.addAll(primitive);   cur.nPrimitive = primitive.size();
+            cur.indices.addAll(weak);        cur.nWeak = weak.size();
+            cur.indices.addAll(indices);     cur.nStrong = indices.size();
         }
     }
 

@@ -103,8 +103,10 @@ public class AbcExtension extends abc.eaj.AbcExtension
            if(abc.main.Debug.v().useCommonsCollections)
         	   Scene.v().addBasicClass("org.apache.commons.collections.map.ReferenceIdentityMap", SootClass.SIGNATURES);
            else {
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityMap", SootClass.SIGNATURES);
+        	   Scene.v().addBasicClass("java.util.NoSuchElementException", SootClass.SIGNATURES);
+        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IdentityHashMap", SootClass.SIGNATURES);
+        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityHashMap", SootClass.SIGNATURES);
+        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap", SootClass.SIGNATURES);
            }
 	   }
     
