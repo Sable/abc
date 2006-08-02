@@ -110,7 +110,7 @@ public class ClassGenHelper {
      */
     class IterationContext {
         public Local[] keys, maps, iterators;
-        public Stmt[] loopBegins, loopEnds, trapHandlers;
+        public Stmt[] loopBegins, loopEnds;
         public Local relevantSet;
         public int depth;
         
@@ -121,7 +121,6 @@ public class ClassGenHelper {
             
             loopBegins = new Stmt[depth];
             loopEnds = new Stmt[depth];
-            trapHandlers = new Stmt[depth];
             
             maps[0] = map;
             
@@ -914,31 +913,18 @@ public class ClassGenHelper {
                         "iterator", iteratorType);
                 context.loopBegins[i] = getNewLabel();
                 doAddLabel(context.loopBegins[i]);
-                if(abc.main.Debug.v().useCommonsCollections) {
-                	doJumpIfFalse(getMethodCallResult(context.iterators[i], "hasNext", 
-                			BooleanType.v()), context.loopEnds[i]);
-                	context.keys[i] = getMethodCallResult(context.iterators[i], "next", objectType);
-                } else {
-                	// If we're using our custom (and correct!) indexing data structure maps,
-                	// then rather than believing iterator.hasNext() we check the return value
-                	// of iterator.next() for non-nullness.
-                	
-                	// However, HashMaps still use the old hasNext() semantics, so we need to catch
-                	// NoSuchElementExceptions --- at least in the presence of primitive bindings.
-                	Stmt trapStart = getNewLabel();
-                	Stmt trapEnd = getNewLabel();
-                	
-                	context.trapHandlers[i] = getNewLabel();
-                	
-                	SootClass ex = Scene.v().getSootClass("java.util.NoSuchElementException");
-                	curBody.getTraps().add(Jimple.v().newTrap(ex, trapStart, trapEnd, context.trapHandlers[i]));
-                	
-                	doAddLabel(trapStart);
-                	context.keys[i] = getMethodCallResult(context.iterators[i], "next", objectType);
-                	doJumpIfNull(context.keys[i], context.loopEnds[i]);
-                	doAddLabel(trapEnd);
-                }
-                if(i + 1 < context.depth) {
+            	doJumpIfFalse(getMethodCallResult(context.iterators[i], "hasNext", 
+            			BooleanType.v()), context.loopEnds[i]);
+            	context.keys[i] = getMethodCallResult(context.iterators[i], "next", objectType);
+
+            	if(!Debug.v().useCommonsCollections) {
+	            	// If we're using our custom (and correct!) indexing data structure maps,
+	            	// then the result of hasNext() is unreliable -- the key/value pair could
+	            	// have expired in the meantime. Thus, we check the result for nullness.
+	            	doJumpIfNull(context.keys[i], context.loopEnds[i]);
+            	}
+
+            	if(i + 1 < context.depth) {
                     context.maps[i + 1] = getCastValue(
                             getMethodCallResult(context.maps[i], "get", singleObjectType, 
                             objectType, context.keys[i]), mapType);
@@ -1029,11 +1015,6 @@ public class ClassGenHelper {
         		}
         	}
         	
-        	if(!Debug.v().useCommonsCollections && context.trapHandlers[i] != null) {
-        		doJump(context.loopEnds[i]);
-        		doAddLabel(context.trapHandlers[i]);
-        		getCaughtExceptionLocal();
-        	}
             doAddLabel(context.loopEnds[i]);
         }
     }

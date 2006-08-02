@@ -23,7 +23,7 @@ package org.aspectbench.tm.runtime.internal;
  * Part of the Indexing Data Structure implementation. This is a HashMap-like
  * data structure that uses key identity as the basis for comparison. It isn't
  * quite conformant to the java.util.Map interface, since its hasNext() method
- * is (by design) unreliable. Instead, next() should be called and the return
+ * is (by design) unreliable. If it returns true, next() should be called and the return
  * value checked for non-nullness.
  * 
  * Only the methods of the Map interface that are required by the IDS are
@@ -140,8 +140,8 @@ public class IdentityHashMap implements Map {
      * An iterator over the key set of an IdentityHashMap. This class doesn't quite 
      * conform to the Iterator contract --- if keys can expire, it is impossible to
      * guarantee that after hasNext() terminates and before next() is called, the
-     * key won't expire. Thus, hasNext() here throws an exception, and next() returns
-     * non-null if there is a further key/value pair.
+     * key won't expire. Thus, if hasNext() here returns true, and next() returns
+     * non-null, then there is a further key/value pair.
      * 
      * Clever handling of keys expiring while the iteration is in progress ensures the
      * most sensible possible behaviour.
@@ -170,8 +170,7 @@ public class IdentityHashMap implements Map {
         }
         
         public boolean hasNext() {
-        	throw new RuntimeException("KeyIterator.hasNext() should not be used " + 
-        			"-- check the result of KeyIterator.next() for non-nullness instead.");
+        	return (next != null);
         }
 
 		public Object next() {
@@ -332,6 +331,7 @@ public class IdentityHashMap implements Map {
 	 */
 	public Object put(Object key, Object value) {
 		modCount++;
+		//System.out.print("+");
 		int hash = System.identityHashCode(key);
 		int index = hashIndexFromCode(hash);
 		HashEntry cur = data[index];
@@ -408,6 +408,7 @@ public class IdentityHashMap implements Map {
 	 * {@inheritDoc}
 	 */
 	public Object remove(Object key) {
+		//System.out.print("-");
 		int index = hashIndex(key);
 		HashEntry cur = data[index];
 		HashEntry prev = null;
@@ -439,6 +440,7 @@ public class IdentityHashMap implements Map {
 	 * but still catch "non-safe", i.e. user-initiated, removals.
 	 */
 	protected Object safeRemove(Object key) {
+		//System.out.print("=");
 		int index = hashIndex(key);
 		HashEntry cur = data[index];
 		HashEntry prev = null;

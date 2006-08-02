@@ -51,11 +51,11 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 	 * @author Pavel Avgustinov
 	 */
 	class WeakKeyHashEntry extends IdentityHashMap.HashEntry {
-		private MyWeakRef key;
+		private java.lang.ref.WeakReference key;
 		
 		public WeakKeyHashEntry(HashEntry next, Object key, int hashCode, Object value, ReferenceQueue q) {
 			super(next, hashCode, value);
-			this.key = new MyWeakRef(key, q);
+			this.key = new java.lang.ref.WeakReference(key, q);
 		}
 
 		protected Object getKey() {
