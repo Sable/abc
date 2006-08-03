@@ -41,8 +41,6 @@ import java.util.Set;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
 
-import org.aspectbench.tm.runtime.internal.IdentityHashMap.HashEntry;
-
 public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 	ReferenceQueue queue = new ReferenceQueue();
 
@@ -69,6 +67,10 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 			return key;
 		}
 		
+		protected int getKeyHash() {
+			return key.hashCode();
+		}
+
 	}
 	
 	class WeakKeySet extends IdentityHashMap.KeySet {
@@ -240,7 +242,14 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 		}
 		// Should never fall through here -- safeRemove only called on keys that are
 		// definitely in the mapping.
-		System.out.println("safeRemove failed on key " + key);
+		try { throw new RuntimeException("safeRemove failed"); } catch(Exception e) { e.printStackTrace(); }
+		for(int i = 0; i < data.length; i++) {
+			for(cur = data[i]; cur != null; cur = cur.next) {
+				if(((WeakKeyHashEntry)cur).getRawKey() == key) {
+					System.out.println("Attention -- found matching key at hash index " + i + ", rather than the expected " + index);
+				}
+			}
+		}
 		return null;
 	}
 

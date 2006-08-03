@@ -108,6 +108,10 @@ public class IdentityHashMap implements Map {
 		protected Object getKey() {
 			return key;
 		}
+		
+		protected int getKeyHash() {
+			return System.identityHashCode(key);
+		}
     }
     
     /**
@@ -271,6 +275,17 @@ public class IdentityHashMap implements Map {
     }
     
     /**
+     * Calculates the hash bucket this hashCode should go into, assuming the given
+     * number of buckets
+     * @param hashCode the pre-computed hashCode of the object
+     * @param capacity the target number of buckets
+     * @return an index into the buckets array
+     */
+    protected int hashIndexFromCode(int hashCode, int capacity) {
+    	return hashCode & (capacity - 1);
+    }
+    
+    /**
      * Calculates the hash bucket for this key.
      */
     protected int hashIndex(Object key) {
@@ -392,7 +407,7 @@ public class IdentityHashMap implements Map {
 					oldEntries[i] = null;
 					do {
 						next = cur.next;
-						index = hashIndex(cur.getKey(), n);
+						index = hashIndexFromCode(cur.getKeyHash(), n);
 						cur.next = newEntries[index];
 						newEntries[index] = cur;
 						cur = next;
