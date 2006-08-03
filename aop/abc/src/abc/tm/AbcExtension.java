@@ -20,23 +20,25 @@
 
 package abc.tm;
 
-import abc.aspectj.parse.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.weaver.*;
-import abc.weaving.weaver.ReweavingPass.ID;
+import java.util.Collection;
 
-import abc.main.Debug;
-import abc.main.options.OptionsParser;
-import abc.tm.weaving.aspectinfo.*;
-import abc.tm.weaving.weaver.*;
-import abc.tm.weaving.weaver.tmanalysis.TracematchAnalysis;
-
-import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
-
-import java.util.*;
-
-import soot.*;
+import polyglot.util.Position;
+import soot.Scene;
+import soot.SootClass;
+import abc.aspectj.parse.AbcLexer;
+import abc.aspectj.parse.LexerAction_c;
+import abc.tm.weaving.aspectinfo.TMAdviceDecl;
+import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import abc.tm.weaving.weaver.TMWeaver;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.CflowSetup;
+import abc.weaving.aspectinfo.DeclareMessage;
+import abc.weaving.aspectinfo.DeclareSoft;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.Weaver;
+import abc.weaving.weaver.ReweavingPass.ID;
 
 /*
  * @author Julian Tibble
@@ -271,14 +273,4 @@ public class AbcExtension extends abc.eaj.AbcExtension
 			   ("case not handled when comparing "+a+" and "+b);
 	   }
     
-    /** 
-     * {@inheritDoc}
-     */
-    protected void createReweavingPasses(List passes) {
-        super.createReweavingPasses(passes);
-        if(Debug.v().tmAnalysis) {
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS, new TracematchAnalysis() ) );
-            OptionsParser.v().set_tag_instructions(true);            
-        }
-    }
 }
