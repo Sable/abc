@@ -117,7 +117,7 @@ public class IdentityHashMap implements Map {
      * @author Pavel Avgustinov
      */
     class KeySet extends AbstractSet {
-    	protected final IdentityHashMap parent;
+    	private final IdentityHashMap parent;
     	
     	protected KeySet(IdentityHashMap parent) {
     		this.parent = parent;
@@ -150,7 +150,7 @@ public class IdentityHashMap implements Map {
      */
     class KeyIterator implements Iterator {
         /** The parent map */
-        protected final IdentityHashMap parent;
+        private final IdentityHashMap parent;
         /** The current index into the array of buckets */
         protected int hashIndex;
         /** The last returned entry */
@@ -431,37 +431,6 @@ public class IdentityHashMap implements Map {
 		return null;
 	}
 	
-	/**
-	 * Removes the key/value pair corresponding to the hidden key in a "safe" way.
-	 * 
-	 * What this means is that it doesn't update the modCount. It's intended for
-	 * this method to be called when automatically purging values from the map.
-	 * In this way, we allow removal of values while iterating over the keyset,
-	 * but still catch "non-safe", i.e. user-initiated, removals.
-	 */
-	protected Object safeRemove(Object key) {
-		//System.out.print("=");
-		int index = hashIndex(key);
-		HashEntry cur = data[index];
-		HashEntry prev = null;
-		while(cur != null) {
-			if(cur.getKey() == key) {
-				Object old = cur.value;
-				cur.live = false;
-				size--;
-				if(prev == null) {
-					data[index] = cur.next;
-				} else {
-					prev.next = cur.next;
-				}
-				return old;
-			}
-			prev = cur;
-			cur = cur.next;
-		}
-		return null;
-	}
-
 	public void putAll(Map arg0) {
 		notImplemented("putAll");
 	}
