@@ -29,6 +29,7 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.2.1 1154710255
 $abc now supports mutiple reweaving analyses. Those analyses are
 ;executed on the woven program and may change e.g. the residues
 ;in order to produce a different (e.g. more efficient) woven
@@ -39,6 +40,16 @@ $abc now supports mutiple reweaving analyses. Those analyses are
 ;They are scheduled via instances of ReweavingPass.
 ;Passes can also be annotated with a timeout so that abc stops them
 ;automatically when exceeding this timeframe.
+$There have been a number of fixes to the 'indexing' optimisation
+;for tracematches. In particular, it should now behave correctly even
+;for tracematches that include "non-collectable weak reference 
+;indices". Depending on the base program, there may also be
+;performance improvements (we have observed up to 10%).
+!abc has been upgraded to use a newer version of the Polyglot compiler
+;framework. We now use Polyglot 1.3.2, which should significantly
+;improve compilation of pure-java programs.
+
+%1.2.0 1145636677
 $The 'indexing' optimisation for tracematches now doesn't introduce a
 ;further dependency by default, but uses classes provided in the abc
 ;runtime. The old behaviour can be restored by passing abc the flag
