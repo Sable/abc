@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Jennifer Lhotak
  * Copyright (C) 2004 Ondrej Lhotak
  * Copyright (C) 2004 Laurie Hendren
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
