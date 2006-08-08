@@ -38,7 +38,6 @@ import abc.weaving.aspectinfo.DeclareMessage;
 import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.Weaver;
-import abc.weaving.weaver.ReweavingPass.ID;
 
 /*
  * @author Julian Tibble
@@ -46,8 +45,6 @@ import abc.weaving.weaver.ReweavingPass.ID;
  */
 public class AbcExtension extends abc.eaj.AbcExtension
 {
-
-    private static final ID PASS_TM_ANALYSIS = new ID("Tracematch analysis");
 
     protected void collectVersions(StringBuffer versions)
     {
