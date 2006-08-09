@@ -31,6 +31,7 @@ import java.util.Set;
 
 import polyglot.util.InternalCompilerError;
 import soot.Body;
+import soot.IntType;
 import soot.Local;
 import soot.Modifier;
 import soot.SootClass;
@@ -61,12 +62,12 @@ import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 import soot.util.Chain;
+import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.tagkit.InstructionInlineCountTag;
 import abc.weaving.tagkit.InstructionInlineTags;
 import abc.weaving.tagkit.InstructionKindTag;
@@ -94,7 +95,8 @@ public class AdviceInliner { //extends BodyTransformer {
 	    instance = abc.main.Main.v().getAbcExtension().makeAdviceInliner();
 	return instance;
     }
-	
+
+	private HashMap inlinedAroundMehtods = new HashMap();  //map record the around method which has been inlined in the advice class.
 	
 	private Set shadowMethods=new HashSet();
 	private Set additionalShadowMethods=new HashSet();
@@ -222,7 +224,6 @@ public class AdviceInliner { //extends BodyTransformer {
 	public static class CombinedInlineOptions implements InlineOptions {
 		public List inlineOptions=new ArrayList();
 		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
-			SootMethod method=expr.getMethod();
 			String name=expr.getMethodRef().name();
 			
 			for (Iterator it=inlineOptions.iterator(); it.hasNext();) {
@@ -488,85 +489,112 @@ public class AdviceInliner { //extends BodyTransformer {
             } else if (inliningMode==InlineOptions.INLINE_STATIC_METHOD) {
             	SootMethod m=expr.getMethod();
             	List inlineMethodArgTypes=new LinkedList();//(expr.getMethodRef().parameterTypes());
+            	
+            	String argtypes = "", argvalues="";
+            	int pi = 0, intTypeNum = 0;
+            	
             	for (Iterator it=expr.getArgs().iterator(); it.hasNext(); ) {
             		Value v=(Value)it.next();
             		Type t=v.getType();
-            		inlineMethodArgTypes.add(t);
+           			inlineMethodArgTypes.add(t);
+           			argtypes = argtypes + t.toString();
+
+            		if (t instanceof IntType && intTypeNum < 3){  // The fist three int type parameters must 
+            			                                  //be: shadowClassId, shadowId, bind info.
+            			argvalues = argvalues + v;
+            			intTypeNum++;                		
+            		}
+            		pi++;
+            		
             	}
             	SootClass targetClass=
             		expr.getMethodRef().declaringClass();
             	if (!m.isStatic())
             		inlineMethodArgTypes.add(0, targetClass.getType());
             	Type retType=expr.getMethodRef().returnType();
-            	/*Type retType;
-            	if (stmt instanceof AssignStmt) {
-            		AssignStmt as=(AssignStmt)stmt;
-            		retType=as.getLeftOp().getType();
-            	} else {
-            		retType=m.getReturnType();
-            	}*/
             	
-            	SootMethod method = new SootMethod("inline$" + 
-            			getUniqueID() + "$" +
-            			expr.getMethodRef().name(),            			
-        				inlineMethodArgTypes, retType, 
-        				Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL,
-						m.getExceptions()
-						);
+            	SootMethod method = null;
+            	InvokeExpr inv = null;
+            	Stmt invStmt = null;
+            	String sourceMethodName = body.getMethod().getSignature();
+            	//String methodkey = argvalues+m.getSignature()+sourceMethodName+targetClass.getName();         
+				//String methodkey = argvalues+argtypes+Util.getMethodFingerprint(m);
+				String methodkey = argvalues+argtypes+m.getSignature()+sourceMethodName+targetClass.getName();
             	
-            	Body inlineBody = Jimple.v().newBody(method);
-        		method.setActiveBody(inlineBody);
-        		
-        		targetClass.addMethod(method); 
-        		
-        		additionalShadowMethods.add(method); 
-        		allStaticInlineMethods.add(method);
-        		
-        		Chain statements=inlineBody.getUnits().getNonPatchingChain();
-        		LocalGeneratorEx lg=new LocalGeneratorEx(inlineBody);
-        		
-        		List locals=new LinkedList();
-        		//int i=m.isStatic() ? 0 : -1;
-        		int i=0;
-        		for (Iterator it=inlineMethodArgTypes.iterator(); it.hasNext();i++) {
-        			Type type=(Type)it.next();
-        			Local l=lg.generateLocal(type); 
-        			statements.add(Jimple.v().newIdentityStmt(
-        				l,
-					//	i==-1 ?
-					//				(Value)Jimple.v().newThisRef((RefType)type) :
-									(Value)Jimple.v().newParameterRef(type, i)	
-        				));
-					locals.add(l);
-        		}
-        		InvokeExpr inv;
-        		SootMethodRef ref=expr.getMethodRef();
-        		if (expr instanceof InstanceInvokeExpr) {
-        			Local base = (Local)locals.get(0);
-        			locals.remove(0);
-        			if (expr instanceof InterfaceInvokeExpr)
-        				inv= Jimple.v().newInterfaceInvokeExpr(base, ref, locals);
-        			else if (expr instanceof SpecialInvokeExpr) {
-        				inv=Jimple.v().newSpecialInvokeExpr(base, ref, locals);
-        			} else if (expr instanceof VirtualInvokeExpr)
-        				inv= Jimple.v().newVirtualInvokeExpr(base, ref, locals);
-        			else
-        				throw new InternalCompilerError("");
-        		} else {
-        			inv= Jimple.v().newStaticInvokeExpr(ref, locals);
-        		}
-        		Stmt invStmt;
-        		if (method.getReturnType().equals(VoidType.v())) {
-        			invStmt=Jimple.v().newInvokeStmt(inv);
-        			statements.add(invStmt);
-        			statements.add(Jimple.v().newReturnVoidStmt());
-        		} else {
-        			Local retl=lg.generateLocal(method.getReturnType());
-        			invStmt=Jimple.v().newAssignStmt(retl, inv);
-        			statements.add(invStmt);
-        			statements.add(Jimple.v().newReturnStmt(retl));
-        		}
-        		
+            	if (inlinedAroundMehtods.containsKey(methodkey) && Debug.v().isEnableDupCheck)
+            	{//already inlined, 
+            		method = (SootMethod)inlinedAroundMehtods.get(methodkey);            		
+            	}
+            	else
+            	{//first time inline the around method. we need to keep the map to the new created inline around method in the advice class.
+            	
+	            	method = new SootMethod("inline$" + 
+	            			getUniqueID() + "$" +
+	            			expr.getMethodRef().name(),            			
+	        				inlineMethodArgTypes, retType, 
+	        				Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL,
+							m.getExceptions()
+							);
+	            	
+	            	Body inlineBody = Jimple.v().newBody(method);
+	        		method.setActiveBody(inlineBody);
+	        		
+	        		targetClass.addMethod(method); 
+		        		
+	        		additionalShadowMethods.add(method); 
+	        		allStaticInlineMethods.add(method);
+	        		
+	        		Chain statements=inlineBody.getUnits().getNonPatchingChain();
+	        		LocalGeneratorEx lg=new LocalGeneratorEx(inlineBody);
+	        		
+	        		List locals=new LinkedList();
+	        		//int i=m.isStatic() ? 0 : -1;
+	        		int i=0;
+	        		for (Iterator it=inlineMethodArgTypes.iterator(); it.hasNext();i++) {
+	        			Type type=(Type)it.next();
+	        			Local l=lg.generateLocal(type); 
+	        			statements.add(Jimple.v().newIdentityStmt(
+	        				l,
+						//	i==-1 ?
+						//				(Value)Jimple.v().newThisRef((RefType)type) :
+										(Value)Jimple.v().newParameterRef(type, i)	
+	        				));
+						locals.add(l);
+	        		}
+	        		//InvokeExpr inv;
+	        		SootMethodRef ref=expr.getMethodRef();
+	        		if (expr instanceof InstanceInvokeExpr) {
+	        			Local base = (Local)locals.get(0);
+	        			locals.remove(0);
+	        			if (expr instanceof InterfaceInvokeExpr)
+	        				inv= Jimple.v().newInterfaceInvokeExpr(base, ref, locals);
+	        			else if (expr instanceof SpecialInvokeExpr) {
+	        				inv=Jimple.v().newSpecialInvokeExpr(base, ref, locals);
+	        			} else if (expr instanceof VirtualInvokeExpr)
+	        				inv= Jimple.v().newVirtualInvokeExpr(base, ref, locals);
+	        			else
+	        				throw new InternalCompilerError("");
+	        		} else {
+	        			inv= Jimple.v().newStaticInvokeExpr(ref, locals);
+	        		}
+	        		//Stmt invStmt;
+	        		if (method.getReturnType().equals(VoidType.v())) {
+	        			invStmt=Jimple.v().newInvokeStmt(inv);
+	        			statements.add(invStmt);
+	        			statements.add(Jimple.v().newReturnVoidStmt());
+	        		} else {
+	        			Local retl=lg.generateLocal(method.getReturnType());
+	        			invStmt=Jimple.v().newAssignStmt(retl, inv);
+	        			statements.add(invStmt);
+	        			statements.add(Jimple.v().newReturnStmt(retl));
+	        		}
+	        		if (Debug.v().isEnableDupCheck)
+	        			inlinedAroundMehtods.put(methodkey, method);
+	        		inlineSite(inv.getMethod(), invStmt, method);
+	        		bDidInline=true;
+
+            	}//end duplicate check.
+            	
         		List newArgs=new LinkedList(expr.getArgs());
         		if (expr instanceof InstanceInvokeExpr)
         			newArgs.add(0, ((InstanceInvokeExpr)expr).getBase());
@@ -575,10 +603,7 @@ public class AdviceInliner { //extends BodyTransformer {
         				Jimple.v().newStaticInvokeExpr(method.makeRef(),
         					newArgs
         				));
-				
-        		inlineSite(inv.getMethod(), invStmt, method);
-        		bDidInline=true;
-        		
+								
         		debug("Succeeded(2).", depth);
         		//result.addAll(inlineeInlinees);
         		//result.add(inlineBody);
@@ -732,22 +757,7 @@ public class AdviceInliner { //extends BodyTransformer {
 		}
 		return false;
 	}
-	private static boolean rangeContainsSwitch(Chain units, Stmt before, Stmt after) {
-		Iterator it;
-		if (before==null)
-			it=units.iterator();
-		else 
-			it=units.iterator(before);
-		
-		while(it.hasNext()) {
-			Stmt s=(Stmt)it.next();
-			if (s==after)
-				return false;
-			if (s instanceof TableSwitchStmt || s instanceof LookupSwitchStmt)
-				return true;
-		}
-		return false;
-	}
+
 	protected class IfMethodInlineOptions implements InlineOptions {
 		public boolean considerForInlining(String name) {
 		    return name.startsWith("if$");
@@ -801,7 +811,6 @@ public class AdviceInliner { //extends BodyTransformer {
 			return Util.isAroundAdviceMethodName(name);
 		}
 		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
-			SootMethod method=expr.getMethod();
 			if (!Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
 				return InlineOptions.DONT_INLINE;
 			
@@ -1144,8 +1153,7 @@ public class AdviceInliner { //extends BodyTransformer {
 			
 			String fingerPrint=Util.getMethodFingerprint(m);
 			fingerPrints.put(m, fingerPrint);
-			//System.out.println("FINGERPRINT : " + m.getName());
-			//System.out.println(fingerPrint);
+
 			if (methods.containsKey(fingerPrint))
 				duplicates.add(m);			
 			else 
@@ -1155,8 +1163,7 @@ public class AdviceInliner { //extends BodyTransformer {
 		if (duplicates.size()==0)
 			return;
 		debug("Found duplicate(s): " + duplicates);
-		
-	
+					
 		for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
             final AbcClass cl = (AbcClass) clIt.next();
@@ -1202,5 +1209,5 @@ public class AdviceInliner { //extends BodyTransformer {
 				throw new InternalCompilerError("");
 		}
 				
-	}
+	}	
 }

@@ -52,6 +52,7 @@ import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.tagkit.Tag;
 import soot.util.Chain;
+import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AroundShadowInfoTag;
@@ -60,9 +61,6 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.RedirectedExceptionSpecTag;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.aspectinfo.AdviceSpec;
-import abc.weaving.aspectinfo.AroundAdvice;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ExecutionAdviceApplication;
 import abc.weaving.matching.ShadowMatch;
@@ -80,6 +78,44 @@ import abc.weaving.weaver.around.AroundWeaver.ShadowInlineInfo;
 
 public class AdviceApplicationInfo {
 	private final ProceedMethod proceedMethod;
+	
+	protected static HashMap shadownMethodsMap = new HashMap(); 
+	protected static HashMap shadownCallsMap = new HashMap(); 
+	
+	class ShadowMethodIDObj {
+		//used to store the extracted shadown method inforamtion.(used for move shadow into shadow$ method )
+		public SootMethod shadowMethod;
+		public int shadowID; //in proceed method, this represent the switch target.
+		public HashMap localMap;
+		public ObjectBox result;
+		public Tag redirectException;
+		public boolean shadowMethodExists;
+		public ShadowMethodIDObj(SootMethod m, int sid, HashMap lm, ObjectBox rt, Tag re){
+			this.shadowMethod = m;
+			this.shadowID = sid;
+			this.localMap = lm;
+			this.redirectException = re;
+			this.result = rt;
+		}
+	}
+	
+	class ShadowMethodCallObj {
+		//used to store the extracted shadown method inforamtion.(used for move shadow into proceed method )
+		//localMap, first, switchTarget ,redirectExceptions
+		public HashMap localMap;
+		public Stmt first;
+		public Stmt switchTarget;
+		public Tag redirectException;
+		public Local returnedLocal;
+		public ShadowMethodCallObj(HashMap lm, Stmt first, Stmt switchTarget, Tag re, Local returnedLocal){
+			this.first = first;
+			this.switchTarget = switchTarget;
+			this.localMap = lm;
+			this.redirectException = re;
+			this.returnedLocal = returnedLocal;
+		}
+	}
+	
 
 	public int shadowSize;
 
@@ -112,11 +148,9 @@ public class AdviceApplicationInfo {
 
 		AdviceDecl adviceDecl = (AdviceDecl) adviceAppl.advice;
 
-		AdviceSpec adviceSpec = adviceDecl.getAdviceSpec();
-		AroundAdvice aroundSpec = (AroundAdvice) adviceSpec;
-		SootClass theAspect = adviceDecl.getAspect().getInstanceClass()
+		adviceDecl.getAspect().getInstanceClass()
 				.getSootClass();
-		SootMethod method = adviceDecl.getImpl().getSootMethod();
+		adviceDecl.getImpl().getSootMethod();
 
 		//this.bHasProceed=adviceDecl.getSootProceeds().size()>0;
 
@@ -180,9 +214,7 @@ public class AdviceApplicationInfo {
 		}
 
 	}
-	private boolean isShadowBig() {
-		return this.shadowSize>2;
-	}
+
 	private void extractShadowIntoStaticMethod(Local returnedLocal, List context) {
 
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@");
@@ -206,7 +238,6 @@ public class AdviceApplicationInfo {
 		
 		Stmt first;
 		HashMap localMap;
-		Stmt switchTarget;
 		{ // copy shadow into proceed method
 			ObjectBox result = new ObjectBox();			
 			
@@ -309,6 +340,18 @@ public class AdviceApplicationInfo {
 
 		validateShadow(shadowMethodBody, begin, end);
 
+		ShadowMethodIDObj exitsShadowMethodObj = null; //added by james		
+		//move to here by james.
+		{ // determine shadow ID
+			if (this.proceedMethod.bUseClosureObject) {
+				shadowID = -1; // bogus value, since not used in this case.
+			} else if (this.proceedMethod.bStaticProceedMethod) {
+				shadowID = this.proceedMethod.nextShadowID++;
+			} else {
+				shadowID = this.proceedMethod.adviceMethod.getUniqueShadowID();
+			}
+		}	
+		
 		/*
 		 * When inlining, it can be useful to have the shadow in a static method.
 		 * Otherwise, the shadow may be inlined twice, once for the failed-case
@@ -320,7 +363,14 @@ public class AdviceApplicationInfo {
 			!OptionsParser.v().around_force_inlining()) { /* && // but not forced 
 				isShadowBig()){ // and the shadow is big, extract it into a static method.
 				*/
-			extractShadowIntoStaticMethod(returnedLocal, context);
+			if (Debug.v().isEnableDupCheck){
+				exitsShadowMethodObj = extractShadowIntoStaticMethodNew(returnedLocal, context, shadowID); //if return != null, means shadow method exists.
+				if (exitsShadowMethodObj.shadowMethodExists)
+					shadowID = exitsShadowMethodObj.shadowID;
+			}else{
+				extractShadowIntoStaticMethod(returnedLocal, context);
+			}
+			
 			this.shadowSize = getShadowSize();
 		}
 		
@@ -367,7 +417,9 @@ public class AdviceApplicationInfo {
 		Stmt first;
 		HashMap localMap;
 		Stmt switchTarget;
-		{ // copy shadow into proceed method
+		Tag redirectExceptions = null;
+		if (! (Debug.v().isEnableDupCheck && exitsShadowMethodObj.shadowMethodExists))  		
+		{ // copy shadow into proceed method when DupCheck disabled or not exists duplcated one.
 			ObjectBox result = new ObjectBox();
 			if (this.proceedMethod.getLookupStmt() == null)
 				throw new InternalAroundError();
@@ -384,24 +436,34 @@ public class AdviceApplicationInfo {
 
 			this.proceedMethod.proceedMethodStatements.insertBefore(
 					switchTarget, first);
+
+			AroundWeaver.updateSavedReferencesToStatements(localMap);
+	
+			// Construct a tag to place on the invokes that are put in place of the removed
+			// statements
+	
+			List newstmts = new LinkedList();
+			Chain units = shadowMethodBody.getUnits();
+			Stmt s = (Stmt) units.getSuccOf(begin);
+			while (s != end) {
+				newstmts.add(localMap.get(s));
+				s = (Stmt) units.getSuccOf(s);
+			}
+			//IntConstant.v()
+			redirectExceptions = new RedirectedExceptionSpecTag(
+					this.proceedMethod.proceedMethodBody, newstmts);
+			if (Debug.v().isEnableDupCheck)
+				shadownCallsMap.put(exitsShadowMethodObj, new ShadowMethodCallObj(localMap, first, switchTarget, redirectExceptions, returnedLocal));
+
+		}else{//localMap, first, switchTarget ,redirectExceptions
+			ShadowMethodCallObj smco = (ShadowMethodCallObj)shadownCallsMap.get(exitsShadowMethodObj);
+			localMap = smco.localMap;
+			first = smco.first;
+			switchTarget = smco.switchTarget;
+			redirectExceptions = smco.redirectException;
+			//returnedLocal = smco.returnedLocal;
 		}
-
-		AroundWeaver.updateSavedReferencesToStatements(localMap);
-
-		// Construct a tag to place on the invokes that are put in place of the removed
-		// statements
-
-		List newstmts = new LinkedList();
-		Chain units = shadowMethodBody.getUnits();
-		Stmt s = (Stmt) units.getSuccOf(begin);
-		while (s != end) {
-			newstmts.add(localMap.get(s));
-			s = (Stmt) units.getSuccOf(s);
-		}
-		//IntConstant.v()
-		Tag redirectExceptions = new RedirectedExceptionSpecTag(
-				this.proceedMethod.proceedMethodBody, newstmts);
-
+		
 		//}
 		{ // remove old shadow
 			// remove any traps from the shadow before removing the shadow
@@ -418,15 +480,15 @@ public class AdviceApplicationInfo {
 
 		//if (bHasProceed) {
 
-		{ // determine shadow ID
-			if (this.proceedMethod.bUseClosureObject) {
-				shadowID = -1; // bogus value, since not used in this case.
-			} else if (this.proceedMethod.bStaticProceedMethod) {
-				shadowID = this.proceedMethod.nextShadowID++;
-			} else {
-				shadowID = this.proceedMethod.adviceMethod.getUniqueShadowID();
-			}
-		}
+//		{ // determine shadow ID
+//			if (this.proceedMethod.bUseClosureObject) {
+//				shadowID = -1; // bogus value, since not used in this case.
+//			} else if (this.proceedMethod.bStaticProceedMethod) {
+//				shadowID = this.proceedMethod.nextShadowID++;
+//			} else {
+//				shadowID = this.proceedMethod.adviceMethod.getUniqueShadowID();
+//			}
+//		}
 
 		boolean bNeedsUnBoxing=
 			returnedLocal!=null &&
@@ -474,7 +536,7 @@ public class AdviceApplicationInfo {
 
 		//}
 
-		Stmt endResidue = weaveDynamicResidue(returnedLocal,
+		weaveDynamicResidue(returnedLocal,
 				skipDynamicActuals, shadowID, wc, failPoint, redirectExceptions);
 
 		shadowMethodStatements.insertAfter(Jimple.v().newAssignStmt(
@@ -483,11 +545,13 @@ public class AdviceApplicationInfo {
 		//List assignments=getAssignmentsToAdviceFormals(begin, endResidue, staticBindings);
 		//createBindingMask(assignments, staticBindings, wc, begin, endResidue);
 
-		this.proceedMethod.assignCorrectParametersToLocals(context, argIndex,
+		if (!(Debug.v().isEnableDupCheck && exitsShadowMethodObj.shadowMethodExists)) { 
+			this.proceedMethod.assignCorrectParametersToLocals(context, argIndex,
 				first, localMap, bindings);
 
-		if (!this.proceedMethod.bUseClosureObject)
-			this.proceedMethod.modifyLookupStatement(switchTarget, shadowID);
+			if (!this.proceedMethod.bUseClosureObject)
+				this.proceedMethod.modifyLookupStatement(switchTarget, shadowID);
+		}
 
 		Local lThis = null;
 		if (!bStaticShadowMethod)
@@ -1043,5 +1107,135 @@ public class AdviceApplicationInfo {
 
 	public final boolean bStaticShadowMethod;
 	//public final boolean bUseStaticProceedMethod;
-	//public final AdviceMethod.ProceedMethod proceedMethod;	
+	//public final AdviceMethod.ProceedMethod proceedMethod;
+	
+	
+	private ShadowMethodIDObj extractShadowIntoStaticMethodNew(Local returnedLocal, List context, int shadowId) {
+
+		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@");
+		//AroundWeaver.debug(Util.printMethod(shadowMethod));
+		boolean shadowMethodExists = false;
+		
+		SootMethod method = new SootMethod("shadow$" + aroundWeaver.getUniqueID(),
+				Util.getTypeListFromLocals(context), returnedLocal==null ? VoidType.v() : returnedLocal.getType(),
+				Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL);
+		
+		Body shadowBody = Jimple.v().newBody(method);
+		method.setActiveBody(shadowBody);
+		
+		shadowClass.addMethod(method);
+		
+		Chain statements=shadowBody.getUnits().getNonPatchingChain();
+		
+		Stmt nopStmt=Jimple.v().newNopStmt();
+		statements.add(nopStmt);
+		
+		Stmt first;
+		HashMap localMap;
+
+		ObjectBox result = null;
+		{ // copy shadow into proceed method
+			result = new ObjectBox();			
+			
+			localMap = Util.copyStmtSequence(shadowMethodBody, begin, end,
+					shadowBody,
+					nopStmt, returnedLocal, result);
+			first = (Stmt) result.object;
+			if (first == null)
+				throw new InternalAroundError();
+		}
+
+		//compare two shadow method is identical or not
+		ShadowMethodIDObj exitsShadowMethodObj = null;
+		String methodFinger = adviceAppl.advice.hashCode() + Util.getMethodFingerprint(method);
+
+		if (shadownMethodsMap.containsKey(methodFinger) ){  
+			exitsShadowMethodObj = (ShadowMethodIDObj)shadownMethodsMap.get(methodFinger);
+			exitsShadowMethodObj.shadowMethodExists = true;
+			shadowMethodExists = true;
+
+			shadowClass.removeMethod(method);
+			method = exitsShadowMethodObj.shadowMethod;
+			localMap = exitsShadowMethodObj.localMap;
+			first = (Stmt) exitsShadowMethodObj.result.object;	
+		}
+			
+		
+		AroundWeaver.updateSavedReferencesToStatements(localMap);
+
+		//}
+		{ // remove old shadow
+			// remove any traps from the shadow before removing the shadow
+			Util.removeTraps(shadowMethodBody, begin, end);
+			// remove statements except original assignment
+			Util.removeStatements(shadowMethodBody, begin, end, null);
+		}
+		
+		Tag redirectExceptions;
+		if (!shadowMethodExists){
+		// add parameters to static$nnn
+			int index=0;
+			for (Iterator it=context.iterator(); it.hasNext();index++) {
+				Local l=(Local)it.next();
+				Local l2=(Local)localMap.get(l);			
+				IdentityStmt newIDStmt=Jimple.v().newIdentityStmt(l2, 
+						Jimple.v().newParameterRef(l2.getType(), index));
+				statements.insertBefore(newIDStmt, nopStmt);
+				//shadowBody.getLocals().add(l2);
+			}
+			
+			{
+				List newstmts = new LinkedList();		
+				for(Iterator it=statements.iterator();it.hasNext();) {
+					newstmts.add(it.next());				
+				}
+				redirectExceptions = new RedirectedExceptionSpecTag(
+					shadowBody, newstmts);
+			}
+		}
+		else{
+			redirectExceptions = exitsShadowMethodObj.redirectException;
+		}
+		
+		if (!shadowMethodExists){
+			exitsShadowMethodObj = new ShadowMethodIDObj(method, shadowId, localMap,result, redirectExceptions );
+			exitsShadowMethodObj.shadowMethodExists = false;
+			shadownMethodsMap.put(methodFinger, exitsShadowMethodObj);
+		}		
+		
+		InvokeExpr expr=Jimple.v().newStaticInvokeExpr(method.makeRef(), context);
+		Stmt invStmt;
+		// insert method call to static$nnn
+		if (returnedLocal==null) {
+			invStmt=Jimple.v().newInvokeStmt(expr);
+		} else {
+			invStmt=Jimple.v().newAssignStmt(returnedLocal, expr);
+		}
+		invStmt.addTag(redirectExceptions);
+		if (!shadowMethodExists){
+			method.addTag(new DisableExceptionCheckTag());
+		}
+		//shadowMethod.addException(shadow)
+		
+		shadowMethodStatements.insertAfter(invStmt, begin);
+		
+		
+		 
+		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@2");
+		//AroundWeaver.debug(Util.printMethod(shadowMethod));
+		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@3");
+		//AroundWeaver.debug(Util.printMethod(method));
+		
+		shadowBody.validate();
+		return exitsShadowMethodObj;
+	}
+	
+	/**
+	 * Clears the cache. (primarily used for running the test harness) 
+	 */
+	public static void resetCache() {
+		shadownMethodsMap.clear();
+		shadownCallsMap.clear();
+	}
+	
 }
