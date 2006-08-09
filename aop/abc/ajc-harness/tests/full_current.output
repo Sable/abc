@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@7e33b4
+creating: A@15f9634
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2280,7 +2280,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@13c67e1, [Ljava.lang.Object;@c81fe2, TwoAnonymous$3@13c67e1
+calling run: TwoAnonymous$3@1cff28a, [Ljava.lang.Object;@13c67e1, TwoAnonymous$3@1cff28a
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2397,32 +2397,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@495e7.foo calls Outer$Inner@10d77e1.mi
+Outer@1ac58f6.foo calls Outer$Inner@495e7.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@10d77e1.mi calls java.io.PrintStream@1397d52.println
+Outer$Inner@495e7.mi calls java.io.PrintStream@10d77e1.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@495e7.foo calls Outer$InnerRandom@8853a3.nextHook
+Outer@1ac58f6.foo calls Outer$InnerRandom@152d2b8.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@8853a3.nextHook calls Outer$InnerRandom@8853a3.next
+Outer$InnerRandom@152d2b8.nextHook calls Outer$InnerRandom@152d2b8.next
 Outer.foo() calls Random.nextInt(..)
-Outer@495e7.foo calls X.nextInt
+Outer@1ac58f6.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@78d0e4.foo calls Outer$Inner@1da6372.mi
+Outer@1c59bd1.foo calls Outer$Inner@78d0e4.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1da6372.mi calls java.io.PrintStream@b6ff74.println
+Outer$Inner@78d0e4.mi calls java.io.PrintStream@1da6372.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@78d0e4.foo calls Outer$InnerRandom@1519dc7.nextHook
+Outer@1c59bd1.foo calls Outer$InnerRandom@3d213e.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1519dc7.nextHook calls Outer$InnerRandom@1519dc7.next
+Outer$InnerRandom@3d213e.nextHook calls Outer$InnerRandom@3d213e.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@78d0e4.foo calls X.nextInt
+Outer@1c59bd1.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
