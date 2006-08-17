@@ -92,10 +92,10 @@ if (scalar @ARGV > 0) {
          $subject .= " (";
          $bracketopen = 1;
       } else {
-         $subject .= ",";
+         $subject .= ", ";
       }
       my $sign = $failnum < 0 ? '' : '+';
-      $subject .= "$sign$failnum failures";
+      $subject .= "$sign${failnum}f";
    }
    my $passnum = &dodiffnum(\%newpassed, \%oldpassed);
    if ($passnum != 0) {
@@ -106,7 +106,7 @@ if (scalar @ARGV > 0) {
          $subject .= ",";
       }
       my $sign = $passnum < 0 ? '' : '+';
-      $subject .= "$sign$passnum passes";
+      $subject .= "$sign${passnum}p";
    }
    my $skipnum = &dodiffnum(\%newskipped, \%oldskipped);
    if ($skipnum != 0) {
@@ -114,13 +114,15 @@ if (scalar @ARGV > 0) {
          $subject .= " (";
          $bracketopen = 1;
       } else {
-         $subject .= ",";
+         $subject .= ", ";
       }
       my $sign = $skipnum < 0 ? '' : '+';
-      $subject .= "$sign$skipnum skipped";
+      $subject .= "$sign${skipnum}s";
    }
    if ($bracketopen) {
       $subject .= ")";
+   } else {
+      $subject .= " (no changes)";
    }
    close DEVNULL;
 
