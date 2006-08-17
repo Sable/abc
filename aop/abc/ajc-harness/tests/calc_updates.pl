@@ -42,6 +42,7 @@ sub dodiffnum {
     print "no change";
   }
   print ")\n";
+  return $diff;
 }
 
 sub dodiff {
@@ -73,6 +74,38 @@ sub dodiff {
 &load('passed.xml',\%newpassed);
 &load('skipped_current.xml',\%oldskipped);
 &load('skipped.xml',\%newskipped);
+
+# Yes, I know this bit is a horrible hack. Please
+# rewrite the whole lot!
+if (scalar @ARGV > 0) {
+   my ($address) = $ARGV[0];
+   my $subject = "test run results";
+   if (scalar @ARGV > 1) {
+      $subject = $ARGV[1];
+   }
+   open DEVNULL, "> /dev/null";
+   select(DEVNULL);
+   my $failnum = &dodiffnum(\%newfailed, \%oldfailed);
+   if ($failnum != 0) {
+      my $sign = $failnum < 0 ? '' : '+';
+      $subject .= " ($sign$failnum failures)";
+   }
+   my $passnum = &dodiffnum(\%newpassed, \%oldpassed);
+   if ($passnum != 0) {
+      my $sign = $passnum < 0 ? '' : '+';
+      $subject .= " ($sign$passnum passes)";
+   }
+   my $skipnum = &dodiffnum(\%newskipped, \%oldskipped);
+   if ($skipnum != 0) {
+      my $sign = $skipnum < 0 ? '' : '+';
+      $subject .= " ($sign$skipnum skipped)";
+   }
+   close DEVNULL;
+
+   open MAIL, qq{| mail -s "$subject" $address};
+
+   select(MAIL);
+}
 
 print "Pass: ";
 &dodiffnum(\%newpassed,\%oldpassed);
