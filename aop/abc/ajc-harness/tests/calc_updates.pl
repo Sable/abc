@@ -85,20 +85,42 @@ if (scalar @ARGV > 0) {
    }
    open DEVNULL, "> /dev/null";
    select(DEVNULL);
+   my $bracketopen = 0;
    my $failnum = &dodiffnum(\%newfailed, \%oldfailed);
    if ($failnum != 0) {
+      if (!$bracketopen) {
+         $subject .= " (";
+         $bracketopen = 1;
+      } else {
+         $subject .= ",";
+      }
       my $sign = $failnum < 0 ? '' : '+';
-      $subject .= " ($sign$failnum failures)";
+      $subject .= "$sign$failnum failures";
    }
    my $passnum = &dodiffnum(\%newpassed, \%oldpassed);
    if ($passnum != 0) {
+      if (!$bracketopen) {
+         $subject .= " (";
+         $bracketopen = 1;
+      } else {
+         $subject .= ",";
+      }
       my $sign = $passnum < 0 ? '' : '+';
-      $subject .= " ($sign$passnum passes)";
+      $subject .= "$sign$passnum passes";
    }
    my $skipnum = &dodiffnum(\%newskipped, \%oldskipped);
    if ($skipnum != 0) {
+      if (!$bracketopen) {
+         $subject .= " (";
+         $bracketopen = 1;
+      } else {
+         $subject .= ",";
+      }
       my $sign = $skipnum < 0 ? '' : '+';
-      $subject .= " ($sign$skipnum skipped)";
+      $subject .= "$sign$skipnum skipped";
+   }
+   if ($bracketopen) {
+      $subject .= ")";
    }
    close DEVNULL;
 
