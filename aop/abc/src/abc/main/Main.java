@@ -96,7 +96,6 @@ import abc.weaving.weaver.InterprocConstantPropagator;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.UnusedMethodsRemover;
-import abc.weaving.weaver.around.AdviceApplicationInfo;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -165,7 +164,8 @@ public class Main {
         abc.main.options.OptionsParser.reset();
         abc.weaving.weaver.WeavingState.reset();
         abc.weaving.weaver.CflowCodeGenUtils.reset();
-		abc.weaving.weaver.around.Util.reset();
+        abc.weaving.weaver.around.Util.reset();
+        abc.weaving.weaver.around.AdviceApplicationInfo.reset();
 		
         v=null;
     }
@@ -536,17 +536,7 @@ public class Main {
             // The compile method itself aborts if there is an error
 
             if (!getAbcExtension().getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
-                
-            	try {
-            		
-            		weave(); // Timers marked inside weave()
-            		
-            	} finally {
-            		if(Debug.v().isEnableDupCheck) {
-	            		//clear up the cache after we are done 
-	            		AdviceApplicationInfo.resetCache();
-            		}
-            	}
+                weave(); // Timers marked inside weave()
 
                 abortIfErrors();
 

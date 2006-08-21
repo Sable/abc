@@ -74,6 +74,7 @@ public class AroundWeaver {
 
 	public static void reset() {
 		instance = new AroundWeaver();
+		AdviceApplicationInfo.reset();
 	}
 
 	public static void debug(String message) {

@@ -117,7 +117,10 @@ public class Debug {
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
     public boolean aroundWeaver=false;
-	public boolean isEnableDupCheck = true; //if true, duplicate methods in around weaving/inlining are removed    
+
+    // Removes duplicate methods caused by around weaving/inlining
+    public boolean removeDupAroundMethods = true;
+
     public boolean restructure=false; // restructuring utilities
     public boolean abcTimer=false;
     public boolean polyglotTimer=false;

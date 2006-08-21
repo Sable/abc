@@ -79,11 +79,11 @@ import abc.weaving.weaver.around.AroundWeaver.ShadowInlineInfo;
 public class AdviceApplicationInfo {
 	private final ProceedMethod proceedMethod;
 	
-	protected static HashMap shadownMethodsMap = new HashMap(); 
-	protected static HashMap shadownCallsMap = new HashMap(); 
+	protected static HashMap shadowMethodsMap = new HashMap(); 
+	protected static HashMap shadowCallsMap = new HashMap(); 
 	
 	class ShadowMethodIDObj {
-		//used to store the extracted shadown method inforamtion.(used for move shadow into shadow$ method )
+		//used to store the extracted shadow method information.(used for move shadow into shadow$ method )
 		public SootMethod shadowMethod;
 		public int shadowID; //in proceed method, this represent the switch target.
 		public HashMap localMap;
@@ -100,7 +100,7 @@ public class AdviceApplicationInfo {
 	}
 	
 	class ShadowMethodCallObj {
-		//used to store the extracted shadown method inforamtion.(used for move shadow into proceed method )
+		//used to store the extracted shadow method information.(used for move shadow into proceed method )
 		//localMap, first, switchTarget ,redirectExceptions
 		public HashMap localMap;
 		public Stmt first;
@@ -363,7 +363,7 @@ public class AdviceApplicationInfo {
 			!OptionsParser.v().around_force_inlining()) { /* && // but not forced 
 				isShadowBig()){ // and the shadow is big, extract it into a static method.
 				*/
-			if (Debug.v().isEnableDupCheck){
+			if (Debug.v().removeDupAroundMethods){
 				exitsShadowMethodObj = extractShadowIntoStaticMethodNew(returnedLocal, context, shadowID); //if return != null, means shadow method exists.
 				if (exitsShadowMethodObj.shadowMethodExists)
 					shadowID = exitsShadowMethodObj.shadowID;
@@ -418,7 +418,7 @@ public class AdviceApplicationInfo {
 		HashMap localMap;
 		Stmt switchTarget;
 		Tag redirectExceptions = null;
-		if (! (Debug.v().isEnableDupCheck && exitsShadowMethodObj.shadowMethodExists))  		
+		if (! (Debug.v().removeDupAroundMethods && exitsShadowMethodObj.shadowMethodExists))  		
 		{ // copy shadow into proceed method when DupCheck disabled or not exists duplcated one.
 			ObjectBox result = new ObjectBox();
 			if (this.proceedMethod.getLookupStmt() == null)
@@ -452,11 +452,11 @@ public class AdviceApplicationInfo {
 			//IntConstant.v()
 			redirectExceptions = new RedirectedExceptionSpecTag(
 					this.proceedMethod.proceedMethodBody, newstmts);
-			if (Debug.v().isEnableDupCheck)
-				shadownCallsMap.put(exitsShadowMethodObj, new ShadowMethodCallObj(localMap, first, switchTarget, redirectExceptions, returnedLocal));
+			if (Debug.v().removeDupAroundMethods)
+				shadowCallsMap.put(exitsShadowMethodObj, new ShadowMethodCallObj(localMap, first, switchTarget, redirectExceptions, returnedLocal));
 
 		}else{//localMap, first, switchTarget ,redirectExceptions
-			ShadowMethodCallObj smco = (ShadowMethodCallObj)shadownCallsMap.get(exitsShadowMethodObj);
+			ShadowMethodCallObj smco = (ShadowMethodCallObj)shadowCallsMap.get(exitsShadowMethodObj);
 			localMap = smco.localMap;
 			first = smco.first;
 			switchTarget = smco.switchTarget;
@@ -545,7 +545,7 @@ public class AdviceApplicationInfo {
 		//List assignments=getAssignmentsToAdviceFormals(begin, endResidue, staticBindings);
 		//createBindingMask(assignments, staticBindings, wc, begin, endResidue);
 
-		if (!(Debug.v().isEnableDupCheck && exitsShadowMethodObj.shadowMethodExists)) { 
+		if (!(Debug.v().removeDupAroundMethods && exitsShadowMethodObj.shadowMethodExists)) { 
 			this.proceedMethod.assignCorrectParametersToLocals(context, argIndex,
 				first, localMap, bindings);
 
@@ -1149,8 +1149,8 @@ public class AdviceApplicationInfo {
 		ShadowMethodIDObj exitsShadowMethodObj = null;
 		String methodFinger = adviceAppl.advice.hashCode() + Util.getMethodFingerprint(method);
 
-		if (shadownMethodsMap.containsKey(methodFinger) ){  
-			exitsShadowMethodObj = (ShadowMethodIDObj)shadownMethodsMap.get(methodFinger);
+		if (shadowMethodsMap.containsKey(methodFinger) ){  
+			exitsShadowMethodObj = (ShadowMethodIDObj)shadowMethodsMap.get(methodFinger);
 			exitsShadowMethodObj.shadowMethodExists = true;
 			shadowMethodExists = true;
 
@@ -1200,7 +1200,7 @@ public class AdviceApplicationInfo {
 		if (!shadowMethodExists){
 			exitsShadowMethodObj = new ShadowMethodIDObj(method, shadowId, localMap,result, redirectExceptions );
 			exitsShadowMethodObj.shadowMethodExists = false;
-			shadownMethodsMap.put(methodFinger, exitsShadowMethodObj);
+			shadowMethodsMap.put(methodFinger, exitsShadowMethodObj);
 		}		
 		
 		InvokeExpr expr=Jimple.v().newStaticInvokeExpr(method.makeRef(), context);
@@ -1233,9 +1233,9 @@ public class AdviceApplicationInfo {
 	/**
 	 * Clears the cache. (primarily used for running the test harness) 
 	 */
-	public static void resetCache() {
-		shadownMethodsMap.clear();
-		shadownCallsMap.clear();
+	public static void reset() {
+		shadowMethodsMap.clear();
+		shadowCallsMap.clear();
 	}
 	
 }

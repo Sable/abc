@@ -96,7 +96,7 @@ public class AdviceInliner { //extends BodyTransformer {
 	return instance;
     }
 
-	private HashMap inlinedAroundMehtods = new HashMap();  //map record the around method which has been inlined in the advice class.
+	private HashMap inlinedAroundMethods = new HashMap();  //map record the around method which has been inlined in the advice class.
 	
 	private Set shadowMethods=new HashSet();
 	private Set additionalShadowMethods=new HashSet();
@@ -521,9 +521,9 @@ public class AdviceInliner { //extends BodyTransformer {
 				//String methodkey = argvalues+argtypes+Util.getMethodFingerprint(m);
 				String methodkey = argvalues+argtypes+m.getSignature()+sourceMethodName+targetClass.getName();
             	
-            	if (inlinedAroundMehtods.containsKey(methodkey) && Debug.v().isEnableDupCheck)
+            	if (inlinedAroundMethods.containsKey(methodkey) && Debug.v().removeDupAroundMethods)
             	{//already inlined, 
-            		method = (SootMethod)inlinedAroundMehtods.get(methodkey);            		
+            		method = (SootMethod)inlinedAroundMethods.get(methodkey);            		
             	}
             	else
             	{//first time inline the around method. we need to keep the map to the new created inline around method in the advice class.
@@ -588,8 +588,8 @@ public class AdviceInliner { //extends BodyTransformer {
 	        			statements.add(invStmt);
 	        			statements.add(Jimple.v().newReturnStmt(retl));
 	        		}
-	        		if (Debug.v().isEnableDupCheck)
-	        			inlinedAroundMehtods.put(methodkey, method);
+	        		if (Debug.v().removeDupAroundMethods)
+	        			inlinedAroundMethods.put(methodkey, method);
 	        		inlineSite(inv.getMethod(), invStmt, method);
 	        		bDidInline=true;
 
