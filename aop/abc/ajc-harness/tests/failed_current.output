@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$21$around$1601(AroundAll.java:199)
+	at A.inline$23$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -127,13 +127,13 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:671)
+	at abc.main.Main.run(Main.java:661)
 	at abc.testing.TestCase.runTest(TestCase.java:285)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:767)
-	at abc.main.Main.loadSourceRoots(Main.java:784)
+	at abc.main.Main.findSourcesInDir(Main.java:757)
+	at abc.main.Main.loadSourceRoots(Main.java:774)
 	at abc.main.Main.run(Main.java:529)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -183,7 +183,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:671)
+	at abc.main.Main.run(Main.java:661)
 	at abc.testing.TestCase.runTest(TestCase.java:285)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
@@ -193,7 +193,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:335)
-	at abc.main.Main.compile(Main.java:931)
+	at abc.main.Main.compile(Main.java:921)
 	at abc.main.Main.run(Main.java:535)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
