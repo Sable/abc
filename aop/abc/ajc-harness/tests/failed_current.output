@@ -1,3 +1,11 @@
+Running test 53: new/handle multiple nested inner classes
+Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java 
+Compilation produced an unexpected number of errors: 1, should be 0
+Actual errors found: 
+Semantic Error at InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
+FAIL: Test 53: "new/handle multiple nested inner classes" failed.
+
+
 Running test 115: new/Not binding constructor when using more than one compilation
 Commandline: abc -d new -warn-unused-advice:off new/OuterAbstract_PR408.java 
 Commandline: abc -cp new:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new -warn-unused-advice:off new/ExtendsOuterAbstract_PR408.java 
@@ -42,12 +50,12 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$27$around$1601(AroundAll.java:199)
+	at A.inline$30$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
+	at java.lang.reflect.Method.invoke(Method.java:585)
 	at abc.testing.TestCase.runTest(TestCase.java:392)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
@@ -61,7 +69,7 @@ java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
+	at java.lang.reflect.Method.invoke(Method.java:585)
 	at abc.testing.TestCase.runTest(TestCase.java:392)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
@@ -89,7 +97,7 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
+	at java.lang.reflect.Method.invoke(Method.java:585)
 	at abc.testing.TestCase.runTest(TestCase.java:392)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
@@ -172,7 +180,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
+	at java.lang.reflect.Method.invoke(Method.java:585)
 	at abc.testing.TestCase.runTest(TestCase.java:392)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
