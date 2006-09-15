@@ -169,4 +169,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	return "method execution";
     }
 
+    public String toString() {
+    	return "execution( " + container + " )";
+    }
 }
