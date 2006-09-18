@@ -10164,5 +10164,13 @@
         <run class="ContainsTest"/>
     </ajc-test>       
 
+    <ajc-test num="1216" dir="abctests/eaj/arrayget"
+              title="Test of arrayget and arrayset">
+         <compile files="ArrayGetSet.java" options="-ext,abc.eaj" />
+         <run class="ArrayGetSet" />
+    </ajc-test>
+ 
+
+
 
 </suite>
