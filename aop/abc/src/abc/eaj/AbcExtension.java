@@ -31,9 +31,9 @@ import soot.tagkit.Host;
 
 import java.util.*;
 
-/*
+/**
  * @author Julian Tibble
- *
+ * @author Pavel Avgustinov
  */
 public class AbcExtension extends abc.main.AbcExtension
 {
@@ -58,6 +58,8 @@ public class AbcExtension extends abc.main.AbcExtension
 
         shadowTypes.add(CastShadowMatch.shadowType());
         shadowTypes.add(ThrowShadowMatch.shadowType());
+        shadowTypes.add(ArrayGetShadowMatch.shadowType());
+        shadowTypes.add(ArraySetShadowMatch.shadowType());
 
         return shadowTypes;
     }
@@ -121,5 +123,9 @@ public class AbcExtension extends abc.main.AbcExtension
         	//keyword for the "contains" pointcut extension
         	lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CONTAINS)));
         }
+        
+        // Array set/get pointcut keywords
+        lexer.addPointcutKeyword("arrayget", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYGET)));
+        lexer.addPointcutKeyword("arrayset", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYSET)));
     }
 }

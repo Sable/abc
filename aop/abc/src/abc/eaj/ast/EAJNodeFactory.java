@@ -29,6 +29,7 @@ import java.util.*;
 /**
  * NodeFactory for Extended AspectJ extension.
  * @author Julian Tibble
+ * @author Pavel Avgustinov
  */
 public interface EAJNodeFactory extends AJNodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
@@ -49,4 +50,7 @@ public interface EAJNodeFactory extends AJNodeFactory {
 
     public PCLet PCLet(Position pos, Local var, Expr expr);
     public PCContains PCContains(Position pos, Pointcut param);
+    
+    public PCArrayGet PCArrayGet(Position pos);
+    public PCArraySet PCArraySet(Position pos);
 }

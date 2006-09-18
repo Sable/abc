@@ -50,4 +50,16 @@ public class EajFactory extends Factory
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
     }
+    
+    public ArrayGetSignature makeArrayGetSig(String stringRep) {
+    	ArrayGetSignatureImpl ret = new ArrayGetSignatureImpl(stringRep);
+    	ret.setLookupClassLoader(lookupClassLoader);
+    	return ret;
+    }
+
+    public ArraySetSignature makeArraySetSig(String stringRep) {
+    	ArraySetSignatureImpl ret = new ArraySetSignatureImpl(stringRep);
+    	ret.setLookupClassLoader(lookupClassLoader);
+    	return ret;
+    }
 }

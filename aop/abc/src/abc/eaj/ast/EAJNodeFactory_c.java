@@ -124,4 +124,18 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
         n = (PCContains)n.del(((EAJDelFactory)delFactory()).delPCContains());
         return n;
     }
+    
+    public PCArrayGet PCArrayGet(Position pos) {
+    	PCArrayGet n = new PCArrayGet_c(pos);
+    	n = (PCArrayGet)n.ext(((EAJExtFactory)extFactory()).extPCArrayGet());
+    	n = (PCArrayGet)n.del(((EAJDelFactory)delFactory()).delPCArrayGet());
+    	return n;
+    }
+
+    public PCArraySet PCArraySet(Position pos) {
+    	PCArraySet n = new PCArraySet_c(pos);
+    	n = (PCArraySet)n.ext(((EAJExtFactory)extFactory()).extPCArraySet());
+    	n = (PCArraySet)n.del(((EAJDelFactory)delFactory()).delPCArraySet());
+    	return n;
+    }
 }

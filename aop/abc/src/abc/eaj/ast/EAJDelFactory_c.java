@@ -24,6 +24,7 @@ import polyglot.ast.JL;
 
 /**
  * @author Eric Bodden
+ * @author Pavel Avgustinov
  */
 public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFactory {
 
@@ -198,5 +199,13 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
 
     protected JL postDelPCThrow(JL del) {
         return postDelPointcut(del);
-    } 
+    }
+    
+    public JL delPCArrayGet() {
+    	return delPointcutImpl();
+    }
+    
+    public JL delPCArraySet() {
+    	return delPointcutImpl();
+    }
 }

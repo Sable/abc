@@ -48,6 +48,8 @@ terminal Token PC_CFLOWDEPTH;
 terminal Token PC_CFLOWBELOWDEPTH;
 terminal Token PC_LET;
 terminal Token PC_CONTAINS;
+terminal Token PC_ARRAYGET;
+terminal Token PC_ARRAYSET;
 
 // ------- new non-terminals -----------------------
 
@@ -106,6 +108,18 @@ extend basic_pointcut_expr ::=
     	{:
     		Grm.parserTrace("CONTAINS pointcut");
     		RESULT = parser.nf.PCContains(parser.pos(x,y), pc);
+    	:}
+    |
+    	PC_ARRAYGET:x LPAREN RPAREN:y
+    	{:
+    		Grm.parserTrace("ARRAYGET pointcut");
+    		RESULT = parser.nf.PCArrayGet(parser.pos(x, y));
+    	:}
+    |
+    	PC_ARRAYSET:x LPAREN RPAREN:y
+    	{:
+    		Grm.parserTrace("ARRAYSET pointcut");
+    		RESULT = parser.nf.PCArraySet(parser.pos(x, y));
     	:}
     ;
 

@@ -23,6 +23,7 @@ import polyglot.ast.Ext;
 
 /**
  * @author Eric Bodden
+ * @author Pavel Avgustinov
  */
 public interface EAJExtFactory {
 
@@ -70,5 +71,9 @@ public interface EAJExtFactory {
      * @return extension for contains pointcuts
      */
     public Ext extPCContains();
+    
+    public Ext extPCArrayGet();
+    
+    public Ext extPCArraySet();
     
 }

@@ -23,6 +23,7 @@ import polyglot.ast.JL;
 
 /**
  * @author Eric Bodden
+ * @author Pavel Avgustinov
  */
 public interface EAJDelFactory {
 
@@ -70,5 +71,9 @@ public interface EAJDelFactory {
      * @return delegates for contains pointcuts
      */
     public JL delPCContains();
+    
+    public JL delPCArrayGet();
+    
+    public JL delPCArraySet();
 
 }

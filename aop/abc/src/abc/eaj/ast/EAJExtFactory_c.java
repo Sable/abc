@@ -25,6 +25,7 @@ import abc.aspectj.ast.AJAbstractExtFactory_c;
 /**
  * Extension factory for the EAJ extension.
  * @author Eric Bodden
+ * @author Pavel Avgustinov
  */
 public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFactory {
 
@@ -199,6 +200,14 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
 
     protected Ext postExtPCContains(Ext e) {
         return postExtPointcut(e);
+    }
+    
+    public Ext extPCArrayGet() {
+    	return extPointcut();
+    }
+    
+    public Ext extPCArraySet() {
+    	return extPointcut();
     }
     
 }
