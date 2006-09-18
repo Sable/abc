@@ -1,0 +1,24 @@
+aspect ConstantPoolNames {
+
+  syn lazy String TypeDecl.typeDescriptor() {
+    throw new Error("Can not compute typeDescriptor for " + getClass().getName());
+  }
+  eq ClassDecl.typeDescriptor() = "L" + constantPoolName() + ";";
+  eq InterfaceDecl.typeDescriptor() = "L" + constantPoolName() + ";";
+  eq BooleanType.typeDescriptor() = "Z";
+  eq    ByteType.typeDescriptor() = "B";
+  eq   ShortType.typeDescriptor() = "S";
+  eq     IntType.typeDescriptor() = "I";
+  eq    LongType.typeDescriptor() = "J";
+  eq    CharType.typeDescriptor() = "C";
+  eq   FloatType.typeDescriptor() = "F";
+  eq  DoubleType.typeDescriptor() = "D";
+  eq    VoidType.typeDescriptor() = "V";
+  eq   ArrayDecl.typeDescriptor() { 
+    StringBuffer dim = new StringBuffer();
+    for(int i = 0; i < dimension(); i++)
+      dim.append("[");
+    return dim.toString() + elementType().typeDescriptor(); 
+  }
+
+}

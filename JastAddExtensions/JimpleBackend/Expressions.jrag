@@ -1,0 +1,982 @@
+aspect Expressions {
+  public soot.Value Expr.eval(Body b) {
+    throw new Error("Operation eval not supported for " + getClass().getName());
+  }
+
+  public soot.Value ParExpr.eval(Body b) { return getExpr().eval(b); }
+
+  public soot.Value IntegerLiteral.eval(Body b) {
+    return IntType.emitConstant(constant().intValue());
+  }
+  public soot.Value CharacterLiteral.eval(Body b) {
+    return IntType.emitConstant(constant().intValue());
+  }
+  public soot.Value LongLiteral.eval(Body b) {
+    return soot.jimple.LongConstant.v(constant().longValue());
+  }
+  public soot.Value FloatingPointLiteral.eval(Body b) {
+    return soot.jimple.FloatConstant.v(constant().floatValue());
+  }
+  public soot.Value DoubleLiteral.eval(Body b) {
+    return soot.jimple.DoubleConstant.v(constant().doubleValue());
+  }
+  public soot.Value StringLiteral.eval(Body b) {
+    return soot.jimple.StringConstant.v(getLITERAL());
+  }
+  public soot.Value NullLiteral.eval(Body b) {
+    return soot.jimple.NullConstant.v();
+  }
+  public soot.Value BooleanLiteral.eval(Body b) {
+    return BooleanType.emitConstant(constant().booleanValue());
+  }
+
+  public static soot.Value IntType.emitConstant(int i) {
+    return IntConstant.v(i);
+  }
+  public static soot.Value BooleanType.emitConstant(boolean b) {
+    return soot.jimple.IntConstant.v(b ? 1 : 0);
+  }
+
+  // simple assign expression
+  public soot.Value AssignSimpleExpr.eval(Body b) {
+    Value lvalue = getDest().eval(b);
+    Value rvalue = asRValue(b,
+      getSource().type().emitCastTo(b, // Assign conversion
+        getSource().eval(b),
+        getDest().type()
+      )
+    );
+    return getDest().emitStore(b, lvalue, asImmediate(b, rvalue));
+  }
+
+  // compound assign expression
+  public soot.Value AssignExpr.eval(Body b) {
+    TypeDecl dest = getDest().type();
+    TypeDecl source = getSource().type();
+    TypeDecl type;
+    if(dest.isNumericType() && source.isNumericType())
+      type = dest.binaryNumericPromotion(source);
+    else 
+      type = dest;
+    Value lvalue = getDest().eval(b);
+    Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
+    Value value = dest.emitCastTo(b, v, type);
+    Value rvalue = source.emitCastTo(b, getSource().eval(b), type);
+    Value result = asLocal(b, type.emitCastTo(b,
+      createAssignOp(b, value, rvalue),
+      dest
+    ));
+    getDest().emitStore(b, lvalue, result);
+    return result;
+  }
+
+  // string addition assign expression
+  public soot.Value AssignPlusExpr.eval(Body b) {
+    TypeDecl dest = getDest().type();
+    TypeDecl source = getSource().type();
+    if(dest.isString()) {
+      
+      Value lvalue = getDest().eval(b);
+
+      Value v = asImmediate(b, lvalue);
+
+      // new StringBuffer(left)
+      Local local = b.newTemp(Jimple.v().newNewExpr(
+        lookupType("java.lang", "StringBuffer").sootRef()));
+      b.add(Jimple.v().newInvokeStmt(
+        Jimple.v().newSpecialInvokeExpr(local, 
+          Scene.v().getMethod("<java.lang.StringBuffer: void <init>(java.lang.String)>").makeRef(),
+          v
+        )));
+
+      // append right
+      Local rightResult = b.newTemp(
+        Jimple.v().newVirtualInvokeExpr(local,
+          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.StringBuffer append(" + source.stringPromotion() + ")>").makeRef(),
+          asImmediate(b, getSource().eval(b))
+        ));
+
+      // toString
+      Local result = b.newTemp(
+        Jimple.v().newVirtualInvokeExpr(rightResult,
+          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef()
+        ));
+  
+      getDest().emitStore(b, lvalue, result);
+      return result;
+    }
+    else {
+      return super.eval(b);
+    }
+  }
+
+  // create the operation for a compound assign expression
+  public soot.Value AssignExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    throw new Error("Operation createAssignOp is not implemented for " + getClass().getName());
+  }
+  public soot.Value AssignMulExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return asImmediate(b, Jimple.v().newMulExpr(asImmediate(b, fst), asImmediate(b, snd)));
+  }
+  public soot.Value AssignDivExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newDivExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignModExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newRemExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignPlusExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newAddExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignMinusExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newSubExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignLShiftExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newShlExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignRShiftExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newShrExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignURShiftExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newUshrExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignAndExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newAndExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignXorExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newXorExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+  public soot.Value AssignOrExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
+    return Jimple.v().newOrExpr(asImmediate(b, fst), asImmediate(b, snd));
+  }
+
+  public soot.Value AbstractDot.eval(Body b) {
+    return lastAccess().eval(b);
+  }
+
+  public soot.Value VarAccess.eval(Body b) {
+    Variable v = decl();
+    if(v instanceof VariableDeclaration) {
+      VariableDeclaration decl = (VariableDeclaration)v;
+      if(decl.hostType() == hostType())
+        return decl.local;
+      else
+        return emitLoadLocalInNestedClass(b, decl);
+    }
+    else if(v instanceof ParameterDeclaration) {
+      ParameterDeclaration decl = (ParameterDeclaration)v;
+      if(decl.hostType() == hostType())
+        return decl.local;
+      else
+        return emitLoadLocalInNestedClass(b, decl);
+    }
+    else if(v instanceof FieldDeclaration) {
+      FieldDeclaration f = (FieldDeclaration)v;
+      if(f.hostType().isArrayDecl() && f.name().equals("length")) {
+        return Jimple.v().newLengthExpr(asImmediate(b, createLoadQualifier(b)));
+      }
+      if(f.isStatic()) {
+        if(f.isPrivate() && !hostType().hasField(v.name()))
+          return f.emitInvokeFieldAccessor(b, null, fieldQualifierType());
+        else
+          return Jimple.v().newStaticFieldRef(f.sootRef());
+      }
+      else {
+        if(f.isPrivate() && !hostType().hasField(v.name())) {
+          soot.Local base = base(b);
+          return f.emitInvokeFieldAccessor(b, base, fieldQualifierType());
+        }
+        else {
+          soot.Local base = createLoadQualifier(b);
+          return Jimple.v().newInstanceFieldRef(base, f.sootRef());
+        }
+      }
+    }
+    else
+      return super.eval(b);
+  }
+  syn lazy soot.Local VarAccess.base(Body b) = asLocal(b, createLoadQualifier(b));
+
+  public soot.Value AbstractDot.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+    return lastAccess().emitStore(b, lvalue, rvalue);
+  }
+  public soot.Value Expr.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+    b.add(
+      Jimple.v().newAssignStmt(
+        lvalue,
+        asLocal(b, rvalue)
+      )
+    );
+    return rvalue;
+  }
+  public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+    Variable v = decl();
+    if(v instanceof FieldDeclaration) {
+      FieldDeclaration f = (FieldDeclaration)v;
+      if(f.isPrivate() && !hostType().hasField(v.name())) {
+        if(f.isStatic())
+          return f.emitInvokeFieldAccessorWrite(b, null, rvalue, fieldQualifierType());
+        else
+          return f.emitInvokeFieldAccessorWrite(b, base(b), rvalue, fieldQualifierType());
+      }
+    }
+    return super.emitStore(b, lvalue, rvalue);
+  }
+
+  inh BodyDecl Access.enclosingBodyDecl();
+  inh boolean Access.inExplicitConstructorInvocation();
+  public soot.Value Access.emitLoadLocalInNestedClass(Body b, Variable v) {
+    if(inExplicitConstructorInvocation() && enclosingBodyDecl() instanceof ConstructorDecl) {
+      ConstructorDecl c = (ConstructorDecl)enclosingBodyDecl();
+      return asLocal(b, Jimple.v().newParameterRef(
+        v.type().getSootType(), 
+        c.localIndexOfEnclosingVariable(v)
+      ));
+    }
+    else {
+      return Jimple.v().newInstanceFieldRef(
+        b.emitThis(),
+        hostType().getSootField("val$" + v.name(), v.type()).makeRef()
+      );
+    }
+  }
+  public soot.Local VarAccess.createLoadQualifier(Body b) {
+    Variable v = decl();
+    if(v instanceof FieldDeclaration) {
+      FieldDeclaration f = (FieldDeclaration)v;
+      if(hasPrevExpr()) {
+        // load explicit qualifier
+        Local qualifier = asLocal(b, prevExpr().eval(b));
+        // pop qualifier stack element for class variables
+        // this qualifier must be computed to ensure side effects
+        return qualifier;
+      }
+      else if(f.isInstanceVariable()) {
+        return emitThis(b, fieldQualifierType());
+      }
+    }
+    throw new Error("createLoadQualifier not supported for " + v.getClass().getName());
+  }
+
+  // no lazy since needed in phases when tree has been modified
+  public boolean TypeDecl.hasField(String name) {
+    if(!fields(name).isEmpty())
+      return true;
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof FieldDeclaration) {
+        FieldDeclaration decl = (FieldDeclaration)getBodyDecl(i);
+        if(decl.name().equals(name))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  private TypeDecl VarAccess.fieldQualifierType() {
+    if(hasPrevExpr())
+      return prevExpr().type();
+    TypeDecl typeDecl = hostType();
+    while(!typeDecl.hasField(name()))
+      typeDecl = typeDecl.enclosingType();
+    return typeDecl;
+  }
+
+  private ArrayList MethodAccess.buildArgList(Body b) {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumArg(); i++)
+      list.add(
+        asImmediate(b,
+          getArg(i).type().emitCastTo(b, // MethodInvocationConversion
+            getArg(i).eval(b),
+            decl().getParameter(i).type()
+          )
+        )
+      );
+    return list;
+  }
+
+  public soot.Value MethodAccess.eval(Body b) {
+    if(!decl().isStatic() && isQualified() && prevExpr().isSuperAccess()) {
+      Local left = asLocal(b, createLoadQualifier(b));
+      ArrayList list = buildArgList(b);
+      if(!hostType().instanceOf(prevExpr().type())) {
+        TypeDecl typeDecl = superAccessorTarget();
+        MethodDecl m = typeDecl.createSuperAccessor(decl());
+        if(decl().hostType().isInterfaceDecl())
+          return Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
+        else
+          return Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
+      }
+      else
+        return Jimple.v().newSpecialInvokeExpr(left, decl().sootRef(), list);
+        // TODO: checkme decl().emitInvokeSpecialMethod(gen, methodQualifierType());
+    }
+    else {
+      if(!decl().isStatic()) {
+        Local left = asLocal(b, createLoadQualifier(b));
+        ArrayList list = buildArgList(b);
+        if(decl().hostType().isInterfaceDecl())
+          return Jimple.v().newInterfaceInvokeExpr(left, decl().sootRef(), list);
+        else
+          return Jimple.v().newVirtualInvokeExpr(left, decl().sootRef(), list);
+      }
+      else if(decl().isStatic()) {
+        ArrayList list = buildArgList(b);
+        return Jimple.v().newStaticInvokeExpr(decl().sootRef(), list);
+      }
+      else
+        return super.eval(b);
+    }
+  }
+
+  public TypeDecl MethodAccess.superAccessorTarget() {
+    TypeDecl targetDecl = prevExpr().type();
+    TypeDecl enclosing = hostType();
+    do {
+      enclosing = enclosing.enclosingType();
+    } while (!enclosing.instanceOf(targetDecl));
+    return enclosing;
+  }
+
+  private HashMap TypeDecl.createSuperAccessorMap = null;
+  public MethodDecl TypeDecl.createSuperAccessor(MethodDecl decl) {
+    if(createSuperAccessorMap == null) createSuperAccessorMap = new HashMap();
+    if(createSuperAccessorMap.containsKey(decl))
+      return (MethodDecl)createSuperAccessorMap.get(decl);
+      
+    List parameters = new List();
+    parameters.add(new ParameterDeclaration(new Modifiers(new List()), createQualifiedAccess(), "self"));
+    List args = new List();
+    for(int i = 0; i < decl.getNumParameter(); i++) {
+      parameters.add(decl.getParameter(i).fullCopy());
+      args.add(new VarAccess(decl.getParameter(i).name()));
+    }
+    MethodDecl m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("static")).add(new Modifier("synthetic"))),
+      decl.type().createQualifiedAccess(),
+      "access$" + accessorCounter++,
+      parameters,
+      new List(),
+      new List(),
+      new Opt(
+        new Block(
+          new List().add(
+            new ReturnStmt(
+              new Opt(
+                new SuperAccess("super").qualifiesAccess(new MethodAccess(args, decl.name()))
+              )
+            )
+          )
+        )
+      )
+    );
+    m = addMemberMethod(m);
+    createSuperAccessorMap.put(decl, m);
+    return m;
+  }
+
+  private soot.Value MethodAccess.createLoadQualifier(Body b) {
+    MethodDecl m = decl();
+    if(hasPrevExpr()) {
+      // load explicit qualifier
+      soot.Value v = prevExpr().eval(b);
+      if(v ==  null)
+        throw new Error("Problems evaluating " + prevExpr().getClass().getName());
+      Local qualifier = asLocal(b, v /*prevExpr().eval(b)*/);
+      // pop qualifier stack element for class variables
+      // this qualifier must be computed to ensure side effects
+      return qualifier;
+    }
+    else if(!m.isStatic()) {
+      // load implicit this qualifier
+      return emitThis(b, methodQualifierType());
+    }
+    throw new Error("createLoadQualifier not supported for " + m.getClass().getName());
+  }
+
+  private TypeDecl MethodAccess.methodQualifierType() {
+    if(hasPrevExpr())
+      return prevExpr().type();
+    TypeDecl typeDecl = hostType();
+    while(!typeDecl.hasMethod(name()))
+      typeDecl = typeDecl.enclosingType();
+    return typeDecl;
+  }
+
+  syn boolean TypeDecl.hasMethod(String id) {
+    if(!memberMethods(id).isEmpty()) return true;
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof MethodDecl) {
+        MethodDecl decl = (MethodDecl)getBodyDecl(i);
+        if(decl.name().equals(id))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  public soot.Value ArrayAccess.eval(Body b) {
+    soot.Value arrayRef = prevExpr().eval(b);
+    soot.Value arrayIndex = getExpr().eval(b);
+    return Jimple.v().newArrayRef(
+      asLocal(b, arrayRef),
+      asImmediate(b, arrayIndex)
+    );
+  }
+
+  public soot.Value ThisAccess.eval(Body b) {
+    return emitThis(b, decl());
+  }
+  
+  public soot.Value SuperAccess.eval(Body b) {
+    TypeDecl targetDecl = isQualified() ? qualifier().type() : hostType();
+    return emitThis(b, targetDecl);
+  }
+
+  // load this where hostType is the target this instance 
+  // supporting inner classes and in explicit contructor invocations
+  public soot.Local Access.emitThis(Body b, TypeDecl targetDecl) {
+    if(targetDecl == hostType())
+      return b.emitThis();
+    else {
+      TypeDecl enclosing = hostType();
+      Local base;
+      if(inExplicitConstructorInvocation()) {
+        base = asLocal(b,
+          Jimple.v().newParameterRef(enclosing.getSootType(), 0)
+        );
+        enclosing = enclosing.enclosingType();
+      }
+      else {
+        base = b.emitThis();
+      }
+      while(enclosing != targetDecl) {
+        Local next = b.newTemp(enclosing.enclosingType().getSootType());
+        b.add(
+          Jimple.v().newAssignStmt(
+            next,
+            Jimple.v().newInstanceFieldRef(
+              base,
+              enclosing.getSootField("this$0", enclosing.enclosingType()).makeRef()
+            )
+          )
+        );
+        base = next;
+        enclosing = enclosing.enclosingType();
+      }
+      return base;
+    }
+  }
+
+  public soot.Value ConstructorAccess.eval(Body b) {
+    ConstructorDecl c = decl();
+    // this
+    Local base = b.emitThis();
+  
+    int index = 0;
+    ArrayList list = new ArrayList();
+    // this$0
+    if(c.needsEnclosing())
+      list.add(asImmediate(b,
+        Jimple.v().newParameterRef(hostType().enclosingType().getSootType(), index++)
+      ));
+    if(c.needsSuperEnclosing()) {
+      TypeDecl superClass = ((ClassDecl)hostType()).superclass();
+      list.add(asImmediate(b,
+        Jimple.v().newParameterRef(superClass.enclosingType().getSootType(), index++)
+      ));
+    }
+    // args
+    for(int i = 0; i < getNumArg(); i++)
+      list.add(asImmediate(b, 
+         getArg(i).type().emitCastTo(b, getArg(i).eval(b), c.getParameter(i).type()))); // MethodInvocationConversion
+
+    // this$val
+    for(Iterator iter = c.hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      ConstructorDecl con = (ConstructorDecl)enclosingBodyDecl();
+      int localIndex = con.localIndexOfEnclosingVariable(v);
+      list.add(asImmediate(b,
+        Jimple.v().newParameterRef(v.type().getSootType(), localIndex)
+      ));
+    }
+    if(decl().isPrivate() && decl().hostType() != hostType()) {
+      list.add(asImmediate(b, soot.jimple.NullConstant.v()));
+      decl().emitInvokeConstructorAccessor(b, base, list);
+      return base;
+    }
+    else {
+      return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
+    }
+  }
+
+  protected TypeDecl Access.superConstructorQualifier(TypeDecl targetEnclosingType) {
+    TypeDecl enclosing = hostType();
+    while(!enclosing.instanceOf(targetEnclosingType))
+      enclosing = enclosing.enclosingType();
+    return enclosing;
+  }
+
+
+  public soot.Value SuperConstructorAccess.eval(Body b) {
+    ConstructorDecl c = decl();
+    // this
+    Local base = b.emitThis();
+
+    int index = 0;
+    ArrayList list = new ArrayList();
+    if(c.needsEnclosing()) {
+      if(hasPrevExpr() && !prevExpr().isTypeAccess()) {
+        list.add(asImmediate(b, prevExpr().eval(b)));
+      }
+      else {
+        if(hostType().needsSuperEnclosing()) {
+          soot.Type type = ((ClassDecl)hostType()).superclass().enclosingType().getSootType();
+          if(hostType().needsEnclosing())
+            list.add(asImmediate(b, Jimple.v().newParameterRef(type, 1)));
+          else
+            list.add(asImmediate(b, Jimple.v().newParameterRef(type, 0)));
+        }
+        else {
+          list.add(emitThis(b, superConstructorQualifier(c.hostType().enclosingType())));
+        }
+      }
+    }
+
+    // args
+    for(int i = 0; i < getNumArg(); i++)
+      list.add(asImmediate(b, 
+         getArg(i).type().emitCastTo(b, getArg(i).eval(b), c.getParameter(i).type()))); // MethodInvocationConversion
+
+    // this$val
+    for(Iterator iter = c.hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      ConstructorDecl con = (ConstructorDecl)enclosingBodyDecl();
+      int localIndex = con.localIndexOfEnclosingVariable(v);
+      list.add(asImmediate(b,
+        Jimple.v().newParameterRef(v.type().getSootType(), localIndex)
+      ));
+    }
+    if(decl().isPrivate() && decl().hostType() != hostType()) {
+      list.add(asImmediate(b, soot.jimple.NullConstant.v()));
+      decl().emitInvokeConstructorAccessor(b, base, list);
+      return base;
+    }
+    else {
+      return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
+    }
+  }
+
+
+  syn int ConstructorDecl.localIndexOfEnclosingVariable(Variable v) {
+    int localIndex  = offsetFirstEnclosingVariable();
+    Iterator iter = hostType().enclosingVariables().iterator();
+    Variable varDecl = (Variable)iter.next();
+    while(varDecl != v && iter.hasNext()) {
+      localIndex += varDecl.type().variableSize();
+      varDecl = (Variable)iter.next();
+    }
+    return localIndex;
+  }
+
+  private soot.Value ClassInstanceExpr.emitLocalEnclosing(Body b, TypeDecl localClass) {
+    if(!localClass.inStaticContext()) {
+      return emitThis(b, localClass.enclosingType());
+    }
+    throw new Error("Not implemented");
+  }
+
+  private soot.Value ClassInstanceExpr.emitInnerMemberEnclosing(Body b, TypeDecl innerClass) {
+    if(hasPrevExpr()) {
+      Local base = asLocal(b, prevExpr().eval(b));
+      b.add(Jimple.v().newInvokeStmt(
+        Jimple.v().newVirtualInvokeExpr(
+          base, 
+          Scene.v().getMethod("<java.lang.Object: java.lang.Class getClass()>").makeRef()
+        )
+      ));
+      return base;
+    }
+    else {
+      TypeDecl enclosing = hostType();
+      while(!enclosing.hasType(innerClass.name()))
+        enclosing = enclosing.enclosingType();
+      return emitThis(b, enclosing);
+    }
+  }
+
+  public soot.Value ClassInstanceExpr.eval(Body b) {
+    Local local = asLocal(b, Jimple.v().newNewExpr(type().sootRef()));
+    ArrayList list = new ArrayList();
+
+     // 15.9.2 first part
+    if(type().isAnonymous()) {
+      if(type().isAnonymousInNonStaticContext()) {
+        list.add(asImmediate(b, b.emitThis()));
+      }
+      // 15.9.2 second part
+      ClassDecl C = (ClassDecl)type();
+      TypeDecl S = C.superclass();
+      if(S.isLocalClass()) {
+        if(!type().inStaticContext())
+          list.add(asImmediate(b, emitLocalEnclosing(b, S)));
+      }
+      else if(S.isInnerType()) {
+        list.add(asImmediate(b, emitInnerMemberEnclosing(b, S)));
+      }
+    }
+    else if(type().isLocalClass()) {
+      if(!type().inStaticContext())
+        list.add(asImmediate(b, emitLocalEnclosing(b, type())));
+    }
+    else if(type().isInnerType()) {
+      list.add(asImmediate(b, emitInnerMemberEnclosing(b, type())));
+    }
+
+    for(int i = 0; i < getNumArg(); i++)
+      list.add(asImmediate(b, getArg(i).type().emitCastTo(b, getArg(i).eval(b), decl().getParameter(i).type()))); // MethodInvocationConversion
+
+    // local values of local variables in this class that are accessed from the instantiated anonymous class
+    for(Iterator iter = type().enclosingVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      if(v instanceof VariableDeclaration) {
+        VariableDeclaration decl = (VariableDeclaration)v;
+        if(decl.hostType() == hostType())
+          list.add(asImmediate(b, decl.local));
+        else
+          list.add(asImmediate(b, emitLoadLocalInNestedClass(b, decl)));
+      }
+      else if(v instanceof ParameterDeclaration) {
+        ParameterDeclaration decl = (ParameterDeclaration)v;
+        if(decl.hostType() == hostType())
+          list.add(asImmediate(b, decl.local));
+        else
+          list.add(asImmediate(b, emitLoadLocalInNestedClass(b, decl)));
+      }
+    }
+
+    if(decl().isPrivate() && type() != hostType()) {
+      list.add(asImmediate(b, soot.jimple.NullConstant.v()));
+      decl().emitInvokeConstructorAccessor(b, local, list);
+      return local;
+    }
+    else {
+      b.add(
+        Jimple.v().newInvokeStmt(
+          Jimple.v().newSpecialInvokeExpr(local, decl().sootRef(), list)
+        )
+      );
+      return local;
+    }
+  }
+
+  public soot.Value ArrayCreationExpr.eval(Body b) {
+    if(hasArrayInit()) {
+      return getArrayInit().eval(b);
+    }
+    else {
+      if(numArrays() == 1) {
+        soot.Value size = getDims(0).eval(b);
+        return Jimple.v().newNewArrayExpr(
+          type().componentType().getSootType(),
+          asImmediate(b, size)
+        );
+      }
+      else {
+        ArrayList list = new ArrayList();
+        for(int i = 0; i < numArrays(); i++)
+          list.add(asImmediate(b, getDims(i).eval(b)));
+        return Jimple.v().newNewMultiArrayExpr(
+          (soot.ArrayType)type().getSootType(),
+          list
+        );
+      }
+    }
+  }
+
+  public soot.Value ArrayInit.eval(Body b) {
+    soot.Value size = IntType.emitConstant(getNumInit());
+    Local array = asLocal(b, Jimple.v().newNewArrayExpr(
+      type().componentType().getSootType(),
+      asImmediate(b, size)
+    ));
+    for(int i = 0; i < getNumInit(); i++) {
+      Value rvalue = 
+        getInit(i).type().emitCastTo(b, // Assign conversion
+          getInit(i).eval(b),
+          expectedType()
+        );
+      Value index = IntType.emitConstant(i);
+      Value lvalue = Jimple.v().newArrayRef(array, index);
+      b.add(Jimple.v().newAssignStmt(lvalue, asLocal(b, rvalue)));
+    }
+    return array;
+  }
+
+  public soot.Value Dims.eval(Body b) {
+    if(hasExpr())
+      return getExpr().eval(b);
+    throw new Error("eval not supported for Dims without expression");
+  }
+
+
+  inh TypeDecl ArrayInit.expectedType();
+  eq Program.getCompilationUnit(int i).expectedType() = null;
+  eq ArrayCreationExpr.getArrayInit().expectedType() = type().componentType();
+  eq FieldDeclaration.getInit().expectedType() = type().componentType();
+  eq VariableDeclaration.getInit().expectedType() = type().componentType();
+  eq VariableDecl.getInit().expectedType() = null;
+  eq ArrayInit.getInit().expectedType() = expectedType().componentType();
+  
+  syn lazy int ArrayCreationExpr.numArrays() {
+    for(int i = 0; i < getNumDims(); i++)
+      if(!getDims(i).hasExpr())
+        return i;
+    return getNumDims();
+  }
+
+  public soot.Value Unary.eval(Body b) {
+    return super.eval(b);
+  }
+  public soot.Value MinusExpr.eval(Body b) { 
+    return Jimple.v().newNegExpr(asImmediate(b, getOperand().eval(b)));
+  }
+  public soot.Value PlusExpr.eval(Body b) { return getOperand().eval(b); }
+  public soot.Value BitNotExpr.eval(Body b) {
+    soot.Value v = IntType.emitConstant(-1);
+    soot.Local result = asLocal(b,
+      soot.jimple.Jimple.v().newXorExpr(
+        asImmediate(b, typeInt().emitCastTo(b, v, type())),
+        asImmediate(b, getOperand().eval(b))
+      )
+    );
+    return result;
+  }
+  // See BooleanExpressions.jrag for LogNotExpr
+
+  public soot.Value CastExpr.eval(Body b) {
+    return getExpr().type().emitCastTo(b,
+      asLocal(b, getExpr().eval(b)),
+      type()
+    );
+  }
+
+  public soot.Value Unary.emitPostfix(Body b, int constant) {
+    soot.Value lvalue = getOperand().eval(b);
+    TypeDecl type = getOperand().type().binaryNumericPromotion(typeInt());
+    Value value = b.newTemp(getOperand().type().emitCastTo(b, lvalue, type));
+    Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type);
+    Value sum = asLocal(b, type.emitCastTo(b,
+      Jimple.v().newAddExpr(asImmediate(b, value), asImmediate(b, rvalue)),
+      getOperand().type()
+    ));
+    getOperand().emitStore(b, lvalue, sum);
+    return value;
+  }
+
+  public soot.Value PostIncExpr.eval(Body b) { return emitPostfix(b, 1); }
+  public soot.Value PostDecExpr.eval(Body b) { return emitPostfix(b, -1); }
+
+  public soot.Value Unary.emitPrefix(Body b, int constant) {
+    soot.Value lvalue = getOperand().eval(b);
+    Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
+    TypeDecl type = getOperand().type().binaryNumericPromotion(typeInt());
+    Value value = getOperand().type().emitCastTo(b, v, type);
+    Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type);
+    Value result = asLocal(b, type.emitCastTo(b,
+      Jimple.v().newAddExpr(asImmediate(b, value), asImmediate(b, rvalue)),
+      getOperand().type()
+    ));
+    getOperand().emitStore(b, lvalue, result);
+    return result;
+  }
+
+  public soot.Value PreIncExpr.eval(Body b) { return emitPrefix(b, 1); }
+  public soot.Value PreDecExpr.eval(Body b) { return emitPrefix(b, -1); }
+
+  public soot.Value Binary.eval(Body b) {
+    return emitOperation(b, 
+      getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
+        getLeftOperand().eval(b),
+        type()
+      ),
+      getRightOperand().type().emitCastTo(b, // Binary numeric promotion
+        getRightOperand().eval(b),
+        type()
+      )
+    );
+  }
+
+  public soot.Value Binary.emitShiftExpr(Body b) {
+    return emitOperation(b, 
+      getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
+        getLeftOperand().eval(b),
+        type()
+      ),
+      getRightOperand().type().emitCastTo(b,
+        getRightOperand().eval(b),
+        typeInt()
+      )
+    );
+  }
+
+  public soot.Value LShiftExpr.eval(Body b) { return emitShiftExpr(b); }
+  public soot.Value RShiftExpr.eval(Body b) { return emitShiftExpr(b); }
+  public soot.Value URShiftExpr.eval(Body b) { return emitShiftExpr(b); }
+
+  public soot.Value Binary.emitOperation(Body b, soot.Value left, soot.Value right) {
+    throw new Error("emitOperation not implemented in " + getClass().getName());
+  }
+  public soot.Value AddExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newAddExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value SubExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newSubExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value MulExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newMulExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value DivExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newDivExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value ModExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newRemExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value LShiftExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newShlExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value RShiftExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newShrExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value URShiftExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newUshrExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value OrBitwiseExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newOrExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value AndBitwiseExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newAndExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+  public soot.Value XorBitwiseExpr.emitOperation(Body b, soot.Value left, soot.Value right) {
+    return asLocal(b, Jimple.v().newXorExpr(asImmediate(b, left), asImmediate(b, right)));
+  }
+
+  syn String TypeDecl.stringPromotion() = "java.lang.Object";
+  eq ReferenceType.stringPromotion() = isString() ? "java.lang.String" : super.stringPromotion();
+  eq PrimitiveType.stringPromotion() = name();
+  eq ByteType.stringPromotion() = "int";
+  eq ShortType.stringPromotion() = "int";
+
+  syn boolean ASTNode.isStringAdd() = false;
+  eq AddExpr.isStringAdd() = type().isString();
+
+  syn boolean AddExpr.firstStringAddPart() = !getLeftOperand().isStringAdd() && type().isString();
+  syn boolean AddExpr.lastStringAddPart() = !getParent().isStringAdd();
+
+  public soot.Value AddExpr.eval(Body b) {
+    if(isStringAdd()) {
+      Local v;
+      if(firstStringAddPart()) {
+        // new StringBuffer
+        v = b.newTemp(Jimple.v().newNewExpr(
+          lookupType("java.lang", "StringBuffer").sootRef()));
+        b.add(Jimple.v().newInvokeStmt(
+          Jimple.v().newSpecialInvokeExpr(v, 
+          Scene.v().getMethod("<java.lang.StringBuffer: void <init>()>").makeRef()
+        )));
+        b.add(Jimple.v().newInvokeStmt(
+          Jimple.v().newVirtualInvokeExpr(v,
+            Scene.v().getMethod("<java.lang.StringBuffer: java.lang.StringBuffer append(" + getLeftOperand().type().stringPromotion() + ")>").makeRef(),
+            asImmediate(b, getLeftOperand().eval(b))
+          )));
+      }
+      else
+        v = (Local)getLeftOperand().eval(b);
+      // append
+      b.add(Jimple.v().newInvokeStmt(
+        Jimple.v().newVirtualInvokeExpr(v,
+          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.StringBuffer append(" + getRightOperand().type().stringPromotion() + ")>").makeRef(),
+          asImmediate(b, getRightOperand().eval(b))
+        )));
+      if(lastStringAddPart()) {
+        return b.newTemp(
+          Jimple.v().newVirtualInvokeExpr(v,
+            Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef()
+        ));
+      }
+      else
+        return v;
+    }
+    else 
+    return soot.jimple.Jimple.v().newAddExpr(
+      asImmediate(b,
+        getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
+          getLeftOperand().eval(b),
+          type()
+        )
+      ),
+      asImmediate(b,
+        getRightOperand().type().emitCastTo(b, // Binary numeric promotion
+          getRightOperand().eval(b),
+          type()
+        )
+      )
+    );
+  }
+
+  // See BooleanExpressions.jrag for the evaluation of conditionals
+
+  public soot.Value InstanceOfExpr.eval(Body b) {
+    return Jimple.v().newInstanceOfExpr(
+      asImmediate(b, getExpr().eval(b)),
+      getTypeAccess().type().getSootType()
+    );
+  }
+
+
+  public soot.Value ClassAccess.eval(Body b) {
+    if(prevExpr().type().isPrimitiveType() || prevExpr().type().isVoid()) {
+      TypeDecl typeDecl = lookupType("java.lang", prevExpr().type().primitiveClassName());
+      SimpleSet c = typeDecl.memberFields("TYPE");
+      FieldDeclaration f = (FieldDeclaration)c.iterator().next();
+      return Jimple.v().newStaticFieldRef(f.sootRef());
+    }
+    else {
+      FieldDeclaration f = hostType().createStaticClassField(prevExpr().type().referenceClassFieldName());
+      // add method to perform lookup as a side-effect
+      MethodDecl m = hostType().createStaticClassMethod();
+
+      soot.jimple.Stmt next_label = b.newLabel();
+      soot.jimple.Stmt end_label = b.newLabel();
+      Local result = b.newTemp(type().getSootType());
+      Local ref = asLocal(b, Jimple.v().newStaticFieldRef(f.sootRef()));
+      b.add(
+        Jimple.v().newIfStmt(
+          Jimple.v().newNeExpr(ref, soot.jimple.NullConstant.v()),
+          next_label
+        )
+      );
+      // emit string literal
+        
+      ArrayList list = new ArrayList();
+      list.add(new StringLiteral(prevExpr().type().referenceClassName()).eval(b));
+      Local l = asLocal(b, Jimple.v().newStaticInvokeExpr(m.sootRef(), list));
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newStaticFieldRef(f.sootRef()),
+        l
+      ));
+      b.add(Jimple.v().newAssignStmt(result, l));
+      b.add(Jimple.v().newGotoStmt(end_label));
+      b.addLabel(next_label);
+      b.add(Jimple.v().newAssignStmt(
+        result,
+        Jimple.v().newStaticFieldRef(f.sootRef())
+      ));
+      b.addLabel(end_label);
+      return result;
+    }
+  }
+
+
+
+
+
+}

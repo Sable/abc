@@ -1,0 +1,171 @@
+aspect Java2Rewrites {
+  // add check for no errors
+  
+
+  syn String TypeDecl.primitiveClassName() {
+    throw new Error("primitiveClassName not supported for " + name() + " of type " + getClass().getName());
+  }
+  eq ByteType.primitiveClassName() = "Byte";
+  eq CharType.primitiveClassName() = "Character";
+  eq ShortType.primitiveClassName() = "Short";
+  eq IntType.primitiveClassName() = "Integer";
+  eq LongType.primitiveClassName() = "Long";
+  eq FloatType.primitiveClassName() = "Float";
+  eq DoubleType.primitiveClassName() = "Double";
+  eq BooleanType.primitiveClassName() = "Boolean";
+  eq VoidType.primitiveClassName() = "Void";
+  
+  syn String TypeDecl.referenceClassName() {
+    throw new Error("referenceClassName not supported for " + name() + " of type " + getClass().getName());
+  }
+  
+  eq ReferenceType.referenceClassName() = constantPoolName().replace('/', '.');
+  eq ArrayDecl.referenceClassName() = typeDescriptor().replace('/', '.');
+
+  syn String TypeDecl.referenceClassFieldName() {
+    throw new Error("referenceClassFieldName not supported for " + name() + " of type " + getClass().getName());
+  }
+  eq ReferenceType.referenceClassFieldName() = "class$" + referenceClassName().replace('[', '$').replace('.', '$').replace(';', ' ').trim();
+  eq ArrayDecl.referenceClassFieldName() = "array" + referenceClassName().replace('[', '$').replace('.', '$').replace(';', ' ').trim();
+  
+  inh TypeDecl AssertStmt.hostType();
+  
+  // lazily build a static field for assertionsDisabled 
+  private FieldDeclaration TypeDecl.createAssertionsDisabled = null;
+  public FieldDeclaration TypeDecl.createAssertionsDisabled() {
+    if(createAssertionsDisabled != null)
+      return createAssertionsDisabled;
+    // static final boolean $assertionsDisabled = !TypeName.class.desiredAssertionStatus();
+    createAssertionsDisabled = new FieldDeclaration(
+      new Modifiers(new List().add(new Modifier("static")).add(new Modifier("final"))),
+      new PrimitiveTypeAccess("boolean"),
+      "$assertionsDisabled",
+      new Opt(
+          new LogNotExpr(
+            createQualifiedAccess().qualifiesAccess(
+              new ClassAccess().qualifiesAccess(
+                new MethodAccess(
+                  new List(),
+                  "desiredAssertionStatus"
+                )
+              )
+            )
+          )
+      )
+    );
+    getBodyDeclList().insertChild(createAssertionsDisabled, 0);
+    // explicit read to trigger possible rewrites
+    createAssertionsDisabled = (FieldDeclaration)getBodyDeclList().getChild(0);
+    // transform the generated initalization, e.g., the ClassAccess construct
+    createAssertionsDisabled.java2Transformation();
+    return createAssertionsDisabled;
+  }
+
+  // lazily build a static field for each typename used in a .class expression
+  private HashMap TypeDecl.createStaticClassField = null;
+  public FieldDeclaration TypeDecl.createStaticClassField(String name) {
+    if(createStaticClassField == null)
+      createStaticClassField = new HashMap();
+    if(createStaticClassField.containsKey(name))
+      return (FieldDeclaration)createStaticClassField.get(name);
+    // static synthetic Class class$java$lang$String;
+    FieldDeclaration f = new FieldDeclaration(
+      new Modifiers(new List().add(new Modifier("static"))),
+      lookupType("java.lang", "Class").createQualifiedAccess(),
+      name,
+      new Opt()
+    ) {
+      public boolean isConstant() {
+        return true;
+      }
+    };
+    createStaticClassField.put(name, f);
+    return addMemberField(f);
+  }
+
+  // lazily build a static class$ method in this type declaration
+  private MethodDecl TypeDecl.createStaticClassMethod = null;
+  public MethodDecl TypeDecl.createStaticClassMethod() {
+    if(createStaticClassMethod != null)
+      return createStaticClassMethod;
+    // static synthetic Class class$(String name) {
+    //   try {
+    //     return java.lang.Class.forName(name);
+    //   } catch(java.lang.ClassNotFoundException e) {
+    //     throw new java.lang.NoClassDefFoundError(e.getMessage());
+    //   }
+    // }
+    createStaticClassMethod = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("static"))),
+      lookupType("java.lang", "Class").createQualifiedAccess(),
+      "class$",
+      new List().add(
+        new ParameterDeclaration(
+          new Modifiers(new List()),
+          lookupType("java.lang", "String").createQualifiedAccess(),
+          "name"
+        )
+      ),
+      new List(),
+      new List(),
+      new Opt(
+        new Block(
+          new List().add(
+            new TryStmt(
+              new Block(
+                new List().add(
+                  new ReturnStmt(
+                    new Opt(
+                      lookupType("java.lang", "Class").createQualifiedAccess().qualifiesAccess(
+                        new MethodAccess(
+                          new List().add(
+                            new VarAccess("name")
+                          ),
+                          "forName"
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              new List().add(
+                new CatchClause(
+                  new ParameterDeclaration(
+                    new Modifiers(new List()),
+                    lookupType("java.lang", "ClassNotFoundException").createQualifiedAccess(),
+                    "e"
+                  ),
+                  new Block(
+                    new List().add(
+                      new ThrowStmt(
+                        new ClassInstanceExpr(
+                          lookupType("java.lang", "NoClassDefFoundError").createQualifiedAccess(),
+                          new List().add(
+                            new VarAccess("e").qualifiesAccess(
+                              new MethodAccess(
+                                new List(),
+                                "getMessage"
+                              )
+                            )
+                          ),
+                          new Opt()
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              new Opt()
+            )
+          )
+        )
+      )
+    ) {
+      public boolean isConstant() {
+        return true;
+      }
+    };
+    return addMemberMethod(createStaticClassMethod);
+  }
+  
+}

@@ -1,0 +1,551 @@
+import soot.*;
+import soot.util.*;
+import soot.jimple.*;
+
+aspect EmitJimple {
+  public void Program.jimplify1() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit u = (CompilationUnit)iter.next();
+      if(u.fromSource())
+        u.jimplify1phase1();
+    }
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit u = (CompilationUnit)iter.next();
+      if(u.fromSource())
+        u.jimplify1phase2();
+    }
+  }
+  
+  syn String TypeDecl.jvmName() = constantPoolName().replace(java.io.File.separatorChar, '.');
+
+  inh CompilationUnit TypeDecl.compilationUnit();
+  eq CompilationUnit.getTypeDecl(int i).compilationUnit() = this;
+  eq CompilationUnit.getImportDecl(int i).compilationUnit() = this;
+
+  syn lazy SootClass TypeDecl.getSootClassDecl() {
+    if(compilationUnit().fromSource()) {
+      return sootClass();
+    }
+    else {
+      System.out.println("Loading .class file " + jvmName());
+      return Scene.v().loadClassAndSupport(jvmName());
+    }
+  }
+  
+  syn lazy Type TypeDecl.getSootType() = getSootClassDecl().getType();
+  eq BooleanType.getSootType() = soot.BooleanType.v();
+  eq ByteType.getSootType() = soot.ByteType.v();
+  eq ShortType.getSootType() = soot.ShortType.v();
+  eq IntType.getSootType() = soot.IntType.v();
+  eq LongType.getSootType() = soot.LongType.v();
+  eq CharType.getSootType() = soot.CharType.v();
+  eq FloatType.getSootType() = soot.FloatType.v();
+  eq DoubleType.getSootType() = soot.DoubleType.v();
+  eq VoidType.getSootType() = soot.VoidType.v();
+  eq ArrayDecl.getSootType() = soot.ArrayType.v(elementType().getSootType(), dimension());
+
+  syn soot.RefType TypeDecl.sootRef() = (soot.RefType)getSootType();
+
+  public void ASTNode.jimplify1phase1() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).jimplify1phase1();
+  }
+  
+  syn lazy SootClass TypeDecl.sootClass() = null;
+  eq ClassDecl.sootClass() {
+    System.out.println("Creating from source " + jvmName());
+    SootClass sc = new SootClass(jvmName(), sootTypeModifiers()); 
+    Scene.v().addClass(sc);
+    sc.setApplicationClass();
+    return sc;
+  }
+  eq InterfaceDecl.sootClass() {
+    System.out.println("Creating from source " + jvmName());
+    SootClass sc = new SootClass(jvmName(), sootTypeModifiers() | soot.Modifier.INTERFACE);
+    Scene.v().addClass(sc);
+    sc.setApplicationClass();
+    return sc;
+  }
+  
+  syn int TypeDecl.sootTypeModifiers() {
+    int result = 0;
+    if(isPublic()) result |= soot.Modifier.PUBLIC;
+    if(isProtected()) result |= soot.Modifier.PROTECTED;
+    if(isPrivate()) result |= soot.Modifier.PRIVATE;
+    if(isFinal()) result |= soot.Modifier.FINAL;
+    if(isStatic()) result |= soot.Modifier.STATIC;
+    if(isAbstract()) result |= soot.Modifier.ABSTRACT;
+    return result;
+  }
+  syn int MethodDecl.sootTypeModifiers() {
+    int result = 0;
+    if(isPublic()) result |= soot.Modifier.PUBLIC;
+    if(isProtected()) result |= soot.Modifier.PROTECTED;
+    if(isPrivate()) result |= soot.Modifier.PRIVATE;
+    if(isFinal()) result |= soot.Modifier.FINAL;
+    if(isStatic()) result |= soot.Modifier.STATIC;
+    if(isAbstract()) result |= soot.Modifier.ABSTRACT;
+    return result;
+  }
+  syn int ConstructorDecl.sootTypeModifiers() {
+    int result = 0;
+    if(isPublic()) result |= soot.Modifier.PUBLIC;
+    if(isProtected()) result |= soot.Modifier.PROTECTED;
+    if(isPrivate()) result |= soot.Modifier.PRIVATE;
+    return result;
+  }
+  syn int FieldDeclaration.sootTypeModifiers() {
+    int result = 0;
+    if(isPublic()) result |= soot.Modifier.PUBLIC;
+    if(isProtected()) result |= soot.Modifier.PROTECTED;
+    if(isPrivate()) result |= soot.Modifier.PRIVATE;
+    if(isFinal()) result |= soot.Modifier.FINAL;
+    if(isStatic()) result |= soot.Modifier.STATIC;
+    return result;
+  }
+  
+  public void ASTNode.jimplify1phase2() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).jimplify1phase2();
+  }
+
+  public void TypeDecl.jimplify1phase2() {
+    for(Iterator iter = nestedTypes().iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      typeDecl.jimplify1phase2();
+    }
+    for(int i = 0; i < getNumBodyDecl(); i++)
+      getBodyDecl(i).jimplify1phase2();
+  }
+
+  public void ClassDecl.jimplify1phase2() {
+    SootClass sc = getSootClassDecl();
+    if(hasSuperclass()) {
+      sc.setSuperclass(superclass().getSootClassDecl());
+    }
+    for(int i = 0; i < getNumImplements(); i++) {
+      sc.addInterface(getImplements(i).type().getSootClassDecl());
+    }
+    super.jimplify1phase2();
+  }
+
+  public void InterfaceDecl.jimplify1phase2() {
+    SootClass sc = getSootClassDecl();
+    sc.setSuperclass(typeObject().getSootClassDecl());
+    for(int i = 0; i < getNumSuperInterfaceId(); i++) {
+      if(getSuperInterfaceId(i).type() != typeObject())
+        sc.addInterface(getSuperInterfaceId(i).type().getSootClassDecl());
+    }
+    super.jimplify1phase2();
+  }
+  
+  public void BodyDecl.jimplify1phase2() {
+  }
+
+  public void MethodDecl.jimplify1phase2() {
+    String name = name();
+    ArrayList parameters = new ArrayList();
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    soot.Type returnType = type().getSootType();
+    int modifiers = sootTypeModifiers();
+    ArrayList throwtypes = new ArrayList();
+    for(int i = 0; i < getNumException(); i++)
+      throwtypes.add(getException(i).type().getSootClassDecl());
+    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
+    hostType().getSootClassDecl().addMethod(m);
+    sootMethod = m;
+  }
+  public void ConstructorDecl.jimplify1phase2() {
+    String name = "<init>";
+    ArrayList parameters = new ArrayList();
+    // this$0
+    TypeDecl typeDecl = hostType();
+    if(typeDecl.needsEnclosing())
+      parameters.add(typeDecl.enclosingType().getSootType());
+    if(typeDecl.needsSuperEnclosing()) {
+      TypeDecl superClass = ((ClassDecl)typeDecl).superclass();
+      parameters.add(superClass.enclosingType().getSootType());
+    }
+    // args
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    // this$val
+    for(Iterator iter = typeDecl.enclosingVariables().iterator(); iter.hasNext(); )
+      parameters.add(((Variable)iter.next()).type().getSootType());
+
+    soot.Type returnType = soot.VoidType.v();
+    int modifiers = sootTypeModifiers();
+    ArrayList throwtypes = new ArrayList();
+    for(int i = 0; i < getNumException(); i++)
+      throwtypes.add(getException(i).type().getSootClassDecl());
+    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
+    hostType().getSootClassDecl().addMethod(m);
+    sootMethod = m;
+  }
+
+  public SootMethod MethodDecl.sootMethod;
+  syn lazy SootMethod MethodDecl.sootMethod() {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).type().getSootType());
+    if(hostType().isArrayDecl())
+      return typeObject().getSootClassDecl().getMethod(name(), list, type().getSootType());
+    return hostType().getSootClassDecl().getMethod(name(), list, type().getSootType());
+  }
+  inh TypeDecl MethodDecl.typeObject();
+
+  syn lazy SootMethodRef MethodDecl.sootRef() = sootMethod().makeRef();
+
+  public SootMethod ConstructorDecl.sootMethod;
+  syn lazy SootMethod ConstructorDecl.sootMethod() {
+    ArrayList list = new ArrayList();
+    // this$0
+    TypeDecl typeDecl = hostType();
+    if(typeDecl.needsEnclosing())
+      list.add(typeDecl.enclosingType().getSootType());
+    if(typeDecl.needsSuperEnclosing()) {
+      TypeDecl superClass = ((ClassDecl)typeDecl).superclass();
+      list.add(superClass.enclosingType().getSootType());
+    }
+    // args
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).type().getSootType());
+    // this$val
+    for(Iterator iter = typeDecl.enclosingVariables().iterator(); iter.hasNext(); )
+      list.add(((Variable)iter.next()).type().getSootType());
+    return hostType().getSootClassDecl().getMethod("<init>", list, soot.VoidType.v());
+  }
+  syn lazy SootMethodRef ConstructorDecl.sootRef() = sootMethod().makeRef();
+  
+
+  public void FieldDeclaration.jimplify1phase2() {
+    String name = name();
+    soot.Type type = type().getSootType();
+    int modifiers = sootTypeModifiers();
+    SootField f = new SootField(name, type, modifiers);
+    hostType().getSootClassDecl().addField(f);
+    sootField = f;
+  }
+  public SootField FieldDeclaration.sootField;
+  syn lazy SootFieldRef FieldDeclaration.sootRef() =
+    hostType().getSootClassDecl().getField(name(), type().getSootType()).makeRef();
+  
+  public void Program.jimplify2() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit u = (CompilationUnit)iter.next();
+      if(u.fromSource())
+        u.jimplify2();
+    }
+  }
+  public void ASTNode.jimplify2() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).jimplify2();
+  }
+
+  public void ASTNode.jimplify2(Body b) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).jimplify2(b);
+  }
+
+
+  public void VariableDeclaration.jimplify2(Body b) {
+    local = b.newLocal(name(), type().getSootType());
+    if(hasInit()) {
+      b.add(
+        Jimple.v().newAssignStmt(
+          local,
+          asRValue(b,
+            getInit().type().emitCastTo(b, // Assign conversion
+              getInit().eval(b),
+              type()
+            )
+          )
+        )
+      );
+    }
+  }
+  public Local VariableDeclaration.local;
+
+  public void ParameterDeclaration.jimplify2(Body b) {
+    local = b.newLocal(name(), type().getSootType());
+    b.add(Jimple.v().newIdentityStmt(local, Jimple.v().newParameterRef(type().getSootType(), localNum())));
+  }
+  public Local ParameterDeclaration.local;
+
+
+  public soot.Immediate ASTNode.asImmediate(Body b, soot.Value v) {
+    if(v instanceof soot.Immediate) return (soot.Immediate)v;
+    return b.newTemp(v);
+  }
+  public soot.Local ASTNode.asLocal(Body b, soot.Value v) {
+    if(v instanceof soot.Local) return (soot.Local)v;
+    return b.newTemp(v);
+  }
+  public soot.Value ASTNode.asRValue(Body b, soot.Value v) {
+    if(v instanceof soot.Local) return v;
+    if(v instanceof soot.jimple.Constant) return v;
+    if(v instanceof soot.jimple.ConcreteRef) return v;
+    if(v instanceof soot.jimple.Expr) return v;
+    throw new Error("Need to convert " + v.getClass().getName() + " to RValue");
+  }
+
+  public soot.Value TypeDecl.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+    if(this == type)
+      return v;
+    if(isReferenceType() && type.isReferenceType() && instanceOf(type))
+      return v;
+    if((isLong() || this instanceof FloatingPointType) && type.isIntegralType()) {
+      v = soot.jimple.Jimple.v().newCastExpr(
+        asImmediate(b, v), typeInt().getSootType());
+      return typeInt().emitCastTo(b, v, type);
+    }
+
+    return soot.jimple.Jimple.v().newCastExpr(
+      asImmediate(b, v),
+      type.getSootType()
+    );
+  }
+  public soot.Value NullType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+    return v;
+  }
+
+  class Body {
+    int nextTempIndex = 0;
+    soot.jimple.JimpleBody body;
+    java.util.Stack chains;
+    public Body(soot.jimple.JimpleBody body) {
+      this.body = body;
+      chains = new java.util.Stack();
+      chains.push(body.getUnits());
+    }
+    public Local newTemp(soot.Type type) {
+      Local local = Jimple.v().newLocal("temp$" + nextTempIndex++, type);
+      body.getLocals().add(local);
+      return local;
+    }
+    public Local newTemp(soot.Value v) {
+      Local local = newTemp(v.getType());
+      if(v instanceof soot.jimple.ParameterRef) {
+        add(Jimple.v().newIdentityStmt(local, (soot.jimple.ParameterRef)v));
+      }
+      else {
+        add(Jimple.v().newAssignStmt(local, v));
+      }
+      return local;
+    }
+    public Local newLocal(String name, soot.Type type) {
+      Local local = Jimple.v().newLocal(name, type);
+      body.getLocals().add(local);
+      return local;
+    }
+    public Body add(soot.jimple.Stmt stmt) {
+      soot.PatchingChain chain = (soot.PatchingChain)chains.peek();
+      chain.add(stmt);
+      return this;
+    }
+    public void pushBlock(soot.PatchingChain c) {
+      chains.push(c);
+    }
+    public void popBlock() {
+      chains.pop();
+    }
+
+    public soot.jimple.Stmt newLabel() {
+      return soot.jimple.Jimple.v().newNopStmt();
+    }
+    public Body addLabel(soot.jimple.Stmt label) {
+      add(label);
+      return this;
+    }
+
+    Local thisName;
+    public Body addThis(TypeDecl type) {
+      thisName = newLocal("this", type.getSootType());
+      add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newThisRef(type.sootRef())));
+      return this;
+    }
+    public soot.Local emitThis() {
+      return thisName;
+    }
+
+    public Body addTrap(TypeDecl type, soot.jimple.Stmt firstStmt, soot.jimple.Stmt lastStmt, soot.jimple.Stmt handler) {
+      body.getTraps().add(Jimple.v().newTrap(type.getSootClassDecl(), firstStmt, lastStmt, handler));
+      return this;
+    }
+  }
+
+  protected soot.jimple.Stmt ASTNode.newLabel() {
+    return soot.jimple.Jimple.v().newNopStmt();
+  }
+
+
+
+  inh TypeDecl Stmt.hostType();
+  inh TypeDecl CatchClause.hostType();
+  inh TypeDecl Case.hostType();
+  
+  syn lazy boolean TypeDecl.hasClinit() {
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      BodyDecl b = getBodyDecl(i);
+      if(b instanceof FieldDeclaration) {
+        FieldDeclaration f = (FieldDeclaration)b;
+        if(f.isStatic() && f.hasInit()) {
+          return true;
+        }
+      }
+      else if(b instanceof StaticInitializer) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void TypeDecl.jimplify2() {
+    super.jimplify2();
+    if(hasClinit()) {
+      SootMethod m = new SootMethod("<clinit>", new ArrayList(), soot.VoidType.v(), soot.Modifier.STATIC, new ArrayList());
+      getSootClassDecl().addMethod(m);
+      JimpleBody body = Jimple.v().newBody(m);
+      m.setActiveBody(body);
+      Body b = new Body(body);
+      for(int i = 0; i < getNumBodyDecl(); i++) {
+        BodyDecl bodyDecl = getBodyDecl(i);
+        if(bodyDecl instanceof FieldDeclaration && bodyDecl.isBytecodeField()) {
+          FieldDeclaration f = (FieldDeclaration)bodyDecl;
+          if(f.isStatic() && f.hasInit()) {
+            Local l = asLocal(b, 
+              f.getInit().type().emitCastTo(b, f.getInit().eval(b), f.type()) // AssignConversion
+            );
+            b.add(Jimple.v().newAssignStmt(
+              Jimple.v().newStaticFieldRef(f.sootRef()),
+              l
+            ));
+          }
+        }
+        else if(bodyDecl instanceof StaticInitializer) {
+          bodyDecl.jimplify2(b);
+        }
+      }
+      b.add(Jimple.v().newReturnVoidStmt());
+    }
+    for(Iterator iter = nestedTypes().iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      typeDecl.jimplify2();
+    }
+  }
+
+  public void BodyDecl.jimplify2() {
+  }
+
+  public void MethodDecl.jimplify2() {
+    if(hasBlock()) {
+      JimpleBody body = Jimple.v().newBody(sootMethod);
+      sootMethod.setActiveBody(body);
+      Body b = new Body(body);
+      if(!isStatic())
+        b.addThis(hostType());
+      for(int i = 0; i < getNumParameter(); i++)
+        getParameter(i).jimplify2(b);
+      getBlock().jimplify2(b);
+      if(type() instanceof VoidType)
+        b.add(Jimple.v().newReturnVoidStmt());
+    }
+  }
+
+  syn lazy SootField TypeDecl.getSootField(String name, TypeDecl type) {
+    SootField f = new SootField(name, type.getSootType(), 0);
+    getSootClassDecl().addField(f);
+    return f;
+  }
+
+  public void ConstructorDecl.jimplify2() {
+    JimpleBody body = Jimple.v().newBody(sootMethod);
+    sootMethod.setActiveBody(body);
+    Body b = new Body(body);
+    b.addThis(hostType());
+    for(int i = 0; i < getNumParameter(); i++)
+      getParameter(i).jimplify2(b);
+
+    boolean needsInit = true;
+
+    if(hasConstructorInvocation()) {
+      getConstructorInvocation().jimplify2(b);
+      Stmt stmt = getConstructorInvocation();
+      if(stmt instanceof ExprStmt) {
+        ExprStmt exprStmt = (ExprStmt)stmt;
+        Expr expr = exprStmt.getExpr();
+        if(!expr.isSuperConstructorAccess())
+          needsInit = false;
+
+      }
+    }
+
+    int localIndex = 0;
+    if(hostType().needsEnclosing()) {
+      TypeDecl type = hostType().enclosingType();
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newInstanceFieldRef(
+          b.emitThis(),
+          hostType().getSootField("this$0", type).makeRef()
+        ),
+        asLocal(b, Jimple.v().newParameterRef(type.getSootType(), localIndex))
+      ));
+      localIndex++;
+    }
+    if(needsSuperEnclosing()) {
+      localIndex++;
+    }
+    localIndex += getNumParameter();
+    for(Iterator iter = hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newInstanceFieldRef(
+          b.emitThis(),
+          hostType().getSootField("val$" + v.name(), v.type()).makeRef()
+        ),
+        asLocal(b, Jimple.v().newParameterRef(v.type().getSootType(), localIndex))
+      ));
+      localIndex++;
+    }
+
+    if(needsInit) {
+      TypeDecl typeDecl = hostType();
+      for(int i = 0; i < typeDecl.getNumBodyDecl(); i++) {
+        BodyDecl bodyDecl = typeDecl.getBodyDecl(i);
+        if(bodyDecl instanceof FieldDeclaration && bodyDecl.isBytecodeField()) {
+          FieldDeclaration f = (FieldDeclaration)bodyDecl;
+          if(!f.isStatic() && f.hasInit()) {
+            soot.Local base = b.emitThis();
+            Local l = asLocal(b,
+              f.getInit().type().emitCastTo(b, f.getInit().eval(b), f.type()) // AssignConversion
+            );
+            b.add(Jimple.v().newAssignStmt(
+              Jimple.v().newInstanceFieldRef(base, f.sootRef()),
+              l
+            ));
+          }
+        }
+        else if(bodyDecl instanceof InstanceInitializer) {
+          bodyDecl.jimplify2(b);
+        }
+      }
+    }
+    getBlock().jimplify2(b);
+    b.add(Jimple.v().newReturnVoidStmt());
+  }
+
+
+
+
+
+  syn boolean BodyDecl.isBytecodeField() = false;
+  eq FieldDeclaration.isBytecodeField() = true;
+
+  syn boolean BodyDecl.isBytecodeMethod() = false;
+  eq MethodDecl.isBytecodeMethod() = true;
+  eq ConstructorDecl.isBytecodeMethod() = true;
+
+
+
+}

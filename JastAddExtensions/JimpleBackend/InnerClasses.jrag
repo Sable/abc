@@ -1,0 +1,481 @@
+aspect InnerClasses {
+
+  // The set of TypeDecls that has this TypeDecl as their directly enclosing TypeDecl.
+  // I.e., NestedTypes, InnerTypes, AnonymousClasses, LocalClasses.
+  private Collection TypeDecl.nestedTypes;
+  public Collection TypeDecl.nestedTypes() {
+    return nestedTypes != null ? nestedTypes : new HashSet();
+  }
+  public void TypeDecl.addNestedType(TypeDecl typeDecl) {
+    if(nestedTypes == null) nestedTypes = new ArrayList();
+    if(typeDecl != this)
+      nestedTypes.add(typeDecl);
+  }
+
+  // The set of nested TypeDecls that are accessed in this TypeDecl
+  private Collection TypeDecl.usedNestedTypes;
+  public Collection TypeDecl.usedNestedTypes() {
+    return usedNestedTypes != null ? usedNestedTypes : new HashSet();
+  }
+  public void TypeDecl.addUsedNestedType(TypeDecl typeDecl) {
+    if(usedNestedTypes == null) usedNestedTypes = new HashSet();
+    usedNestedTypes.add(typeDecl);
+  }
+  
+  int TypeDecl.constantPoolNameIndex = 1;
+
+  syn lazy String TypeDecl.constantPoolName() {
+    if(!isNestedType()) {
+      String packageName = packageName();
+      if(!packageName.equals("")) {
+        packageName = packageName.replace('.', '/') + "/";
+      }
+      return packageName + name();
+    }
+    else {
+      String prefix = enclosingType().constantPoolName();
+      if(isAnonymous()) {
+        int index = topLevelType().constantPoolNameIndex++;
+        return prefix + "$" + index;
+      }
+      else if(isLocalClass()) {
+        int index = topLevelType().constantPoolNameIndex++;
+        return prefix + "$" + index + name();
+      }
+      return prefix + "$" + name();
+    }
+  }
+
+  syn lazy String ArrayDecl.constantPoolName() = typeDescriptor();
+
+  syn lazy Collection TypeDecl.enclosingVariables() {
+    HashSet set = new HashSet();
+    for(TypeDecl e = this; e != null; e = e.enclosingType()) {
+      if(e.isLocalClass() || e.isAnonymous()) {
+        collectEnclosingVariables(set, e.enclosingType());
+      }
+    }
+    if(isClassDecl()) {
+      ClassDecl classDecl = (ClassDecl)this;
+      if(classDecl.isNestedType() && classDecl.hasSuperclass())
+        set.addAll(classDecl.superclass().enclosingVariables());
+    }
+    return set;
+  }
+
+  public void ASTNode.collectEnclosingVariables(HashSet set, TypeDecl typeDecl) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectEnclosingVariables(set, typeDecl);
+  }
+  public void VarAccess.collectEnclosingVariables(HashSet set, TypeDecl typeDecl) {
+    Variable v = decl();
+    if(!v.isInstanceVariable() && !v.isClassVariable() && v.hostType() == typeDecl) {
+      //if(Program.verbose()) {
+      //  System.out.println("Local variable " + v.name() + " in " + v.hostType().fullName() + " is used from " + hostType().fullName());
+      //}
+      set.add(v);
+    }
+    super.collectEnclosingVariables(set, typeDecl);
+  }
+
+
+
+  public int TypeDecl.accessorCounter = 0;
+
+  syn boolean FieldDeclaration.needsAccessor() = accessorIndex != -1;
+  syn lazy int FieldDeclaration.accessorIndex() = accessorIndex = hostType().accessorCounter++;
+  private int FieldDeclaration.accessorIndex = -1;
+  syn boolean FieldDeclaration.needsAccessorWrite() = accessorWriteIndex != -1;
+  syn lazy int FieldDeclaration.accessorWriteIndex() = accessorWriteIndex = hostType().accessorCounter++;
+  private int FieldDeclaration.accessorWriteIndex = -1;
+
+  syn boolean ConstructorDecl.needsAccessor() = accessorIndex != -1;
+  private String ConstructorDecl.anonymousJavaName;
+  private TypeDecl ConstructorDecl.anonymousJavaTypeDecl;
+
+  private boolean ConstructorDecl.accessorIndexVisited = false;
+  syn lazy int ConstructorDecl.accessorIndex() {
+    // rework treebuilding, final
+    if(accessorIndexVisited)
+      return accessorIndex;
+    accessorIndexVisited = true;
+
+    ClassDecl classDecl =
+      new ClassDecl(
+          new Modifiers(new List().add(new Modifier("synthetic"))),
+          "Dummy",
+          new Opt(),
+          new List(),
+          new List()
+          );
+    hostType().addUsedNestedType(classDecl);
+    // add as LocalClassDeclStmt
+    getBlock().addStmt(new LocalClassDeclStmt(classDecl)); 
+    // force new subtree to be rewritten and final
+    LocalClassDeclStmt stmt = (LocalClassDeclStmt)getBlock().getStmt(getBlock().getNumStmt()-1);
+    classDecl = stmt.getClassDecl();
+    classDecl.toString(new StringBuffer());
+
+    accessorIndex = hostType().accessorCounter++;
+    anonymousJavaName = classDecl.typeDescriptor();
+    anonymousJavaTypeDecl = classDecl;
+    //classDecl.generateClassfile();
+    return accessorIndex;
+  }
+  private int ConstructorDecl.accessorIndex = -1;
+
+  public int TypeDecl.numAccessorMethods(Collection c) {
+    int num = 0;
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      Object o = iter.next();
+      if(o instanceof ConstructorDecl) {
+        ConstructorDecl m = (ConstructorDecl)o;
+        if(m.needsAccessor())
+          num++;
+      }
+    }
+    return num;
+  }
+
+  public int TypeDecl.numAccessorFields(Collection c) {
+    int num = 0;
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      Object o = iter.next();
+      if(o instanceof FieldDeclaration) {
+        FieldDeclaration f = (FieldDeclaration)o;
+        if(f.needsAccessor())
+          num++;
+        if(f.needsAccessorWrite())
+          num++;
+      }
+    }
+    return num;
+  }
+
+  /*
+  public void FieldDeclaration.emitAccessor(ConstantPool cp, DataOutputStream out) throws java.io.IOException {
+    out.writeChar(Modifiers.ACC_STATIC);
+    out.writeChar(cp.addUtf8("access$" + accessorIndex()));
+    out.writeChar(cp.addUtf8(accessorDescName()));
+    out.writeChar(accessorAttributes().size());
+    for(Iterator iter = accessorAttributes().iterator(); iter.hasNext(); ) {
+      ((Attribute)iter.next()).emit(out);
+    }
+  }
+  public void FieldDeclaration.emitAccessorWrite(ConstantPool cp, DataOutputStream out) throws java.io.IOException {
+    out.writeChar(Modifiers.ACC_STATIC);
+    out.writeChar(cp.addUtf8("access$" + accessorWriteIndex()));
+    out.writeChar(cp.addUtf8(accessorWriteDescName()));
+    out.writeChar(accessorAttributes().size());
+    for(Iterator iter = accessorWriteAttributes().iterator(); iter.hasNext(); ) {
+      ((Attribute)iter.next()).emit(out);
+    }
+  }
+  */
+
+/*
+  public ArrayList FieldDeclaration.accessorAttributes() {
+    ConstantPool cp = hostType().constantPool();
+    ArrayList list = new ArrayList();
+    CodeGeneration gen = new CodeGeneration(cp);
+    int index = 0;
+    if(!isStatic())
+      gen.emitLoadReference(index++);
+    emitLoadField(gen, hostType());
+    type().emitReturn(gen);
+    CodeAttribute a = new CodeAttribute(gen, null);
+    list.add(a);
+    list.add(new SyntheticAttribute(cp));
+    return list;
+  }
+  */
+
+/*
+  public ArrayList FieldDeclaration.accessorWriteAttributes() {
+    ConstantPool cp = hostType().constantPool();
+    ArrayList list = new ArrayList();
+    CodeGeneration gen = new CodeGeneration(cp);
+    int index = 0;
+    if(!isStatic())
+      gen.emitLoadReference(index++);
+    type().emitLoadLocal(gen, index);
+    emitStoreField(gen, hostType());
+    gen.emit(Bytecode.RETURN);
+    CodeAttribute a = new CodeAttribute(gen, null);
+    list.add(a);
+    list.add(new SyntheticAttribute(cp));
+    return list;
+  }
+  */
+
+  syn lazy MethodDecl MethodDecl.createAccessor() {
+    int accessorIndex = hostType().accessorCounter++;
+    // add synthetic flag to modifiers
+    Modifiers modifiers = (Modifiers)getModifiers().fullCopy();
+    modifiers.addModifier(new Modifier("synthetic"));
+    // build accessor declaration
+    MethodDecl m = new MethodAccessorDecl(
+      modifiers,
+      type().createQualifiedAccess(),
+      "access$" + accessorIndex,
+      (List)getParameterList().fullCopy(),
+      new List(), // EmptyBracket*
+      (List)getExceptionList().fullCopy(),
+      new Opt(
+        new Block(
+          new List().add(
+            createAccessorStmt()
+          )
+        )
+      )
+    );
+    return hostType().addMemberMethod(m);
+  }
+  
+  private Stmt MethodDecl.createAccessorStmt() {
+    List argumentList = new List();
+    for(int i = 0; i < getNumParameter(); i++)
+      argumentList.add(new VarAccess(getParameter(i).name()));
+    Access access = new MethodAccess(argumentList, name());
+    if(!isStatic())
+      access = new ThisAccess("this").qualifiesAccess(access);
+    return isVoid() ? (Stmt) new ExprStmt(access) : new ReturnStmt(new Opt(access));
+  }
+    
+  /*
+  eq MethodAccessorDecl.descName() {
+    StringBuffer b = new StringBuffer();
+    b.append("(");
+    if(!isStatic())
+      b.append(hostType().typeDescriptor());
+    for (int i=0; i<getNumParameter(); i++)
+      b.append(getParameter(i).type().typeDescriptor());
+    b.append(")");
+    b.append(type().typeDescriptor());
+    return b.toString();
+  }
+  */
+
+  /*
+  public void MethodAccessorDecl.emitInvokeMethod(CodeGeneration gen, TypeDecl hostType) {
+    // compute operation stack height change
+    int size = type().variableSize();
+    if(!isStatic())
+      size -= 1;
+    for(int i = 0; i < getNumParameter(); i++)
+      size -= getParameter(i).type().variableSize();
+    // invoke method
+    int index = gen.constantPool().addMethodref(hostType().constantPoolName(), name(), descName());
+    gen.emit(Bytecode.INVOKESTATIC, size).add2(index);
+  }
+
+  eq MethodAccessorDecl.flags() = (super.flags() | Modifiers.ACC_STATIC) & (~Modifiers.ACC_PRIVATE);
+
+  public void ConstructorDecl.emitAccessor(ConstantPool cp, DataOutputStream out) throws java.io.IOException {
+    accessorIndex();
+    out.writeChar(0);
+    out.writeChar(cp.addUtf8("<init>"));
+    out.writeChar(cp.addUtf8(accessorDescName()));
+    out.writeChar(accessorAttributes().size());
+    for(Iterator iter = accessorAttributes().iterator(); iter.hasNext(); ) {
+      ((Attribute)iter.next()).emit(out);
+    }
+  }
+  */
+
+  syn boolean ConstructorDecl.needsEnclosing() = hostType().needsEnclosing();
+  syn boolean ConstructorDecl.needsSuperEnclosing() = hostType().needsSuperEnclosing();
+  
+  syn boolean TypeDecl.isAnonymousInNonStaticContext() {
+    return isAnonymous() && !((ClassInstanceExpr)getParent().getParent()).unqualifiedScope().inStaticContext();
+  }
+  
+  syn boolean TypeDecl.needsEnclosing() {
+    if(isAnonymous())
+      return isAnonymousInNonStaticContext();
+    else if(isLocalClass())
+      return !inStaticContext();
+    else if(isInnerType())
+      return true;
+    return false;
+  }
+  
+  syn boolean TypeDecl.needsSuperEnclosing() {
+    if(!isAnonymous())
+      return false;
+    TypeDecl superClass = ((ClassDecl)this).superclass();
+    if(superClass.isLocalClass())
+      return !superClass.inStaticContext();
+    else if(superClass.isInnerType())
+      return true;
+    return false;
+  }
+
+  /*
+  public ArrayList ConstructorDecl.accessorAttributes() {
+    ConstantPool cp = hostType().constantPool();
+    ArrayList list = new ArrayList();
+    CodeGeneration gen = new CodeGeneration(cp);
+    int index = 0;
+    gen.emitLoadReference(index++);
+    // this$0
+    if(hostType().needsEnclosing())
+      gen.emitLoadReference(index++);
+    if(hostType().needsSuperEnclosing())
+      gen.emitLoadReference(index++);
+
+    // args
+    for(int i = 0; i < getNumParameter(); i++) {
+      getParameter(i).type().emitLoadLocal(gen, index);
+      index += getParameter(i).type().variableSize();
+    }
+    // this$val
+    for(Iterator iter = hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      v.type().emitLoadLocal(gen, index);
+      index += v.type().variableSize();
+    }
+    gen.maxLocals++; // Increase max locals to include dummy constructor argument for private constructors
+    emitInvokeConstructor(gen);
+    gen.emit(Bytecode.RETURN);
+    CodeAttribute a = new CodeAttribute(gen, null);
+    list.add(a);
+    list.add(new SyntheticAttribute(cp));
+    return list;
+  }
+  */
+
+
+  syn lazy ArrayList ConstructorDecl.accessorSootTypeList() {
+    ArrayList list = new ArrayList();
+    // this$0
+    TypeDecl typeDecl = hostType();
+    if(typeDecl.needsEnclosing())
+      list.add(typeDecl.enclosingType().getSootType());
+    if(typeDecl.needsSuperEnclosing()) {
+      TypeDecl superClass = ((ClassDecl)typeDecl).superclass();
+      list.add(superClass.enclosingType().getSootType());
+    }
+    // args
+    for (int i=0; i<getNumParameter(); i++)
+      list.add(getParameter(i).type().getSootType());
+    // this$val
+    for(Iterator iter = typeDecl.enclosingVariables().iterator(); iter.hasNext(); )
+      list.add(((Variable)iter.next()).type().getSootType());
+    // anonymous class to handle private constructors
+    list.add(anonymousJavaTypeDecl.getSootType());
+    return list;
+  }
+
+  public void ConstructorDecl.emitInvokeConstructorAccessor(Body b, soot.Local base, ArrayList arguments) {
+    accessorIndex();
+    b.add(
+      Jimple.v().newInvokeStmt(
+        Jimple.v().newSpecialInvokeExpr(base, constructorAccessor().makeRef(), arguments)
+      )
+    );
+  }
+  syn lazy SootMethod ConstructorDecl.constructorAccessor() {
+    ArrayList parameters = accessorSootTypeList();
+    SootMethod m = new SootMethod("<init>", parameters, soot.VoidType.v(), 0, new ArrayList());
+    hostType().getSootClassDecl().addMethod(m);
+    JimpleBody body = Jimple.v().newBody(m);
+    m.setActiveBody(body);
+    Body b = new Body(body);
+  
+    b.addThis(hostType());
+    ArrayList args = new ArrayList();
+    int i = 0;
+    for(Iterator iter = parameters.iterator(); iter.hasNext(); i++) {
+      soot.Type type = (soot.Type)iter.next();
+      // skip last argument
+      if(iter.hasNext()) {
+        args.add(
+          asImmediate(b, Jimple.v().newParameterRef(type, i))
+        );
+      }
+    }
+    b.add(
+      Jimple.v().newInvokeStmt(
+        Jimple.v().newSpecialInvokeExpr(asLocal(b, b.emitThis()), sootRef(), args)
+      )
+    );
+    b.add(Jimple.v().newReturnVoidStmt());
+    return m;
+  }
+
+
+  public soot.Value FieldDeclaration.emitInvokeFieldAccessor(Body b, soot.Value qualifier, TypeDecl hostType) {
+    SootMethodRef m = fieldAccessor().makeRef();
+    ArrayList args = new ArrayList();
+    if(!isStatic())
+      args.add(asImmediate(b, qualifier));
+    return Jimple.v().newStaticInvokeExpr(m, args);
+}
+  syn lazy SootMethod FieldDeclaration.fieldAccessor() {
+    ArrayList parameters = new ArrayList();
+    if(!isStatic())
+      parameters.add(hostType().getSootType());
+    SootMethod m = new SootMethod("access$" + accessorIndex(), parameters, type().getSootType(), soot.Modifier.STATIC, new ArrayList());
+    hostType().getSootClassDecl().addMethod(m);
+    JimpleBody body = Jimple.v().newBody(m);
+    m.setActiveBody(body);
+    Body b = new Body(body);
+    if(isStatic()) {
+      b.add(Jimple.v().newReturnStmt(
+        asImmediate(b, Jimple.v().newStaticFieldRef(sootRef()))
+      ));
+    }
+    else {
+      b.add(Jimple.v().newReturnStmt(
+        asImmediate(b, Jimple.v().newInstanceFieldRef(
+          asLocal(b, Jimple.v().newParameterRef(hostType().getSootType(), 0)),
+          sootRef()
+        ))
+      ));
+    }
+    return m;
+  }
+
+  public soot.Value FieldDeclaration.emitInvokeFieldAccessorWrite(Body b, soot.Value qualifier, soot.Value value, TypeDecl hostType) {
+    SootMethodRef m = fieldAccessorWrite().makeRef();
+    ArrayList args = new ArrayList();
+    if(!isStatic())
+      args.add(asImmediate(b, qualifier));
+    args.add(asImmediate(b, value));
+    return asLocal(b, Jimple.v().newStaticInvokeExpr(m, args));
+  }
+
+  syn lazy SootMethod FieldDeclaration.fieldAccessorWrite() {
+    ArrayList parameters = new ArrayList();
+    if(!isStatic())
+      parameters.add(hostType().getSootType());
+    parameters.add(type().getSootType());
+    SootMethod m = new SootMethod("access$" + accessorWriteIndex(), parameters, type().getSootType(), soot.Modifier.STATIC, new ArrayList());
+    hostType().getSootClassDecl().addMethod(m);
+    JimpleBody body = Jimple.v().newBody(m);
+    m.setActiveBody(body);
+    Body b = new Body(body);
+    soot.Local l;
+    if(isStatic()) {
+      l = asLocal(b, Jimple.v().newParameterRef(type().getSootType(), 0));
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newStaticFieldRef(sootRef()),
+        l
+      ));
+    }
+    else {
+      l = asLocal(b, Jimple.v().newParameterRef(type().getSootType(), 1));
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newInstanceFieldRef(
+          asLocal(b, Jimple.v().newParameterRef(hostType().getSootType(), 0)),
+          sootRef()
+        ),
+        l
+      ));
+    }
+    b.add(Jimple.v().newReturnStmt(l));
+    return m;
+  }
+
+}
