@@ -5453,5 +5453,9 @@
         </compile>
         <run class="ContainsTest"></run>
     </ajc-test>
+<ajc-test title="Test of arrayget and arrayset" num="1216" dir="abctests/eaj/arrayget">
+         <compile options="-ext,abc.eaj" files="ArrayGetSet.java"></compile>
+         <run class="ArrayGetSet"></run>
+    </ajc-test>
  
 </suite>
