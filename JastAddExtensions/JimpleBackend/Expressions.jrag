@@ -62,7 +62,7 @@ aspect Expressions {
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
     Value value = dest.emitCastTo(b, v, type);
     Value rvalue = source.emitCastTo(b, getSource().eval(b), type);
-    Value result = asLocal(b, type.emitCastTo(b,
+    Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
       dest
     ));
@@ -109,6 +109,29 @@ aspect Expressions {
       return super.eval(b);
     }
   }
+
+  // shift assign expression
+  public soot.Value AssignExpr.emitShiftExpr(Body b) {
+    TypeDecl dest = getDest().type();
+    TypeDecl source = getSource().type();
+    TypeDecl type = dest.unaryNumericPromotion();
+
+    Value lvalue = getDest().eval(b);
+    Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
+    Value value = dest.emitCastTo(b, v, type);
+    Value rvalue = source.emitCastTo(b, getSource().eval(b), typeInt());
+    Value result = asImmediate(b, type.emitCastTo(b,
+      createAssignOp(b, value, rvalue),
+      dest
+    ));
+    getDest().emitStore(b, lvalue, result);
+    return result;
+  }
+
+  public soot.Value AssignLShiftExpr.eval(Body b) { return emitShiftExpr(b); }
+  public soot.Value AssignRShiftExpr.eval(Body b) { return emitShiftExpr(b); }
+  public soot.Value AssignURShiftExpr.eval(Body b) { return emitShiftExpr(b); }
+
 
   // create the operation for a compound assign expression
   public soot.Value AssignExpr.createAssignOp(Body b, soot.Value fst, soot.Value snd) {
@@ -706,7 +729,7 @@ aspect Expressions {
         );
       Value index = IntType.emitConstant(i);
       Value lvalue = Jimple.v().newArrayRef(array, index);
-      b.add(Jimple.v().newAssignStmt(lvalue, asLocal(b, rvalue)));
+      b.add(Jimple.v().newAssignStmt(lvalue, asImmediate(b, rvalue)));
     }
     return array;
   }
@@ -761,10 +784,11 @@ aspect Expressions {
 
   public soot.Value Unary.emitPostfix(Body b, int constant) {
     soot.Value lvalue = getOperand().eval(b);
+    Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
     TypeDecl type = getOperand().type().binaryNumericPromotion(typeInt());
-    Value value = b.newTemp(getOperand().type().emitCastTo(b, lvalue, type));
+    Value value = b.newTemp(getOperand().type().emitCastTo(b, v, type));
     Value rvalue = typeInt().emitCastTo(b, IntType.emitConstant(constant), type);
-    Value sum = asLocal(b, type.emitCastTo(b,
+    Value sum = asRValue(b, type.emitCastTo(b,
       Jimple.v().newAddExpr(asImmediate(b, value), asImmediate(b, rvalue)),
       getOperand().type()
     ));

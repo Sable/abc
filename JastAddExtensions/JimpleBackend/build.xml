@@ -18,7 +18,7 @@
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
 <taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../Java1.4Frontend/tools/jastadd2.jar"/>
 
-<property name="libraries" value="lib/abc.jar:lib/abc-runtime.jar:lib/jasminclasses.jar:lib/java_cup.jar:lib/polyglot.jar:lib/sootclasses.jar"/>
+<property name="libraries" value="lib/jasminclasses.jar:lib/java_cup.jar:lib/polyglot.jar:lib/soot-dev/classes/"/>
 
 <!-- compile sources -->
 <target name="build" depends="gen">

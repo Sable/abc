@@ -68,7 +68,6 @@ class JavaCompiler {
           }
           else {
             unit.java2Transformation();
-            //unit.generateClassfile();
           }
         }
       }
@@ -80,34 +79,36 @@ class JavaCompiler {
       e.printStackTrace();
     }
     soot.G.reset();
+    soot.Main main = soot.Main.v();
     program.jimplify1();
     program.jimplify2();
 
-    loadSootClasses();
+    //main.run(new String[] { "-verbose", "test.Test" });
+
+
+    //Scene.v().loadNecessaryClasses();
+    Scene.v().loadBasicClasses();
+    Scene.v().loadDynamicClasses();
 
     Options.v().set_verbose(false);
     if(Program.hasOption("-jimple"))
       Options.v().set_output_format(Options.output_format_jimple);
     Options.v().set_output_dir(".");
 
-    //PhaseOptions.v().setPhaseOption("jop", "enabled");
-    /*
-    PhaseOptions.v().setPhaseOption("wstp", "disabled");
-    PhaseOptions.v().setPhaseOption("wsop", "disabled");
-    PhaseOptions.v().setPhaseOption("wjtp", "disabled");
-    PhaseOptions.v().setPhaseOption("wjap", "disabled");
-    PhaseOptions.v().setPhaseOption("cg", "enabled");
-    */
+    PhaseOptions.v().setPhaseOption("jop", "enabled");
     PackManager.v().runBodyPacks();
     PackManager.v().writeOutput();
     return true;
   }
+    private static void processCmdLine(String[] args) {
 
-  private static void loadSootClasses() {
-    Scene.v().loadClassAndSupport("java.lang.Error");
-    Scene.v().loadClassAndSupport("java.lang.RuntimeException");
-    Scene.v().loadClassAndSupport("java.lang.NegativeArraySizeException");
-  }
+        if (!Options.v().parse(args))
+            throw new CompilationDeathException(
+                CompilationDeathException.COMPILATION_ABORTED,
+                "Option parse error");
+
+        Options.v().warnNonexistentPhase();
+    }
 
   protected static void printUsage() {
     printVersion();
@@ -126,7 +127,7 @@ class JavaCompiler {
   }
 
   protected static void printVersion() {
-    System.out.println("Java1.4Frontend + SootBackend (http://jastadd.cs.lth.se) Version R20060729");
+    System.out.println("Java1.4Frontend + SootBackend (http://jastadd.cs.lth.se) Version R20060918");
   }
 
 }

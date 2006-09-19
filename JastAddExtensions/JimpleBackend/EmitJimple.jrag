@@ -28,7 +28,10 @@ aspect EmitJimple {
     }
     else {
       System.out.println("Loading .class file " + jvmName());
-      return Scene.v().loadClassAndSupport(jvmName());
+      SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
+      sc.setLibraryClass();
+      return sc;
+      //return Scene.v().loadClassAndSupport(jvmName());
     }
   }
   
