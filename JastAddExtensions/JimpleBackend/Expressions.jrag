@@ -819,11 +819,11 @@ aspect Expressions {
   public soot.Value Binary.eval(Body b) {
     return emitOperation(b, 
       getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-        getLeftOperand().eval(b),
+        asLocal(b, getLeftOperand().eval(b)),
         type()
       ),
       getRightOperand().type().emitCastTo(b, // Binary numeric promotion
-        getRightOperand().eval(b),
+        asLocal(b, getRightOperand().eval(b)),
         type()
       )
     );
@@ -832,11 +832,11 @@ aspect Expressions {
   public soot.Value Binary.emitShiftExpr(Body b) {
     return emitOperation(b, 
       getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-        getLeftOperand().eval(b),
+        asLocal(b, getLeftOperand().eval(b)),
         type()
       ),
       getRightOperand().type().emitCastTo(b,
-        getRightOperand().eval(b),
+        asLocal(b, getRightOperand().eval(b)),
         typeInt()
       )
     );

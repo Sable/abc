@@ -95,7 +95,7 @@ class JavaCompiler {
       Options.v().set_output_format(Options.output_format_jimple);
     Options.v().set_output_dir(".");
 
-    PhaseOptions.v().setPhaseOption("jop", "enabled");
+    //PhaseOptions.v().setPhaseOption("jop", "enabled");
     PackManager.v().runBodyPacks();
     PackManager.v().writeOutput();
     return true;
