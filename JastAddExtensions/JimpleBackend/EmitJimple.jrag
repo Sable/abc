@@ -88,6 +88,8 @@ aspect EmitJimple {
     if(isFinal()) result |= soot.Modifier.FINAL;
     if(isStatic()) result |= soot.Modifier.STATIC;
     if(isAbstract()) result |= soot.Modifier.ABSTRACT;
+    if(isSynchronized()) result |= soot.Modifier.SYNCHRONIZED;
+    if(isStrictfp()) result |= soot.Modifier.STRICTFP;
     return result;
   }
   syn int ConstructorDecl.sootTypeModifiers() {

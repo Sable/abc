@@ -60,7 +60,7 @@ aspect Expressions {
       type = dest;
     Value lvalue = getDest().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
-    Value value = dest.emitCastTo(b, v, type);
+    Value value = b.newTemp(dest.emitCastTo(b, v, type));
     Value rvalue = source.emitCastTo(b, getSource().eval(b), type);
     Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
@@ -118,7 +118,7 @@ aspect Expressions {
 
     Value lvalue = getDest().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
-    Value value = dest.emitCastTo(b, v, type);
+    Value value = b.newTemp(dest.emitCastTo(b, v, type));
     Value rvalue = source.emitCastTo(b, getSource().eval(b), typeInt());
     Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
@@ -197,6 +197,8 @@ aspect Expressions {
         return Jimple.v().newLengthExpr(asImmediate(b, createLoadQualifier(b)));
       }
       if(f.isStatic()) {
+        if(isQualified() && !qualifier().isTypeAccess())
+          b.newTemp(qualifier().eval(b));
         if(f.isPrivate() && !hostType().hasField(v.name()))
           return f.emitInvokeFieldAccessor(b, null, fieldQualifierType());
         else
@@ -320,33 +322,37 @@ aspect Expressions {
     if(!decl().isStatic() && isQualified() && prevExpr().isSuperAccess()) {
       Local left = asLocal(b, createLoadQualifier(b));
       ArrayList list = buildArgList(b);
+      soot.Value result;
       if(!hostType().instanceOf(prevExpr().type())) {
         TypeDecl typeDecl = superAccessorTarget();
         MethodDecl m = typeDecl.createSuperAccessor(decl());
         if(decl().hostType().isInterfaceDecl())
-          return Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
+          result = Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
         else
-          return Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
+          result = Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
       }
       else
-        return Jimple.v().newSpecialInvokeExpr(left, decl().sootRef(), list);
+        result = Jimple.v().newSpecialInvokeExpr(left, decl().sootRef(), list);
         // TODO: checkme decl().emitInvokeSpecialMethod(gen, methodQualifierType());
+      return type().isVoid() ? result : asLocal(b, result);
     }
     else {
+      soot.Value result;
       if(!decl().isStatic()) {
         Local left = asLocal(b, createLoadQualifier(b));
         ArrayList list = buildArgList(b);
         if(decl().hostType().isInterfaceDecl())
-          return Jimple.v().newInterfaceInvokeExpr(left, decl().sootRef(), list);
+          result = Jimple.v().newInterfaceInvokeExpr(left, decl().sootRef(), list);
         else
-          return Jimple.v().newVirtualInvokeExpr(left, decl().sootRef(), list);
+          result = Jimple.v().newVirtualInvokeExpr(left, decl().sootRef(), list);
       }
-      else if(decl().isStatic()) {
+      else {
+        if(isQualified() && !qualifier().isTypeAccess())
+          b.newTemp(qualifier().eval(b));
         ArrayList list = buildArgList(b);
-        return Jimple.v().newStaticInvokeExpr(decl().sootRef(), list);
+        result = Jimple.v().newStaticInvokeExpr(decl().sootRef(), list);
       }
-      else
-        return super.eval(b);
+      return type().isVoid() ? result : asLocal(b, result);
     }
   }
 
@@ -437,8 +443,8 @@ aspect Expressions {
   }
 
   public soot.Value ArrayAccess.eval(Body b) {
-    soot.Value arrayRef = prevExpr().eval(b);
-    soot.Value arrayIndex = getExpr().eval(b);
+    soot.Value arrayRef = b.newTemp(prevExpr().eval(b));
+    soot.Value arrayIndex = b.newTemp(getExpr().eval(b));
     return Jimple.v().newArrayRef(
       asLocal(b, arrayRef),
       asImmediate(b, arrayIndex)
@@ -817,29 +823,29 @@ aspect Expressions {
   public soot.Value PreDecExpr.eval(Body b) { return emitPrefix(b, -1); }
 
   public soot.Value Binary.eval(Body b) {
-    return emitOperation(b, 
+    return asLocal(b, emitOperation(b, 
       getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-        asLocal(b, getLeftOperand().eval(b)),
+        getLeftOperand().eval(b),
         type()
       ),
       getRightOperand().type().emitCastTo(b, // Binary numeric promotion
-        asLocal(b, getRightOperand().eval(b)),
+        getRightOperand().eval(b),
         type()
       )
-    );
+    ));
   }
 
   public soot.Value Binary.emitShiftExpr(Body b) {
-    return emitOperation(b, 
+    return asLocal(b, emitOperation(b, 
       getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-        asLocal(b, getLeftOperand().eval(b)),
+        getLeftOperand().eval(b),
         type()
       ),
       getRightOperand().type().emitCastTo(b,
-        asLocal(b, getRightOperand().eval(b)),
+        getRightOperand().eval(b),
         typeInt()
       )
-    );
+    ));
   }
 
   public soot.Value LShiftExpr.eval(Body b) { return emitShiftExpr(b); }
@@ -931,7 +937,7 @@ aspect Expressions {
     }
     else 
     return soot.jimple.Jimple.v().newAddExpr(
-      asImmediate(b,
+      b.newTemp(
         getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
           getLeftOperand().eval(b),
           type()
