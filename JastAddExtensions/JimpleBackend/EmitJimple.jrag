@@ -34,6 +34,7 @@ aspect EmitJimple {
       //return Scene.v().loadClassAndSupport(jvmName());
     }
   }
+  eq ArrayDecl.getSootClassDecl() = typeObject().getSootClassDecl();
   
   syn lazy Type TypeDecl.getSootType() = getSootClassDecl().getType();
   eq BooleanType.getSootType() = soot.BooleanType.v();
@@ -90,6 +91,7 @@ aspect EmitJimple {
     if(isAbstract()) result |= soot.Modifier.ABSTRACT;
     if(isSynchronized()) result |= soot.Modifier.SYNCHRONIZED;
     if(isStrictfp()) result |= soot.Modifier.STRICTFP;
+    if(isNative()) result |= soot.Modifier.NATIVE;
     return result;
   }
   syn int ConstructorDecl.sootTypeModifiers() {
@@ -200,7 +202,21 @@ aspect EmitJimple {
   }
   inh TypeDecl MethodDecl.typeObject();
 
-  syn lazy SootMethodRef MethodDecl.sootRef() = sootMethod().makeRef();
+  //syn lazy SootMethodRef MethodDecl.sootRef() = sootMethod().makeRef();
+  syn lazy SootMethodRef MethodDecl.sootRef() {
+    ArrayList parameters = new ArrayList();
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    SootMethodRef ref = Scene.v().makeMethodRef(
+      hostType().getSootClassDecl(),
+      name(),
+      parameters,
+      type().getSootType(),
+      isStatic()
+    );
+    return ref;
+  }
+
 
   public SootMethod ConstructorDecl.sootMethod;
   syn lazy SootMethod ConstructorDecl.sootMethod() {
@@ -444,6 +460,7 @@ aspect EmitJimple {
   }
 
   public void MethodDecl.jimplify2() {
+    try {
     if(hasBlock()) {
       JimpleBody body = Jimple.v().newBody(sootMethod);
       sootMethod.setActiveBody(body);
@@ -455,6 +472,10 @@ aspect EmitJimple {
       getBlock().jimplify2(b);
       if(type() instanceof VoidType)
         b.add(Jimple.v().newReturnVoidStmt());
+    }
+    } catch (RuntimeException e) {
+      System.err.println("Error generating " + hostType().typeName() + ": " + this); 
+      throw e;
     }
   }
 
