@@ -277,37 +277,19 @@ aspect Statements {
   public void TryStmt.jimplify2(Body b) {
     b.addLabel(label_begin());
     getBlock().jimplify2(b);
-    if(getBlock().canCompleteNormally())
-      b.add(Jimple.v().newGotoStmt(label_finally()));
     b.addLabel(label_block_end());
+    emitFinallyCode(b);
     b.add(Jimple.v().newGotoStmt(label_end()));
+
     for(int i = 0; i < getNumCatchClause(); i++) {
       getCatchClause(i).jimplify2(b);
-      if(getCatchClause(i).getBlock().canCompleteNormally()) {
-        if(!hasFinally())
-          b.add(Jimple.v().newGotoStmt(label_finally()));
-        else
-          b.add(Jimple.v().newGotoStmt(label_catch_end()));
-      }
-    }
-    
-    b.addLabel(label_catch_end());
-    if(hasFinally() && getNumCatchClause() > 0) {
       emitFinallyCode(b);
-      if(canCompleteNormally())
-        b.add(Jimple.v().newGotoStmt(label_end()));
+      b.add(Jimple.v().newGotoStmt(label_end()));
     }
-    
-    b.addLabel(label_finally());
     if(hasFinally()) {
-      if(getBlock().canCompleteNormally()) {
-        emitFinallyCode(b);
-        if(canCompleteNormally())
-          b.add(Jimple.v().newGotoStmt(label_end()));
-      }
       b.addLabel(label_exception_handler());
       emitExceptionHandler(b);
-      b.addLabel(label_finally_block());
+      b.add(Jimple.v().newGotoStmt(label_end()));
     }
     b.addLabel(label_end());
     // createExceptionTable
@@ -323,7 +305,7 @@ aspect Statements {
       b.addTrap(
         typeThrowable(),
         label_begin(),
-        label_finally(),
+        label_block_end(),
         label_exception_handler()
       );
     }

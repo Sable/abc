@@ -386,6 +386,11 @@ aspect EmitJimple {
       add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newThisRef(type.sootRef())));
       return this;
     }
+    public Body addITDThis(TypeDecl type) {
+      thisName = newLocal("this", type.getSootType());
+      add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newParameterRef(type.getSootType(), 0)));
+      return this;
+    }
     public soot.Local emitThis() {
       return thisName;
     }

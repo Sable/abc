@@ -80,6 +80,27 @@ class JavaCompiler {
     }
     soot.G.reset();
     soot.Main main = soot.Main.v();
+    ArrayList list = new ArrayList();
+    list.add("-d");
+    if(Program.hasValueForOption("-d"))
+      list.add(Program.getValueForOption("-d"));
+    else
+      list.add(".");
+    if(Program.hasValueForOption("-classpath")) {
+      list.add("-soot-class-path");
+      list.add(Program.getValueForOption("-classpath"));
+    }
+    /*if(Program.hasOption("-verbose"))
+      list.add("-verbose");*/
+
+    String[] argList = new String[list.size()];
+    int index = 0;
+    for(Iterator iter = list.iterator(); iter.hasNext(); ) {
+      String s = (String)iter.next();
+      argList[index++] = s;
+    }
+    soot.options.Options.v().parse(argList);
+
     program.jimplify1();
     program.jimplify2();
 
@@ -90,10 +111,8 @@ class JavaCompiler {
     Scene.v().loadBasicClasses();
     Scene.v().loadDynamicClasses();
 
-    Options.v().set_verbose(false);
     if(Program.hasOption("-jimple"))
       Options.v().set_output_format(Options.output_format_jimple);
-    Options.v().set_output_dir(".");
 
     //PhaseOptions.v().setPhaseOption("jop", "enabled");
     PackManager.v().runBodyPacks();
