@@ -22,6 +22,16 @@ aspect IntertypeFieldNameAnalysis {
       return set;
     return lookupVariable(name);
   }
+  eq IntertypeMethodDecl.getBlock().lookupVariable(String name) {
+    SimpleSet set = parameterDeclaration(name);
+    // A declaration of a method parameter name shadows any other variable declarations
+    if(!set.isEmpty()) return set;
+    // Search member fields
+    set = introducedType().memberFields(name);
+    if(!set.isEmpty()) return set;
+    // Delegate to other declarations in aspect
+    return lookupVariable(name);
+  }
 
   refine LookupVariable eq TypeDecl.localFields(String name) {
     SimpleSet fields = LookupVariable.TypeDecl.localFields(name);

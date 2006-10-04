@@ -1,4 +1,16 @@
 aspect IntertypeMethodCodegeneration {
+
+  public void TypeDecl.generateIntertypeDecls() {
+    super.generateIntertypeDecls();
+    for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof IntertypeMethodDecl) {
+        IntertypeMethodDecl methodDecl = (IntertypeMethodDecl)m;
+        methodDecl.createIntertypeMethod(this);
+      }
+    }
+  }
+
   // Each IntertypeMethodDecl generates two methods
   //   IntroducedMethodDecl m1 in the aspect, holding the method body
   //   MethodDecl m2 in the introduced type, that delegates the call to m1 
@@ -6,13 +18,19 @@ aspect IntertypeMethodCodegeneration {
   // the IntroducedMethodDecl node type is used to specialize name analysis
   public void IntertypeMethodDecl.generateIntertypeDecls() {
     super.generateIntertypeDecls();
-    MethodDecl aspectMethod = createAspectMethod();
-    hostAspect().addMemberMethod(aspectMethod);
-    MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
-    introducedType().addMemberMethod(delegateMethod);
+    //MethodDecl aspectMethod = createAspectMethod();
+    //MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
+    //introducedType().addMemberMethod(delegateMethod);
   }
 
-  private MethodDecl IntertypeMethodDecl.createAspectMethod() {
+  public void IntertypeMethodDecl.createIntertypeMethod(TypeDecl introducedType) {
+    MethodDecl aspectMethod = createAspectMethod();
+    MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
+    introducedType.addMemberMethod(delegateMethod);
+  }
+
+  syn lazy MethodDecl IntertypeMethodDecl.createAspectMethod() {
+    if(!isFinal) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
     // make aspect method static
     List modifierList = (List)getModifiers().getModifierList().fullCopy();
     if(!isStatic())
@@ -25,7 +43,7 @@ aspect IntertypeMethodCodegeneration {
     for(int i = 0; i < getNumParameter(); i++)
       parameterList.add(getParameter(i).qualifiedCopy());
       
-    return new IntroducedMethodDecl(
+    MethodDecl aspectMethod = new IntroducedMethodDecl(
       new Modifiers(modifierList),
       type().createQualifiedAccess(),
       name(),
@@ -37,6 +55,8 @@ aspect IntertypeMethodCodegeneration {
       ),
       introducedType()
     );
+    hostAspect().addMemberMethod(aspectMethod);
+    return aspectMethod;
   }
 
   public ParameterDeclaration ParameterDeclaration.qualifiedCopy() {
@@ -117,7 +137,8 @@ aspect IntertypeMethodCodegeneration {
     List args = new List();
     for(int i = 0; i < getNumParameter(); i++)
       args.add(getParameter(i).createAccess());
-    Expr e = new SuperAccess("super").qualifiesAccess(new MethodAccess(name(), args));
+    // BUG: Expr e = new SuperAccess("super").qualifiesAccess(new MethodAccess(name(), args));
+    Expr e = new SuperAccess("super").qualifiesAccess(this.createBoundAccess(args));
     if(type().isVoid())
       statements.add(new ExprStmt(e));
     else
@@ -140,7 +161,7 @@ aspect IntertypeMethodCodegeneration {
   // hostType() -> type to hold the new method
   // a new method called dispatchSuper$signature
   
-  private MethodDecl IntertypeMethodDecl.createDelegateMethod(MethodDecl aspectMethod) {
+  public MethodDecl IntertypeMethodDecl.createDelegateMethod(MethodDecl aspectMethod) {
     // make arguments from this and method parameters
     List args = new List();
     if(!isStatic())
@@ -187,14 +208,13 @@ aspect IntertypeMethodCodegeneration {
   inh Collection BodyDecl.lookupMethod(String name);
   
   eq IntroducedMethodDecl.getBlock().lookupVariable(String name) {
-    SimpleSet set = introducedType().memberFields(name);
-    if(!set.isEmpty())
-      return set;
-    SimpleSet v = parameterDeclaration(name);
-    if(!v.isEmpty()) return v;
+    SimpleSet set = parameterDeclaration(name);
+    if(!set.isEmpty()) return set;
+    set = introducedType().memberFields(name);
+    if(!set.isEmpty()) return set;
     return lookupVariable(name);
   }
-  
+
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();
   eq IntroducedMethodDecl.getParameter(int index).hostType() = introducedType();
 

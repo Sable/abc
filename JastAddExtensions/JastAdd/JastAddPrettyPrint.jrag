@@ -28,8 +28,8 @@ aspect JastAddPrettyPrint {
   }
   public void SynEq.toString(StringBuffer s) {
     s.append(indent() + "eq ");
-    getHostType().toString(s);
-    s.append("." + getAttributeName()); 
+    getTargetType().toString(s);
+    s.append("." + getID()); 
     s.append("(");
     if(getNumParameter() > 0) {
       getParameter(0).toString(s);
@@ -44,7 +44,7 @@ aspect JastAddPrettyPrint {
 
   public void InhEq.toString(StringBuffer s) {
     s.append(indent() + "eq ");
-    getHostType().toString(s);
+    getTargetType().toString(s);
     s.append("." + getChildName());
     s.append("(");
     if(getNumChildParameter() > 0) {

@@ -11,6 +11,16 @@ aspect IntertypeMethodNameAnalysis {
   // introducedType is the type into which the intertype method decl is statically introduced
   syn TypeDecl IntertypeMethodDecl.introducedType() = getTargetType().type();
 
+
+  // isNestedType() need not be changed since all types within a bodydecl are nested types
+  // isLocalClass() need not be changed
+  eq IntertypeMethodDecl.getBlock().enclosingType() = introducedType();
+  eq IntertypeMethodDecl.getBlock().isMemberType() = introducedType().isMemberType();
+  eq IntertypeMethodDecl.getBlock().enclosingInstance() = introducedType();
+
+  eq IntroducedMethodDecl.getBlock().enclosingType() = introducedType();
+  eq IntroducedMethodDecl.getBlock().enclosingInstance() = introducedType();
+
   // override ag-inherited attribute, this will cause calls bound to an
   // IntertypeMethodDecl to invoke a method in the introducedType instead of the hostAspect
   syn TypeDecl IntertypeMethodDecl.hostType() = introducedType();
@@ -29,10 +39,24 @@ aspect IntertypeMethodNameAnalysis {
   }
   
   refine LookupMethod eq TypeDecl.localMethodsSignatureMap() {
+    // Locally declared methods
     HashMap map = LookupMethod.TypeDecl.localMethodsSignatureMap();
+    // Add intertype methods if there is no local declaration
     for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
       MethodDecl decl = (MethodDecl)iter.next();
-      map.put(decl.signature(), decl);
+      if(!map.containsKey(decl.signature()))
+        map.put(decl.signature(), decl);
+    }
+    return map;
+  }
+  eq ClassDecl.localMethodsSignatureMap() {
+    // Locally declared methods + intertype methods with exact type
+    HashMap map = super.localMethodsSignatureMap();
+    // Add intertype methods introduced through an interface
+    for(Iterator iter = interfacesMethodsIterator(); iter.hasNext(); ) {
+      MethodDecl decl = (MethodDecl)iter.next();
+      if(decl instanceof IntertypeMethodDecl && !decl.isAbstract() && !map.containsKey(decl.signature()))
+        map.put(decl.signature(), decl);
     }
     return map;
   }
@@ -65,4 +89,5 @@ aspect IntertypeMethodNameAnalysis {
     }
     return c;
   }
+
 }

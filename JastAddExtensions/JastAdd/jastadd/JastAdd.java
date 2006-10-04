@@ -14,7 +14,8 @@ public class JastAdd {
       if(!compile(args))
         System.exit(1);
     } catch (Error e) {
-      e.printStackTrace();
+      throw e;
+      //e.printStackTrace();
     }
   }
 

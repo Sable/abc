@@ -57,7 +57,7 @@ aspect Rewrite {
         new IntegerLiteral(0)
       );
     duringCounter = field;
-    TypeDecl typeDecl = extractSingleType(lookupType("ASTNode"));
+    TypeDecl typeDecl = astNode();
     typeDecl.addMemberField(field);
     typeDecl.addMemberMethod(
       // protected static boolean duringAspectName() {
@@ -265,41 +265,80 @@ aspect Rewrite {
       );
     }
   }
-  
+
+  syn lazy MethodDecl Rewrite.createTransformMethod() {
+    Modifiers m = new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")));
+    String name = "rewrite$transform$" + hostType().rewriteCounter++;
+    List parameters = new List().add(new ParameterDeclaration(astNode().createQualifiedAccess(), "self"));
+    Access returnType = (isListRewrite() ? listNode() : astNode()).createQualifiedAccess();
+    // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
+    MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new List(), new Opt(getBlock().fullCopy()), introducedType());
+    return enclosingBodyDecl().hostType().addMemberMethod(decl);
+  }
+  public int TypeDecl.rewriteCounter;
+  inh TypeDecl Rewrite.hostType();
+  inh BodyDecl Rewrite.enclosingBodyDecl();
+
   public void Rewrite.addTestAndRewrite(List statements) {
+    /*
     if(isListRewrite()) {
       // replace return x with getParent().insertList(x, getParent().getIndexOfChild(this))
       getBlock().replaceReturnStmts();
     }
+    */
     // if(expr) { ... return node; }
     FieldDeclaration field = duringCounter();
-    statements.add(
-      new IfStmt(
-        createCondition(),
-        new Block(
-          new List().add(
-            new ExprStmt(
-              new PostIncExpr(
-                field.createBoundFieldAccess()
-              )
-            )
-          ).add(
-            new TryStmt(
-              (Block)getBlock().fullCopy(),
-              new List(),
-              new Opt(
-                new Block(
-                  new List().add(
-                    new ExprStmt(
-                      new PostDecExpr(
-                        field.createBoundFieldAccess()
-                      )
-                    )
+    Expr init;
+    if(!isListRewrite()) {
+      init = createTransformMethod().createBoundAccess(new List().add(new ThisAccess()));
+    }
+    else {
+      init = 
+          new MethodAccess(
+            "getParent",
+            new List()
+          ).qualifiesAccess(
+            new MethodAccess(
+              "insertList",
+              new List().add(
+                createTransformMethod().createBoundAccess(new List().add(new ThisAccess()))
+              ).add(
+                new MethodAccess(
+                  "getParent",
+                  new List()
+                ).qualifiesAccess(
+                  new MethodAccess(
+                    "getIndexOfChild",
+                    new List().add(new ThisAccess("this"))
                   )
                 )
               )
             )
-          )
+          );
+    }
+
+    List transformBody = new List();
+    // during++
+    transformBody.add(new ExprStmt(new PostIncExpr(field.createBoundFieldAccess())));
+    // ASTNode result = rewrite$transform$0(this);
+    transformBody.add(
+      new VariableDeclaration(
+        astNode().createQualifiedAccess(),
+        "result",
+        init
+      )
+    );
+    // during--
+    transformBody.add(new ExprStmt(new PostDecExpr(field.createBoundFieldAccess())));
+
+    statements.add(
+      new IfStmt(
+        createCondition(),
+        new Block(
+          new List().add(new ExprStmt(new PostIncExpr(field.createBoundFieldAccess()))
+          ).add(new VariableDeclaration(astNode().createQualifiedAccess(), "result", init)
+          ).add(new ExprStmt(new PostDecExpr(field.createBoundFieldAccess()))
+          ).add(new ReturnStmt(new VarAccess("result")))
         )
       )
     );
@@ -403,7 +442,7 @@ aspect Rewrite {
     addMemberMethod(
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
-        new TypeAccess("ASTNode"),
+        astNode().createQualifiedAccess(),
         "rewriteTo",
         new List(),
         new List(),
@@ -449,9 +488,16 @@ aspect Rewrite {
 
   eq RewriteListDecl.getChildName().lookupMethod(String name) = 
     getParentType().type().memberMethods(name);
+  eq RewriteListDecl.getChildName().lookupVariable(String name) = 
+    getParentType().type().memberFields(name);
 
   eq RewriteDecl.getRewrite(int index).lookupMethod(String name) = 
     getAccess().type().memberMethods(name);
+  eq RewriteDecl.getRewrite(int index).lookupVariable(String name) =
+    getAccess().type().memberFields(name);
 
   eq RewriteDecl.getRewrite(int index).hostType() = getAccess().type();
+
+  eq RewriteDecl.getRewrite(int index).introducedType() = getAccess().type();
+  inh TypeDecl Rewrite.introducedType();
 }

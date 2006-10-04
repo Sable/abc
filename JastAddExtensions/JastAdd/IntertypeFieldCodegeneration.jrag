@@ -6,7 +6,7 @@ aspect IntertypeFieldCodegeneration {
         type().createQualifiedAccess(),
         name(),
         (Opt)getInitOpt().fullCopy(),
-        hostType()
+        hostAspect()
       )
     );
   }
@@ -24,6 +24,17 @@ aspect IntertypeFieldCodegeneration {
     if(!set.isEmpty())
       return set;
     return aspectType().memberFields(name); // TODO: Does this work for fields in nested aspects/classes?
+  }
+
+  eq IntroducedFieldDeclaration.getInit().lookupType(String name) {
+    SimpleSet set = hostType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = aspectType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = aspectType().lookupType(name);
+    if(set.isEmpty())
+      System.err.println("Could not find " + name + " from " + name() + " in neither " + hostType().typeName() + " nor " + aspectType().typeName());
+    return set;
   }
 
   eq IntertypeFieldDeclaration.isBytecodeField() = false;

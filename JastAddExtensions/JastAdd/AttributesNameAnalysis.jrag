@@ -5,14 +5,21 @@ aspect JastAdd {
   eq AttributeDecl.getBlock().hostType() = getTargetType().type();
   eq AttributeDecl.getParameter().hostType() = getTargetType().type();
   
-  eq AttributeEq.getBlock().hostType() = getHostType().type();
-  eq AttributeEq.getParameter().hostType() = getHostType().type();
-  eq InhEq.getChildParameter().hostType() = getHostType().type();
+  eq SynEq.getBlock().hostType() = getTargetType().type();
+  eq SynEq.getParameter().hostType() = getTargetType().type();
+
+  eq InhEq.getBlock().hostType() = getTargetType().type();
+  eq InhEq.getParameter().hostType() = getTargetType().type();
+  eq InhEq.getChildParameter().hostType() = getTargetType().type();
 
   eq AttributeDecl.getTypeAccess().nameType() = NameType.TYPE_NAME;
   eq AttributeDecl.getTargetType().nameType() = NameType.TYPE_NAME;
-  eq AttributeEq.getHostType().nameType() = NameType.TYPE_NAME;
-  eq AttributeEq.getParameter().nameType() = NameType.TYPE_NAME;
+
+  eq SynEq.getTargetType().nameType() = NameType.TYPE_NAME;
+  eq SynEq.getParameter().nameType() = NameType.TYPE_NAME;
+
+  eq InhEq.getTargetType().nameType() = NameType.TYPE_NAME;
+  eq InhEq.getParameter().nameType() = NameType.TYPE_NAME;
   eq InhEq.getChildParameter().nameType() = NameType.TYPE_NAME;
 
   syn boolean SynDecl.hasEqBody() = hasBlock() && !getBlock().isDummy();
@@ -113,6 +120,14 @@ aspect JastAdd {
     }
     return false;
   }
+  syn boolean ASTDecl.hasEquation(SynEq synEq) {
+    for(Iterator iter = synEquations().iterator(); iter.hasNext(); ) {
+      SynEq equation = (SynEq)iter.next();
+      if(equation.matches(synEq))
+        return true;
+    }
+    return false;
+  }
 
   public void SynEq.nameCheck() {
     super.nameCheck();
@@ -128,21 +143,15 @@ aspect JastAdd {
         return false;
     return true;
   }
-
-  eq Program.getCompilationUnit(int i).lookupSynDecl(TypeDecl typeDecl, String name) = null;
-  eq AspectDecl.getBodyDecl(int i).lookupSynDecl(TypeDecl typeDecl, String name) {
-    Collection c = new ArrayList(1);
-    for(Iterator iter = localIntroductionMethods().iterator(); iter.hasNext(); ) {
-      BodyDecl decl = (BodyDecl)iter.next();
-      if(decl instanceof SynDecl) {
-        SynDecl synDecl = (SynDecl)decl;
-        if(synDecl.name().equals(name) && synDecl.introducedType() == typeDecl)
-          c.add(synDecl);
-      }
-    }
-    return c;
+  syn boolean SynEq.matches(SynEq synEq) {
+    if(!name().equals(synEq.name()) || getNumParameter() != synEq.getNumParameter())
+      return false;
+    for(int i = 0; i < getNumParameter(); i++)
+      if(getParameter(i).type() != synEq.getParameter(i).type())
+        return false;
+    return true;
   }
-  inh Collection AttributeEq.lookupSynDecl(TypeDecl typeDecl, String name);
+
 
   syn SynDecl SynEq.decl() {
     TypeDecl typeDecl = introducedType();
@@ -176,11 +185,29 @@ aspect JastAdd {
     }
     return null;
     */
-  } 
+  }
+  /*
+  eq Program.getCompilationUnit(int i).lookupSynDecl(TypeDecl typeDecl, String name) = null;
+  eq AspectDecl.getBodyDecl(int i).lookupSynDecl(TypeDecl typeDecl, String name) {
+    Collection c = new ArrayList(1);
+    for(Iterator iter = localIntroductionMethods().iterator(); iter.hasNext(); ) {
+      BodyDecl decl = (BodyDecl)iter.next();
+      if(decl instanceof SynDecl) {
+        SynDecl synDecl = (SynDecl)decl;
+        if(synDecl.name().equals(name) && synDecl.introducedType() == typeDecl)
+          c.add(synDecl);
+      }
+    }
+    return c;
+  }
+  inh Collection SynEq.lookupSynDecl(TypeDecl typeDecl, String name);
+  */
 
-  syn TypeDecl AttributeEq.introducedType() = getHostType().type();   // type in which this equation is valid
-  syn String AttributeEq.name() = getAttributeName();           // attribute name
+  syn TypeDecl SynEq.introducedType() = getTargetType().type();   // type in which this equation is valid
+  syn String SynEq.name() = getID();           // attribute name
   
+  syn TypeDecl InhEq.introducedType() = getTargetType().type();   // type in which this equation is valid
+  syn String InhEq.name() = getAttributeName();           // attribute name
   syn String InhEq.childName() = getChildName().substring(3);          // name of the child of hostType that is the root for this equation
 
   syn lazy List AttributeDecl.getEmptyBracketList() = new List();
@@ -203,53 +230,69 @@ aspect JastAdd {
   eq AttributeDecl.getModifiers().mayBeNative() = false;
   eq AttributeDecl.getModifiers().mayBeStrictfp() = false;
 
-  eq AttributeEq.getParameter().isMethodParameter() = true;
-  eq AttributeEq.getParameter().isConstructorParameter() = false;
-  eq AttributeEq.getParameter().isExceptionHandlerParameter() = false;
-  eq AttributeEq.getBlock().reachable() = true;
-  eq AttributeEq.getBlock().hostBodyDecl() = this;
+  eq SynEq.getParameter().isMethodParameter() = true;
+  eq SynEq.getParameter().isConstructorParameter() = false;
+  eq SynEq.getParameter().isExceptionHandlerParameter() = false;
+  eq SynEq.getBlock().reachable() = true;
+  eq SynEq.getBlock().hostBodyDecl() = this;
   
+  eq InhEq.getParameter().isMethodParameter() = true;
+  eq InhEq.getParameter().isConstructorParameter() = false;
+  eq InhEq.getParameter().isExceptionHandlerParameter() = false;
+  eq InhEq.getBlock().reachable() = true;
+  eq InhEq.getBlock().hostBodyDecl() = this;
   eq InhEq.getChildParameter().isMethodParameter() = true;
   eq InhEq.getChildParameter().isConstructorParameter() = false;
   eq InhEq.getChildParameter().isExceptionHandlerParameter() = false;
 
+  eq SynEq.getBlock().lookupVariable(String name) = localLookupVariable(name);
+  eq SynEq.getParameter().lookupVariable(String name) = localLookupVariable(name);
 
-
-  eq AttributeEq.getBlock().lookupVariable(String name) = localLookupVariable(name);
-  eq AttributeEq.getParameter().lookupVariable(String name) = localLookupVariable(name);
+  eq InhEq.getBlock().lookupVariable(String name) = localLookupVariable(name);
+  eq InhEq.getParameter().lookupVariable(String name) = localLookupVariable(name);
   eq InhEq.getChildParameter().lookupVariable(String name) = localLookupVariable(name);
 
-  syn lazy SimpleSet AttributeEq.localLookupVariable(String name) {
-    for(int i = 0; i < getNumParameter(); i++) {
+  syn lazy SimpleSet SynEq.localLookupVariable(String name) {
+    for(int i = 0; i < getNumParameter(); i++)
       if(getParameter(i) instanceof Variable) {
         Variable v = (Variable)getParameter(i);
-        if(v.name().equals(name)) {
+        if(v.name().equals(name))
           return SimpleSet.emptySet.add(v);
-        }
       }
-    }
     return lookupVariable(name);
   }
 
-  eq InhEq.localLookupVariable(String name) {
-    for(int i = 0; i < getNumChildParameter(); i++) {
+  syn lazy SimpleSet InhEq.localLookupVariable(String name) {
+    for(int i = 0; i < getNumChildParameter(); i++)
       if(getChildParameter(i) instanceof Variable) {
         Variable v = (Variable)getChildParameter(i);
-        if(v.name().equals(name)) {
+        if(v.name().equals(name))
           return SimpleSet.emptySet.add(v);
-        }
       }
-    }
-    return super.localLookupVariable(name);
+    for(int i = 0; i < getNumParameter(); i++)
+      if(getParameter(i) instanceof Variable) {
+        Variable v = (Variable)getParameter(i);
+        if(v.name().equals(name))
+          return SimpleSet.emptySet.add(v);
+      }
+    SimpleSet set = introducedType().memberFields(name);
+    if(!set.isEmpty()) return set;
+    return lookupVariable(name);
   }
 
-  eq AttributeEq.getBlock().lookupMethod(String name) {
+  eq SynDecl.getBlock().lookupMethod(String name) {
     Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;
     return lookupMethod(name);
   }
-  eq SynDecl.getBlock().lookupMethod(String name) {
+  eq SynEq.getBlock().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    if(!c.isEmpty())
+      return c;
+    return lookupMethod(name);
+  }
+  eq InhEq.getBlock().lookupMethod(String name) {
     Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;

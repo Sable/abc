@@ -2,6 +2,15 @@ import java.util.*;
 
 aspect ASTGrammar {
 
+  // Change the packageName() to a specific jastadd package??
+  eq CompilationUnit.getTypeDecl(int i).astNode() = lookupType(packageName(), "ASTNode");
+  inh lazy TypeDecl ASTDecl.astNode();
+  inh lazy TypeDecl InhDecl.astNode();
+  inh lazy TypeDecl ClassDecl.astNode();
+  inh lazy TypeDecl Rewrite.astNode();
+  eq CompilationUnit.getTypeDecl(int i).listNode() = lookupType(packageName(), "List");
+  inh lazy TypeDecl Rewrite.listNode();
+  
   refine ClassPath public void Program.addSourceFile(String name) {
     if(name.endsWith(".ast"))
       loadASTFile(name);
@@ -126,7 +135,7 @@ aspect ASTGrammar {
   public ClassDecl ASTDecl.superclass() {
     if(hasSuperClassAccess() && !isCircular() && getSuperClassAccess().type().isClassDecl())
       return (ClassDecl)getSuperClassAccess().type();
-    ClassDecl classDecl = (ClassDecl)extractSingleType(lookupType("ASTNode"));
+    ClassDecl classDecl = (ClassDecl)astNode();
     if(classDecl != null) return classDecl;
     return (ClassDecl)typeObject();
   }
@@ -220,50 +229,52 @@ aspect ASTGrammar {
     // add constructor with a single int argument for backward compability with jjtree
 
     //if(list.getNumChild() > 0) {
-    statements = new List();
-    index = 0;
-    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
-      ASTChild child = (ASTChild)iter.next();
-      if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
-        statements.add(
-          new ExprStmt(
-            new MethodAccess(
-              "setChild",
-              new List().add(
-                child.createDefaultInit()
-              ).add(
-                new IntegerLiteral(index)
+      statements = new List();
+      index = 0;
+      for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+        ASTChild child = (ASTChild)iter.next();
+        if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
+          statements.add(
+              new ExprStmt(
+                new MethodAccess(
+                  "setChild",
+                  new List().add(
+                    child.createDefaultInit()
+                    ).add(
+                      new IntegerLiteral(index)
+                      )
+                  )
+                )
+              );
+        }
+        if(!(child instanceof ASTTokenChild))
+          index++;
+      }
+
+      /*
+         if(isRootNode()) {
+         statements.add(
+         AssignExpr.asStmt(
+         new VarAccess("isFinal"),
+         new BooleanLiteral("true")
+         )
+         );
+         }
+       */
+    if(Program.hasOption("-jjtree")) {
+      bodyDeclList.add(
+          new ConstructorDecl(
+            new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+            name(),
+            new List().add(new ParameterDeclaration(new TypeAccess("int"), "kind")),
+            new List(),
+            new Opt(),
+            new Block(
+              statements
               )
             )
-          )
-        );
-      }
-      if(!(child instanceof ASTTokenChild))
-        index++;
+          );
     }
-    
-    /*
-    if(isRootNode()) {
-      statements.add(
-        AssignExpr.asStmt(
-          new VarAccess("isFinal"),
-          new BooleanLiteral("true")
-        )
-      );
-    }
-    */
-    bodyDeclList.add(
-      new ConstructorDecl(
-        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-        name(),
-        new List().add(new ParameterDeclaration(new TypeAccess("int"), "kind")),
-        new List(),
-        new Opt(),
-        new Block(
-          statements
-        )
-      )
-    );
     if(list.getNumChild() > 0) {
       bodyDeclList.add(
         new ConstructorDecl(
@@ -311,7 +322,7 @@ aspect ASTGrammar {
       addMemberMethod(
         new MethodDecl(
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-          new TypeAccess("ASTNode"),
+          astNode().createQualifiedAccess(),
           "getChild",
           new List().add(
             new ParameterDeclaration(
@@ -779,9 +790,10 @@ aspect ASTGrammar {
   }
   
   public void ASTTokenChild.addAccessors(List bodyDeclList, int index) {
-    if(!isNTA())
-      addCacheDecl(bodyDeclList, index);
-    addGetter(bodyDeclList, index);
+    if(!isNTA()) {
+      addGetter(bodyDeclList, index);
+    }
+    addCacheDecl(bodyDeclList, index);
     addSetter(bodyDeclList, index);
   }
   public void ASTTokenChild.addCacheDecl(List bodyDeclList, int index) {
