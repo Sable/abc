@@ -67,14 +67,13 @@ public class JastAddTask extends Task {
     */
     ArrayList args = new ArrayList();
     if(outdir != null)      args.add("-o=" + outdir);
-    if(novisitcheck)        args.add("-novisitcheck");
-    if(noCacheCycle)        args.add("-noCacheCycle");
     if(classpath != null) {
       args.add("-classpath");
       args.add(classpath);
     }
     if(verbose)             args.add("-verbose");
-    	if(!componentCheck)	  args.add("-no_component_check");
+    if(novisitcheck)        args.add("-no_visit_check");
+    if(!componentCheck)	  args.add("-no_component_check");
     if(!cacheCycle) args.add("-no_cache_cycle");
     args.addAll(files);
 

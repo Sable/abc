@@ -394,7 +394,20 @@ aspect ASTGrammar {
     addSetter(bodyDeclList, index);
     addInserter(bodyDeclList, index);
     addAdder(bodyDeclList, index);
+    if(isNTA())
+      addChildPosition(bodyDeclList, index, "get" + name() + "List" + "ChildPosition");
   }
+  public void ASTChild.addChildPosition(List bodyDeclList, int index, String name) {
+    bodyDeclList.add(
+      createMethodDecl(
+        "int",
+        name,
+        new List(),
+        new List().add(new ReturnStmt(new IntegerLiteral(index)))
+      )
+    );
+  }
+
   public void ASTListChild.addGetterList(List bodyDeclList, int index) {
     // public List getNameList() { return (List)getChild(index); }
     bodyDeclList.add(
@@ -599,6 +612,8 @@ aspect ASTGrammar {
     addHasOptional(bodyDeclList, index);
     addGetter(bodyDeclList, index);
     addSetter(bodyDeclList, index);
+    if(isNTA())
+      addChildPosition(bodyDeclList, index, "get" + name() + "Opt" + "ChildPosition");
   }
   public void ASTOptionalChild.addGetterOpt(List bodyDeclList, int index) {
     // public Opt getNameOpt() { return (Opt)getChild(index); }
@@ -733,6 +748,8 @@ aspect ASTGrammar {
       addGetter(bodyDeclList, index);
     addGetterNoTransform(bodyDeclList, index);
     addSetter(bodyDeclList, index);
+    if(isNTA())
+      addChildPosition(bodyDeclList, index, "get" + name() + "ChildPosition");
   }
   protected void ASTElementChild.addGetter(List bodyDeclList, int index) {
     // public type getName() { return (type)getChild(index); }

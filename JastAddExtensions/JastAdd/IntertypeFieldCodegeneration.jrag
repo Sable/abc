@@ -1,6 +1,6 @@
 aspect IntertypeFieldCodegeneration {
   public void IntertypeFieldDeclaration.generateIntertypeDecls() {
-    introducedType().addMemberField(
+    FieldDeclaration f = introducedType().addMemberField(
       new IntroducedFieldDeclaration(
         (Modifiers)getModifiers().fullCopy(),
         type().createQualifiedAccess(),
@@ -9,7 +9,15 @@ aspect IntertypeFieldCodegeneration {
         hostAspect()
       )
     );
+    ((IntroducedFieldDeclaration)f).originalField = this;
   }
+
+  public FieldDeclaration IntroducedFieldDeclaration.originalField;
+  eq IntroducedFieldDeclaration.accessorIndex() = originalField.accessorIndex();
+  eq IntroducedFieldDeclaration.needsAccessor() = originalField.needsAccessor();
+  // TODO: the same for write
+  // TODO: the same for methods and constructors
+
 
   
   // change name binding to search for methods in introducedType in IntroducedMethodDecl body

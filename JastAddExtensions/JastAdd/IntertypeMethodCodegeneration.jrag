@@ -83,7 +83,7 @@ aspect IntertypeMethodCodegeneration {
       }
       if(maxSpecific.size() == 1) {
         MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
-        m.createSuperDispatchDelegate();
+        m.createSuperDispatchDelegate(hostType());
       }
     }
   }
@@ -106,7 +106,7 @@ aspect IntertypeMethodCodegeneration {
       }
       if(maxSpecific.size() == 1) {
         MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
-        m = m.createSuperDispatchDelegate();
+        m = m.createSuperDispatchDelegate(hostType());
         // invoke m virtually
         gen.emitLoadReference(0);
         for (int i = 0; i < getNumArg(); ++i) {
@@ -131,8 +131,8 @@ aspect IntertypeMethodCodegeneration {
     return list;
   }
     
-  syn lazy MethodDecl MethodDecl.createSuperDispatchDelegate() {
-    String name = "superDispatch$" + name();
+  syn lazy MethodDecl MethodDecl.createSuperDispatchDelegate(TypeDecl qualifierType) {
+    String name = "superDispatch$" + hostType().fullName().replace('.', '$').replace('@', '_') + "$" + name();
     List statements = new List();
     List args = new List();
     for(int i = 0; i < getNumParameter(); i++)
@@ -152,9 +152,7 @@ aspect IntertypeMethodCodegeneration {
       (List)getExceptionList().fullCopy(),
       new Opt(new Block(statements))
     );
-    hostType().addMemberMethod(m);
-    hostType().getBodyDecl(hostType().getNumBodyDecl()-1);
-    return m;
+    return qualifierType.addMemberMethod(m);
   }
 
   // decl().signature() -> method to call using invoke super

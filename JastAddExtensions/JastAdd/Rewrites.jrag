@@ -44,7 +44,68 @@ aspect Rewrite {
   inh Collection ASTDecl.lookupRewrites(TypeDecl typeDecl);
   eq Program.getCompilationUnit(int i).lookupRewrites(TypeDecl typeDecl) = rewritesMap().containsKey(typeDecl) ? (Collection)rewritesMap().get(typeDecl) : new ArrayList(0);
 
-  
+  protected void AspectDecl.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = astNode();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+
+    FieldDeclaration field = duringCounter();
+    MethodDecl m = addMemberMethod(
+      new IntertypeMethodDecl(
+        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("static"))),
+        new PrimitiveTypeAccess("boolean"),
+        "during" + name(),
+        new List(),
+        new List(),
+        new List(),
+        new Opt(
+          new Block(
+            new List().add(
+              new IfStmt(
+                new EQExpr(
+                  field.createBoundFieldAccess(),
+                  new IntegerLiteral(0)
+                ),
+                new ReturnStmt(new BooleanLiteral(false)),
+                new Block(
+                  new List().add(
+                    new ExprStmt(
+                      new VarAccess("state").qualifiesAccess(
+                        new MethodAccess(
+                          "pop",
+                          new List()
+                        )
+                      )
+                    )
+                  ).add(
+                    new ExprStmt(
+                      new VarAccess("state").qualifiesAccess(
+                        new MethodAccess(
+                          "push",
+                          new List().add(
+                            astNode().createQualifiedAccess().qualifiesAccess(
+                              new VarAccess("REWRITE_INTERRUPT")
+                            )
+                          )
+                        )
+                      )
+                    )
+                  ).add(
+                    new ReturnStmt(new BooleanLiteral(true))
+                  )
+                )
+              )
+            )
+          )
+        ),
+        astNode().createQualifiedAccess()
+      )
+    );
+    c.add(m);
+  }
+
   private FieldDeclaration AspectDecl.duringCounter = null; 
   syn lazy FieldDeclaration AspectDecl.duringCounter() {
     // protected static int duringAspectName = 0;
@@ -59,6 +120,7 @@ aspect Rewrite {
     duringCounter = field;
     TypeDecl typeDecl = astNode();
     typeDecl.addMemberField(field);
+    /*
     typeDecl.addMemberMethod(
       // protected static boolean duringAspectName() {
       //   if(duringAspectName == 0)
@@ -118,6 +180,7 @@ aspect Rewrite {
         )
       )
     );
+    */
     return field;
   }
 
@@ -269,7 +332,7 @@ aspect Rewrite {
   syn lazy MethodDecl Rewrite.createTransformMethod() {
     Modifiers m = new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")));
     String name = "rewrite$transform$" + hostType().rewriteCounter++;
-    List parameters = new List().add(new ParameterDeclaration(astNode().createQualifiedAccess(), "self"));
+    List parameters = new List().add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "self"));
     Access returnType = (isListRewrite() ? listNode() : astNode()).createQualifiedAccess();
     // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
     MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new List(), new Opt(getBlock().fullCopy()), introducedType());

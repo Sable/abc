@@ -148,16 +148,29 @@ aspect GenerateSynCode {
     list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
     for(int i = 0; i < getNumParameter(); i++)
       list.add(getParameter(i).qualifiedCopy());
-    if(getNumChildParameter() == 1)
-      list.add(getChildParameter(0).qualifiedCopy());
+    if(hasChildParameter())
+      list.add(createChildParameter());
     return list;
   }
+  
+  syn boolean InhEq.hasChildParameter() {
+    if(getNumChildParameter() == 1) return true;
+    ASTChild child = child();
+    return child != null && child instanceof ASTListChild;
+  }
+
+  public ParameterDeclaration InhEq.createChildParameter() {
+    if(getNumChildParameter() == 1)
+      return getChildParameter(0).qualifiedCopy();
+    return new ParameterDeclaration(new PrimitiveTypeAccess("int"), "childIndex");
+  }
+
   public List InhEq.createArgumentList() {
     List args = new List();
     args.add(new ThisAccess("this"));
     for(int i = 0; i < getNumParameter(); i++)
       args.add(getParameter(i).createAccess());
-    if(getNumChildParameter() == 1) {
+    if(hasChildParameter()) {
       args.add(
         new VarAccess("caller").qualifiesAccess(
           new MethodAccess(
@@ -180,16 +193,21 @@ aspect GenerateSynCode {
     return list;
   }
 
-  // TODO: do better detection if NTA here
   syn boolean AttributeDecl.isNTA() {
     if(!name().startsWith("get") || getNumParameter() != 0 || !(introducedType() instanceof ASTDecl))
       return false;
     String name = name().substring(3); // remove "get" prefix
     ASTDecl decl = (ASTDecl)introducedType();
+    if(name.endsWith("List") && decl.lookupChild(name.substring(0, name.length() - 4)) instanceof ASTListChild)
+      return true;
+    if(name.endsWith("Opt") && decl.lookupChild(name.substring(0, name.length() - 3)) instanceof ASTOptionalChild)
+      return true;
     boolean result = decl.lookupChild(name) != null;
-    //if(result) System.err.println(this + " is a NTA");
     return result;
   }
+
+  syn boolean AttributeDecl.bindsToTokenChild() = isNTA() && 
+    ((ASTDecl)introducedType()).lookupChild(name().substring(3)) instanceof ASTTokenChild;
   
   // Add a possibly cached delegate in typeDecl that calls aspectMethod
   public void SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
@@ -208,8 +226,10 @@ aspect GenerateSynCode {
     if (!Program.hasOption("-no_component_check")) 
       addInterruptedCircleDeclaration(statements);
     
-    addCheckVisited(statements, typeDecl);
-    addSetVisited(statements, typeDecl);
+    if(!Program.hasOption("-no_visit_check")) {
+      addCheckVisited(statements, typeDecl);
+      addSetVisited(statements, typeDecl);
+    }
     
     if (!Program.hasOption("-no_component_check"))
       addCheckInterruptCircle(statements);
@@ -223,7 +243,9 @@ aspect GenerateSynCode {
       addStoreNTAValue(statements, typeDecl);
     }
     
-    addClearVisited(statements, typeDecl);
+    if(!Program.hasOption("-no_visit_check")) {
+      addClearVisited(statements, typeDecl);
+    }
     
     if (!Program.hasOption("-no_component_check"))
     	  addClearInterruptedCircle(statements);
@@ -379,8 +401,6 @@ aspect GenerateSynCode {
       // visited = true;
       addSetVisited(statements, typeDecl);
     }
-    
-    
       
     if (!Program.hasOption("-no_component_check"))
       addCheckInterruptCircle(statements);
@@ -673,8 +693,26 @@ aspect GenerateSynCode {
     }
   }
   
+   
   protected void AttributeDecl.addComputedCheck(List list, TypeDecl typeDecl) {
-    if(getNumParameter() == 0) {
+    if(isNTA() && !bindsToTokenChild()) {
+      list.add(
+        new IfStmt(
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          // return (List)getChildNoTransform(getDynamicTypeListChildPosition());
+          new ReturnStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              new MethodAccess(
+                "getChildNoTransform",
+                new List().add(new MethodAccess(name() + "ChildPosition", new List()))
+              )
+            )
+          )
+        )
+      );
+    }
+    else if(getNumParameter() == 0) {
       // if(computed_flag) return computed_value;
       list.add(
         new IfStmt(
@@ -967,24 +1005,10 @@ aspect GenerateSynCode {
         for(Iterator i2 = ((Collection)map.get(typeDecl)).iterator(); i2.hasNext(); ) {
           InhEq inhEq = (InhEq)i2.next();
           // add inh equation to aspect 
+          MethodDecl methodDecl = inhEq.addEqToAspect(type());
           List modifierList = (List)getModifiers().getModifierList().fullCopy();
           modifierList.add(new Modifier("static"));
-          MethodDecl methodDecl =
-            new IntroducedMethodDecl(
-              new Modifiers(modifierList),
-              type().createQualifiedAccess(),
-              name() + "$" + inhEq.childName(),
-              inhEq.createParameterList(),
-              new List(),
-              new List(),
-              new Opt(
-                inhEq.getBlock().fullCopy()
-              ),
-              inhEq.introducedType()
-            );
-          
-          //methodDecl = inhEq.hostType().addMethod(name() + "$" + inhEq.childName(), methodDecl);
-          inhEq.hostType().addMemberMethod(methodDecl);
+          methodDecl.setModifiers(new Modifiers(modifierList));
 
           // Add conditional delegation 
           statements.add(
@@ -1058,6 +1082,23 @@ aspect GenerateSynCode {
 
       }
     }
+  }
+
+  syn lazy MethodDecl InhEq.addEqToAspect(TypeDecl returnType) {
+          MethodDecl methodDecl =
+            new IntroducedMethodDecl(
+              new Modifiers(new List()),
+              returnType.createQualifiedAccess(),
+              name() + "$" + childName(),
+              createParameterList(),
+              new List(),
+              new List(),
+              new Opt(
+                getBlock().fullCopy()
+              ),
+              introducedType()
+            );
+          return hostType().addMemberMethod(methodDecl);
   }
 
   Expr ASTChild.createFromCorrectChildCheck() {
@@ -1289,7 +1330,21 @@ aspect GenerateSynCode {
 
   protected void AttributeDecl.addReturnStmt(List list, TypeDecl typeDecl) {
     // return computed_value;
-    if(isLazy() && getNumParameter() == 0)
+    if(isNTA() && !bindsToTokenChild()) {
+      list.add(
+        // return (List)getChildNoTransform(getDynamicTypeListChildPosition());
+        new ReturnStmt(
+          new CastExpr(
+            type().createQualifiedAccess(),
+            new MethodAccess(
+              "getChildNoTransform",
+              new List().add(new MethodAccess(name() + "ChildPosition", new List()))
+            )
+          )
+        )
+      );
+    }
+    else if(isLazy() && getNumParameter() == 0)
       list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));
     else
       list.add(new ReturnStmt(new VarAccess(computedValueName())));
