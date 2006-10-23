@@ -40,7 +40,10 @@ import abc.tm.weaving.aspectinfo.TraceMatch;
 
 public class TMStateMachine implements StateMachine {
 
-    protected LinkedHashSet edges = new LinkedHashSet(), nodes = new LinkedHashSet();
+    protected LinkedHashSet edges = new LinkedHashSet();
+
+	/** List of nodes. The code generation relies on iteration order here. Hence, it has to be a *linked* hash set. */
+    protected LinkedHashSet nodes = new LinkedHashSet();
     
     public State newState() {
         SMNode n = new SMNode(this, false, false);
