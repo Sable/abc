@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@1e6ac09
+creating: A@fbfe50
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@e8788a
+InterfaceAndObject$1@1a99946
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@84734, [Ljava.lang.Object;@17aaa04, TwoAnonymous$3@84734
+calling run: TwoAnonymous$3@10a95b0, [Ljava.lang.Object;@1e9751f, TwoAnonymous$3@10a95b0
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2714,7 +2714,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1601(AroundAll.java:199)
+	at A.inline$23$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4040,7 +4040,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@241fc5.x:=-3
+test.Test3@17514b1.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4123,8 +4123,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@15be28d
-o: Bar@15be28d, i: 10
+o: Bar@19b6ee0
+o: Bar@19b6ee0, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4277,11 +4277,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$7$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$26$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$27$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4317,11 +4317,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$16$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$26$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$27$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4716,7 +4716,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@3ffc4
+LibraryAspect-defined run() for C@1e8dc35
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5040,7 +5040,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@2db9f4
+? Util.read() obj=Test@b4971
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5060,7 +5060,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@102ae37
+? Util.read() obj=ClinitTest@179ab8d
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5070,7 +5070,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@98d78
+? Util.read() obj=SuidTest@13d5384
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5273,12 +5273,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@13f163a
-Invoking command bean:  Command@cc49dc
-hello(Command@cc49dc)
-Created a PerThis aspect : Testcase2@53f3d
-Invoking command bean:  Command@7af639
-hello again(Command@7af639)
+Created a PerThis aspect : Testcase2@bb25c3
+Invoking command bean:  Command@ac6635
+hello(Command@ac6635)
+Created a PerThis aspect : Testcase2@6a3a8a
+Invoking command bean:  Command@293d50
+hello again(Command@293d50)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -6250,13 +6250,13 @@ PASS: Test 1125: "om/roottest/Root module test" passed.
 Running test 1126: om/totest/To test
 Commandline: abc -d om/totest -warn-unused-advice:off -ext abc.om om/totest/Module.java om/totest/ToTestMain.java om/totest/A.java om/totest/ExtAspectA.java om/totest/ExtAspectB.java 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-ExtAspectA void A.f1()
 ExtAspectB void A.f1()
+ExtAspectA void A.f1()
 f1
 ExtAspectA void A.f2()
 f2
-ExtAspectA void A.f3()
 ExtAspectB void A.f3()
+ExtAspectA void A.f3()
 f3
 ExtAspectB void A.f4()
 f4
@@ -6403,6 +6403,8 @@ Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/PCInh.java
 advice 2
 advice 1
 foo
+advice 2
+advice 1
 baz
 PASS: Test 1211: "abctests/new/concrete pointcuts in abstract aspects can be overridden" passed.
 
