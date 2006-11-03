@@ -1,27 +1,31 @@
 public class NCWeakRefs4 {
-    public static void foo(String s) { }
+    public static void foo(Object o) { }
     public static void bar() { 
 	//System.out.println("Matched " + matched + " times."); 
     }
 
-    public static int matched = 0;
+    public static long matched = 0;
 
     public static void main(String[] args) {
-	String s;
-	for(int i = 0; i < 100; i++) {
-	    s = "" + i;
-	    foo(s);
+	Object o;
+	for(int j = 0; j < 1000; j++) {
+	    for(int i = 0; i < 1000; i++) {
+		o = new Object();
+		foo(o);
+	    }
 	    System.gc(); System.gc(); System.gc(); System.gc(); System.gc(); 
+	    bar();
+	    bar();
+	    System.out.print(".");
 	}
-	bar();
-	bar();
-	if(matched != 100) throw new RuntimeException("Matched " + matched + " times, rather than 100.");
+	System.out.println();
+	if(matched != 1000000) throw new RuntimeException("Matched " + matched + " times, rather than 1000000.");
     }
 }
 
 aspect A {
-    tracematch(String s) {
-	sym foo before : call(* *.foo(String)) && args(s);
+    tracematch(Object o) {
+	sym foo before : call(* *.foo(Object)) && args(o);
 	sym bar before : call(* *.bar());
 
 	foo bar bar {
