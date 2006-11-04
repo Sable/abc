@@ -84,6 +84,12 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
+<ajc-test title="Tracematches: Non-collectable weak bindings are propagated correctly (Strings)" num="1041" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="NCWeakRefs4.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="NCWeakRefs4"></run>
+    </ajc-test>
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
