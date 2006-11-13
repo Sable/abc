@@ -109,7 +109,7 @@ public class TestCase {
 			// Need to call reset so that everyone (in particular, soot.G) notices the change
 			// in System.out and System.err. Calling soot.G.reset() seems sufficient, but there might
 			// me others who store static information about stdout/stderr.
-			SilentMain.reset();
+			if(SilentMain.v() != null) SilentMain.v().reset();
 	
 			System.out.println("Running test" + testNumber + ": " + dir + "/" + title);
 			
@@ -343,7 +343,7 @@ public class TestCase {
 					    failTest();
 					    return;
 					} finally {
-						SilentMain.reset();
+						if(SilentMain.v() != null) SilentMain.v().reset();
 					}
 			    } //finished <compile> handling. If we haven't returned, the test is OK this far.
 			    else if(xChildren[i].has("//abc:run")) {

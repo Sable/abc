@@ -85,12 +85,7 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
 					} catch (SemanticException e) {/* skip */ }
 					if (t instanceof ClassType) {
 						if (((ClassType)t).flags().isInterface()) {
-							if (abc.main.Main.v() == null)
-								System.out.println("1");
-							if (abc.main.Main.v().error_queue ==null) {
-								System.out.println("2");
-							}
-							abc.main.Main.v().error_queue.enqueue(ErrorInfo.WARNING,
+							abc.main.Main.v().getAbcExtension().reportError(ErrorInfo.WARNING,
 							"Interface constructor execution is not a join point (consider (..)+ to capture constructors of implementors)", 
 							position());
 						}

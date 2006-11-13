@@ -177,7 +177,7 @@ public class AntTask extends MatchingTask {
             if(DEBUG) System.out.println(args);
             Main main = new Main((String[]) args.toArray(new String[0]));
             main.run();
-            Main.reset();
+            Main.v().reset();
         } catch( CompilerAbortedException e ) {
             e.printStackTrace();
             throw new BuildException(e);

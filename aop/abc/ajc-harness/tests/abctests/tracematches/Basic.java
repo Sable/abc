@@ -1,10 +1,10 @@
 import org.aspectj.testing.Tester;
 
 public class Basic {
-    public static void f() { }
-    public static void g() { }
+    public static void f() { System.out.println("f"); }
+    public static void g() { System.out.println("g"); }
     public static void main(String[] args) {
-	f(); g(); g(); f(); g(); f(); f(); g();
+	f(); g(); g(); f(); g(); f(); f(); g(); g(); g();
 	Tester.expectEvent("fg");
 	Tester.expectEvent("fg");
 	Tester.expectEvent("fg");
@@ -21,6 +21,7 @@ aspect FG {
 
 	    {
 		Tester.event("fg");
+		System.out.println("fg");
 	    }
     }
 }

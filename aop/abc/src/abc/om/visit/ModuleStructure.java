@@ -558,7 +558,7 @@ public ModuleNode getOwner(String name, int type) {
     }
     
     private static void addWarning(String msg, ShadowMatch sm) {
-        abc.main.Main.v().error_queue.enqueue(ErrorInfoFactory.newErrorInfo(
+        abc.main.Main.v().getAbcExtension().reportError(ErrorInfoFactory.newErrorInfo(
                 ErrorInfo.WARNING, msg, sm.getContainer(), sm.getHost()));
     }
 

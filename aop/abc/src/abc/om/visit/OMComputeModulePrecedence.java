@@ -284,7 +284,7 @@ public class OMComputeModulePrecedence extends OncePass {
                 m1.name() + " or one of its included modules.",
                 m2.position()
         );
-        abc.main.Main.v().error_queue.enqueue(err);
+        abc.main.Main.v().getAbcExtension().reportError(err);
     }
     //Error message queueing
     private void addExtAspectCycleError(ExtAspect ext, ModuleNodeModule m) {
@@ -294,7 +294,7 @@ public class OMComputeModulePrecedence extends OncePass {
                 ext.name(),
                 m.position()
         );
-        abc.main.Main.v().error_queue.enqueue(err);
+        abc.main.Main.v().getAbcExtension().reportError(err);
     }
     //Error message queueing
     private void addTopSortCycleError(Set /*<String>*/ aspectNames) {
@@ -309,7 +309,7 @@ public class OMComputeModulePrecedence extends OncePass {
                 msg,
                 AbcExtension.generated
         );
-        abc.main.Main.v().error_queue.enqueue(err);
+        abc.main.Main.v().getAbcExtension().reportError(err);
     }
 
     //Topological sort on the precedence relation

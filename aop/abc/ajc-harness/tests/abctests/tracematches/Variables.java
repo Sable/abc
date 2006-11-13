@@ -1,8 +1,8 @@
 import org.aspectj.testing.Tester;
 
 public class Variables {
-    public static void f(Object o) { }
-    public static void g(Object o) { }
+    public static void f(Object o) { System.out.println("f(" + o + ")"); }
+    public static void g(Object o) { System.out.println("g(" + o + ")"); }
     public static void main(String[] args) {
 	Object o1 = new Object(), o2 = new Object();
 	f(o1); f(o2); g(o2);/*match o2*/ g(o1);/*match o1*/ f(o1);
@@ -27,6 +27,7 @@ aspect FG {
 
 	    {
 		Tester.event(o.toString());
+		System.out.println("fg+(" + o + ")");
 	    }
     }
 }

@@ -72,7 +72,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     }
 
     private void reportError(String s, ShadowMatch sm) {
-        abc.main.Main.v().error_queue.enqueue
+        abc.main.Main.v().getAbcExtension().reportError
             (ErrorInfoFactory.newErrorInfo
              (ErrorInfo.SEMANTIC_ERROR,
               s,
@@ -85,7 +85,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
         if (!sm.supportsAround()) {
             // FIXME: should be a multi-position error
             if(ad instanceof AdviceDecl)
-                abc.main.Main.v().error_queue.enqueue
+                abc.main.Main.v().getAbcExtension().reportError
                     (ErrorInfoFactory.newErrorInfo
                      (ErrorInfo.WARNING,
                       sm.joinpointName()+" join points do not support around advice, but some advice "

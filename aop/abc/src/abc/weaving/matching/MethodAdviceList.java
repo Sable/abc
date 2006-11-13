@@ -101,7 +101,7 @@ public class MethodAdviceList {
 		}
 		msg += " are in precedence conflict, and all apply here";
 		
-    	abc.main.Main.v().error_queue.enqueue
+    	abc.main.Main.v().getAbcExtension().reportError
     	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.SEMANTIC_ERROR,
     					   msg,
     					   aa.shadowmatch.getContainer(),
@@ -124,7 +124,7 @@ public class MethodAdviceList {
 		msg += " can be ordered arbitrarily, and all apply here";
 		msg += " abc has chosen first as having lowest precedence";
 		
-    	abc.main.Main.v().error_queue.enqueue
+    	abc.main.Main.v().getAbcExtension().reportError
     	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.WARNING,
     					   msg,
     					   aa.shadowmatch.getContainer(),

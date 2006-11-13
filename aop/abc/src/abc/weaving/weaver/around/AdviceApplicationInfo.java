@@ -172,8 +172,7 @@ public class AdviceApplicationInfo {
 
 		if (this.proceedMethod.bUseClosureObject) {
 			ShadowMatch sm = adviceAppl.shadowmatch;
-			abc.main.Main.v().error_queue
-					.enqueue(ErrorInfoFactory
+			abc.main.Main.v().getAbcExtension().reportError(ErrorInfoFactory
 							.newErrorInfo(
 									ErrorInfo.WARNING,
 									"Using closure object. This may impact performance.",

@@ -36,29 +36,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import polyglot.frontend.Compiler;
-import polyglot.frontend.ExtensionInfo;
-import polyglot.frontend.Job;
-import polyglot.frontend.Pass;
 import polyglot.main.Options;
-import polyglot.types.SemanticException;
-import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
 import polyglot.util.InternalCompilerError;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
-import soot.SootClass;
-import soot.SootMethod;
 import soot.Timers;
 import soot.Transform;
 import soot.javaToJimple.AbstractJBBFactory;
@@ -66,36 +55,15 @@ import soot.javaToJimple.AbstractJimpleBodyBuilder;
 import soot.javaToJimple.AccessFieldJBB;
 import soot.javaToJimple.InitialResolver;
 import soot.javaToJimple.JimpleBodyBuilder;
-import soot.jimple.toolkits.base.ExceptionChecker;
-import soot.jimple.toolkits.base.ExceptionCheckerError;
-import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
-import abc.aspectj.visit.NoSourceJob;
-import abc.aspectj.visit.OncePass;
-import abc.aspectj.visit.PatternMatcher;
 import abc.main.options.ArgList;
 import abc.main.options.OptionsParser;
-import abc.polyglot.util.ErrorInfoFactory;
-import abc.soot.util.AspectJExceptionChecker;
-import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.aspectinfo.DeclareParents;
-import abc.weaving.aspectinfo.DeclareParentsExt;
-import abc.weaving.aspectinfo.DeclareParentsImpl;
-import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.tagkit.InstructionInlineCountTagAggregator;
 import abc.weaving.tagkit.InstructionInlineTagsAggregator;
 import abc.weaving.tagkit.InstructionKindTagAggregator;
 import abc.weaving.tagkit.InstructionProceedTagAggregator;
 import abc.weaving.tagkit.InstructionShadowTagAggregator;
 import abc.weaving.tagkit.InstructionSourceTagAggregator;
-import abc.weaving.weaver.AdviceInliner;
-import abc.weaving.weaver.DeclareParentsConstructorFixup;
-import abc.weaving.weaver.DeclareParentsWeaver;
-import abc.weaving.weaver.InterprocConstantPropagator;
-import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.ReweavingPass;
-import abc.weaving.weaver.UnusedMethodsRemover;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -126,8 +94,6 @@ public class Main {
 
     public String classes_destdir = ""; // TODO: LJH - fixed with -d option?
 
-    public ErrorQueue error_queue; // For reporting errors and warnings
-
     // delegate all behaviour that might be added to or modified
     // by an extension to an extension-specific class
     private AbcExtension abcExtension = null;
@@ -135,39 +101,6 @@ public class Main {
     public AbcExtension getAbcExtension()
     {
         return abcExtension;
-    }
-
-    /** reset all static information so main can be called again */
-    public static void reset() {
-        soot.G.reset(); // reset all of Soot's global info
-        // TODO: add a call here to the reset method for any class that
-        //  needs static information reset for repeated calls to main
-        abc.main.Debug.reset();
-        abc.main.AbcTimer.reset();
-        abc.main.Options.reset();
-        abc.soot.util.Restructure.reset();
-        abc.aspectj.visit.OncePass.reset();
-        abc.aspectj.visit.PCStructure.reset();
-        abc.aspectj.visit.AspectInfoHarvester.reset();
-        abc.aspectj.parse.Lexer_c.reset();
-        abc.weaving.aspectinfo.AbcFactory.reset();
-        abc.weaving.weaver.around.AroundWeaver.reset();
-        abc.weaving.matching.StmtShadowMatch.reset();
-        abc.weaving.matching.ConstructorCallShadowMatch.reset();
-        abc.weaving.matching.ExecutionShadowMatch.reset();
-        abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
-        abc.soot.util.SwitchFolder.reset();
-        //abc.weaving.weaver.AroundInliner.reset();
-        //abc.weaving.weaver.AfterBeforeInliner.reset();
-        abc.weaving.weaver.AdviceInliner.reset();
-        abc.soot.util.LocalGeneratorEx.reset();
-        abc.main.options.OptionsParser.reset();
-        abc.weaving.weaver.WeavingState.reset();
-        abc.weaving.weaver.CflowCodeGenUtils.reset();
-        abc.weaving.weaver.around.Util.reset();
-        abc.weaving.weaver.around.AdviceApplicationInfo.reset();
-		
-        v=null;
     }
 
     public static void compilerOptionIgnored(String option, String message)
@@ -227,7 +160,12 @@ public class Main {
         v=this;
     }
 
-
+    public void reset() {
+    	if(getAbcExtension() != null && getAbcExtension().getCompileSequence() != null)
+    		getAbcExtension().getCompileSequence().reset();
+    	v = null;
+    }
+    
     public void parseArgs(String[] argArray) throws IllegalArgumentException, CompilerAbortedException {
         ArgList args = new ArgList(argArray);
         boolean noArguments = args.isEmpty();
@@ -496,6 +434,9 @@ public class Main {
         }
     }
 
+    public ErrorQueue createErrorQueue() {
+    	return null;
+    }
     
     public void run() throws CompilerFailedException {
         try {
@@ -523,84 +464,19 @@ public class Main {
             addJarsToClasspath();
             initSoot();
             AbcTimer.mark("Init. of Soot");
-            phaseDebug("Init. of Soot");
+            Debug.phaseDebug("Init. of Soot");
 
             loadJars();
             loadSourceRoots();
             AbcTimer.mark("Loading Jars");
-            phaseDebug("Loading Jars");
+            Debug.phaseDebug("Loading Jars");
 
 
-            // if something to compile
-            compile(); // Timers marked inside compile()
-            // The compile method itself aborts if there is an error
-
-            if (!getAbcExtension().getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
-                weave(); // Timers marked inside weave()
-
-                abortIfErrors();
-
-                if (!abc.main.Debug.v().dontCheckExceptions) {
-                    checkExceptions();
-                    AbcTimer.mark("Exceptions check");
-                    phaseDebug("Exceptions check");
-                }
-                
-               //AroundWeaver.reset();
-               //AbcTimer.mark("Freeing around memory");
-               //phaseDebug("Freeing around memory");
-                
-               if (OptionsParser.v().O()!=0) {
-                
-               		if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining()) {
-	                	getAbcExtension().getWeaver().doInlining();
-	                
-	                	AbcTimer.mark("Advice inlining");
-	                    phaseDebug("Advice inlining");
-	                
-	                    InterprocConstantPropagator.inlineConstantArguments();
-	                
-	                	AbcTimer.mark("Interproc. constant propagator");
-	                    phaseDebug("Interproc. constant propagator");
-	              
-	                	getAbcExtension().getWeaver().runBoxingRemover();
-	                	
-	                	AbcTimer.mark("Boxing remover");
-	                    phaseDebug("Boxing remover");
-	                    
-	                    if (!Debug.v().disableDuplicatesRemover) {
-	                    	AdviceInliner.v().removeDuplicateInlineMethods();
-	                    
-	                    	AbcTimer.mark("Duplicates remover");
-	                    	phaseDebug("Duplicates remover");
-	                    }
-	                    
-	                	UnusedMethodsRemover.removeUnusedMethods();
-	                    
-	                    AbcTimer.mark("Removing unused methods");
-	                    phaseDebug("Removing unused methods");
-	                    
-	                    AdviceInliner.v().specializeReturnTypesOfInlineMethods();
-	                    
-	                    AbcTimer.mark("Specializing return types");
-	                    phaseDebug("Specializing return types");
-               		}
-               }
-                
-                abortIfErrors();
-
-                optimize();
-                
-                // UnusedMethodsRemover.removeUnusedMethods(); // run it again after opts.
-
-                AbcTimer.mark("Soot Packs");
-                phaseDebug("Soot Packs");
-
-                output();
-                AbcTimer.mark("Soot Writing Output");
-                phaseDebug("Soot Writing Output");
-            }
-
+            CompileSequence seq = getAbcExtension().getCompileSequence();
+            seq.passOptions(aspect_sources, jar_classes, soot_args, polyglot_args, classes_destdir);
+            getAbcExtension().setErrorQueue(createErrorQueue());
+            seq.runSequence();
+            
             // Timer end stuff
             Date abcfinish = new Date(); // wall clock time finish
             if(OptionsParser.v().verbose()) {
@@ -645,33 +521,12 @@ public class Main {
             // Polyglot adds something to the error queue for
             // InternalCompilerErrors,
             // and we only want to ignore the error if there are *other* errors
-            abortIfErrors(1);
             throw e;
         } catch (Throwable e) {
-            /*System.err.println("stack trace " + e.getMessage() + " " + e.getClass().getName());
-              try {
-              e.printStackTrace(System.err);
-              }catch (Throwable e2) {
-              System.err.println("/stack trace ex " + e2.getClass().getName());
-              System.err.println(e.hashCode() + ": " + e2.hashCode());
-              e2.printStackTrace();
-              }
-              System.err.println("/stack trace ");*/
-            abortIfErrors();
             throw new InternalCompilerError("unhandled exception during compilation", e);
         }
     }
 
-    private void abortIfErrors() throws CompilerFailedException {
-        abortIfErrors(0);
-    }
-
-    private void abortIfErrors(int n) throws CompilerFailedException {
-        if(error_queue!=null && error_queue.errorCount()>n) {
-            error_queue.flush();
-            throw new CompilerFailedException("There were errors.");
-        }
-    }
 
 
     public void addJarsToClasspath() {
@@ -858,286 +713,6 @@ public class Main {
         // System.out.println(jar_classes);
     }
 
-    public void compile() throws CompilerFailedException, IllegalArgumentException {
-        // Invoke polyglot
-        try {
-            abc.aspectj.ExtensionInfo ext =
-                getAbcExtension().makeExtensionInfo(jar_classes, aspect_sources);
-            Options options = ext.getOptions();
-            options.assertions = true;
-            options.serialize_type_info = false;
-            options.classpath = OptionsParser.v().classpath();
-            if (polyglot_args.size() > 0) {
-                String[] polyglot_argv = (String[]) polyglot_args.toArray(new String[0]);
-                Set sources = new HashSet(aspect_sources);
-                options.parseCommandLine(polyglot_argv, sources);
-                // FIXME: Use updated source set?
-            }
-            Options.global = options;
-            Compiler compiler = createCompiler(ext);
-            error_queue = compiler.errorQueue();
-
-            AbcTimer.mark("Create polyglot compiler");
-            phaseDebug("Create polyglot compiler");
-            try {
-                if(Debug.v().printWeavableClasses) {
-                    System.err.println( "aspect_sources are "+aspect_sources );
-                }
-                if (!aspect_sources.isEmpty()) {
-                    if (!compiler.compile(aspect_sources)) {
-                        throw new CompilerFailedException("Compilation failed.");
-                    }
-                } else {
-                    // No source files. Run all once-passes.
-                    Job job = new NoSourceJob(ext);
-                    List passes = ext.passes(job);
-                    Iterator pi = passes.iterator();
-                    while (pi.hasNext()) {
-                        Pass p = (Pass)pi.next();
-                        if (p instanceof OncePass) {
-                            ((OncePass)p).run();
-                        }
-                    }
-                }
-            } finally {
-                // we need the error queue in the frontend, too, to generate warnings,
-                // so this assignment was moved up.
-                // error_queue = compiler.errorQueue();
-            }
-            Scene.v().loadDynamicClasses();
-            abortIfErrors();
-
-            AbcTimer.mark("Polyglot phases");
-            phaseDebug("Polyglot phases");
-            AbcTimer.storePolyglotStats(ext.getStats());
-
-                if(Debug.v().printWeavableClasses) {
-                    System.err.println( "WeavableClasses are "+abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses() );
-                }
-            for( Iterator clsIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clsIt.hasNext(); ) {
-                final AbcClass cls = (AbcClass) clsIt.next();
-                SootClass scls = cls.getSootClass();
-                scls.setApplicationClass();
-                Scene.v().loadClass(scls.getName(), SootClass.BODIES);
-            }
-            AbcTimer.mark("Initial Soot resolving");
-            phaseDebug("Initial Soot resolving");
-
-            // Make sure that anything mentioned on the RHS of a declare parents
-            // clause is resolved to HIERARCHY, so that the declare parents
-            // weaver knows what to do with it
-            for( Iterator dpIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getDeclareParents().iterator(); dpIt.hasNext(); ) {
-                final DeclareParents dp = (DeclareParents) dpIt.next();
-                if(dp instanceof DeclareParentsImpl) {
-                    final DeclareParentsImpl dpi = (DeclareParentsImpl) dp;
-                    for( Iterator iIt = dpi.getInterfaces().iterator(); iIt.hasNext(); ) {
-                        final AbcClass i = (AbcClass) iIt.next();
-                        Scene.v().loadClass(i.getSootClass().getName(),SootClass.HIERARCHY);
-                    }
-                } else if(dp instanceof DeclareParentsExt) {
-                    final DeclareParentsExt dpe = (DeclareParentsExt) dp;
-                    Scene.v().loadClass(dpe.getParent().getSootClass().getName(),
-                                        SootClass.HIERARCHY);
-                } else throw new InternalCompilerError("Unknown kind of declare parents");
-            }
-
-            Scene.v().setMainClassFromOptions();
-            AbcTimer.mark("Soot resolving");
-            phaseDebug("Soot resolving");
-
-            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();
-            AbcTimer.mark("Aspect inheritance");
-            phaseDebug("Aspect inheritance");
-
-        } catch (polyglot.main.UsageError e) {
-            throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
-        }
-
-        // Output the aspect info
-        if (abc.main.Debug.v().aspectInfo)
-            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
-    }
-
-    protected Compiler createCompiler(ExtensionInfo ext) {
-        return new Compiler(ext);
-    }
-
-    public void weave() throws CompilerFailedException {
-        try {
-            // Perform the declare parents
-            new DeclareParentsWeaver().weave();
-            // FIXME: put re-resolving here, from declareparents weaver
-            AbcTimer.mark("Declare Parents");
-            phaseDebug("Declare Parents");
-            Scene.v().setDoneResolving();
-
-            // Adjust Soot types for intertype decls
-            IntertypeAdjuster ita = new IntertypeAdjuster();
-            ita.adjust();
-            AbcTimer.mark("Intertype Adjuster");
-            phaseDebug("Intertype Adjuster");
-
-            // Retrieve all bodies
-            for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-                final AbcClass cl = (AbcClass) clIt.next();
-                if(Debug.v().showWeavableClasses) System.err.println("Weavable class: "+cl);
-                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-                    final SootMethod method = (SootMethod) methodIt.next();
-                    try {
-                        if( !method.isConcrete() ) continue;
-                        // System.out.println("retrieve "+method+ " from "+cl);
-                        method.retrieveActiveBody();
-                    } catch(InternalCompilerError e) {
-                        throw e;
-                    } catch(Throwable e) {
-                        throw new InternalCompilerError("Exception while processing "+method.getSignature(),e);
-                    }
-                }
-            }
-            AbcTimer.mark("Jimplification");
-            phaseDebug("Jimplification");
-
-            // Fix up constructors in binary classes with newly declared parents
-            new DeclareParentsConstructorFixup().weave();
-            AbcTimer.mark("Fix up constructor calls");
-            phaseDebug("Fix up constructor calls");
-
-            PatternMatcher.v().updateWithAllSootClasses();
-            // evaluate the patterns the third time (depends on re-resolving)
-            PatternMatcher.v().recomputeAllMatches();
-            AbcTimer.mark("Update pattern matcher");
-            phaseDebug("Update pattern matcher");
-
-            // any references made by itd initialisers will appear in a delegate method,
-            // and thus have already been processed by j2j; all resolving ok.
-            ita.initialisers(); // weave the field initialisers into the constructors
-            AbcTimer.mark("Weave Initializers");
-            phaseDebug("Weave Initializers");
-
-            if (!Debug.v().testITDsOnly) {
-                // Make sure that all the standard AspectJ shadow types are loaded
-                AbcTimer.mark("Load shadow types");
-                phaseDebug("Load shadow types");
-
-                // for each shadow in each weavable class, compute list of applicable advice
-                abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().computeAdviceLists();
-                AbcTimer.mark("Compute advice lists");
-                phaseDebug("Compute advice lists");                
-
-                if(Debug.v().printAdviceApplicationCount) {
-                	int adviceApplCount=0;
-                	
-                    for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-                	
-                        final AbcClass cl = (AbcClass) clIt.next();
-                        for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-                            final SootMethod method = (SootMethod) methodIt.next(); 
-                            MethodAdviceList list=getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
-                            if (list==null)
-                            	continue;
-                            List allAdvice=list.allAdvice();
-                            adviceApplCount += allAdvice.size();                           	
-                        }
-                    }                   
-                    System.out.println("Number of advice applications: " + adviceApplCount);
-                }
-                if(Debug.v().matcherTest) {
-                	System.err.println("--- BEGIN ADVICE LISTS ---");
-                    // print out matching information for testing purposes
-                    for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-                        final AbcClass cl = (AbcClass) clIt.next();
-                        for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-                            final SootMethod method = (SootMethod) methodIt.next();
-                            final StringBuffer sb=new StringBuffer(1000);
-                            sb.append("method: "+method.getSignature()+"\n");
-                            getAbcExtension().getGlobalAspectInfo().getAdviceList(method).debugInfo(" ",sb);
-                            System.err.println(sb.toString());
-                        }
-                    }         
-                    System.err.println("--- END ADVICE LISTS ---");
-                }
-
-                if(abc.main.options.OptionsParser.v().warn_unused_advice()) {
-                    for( Iterator adIt = getAbcExtension().getGlobalAspectInfo().getAdviceDecls().iterator(); adIt.hasNext(); ) {
-                        final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
-
-                        if(ad instanceof AdviceDecl && ad.getApplWarning() != null)
-                            error_queue.enqueue(ErrorInfo.WARNING,
-                                                ad.getApplWarning(),
-                                                ad.getPosition());
-                    }
-                }
-
-                //Weaver weaver = new Weaver();
-                getAbcExtension().getWeaver().weave(); // timer marks inside weave() */
-            }
-            // the intertype adjuster has put dummy fields into interfaces,
-            // which now have to be removed
-            ita.removeFakeFields();
-        } catch(SemanticException e) {
-            error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
-        }
-    }
-
-    private class GotCheckedExceptionError implements ExceptionCheckerErrorReporter {
-        public void reportError(ExceptionCheckerError err) {
-            SootClass exctype=err.excType();
-
-            ErrorInfo e=ErrorInfoFactory.newErrorInfo
-                (ErrorInfo.SEMANTIC_ERROR,
-                 "The exception "+exctype+" must be either caught "+
-                 "or declared to be thrown",
-                 err.method(),
-                 err.throwing());
-
-            error_queue.enqueue(e);
-        }
-    }
-
-    public void checkExceptions() {
-        ExceptionChecker exccheck=new AspectJExceptionChecker(new GotCheckedExceptionError());
-        HashMap options=new HashMap();
-        options.put("enabled","true");
-
-        for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-
-            final AbcClass cl = (AbcClass) clIt.next();
-
-            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-
-                final SootMethod method = (SootMethod) methodIt.next();
-
-                if(!method.isConcrete()) continue;
-                if(method.getName().equals(SootMethod.staticInitializerName))
-                    continue;
-                try {
-                    //FIXME: is "jtp.jec" sensible?
-                    exccheck.transform(method.getActiveBody(),"jtp.jec",options);
-                } catch(InternalCompilerError e) {
-                    throw e;
-                } catch(Throwable e) {
-                    throw new InternalCompilerError("Exception while checking exceptions in "+method,e);
-                }
-            }
-        }
-    }
-
-    public void validate() {
-        for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-            final AbcClass cl = (AbcClass) clIt.next();
-            abc.soot.util.Validate.validate(cl.getSootClass());
-        }
-    }
-
-    public void optimize(){
-        PackManager.v().runBodyPacks();
-    }
-
-    public void output() {
-        // Write classes
-        PackManager.v().writeOutput();
-    }
-
     private void loadAbcExtension(String abcExtensionPackage)
     {
         Class abcExt;
@@ -1151,25 +726,4 @@ public class Main {
         }
     }
 
-    public static void phaseDebug(String s) {
-        if( Debug.v().debugPhases ) { 
-        	String m="Done phase: "+s;        	
-        	if (Debug.v().debugMemUsage) {
-        		System.gc();        		
-        		long bytes=(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
-        		
-        		
-        		NumberFormat numberFormatter=NumberFormat.getNumberInstance();       		
-        	
-        		String mem= numberFormatter.format(bytes) + " used. " + 
-					numberFormatter.format(Runtime.getRuntime().totalMemory()) + " heap.";
-        		int padding=79-m.length()-mem.length();
-        		String p="";
-        		while(padding-->0)
-        			p+=" ";
-        		m=m+ p + mem;
-        	}
-        	System.err.println(m);
-        }
-    }
 }

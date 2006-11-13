@@ -1,8 +1,8 @@
 import org.aspectj.testing.Tester;
 
 public class Alternation {
-    public static void f() { }
-    public static void g() { }
+    public static void f() { System.out.println("f"); }
+    public static void g() { System.out.println("g"); }
     public static void main(String[] args) {
 	f(); f(); g(); g(); f();/*match*/
 	g(); f(); f();/*match*/ g();
@@ -21,6 +21,7 @@ aspect FG {
 
 	    {
 		Tester.event("fg*f+");
+		System.out.println("fg*f+");
 	    }
     }
 }

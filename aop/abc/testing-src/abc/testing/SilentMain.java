@@ -16,6 +16,7 @@ import java.util.List;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
+import polyglot.util.ErrorQueue;
 import polyglot.util.SilentErrorQueue;
 import abc.main.CompilerAbortedException;
 
@@ -25,10 +26,11 @@ public class SilentMain extends abc.main.Main {
 		super(args);
 	}
 	
-	protected Compiler createCompiler(ExtensionInfo ext) {
-		errorQueue = new SilentErrorQueue(ext.getOptions().error_count,
-			ext.compilerName());
-		return new Compiler(ext, errorQueue);
+	public ErrorQueue createErrorQueue() {
+		errorQueue = new SilentErrorQueue(100,
+				"testAbc");
+			getAbcExtension().setErrorQueue(errorQueue);
+		return errorQueue;
 	}
 	List getErrors() {
 		return (errorQueue != null) ? errorQueue.getErrors() : null;

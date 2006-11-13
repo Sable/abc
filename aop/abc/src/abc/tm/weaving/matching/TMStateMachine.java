@@ -499,10 +499,7 @@ public class TMStateMachine implements StateMachine {
 			if (rebound.isEmpty() && !node.isInitialNode() && !node.isFinalNode()) {
 				hasWarned = true;
 				String msg="Variable bindings may cause space leak";
-		        abc.main.Main.v().error_queue.enqueue
-						(new ErrorInfo(ErrorInfo.WARNING,
-									   msg,
-									   pos));
+		        abc.main.Main.v().getAbcExtension().reportError(ErrorInfo.WARNING, msg, pos);
 			}
 		}
 	}

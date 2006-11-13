@@ -37,7 +37,7 @@ public abstract class AbstractAfterAdvice extends AbstractAdviceSpec {
         if(sm.supportsAfter()) return AlwaysMatch.v();
         // FIXME: should be a multi-position error
         if(ad instanceof AdviceDecl)
-            abc.main.Main.v().error_queue.enqueue
+            abc.main.Main.v().getAbcExtension().reportError
                 (ErrorInfoFactory.newErrorInfo
                  (ErrorInfo.WARNING,
                   sm.joinpointName()+" join points do not support after advice, but some advice from "+ad.errorInfo()

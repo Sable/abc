@@ -170,7 +170,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
             }
 
             // FIXME: this should be a multi-position error
-            abc.main.Main.v().error_queue.enqueue
+            abc.main.Main.v().getAbcExtension().reportError
                 (ErrorInfoFactory.newErrorInfo
                  (ErrorInfo.SEMANTIC_ERROR,
                   "Advice from aspect "

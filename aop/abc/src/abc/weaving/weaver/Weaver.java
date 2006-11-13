@@ -274,7 +274,7 @@ public class Weaver {
                 }
 
                 AbcTimer.mark("Add aspect code");
-                abc.main.Main.phaseDebug("Add aspect code");
+                abc.main.Debug.phaseDebug("Add aspect code");
 
         }
         
@@ -371,7 +371,7 @@ public class Weaver {
                     }
                 }
                 AbcTimer.mark("Weaving advice");
-                abc.main.Main.phaseDebug("Weaving advice");
+                abc.main.Debug.phaseDebug("Weaving advice");
         } // method weave
 
 } // class Weaver

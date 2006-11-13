@@ -1,8 +1,8 @@
 import org.aspectj.testing.Tester;
 
 public class PrimitiveVariables {
-    public static void f(int o) { }
-    public static void g(int o) { }
+    public static void f(int o) { System.out.println("f(" + o + ")"); }
+    public static void g(int o) { System.out.println("g(" + o + ")"); }
     public static void main(String[] args) {
 	f(1); f(2); g(2);/*match 2*/ g(1);/*match 1*/ f(1);
 	g(2);/*match 2*/ f(1); f(2); g(1);/*match 1*/
@@ -26,6 +26,7 @@ aspect FG {
 
 	    {
 		Tester.event(o + "");
+		System.out.println("fg+(" + o + ")");
 	    }
     }
 }

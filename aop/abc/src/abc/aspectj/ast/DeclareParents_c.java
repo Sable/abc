@@ -95,7 +95,7 @@ public class DeclareParents_c extends DeclareDecl_c
     
     public Node typeCheck(TypeChecker tc) throws SemanticException {
     	if (targets.size() == 0)
-    		abc.main.Main.v().error_queue.enqueue(ErrorInfo.WARNING,
+    		abc.main.Main.v().getAbcExtension().reportError(ErrorInfo.WARNING,
 					"Does not alter parents of any classes (is the pattern correct?)", 
 					position());
     	return this;

@@ -756,7 +756,7 @@ public class IntertypeAdjuster {
     		/*// this appears to generate nondeterministic behaviour, due
     		   // to iteration over a set or map. commented out for now...
     			if (cmp == GlobalAspectInfo.PRECEDENCE_NONE)
-			       abc.main.Main.v().error_queue.enqueue(new polyglot.util.ErrorInfo(
+			       abc.main.Main.v().getAbcExtension().reportError(new polyglot.util.ErrorInfo(
 														   polyglot.util.ErrorInfo.WARNING,
 														   "Unspecified order with intertype initialiser at "+ ifd1.getPosition() +
 														   "(consider using a precedence declaration).",
@@ -778,7 +778,7 @@ public class IntertypeAdjuster {
     	}
     	IntertypeFieldDecl cand1 = (IntertypeFieldDecl) ifds.get(0);
     	IntertypeFieldDecl cand2 = (IntertypeFieldDecl) ifds.get(1);
-    	abc.main.Main.v().error_queue.enqueue(new polyglot.util.ErrorInfo(
+    	abc.main.Main.v().getAbcExtension().reportError(new polyglot.util.ErrorInfo(
 	    	                                           polyglot.util.ErrorInfo.SEMANTIC_ERROR,
 	    	                                           "Precedence conflict with intertype initialiser at "+cand1.getPosition()+".",
 	    	                                           cand2.getPosition()));

@@ -19,6 +19,8 @@
 
 package abc.main;
 
+import java.text.NumberFormat;
+
 /** A class for storing debug flags. Default values go here;
  *  if you make a MyDebug class you can override them in the constructor
  *  there, or you can use -debug and -nodebug on the commandline
@@ -198,4 +200,27 @@ public class Debug {
     public boolean noCollectableWeakRefs = false;	//makes all collectable weak refs "normal" weak refs
     public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or
     												// the maps from the commons collections for TM indexing
+
+    public static void phaseDebug(String s) {
+        if( Debug.v().debugPhases ) { 
+        	String m="Done phase: "+s;        	
+        	if (Debug.v().debugMemUsage) {
+        		System.gc();        		
+        		long bytes=(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        		
+        		
+        		NumberFormat numberFormatter=NumberFormat.getNumberInstance();       		
+        	
+        		String mem= numberFormatter.format(bytes) + " used. " + 
+					numberFormatter.format(Runtime.getRuntime().totalMemory()) + " heap.";
+        		int padding=79-m.length()-mem.length();
+        		String p="";
+        		while(padding-->0)
+        			p+=" ";
+        		m=m+ p + mem;
+        	}
+        	System.err.println(m);
+        }
+    }
+
 }

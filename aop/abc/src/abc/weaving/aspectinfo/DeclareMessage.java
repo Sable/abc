@@ -163,8 +163,7 @@ public class DeclareMessage extends AbstractAdviceDecl {
 
     public void generateMessage(ShadowMatch sm) {
         if(abc.main.Main.v()==null) throw new InternalCompilerError("main was null");
-        if(abc.main.Main.v().error_queue==null) throw new InternalCompilerError("no error queue");
-        abc.main.Main.v().error_queue.enqueue
+        abc.main.Main.v().getAbcExtension().reportError
             (ErrorInfoFactory.newErrorInfo
              (polyglot_sev[severity],
               message,

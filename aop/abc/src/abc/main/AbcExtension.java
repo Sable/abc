@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import polyglot.util.InternalCompilerError;
+import polyglot.util.ErrorQueue;
+import polyglot.util.ErrorInfo;
 import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
@@ -85,6 +87,7 @@ import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 import abc.weaving.weaver.ReweavingPass.ID;
+import polyglot.util.Position;
 
 /**
  * This class should be sub-classed to extend the behaviour of abc
@@ -102,7 +105,10 @@ public class AbcExtension
     
     private GlobalAspectInfo globalAspectInfo = null;
     private Weaver weaver = null;
+    private CompileSequence compileSequence = null;
     private List reweavingPasses;
+    
+    private ErrorQueue error_queue = null;
 
     /**
      * Constructs a version string for all loaded extensions
@@ -127,6 +133,20 @@ public class AbcExtension
                         "\n");
     }
 
+    public CompileSequence getCompileSequence() {
+    	if(compileSequence == null)
+    		compileSequence = new CompileSequence(this);
+    	return compileSequence;
+    }
+
+    public void reportError(ErrorInfo ei) {
+    	compileSequence.error_queue.enqueue(ei);
+    }
+    
+    public void reportError(int level, String s, Position pos) {
+    	compileSequence.error_queue.enqueue(level, s, pos);
+    }
+    
     /**
      * Creates an instance of the <code>ExtensionInfo</code> structure
      * used for extending the Polyglot-based frontend.
@@ -662,4 +682,11 @@ public class AbcExtension
         return reweavingPasses;
     }
 
+    public ErrorQueue getErrorQueue() {
+    	return error_queue;
+    }
+    
+    public void setErrorQueue(ErrorQueue eq) {
+    	error_queue = eq;
+    }
 }
