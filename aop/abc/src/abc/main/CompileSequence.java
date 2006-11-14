@@ -46,7 +46,7 @@ import abc.weaving.weaver.UnusedMethodsRemover;
 
 
 public class CompileSequence {
-	private AbcExtension abcExt = null;
+	protected AbcExtension abcExt = null;
 	
     public ErrorQueue error_queue; // For reporting errors and warnings
 

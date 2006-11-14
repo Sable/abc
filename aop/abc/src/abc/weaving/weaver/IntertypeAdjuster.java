@@ -62,7 +62,7 @@ public class IntertypeAdjuster {
         for(Iterator asIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspects().iterator(); asIt.hasNext(); ) {
             Aspect a = (Aspect) asIt.next();
             AspectType at =(AspectType) a.getInstanceClass().getPolyglotType();
-            at.getAccessorMethods().addAllSootMethods();
+            if(at != null) at.getAccessorMethods().addAllSootMethods();
         }
     }
     
