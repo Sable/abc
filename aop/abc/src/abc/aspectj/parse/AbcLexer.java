@@ -28,7 +28,7 @@ package abc.aspectj.parse;
  * 
  * @author Pavel Avgustinov
  */
-public interface AbcLexer extends polyglot.lex.Lexer {
+public interface AbcLexer {
     /**
      * Returns the integer constant representing the JAVA lexer state.
      */

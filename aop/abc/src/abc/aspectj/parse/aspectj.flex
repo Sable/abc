@@ -41,6 +41,7 @@ import java.math.BigInteger;
 %public
 %class Lexer_c
 %implements AbcLexer
+%implements polyglot.lex.Lexer
 %type Token
 %function nextToken
 

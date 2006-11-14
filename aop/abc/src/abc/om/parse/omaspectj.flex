@@ -44,6 +44,7 @@ import abc.aspectj.parse.LexerAction;
 %public
 %class Lexer_c
 %implements OMAbcLexer
+%implements polyglot.lex.Lexer
 %type Token
 %function nextToken
 
