@@ -160,10 +160,19 @@ public class Main {
         v=this;
     }
 
+    public static void resetStatic() {
+    	if(v != null) v.reset();
+    	v = null;
+    	
+        abc.main.Debug.reset();
+        abc.main.AbcTimer.reset();
+        abc.main.Options.reset();
+        abc.main.options.OptionsParser.reset();
+    }
+    
     public void reset() {
     	if(getAbcExtension() != null && getAbcExtension().getCompileSequence() != null)
     		getAbcExtension().getCompileSequence().reset();
-    	v = null;
     }
     
     public void parseArgs(String[] argArray) throws IllegalArgumentException, CompilerAbortedException {

@@ -122,9 +122,6 @@ public class CompileSequence {
         soot.G.reset(); // reset all of Soot's global info
         // TODO: add a call here to the reset method for any class that
         //  needs static information reset for repeated calls to main
-        abc.main.Debug.reset();
-        abc.main.AbcTimer.reset();
-        abc.main.Options.reset();
         abc.soot.util.Restructure.reset();
         abc.aspectj.visit.OncePass.reset();
         abc.aspectj.visit.PCStructure.reset();
@@ -141,7 +138,6 @@ public class CompileSequence {
         //abc.weaving.weaver.AfterBeforeInliner.reset();
         abc.weaving.weaver.AdviceInliner.reset();
         abc.soot.util.LocalGeneratorEx.reset();
-        abc.main.options.OptionsParser.reset();
         abc.weaving.weaver.WeavingState.reset();
         abc.weaving.weaver.CflowCodeGenUtils.reset();
         abc.weaving.weaver.around.Util.reset();
