@@ -98,7 +98,7 @@
           compress="no" useSwitch="yes"/>
   <!-- copy library files-->
   <copy todir="generated/beaver" preservelastmodified="true">
-    <fileset dir="../Java1.4Frontend/beaver"/>
+    <fileset dir="${frontend}/beaver"/>
   </copy>
 
 </target>
