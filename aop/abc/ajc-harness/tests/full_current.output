@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@79f32d
+creating: A@fbfe50
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@519896
+InterfaceAndObject$1@7329e6
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -1390,7 +1390,6 @@ PASS: Test 258: "errors/Doesn't detect cyclic inheritance of aspects." passed.
 
 Running test 259: errors/Binds the pointcut formals to member variables instead of pointcut formals.
 Commandline: abc -d errors -warn-unused-advice:off -Xlint:warning errors/PointcutFormals.java 
-*** Option -Xlint:warning ignored: abc does not support Xlint
 Compilation failed with 2 errors, which were matched and verified against the expected errors.
 PASS: Test 259: "errors/Binds the pointcut formals to member variables instead of pointcut formals." passed.
 
@@ -1723,7 +1722,6 @@ PASS: Test 313: "new/expecting compile failures with subclass narrowing scope of
 
 Running test 314: new/introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroduceInnerInterfaceCF.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 Compilation failed with 1 errors, which were matched and verified against the expected errors.
 PASS: Test 314: "new/introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public" passed.
 
@@ -1893,14 +1891,12 @@ PASS: Test 344: "new/(related) aspect on interface" passed.
 
 Running test 345: new/advice and package visibility 1
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/packagevisibility/PackagesAndAdvice.java new/packagevisibility/testPackage/Class1.java new/packagevisibility/testPackage/Class2.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 running
 PASS: Test 345: "new/advice and package visibility 1" passed.
 
 
 Running test 346: new/advice and package visibility 2
 Commandline: abc -d new -warn-unused-advice:off -Xlint:error new/packagevisibility/PackagesAndAdviceCf.java new/packagevisibility/testPackage/Class1.java new/packagevisibility/testPackage/Class2.java 
-*** Option -Xlint:error ignored: abc does not support Xlint
 Compilation failed with 1 errors, which were matched and verified against the expected errors.
 PASS: Test 346: "new/advice and package visibility 2" passed.
 
@@ -2005,7 +2001,6 @@ PASS: Test 365: "new/fancy name patterns for method names" passed.
 
 Running test 366: design/calls/calls: calls(...)
 Commandline: abc -d design/calls -warn-unused-advice:off -Xlint:ignore design/calls/Simple.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 366: "design/calls/calls: calls(...)" passed.
 
 
@@ -2191,7 +2186,6 @@ PASS: Test 403: "new/Parsing C+ expressions without parens in super introduction
 
 Running test 404: new/Introducing methods on classes that implements inner-interfaces with +implements.
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroducingMethodsOnPlusImplementedInterfaces.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 404: "new/Introducing methods on classes that implements inner-interfaces with +implements." passed.
 
 
@@ -2283,7 +2277,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@aa25e1, [Ljava.lang.Object;@9cd92b, TwoAnonymous$3@aa25e1
+calling run: TwoAnonymous$3@61b6a5, [Ljava.lang.Object;@11e3d18, TwoAnonymous$3@61b6a5
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2394,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1358448.foo calls Outer$Inner@7fce0f.mi
+Outer@1faadf.foo calls Outer$Inner@10b2f27.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@7fce0f.mi calls java.io.PrintStream@b15ad7.println
+Outer$Inner@10b2f27.mi calls java.io.PrintStream@144e265.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1358448.foo calls Outer$InnerRandom@ba4860.nextHook
+Outer@1faadf.foo calls Outer$InnerRandom@f1e75d.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@ba4860.nextHook calls Outer$InnerRandom@ba4860.next
+Outer$InnerRandom@f1e75d.nextHook calls Outer$InnerRandom@f1e75d.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1358448.foo calls X.nextInt
+Outer@1faadf.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@237e06.foo calls Outer$Inner@26c016.mi
+Outer@1bfb239.foo calls Outer$Inner@4de516.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@26c016.mi calls java.io.PrintStream@d0e7c.println
+Outer$Inner@4de516.mi calls java.io.PrintStream@1fb2127.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@237e06.foo calls Outer$InnerRandom@1b48d0c.nextHook
+Outer@1bfb239.foo calls Outer$InnerRandom@ae92c2.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1b48d0c.nextHook calls Outer$InnerRandom@1b48d0c.next
+Outer$InnerRandom@ae92c2.nextHook calls Outer$InnerRandom@ae92c2.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@237e06.foo calls X.nextInt
+Outer@1bfb239.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2589,7 +2583,6 @@ PASS: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 473: new/Does the matrix coverage thing for the new method signatures
 Commandline: abc -d new -warn-unused-advice:off -1.4 -Xlint:ignore new/MethodSignatures.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 473: "new/Does the matrix coverage thing for the new method signatures" passed.
 
 
@@ -2605,7 +2598,6 @@ PASS: Test 475: "new/Gets and sets on a number of variables (field access ???)" 
 
 Running test 476: new/correct types of parameters at call-sites
 Commandline: abc -d new -warn-unused-advice:off -1.4 -Xlint:ignore new/CallTypes.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 476: "new/correct types of parameters at call-sites" passed.
 
 
@@ -2714,7 +2706,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$27$around$1601(AroundAll.java:199)
+	at A.inline$26$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -2740,7 +2732,6 @@ PASS: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" passed.
 
 Running test 499: new/target type matching with messy interface hierarchies
 Commandline: abc -d new -warn-unused-advice:off -1.4 -Xlint:ignore new/CallTypesI.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 499: "new/target type matching with messy interface hierarchies" passed.
 
 
@@ -2817,7 +2808,6 @@ PASS: Test 514: "new/protected subclass impl of superclass method with default a
 
 Running test 515: new/Exception planning advice
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/PR519.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 515: "new/Exception planning advice" passed.
 
 
@@ -2849,7 +2839,6 @@ PASS: Test 517: "new/introduced inner interfaces accessible inside aspect" passe
 
 Running test 518: new/validate (enclosing) join point and source locations
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/NegativeSourceLocation.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 518: "new/validate (enclosing) join point and source locations" passed.
 
 
@@ -2950,7 +2939,6 @@ PASS: Test 537: "new/after advice on static method with pcd if() using result" p
 
 Running test 538: new/after advice on static method with pcd if() using result through pointcut
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/PR590a.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 Compilation failed with 2 errors, which were matched and verified against the expected errors.
 PASS: Test 538: "new/after advice on static method with pcd if() using result through pointcut" passed.
 
@@ -3152,13 +3140,11 @@ PASS: Test 568: "new/unreachable code generated by around advice on the executio
 
 Running test 569: new/Overriding method implementations using introduction on interfaces
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroductionsOverriding.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 569: "new/Overriding method implementations using introduction on interfaces" passed.
 
 
 Running test 570: new/more coverage for around and concrete methods on interfaces
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/MultiAndAround.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 570: "new/more coverage for around and concrete methods on interfaces" passed.
 
 
@@ -3180,7 +3166,6 @@ PASS: Test 573: "new/after returning advice param" passed.
 
 Running test 574: new/! and declaring types with callee-side call join points
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/NotAndDeclaringTypes.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
 PASS: Test 574: "new/! and declaring types with callee-side call join points" passed.
 
 
@@ -3979,7 +3964,6 @@ PASS: Test 737: "new/PR852/declaring method on superclass and subclass" passed.
 
 Running test 739: bugs/privileged access to code outside the control of the compiler
 Commandline: abc -d bugs -warn-unused-advice:off -Xlint:warning bugs/PrivilegeBeyondScope.java 
-*** Option -Xlint:warning ignored: abc does not support Xlint
 Compilation failed with 1 errors, which were matched and verified against the expected errors.
 PASS: Test 739: "bugs/privileged access to code outside the control of the compiler" passed.
 
@@ -4040,7 +4024,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@241fc5.x:=-3
+test.Test3@1b2fd40.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4123,8 +4107,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@15be28d
-o: Bar@15be28d, i: 10
+o: Bar@cda89
+o: Bar@cda89, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4277,11 +4261,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$7$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$26$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4317,11 +4301,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$16$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$26$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4465,663 +4449,582 @@ PASS: Test 808: "bugs/Weaver fails with NPE for very large source files " passed
 
 Running test 809: harness/CLE: -help usage
 Commandline: abc -d harness -warn-unused-advice:off -help 
-Usage:  java <java_options> abc.main.Main <abc_options> <filenames> 
-   -or- abc <abc_options> <filenames>
-
-   where a useful <java_option> is -Xmx512M, to provide a large heap
-     and <filenames> should end in .java or .aj .
-
-   <abc_options> are listed below.
-
-
-General Options:
-  -h -help                     Print the usage screen for abc. 
-  -v -version                  Print the abc version number. 
-  -verbose                     Verbose output. 
-  @<filename>                  
-  -argfile <filename>          Read arguments from a file. 
-
-Input Options:
-  -sourceroots <path>          Use .java files in dirs in <path> as source. 
-  -injars <jar list>           Use class files from the jars in <jar list> as 
-                               source. 
-  -inpath <dir list>           Use class files found in the directories in 
-                               <dir list> as source. 
-  -cp <classpath>              
-  -classpath <classpath>       Specify the class path to be used when 
-                               searching for libraries. 
-  -main-class <class>          Sets the main class for interprocedural 
-                               analysis. 
-
-Output Options:
-  -dava                        Decompile instead of outputting classes. 
-  -outjar <jar>                Write output class files into a jar file. 
-  -d <path>                    Write output class files into a directory. 
-  -tag-instructions            Tag overhead instructions. 
-
-Warning/Error Reporting Options:
-  -warn-unused-advice          Warn if a piece of advice doesn't apply 
-                               anywhere. 
-  -warn-prec-ambiguity         Warn if there is a precedence ambiguity 
-
-Language Options:
-  -nested-comments             Allow nested comments. 
-  -ext <package name>          Load a language extension. 
-  -1.3                         Java 1.3 compliance mode. 
-  -1.4                         Java 1.4 compliance mode. 
-  -abc101runtime               abc 1.0.1 runtime compliance mode. 
-
-Optimization Options:
-  -O<arg>                      Set the general optimization level. 
-  -around-force-closures       Force closures for around advice. 
-  -around-inlining             Enable inlining of around advice. 
-  -around-force-inlining       Inline around advice whenever possible. 
-  -before-after-inlining       Enable inlining of before and after advice. 
-  -before-after-force-inlining Inline before and after advice whenever 
-                               possible. 
-  -cflow-use-counters          Use the counter implementation of cflow 
-                               whenever possible. 
-  -cflow-use-sharing           Share state between cflow pointcuts whenever 
-                               possible 
-  -cflow-share-thread-locals   Share thread-local instances of cflow stacks 
-                               within method bodies 
-
 PASS: Test 809: "harness/CLE: -help usage" passed.
 
 
 Running test 811: harness/CLE: bad filename
 Commandline: abc -d harness -warn-unused-advice:off harness/NoSuchFile.java 
-Error position is null; assuming error matches current expected error with no line number. Error message: Cannot find source file "harness/NoSuchFile.java".
-WARNING: This test was probably not really passed!!
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 811: "harness/CLE: bad filename" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 811: "harness/CLE: bad filename" failed.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:661)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
-Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:757)
-	at abc.main.Main.loadSourceRoots(Main.java:774)
-	at abc.main.Main.run(Main.java:529)
-	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
+PASS: Test 812: "harness/CLE: no dir specified for sourceroots" passed.
 
 
 Running test 815: bugs/Unexpected Xlint:unresolvableMember warning with withincode
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CatchSig.java 
-from: call(Class B.findClass())
-from B.new()
-from: call(Class B.findClass())
-from B.new()
-test from test2
-from: execution(void CatchSig.main(String[]))
-PASS: Test 815: "bugs/Unexpected Xlint:unresolvableMember warning with withincode" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 815: "bugs/Unexpected Xlint:unresolvableMember warning with withincode" failed.
 
 
 Running test 816: bugs/public static fields being ignored
 Commandline: abc -d bugs -warn-unused-advice:off bugs/FinalFields.java 
-modifers are: public static final
-PASS: Test 816: "bugs/public static fields being ignored" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 816: "bugs/public static fields being ignored" failed.
 
 
 Running test 817: bugs/lines/Weaving rt.jar results in stack overflow
 Commandline: abc -d bugs/lines -injars bugs/lines/big.jar -warn-unused-advice:off bugs/lines/A.java 
-execution(void Big.main(String[]))
-execution(String Big.m())
-360
-PASS: Test 817: "bugs/lines/Weaving rt.jar results in stack overflow" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 817: "bugs/lines/Weaving rt.jar results in stack overflow" failed.
 
 
 Running test 820: harness/XLint:ignore suppresses XLint warnings
 Commandline: abc -d harness -warn-unused-advice:off -Xlint:ignore harness/XLintWarningTest.java 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
-PASS: Test 820: "harness/XLint:ignore suppresses XLint warnings" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 820: "harness/XLint:ignore suppresses XLint warnings" failed.
 
 
 Running test 822: new/binaryWarnings/src/declare warnings on main - constructor execution
 Commandline: abc -d new/binaryWarnings/src -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java new/binaryWarnings/src/app/Main.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 822: "new/binaryWarnings/src/declare warnings on main - constructor execution" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 822: "new/binaryWarnings/src/declare warnings on main - constructor execution" failed.
 
 
 Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-javac-1.4.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed.
 
 
 Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-ajc-1.1.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed.
 
 
 Running test 825: bugs/handlers/advice on handler join points should not throw unpermitted checked exceptions
 Commandline: abc -d bugs/handlers -warn-unused-advice:off bugs/handlers/ExceptionCheckCE.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 825: "bugs/handlers/advice on handler join points should not throw unpermitted checked exceptions" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 825: "bugs/handlers/advice on handler join points should not throw unpermitted checked exceptions" failed.
 
 
 Running test 827: harness/-nowarn suppresses XLint warnings
 Commandline: abc -d harness -warn-unused-advice:off -nowarn harness/XLintWarningTest.java 
-*** Option -nowarn ignored: warnings not disabled.
-PASS: Test 827: "harness/-nowarn suppresses XLint warnings" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 827: "harness/-nowarn suppresses XLint warnings" failed.
 
 
 Running test 828: harness/warn:none suppresses XLint warnings
 Commandline: abc -d harness -warn-unused-advice:off -warn:none harness/XLintWarningTest.java 
-*** Option -warn:none ignored:  warning flags not implemented yet.
-PASS: Test 828: "harness/warn:none suppresses XLint warnings" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 828: "harness/warn:none suppresses XLint warnings" failed.
 
 
 Running test 832: bugs/accessMethods/can not resolve this member warning
 Commandline: abc -d bugs/accessMethods -warn-unused-advice:off bugs/accessMethods/p1/Base.java bugs/accessMethods/p2/Derived.java 
-Base:Base:0:0
-PASS: Test 832: "bugs/accessMethods/can not resolve this member warning" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 832: "bugs/accessMethods/can not resolve this member warning" failed.
 
 
 Running test 833: bugs/try switch VerifyError, InconsistentStackHeight
 Commandline: abc -d bugs -warn-unused-advice:off bugs/TrySwitch.java 
-caught: java.lang.RuntimeException
-PASS: Test 833: "bugs/try switch VerifyError, InconsistentStackHeight" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 833: "bugs/try switch VerifyError, InconsistentStackHeight" failed.
 
 
 Running test 834: bugs/Compiler crash in ajc 1.1 - terrible error for inaccessible constructor
 Commandline: abc -d bugs -warn-unused-advice:off bugs/NewVoid.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 834: "bugs/Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 834: "bugs/Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" failed.
 
 
 Running test 835: bugs/Missing import crashes compiler
 Commandline: abc -d bugs -warn-unused-advice:off bugs/MissingImport.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 835: "bugs/Missing import crashes compiler" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 835: "bugs/Missing import crashes compiler" failed.
 
 
 Running test 836: bugs/NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch
 Commandline: abc -d bugs -warn-unused-advice:off bugs/NewSwitch.java 
-PASS: Test 836: "bugs/NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 836: "bugs/NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch" failed.
 
 
 Running test 837: bugs/switch statement in aspects crashes weaving
 Commandline: abc -d bugs -warn-unused-advice:off bugs/SwitchInAround.java 
-PASS: Test 837: "bugs/switch statement in aspects crashes weaving" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 837: "bugs/switch statement in aspects crashes weaving" failed.
 
 
 Running test 838: bugs/ajc stack trace on declaring hashcode() method in aspect
 Commandline: abc -d bugs -warn-unused-advice:off bugs/OverridingInterfaceObjectMethod.java 
-PASS: Test 838: "bugs/ajc stack trace on declaring hashcode() method in aspect" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 838: "bugs/ajc stack trace on declaring hashcode() method in aspect" failed.
 
 
 Running test 839: bugs/using super in method introduced on interface with multiple supertypes
 Commandline: abc -d bugs -warn-unused-advice:off bugs/MultipleSuperCf.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 839: "bugs/using super in method introduced on interface with multiple supertypes" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 839: "bugs/using super in method introduced on interface with multiple supertypes" failed.
 
 
 Running test 840: bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)
 Commandline: abc -d bugs/cflowAndJar -warn-unused-advice:off bugs/cflowAndJar/TestAspect.aj bugs/cflowAndJar/Test.java bugs/cflowAndJar/AbstractAspect.aj 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-hello.
-hello.
-PASS: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" failed.
 
 
 Running test 842: bugs/Default method impl for interface causes internal exception.
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CloneMethod.java 
-... done.
-PASS: Test 842: "bugs/Default method impl for interface causes internal exception." passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 842: "bugs/Default method impl for interface causes internal exception." failed.
 
 
 Running test 843: bugs/Class Literals as non final fields (also assert, and this$0)
 Commandline: abc -d bugs -warn-unused-advice:off -source 1.4 bugs/ClassLiteralField.java 
-PASS: Test 843: "bugs/Class Literals as non final fields (also assert, and this$0)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 843: "bugs/Class Literals as non final fields (also assert, and this$0)" failed.
 
 
 Running test 844: errors/compile error expected for abstract pointcut outside abstract aspect
 Commandline: abc -d errors -warn-unused-advice:off errors/AbstractPointcutCE.java 
-Compilation failed with 3 errors, which were matched and verified against the expected errors.
-PASS: Test 844: "errors/compile error expected for abstract pointcut outside abstract aspect" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 844: "errors/compile error expected for abstract pointcut outside abstract aspect" failed.
 
 
 Running test 845: bugs/subtype-qualified pointcut reference
 Commandline: abc -d bugs -warn-unused-advice:off bugs/PointcutLibraryTest.java 
-Test.prun()
-PASS: Test 845: "bugs/subtype-qualified pointcut reference" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 845: "bugs/subtype-qualified pointcut reference" failed.
 
 
 Running test 846: bugs/weaver trace on mis-qualified pointcut reference
 Commandline: abc -d bugs -warn-unused-advice:off bugs/SuperPointcutCE.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 846: "bugs/weaver trace on mis-qualified pointcut reference" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 846: "bugs/weaver trace on mis-qualified pointcut reference" failed.
 
 
 Running test 847: bugs/compile error expected for interface pointcuts
 Commandline: abc -d bugs -warn-unused-advice:off bugs/AbstractPointcutCE.java 
-Compilation failed with 4 errors, which were matched and verified against the expected errors.
-PASS: Test 847: "bugs/compile error expected for interface pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 847: "bugs/compile error expected for interface pointcuts" failed.
 
 
 Running test 848: bugs/interface call signatures when declaring method in aspect
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DeclareWarningAndInterfaceMethodCW.java 
-Compilation succeeded with 10 warnings, which were matched and verified against the expected warnings.
-PASS: Test 848: "bugs/interface call signatures when declaring method in aspect" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 848: "bugs/interface call signatures when declaring method in aspect" failed.
 
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@3ffc4
-PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" failed.
 
 
 Running test 852: new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar
 Commandline: abc -cp new/interfaceLibrary/aspectedInterfaceOnly.jar:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/Client.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 852: "new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 852: "new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar" failed.
 
 
 Running test 853: new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar
 Commandline: abc -cp new/interfaceLibrary/aspectedInterfaceOnly.jar:new/interfaceLibrary/aspectOnly.jar:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/Client.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 853: "new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 853: "new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" failed.
 
 
 Running test 854: new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar
 Commandline: abc -cp new/interfaceLibrary/aspectedInterfaceOnlyBinary.jar:new/interfaceLibrary/aspectOnly.jar:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/Client.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 854: "new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 854: "new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar" failed.
 
 
 Running test 857: bugs/interfaceLibrary/exception clause for aspect-declared interface methods - positive
 Commandline: abc -d bugs/interfaceLibrary -warn-unused-advice:off bugs/interfaceLibrary/Client.java bugs/interfaceLibrary/LibraryAspect.java bugs/interfaceLibrary/lib/LibraryInterface.java 
-PASS: Test 857: "bugs/interfaceLibrary/exception clause for aspect-declared interface methods - positive" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 857: "bugs/interfaceLibrary/exception clause for aspect-declared interface methods - positive" failed.
 
 
 Running test 858: bugs/interfaceLibrary/exception clause for aspect-declared interface methods - negative
 Commandline: abc -d bugs/interfaceLibrary -warn-unused-advice:off bugs/interfaceLibrary/ClientCE.java bugs/interfaceLibrary/LibraryAspect.java bugs/interfaceLibrary/lib/LibraryInterface.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 858: "bugs/interfaceLibrary/exception clause for aspect-declared interface methods - negative" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 858: "bugs/interfaceLibrary/exception clause for aspect-declared interface methods - negative" failed.
 
 
 Running test 859: bugs/interfaceLibrary/exception clause for aspect-declared class methods - positive
 Commandline: abc -d bugs/interfaceLibrary -warn-unused-advice:off bugs/interfaceLibrary/ClassClient.java bugs/interfaceLibrary/LibraryClassAspect.java bugs/interfaceLibrary/lib/LibraryClass.java 
-PASS: Test 859: "bugs/interfaceLibrary/exception clause for aspect-declared class methods - positive" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 859: "bugs/interfaceLibrary/exception clause for aspect-declared class methods - positive" failed.
 
 
 Running test 860: bugs/interfaceLibrary/exception clause for aspect-declared class methods - negative
 Commandline: abc -d bugs/interfaceLibrary -warn-unused-advice:off bugs/interfaceLibrary/ClassClientCE.java bugs/interfaceLibrary/LibraryClassAspect.java bugs/interfaceLibrary/lib/LibraryClass.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 860: "bugs/interfaceLibrary/exception clause for aspect-declared class methods - negative" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 860: "bugs/interfaceLibrary/exception clause for aspect-declared class methods - negative" failed.
 
 
 Running test 861: bugs/reflective check of declared exceptions from aspect-declared methods
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DeclaredExceptions.java 
-PASS: Test 861: "bugs/reflective check of declared exceptions from aspect-declared methods" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 861: "bugs/reflective check of declared exceptions from aspect-declared methods" failed.
 
 
 Running test 866: bugs/moreInterfaceLibrary/Weaving failure when using injars (no jars)
 Commandline: abc -d bugs/moreInterfaceLibrary -warn-unused-advice:off bugs/moreInterfaceLibrary/lib/ExecutionMonitor.aj bugs/moreInterfaceLibrary/model/BusObj.java bugs/moreInterfaceLibrary/model/MonitorBusObj.java 
-PASS: Test 866: "bugs/moreInterfaceLibrary/Weaving failure when using injars (no jars)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 866: "bugs/moreInterfaceLibrary/Weaving failure when using injars (no jars)" failed.
 
 
 Running test 870: bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points
 Commandline: abc -d bugs/perCflowAndJar -warn-unused-advice:off bugs/perCflowAndJar/PerCFlowCompileFromJar.java bugs/perCflowAndJar/PerCFlowCompileFromJarTest.java 
-PASS: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" failed.
 
 
 Running test 872: bugs/throwsSignature/throw derivative pointcuts not advised
 Commandline: abc -d bugs/throwsSignature -warn-unused-advice:off bugs/throwsSignature/ExceptionBugTest.java bugs/throwsSignature/ExceptionAspect.java 
-Compilation failed with 3 errors, which were matched and verified against the expected errors.
-PASS: Test 872: "bugs/throwsSignature/throw derivative pointcuts not advised" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 872: "bugs/throwsSignature/throw derivative pointcuts not advised" failed.
 
 
 Running test 873: bugs/perthis and signature bad interaction
 Commandline: abc -d bugs -warn-unused-advice:off bugs/InterPerCall.java 
-PASS: Test 873: "bugs/perthis and signature bad interaction" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 873: "bugs/perthis and signature bad interaction" failed.
 
 
 Running test 874: bugs/declareBinding/declare error fails on pointcuts composed from multiple classes
 Commandline: abc -d bugs/declareBinding -warn-unused-advice:off bugs/declareBinding/SampleExceptionHandling1.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 874: "bugs/declareBinding/declare error fails on pointcuts composed from multiple classes" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 874: "bugs/declareBinding/declare error fails on pointcuts composed from multiple classes" failed.
 
 
 Running test 875: bugs/declareSoftWithin/declare error fails on pointcuts composed from multiple classes
 Commandline: abc -d bugs/declareSoftWithin -warn-unused-advice:off bugs/declareSoftWithin/aspects/Softener.aj bugs/declareSoftWithin/test/NoSoftener.java 
-PASS: Test 875: "bugs/declareSoftWithin/declare error fails on pointcuts composed from multiple classes" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 875: "bugs/declareSoftWithin/declare error fails on pointcuts composed from multiple classes" failed.
 
 
 Running test 876: bugs/Interaction between pointcut binding and declare parents
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ParentsAndPointcuts.java 
-PASS: Test 876: "bugs/Interaction between pointcut binding and declare parents" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 876: "bugs/Interaction between pointcut binding and declare parents" failed.
 
 
 Running test 877: bugs/Non-functional concretezation of ReferencePointcut
 Commandline: abc -d bugs -warn-unused-advice:off bugs/AdviceInteraction.java 
-PASS: Test 877: "bugs/Non-functional concretezation of ReferencePointcut" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 877: "bugs/Non-functional concretezation of ReferencePointcut" failed.
 
 
 Running test 878: bugs/concretizeNpe/NPE in concretization error path
 Commandline: abc -d bugs/concretizeNpe -warn-unused-advice:off bugs/concretizeNpe/base/ExceptionHandling.java bugs/concretizeNpe/model/ModelExceptionHandling.java 
-Error position is null; assuming error matches current expected error with no line number. Error message: Couldn't repair and continue parse
-WARNING: This test was probably not really passed!!
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 878: "bugs/concretizeNpe/NPE in concretization error path" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 878: "bugs/concretizeNpe/NPE in concretization error path" failed.
 
 
 Running test 879: bugs/jpOptimization/JoinPoint Optimization when targetting 1.4
 Commandline: abc -d bugs/jpOptimization -warn-unused-advice:off -1.4 bugs/jpOptimization/de/test/MyMain.java bugs/jpOptimization/de/test/MyAspect.java 
-before: void de.test.MyMain.sayHello()
-hello
-PASS: Test 879: "bugs/jpOptimization/JoinPoint Optimization when targetting 1.4" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 879: "bugs/jpOptimization/JoinPoint Optimization when targetting 1.4" failed.
 
 
 Running test 881: bugs/privilege/packageProtected/priviledged aspects calling methods from advice
 Commandline: abc -d bugs/privilege/packageProtected -warn-unused-advice:off bugs/privilege/packageProtected/concern/ContextUser.java bugs/privilege/packageProtected/concern/BaseTarget.java bugs/privilege/packageProtected/core/Base.java 
-PASS: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed.
 
 
 Running test 882: bugs/No error on overloaded pointcuts in class
 Commandline: abc -d bugs -warn-unused-advice:off bugs/OverloadedPointcutsInClass.java 
-Compilation failed with 3 errors, which were matched and verified against the expected errors.
-PASS: Test 882: "bugs/No error on overloaded pointcuts in class" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 882: "bugs/No error on overloaded pointcuts in class" failed.
 
 
 Running test 883: bugs/No error on overloaded pointcuts unless binding variables
 Commandline: abc -d bugs -warn-unused-advice:off bugs/OverloadedPointcutsInAspect.java 
-Compilation failed with 8 errors, which were matched and verified against the expected errors.
-PASS: Test 883: "bugs/No error on overloaded pointcuts unless binding variables" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 883: "bugs/No error on overloaded pointcuts unless binding variables" failed.
 
 
 Running test 884: bugs/alias getCause for getWrappedThrowable in SoftException
 Commandline: abc -d bugs -warn-unused-advice:off -Xlint:warning bugs/GetCauseOnSoftException.java 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-MyException: secret
-PASS: Test 884: "bugs/alias getCause for getWrappedThrowable in SoftException" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 884: "bugs/alias getCause for getWrappedThrowable in SoftException" failed.
 
 
 Running test 885: bugs/Declare soft softening other exception types
 Commandline: abc -d bugs -warn-unused-advice:off bugs/SofteningTooMuch.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 885: "bugs/Declare soft softening other exception types" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 885: "bugs/Declare soft softening other exception types" failed.
 
 
 Running test 886: bugs/static method introduction on interfaces, should not be allowed
 Commandline: abc -d bugs -warn-unused-advice:off bugs/StaticInterfaceMethods.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 886: "bugs/static method introduction on interfaces, should not be allowed" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 886: "bugs/static method introduction on interfaces, should not be allowed" failed.
 
 
 Running test 887: bugs/External pointcut refs not resolved if named pointcut used by declare
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DeclareErrorNamedPointcutCE.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 887: "bugs/External pointcut refs not resolved if named pointcut used by declare" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 887: "bugs/External pointcut refs not resolved if named pointcut used by declare" failed.
 
 
 Running test 892: bugs/Appropriate message for 'after() thowing(Throwable th)' syntax error
 Commandline: abc -d bugs -warn-unused-advice:off bugs/AfterThrowingAdviceSyntaxError.java 
-Compilation failed with 3 errors, which were matched and verified against the expected errors.
-PASS: Test 892: "bugs/Appropriate message for 'after() thowing(Throwable th)' syntax error" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 892: "bugs/Appropriate message for 'after() thowing(Throwable th)' syntax error" failed.
 
 
 Running test 894: bugs/inner aspect containing declare soft
 Commandline: abc -d bugs -warn-unused-advice:off bugs/TestSoftening.java 
-PASS: Test 894: "bugs/inner aspect containing declare soft" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 894: "bugs/inner aspect containing declare soft" failed.
 
 
 Running test 895: bugs/Bad parser error recovery in advice
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ParserRecoveryTest.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 895: "bugs/Bad parser error recovery in advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 895: "bugs/Bad parser error recovery in advice" failed.
 
 
 Running test 896: bugs/Bad parser error recovery in java source
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ParserRecoveryTestPureJava.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 896: "bugs/Bad parser error recovery in java source" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 896: "bugs/Bad parser error recovery in java source" failed.
 
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
 Commandline: abc -d bugs -warn-unused-advice:off bugs/PrivilegedParsing.java 
-3, 3
-PASS: Test 897: "bugs/compiler issues error on inner aspects when privilieged" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed.
 
 
 Running test 898: bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits
 Commandline: abc -d bugs -warn-unused-advice:off bugs/AfterThrowingCtor.java 
-PASS: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits" failed.
 
 
 Running test 900: bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (weave altogether)
 Commandline: abc -d bugs/abstractMethods -warn-unused-advice:off bugs/abstractMethods/interface/C.java bugs/abstractMethods/interface/A.java bugs/abstractMethods/interface/B.java 
-PASS: Test 900: "bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (weave altogether)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 900: "bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (weave altogether)" failed.
 
 
 Running test 901: bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (injars)
 Commandline: abc -d bugs/abstractMethods -injars bugs/abstractMethods/interface/jars/AandB.jar -warn-unused-advice:off bugs/abstractMethods/interface/C.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 901: "bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (injars)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 901: "bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (injars)" failed.
 
 
 Running test 903: bugs/abstractMethods/Introduced abstract method on abstract class not implemented by subtype (single source file)
 Commandline: abc -d bugs/abstractMethods -warn-unused-advice:off bugs/abstractMethods/singlesource/C.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 903: "bugs/abstractMethods/Introduced abstract method on abstract class not implemented by subtype (single source file)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 903: "bugs/abstractMethods/Introduced abstract method on abstract class not implemented by subtype (single source file)" failed.
 
 
 Running test 904: bugs/abstractMethods/Introduced abstract method on abstract class with introduced concrete method (single source file)
 Commandline: abc -d bugs/abstractMethods -warn-unused-advice:off bugs/abstractMethods/singlesource/C1.java 
-PASS: Test 904: "bugs/abstractMethods/Introduced abstract method on abstract class with introduced concrete method (single source file)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 904: "bugs/abstractMethods/Introduced abstract method on abstract class with introduced concrete method (single source file)" failed.
 
 
 Running test 905: bugs/abstractMethods/Introduced abstract method on abstract class with existing concrete method (single source file)
 Commandline: abc -d bugs/abstractMethods -warn-unused-advice:off bugs/abstractMethods/singlesource/C2.java 
-PASS: Test 905: "bugs/abstractMethods/Introduced abstract method on abstract class with existing concrete method (single source file)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 905: "bugs/abstractMethods/Introduced abstract method on abstract class with existing concrete method (single source file)" failed.
 
 
 Running test 906: bugs/interAbstract/aspect declares interface method (no modifiers)
 Commandline: abc -d bugs/interAbstract -warn-unused-advice:off bugs/interAbstract/InterfaceMethodDeclarationNone.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 906: "bugs/interAbstract/aspect declares interface method (no modifiers)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 906: "bugs/interAbstract/aspect declares interface method (no modifiers)" failed.
 
 
 Running test 907: bugs/interAbstract/aspect declares interface method (abstract)
 Commandline: abc -d bugs/interAbstract -warn-unused-advice:off bugs/interAbstract/InterfaceMethodDeclarationAbstract.java 
-PASS: Test 907: "bugs/interAbstract/aspect declares interface method (abstract)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 907: "bugs/interAbstract/aspect declares interface method (abstract)" failed.
 
 
 Running test 908: bugs/interAbstract/aspect declares interface method (public abstract)
 Commandline: abc -d bugs/interAbstract -warn-unused-advice:off bugs/interAbstract/InterfaceMethodDeclarationFull.java 
-PASS: Test 908: "bugs/interAbstract/aspect declares interface method (public abstract)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 908: "bugs/interAbstract/aspect declares interface method (public abstract)" failed.
 
 
 Running test 910: bugs/interfaceDefinition/Use class implementing interface via aspect (weave all together)
 Commandline: abc -d bugs/interfaceDefinition -warn-unused-advice:off bugs/interfaceDefinition/pack/DefineInterface.java bugs/interfaceDefinition/pack/InterfaceDefinition.java bugs/interfaceDefinition/pack/MyInterface.java bugs/interfaceDefinition/Main.java 
-hello
-PASS: Test 910: "bugs/interfaceDefinition/Use class implementing interface via aspect (weave all together)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 910: "bugs/interfaceDefinition/Use class implementing interface via aspect (weave all together)" failed.
 
 
 Running test 912: bugs/Erroneous exception conversion
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ErroneousExceptionConversion.java 
-boom in 5...
-PASS: Test 912: "bugs/Erroneous exception conversion" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 912: "bugs/Erroneous exception conversion" failed.
 
 
 Running test 913: bugs/before():execution(new(..)) does not throw NoAspectBoundException
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ErroneousExceptionConversion1.java 
-PASS: Test 913: "bugs/before():execution(new(..)) does not throw NoAspectBoundException" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 913: "bugs/before():execution(new(..)) does not throw NoAspectBoundException" failed.
 
 
 Running test 914: bugs/Anomalous handling of inter-type declarations to abstract base classes in aspectj 1.1
 Commandline: abc -d bugs -warn-unused-advice:off bugs/AbstractBaseAndInterTypeInterface.java 
-PASS: Test 914: "bugs/Anomalous handling of inter-type declarations to abstract base classes in aspectj 1.1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 914: "bugs/Anomalous handling of inter-type declarations to abstract base classes in aspectj 1.1" failed.
 
 
 Running test 915: bugs/caseSensitivity/NPE When compiling intertype declaration
 Commandline: abc -d bugs/caseSensitivity -warn-unused-advice:off bugs/caseSensitivity/uniqueId/Numbered.java bugs/caseSensitivity/uniqueId/Bug.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 915: "bugs/caseSensitivity/NPE When compiling intertype declaration" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 915: "bugs/caseSensitivity/NPE When compiling intertype declaration" failed.
 
 
 Running test 916: bugs/declare warning on subtype constructor
 Commandline: abc -d bugs -warn-unused-advice:off bugs/SubtypeConstructorCW.java 
-Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-    "before execution(C())",
-    "before execution(F(int))",
-PASS: Test 916: "bugs/declare warning on subtype constructor" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 916: "bugs/declare warning on subtype constructor" failed.
 
 
 Running test 917: bugs/CatchClauseSignature has broken operation
 Commandline: abc -d bugs -warn-unused-advice:off bugs/HandlerSig.java 
-PASS: Test 917: "bugs/CatchClauseSignature has broken operation" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 917: "bugs/CatchClauseSignature has broken operation" failed.
 
 
 Running test 918: new/after returning with parameter: matching rules
 Commandline: abc -d new -warn-unused-advice:off new/AfterReturningParamMatching.java 
-PASS: Test 918: "new/after returning with parameter: matching rules" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 918: "new/after returning with parameter: matching rules" failed.
 
 
 Running test 922: bugs/protectedvf/mail list VerifyError with protected access
 Commandline: abc -d bugs/protectedvf -warn-unused-advice:off bugs/protectedvf/main/Driver.java bugs/protectedvf/main/p2/AbstractTest.aj bugs/protectedvf/main/p1/ConcreteTest.aj 
-The value of the field is 1
-test: test-1, test-1, test-1
-The value of the field when replacing is 1
-PASS: Test 922: "bugs/protectedvf/mail list VerifyError with protected access" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 922: "bugs/protectedvf/mail list VerifyError with protected access" failed.
 
 
 Running test 923: abctests/design/reflection/thisJoinPoint etc inside if pointcut
 Commandline: abc -d abctests/design/reflection -warn-unused-advice:off abctests/design/reflection/InsideIf.java 
-PASS: Test 923: "abctests/design/reflection/thisJoinPoint etc inside if pointcut" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 923: "abctests/design/reflection/thisJoinPoint etc inside if pointcut" failed.
 
 
 Running test 924: abctests/design/cflow/cflow at handler joinpoints
 Commandline: abc -d abctests/design/cflow -warn-unused-advice:off abctests/design/cflow/Handler.java 
-PASS: Test 924: "abctests/design/cflow/cflow at handler joinpoints" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 924: "abctests/design/cflow/cflow at handler joinpoints" failed.
 
 
 Running test 925: bugs/Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)
 Commandline: abc -d bugs -warn-unused-advice:off bugs/OverloadedITDNPE.java 
-PASS: Test 925: "bugs/Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 925: "bugs/Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)" failed.
 
 
 Running test 926: bugs/ClasscastException on concretization of if(false) 1
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DecwClassCastException.java 
-Compilation failed with 6 errors, which were matched and verified against the expected errors.
-PASS: Test 926: "bugs/ClasscastException on concretization of if(false) 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 926: "bugs/ClasscastException on concretization of if(false) 1" failed.
 
 
 Running test 92601: abctests/bugs/ClasscastException on concretization of if(false) 1-1
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DecwClassCastExceptionIndirect.java 
-Compilation failed with 6 errors, which were matched and verified against the expected errors.
-PASS: Test 92601: "abctests/bugs/ClasscastException on concretization of if(false) 1-1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 92601: "abctests/bugs/ClasscastException on concretization of if(false) 1-1" failed.
 
 
 Running test 927: bugs/ClasscastException on concretization of if(false) 2-1
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DeclareSoftDynamicPCDs.java 
-Compilation failed with 6 errors, which were matched and verified against the expected errors.
-PASS: Test 927: "bugs/ClasscastException on concretization of if(false) 2-1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 927: "bugs/ClasscastException on concretization of if(false) 2-1" failed.
 
 
 Running test 92701: abctests/bugs/ClasscastException on concretization of if(false) 2-2
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DeclareSoftDynamicPCDsIndirect.java 
-Compilation failed with 6 errors, which were matched and verified against the expected errors.
-PASS: Test 92701: "abctests/bugs/ClasscastException on concretization of if(false) 2-2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 92701: "abctests/bugs/ClasscastException on concretization of if(false) 2-2" failed.
 
 
 Running test 928: bugs/serialVersionUID/SUID: Before execution advice
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
-Test.run()
-? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
-Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@b9ab3a
-PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" failed.
 
 
 Running test 930: bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
-Test.run()
-? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
-Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:ignore bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AroundClosureExecutionAdvice.aj 
-*** Option -Xlint:ignore ignored: abc does not support Xlint
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-? Util.fail() ex=java.io.InvalidClassException: Test; local class incompatible: stream classdesc serialVersionUID = 6093543801813805496, local class serialVersionUID = -3243753134776029924
-PASS: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" failed.
 
 
 Running test 933: bugs/serialVersionUID/SUID: thisJoinPoint with clinit method
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java 
-? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
-Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@15725ee
-PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" failed.
 
 
 Running test 935: bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java 
-? Util.write() suid=SuidTest: static final long serialVersionUID = 8904684881596717140L;
-Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1190199
-PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" failed.
 
 
 Running test 938: bugs/serialVersionUID/SUID: Declare extends
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
-Test.run()
-? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
-Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/DeclareExtends.aj 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Thread[Thread-949,5,main]
-PASS: Test 938: "bugs/serialVersionUID/SUID: Declare extends" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 938: "bugs/serialVersionUID/SUID: Declare extends" failed.
 
 
 Running test 940: bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/NonSerializableTest.java bugs/serialVersionUID/DeclareImplements.aj 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-PASS: Test 940: "bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 940: "bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)" failed.
 
 
 Running test 941: bugs/serialVersionUID/SUID: Declare implements Serializable (compile)
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/NonSerializableTest.java bugs/serialVersionUID/DeclareImplementsSerializable.aj 
-*** Option -Xlint:warning ignored: abc does not support Xlint
-PASS: Test 941: "bugs/serialVersionUID/SUID: Declare implements Serializable (compile)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 941: "bugs/serialVersionUID/SUID: Declare implements Serializable (compile)" failed.
 
 
 Running test 945: bugs/fieldsOnInterfaces/declare String field on interface
 Commandline: abc -d bugs/fieldsOnInterfaces -warn-unused-advice:off bugs/fieldsOnInterfaces/StringFieldOnInterface.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 945: "bugs/fieldsOnInterfaces/declare String field on interface" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 945: "bugs/fieldsOnInterfaces/declare String field on interface" failed.
 
 
 Running test 946: bugs/fieldsOnInterfaces/declare int field on interface
 Commandline: abc -d bugs/fieldsOnInterfaces -warn-unused-advice:off bugs/fieldsOnInterfaces/IntFieldOnInterface.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 946: "bugs/fieldsOnInterfaces/declare int field on interface" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 946: "bugs/fieldsOnInterfaces/declare int field on interface" failed.
 
 
 Running test 947: bugs/fieldsOnInterfaces/declare Object field on interface
 Commandline: abc -d bugs/fieldsOnInterfaces -warn-unused-advice:off bugs/fieldsOnInterfaces/ObjectFieldOnInterface.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 947: "bugs/fieldsOnInterfaces/declare Object field on interface" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 947: "bugs/fieldsOnInterfaces/declare Object field on interface" failed.
 
 
 Running test 948: bugs/fail in compiling aspect with overriding method introduction with different throws clause 
 Commandline: abc -d bugs -warn-unused-advice:off bugs/IntertypeDifferentThrows.java 
-PASS: Test 948: "bugs/fail in compiling aspect with overriding method introduction with different throws clause " passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 948: "bugs/fail in compiling aspect with overriding method introduction with different throws clause " failed.
 
 
 Running test 949: new/super call in anonymous class created in around advice
 Commandline: abc -d new -warn-unused-advice:off new/SuperClosure.java 
-PASS: Test 949: "new/super call in anonymous class created in around advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 949: "new/super call in anonymous class created in around advice" failed.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
@@ -5132,1357 +5035,805 @@ FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed.
 
 Running test 952: bugs/retitle warning to circular {advice} dependency at ...
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CircularAdvicePrecedence.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 952: "bugs/retitle warning to circular {advice} dependency at ..." passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 952: "bugs/retitle warning to circular {advice} dependency at ..." failed.
 
 
 Running test 953: bugs/Introduce Unknown Type to class causes Null pointer exception
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Pr51322.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 953: "bugs/Introduce Unknown Type to class causes Null pointer exception" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 953: "bugs/Introduce Unknown Type to class causes Null pointer exception" failed.
 
 
 Running test 957: bugs/Private members introduced via an interface are visible to the class
 Commandline: abc -d bugs -warn-unused-advice:off bugs/VisiblePrivateInterfaceITDs.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 957: "bugs/Private members introduced via an interface are visible to the class" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 957: "bugs/Private members introduced via an interface are visible to the class" failed.
 
 
 Running test 958: bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 1
 Commandline: abc -d bugs/declarePrecedenceWithClasses -warn-unused-advice:off bugs/declarePrecedenceWithClasses/DeclarePrecedenceTestClass.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 958: "bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 958: "bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 1" failed.
 
 
 Running test 959: bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 2
 Commandline: abc -d bugs/declarePrecedenceWithClasses -warn-unused-advice:off bugs/declarePrecedenceWithClasses/Priority.aj 
-PASS: Test 959: "bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 959: "bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 2" failed.
 
 
 Running test 960: bugs/StringToString/error Type mismatch: cannot convert from java.lang.String to java.lang.String
 Commandline: abc -cp bugs/StringToString/helloworld.jar:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d bugs/StringToString -warn-unused-advice:off bugs/StringToString/X.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 960: "bugs/StringToString/error Type mismatch: cannot convert from java.lang.String to java.lang.String" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 960: "bugs/StringToString/error Type mismatch: cannot convert from java.lang.String to java.lang.String" failed.
 
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
 Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-debug.jar -warn-unused-advice:off bugs/systemouts/A.java 
-Compilation failed with 21 errors, which were matched and verified against the expected errors.
-PASS: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed.
 
 
 Running test 962: bugs/systemouts/declare error binary-weaving NPE 2 
 Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-nodebug.jar -warn-unused-advice:off bugs/systemouts/A.java 
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void ut(boolean,java.lang.String)> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void ut(boolean,java.lang.String)> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void ut(boolean,java.lang.String)> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void printArgs(java.lang.String,java.lang.String[])> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void printArgs(java.lang.String,java.lang.String[])> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void printArgs(java.lang.String,java.lang.String[])> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Error position is null; assuming error matches current expected error with no line number. Error message: NPE in method <pack.X: void t()> in class pack.X
-WARNING: This test was probably not really passed!!
-Compilation failed with 21 errors, which were matched and verified against the expected errors.
-PASS: Test 962: "bugs/systemouts/declare error binary-weaving NPE 2 " passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 962: "bugs/systemouts/declare error binary-weaving NPE 2 " failed.
 
 
 Running test 963: bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult
 Commandline: abc -d bugs/tooManyErrors -injars bugs/tooManyErrors/Joinpoints101.jar -warn-unused-advice:off bugs/tooManyErrors/DecErrors.aj 
-Compilation failed with 100 errors, which were matched and verified against the expected errors.
-PASS: Test 963: "bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 963: "bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult" failed.
 
 
 Running test 964: bugs/NPE when binary weaving a ctor ITD
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CtorITD.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 964: "bugs/NPE when binary weaving a ctor ITD" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 964: "bugs/NPE when binary weaving a ctor ITD" failed.
 
 
 Running test 966: bugs/NPE in compiler when using (an unusual) declare warning against a ctor ITD
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DecwInitializationITD.java 
-PASS: Test 966: "bugs/NPE in compiler when using (an unusual) declare warning against a ctor ITD" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 966: "bugs/NPE in compiler when using (an unusual) declare warning against a ctor ITD" failed.
 
 
 Running test 967: bugs/compileOrdering/InterTypeMethodDeclaration.java:104
 Commandline: abc -d bugs/compileOrdering -warn-unused-advice:off bugs/compileOrdering/B.java bugs/compileOrdering/D.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-Commandline: abc -d bugs/compileOrdering -warn-unused-advice:off bugs/compileOrdering/D.java bugs/compileOrdering/B.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 967: "bugs/compileOrdering/InterTypeMethodDeclaration.java:104" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 967: "bugs/compileOrdering/InterTypeMethodDeclaration.java:104" failed.
 
 
 Running test 968: bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ConstructorMain.java 
-PASS: Test 968: "bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 968: "bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" failed.
 
 
 Running test 969: bugs/wrong variable binding in || pointcuts
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DisjunctVarBinding.java 
-PASS: Test 969: "bugs/wrong variable binding in || pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 969: "bugs/wrong variable binding in || pointcuts" failed.
 
 
 Running test 970: bugs/error message for constructor-execution pcd
 Commandline: abc -d bugs -warn-unused-advice:off bugs/InterfaceConstructor.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 970: "bugs/error message for constructor-execution pcd" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 970: "bugs/error message for constructor-execution pcd" failed.
 
 
 Running test 971: bugs/false ambigous binding error (introduced in 1.2rc2)
 Commandline: abc -d bugs -warn-unused-advice:off bugs/DisjunctVarBinding_2.java bugs/DisjunctVarBinding_3.java 
-Commandline: abc -d bugs -warn-unused-advice:off bugs/DisjunctVarBinding_3.java bugs/DisjunctVarBinding_2.java 
-PASS: Test 971: "bugs/false ambigous binding error (introduced in 1.2rc2)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 971: "bugs/false ambigous binding error (introduced in 1.2rc2)" failed.
 
 
 Running test 972: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase1.java 
-PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" failed.
 
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@179cfd3
-Invoking command bean:  Command@3b62ec
-hello(Command@3b62ec)
-Created a PerThis aspect : Testcase2@dba449
-Invoking command bean:  Command@1febb37
-hello again(Command@1febb37)
-PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" failed.
 
 
 Running test 974: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase3.java 
-PASS: Test 974: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 974: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" failed.
 
 
 Running test 975: abctests/eaj/casting/Test of cast pointcuts
 Commandline: abc -d abctests/eaj/casting -warn-unused-advice:off -ext abc.eaj abctests/eaj/casting/Test.java 
-PASS: Test 975: "abctests/eaj/casting/Test of cast pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 975: "abctests/eaj/casting/Test of cast pointcuts" failed.
 
 
 Running test 976: abctests/eaj/global_pointcuts/Test of global and private pointcuts
 Commandline: abc -d abctests/eaj/global_pointcuts -warn-unused-advice:off -ext abc.eaj abctests/eaj/global_pointcuts/aaa/A.java abctests/eaj/global_pointcuts/bbb/B.java 
-PASS: Test 976: "abctests/eaj/global_pointcuts/Test of global and private pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 976: "abctests/eaj/global_pointcuts/Test of global and private pointcuts" failed.
 
 
 Running test 977: abctests/eaj/local_vars/Test of private pointcuts
 Commandline: abc -d abctests/eaj/local_vars -warn-unused-advice:off -ext abc.eaj abctests/eaj/local_vars/Fibonacci.java abctests/eaj/local_vars/Observer.java 
-PASS: Test 977: "abctests/eaj/local_vars/Test of private pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 977: "abctests/eaj/local_vars/Test of private pointcuts" failed.
 
 
 Running test 978: abctests/bugs/cflowbelow in abstract aspects
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AbstractPrec1.java 
-PASS: Test 978: "abctests/bugs/cflowbelow in abstract aspects" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 978: "abctests/bugs/cflowbelow in abstract aspects" failed.
 
 
 Running test 979: abctests/bugs/pack1/packages in wrong place
 Commandline: abc -d abctests/bugs/pack1 -warn-unused-advice:off abctests/bugs/pack1/A/B.java 
-Error position is null; assuming error matches current expected error with no line number. Error message: class C.B cannot be defined in file abctests/bugs/pack1/A/B.java
-WARNING: This test was probably not really passed!!
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 979: "abctests/bugs/pack1/packages in wrong place" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 979: "abctests/bugs/pack1/packages in wrong place" failed.
 
 
 Running test 980: abctests/bugs/binding of variables inside || pointcuts
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/BindProblem.java 
-PASS: Test 980: "abctests/bugs/binding of variables inside || pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 980: "abctests/bugs/binding of variables inside || pointcuts" failed.
 
 
 Running test 981: abctests/bugs/problem with byte constants
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ByteProblem.java 
-PASS: Test 981: "abctests/bugs/problem with byte constants" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 981: "abctests/bugs/problem with byte constants" failed.
 
 
 Running test 982: abctests/bugs/needing declare parents to resolve inner class reference
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DeclareParentsInner.java 
-PASS: Test 982: "abctests/bugs/needing declare parents to resolve inner class reference" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 982: "abctests/bugs/needing declare parents to resolve inner class reference" failed.
 
 
 Running test 983: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses.jar -warn-unused-advice:off abctests/bugs/declareparentsbinary/Aspect.java 
-PASS: Test 983: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 983: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1" failed.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses2.jar -warn-unused-advice:off abctests/bugs/declareparentsbinary/Aspect.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed.
 
 
 Running test 985: abctests/bugs/declare parents referring to an otherwise unmentioned class
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DeclareParentsRef.java 
-PASS: Test 985: "abctests/bugs/declare parents referring to an otherwise unmentioned class" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 985: "abctests/bugs/declare parents referring to an otherwise unmentioned class" failed.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/IntArray.java 
-Compilation produced an unexpected number of errors: 2, should be 0
-Actual errors found: 
-Syntax Error at IntArray.java:14,28-31: Syntax error: unexpected int.
-Syntax Error at IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
+Compiler aborted when it wasn't meant to.
 FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
 
 
 Running test 987: abctests/bugs/method intertype onto inner class
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/QualThis.java 
-PASS: Test 987: "abctests/bugs/method intertype onto inner class" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 987: "abctests/bugs/method intertype onto inner class" failed.
 
 
 Running test 988: abctests/bugs/separate compilation and references to compile time constants
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConstantInit.java 
-Commandline: abc -cp abctests/bugs:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConstantUse.java 
-PASS: Test 988: "abctests/bugs/separate compilation and references to compile time constants" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 988: "abctests/bugs/separate compilation and references to compile time constants" failed.
 
 
 Running test 989: abctests/bugs/lifting if out of cflow, with correct parameters
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/CflowIf.java 
-PASS: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" failed.
 
 
 Running test 990: abctests/bugs/lifting if out of cflow, with correct parameters 2
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/CflowIf2.java 
-PASS: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" failed.
 
 
 Running test 991: abctests/bugs/declare parents causes interface to implement itself
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/foo/Foo.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 991: "abctests/bugs/declare parents causes interface to implement itself" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 991: "abctests/bugs/declare parents causes interface to implement itself" failed.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
 Commandline: abc -d abctests/bugs -injars abctests/bugs/cast.jar -warn-unused-advice:off -ext abc.eaj abctests/bugs/CastAspect.java 
-Test failed, compiled class behaved incorrectly
-Message: fail [ unexpected event "cast happened" found,  unexpected event "cast happened" found]
-org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  unexpected event "cast happened" found]
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.check(Tester.java:204)
-	at org.aspectj.testing.Tester.checkEqualIgnoreDups(Tester.java:702)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:742)
-	at org.aspectj.testing.Tester.checkEvents(Tester.java:922)
-	at org.aspectj.testing.Tester.checkAndClearEvents(Tester.java:933)
-	at org.aspectj.testing.Tester.checkAllEvents(Tester.java:846)
-	at Cast.main(Cast.java:5)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+Compiler aborted when it wasn't meant to.
 FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed.
 
 
 Running test 993: abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint
 Commandline: abc -d abctests/eaj/throw_pointcut -warn-unused-advice:off -ext abc.eaj abctests/eaj/throw_pointcut/Throw.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" failed.
 
 
 Running test 994: abctests/bugs/&& and || interact correctly with binding
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AndOrBind.java 
-PASS: Test 994: "abctests/bugs/&& and || interact correctly with binding" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 994: "abctests/bugs/&& and || interact correctly with binding" failed.
 
 
 Running test 995: abctests/bugs/correct treatment of exceptions with interfaceinvoke
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/InterfaceExceptions.java 
-PASS: Test 995: "abctests/bugs/correct treatment of exceptions with interfaceinvoke" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 995: "abctests/bugs/correct treatment of exceptions with interfaceinvoke" failed.
 
 
 Running test 996: abctests/bugs/anonymous class constructed inside this(...) call
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AnonPreinit.java 
-PASS: Test 996: "abctests/bugs/anonymous class constructed inside this(...) call" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 996: "abctests/bugs/anonymous class constructed inside this(...) call" failed.
 
 
 Running test 997: abctests/bugs/verify error with calls to outer methods from inner classes
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/PatternMatcher.java 
-PASS: Test 997: "abctests/bugs/verify error with calls to outer methods from inner classes" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 997: "abctests/bugs/verify error with calls to outer methods from inner classes" failed.
 
 
 Running test 998: abctests/bugs/declare parents causes interface to implement itself
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/foo2/Foo.java 
-PASS: Test 998: "abctests/bugs/declare parents causes interface to implement itself" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 998: "abctests/bugs/declare parents causes interface to implement itself" failed.
 
 
 Running test 999: abctests/bugs/declareparentsprotectedaccessinnerclasses/declare parents/protected access/inner classes
 Commandline: abc -d abctests/bugs/declareparentsprotectedaccessinnerclasses -warn-unused-advice:off abctests/bugs/declareparentsprotectedaccessinnerclasses/A.java abctests/bugs/declareparentsprotectedaccessinnerclasses/bar/C.java 
-PASS: Test 999: "abctests/bugs/declareparentsprotectedaccessinnerclasses/declare parents/protected access/inner classes" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 999: "abctests/bugs/declareparentsprotectedaccessinnerclasses/declare parents/protected access/inner classes" failed.
 
 
 Running test 1000: abctests/bugs/resolvingdeclareparents/resolving and declared parents
 Commandline: abc -d abctests/bugs/resolvingdeclareparents -warn-unused-advice:off abctests/bugs/resolvingdeclareparents/B.java 
-Commandline: abc -cp abctests/bugs/resolvingdeclareparents/.:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d abctests/bugs/resolvingdeclareparents -warn-unused-advice:off abctests/bugs/resolvingdeclareparents/A.java 
-PASS: Test 1000: "abctests/bugs/resolvingdeclareparents/resolving and declared parents" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1000: "abctests/bugs/resolvingdeclareparents/resolving and declared parents" failed.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:661)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
-Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot-class-path set properly?)
-	at soot.SootResolver.bringToHierarchy(SootResolver.java:139)
-	at soot.SootResolver.bringToSignatures(SootResolver.java:172)
-	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
-	at soot.SootResolver.resolveClass(SootResolver.java:89)
-	at soot.Scene.loadClass(Scene.java:336)
-	at abc.main.Main.compile(Main.java:921)
-	at abc.main.Main.run(Main.java:535)
-	... 3 more
+Compiler aborted when it wasn't meant to.
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
 
 Running test 1002: abctests/bugs/doubledeclareparents/double declare parents
 Commandline: abc -d abctests/bugs/doubledeclareparents -warn-unused-advice:off abctests/bugs/doubledeclareparents/A.java 
-PASS: Test 1002: "abctests/bugs/doubledeclareparents/double declare parents" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1002: "abctests/bugs/doubledeclareparents/double declare parents" failed.
 
 
 Running test 1003: abctests/bugs/interaction of around and after returning at execution shadow
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundAR.java 
-PASS: Test 1003: "abctests/bugs/interaction of around and after returning at execution shadow" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1003: "abctests/bugs/interaction of around and after returning at execution shadow" failed.
 
 
 Running test 1004: abctests/around/initialization/around with initialization
 Commandline: abc -d abctests/around/initialization -warn-unused-advice:off abctests/around/initialization/Foo.java 
-around Foo()0
-Foo()1
-around Foo()1
-PASS: Test 1004: "abctests/around/initialization/around with initialization" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1004: "abctests/around/initialization/around with initialization" failed.
 
 
 Running test 1005: abctests/around/alternative/around with alternative binding, changed proceed
 Commandline: abc -d abctests/around/alternative -warn-unused-advice:off abctests/around/alternative/Foo.java 
-new, null
-null, new
-PASS: Test 1005: "abctests/around/alternative/around with alternative binding, changed proceed" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1005: "abctests/around/alternative/around with alternative binding, changed proceed" failed.
 
 
 Running test 1006: abctests/around/adviceexecution/around with circular adviceexecution advice
 Commandline: abc -d abctests/around/adviceexecution -warn-unused-advice:off abctests/around/adviceexecution/Foo.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-n=0
-n=0
-n=0
-PASS: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed.
 
 
 Running test 1007: abctests/bugs/make sure we get valid jimple for perthis/pertarget bind methods
 Commandline: abc -d abctests/bugs -warn-unused-advice:off -debug doValidate abctests/bugs/PerTarget.java 
-PASS: Test 1007: "abctests/bugs/make sure we get valid jimple for perthis/pertarget bind methods" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1007: "abctests/bugs/make sure we get valid jimple for perthis/pertarget bind methods" failed.
 
 
 Running test 1008: abctests/bugs/percflowinterfaces/precedence of percflowsetups
 Commandline: abc -d abctests/bugs/percflowinterfaces -warn-unused-advice:off abctests/bugs/percflowinterfaces/F.java 
-PASS: Test 1008: "abctests/bugs/percflowinterfaces/precedence of percflowsetups" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1008: "abctests/bugs/percflowinterfaces/precedence of percflowsetups" failed.
 
 
 Running test 1009: abctests/bugs/correct interaction of advice and constructor inlining
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/InlinedCons.java 
-PASS: Test 1009: "abctests/bugs/correct interaction of advice and constructor inlining" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1009: "abctests/bugs/correct interaction of advice and constructor inlining" failed.
 
 
 Running test 1010: abctests/bugs/correct handling of methods in source with $ in the name 1
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DollarMethod.java 
-PASS: Test 1010: "abctests/bugs/correct handling of methods in source with $ in the name 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1010: "abctests/bugs/correct handling of methods in source with $ in the name 1" failed.
 
 
 Running test 1011: abctests/bugs/correct handling of methods in source with $ in the name 2
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DollarMethod2.java 
-PASS: Test 1011: "abctests/bugs/correct handling of methods in source with $ in the name 2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1011: "abctests/bugs/correct handling of methods in source with $ in the name 2" failed.
 
 
 Running test 1012: abctests/bugs/correct handling of methods in source with $ in the name 3
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/Dollar$Method3.java 
-PASS: Test 1012: "abctests/bugs/correct handling of methods in source with $ in the name 3" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1012: "abctests/bugs/correct handling of methods in source with $ in the name 3" failed.
 
 
 Running test 1013: abctests/bugs/circular pointcuts
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/TestAspect.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 1013: "abctests/bugs/circular pointcuts" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1013: "abctests/bugs/circular pointcuts" failed.
 
 
 Running test 1014: abctests/bugs/interaction of named pointcuts and nested cflow
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/CflowInliningDepth.java 
-PASS: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" failed.
 
 
 Running test 1015: abctests/bugs/correct topological sorting of precedence
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/PrecedenceSort.java 
-PASS: Test 1015: "abctests/bugs/correct topological sorting of precedence" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1015: "abctests/bugs/correct topological sorting of precedence" failed.
 
 
 Running test 1016: abctests/bugs/checks for declare parents on binary classes
 Commandline: abc -d abctests/bugs -injars abctests/bugs/declareparentsbinary/DP.jar -warn-unused-advice:off abctests/bugs/DeclareParentsBinaryAspect.java 
-Compilation failed with 8 errors, which were matched and verified against the expected errors.
-PASS: Test 1016: "abctests/bugs/checks for declare parents on binary classes" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1016: "abctests/bugs/checks for declare parents on binary classes" failed.
 
 
 Running test 1017: abctests/bugs/around weaver incorrectly unboxing double literals in float context
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundUnboxing.java 
-PASS: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed.
 
 
 Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtractedProceed.java 
-Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-PASS: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed.
 
 
 Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Basic.java 
-PASS: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed.
 
 
 Running test 1020: abctests/tracematches/Tracematches: Plus and Star
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PlusStar.java 
-PASS: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed.
 
 
 Running test 1021: abctests/tracematches/Tracematches: Alternation
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Alternation.java 
-PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed.
 
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed.
 
 
 Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
 Commandline: abc -d abctests/tracematches/failsafe -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe/leaktest/LeakTest.java abctests/tracematches/failsafe/tracematches/FailSafeEnum.java 
-PASS: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
 Commandline: abc -d abctests/tracematches/failsafe3 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe3/leaktest/LeakTest.java abctests/tracematches/failsafe3/tracematches/FailSafeEnum.java 
-PASS: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
 Commandline: abc -d abctests/tracematches/failsafe4 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe4/leaktest/LeakTest.java abctests/tracematches/failsafe4/tracematches/FailSafeEnum.java 
-PASS: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Test.java 
-MATCHED
-MATCHED
-PASS: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed.
 
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NegBindings.java 
-PASS: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MoreBindings.java 
-PASS: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/BasicAround.java 
-PASS: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MultipleBindingsForAround.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed.
 
 
 Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PerThread.java 
-PASS: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/AdviseSelf.java 
-PASS: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IfTest.java 
-PASS: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed.
 
 
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NoUpdates.java 
-PASS: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimitiveVariables.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed.
 
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IntVariable.java 
-PASS: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimNegBindings.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed.
 
 
 Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NCWeakRefs.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed.
 
 
 Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NCWeakRefs2.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-PASS: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/CollWeakRefs.java 
-Matched orig
-Matched 99
-Matched 99
-PASS: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed.
 
 
 Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NCWeakRefs4.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999983 times, rather than 1000000.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
-Caused by: java.lang.RuntimeException: Matched 999983 times, rather than 1000000.
-	at NCWeakRefs4.main(NCWeakRefs4.java:22)
-	... 7 more
+Compiler aborted when it wasn't meant to.
 FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Strings)" failed.
 
 
 Running test 1101: om/simple/Simple module compile
 Commandline: abc -d om/simple -warn-unused-advice:off -ext abc.om om/simple/ModuleTest.java om/simple/ModuleTest2.java om/simple/ModuleTest3.java om/simple/A.java om/simple/Another.java om/simple/AnotherChild.java om/simple/AspectA.aj om/simple/AspectB.aj 
-PASS: Test 1101: "om/simple/Simple module compile" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1101: "om/simple/Simple module compile" failed.
 
 
 Running test 1102: om/duplicatemodule/Duplicate module name
 Commandline: abc -d om/duplicatemodule -warn-unused-advice:off -ext abc.om om/duplicatemodule/DuplicateModule1.java om/duplicatemodule/DuplicateModule2.java om/duplicatemodule/A.java om/duplicatemodule/Another.java om/duplicatemodule/AnotherChild.java om/duplicatemodule/AspectA.aj om/duplicatemodule/AspectB.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1102: "om/duplicatemodule/Duplicate module name" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1102: "om/duplicatemodule/Duplicate module name" failed.
 
 
 Running test 1103: om/nonexistentaspect/Non-existent aspect
 Commandline: abc -d om/nonexistentaspect -warn-unused-advice:off -ext abc.om om/nonexistentaspect/NonExistentAspect.java om/nonexistentaspect/A.java om/nonexistentaspect/Another.java om/nonexistentaspect/AnotherChild.java om/nonexistentaspect/AspectA.aj om/nonexistentaspect/AspectB.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1103: "om/nonexistentaspect/Non-existent aspect" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1103: "om/nonexistentaspect/Non-existent aspect" failed.
 
 
 Running test 1104: om/nonexistentmodule/Non-existent module
 Commandline: abc -d om/nonexistentmodule -warn-unused-advice:off -ext abc.om om/nonexistentmodule/NonExistentModule.java om/nonexistentmodule/A.java om/nonexistentmodule/Another.java om/nonexistentmodule/AnotherChild.java om/nonexistentmodule/AspectA.aj om/nonexistentmodule/AspectB.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1104: "om/nonexistentmodule/Non-existent module" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1104: "om/nonexistentmodule/Non-existent module" failed.
 
 
 Running test 1105: om/duplicatemoduleinclude/Duplicate module include
 Commandline: abc -d om/duplicatemoduleinclude -warn-unused-advice:off -ext abc.om om/duplicatemoduleinclude/DuplicateModuleInclude.java om/duplicatemoduleinclude/DuplicateModuleInclude1.java om/duplicatemoduleinclude/DuplicateModuleInclude2.java om/duplicatemoduleinclude/A.java om/duplicatemoduleinclude/Another.java om/duplicatemoduleinclude/AnotherChild.java om/duplicatemoduleinclude/AspectA.aj om/duplicatemoduleinclude/AspectB.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1105: "om/duplicatemoduleinclude/Duplicate module include" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1105: "om/duplicatemoduleinclude/Duplicate module include" failed.
 
 
 Running test 1106: om/duplicateaspectinclude/Duplicate aspect include
 Commandline: abc -d om/duplicateaspectinclude -warn-unused-advice:off -ext abc.om om/duplicateaspectinclude/DuplicateAspectInclude1.java om/duplicateaspectinclude/DuplicateAspectInclude2.java om/duplicateaspectinclude/A.java om/duplicateaspectinclude/Another.java om/duplicateaspectinclude/AnotherChild.java om/duplicateaspectinclude/AspectA.aj om/duplicateaspectinclude/AspectB.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1106: "om/duplicateaspectinclude/Duplicate aspect include" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1106: "om/duplicateaspectinclude/Duplicate aspect include" failed.
 
 
 Running test 1107: om/circularmoduleinclude/Circular module include
 Commandline: abc -d om/circularmoduleinclude -warn-unused-advice:off -ext abc.om om/circularmoduleinclude/Circular1.java om/circularmoduleinclude/Circular2.java om/circularmoduleinclude/Circular3.java om/circularmoduleinclude/A.java om/circularmoduleinclude/Another.java om/circularmoduleinclude/AnotherChild.java om/circularmoduleinclude/AspectA.aj om/circularmoduleinclude/AspectB.aj 
-Compilation failed with 3 errors, which were matched and verified against the expected errors.
-PASS: Test 1107: "om/circularmoduleinclude/Circular module include" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1107: "om/circularmoduleinclude/Circular module include" failed.
 
 
 Running test 1108: om/duplicateclassinclude/Class included in multiple modules
 Commandline: abc -d om/duplicateclassinclude -warn-unused-advice:off -ext abc.om om/duplicateclassinclude/DuplicateClassInclude1.java om/duplicateclassinclude/DuplicateClassInclude2.java om/duplicateclassinclude/A.java om/duplicateclassinclude/Another.java om/duplicateclassinclude/AnotherChild.java om/duplicateclassinclude/AspectA.aj om/duplicateclassinclude/AspectB.aj 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1108: "om/duplicateclassinclude/Class included in multiple modules" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1108: "om/duplicateclassinclude/Class included in multiple modules" failed.
 
 
 Running test 1109: om/matchtest/Basic matching test
 Commandline: abc -d om/matchtest -warn-unused-advice:off -ext abc.om om/matchtest/Module1.java om/matchtest/Module2.java om/matchtest/MatchTestA.java om/matchtest/MatchTestB.java om/matchtest/MatchTestMain.java om/matchtest/AspectA.aj om/matchtest/AspectB.aj om/matchtest/AspectC.aj 
-Compilation succeeded with 3 warnings, which were matched and verified against the expected warnings.
-Before MatchTestA.a() from AspectA
-Before MatchTestA.a() from AspectB
-Before MatchTestA.a() from AspectC
-MatchTestA.a
-Before MatchTestA.b() from AspectA
-MatchTestA.b
-Before MatchTestB.a() from AspectA
-Before MatchTestB.a() from AspectB
-Before MatchTestB.a() from AspectC
-MatchTestB.a
-Before MatchTestB.b() from AspectA
-Before MatchTestB.b() from AspectB
-MatchTestB.b
-1
-1
-1
-1
-1
-0
-1
-1
-1
-0
-1
-0
-PASS: Test 1109: "om/matchtest/Basic matching test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1109: "om/matchtest/Basic matching test" failed.
 
 
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
-Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibExtAspect: Before fib(5)
-In FibAspect: Before fib(5)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(5)
-In FibAspect: Before fib(4)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(4)
-In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(3)
-In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(2)
-In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(1)
-In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(2)
-In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(3)
-In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(2)
-In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-fib(1)
-5
-In FibExtAspect: Before getPrevX
-In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
-In FibAspect: Before setPrevX
-9
-1
-10
-10
-10
-10
-PASS: Test 1110: "om/extcalltest/External call only test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1110: "om/extcalltest/External call only test" failed.
 
 
 Running test 1111: om/prectest/Fib (Aldrich) precedence test
 Commandline: abc -d om/prectest -warn-unused-advice:off -ext abc.om om/prectest/Module1.java om/prectest/A.java om/prectest/PrecTestMain.java om/prectest/Fib.aj om/prectest/ACache.aj om/prectest/PrecFibExtAspect.aj 
-Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-before int A.fib(int) in FibExtAspect
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in ACache
-around int A.fib(int)in ACache
-around int A.fib(int)in ACache
-around int A.fib(int)in ACache
-around int A.fib(int)in ACache
-around int A.fib(int)in ACache
-55
-10
-17
-1
-PASS: Test 1111: "om/prectest/Fib (Aldrich) precedence test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1111: "om/prectest/Fib (Aldrich) precedence test" failed.
 
 
 Running test 1112: om/prectest/Fib (Aldrich) reverse precedence test
 Commandline: abc -d om/prectest -warn-unused-advice:off -ext abc.om om/prectest/Module2.java om/prectest/A.java om/prectest/PrecTestMain2.java om/prectest/Fib.aj om/prectest/ACache.aj om/prectest/PrecFibExtAspect.aj 
-Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-before int A.fib(int) in FibExtAspect
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-around int A.fib(int)in Fib
-around int A.fib(int)in ACache
-55
-109
-55
-1
-PASS: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" failed.
 
 
 Running test 1113: om/emptysigtest/Empty signature test
 Commandline: abc -d om/emptysigtest -warn-unused-advice:off -ext abc.om om/emptysigtest/Module.java om/emptysigtest/A.java om/emptysigtest/EmptySigTestMain.java om/emptysigtest/AspectA.aj 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-Before void java.io.PrintStream.println(String)
-f
-Before void org.aspectj.testing.Tester.checkEqual(int, int, String)
-PASS: Test 1113: "om/emptysigtest/Empty signature test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1113: "om/emptysigtest/Empty signature test" failed.
 
 
 Running test 1114: om/inheritsigtest/Signature inheritance test
 Commandline: abc -d om/inheritsigtest -warn-unused-advice:off -ext abc.om om/inheritsigtest/ModuleA.java om/inheritsigtest/ModuleB.java om/inheritsigtest/ModuleC.java om/inheritsigtest/A.java om/inheritsigtest/B.java om/inheritsigtest/C.java om/inheritsigtest/InheritSigTest.java om/inheritsigtest/ExtAspectA.aj 
-Compilation succeeded with 4 warnings, which were matched and verified against the expected warnings.
-Before void A.f1()
-a.f1
-a.f2
-a.f3
-Before void B.f1()
-b.f1
-Before void B.f2()
-b.f2
-b.f3
-Before void C.f1()
-c.f1
-c.f2
-Before void C.f3()
-c.f3
-PASS: Test 1114: "om/inheritsigtest/Signature inheritance test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1114: "om/inheritsigtest/Signature inheritance test" failed.
 
 
 Running test 1115: om/cflowsigtest/CFlow signature test
 Commandline: abc -d om/cflowsigtest -warn-unused-advice:off -ext abc.om om/cflowsigtest/Module.java om/cflowsigtest/A.java om/cflowsigtest/CflowSigTestMain.java om/cflowsigtest/CFlowAspect.aj 
-a
-Before void A.b()
-b
-Before void A.e()
-e
-b
-c
-d
-Before void A.e()
-e
-e
-PASS: Test 1115: "om/cflowsigtest/CFlow signature test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1115: "om/cflowsigtest/CFlow signature test" failed.
 
 
 Running test 1116: om/argstest/Args matching test
 Commandline: abc -d om/argstest -warn-unused-advice:off -ext abc.om om/argstest/Module.java om/argstest/A.java om/argstest/ArgsTestMain.java om/argstest/ArgsAspect.aj 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-before void A.f(int)
-f(int)
-f(float)
-before void A.f(A)
-f(A)
-PASS: Test 1116: "om/argstest/Args matching test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1116: "om/argstest/Args matching test" failed.
 
 
 Running test 1117: om/emptymoduletest/Empty module test
 Commandline: abc -d om/emptymoduletest -warn-unused-advice:off -ext abc.om om/emptymoduletest/Module.java om/emptymoduletest/A.java om/emptymoduletest/EmptyModuleTestMain.java om/emptymoduletest/AspectA.aj 
-Before void A.f()
-Before void java.io.PrintStream.println(String)
-f
-Before void org.aspectj.testing.Tester.checkEqual(int, int, String)
-PASS: Test 1117: "om/emptymoduletest/Empty module test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1117: "om/emptymoduletest/Empty module test" failed.
 
 
 Running test 1118: om/privatesigtest/Private signature test
 Commandline: abc -d om/privatesigtest -warn-unused-advice:off -ext abc.om om/privatesigtest/ModuleA.java om/privatesigtest/ModuleB.java om/privatesigtest/ModuleC.java om/privatesigtest/A.java om/privatesigtest/B.java om/privatesigtest/C.java om/privatesigtest/PrivateSigTest.java om/privatesigtest/ExtAspectA.aj 
-Compilation succeeded with 5 warnings, which were matched and verified against the expected warnings.
-Before void A.f1()
-a.f1
-a.f2
-a.f3
-b.f1
-Before void B.f2()
-b.f2
-b.f3
-c.f1
-Before void C.f2()
-c.f2
-Before void C.f3()
-c.f3
-PASS: Test 1118: "om/privatesigtest/Private signature test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1118: "om/privatesigtest/Private signature test" failed.
 
 
 Running test 1119: om/constraintest/Constrained module inclusion test
 Commandline: abc -d om/constraintest -warn-unused-advice:off -ext abc.om om/constraintest/ModuleA.java om/constraintest/ModuleB.java om/constraintest/ModuleC.java om/constraintest/A.java om/constraintest/B.java om/constraintest/C.java om/constraintest/AspectA.java om/constraintest/AspectB.java om/constraintest/AspectC.java om/constraintest/ConstrainTestMain.java om/constraintest/ExtAspectA.aj 
-Compilation succeeded with 9 warnings, which were matched and verified against the expected warnings.
-AspectA
-AspectB
-AspectC
-Before void A.f1()
-a.f1
-AspectA
-a.f2
-AspectA
-a.f3
-AspectA
-AspectB
-AspectC
-Before void B.f1()
-b.f1
-AspectA
-AspectB
-AspectC
-Before void B.f2()
-b.f2
-AspectA
-AspectB
-b.f3
-AspectA
-AspectB
-AspectC
-Before void C.f1()
-c.f1
-AspectA
-AspectB
-AspectC
-Before void C.f2()
-c.f2
-AspectA
-AspectB
-AspectC
-c.f3
-PASS: Test 1119: "om/constraintest/Constrained module inclusion test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1119: "om/constraintest/Constrained module inclusion test" failed.
 
 
 Running test 1120: om/inheritprectest/Precedence inheritance test
 Commandline: abc -d om/inheritprectest -warn-unused-advice:off -ext abc.om om/inheritprectest/ModuleA.java om/inheritprectest/ModuleB.java om/inheritprectest/ModuleC.java om/inheritprectest/A.java om/inheritprectest/AspectA.aj om/inheritprectest/AspectB.aj om/inheritprectest/AspectC.aj om/inheritprectest/InheritPrecTestMain.java 
-AspectA
-AspectB
-AspectC
-A.f1
-PASS: Test 1120: "om/inheritprectest/Precedence inheritance test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1120: "om/inheritprectest/Precedence inheritance test" failed.
 
 
 Running test 1121: om/multimodtest/Multiple modules in a single file
 Commandline: abc -d om/multimodtest -warn-unused-advice:off -ext abc.om om/multimodtest/Modules.java om/multimodtest/A.java om/multimodtest/B.java om/multimodtest/C.java om/multimodtest/MultiModTest.java om/multimodtest/ExtAspectA.aj 
-Compilation succeeded with 4 warnings, which were matched and verified against the expected warnings.
-Before void A.f1()
-a.f1
-a.f2
-a.f3
-Before void B.f1()
-b.f1
-Before void B.f2()
-b.f2
-b.f3
-Before void C.f1()
-c.f1
-c.f2
-Before void C.f3()
-c.f3
-PASS: Test 1121: "om/multimodtest/Multiple modules in a single file" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1121: "om/multimodtest/Multiple modules in a single file" failed.
 
 
 Running test 1122: om/iftest/If pointcut signatures
 Commandline: abc -d om/iftest -warn-unused-advice:off -ext abc.om om/iftest/Module.java om/iftest/AspectA.java om/iftest/AspectB.java om/iftest/IfTest.java 
-Test
-AspectA
-AspectB
-Test
-PASS: Test 1122: "om/iftest/If pointcut signatures" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1122: "om/iftest/If pointcut signatures" failed.
 
 
 Running test 1123: om/emptysiginctest/Inclusion with empty signatures
 Commandline: abc -d om/emptysiginctest -warn-unused-advice:off -ext abc.om om/emptysiginctest/Module.java om/emptysiginctest/AspectA.aj om/emptysiginctest/A.java om/emptysiginctest/B.java om/emptysiginctest/C.java om/emptysiginctest/EmptySigIncTestMain.java 
-Compilation succeeded with 6 warnings, which were matched and verified against the expected warnings.
-Before void A.f1()
-A.f1
-A.f2
-A.f3
-Before void B.f1()
-B.f1
-B.f2
-B.f3
-Before void C.f1()
-C.f1
-C.f2
-C.f3
-PASS: Test 1123: "om/emptysiginctest/Inclusion with empty signatures" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1123: "om/emptysiginctest/Inclusion with empty signatures" failed.
 
 
 Running test 1124: om/packagetest/Aspects in packages
 Commandline: abc -d om/packagetest -warn-unused-advice:off -ext abc.om om/packagetest/Module.java om/packagetest/PackageTestMain.java om/packagetest/pack1/A.java om/packagetest/pack1/AspectA.java om/packagetest/pack2/A.java om/packagetest/pack2/AspectA.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-pack1.AspectA
-pack1.A
-pack2.AspectA
-pack2.a
-PASS: Test 1124: "om/packagetest/Aspects in packages" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1124: "om/packagetest/Aspects in packages" failed.
 
 
 Running test 1125: om/roottest/Root module test
 Commandline: abc -d om/roottest -warn-unused-advice:off -ext abc.om om/roottest/Module.java om/roottest/RootTestMain.java om/roottest/A.java om/roottest/AspectA.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1125: "om/roottest/Root module test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1125: "om/roottest/Root module test" failed.
 
 
 Running test 1126: om/totest/To test
 Commandline: abc -d om/totest -warn-unused-advice:off -ext abc.om om/totest/Module.java om/totest/ToTestMain.java om/totest/A.java om/totest/ExtAspectA.java om/totest/ExtAspectB.java 
-Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-ExtAspectA void A.f1()
-ExtAspectB void A.f1()
-f1
-ExtAspectA void A.f2()
-f2
-ExtAspectA void A.f3()
-ExtAspectB void A.f3()
-f3
-ExtAspectB void A.f4()
-f4
-PASS: Test 1126: "om/totest/To test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1126: "om/totest/To test" failed.
 
 
 Running test 1127: om/omantstest/omants test
 Commandline: abc -d om/omantstest -warn-unused-advice:off -ext abc.om om/omantstest/automaton/Automaton.java om/omantstest/benchmark/Main.java om/omantstest/command/Command.java om/omantstest/command/Comment.java om/omantstest/command/Condition.java om/omantstest/command/Drop.java om/omantstest/command/Flip.java om/omantstest/command/Foe.java om/omantstest/command/FoeHome.java om/omantstest/command/FoeMarker.java om/omantstest/command/FoeWithFood.java om/omantstest/command/Food.java om/omantstest/command/Friend.java om/omantstest/command/FriendWithFood.java om/omantstest/command/Home.java om/omantstest/command/Mark.java om/omantstest/command/Marker.java om/omantstest/command/Move.java om/omantstest/command/PickUp.java om/omantstest/command/Rock.java om/omantstest/command/Sense.java om/omantstest/command/Turn.java om/omantstest/command/Unmark.java om/omantstest/debug/CheckScores.java om/omantstest/debug/CommandTracer.java om/omantstest/debug/LiveAnts.java om/omantstest/debug/WorldDumper.java om/omantstest/main/Main.java om/omantstest/model/Ant.java om/omantstest/model/Cell.java om/omantstest/model/Color.java om/omantstest/model/Combat.java om/omantstest/model/Resting.java om/omantstest/model/World.java om/omantstest/modules/Modules.java om/omantstest/parser/CommandParser.java om/omantstest/profile/NoNewInCmd.java om/omantstest/profile/NoNewInRound.java om/omantstest/style/PublicAccessFields.java om/omantstest/viewer/Board.java om/omantstest/viewer/Bug.java om/omantstest/viewer/Hexagon.java om/omantstest/viewer/Update.java om/omantstest/viewer/Viewer.java 
-PASS: Test 1127: "om/omantstest/omants test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1127: "om/omantstest/omants test" failed.
 
 
 Running test 1128: om/inheritprectest2/Second inherit precedence test (checks for precedence of aspects of included modules)
 Commandline: abc -d om/inheritprectest2 -warn-unused-advice:off -ext abc.om om/inheritprectest2/Modules.java om/inheritprectest2/InheritPrecTestMain2.java 
-B1;B2;B3;A1;A2;A3;C1;C2;C3;
-PASS: Test 1128: "om/inheritprectest2/Second inherit precedence test (checks for precedence of aspects of included modules)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1128: "om/inheritprectest2/Second inherit precedence test (checks for precedence of aspects of included modules)" failed.
 
 
 Running test 1129: om/modprectest/Module precedence test
 Commandline: abc -d om/modprectest -warn-unused-advice:off -ext abc.om om/modprectest/Modules.java om/modprectest/ModPrecTestMain.java 
-Ext3;B1;B2;B3;A1;A2;A3;C1;C2;C3;Ext1;Y1;Y2;Y3;X1;X2;X3;Ext2;
-PASS: Test 1129: "om/modprectest/Module precedence test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1129: "om/modprectest/Module precedence test" failed.
 
 
 Running test 1130: om/modprecaspectcycletest/Module-Aspect cycle detection test
 Commandline: abc -d om/modprecaspectcycletest -warn-unused-advice:off -ext abc.om om/modprecaspectcycletest/Modules.java om/modprecaspectcycletest/ModPrecAspectCycleTest.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1130: "om/modprecaspectcycletest/Module-Aspect cycle detection test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1130: "om/modprecaspectcycletest/Module-Aspect cycle detection test" failed.
 
 
 Running test 1131: om/modprecmodcycletest/Module-Module cycle detection test
 Commandline: abc -d om/modprecmodcycletest -warn-unused-advice:off -ext abc.om om/modprecmodcycletest/Modules.java om/modprecmodcycletest/ModPrecModCycleTest.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 1131: "om/modprecmodcycletest/Module-Module cycle detection test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1131: "om/modprecmodcycletest/Module-Module cycle detection test" failed.
 
 
 Running test 1200: cflowdepth/Cflowdepth Factorial
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Fact.java 
-before fact; depth is 1
-before fact; depth is 2
-before fact; depth is 3
-before fact; depth is 4
-before fact; depth is 5
-before fact; depth is 6
-after fact; depth is 6
-after fact; depth is 5
-after fact; depth is 4
-after fact; depth is 3
-after fact; depth is 2
-after fact; depth is 1
-5! is 120
-PASS: Test 1200: "cflowdepth/Cflowdepth Factorial" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1200: "cflowdepth/Cflowdepth Factorial" failed.
 
 
 Running test 1201: cflowdepth/Cflowdepth Factorial with arguments
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Fact2.java 
-before fact; depth is 1
-before fact; depth is 2
-before fact; depth is 3
-before fact; depth is 4
-before fact; depth is 5
-before fact; depth is 6
-after fact; depth is 6
-after fact; depth is 5
-after fact; depth is 4
-after fact; depth is 3
-after fact; depth is 2
-after fact; depth is 1
-5! is 120
-PASS: Test 1201: "cflowdepth/Cflowdepth Factorial with arguments" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1201: "cflowdepth/Cflowdepth Factorial with arguments" failed.
 
 
 Running test 1202: cflowdepth/Cflowbelowdepth Factorial
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Fact3.java 
-before fact; depth is 1
-before fact; depth is 2
-before fact; depth is 3
-before fact; depth is 4
-before fact; depth is 5
-after fact; depth is 5
-after fact; depth is 4
-after fact; depth is 3
-after fact; depth is 2
-after fact; depth is 1
-5! is 120
-PASS: Test 1202: "cflowdepth/Cflowbelowdepth Factorial" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1202: "cflowdepth/Cflowbelowdepth Factorial" failed.
 
 
 Running test 1203: cflowdepth/Cflowbelowdepth Factorial with arguments
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Fact4.java 
-before fact; depth is 1
-before fact; depth is 2
-before fact; depth is 3
-before fact; depth is 4
-before fact; depth is 5
-after fact; depth is 5
-after fact; depth is 4
-after fact; depth is 3
-after fact; depth is 2
-after fact; depth is 1
-5! is 120
-PASS: Test 1203: "cflowdepth/Cflowbelowdepth Factorial with arguments" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1203: "cflowdepth/Cflowbelowdepth Factorial with arguments" failed.
 
 
 Running test 1204: cflowdepth/Cflowdepth Factorial
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Fact5.java 
-Compilation failed with 3 errors, which were matched and verified against the expected errors.
-PASS: Test 1204: "cflowdepth/Cflowdepth Factorial" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1204: "cflowdepth/Cflowdepth Factorial" failed.
 
 
 Running test 1205: abctests/bugs/Preinit weaving problem
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/Preinit.java 
-PASS: Test 1205: "abctests/bugs/Preinit weaving problem" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1205: "abctests/bugs/Preinit weaving problem" failed.
 
 
 Running test 1206: abctests/bugs/Preinit weaving problem (test 2)
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/Preinit2.java 
-PASS: Test 1206: "abctests/bugs/Preinit weaving problem (test 2)" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1206: "abctests/bugs/Preinit weaving problem (test 2)" failed.
 
 
 Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ITDPrivate.java 
-PASS: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
-File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
-Failed to find class Test
+Compiler aborted when it wasn't meant to.
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
 
 
 Running test 1209: abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/TracematchAndIfAndPPVs.java 
-PASS: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed.
 
 
 Running test 1210: abctests/bugs/thisJoinPoint maintains object identity for an entire join point
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/TJP.java 
-PASS: Test 1210: "abctests/bugs/thisJoinPoint maintains object identity for an entire join point" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1210: "abctests/bugs/thisJoinPoint maintains object identity for an entire join point" failed.
 
 
 Running test 1211: abctests/new/concrete pointcuts in abstract aspects can be overridden
 Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/PCInh.java 
-advice 2
-advice 1
-foo
-advice 2
-advice 1
-baz
-PASS: Test 1211: "abctests/new/concrete pointcuts in abstract aspects can be overridden" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1211: "abctests/new/concrete pointcuts in abstract aspects can be overridden" failed.
 
 
 Running test 1212: cflowdepth/Cflowdepth in complicated booleans
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Test.java 
-before foo at depth: 1
-foo
-PASS: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" failed.
 
 
 Running test 1213: abctests/bugs/Precedence of derived advice
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/DerivedAdvicePrecedence.java 
-A5;A4;A3;A2;A1;
-PASS: Test 1213: "abctests/bugs/Precedence of derived advice" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1213: "abctests/bugs/Precedence of derived advice" failed.
 
 
 Running test 1214: contains/checkstatic/Contains static test
 Commandline: abc -d contains/checkstatic -warn-unused-advice:off -ext abc.eaj contains/checkstatic/ContainsTest.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 1214: "contains/checkstatic/Contains static test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1214: "contains/checkstatic/Contains static test" failed.
 
 
 Running test 1215: contains/basic/Contains basic matching test
 Commandline: abc -d contains/basic -warn-unused-advice:off -ext abc.eaj contains/basic/ContainsTest.java 
-void ContainsTest.main(String[])
-main
-f
-void ContainsTest.g()
-g
-f
-void ContainsTest.h(boolean)
-h
-f
-void ContainsTest.i()
-i
-f
-f
-f
-f
-f
-void ContainsTest.j()
-j
-f
-f
-f
-f
-f
-k
-l
-void ContainsTest.g()
-g
-f
-callctr = 6
-PASS: Test 1215: "contains/basic/Contains basic matching test" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1215: "contains/basic/Contains basic matching test" failed.
 
 
 Running test 1216: abctests/eaj/arrayget/Test of arrayget and arrayset
 Commandline: abc -d abctests/eaj/arrayget -warn-unused-advice:off -ext abc.eaj abctests/eaj/arrayget/ArrayGetSet.java 
-PASS: Test 1216: "abctests/eaj/arrayget/Test of arrayget and arrayset" passed.
+Compiler aborted when it wasn't meant to.
+FAIL: Test 1216: "abctests/eaj/arrayget/Test of arrayget and arrayset" failed.
 
 
