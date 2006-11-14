@@ -1,0 +1,95 @@
+AspectDecl : ClassDecl ::= Modifiers <ID:String> BodyDecl* [SuperClassAccess:Access] Implements:Access*;
+
+IntertypeMethodDecl : MethodDecl ::= HostType:Access;
+
+AdviceDecl : BodyDecl ::= Modifiers AdviceSpec PointcutExpr Block;
+
+abstract AdviceSpec ::= Parameter:ParameterDeclaration*;
+BeforeSpec : AdviceSpec;
+AfterSpec : AdviceSpec;
+AfterReturningSpec : AfterSpec ::= [ReturnParameter:ParameterDeclaration];
+AfterThrowingSpec : AfterSpec ::= [ExceptionParameter:ParameterDeclaration];
+AroundSpec : AdviceSpec ::= TypeAccess:Access;
+
+
+// ----------------------- Pointcuts -----------------------
+abstract PointcutExpr;
+abstract BinaryPointcutExpr : PointcutExpr ::= Lhs:PointcutExpr Rhs:PointcutExpr;
+OrPointcutExpr : BinaryPointcutExpr;
+AndPointcutExpr : BinaryPointcutExpr;
+
+NegPointcutExpr : PointcutExpr ::= PointcutExpr;
+
+CallPointcutExpr : PointcutExpr ::= Pattern:MemberPattern;
+ExecutionPointcutExpr : PointcutExpr ::= Pattern:MemberPattern;
+
+InitializationPointcutExp : PointcutExpr ::= Pattern:ConstructorPattern;
+PreInitializationPointcutExp : PointcutExpr ::= Pattern:ConstructorPattern;
+StaticInitializationPointcutExp : PointcutExpr ::= Pattern:Pattern;
+
+GetPointcutExpr : PointcutExpr ::= Pattern:FieldPattern;
+SetPointcutExpr : PointcutExpr ::= Pattern:FieldPattern;
+
+HandlerPointcutExpr : PointcutExpr ::= Pattern:Pattern;
+AdviceExecutionPointcutExpr : PointcutExpr;
+WithinPointcutExpr : PointcutExpr ::= Pattern:Pattern;
+WithinCodePointcutExpr : PointcutExpr ::= Pattern:MemberPattern;
+
+CflowPointcutExpr : PointcutExpr ::= Pointcut:PointcutExpr;
+CflowBelowPointcutExpr : PointcutExpr ::= Pointcut:PointcutExpr;
+
+IfPointcutExpr : PointcutExpr ::= Expr;
+
+ThisPointcutExpr : PointcutExpr ::= Pattern:BindingPattern;
+TargetPointcutExpr : PointcutExpr ::= Pattern:BindingPattern;
+ArgsPointcutExpr : PointcutExpr ::= Pattern:BindingPattern*;
+
+NamedPointcutExpr : PointcutExpr ::= Name:Access Pattern:BindingPattern*;
+
+
+
+// ----------------------- NamePatterns ------------------
+abstract Pattern;
+abstract BinaryPattern : Pattern ::= Lhs: Pattern Rhs: Pattern;
+AndPattern : BinaryPattern;
+OrPattern : BinaryPattern;
+NegPattern : Pattern ::= Pattern;
+UniversalNegPattern : Pattern ::= Pattern;
+
+abstract NamePattern : Pattern;
+SimpleNamePattern : NamePattern ::= <Pattern:String>;
+DotNamePattern : NamePattern ::= Lhs:NamePattern Rhs:SimpleNamePattern;
+DotDotNamePattern : NamePattern ::= Lhs:NamePattern Rhs:SimpleNamePattern;
+PlusDotNamePattern : NamePattern ::= Lhs:NamePattern Rhs:SimpleNamePattern;
+TypeDotNamePattern : NamePattern ::= Lhs:Pattern Rhs:SimpleNamePattern;
+
+ExplicitTypeNamePattern : NamePattern ::= TypeAccess:Access;
+SubtypeNamePattern : NamePattern ::= Pattern:NamePattern;
+ArraytypeNamePattern : NamePattern ::= Pattern:NamePattern Dims*;
+
+
+
+// ---------------------- Modifier patterns ---------------
+ModifierPattern ::= Modifier;
+NegModifierPattern : ModifierPattern;
+
+
+// ---------------------- Member patterns ----------------
+abstract MemberPattern;
+MethodPattern : MemberPattern ::= ModifierPattern* ReturnTypePattern:Pattern MemberNamePattern:Pattern FormalPattern* ThrowsPattern:Pattern*;
+
+ConstructorPattern : MemberPattern ::= ModifierPattern*  MemberNamePattern:Pattern FormalPattern* ThrowsPattern:Pattern*;
+
+FieldPattern : MemberPattern ::= ModifierPattern* TypePattern:Pattern MemberNamePattern:Pattern;
+
+abstract FormalPattern;
+WildcardFormalPattern : FormalPattern;
+ConcreteFormalPattern : FormalPattern ::= Pattern;
+ 
+// -----------------------------------------------------------
+
+abstract BindingPattern;
+StarBindingPattern : BindingPattern;
+DotDotBindingPattern : BindingPattern;
+NameBindingPattern : BindingPattern ::= Pattern;
+

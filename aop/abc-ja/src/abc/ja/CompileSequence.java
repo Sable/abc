@@ -1,0 +1,219 @@
+package abc.ja;
+
+import abc.main.AbcExtension;
+import abc.main.AbcTimer;
+import abc.main.CompilerFailedException;
+import abc.main.Debug;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.weaver.DeclareParentsConstructorFixup;
+import abc.weaving.weaver.DeclareParentsWeaver;
+import abc.weaving.weaver.IntertypeAdjuster;
+
+import java.util.*;
+import java.util.List;
+
+import polyglot.types.SemanticException;
+import polyglot.util.ErrorInfo;
+import polyglot.util.InternalCompilerError;
+import soot.Scene;
+import soot.SootMethod;
+import abc.aspectj.visit.PatternMatcher;
+import abc.ja.jrag.*;
+import abc.ja.parse.JavaParser;
+
+public class CompileSequence extends abc.main.CompileSequence {
+	public CompileSequence(AbcExtension ext) {
+		super(ext);
+	}
+
+	public void compile() throws CompilerFailedException, IllegalArgumentException {
+		try {
+			System.out.println("Hello JastAdd");
+			String[] args = new String[aspect_sources.size()];
+			int index = 0;
+			for(Iterator iter = aspect_sources.iterator(); iter.hasNext(); index++) {
+				String s = (String)iter.next();
+				args[index] = s;
+			}
+			Program program = new Program();
+			program.initOptions();    
+			program.addOptions(args);
+			Collection files = program.files();
+
+			for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+				String name = (String)iter.next();
+				program.addSourceFile(name);
+			}
+
+			try {
+				for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+					CompilationUnit unit = (CompilationUnit)iter.next();
+					if(unit.fromSource()) {
+						Collection errors = new LinkedList();
+						if(Program.verbose())
+							System.out.println("Error checking " + unit.relativeName());
+						long time = System.currentTimeMillis();
+						unit.errorCheck(errors);
+						time = System.currentTimeMillis()-time;
+						if(Program.verbose())
+							System.out.println("Error checking " + unit.relativeName() + " done in " + time + " ms");
+						if(!errors.isEmpty()) {
+							System.out.println("Errors:");
+							for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
+								String s = (String)iter2.next();
+								System.out.println(s);
+							}
+							return;
+						}
+						else {
+							unit.java2Transformation();
+						}
+					}
+				}
+			} catch (JavaParser.SourceError e) {
+				System.err.println(e.getMessage());
+				return;
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+				e.printStackTrace();
+			}
+			program.jimplify1();
+			program.jimplify2();
+
+			abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();
+			abc.main.AbcTimer.mark("Aspect inheritance");
+			abc.main.Debug.phaseDebug("Aspect inheritance");
+
+		} catch (Error /*polyglot.main.UsageError*/ e) {
+			throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
+		}
+
+		// Output the aspect info
+		if (abc.main.Debug.v().aspectInfo)
+			abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
+
+	}
+	
+    public void weave() throws CompilerFailedException {
+        try {
+            // Perform the declare parents
+            new DeclareParentsWeaver().weave();
+            // FIXME: put re-resolving here, from declareparents weaver
+            AbcTimer.mark("Declare Parents");
+            Debug.phaseDebug("Declare Parents");
+            Scene.v().setDoneResolving();
+
+            // Adjust Soot types for intertype decls
+            IntertypeAdjuster ita = new IntertypeAdjuster();
+            ita.adjust();
+            AbcTimer.mark("Intertype Adjuster");
+            Debug.phaseDebug("Intertype Adjuster");
+
+            // Retrieve all bodies
+            for( Iterator clIt = abcExt.getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                final AbcClass cl = (AbcClass) clIt.next();
+                if(Debug.v().showWeavableClasses) System.err.println("Weavable class: "+cl);
+                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                    final SootMethod method = (SootMethod) methodIt.next();
+                    try {
+                        if( !method.isConcrete() ) continue;
+                        // System.out.println("retrieve "+method+ " from "+cl);
+                        method.retrieveActiveBody();
+                    } catch(InternalCompilerError e) {
+                        throw e;
+                    } catch(Throwable e) {
+                        throw new InternalCompilerError("Exception while processing "+method.getSignature(),e);
+                    }
+                }
+            }
+            AbcTimer.mark("Jimplification");
+            Debug.phaseDebug("Jimplification");
+
+            // Fix up constructors in binary classes with newly declared parents
+            new DeclareParentsConstructorFixup().weave();
+            AbcTimer.mark("Fix up constructor calls");
+            Debug.phaseDebug("Fix up constructor calls");
+
+            // FIXME XXX TODO Here be Welsh Dragons
+            //PatternMatcher.v().updateWithAllSootClasses();
+            // evaluate the patterns the third time (depends on re-resolving)
+            //PatternMatcher.v().recomputeAllMatches();
+            AbcTimer.mark("Update pattern matcher");
+            Debug.phaseDebug("Update pattern matcher");
+
+            // any references made by itd initialisers will appear in a delegate method,
+            // and thus have already been processed by j2j; all resolving ok.
+            ita.initialisers(); // weave the field initialisers into the constructors
+            AbcTimer.mark("Weave Initializers");
+            Debug.phaseDebug("Weave Initializers");
+
+            if (!Debug.v().testITDsOnly) {
+                // Make sure that all the standard AspectJ shadow types are loaded
+                AbcTimer.mark("Load shadow types");
+                Debug.phaseDebug("Load shadow types");
+
+                // for each shadow in each weavable class, compute list of applicable advice
+                abcExt.getGlobalAspectInfo().computeAdviceLists();
+                AbcTimer.mark("Compute advice lists");
+                Debug.phaseDebug("Compute advice lists");                
+
+                if(Debug.v().printAdviceApplicationCount) {
+                	int adviceApplCount=0;
+                	
+                    for( Iterator clIt = abcExt.getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                	
+                        final AbcClass cl = (AbcClass) clIt.next();
+                        for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                            final SootMethod method = (SootMethod) methodIt.next(); 
+                            MethodAdviceList list=abcExt.getGlobalAspectInfo().getAdviceList(method);
+                            if (list==null)
+                            	continue;
+                            List allAdvice=list.allAdvice();
+                            adviceApplCount += allAdvice.size();                           	
+                        }
+                    }                   
+                    System.out.println("Number of advice applications: " + adviceApplCount);
+                }
+                if(Debug.v().matcherTest) {
+                	System.err.println("--- BEGIN ADVICE LISTS ---");
+                    // print out matching information for testing purposes
+                    for( Iterator clIt = abcExt.getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                        final AbcClass cl = (AbcClass) clIt.next();
+                        for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                            final SootMethod method = (SootMethod) methodIt.next();
+                            final StringBuffer sb=new StringBuffer(1000);
+                            sb.append("method: "+method.getSignature()+"\n");
+                            abcExt.getGlobalAspectInfo().getAdviceList(method).debugInfo(" ",sb);
+                            System.err.println(sb.toString());
+                        }
+                    }         
+                    System.err.println("--- END ADVICE LISTS ---");
+                }
+
+                if(abc.main.options.OptionsParser.v().warn_unused_advice()) {
+                    for( Iterator adIt = abcExt.getGlobalAspectInfo().getAdviceDecls().iterator(); adIt.hasNext(); ) {
+                        final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
+
+                        if(ad instanceof AdviceDecl && ad.getApplWarning() != null)
+                            abcExt.reportError(ErrorInfo.WARNING,
+                                                ad.getApplWarning(),
+                                                ad.getPosition());
+                    }
+                }
+
+                //Weaver weaver = new Weaver();
+                abcExt.getWeaver().weave(); // timer marks inside weave() */
+            }
+            // the intertype adjuster has put dummy fields into interfaces,
+            // which now have to be removed
+            ita.removeFakeFields();
+        } catch(SemanticException e) {
+            abcExt.reportError(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
+        }
+    }
+
+
+}

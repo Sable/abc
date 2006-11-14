@@ -1,0 +1,120 @@
+<!--
+ Targets for working from terminal window:
+       build (default) - generates java files and compiles them
+       clean           - removes all generated files and class files
+-->
+<project name="Bytecode backend" default="build">
+
+<property file="ant.settings"/>
+<fail message="Please fix ant.settings" unless="abc.loc"/>
+
+<property file="${abc.loc}/ant.settings"/>
+<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+            unless="polyglot.loc"/>
+
+<!-- "package" is the directory where generated files will be stored -->
+<property name="package" value="abc.ja.jrag"/>
+
+<!-- "tools" is the directory where generators and libraries are located. -->
+<property name="tools" value="${frontend}/tools"/>
+
+<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+<taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
+                      classpath="${tools}/JFlex.jar"/>
+<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+<taskdef name="beaver" classname="beaver.comp.run.AntTask"
+                       classpath="${tools}/beaver.jar"/>
+<!-- "jastadd" is an ant task class in jastadd2.jar -->
+<taskdef name="jastadd" classname="jastadd.JastAddTask"
+                        classpath="${tools}/jastadd2.jar"/>
+
+<!-- compile sources -->
+<target name="build" depends="gen">
+        <!-- compile sources compiler="jikes" nowarn="true" -->
+        <javac debug="true"
+               fork="true" memoryMaximumSize="128M" destdir="classes">
+	<classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="${abc.loc}/classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+	      <pathelement location="."/>
+            </classpath>
+                <src path="src"/>
+                <src path="generated"/>
+        </javac>
+</target>
+	
+<!-- generate compiler source files -->
+<target name="gen">
+  <!-- create AST node types and weave aspect modules -->
+	<jastadd package="${package}" rewrite="true"
+                beaver="true" noVisitCheck="true"
+                noCacheCycle="true" noComponentCheck="true"
+                outdir="${basedir}/generated" lazyMaps="true"
+                suppressWarnings="false" parentInterface="false">
+		<fileset dir="${frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<exclude name="ClassPath.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${backend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="src/abc/ja/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+  </jastadd>
+  <property name="parserdir" location="generated/abc/ja/parse"/>
+
+  <!-- generate the scanner -->
+	<jflex file="src/abc/ja/parse/aspectj.flex"
+               outdir="${parserdir}" nobak="yes"/>
+  <!-- generate the parser phase 1, create a full .lalr
+     - specification from fragments -->
+  <concat destfile="${parserdir}/JavaParser.all" binary="true" force="no">
+    <fileset dir=".">
+      <include name="src/abc/ja/parse/java14.parser"/>
+    </fileset>
+    <fileset dir=".">
+      <include name="src/abc/ja/parse/aspectj.parser"/>
+    </fileset>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+	<java classpath="${tools}/proj.jar:${tools}/beaver-rt.jar"
+              classname="Main" fork="true" dir="${parserdir}">
+		<arg line="JavaParser.all JavaParser.beaver"/>
+	</java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${parserdir}/JavaParser.beaver" terminalNames="yes"
+          compress="no" useSwitch="yes"/>
+  <!-- copy library files-->
+  <copy todir="generated/beaver" preservelastmodified="true">
+    <fileset dir="../Java1.4Frontend/beaver"/>
+  </copy>
+
+</target>
+
+<target name="clean">
+    <delete>
+      <fileset dir="generated" includes="**/*"/>
+      <fileset dir="classes"   includes="**/*"/>
+    </delete>
+    <delete file="JavaCompiler.jar"/>
+</target>
+	
+<target name="jar" depends="build">
+  <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" excludes="test/** sun/** executiontests/**">
+  </jar>
+</target>
+
+</project>
+

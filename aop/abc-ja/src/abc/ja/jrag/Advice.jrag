@@ -1,0 +1,42 @@
+aspect Advice {
+
+
+  eq AdviceDecl.getBlock().lookupVariable(String name) {
+    SimpleSet v = localLookupVariable(name);
+    if(!v.isEmpty()) return v;
+    return lookupVariable(name);
+  }
+  eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
+    SimpleSet v = localLookupVariable(name);
+    if(!v.isEmpty()) return v;
+    return lookupVariable(name);
+  }
+  syn SimpleSet AdviceDecl.localLookupVariable(String name) {
+    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
+      if(getAdviceSpec().getParameter(i).name().equals(name))
+        return SimpleSet.emptySet.add(getAdviceSpec().getParameter(i));
+    return SimpleSet.emptySet;
+  }
+  inh SimpleSet AdviceDecl.lookupVariable(String name);
+
+  // UnreachableStatements.jrag
+  eq AdviceDecl.getBlock().reachable() = true;
+
+  eq AdviceDecl.getModifiers().mayBeSynchronized() = true;
+  eq AdviceDecl.getModifiers().mayBeStrictfp() = true;
+
+  
+  eq AdviceSpec.getParameter(int index).isMethodParameter() = true;
+  eq AdviceSpec.getParameter(int index).isConstructorParameter() = false;
+  eq AdviceSpec.getParameter(int index).isExceptionHandlerParameter() = false;
+
+  eq AfterReturningSpec.getReturnParameter().isMethodParameter() = true;
+  eq AfterReturningSpec.getReturnParameter().isConstructorParameter() = false;
+  eq AfterReturningSpec.getReturnParameter().isExceptionHandlerParameter() = false;
+
+  eq AfterThrowingSpec.getExceptionParameter().isMethodParameter() = true;
+  eq AfterThrowingSpec.getExceptionParameter().isConstructorParameter() = false;
+  eq AfterThrowingSpec.getExceptionParameter().isExceptionHandlerParameter() = false;
+
+  eq AroundSpec.getTypeAccess().nameType() = NameType.TYPE_NAME;
+}

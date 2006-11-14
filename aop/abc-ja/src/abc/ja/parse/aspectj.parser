@@ -1,0 +1,974 @@
+/* ---------------------------------------------------------------- */
+/*             EXTENSIONS TO BASE JAVA RULES                        */
+/* ---------------------------------------------------------------- */
+
+/* add the possiblility of declaring an apspect to type_declaration */
+TypeDecl type_declaration =   // class | interface | aspect
+     aspect_declaration.a
+       {: return a; :}
+  ;
+
+/* add the possibility of a call to proceed as a method_invocation */
+Access method_invocation =
+     PROCEED.a LPAREN argument_list_opt.b RPAREN.d
+       {: return null;
+       :}  
+  ;
+
+/* add the possiblity of a simple_name for this_ aspectj vars */
+/*
+Access simple_name = 
+     THISJOINPOINT.a
+       {: return null; 
+       :}
+  |  THISJOINPOINTSTATICPART.a
+       {: return null; 
+       :}
+  |  THISENCLOSINGJOINPOINTSTATICPART.a
+       {: return null;
+       :}
+  ;
+  */
+  
+
+BodyDecl class_member_declaration =
+    aspect_declaration.a
+    {: ParserTrace.parserTrace("a class member declaration is an aspect");
+       return new MemberClassDecl(a);
+    :}
+|   pointcut_declaration.a
+    {: ParserTrace.parserTrace("a class member declaration is a pointcut declaration");
+       return a;
+    :}
+  ;
+
+BodyDecl interface_member_declaration =
+    aspect_declaration.a
+    {: ParserTrace.parserTrace("an interface declaration is an aspect");
+       return new MemberClassDecl(a);
+    :}
+|   pointcut_declaration.a
+    {: ParserTrace.parserTrace("an interface member declaration is a pointcut declaration");
+       return a;
+    :}
+  ;
+
+Modifiers modifiers_opt = 
+	{: return new Modifiers(new List()); :}
+|	modifiers	{: return modifiers; :}
+  ;
+
+
+/* ---------------------------------------------------------------- */
+/*                      ASPECTJ RULES                               */
+/* ---------------------------------------------------------------- */
+
+/* must explicitly give two alternatives here,  if you make PRIVILEGED
+   another rule which can go to epsilon,  then there is a shift reduce
+   conflict with modifiers_opt, which can also go to epsilon. */
+
+AspectDecl aspect_declaration =
+      modifiers_opt.a ASPECT.n IDENTIFIER.b
+                         super_opt.c interfaces_opt.d  perclause_opt.f  
+                         aspect_body.g
+       {: ParserTrace.parserTrace( "aspect declaration: " + 
+                                               b); 
+	  return new AspectDecl(a, b, g, new Opt(), new List()); 
+       :}
+  ;
+
+Opt perclause_opt =
+     perclause.a
+       {: ParserTrace.parserTrace("non-empty perclause in perclause_opt");
+          return null;
+       :}
+  | /* epsilon */
+       {: ParserTrace.parserTrace("empty perclause in perclause_opt");
+          return new Opt();
+       :}
+  ;
+
+ASTNode perclause = 
+     PERTARGET.per LPAREN pointcut_expr.pc RPAREN.d
+       {: ParserTrace.parserTrace("pertarget");
+          return null;
+       :}
+  |  PERTHIS.per LPAREN pointcut_expr.pc RPAREN.d
+       {: ParserTrace.parserTrace("perthis");
+          return null;
+       :}
+  |  PERCFLOW.per LPAREN pointcut_expr.pc RPAREN.d
+       {: ParserTrace.parserTrace("percflow");
+          return null;
+       :}
+  |  PERCFLOWBELOW.per LPAREN pointcut_expr.pc RPAREN.d
+       {: ParserTrace.parserTrace("percflowbelow");
+          return null;
+       :}
+  |  ISSINGLETON.per
+       {: ParserTrace.parserTrace("isingleton");
+          return null;
+       :}
+  |  ISSINGLETON.per LPAREN RPAREN.d // just to pass the ajc tests
+       {: ParserTrace.parserTrace("isingleton");
+          return null;
+       :}
+  ;
+
+
+List aspect_body =
+     LBRACE.lb  RBRACE.rb
+        {: ParserTrace.parserTrace("empty aspect body");
+	   return new List(); 
+        :}
+  |
+     LBRACE.lb aspect_body_declarations.a RBRACE.rb
+       {: ParserTrace.parserTrace("aspect body"); 
+          return a; 
+       :}
+  ;
+
+List aspect_body_declarations =
+     aspect_body_declaration.a
+       {: ParserTrace.parserTrace("aspect_body_declaration");
+          return new List().add(a);
+       :}
+  |  aspect_body_declarations.a aspect_body_declaration.b
+       {: ParserTrace.parserTrace("aspect_body_declarations");
+          return a.add(b);
+       :}
+  ;
+
+BodyDecl aspect_body_declaration = 
+     class_body_declaration.a
+       {: ParserTrace.parserTrace("aspect_body_declaration is just a class_body_declaration\n");
+          ParserTrace.parserTrace("LINE " + a.lineNumber());
+          ParserTrace.parserTrace("-----------------------------------------------\n");
+          return a;
+       :}
+  |  declare_declaration.a
+       {: ParserTrace.parserTrace("declare declaration\n");
+          ParserTrace.parserTrace("LINE " + a.lineNumber());
+          ParserTrace.parserTrace("-----------------------------------------------\n");
+          return a;
+       :}
+ /* |  pointcut_declaration.a
+       {: ParserTrace.parserTrace("pointcut declaration\n");
+          ParserTrace.parserTrace("LINE " + a.lineNumber());
+          ParserTrace.parserTrace("-----------------------------------------------\n");
+          return a;
+       :} */
+  |  advice_declaration.a
+       {: ParserTrace.parserTrace("advice declaration\n");
+          ParserTrace.parserTrace("LINE " + a.lineNumber());
+          ParserTrace.parserTrace("-----------------------------------------------\n");
+          return a;
+       :}
+  |  intertype_member_declaration.a
+       {: ParserTrace.parserTrace("intertype_member_declaration\n");
+          ParserTrace.parserTrace("LINE " + a.lineNumber());
+          ParserTrace.parserTrace("-----------------------------------------------\n");
+          return a;
+       :}
+  ;
+
+BodyDecl declare_declaration =
+     DECLARE.d PC_PARENTS COLON classname_pattern_expr.a EXTENDS interface_type_list.b SEMICOLON.e
+       {: ParserTrace.parserTrace("Declare class extension");
+          return null;
+       :}
+  |  DECLARE.d PC_PARENTS COLON classname_pattern_expr.a IMPLEMENTS interface_type_list.b SEMICOLON.e
+       {: ParserTrace.parserTrace("Declare interface extension");
+          return null;
+       :}
+  |  DECLARE.d PC_WARNING COLON pointcut_expr.a COLON STRING_LITERAL.b SEMICOLON.e 
+       {: ParserTrace.parserTrace("Declare warning:" + b);
+          return null;
+       :}
+  |  DECLARE.d PC_ERROR COLON pointcut_expr.a COLON STRING_LITERAL.b SEMICOLON.e 
+       {: ParserTrace.parserTrace("Declare error:" + b);
+          return null;
+       :}
+  |  DECLARE.d PC_SOFT COLON type.a COLON pointcut_expr.b SEMICOLON.e
+       {: ParserTrace.parserTrace("Declare soft");
+          return null;
+       :}
+  |  DECLARE.d PC_PRECEDENCE COLON classname_pattern_expr_list.a SEMICOLON.e
+       {: ParserTrace.parserTrace("Declare precedence");
+          return null;
+       :}
+  ;
+
+BodyDecl pointcut_declaration =
+     modifiers_opt.a POINTCUT IDENTIFIER.b 
+             LPAREN formal_parameter_list_opt.c RPAREN SEMICOLON.e
+     /* must check that modifiers include ABSTRACT */
+     {: ParserTrace.parserTrace("abstract pointcut declaration");
+        return null;
+     :}
+  |  modifiers_opt.a POINTCUT IDENTIFIER.b 
+             LPAREN formal_parameter_list_opt.c RPAREN 
+             COLON pointcut_expr.d SEMICOLON.e 
+     /* must check that modifiers DO NOT include ABSTRACT */
+     {: ParserTrace.parserTrace("non-abstract pointcut declaration");
+        return null;
+     :}
+  ;
+
+AdviceDecl advice_declaration =
+      modifiers_opt.m advice_spec.a throws_opt.b COLON pointcut_expr.c 
+     /* only valid modifier is strictfp */
+        block.d 
+       {: ParserTrace.parserTrace("advice declaration without strictfp");
+          return new AdviceDecl(m, a, c, d);
+       :}
+  ;
+
+AdviceSpec advice_spec =
+     BEFORE.x LPAREN formal_parameter_list_opt.a RPAREN.y
+       {: ParserTrace.parserTrace("before(formals)");
+          return new BeforeSpec(a);
+       :}
+  |  AFTER.x LPAREN formal_parameter_list_opt.a RPAREN.y
+       {: ParserTrace.parserTrace("after(formals)");
+          return new AfterSpec(a);
+       :}
+  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING.y
+       {: ParserTrace.parserTrace("after(formals)returning");
+          return null;
+       :}
+  |  AFTER.x LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING LPAREN RPAREN.y // just to pass ajc tests
+       {: ParserTrace.parserTrace("after(formals)returning()");
+          return null;
+       :}
+  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING 
+                                               LPAREN formal_parameter.b RPAREN.y
+       {: ParserTrace.parserTrace("after(formals) returning(p)");
+          return null;
+       :}
+  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING.y
+       {: ParserTrace.parserTrace("after(formals)throwing");
+          return null;
+       :}
+  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING LPAREN RPAREN.y // ajc compatibility again
+       {: ParserTrace.parserTrace("after(formals)throwing");
+          return null;
+       :}
+  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING
+                                               LPAREN formal_parameter.b RPAREN.y
+       {: ParserTrace.parserTrace("after(formals)throwing(p)");
+          return null;
+       :}
+  |  type.a AROUND LPAREN formal_parameter_list_opt.b RPAREN.y
+       {: ParserTrace.parserTrace("non-void-type around (formals)");
+          return null;
+       :}
+  |  VOID.a AROUND LPAREN formal_parameter_list_opt.b RPAREN.y
+       {: ParserTrace.parserTrace("VOID around (formals)");
+          return null;
+       :}
+  ;
+
+BodyDecl intertype_member_declaration =
+     modifiers_opt.a VOID.b name.c DOT IDENTIFIER.d 
+         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
+     /* must check if modifiers includes abstract, no body,  if doesn't
+          include abstract, has body */
+       {: ParserTrace.parserTrace("Intertype VOID METHOD declaration");
+           return new IntertypeMethodDecl(a, new TypeAccess("void"), d, e, new List(), f, g, c);
+       :}
+  |  modifiers_opt.a type.b name.c DOT IDENTIFIER.d 
+         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
+     /* must check if modifiers includes abstract, no body,  if doesn't
+          include abstract, has body */
+       {: ParserTrace.parserTrace("Intertype METHOD declaration");
+           return new IntertypeMethodDecl(a, b, d, e, new List(), f, g, c);
+       :}
+  | modifiers_opt.a name.b DOT NEW 
+         LPAREN formal_parameter_list_opt.c RPAREN throws_opt.d constructor_body.e
+     /* must check that body is not null */
+       {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
+          return null;
+       :}
+  | modifiers_opt.a type.b name.c DOT IDENTIFIER.d SEMICOLON 
+       {: ParserTrace.parserTrace("Intertype FIELD without initializer");
+          return null;
+       :}
+  | modifiers_opt.a type.b name.c DOT IDENTIFIER.d  
+        EQ variable_initializer.e SEMICOLON 
+       {: ParserTrace.parserTrace("Intertype FIELD with initializer");
+          return null;
+       :}
+  ;
+
+/* ------------------------- POINTCUT EXPRESSIONS ---------------------- */
+
+PointcutExpr pointcut_expr = 
+      or_pointcut_expr.a
+        {: ParserTrace.parserTrace("pointcut_expr is an or_pointcut_expr");
+           return a;
+        :}
+   |  pointcut_expr.a PC_ANDAND or_pointcut_expr.b
+        {: ParserTrace.parserTrace("pointcut_expr && or_pointcut_expr");
+           return new AndPointcutExpr(a, b);
+        :} 
+   ;
+
+PointcutExpr or_pointcut_expr =
+      unary_pointcut_expr.a 
+        {: ParserTrace.parserTrace("or_pointcut_expr is a unary_pointcut_expr");
+           return a;
+        :}
+   |  or_pointcut_expr.a PC_OROR unary_pointcut_expr.b 
+        {: ParserTrace.parserTrace("or_pointcut_expr || unary_pointcut_expr");
+           return new OrPointcutExpr(a, b);
+        :}
+   ;
+
+PointcutExpr unary_pointcut_expr =
+      basic_pointcut_expr.a
+        {: ParserTrace.parserTrace("unary_pointcut_expr is a basic_pointcut_expr");
+           return a;
+        :}
+   |  PC_NOT unary_pointcut_expr.a
+        {: ParserTrace.parserTrace("! unary_pointcut_expr");
+           return new NegPointcutExpr(a);
+        :}
+   ;
+
+PointcutExpr basic_pointcut_expr =
+     LPAREN pointcut_expr.a RPAREN
+       {: ParserTrace.parserTrace("basic_pointcut_expr is ( pointcut_expr )");
+          return a;
+       :}
+   | PC_CALL.x LPAREN method_constructor_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("CALL pointcut");
+          return new CallPointcutExpr(a);
+       :}
+   | PC_EXECUTION.x LPAREN method_constructor_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("EXECUTION pointcut");
+          return new ExecutionPointcutExpr(a);
+       :}
+   | PC_INITIALIZATION.x LPAREN constructor_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("INITIALIZATION pointcut");
+          return new InitializationPointcutExp(a);
+       :}
+   | PC_PREINITIALIZATION.x LPAREN constructor_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("PREINITIALIZATION pointcut");
+          return new PreInitializationPointcutExp(a);
+       :}
+   | PC_STATICINITIALIZATION.x LPAREN classname_pattern_expr.a RPAREN.y
+       {: ParserTrace.parserTrace("STATICINITIALIZATION pointcut");
+          return new StaticInitializationPointcutExp(a);
+       :}
+   | PC_GET.x LPAREN field_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("GET pointcut");
+          return new GetPointcutExpr(a);
+       :} 
+   | PC_SET.x LPAREN field_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("SET pointcut");
+          return new SetPointcutExpr(a);
+       :}
+   | PC_HANDLER.x LPAREN classname_pattern_expr.a RPAREN.y
+     /* verify that this really can take any type_pattern */
+       {: ParserTrace.parserTrace("HANDLER pointcut");
+          return new HandlerPointcutExpr(a);
+       :}
+   | PC_ADVICEEXECUTION.a LPAREN RPAREN.y
+       {: ParserTrace.parserTrace("ADVICEEXECUTION pointcut");
+          return new AdviceExecutionPointcutExpr();
+       :}
+   | PC_WITHIN.x LPAREN classname_pattern_expr.a RPAREN.y
+       {: ParserTrace.parserTrace("WITHIN pointcut on pattern");
+          return new WithinPointcutExpr(a);
+       :}
+   | PC_WITHINCODE.x LPAREN method_constructor_pattern.a RPAREN.y
+       {: ParserTrace.parserTrace("WITHINCODE pointcut on method_constructor_pattern");
+          return new WithinCodePointcutExpr(a);
+       :}
+   | PC_CFLOW.x LPAREN pointcut_expr.a RPAREN.y
+       {: ParserTrace.parserTrace("CFLOW pointcut");
+          return new CflowPointcutExpr(a);
+       :}
+   | PC_CFLOWBELOW.x LPAREN pointcut_expr.a RPAREN.y
+       {: ParserTrace.parserTrace("CFLOWBELOW pointcut");
+          return new CflowBelowPointcutExpr(a);
+       :}
+   | PC_IF.x LPAREN expression.a RPAREN.y
+       {: ParserTrace.parserTrace("IF pointcut");
+          return new IfPointcutExpr(a);
+       :}
+   // following two rules, ajc only allows * or a fully-defined type/id
+   | PC_THIS.x LPAREN type_id_star.a RPAREN.y 
+       {: ParserTrace.parserTrace("THIS pointcut");
+          return new ThisPointcutExpr(a);
+       :}
+   | PC_TARGET.x LPAREN type_id_star.a RPAREN.y 
+       {: ParserTrace.parserTrace("TARGET pointcut");
+          return new TargetPointcutExpr(a);
+       :}
+   // for args, ajc only allows each arg to be * .. or fully-defined type/id
+   | PC_ARGS.x LPAREN type_id_star_list_opt.a RPAREN.y
+       {: ParserTrace.parserTrace("ARGS pointcut");
+          return new ArgsPointcutExpr(a);
+       :}   
+   // for named pointcuts, ajc allows only * or fully-defined type/id
+    |  name.a LPAREN type_id_star_list_opt.b RPAREN.y
+            {: return new NamedPointcutExpr(a, b); :}
+  ;
+
+
+
+
+/* ------------------- NAME PATTERNS ---------------------------------- */
+
+NamePattern name_pattern =
+      simple_name_pattern.a
+        {: return a;
+        :}
+   |  name_pattern.a DOT simple_name_pattern.b
+        {: return new DotNamePattern(a, b);
+        :}
+   |  name_pattern.a PC_DOTDOT.d simple_name_pattern.b
+        {: 
+           return new DotDotNamePattern(a, b);
+        :}
+   ;
+
+SimpleNamePattern simple_name_pattern = 
+     PC_MULT.m
+        {: ParserTrace.parserTrace("name_pattern is a star: ");
+           return new SimpleNamePattern("*");
+        :}
+   | IDENTIFIERPATTERN.a
+        {: ParserTrace.parserTrace("name_pattern is simple name pattern: " + a);
+           return new SimpleNamePattern(a);
+        :}
+   | IDENTIFIER.a
+        {: ParserTrace.parserTrace("name_pattern is identifer: " + a);
+           return new SimpleNamePattern(a);
+        :}
+/*   | aspectj_reserved_identifier.a
+        {: ParserTrace.parserTrace("name_pattern is aspectj_reserved_identifier");
+           return null;
+        :}*/
+   ;
+
+/*NamePattern aspectj_reserved_identifier =
+     ASPECT.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PRIVILEGED.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_ADVICEEXECUTION.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_ARGS.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_CALL.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_CFLOW.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_CFLOWBELOW.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_ERROR.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_EXECUTION.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_GET.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_HANDLER.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_INITIALIZATION.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_PARENTS.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_PRECEDENCE.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_PREINITIALIZATION.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_RETURNING.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_SET.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_SOFT.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_STATICINITIALIZATION.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_TARGET.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_THROWING.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_WARNING.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  |  PC_WITHINCODE.a
+        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+           return null;
+        :}
+  ;*/
+
+NamePattern classtype_dot_id =
+     simple_name_pattern.b
+        {: ParserTrace.parserTrace("classtype_dot_id is simple_name_pattern: ");
+	   return b;
+        :}
+  |  name_pattern.a DOT simple_name_pattern.b 
+        {: ParserTrace.parserTrace("classtype_dot_id is np . simple_name_pattern");
+           return new DotNamePattern(a, b);
+        :}
+  |  name_pattern.a PC_PLUS.p DOT simple_name_pattern.b 
+        {: ParserTrace.parserTrace("classtype_dot_id is np + . simple_name_pattern");
+           return new PlusDotNamePattern(a, b);
+        :}
+  |  name_pattern.a PC_DOTDOT.d simple_name_pattern.b 
+        {: ParserTrace.parserTrace("classtype_dot_id is np . simple_name_pattern");
+           return new DotDotNamePattern(a, b);
+        :}
+  |  LPAREN.x type_pattern_expr.a RPAREN.y DOT simple_name_pattern.b
+        /* must check it is a class pattern expr */
+       {: ParserTrace.parserTrace("(tpe) . new");
+          return new TypeDotNamePattern(a, b);
+       :}
+  ;
+
+NamePattern classtype_dot_new =
+     NEW.a
+        {: ParserTrace.parserTrace("classtype_dot_new is NEW: ");
+	   return new SimpleNamePattern("new");
+        :}
+  |  name_pattern.a DOT NEW.y 
+        {: ParserTrace.parserTrace("classtype_dot_new is np . NEW");
+           return new DotNamePattern(a, new SimpleNamePattern(y));
+        :}
+  |  name_pattern.a PC_PLUS.p DOT NEW.y 
+        {: ParserTrace.parserTrace("classtype_dot_new is np + . NEW");
+           return new PlusDotNamePattern(a, new SimpleNamePattern(y));
+        :}
+  |  name_pattern.a PC_DOTDOT.d NEW.y 
+        {: ParserTrace.parserTrace("classtype_dot_new is np .. NEW");
+           return new DotDotNamePattern(a, new SimpleNamePattern(y));
+        :}
+  |  LPAREN.x type_pattern_expr.a RPAREN DOT NEW.y
+        /* must check it is a class pattern expr */
+       {: ParserTrace.parserTrace("(tpe) . new");
+          return new TypeDotNamePattern(a, new SimpleNamePattern(y));
+       :}
+  ;
+
+
+/* ------------------- TYPE PATTERNS ----------------------------------- */
+
+
+Pattern type_pattern_expr = 
+      or_type_pattern_expr.a
+        {: ParserTrace.parserTrace("type_pattern_expr is an or_type_pattern_expr");
+           return a;
+        :}
+   |  type_pattern_expr.a PC_ANDAND or_type_pattern_expr.b
+        {: ParserTrace.parserTrace("type_pattern_expr && or_type_pattern_expr");
+	   return new AndPattern(a, b);
+        :} 
+   ;
+
+Pattern or_type_pattern_expr =
+      unary_type_pattern_expr.a 
+        {: ParserTrace.parserTrace("or_type_pattern_expr is a unary_type_pattern_expr");
+           return a;
+        :}
+   |  or_type_pattern_expr.a PC_OROR unary_type_pattern_expr.b 
+        {: ParserTrace.parserTrace("or_type_pattern_expr || unary_type_pattern_expr");
+           return new OrPattern(a, b);
+        :}
+   ;
+
+Pattern unary_type_pattern_expr =
+      basic_type_pattern.a
+        {: ParserTrace.parserTrace("unary_type_pattern_expr is a  basic_type_pattern");
+           return a;
+        :}
+   |  PC_NOT.a unary_type_pattern_expr.b 
+        {: ParserTrace.parserTrace("! unary_type_pattern_expr");
+           return new NegPattern(b);
+        :}
+   ;
+
+/* check that VOID is not in patterns for formals, ok for 
+       patterns for return types */
+NamePattern basic_type_pattern =
+     VOID.a
+       {: ParserTrace.parserTrace("VOID type");
+          return new ExplicitTypeNamePattern(new TypeAccess("void"));
+       :}
+  |  base_type_pattern.a
+       {: ParserTrace.parserTrace("basic_type_pattern is a reference_type_pattern");
+          return a;
+       :} 
+  |  base_type_pattern.a dims.b
+       {: ParserTrace.parserTrace("basic_type_pattern is just a primitive_type");
+          return new ArraytypeNamePattern(a, b);
+       :}
+  |  LPAREN.lp type_pattern_expr.a RPAREN.rp
+       {: ParserTrace.parserTrace("basic_type_pattern is a ( type_pattern_expr )");
+          return a;
+       :}
+  ;
+
+NamePattern base_type_pattern =
+     primitive_type.a
+       {: ParserTrace.parserTrace("basic_type_pattern is just a primitive_type");
+          return new ExplicitTypeNamePattern(a);
+       :}
+  |  name_pattern.a 
+       {: ParserTrace.parserTrace("reference_type_pattern is a name_pattern");
+	  return a;
+       :}
+  |  name_pattern.a PC_PLUS.p 
+       {: ParserTrace.parserTrace("reference_type_pattern is name_pattern +");
+          return new SubtypeNamePattern(a);
+       :}
+  ;
+
+/* ------------------ CLASSNAME PATTERNS ------------------------------- */
+
+List classname_pattern_expr_list =
+     classname_pattern_expr.a 
+       {: ParserTrace.parserTrace("first item of classname_pattern_expr_list");
+	   return new List().add(a);
+       :}
+  |  classname_pattern_expr_list.a COMMA classname_pattern_expr.b
+       {: ParserTrace.parserTrace("another item of classname_pattern_expr_list");
+          return a.add(b);
+       :}
+  ;
+
+Pattern classname_pattern_expr = 
+      and_classname_pattern_expr.a
+        {: ParserTrace.parserTrace("classname_pattern_expr is an and_classname_pattern_expr");
+           return a;
+        :}
+   |  classname_pattern_expr.a PC_OROR and_classname_pattern_expr.b
+        {: ParserTrace.parserTrace("classname_pattern_expr || and_classname_pattern_expr");
+           return new OrPattern(a, b);
+        :} 
+   ;
+
+Pattern and_classname_pattern_expr =
+      unary_classname_pattern_expr.a 
+        {: ParserTrace.parserTrace("and_classname_pattern_expr is a unary_classname_pattern_expr");
+           return a;
+        :}
+   |  and_classname_pattern_expr.a PC_ANDAND unary_classname_pattern_expr.b 
+        {: ParserTrace.parserTrace("and_classname_pattern_expr && unary_classname_pattern_expr");
+           return new AndPattern(a, b);
+        :}
+   ;
+
+Pattern unary_classname_pattern_expr =
+      basic_classname_pattern.a
+        {: ParserTrace.parserTrace("unary_classname_pattern_expr is a  basic_classname_pattern");
+           return a;
+        :}
+   |  PC_NOT.x unary_classname_pattern_expr.a 
+        {: ParserTrace.parserTrace("! unary_classname_pattern_expr");
+           return new NegPattern(a);
+        :}
+   ;
+
+NamePattern basic_classname_pattern =
+     name_pattern.a 
+        {: ParserTrace.parserTrace("classname_type_pattern is a name_pattern");
+	   return a;
+        :}
+  |  name_pattern.a PC_PLUS.p 
+        {: ParserTrace.parserTrace("classname_type_pattern is name_pattern +");
+           return new SubtypeNamePattern(a);
+        :}
+  |  LPAREN.lp classname_pattern_expr.a RPAREN.rp
+        {: ParserTrace.parserTrace("basic_classname_pattern is a ( classname_pattern_expr )");
+           return a;
+        :}
+  ;
+
+
+NamePattern classname_pattern_expr_nobang = 
+      and_classname_pattern_expr_nobang.a
+        {: ParserTrace.parserTrace("classname_pattern_expr_nobang is an and_classname_pattern_expr");
+           return a;
+        :}
+   |  classname_pattern_expr_nobang.a PC_OROR and_classname_pattern_expr.b
+        {: ParserTrace.parserTrace("classname_pattern_expr_nobang || and_classname_pattern_expr");
+           return new OrPattern(a, b);
+        :} 
+   ;
+
+NamePattern and_classname_pattern_expr_nobang =
+      basic_classname_pattern.a 
+        {: ParserTrace.parserTrace("and_classname_pattern_expr_nobang is a basic_classname_pattern");
+           return a;
+        :}
+   |  and_classname_pattern_expr_nobang.a PC_ANDAND unary_classname_pattern_expr.b 
+        {: ParserTrace.parserTrace("and_classname_pattern_expr_nobang && unary_classname_pattern_expr");
+           return new AndPattern(a, b);
+        :}
+   ;
+
+/* ----------------------- MODIFIER PATTERNS ---------------------------- */
+
+List modifier_pattern_expr =
+     modifier.a
+       {: ParserTrace.parserTrace("first modifier " + a);
+	  return new List().add(new ModifierPattern(a));
+       :}
+  |  PC_NOT.b modifier.a
+       {: ParserTrace.parserTrace("first modifier is NOT " + a);
+	  return new List().add(new NegModifierPattern(a));
+       :}
+  |  modifier_pattern_expr.a modifier.b
+       {: ParserTrace.parserTrace("another modifier is " + b);
+          return a.add(new ModifierPattern(b));
+       :}
+  |  modifier_pattern_expr.a PC_NOT.c modifier.b
+       {: ParserTrace.parserTrace("another modifier is NOT" + b);
+          return a.add(new NegModifierPattern(b));
+       :}
+  ;
+
+
+/* -------------- METHOD, CONSTRUCTOR and FIELD PATTERNS ----------------- */
+
+List throws_pattern_list_opt =
+     // epsilon
+       {: ParserTrace.parserTrace("no throws patterns");
+          return new List(); 
+       :}
+  |  THROWS throws_pattern_list.a
+       {: ParserTrace.parserTrace("has throws patterns");
+          return a;
+       :}
+  ;
+
+List throws_pattern_list =
+     throws_pattern.a
+        {: ParserTrace.parserTrace("First throws pattern in the list.");
+           return new List().add(a); 
+        :}
+    |  throws_pattern_list.a COMMA throws_pattern.b
+        {: ParserTrace.parserTrace("Another throws parameter");
+	   return a.add(b);
+        :}
+    ;
+
+NamePattern throws_pattern =
+     classname_pattern_expr_nobang.a
+       {: ParserTrace.parserTrace("throws pattern is " + a);
+	  return a;
+       :}
+  |  PC_NOT.b classname_pattern_expr.a
+       {: ParserTrace.parserTrace("throws pattern is NOT " + a);
+          return new UniversalNegPattern(a);
+       :}
+;
+
+MemberPattern method_constructor_pattern =
+     method_pattern.a
+       {: ParserTrace.parserTrace("method_constructor is method");
+          return a;
+       :}
+  |  constructor_pattern.a
+       {: ParserTrace.parserTrace("method_constructor is constructor");
+          return a;
+       :}
+  ;
+
+MethodPattern method_pattern =
+     modifier_pattern_expr.a  
+       type_pattern_expr.b 
+       classtype_dot_id.c
+       LPAREN.lp formal_pattern_list_opt.d RPAREN.rp 
+       throws_pattern_list_opt.e
+        {: ParserTrace.parserTrace("method_pattern with modifiers");
+           return new MethodPattern(a, b, c, d, e);
+        :}
+  |  type_pattern_expr.b classtype_dot_id.c
+       LPAREN.lp formal_pattern_list_opt.d RPAREN.rp 
+       throws_pattern_list_opt.e
+        {: ParserTrace.parserTrace("method_pattern no modifiers");
+           return new MethodPattern(new List(), b, c, d, e);
+        :}
+  ;
+
+ConstructorPattern constructor_pattern =
+     modifier_pattern_expr.a  
+       classtype_dot_new.b
+       LPAREN.lp formal_pattern_list_opt.c RPAREN.rp 
+       throws_pattern_list_opt.d
+        {: ParserTrace.parserTrace("constructor_pattern with modifiers");
+           return new ConstructorPattern(a, b, c, d);
+        :}
+  |    classtype_dot_new.b
+       LPAREN.lp formal_pattern_list_opt.c RPAREN.rp 
+       throws_pattern_list_opt.d
+        {: ParserTrace.parserTrace("constructor_pattern no modifiers");
+           return new ConstructorPattern(new List(), b, c, d);
+        :}
+  ;
+
+FieldPattern field_pattern =
+     modifier_pattern_expr.a  type_pattern_expr.b classtype_dot_id.c
+// should be regular_variable_pattern 
+       {: ParserTrace.parserTrace("field pattern with modifiers");
+          return new FieldPattern(a, b, c);
+       :}
+  |  type_pattern_expr.b classtype_dot_id.c
+       {: ParserTrace.parserTrace("field pattern without modifiers");
+          return new FieldPattern(new List(), b, c);
+       :}
+  ;
+
+/* -------------------- FORMAL PARAMETER LIST PATTERNS --------------*/
+
+List formal_pattern_list_opt =
+      // epsilon                   
+       {: ParserTrace.parserTrace("Empty formal parameter list"); 
+          return new List(); 
+       :}
+  | formal_pattern_list.a
+       {: ParserTrace.parserTrace("Non-empty formal parameter list");
+	  return a; 
+       :}
+    ;
+List formal_pattern_list =
+     formal_pattern.a
+        {: ParserTrace.parserTrace("First formal pattern in the list.");
+           return new List().add(a); 
+        :}
+    |  formal_pattern_list.a COMMA formal_pattern.b
+        {: ParserTrace.parserTrace("Another formal parameter");
+	   return a.add(b);
+        :}
+    ;
+
+FormalPattern formal_pattern =
+       PC_DOTDOT.a 
+         {: ParserTrace.parserTrace("DOT DOT formal pattern");
+            return new WildcardFormalPattern();
+         :}
+    |  DOT DOT.a
+         {: ParserTrace.parserTrace("DOT DOT formal pattern - separate dots");
+            return new WildcardFormalPattern();
+         :}
+    |  type_pattern_expr.a 
+         {: ParserTrace.parserTrace("A type pattern formal pattern");
+            return new ConcreteFormalPattern(a);
+         :}
+    ;
+    
+/* -------------------- POINTCUT PARAMETER LIST PATTERNS --------------*/
+
+List type_id_star_list_opt =
+      // epsilon                   
+       {: ParserTrace.parserTrace("Empty pointcut parameter list"); 
+          return new List();
+       :}
+      | type_id_star_list.a
+       {: ParserTrace.parserTrace("Non-empty pointcut parameter list");
+	  return a; 
+       :}
+    ;
+List type_id_star_list =
+     type_id_star.a
+        {: ParserTrace.parserTrace("First pointcut parameter in the list.");
+           return new List().add(a);
+        :}
+    |  type_id_star_list.a COMMA type_id_star.b
+        {: ParserTrace.parserTrace("Another pointcut parameter");
+	   return a.add(b);
+        :}
+    ;
+
+// there should be three alternatives here: star, type, and identifier
+// disambiguation between type and identifier happens in the type-checker
+BindingPattern type_id_star =
+       PC_MULT.a 
+         {: ParserTrace.parserTrace("Star pointcut parameter");
+            return new StarBindingPattern();
+         :}
+    |  PC_DOTDOT.a 
+         {: ParserTrace.parserTrace("DotDot pointcut parameter");
+            return new DotDotBindingPattern();
+         :}
+    |  type.a 
+         {: ParserTrace.parserTrace("A type pointcut parameter");
+            return new NameBindingPattern(new ExplicitTypeNamePattern(a));
+         :}
+    |  type.a PC_PLUS
+         {: ParserTrace.parserTrace("A type pointcut parameter with a plus");
+            return new NameBindingPattern(new SubtypeNamePattern(new ExplicitTypeNamePattern(a)));
+         :}
+    ;
+
+
+List formal_parameter_list_opt =
+	{: return new List(); :}
+|	formal_parameter_list.l		{: return l; :}
+    ;
+
+List throws_opt = 
+	{: return new List(); :}
+| 	throws.l			{: return l; :}
+    ;
+
+
+Modifier modifier = PRIVILEGED {: return new Modifier("privileged"); :};
+
+Opt super_opt =
+	{: return new Opt(); :}
+|	super.s		{: return s; :}
+    ;
+
+List interfaces_opt =
+	{: return new List(); :}
+|	interfaces.i	{: return i; :}
+    ;

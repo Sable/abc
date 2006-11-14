@@ -1,0 +1,11 @@
+aspect ParserTraceAspect {
+  class ParserTrace {
+    /* Flag for personalized parser trace. */
+    public static boolean parserTraceOn = true;
+
+    public static void parserTrace (String s)
+      { if (parserTraceOn) 
+          System.err.println(" REDUCED: " + s); 
+      }
+  }
+}

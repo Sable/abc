@@ -1,0 +1,153 @@
+import abc.weaving.aspectinfo.*;
+
+aspect AspectJCodegen {
+
+  public static GlobalAspectInfo ASTNode.globalAspectInfo() {
+    return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+  }
+
+  syn lazy AbcClass TypeDecl.abcClass() = AbcFactory.AbcClass(sootClass());
+
+  public void ClassDecl.jimplify1phase1() {
+    super.jimplify1phase1();
+    AbcClass abc = abcClass();
+    globalAspectInfo().addWeavableClass(abc);
+  }
+  
+  public void InterfaceDecl.jimplify1phase1() {
+    super.jimplify1phase1();
+    AbcClass abc = abcClass();
+    globalAspectInfo().addWeavableClass(abc);
+  }
+
+  public void AspectDecl.jimplify1phase1() {
+    super.jimplify1phase1();
+    polyglot.util.Position p = new polyglot.util.Position("TO BE DONE");
+    globalAspectInfo().addAspect(new Aspect(abcClass(), new Singleton(p), p));
+    addAspectOf();
+    addHasAspect();
+  }
+
+  private void AspectDecl.addAspectOf() {
+    String name = "aspectOf";
+    ArrayList parameters = new ArrayList();
+    soot.Type returnType = getSootType();
+    int modifiers = soot.Modifier.PUBLIC | soot.Modifier.STATIC;
+    ArrayList throwtypes = new ArrayList(); // Add NoAspectBound...
+    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
+    getSootClassDecl().addMethod(m);
+    
+    JimpleBody body = Jimple.v().newBody(m);
+    m.setActiveBody(body);
+    Chain units = body.getUnits();
+    units.add(Jimple.v().newReturnStmt(NullConstant.v()));
+  }
+  private void AspectDecl.addHasAspect() {
+    String name = "hasAspect";
+    ArrayList parameters = new ArrayList();
+    soot.Type returnType = soot.BooleanType.v();
+    int modifiers = soot.Modifier.PUBLIC | soot.Modifier.STATIC;
+    ArrayList throwtypes = new ArrayList();
+    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
+    getSootClassDecl().addMethod(m);
+    
+    JimpleBody body = Jimple.v().newBody(m);
+    m.setActiveBody(body);
+    Chain units = body.getUnits();
+    units.add(Jimple.v().newReturnStmt(IntConstant.v(1))); // true
+  }
+
+  eq IntertypeMethodDecl.sootRef() {
+    ArrayList parameters = new ArrayList();
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    SootMethodRef ref = Scene.v().makeMethodRef(
+      targetType().getSootClassDecl(),
+      name(),
+      parameters,
+      type().getSootType(),
+      isStatic()
+    );
+    return ref;
+  }
+
+  public void IntertypeMethodDecl.jimplify2() {
+    if(hasBlock()) {
+      JimpleBody body = Jimple.v().newBody(sootMethod);
+      sootMethod.setActiveBody(body);
+      Body b = new Body(body);
+      if(!isStatic()) {
+        b.addITDThis(hostType());
+      }
+      for(int i = 0; i < getNumParameter(); i++)
+        getParameter(i).jimplify2(b);
+      getBlock().jimplify2(b);
+      if(type() instanceof VoidType)
+        b.add(Jimple.v().newReturnVoidStmt());
+    }
+  }
+
+
+  public Formal ParameterDeclaration.formal() {
+    return new Formal(
+        AbcFactory.AbcType(type().getSootType()),
+        name(),
+        new polyglot.util.Position("TO BE DONE")
+    );
+  }
+
+  public void IntertypeMethodDecl.jimplify1phase2() {
+    String name = name();
+    ArrayList parameters = new ArrayList();
+    if(!isStatic())
+      parameters.add(targetType().getSootType());
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    soot.Type returnType = type().getSootType();
+    int modifiers = sootTypeModifiers() | soot.Modifier.STATIC;
+    ArrayList throwtypes = new ArrayList();
+    for(int i = 0; i < getNumException(); i++)
+      throwtypes.add(getException(i).type().getSootClassDecl());
+    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
+    hostType().getSootClassDecl().addMethod(m);
+    sootMethod = m;
+
+    //super.jimplify1phase2(); // build method
+
+    ArrayList formals = new ArrayList();
+    if(!isStatic()) {
+      formals.add(new Formal(
+        AbcFactory.AbcType(targetType().getSootType()),
+        "this$1",
+        new polyglot.util.Position("TO BE DONE"))
+      );
+    }
+    for(int i = 0; i < getNumParameter(); i++) {
+      formals.add(getParameter(i).formal());
+    }
+
+    MethodSig impl = new MethodSig(
+      sootTypeModifiers(),
+	    AbcFactory.AbcClass(hostType().getSootClassDecl()),
+	    AbcFactory.AbcType(type().getSootType()),
+      name(),
+	    formals,
+	    new ArrayList(),
+	    null);
+    System.out.println("Signature: " + impl);
+
+    MethodSig target = new MethodSig(
+      sootTypeModifiers(),
+	    AbcFactory.AbcClass(targetType().getSootClassDecl()),
+	    AbcFactory.AbcType(type().getSootType()),
+      name(),
+	    formals,
+	    new ArrayList(),
+	    null);
+    Aspect asp = globalAspectInfo().getAspect(hostType().abcClass());
+    globalAspectInfo().addIntertypeMethodDecl(new abc.weaving.aspectinfo.IntertypeMethodDecl(
+      target, impl, asp, name(), new polyglot.util.Position("TO BE DONE")
+    ));
+  }
+
+}

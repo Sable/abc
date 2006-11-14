@@ -1,0 +1,129 @@
+aspect AdviceCodegen {
+  inh Aspect BodyDecl.aspectClass();
+  eq AspectDecl.getBodyDecl().aspectClass() = globalAspectInfo().getAspect(abcClass());
+  eq Program.getCompilationUnit().aspectClass() { throw new Error("Missing equation for aspectClass()"); }
+
+  public int TypeDecl.adviceCounter = 0;
+  syn lazy String AdviceDecl.name() = "advice$" + hostType().adviceCounter++;
+
+  public void AdviceDecl.jimplify1phase2() {
+    hostType().getSootClassDecl().addMethod(sootMethod());
+    createAspectInfo();
+  }
+
+  syn lazy SootMethod AdviceDecl.sootMethod() {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
+      list.add(getAdviceSpec().getParameter(i).type().getSootType());
+    return new SootMethod(name(), list, soot.VoidType.v(), sootTypeModifiers(), new ArrayList());
+  }
+
+  protected void AdviceDecl.createAspectInfo() {
+    
+    Pointcut pc = getPointcutExpr().pointcut();
+    if(getAdviceSpec().getNumParameter() > 0) {
+      ArrayList list = new ArrayList();
+      for(int i = 0; i < getAdviceSpec().getNumParameter(); i++) {
+        ParameterDeclaration p = getAdviceSpec().getParameter(i);
+        Var v = new Var(p.name(), null);
+        ArgVar argVar = new ArgVar(v, null);
+        list.add(argVar);
+      }
+      Args args = new Args(list, null);
+      pc = AndPointcut.construct(pc, args, null);
+    }
+
+    globalAspectInfo().addAdviceDecl(new abc.weaving.aspectinfo.AdviceDecl(
+      getAdviceSpec().adviceSpec(),
+      pc,
+      methodSig(),
+      aspectClass(),
+      -1 /*jp*/,
+      -1 /*jpsp*/,
+      -1 /*ejp*/,
+      new ArrayList(),
+      new polyglot.util.Position("TO BE DONE")
+    ));
+  }
+
+  protected MethodSig AdviceDecl.methodSig() {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
+      list.add(getAdviceSpec().getParameter(i).formal());
+    return new MethodSig(
+      sootTypeModifiers(),
+	    AbcFactory.AbcClass(hostType().getSootClassDecl()),
+	    AbcFactory.AbcType(soot.VoidType.v()),
+      name(),
+	    list,
+	    new ArrayList(),
+	    new polyglot.util.Position("TO BE DONE")
+    );
+  }
+
+  /*abstract*/ public abc.weaving.aspectinfo.AdviceSpec AdviceSpec.adviceSpec() {
+    throw new Error("adviceSpec() not implemented for " + getClass().getName());
+  }
+
+  public abc.weaving.aspectinfo.AdviceSpec BeforeSpec.adviceSpec() {
+    return new BeforeAdvice(new polyglot.util.Position("TO BE DONE"));
+  }
+  public abc.weaving.aspectinfo.AdviceSpec AfterSpec.adviceSpec() {
+    return new AfterAdvice(new polyglot.util.Position("TO BE DONE"));
+  }
+
+  /*abstract*/ public Pointcut PointcutExpr.pointcut() {
+    throw new Error("pointcut() not implemented for " + getClass().getName());
+  }
+
+  public Pointcut CallPointcutExpr.pointcut() {
+    return new MethodCall(
+      new SimpleMethodPattern("foo"),
+      new polyglot.util.Position("TO BE DONE")
+    );
+  }
+
+  syn int AdviceDecl.sootTypeModifiers() {
+    int result = 0;
+    result |= soot.Modifier.PUBLIC;
+    if(getModifiers().isSynchronized()) result |= soot.Modifier.SYNCHRONIZED;
+    if(getModifiers().isStrictfp()) result |= soot.Modifier.STRICTFP;
+    return result;
+  }
+
+  public void AdviceDecl.jimplify2() {
+    JimpleBody body = Jimple.v().newBody(sootMethod());
+    sootMethod().setActiveBody(body);
+    Body b = new Body(body);
+    b.addThis(hostType());
+    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
+      getAdviceSpec().getParameter(i).jimplify2(b);
+    getBlock().jimplify2(b);
+    b.add(Jimple.v().newReturnVoidStmt());
+  }
+  eq AdviceSpec.getParameter(int index).localNum() = index;
+
+  class SimpleMethodPattern implements abc.weaving.aspectinfo.MethodPattern {
+    private String name;
+    public SimpleMethodPattern(String name) {
+      this.name = name;
+    }
+    public boolean matchesCall(SootMethodRef smr) {
+      return smr.name().equals(name);
+    }
+    public boolean matchesExecution(SootMethod sm) {
+      return sm.getName().equals(name);
+    }
+    public boolean equivalent(abc.weaving.aspectinfo.MethodPattern p) {
+      if(p instanceof SimpleMethodPattern) {
+        SimpleMethodPattern smp = (SimpleMethodPattern)p;
+        return smp.name.equals(name);
+      }
+      else
+        return false;
+    }
+    public abc.aspectj.ast.MethodPattern getPattern() {
+      return null;
+    }
+  }
+}
