@@ -112,8 +112,7 @@
 </target>
 	
 <target name="jar" depends="build">
-  <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" excludes="test/** sun/** executiontests/**">
-  </jar>
+  <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
 </target>
 
 </project>

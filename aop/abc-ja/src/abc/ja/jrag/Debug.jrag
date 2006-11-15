@@ -1,7 +1,7 @@
 aspect ParserTraceAspect {
   class ParserTrace {
     /* Flag for personalized parser trace. */
-    public static boolean parserTraceOn = true;
+    public static boolean parserTraceOn = false;
 
     public static void parserTrace (String s)
       { if (parserTraceOn) 
