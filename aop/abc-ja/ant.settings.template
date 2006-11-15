@@ -1,0 +1,5 @@
+## Location of the root abc checkout
+abc.loc=../abc
+
+frontend=../Java1.4Frontend
+backend=../jastaddJimpleBackend
