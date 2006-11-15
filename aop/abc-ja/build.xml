@@ -115,7 +115,7 @@
   <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
 </target>
 
-<target name="test">
+<target name="test" depends="build">
   <java classname="abc.testing.Main" fork="true"
         dir="${abc.loc}/ajc-harness/tests">
     <arg value="+abc"/>
@@ -123,6 +123,28 @@
     <arg value="abc.ja"/>
     <arg value="-abc"/>
     <arg value="abcTests.xml"/>
+    <classpath>
+      <pathelement location="classes"/>
+      <pathelement location="${abc.loc}/classes"/>
+      <pathelement location="${abc.loc}/runtime-classes"/>
+      <pathelement location="${abc.loc}/testing-classes"/>
+      <pathelement location="${polyglot.loc}"/>
+      <pathelement location="${polyglot.cupclasses.loc}"/>
+      <pathelement location="${soot.loc}"/>
+      <pathelement location="${jasmin.loc}"/>
+      <pathelement location="${xact.loc}"/>
+      <pathelement
+          location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+    </classpath>
+  </java>
+</target>
+
+<target name="run" depends="build">
+<fail message="Compiler arguments is given in variable 'args'" unless="args"/>
+  <java classname="abc.main.Main" fork="true">
+    <arg value="-ext"/>
+    <arg value="abc.ja"/>
+    <arg line="${args}"/>
     <classpath>
       <pathelement location="classes"/>
       <pathelement location="${abc.loc}/classes"/>
