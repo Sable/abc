@@ -89,32 +89,37 @@ public class CompileSequence {
 			throw new InternalCompilerError("unhandled exception during compilation", e);
 		}
         
-        if(!abcExt.getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
-    		weave();
-
-    		abortIfErrors();
-
-            if (!abc.main.Debug.v().dontCheckExceptions) {
-                checkExceptions();
-                AbcTimer.mark("Exceptions check");
-                Debug.phaseDebug("Exceptions check");
-            }
-
-            inlineAdvice();
-            
-            abortIfErrors();
-
-            optimize();
-            
-            // UnusedMethodsRemover.removeUnusedMethods(); // run it again after opts.
-
-            AbcTimer.mark("Soot Packs");
-            Debug.phaseDebug("Soot Packs");
-
-            output();
-            AbcTimer.mark("Soot Writing Output");
-            Debug.phaseDebug("Soot Writing Output");
-        }
+		try {
+	        if(!abcExt.getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
+	    		weave();
+	
+	    		abortIfErrors();
+	
+	            if (!abc.main.Debug.v().dontCheckExceptions) {
+	                checkExceptions();
+	                AbcTimer.mark("Exceptions check");
+	                Debug.phaseDebug("Exceptions check");
+	            }
+	
+	            inlineAdvice();
+	            
+	            abortIfErrors();
+	
+	            optimize();
+	            
+	            // UnusedMethodsRemover.removeUnusedMethods(); // run it again after opts.
+	
+	            AbcTimer.mark("Soot Packs");
+	            Debug.phaseDebug("Soot Packs");
+	
+	            output();
+	            AbcTimer.mark("Soot Writing Output");
+	            Debug.phaseDebug("Soot Writing Output");
+	        }
+		} catch(Throwable e) {
+	    	abortIfErrors();
+	    	throw new InternalCompilerError("unhandled exception during weaving/optimisation", e); 
+	    }
 	}
 	
     /** reset all static information so main can be called again */

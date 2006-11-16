@@ -140,10 +140,11 @@ public class AbcExtension
     }
 
     public void reportError(ErrorInfo ei) {
-    	compileSequence.error_queue.enqueue(ei);
+		compileSequence.error_queue.enqueue(ei);
     }
     
     public void reportError(int level, String s, Position pos) {
+    	
     	compileSequence.error_queue.enqueue(level, s, pos);
     }
     
