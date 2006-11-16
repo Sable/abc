@@ -1,6 +1,14 @@
-AspectDecl : ClassDecl ::= Modifiers <ID:String> BodyDecl* [SuperClassAccess:Access] Implements:Access*;
+// ----------------------- Aspects ------------------------
 
-IntertypeMethodDecl : MethodDecl ::= HostType:Access;
+AspectDecl : ClassDecl ::= Modifiers
+                           <ID:String>
+                           BodyDecl*
+                           [SuperClassAccess:Access]
+                           Implements:Access*
+                           PerClause;
+
+
+// ----------------------- Advice -------------------------
 
 AdviceDecl : BodyDecl ::= Modifiers AdviceSpec PointcutExpr Block;
 
@@ -11,8 +19,39 @@ AfterReturningSpec : AfterSpec ::= [ReturnParameter:ParameterDeclaration];
 AfterThrowingSpec : AfterSpec ::= [ExceptionParameter:ParameterDeclaration];
 AroundSpec : AdviceSpec ::= TypeAccess:Access;
 
+abstract PerClause;
+PerTarget : PerClause ::= PointcutExpr;
+PerThis : PerClause ::= PointcutExpr;
+PerCflow : PerClause ::= PointcutExpr;
+PerCflowBelow : PerClause ::= PointcutExpr;
+IsSingleton : PerClause;
+
+Proceed : Access ::= Arg:Expr*;
+
+// ----------------------- Declare (...) -------------------
+
+DeclareParentsExtends : BodyDecl ::= Pattern TypeAccess:Access*;
+DeclareParentsImplements : BodyDecl ::= Pattern TypeAccess:Access*;
+DeclareWarning : BodyDecl ::= PointcutExpr <Message:String>;
+DeclareError : BodyDecl ::= PointcutExpr <Message:String>;
+DeclareSoft : BodyDecl ::= Access PointcutExpr;
+DeclarePrecedence : BodyDecl ::= Pattern*;
+
+
+// ----------------------- Intertype declarations ----------
+
+IntertypeMethodDecl : MethodDecl ::= HostType:Access;
+IntertypeConstructorDecl : ConstructorDecl ::= HostType:Access;
+IntertypeFieldDecl : FieldDeclaration ::= HostType:Access;
+
 
 // ----------------------- Pointcuts -----------------------
+
+PointcutDecl : BodyDecl ::= Modifiers
+                            <ID:String>
+                            Parameter:ParameterDeclaration*
+                            [PointcutExpr];
+
 abstract PointcutExpr;
 abstract BinaryPointcutExpr : PointcutExpr ::= Lhs:PointcutExpr Rhs:PointcutExpr;
 OrPointcutExpr : BinaryPointcutExpr;

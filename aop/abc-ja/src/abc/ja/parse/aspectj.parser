@@ -11,25 +11,9 @@ TypeDecl type_declaration =   // class | interface | aspect
 /* add the possibility of a call to proceed as a method_invocation */
 Access method_invocation =
      PROCEED.a LPAREN argument_list_opt.b RPAREN.d
-       {: return null;
+       {: return new Proceed(b);
        :}  
   ;
-
-/* add the possiblity of a simple_name for this_ aspectj vars */
-/*
-Access simple_name = 
-     THISJOINPOINT.a
-       {: return null; 
-       :}
-  |  THISJOINPOINTSTATICPART.a
-       {: return null; 
-       :}
-  |  THISENCLOSINGJOINPOINTSTATICPART.a
-       {: return null;
-       :}
-  ;
-  */
-  
 
 BodyDecl class_member_declaration =
     aspect_declaration.a
@@ -73,45 +57,45 @@ AspectDecl aspect_declaration =
                          aspect_body.g
        {: ParserTrace.parserTrace( "aspect declaration: " + 
                                                b); 
-	  return new AspectDecl(a, b, g, new Opt(), new List()); 
+	  return new AspectDecl(a, b, g, new Opt(), new List(), f); 
        :}
   ;
 
-Opt perclause_opt =
+PerClause perclause_opt =
      perclause.a
        {: ParserTrace.parserTrace("non-empty perclause in perclause_opt");
-          return null;
+          return a;
        :}
   | /* epsilon */
        {: ParserTrace.parserTrace("empty perclause in perclause_opt");
-          return new Opt();
+          return new IsSingleton(); // default perclause
        :}
   ;
 
-ASTNode perclause = 
+PerClause perclause = 
      PERTARGET.per LPAREN pointcut_expr.pc RPAREN.d
        {: ParserTrace.parserTrace("pertarget");
-          return null;
+          return new PerTarget(pc);
        :}
   |  PERTHIS.per LPAREN pointcut_expr.pc RPAREN.d
        {: ParserTrace.parserTrace("perthis");
-          return null;
+          return new PerThis(pc);
        :}
   |  PERCFLOW.per LPAREN pointcut_expr.pc RPAREN.d
        {: ParserTrace.parserTrace("percflow");
-          return null;
+          return new PerCflow(pc);
        :}
   |  PERCFLOWBELOW.per LPAREN pointcut_expr.pc RPAREN.d
        {: ParserTrace.parserTrace("percflowbelow");
-          return null;
+          return new PerCflowBelow(pc);
        :}
   |  ISSINGLETON.per
-       {: ParserTrace.parserTrace("isingleton");
-          return null;
+       {: ParserTrace.parserTrace("issingleton");
+          return new IsSingleton();
        :}
   |  ISSINGLETON.per LPAREN RPAREN.d // just to pass the ajc tests
-       {: ParserTrace.parserTrace("isingleton");
-          return null;
+       {: ParserTrace.parserTrace("issingleton");
+          return new IsSingleton();
        :}
   ;
 
@@ -175,27 +159,27 @@ BodyDecl aspect_body_declaration =
 BodyDecl declare_declaration =
      DECLARE.d PC_PARENTS COLON classname_pattern_expr.a EXTENDS interface_type_list.b SEMICOLON.e
        {: ParserTrace.parserTrace("Declare class extension");
-          return null;
+          return new DeclareParentsExtends(a,b);
        :}
   |  DECLARE.d PC_PARENTS COLON classname_pattern_expr.a IMPLEMENTS interface_type_list.b SEMICOLON.e
        {: ParserTrace.parserTrace("Declare interface extension");
-          return null;
+          return new DeclareParentsImplements(a,b);
        :}
   |  DECLARE.d PC_WARNING COLON pointcut_expr.a COLON STRING_LITERAL.b SEMICOLON.e 
        {: ParserTrace.parserTrace("Declare warning:" + b);
-          return null;
+          return new DeclareWarning(a,b);
        :}
   |  DECLARE.d PC_ERROR COLON pointcut_expr.a COLON STRING_LITERAL.b SEMICOLON.e 
        {: ParserTrace.parserTrace("Declare error:" + b);
-          return null;
+          return new DeclareError(a,b);
        :}
   |  DECLARE.d PC_SOFT COLON type.a COLON pointcut_expr.b SEMICOLON.e
        {: ParserTrace.parserTrace("Declare soft");
-          return null;
+          return new DeclareSoft(a,b);
        :}
   |  DECLARE.d PC_PRECEDENCE COLON classname_pattern_expr_list.a SEMICOLON.e
        {: ParserTrace.parserTrace("Declare precedence");
-          return null;
+          return new DeclarePrecedence(a);
        :}
   ;
 
@@ -204,14 +188,14 @@ BodyDecl pointcut_declaration =
              LPAREN formal_parameter_list_opt.c RPAREN SEMICOLON.e
      /* must check that modifiers include ABSTRACT */
      {: ParserTrace.parserTrace("abstract pointcut declaration");
-        return null;
+        return new PointcutDecl(a, b, c, new Opt());
      :}
   |  modifiers_opt.a POINTCUT IDENTIFIER.b 
              LPAREN formal_parameter_list_opt.c RPAREN 
              COLON pointcut_expr.d SEMICOLON.e 
      /* must check that modifiers DO NOT include ABSTRACT */
      {: ParserTrace.parserTrace("non-abstract pointcut declaration");
-        return null;
+        return new PointcutDecl(a, b, c, new Opt(d));
      :}
   ;
 
@@ -235,37 +219,37 @@ AdviceSpec advice_spec =
        :}
   |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING.y
        {: ParserTrace.parserTrace("after(formals)returning");
-          return null;
+          return new AfterReturningSpec(a, new Opt());
        :}
   |  AFTER.x LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING LPAREN RPAREN.y // just to pass ajc tests
        {: ParserTrace.parserTrace("after(formals)returning()");
-          return null;
+          return new AfterReturningSpec(a, new Opt());
        :}
   |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING 
                                                LPAREN formal_parameter.b RPAREN.y
        {: ParserTrace.parserTrace("after(formals) returning(p)");
-          return null;
+          return new AfterReturningSpec(a, new Opt(b));
        :}
   |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING.y
        {: ParserTrace.parserTrace("after(formals)throwing");
-          return null;
+          return new AfterThrowingSpec(a, new Opt());
        :}
   |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING LPAREN RPAREN.y // ajc compatibility again
        {: ParserTrace.parserTrace("after(formals)throwing");
-          return null;
+          return new AfterThrowingSpec(a, new Opt());
        :}
   |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING
                                                LPAREN formal_parameter.b RPAREN.y
        {: ParserTrace.parserTrace("after(formals)throwing(p)");
-          return null;
+          return new AfterThrowingSpec(a, new Opt(b));
        :}
   |  type.a AROUND LPAREN formal_parameter_list_opt.b RPAREN.y
        {: ParserTrace.parserTrace("non-void-type around (formals)");
-          return null;
+          return new AroundSpec(b, a);
        :}
   |  VOID.a AROUND LPAREN formal_parameter_list_opt.b RPAREN.y
        {: ParserTrace.parserTrace("VOID around (formals)");
-          return null;
+          return new AroundSpec(b, new PrimitiveTypeAccess("void"));
        :}
   ;
 
@@ -288,16 +272,23 @@ BodyDecl intertype_member_declaration =
          LPAREN formal_parameter_list_opt.c RPAREN throws_opt.d constructor_body.e
      /* must check that body is not null */
        {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
-          return null;
+          IntertypeConstructorDecl icd = new IntertypeConstructorDecl();
+          icd.setModifiers(a);
+          icd.setHostType(b);
+          icd.setParameterList(c);
+          icd.setExceptionList(d);
+          icd.setConstructorInvocation(e.getConstructorInvocation());
+          icd.setBlock(e.getBlock());
+          return icd;
        :}
   | modifiers_opt.a type.b name.c DOT IDENTIFIER.d SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD without initializer");
-          return null;
+          return new IntertypeFieldDecl(a, b, d, new Opt(), c);
        :}
   | modifiers_opt.a type.b name.c DOT IDENTIFIER.d  
         EQ variable_initializer.e SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD with initializer");
-          return null;
+          return new IntertypeFieldDecl(a, b, d, new Opt(e), c);
        :}
   ;
 
@@ -448,106 +439,8 @@ SimpleNamePattern simple_name_pattern =
         {: ParserTrace.parserTrace("name_pattern is identifer: " + a);
            return new SimpleNamePattern(a);
         :}
-/*   | aspectj_reserved_identifier.a
-        {: ParserTrace.parserTrace("name_pattern is aspectj_reserved_identifier");
-           return null;
-        :}*/
    ;
 
-/*NamePattern aspectj_reserved_identifier =
-     ASPECT.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PRIVILEGED.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_ADVICEEXECUTION.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_ARGS.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_CALL.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_CFLOW.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_CFLOWBELOW.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_ERROR.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_EXECUTION.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_GET.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_HANDLER.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_INITIALIZATION.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_PARENTS.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_PRECEDENCE.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_PREINITIALIZATION.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_RETURNING.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_SET.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_SOFT.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_STATICINITIALIZATION.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_TARGET.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_THROWING.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_WARNING.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  |  PC_WITHINCODE.a
-        {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
-           return null;
-        :}
-  ;*/
 
 NamePattern classtype_dot_id =
      simple_name_pattern.b

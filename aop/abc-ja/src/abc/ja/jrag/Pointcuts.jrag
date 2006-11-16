@@ -1,0 +1,44 @@
+aspect Pointcuts
+{
+    // ----------------------------------------------------
+    //   Pointcut declarations
+    // ----------------------------------------------------
+    //
+    // To be a BodyDecl, PointcutDecl must answer some
+    // questions about its children.
+
+    eq PointcutDecl.getParameter(int i).isMethodParameter() = false;
+    eq PointcutDecl.getParameter(int i).isConstructorParameter() = false;
+    eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
+
+    // ----------------------------------------------------
+    //   Pointcut variable binding
+    // ----------------------------------------------------
+    // 
+    // For a pointcut, p, p.binds(var) is:
+    //   2 - if |p| may bind |var| more than once
+    //   1 - if |p| must bind |var| exactly once
+    //   0 - otherwise
+
+    syn int PointcutExpr.binds(String var) = 0;
+
+    // binary pointcuts
+    eq AndPointcutExpr.binds(String var) {
+        int combination = getLhs().binds(var) + getRhs().binds(var);
+        return (combination > 2) ? 2 : combination;
+    }
+    eq OrPointcutExpr.binds(String var) {
+        int combination = getLhs().binds(var) * getRhs().binds(var);
+        return (combination > 2) ? 2 : combination;
+    }
+        
+    // cflow pointcuts
+    eq CflowPointcutExpr.binds(String var) = getPointcut().binds(var);
+    eq CflowBelowPointcutExpr.binds(String var) = getPointcut().binds(var);
+
+    // FIXME!!!
+    eq ThisPointcutExpr.binds(String var) = 1;
+    eq TargetPointcutExpr.binds(String var) = 1;
+    eq ArgsPointcutExpr.binds(String var) = 1;
+    eq NamedPointcutExpr.binds(String var) = 1;
+}
