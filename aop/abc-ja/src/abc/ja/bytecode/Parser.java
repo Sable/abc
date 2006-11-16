@@ -4,7 +4,12 @@ import abc.ja.jrag.*;
 import java.io.*;
 
 
-public class Parser {
+public class Parser implements BytecodeReader {
+  public CompilationUnit read(InputStream is, String fullName, Program p) throws FileNotFoundException, IOException {
+    return new Parser(is, fullName).parse(null, null, p);
+  }
+
+
   public static final boolean VERBOSE = false;
 
 	private DataInputStream is;
@@ -21,6 +26,10 @@ public class Parser {
     //this.is = new DataInputStream(new DummyInputStream(buffer, size));
     this.is = new DataInputStream(new DummyInputStream(in));
     this.name = name;
+  }
+
+  public Parser() {
+    this("");
   }
   
 	public Parser(String name) {

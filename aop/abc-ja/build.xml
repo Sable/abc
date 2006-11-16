@@ -59,7 +59,6 @@
 		<fileset dir="${frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
-			<exclude name="ClassPath.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
 		<fileset dir="${backend}">

@@ -31,6 +31,7 @@ import beaver.Scanner;
 import abc.ja.parse.JavaParser.Terminals;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction;
+import abc.ja.jrag.LexicalError;
 
 import polyglot.lex.*;
 import polyglot.util.Position;
@@ -41,15 +42,18 @@ import java.util.Stack;
 import polyglot.ext.jl.parse.*;
 import java.math.BigInteger;
 
+import java.io.*;
+
 %%
 
 %public
 %class JavaScanner
 %extends Scanner
 %implements AbcLexer
+%implements abc.ja.jrag.PackageExtractor
 %type Symbol
 %function nextToken
-%yylexthrow Scanner.Exception
+%yylexthrow LexicalError
 
 %unicode
 %pack
@@ -66,6 +70,32 @@ import java.math.BigInteger;
   private Symbol sym(int id, String value) {
     lastTokenWasDot = (str().equals("."));
     return new Symbol((short)id, yyline + 1, yycolumn + 1, len(), value);
+  }
+
+
+  public JavaScanner() {
+  }
+
+  public String extractPackageName(String fileName) {
+    StringBuffer packageName = new StringBuffer();
+    try {
+      Reader reader = new FileReader(fileName);
+      JavaScanner scanner = new JavaScanner(new Unicode(reader));
+      Symbol sym = scanner.nextToken();
+      if(sym.getId() == Terminals.PACKAGE) {
+        while(true) {
+          sym = scanner.nextToken();
+          if(sym.getId() == Terminals.SEMICOLON)
+            break;
+          packageName.append(sym.value);
+        }
+      }
+      reader.close();
+      if(packageName.length() != 0)
+        packageName.append(".");
+    } catch (java.lang.Exception e) {
+    }
+    return packageName.toString();
   }
 
   private String str() { return yytext(); }

@@ -17,19 +17,67 @@ import java.util.List;
 
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
+import polyglot.util.ErrorQueue;
+import polyglot.util.StdErrorQueue;
+import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
 import soot.Scene;
 import soot.SootMethod;
 import abc.aspectj.visit.PatternMatcher;
 import abc.ja.jrag.*;
-import abc.ja.parse.JavaParser;
+
+import java.io.*;
 
 public class CompileSequence extends abc.main.CompileSequence {
 	public CompileSequence(AbcExtension ext) {
 		super(ext);
 	}
 
+  private void addError(String s) {
+    Position p = new Position("FileName", 10);
+    try {
+    int first = s.indexOf(':');
+    int second = s.indexOf('\n');
+    if(first != -1 && second != -1) {
+      String fileName = s.substring(0, first);
+      String sub = s.substring(first+1, second);
+      String splitString = ",";
+      if(sub.indexOf(':') != -1)
+        splitString = ":";
+      String pos[] = sub.split(splitString);
+      int line = 0;
+      try {
+        line = Integer.parseInt(pos[0].trim());
+      } catch (Exception e) {
+      }
+      int column = 0;
+      try {
+        column = Integer.parseInt(pos[1].trim());
+      } catch (Exception e) {
+      }
+      if(column != 0)
+        p = new Position(fileName, line, column);
+      else
+        p = new Position(fileName, line);
+      s = s.substring(second+1, s.length());
+    }
+    } catch (Exception e) {
+    }
+    error_queue().enqueue(ErrorInfo.SEMANTIC_ERROR, s, p);
+  }
+  private ErrorQueue error_queue() {
+    if(error_queue == null)
+      error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
+    return error_queue;
+  }
+
+  // throw CompilerFailedException if there are errors
+  // place errors in error_queue
 	public void compile() throws CompilerFailedException, IllegalArgumentException {
+     error_queue = abcExt.getErrorQueue();
+    if(error_queue == null)
+      error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
+
 		try {
 			System.out.println("Hello JastAdd");
 			String[] args = new String[aspect_sources.size()];
@@ -39,16 +87,28 @@ public class CompileSequence extends abc.main.CompileSequence {
 				args[index] = s;
 			}
 			Program program = new Program();
+
+      program.initBytecodeReader(new abc.ja.bytecode.Parser());
+      program.initJavaParser(
+        new JavaParser() {
+          public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
+            return new abc.ja.parse.JavaParser().parse(is, fileName, error_queue);
+          }
+        }
+      );
+      // extract package name from a source file without parsing the entire file
+      program.initPackageExtractor(new abc.ja.parse.JavaScanner());
+
 			program.initOptions();    
 			program.addOptions(args);
 			Collection files = program.files();
 
-			for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-				String name = (String)iter.next();
-				program.addSourceFile(name);
-			}
-
 			try {
+			  for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+			  	String name = (String)iter.next();
+			  	program.addSourceFile(name);
+			  }
+
 				for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 					CompilationUnit unit = (CompilationUnit)iter.next();
 					if(unit.fromSource()) {
@@ -61,25 +121,28 @@ public class CompileSequence extends abc.main.CompileSequence {
 						if(Program.verbose())
 							System.out.println("Error checking " + unit.relativeName() + " done in " + time + " ms");
 						if(!errors.isEmpty()) {
-							System.out.println("Errors:");
+							//System.out.println("Errors:");
 							for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
 								String s = (String)iter2.next();
-								System.out.println(s);
+                addError(s);
+								//System.out.println(s);
 							}
-							return;
+              throw new CompilerFailedException("There were errors.");
+							//return;
 						}
 						else {
 							unit.java2Transformation();
 						}
 					}
 				}
-			} catch (JavaParser.SourceError e) {
-				System.err.println(e.getMessage());
-				return;
-			} catch (Exception e) {
+			} catch (ParseError e) {
+				//System.err.println(e.getMessage());
+        addError(e.getMessage());
+        throw new CompilerFailedException("There were errors.");
+			} /*catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
-			}
+			}*/
 			program.jimplify1();
 			program.jimplify2();
 
