@@ -333,11 +333,11 @@ perclause ::=
           RESULT = parser.nf.PerCflowBelow(parser.pos(per,d),pc);
        :}
   |  ISSINGLETON:per
-       {: Grm.parserTrace("isingleton");
+       {: Grm.parserTrace("issingleton");
           RESULT = parser.nf.IsSingleton(parser.pos(per));
        :}
   |  ISSINGLETON:per LPAREN RPAREN:d // just to pass the ajc tests
-       {: Grm.parserTrace("isingleton");
+       {: Grm.parserTrace("issingleton");
           RESULT = parser.nf.IsSingleton(parser.pos(per,d));
        :}
   ;
