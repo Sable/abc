@@ -4684,6 +4684,172 @@
 			<ajcmessage line="0" kind="error"></ajcmessage>
         </compile>
     </ajc-test>
+<ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors" abccomment="abc stops after 100 errors, ajc after 101. Nothing               interesting in this test case. PA">
+        <compile files="Joinpoints101.jar,DecErrors.aj">
+         
+          <ajcmessage line="10" kind="error"></ajcmessage><ajcmessage line="11" kind="error"></ajcmessage>
+          <ajcmessage line="12" kind="error"></ajcmessage><ajcmessage line="13" kind="error"></ajcmessage>
+          <ajcmessage line="14" kind="error"></ajcmessage>
+
+          <ajcmessage line="16" kind="error"></ajcmessage><ajcmessage line="17" kind="error"></ajcmessage>
+          <ajcmessage line="18" kind="error"></ajcmessage><ajcmessage line="19" kind="error"></ajcmessage>
+          <ajcmessage line="20" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="22" kind="error"></ajcmessage><ajcmessage line="23" kind="error"></ajcmessage>
+          <ajcmessage line="24" kind="error"></ajcmessage><ajcmessage line="25" kind="error"></ajcmessage>
+          <ajcmessage line="26" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="28" kind="error"></ajcmessage><ajcmessage line="29" kind="error"></ajcmessage>
+          <ajcmessage line="30" kind="error"></ajcmessage><ajcmessage line="31" kind="error"></ajcmessage>
+          <ajcmessage line="32" kind="error"></ajcmessage>
+  
+          <ajcmessage line="34" kind="error"></ajcmessage><ajcmessage line="35" kind="error"></ajcmessage>
+          <ajcmessage line="36" kind="error"></ajcmessage><ajcmessage line="37" kind="error"></ajcmessage>
+          <ajcmessage line="38" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="40" kind="error"></ajcmessage><ajcmessage line="41" kind="error"></ajcmessage>
+          <ajcmessage line="42" kind="error"></ajcmessage><ajcmessage line="43" kind="error"></ajcmessage>
+          <ajcmessage line="44" kind="error"></ajcmessage>
+          
+          <ajcmessage line="46" kind="error"></ajcmessage><ajcmessage line="47" kind="error"></ajcmessage>
+          <ajcmessage line="48" kind="error"></ajcmessage><ajcmessage line="49" kind="error"></ajcmessage>
+          <ajcmessage line="50" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="52" kind="error"></ajcmessage><ajcmessage line="53" kind="error"></ajcmessage>
+          <ajcmessage line="54" kind="error"></ajcmessage><ajcmessage line="55" kind="error"></ajcmessage>
+          <ajcmessage line="56" kind="error"></ajcmessage>
+  
+          <ajcmessage line="58" kind="error"></ajcmessage><ajcmessage line="59" kind="error"></ajcmessage>
+          <ajcmessage line="60" kind="error"></ajcmessage><ajcmessage line="61" kind="error"></ajcmessage>
+          <ajcmessage line="62" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="64" kind="error"></ajcmessage><ajcmessage line="65" kind="error"></ajcmessage>
+          <ajcmessage line="66" kind="error"></ajcmessage><ajcmessage line="67" kind="error"></ajcmessage>
+          <ajcmessage line="68" kind="error"></ajcmessage>
+          
+          <ajcmessage line="70" kind="error"></ajcmessage><ajcmessage line="71" kind="error"></ajcmessage>
+          <ajcmessage line="72" kind="error"></ajcmessage><ajcmessage line="73" kind="error"></ajcmessage>
+          <ajcmessage line="74" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="76" kind="error"></ajcmessage><ajcmessage line="77" kind="error"></ajcmessage>
+          <ajcmessage line="78" kind="error"></ajcmessage><ajcmessage line="79" kind="error"></ajcmessage>
+          <ajcmessage line="80" kind="error"></ajcmessage>
+  
+          <ajcmessage line="82" kind="error"></ajcmessage><ajcmessage line="83" kind="error"></ajcmessage>
+          <ajcmessage line="84" kind="error"></ajcmessage><ajcmessage line="85" kind="error"></ajcmessage>
+          <ajcmessage line="86" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="88" kind="error"></ajcmessage><ajcmessage line="89" kind="error"></ajcmessage>
+          <ajcmessage line="90" kind="error"></ajcmessage><ajcmessage line="91" kind="error"></ajcmessage>
+          <ajcmessage line="92" kind="error"></ajcmessage>
+          
+          <ajcmessage line="94" kind="error"></ajcmessage><ajcmessage line="95" kind="error"></ajcmessage>
+          <ajcmessage line="96" kind="error"></ajcmessage><ajcmessage line="97" kind="error"></ajcmessage>
+          <ajcmessage line="98" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="100" kind="error"></ajcmessage><ajcmessage line="101" kind="error"></ajcmessage>
+          <ajcmessage line="102" kind="error"></ajcmessage><ajcmessage line="103" kind="error"></ajcmessage>
+          <ajcmessage line="104" kind="error"></ajcmessage>
+  
+          <ajcmessage line="106" kind="error"></ajcmessage><ajcmessage line="107" kind="error"></ajcmessage>
+          <ajcmessage line="108" kind="error"></ajcmessage><ajcmessage line="109" kind="error"></ajcmessage>
+          <ajcmessage line="110" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="112" kind="error"></ajcmessage><ajcmessage line="113" kind="error"></ajcmessage>
+          <ajcmessage line="114" kind="error"></ajcmessage><ajcmessage line="115" kind="error"></ajcmessage>
+          <ajcmessage line="116" kind="error"></ajcmessage>
+          
+          <ajcmessage line="118" kind="error"></ajcmessage><ajcmessage line="119" kind="error"></ajcmessage>
+          <ajcmessage line="120" kind="error"></ajcmessage><ajcmessage line="121" kind="error"></ajcmessage>
+          <ajcmessage line="122" kind="error"></ajcmessage>
+  
+          <ajcmessage line="124" kind="error"></ajcmessage><ajcmessage line="125" kind="error"></ajcmessage>
+          <ajcmessage line="126" kind="error"></ajcmessage><ajcmessage line="127" kind="error"></ajcmessage>
+          <ajcmessage line="128" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="130" kind="error"></ajcmessage>
+          
+          <message line="10" kind="error"></message><message line="11" kind="error"></message>
+          <message line="12" kind="error"></message><message line="13" kind="error"></message>
+          <message line="14" kind="error"></message>
+
+          <message line="16" kind="error"></message><message line="17" kind="error"></message>
+          <message line="18" kind="error"></message><message line="19" kind="error"></message>
+          <message line="20" kind="error"></message>
+ 
+          <message line="22" kind="error"></message><message line="23" kind="error"></message>
+          <message line="24" kind="error"></message><message line="25" kind="error"></message>
+          <message line="26" kind="error"></message>
+ 
+          <message line="28" kind="error"></message><message line="29" kind="error"></message>
+          <message line="30" kind="error"></message><message line="31" kind="error"></message>
+          <message line="32" kind="error"></message>
+  
+          <message line="34" kind="error"></message><message line="35" kind="error"></message>
+          <message line="36" kind="error"></message><message line="37" kind="error"></message>
+          <message line="38" kind="error"></message>
+ 
+          <message line="40" kind="error"></message><message line="41" kind="error"></message>
+          <message line="42" kind="error"></message><message line="43" kind="error"></message>
+          <message line="44" kind="error"></message>
+          
+          <message line="46" kind="error"></message><message line="47" kind="error"></message>
+          <message line="48" kind="error"></message><message line="49" kind="error"></message>
+          <message line="50" kind="error"></message>
+ 
+          <message line="52" kind="error"></message><message line="53" kind="error"></message>
+          <message line="54" kind="error"></message><message line="55" kind="error"></message>
+          <message line="56" kind="error"></message>
+  
+          <message line="58" kind="error"></message><message line="59" kind="error"></message>
+          <message line="60" kind="error"></message><message line="61" kind="error"></message>
+          <message line="62" kind="error"></message>
+ 
+          <message line="64" kind="error"></message><message line="65" kind="error"></message>
+          <message line="66" kind="error"></message><message line="67" kind="error"></message>
+          <message line="68" kind="error"></message>
+          
+          <message line="70" kind="error"></message><message line="71" kind="error"></message>
+          <message line="72" kind="error"></message><message line="73" kind="error"></message>
+          <message line="74" kind="error"></message>
+ 
+          <message line="76" kind="error"></message><message line="77" kind="error"></message>
+          <message line="78" kind="error"></message><message line="79" kind="error"></message>
+          <message line="80" kind="error"></message>
+  
+          <message line="82" kind="error"></message><message line="83" kind="error"></message>
+          <message line="84" kind="error"></message><message line="85" kind="error"></message>
+          <message line="86" kind="error"></message>
+ 
+          <message line="88" kind="error"></message><message line="89" kind="error"></message>
+          <message line="90" kind="error"></message><message line="91" kind="error"></message>
+          <message line="92" kind="error"></message>
+          
+          <message line="94" kind="error"></message><message line="95" kind="error"></message>
+          <message line="96" kind="error"></message><message line="97" kind="error"></message>
+          <message line="98" kind="error"></message>
+ 
+          <message line="100" kind="error"></message><message line="101" kind="error"></message>
+          <message line="102" kind="error"></message><message line="103" kind="error"></message>
+          <message line="104" kind="error"></message>
+  
+          <message line="106" kind="error"></message><message line="107" kind="error"></message>
+          <message line="108" kind="error"></message><message line="109" kind="error"></message>
+          <message line="110" kind="error"></message>
+ 
+          <message line="112" kind="error"></message><message line="113" kind="error"></message>
+          <message line="114" kind="error"></message><message line="115" kind="error"></message>
+          <message line="116" kind="error"></message>
+          
+          <message line="118" kind="error"></message><message line="119" kind="error"></message>
+          <message line="120" kind="error"></message><message line="121" kind="error"></message>
+          <message line="122" kind="error"></message>
+  
+          <message line="124" kind="error"></message><message line="125" kind="error"></message>
+          <message line="126" kind="error"></message><message line="127" kind="error"></message>
+          <message line="128" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="NPE when binary weaving a ctor ITD" pr="59440" num="964" dir="bugs">
         <compile files="CtorITD.aj">
         	<message line="2" kind="error"></message>

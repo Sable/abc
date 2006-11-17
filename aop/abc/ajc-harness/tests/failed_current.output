@@ -153,29 +153,6 @@ Illegal arguments: Unknown option -deprecation
 FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed.
 
 
-Running test 963: bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult
-Commandline: abc -d bugs/tooManyErrors -injars bugs/tooManyErrors/Joinpoints101.jar -warn-unused-advice:off bugs/tooManyErrors/DecErrors.aj 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:535)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
-Caused by: polyglot.util.ErrorLimitError
-	at polyglot.util.AbstractErrorQueue.enqueue(AbstractErrorQueue.java:41)
-	at abc.main.AbcExtension.reportError(AbcExtension.java:143)
-	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
-	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
-	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:341)
-	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:295)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:215)
-	at abc.main.CompileSequence.weave(CompileSequence.java:467)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:93)
-	at abc.main.Main.run(Main.java:487)
-	... 3 more
-FAIL: Test 963: "bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult" failed.
-
-
 Running test 986: abctests/bugs/Matching int[].clone()
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/IntArray.java 
 Compilation produced an unexpected number of errors: 2, should be 0
@@ -225,7 +202,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:336)
-	at abc.main.CompileSequence.compile(CompileSequence.java:312)
+	at abc.main.CompileSequence.compile(CompileSequence.java:317)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
@@ -235,7 +212,7 @@ Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bind
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NCWeakRefs4.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999983 times, rather than 1000000.
+InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999981 times, rather than 1000000.
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -244,7 +221,7 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.TestCase.runTest(TestCase.java:392)
 	at abc.testing.Main.doCase(Main.java:281)
 	at abc.testing.Main.main(Main.java:115)
-Caused by: java.lang.RuntimeException: Matched 999983 times, rather than 1000000.
+Caused by: java.lang.RuntimeException: Matched 999981 times, rather than 1000000.
 	at NCWeakRefs4.main(NCWeakRefs4.java:22)
 	... 7 more
 FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Strings)" failed.
