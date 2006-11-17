@@ -107,7 +107,7 @@
       <fileset dir="generated" includes="**/*"/>
       <fileset dir="classes"   includes="**/*"/>
     </delete>
-    <delete file="JavaCompiler.jar"/>
+    <delete file="lib/abc-ja.jar"/>
 </target>
 	
 <target name="jar" depends="build">
