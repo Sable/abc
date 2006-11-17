@@ -42,7 +42,7 @@ aspect AdviceCodegen {
       -1 /*jpsp*/,
       -1 /*ejp*/,
       new ArrayList(),
-      new polyglot.util.Position("TO BE DONE")
+      pos()
     ));
   }
 
@@ -57,7 +57,7 @@ aspect AdviceCodegen {
       name(),
 	    list,
 	    new ArrayList(),
-	    new polyglot.util.Position("TO BE DONE")
+      pos()
     );
   }
 
@@ -66,10 +66,10 @@ aspect AdviceCodegen {
   }
 
   public abc.weaving.aspectinfo.AdviceSpec BeforeSpec.adviceSpec() {
-    return new BeforeAdvice(new polyglot.util.Position("TO BE DONE"));
+    return new BeforeAdvice(pos());
   }
   public abc.weaving.aspectinfo.AdviceSpec AfterSpec.adviceSpec() {
-    return new AfterAdvice(new polyglot.util.Position("TO BE DONE"));
+    return new AfterAdvice(pos());
   }
 
   /*abstract*/ public Pointcut PointcutExpr.pointcut() {
@@ -79,7 +79,7 @@ aspect AdviceCodegen {
   public Pointcut CallPointcutExpr.pointcut() {
     return new MethodCall(
       new SimpleMethodPattern("foo"),
-      new polyglot.util.Position("TO BE DONE")
+      pos()
     );
   }
 

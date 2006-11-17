@@ -22,8 +22,7 @@ aspect AspectJCodegen {
 
   public void AspectDecl.jimplify1phase1() {
     super.jimplify1phase1();
-    polyglot.util.Position p = new polyglot.util.Position("TO BE DONE");
-    globalAspectInfo().addAspect(new Aspect(abcClass(), new Singleton(p), p));
+    globalAspectInfo().addAspect(new Aspect(abcClass(), new Singleton(pos()), pos()));
     addAspectOf();
     addHasAspect();
   }
@@ -92,7 +91,7 @@ aspect AspectJCodegen {
     return new Formal(
         AbcFactory.AbcType(type().getSootType()),
         name(),
-        new polyglot.util.Position("TO BE DONE")
+        pos()
     );
   }
 
@@ -119,8 +118,8 @@ aspect AspectJCodegen {
       formals.add(new Formal(
         AbcFactory.AbcType(targetType().getSootType()),
         "this$1",
-        new polyglot.util.Position("TO BE DONE"))
-      );
+        pos()
+      ));
     }
     for(int i = 0; i < getNumParameter(); i++) {
       formals.add(getParameter(i).formal());
@@ -146,8 +145,14 @@ aspect AspectJCodegen {
 	    null);
     Aspect asp = globalAspectInfo().getAspect(hostType().abcClass());
     globalAspectInfo().addIntertypeMethodDecl(new abc.weaving.aspectinfo.IntertypeMethodDecl(
-      target, impl, asp, name(), new polyglot.util.Position("TO BE DONE")
+      target, impl, asp, name(), pos()
     ));
   }
+  
+  // Build a polyglot Position that corresponds to the current position
+  public polyglot.util.Position ASTNode.pos() {
+    return new polyglot.util.Position(sourceFile(), lineNumber());
+  }
+
 
 }
