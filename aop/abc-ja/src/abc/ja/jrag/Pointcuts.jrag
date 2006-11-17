@@ -11,6 +11,30 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isConstructorParameter() = false;
     eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
 
+    // The advice/pointcut formal parameters should be visible
+    // to the pointcut and the parameters themselves.
+
+    eq PointcutDecl.getParameter(int i).lookupVariable(String name) {
+        SimpleSet result = localLookupVariable(name);
+        if (!result.isEmpty())
+            return result;
+        return lookupVariable(name);
+    }
+
+    eq PointcutDecl.getPointcutExpr().lookupVariable(String name) {
+        SimpleSet result = localLookupVariable(name);
+        if (!result.isEmpty())
+            return result;
+        return lookupVariable(name);
+    }
+
+    syn SimpleSet PointcutDecl.localLookupVariable(String name) {
+        for(int i = 0; i < getNumParameter(); i++)
+            if(getParameter(i).name().equals(name))
+                return SimpleSet.emptySet.add(getParameter(i));
+        return SimpleSet.emptySet;
+    }
+
     // ----------------------------------------------------
     //   Pointcut variable binding
     // ----------------------------------------------------

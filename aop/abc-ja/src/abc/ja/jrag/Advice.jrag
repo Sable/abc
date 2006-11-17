@@ -1,12 +1,16 @@
-aspect Advice {
-
-
+aspect Advice
+{
+  eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
+    SimpleSet v = localLookupVariable(name);
+    if(!v.isEmpty()) return v;
+    return lookupVariable(name);
+  }
   eq AdviceDecl.getBlock().lookupVariable(String name) {
     SimpleSet v = localLookupVariable(name);
     if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
-  eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
+  eq AdviceDecl.getPointcutExpr().lookupVariable(String name) {
     SimpleSet v = localLookupVariable(name);
     if(!v.isEmpty()) return v;
     return lookupVariable(name);

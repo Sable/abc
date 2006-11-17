@@ -1,0 +1,43 @@
+aspect PointcutCodegenAdviceCodegen
+{
+    //
+    // The abc backend works on a representation of AspectJ constructs
+    // known as the "AspectInfo". Each pointcut expression in the frontend
+    // is converted to an AspectInfo representation.
+    //
+    /*abstract*/ public Pointcut PointcutExpr.pointcut() {
+        throw new Error("pointcut() not implemented for " +
+                        getClass().getName());
+    }
+
+
+    // boolean pointcut expressions
+
+    public Pointcut AndPointcutExpr.pointcut() {
+        return AndPointcut.construct(getLhs().pointcut(),
+                                     getRhs().pointcut(), pos());
+    }
+
+    public Pointcut OrPointcutExpr.pointcut() {
+    return OrPointcut.construct(getLhs().pointcut(),
+                                getRhs().pointcut(), pos());
+    }
+
+    public Pointcut NegPointcutExpr.pointcut() {
+        return NotPointcut.construct(getPointcutExpr().pointcut(), pos());
+    }
+
+
+    // variable-binding primitive pointcuts
+
+    public Pointcut ArgsPointcutExpr.pointcut() {
+        return new Args(new LinkedList(), pos());
+    }
+
+
+    // non-binding primitive pointcuts
+
+    public Pointcut CallPointcutExpr.pointcut() {
+        return new MethodCall(getPattern(), pos());
+    }
+}

@@ -31,8 +31,8 @@ aspect AdviceCodegen {
         ArgVar argVar = new ArgVar(v, null);
         list.add(argVar);
       }
-      Args args = new Args(list, null);
-      pc = AndPointcut.construct(pc, args, null);
+      Args args = new Args(list, pos());
+      pc = AndPointcut.construct(pc, args, pos());
     }
 
     globalAspectInfo().addAdviceDecl(new abc.weaving.aspectinfo.AdviceDecl(
@@ -72,24 +72,6 @@ aspect AdviceCodegen {
   }
   public abc.weaving.aspectinfo.AdviceSpec AfterSpec.adviceSpec() {
     return new AfterAdvice(pos());
-  }
-
-  /*abstract*/ public Pointcut PointcutExpr.pointcut() {
-    throw new Error("pointcut() not implemented for " + getClass().getName());
-  }
-
-  public Pointcut OrPointcutExpr.pointcut() {
-    return OrPointcut.construct(getLhs().pointcut(), getRhs().pointcut(), pos());
-  }
-  public Pointcut AndPointcutExpr.pointcut() {
-    return AndPointcut.construct(getLhs().pointcut(), getRhs().pointcut(), pos());
-  }
-  public Pointcut NegPointcutExpr.pointcut() {
-    return NotPointcut.construct(getPointcutExpr().pointcut(), pos());
-  }
-
-  public Pointcut CallPointcutExpr.pointcut() {
-    return new MethodCall(getPattern(), pos());
   }
 
   MemberPattern implements abc.weaving.aspectinfo.MethodPattern;
