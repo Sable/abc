@@ -342,15 +342,15 @@ PointcutExpr basic_pointcut_expr =
        :}
    | PC_INITIALIZATION.x LPAREN constructor_pattern.a RPAREN.y
        {: ParserTrace.parserTrace("INITIALIZATION pointcut");
-          return new InitializationPointcutExp(a);
+          return new InitializationPointcutExpr(a);
        :}
    | PC_PREINITIALIZATION.x LPAREN constructor_pattern.a RPAREN.y
        {: ParserTrace.parserTrace("PREINITIALIZATION pointcut");
-          return new PreInitializationPointcutExp(a);
+          return new PreInitializationPointcutExpr(a);
        :}
    | PC_STATICINITIALIZATION.x LPAREN classname_pattern_expr.a RPAREN.y
        {: ParserTrace.parserTrace("STATICINITIALIZATION pointcut");
-          return new StaticInitializationPointcutExp(a);
+          return new StaticInitializationPointcutExpr(a);
        :}
    | PC_GET.x LPAREN field_pattern.a RPAREN.y
        {: ParserTrace.parserTrace("GET pointcut");

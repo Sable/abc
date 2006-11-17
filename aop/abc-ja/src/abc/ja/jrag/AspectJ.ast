@@ -62,9 +62,9 @@ NegPointcutExpr : PointcutExpr ::= PointcutExpr;
 CallPointcutExpr : PointcutExpr ::= Pattern:MemberPattern;
 ExecutionPointcutExpr : PointcutExpr ::= Pattern:MemberPattern;
 
-InitializationPointcutExp : PointcutExpr ::= Pattern:ConstructorPattern;
-PreInitializationPointcutExp : PointcutExpr ::= Pattern:ConstructorPattern;
-StaticInitializationPointcutExp : PointcutExpr ::= Pattern:Pattern;
+InitializationPointcutExpr : PointcutExpr ::= Pattern:ConstructorPattern;
+PreInitializationPointcutExpr : PointcutExpr ::= Pattern:ConstructorPattern;
+StaticInitializationPointcutExpr : PointcutExpr ::= Pattern:Pattern;
 
 GetPointcutExpr : PointcutExpr ::= Pattern:FieldPattern;
 SetPointcutExpr : PointcutExpr ::= Pattern:FieldPattern;

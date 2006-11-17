@@ -1,14 +1,12 @@
-aspect PointcutCodegenAdviceCodegen
+aspect PointcutCodegen
 {
     //
     // The abc backend works on a representation of AspectJ constructs
-    // known as the "AspectInfo". Each pointcut expression in the frontend
-    // is converted to an AspectInfo representation.
+    // known as the "aspectinfo". Each pointcut expression in the frontend
+    // is converted to an aspectinfo representation.
     //
-    /*abstract*/ public Pointcut PointcutExpr.pointcut() {
-        throw new Error("pointcut() not implemented for " +
-                        getClass().getName());
-    }
+
+    abstract public Pointcut PointcutExpr.pointcut();
 
 
     // boolean pointcut expressions
@@ -19,8 +17,8 @@ aspect PointcutCodegenAdviceCodegen
     }
 
     public Pointcut OrPointcutExpr.pointcut() {
-    return OrPointcut.construct(getLhs().pointcut(),
-                                getRhs().pointcut(), pos());
+        return OrPointcut.construct(getLhs().pointcut(),
+                                    getRhs().pointcut(), pos());
     }
 
     public Pointcut NegPointcutExpr.pointcut() {
@@ -28,16 +26,78 @@ aspect PointcutCodegenAdviceCodegen
     }
 
 
-    // variable-binding primitive pointcuts
+    // primitive pointcuts (in alphabetical order)
+
+    public Pointcut AdviceExecutionPointcutExpr.pointcut() {
+        return null;
+    }
 
     public Pointcut ArgsPointcutExpr.pointcut() {
         return new Args(new LinkedList(), pos());
     }
 
-
-    // non-binding primitive pointcuts
-
     public Pointcut CallPointcutExpr.pointcut() {
         return new MethodCall(getPattern(), pos());
+    }
+
+    // FIXME below this point
+    public Pointcut CflowPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut CflowBelowPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut ExecutionPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut GetPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut HandlerPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut IfPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut InitializationPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut NamedPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut PreInitializationPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut SetPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut StaticInitializationPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut TargetPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut ThisPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut WithinPointcutExpr.pointcut() {
+        return null;
+    }
+
+    public Pointcut WithinCodePointcutExpr.pointcut() {
+        return null;
     }
 }
