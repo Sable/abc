@@ -1,0 +1,58 @@
+aspect Patterns
+{
+    // Check if a pattern contains a wildcard
+    syn boolean Pattern.containsWildcard() = false;
+    eq DotDotNamePattern.containsWildcard() = true;
+    eq SimpleNamePattern.containsWildcard() =
+            getPattern().indexOf('*') != -1;
+    eq DotNamePattern.containsWildcard() =
+            getLhs().containsWildcard() || getRhs().containsWildcard();
+
+    // Check if a pattern is to be interpreted as a type
+    inh boolean Pattern.interpretAsType();
+    eq Program.getCompilationUnit().interpretAsType() = true;
+    eq MethodPattern.getMemberNamePattern().interpretAsType() = false;
+    eq DotNamePattern.getLhs().interpretAsType() = true;
+
+    // Build Access nodes for patterns with no wildcards
+    protected Access Pattern.buildAccess()
+    {
+        throw new RuntimeException(
+                "buildAccess() not supported for " + getClass().getName());
+    }
+
+    protected Access SimpleNamePattern.buildAccess()
+    {
+        return new ParseName(getPattern());
+    }
+
+    protected Access ExplicitTypeNamePattern.buildAccess()
+    {
+        return getAccess();
+    }
+
+    protected Access DotNamePattern.buildAccess()
+    {
+        return getLhs().buildAccess().qualifiesAccess(getRhs().buildAccess());
+    }
+
+    // Re-write patterns to ExplictTypeNamePatterns where the
+    // pattern does not contain a wildcard.
+    rewrite DotNamePattern {
+        when (!containsWildcard() && interpretAsType())
+        to ExplicitTypeNamePattern {
+            return new ExplicitTypeNamePattern(buildAccess());
+        }
+    }
+
+    // syntactic classification of explicit names in patterns
+    // (see SyntacticClassification.jrag)
+    eq MethodPattern.getMemberNamePattern().nameType() =
+            NameType.TYPE_NAME;
+    eq ArgsPointcutExpr.getPattern(int i).nameType() =
+            NameType.AMBIGUOUS_NAME;
+    eq ThisPointcutExpr.getPattern().nameType() =
+            NameType.AMBIGUOUS_NAME;
+    eq TargetPointcutExpr.getPattern().nameType() =
+            NameType.AMBIGUOUS_NAME;
+}

@@ -11,6 +11,12 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isConstructorParameter() = false;
     eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
 
+    // Pointcut variables are those declared by named pointcut declarations
+    // or advice (see Advice.jrag)
+    inh boolean Variable.isPointcutVariable();
+    eq Program.getCompilationUnit().isPointcutVariable() = false;
+    eq PointcutDecl.getParameter(int i).isPointcutVariable() = true;
+
     // The advice/pointcut formal parameters should be visible
     // to the pointcut and the parameters themselves.
 
@@ -33,6 +39,31 @@ aspect Pointcuts
             if(getParameter(i).name().equals(name))
                 return SimpleSet.emptySet.add(getParameter(i));
         return SimpleSet.emptySet;
+    }
+
+    // want to use lookupVariable on this node
+    inh SimpleSet PointcutExpr.lookupVariable(String name);
+
+
+    // args, this, and target can only refer to pointcut variables
+    // or types
+    eq ArgsPointcutExpr.getPattern().lookupVariable(String name) =
+        lookupPointcutVariables(name);
+    eq ThisPointcutExpr.getPattern().lookupVariable(String name) =
+        lookupPointcutVariables(name);
+    eq TargetPointcutExpr.getPattern().lookupVariable(String name) =
+        lookupPointcutVariables(name);
+
+    syn SimpleSet PointcutExpr.lookupPointcutVariables(String name)
+    {
+        SimpleSet result = SimpleSet.emptySet;
+        Iterator iter = lookupVariable(name).iterator();
+        while (iter.hasNext()) {
+            Variable v = (Variable)iter.next();
+            if(v.isPointcutVariable())
+                result = result.add(v);
+        }
+        return result;
     }
 
     // ----------------------------------------------------

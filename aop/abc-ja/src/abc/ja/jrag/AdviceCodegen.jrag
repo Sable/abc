@@ -23,17 +23,6 @@ aspect AdviceCodegen {
   protected void AdviceDecl.createAspectInfo() {
     
     Pointcut pc = getPointcutExpr().pointcut();
-    if(getAdviceSpec().getNumParameter() > 0) {
-      ArrayList list = new ArrayList();
-      for(int i = 0; i < getAdviceSpec().getNumParameter(); i++) {
-        ParameterDeclaration p = getAdviceSpec().getParameter(i);
-        Var v = new Var(p.name(), null);
-        ArgVar argVar = new ArgVar(v, null);
-        list.add(argVar);
-      }
-      Args args = new Args(list, pos());
-      pc = AndPointcut.construct(pc, args, pos());
-    }
 
     globalAspectInfo().addAdviceDecl(new abc.weaving.aspectinfo.AdviceDecl(
       getAdviceSpec().adviceSpec(),
@@ -128,6 +117,9 @@ aspect AdviceCodegen {
 
   syn boolean Pattern.matchesType(SootClass c) = false;
   eq SimpleNamePattern.matchesType(SootClass c) = matchesName(c.getShortName());
+  eq ExplicitTypeNamePattern.matchesType(SootClass c) =
+    getAccess().type().fullName().equals(c.getName())
+    && getAccess().isTypeAccess();
 
   syn boolean Pattern.matchesType(Type t) = false;
   eq SimpleNamePattern.matchesType(Type t) {
@@ -137,14 +129,7 @@ aspect AdviceCodegen {
     return matchesType(c);
   }
   eq ExplicitTypeNamePattern.matchesType(Type t) = 
-    getTypeAccess().type().name().equals(t.toString());
-
-  syn boolean Pattern.containsWildcard() = false;
-  eq SimpleNamePattern.containsWildcard() = getPattern().indexOf('*') != -1;
-  eq DotNamePattern.containsWildcard() = getLhs().containsWildcard() || getRhs().containsWildcard();
-  eq DotDotNamePattern.containsWildcard() = true;
-
-
+    getAccess().type().name().equals(t.toString());
 
   syn int AdviceDecl.sootTypeModifiers() {
     int result = 0;

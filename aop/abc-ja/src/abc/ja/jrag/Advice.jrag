@@ -33,6 +33,7 @@ aspect Advice
   eq AdviceSpec.getParameter(int index).isMethodParameter() = true;
   eq AdviceSpec.getParameter(int index).isConstructorParameter() = false;
   eq AdviceSpec.getParameter(int index).isExceptionHandlerParameter() = false;
+  eq AdviceSpec.getParameter(int index).isPointcutVariable() = true;
 
   eq AfterReturningSpec.getReturnParameter().isMethodParameter() = true;
   eq AfterReturningSpec.getReturnParameter().isConstructorParameter() = false;

@@ -29,18 +29,26 @@ aspect PointcutCodegen
     // primitive pointcuts (in alphabetical order)
 
     public Pointcut AdviceExecutionPointcutExpr.pointcut() {
-        return null;
+        return AndPointcut.construct(
+                    new WithinAdvice(pos()),
+                    new Execution(pos()),
+                    pos());
     }
 
+    // FIXME below this point
     public Pointcut ArgsPointcutExpr.pointcut() {
-        return new Args(new LinkedList(), pos());
+        java.util.List arg_patterns = new ArrayList();
+
+        for(int i = 0; i < getNumPattern(); i++)
+            arg_patterns.add(getPattern(i).argPattern());
+
+        return new Args(arg_patterns, pos());
     }
 
     public Pointcut CallPointcutExpr.pointcut() {
         return new MethodCall(getPattern(), pos());
     }
 
-    // FIXME below this point
     public Pointcut CflowPointcutExpr.pointcut() {
         return null;
     }
@@ -99,5 +107,48 @@ aspect PointcutCodegen
 
     public Pointcut WithinCodePointcutExpr.pointcut() {
         return null;
+    }
+
+
+
+    //
+    // Arguments to args/target/this also need to be converted
+    // into aspectinfo format
+    //
+    
+    abstract public ArgPattern BindingPattern.argPattern();
+
+    public ArgPattern StarBindingPattern.argPattern() {
+        return new ArgAny(pos());
+    }
+
+    public ArgPattern DotDotBindingPattern.argPattern() {
+        return new ArgFill(pos());
+    }
+
+    public ArgPattern NameBindingPattern.argPattern() {
+        return getPattern().argPattern();
+    }
+
+    public ArgPattern Pattern.argPattern() {
+        throw new RuntimeException("argPattern() not defined for " +
+                                    getClass().getName());
+    }
+
+    public ArgPattern ExplicitTypeNamePattern.argPattern() {
+        return getAccess().argPattern();
+    }
+
+    public ArgPattern Access.argPattern() {
+        throw new RuntimeException("argPattern() not defined for " +
+                                    getClass().getName());
+    }
+
+    public ArgPattern VarAccess.argPattern() {
+        return new ArgVar(new Var(name(), pos()), pos());
+    }
+
+    public ArgPattern TypeAccess.argPattern() {
+        return new ArgType(AbcFactory.AbcType(type().getSootType()), pos());
     }
 }
