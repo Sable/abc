@@ -363,16 +363,18 @@ aspect EmitJimple {
     public Body add(soot.jimple.Stmt stmt) {
       soot.PatchingChain chain = (soot.PatchingChain)chains.peek();
       if(stmt instanceof IdentityStmt && chain.size() != 0) {
-        Object s = chain.getFirst();
-        while(s instanceof IdentityStmt)
-          s = chain.getSuccOf(s);
-        if(s != null)
-          chain.insertBefore(stmt, s);
-        else
-          chain.add(stmt);
+        IdentityStmt idstmt = (IdentityStmt) stmt;
+        if(!(idstmt.getRightOp() instanceof CaughtExceptionRef)) {
+          Object s = chain.getFirst();
+          while(s instanceof IdentityStmt)
+            s = chain.getSuccOf(s);
+          if(s != null) {
+            chain.insertBefore(stmt, s);
+            return this;
+          }
+        }
       }
-      else
-        chain.add(stmt);
+      chain.add(stmt);
       return this;
     }
     public void pushBlock(soot.PatchingChain c) {
