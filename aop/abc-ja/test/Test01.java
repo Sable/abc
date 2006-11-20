@@ -1,12 +1,11 @@
 package test;
 
 aspect Test01Aspect {
-  synchronized before(): call(* foo()) {
+  before(): call(* foo()) {
     System.out.println("Before foo");
   }
 
-  //after(int i): call(* bar(*)) && args(i) {
-  after(int i): call(* bar()) {
+  after(int i): call(* bar()) && args(i) {
     System.out.println("After bar " + i);
   }
 }

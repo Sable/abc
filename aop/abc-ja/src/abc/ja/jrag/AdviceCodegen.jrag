@@ -123,13 +123,15 @@ aspect AdviceCodegen {
 
   syn boolean Pattern.matchesType(Type t) = false;
   eq SimpleNamePattern.matchesType(Type t) {
-    if(! (t instanceof RefType))
-      return false;
+    if(! (t instanceof RefType)) {
+      return matchesName(t.toString());
+    }
     SootClass c = ((RefType) t).getSootClass();
     return matchesType(c);
   }
   eq ExplicitTypeNamePattern.matchesType(Type t) = 
-    getAccess().type().name().equals(t.toString());
+    getAccess().type().name().equals(t.toString())
+    && getAccess().isTypeAccess();
 
   syn int AdviceDecl.sootTypeModifiers() {
     int result = 0;
@@ -151,27 +153,4 @@ aspect AdviceCodegen {
   }
   eq AdviceSpec.getParameter(int index).localNum() = index;
 
-  class SimpleMethodPattern implements abc.weaving.aspectinfo.MethodPattern {
-    private String name;
-    public SimpleMethodPattern(String name) {
-      this.name = name;
-    }
-    public boolean matchesCall(SootMethodRef smr) {
-      return smr.name().equals(name);
-    }
-    public boolean matchesExecution(SootMethod sm) {
-      return sm.getName().equals(name);
-    }
-    public boolean equivalent(abc.weaving.aspectinfo.MethodPattern p) {
-      if(p instanceof SimpleMethodPattern) {
-        SimpleMethodPattern smp = (SimpleMethodPattern)p;
-        return smp.name.equals(name);
-      }
-      else
-        return false;
-    }
-    public abc.aspectj.ast.MethodPattern getPattern() {
-      return null;
-    }
-  }
 }
