@@ -117,10 +117,8 @@
 <target name="test" depends="build">
   <java classname="abc.testing.Main" fork="true"
         dir="${abc.loc}/ajc-harness/tests">
-    <arg value="+abc"/>
-    <arg value="-ext"/>
-    <arg value="abc.ja"/>
-    <arg value="-abc"/>
+    <jvmarg line="-Xmx512M" />
+    <arg line="+abc -ext abc.ja -abc"/>
     <arg value="abcTests.xml"/>
     <classpath>
       <pathelement location="classes"/>
@@ -139,10 +137,9 @@
 </target>
 
 <target name="run" depends="build">
-<fail message="Compiler arguments is given in variable 'args'" unless="args"/>
+<fail message="Compiler arguments are given in variable 'args'" unless="args"/>
   <java classname="abc.main.Main" fork="true">
-    <arg value="-ext"/>
-    <arg value="abc.ja"/>
+    <arg line="-ext abc.ja"/>
     <arg line="${args}"/>
     <classpath>
       <pathelement location="classes"/>
