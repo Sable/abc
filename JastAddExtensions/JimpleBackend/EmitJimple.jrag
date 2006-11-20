@@ -367,7 +367,7 @@ aspect EmitJimple {
         while(s instanceof IdentityStmt)
           s = chain.getSuccOf(s);
         if(s != null)
-          chain.insertAfter(stmt, s);
+          chain.insertBefore(stmt, s);
         else
           chain.add(stmt);
       }
