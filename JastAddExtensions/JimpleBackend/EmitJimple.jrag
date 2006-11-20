@@ -362,7 +362,17 @@ aspect EmitJimple {
     }
     public Body add(soot.jimple.Stmt stmt) {
       soot.PatchingChain chain = (soot.PatchingChain)chains.peek();
-      chain.add(stmt);
+      if(stmt instanceof IdentityStmt && chain.size() != 0) {
+        Object s = chain.getFirst();
+        while(s instanceof IdentityStmt)
+          s = chain.getSuccOf(s);
+        if(s != null)
+          chain.insertAfter(stmt, s);
+        else
+          chain.add(stmt);
+      }
+      else
+        chain.add(stmt);
       return this;
     }
     public void pushBlock(soot.PatchingChain c) {
