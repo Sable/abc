@@ -35,7 +35,6 @@ aspect PointcutCodegen
                     pos());
     }
 
-    // FIXME below this point
     public Pointcut ArgsPointcutExpr.pointcut() {
         java.util.List arg_patterns = new ArrayList();
 
@@ -46,19 +45,31 @@ aspect PointcutCodegen
     }
 
     public Pointcut CallPointcutExpr.pointcut() {
-        return new MethodCall(getPattern(), pos());
+        if(getPattern().isMethodPattern())
+            return new MethodCall(getPattern(), pos());
+        else
+            // FIXME: return new ConstructorCall(getPattern(), pos());
+            throw new RuntimeException("constructor matching: broken");
     }
 
     public Pointcut CflowPointcutExpr.pointcut() {
-        return null;
+        return new Cflow(getPointcut().pointcut(), pos());
     }
 
     public Pointcut CflowBelowPointcutExpr.pointcut() {
-        return null;
+        return new CflowBelow(getPointcut().pointcut(), pos());
     }
 
+    // FIXME below this point
     public Pointcut ExecutionPointcutExpr.pointcut() {
-        return null;
+        Pointcut withincode;
+        if(getPattern().isMethodPattern())
+            withincode = new WithinMethod(getPattern(), pos());
+        else
+            // withincode = new WithinConstructor(getPattern(), pos());
+            throw new RuntimeException("constructor matching: broken");
+
+        return AndPointcut.construct(withincode, new Execution(pos()), pos());
     }
 
     public Pointcut GetPointcutExpr.pointcut() {

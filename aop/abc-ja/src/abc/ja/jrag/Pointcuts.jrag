@@ -10,6 +10,7 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isMethodParameter() = false;
     eq PointcutDecl.getParameter(int i).isConstructorParameter() = false;
     eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
+    eq PointcutDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;
 
     // Pointcut variables are those declared by named pointcut declarations
     // or advice (see Advice.jrag)

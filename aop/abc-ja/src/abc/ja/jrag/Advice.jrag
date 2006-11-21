@@ -1,25 +1,37 @@
 aspect Advice
 {
   eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
-    SimpleSet v = localLookupVariable(name);
+    SimpleSet v = getAdviceSpec().localLookupVariable(name);
     if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
   eq AdviceDecl.getBlock().lookupVariable(String name) {
-    SimpleSet v = localLookupVariable(name);
+    SimpleSet v = getAdviceSpec().localLookupVariable(name);
     if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
   eq AdviceDecl.getPointcutExpr().lookupVariable(String name) {
-    SimpleSet v = localLookupVariable(name);
+    SimpleSet v = getAdviceSpec().localLookupVariable(name);
     if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
-  syn SimpleSet AdviceDecl.localLookupVariable(String name) {
-    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
-      if(getAdviceSpec().getParameter(i).name().equals(name))
-        return SimpleSet.emptySet.add(getAdviceSpec().getParameter(i));
+  syn SimpleSet AdviceSpec.localLookupVariable(String name) {
+    for(int i = 0; i < getNumParameter(); i++)
+      if(getParameter(i).name().equals(name))
+        return SimpleSet.emptySet.add(getParameter(i));
     return SimpleSet.emptySet;
+  }
+  syn SimpleSet AfterReturningSpec.localLookupVariable(String name) {
+    if(hasReturnParameter() &&
+       getReturnParameter().name().equals(name))
+      return SimpleSet.emptySet.add(getReturnParameter());
+    return super.localLookupVariable(name);
+  }
+  syn SimpleSet AfterThrowingSpec.localLookupVariable(String name) {
+    if(hasExceptionParameter() &&
+       getExceptionParameter().name().equals(name))
+      return SimpleSet.emptySet.add(getExceptionParameter());
+    return super.localLookupVariable(name);
   }
   inh SimpleSet AdviceDecl.lookupVariable(String name);
 
@@ -34,14 +46,17 @@ aspect Advice
   eq AdviceSpec.getParameter(int index).isConstructorParameter() = false;
   eq AdviceSpec.getParameter(int index).isExceptionHandlerParameter() = false;
   eq AdviceSpec.getParameter(int index).isPointcutVariable() = true;
+  eq AdviceSpec.getParameter(int index).nameType() = NameType.TYPE_NAME;
 
   eq AfterReturningSpec.getReturnParameter().isMethodParameter() = true;
   eq AfterReturningSpec.getReturnParameter().isConstructorParameter() = false;
   eq AfterReturningSpec.getReturnParameter().isExceptionHandlerParameter() = false;
+  eq AfterReturningSpec.getReturnParameter().nameType() = NameType.TYPE_NAME;
 
   eq AfterThrowingSpec.getExceptionParameter().isMethodParameter() = true;
   eq AfterThrowingSpec.getExceptionParameter().isConstructorParameter() = false;
   eq AfterThrowingSpec.getExceptionParameter().isExceptionHandlerParameter() = false;
+  eq AfterThrowingSpec.getExceptionParameter().nameType() = NameType.TYPE_NAME;
 
   eq AroundSpec.getTypeAccess().nameType() = NameType.TYPE_NAME;
 }

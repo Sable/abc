@@ -13,11 +13,30 @@ aspect AdviceCodegen {
     createAspectInfo();
   }
 
-  syn lazy SootMethod AdviceDecl.sootMethod() {
+  syn lazy java.util.List AdviceSpec.paramList() {
     ArrayList list = new ArrayList();
-    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
-      list.add(getAdviceSpec().getParameter(i).type().getSootType());
-    return new SootMethod(name(), list, soot.VoidType.v(), sootTypeModifiers(), new ArrayList());
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).type().getSootType());
+    return list;
+  }
+
+  syn lazy java.util.List AfterReturningSpec.paramList() {
+    java.util.List list = super.paramList();
+    if(hasReturnParameter())
+      list.add(getReturnParameter().type().getSootType());
+    return list;
+  }
+
+  syn lazy java.util.List AfterThrowingSpec.paramList() {
+    java.util.List list = super.paramList();
+    if(hasExceptionParameter())
+      list.add(getExceptionParameter().type().getSootType());
+    return list;
+  }
+
+  syn lazy SootMethod AdviceDecl.sootMethod() {
+    return new SootMethod(name(), getAdviceSpec().paramList(),
+                    soot.VoidType.v(), sootTypeModifiers(), new ArrayList());
   }
 
   protected void AdviceDecl.createAspectInfo() {
@@ -37,17 +56,35 @@ aspect AdviceCodegen {
     ));
   }
 
-  protected MethodSig AdviceDecl.methodSig() {
+  protected java.util.List AdviceSpec.methodFormals() {
     ArrayList list = new ArrayList();
-    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
-      list.add(getAdviceSpec().getParameter(i).formal());
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).formal());
+    return list;
+  }
+
+  protected java.util.List AfterReturningSpec.methodFormals() {
+    java.util.List list = super.methodFormals();
+    if (hasReturnParameter())
+      list.add(getReturnParameter().formal());
+    return list;
+  }
+
+  protected java.util.List AfterThrowingSpec.methodFormals() {
+    java.util.List list = super.methodFormals();
+    if(hasExceptionParameter())
+      list.add(getExceptionParameter().formal());
+    return list;
+  }
+
+  protected MethodSig AdviceDecl.methodSig() {
     return new MethodSig(
       sootTypeModifiers(),
-	    AbcFactory.AbcClass(hostType().getSootClassDecl()),
-	    AbcFactory.AbcType(soot.VoidType.v()),
+      AbcFactory.AbcClass(hostType().getSootClassDecl()),
+      AbcFactory.AbcType(soot.VoidType.v()),
       name(),
-	    list,
-	    new ArrayList(),
+      getAdviceSpec().methodFormals(),
+      new ArrayList(),
       pos()
     );
   }
@@ -61,6 +98,20 @@ aspect AdviceCodegen {
   }
   public abc.weaving.aspectinfo.AdviceSpec AfterSpec.adviceSpec() {
     return new AfterAdvice(pos());
+  }
+  public abc.weaving.aspectinfo.AdviceSpec AfterReturningSpec.adviceSpec() {
+    if(hasReturnParameter())
+      return new AfterReturningArgAdvice(
+                    getReturnParameter().formal(), pos());
+    else
+      return new AfterReturningAdvice(pos());
+  }
+  public abc.weaving.aspectinfo.AdviceSpec AfterThrowingSpec.adviceSpec() {
+    if(hasExceptionParameter())
+      return new AfterThrowingArgAdvice(
+                    getExceptionParameter().formal(), pos());
+    else
+      return new AfterThrowingAdvice(pos());
   }
 
   MemberPattern implements abc.weaving.aspectinfo.MethodPattern;
@@ -141,13 +192,29 @@ aspect AdviceCodegen {
     return result;
   }
 
+  public void AdviceSpec.jimplify2(Body b) {
+    for(int i = 0; i < getNumParameter(); i++)
+      getParameter(i).jimplify2(b);
+  }
+
+  public void AfterReturningSpec.jimplify2(Body b) {
+    super.jimplify2(b);
+    if (hasReturnParameter())
+      getReturnParameter().jimplify2(b);
+  }
+
+  public void AfterThrowingSpec.jimplify2(Body b) {
+    super.jimplify2(b);
+    if (hasExceptionParameter())
+      getExceptionParameter().jimplify2(b);
+  }
+
   public void AdviceDecl.jimplify2() {
     JimpleBody body = Jimple.v().newBody(sootMethod());
     sootMethod().setActiveBody(body);
     Body b = new Body(body);
     b.addThis(hostType());
-    for(int i = 0; i < getAdviceSpec().getNumParameter(); i++)
-      getAdviceSpec().getParameter(i).jimplify2(b);
+    getAdviceSpec().jimplify2(b);
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
   }

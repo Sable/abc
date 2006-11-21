@@ -55,4 +55,14 @@ aspect Patterns
             NameType.AMBIGUOUS_NAME;
     eq TargetPointcutExpr.getPattern().nameType() =
             NameType.AMBIGUOUS_NAME;
+
+    // syntactic classification of method/constructor/field patterns
+    // defaults:
+    syn boolean MemberPattern.isMethodPattern() = false;
+    syn boolean MemberPattern.isConstructorPattern() = false;
+    syn boolean MemberPattern.isFieldPattern() = false;
+    // overrides:
+    syn boolean MethodPattern.isMethodPattern() = true;
+    syn boolean ConstructorPattern.isConstructorPattern() = true;
+    syn boolean FieldPattern.isFieldPattern() = true;
 }
