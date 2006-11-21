@@ -245,7 +245,6 @@ public abstract class AdviceApplication {
         (new soot.jimple.toolkits.base.JimpleConstructorFolder())
             .transform(method.getActiveBody(),"jtp.jcf",m);
 
-        // Identify whether we're in a constructor, and if we are identify
         // the position of the 'this' or 'super' call.
         // Uniquely, the constructor of java.lang.Object has none.
         if(method.getName().equals(SootMethod.constructorName)
