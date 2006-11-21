@@ -10177,7 +10177,10 @@
          <run class="ArrayGetSet" />
     </ajc-test>
  
-
-
-
+     <ajc-test num="1217" dir="abctests/bugs/purejava" 
+      title="bug in NullCheckEliminator">
+        <compile files="NullCheckElim.java"/>
+        <run class="NullCheckElim"/>
+    </ajc-test>
+ 
 </suite>
