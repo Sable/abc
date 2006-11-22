@@ -94,5 +94,9 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
+<ajc-test title="bug in NullCheckEliminator" num="1217" dir="abctests/bugs/purejava">
+        <compile files="NullCheckElim.java"></compile>
+        <run class="NullCheckElim"></run>
+    </ajc-test>
  
 </suite>
