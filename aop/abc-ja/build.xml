@@ -120,6 +120,7 @@
     <jvmarg line="-Xmx512M" />
     <arg line="+abc -ext abc.ja -abc"/>
     <arg value="abcTests.xml"/>
+<!--    <arg line="abcTests.xml pureJava"/>    -->
     <classpath>
       <pathelement location="classes"/>
       <pathelement location="${abc.loc}/classes"/>
