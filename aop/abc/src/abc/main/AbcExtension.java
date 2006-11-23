@@ -26,9 +26,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import polyglot.util.InternalCompilerError;
-import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
+import polyglot.util.ErrorQueue;
+import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
 import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
@@ -39,8 +40,8 @@ import soot.Trap;
 import soot.Value;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis;
 import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
+import soot.jimple.toolkits.annotation.nullcheck.NullnessAnalysis;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
 import soot.util.Chain;
@@ -87,7 +88,6 @@ import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 import abc.weaving.weaver.ReweavingPass.ID;
-import polyglot.util.Position;
 
 /**
  * This class should be sub-classed to extend the behaviour of abc
@@ -260,8 +260,8 @@ public class AbcExtension
 		if (Debug.v().nullCheckElim) {
 			// Add a null check eliminator that knows about abc specific stuff
 			NullCheckEliminator.AnalysisFactory f = new NullCheckEliminator.AnalysisFactory() {
-				public BranchedRefVarsAnalysis newAnalysis(soot.toolkits.graph.UnitGraph g) {
-					return new BranchedRefVarsAnalysis(g) {
+				public NullnessAnalysis newAnalysis(soot.toolkits.graph.UnitGraph g) {
+					return new NullnessAnalysis(g) {
 						public boolean isAlwaysNonNull(Value v) {
 							if (super.isAlwaysNonNull(v))
 								return true;
