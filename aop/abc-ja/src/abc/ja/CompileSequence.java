@@ -4,6 +4,7 @@ import abc.main.AbcExtension;
 import abc.main.AbcTimer;
 import abc.main.CompilerFailedException;
 import abc.main.Debug;
+import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -73,20 +74,24 @@ public class CompileSequence extends abc.main.CompileSequence {
 
   // throw CompilerFailedException if there are errors
   // place errors in error_queue
-	public void compile() throws CompilerFailedException, IllegalArgumentException {
-     error_queue = abcExt.getErrorQueue();
+    public void compile() throws CompilerFailedException, IllegalArgumentException {
+    error_queue = abcExt.getErrorQueue();
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
 
-		try {
+	try {
 			System.out.println("Hello JastAdd");
-			String[] args = new String[aspect_sources.size()];
+            Collection c = new ArrayList();
+            c.addAll(aspect_sources);
+            c.add("-classpath");
+            c.add(OptionsParser.v().classpath());
+			String[] args = new String[c.size()];
 			int index = 0;
-			for(Iterator iter = aspect_sources.iterator(); iter.hasNext(); index++) {
+			for(Iterator iter = c.iterator(); iter.hasNext(); index++) {
 				String s = (String)iter.next();
 				args[index] = s;
 			}
-			Program program = new Program();
+    Program program = new Program();
 
       program.initBytecodeReader(new abc.ja.bytecode.Parser());
       program.initJavaParser(
@@ -99,7 +104,8 @@ public class CompileSequence extends abc.main.CompileSequence {
       // extract package name from a source file without parsing the entire file
       program.initPackageExtractor(new abc.ja.parse.JavaScanner());
 
-			program.initOptions();    
+			program.initOptions();
+            program.addKeyValueOption("-classpath");
 			program.addOptions(args);
 			Collection files = program.files();
 
