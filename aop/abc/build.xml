@@ -538,4 +538,50 @@
 	            <arg line="aspectj5exp_ppg.cup"/>
 	        </java>
 	    </target>
+
+	    <target name="test" depends="abc-jar">
+	      <java classname="abc.testing.Main" fork="true"
+	            dir="ajc-harness/tests">
+	        <jvmarg line="-Xmx512M" />
+	        <arg line="abcTests.xml ${args}"/>
+	    <!--    <arg line="abcTests.xml pureJava"/>    -->
+	        <classpath>
+	          <pathelement location="classes"/>
+	          <pathelement location="classes"/>
+	          <pathelement location="runtime-classes"/>
+	          <pathelement location="testing-classes"/>
+	          <pathelement location="${polyglot.loc}"/>
+	          <pathelement location="${polyglot.cupclasses.loc}"/>
+	          <pathelement location="${soot.loc}"/>
+	          <pathelement location="${jasmin.loc}"/>
+	          <pathelement location="${xact.loc}"/>
+	          <pathelement
+	              location="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+	        </classpath>
+	      </java>
+	    </target>
+
+	    <target name="reweaving-test" depends="abc-jar">
+	      <java classname="abc.testing.Main" fork="true"
+	            dir="ajc-harness/tests">
+	        <jvmarg line="-Xmx512M" />
+	        <arg line="abcTests.xml +abc -debug debugUnweaver -abc ${args}"/>
+	    <!--    <arg line="abcTests.xml pureJava"/>    -->
+	        <classpath>
+	          <pathelement location="classes"/>
+	          <pathelement location="classes"/>
+	          <pathelement location="runtime-classes"/>
+	          <pathelement location="testing-classes"/>
+	          <pathelement location="${polyglot.loc}"/>
+	          <pathelement location="${polyglot.cupclasses.loc}"/>
+	          <pathelement location="${soot.loc}"/>
+	          <pathelement location="${jasmin.loc}"/>
+	          <pathelement location="${xact.loc}"/>
+		  <pathelement location="${paddle.loc}"/>
+	          <pathelement
+	              location="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+	        </classpath>
+	      </java>
+	    </target>
+
 </project>
