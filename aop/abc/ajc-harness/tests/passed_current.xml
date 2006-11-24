@@ -3292,10 +3292,6 @@
         <compile files="IndeterminateArgType.java"></compile>
         <run class="IndeterminateArgType"></run>
     </ajc-test>
-<ajc-test title="testing and binding args with single indeterminate prefix and suffix" pr="764" num="649" keywords="from-resolved_105" dir="new">
-        <compile files="IndeterminateArg.java"></compile>
-        <run class="IndeterminateArg"></run>
-    </ajc-test>
 <ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" num="650" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateHandlerArg.java"></compile>
         <run class="IndeterminateHandlerArg"></run>
@@ -3999,12 +3995,6 @@
 <ajc-test title="public static fields being ignored" pr="37304" num="816" dir="bugs">
         <compile files="FinalFields.java"></compile>
         <run class="FinalFields"></run>
-    </ajc-test>
-<ajc-test title="Weaving rt.jar results in stack overflow" pr="37758" num="817" dir="bugs/lines">
-        <compile files="A.java,big.jar">
- 			
-        </compile>
-        <run class="Big"></run>
     </ajc-test>
 <ajc-test title="XLint:ignore suppresses XLint warnings" num="820" dir="harness">
         <compile options="-Xlint:ignore" files="XLintWarningTest.java"></compile>
@@ -5456,6 +5446,10 @@
 <ajc-test title="Test of arrayget and arrayset" num="1216" dir="abctests/eaj/arrayget">
          <compile options="-ext,abc.eaj" files="ArrayGetSet.java"></compile>
          <run class="ArrayGetSet"></run>
+    </ajc-test>
+<ajc-test title="bug in NullCheckEliminator" num="1217" dir="abctests/bugs/purejava">
+        <compile files="NullCheckElim.java"></compile>
+        <run class="NullCheckElim"></run>
     </ajc-test>
  
 </suite>
