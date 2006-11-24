@@ -45,11 +45,11 @@ aspect PointcutCodegen
     }
 
     public Pointcut CallPointcutExpr.pointcut() {
-        if(getPattern().isMethodPattern())
-            return new MethodCall(getPattern(), pos());
+        if (getPattern().isMethodPattern())
+            return new MethodCall(getPattern().methodPattern(), pos());
         else
-            // FIXME: return new ConstructorCall(getPattern(), pos());
-            throw new RuntimeException("constructor matching: broken");
+            return new
+                ConstructorCall(getPattern().constructorPattern(), pos());
     }
 
     public Pointcut CflowPointcutExpr.pointcut() {
@@ -60,64 +60,108 @@ aspect PointcutCodegen
         return new CflowBelow(getPointcut().pointcut(), pos());
     }
 
-    // FIXME below this point
     public Pointcut ExecutionPointcutExpr.pointcut() {
         Pointcut withincode;
-        if(getPattern().isMethodPattern())
-            withincode = new WithinMethod(getPattern(), pos());
+        if (getPattern().isMethodPattern())
+            withincode = new WithinMethod(getPattern().methodPattern(), pos());
         else
-            // withincode = new WithinConstructor(getPattern(), pos());
-            throw new RuntimeException("constructor matching: broken");
+            withincode = new
+                WithinConstructor(getPattern().constructorPattern(), pos());
 
         return AndPointcut.construct(withincode, new Execution(pos()), pos());
     }
 
     public Pointcut GetPointcutExpr.pointcut() {
-        return null;
+        return new GetField(getPattern().fieldPattern(), pos());
     }
 
     public Pointcut HandlerPointcutExpr.pointcut() {
-        return null;
+        return new Handler(getPattern().classnamePattern(), pos());
     }
 
+    // FIXME
     public Pointcut IfPointcutExpr.pointcut() {
         return null;
     }
 
     public Pointcut InitializationPointcutExpr.pointcut() {
-        return null;
+        Pointcut within_constructor =
+            new WithinConstructor(getPattern().constructorPattern(), pos());
+
+        Pointcut class_init = new ClassInitialization(pos());
+
+        Pointcut interface_init =
+            new InterfaceInitialization(
+                    getPattern().getMemberNamePattern().classnamePattern(),
+                    pos());
+
+        return OrPointcut.construct(
+                AndPointcut.construct(within_constructor, class_init, pos()),
+                interface_init,
+                pos());
     }
 
+    // FIXME
     public Pointcut NamedPointcutExpr.pointcut() {
-        return null;
+        java.util.List arg_patterns = new ArrayList();
+
+        for(int i = 0; i < getNumPattern(); i++)
+            arg_patterns.add(getPattern(i).argPattern());
+
+        // where do I get a method-instance from?
+        // Object pcd_key;
+
+        // can we replace the AspectInfoHarvester using
+        // inherited attributes?
+        // abc.aspectj.visit.AspectInfoHarvester.pointcutDeclarationMap();
+
+        // what does (target != null) for the last parameter mean?
+
+        return new PointcutRef(null, null, arg_patterns, pos(), false);
     }
 
     public Pointcut PreInitializationPointcutExpr.pointcut() {
-        return null;
+        return AndPointcut.construct(
+            new WithinConstructor(getPattern().constructorPattern(), pos()),
+            new Preinitialization(pos()),
+            pos());
     }
 
     public Pointcut SetPointcutExpr.pointcut() {
-        return null;
+        return new SetField(getPattern().fieldPattern(), pos());
     }
 
     public Pointcut StaticInitializationPointcutExpr.pointcut() {
-        return null;
+        Pointcut directly_within =
+            new DirectlyWithin(getPattern().classnamePattern(), pos());
+        Pointcut within_static_init =
+            new WithinStaticInitializer(pos());
+        Pointcut execution = new Execution(pos());
+
+        return AndPointcut.construct(
+                directly_within,
+                AndPointcut.construct(within_static_init, execution, pos()),
+                pos());
     }
 
     public Pointcut TargetPointcutExpr.pointcut() {
-        return null;
+        return getPattern().targetPointcut();
     }
 
     public Pointcut ThisPointcutExpr.pointcut() {
-        return null;
+        return getPattern().thisPointcut();
     }
 
     public Pointcut WithinPointcutExpr.pointcut() {
-        return null;
+        return new Within(getPattern().classnamePattern(), pos());
     }
 
+    // FIXME below this point
     public Pointcut WithinCodePointcutExpr.pointcut() {
-        return null;
+        if (getPattern().isMethodPattern())
+            return new WithinMethod(getPattern().methodPattern(), pos());
+
+        return new WithinConstructor(getPattern().constructorPattern(), pos());
     }
 
 
@@ -126,40 +170,80 @@ aspect PointcutCodegen
     // Arguments to args/target/this also need to be converted
     // into aspectinfo format
     //
-    
-    abstract public ArgPattern BindingPattern.argPattern();
 
-    public ArgPattern StarBindingPattern.argPattern() {
-        return new ArgAny(pos());
-    }
+    // find an ArgPattern from a BindingPattern
+    syn ArgPattern BindingPattern.argPattern();
+    eq StarBindingPattern.argPattern() = new ArgAny(pos());
+    eq DotDotBindingPattern.argPattern() = new ArgFill(pos());
+    eq NameBindingPattern.argPattern() = getPattern().argPattern();
 
-    public ArgPattern DotDotBindingPattern.argPattern() {
-        return new ArgFill(pos());
-    }
-
-    public ArgPattern NameBindingPattern.argPattern() {
-        return getPattern().argPattern();
-    }
-
-    public ArgPattern Pattern.argPattern() {
+    // find an ArgPattern from a Pattern
+    syn ArgPattern Pattern.argPattern() {
         throw new RuntimeException("argPattern() not defined for " +
                                     getClass().getName());
     }
+    eq ExplicitTypeNamePattern.argPattern() = getAccess().argPattern();
 
-    public ArgPattern ExplicitTypeNamePattern.argPattern() {
-        return getAccess().argPattern();
-    }
-
-    public ArgPattern Access.argPattern() {
+    // find an ArgPattern from an Access
+    syn ArgPattern Access.argPattern() {
         throw new RuntimeException("argPattern() not defined for " +
                                     getClass().getName());
     }
+    eq VarAccess.argPattern() = new ArgVar(new Var(name(), pos()), pos());
+    eq TypeAccess.argPattern() =
+        new ArgType(AbcFactory.AbcType(type().getSootType()), pos());
 
-    public ArgPattern VarAccess.argPattern() {
-        return new ArgVar(new Var(name(), pos()), pos());
+    // find a target pointcut from a BindingPattern
+    syn Pointcut BindingPattern.targetPointcut();
+    eq StarBindingPattern.targetPointcut() = new TargetAny(pos());
+    eq NameBindingPattern.targetPointcut() = getPattern().targetPointcut();
+    eq DotDotBindingPattern.targetPointcut() {
+        throw new InternalCompilerError(
+            "trying to create an aspectinfo pointcut for 'target(..)'");
     }
 
-    public ArgPattern TypeAccess.argPattern() {
-        return new ArgType(AbcFactory.AbcType(type().getSootType()), pos());
+    // find a target pointcut from a Pattern
+    syn Pointcut Pattern.targetPointcut()
+    {
+        throw new InternalCompilerError(
+            "targetPointcut() not defined for " + getClass().getName());
     }
+    eq ExplicitTypeNamePattern.targetPointcut() = getAccess().targetPointcut();
+
+    // find a target pointcut from an Access
+    syn Pointcut Access.targetPointcut() {
+        throw new RuntimeException("targetPointcut() not defined for " +
+                                    getClass().getName());
+    }
+    eq VarAccess.targetPointcut() =
+        new TargetVar(new Var(name(), pos()), pos());
+    eq TypeAccess.targetPointcut() =
+        new TargetType(AbcFactory.AbcType(type().getSootType()), pos());
+
+    // find a this pointcut from a BindingPattern
+    syn Pointcut BindingPattern.thisPointcut();
+    eq StarBindingPattern.thisPointcut() = new ThisAny(pos());
+    eq NameBindingPattern.thisPointcut() = getPattern().thisPointcut();
+    eq DotDotBindingPattern.thisPointcut() {
+        throw new InternalCompilerError(
+            "trying to create an aspectinfo pointcut for 'this(..)'");
+    }
+
+    // find a this pointcut from a Pattern
+    syn Pointcut Pattern.thisPointcut()
+    {
+        throw new InternalCompilerError(
+            "thisPointcut() not defined for " + getClass().getName());
+    }
+    eq ExplicitTypeNamePattern.thisPointcut() = getAccess().thisPointcut();
+
+    // find a this pointcut from an Access
+    syn Pointcut Access.thisPointcut() {
+        throw new RuntimeException("thisPointcut() not defined for " +
+                                    getClass().getName());
+    }
+    eq VarAccess.thisPointcut() =
+        new ThisVar(new Var(name(), pos()), pos());
+    eq TypeAccess.thisPointcut() =
+        new ThisType(AbcFactory.AbcType(type().getSootType()), pos());
 }

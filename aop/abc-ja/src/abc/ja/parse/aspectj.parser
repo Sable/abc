@@ -200,7 +200,13 @@ BodyDecl pointcut_declaration =
   ;
 
 AdviceDecl advice_declaration =
-      modifiers_opt.m advice_spec.a throws_opt.b COLON pointcut_expr.c 
+      advice_spec.a throws_opt.b COLON pointcut_expr.c 
+     /* only valid modifier is strictfp */
+        block.d 
+       {: ParserTrace.parserTrace("advice declaration without strictfp");
+          return new AdviceDecl(new Modifiers(new List()), a, c, d);
+       :}
+  |   modifiers.m advice_spec.a throws_opt.b COLON pointcut_expr.c 
      /* only valid modifier is strictfp */
         block.d 
        {: ParserTrace.parserTrace("advice declaration without strictfp");

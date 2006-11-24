@@ -115,11 +115,11 @@ NegModifierPattern : ModifierPattern;
 
 // ---------------------- Member patterns ----------------
 abstract MemberPattern;
-MethodPattern : MemberPattern ::= ModifierPattern* ReturnTypePattern:Pattern MemberNamePattern:Pattern FormalPattern* ThrowsPattern:Pattern*;
+MethodPattern : MemberPattern ::= ModifierPattern* ReturnTypePattern:Pattern MemberNamePattern:NamePattern FormalPattern* ThrowsPattern:Pattern*;
 
-ConstructorPattern : MemberPattern ::= ModifierPattern*  MemberNamePattern:Pattern FormalPattern* ThrowsPattern:Pattern*;
+ConstructorPattern : MemberPattern ::= ModifierPattern*  MemberNamePattern:NamePattern FormalPattern* ThrowsPattern:Pattern*;
 
-FieldPattern : MemberPattern ::= ModifierPattern* TypePattern:Pattern MemberNamePattern:Pattern;
+FieldPattern : MemberPattern ::= ModifierPattern* TypePattern:Pattern MemberNamePattern:NamePattern;
 
 abstract FormalPattern;
 WildcardFormalPattern : FormalPattern;

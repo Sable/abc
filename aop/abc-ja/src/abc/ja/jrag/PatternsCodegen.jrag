@@ -1,0 +1,213 @@
+aspect PatternsCodegen
+{
+    //
+    // The abc weaver must be able to check whether or not a
+    // pattern matches a particular method or constructor or
+    // field or type.
+    //
+    // Each kind of pattern in the frontend implements an
+    // interface to allow these checks to take place.
+    //
+
+    FieldPattern implements abc.weaving.aspectinfo.FieldPattern;
+    MethodPattern implements abc.weaving.aspectinfo.MethodPattern;
+    ConstructorPattern implements abc.weaving.aspectinfo.ConstructorPattern;
+
+    // methods are needed to get these in a type-safe way...
+
+    eq FieldPattern.fieldPattern() = this;
+    eq MethodPattern.methodPattern() = this;
+    eq ConstructorPattern.constructorPattern() = this;
+
+    // ...which throw an exception when called on the wrong node
+
+    syn FieldPattern MemberPattern.fieldPattern()
+    {
+        throw new RuntimeException("Tried get a FieldPattern from a "
+                                    + getClass().getName());
+    }
+    syn MethodPattern MemberPattern.methodPattern()
+    {
+        throw new RuntimeException("Tried get a MethodPattern from a "
+                                    + getClass().getName());
+    }
+    syn ConstructorPattern MemberPattern.constructorPattern()
+    {
+        throw new RuntimeException("Tried get a ConstructorPattern from a "
+                                    + getClass().getName());
+    }
+
+
+    //
+    // Matching method patterns
+    //
+    public boolean MethodPattern.matchesCall(SootMethodRef smr) {
+        SootMethod m = smr.resolve();
+        return matchesExecution(m);
+    }
+
+    public boolean MethodPattern.matchesExecution(SootMethod sm)
+    {
+        // check modifiers
+        // (FIXME)
+
+        // check return type
+        if(!getReturnTypePattern().matchesType(sm.getReturnType()))
+            return false;
+
+        // check type and name
+        if(!getMemberNamePattern().matchesTypeAndName(sm))
+            return false;
+
+        // check exceptions
+        // (FIXME)
+
+        return true;
+    }
+
+    public boolean
+    MethodPattern.equivalent(abc.weaving.aspectinfo.MethodPattern p)
+    {
+        return false;
+    }
+
+    public abc.aspectj.ast.MethodPattern MethodPattern.getPattern()
+    {
+        throw new InternalCompilerError(
+                    "Can not get polyglot frontend pattern from JastAdd");
+    }
+
+
+    //
+    // Matching field patterns
+    //
+    public boolean FieldPattern.matchesFieldRef(SootFieldRef sfr)
+    {
+        return false;
+    }
+
+    public boolean FieldPattern.matchesMethod(SootMethod sf)
+    {
+        return false;
+    }
+
+    public boolean
+    FieldPattern.equivalent(abc.weaving.aspectinfo.FieldPattern p)
+    {
+        return false;
+    }
+
+    public abc.aspectj.ast.FieldPattern FieldPattern.getPattern()
+    {
+        throw new InternalCompilerError(
+                    "Can not get polyglot frontend pattern from JastAdd");
+    }
+
+
+    //
+    // Matching constructor patterns
+    //
+    public boolean ConstructorPattern.matchesConstructor(SootMethod sc)
+    {
+        return false;
+    }
+
+    public boolean ConstructorPattern.equivalent(
+                                abc.weaving.aspectinfo.ConstructorPattern p)
+    {
+        return false;
+    }
+
+    public abc.aspectj.ast.ConstructorPattern ConstructorPattern.getPattern()
+    {
+        throw new InternalCompilerError(
+            "Can not get polyglot frontend pattern from JastAdd");
+    }
+
+
+    //
+    // Matching name patterns
+    //
+    syn ClassnamePattern Pattern.classnamePattern() =
+        new ClassnamePattern() {
+            public boolean matchesClass(SootClass cl)
+            {
+                return matchesType(cl.getType());
+            }
+
+            public boolean equivalent(ClassnamePattern p)
+            {
+                return false;
+            }
+
+            public abc.aspectj.ast.ClassnamePatternExpr getPattern()
+            {
+                throw new InternalCompilerError(
+                        "Can not get polyglot frontend pattern from JastAdd");
+            }
+        };
+
+
+    //
+    // Type-pattern matching
+    //
+
+    // Simple name patterns can be matched using the regular-expression
+    // matcher in the Java standard library. The AspectJ patterns must be
+    // pre-processed to:
+    //   - replace each * with .*
+    //   - escape any dollar-signs which appear in the pattern
+    //   - add ^ at the beginning of the regular expression and $ at the
+    //     end because the pattern must match the whole class name
+    syn lazy java.util.regex.Pattern SimpleNamePattern.regex()
+    {
+        String p = getPattern();
+        p = p.replaceAll("\\*", ".*");
+        p = p.replaceAll("\\$","\\\\\\$");
+        p = "^" + p + "$";
+        return java.util.regex.Pattern.compile(p);
+    }
+
+
+    syn boolean Pattern.matchesTypeAndName(SootMethod m) = false;
+    syn boolean Pattern.matchesName(String name) = false;
+
+    eq SimpleNamePattern.matchesTypeAndName(SootMethod m) =
+        matchesName(m.getName());
+
+    eq SimpleNamePattern.matchesName(String name) =
+        regex().matcher(name).matches();
+
+    eq TypeDotNamePattern.matchesTypeAndName(SootMethod m) {
+        throw new InternalCompilerError("matches not implemented for "
+                                            + getClass().getName());
+    }
+
+    eq DotNamePattern.matchesTypeAndName(SootMethod m)
+    {
+        if(m.isStatic()) {
+        return getLhs().matchesType(m.getDeclaringClass())
+            && getRhs().matchesName(m.getName());
+        }
+        return false;
+    }
+
+    syn boolean Pattern.matchesType(SootClass c) = false;
+    eq SimpleNamePattern.matchesType(SootClass c) =
+        matchesName(c.getShortName());
+    eq ExplicitTypeNamePattern.matchesType(SootClass c) =
+        getAccess().type().fullName().equals(c.getName())
+        && getAccess().isTypeAccess();
+
+    syn boolean Pattern.matchesType(Type t) = false;
+    eq SimpleNamePattern.matchesType(Type t) {
+        if(! (t instanceof RefType)) {
+            return matchesName(t.toString());
+        }
+        SootClass c = ((RefType) t).getSootClass();
+        return matchesType(c);
+    }
+    eq ExplicitTypeNamePattern.matchesType(Type t) = 
+        getAccess().type().name().equals(t.toString())
+        && getAccess().isTypeAccess();
+}
