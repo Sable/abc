@@ -38,10 +38,6 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="testing and binding args with single indeterminate prefix and suffix" pr="764" num="649" keywords="from-resolved_105" dir="new">
-        <compile files="IndeterminateArg.java"></compile>
-        <run class="IndeterminateArg"></run>
-    </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>

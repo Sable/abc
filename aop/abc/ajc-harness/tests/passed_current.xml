@@ -3292,6 +3292,10 @@
         <compile files="IndeterminateArgType.java"></compile>
         <run class="IndeterminateArgType"></run>
     </ajc-test>
+<ajc-test title="testing and binding args with single indeterminate prefix and suffix" pr="764" num="649" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArg.java"></compile>
+        <run class="IndeterminateArg"></run>
+    </ajc-test>
 <ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" num="650" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateHandlerArg.java"></compile>
         <run class="IndeterminateHandlerArg"></run>
