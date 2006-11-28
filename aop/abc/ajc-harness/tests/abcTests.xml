@@ -10053,6 +10053,126 @@
 			<message kind="error" line="1-5" />
         </compile>
     </ajc-test>        
+    <ajc-test num="1132" dir="om/openclassbasic"
+      title="Simple open class compile"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.om"/>
+    </ajc-test>
+    <ajc-test num="1133" dir="om/openclassbasicparents"
+      title="Simple open class parents"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.om">
+			<message kind="error" line="19" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1134" dir="om/openclassbasicitd"
+      title="Simple open class ITD"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.om">
+			<message kind="error" line="27" />
+			<message kind="error" line="28" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1135" dir="om/openclassbasicinclusion"
+      title="Simple open class inclusion"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.om">
+			<message kind="error" line="23" />
+			<message kind="error" line="25" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1136" dir="om/openclassfriendparenttest"
+      title="Friend aspect parent test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			A.java,
+			B.java,
+			I.java,
+			pack/Y.java"
+        options="-ext,abc.om">
+			<message kind="error" line="20" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1137" dir="om/openclassfrienditdtest"
+      title="Friend aspect ITD test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			A.java,
+			B.java,
+			I.java,
+			pack/Y.java"
+        options="-ext,abc.om">
+			<message kind="error" line="20" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1138" dir="om/openclassrefinedparents"
+      title="Refined parents positive test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			XPos.java"
+        options="-ext,abc.om">
+		</compile>
+    </ajc-test>
+    <ajc-test num="1139" dir="om/openclassrefinedparents"
+      title="Refined parents negative test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			XNeg.java"
+        options="-ext,abc.om">
+			<message kind="error" line="2" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1140" dir="om/openclasstoclause"
+      title="To clause positive test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Pos.java"
+        options="-ext,abc.om">
+		</compile>
+    </ajc-test>
+    <ajc-test num="1141" dir="om/openclasstoclause"
+      title="To clause negative test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Neg.java"
+        options="-ext,abc.om">
+			<message kind="error" line="3" />
+			<message kind="error" line="7" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1142" dir="om/openclasscpeflag"
+      title="To clause cpe flag positive test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Pos.java"
+        options="-ext,abc.om">
+		</compile>
+    </ajc-test>
+    <ajc-test num="1143" dir="om/openclasscpeflag"
+      title="To clause cpe flag negative test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Neg.java"
+        options="-ext,abc.om">
+			<message kind="error" line="2" />
+		</compile>
+    </ajc-test>
 	<!-- end openmodTests.xml (generated comment, please don't delete) -->
 
     <ajc-test num="1200" dir="cflowdepth"

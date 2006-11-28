@@ -1,4 +1,5 @@
 module OpenClassTest {
-	class OpenClassBasicMain;
-	openclass field, parent, method : OpenClassBasicMain;
+	class Main;
+	openclass : Main;
+	openclass parent : A;
 }

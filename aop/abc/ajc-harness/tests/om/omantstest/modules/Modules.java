@@ -4,6 +4,7 @@ module Model {
 	friend model.Resting, model.Combat;
 	expose : call(* model.Ant.kill()); 
 	expose : call(* model.World.round()); 
+	openclass : *; 
 }
 
 module Command {
@@ -11,6 +12,7 @@ module Command {
     class parser.*;
     friend command.Comment; 
     advertise : call(* command.Command.step(..));
+	openclass : *; 
 }
 
 module DebugAndProfile {
@@ -18,11 +20,13 @@ module DebugAndProfile {
     friend debug.CheckScores, debug.CommandTracer, 
     	debug.LiveAnts, debug.WorldDumper; 
     friend profile.NoNewInRound, profile.NoNewInCmd;
+	openclass : *; 
 }
 
 module JavaLang {
     class java.lang.*; 
     advertise : !call(java.lang.StringBuffer.new(..));
+	openclass : *; 
 }
 
 module AntSystem {
@@ -30,4 +34,5 @@ module AntSystem {
     constrain DebugAndProfile;
     friend viewer.Update;
     private expose to profile.*: call(*.new(..)); 
+	openclass : *; 
 }

@@ -6,4 +6,5 @@ module ModuleTest {
 	expose : call(* *(..));
 	expose : AspectA.allfuncs();
 	advertise : call(int A.fib(x));
+	openclass : *;
 }
