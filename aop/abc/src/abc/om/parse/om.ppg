@@ -25,6 +25,8 @@ package abc.om.parse;
 
 import abc.om.ast.*;
 import abc.om.*;
+import polyglot.types.Flags;
+import abc.aspectj.types.AJFlags;
 
 import polyglot.ext.jl.parse.Name;
 
@@ -70,8 +72,8 @@ non terminal ClassnamePatternExpr to_clause;
 
 //open class nonterms
 non terminal OpenClassMember open_class_member;
-non terminal OpenClassFlags open_class_flag;
-non terminal OpenClassFlags open_class_flag_list;
+non terminal OpenClassMemberFlag open_class_flag;
+non terminal List /*OpenClassMemberFlag*/ open_class_flag_list;
 
 start with goal;
 
@@ -337,45 +339,88 @@ aspect_simple_name_pattern ::=
 //open class syntax
 
 open_class_member ::=
-	OPENCLASS:oc open_class_flag_list:flags COLON classname_pattern_expr:cpe SEMICOLON:sc
+	OPENCLASS:oc open_class_flag_list:flags to_clause:toc COLON classname_pattern_expr:cpe SEMICOLON:sc
 	{:
-		RESULT = parser.nf.OpenClassMember(flags, cpe, parser.pos(oc,sc));
+		RESULT = parser.nf.OpenClassMember(flags, 
+			cpe, 
+			toc, 
+			parser.pos(oc,sc));
 	:}
 ;
 
 open_class_flag ::= 
-	FIELD
+	FIELD:f
 	{:
-		RESULT = new OpenClassFlags();
-		RESULT.setField(true);
+		RESULT = parser.nf.OpenClassMemberFlagField(parser.pos(f));
 	:}
 	|
-	PARENT
-	{:
-		RESULT = new OpenClassFlags();
-		RESULT.setParent(true);
+	PARENT:p
+	{: 
+		RESULT = parser.nf.OpenClassMemberFlagParent(
+				parser.nf.CPEUniversal(AbcExtension.generated), 
+				parser.pos(p));
 	:}
 	|
-	METHOD
+	PARENT:p LPAREN classname_pattern_expr:cpe RPAREN:r
 	{:
-		RESULT = new OpenClassFlags();
-		RESULT.setMethod(true);
+		RESULT = parser.nf.OpenClassMemberFlagParent(
+				cpe,
+				parser.pos(p, r));
+	:}
+	|
+	METHOD:m
+	{:
+		RESULT = parser.nf.OpenClassMemberFlagMethod(parser.pos(m));
 	:}
 ;
 
 open_class_flag_list ::=
 	{:
 		//default is all allowed
-		RESULT = new OpenClassFlags(true, true, true);
+		List flagList = new LinkedList();
+
+		//add parent
+		flagList.add(
+			parser.nf.OpenClassMemberFlagParent(
+				parser.nf.CPEUniversal(AbcExtension.generated), 
+				AbcExtension.generated
+			)
+		);
+		//add method
+		flagList.add(parser.nf.OpenClassMemberFlagMethod(AbcExtension.generated));
+		
+		//add field
+		flagList.add(parser.nf.OpenClassMemberFlagField(AbcExtension.generated));
+		
+		RESULT = flagList;
 	:}
 	|
 	open_class_flag:flag
 	{:
-		RESULT = flag;
+		List flagList = new LinkedList();
+		flagList.add(flag);
+		RESULT = flagList;
 	:}
 	|
 	open_class_flag_list:flags COMMA open_class_flag:endflag
 	{:
-		RESULT = flags.disjoin(endflag);
+		flags.add(endflag);
+		RESULT = flags;
 	:}
 ;
+
+//test dropping the support for aspectj reserved identifiers in the CPE
+drop {
+simple_name_pattern ::= aspectj_reserved_identifier:a;
+}
+
+extend unary_classname_pattern_expr ::= //add CPEFlags. Privileged for now...
+	PRIVILEGED:p unary_classname_pattern_expr:cpe
+		{:
+			RESULT = 
+			parser.nf.CPEFlags(
+				AJFlags.aspectclass(AJFlags.privilegedaspect(Flags.NONE)),
+				cpe,
+				parser.pos(p,cpe));
+		:}
+	;

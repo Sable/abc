@@ -23,8 +23,10 @@
  */
 package abc.om.ast;
 
+import polyglot.types.Flags;
 import polyglot.util.*;
 import abc.aspectj.ast.*;
+import abc.aspectj.types.AJFlags;
 import abc.eaj.ast.EAJNodeFactory;
 
 import java.util.*;
@@ -61,7 +63,17 @@ public interface OpenModNodeFactory extends EAJNodeFactory {
     
     public AspectDecl DummyAspectDecl(Position pos, String moduleName);
     
-    public OpenClassMember OpenClassMember(OpenClassFlags flags, 
+    public OpenClassMember OpenClassMember(List memberFlags, 
     		ClassnamePatternExpr cpe, 
+    		ClassnamePatternExpr toClauseCPE,    		
     		Position pos);
+    
+    public OpenClassMemberFlagField OpenClassMemberFlagField(Position pos);
+    
+    public OpenClassMemberFlagMethod OpenClassMemberFlagMethod(Position pos);
+    
+    public OpenClassMemberFlagParent OpenClassMemberFlagParent(
+            ClassnamePatternExpr allowedParents, Position pos);
+    
+    public CPEFlags CPEFlags(Flags flags, ClassnamePatternExpr cpe, Position pos);
 }

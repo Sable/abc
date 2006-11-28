@@ -43,5 +43,6 @@ public interface ModuleBody extends Node {
     public void checkMembers(ModuleDecl module, ExtensionInfo ext)
             throws SemanticException;
     public void checkSigMembers(ModuleDecl module, ExtensionInfo ext);
+    public void checkOpenClassMembers(ModuleDecl module, ExtensionInfo ext);
 
 }

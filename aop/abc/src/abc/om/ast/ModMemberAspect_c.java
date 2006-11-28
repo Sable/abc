@@ -41,7 +41,10 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
- * Represents an aspect member in the AST.
+ * Represents an aspect member in the AST. Implements ContainsNamePattern
+ * as the aspect_name_pattern in the grammar returns a name pattern, so
+ * this must be processed by the name pattern evaluator for the name patterns
+ * to make sense.
  * 
  * @author Neil Ongkingco
  */

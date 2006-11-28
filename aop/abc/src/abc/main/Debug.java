@@ -201,6 +201,15 @@ public class Debug {
     public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or
     												// the maps from the commons collections for TM indexing
 
+    //temporary openmod stuff
+    public boolean omPrecedenceDebug = false;
+    public boolean omCollectModuleAspectsDebug = false;
+    public boolean omMatchingDebug = false;
+    public boolean omASTPrintDebug = false;
+    public boolean omOpenClassParentDebug = false;
+    public boolean omOpenClassITDDebug = false;
+    public boolean omNormalizeDebug = false;
+    
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
         	String m="Done phase: "+s;        	

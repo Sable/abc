@@ -103,19 +103,20 @@ public class ModuleStructure {
     // Caching seems to make openmod run a bit slower (at least for ants)
     // I'm leaving the code in (but commented) until I get a larger test case
     // to see it's worth implementing
-    //private Map /* <PCNode,ModuleNode> */ownerCache;
-    //private Map /* <ModuleNode,List> */moduleListCache;
-    //private Map /* <PCNode,Pointcut> */sigCache;
+    private Map /* <PCNode,ModuleNode> */ownerCache;
+    private Map /* <ModuleNode,List> */moduleListCache;
+    private Map /* <PCNode,Pointcut> */sigCache;
 
     public ModuleStructure(ExtensionInfo ext) {
         moduleNodes = new HashMap();
         aspectNodes = new HashMap();
         classNodes = new HashMap();
+        
         //caching
-        /*
-         * ownerCache = new HashMap(); moduleListCache = new HashMap(); sigCache =
-         * new HashMap();
-         */
+        ownerCache = new HashMap(); 
+        moduleListCache = new HashMap(); 
+        sigCache = new HashMap();
+        
         ModuleStructure.instance = this;
         this.ext = ext;
     }
@@ -213,7 +214,7 @@ public class ModuleStructure {
     /**
      * Returns the owner of an aspect.
      */
-public ModuleNode getOwner(String name, int type) {
+    public ModuleNode getOwner(String name, int type) {
     	//TODO: Just get the parent of the ModuleNodeAspect
         assert(type == ModuleNode.TYPE_ASPECT) : "Node is not an aspect node";
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
@@ -234,10 +235,10 @@ public ModuleNode getOwner(String name, int type) {
         ModuleNode ret = null;
 
         //caching
-        /*
-         * ret = (ModuleNode)ownerCache.get(node); if (ret != null) { return
-         * ret; }
-         */
+        ret = (ModuleNode) ownerCache.get(node);
+        if (ret != null) {
+            return ret;
+        }
 
         //iterate through all module nodes
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
@@ -245,7 +246,7 @@ public ModuleNode getOwner(String name, int type) {
             ret = (ModuleNode) iter.next();
             if (ret.isModule() && ((ModuleNodeModule) ret).containsMember(node)) {
                 //caching
-                //ownerCache.put(node,ret);
+                ownerCache.put(node,ret);
                 return ret;
             }
         }
@@ -356,28 +357,30 @@ public ModuleNode getOwner(String name, int type) {
         return false;
     }
     /**
-     * Returns the module list of the given node. For a module, the module list
-     * is the module itself and its ancestors, starting from the module itself.
-     * For aspects and classes, the module list is the module list of its
-     * parent.
+     * Returns the module list of the given node. For a module, the module 
+     * ancestor list is the module itself and its ancestors, starting from 
+     * the module itself. For aspects and classes, the module list is the 
+     * module list of its parent.
      */
-    public List getModuleList(ModuleNode n) {
+    public List getModuleAncestorList(ModuleNode node) {
         List ret;
 
         //caching
-        /*
-         * ret = (List)moduleListCache.get(n); if (ret != null) { return ret; }
-         */
+        ret = (List)moduleListCache.get(node); 
+        if (ret != null) { return ret; }
 
         //iterate to get list of ancestors
+        ModuleNode currNode = node;
         ret = new ArrayList();
-        if (n.isModule()) {
-            ret.add(n);
+        if (currNode.isModule()) {
+            ret.add(currNode);
         }
-        while (n.getParent() != null) {
-            n = n.getParent();
-            ret.add(n);
+        while (currNode.getParent() != null) {
+            currNode = currNode.getParent();
+            ret.add(currNode);
         }
+        //caching
+        moduleListCache.put(node, ret);
         return ret;
     }
 
@@ -389,10 +392,8 @@ public ModuleNode getOwner(String name, int type) {
         Pointcut ret = null;
 
         //caching
-        /*
-         * ret = (Pointcut)sigCache.get(classNode); if (ret != null) { return
-         * ret; }
-         */
+        ret = (Pointcut)sigCache.get(classNode); 
+        if (ret != null) { return ret; }
 
         ModuleNodeModule owner = (ModuleNodeModule) getOwner(classNode);
         if (owner == null) {
@@ -404,7 +405,7 @@ public ModuleNode getOwner(String name, int type) {
 
         boolean prevIsConstrained = false;
         //get the non-private signatures from the modules in the modulelist
-        List /* ModuleNode */moduleList = getModuleList(owner);
+        List /* ModuleNode */moduleList = getModuleAncestorList(owner);
         for (Iterator iter = moduleList.iterator(); iter.hasNext();) {
             ModuleNodeModule module = (ModuleNodeModule) iter.next();
             if (prevIsConstrained) {
@@ -425,7 +426,7 @@ public ModuleNode getOwner(String name, int type) {
         }
 
         //caching
-        //sigCache.put(classNode,ret);
+        sigCache.put(classNode,ret);
         return ret;
     }
 
@@ -478,7 +479,9 @@ public ModuleNode getOwner(String name, int type) {
         PCNode containingClass = PCStructure.v().getClass(sootContainingClass);
 
         //debug
-        AbcExtension.debPrintln("ModuleStructure.matchesAt: aspect "
+        AbcExtension.debPrintln(
+                AbcExtension.MATCHING_DEBUG,
+                "ModuleStructure.matchesAt: aspect "
                 + currAspect.getName() + "; owning class "
                 + owningClass.toString() + "; containing class "
                 + containingClass.toString() + "; pc " + pc.toString());
@@ -526,14 +529,18 @@ public ModuleNode getOwner(String name, int type) {
                 retResidue = AndResidue.construct(sigMatch, ret);
             }
             //debug
-            AbcExtension.debPrintln("sigMatch = " + sigMatch);
-            AbcExtension.debPrintln("ret = " + ret);
-            AbcExtension.debPrintln("retResidue = " + retResidue);
+            AbcExtension.debPrintln(AbcExtension.MATCHING_DEBUG,
+                    "sigMatch = " + sigMatch);
+            AbcExtension.debPrintln(AbcExtension.MATCHING_DEBUG,
+                    "ret = " + ret);
+            AbcExtension.debPrintln(AbcExtension.MATCHING_DEBUG,
+                    "retResidue = " + retResidue);
 
             return retResidue;
         } else {
             //else throw a no signature match warning
-            AbcExtension.debPrintln("No matching signature in class "
+            AbcExtension.debPrintln(AbcExtension.MATCHING_DEBUG,
+                    "No matching signature in class "
                     + containingClass + " of advice in aspect "
                     + currAspect.getName());
 

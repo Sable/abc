@@ -25,8 +25,10 @@ package abc.om.ast;
 
 import java.util.List;
 
+import polyglot.types.Flags;
 import polyglot.util.*;
 import abc.aspectj.ast.*;
+import abc.aspectj.types.AJFlags;
 import abc.eaj.ast.EAJNodeFactory_c;
 
 /**
@@ -75,8 +77,28 @@ public class OpenModNodeFactory_c extends EAJNodeFactory_c implements
     public AspectDecl DummyAspectDecl(Position pos, String moduleName) {
         return new DummyAspectDecl_c(pos, moduleName);
     }
-	public OpenClassMember OpenClassMember(OpenClassFlags flags, 
+	public OpenClassMember OpenClassMember(List memberFlags, 
 			ClassnamePatternExpr cpe, 
+			ClassnamePatternExpr toClauseCPE,
 			Position pos) {
-		return new OpenClassMember_c(flags, cpe, pos);	}
+		return new OpenClassMember_c(memberFlags, cpe, toClauseCPE, pos);	
+	}
+
+	public OpenClassMemberFlagField OpenClassMemberFlagField(Position pos) {
+	    return new OpenClassMemberFlagField_c(pos);
+	}
+    
+    public OpenClassMemberFlagMethod OpenClassMemberFlagMethod(Position pos) {
+        return new OpenClassMemberFlagMethod_c(pos);
+    }
+    
+    public OpenClassMemberFlagParent OpenClassMemberFlagParent(
+            ClassnamePatternExpr allowedParents, Position pos) {
+        return new OpenClassMemberFlagParent_c(allowedParents, pos);
+    }
+    
+    public CPEFlags CPEFlags(Flags flags, ClassnamePatternExpr cpe, Position pos) {
+        return new CPEFlags_c(flags, cpe, pos);
+    }
+	
 }

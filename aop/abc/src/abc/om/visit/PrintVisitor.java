@@ -66,7 +66,7 @@ public class PrintVisitor extends ContextVisitor {
     }
 
     public NodeVisitor enter(Node parent, Node n) {
-        if (AbcExtension.debug == false) {
+        if (!AbcExtension.isDebugSet(AbcExtension.AST_PRINT_DEBUG)) {
             return super.enter(parent, n);
         }
         if (n instanceof ModuleDecl) {
@@ -79,7 +79,7 @@ public class PrintVisitor extends ContextVisitor {
             
             w.write("From ModuleStructure: ");
             w.newline();
-            printFromModuleStructure((ModuleDecl) n, w);
+            printFromModuleStructure((ModuleDecl) n, w, p);
             printOtherModules(((ModuleDecl) n).name(), w);
         }
         //test for getApplicableSignatures
@@ -110,7 +110,7 @@ public class PrintVisitor extends ContextVisitor {
         return super.enter(parent, n);
     }
 
-    private void printFromModuleStructure(ModuleDecl decl, CodeWriter w) {
+    private void printFromModuleStructure(ModuleDecl decl, CodeWriter w, PrettyPrinter pp) {
         ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(decl.name(),
                 ModuleNode.TYPE_MODULE);
         assert(n != null) : "Node is null";
@@ -119,7 +119,6 @@ public class PrintVisitor extends ContextVisitor {
         w.newline();
         w.write("isConstrained = " + n.isConstrained());
         w.newline();
-        w.begin(4);
         w.write("/*members*/");
         w.newline();
         //print the module members
@@ -164,6 +163,11 @@ public class PrintVisitor extends ContextVisitor {
         w.write("/*thisAspect pointcut*/");
         Pointcut thisAspectPc = n.getThisAspectPointcut();
         w.write(thisAspectPc.toString());
+        w.newline();
+        
+        w.write("/*open class members*/");
+        w.newline();
+        n.getOpenClassMembers().prettyPrint(w, pp);
         w.newline();
         try {
             w.flush();

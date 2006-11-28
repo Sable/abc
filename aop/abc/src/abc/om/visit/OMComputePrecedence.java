@@ -56,9 +56,11 @@ public class OMComputePrecedence extends OncePass {
      * @see abc.aspectj.visit.OncePass#once()
      */
     protected void once() {
-        AbcExtension.debPrintln("openmod compute precedence");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
+                "openmod compute precedence");
         
-        AbcExtension.debPrintln("prec_rel before openmod");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
+                "prec_rel before openmod");
         printPrecRel();
         
         Collection modules = ext.moduleStruct.getModules();
@@ -94,7 +96,8 @@ public class OMComputePrecedence extends OncePass {
                     }
                     prevAspects.addAll(moduleAspectNames);
                 } else if (member.isAspect()) {
-                    AbcExtension.debPrintln("Adding ("+member.name() + "," + prevAspects + ")");
+                    AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG, 
+                            "Adding ("+member.name() + "," + prevAspects + ")");
                     if (ext.prec_rel.get(member.name()) == null) {
                         ext.prec_rel.put(member.name(), new HashSet());
                     }
@@ -105,7 +108,8 @@ public class OMComputePrecedence extends OncePass {
             }
         }
         
-        AbcExtension.debPrintln("prec_rel after openmod");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
+                "prec_rel after openmod");
         printPrecRel();
     }
     
@@ -114,15 +118,17 @@ public class OMComputePrecedence extends OncePass {
         for (Iterator iter = ext.prec_rel.keySet().iterator();
         	iter.hasNext();) {
             String aspectName = (String) iter.next();
-            AbcExtension.debPrint(aspectName + " : ");
+            AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG, 
+                    aspectName + " : ");
             Set laterAspects = (Set)ext.prec_rel.get(aspectName);
             
             for (Iterator iter2 = laterAspects.iterator(); iter2.hasNext(); ) {
                 String laterAspectName = (String) iter2.next();
-                AbcExtension.debPrint(laterAspectName + "; ");
+                AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG, 
+                        laterAspectName + "; ");
             }
             
-            AbcExtension.debPrintln("");
+            AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG, "");
         }
     }
 

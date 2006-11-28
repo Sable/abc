@@ -26,12 +26,15 @@ package abc.om;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import polyglot.util.Position;
 
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
+import abc.main.Debug;
 import abc.om.parse.OMAbcLexer;
 import abc.om.parse.sym;
 import abc.om.visit.ModuleStructure;
@@ -54,7 +57,18 @@ import abc.weaving.matching.*;
  */
 public class AbcExtension extends abc.eaj.AbcExtension {
     //debug
-    public static final boolean debug = false;
+    public static class OMDebug {
+        public OMDebug() {}
+    }
+    public static final OMDebug PRECEDENCE_DEBUG = new OMDebug();
+    public static final OMDebug COLLECT_MODULE_ASPECTS_DEBUG = new OMDebug();
+    public static final OMDebug MATCHING_DEBUG = new OMDebug();
+    public static final OMDebug AST_PRINT_DEBUG = new OMDebug();
+    public static final OMDebug PARENT_DEBUG = new OMDebug();
+    public static final OMDebug ITD_DEBUG = new OMDebug();
+    public static final OMDebug NORMALIZE_DEBUG = new OMDebug();
+    protected static Set debugSet = null; 
+    
     private static boolean isLoaded = false;
 
     public static Position generated = new Position("openmod_generated:0");
@@ -62,6 +76,29 @@ public class AbcExtension extends abc.eaj.AbcExtension {
     public AbcExtension() { 
         super();
         isLoaded = true;
+        
+        this.debugSet = new HashSet();
+        if (Debug.v().omASTPrintDebug) {
+            debugSet.add(AST_PRINT_DEBUG);
+        }
+        if (Debug.v().omCollectModuleAspectsDebug){
+            debugSet.add(COLLECT_MODULE_ASPECTS_DEBUG);
+        }
+        if (Debug.v().omMatchingDebug) {
+            debugSet.add(MATCHING_DEBUG);
+        }
+        if (Debug.v().omPrecedenceDebug) {
+            debugSet.add(PRECEDENCE_DEBUG);
+        }
+        if (Debug.v().omOpenClassParentDebug) {
+            debugSet.add(PARENT_DEBUG);
+        }
+        if (Debug.v().omOpenClassITDDebug) {
+            debugSet.add(ITD_DEBUG);
+        }
+        if (Debug.v().omNormalizeDebug) {
+            debugSet.add(NORMALIZE_DEBUG);
+        }
     }
     
     public static boolean isLoaded() {
@@ -105,12 +142,12 @@ public class AbcExtension extends abc.eaj.AbcExtension {
         
         //open class tokens
         omLexer.addModuleKeyword("openclass", new LexerAction_c(new Integer(
-                sym.OPENCLASS), null));
-        omLexer.addModuleKeyword("field", new LexerAction_c(new Integer(
+                sym.OPENCLASS), new Integer(lexer.pointcut_state())));
+        omLexer.addPointcutKeyword("field", new LexerAction_c(new Integer(
                 sym.FIELD), null));        
-        omLexer.addModuleKeyword("method", new LexerAction_c(new Integer(
+        omLexer.addPointcutKeyword("method", new LexerAction_c(new Integer(
                 sym.METHOD), null));
-        omLexer.addModuleKeyword("parent", new LexerAction_c(new Integer(
+        omLexer.addPointcutKeyword("parent", new LexerAction_c(new Integer(
                 sym.PARENT), null));
         
         //overrride the class keyword
@@ -180,14 +217,18 @@ public class AbcExtension extends abc.eaj.AbcExtension {
     }
     
     
-    public static void debPrintln(String str) {
-        if (debug) {
+    public static boolean isDebugSet(OMDebug debug) {
+        return debugSet.contains(debug);
+    }
+    
+    public static void debPrintln(OMDebug debug, String str) {
+        if (isDebugSet(debug)) {
             System.out.println(str);
         }
     }
 
-    public static void debPrint(String str) {
-        if (debug) {
+    public static void debPrint(OMDebug debug, String str) {
+        if (isDebugSet(debug)) {
             System.out.print(str);
         }
     }

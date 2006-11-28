@@ -49,12 +49,17 @@ public class PCStructure {
     PCNode root;
     PCNode dummy;
     Map/*<ClassType,PCNode>*/ classes;
+    //OM: Reverse hashmap for getting classtypes
+    Map/*<PCNode, ClassType>*/ revClasses;
+    
     boolean autosootify = false;
 
     private PCStructure() {
 	root = new PCNode(null, null, this);
 	dummy = new PCNode(null, null, this);
 	classes = new HashMap();
+	//OM: Reverse hashmap
+	revClasses = new HashMap();
 	v = this;
     }
 
@@ -79,6 +84,9 @@ public class PCStructure {
 		cn = new PCNode(null, null, this).updateWeavable(weavable).setClassType(ct);
 	    }
 	    classes.put(ct, cn);
+	    //OM: Reverse hashmap
+	    revClasses.put(cn,ct);
+	    
 	    if (autosootify) {
 		AbcFactory.classTypeToSootClass(ct);
 	    }
@@ -129,6 +137,9 @@ public class PCStructure {
 	if (!classes.containsKey(ct)) {
 	    PCNode cn = insertClassAndSuperclasses(ct, false);
 	    classes.put(ct, cn);
+	    //OM: Reverse hashmap
+	    revClasses.put(cn,ct);
+	    
 	    return cn;
 	}
 	return (PCNode)classes.get(ct);
@@ -210,6 +221,11 @@ public class PCStructure {
 	}
 	//System.out.println("Nodes: "+nodes);
 	return nodes;
+    }
+    
+    //OM:Reverse hashmap
+    public ClassType getClassType(PCNode node) {
+        return (ClassType)revClasses.get(node);
     }
 
 }

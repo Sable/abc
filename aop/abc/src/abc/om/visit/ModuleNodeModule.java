@@ -39,6 +39,7 @@ import abc.aspectj.visit.PCNode;
 import abc.aspectj.visit.PatternMatcher;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
+import abc.om.ast.OpenClassMember;
 import abc.om.ast.SigMember;
 import abc.om.ast.SigMemberAdvertiseDecl;
 import abc.om.weaving.aspectinfo.BoolPointcut;
@@ -60,11 +61,14 @@ import abc.weaving.aspectinfo.Within;
 public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
     private List /* ModuleNode */members = null;
 
-    private List /* SigMember */sigMembers = null;
+    private List /* SigMember */sigMembers = null; //TODO: Seems to be unused, check if removal possible
+    
 
     //pointcut which is the disjuction of the sigMembers;
     private abc.weaving.aspectinfo.Pointcut sigAIPointcut = null;
     private abc.weaving.aspectinfo.Pointcut privateSigAIPointcut = null;
+    
+    private MSOpenClassMember openClassMember = null;
     
     //true if the module is included as a constrained module
     //only valid for modules
@@ -190,6 +194,20 @@ public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
                     newPointcut, AbcExtension.generated);
         }
     }
+    
+    public void addOpenClassMember(OpenClassMember ocm) {
+        MSOpenClassMemberBase newMember = 
+            new MSOpenClassMemberBase(
+                ocm.getFlags(), ocm.getCPE(), ocm.getToClauseCPE());
+        if (openClassMember == null) {
+            openClassMember = newMember;
+            return;
+        } else {
+            openClassMember = 
+                new MSOpenClassMemberOr(openClassMember, newMember);
+        }
+        
+    }
 
     public Pointcut getSigAIPointcut() {
         return sigAIPointcut;
@@ -295,6 +313,16 @@ public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
             ret = OrPointcut.construct(ret, newTerm, AbcExtension.generated);
         }
         return ret;
+    }
+    
+    public MSOpenClassMember getOpenClassMembers() {
+        if (this.openClassMember == null) {
+            this.openClassMember = new MSOpenClassMemberBase();
+        }
+        return this.openClassMember;
+    }
+    public void setOpenClassMembers(MSOpenClassMember ocm) {
+        this.openClassMember = ocm;
     }
     
     public boolean isAspect() {

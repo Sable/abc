@@ -26,6 +26,7 @@ package abc.om;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,22 +37,29 @@ import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.AspectReflectionInspect;
 import abc.aspectj.visit.AspectReflectionRewrite;
 import abc.aspectj.visit.CleanAspectMembers;
+import abc.aspectj.visit.OncePass;
+import abc.aspectj.visit.ParentDeclarer;
 import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
 import abc.om.ast.OpenModNodeFactory_c;
 import abc.om.parse.Grm;
+import abc.om.visit.CheckDeclareParents;
 import abc.om.visit.CheckDuplicateClassInclude;
+import abc.om.visit.CheckITDs;
 import abc.om.visit.CheckModuleCycles;
 import abc.om.visit.CheckModuleMembers;
 import abc.om.visit.CheckModuleSigMembers;
 import abc.om.visit.CollectModuleAspects;
+import abc.om.visit.CollectModuleOpenClassMembers;
 import abc.om.visit.CollectModules;
 import abc.om.visit.ModuleStructure;
+import abc.om.visit.NormalizeOpenClassMembers;
 import abc.om.visit.OMComputeModulePrecedence;
 import abc.om.visit.OMComputePrecedence;
 import abc.om.visit.PrintVisitor;
 
 import polyglot.ast.NodeFactory;
+import polyglot.frontend.AbstractPass;
 import polyglot.frontend.CupParser;
 import polyglot.frontend.FileSource;
 import polyglot.frontend.GlobalBarrierPass;
@@ -122,11 +130,32 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     public static final Pass.ID AFTER_OM_COMPUTE_MODULE_PRECEDENCE = new Pass.ID(
     		"after-om-compute-module-precedence");
     
-    public static final Pass.ID INIT_DUMMY_ASPECT = new Pass.ID("init_dummy_aspect");
+    public static final Pass.ID INIT_DUMMY_ASPECT = 
+        new Pass.ID("init_dummy_aspect");
     
-    public static final Pass.ID COLLECT_MODULE_ASPECTS = new Pass.ID("collect_module_aspects");
-    public static final Pass.ID AFTER_COLLECT_MODULE_ASPECTS = new Pass.ID("after_collect_module_aspects");
+    public static final Pass.ID COLLECT_MODULE_ASPECTS = 
+        new Pass.ID("collect_module_aspects");
+    public static final Pass.ID AFTER_COLLECT_MODULE_ASPECTS = 
+        new Pass.ID("after_collect_module_aspects");
+    
+    public static final Pass.ID COLLECT_OPEN_CLASS_MEMBERS = 
+        new Pass.ID("collect_open_class_members");
+    public static final Pass.ID AFTER_COLLECT_OPEN_CLASS_MEMBERS = 
+        new Pass.ID("after_collect_open_class_members");
 
+    public static final Pass.ID CHECK_DECLARE_PARENTS =
+        new Pass.ID("check_declare_parents");
+    public static final Pass.ID AFTER_CHECK_DECLARE_PARENTS =
+        new Pass.ID("after_check_declare_parents");
+    
+    public static final Pass.ID CHECK_ITD = 
+        new Pass.ID("check_itd");
+    public static final Pass.ID AFTER_CHECK_ITD =
+        new Pass.ID("after_check_itd");
+    
+    public static final Pass.ID NORMALIZE_OPEN_CLASS_MEMBERS =
+        new Pass.ID("normalize_open_class_members");
+    
     /* Module globals */
     public ModuleStructure moduleStruct;
 
@@ -159,24 +188,54 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     protected void passes_patterns_and_parents(List l, Job job) {
         super.passes_patterns_and_parents(l, job);
 
-        l.add(new GlobalBarrierPass(BEFORE_MODULE_COLLECT, job));
-        l.add(new VisitorPass(MODULE_COLLECT, job, new CollectModules(job, ts,
+        List newList = new LinkedList();
+        
+        newList.add(new GlobalBarrierPass(BEFORE_MODULE_COLLECT, job));
+        newList.add(new VisitorPass(MODULE_COLLECT, job, new CollectModules(job, ts,
                 (OpenModNodeFactory) nf, this)));
-        l.add(new GlobalBarrierPass(AFTER_MODULE_COLLECT, job));
+        newList.add(new GlobalBarrierPass(AFTER_MODULE_COLLECT, job));
 
-        l.add(new VisitorPass(CHECK_MODULE_MEMBERS, job,
+        newList.add(new VisitorPass(CHECK_MODULE_MEMBERS, job,
                         new CheckModuleMembers(job, ts,
                                 (OpenModNodeFactory) nf, this)));
-        l.add(new GlobalBarrierPass(CHECKED_MODULE_MEMBERS, job));
+        newList.add(new GlobalBarrierPass(CHECKED_MODULE_MEMBERS, job));
 
-        l.add(new VisitorPass(CHECK_MODULE_CYCLES, job, new CheckModuleCycles(
+        newList.add(new VisitorPass(CHECK_MODULE_CYCLES, job, new CheckModuleCycles(
                 job, ts, (OpenModNodeFactory) nf, this)));
-        l.add(new GlobalBarrierPass(CHECKED_MODULE_CYCLES, job));
+        newList.add(new GlobalBarrierPass(CHECKED_MODULE_CYCLES, job));
 
-        l.add(new VisitorPass(CHECK_DUPLICATE_CLASS_INCLUDE, job,
+        newList.add(new VisitorPass(CHECK_DUPLICATE_CLASS_INCLUDE, job,
                 new CheckDuplicateClassInclude(job, ts,
                         (OpenModNodeFactory) nf, this)));
-        l.add(new GlobalBarrierPass(AFTER_CHECK_DUPLICATE_CLASS_INCLUDE, job));
+        newList.add(new GlobalBarrierPass(AFTER_CHECK_DUPLICATE_CLASS_INCLUDE, job));
+        
+        newList.add(new VisitorPass(COLLECT_OPEN_CLASS_MEMBERS, job,
+                new CollectModuleOpenClassMembers(job,
+                        ts, 
+                        (OpenModNodeFactory) nf, 
+                        this)
+                        ));
+        newList.add(new GlobalBarrierPass(AFTER_COLLECT_OPEN_CLASS_MEMBERS, job));
+        
+        newList.add(new NormalizeOpenClassMembers(NORMALIZE_OPEN_CLASS_MEMBERS,job,this));
+        
+        newList.add(new VisitorPass(CHECK_DECLARE_PARENTS, job,
+                new CheckDeclareParents(job,ts,
+                        (OpenModNodeFactory)nf, this)
+                        ));
+        newList.add(new GlobalBarrierPass(AFTER_CHECK_DECLARE_PARENTS, job));
+        
+        //TODO: Find a way to make this extensible. This is not so great
+        //Find the ParentDeclarer, then insert the passes before it.
+        int i = 0;
+        for (i = 0; i < l.size(); i++) {
+            AbstractPass currPass = (AbstractPass) l.get(i);
+            if (currPass.id() == DECLARE_PARENTS) {
+                break;
+            }
+        }
+        l.addAll(i, newList);
+        
     }
 
     protected void passes_precedence_relation(List l, Job job) {
@@ -191,9 +250,15 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     }
     
     protected void passes_aspectj_transforms(List l, Job job) {
-        //NEIL: copy the implementation of the aspectj transforms
+        //copy the implementation of the aspectj transforms
         //as checkmodulesigmembers needed to be added after harvestaspectinfo
         //but before cleanaspectmembers.
+
+        //Place CheckITDs here, before AspectMethods push the itds into the
+        //classes
+        l.add(new VisitorPass(CHECK_ITD, job,
+                new CheckITDs(job, ts, (OpenModNodeFactory)nf, this)));
+        l.add(new GlobalBarrierPass(AFTER_CHECK_ITD,job));
         
     	l.add(new VisitorPass(ASPECT_REFLECTION_INSPECT,job, new AspectReflectionInspect()));
     	l.add(new VisitorPass(ASPECT_REFLECTION_REWRITE,job, new AspectReflectionRewrite(nf,ts)));

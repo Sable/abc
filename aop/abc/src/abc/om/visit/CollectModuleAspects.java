@@ -60,7 +60,8 @@ public class CollectModuleAspects extends ContextVisitor {
             Aspect dummyAspect = ext.getAbcExtension().getGlobalAspectInfo().getAspect(
                     				AbcFactory.AbcClass(dummyAspectDecl.type())
                     				);
-            AbcExtension.debPrintln(dummyAspect.toString());
+            AbcExtension.debPrintln(AbcExtension.COLLECT_MODULE_ASPECTS_DEBUG,
+                    dummyAspect.toString());
             ModuleNodeModule module = (ModuleNodeModule)ext.moduleStruct.getNode(decl.name(), 
                     				ModuleNode.TYPE_MODULE);
             module.setDummyAspect(dummyAspect);

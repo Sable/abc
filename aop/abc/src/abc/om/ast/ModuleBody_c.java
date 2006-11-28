@@ -89,20 +89,30 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
 
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
         w.begin(4);
+        
         w.write("/*members*/");
         w.newline();
         for (Iterator iter = members.iterator(); iter.hasNext();) {
             ModMember member = (ModMember) iter.next();
             member.prettyPrint(w, pp);
         }
+        
         w.write("/*signature*/");
         w.newline();
         for (Iterator iter = sigMembers.iterator(); iter.hasNext();) {
             SigMember sigMember = (SigMember) iter.next();
             sigMember.prettyPrint(w, pp);
         }
-        w.end();
+        
+        w.write("/*open class members*/");
         w.newline();
+        for (Iterator iter = openClassMembers.iterator(); iter.hasNext();) {
+            OpenClassMember ocm = (OpenClassMember) iter.next();
+            ocm.prettyPrint(w, pp);
+        }
+        w.newline();
+        
+        w.end();
         //super.prettyPrint(w, pp);
     }
 
@@ -208,13 +218,28 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
         assert(n != null);
         n.addSigMember(sigMember);
     }
+    
+    public void checkOpenClassMembers(ModuleDecl module, ExtensionInfo ext) {
+        ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(module.name(),
+                ModuleNode.TYPE_MODULE);
+        assert(n != null);
+        for (Iterator i = openClassMembers.iterator(); i.hasNext();) {
+            OpenClassMember ocm = (OpenClassMember) i.next();
+            n.addOpenClassMember(ocm);
+        }
+    }
 
-    public ModuleBody_c reconstruct(List members, List sigMembers) {
+
+    public ModuleBody_c reconstruct(List members, 
+            List sigMembers, 
+            List openClassMembers) {
         if (!CollectionUtil.equals(members, this.members)
-                || !CollectionUtil.equals(sigMembers, this.sigMembers)) {
+                || !CollectionUtil.equals(sigMembers, this.sigMembers)
+                || !CollectionUtil.equals(openClassMembers, this.openClassMembers)) {
             ModuleBody_c n = (ModuleBody_c) copy();
             n.members = members;
             n.sigMembers = sigMembers;
+            n.openClassMembers = openClassMembers;
             return n;
         }
         return this;
@@ -223,6 +248,7 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
     public Node visitChildren(NodeVisitor v) {
         List newMembers = new LinkedList();
         List newSigMembers = new LinkedList();
+        List newOpenClassMembers = new LinkedList();
 
         //visit members
         for (Iterator iter = members.iterator(); iter.hasNext();) {
@@ -235,8 +261,14 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
             SigMember sigMember = (SigMember) iter.next();
             newSigMembers.add(visitChild(sigMember, v));
         }
+        
+        //visit open class members
+        for (Iterator iter = openClassMembers.iterator(); iter.hasNext();) {
+            OpenClassMember openClassMember = (OpenClassMember) iter.next();
+            newOpenClassMembers.add(visitChild(openClassMember, v));
+        }
 
-        return reconstruct(newMembers, newSigMembers);
+        return reconstruct(newMembers, newSigMembers, openClassMembers);
     }
 
 }

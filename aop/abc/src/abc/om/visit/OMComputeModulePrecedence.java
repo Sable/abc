@@ -124,7 +124,8 @@ public class OMComputeModulePrecedence extends OncePass {
      * by the order they are included.
      */
     protected void once() {
-        AbcExtension.debPrintln("---OMComputeModulePrecedence");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
+                "---OMComputeModulePrecedence");
         
         Collection modules = ext.moduleStruct.getModules();
         
@@ -177,7 +178,8 @@ public class OMComputeModulePrecedence extends OncePass {
                     
         //			check for cycles
                     if (hasHigherPrecedence(laterAspectRoot, currModule)) {
-                        AbcExtension.debPrint("The modules " + currModule + 
+                        AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG,
+                                "The modules " + currModule + 
                                 " and " + laterAspectRoot + "have a precedence conflict.");
                         addModuleCycleError(currModule, laterAspectRoot);
                         continue topmodule;
@@ -234,11 +236,12 @@ public class OMComputeModulePrecedence extends OncePass {
             return;
         }
         //DEBUG
-        AbcExtension.debPrint("[");
+        AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG,"[");
         for (Iterator i = sorted.iterator(); i.hasNext(); ) {
-            AbcExtension.debPrint(i.next().toString() + "; ");
+            AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG,
+                    i.next().toString() + "; ");
         }
-        AbcExtension.debPrintln("]");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,"]");
         
         //TODO: Add warnings when top level module precedence wasn't explicitly
         //defined
@@ -260,9 +263,11 @@ public class OMComputeModulePrecedence extends OncePass {
         }
         
         //DEBUG
-        AbcExtension.debPrintln("Module precedence relation");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
+                "Module precedence relation");
         debPrintPrecRel(mod_prec_rel);
-        AbcExtension.debPrintln("Aspect precedence relation");
+        AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
+                "Aspect precedence relation");
         debPrintPrecRel(ext.prec_rel);
     }
     
@@ -372,14 +377,16 @@ public class OMComputeModulePrecedence extends OncePass {
         Set keys = map.keySet();
         for (Iterator iter = keys.iterator(); iter.hasNext();) {
             Object currEntry = iter.next();
-            AbcExtension.debPrint(currEntry.toString() + " : [");
+            AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG,
+                    currEntry.toString() + " : [");
             
             Set laterEntries = (Set)map.get(currEntry);
             for (Iterator iter2 = laterEntries.iterator(); iter2.hasNext();) {
                 Object laterEntry = iter2.next();
-                AbcExtension.debPrint(laterEntry.toString() + "; ");
+                AbcExtension.debPrint(AbcExtension.PRECEDENCE_DEBUG,
+                        laterEntry.toString() + "; ");
             }
-            AbcExtension.debPrintln("]");
+            AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,"]");
         }
     }
 }
