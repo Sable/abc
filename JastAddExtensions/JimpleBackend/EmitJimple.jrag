@@ -340,6 +340,10 @@ aspect EmitJimple {
       chains = new java.util.Stack();
       chains.push(body.getUnits());
     }
+    public Local getParam(int i)
+    {
+      return body.getParameterLocal(i);
+    }
     public Local newTemp(soot.Type type) {
       Local local = Jimple.v().newLocal("temp$" + nextTempIndex++, type);
       body.getLocals().add(local);
