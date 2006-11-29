@@ -9,21 +9,58 @@
     }
   }
   class Events extends Parser.Events {
+    public void reportError(Symbol token, String msg) {
+      //StringBuffer s = new StringBuffer();
+      //s.append(token.getLine(token.getStart()) + ", " + token.getColumn(token.getStart()) + "\n");
+      //s.append(msg);
+      abc.main.Main.v().getAbcExtension().reportError(
+        polyglot.util.ErrorInfo.SYNTAX_ERROR,
+        msg,
+        new polyglot.util.Position(fileName, token.getLine(token.getStart()), token.getColumn(token.getStart()))
+      );
+      //System.out.println(s.toString());
+      //throw new SourceError(s.toString());
+    }
     public void syntaxError(Symbol token) {
-      StringBuffer s = new StringBuffer();
-      s.append(token.getLine(token.getStart()) + ", " + token.getColumn(token.getStart()) + "\n");
-      s.append("  *** Syntactic error: unexpected token " + Terminals.NAMES[token.getId()]);
-      throw new SourceError(s.toString());
-        //super.syntaxError(token);
-        //throw new RuntimeException(token.getLine(token.getStart()) + ", " + token.getColumn(token.getStart()) + ": Syntax Error");
+      reportError(token, "Unexpected token " + Terminals.NAMES[token.getId()]);
     }
     public void scannerError(Scanner.Exception e) {
+      abc.main.Main.v().getAbcExtension().reportError(
+        polyglot.util.ErrorInfo.LEXICAL_ERROR,
+        e.getMessage(),
+        new polyglot.util.Position(fileName, e.line, e.column)
+      );
+      /*
       StringBuffer s = new StringBuffer();
       s.append(e.line + ", " + e.column + "\n");
       s.append("  *** Lexical error: " + e.getMessage());
-      throw new SourceError(s.toString());
+      System.out.println(s.toString());
+      */
+      //throw new SourceError(s.toString());
         //super.scannerError(e);
         //throw new RuntimeException("Unexpected token");
+    }
+    public void unexpectedTokenRemoved(Symbol token) {
+      reportError(token, "Removed unexpected token " + Terminals.NAMES[token.getId()]);
+    }
+    public void missingTokenInserted(Symbol token) {
+      reportError(token, "Inserted missing token");
+    }
+    public void misspelledTokenReplaced(Symbol token) {
+      /*
+      StringBuffer s = new StringBuffer();
+      s.append("  *** Syntactic error: replaced unexpected token with " );
+      if (token.value != null) {
+        s.append("\"" + token.value + "\"");
+			}
+      else {
+        s.append(Terminals.NAMES[token.getId()]);
+			}
+      reportError(token, s.toString());
+      */
+    }
+    public void errorPhraseRemoved(Symbol token) {
+      //reportError(token, "   *** Syntactic error: removed error phrase");
     }
 
   }
@@ -32,8 +69,11 @@
             report = new Events(); // Use error handler in parser
         }
 
+  String fileName;
+
   public CompilationUnit parse(java.io.InputStream is, String fileName, polyglot.util.ErrorQueue error_queue) throws java.io.IOException, beaver.Parser.Exception {
     try {
+      this.fileName = fileName;
       abc.ja.parse.JavaScanner scanner = new abc.ja.parse.JavaScanner(new Unicode(is), fileName, error_queue);
       return (CompilationUnit)parse(scanner);
     } catch(SourceError e) {
@@ -212,6 +252,8 @@ BodyDecl class_body_declaration =
   | instance_initializer.i                     {: return i; :}
   | static_initializer.si                      {: return si; :}
   | constructor_declaration.c                  {: return c; :}
+  | error SEMICOLON {: return new InstanceInitializer(new Block()); :}
+  | error LBRACE {: return new InstanceInitializer(new Block()); :}
   ;
 BodyDecl class_member_declaration =
     field_declaration.f                        {: return f; :}
@@ -376,6 +418,7 @@ List variable_initializers =
 Block block =
     LBRACE block_statements.l RBRACE {: return new Block(l); :}
   | LBRACE                    RBRACE {: return new Block(new List()); :}
+  | error RBRACE {: return new Block(new List()); :}
   ;
 List block_statements =
     block_statement.b                     {: return new List().add(b); :}
@@ -400,6 +443,7 @@ Stmt statement =
   | if_then_else_statement.i                   {: return i; :}
   | while_statement.w                          {: return w; :}
   | for_statement.f                            {: return f; :}
+  | error SEMICOLON {: return new EmptyStmt(); :}
   ;
 Stmt statement_without_trailing_substatement =
     block.b                                    {: return b; :}

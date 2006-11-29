@@ -66,7 +66,7 @@ public class CompileSequence extends abc.main.CompileSequence {
     }
     error_queue().enqueue(ErrorInfo.SEMANTIC_ERROR, s, p);
   }
-  private ErrorQueue error_queue() {
+  public ErrorQueue error_queue() {
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
     return error_queue;
@@ -85,13 +85,18 @@ public class CompileSequence extends abc.main.CompileSequence {
             c.addAll(aspect_sources);
             c.add("-classpath");
             c.add(OptionsParser.v().classpath());
+            if(c.contains("new/IndeterminateArg.java")) {
+              c.add("-verbose");
+            }
 			String[] args = new String[c.size()];
 			int index = 0;
 			for(Iterator iter = c.iterator(); iter.hasNext(); index++) {
 				String s = (String)iter.next();
+                //abc.testing.Main.stdout.println("Arg to jastadd: " + s);
 				args[index] = s;
 			}
     Program program = new Program();
+    ASTNode.reset();
 
       program.initBytecodeReader(new abc.ja.bytecode.Parser());
       program.initJavaParser(
@@ -106,6 +111,7 @@ public class CompileSequence extends abc.main.CompileSequence {
 
 			program.initOptions();
             program.addKeyValueOption("-classpath");
+            program.addKeyOption("-verbose");
 			program.addOptions(args);
 			Collection files = program.files();
 

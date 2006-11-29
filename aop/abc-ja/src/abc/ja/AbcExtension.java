@@ -7,12 +7,11 @@ import abc.ja.parse.JavaParser.Terminals;
 
 public class AbcExtension extends abc.main.AbcExtension {
 	public void reportError(ErrorInfo ei) {
-		System.out.println("Error: " + ei);
+    compileSequence.error_queue().enqueue(ei);
 	}
 
 	public void reportError(int level, String s, Position pos) {
-		// TODO Auto-generated method stub
-		System.out.println("Error: " + s + " at " + pos);
+    compileSequence.error_queue().enqueue(level, s, pos);
 	}
 
 	private CompileSequence compileSequence = null;
