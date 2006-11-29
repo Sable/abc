@@ -5376,6 +5376,64 @@
 			<message line="1-5" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Simple open class compile" num="1132" keywords="openmod" dir="om/openclassbasic">
+        <compile options="-ext,abc.om" files="Main.java,          Modules.java"></compile>
+    </ajc-test>
+<ajc-test title="Simple open class parents" num="1133" keywords="openmod" dir="om/openclassbasicparents">
+        <compile options="-ext,abc.om" files="Main.java,          Modules.java">
+			<message line="19" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Simple open class ITD" num="1134" keywords="openmod" dir="om/openclassbasicitd">
+        <compile options="-ext,abc.om" files="Main.java,          Modules.java">
+			<message line="27" kind="error"></message>
+			<message line="28" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Simple open class inclusion" num="1135" keywords="openmod" dir="om/openclassbasicinclusion">
+        <compile options="-ext,abc.om" files="Main.java,          Modules.java">
+			<message line="23" kind="error"></message>
+			<message line="25" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Friend aspect parent test" num="1136" keywords="openmod" dir="om/openclassfriendparenttest">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    A.java,    B.java,    I.java,    pack/Y.java">
+			<message line="20" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Friend aspect ITD test" num="1137" keywords="openmod" dir="om/openclassfrienditdtest">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    A.java,    B.java,    I.java,    pack/Y.java">
+			<message line="20" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Refined parents positive test" num="1138" keywords="openmod" dir="om/openclassrefinedparents">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    XPos.java">
+		</compile>
+    </ajc-test>
+<ajc-test title="Refined parents negative test" num="1139" keywords="openmod" dir="om/openclassrefinedparents">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    XNeg.java">
+			<message line="2" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="To clause positive test" num="1140" keywords="openmod" dir="om/openclasstoclause">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    Pos.java">
+		</compile>
+    </ajc-test>
+<ajc-test title="To clause negative test" num="1141" keywords="openmod" dir="om/openclasstoclause">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    Neg.java">
+			<message line="3" kind="error"></message>
+			<message line="7" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="To clause cpe flag positive test" num="1142" keywords="openmod" dir="om/openclasscpeflag">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    Pos.java">
+		</compile>
+    </ajc-test>
+<ajc-test title="To clause cpe flag negative test" num="1143" keywords="openmod" dir="om/openclasscpeflag">
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    Neg.java">
+			<message line="2" kind="error"></message>
+		</compile>
+    </ajc-test>
 <ajc-test title="Cflowdepth Factorial" num="1200" dir="cflowdepth">
         <compile options="-ext,abc.eaj" files="Fact.java">
         </compile>
