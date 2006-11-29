@@ -286,7 +286,7 @@ aspect Statements {
       emitFinallyCode(b);
       b.add(Jimple.v().newGotoStmt(label_end()));
     }
-    if(hasFinally()) {
+    if(hasFinally() && getNumCatchClause() > 0) {
       b.addLabel(label_exception_handler());
       emitExceptionHandler(b);
       b.add(Jimple.v().newGotoStmt(label_end()));
@@ -301,7 +301,7 @@ aspect Statements {
         getCatchClause(i).label()
       );
     }
-    if(hasFinally()) {
+    if(hasFinally() && getNumCatchClause() > 0) {
       b.addTrap(
         typeThrowable(),
         label_begin(),

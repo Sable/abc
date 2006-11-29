@@ -73,9 +73,14 @@ aspect EmitJimple {
   
   syn int TypeDecl.sootTypeModifiers() {
     int result = 0;
-    if(isPublic()) result |= soot.Modifier.PUBLIC;
-    if(isProtected()) result |= soot.Modifier.PROTECTED;
-    if(isPrivate()) result |= soot.Modifier.PRIVATE;
+    if(isNestedType()) {
+      result |= soot.Modifier.PUBLIC;
+    }
+    else {
+      if(isPublic()) result |= soot.Modifier.PUBLIC;
+      if(isProtected()) result |= soot.Modifier.PROTECTED;
+      if(isPrivate()) result |= soot.Modifier.PRIVATE;
+    }
     if(isFinal()) result |= soot.Modifier.FINAL;
     if(isStatic()) result |= soot.Modifier.STATIC;
     if(isAbstract()) result |= soot.Modifier.ABSTRACT;

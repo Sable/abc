@@ -17,6 +17,18 @@ class JavaCompiler {
   
   public static boolean compile(String args[]) {
     Program program = new Program();
+    program.initBytecodeReader(new bytecode.Parser());
+    program.initJavaParser(
+      new JavaParser() {
+        public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
+          return new parser.JavaParser().parse(is, fileName);
+        }
+      }
+    );
+    // extract package name from a source file without parsing the entire file
+    program.initPackageExtractor(new parser.JavaScanner());
+
+
     program.initOptions();    
     program.addKeyValueOption("-classpath");
     program.addKeyValueOption("-sourcepath");
