@@ -5,26 +5,40 @@
 -->
 <project name="Bytecode backend" default="build">
 
+<property file="ant.settings"/>
+<fail message="Please fix ant.settings" unless="abc.loc"/>
+
+<property file="${abc.loc}/ant.settings"/>
+<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+            unless="polyglot.loc"/>
+
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
 
 <!-- "tools" is the directory where generators and libraries are located. -->
-<property name="tools" value="../Java1.4Frontend/tools"/>
+<property name="tools" value="${frontend}/tools"/>
 	
 <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
-<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="../Java1.4Frontend/tools/JFlex.jar"/>
+<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
 <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
-<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="../Java1.4Frontend/tools/beaver.jar"/>
+<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
-<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../Java1.4Frontend/tools/jastadd2.jar"/>
-
-<property name="libraries" value="lib/jasminclasses.jar:lib/java_cup.jar:lib/polyglot.jar:lib/soot-dev/classes/"/>
+<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
 
 <!-- compile sources -->
 <target name="build" depends="gen">
 	  <!-- compile sources compiler="jikes" nowarn="true"-->
-	  <javac debug="true" nowarn="true" srcdir="." sourcepath="" classpath=".:${tools}/junit.jar:${libraries}"
+	  <javac debug="true" nowarn="true" srcdir="." sourcepath=""
 	         fork="true" memoryMaximumSize="128M">
+
+      <classpath>
+         <pathelement location="${polyglot.loc}"/>
+         <pathelement location="${polyglot.cupclasses.loc}"/>
+         <pathelement location="${soot.loc}"/>
+         <pathelement location="${jasmin.loc}"/>
+	       <pathelement location="."/>
+      </classpath>
+
       <include name ="*.java"/>
 	    <include name ="AST/*.java"/>
 	    <include name ="bytecode/**/*.java"/>
@@ -38,7 +52,7 @@
   <!-- create AST node types and weave aspect modules -->
 	<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true"
            outdir="${basedir}" lazyMaps="true" suppressWarnings="false" parentInterface="false">
-		<fileset dir="../Java1.4Frontend">
+		<fileset dir="${frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -50,10 +64,10 @@
 		</fileset>
   </jastadd>
   <!-- generate the scanner -->
-	<jflex file="../Java1.4Frontend/parser/java14.flex" outdir="parser" nobak="yes"/>
+	<jflex file="${frontend}/parser/java14.flex" outdir="parser" nobak="yes"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
   <concat destfile="parser/JavaParser.all" binary="true" force="no">
-    <fileset dir="../Java1.4Frontend">
+    <fileset dir="${frontend}">
       <include name="parser/java14.parser"/>
     </fileset>
   </concat>
@@ -65,12 +79,12 @@
   <beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="no" useSwitch="yes"/>
   <!-- copy library files-->
   <copy todir="beaver" preservelastmodified="true">
-    <fileset dir="../Java1.4Frontend/beaver"/>
+    <fileset dir="${frontend}/beaver"/>
   </copy>
   <copy todir="bytecode" preservelastmodified="true">
-    <fileset dir="../Java1.4Frontend/bytecode"/>
+    <fileset dir="${frontend}/bytecode"/>
   </copy>
-  <copy todir="parser" file="../Java1.4Frontend/parser/Unicode.java" preservelastmodified="true"/>
+  <copy todir="parser" file="${frontend}/parser/Unicode.java" preservelastmodified="true"/>
 </target>
 
 <!-- remove .class files also -->
@@ -95,6 +109,20 @@
       <attribute name="Main-Class" value="JavaCompiler"/>
     </manifest>
   </jar>
+</target>
+
+<target name="run" depends="build">
+<fail message="Compiler arguments are given in variable 'args'" unless="args"/>
+  <java classname="JavaCompiler" fork="true">
+    <arg line="${args}"/>
+    <classpath>
+      <pathelement location="."/>
+      <pathelement location="${polyglot.loc}"/>
+      <pathelement location="${polyglot.cupclasses.loc}"/>
+      <pathelement location="${soot.loc}"/>
+      <pathelement location="${jasmin.loc}"/>
+    </classpath>
+  </java>
 </target>
 
 </project>
