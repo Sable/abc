@@ -2,7 +2,6 @@ import AST.*;
 
 import java.util.*;
 import java.io.*;
-import parser.*;
 import beaver.Symbol;
 
 import soot.*;
@@ -83,7 +82,7 @@ class JavaCompiler {
           }
         }
       }
-    } catch (JavaParser.SourceError e) {
+    } catch (parser.JavaParser.SourceError e) {
       System.err.println(e.getMessage());
       return false;
     } catch (Exception e) {
