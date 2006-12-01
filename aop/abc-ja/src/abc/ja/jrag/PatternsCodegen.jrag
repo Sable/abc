@@ -41,28 +41,28 @@ aspect PatternsCodegen
     //
     // Matching method patterns
     //
-    public boolean MethodPattern.matchesCall(SootMethodRef smr) {
-        SootMethod m = smr.resolve();
-        return matchesExecution(m);
-    }
-
-    public boolean MethodPattern.matchesExecution(SootMethod sm)
+    public boolean MethodPattern.matchesCall(SootMethodRef smr)
     {
         // check modifiers
         // (FIXME)
 
         // check return type
-        if(!getReturnTypePattern().matchesType(sm.getReturnType()))
+        if(!getReturnTypePattern().matchesType(smr.returnType()))
             return false;
 
         // check type and name
-        if(!getMemberNamePattern().matchesTypeAndName(sm))
+        if(!getMemberNamePattern().matchesTypeAndName(smr))
             return false;
 
         // check exceptions
         // (FIXME)
 
         return true;
+    }
+
+    public boolean MethodPattern.matchesExecution(SootMethod sm)
+    {
+        return matchesCall(sm.makeRef());
     }
 
     public boolean
@@ -169,32 +169,113 @@ aspect PatternsCodegen
     }
 
 
-    syn boolean Pattern.matchesTypeAndName(SootMethod m) = false;
+    syn boolean Pattern.matchesTypeAndName(SootMethodRef smr) = false;
     syn boolean Pattern.matchesName(String name) = false;
 
-    eq SimpleNamePattern.matchesTypeAndName(SootMethod m) =
-        matchesName(m.getName());
+    eq SimpleNamePattern.matchesTypeAndName(SootMethodRef smr) =
+        matchesName(smr.name());
 
     eq SimpleNamePattern.matchesName(String name) =
         regex().matcher(name).matches();
 
-    eq TypeDotNamePattern.matchesTypeAndName(SootMethod m) {
+    eq TypeDotNamePattern.matchesTypeAndName(SootMethodRef smr) {
         throw new InternalCompilerError("matches not implemented for "
                                             + getClass().getName());
     }
 
-    eq DotNamePattern.matchesTypeAndName(SootMethod m)
+    eq DotNamePattern.matchesTypeAndName(SootMethodRef smr)
     {
-        if(m.isStatic()) {
-        return getLhs().matchesType(m.getDeclaringClass())
-            && getRhs().matchesName(m.getName());
+        // abc-2006-2, section 4.1.1
+        // -------------------------
+        // C (the context) is implicit
+        // R is the static type for method called X in the shadow
+        // X is any method that smr overrides
+        // Z is a (reflexive transitive) supertype of R and matches the pattern
+        // P is the class that contains X
+
+        // match member part
+        if (!getRhs().matchesName(smr.name()))
+            return false;
+
+        // match type part
+        SootClass classR = smr.declaringClass();
+
+        // find supertypes of R that matches the type pattern
+        Set supertypes = superTypes(classR);
+
+        Iterator i = supertypes.iterator();
+        while (i.hasNext()) {
+            SootClass classZ = (SootClass) i.next();
+            if (!getLhs().matchesType(classZ))
+                continue;
+
+            // in the static case it must be the case that P = Z
+            if(smr.isStatic() && declaresMethod(classZ, smr))
+                return true;
+
+            // otherwise it must be the case that hasSubtypeStar(P,Z)
+            if (!smr.isStatic() && containsOverriddenMethod(classZ, smr))
+                return true;
         }
         return false;
     }
 
+    protected boolean
+    DotNamePattern.declaresMethod(SootClass sc, SootMethodRef smr)
+    {
+        return sc.declaresMethod(smr.getSubSignature());
+    }
+
+    protected boolean
+    DotNamePattern.containsOverriddenMethod(SootClass sc, SootMethodRef smr)
+    {
+        SootMethodRef overridden =
+            Scene.v().makeMethodRef(sc, smr.name(), smr.parameterTypes(),
+                                    smr.returnType(), smr.isStatic());
+
+        try {
+            overridden.resolve();
+            return true;
+        } catch(RuntimeException e) {
+            return false;
+        }
+    }
+
+    protected Set DotNamePattern.superTypes(SootClass sc)
+    {
+        Set supertypes = new HashSet();
+        addSuperTypes(sc, supertypes);
+        return supertypes;
+    }
+
+    protected void DotNamePattern.addSuperTypes(SootClass sc, Set supertypes)
+    {
+        supertypes.add(sc);
+
+        // recurse over the interfaces of this class
+        Iterator i = sc.getInterfaces().iterator();
+        while(i.hasNext()) {
+            SootClass iface = (SootClass) i.next();
+            if (!supertypes.contains(iface))
+                addSuperTypes(iface, supertypes);
+        }
+
+        // recurse over the superclass of this class
+        if (sc.hasSuperclass()) {
+            SootClass superclass = sc.getSuperclass();
+            if (!supertypes.contains(superclass))
+                addSuperTypes(superclass, supertypes);
+        }
+    }
+
     syn boolean Pattern.matchesType(SootClass c) = false;
-    eq SimpleNamePattern.matchesType(SootClass c) =
-        matchesName(c.getShortName());
+    eq SimpleNamePattern.matchesType(SootClass c) {
+        String name = c.getShortName();
+        int index = name.lastIndexOf('$');
+        if (index != -1)
+            name = name.substring(index + 1, name.length());
+        return matchesName(name);
+    }
     eq ExplicitTypeNamePattern.matchesType(SootClass c) =
         getAccess().type().fullName().equals(c.getName())
         && getAccess().isTypeAccess();

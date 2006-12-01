@@ -84,6 +84,9 @@ aspect PointcutCodegen
         return null;
     }
 
+    // FIXME - interface init conditional on the pattern
+    //         matching the empty argument list
+    //       - supposed to get base() for interface-initialization
     public Pointcut InitializationPointcutExpr.pointcut() {
         Pointcut within_constructor =
             new WithinConstructor(getPattern().constructorPattern(), pos());
@@ -156,7 +159,6 @@ aspect PointcutCodegen
         return new Within(getPattern().classnamePattern(), pos());
     }
 
-    // FIXME below this point
     public Pointcut WithinCodePointcutExpr.pointcut() {
         if (getPattern().isMethodPattern())
             return new WithinMethod(getPattern().methodPattern(), pos());
