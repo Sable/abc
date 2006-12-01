@@ -377,7 +377,9 @@ aspect Statements {
     Local l = b.newTemp(typeThrowable().getSootType());
     b.add(Jimple.v().newIdentityStmt(l, Jimple.v().newCaughtExceptionRef()));
     emitFinallyCode(b);
-    b.add(Jimple.v().newThrowStmt(l));
+    soot.jimple.Stmt throwStmt = Jimple.v().newThrowStmt(l);
+    throwStmt.addTag(new soot.tagkit.ThrowCreatedByCompilerTag());
+    b.add(throwStmt);
     b.addLabel(label_end());
     // createExceptionTable
     b.addTrap(typeThrowable(), label_begin(), label_finally(), label_exception_handler());
