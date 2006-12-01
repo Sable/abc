@@ -1,0 +1,105 @@
+aspect ImplicitVariables
+{
+    //
+    // Advice bodies in AspectJ have three implicitly defined variables,
+    // which are encoded in this source-file using the following numbering:
+    //
+    //  (0) thisJointPoint
+    //  (1) thisJoinPointStaticPart
+    //  (2) thisEnclosingJoinPoint
+    //
+    // All VarAccess nodes, that occur in advice and mention these variable
+    // names, should be rewritten to ImplicitVarAccess nodes.
+
+    inh AdviceDecl ASTNode.enclosingAdviceDecl();
+    eq Program.getCompilationUnit(int i).enclosingAdviceDecl() = null;
+    eq AdviceDecl.getBlock().enclosingAdviceDecl() = this;
+
+    rewrite VarAccess {
+        when (! (this instanceof ImplicitVarAccess) &&
+              enclosingAdviceDecl() != null &&
+              (name().equals("thisJoinPoint")
+               || name().equals("thisJoinPointStaticPart")
+               || name().equals("thisEnclosingJoinPoint")))
+        to ImplicitVarAccess {
+            return new ImplicitVarAccess(name());
+        }
+    }
+
+    syn lazy Variable AdviceDecl.implicitVarDecl(String name)
+    {
+        // compute a declaration for this implicit variable
+        Modifiers final_mod =
+            new Modifiers(new List().add(new Modifier("final")));
+        String classname =
+            name.equals("thisJoinPoint") ? "JoinPoint" : "JoinPointStaticPart";
+        Access type_access =
+            lookupType("org.aspectj.lang", classname).createQualifiedAccess();
+
+        ParameterDeclaration decl =
+            new ParameterDeclaration(final_mod, type_access, name);
+
+        // add decl to tree (as parameter to the advice method)
+        // and force possible rewrites to this decl (by reading it)
+        AdviceSpec spec = getAdviceSpec();
+        spec.addParameter(decl);
+        decl = spec.getParameter(spec.getNumParameter() - 1);
+
+        // return the new declaration
+        return decl;
+    }
+      
+    eq ImplicitVarAccess.decl() = enclosingAdviceDecl().implicitVarDecl(name());
+
+    public void AdviceSpec.nameCheck()
+    {
+        super.nameCheck();
+
+        for (int i = 0; i < getNumParameter(); i++) {
+            String name = getParameter(i).name();
+
+            if (name.equals("thisJoinPoint") ||
+                name.equals("thisJoinPointStaticPart") ||
+                name.equals("thisEnclosingJoinPointStaticPart"))
+            {
+                getParameter(i).error(
+                    "The variable \"" + name +
+                    "\" is implicitly defined in advice bodies");
+            }
+        }
+    }
+
+
+
+    // some of this may eventually be split off into
+    // ImplicitVariablesCodegen.jrag
+
+    public static String AdviceDecl.implicitVarName(int i)
+    {
+        switch(i) {
+            case 0:
+                return "thisJoinPoint";
+            case 1:
+                return "thisJoinPointStaticPart";
+            case 2:
+                return "thisEnclosingJoinPointStaticPart";
+        }
+        throw new
+            InternalCompilerError("No such implicit advice variable: " + i);
+    }
+
+    syn lazy int[] AdviceDecl.implicitParameters()
+    {
+        int[] params = new int[3];
+        AdviceSpec spec = getAdviceSpec();
+        
+        for (int i = 0; i < 3; i++) {
+            params[i] = -1;
+
+            for (int j = 0; j < spec.getNumParameter(); j++)
+                if (spec.getParameter(j).name().equals(implicitVarName(i)))
+                    params[i] = j;
+        }
+        return params;
+    }
+}

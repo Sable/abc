@@ -40,7 +40,7 @@ aspect AdviceCodegen {
   }
 
   protected void AdviceDecl.createAspectInfo() {
-    
+    int[] jp_params = implicitParameters();
     Pointcut pc = getPointcutExpr().pointcut();
 
     globalAspectInfo().addAdviceDecl(new abc.weaving.aspectinfo.AdviceDecl(
@@ -48,9 +48,9 @@ aspect AdviceCodegen {
       pc,
       methodSig(),
       aspectClass(),
-      -1 /*jp*/,
-      -1 /*jpsp*/,
-      -1 /*ejp*/,
+      jp_params[0] /*jp*/,
+      jp_params[1] /*jpsp*/,
+      jp_params[2] /*ejp*/,
       new ArrayList(),
       pos()
     ));

@@ -27,6 +27,8 @@ PerCflowBelow : PerClause ::= PointcutExpr;
 IsSingleton : PerClause;
 
 Proceed : Access ::= Arg:Expr*;
+ImplicitVarAccess : VarAccess;
+
 
 // ----------------------- Declare (...) -------------------
 
