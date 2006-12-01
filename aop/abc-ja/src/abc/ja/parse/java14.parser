@@ -41,10 +41,10 @@
         //throw new RuntimeException("Unexpected token");
     }
     public void unexpectedTokenRemoved(Symbol token) {
-      reportError(token, "Removed unexpected token " + Terminals.NAMES[token.getId()]);
+      //reportError(token, "Removed unexpected token " + Terminals.NAMES[token.getId()]);
     }
     public void missingTokenInserted(Symbol token) {
-      reportError(token, "Inserted missing token");
+      //reportError(token, "Inserted missing token");
     }
     public void misspelledTokenReplaced(Symbol token) {
       /*
