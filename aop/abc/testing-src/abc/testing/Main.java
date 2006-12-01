@@ -46,6 +46,8 @@ public class Main {
         static ArrayList numberFilter = null;
 
         static Runtime runtime;
+        
+        static String messageOverride = "";
 
         /* Pitfall: All XML.select operations need fully qualified node
          * names in order to match, i.e. NAMESPACE:Node. For convenience,
@@ -346,6 +348,9 @@ public class Main {
                             }
                             numberFilter = nums;
                         }
+                        else if(args[arg].equals("-messageOverride")) {
+                        	messageOverride = args[++arg];
+                        }
                         else if(!doneXmlFile) {
                             inputFileName = args[arg];
                             doneXmlFile = true;
@@ -367,7 +372,8 @@ public class Main {
         }
 
         protected static void printUsage() {
-                System.out.println("Usage: java abc.testing.Main [-list [-xml]] [-timeajc [-cutoff SECONDS]] XMLFILE [DIR-FILTER [TITLE-FILTER]]");
+                System.out.println("Usage: java abc.testing.Main [-list [-xml]] [-timeajc [-cutoff SECONDS]] " +
+                		"\n\t[-messageOverride OVERRIDE] XMLFILE [DIR-FILTER [TITLE-FILTER]]");
                 System.out.println("Runs the cases listed in XMLFILE individually.");
                 System.out.println("Outputs passed.xml, skipped.xml and failed.xml");
         }

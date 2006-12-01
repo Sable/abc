@@ -14,7 +14,7 @@
    <!ATTLIST ajc-test comment CDATA #IMPLIED >
    <!ATTLIST ajc-test abccomment CDATA #IMPLIED>
 
-   <!ELEMENT compile (dir-changes*,file*,(ajcmessage | message)*)>
+   <!ELEMENT compile (dir-changes*,file*,(ajcmessage | message | jamessage)*)>
    <!ATTLIST compile staging CDATA #IMPLIED >
    <!ATTLIST compile badInput CDATA #IMPLIED >
    <!ATTLIST compile files CDATA #IMPLIED >
@@ -83,6 +83,13 @@
    <!ATTLIST ajcmessage text CDATA #IMPLIED >
    <!ATTLIST ajcmessage file CDATA #IMPLIED >
    <!ATTLIST ajcmessage details CDATA #IMPLIED >
+
+   <!ELEMENT jamessage (source*)>
+   <!ATTLIST jamessage kind (abort | fail | error | warning | info | Xlint | ignore ) #REQUIRED >
+   <!ATTLIST jamessage line CDATA #IMPLIED >
+   <!ATTLIST jamessage text CDATA #IMPLIED >
+   <!ATTLIST jamessage file CDATA #IMPLIED >
+   <!ATTLIST jamessage details CDATA #IMPLIED >
 
    <!ELEMENT source (#PCDATA)>
    <!ATTLIST source line CDATA #IMPLIED >

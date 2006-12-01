@@ -61,7 +61,7 @@ public class TestCase {
 	}
 	
 // Attributes of <ajc-test/>
-	String title, dir;
+	String title, dir, messageOverride;
 	
 	XML xTest;
 	
@@ -281,15 +281,18 @@ public class TestCase {
 					
 					SilentMain main = null;
 					try {
+						messageOverride = abc.testing.Main.messageOverride + "message";
 						main = new SilentMain(args);
 						main.run();
 						// Compilation successful. If we were expecting errors, this means the test failed.
 					    List warnings = sortList(main.getErrors());
-						if(xChildren[i].has("//abc:message[@kind != \"warning\"]")) {
+						if(xChildren[i].has("//abc:message[@kind != \"warning\"]")
+								|| xChildren[i].has("//abc:" + messageOverride + "[@kind != \"warning\"]")) {
 						    System.err.println("Compilation succeeded but was expected to fail.");
 						    failTest();
 						    return;
-						} else if(xChildren[i].has("//abc:message")) {
+						} else if(xChildren[i].has("//abc:message")
+								|| xChildren[i].has("//abc:" + messageOverride)) {
 						    // we can only really have warnings now, otherwise we should have entered the previous
 						    // case - and we should have received a CompilationFailedException anyway.
 						    if(!checkErrors(warnings, xChildren[i]))
@@ -313,7 +316,8 @@ public class TestCase {
 					    // Alternative way of detecting this could be to check if badInput=true for <message />
 					    // TODO: Check if abc needs to throw the same errors.
 					    // XXX: Should we check for presence of further errors here?
-					    if(!xChildren[i].has("//abc:message[@kind=\"abort\"]")) {
+					    if(!xChildren[i].has("//abc:message[@kind=\"abort\"]")
+					    		&& !xChildren[i].has("//abc:" + messageOverride + "[@kind=\"abort\"]")) {
 					        System.err.println("Compiler aborted when it wasn't meant to.");
 					        failTest();
 					        return;
@@ -542,7 +546,8 @@ public class TestCase {
 		Position pos;
 		String errFile, errKind;
 		int errLine;
-		XML[] expectedErrors = xTest.select("//abc:message");
+		XML[] expectedErrors = xTest.select("//abc:" + messageOverride);
+		if(expectedErrors.length == 0) expectedErrors = xTest.select("//abc:message");
 		if(errors.size() != expectedErrors.length) {
 		    // We require a 1-1 correspondence between expected and actual errors to pass the
 		    // test, so that if the number isn't the same we can't possibly pass.
