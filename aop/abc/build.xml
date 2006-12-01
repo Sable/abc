@@ -541,15 +541,15 @@
 	        </java>
 	    </target>
 	
-
-	    <target name="test" depends="abc-jar">
+    <!-- default testing harness args-->
+    	<property name="args" value="" />
+	    <target name="test" depends="abc-jar,testing">
 	      <java classname="abc.testing.Main" fork="true"
 	            dir="ajc-harness/tests">
 	        <jvmarg line="-Xmx512M" />
 	        <arg line="abcTests.xml ${args}"/>
 	    <!--    <arg line="abcTests.xml pureJava"/>    -->
 	        <classpath>
-	          <pathelement location="classes"/>
 	          <pathelement location="classes"/>
 	          <pathelement location="runtime-classes"/>
 	          <pathelement location="testing-classes"/>
