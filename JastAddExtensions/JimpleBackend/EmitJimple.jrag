@@ -286,7 +286,7 @@ aspect EmitJimple {
           local,
           asRValue(b,
             getInit().type().emitCastTo(b, // Assign conversion
-              getInit().eval(b),
+              getInit(),
               type()
             )
           )
@@ -317,6 +317,12 @@ aspect EmitJimple {
     if(v instanceof soot.jimple.ConcreteRef) return v;
     if(v instanceof soot.jimple.Expr) return v;
     throw new Error("Need to convert " + v.getClass().getName() + " to RValue");
+  }
+
+  public soot.Value TypeDecl.emitCastTo(Body b, Expr expr, TypeDecl type) {
+    if(expr.isConstant())
+      return emitConstant(type.cast(expr.constant()));
+    return emitCastTo(b, expr.eval(b), type);
   }
 
   public soot.Value TypeDecl.emitCastTo(Body b, soot.Value v, TypeDecl type) {
@@ -465,7 +471,7 @@ aspect EmitJimple {
           FieldDeclaration f = (FieldDeclaration)bodyDecl;
           if(f.isStatic() && f.hasInit()) {
             Local l = asLocal(b, 
-              f.getInit().type().emitCastTo(b, f.getInit().eval(b), f.type()) // AssignConversion
+              f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
             );
             b.add(Jimple.v().newAssignStmt(
               Jimple.v().newStaticFieldRef(f.sootRef()),
@@ -573,7 +579,7 @@ aspect EmitJimple {
           if(!f.isStatic() && f.hasInit()) {
             soot.Local base = b.emitThis();
             Local l = asLocal(b,
-              f.getInit().type().emitCastTo(b, f.getInit().eval(b), f.type()) // AssignConversion
+              f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
             );
             b.add(Jimple.v().newAssignStmt(
               Jimple.v().newInstanceFieldRef(base, f.sootRef()),

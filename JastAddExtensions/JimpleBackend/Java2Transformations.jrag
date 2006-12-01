@@ -56,7 +56,7 @@ aspect Java2Transformations {
     Variable v = decl();
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
-      if(f.isPrivate() && !hostType().hasField(v.name())) {
+      if(requiresAccessor()) {
         f.accessorIndex();
         f.accessorWriteIndex();
       }

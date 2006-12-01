@@ -42,7 +42,7 @@ aspect Expressions {
     Value lvalue = getDest().eval(b);
     Value rvalue = asRValue(b,
       getSource().type().emitCastTo(b, // Assign conversion
-        getSource().eval(b),
+        getSource(),
         getDest().type()
       )
     );
@@ -61,7 +61,7 @@ aspect Expressions {
     Value lvalue = getDest().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
     Value value = b.newTemp(dest.emitCastTo(b, v, type));
-    Value rvalue = source.emitCastTo(b, getSource().eval(b), type);
+    Value rvalue = source.emitCastTo(b, getSource(), type);
     Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
       dest
@@ -119,7 +119,7 @@ aspect Expressions {
     Value lvalue = getDest().eval(b);
     Value v = lvalue instanceof Local ? lvalue : (Value)lvalue.clone();
     Value value = b.newTemp(dest.emitCastTo(b, v, type));
-    Value rvalue = source.emitCastTo(b, getSource().eval(b), typeInt());
+    Value rvalue = source.emitCastTo(b, getSource(), typeInt());
     Value result = asImmediate(b, type.emitCastTo(b,
       createAssignOp(b, value, rvalue),
       dest
@@ -175,6 +175,18 @@ aspect Expressions {
     return lastAccess().eval(b);
   }
 
+
+  syn boolean VarAccess.requiresAccessor() {
+    Variable v = decl();
+    if(!(v instanceof FieldDeclaration))
+      return false;
+    FieldDeclaration f = (FieldDeclaration)v;
+    if(f.isPrivate() && !hostType().hasField(v.name()))
+      return true;
+    if(f.isProtected() && !f.hostPackage().equals(hostPackage()))
+      return true;
+    return false;
+  }
   public soot.Value VarAccess.eval(Body b) {
     Variable v = decl();
     if(v instanceof VariableDeclaration) {
@@ -199,13 +211,13 @@ aspect Expressions {
       if(f.isStatic()) {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
-        if(f.isPrivate() && !hostType().hasField(v.name()))
+        if(requiresAccessor())
           return f.emitInvokeFieldAccessor(b, null, fieldQualifierType());
         else
           return Jimple.v().newStaticFieldRef(f.sootRef());
       }
       else {
-        if(f.isPrivate() && !hostType().hasField(v.name())) {
+        if(requiresAccessor()) {
           soot.Local base = base(b);
           return f.emitInvokeFieldAccessor(b, base, fieldQualifierType());
         }
@@ -236,7 +248,7 @@ aspect Expressions {
     Variable v = decl();
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
-      if(f.isPrivate() && !hostType().hasField(v.name())) {
+      if(requiresAccessor()) {
         if(f.isStatic())
           return f.emitInvokeFieldAccessorWrite(b, null, rvalue, fieldQualifierType());
         else
@@ -310,7 +322,7 @@ aspect Expressions {
       list.add(
         asImmediate(b,
           getArg(i).type().emitCastTo(b, // MethodInvocationConversion
-            getArg(i).eval(b),
+            getArg(i),
             decl().getParameter(i).type()
           )
         )
@@ -516,7 +528,7 @@ aspect Expressions {
     // args
     for(int i = 0; i < getNumArg(); i++)
       list.add(asImmediate(b, 
-         getArg(i).type().emitCastTo(b, getArg(i).eval(b), c.getParameter(i).type()))); // MethodInvocationConversion
+         getArg(i).type().emitCastTo(b, getArg(i), c.getParameter(i).type()))); // MethodInvocationConversion
 
     // this$val
     for(Iterator iter = c.hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
@@ -573,7 +585,7 @@ aspect Expressions {
     // args
     for(int i = 0; i < getNumArg(); i++)
       list.add(asImmediate(b, 
-         getArg(i).type().emitCastTo(b, getArg(i).eval(b), c.getParameter(i).type()))); // MethodInvocationConversion
+         getArg(i).type().emitCastTo(b, getArg(i), c.getParameter(i).type()))); // MethodInvocationConversion
 
     // this$val
     for(Iterator iter = c.hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
@@ -661,7 +673,7 @@ aspect Expressions {
     }
 
     for(int i = 0; i < getNumArg(); i++)
-      list.add(asImmediate(b, getArg(i).type().emitCastTo(b, getArg(i).eval(b), decl().getParameter(i).type()))); // MethodInvocationConversion
+      list.add(asImmediate(b, getArg(i).type().emitCastTo(b, getArg(i), decl().getParameter(i).type()))); // MethodInvocationConversion
 
     // local values of local variables in this class that are accessed from the instantiated anonymous class
     for(Iterator iter = type().enclosingVariables().iterator(); iter.hasNext(); ) {
@@ -730,7 +742,7 @@ aspect Expressions {
     for(int i = 0; i < getNumInit(); i++) {
       Value rvalue = 
         getInit(i).type().emitCastTo(b, // Assign conversion
-          getInit(i).eval(b),
+          getInit(i),
           expectedType()
         );
       Value index = IntType.emitConstant(i);
@@ -782,10 +794,30 @@ aspect Expressions {
   // See BooleanExpressions.jrag for LogNotExpr
 
   public soot.Value CastExpr.eval(Body b) {
+    if(isConstant())
+      return emitConstant(constant());
     return getExpr().type().emitCastTo(b,
       asLocal(b, getExpr().eval(b)),
       type()
     );
+  }
+
+  public static soot.Value ASTNode.emitConstant(Constant constant) {
+    if(constant instanceof Constant.ConstantInt)
+      return IntType.emitConstant(constant.intValue());
+    else if(constant instanceof Constant.ConstantLong)
+      return soot.jimple.LongConstant.v(constant.longValue());
+    else if(constant instanceof Constant.ConstantFloat)
+      return soot.jimple.FloatConstant.v(constant.floatValue());
+    else if(constant instanceof Constant.ConstantDouble)
+      return soot.jimple.DoubleConstant.v(constant.doubleValue());
+    else if(constant instanceof Constant.ConstantChar)
+      return IntType.emitConstant(constant.intValue());
+    else if(constant instanceof Constant.ConstantBoolean)
+      return BooleanType.emitConstant(constant.booleanValue());
+    else if(constant instanceof Constant.ConstantString)
+      return soot.jimple.StringConstant.v(constant.stringValue());
+    throw new Error("Unexpected constant");
   }
 
   public soot.Value Unary.emitPostfix(Body b, int constant) {
@@ -825,11 +857,11 @@ aspect Expressions {
   public soot.Value Binary.eval(Body b) {
     return asLocal(b, emitOperation(b, 
       getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-        getLeftOperand().eval(b),
+        getLeftOperand(),
         type()
       ),
       getRightOperand().type().emitCastTo(b, // Binary numeric promotion
-        getRightOperand().eval(b),
+        getRightOperand(),
         type()
       )
     ));
@@ -838,11 +870,11 @@ aspect Expressions {
   public soot.Value Binary.emitShiftExpr(Body b) {
     return asLocal(b, emitOperation(b, 
       getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-        getLeftOperand().eval(b),
+        getLeftOperand(),
         type()
       ),
       getRightOperand().type().emitCastTo(b,
-        getRightOperand().eval(b),
+        getRightOperand(),
         typeInt()
       )
     ));
@@ -941,13 +973,13 @@ aspect Expressions {
     return soot.jimple.Jimple.v().newAddExpr(
       b.newTemp(
         getLeftOperand().type().emitCastTo(b,  // Binary numeric promotion
-          getLeftOperand().eval(b),
+          getLeftOperand(),
           type()
         )
       ),
       asImmediate(b,
         getRightOperand().type().emitCastTo(b, // Binary numeric promotion
-          getRightOperand().eval(b),
+          getRightOperand(),
           type()
         )
       )

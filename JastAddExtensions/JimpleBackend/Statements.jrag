@@ -274,6 +274,13 @@ aspect Statements {
   syn lazy soot.jimple.Stmt TryStmt.label_exception_handler() = newLabel();
   syn lazy soot.jimple.Stmt TryStmt.label_catch_end() = newLabel();
 
+  syn boolean TryStmt.needsFinallyTrap() = getNumCatchClause() != 0 || enclosedByExceptionHandler();
+  inh boolean TryStmt.enclosedByExceptionHandler();
+  eq TypeDecl.getBodyDecl().enclosedByExceptionHandler() = false;
+  eq MethodDecl.getBlock().enclosedByExceptionHandler() = getNumException() != 0;
+  eq ConstructorDecl.getBlock().enclosedByExceptionHandler() = getNumException() != 0;
+  eq TryStmt.getBlock().enclosedByExceptionHandler() = true;
+
   public void TryStmt.jimplify2(Body b) {
     b.addLabel(label_begin());
     getBlock().jimplify2(b);
@@ -281,12 +288,14 @@ aspect Statements {
     emitFinallyCode(b);
     b.add(Jimple.v().newGotoStmt(label_end()));
 
+    soot.jimple.Stmt catches = newLabel();
+    b.addLabel(catches);
     for(int i = 0; i < getNumCatchClause(); i++) {
       getCatchClause(i).jimplify2(b);
       emitFinallyCode(b);
       b.add(Jimple.v().newGotoStmt(label_end()));
     }
-    if(hasFinally() && getNumCatchClause() > 0) {
+    if(hasFinally() && needsFinallyTrap()) {
       b.addLabel(label_exception_handler());
       emitExceptionHandler(b);
       b.add(Jimple.v().newGotoStmt(label_end()));
@@ -301,11 +310,17 @@ aspect Statements {
         getCatchClause(i).label()
       );
     }
-    if(hasFinally() && getNumCatchClause() > 0) {
+    if(hasFinally() && needsFinallyTrap()) {
       b.addTrap(
         typeThrowable(),
         label_begin(),
         label_block_end(),
+        label_exception_handler()
+      );
+      b.addTrap(
+        typeThrowable(),
+        catches,
+        label_exception_handler(),
         label_exception_handler()
       );
     }
@@ -327,7 +342,11 @@ aspect Statements {
     Local l = b.newTemp(typeThrowable().getSootType());
     b.add(Jimple.v().newIdentityStmt(l, Jimple.v().newCaughtExceptionRef()));
     emitFinallyCode(b);
-    b.add(Jimple.v().newThrowStmt(l));
+    if(hasFinally() && getFinally().canCompleteNormally()) {
+      soot.jimple.Stmt throwStmt = Jimple.v().newThrowStmt(l);
+      throwStmt.addTag(new soot.tagkit.ThrowCreatedByCompilerTag());
+      b.add(throwStmt);
+    }
   }
 
   syn lazy soot.jimple.Stmt SynchronizedStmt.label_begin() = newLabel();

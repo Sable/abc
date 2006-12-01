@@ -117,7 +117,7 @@ aspect BooleanExpressions {
         b.addLabel(then_branch_label());
         b.add(Jimple.v().newAssignStmt(result,
           getTrueExpr().type().emitCastTo(b,
-            getTrueExpr().eval(b),
+            getTrueExpr(),
             type()
           )
         ));
@@ -129,7 +129,7 @@ aspect BooleanExpressions {
         b.addLabel(else_branch_label());
         b.add(Jimple.v().newAssignStmt(result,
           getFalseExpr().type().emitCastTo(b,
-            getFalseExpr().eval(b),
+            getFalseExpr(),
             type()
           )
         ));
@@ -215,20 +215,44 @@ aspect BooleanExpressions {
       if(type.isNumericType()) {
         type = binaryNumericPromotedType();
         left = getLeftOperand().type().emitCastTo(b, // Binary numeric promotion
-          getLeftOperand().eval(b),
+          getLeftOperand(),
           type
         );
         right = getRightOperand().type().emitCastTo(b, // Binary numeric promotion
-          getRightOperand().eval(b),
+          getRightOperand(),
           type
         );
+        if(type.isDouble() || type.isFloat() || type.isLong()) {
+          Local l;
+          if(type.isDouble() || type.isFloat()) {
+            if(this instanceof GEExpr || this instanceof GTExpr) {
+              l = asLocal(b, soot.jimple.Jimple.v().newCmplExpr(asImmediate(b, left), asImmediate(b, right)));
+            }
+            else {
+              l = asLocal(b, soot.jimple.Jimple.v().newCmpgExpr(asImmediate(b, left), asImmediate(b, right)));
+            }
+          }
+          else {
+            l = asLocal(b, soot.jimple.Jimple.v().newCmpExpr(asImmediate(b, left), asImmediate(b, right)));
+          }
+          b.add(Jimple.v().newIfStmt(comparisonInv(b, l, BooleanType.emitConstant(false)), false_label()));
+          b.add(Jimple.v().newGotoStmt(true_label()));
+        }
+        else {
+          b.add(Jimple.v().newIfStmt(comparison(b, left, right), true_label()));
+          b.add(Jimple.v().newGotoStmt(false_label()));
+          //b.add(Jimple.v().newIfStmt(comparisonInv(b, left, right), false_label()));
+          //b.add(Jimple.v().newGotoStmt(true_label()));
+        }
       }
       else {
         left = getLeftOperand().eval(b);
         right = getRightOperand().eval(b);
+        b.add(Jimple.v().newIfStmt(comparison(b, left, right), true_label()));
+        b.add(Jimple.v().newGotoStmt(false_label()));
+        //b.add(Jimple.v().newIfStmt(comparisonInv(b, left, right), false_label()));
+        //b.add(Jimple.v().newGotoStmt(true_label()));
       }
-      b.add(Jimple.v().newIfStmt(comparison(b, left, right), true_label()));
-      b.add(Jimple.v().newGotoStmt(false_label()));
     }
   }
 
@@ -252,5 +276,27 @@ aspect BooleanExpressions {
   }
   public soot.Value NEExpr.comparison(Body b, soot.Value left, soot.Value right) {
     return Jimple.v().newNeExpr(asImmediate(b, left), asImmediate(b, right));
+  }
+
+  public soot.Value RelationalExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    throw new Error("comparisonInv not supported for " + getClass().getName());
+  }
+  public soot.Value LTExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    return Jimple.v().newGeExpr(asImmediate(b, left), asImmediate(b, right));
+  }
+  public soot.Value LEExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    return Jimple.v().newGtExpr(asImmediate(b, left), asImmediate(b, right));
+  }
+  public soot.Value GEExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    return Jimple.v().newLtExpr(asImmediate(b, left), asImmediate(b, right));
+  }
+  public soot.Value GTExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    return Jimple.v().newLeExpr(asImmediate(b, left), asImmediate(b, right));
+  }
+  public soot.Value EQExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    return Jimple.v().newNeExpr(asImmediate(b, left), asImmediate(b, right));
+  }
+  public soot.Value NEExpr.comparisonInv(Body b, soot.Value left, soot.Value right) {
+    return Jimple.v().newEqExpr(asImmediate(b, left), asImmediate(b, right));
   }
 }

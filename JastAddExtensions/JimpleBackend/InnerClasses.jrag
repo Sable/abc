@@ -416,7 +416,7 @@ aspect InnerClasses {
     ArrayList parameters = new ArrayList();
     if(!isStatic())
       parameters.add(hostType().getSootType());
-    SootMethod m = new SootMethod("access$" + accessorIndex(), parameters, type().getSootType(), soot.Modifier.STATIC, new ArrayList());
+    SootMethod m = new SootMethod("access$" + accessorIndex(), parameters, type().getSootType(), soot.Modifier.STATIC | soot.Modifier.PUBLIC , new ArrayList());
     hostType().getSootClassDecl().addMethod(m);
     JimpleBody body = Jimple.v().newBody(m);
     m.setActiveBody(body);
@@ -451,7 +451,7 @@ aspect InnerClasses {
     if(!isStatic())
       parameters.add(hostType().getSootType());
     parameters.add(type().getSootType());
-    SootMethod m = new SootMethod("access$" + accessorWriteIndex(), parameters, type().getSootType(), soot.Modifier.STATIC, new ArrayList());
+    SootMethod m = new SootMethod("access$" + accessorWriteIndex(), parameters, type().getSootType(), soot.Modifier.STATIC | soot.Modifier.PUBLIC, new ArrayList());
     hostType().getSootClassDecl().addMethod(m);
     JimpleBody body = Jimple.v().newBody(m);
     m.setActiveBody(body);

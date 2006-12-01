@@ -125,7 +125,7 @@ class JavaCompiler {
     if(Program.hasOption("-jimple"))
       Options.v().set_output_format(Options.output_format_jimple);
 
-    //PhaseOptions.v().setPhaseOption("jop", "enabled");
+    PhaseOptions.v().setPhaseOption("jop", "enabled");
     PackManager.v().runBodyPacks();
     PackManager.v().writeOutput();
     return true;
