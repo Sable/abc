@@ -80,14 +80,10 @@ public class CompileSequence extends abc.main.CompileSequence {
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
 
 	try {
-			System.out.println("Hello JastAdd");
             Collection c = new ArrayList();
             c.addAll(aspect_sources);
             c.add("-classpath");
             c.add(OptionsParser.v().classpath());
-            if(c.contains("new/IndeterminateArg.java")) {
-              c.add("-verbose");
-            }
 			String[] args = new String[c.size()];
 			int index = 0;
 			for(Iterator iter = c.iterator(); iter.hasNext(); index++) {
