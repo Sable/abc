@@ -50,15 +50,15 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$30$around$1601(AroundAll.java:199)
+	at A.inline$28$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:396)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 FAIL: Test 496: "new/elaborated into testing of around on all join points" failed.
 
 
@@ -70,9 +70,9 @@ java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:396)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
@@ -98,9 +98,9 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:396)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
 
 
@@ -136,9 +136,9 @@ Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTe
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:535)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
 	at abc.main.Main.findSourcesInDir(Main.java:621)
 	at abc.main.Main.loadSourceRoots(Main.java:638)
@@ -153,9 +153,9 @@ Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhan
 polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
 	at abc.main.Main.run(Main.java:487)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 Caused by: java.lang.OutOfMemoryError: Java heap space
 FAIL: Test 817: "bugs/lines/Weaving rt.jar results in stack overflow" failed.
 
@@ -194,9 +194,9 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:396)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed.
 
 
@@ -206,9 +206,9 @@ Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhan
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:89)
 	at abc.main.Main.run(Main.java:487)
-	at abc.testing.TestCase.runTest(TestCase.java:285)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
 Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot-class-path set properly?)
 	at soot.SootResolver.bringToHierarchy(SootResolver.java:139)
 	at soot.SootResolver.bringToSignatures(SootResolver.java:172)
@@ -225,16 +225,16 @@ Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bind
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NCWeakRefs4.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999984 times, rather than 1000000.
+InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999981 times, rather than 1000000.
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:392)
-	at abc.testing.Main.doCase(Main.java:281)
-	at abc.testing.Main.main(Main.java:115)
-Caused by: java.lang.RuntimeException: Matched 999984 times, rather than 1000000.
+	at abc.testing.TestCase.runTest(TestCase.java:396)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: Matched 999981 times, rather than 1000000.
 	at NCWeakRefs4.main(NCWeakRefs4.java:22)
 	... 7 more
 FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Strings)" failed.
