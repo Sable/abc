@@ -344,8 +344,7 @@ aspect Expressions {
           result = Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
       }
       else
-        result = Jimple.v().newSpecialInvokeExpr(left, decl().sootRef(), list);
-        // TODO: checkme decl().emitInvokeSpecialMethod(gen, methodQualifierType());
+        result = Jimple.v().newSpecialInvokeExpr(left, sootRef(), list);
       return type().isVoid() ? result : asLocal(b, result);
     }
     else {
@@ -354,18 +353,33 @@ aspect Expressions {
         Local left = asLocal(b, createLoadQualifier(b));
         ArrayList list = buildArgList(b);
         if(decl().hostType().isInterfaceDecl())
-          result = Jimple.v().newInterfaceInvokeExpr(left, decl().sootRef(), list);
+          result = Jimple.v().newInterfaceInvokeExpr(left, sootRef(), list);
         else
-          result = Jimple.v().newVirtualInvokeExpr(left, decl().sootRef(), list);
+          result = Jimple.v().newVirtualInvokeExpr(left, sootRef(), list);
       }
       else {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
         ArrayList list = buildArgList(b);
-        result = Jimple.v().newStaticInvokeExpr(decl().sootRef(), list);
+        result = Jimple.v().newStaticInvokeExpr(sootRef(), list);
       }
       return type().isVoid() ? result : asLocal(b, result);
     }
+  }
+
+  private SootMethodRef MethodAccess.sootRef() {
+    MethodDecl decl = decl();
+    ArrayList parameters = new ArrayList();
+    for(int i = 0; i < decl.getNumParameter(); i++)
+      parameters.add(decl.getParameter(i).type().getSootType());
+    SootMethodRef ref = Scene.v().makeMethodRef(
+      methodQualifierType().getSootClassDecl(),
+      decl.name(),
+      parameters,
+      decl.type().getSootType(),
+      decl.isStatic()
+    );
+    return ref;
   }
 
   public TypeDecl MethodAccess.superAccessorTarget() {
