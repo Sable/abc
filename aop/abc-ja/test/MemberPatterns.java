@@ -10,8 +10,8 @@ public class MemberPatterns
         new A().m();
         System.out.println("B");
         new B().m();
-//        System.out.println("C");
-//        new C().m();
+        System.out.println("C");
+        new C().m();
     }
 
     static class A { public void m() { } }
@@ -21,11 +21,11 @@ public class MemberPatterns
 
 aspect MemberPatternsAspect
 {
-//    before(): call(* A.m()) { System.out.println("call A.m"); }
+    before(): call(* A.m()) { System.out.println("call A.m"); }
     before(): call(* B.m()) { System.out.println("call B.m"); }
-//    before(): call(* C.m()) { System.out.println("call C.m"); }
+    before(): call(* C.m()) { System.out.println("call C.m"); }
 
-//    before(): execution(* A.m()) { System.out.println("execution A.m"); }
-//    before(): execution(* B.m()) { System.out.println("execution B.m"); }
-//    before(): execution(* C.m()) { System.out.println("execution C.m"); }
+    before(): execution(* A.m()) { System.out.println("execution A.m"); }
+    before(): execution(* B.m()) { System.out.println("execution B.m"); }
+    before(): execution(* C.m()) { System.out.println("execution C.m"); }
 }
