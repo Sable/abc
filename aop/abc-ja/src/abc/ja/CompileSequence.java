@@ -120,6 +120,9 @@ public class CompileSequence extends abc.main.CompileSequence {
 				for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 					CompilationUnit unit = (CompilationUnit)iter.next();
 					if(unit.fromSource()) {
+            // abort if there were syntax or lexical errors
+            if(error_queue().errorCount() > 0)
+              throw new CompilerFailedException("There were errors.");
 						Collection errors = new LinkedList();
 						if(Program.verbose())
 							System.out.println("Error checking " + unit.relativeName());
