@@ -225,7 +225,7 @@ Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bind
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NCWeakRefs4.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999983 times, rather than 1000000.
+InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 999981 times, rather than 1000000.
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -234,7 +234,7 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.TestCase.runTest(TestCase.java:396)
 	at abc.testing.Main.doCase(Main.java:283)
 	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 999983 times, rather than 1000000.
+Caused by: java.lang.RuntimeException: Matched 999981 times, rather than 1000000.
 	at NCWeakRefs4.main(NCWeakRefs4.java:22)
 	... 7 more
 FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Strings)" failed.
