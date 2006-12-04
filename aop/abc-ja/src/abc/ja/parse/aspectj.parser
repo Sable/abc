@@ -57,7 +57,7 @@ AspectDecl aspect_declaration =
                          aspect_body.g
        {: ParserTrace.parserTrace( "aspect declaration: " + 
                                                b); 
-	  return new AspectDecl(a, b, g, new Opt(), new List(), f); 
+	  return new AspectDecl(a, b, g, c, d, f); 
        :}
   ;
 
@@ -411,7 +411,19 @@ PointcutExpr basic_pointcut_expr =
        :}   
    // for named pointcuts, ajc allows only * or fully-defined type/id
     |  name.a LPAREN type_id_star_list_opt.b RPAREN.y
-            {: return new NamedPointcutExpr(a, b); :}
+       {:
+          Access pc_access;
+          if (a instanceof AbstractDot) {
+            AbstractDot dot = (AbstractDot) a;
+            ParseName pn = (ParseName) dot.extractLast();
+            dot.replaceLast(new PointcutAccess(pn.getID()));
+            pc_access = dot;
+          } else {
+            ParseName pn = (ParseName) a;
+            pc_access = new PointcutAccess(pn.getID());
+          }
+          return new NamedPointcutExpr(pc_access, b);
+       :}
   ;
 
 

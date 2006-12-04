@@ -81,7 +81,10 @@ aspect PointcutCodegen
 
     // FIXME
     public Pointcut IfPointcutExpr.pointcut() {
-        return null;
+        // get vars
+        // get methodsig
+        // get jp/jpsp/ejpsp info
+        return new If(null, null, -1, -1, -1, pos());
     }
 
     // FIXME - interface init conditional on the pattern
@@ -111,16 +114,13 @@ aspect PointcutCodegen
         for(int i = 0; i < getNumPattern(); i++)
             arg_patterns.add(getPattern(i).argPattern());
 
-        // where do I get a method-instance from?
-        // Object pcd_key;
+        PointcutAccess access = (PointcutAccess) getName().lastAccess();
+        Object key = new Object();
+        Map decl_map = new HashMap();
+        decl_map.put(key, access.decl().pointcutDecl());
 
-        // can we replace the AspectInfoHarvester using
-        // inherited attributes?
-        // abc.aspectj.visit.AspectInfoHarvester.pointcutDeclarationMap();
-
-        // what does (target != null) for the last parameter mean?
-
-        return new PointcutRef(null, null, arg_patterns, pos(), false);
+        return new PointcutRef(key, decl_map, arg_patterns,
+                                pos(), access.isQualified());
     }
 
     public Pointcut PreInitializationPointcutExpr.pointcut() {
@@ -248,4 +248,32 @@ aspect PointcutCodegen
         new ThisVar(new Var(name(), pos()), pos());
     eq TypeAccess.thisPointcut() =
         new ThisType(AbcFactory.AbcType(type().getSootType()), pos());
+
+
+
+    //
+    // Code generation for pointcut declarations
+    //
+    syn lazy abc.weaving.aspectinfo.PointcutDecl PointcutDecl.pointcutDecl()
+    {
+        return new abc.weaving.aspectinfo.PointcutDecl(
+                    name(),
+                    formals(),
+                    hasPointcutExpr() ? getPointcutExpr().pointcut() : null,
+                    aspectClass(),
+                    pos());
+    }
+
+    protected java.util.List PointcutDecl.formals()
+    {
+        ArrayList list = new ArrayList();
+        for (int i = 0; i < getNumParameter(); i++)
+            list.add(getParameter(i).formal());
+        return list;
+    }
+
+    public void PointcutDecl.jimplify2()
+    {
+        globalAspectInfo().addPointcutDecl(pointcutDecl());
+    }
 }

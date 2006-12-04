@@ -49,13 +49,13 @@ aspect Pointcuts
     // args, this, and target can only refer to pointcut variables
     // or types
     eq ArgsPointcutExpr.getPattern().lookupVariable(String name) =
-        lookupPointcutVariables(name);
+        lookupPointcutVariable(name);
     eq ThisPointcutExpr.getPattern().lookupVariable(String name) =
-        lookupPointcutVariables(name);
+        lookupPointcutVariable(name);
     eq TargetPointcutExpr.getPattern().lookupVariable(String name) =
-        lookupPointcutVariables(name);
+        lookupPointcutVariable(name);
 
-    syn SimpleSet PointcutExpr.lookupPointcutVariables(String name)
+    syn SimpleSet PointcutExpr.lookupPointcutVariable(String name)
     {
         SimpleSet result = SimpleSet.emptySet;
         Iterator iter = lookupVariable(name).iterator();
@@ -66,6 +66,110 @@ aspect Pointcuts
         }
         return result;
     }
+
+
+    // ----------------------------------------------------
+    //   Looking up named pointcuts
+    // ----------------------------------------------------
+
+    syn String PointcutDecl.name() = getID();
+    syn String PointcutAccess.name() = getID();
+    eq PointcutAccess.predNameType() = NameType.TYPE_NAME;
+
+    syn PointcutDecl PointcutAccess.decl()
+    {
+        SimpleSet decls = decls();
+        if (decls.size() == 1) 
+            return (PointcutDecl) decls.iterator().next();
+        return null;
+    }
+
+    syn SimpleSet PointcutAccess.decls()
+    {
+        return lookupPointcut(name());
+    }
+
+    public void PointcutAccess.nameCheck()
+    {
+        SimpleSet decls = decls();
+        if (decls.size() == 0)
+            error("cannot find pointcut " + name());
+        else if (decls.size() > 1)
+            error("found multiple definitions of pointcut " + name());
+    }
+
+    inh SimpleSet PointcutAccess.lookupPointcut(String name);
+    eq Program.getCompilationUnit().lookupPointcut(String name) =
+        SimpleSet.emptySet;
+    eq TypeDecl.getBodyDecl(int i).lookupPointcut(String name)
+    {
+        return lookupMemberPointcut(name);
+    }
+    eq AbstractDot.getRight().lookupPointcut(String name) =
+        getLeft().type().lookupMemberPointcut(name);
+
+
+    syn SimpleSet TypeDecl.lookupMemberPointcut(String name)
+    {
+        SimpleSet decls;
+        for (int i = 0; i < getNumBodyDecl(); i++) {
+            decls = getBodyDecl(i).lookupMemberPointcut(name);
+            if (decls.size() > 0)
+                return decls;
+        }
+        return SimpleSet.emptySet;
+    }
+
+    eq ClassDecl.lookupMemberPointcut(String name)
+    {
+        SimpleSet decls = super.lookupMemberPointcut(name);
+
+        if (hasSuperclass()) {
+            Iterator i = superclass().lookupMemberPointcut(name).iterator();
+            while (i.hasNext())
+                decls = decls.add(i.next());
+        }
+
+        Iterator i = interfacesIterator();
+        while (i.hasNext()) {
+            TypeDecl iface = (TypeDecl) i.next();
+            Iterator j = iface.lookupMemberPointcut(name).iterator();
+            while (j.hasNext())
+                decls = decls.add(j.next());
+        }
+
+        return decls;
+        // hasSuperclass(), superclass(), interfacesIterator()
+    }
+
+    // InterfaceDecl
+    // superInterfacesIterator()
+    eq InterfaceDecl.lookupMemberPointcut(String name)
+    {
+        SimpleSet decls = super.lookupMemberPointcut(name);
+
+        Iterator i = superinterfacesIterator();
+        while (i.hasNext()) {
+            TypeDecl iface = (TypeDecl) i.next();
+            Iterator j = iface.lookupMemberPointcut(name).iterator();
+            while (j.hasNext())
+                decls = decls.add(j.next());
+        }
+
+        return decls;
+    }
+
+    syn SimpleSet BodyDecl.lookupMemberPointcut(String name);
+    eq BodyDecl.lookupMemberPointcut(String name) = SimpleSet.emptySet;
+    eq PointcutDecl.lookupMemberPointcut(String name)
+    {
+        if (name.equals(name()))
+            return SimpleSet.emptySet.add(this);
+        return SimpleSet.emptySet;
+    }
+
+    eq PointcutAccess.dumpString() = super.dumpString() + " " + decl().name();
+
 
     // ----------------------------------------------------
     //   Pointcut variable binding

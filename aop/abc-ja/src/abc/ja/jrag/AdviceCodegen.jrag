@@ -2,7 +2,7 @@ import polyglot.util.InternalCompilerError;
 
 aspect AdviceCodegen {
   inh Aspect BodyDecl.aspectClass();
-  eq AspectDecl.getBodyDecl().aspectClass() = globalAspectInfo().getAspect(abcClass());
+  eq TypeDecl.getBodyDecl().aspectClass() = globalAspectInfo().getAspect(abcClass());
   eq Program.getCompilationUnit().aspectClass() { throw new Error("Missing equation for aspectClass()"); }
 
   public int TypeDecl.adviceCounter = 0;
