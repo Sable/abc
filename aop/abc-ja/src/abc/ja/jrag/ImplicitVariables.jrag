@@ -1,32 +1,20 @@
 aspect ImplicitVariables
 {
     //
-    // Advice bodies in AspectJ have three implicitly defined variables,
+    // Pieces of advice in AspectJ have three implicitly defined variables,
     // which are encoded in this source-file using the following numbering:
     //
     //  (0) thisJointPoint
     //  (1) thisJoinPointStaticPart
-    //  (2) thisEnclosingJoinPoint
-    //
-    // All VarAccess nodes, that occur in advice and mention these variable
-    // names, should be rewritten to ImplicitVarAccess nodes.
+    //  (2) thisEnclosingJoinPointStaticPart
 
-    inh AdviceDecl ASTNode.enclosingAdviceDecl();
-    eq Program.getCompilationUnit(int i).enclosingAdviceDecl() = null;
-    eq AdviceDecl.getBlock().enclosingAdviceDecl() = this;
-
-    rewrite VarAccess {
-        when (! (this instanceof ImplicitVarAccess) &&
-              enclosingAdviceDecl() != null &&
-              (name().equals("thisJoinPoint")
-               || name().equals("thisJoinPointStaticPart")
-               || name().equals("thisEnclosingJoinPoint")))
-        to ImplicitVarAccess {
-            return new ImplicitVarAccess(name());
-        }
+    inh TypeDecl AdviceSpec.lookupType(String packageName, String typeName);
+    eq AdviceDecl.getAdviceSpec().lookupType(String packageName, String typeName)
+    {
+        return lookupType(packageName, typeName);
     }
 
-    syn lazy Variable AdviceDecl.implicitVarDecl(String name)
+    syn lazy Variable AdviceSpec.implicitVarDecl(String name)
     {
         // compute a declaration for this implicit variable
         Modifiers final_mod =
@@ -41,16 +29,13 @@ aspect ImplicitVariables
 
         // add decl to tree (as parameter to the advice method)
         // and force possible rewrites to this decl (by reading it)
-        AdviceSpec spec = getAdviceSpec();
-        spec.addParameter(decl);
-        decl = spec.getParameter(spec.getNumParameter() - 1);
+        addParameter(decl);
+        getParameter(getNumParameter() - 1);
 
         // return the new declaration
         return decl;
     }
-      
-    eq ImplicitVarAccess.decl() = enclosingAdviceDecl().implicitVarDecl(name());
-
+ 
     public void AdviceSpec.nameCheck()
     {
         super.nameCheck();

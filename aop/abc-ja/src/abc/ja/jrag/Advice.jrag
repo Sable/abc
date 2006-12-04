@@ -16,6 +16,12 @@ aspect Advice
     return lookupVariable(name);
   }
   syn SimpleSet AdviceSpec.localLookupVariable(String name) {
+    if (name.equals("thisJoinPoint")
+        || name.equals("thisJoinPointStaticPart")
+        || name.equals("thisEnclosingJoinPointStaticPart"))
+    {
+      return SimpleSet.emptySet.add(implicitVarDecl(name));
+    }
     for(int i = 0; i < getNumParameter(); i++)
       if(getParameter(i).name().equals(name))
         return SimpleSet.emptySet.add(getParameter(i));
