@@ -98,6 +98,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
            Scene.v().addBasicClass("java.lang.ThreadLocal", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
+           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashWeakRef", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);
            if(abc.main.Debug.v().useCommonsCollections)
         	   Scene.v().addBasicClass("org.apache.commons.collections.map.ReferenceIdentityMap", SootClass.SIGNATURES);

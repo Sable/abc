@@ -201,6 +201,9 @@ public class Debug {
     public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or
     												// the maps from the commons collections for TM indexing
 
+    // make every weakref used for tracematches have the same hashcode
+    public boolean clashHashCodes = false;
+
     //temporary openmod stuff
     public boolean omPrecedenceDebug = false;
     public boolean omCollectModuleAspectsDebug = false;

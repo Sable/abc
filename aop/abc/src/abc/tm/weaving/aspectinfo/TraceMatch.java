@@ -480,7 +480,9 @@ public class TraceMatch
 
 
         tm_weak_ref = Scene.v().getSootClass(
-                        "org.aspectbench.tm.runtime.internal.MyWeakRef");
+                        abc.main.Debug.v().clashHashCodes
+                        ? "org.aspectbench.tm.runtime.internal.ClashWeakRef"
+                        : "org.aspectbench.tm.runtime.internal.MyWeakRef");
     }
 
     protected SootMethod getConstructor(SootClass constructed, Type param)
