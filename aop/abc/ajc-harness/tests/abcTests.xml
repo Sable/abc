@@ -9518,27 +9518,27 @@
     </ajc-test>
     <ajc-test num="1038" dir="abctests/tracematches"
         title="Tracematches: Non-collectable weak bindings work correctly (Strings)">
-        <compile files="NCWeakRefs.java" options="-ext,abc.tm">
+        <compile files="NCWeakRefs.java" options="-ext,abc.tm,-debug,clashHashCodes">
 	    <message kind="warning"/>
 	</compile>
 	<run class="NCWeakRefs"/>
     </ajc-test>
     <ajc-test num="1039" dir="abctests/tracematches"
         title="Tracematches: Non-collectable weak bindings work correctly (Objects)">
-        <compile files="NCWeakRefs2.java" options="-ext,abc.tm">
+        <compile files="NCWeakRefs2.java" options="-ext,abc.tm,-debug,clashHashCodes">
 	    <message kind="warning"/>
 	</compile>
 	<run class="NCWeakRefs2"/>
     </ajc-test>
     <ajc-test num="1040" dir="abctests/tracematches"
         title="Tracematches: Collectable weak bindings work correctly (Strings)">
-        <compile files="CollWeakRefs.java" options="-ext,abc.tm">
+        <compile files="CollWeakRefs.java" options="-ext,abc.tm,-debug,clashHashCodes">
 	</compile>
 	<run class="CollWeakRefs"/>
     </ajc-test>
     <ajc-test num="1041" dir="abctests/tracematches"
         title="Tracematches: Non-collectable weak bindings are propagated correctly (Strings)">
-        <compile files="NCWeakRefs4.java" options="-ext,abc.tm">
+        <compile files="NCWeakRefs4.java" options="-ext,abc.tm,-debug,clashHashCodes">
 	    <message kind="warning"/>
 	</compile>
 	<run class="NCWeakRefs4"/>

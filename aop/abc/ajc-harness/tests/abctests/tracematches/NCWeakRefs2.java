@@ -7,12 +7,13 @@ public class NCWeakRefs2 {
 
     public static int matched = 0;
 
+    static class BigObject { int[] big_array = new int[1024*1024]; }
+
     public static void main(String[] args) {
 	Object o;
 	for(int i = 0; i < 100; i++) {
-	    o = new Object();
+	    o = new BigObject();
 	    foo(o);
-	    System.gc(); System.gc(); System.gc(); System.gc(); System.gc(); 
 	}
 	bar();
     }

@@ -10,10 +10,10 @@ public class CollWeakRefs {
 	Object o = "";
 	Object orig = "orig";
 	foo(orig);
-	for(int i = 0; i < 100; i++) {
+	for(int i = 0; i < 20; i++) {
 	    o = "" + i;
 	    foo(o);
-	    System.gc(); System.gc(); System.gc(); System.gc(); System.gc(); 
+	    System.gc(); System.gc(); System.gc();
 	}
         bar(orig); bar(o); foo(o); foo(o); bar(o);
 	if(matched != 3) throw new RuntimeException("Matched " + matched + " times, rather than 3.");
