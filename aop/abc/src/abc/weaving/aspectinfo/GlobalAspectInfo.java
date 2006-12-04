@@ -205,18 +205,30 @@ public class GlobalAspectInfo {
             System.err.println("Looking up pointcut "+name+" in aspect "+context.getName());
         Set matching_pcds = (Set)pc_map.get(name);
         Iterator pi = matching_pcds.iterator();
+        PointcutDecl most_specific_decl = null;
         while (pi.hasNext()) {
             PointcutDecl p = (PointcutDecl)pi.next();
-            if (abc.main.Debug.v().abstractPointcutLookup)
-                System.err.println(p);
             if (!p.isAbstract() &&
                 p.getAspect() != null &&
-                ((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
-                return p;
+                ((Set)aspect_visibility.get(p.getAspect())).contains(context))
+            {
+                most_specific_decl = mostSpecific(most_specific_decl, p);
             }
         }
-        return null;
-        // throw new InternalCompilerError("Pointcut "+name+" was not found in "+context);
+        return most_specific_decl;
+    }
+
+    protected PointcutDecl mostSpecific(PointcutDecl p1, PointcutDecl p2)
+    {
+        if (p1 != null) {
+            Set subtypes = (Set) aspect_visibility.get(p1.getAspect());
+
+            if (!subtypes.contains(p2.getAspect()))
+                return p1;
+        }
+        if (abc.main.Debug.v().abstractPointcutLookup)
+            System.err.println("Chosen most specific pointcut definition: " + p2);
+        return p2;
     }
 
     /** Returns the list of all <code>declare parents</code> declarations.
