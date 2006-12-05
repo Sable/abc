@@ -1,5 +1,7 @@
 aspect Advice
 {
+  eq AdviceDecl.getBlock().hostBodyDecl() = this;
+
   eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
     SimpleSet v = getAdviceSpec().localLookupVariable(name);
     if(!v.isEmpty()) return v;
