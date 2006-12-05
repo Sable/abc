@@ -5162,20 +5162,8 @@
 	</compile>
 	<run class="PrimNegBindings"></run>
     </ajc-test>
-<ajc-test title="Tracematches: Non-collectable weak bindings work correctly (Strings)" num="1038" dir="abctests/tracematches">
-        <compile options="-ext,abc.tm" files="NCWeakRefs.java">
-	    <message kind="warning"></message>
-	</compile>
-	<run class="NCWeakRefs"></run>
-    </ajc-test>
-<ajc-test title="Tracematches: Non-collectable weak bindings work correctly (Objects)" num="1039" dir="abctests/tracematches">
-        <compile options="-ext,abc.tm" files="NCWeakRefs2.java">
-	    <message kind="warning"></message>
-	</compile>
-	<run class="NCWeakRefs2"></run>
-    </ajc-test>
 <ajc-test title="Tracematches: Collectable weak bindings work correctly (Strings)" num="1040" dir="abctests/tracematches">
-        <compile options="-ext,abc.tm" files="CollWeakRefs.java">
+        <compile options="-ext,abc.tm,-debug,clashHashCodes" files="CollWeakRefs.java">
 	</compile>
 	<run class="CollWeakRefs"></run>
     </ajc-test>
