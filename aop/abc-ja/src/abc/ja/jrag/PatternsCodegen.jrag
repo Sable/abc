@@ -96,7 +96,16 @@ aspect PatternsCodegen
     		return false;
     	
     	// Check modifier list
-    	// TODO
+    	SootField sf;
+    	try {
+    		sf = sfr.resolve();
+    	} catch(Exception e) {
+    		System.err.println("Failed to resolve SootFieldRef while matching... assuming no match.");
+    		return false;
+    	}
+    	for(int i = 0; i < getNumModifierPattern(); i++)
+    		if(!getModifierPattern(i).matches(sf.getModifiers()))
+    			return false;
     	
         return true;
     }
@@ -354,4 +363,12 @@ aspect PatternsCodegen
     eq ExplicitTypeNamePattern.matchesType(Type t) = 
         getAccess().type().name().equals(t.toString())
         && getAccess().isTypeAccess();
+    
+    //
+    // Modifier patterns
+    //
+    // There's probably a more efficient way of doing this, but it requires
+    // enumerating all modifiers. Maybe we should anyway?
+    syn boolean ModifierPattern.matches(int modifiers) = (soot.Modifier.toString(modifiers).indexOf(getModifier().getID()) > -1);
+    eq NegModifierPattern.matches(int modifiers) = (soot.Modifier.toString(modifiers).indexOf(getModifier().getID()) == -1);
 }
