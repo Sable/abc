@@ -81,9 +81,24 @@ aspect PatternsCodegen
     //
     // Matching field patterns
     //
+    // abc-2006-2, section 4.1.2:
+    // 
     public boolean FieldPattern.matchesFieldRef(SootFieldRef sfr)
     {
-        return false;
+    	// Check these in roughly increasing order of complexity...
+    	
+    	// Check name of field
+    	if(!getMemberNamePattern().matchesTypeAndName(sfr))
+    		return false;
+    	
+    	// Check type of field
+    	if(!getTypePattern().matchesType(sfr.type()))
+    		return false;
+    	
+    	// Check modifier list
+    	// TODO
+    	
+        return true;
     }
 
     public boolean FieldPattern.matchesMethod(SootMethod sf)
@@ -168,6 +183,50 @@ aspect PatternsCodegen
         return java.util.regex.Pattern.compile(p);
     }
 
+    // Field patterns require different matching (to some extent), as the
+    // 'static' modifier is not taken into account (cf. abc-2006-2, section
+    // 4.1.2).
+    syn boolean Pattern.matchesTypeAndName(SootFieldRef sfr) = false;
+    
+    eq SimpleNamePattern.matchesTypeAndName(SootFieldRef sfr) =
+    	matchesName(sfr.name());
+    
+    eq TypeDotNamePattern.matchesTypeAndName(SootFieldRef sfr) {
+    	throw new InternalCompilerError("matches not implemented for "
+    										+ getClass().getName());	
+    }
+    
+    eq DotNamePattern.matchesTypeAndName(SootFieldRef sfr) {
+    	// abc-2006-2, section 4.1.2
+    	// -------------------------
+    	// C (the context) is implicit
+    	// R is the static type of the field access in the shadow
+    	// X is the field in question (matching the rhs)
+    	// Z is a (reflexive transitive) supertype of R and matches the pattern
+    	// P is the class that contains X
+    	
+    	// member part
+    	if(!getRhs().matchesName(sfr.name()))
+    		return false;
+    	
+    	// match type part
+    	SootClass classR = sfr.declaringClass();
+    	
+    	// find supertypes of R that match the type pattern
+    	Set supertypes = superTypes(classR);
+    	
+        Iterator i = supertypes.iterator();
+        while (i.hasNext()) {
+            SootClass classZ = (SootClass) i.next();
+            if (!getLhs().matchesType(classZ))
+                continue;
+
+            // If the supertype contains our field, we match.
+            if(declaresField(classZ, sfr))
+            	return true;
+        }
+        return false;
+    }
 
     syn boolean Pattern.matchesTypeAndName(SootMethodRef smr) = false;
     syn boolean Pattern.matchesName(String name) = false;
@@ -224,6 +283,10 @@ aspect PatternsCodegen
     DotNamePattern.declaresMethod(SootClass sc, SootMethodRef smr)
     {
         return sc.declaresMethod(smr.getSubSignature());
+    }
+    
+    protected boolean DotNamePattern.declaresField(SootClass sc, SootFieldRef sfr) {
+    	return sc.declaresField(sfr.name(), sfr.type());
     }
 
     protected boolean

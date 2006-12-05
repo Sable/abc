@@ -8,12 +8,42 @@ aspect Patterns
     eq DotNamePattern.containsWildcard() =
             getLhs().containsWildcard() || getRhs().containsWildcard();
 
-    // Check if a pattern is to be interpreted as a type
-    inh boolean Pattern.interpretAsType();
-    eq Program.getCompilationUnit().interpretAsType() = true;
-    eq MethodPattern.getMemberNamePattern().interpretAsType() = false;
-    eq DotNamePattern.getLhs().interpretAsType() = true;
-
+    
+    // Does this DotNamePattern correspond to a classtype_dot_id, i.e. is the Rhs
+    // a member pattern, or is the whole thing a type pattern?
+    inh boolean DotNamePattern.denotesMember();
+    // In these cases, Rhs is a member pattern.
+    eq MethodPattern.getMemberNamePattern().denotesMember() = true;
+    eq ConstructorPattern.getMemberNamePattern().denotesMember() = true;
+    eq FieldPattern.getMemberNamePattern().denotesMember() = true;
+    
+    // Default: Try to interpret as non-member type pattern.
+    eq TypeDecl.getBodyDecl().denotesMember() = false;
+    
+    // Children of Dot[Dot]NamePattern are never member patterns.
+    eq DotNamePattern.getLhs().denotesMember() = false;
+    eq DotNamePattern.getRhs().denotesMember() = false;
+    eq DotDotNamePattern.getLhs().denotesMember() = false;
+    eq DotDotNamePattern.getRhs().denotesMember() = false;
+    
+    syn boolean Pattern.isExplicitTypeName() = false;
+    eq ExplicitTypeNamePattern.isExplicitTypeName() = true;
+    // Rewrite all DotNamePatterns that denote a type and contain no
+    // wildcards to ExplicitTypeNamePatterns.
+    rewrite DotNamePattern {
+    	when(denotesMember() && !getLhs().containsWildcard() && !getLhs().isExplicitTypeName())
+    	to DotNamePattern {
+    		setLhs(new ExplicitTypeNamePattern(getLhs().buildAccess()));
+    		return this;
+    	}
+    	when(!denotesMember() && !containsWildcard())
+    	to ExplicitTypeNamePattern {
+    		System.out.println("Not OK");
+    		return new ExplicitTypeNamePattern(buildAccess());
+    	}
+    }
+    
+    
     // Build Access nodes for patterns with no wildcards
     protected Access Pattern.buildAccess()
     {
@@ -36,19 +66,31 @@ aspect Patterns
         return getLhs().buildAccess().qualifiesAccess(getRhs().buildAccess());
     }
 
-    // Re-write patterns to ExplictTypeNamePatterns where the
-    // pattern does not contain a wildcard.
-    rewrite DotNamePattern {
-        when (!containsWildcard() && interpretAsType())
-        to ExplicitTypeNamePattern {
-            return new ExplicitTypeNamePattern(buildAccess());
-        }
-    }
 
     // syntactic classification of explicit names in patterns
     // (see SyntacticClassification.jrag)
-    eq MethodPattern.getMemberNamePattern().nameType() =
-            NameType.TYPE_NAME;
+    eq AdviceDecl.getPointcutExpr().nameType() =
+        NameType.TYPE_NAME;
+    eq AspectDecl.getPerClause().nameType() =
+        NameType.TYPE_NAME;
+    
+    eq DeclareWarning.getPointcutExpr().nameType() =
+        NameType.TYPE_NAME;
+    eq DeclareError.getPointcutExpr().nameType() =
+        NameType.TYPE_NAME;
+    eq DeclareSoft.getPointcutExpr().nameType() =
+        NameType.TYPE_NAME;
+    eq DeclareParentsExtends.getPattern().nameType() =
+        NameType.TYPE_NAME;
+    eq DeclareParentsImplements.getPattern().nameType() =
+        NameType.TYPE_NAME;
+    eq DeclarePrecedence.getPattern().nameType() =
+        NameType.TYPE_NAME;
+    
+    eq PointcutDecl.getPointcutExpr().nameType() =
+        NameType.TYPE_NAME;
+    
+    
     eq ArgsPointcutExpr.getPattern(int i).nameType() =
             NameType.AMBIGUOUS_NAME;
     eq ThisPointcutExpr.getPattern().nameType() =
