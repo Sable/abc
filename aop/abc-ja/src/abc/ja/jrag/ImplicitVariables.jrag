@@ -19,11 +19,14 @@ aspect ImplicitVariables
         // compute a declaration for this implicit variable
         Modifiers final_mod =
             new Modifiers(new List().add(new Modifier("final")));
-        String classname =
-            name.equals("thisJoinPoint") ? "JoinPoint" : "JoinPointStaticPart";
-        Access type_access =
-            lookupType("org.aspectj.lang", classname).createQualifiedAccess();
 
+        TypeDecl var_type = lookupType("org.aspectj.lang", "JoinPoint");
+        if (!name.equals("thisJoinPoint")) {
+            SimpleSet results = var_type.memberTypes("StaticPart");
+            var_type = (TypeDecl) results.iterator().next();
+        }
+
+        Access type_access = var_type.createQualifiedAccess();
         ParameterDeclaration decl =
             new ParameterDeclaration(final_mod, type_access, name);
 
