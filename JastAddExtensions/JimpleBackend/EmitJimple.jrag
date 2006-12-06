@@ -68,7 +68,7 @@ aspect EmitJimple {
   eq InterfaceDecl.sootClass() {
     if(Program.verbose())
       System.out.println("Creating from source " + jvmName());
-    SootClass sc = new SootClass(jvmName(), sootTypeModifiers() | soot.Modifier.INTERFACE);
+    SootClass sc = new SootClass(jvmName(), sootTypeModifiers());
     Scene.v().addClass(sc);
     sc.setApplicationClass();
     return sc;
@@ -89,6 +89,8 @@ aspect EmitJimple {
     if(isAbstract()) result |= soot.Modifier.ABSTRACT;
     return result;
   }
+  eq InterfaceDecl.sootTypeModifiers() = super.sootTypeModifiers() | soot.Modifier.INTERFACE;
+
   syn int MethodDecl.sootTypeModifiers() {
     int result = 0;
     if(isPublic()) result |= soot.Modifier.PUBLIC;
@@ -141,6 +143,8 @@ aspect EmitJimple {
     for(int i = 0; i < getNumImplements(); i++) {
       sc.addInterface(getImplements(i).type().getSootClassDecl());
     }
+    if(isNestedType())
+      sc.setOuterClass(enclosingType().getSootClassDecl());
     super.jimplify1phase2();
   }
 
@@ -151,6 +155,8 @@ aspect EmitJimple {
       if(getSuperInterfaceId(i).type() != typeObject())
         sc.addInterface(getSuperInterfaceId(i).type().getSootClassDecl());
     }
+    if(isNestedType())
+      sc.setOuterClass(enclosingType().getSootClassDecl());
     super.jimplify1phase2();
   }
   
@@ -490,6 +496,31 @@ aspect EmitJimple {
       TypeDecl typeDecl = (TypeDecl)iter.next();
       typeDecl.jimplify2();
     }
+    // add inner class attribute
+    ArrayList tags = new ArrayList();
+    for(Iterator iter = innerClassesAttributeEntries().iterator(); iter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)iter.next();
+      tags.add(
+        new soot.tagkit.InnerClassTag(
+          type.constantPoolName(),
+          type.isMemberType() ? type.enclosingType().constantPoolName() : null,
+          type.isAnonymous() ? null : type.name(),
+          type.sootTypeModifiers()
+        )
+      );
+    }
+    getSootClassDecl().addTag(new soot.tagkit.InnerClassAttribute(tags));
+  }
+
+  syn lazy Collection TypeDecl.innerClassesAttributeEntries() {
+    HashSet list = new HashSet();
+    if(isNestedType())
+      list.add(this);
+    for(Iterator iter = nestedTypes().iterator(); iter.hasNext(); )
+      list.add(iter.next());
+    for(Iterator iter = usedNestedTypes().iterator(); iter.hasNext(); )
+      list.add(iter.next());
+    return list;
   }
 
   public void BodyDecl.jimplify2() {
