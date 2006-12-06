@@ -509,7 +509,8 @@ aspect EmitJimple {
         )
       );
     }
-    getSootClassDecl().addTag(new soot.tagkit.InnerClassAttribute(tags));
+    if(!tags.isEmpty())
+      getSootClassDecl().addTag(new soot.tagkit.InnerClassAttribute(tags));
   }
 
   syn lazy Collection TypeDecl.innerClassesAttributeEntries() {
