@@ -211,8 +211,11 @@ aspect InnerClasses {
   syn lazy MethodDecl MethodDecl.createAccessor() {
     int accessorIndex = hostType().accessorCounter++;
     // add synthetic flag to modifiers
-    Modifiers modifiers = (Modifiers)getModifiers().fullCopy();
+    Modifiers modifiers = new Modifiers(new List());
+    if(getModifiers().isStatic())
+      modifiers.addModifier(new Modifier("static"));
     modifiers.addModifier(new Modifier("synthetic"));
+    modifiers.addModifier(new Modifier("public"));
     // build accessor declaration
     MethodDecl m = new MethodAccessorDecl(
       modifiers,
@@ -381,9 +384,8 @@ aspect InnerClasses {
     hostType().getSootClassDecl().addMethod(m);
     JimpleBody body = Jimple.v().newBody(m);
     m.setActiveBody(body);
-    Body b = new Body(body);
+    Body b = new Body(hostType(), body);
   
-    b.addThis(hostType());
     ArrayList args = new ArrayList();
     int i = 0;
     for(Iterator iter = parameters.iterator(); iter.hasNext(); i++) {
@@ -420,7 +422,7 @@ aspect InnerClasses {
     hostType().getSootClassDecl().addMethod(m);
     JimpleBody body = Jimple.v().newBody(m);
     m.setActiveBody(body);
-    Body b = new Body(body);
+    Body b = new Body(hostType(), body);
     if(isStatic()) {
       b.add(Jimple.v().newReturnStmt(
         asImmediate(b, Jimple.v().newStaticFieldRef(sootRef()))
@@ -455,7 +457,7 @@ aspect InnerClasses {
     hostType().getSootClassDecl().addMethod(m);
     JimpleBody body = Jimple.v().newBody(m);
     m.setActiveBody(body);
-    Body b = new Body(body);
+    Body b = new Body(hostType(), body);
     soot.Local l;
     if(isStatic()) {
       l = asLocal(b, Jimple.v().newParameterRef(type().getSootType(), 0));

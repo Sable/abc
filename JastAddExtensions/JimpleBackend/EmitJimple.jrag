@@ -349,10 +349,14 @@ aspect EmitJimple {
     int nextTempIndex = 0;
     soot.jimple.JimpleBody body;
     java.util.Stack chains;
-    public Body(soot.jimple.JimpleBody body) {
+    TypeDecl typeDecl;
+    public Body(TypeDecl typeDecl, soot.jimple.JimpleBody body) {
+      this.typeDecl = typeDecl;
       this.body = body;
       chains = new java.util.Stack();
       chains.push(body.getUnits());
+      if(!body.getMethod().isStatic())
+        emitThis();
     }
     public Local getParam(int i)
     {
@@ -410,20 +414,17 @@ aspect EmitJimple {
       return this;
     }
 
-    Local thisName;
-    public Body addThis(TypeDecl type) {
-      thisName = newLocal("this", type.getSootType());
-      add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newThisRef(type.sootRef())));
-      return this;
-    }
-    public Body addITDThis(TypeDecl type) {
-      thisName = newLocal("this", type.getSootType());
-      add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newParameterRef(type.getSootType(), 0)));
-      return this;
-    }
     public soot.Local emitThis() {
+      if(thisName == null) {
+        thisName = newLocal("this", typeDecl.getSootType());
+        if(body.getMethod().isStatic())
+          add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newParameterRef(typeDecl.getSootType(), 0)));
+        else
+          add(Jimple.v().newIdentityStmt(thisName, Jimple.v().newThisRef(typeDecl.sootRef())));
+      }
       return thisName;
     }
+    Local thisName;
 
     public Body addTrap(TypeDecl type, soot.jimple.Stmt firstStmt, soot.jimple.Stmt lastStmt, soot.jimple.Stmt handler) {
       body.getTraps().add(Jimple.v().newTrap(type.getSootClassDecl(), firstStmt, lastStmt, handler));
@@ -464,7 +465,7 @@ aspect EmitJimple {
       getSootClassDecl().addMethod(m);
       JimpleBody body = Jimple.v().newBody(m);
       m.setActiveBody(body);
-      Body b = new Body(body);
+      Body b = new Body(this, body);
       for(int i = 0; i < getNumBodyDecl(); i++) {
         BodyDecl bodyDecl = getBodyDecl(i);
         if(bodyDecl instanceof FieldDeclaration && bodyDecl.isBytecodeField()) {
@@ -499,9 +500,7 @@ aspect EmitJimple {
     if(hasBlock()) {
       JimpleBody body = Jimple.v().newBody(sootMethod);
       sootMethod.setActiveBody(body);
-      Body b = new Body(body);
-      if(!isStatic())
-        b.addThis(hostType());
+      Body b = new Body(hostType(), body);
       for(int i = 0; i < getNumParameter(); i++)
         getParameter(i).jimplify2(b);
       getBlock().jimplify2(b);
@@ -523,8 +522,7 @@ aspect EmitJimple {
   public void ConstructorDecl.jimplify2() {
     JimpleBody body = Jimple.v().newBody(sootMethod);
     sootMethod.setActiveBody(body);
-    Body b = new Body(body);
-    b.addThis(hostType());
+    Body b = new Body(hostType(), body);
     for(int i = 0; i < getNumParameter(); i++)
       getParameter(i).jimplify2(b);
 

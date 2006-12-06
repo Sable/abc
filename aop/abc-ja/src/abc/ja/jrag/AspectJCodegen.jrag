@@ -74,10 +74,7 @@ aspect AspectJCodegen {
     if(hasBlock()) {
       JimpleBody body = Jimple.v().newBody(sootMethod);
       sootMethod.setActiveBody(body);
-      Body b = new Body(body);
-      if(!isStatic()) {
-        b.addITDThis(hostType());
-      }
+      Body b = new Body(hostType(), body);
       for(int i = 0; i < getNumParameter(); i++)
         getParameter(i).jimplify2(b);
       getBlock().jimplify2(b);

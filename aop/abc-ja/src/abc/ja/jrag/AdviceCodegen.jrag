@@ -142,8 +142,7 @@ aspect AdviceCodegen {
   public void AdviceDecl.jimplify2() {
     JimpleBody body = Jimple.v().newBody(sootMethod());
     sootMethod().setActiveBody(body);
-    Body b = new Body(body);
-    b.addThis(hostType());
+    Body b = new Body(hostType(), body);
     getAdviceSpec().jimplify2(b);
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
