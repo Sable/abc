@@ -1,6 +1,13 @@
 aspect Advice
 {
   eq AdviceDecl.getBlock().hostBodyDecl() = this;
+  eq AdviceDecl.getBlock().returnType() = returnType();
+  syn TypeDecl AdviceDecl.returnType() = getAdviceSpec().returnType();
+
+  inh TypeDecl AdviceSpec.typeVoid();
+  syn TypeDecl AdviceSpec.returnType() = typeVoid();
+  eq AroundSpec.returnType() = getTypeAccess().type();
+
 
   eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
     SimpleSet v = getAdviceSpec().localLookupVariable(name);
@@ -67,4 +74,31 @@ aspect Advice
   eq AfterThrowingSpec.getExceptionParameter().nameType() = NameType.TYPE_NAME;
 
   eq AroundSpec.getTypeAccess().nameType() = NameType.TYPE_NAME;
+
+
+  //
+  // semantic checks for proceed-calls
+  //
+
+  public void Proceed.typeCheck() {
+    AroundSpec spec = aroundSpec();
+    if (spec == null)
+      error("Can only use proceed within around advice");
+    else if (spec.getNumExplicitParameter() != getNumArg()) {
+      error("Proceed called with the wrong number of arguments");
+    } else {
+      for (int i = 0; i < getNumArg(); i++) {
+        TypeDecl exprType = getArg(i).type();
+        TypeDecl parmType = spec.getExplicitParameter(i).type();
+
+        if (!exprType.methodInvocationConversionTo(parmType)
+            && !exprType.isUnknown() && !parmType.isUnknown())
+        {
+            error("Expression " + getArg(i) + " of type " + exprType.typeName()
+            + " is not compatible with the proceed parameter type " +
+            parmType.typeName());
+        }
+      }
+    }
+  }
 }

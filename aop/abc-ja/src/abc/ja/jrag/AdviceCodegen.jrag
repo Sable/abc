@@ -11,6 +11,7 @@ aspect AdviceCodegen {
   public void AdviceDecl.jimplify1phase2() {
     hostType().getSootClassDecl().addMethod(sootMethod());
     createAspectInfo();
+    getAdviceSpec().jimplify1phase2();
   }
 
   syn lazy java.util.List AdviceSpec.paramList() {
@@ -36,7 +37,8 @@ aspect AdviceCodegen {
 
   syn lazy SootMethod AdviceDecl.sootMethod() {
     return new SootMethod(name(), getAdviceSpec().paramList(),
-                    soot.VoidType.v(), sootTypeModifiers(), new ArrayList());
+                          returnType().getSootType(),
+                          sootTypeModifiers(), new ArrayList());
   }
 
   protected void AdviceDecl.createAspectInfo() {
@@ -81,7 +83,7 @@ aspect AdviceCodegen {
     return new MethodSig(
       sootTypeModifiers(),
       AbcFactory.AbcClass(hostType().getSootClassDecl()),
-      AbcFactory.AbcType(soot.VoidType.v()),
+      AbcFactory.AbcType(returnType().getSootType()),
       name(),
       getAdviceSpec().methodFormals(),
       new ArrayList(),
@@ -89,9 +91,7 @@ aspect AdviceCodegen {
     );
   }
 
-  /*abstract*/ public abc.weaving.aspectinfo.AdviceSpec AdviceSpec.adviceSpec() {
-    throw new Error("adviceSpec() not implemented for " + getClass().getName());
-  }
+  abstract public abc.weaving.aspectinfo.AdviceSpec AdviceSpec.adviceSpec();
 
   public abc.weaving.aspectinfo.AdviceSpec BeforeSpec.adviceSpec() {
     return new BeforeAdvice(pos());
@@ -112,6 +112,11 @@ aspect AdviceCodegen {
                     getExceptionParameter().formal(), pos());
     else
       return new AfterThrowingAdvice(pos());
+  }
+  public abc.weaving.aspectinfo.AdviceSpec AroundSpec.adviceSpec() {
+    MethodCategory.register(proceedSig(), MethodCategory.PROCEED);
+    AbcType return_type = AbcFactory.AbcType(returnType().getSootType());
+    return new AroundAdvice(return_type, proceedSig(), pos());
   }
 
   syn int AdviceDecl.sootTypeModifiers() {
@@ -146,7 +151,104 @@ aspect AdviceCodegen {
     getAdviceSpec().jimplify2(b);
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
+    getAdviceSpec().jimplify2();
   }
   eq AdviceSpec.getParameter(int index).localNum() = index;
 
+
+
+  //
+  // proceed calls
+  //
+
+  syn AroundSpec AdviceSpec.aroundSpec() = null;
+  eq AroundSpec.aroundSpec() = this;
+
+  inh AroundSpec Proceed.aroundSpec();
+  eq Program.getCompilationUnit().aroundSpec() = null;
+  eq AdviceDecl.getBlock().aroundSpec() = getAdviceSpec().aroundSpec();
+
+  protected java.util.List AroundSpec.proceedFormals()
+  {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumExplicitParameter(); i++)
+      list.add(getExplicitParameter(i).formal());
+    return list;
+  }
+
+  protected java.util.List AroundSpec.proceedParamList()
+  {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumExplicitParameter(); i++)
+        list.add(getExplicitParameter(i).type().getSootType());
+    return list;
+  }
+
+  inh lazy MethodSig AroundSpec.proceedSig();
+  eq AdviceDecl.getAdviceSpec().proceedSig() {
+    return new MethodSig(
+      soot.Modifier.PUBLIC | soot.Modifier.FINAL | soot.Modifier.STATIC,
+      AbcFactory.AbcClass(hostType().getSootClassDecl()),
+      AbcFactory.AbcType(returnType().getSootType()),
+      "proceed$" + name(),
+      getAdviceSpec().aroundSpec().proceedFormals(),
+      new ArrayList(),
+      pos());
+  }
+
+  private ArrayList Proceed.buildProceedArgs(Body b)
+  {
+    ArrayList list = new ArrayList();
+    AroundSpec spec = aroundSpec();
+    int arg = 0;
+
+    for(int i = 0; i < spec.getNumExplicitParameter(); i++)
+    {
+      TypeDecl type = spec.getExplicitParameter(i).type();
+      list.add(
+        asImmediate(b, getArg(arg).type().emitCastTo(b, getArg(arg), type))
+      );
+      arg++;
+    }
+    return list;
+  }
+
+  inh Aspect AdviceSpec.aspectClass();
+  inh TypeDecl AdviceSpec.hostType();
+
+  public soot.Value Proceed.eval(Body b)
+  {
+    AroundSpec spec = aroundSpec();
+    soot.SootMethodRef ref = spec.proceedSig().getSootMethodRef();
+    ArrayList args = buildProceedArgs(b);
+
+    soot.Value result = Jimple.v().newStaticInvokeExpr(ref, args);
+
+    return spec.returnType().isVoid() ? result : asLocal(b, result);
+  }
+
+  syn lazy SootMethod AroundSpec.proceedMethod()
+  {
+    MethodSig ms = aroundSpec().proceedSig();
+    SootMethod m = new SootMethod(ms.getName(), proceedParamList(),
+                        ms.getReturnType().getSootType(), ms.getModifiers(),
+                        new ArrayList());
+    return m;
+  }
+
+  public void AdviceSpec.jimplify1phase2() { }
+
+  public void AroundSpec.jimplify1phase2()
+  {
+    hostType().getSootClassDecl().addMethod(proceedMethod());
+  }
+
+  public void AroundSpec.jimplify2()
+  {
+    JimpleBody body = Jimple.v().newBody(proceedMethod());
+    proceedMethod().setActiveBody(body);
+    Body b = new Body(hostType(), body);
+    jimplify2(b);
+    b.add(Jimple.v().newReturnVoidStmt());
+  }
 }

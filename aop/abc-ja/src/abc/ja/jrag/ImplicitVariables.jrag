@@ -28,7 +28,8 @@ aspect ImplicitVariables
 
         Access type_access = var_type.createQualifiedAccess();
         ParameterDeclaration decl =
-            new ParameterDeclaration(final_mod, type_access, name);
+            new ImplicitParameterDeclaration(final_mod, type_access,
+                                             name, new List());
 
         // add decl to tree (as parameter to the advice method)
         // and force possible rewrites to this decl (by reading it)
@@ -39,6 +40,32 @@ aspect ImplicitVariables
         return decl;
     }
  
+    syn boolean ParameterDeclaration.isImplicit() = false;
+    eq ImplicitParameterDeclaration.isImplicit() = true;
+
+    syn int AdviceSpec.getNumExplicitParameter()
+    {
+        return getExplicitParameterList().size();
+    }
+
+    syn lazy ArrayList AdviceSpec.getExplicitParameterList()
+    {
+        ArrayList list = new ArrayList();
+        for (int i = 0; i < getNumParameter(); i++) {
+            ParameterDeclaration decl = getParameter(i);
+            if (!decl.isImplicit())
+                list.add(decl);
+        }
+        return list;
+    }
+
+    syn ParameterDeclaration AdviceSpec.getExplicitParameter(int i)
+    {
+        return (ParameterDeclaration)getExplicitParameterList().get(i);
+    }
+
+
+    // this is run before the implicit parameters are added
     public void AdviceSpec.nameCheck()
     {
         super.nameCheck();

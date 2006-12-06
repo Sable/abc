@@ -260,21 +260,35 @@ AdviceSpec advice_spec =
   ;
 
 BodyDecl intertype_member_declaration =
-     modifiers_opt.a VOID.b name.c DOT IDENTIFIER.d 
+     modifiers.a VOID.b name.c DOT IDENTIFIER.d 
          LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: ParserTrace.parserTrace("Intertype VOID METHOD declaration");
            return new IntertypeMethodDecl(a, new TypeAccess("void"), d, e, new List(), f, g, c);
        :}
-  |  modifiers_opt.a type.b name.c DOT IDENTIFIER.d 
+  |  VOID.b name.c DOT IDENTIFIER.d 
+         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
+     /* must check if modifiers includes abstract, no body,  if doesn't
+          include abstract, has body */
+       {: ParserTrace.parserTrace("Intertype VOID METHOD declaration");
+           return new IntertypeMethodDecl(new Modifiers(new List()), new TypeAccess("void"), d, e, new List(), f, g, c);
+       :}
+  |  modifiers.a type.b name.c DOT IDENTIFIER.d 
          LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: ParserTrace.parserTrace("Intertype METHOD declaration");
            return new IntertypeMethodDecl(a, b, d, e, new List(), f, g, c);
        :}
-  | modifiers_opt.a name.b DOT NEW 
+  |  type.b name.c DOT IDENTIFIER.d 
+         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
+     /* must check if modifiers includes abstract, no body,  if doesn't
+          include abstract, has body */
+       {: ParserTrace.parserTrace("Intertype METHOD declaration");
+           return new IntertypeMethodDecl(new Modifiers(new List()), b, d, e, new List(), f, g, c);
+       :}
+  | modifiers.a name.b DOT NEW 
          LPAREN formal_parameter_list_opt.c RPAREN throws_opt.d constructor_body.e
      /* must check that body is not null */
        {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
@@ -283,18 +297,40 @@ BodyDecl intertype_member_declaration =
           icd.setHostType(b);
           icd.setParameterList(c);
           icd.setExceptionList(d);
-          icd.setConstructorInvocation(e.getConstructorInvocation());
+          icd.setConstructorInvocationOpt(e.getConstructorInvocationOpt());
           icd.setBlock(e.getBlock());
           return icd;
        :}
-  | modifiers_opt.a type.b name.c DOT IDENTIFIER.d SEMICOLON 
+  | name.b DOT NEW 
+         LPAREN formal_parameter_list_opt.c RPAREN throws_opt.d constructor_body.e
+     /* must check that body is not null */
+       {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
+          IntertypeConstructorDecl icd = new IntertypeConstructorDecl();
+          icd.setModifiers(new Modifiers(new List()));
+          icd.setHostType(b);
+          icd.setParameterList(c);
+          icd.setExceptionList(d);
+          icd.setConstructorInvocationOpt(e.getConstructorInvocationOpt());
+          icd.setBlock(e.getBlock());
+          return icd;
+       :}
+  | modifiers.a type.b name.c DOT IDENTIFIER.d SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD without initializer");
           return new IntertypeFieldDecl(a, b, d, new Opt(), c);
        :}
-  | modifiers_opt.a type.b name.c DOT IDENTIFIER.d  
+  | type.b name.c DOT IDENTIFIER.d SEMICOLON 
+       {: ParserTrace.parserTrace("Intertype FIELD without initializer");
+          return new IntertypeFieldDecl(new Modifiers(new List()), b, d, new Opt(), c);
+       :}
+  | modifiers.a type.b name.c DOT IDENTIFIER.d  
         EQ variable_initializer.e SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD with initializer");
           return new IntertypeFieldDecl(a, b, d, new Opt(e), c);
+       :}
+  | type.b name.c DOT IDENTIFIER.d  
+        EQ variable_initializer.e SEMICOLON 
+       {: ParserTrace.parserTrace("Intertype FIELD with initializer");
+          return new IntertypeFieldDecl(new Modifiers(new List()), b, d, new Opt(e), c);
        :}
   ;
 

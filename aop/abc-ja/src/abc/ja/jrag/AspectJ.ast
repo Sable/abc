@@ -28,6 +28,7 @@ IsSingleton : PerClause;
 
 Proceed : Access ::= Arg:Expr*;
 PointcutAccess : Access ::= <ID:String>;
+ImplicitParameterDeclaration : ParameterDeclaration;
 
 
 // ----------------------- Declare (...) -------------------
