@@ -206,13 +206,9 @@ aspect Statements {
 
   public void ReturnStmt.jimplify2(Body b) {
     if(hasResult()) {
-      TypeDecl type = null;
-      BodyDecl bo = hostBodyDecl();
-      if(bo instanceof MethodDecl) {
-        type = ((MethodDecl)bo).type();
-      }
-      else {
-        throw new Error("Can not create code that returns value within non method");
+      TypeDecl type = returnType();
+      if(type.isVoid()) {
+        throw new Error("Can not return a value from a void body");
       }
       Local local = asLocal(b,
         getResult().type().emitCastTo(b,
