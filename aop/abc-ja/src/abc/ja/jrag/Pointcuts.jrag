@@ -12,6 +12,22 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
     eq PointcutDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;
 
+
+    // Modifiers allowed for pointcut declarations
+
+    eq PointcutDecl.getModifiers().mayBePublic() = true;
+    eq PointcutDecl.getModifiers().mayBePrivate() = true;
+    eq PointcutDecl.getModifiers().mayBeProtected() = true;
+    eq PointcutDecl.getModifiers().mayBeAbstract() = true;
+    eq PointcutDecl.getModifiers().mayBeFinal() = true;
+
+    syn boolean PointcutDecl.isPublic() = getModifiers().isPublic();
+    syn boolean PointcutDecl.isPrivate() = getModifiers().isPrivate();
+    syn boolean PointcutDecl.isProtected() = getModifiers().isProtected();
+    syn boolean PointcutDecl.isAbstract() = getModifiers().isAbstract();
+    syn boolean PointcutDecl.isFinal() = getModifiers().isFinal();
+
+
     // Pointcut variables are those declared by named pointcut declarations
     // or advice (see Advice.jrag)
     inh boolean Variable.isPointcutVariable();
@@ -86,7 +102,21 @@ aspect Pointcuts
 
     syn SimpleSet PointcutAccess.decls()
     {
-        return lookupPointcut(name());
+        SimpleSet concrete = SimpleSet.emptySet;
+        SimpleSet abstr = SimpleSet.emptySet;
+
+        Iterator i = lookupPointcut(name()).iterator();
+        while (i.hasNext()) {
+            PointcutDecl decl = (PointcutDecl) i.next();
+            if (decl.isAbstract())
+                abstr = SimpleSet.emptySet.add(decl);
+            else
+                concrete = concrete.add(decl);
+        }
+        if (concrete.isEmpty())
+            return abstr;
+        else
+            return concrete;
     }
 
     public void PointcutAccess.nameCheck()
