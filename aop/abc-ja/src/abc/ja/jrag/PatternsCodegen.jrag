@@ -100,7 +100,7 @@ aspect PatternsCodegen
     	try {
     		sf = sfr.resolve();
     	} catch(Exception e) {
-    		System.err.println("Failed to resolve SootFieldRef while matching... assuming no match.");
+    		System.err.println("Failed to resolve SootFieldRef while matching... assuming no match, but this shouldn't happen.");
     		return false;
     	}
     	for(int i = 0; i < getNumModifierPattern(); i++)
@@ -110,9 +110,22 @@ aspect PatternsCodegen
         return true;
     }
 
-    public boolean FieldPattern.matchesMethod(SootMethod sf)
+    // Sometimes we need to introduce accessor methods for fields, e.g. when they're private.
+    // These methods should still match field patterns.
+    // Although, this seems to be dead code -- it's never called!
+    public boolean FieldPattern.matchesMethod(SootMethod sm)
     {
-        return false;
+    	System.out.println("MATCHING METHOD TO FIELD!");
+    	int cat = abc.weaving.aspectinfo.MethodCategory.getCategory(sm);
+    	if(cat != MethodCategory.ACCESSOR_GET && cat != MethodCategory.ACCESSOR_SET)
+    		return false;
+    		
+    	String name = MethodCategory.getName(sm);
+    	SootClass realcl = MethodCategory.getClass(sm);
+    	// FIXME: This (apparently) will not work for inner classes, according to
+    	// comment in abc.aspectj.visit.PatternMatcher.AIFieldPattern.matchesMethod()
+    	SootField sf = realcl.getField(name);
+        return matchesFieldRef(sf.makeRef());
     }
 
     public boolean
