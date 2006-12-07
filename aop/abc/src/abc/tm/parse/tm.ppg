@@ -44,6 +44,8 @@ terminal Token PERTHREAD;
 terminal Token TRACEMATCH;
 terminal Token SYM;
 terminal Token FREQUENT;
+terminal Token FILTERMATCH;
+terminal Token SKIPMATCH;
 
 // ------- new non-terminals -----------------------
 
@@ -67,6 +69,15 @@ non terminal Regex regex_and;
 non terminal Regex regex_count;
 non terminal Regex regex_simple;
 
+// skipping-semantics expression non-terminals
+non terminal Regex skip_or;
+non terminal Regex skip_seq;
+non terminal Regex skip_regex_simple;
+non terminal List regex_symbol_disj;
+
+// Global 'pattern'
+non terminal Regex tm_pattern;
+
 
 start with goal;
 
@@ -85,7 +96,7 @@ tracematch ::=
     LBRACE
         symbol_declaration_list:s
         frequent_symbols_declaration_opt:f
-        regex_or:r
+        tm_pattern:r
         method_body:b
     RBRACE:y
     {:
@@ -289,6 +300,22 @@ symbol_list ::=
     :}
 ;
 
+tm_pattern ::=
+	regex_or:a
+	{:
+		RESULT = a;
+	:}
+|
+	FILTERMATCH COLON regex_or:a
+	{:
+		RESULT = a;
+	:}
+|
+	SKIPMATCH COLON skip_or:a
+	{:
+		RESULT = a;
+	:}
+;
 
 regex_or ::=
     regex_and:a
@@ -367,3 +394,68 @@ regex_simple ::=
         RESULT = a;
     :}
 ;
+
+skip_regex_simple ::=
+	IDENTIFIER:a
+	{:
+		RESULT = parser.nf.RegexSymbol(parser.pos(a), a.getIdentifier());
+	:}
+;
+
+skip_or ::=
+    skip_seq:a
+    {:
+        RESULT = a;
+    :}
+|
+    skip_seq:a OR skip_or:b
+    {:
+        RESULT = parser.nf.RegexAlternation(parser.pos(a,b), a, b);
+    :}
+;
+
+
+skip_seq ::= 
+    skip_regex_simple:a
+    {:
+        RESULT = a;
+    :}
+|   
+	skip_regex_simple:a NOT IDENTIFIER:b skip_seq:c
+	{:
+		List list = new LinkedList();
+		list.add(b.getIdentifier());
+		RESULT = parser.nf.RegexSkipSeq(parser.pos(a,c), a, list, c);
+	:}
+|
+    skip_regex_simple:a NOT LPAREN regex_symbol_disj:b RPAREN skip_seq:c
+    {:
+        RESULT = parser.nf.RegexSkipSeq(parser.pos(a,c), a, b, c);
+    :}
+|
+	skip_regex_simple:a skip_seq:b
+	{:
+		RESULT = parser.nf.RegexSkipSeq(parser.pos(a,b), a, new LinkedList(), b);
+	:}
+|
+	LPAREN skip_seq:a RPAREN
+	{:
+		RESULT = a;
+	:}
+;
+ 
+
+ regex_symbol_disj ::=
+ 	IDENTIFIER:a
+ 	{:
+ 		List list = new LinkedList();
+ 		list.add(a.getIdentifier());
+ 		RESULT = list;
+ 	:}
+ |
+ 	skip_regex_simple:a regex_symbol_disj:b
+ 	{:
+ 		b.add(0, a);
+ 		RESULT = b;
+ 	:}
+ ;
