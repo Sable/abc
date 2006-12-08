@@ -892,7 +892,7 @@ BindingPattern type_id_star =
          :}
     |  type.a PC_PLUS
          {: ParserTrace.parserTrace("A type pointcut parameter with a plus");
-            return new NameBindingPattern(new SubtypeNamePattern(new ExplicitTypeNamePattern(a)));
+            return new NameBindingPattern(new ExplicitTypeNamePattern(a));
          :}
     ;
 

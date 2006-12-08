@@ -177,77 +177,70 @@ aspect PointcutCodegen
     syn ArgPattern BindingPattern.argPattern();
     eq StarBindingPattern.argPattern() = new ArgAny(pos());
     eq DotDotBindingPattern.argPattern() = new ArgFill(pos());
-    eq NameBindingPattern.argPattern() = getPattern().argPattern();
-
-    // find an ArgPattern from a Pattern
-    syn ArgPattern Pattern.argPattern() {
-        throw new RuntimeException("argPattern() not defined for " +
-                                    getClass().getName());
+    eq NameBindingPattern.argPattern()
+    {
+        Pattern pat = getPattern();
+        if (pat.isVariable())
+            return new ArgVar(new Var(pat.variableName(), pos()), pos());
+        else
+            return new ArgType(AbcFactory.AbcType(pat.type().getSootType()),
+                               pos());
     }
-    eq ExplicitTypeNamePattern.argPattern() = getAccess().argPattern();
-
-    // find an ArgPattern from an Access
-    syn ArgPattern Access.argPattern() {
-        throw new RuntimeException("argPattern() not defined for " +
-                                    getClass().getName());
-    }
-    eq VarAccess.argPattern() = new ArgVar(new Var(name(), pos()), pos());
-    eq TypeAccess.argPattern() =
-        new ArgType(AbcFactory.AbcType(type().getSootType()), pos());
 
     // find a target pointcut from a BindingPattern
     syn Pointcut BindingPattern.targetPointcut();
     eq StarBindingPattern.targetPointcut() = new TargetAny(pos());
-    eq NameBindingPattern.targetPointcut() = getPattern().targetPointcut();
-    eq DotDotBindingPattern.targetPointcut() {
+    eq DotDotBindingPattern.targetPointcut()
+    {
         throw new InternalCompilerError(
             "trying to create an aspectinfo pointcut for 'target(..)'");
     }
-
-    // find a target pointcut from a Pattern
-    syn Pointcut Pattern.targetPointcut()
+    eq NameBindingPattern.targetPointcut()
     {
-        throw new InternalCompilerError(
-            "targetPointcut() not defined for " + getClass().getName());
+        Pattern pat = getPattern();
+        if (pat.isVariable())
+            return new TargetVar(new Var(pat.variableName(), pos()), pos());
+        return new TargetType(AbcFactory.AbcType(pat.type().getSootType()),
+                              pos());
     }
-    eq ExplicitTypeNamePattern.targetPointcut() = getAccess().targetPointcut();
-
-    // find a target pointcut from an Access
-    syn Pointcut Access.targetPointcut() {
-        throw new RuntimeException("targetPointcut() not defined for " +
-                                    getClass().getName());
-    }
-    eq VarAccess.targetPointcut() =
-        new TargetVar(new Var(name(), pos()), pos());
-    eq TypeAccess.targetPointcut() =
-        new TargetType(AbcFactory.AbcType(type().getSootType()), pos());
 
     // find a this pointcut from a BindingPattern
     syn Pointcut BindingPattern.thisPointcut();
     eq StarBindingPattern.thisPointcut() = new ThisAny(pos());
-    eq NameBindingPattern.thisPointcut() = getPattern().thisPointcut();
-    eq DotDotBindingPattern.thisPointcut() {
+    eq DotDotBindingPattern.thisPointcut()
+    {
         throw new InternalCompilerError(
             "trying to create an aspectinfo pointcut for 'this(..)'");
     }
-
-    // find a this pointcut from a Pattern
-    syn Pointcut Pattern.thisPointcut()
+    eq NameBindingPattern.thisPointcut()
     {
-        throw new InternalCompilerError(
-            "thisPointcut() not defined for " + getClass().getName());
+        Pattern pat = getPattern();
+        if (pat.isVariable())
+            return new ThisVar(new Var(pat.variableName(), pos()), pos());
+        return new ThisType(AbcFactory.AbcType(pat.type().getSootType()),
+                            pos());
     }
-    eq ExplicitTypeNamePattern.thisPointcut() = getAccess().thisPointcut();
 
-    // find a this pointcut from an Access
-    syn Pointcut Access.thisPointcut() {
-        throw new RuntimeException("thisPointcut() not defined for " +
-                                    getClass().getName());
+    syn boolean Pattern.isVariable() = false;
+    eq ExplicitTypeNamePattern.isVariable() = getAccess().isVariable();
+
+    syn String Pattern.variableName() {
+        throw new InternalCompilerError(
+            "variableName() not defined for " + getClass().getName() + ")");
     }
-    eq VarAccess.thisPointcut() =
-        new ThisVar(new Var(name(), pos()), pos());
-    eq TypeAccess.thisPointcut() =
-        new ThisType(AbcFactory.AbcType(type().getSootType()), pos());
+    eq ExplicitTypeNamePattern.variableName() = getAccess().variableName();
+
+    syn String Access.variableName() {
+        throw new InternalCompilerError(
+            "variableName() not defined for " + getClass().getName() + ")");
+    }
+    eq VarAccess.variableName() = name();
+
+    syn TypeDecl Pattern.type() {
+        throw new InternalCompilerError(
+            "type() not defined for " + getClass().getName() + ")");
+    }
+    eq ExplicitTypeNamePattern.type() = getAccess().type();
 
 
 
