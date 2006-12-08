@@ -400,6 +400,11 @@ skip_regex_simple ::=
 	{:
 		RESULT = parser.nf.RegexSymbol(parser.pos(a), a.getIdentifier());
 	:}
+|
+	LPAREN skip_or:a RPAREN
+	{:
+		RESULT = a;
+	:}
 ;
 
 skip_or ::=
@@ -436,11 +441,6 @@ skip_seq ::=
 	skip_regex_simple:a skip_seq:b
 	{:
 		RESULT = parser.nf.RegexSkipSeq(parser.pos(a,b), a, new LinkedList(), b);
-	:}
-|
-	LPAREN skip_seq:a RPAREN
-	{:
-		RESULT = a;
 	:}
 ;
  
