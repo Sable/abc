@@ -83,6 +83,11 @@ public class CPEFlags_c extends ClassnamePatternExpr_c implements CPEFlags {
         return flags.toString() + cpe;
     }
 
+    //TODO: This does not yet work in the back end, as aspectinfo.Aspect does
+    //not store the privileged status of the aspect. This means that 
+    //statements such as 
+    //	advertise to !(privileged *): call(* foo())
+    //are allowed by the language, but do not conform to the expected semantics.
     public boolean matches(PatternMatcher matcher, PCNode cl) {
         //check if cl matches the flags
         ClassType ct = PCStructure.v().getClassType(cl);
