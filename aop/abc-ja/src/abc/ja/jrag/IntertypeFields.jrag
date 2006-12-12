@@ -1,0 +1,129 @@
+aspect IntertypeFields {
+  // the name of the host of an intertype field declaration is just
+  // the name of that type
+  eq IntertypeFieldDecl.getHostType().nameType() = NameType.TYPE_NAME;
+
+  syn TypeDecl FieldDeclaration.targetType() = hostType();
+  eq IntertypeFieldDecl.targetType() = getHostType().type();
+
+  eq IntertypeFieldDecl.getInit().hostType() = targetType();
+  eq IntertypeFieldDecl.getInit().enclosingType() = targetType().enclosingType();
+
+  // look up a field from another type
+  // compare to the code in LookupVariable.jrag:
+  // TypeDecl.getBodyDecl(int i).lookupVariable(String name) 
+  syn SimpleSet TypeDecl.remoteIntertypeLookupVariable(String name) {
+    SimpleSet list = memberFields(name);
+    if(!list.isEmpty()) return list;
+    list = lookupVariable(name);
+    if(inStaticContext() || isStatic() || (isAnonymous() && inExplicitConstructorInvocation()))
+      list = removeInstanceVariables(list);
+    return list;
+  }
+
+  eq IntertypeFieldDecl.getInit().lookupVariable(String name) {
+    SimpleSet s = targetType().remoteIntertypeLookupVariable(name);
+    if(!s.isEmpty()) return s;
+    return lookupVariable(name);
+  }
+
+  protected void IntertypeFieldDecl.collectIntertypeDeclarations(Collection c) {
+    c.add(this);
+  }
+
+  // find all intertype fields introduced onto a particular typeDecl
+  // they can either be introduced directly, or via an interface
+  inh lazy Collection TypeDecl.intertypeFields(TypeDecl typeDecl);
+  eq Program.getCompilationUnit(int i).intertypeFields(TypeDecl typeDecl) {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDeclarations().iterator(); iter.hasNext();) {
+      BodyDecl d = (BodyDecl)iter.next();
+      if(d instanceof IntertypeFieldDecl) {
+        IntertypeFieldDecl f = (IntertypeFieldDecl)d;
+        if(f.targetType() == typeDecl || f.targetType().isInterfaceDecl() && typeDecl.implement(f.targetType()))
+          c.add(f);
+      }
+    }
+    return c;
+  }
+
+  refine LookupVariable eq TypeDecl.localFields(String name) {
+    SimpleSet set = LookupVariable.TypeDecl.localFields(name);
+    if(!set.isEmpty())
+      return set;
+    for(Iterator iter = intertypeFields(this).iterator(); iter.hasNext(); ) {
+      IntertypeFieldDecl f = (IntertypeFieldDecl)iter.next();
+      if(f.name().equals(name))
+        set = set.add(f);
+    }
+    return set;
+  }
+
+  eq IntertypeFieldDecl.sootRef() {
+    SootFieldRef ref = Scene.v().makeFieldRef(
+      targetType().getSootClassDecl(),
+      name(),
+      type().getSootType(),
+      isStatic()
+    );
+    return ref;
+  }
+
+  eq IntertypeFieldDecl.isBytecodeField() = false;
+
+  public void IntertypeFieldDecl.jimplify1phase2() {
+    FieldSig fieldSig = new FieldSig(
+      sootTypeModifiers(),
+      AbcFactory.AbcClass(targetType().getSootClassDecl()),
+      AbcFactory.AbcType(type().getSootType()),
+      name(),
+      pos()
+    );
+    Aspect asp = globalAspectInfo().getAspect(hostType().abcClass());
+    globalAspectInfo().addIntertypeFieldDecl(
+      new abc.weaving.aspectinfo.IntertypeFieldDecl(
+        fieldSig,
+        asp,
+        createInitMethodSig(), // MethodSig init
+        null, // MethodSig getter
+        null, // MethodSig setter
+        pos()
+      )
+    );
+  }
+
+  // create a field with an initiazlier
+  public MethodSig IntertypeFieldDecl.createInitMethodSig() {
+    if(!hasInit())
+      return null;
+    // build a mangled name for the initalization method
+    String name = "abc$interFieldInit$" + hostType().fullName() + "$" + targetType().fullName() + "$" + name();
+    name = name.replace('.', '$');
+    // Create a Soot method ...
+    ArrayList parameters = new ArrayList();
+    parameters.add(targetType().getSootType());
+    int modifiers = soot.Modifier.PUBLIC | soot.Modifier.STATIC;
+    SootMethod decl = new SootMethod(name, parameters, type().getSootType(), modifiers, new ArrayList());
+    hostType().getSootClassDecl().addMethod(decl);
+    // ... with a corresponding body that returns the field initializatio value ...
+    JimpleBody body = Jimple.v().newBody(decl);
+    decl.setActiveBody(body);
+    Body b = new Body(hostType(), body);
+    Local l = asLocal(b,
+      getInit().type().emitCastTo(b, getInit(), type()) // AssignConversion
+    );
+    b.add(Jimple.v().newReturnStmt(l));
+    // ... and finally return a MethodSig 
+    ArrayList formals = new ArrayList();
+    formals.add(new Formal(AbcFactory.AbcType(targetType().getSootType()), "p", pos()));
+    return new MethodSig(
+      modifiers,
+      AbcFactory.AbcClass(hostType().getSootClassDecl()),
+      AbcFactory.AbcType(type().getSootType()),
+      name,
+      formals, 
+      new ArrayList(),
+      pos()
+    );
+  }
+}

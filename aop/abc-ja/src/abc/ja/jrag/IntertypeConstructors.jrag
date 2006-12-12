@@ -1,0 +1,83 @@
+aspect IntertypeConstructors {
+  eq IntertypeConstructorDecl.getHostType().nameType() = NameType.TYPE_NAME;
+  
+  syn TypeDecl IntertypeConstructorDecl.introducedType() = getHostType().type();
+
+  syn TypeDecl IntertypeConstructorDecl.hostType() = introducedType();
+  eq IntertypeConstructorDecl.getBlock().hostType() = hostType();
+  eq IntertypeConstructorDecl.getConstructorInvocation().hostType() = hostType();
+  eq IntertypeConstructorDecl.getParameter(int index).hostType() = hostType();
+
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupConstructor() = hostType().constructors();
+  eq IntertypeConstructorDecl.getBlock().lookupConstructor() = hostType().constructors();
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupSuperConstructor() = hostType().lookupSuperConstructor();
+  eq IntertypeConstructorDecl.getBlock().lookupSuperConstructor() = hostType().lookupSuperConstructor();
+
+  // Hack to avoid multiple declared intertype constructors
+  //public ConstructorDecl AspectDecl.lookupConstructor(ConstructorDecl signature) {
+  //  return signature;
+  //}
+
+  refine LookupConstructor eq TypeDecl.constructors() {
+    Collection c = new ArrayList();
+    c.addAll(intertypeConstructors(this));
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof ConstructorDecl) {
+        c.add(getBodyDecl(i));
+      }
+    }
+    if(c.isEmpty() && isClassDecl()) {
+      Modifiers m = new Modifiers();
+      if(isPublic()) m.addModifier(new Modifier("public"));
+      else if(isProtected()) m.addModifier(new Modifier("protected"));
+      else if(isPrivate()) m.addModifier(new Modifier("private"));
+      addBodyDecl(
+          new ConstructorDecl(
+            m,
+            name(),
+            new List(),
+            new List(),
+            new Opt(),
+            new Block()
+          )
+      );
+      c.add(getBodyDecl(getNumBodyDecl()-1));
+    }
+    return c;
+  }
+
+  // find all intertype constructors introduced onto a particular typeDecl
+  inh lazy Collection TypeDecl.intertypeConstructors(TypeDecl typeDecl);
+  eq Program.getCompilationUnit(int i).intertypeConstructors(TypeDecl typeDecl) {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDeclarations().iterator(); iter.hasNext();) {
+      BodyDecl d = (BodyDecl)iter.next();
+      if(d instanceof IntertypeConstructorDecl) {
+        IntertypeConstructorDecl constr = (IntertypeConstructorDecl)d;
+        if(constr.introducedType() == typeDecl)
+          c.add(constr);
+      }
+    }
+    return c;
+  }
+
+  protected void IntertypeConstructorDecl.collectIntertypeDeclarations(Collection c) {
+    c.add(this);
+  }
+
+  eq IntertypeConstructorDecl.name() = introducedType().name();
+
+
+  public void IntertypeConstructorDecl.nameCheck() {
+  }
+
+  /*
+  public void IntertypeConstructorDecl.jimplify1phase2() {
+
+  }
+  public void IntertypeConstructorDecl.jimplify2() {
+  }
+  */
+
+
+}

@@ -42,11 +42,16 @@ aspect AspectJNameAnalysis {
   // method lookup
   eq IntertypeMethodDecl.getBlock().lookupMethod(String name) {
     Collection c = targetType().remoteIntertypeLookupMethod(name);
-    if(!c.isEmpty())
-      return c;
+    if(!c.isEmpty()) return c;
     return lookupMethod(name);
   }
   inh Collection IntertypeMethodDecl.lookupMethod(String name);
+  eq IntertypeConstructorDecl.getBlock().lookupMethod(String name) {
+    Collection c = introducedType().remoteIntertypeLookupMethod(name);
+    if(!c.isEmpty()) return c;
+    return lookupMethod(name);
+  }
+  inh Collection IntertypeConstructorDecl.lookupMethod(String name);
 
   // compute the set of intertype declarations
   // this is an attribute at the very root of the
@@ -71,15 +76,6 @@ aspect AspectJNameAnalysis {
     for(int i = 0; i < getNumChild(); i++)
       getChild(i).collectIntertypeDeclarations(c);
   }
-  // traversal specialised to AspectDecl 
-  protected void AspectDecl.collectIntertypeDeclarations(Collection c) {
-    super.collectIntertypeDeclarations(c);
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
-        c.add(getBodyDecl(i));
-      }
-    }
-  }
   // override generic traversal..
   protected void BodyDecl.collectIntertypeDeclarations(Collection c) {
   }
@@ -87,6 +83,10 @@ aspect AspectJNameAnalysis {
   protected void MemberTypeDecl.collectIntertypeDeclarations(Collection c) {
     for(int i = 0; i < getNumChild(); i++)
       getChild(i).collectIntertypeDeclarations(c);
+  }
+  // ..and to add intertype declarations
+  protected void IntertypeMethodDecl.collectIntertypeDeclarations(Collection c) {
+    c.add(this);
   }
 
   // redefine the local methods of a class declaration
@@ -139,62 +139,6 @@ aspect AspectJNameAnalysis {
     }
     return result;
   }
-  /*
-  syn lazy Collection ClassDecl.localMethods(String name) {
-    Collection local = super.localMethods(name);
-    Collection result = new ArrayList(1);
-    Map map = new HashMap();
-    for(Iterator iter = local.iterator(); iter.hasNext(); ) {
-      MethodDecl m = (MethodDecl)iter.next();
-      if(!map.containsKey(m.signature()))
-        map.put(m.signature(), new ArrayList(1));
-      Collection c = (Collection)map.get(m.signature());
-      c.add(m);
-    }
-    for(Iterator iter = intertypeMethods(this, name).iterator(); iter.hasNext(); ) {
-      MethodDecl m = (MethodDecl)iter.next();
-      if(!map.containsKey(m.signature()))
-        map.put(m.signature(), new ArrayList(1));
-      Collection c = (Collection)map.get(m.signature());
-      c.add(m);
-    }
-    for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-      String key = (String)iter.next();
-      ArrayList mostSpecific = new ArrayList(1);
-      for(Iterator i2 = ((Collection)map.get(key)).iterator(); i2.hasNext(); ) {
-        MethodDecl m = (MethodDecl)i2.next();
-        if(mostSpecific.isEmpty())
-          mostSpecific.add(m);
-        else {
-          boolean done = false;
-          for(Iterator i3 = mostSpecific.iterator(); i3.hasNext() && !done; ) {
-            MethodDecl n = (MethodDecl)i3.next();
-            if(m.isMoreSpecificThan(n)) {
-              i3.remove();
-            }
-            else if(n.isMoreSpecificThan(m)) {
-              done = true;
-            }
-          }
-          if(!done) {
-            mostSpecific.add(m);
-          }
-        }
-      }
-      if(mostSpecific.size() > 1) {
-        StringBuffer s = new StringBuffer();
-        s.append("*** ITD Conflict in " + fullName() + " between ");
-        s.append(((MethodDecl)mostSpecific.get(0)).signature() + " in ");
-        for(Iterator i2 = mostSpecific.iterator(); i2.hasNext(); ) {
-          MethodDecl m = (MethodDecl)i2.next();
-          s.append(m.hostType().fullName() + " ");
-        }
-        error(s.toString());
-      }
-      result.addAll(mostSpecific);
-    }
-    return result;
-  }*/
 
   // compare the targets of two method declarations:
   // return true if the first target is a strict
@@ -214,28 +158,18 @@ aspect AspectJNameAnalysis {
     return false;
   }
  
-  // find the intertype methods introduced onto a particular
-  // typeDecl with a given name: they can either be introduced
-  // directly, or via an interface
-  inh lazy Collection TypeDecl.intertypeMethods(TypeDecl typeDecl, String name);
-  eq Program.getCompilationUnit(int i).intertypeMethods(TypeDecl typeDecl, String name) {
-    Collection c = new ArrayList();
-    for(Iterator iter = intertypeDeclarations().iterator(); iter.hasNext();) {
-      IntertypeMethodDecl m = (IntertypeMethodDecl)iter.next();
-      if(m.name().equals(name) && (m.targetType() == typeDecl || m.targetType().isInterfaceDecl() && typeDecl.implement(m.targetType())))
-        c.add(m);
-    }
-    return c;
-  }
- 
-  // find all intertype methods introduced onto a typeDecl
+  // find all intertype methods introduced onto a particular typeDecl
+  // they can either be introduced directly, or via an interface
   inh lazy Collection TypeDecl.intertypeMethods(TypeDecl typeDecl);
   eq Program.getCompilationUnit(int i).intertypeMethods(TypeDecl typeDecl) {
     Collection c = new ArrayList();
     for(Iterator iter = intertypeDeclarations().iterator(); iter.hasNext();) {
-      IntertypeMethodDecl m = (IntertypeMethodDecl)iter.next();
-      if(m.targetType() == typeDecl || m.targetType().isInterfaceDecl() && typeDecl.implement(m.targetType()))
-        c.add(m);
+      BodyDecl d = (BodyDecl)iter.next();
+      if(d instanceof IntertypeMethodDecl) {
+        IntertypeMethodDecl m = (IntertypeMethodDecl)d;
+        if(m.targetType() == typeDecl || m.targetType().isInterfaceDecl() && typeDecl.implement(m.targetType()))
+          c.add(m);
+      }
     }
     return c;
   }
