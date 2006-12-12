@@ -287,6 +287,7 @@ aspect AspectJNameAnalysis {
     return list;
   }*/
   eq AspectDecl.localMethodsSignatureMap() {
+    addImplicitMethods();
     HashMap map = new HashMap(getNumBodyDecl());
     for(int i = 0; i < getNumBodyDecl(); i++) {
       if(getBodyDecl(i).isLocalMethod()) {
@@ -296,6 +297,46 @@ aspect AspectJNameAnalysis {
     }
     return map;
   }
+
+  private boolean AspectDecl.addImplicitMethods = true;
+  private void AspectDecl.addImplicitMethods() {
+    if(!addImplicitMethods)
+      return;
+    addImplicitMethods = false;
+    List parameters = new List();
+    if(getPerClause().isPerObject())
+      parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
+    addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
+        createQualifiedAccess(),
+        "aspectOf",
+        parameters,
+        new List(),
+        new List(),
+        new Opt(new Block(new List().add(new ReturnStmt(new Opt(new NullLiteral())))))
+      )
+    );
+    parameters = new List();
+    if(getPerClause().isPerObject())
+      parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
+    addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
+        typeBoolean().createQualifiedAccess(),
+        "hasAspect",
+        parameters,
+        new List(),
+        new List(),
+        new Opt(new Block(new List().add(new ReturnStmt(new Opt(new BooleanLiteral("true"))))))
+      )
+    );
+  }
+  inh TypeDecl AspectDecl.typeBoolean();
+
+  syn boolean PerClause.isPerObject() = false;
+  eq PerTarget.isPerObject() = true;
+  eq PerThis.isPerObject() = true;
 
  
   // check names of intertype methods

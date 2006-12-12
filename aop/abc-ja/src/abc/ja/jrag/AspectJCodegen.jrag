@@ -22,38 +22,34 @@ aspect AspectJCodegen {
 
   public void AspectDecl.jimplify1phase1() {
     super.jimplify1phase1();
-    globalAspectInfo().addAspect(new Aspect(abcClass(), new Singleton(pos()), pos()));
-    addAspectOf();
-    addHasAspect();
+    globalAspectInfo().addAspect(
+      new Aspect(abcClass(), getPerClause().aspectInfo(), pos())
+    );
   }
 
-  private void AspectDecl.addAspectOf() {
-    String name = "aspectOf";
-    ArrayList parameters = new ArrayList();
-    soot.Type returnType = getSootType();
-    int modifiers = soot.Modifier.PUBLIC | soot.Modifier.STATIC;
-    ArrayList throwtypes = new ArrayList(); // Add NoAspectBound...
-    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
-    getSootClassDecl().addMethod(m);
-    
-    JimpleBody body = Jimple.v().newBody(m);
-    m.setActiveBody(body);
-    Chain units = body.getUnits();
-    units.add(Jimple.v().newReturnStmt(NullConstant.v()));
+  public abstract Per PerClause.aspectInfo();
+  public Per PerTarget.aspectInfo() {
+    return new abc.weaving.aspectinfo.PerTarget(
+      getPointcutExpr().pointcut(), pos()
+    );
   }
-  private void AspectDecl.addHasAspect() {
-    String name = "hasAspect";
-    ArrayList parameters = new ArrayList();
-    soot.Type returnType = soot.BooleanType.v();
-    int modifiers = soot.Modifier.PUBLIC | soot.Modifier.STATIC;
-    ArrayList throwtypes = new ArrayList();
-    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
-    getSootClassDecl().addMethod(m);
-    
-    JimpleBody body = Jimple.v().newBody(m);
-    m.setActiveBody(body);
-    Chain units = body.getUnits();
-    units.add(Jimple.v().newReturnStmt(IntConstant.v(1))); // true
+  public Per PerThis.aspectInfo() {
+    return new abc.weaving.aspectinfo.PerThis(
+      getPointcutExpr().pointcut(), pos()
+    );
+  }
+  public Per PerCflow.aspectInfo() {
+    return new abc.weaving.aspectinfo.PerCflow(
+      getPointcutExpr().pointcut(), pos()
+    );
+  }
+  public Per PerCflowBelow.aspectInfo() {
+    return new abc.weaving.aspectinfo.PerCflowBelow(
+      getPointcutExpr().pointcut(), pos()
+    );
+  }
+  public Per IsSingleton.aspectInfo() {
+    return new Singleton(pos());
   }
 
   eq IntertypeMethodDecl.sootRef() {
