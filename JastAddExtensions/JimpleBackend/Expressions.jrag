@@ -214,7 +214,7 @@ aspect Expressions {
         if(requiresAccessor())
           return f.emitInvokeFieldAccessor(b, null, fieldQualifierType());
         else
-          return Jimple.v().newStaticFieldRef(f.sootRef());
+          return Jimple.v().newStaticFieldRef(sootRef());
       }
       else {
         if(requiresAccessor()) {
@@ -223,13 +223,26 @@ aspect Expressions {
         }
         else {
           soot.Local base = createLoadQualifier(b);
-          return Jimple.v().newInstanceFieldRef(base, f.sootRef());
+          return Jimple.v().newInstanceFieldRef(base, sootRef());
         }
       }
     }
     else
       return super.eval(b);
   }
+  private SootFieldRef VarAccess.sootRef() {
+    FieldDeclaration decl = (FieldDeclaration)decl();
+    SootFieldRef ref = Scene.v().makeFieldRef(
+      fieldQualifierType().getSootClassDecl(),
+      decl.name(),
+      decl.type().getSootType(),
+      decl.isStatic()
+    );
+    return ref;
+  }
+
+
+
   syn lazy soot.Local VarAccess.base(Body b) = asLocal(b, createLoadQualifier(b));
 
   public soot.Value AbstractDot.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
