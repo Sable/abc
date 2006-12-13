@@ -324,9 +324,11 @@ aspect Expressions {
     if(hasPrevExpr())
       return prevExpr().type();
     TypeDecl typeDecl = hostType();
-    while(!typeDecl.hasField(name()))
+    while(typeDecl != null && !typeDecl.hasField(name()))
       typeDecl = typeDecl.enclosingType();
-    return typeDecl;
+    if(typeDecl != null)
+      return typeDecl;
+    return decl().hostType();
   }
 
   private ArrayList MethodAccess.buildArgList(Body b) {
@@ -463,9 +465,11 @@ aspect Expressions {
     if(hasPrevExpr())
       return prevExpr().type();
     TypeDecl typeDecl = hostType();
-    while(!typeDecl.hasMethod(name()))
+    while(typeDecl != null && !typeDecl.hasMethod(name()))
       typeDecl = typeDecl.enclosingType();
-    return typeDecl;
+    if(typeDecl != null)
+      return typeDecl;
+    return decl().hostType();
   }
 
   syn boolean TypeDecl.hasMethod(String id) {
