@@ -18,11 +18,15 @@ aspect IntertypeConstructors {
   //  return signature;
   //}
 
+  syn boolean BodyDecl.isExactConstructorDecl() = false;
+  eq ConstructorDecl.isExactConstructorDecl() = true;
+  eq IntertypeConstructorDecl.isExactConstructorDecl() = false;
+
   refine LookupConstructor eq TypeDecl.constructors() {
     Collection c = new ArrayList();
     c.addAll(intertypeConstructors(this));
     for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof ConstructorDecl) {
+      if(getBodyDecl(i).isExactConstructorDecl()) {
         c.add(getBodyDecl(i));
       }
     }
@@ -71,13 +75,142 @@ aspect IntertypeConstructors {
   public void IntertypeConstructorDecl.nameCheck() {
   }
 
+
+
+
+  private void IntertypeConstructorDecl.addParameterTypes(ArrayList parameters) {
+    // this$0
+    TypeDecl typeDecl = introducedType();
+    if(typeDecl.needsEnclosing())
+      parameters.add(typeDecl.enclosingType().getSootType());
+    if(typeDecl.needsSuperEnclosing()) {
+      TypeDecl superClass = ((ClassDecl)typeDecl).superclass();
+      parameters.add(superClass.enclosingType().getSootType());
+    }
+    // args
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    // this$val
+    for(Iterator iter = typeDecl.enclosingVariables().iterator(); iter.hasNext(); )
+      parameters.add(((Variable)iter.next()).type().getSootType());
+  }
+
+  private ArrayList IntertypeConstructorDecl.toAbcTypes(ArrayList types) {
+    ArrayList abcTypes = new ArrayList(types.size());
+    for(Iterator iter = types.iterator(); iter.hasNext(); ) {
+      soot.Type type = (soot.Type)iter.next();
+      abcTypes.add(AbcFactory.AbcType(type));
+    }
+    return abcTypes;
+  }
+
+  private ArrayList IntertypeConstructorDecl.throwTypesList() {
+    ArrayList throwtypes = new ArrayList();
+    for(int i = 0; i < getNumException(); i++)
+      throwtypes.add(getException(i).type().getSootClassDecl());
+    return throwtypes;
+  }
+
   /*
+  // create constructor
   public void IntertypeConstructorDecl.jimplify1phase2() {
+    addDummyConstructor();
+    String name = "init$" + introducedType().fullName();
+    name = name.replace('.', '$');
 
+    ArrayList parameters = new ArrayList();
+    parameters.add(introducedType().getSootType());
+    addParameterTypes(parameters);
+
+    soot.Type returnType = soot.VoidType.v();
+
+    int modifiers = sootTypeModifiers() | soot.Modifier.STATIC ;
+
+    ArrayList throwtypes = throwTypesList();
+
+    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
+    hostType().getSootClassDecl().addMethod(m);
+    sootMethod = m;
+
+    Aspect asp = globalAspectInfo().getAspect(hostType().abcClass());
+    globalAspectInfo().addIntertypeConstructorDecl(
+      new abc.weaving.aspectinfo.IntertypeConstructorDecl(
+        AbcFactory.AbcClass(introducedType().getSootClassDecl()),
+        globalAspectInfo().getAspect(hostType().abcClass()),
+        sootTypeModifiers(),
+        sootTypeModifiers(),
+        false,
+        toAbcTypes(parameters), // formal types
+        new ArrayList(), // throw types
+        AbcFactory.AbcClass(introducedType().getSootClassDecl()), // qualifier
+        abc.weaving.aspectinfo.IntertypeConstructorDecl.SUPER,
+        new ArrayList(), // arguments
+        AbcFactory.MethodSig(m),
+        pos()
+      )
+    );
   }
+
+  syn lazy SootMethod IntertypeConstructorDecl.addDummyConstructor() {
+    ArrayList parameters = new ArrayList();
+    addParameterTypes(parameters);
+    soot.Type returnType = soot.VoidType.v();
+    int modifiers = sootTypeModifiers();
+    ArrayList throwtypes = throwTypesList();
+    SootMethod m = new SootMethod("<init>", parameters, returnType, modifiers, throwtypes);
+    introducedType().getSootClassDecl().addMethod(m);
+    return m;
+  }
+
+  private void IntertypeConstructorDecl.addDummyConstructorBody() {
+    SootMethod m = addDummyConstructor();
+    JimpleBody body = Jimple.v().newBody(m);
+    m.setActiveBody(body);
+    Body b = new Body(introducedType(), body);
+    if(hasConstructorInvocation())
+      getConstructorInvocation().jimplify2(b);
+    b.add(Jimple.v().newReturnVoidStmt());
+  }
+  
+  // add the method body
   public void IntertypeConstructorDecl.jimplify2() {
+    addDummyConstructorBody();
+
+    JimpleBody body = Jimple.v().newBody(sootMethod);
+    sootMethod.setActiveBody(body);
+    Body b = new Body(hostType(), body);
+    for(int i = 0; i < getNumParameter(); i++)
+      getParameter(i).jimplify2(b);
+
+    int localIndex = 0;
+    if(hostType().needsEnclosing()) {
+      TypeDecl type = hostType().enclosingType();
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newInstanceFieldRef(
+          b.emitThis(),
+          hostType().getSootField("this$0", type).makeRef()
+        ),
+        asLocal(b, Jimple.v().newParameterRef(type.getSootType(), localIndex))
+      ));
+      localIndex++;
+    }
+    if(needsSuperEnclosing()) {
+      localIndex++;
+    }
+    localIndex += getNumParameter();
+    for(Iterator iter = hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      b.add(Jimple.v().newAssignStmt(
+        Jimple.v().newInstanceFieldRef(
+          b.emitThis(),
+          hostType().getSootField("val$" + v.name(), v.type()).makeRef()
+        ),
+        asLocal(b, Jimple.v().newParameterRef(v.type().getSootType(), localIndex))
+      ));
+      localIndex++;
+    }
+    getBlock().jimplify2(b);
+    b.add(Jimple.v().newReturnVoidStmt());
   }
-  */
-
-
+*/
 }

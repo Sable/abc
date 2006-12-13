@@ -37,6 +37,7 @@ aspect PatternsCodegen
                                     + getClass().getName());
     }
 
+    
 
     //
     // Matching method patterns
@@ -44,7 +45,9 @@ aspect PatternsCodegen
     public boolean MethodPattern.matchesCall(SootMethodRef smr)
     {
         // check modifiers
-        // (FIXME)
+        for(int i  = 0; i < getNumModifierPattern(); i++)
+          if(!getModifierPattern(i).matches(smr.resolve().getModifiers()))
+            return false;
 
         // check return type
         if(!getReturnTypePattern().matchesType(smr.returnType()))
@@ -54,11 +57,51 @@ aspect PatternsCodegen
         if(!getMemberNamePattern().matchesTypeAndName(smr))
             return false;
 
-        // check exceptions
-        // (FIXME)
+        // check formals
+        LinkedList/*<soot.Type>*/ ftypes = new LinkedList(smr.parameterTypes());
+        LinkedList/*<FormalPattern>*/ fpats = new LinkedList();
+        for(int i = 0; i < getNumFormalPattern(); i++)
+          fpats.add(getFormalPattern(i));
+        if(!matchesFormals(fpats, 0, ftypes, 0))
+          return false;
 
+        // check exceptions
+        for(int i = 0; i < getNumThrowsPattern(); i++) {
+          boolean found = false;
+          for(Iterator iter = smr.resolve().getExceptions().iterator(); iter.hasNext() && !found; ) {
+            soot.SootClass c = (soot.SootClass)iter.next();
+            if(getThrowsPattern(i).matchesType(c))
+              found = true;
+          }
+          if(!found)
+            return false;
+        }
         return true;
     }
+
+    protected static boolean MemberPattern.matchesFormals(java.util.List/*<FormalPattern>*/ fpats, int fpi, java.util.List/*<soot.Type>*/ ftypes, int fti) {
+      // FIXME: BRUTE FORCE MATCHING. DO SOMETHING MORE CLEVER!
+      while (fpi < fpats.size()) {
+        FormalPattern fp = (FormalPattern)fpats.get(fpi);
+        if (fp instanceof ConcreteFormalPattern) {
+          if (fti >= ftypes.size()) return false;
+          Pattern pat = ((ConcreteFormalPattern)fp).getPattern();
+          soot.Type ft = (soot.Type)ftypes.get(fti);
+          if (!pat.matchesType(ft)) return false;
+        } else {
+          // DOTDOT
+          while (fti <= ftypes.size()) {
+            if (matchesFormals(fpats, fpi+1, ftypes, fti)) return true;
+            fti++;
+          }
+          return false;
+        }
+        fpi++;
+        fti++;
+      }
+      return fti == ftypes.size();
+    }
+
 
     public boolean MethodPattern.matchesExecution(SootMethod sm)
     {
@@ -146,7 +189,35 @@ aspect PatternsCodegen
     //
     public boolean ConstructorPattern.matchesConstructor(SootMethod sc)
     {
-        return false;
+        // check modifiers
+        for(int i  = 0; i < getNumModifierPattern(); i++)
+          if(!getModifierPattern(i).matches(sc.getModifiers()))
+            return false;
+
+        // check type and name
+        if(!getMemberNamePattern().matchesTypeAndName(sc.makeRef()))
+            return false;
+
+        // check formals
+        LinkedList/*<soot.Type>*/ ftypes = new LinkedList(sc.getParameterTypes());
+        LinkedList/*<FormalPattern>*/ fpats = new LinkedList();
+        for(int i = 0; i < getNumFormalPattern(); i++)
+          fpats.add(getFormalPattern(i));
+        if(!matchesFormals(fpats, 0, ftypes, 0))
+          return false;
+
+        // check exceptions
+        for(int i = 0; i < getNumThrowsPattern(); i++) {
+          boolean found = false;
+          for(Iterator iter = sc.getExceptions().iterator(); iter.hasNext() && !found; ) {
+            soot.SootClass c = (soot.SootClass)iter.next();
+            if(getThrowsPattern(i).matchesType(c))
+              found = true;
+          }
+          if(!found)
+            return false;
+        }
+        return true;
     }
 
     public boolean ConstructorPattern.equivalent(
@@ -326,14 +397,14 @@ aspect PatternsCodegen
         }
     }
 
-    protected Set DotNamePattern.superTypes(SootClass sc)
+    protected static Set ASTNode.superTypes(SootClass sc)
     {
         Set supertypes = new HashSet();
         addSuperTypes(sc, supertypes);
         return supertypes;
     }
 
-    protected void DotNamePattern.addSuperTypes(SootClass sc, Set supertypes)
+    protected static void ASTNode.addSuperTypes(SootClass sc, Set supertypes)
     {
         supertypes.add(sc);
 
@@ -353,17 +424,41 @@ aspect PatternsCodegen
         }
     }
 
+    // detect if the subtypes of the type are to be matched
+    inh boolean Pattern.matchSubtype();
+    // notation for match on subtype
+    eq SubtypeNamePattern.getPattern().matchSubtype() = true;
+    // default is to not match on subtype
+    eq TypeDecl.getBodyDecl().matchSubtype() = false;
+    eq AspectDecl.getPerClause().matchSubtype() = false;
+
     syn boolean Pattern.matchesType(SootClass c) = false;
     eq SimpleNamePattern.matchesType(SootClass c) {
-        String name = c.getShortName();
-        int index = name.lastIndexOf('$');
-        if (index != -1)
+        Set set = matchSubtype() ? superTypes(c) : new HashSet();
+        set.add(c);
+        for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+          c = (SootClass)iter.next();
+          String name = c.getShortName();
+          int index = name.lastIndexOf('$');
+          if (index != -1)
             name = name.substring(index + 1, name.length());
-        return matchesName(name);
+          if(matchesName(name))
+            return true;
+        }
+        return false;
     }
-    eq ExplicitTypeNamePattern.matchesType(SootClass c) =
-        getAccess().type().fullName().equals(c.getName())
-        && getAccess().isTypeAccess();
+    eq ExplicitTypeNamePattern.matchesType(SootClass c) {
+        Set set = matchSubtype() ? superTypes(c) : new HashSet();
+        set.add(c);
+        for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+          c = (SootClass)iter.next();
+
+          if(getAccess().type().jvmName().equals(c.getName())
+             && getAccess().isTypeAccess())
+            return true;
+        }
+        return false;
+    }
 
     syn boolean Pattern.matchesType(Type t) = false;
     eq SimpleNamePattern.matchesType(Type t) {
@@ -377,11 +472,21 @@ aspect PatternsCodegen
         getAccess().type().name().equals(t.toString())
         && getAccess().isTypeAccess();
     
-    //
-    // Modifier patterns
-    //
-    // There's probably a more efficient way of doing this, but it requires
-    // enumerating all modifiers. Maybe we should anyway?
-    syn boolean ModifierPattern.matches(int modifiers) = (soot.Modifier.toString(modifiers).indexOf(getModifier().getID()) > -1);
-    eq NegModifierPattern.matches(int modifiers) = (soot.Modifier.toString(modifiers).indexOf(getModifier().getID()) == -1);
+    syn boolean ModifierPattern.matches(int m) = (modifierMask() & m) != 0;
+    eq NegModifierPattern.matches(int m) = !super.matches(m);
+    syn lazy int ModifierPattern.modifierMask() {
+      String s = getModifier().getID();
+      if(s.equals("public")) return soot.Modifier.PUBLIC;
+      if(s.equals("private")) return soot.Modifier.PRIVATE;
+      if(s.equals("protected")) return soot.Modifier.PROTECTED;
+      if(s.equals("static")) return soot.Modifier.STATIC;
+      if(s.equals("abstract")) return soot.Modifier.ABSTRACT;
+      if(s.equals("final")) return soot.Modifier.FINAL;
+      if(s.equals("native")) return soot.Modifier.NATIVE;
+      if(s.equals("synchronized")) return soot.Modifier.SYNCHRONIZED;
+      if(s.equals("transient")) return soot.Modifier.TRANSIENT;
+      if(s.equals("volatile")) return soot.Modifier.VOLATILE;
+      if(s.equals("strictfp")) return soot.Modifier.STRICTFP;
+      throw new Error("Trying to match unsupported modifier: " + s);
+    }
 }

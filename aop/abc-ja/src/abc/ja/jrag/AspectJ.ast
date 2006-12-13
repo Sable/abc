@@ -102,14 +102,11 @@ abstract NamePattern : Pattern;
 SimpleNamePattern : NamePattern ::= <Pattern:String>;
 DotNamePattern : NamePattern ::= Lhs:NamePattern Rhs:SimpleNamePattern;
 DotDotNamePattern : NamePattern ::= Lhs:NamePattern Rhs:SimpleNamePattern;
-PlusDotNamePattern : NamePattern ::= Lhs:NamePattern Rhs:SimpleNamePattern;
 TypeDotNamePattern : NamePattern ::= Lhs:Pattern Rhs:SimpleNamePattern;
 
 ExplicitTypeNamePattern : NamePattern ::= Access;
 SubtypeNamePattern : NamePattern ::= Pattern:NamePattern;
 ArraytypeNamePattern : NamePattern ::= Pattern:NamePattern Dims*;
-
-
 
 // ---------------------- Modifier patterns ---------------
 ModifierPattern ::= Modifier;

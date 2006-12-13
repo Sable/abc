@@ -234,7 +234,7 @@ aspect AspectJNameAnalysis {
 
   private boolean AspectDecl.addImplicitMethods = true;
   private void AspectDecl.addImplicitMethods() {
-    if(!addImplicitMethods)
+    if(!addImplicitMethods || isAbstract())
       return;
     addImplicitMethods = false;
     List parameters = new List();

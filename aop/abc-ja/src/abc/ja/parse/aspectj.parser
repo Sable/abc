@@ -507,7 +507,7 @@ NamePattern classtype_dot_id =
         :}
   |  name_pattern.a PC_PLUS.p DOT simple_name_pattern.b 
         {: ParserTrace.parserTrace("classtype_dot_id is np + . simple_name_pattern");
-           return new PlusDotNamePattern(a, b);
+           return new DotNamePattern(new SubtypeNamePattern(a), b);
         :}
   |  name_pattern.a PC_DOTDOT.d simple_name_pattern.b 
         {: ParserTrace.parserTrace("classtype_dot_id is np . simple_name_pattern");
@@ -523,24 +523,24 @@ NamePattern classtype_dot_id =
 NamePattern classtype_dot_new =
      NEW.a
         {: ParserTrace.parserTrace("classtype_dot_new is NEW: ");
-	   return new SimpleNamePattern("new");
+	   return new SimpleNamePattern("<init>");
         :}
   |  name_pattern.a DOT NEW.y 
         {: ParserTrace.parserTrace("classtype_dot_new is np . NEW");
-           return new DotNamePattern(a, new SimpleNamePattern(y));
+           return new DotNamePattern(a, new SimpleNamePattern("<init>"));
         :}
   |  name_pattern.a PC_PLUS.p DOT NEW.y 
         {: ParserTrace.parserTrace("classtype_dot_new is np + . NEW");
-           return new PlusDotNamePattern(a, new SimpleNamePattern(y));
+           return new DotNamePattern(new SubtypeNamePattern(a), new SimpleNamePattern("<init>"));
         :}
   |  name_pattern.a PC_DOTDOT.d NEW.y 
         {: ParserTrace.parserTrace("classtype_dot_new is np .. NEW");
-           return new DotDotNamePattern(a, new SimpleNamePattern(y));
+           return new DotDotNamePattern(a, new SimpleNamePattern("<init>"));
         :}
   |  LPAREN.x type_pattern_expr.a RPAREN DOT NEW.y
         /* must check it is a class pattern expr */
        {: ParserTrace.parserTrace("(tpe) . new");
-          return new TypeDotNamePattern(a, new SimpleNamePattern(y));
+          return new TypeDotNamePattern(a, new SimpleNamePattern("<init>"));
        :}
   ;
 

@@ -7,7 +7,6 @@ aspect Patterns
             getPattern().indexOf('*') != -1;
     eq DotNamePattern.containsWildcard() =
             getLhs().containsWildcard() || getRhs().containsWildcard();
-
     
     // Does this DotNamePattern correspond to a classtype_dot_id, i.e. is the Rhs
     // a member pattern, or is the whole thing a type pattern?
@@ -39,11 +38,16 @@ aspect Patterns
     	}
     	when(!denotesMember() && !containsWildcard())
     	to ExplicitTypeNamePattern {
-    		System.out.println("Not OK");
     		return new ExplicitTypeNamePattern(buildAccess());
     	}
     }
-    
+    rewrite SubtypeNamePattern {
+    	when(!getPattern().containsWildcard() && !getPattern().isExplicitTypeName())
+    	to SubtypeNamePattern {
+    		setPattern(new ExplicitTypeNamePattern(getPattern().buildAccess()));
+    		return this;
+    	}
+    }
     
     // Build Access nodes for patterns with no wildcards
     protected Access Pattern.buildAccess()
