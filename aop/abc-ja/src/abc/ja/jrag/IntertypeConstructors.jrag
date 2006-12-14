@@ -24,7 +24,6 @@ aspect IntertypeConstructors {
 
   refine LookupConstructor eq TypeDecl.constructors() {
     Collection c = new ArrayList();
-    c.addAll(intertypeConstructors(this));
     for(int i = 0; i < getNumBodyDecl(); i++) {
       if(getBodyDecl(i).isExactConstructorDecl()) {
         c.add(getBodyDecl(i));
@@ -47,6 +46,7 @@ aspect IntertypeConstructors {
       );
       c.add(getBodyDecl(getNumBodyDecl()-1));
     }
+    c.addAll(intertypeConstructors(this));
     return c;
   }
 
@@ -171,16 +171,20 @@ aspect IntertypeConstructors {
       getConstructorInvocation().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
   }
-  
+  */ 
   // add the method body
   public void IntertypeConstructorDecl.jimplify2() {
-    addDummyConstructorBody();
+    //addDummyConstructorBody();
 
     JimpleBody body = Jimple.v().newBody(sootMethod);
     sootMethod.setActiveBody(body);
     Body b = new Body(hostType(), body);
     for(int i = 0; i < getNumParameter(); i++)
       getParameter(i).jimplify2(b);
+
+    if(hasConstructorInvocation()) {
+      getConstructorInvocation().jimplify2(b);
+    }
 
     int localIndex = 0;
     if(hostType().needsEnclosing()) {
@@ -212,5 +216,4 @@ aspect IntertypeConstructors {
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
   }
-*/
 }
