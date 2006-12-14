@@ -1,4 +1,11 @@
 aspect IntertypeFields {
+
+  public void IntertypeFieldDecl.checkModifiers() {
+    super.checkModifiers();
+    if(isStatic() && targetType().isInterfaceDecl())
+      error("Intertype fields on interfaces cannot be static");
+  }
+
   // the name of the host of an intertype field declaration is just
   // the name of that type
   eq IntertypeFieldDecl.getHostType().nameType() = NameType.TYPE_NAME;

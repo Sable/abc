@@ -13,6 +13,18 @@ aspect IntertypeConstructors {
   eq IntertypeConstructorDecl.getConstructorInvocation().lookupSuperConstructor() = hostType().lookupSuperConstructor();
   eq IntertypeConstructorDecl.getBlock().lookupSuperConstructor() = hostType().lookupSuperConstructor();
 
+
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    return !c.isEmpty() ? c : lookupMethod(name);
+  }
+  eq IntertypeConstructorDecl.getBlock().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    return !c.isEmpty() ? c : lookupMethod(name);
+  }
+
+
+
   // Hack to avoid multiple declared intertype constructors
   //public ConstructorDecl AspectDecl.lookupConstructor(ConstructorDecl signature) {
   //  return signature;

@@ -43,7 +43,7 @@ DeclarePrecedence : BodyDecl ::= Pattern*;
 
 // ----------------------- Intertype declarations ----------
 
-IntertypeMethodDecl : MethodDecl ::= HostType:Access;
+//IntertypeMethodDecl : MethodDecl ::= TargetType:Access;
 IntertypeConstructorDecl : ConstructorDecl ::= HostType:Access;
 IntertypeFieldDecl : FieldDeclaration ::= HostType:Access;
 

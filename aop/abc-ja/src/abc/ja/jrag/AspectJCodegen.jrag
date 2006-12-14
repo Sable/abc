@@ -52,12 +52,13 @@ aspect AspectJCodegen {
     return new Singleton(pos());
   }
 
+  
   eq IntertypeMethodDecl.sootRef() {
     ArrayList parameters = new ArrayList();
     for(int i = 0; i < getNumParameter(); i++)
       parameters.add(getParameter(i).type().getSootType());
     SootMethodRef ref = Scene.v().makeMethodRef(
-      targetType().getSootClassDecl(),
+      introducedType().getSootClassDecl(),
       name(),
       parameters,
       type().getSootType(),
@@ -67,16 +68,8 @@ aspect AspectJCodegen {
   }
 
   public void IntertypeMethodDecl.jimplify2() {
-    if(hasBlock()) {
-      JimpleBody body = Jimple.v().newBody(sootMethod);
-      sootMethod.setActiveBody(body);
-      Body b = new Body(hostType(), body);
-      for(int i = 0; i < getNumParameter(); i++)
-        getParameter(i).jimplify2(b);
-      getBlock().jimplify2(b);
-      if(type() instanceof VoidType)
-        b.add(Jimple.v().newReturnVoidStmt());
-    }
+    // do not generate any code for an IntertypeMethodDecl
+    // weaving is done in the front-end
   }
 
 
@@ -89,57 +82,8 @@ aspect AspectJCodegen {
   }
 
   public void IntertypeMethodDecl.jimplify1phase2() {
-    String name = name();
-    ArrayList parameters = new ArrayList();
-    if(!isStatic())
-      parameters.add(targetType().getSootType());
-    for(int i = 0; i < getNumParameter(); i++)
-      parameters.add(getParameter(i).type().getSootType());
-    soot.Type returnType = type().getSootType();
-    int modifiers = sootTypeModifiers() | soot.Modifier.STATIC;
-    ArrayList throwtypes = new ArrayList();
-    for(int i = 0; i < getNumException(); i++)
-      throwtypes.add(getException(i).type().getSootClassDecl());
-    SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
-    hostType().getSootClassDecl().addMethod(m);
-    sootMethod = m;
-
-    //super.jimplify1phase2(); // build method
-
-    ArrayList formals = new ArrayList();
-    if(!isStatic()) {
-      formals.add(new Formal(
-        AbcFactory.AbcType(targetType().getSootType()),
-        "this$1",
-        pos()
-      ));
-    }
-    for(int i = 0; i < getNumParameter(); i++) {
-      formals.add(getParameter(i).formal());
-    }
-
-    MethodSig impl = new MethodSig(
-      sootTypeModifiers(),
-	    AbcFactory.AbcClass(hostType().getSootClassDecl()),
-	    AbcFactory.AbcType(type().getSootType()),
-      name(),
-	    formals,
-	    new ArrayList(),
-	    null
-    );
-
-    MethodSig target = new MethodSig(
-      sootTypeModifiers(),
-	    AbcFactory.AbcClass(targetType().getSootClassDecl()),
-	    AbcFactory.AbcType(type().getSootType()),
-      name(),
-	    formals,
-	    new ArrayList(),
-	    null);
-    Aspect asp = globalAspectInfo().getAspect(hostType().abcClass());
-    globalAspectInfo().addIntertypeMethodDecl(new abc.weaving.aspectinfo.IntertypeMethodDecl(
-      target, impl, asp, name(), pos()
-    ));
+    // do not generate any code for an IntertypeMethodDecl
+    // weaving is done in the front-end
   }
   
   // Build a polyglot Position that corresponds to the current position

@@ -1,58 +1,4 @@
 aspect AspectJNameAnalysis {
-  // the name of the host of an intertype declaration is just
-  // the name of that type
-  eq IntertypeMethodDecl.getHostType().nameType() = NameType.TYPE_NAME;
-
-  // target type of a normal method declaration is the 
-  // host where that method is declared
-  syn TypeDecl MethodDecl.targetType() = hostType();
-
-  // target type of an intertype method declaration is
-  // the explicit host in the declaration
-  eq IntertypeMethodDecl.targetType() = getHostType().type();
-
-  // when processing the body of an intertype method, the
-  // hosttype is defined to be the target type
-  eq IntertypeMethodDecl.getBlock().hostType() = targetType();
-
-  // the enclosing type of the body of an intertype method
-  // is the enclosing type of the target type
-  eq IntertypeMethodDecl.getBlock().enclosingType() = targetType().enclosingType();
-
-  // look up a method from another type
-  // compare to the code in MethodLookup.jrag:
-  // TypeDecl.getBodyDecl(int i).lookupMethod(String name) 
-  syn Collection TypeDecl.remoteIntertypeLookupMethod(String name) {
-    if(hasMethod(name)) {
-      Collection list = memberMethods(name);
-      return list;
-    }
-    if(isNestedType()) {
-      Collection list = lookupMethod(name);
-      if(!isInnerType())
-        list = removeInstanceMethods(list);
-      return list;
-    }
-    return Collections.EMPTY_LIST;
-  }
- 
-  // in the block of an intertype method, we first try to
-  // look up the method in the host/target, only if that fails
-  // do we look in the declaring aspect, using the default
-  // method lookup
-  eq IntertypeMethodDecl.getBlock().lookupMethod(String name) {
-    Collection c = targetType().remoteIntertypeLookupMethod(name);
-    if(!c.isEmpty()) return c;
-    return lookupMethod(name);
-  }
-  inh Collection IntertypeMethodDecl.lookupMethod(String name);
-  eq IntertypeConstructorDecl.getBlock().lookupMethod(String name) {
-    Collection c = introducedType().remoteIntertypeLookupMethod(name);
-    if(!c.isEmpty()) return c;
-    return lookupMethod(name);
-  }
-  inh Collection IntertypeConstructorDecl.lookupMethod(String name);
-
   // compute the set of intertype declarations
   // this is an attribute at the very root of the
   // program - we'll collect the intertype decls from
@@ -89,91 +35,6 @@ aspect AspectJNameAnalysis {
     c.add(this);
   }
 
-  // redefine the local methods of a class declaration
-  // by adding the relevant intertype methods.
-  // this implements the "zapping" rules for ITDS,
-  // where the most specific introducer of a method
-  // wins, and if there are two incomparable introducers,
-  // it is an error.
-  refine LookupMethod eq ClassDecl.methodsSignatureMap() {
-    HashMap map = LookupMethod.ClassDecl.methodsSignatureMap();
-    for(Iterator iter = intertypeMethods(this).iterator(); iter.hasNext(); ) {
-      MethodDecl m = (MethodDecl)iter.next();
-      putSimpleSetElement(map, m.signature(), m);
-    }
-    HashMap result = new HashMap();
-    for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-      Object key = iter.next();
-      ArrayList mostSpecific = new ArrayList(1);
-      for(Iterator i2 = ((SimpleSet)map.get(key)).iterator(); i2.hasNext(); ) {
-        MethodDecl m = (MethodDecl)i2.next();
-        if(mostSpecific.isEmpty())
-          mostSpecific.add(m);
-        else {
-          boolean done = false;
-          for(Iterator i3 = mostSpecific.iterator(); i3.hasNext() && !done; ) {
-            MethodDecl n = (MethodDecl)i3.next();
-            if(m.isMoreSpecificThan(n)) {
-              i3.remove();
-            }
-            else if(n.isMoreSpecificThan(m)) {
-              done = true;
-            }
-          }
-          if(!done) {
-            mostSpecific.add(m);
-          }
-        }
-      }
-      if(mostSpecific.size() > 1) {
-        StringBuffer s = new StringBuffer();
-        s.append("*** ITD Conflict in " + fullName() + " between ");
-        s.append(((MethodDecl)mostSpecific.get(0)).signature() + " in ");
-        for(Iterator i2 = mostSpecific.iterator(); i2.hasNext(); ) {
-          MethodDecl m = (MethodDecl)i2.next();
-          s.append(m.hostType().fullName() + " ");
-        }
-        error(s.toString());
-      }
-      putSimpleSetElement(result, key, mostSpecific.iterator().next());
-    }
-    return result;
-  }
-
-  // compare the targets of two method declarations:
-  // return true if the first target is a strict
-  // subtype of the second
-  syn boolean MethodDecl.isMoreSpecificThan(MethodDecl m) {
-    return targetType() != m.targetType() && targetType().instanceOf(m.targetType()); 
-  }
- 
-  // does a method of the same signature as m1 occur
-  // in collection c?
-  private boolean ClassDecl.hasSameSignature(MethodDecl m1, Collection c) {
-    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
-      MethodDecl m2 = (MethodDecl)iter.next();
-      if(m1.sameSignature(m2))
-        return true;
-    }
-    return false;
-  }
- 
-  // find all intertype methods introduced onto a particular typeDecl
-  // they can either be introduced directly, or via an interface
-  inh lazy Collection TypeDecl.intertypeMethods(TypeDecl typeDecl);
-  eq Program.getCompilationUnit(int i).intertypeMethods(TypeDecl typeDecl) {
-    Collection c = new ArrayList();
-    for(Iterator iter = intertypeDeclarations().iterator(); iter.hasNext();) {
-      BodyDecl d = (BodyDecl)iter.next();
-      if(d instanceof IntertypeMethodDecl) {
-        IntertypeMethodDecl m = (IntertypeMethodDecl)d;
-        if(m.targetType() == typeDecl || m.targetType().isInterfaceDecl() && typeDecl.implement(m.targetType()))
-          c.add(m);
-      }
-    }
-    return c;
-  }
-
   // transitive "implements" test
   syn boolean TypeDecl.implement(TypeDecl typeDecl) = false;
   eq ClassDecl.implement(TypeDecl typeDecl) {
@@ -183,43 +44,11 @@ aspect AspectJNameAnalysis {
     return false;
   }
 
-  // rewrite rule to introduce signatures for
-  // any interface ITDS onto an interface
-  // This rule must be applied only once (the default
-  // is to apply rules exhaustively), and that 
-  // is enforced with the boolean flag.
-  private boolean InterfaceDecl.hasAddedIntertypeMethods = false;
-  rewrite InterfaceDecl {
-    when(!hasAddedIntertypeMethods)
-    to InterfaceDecl {
-      hasAddedIntertypeMethods = true;
-      for(Iterator iter = intertypeMethods(this).iterator(); iter.hasNext(); ) {
-        IntertypeMethodDecl m = (IntertypeMethodDecl)iter.next();
-        MethodDecl decl = (MethodDecl)m.fullCopy();
-        decl.setBlockOpt(new Opt());
-        addBodyDecl(decl);
-      }
-      return this;
-    }
-  }
-  
-
   // mark normal methods as local, and intertype methods as nonlocal
   syn boolean BodyDecl.isLocalMethod(/*String name*/) = false;
   eq MethodDecl.isLocalMethod(/*String name*/) = true; //name().equals(name);
   eq IntertypeMethodDecl.isLocalMethod(/*String name*/) = false;
   
-  // collect the local methods in an aspect,
-  // that is all the methods that are not ITDs
-  /*
-  eq AspectDecl.localMethods(String name) {
-    Collection list = new ArrayList();
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i).isLocalMethod(name))
-        list.add(getBodyDecl(i));
-    }
-    return list;
-  }*/
   eq AspectDecl.localMethodsSignatureMap() {
     addImplicitMethods();
     HashMap map = new HashMap(getNumBodyDecl());
@@ -271,24 +100,6 @@ aspect AspectJNameAnalysis {
   syn boolean PerClause.isPerObject() = false;
   eq PerTarget.isPerObject() = true;
   eq PerThis.isPerObject() = true;
-
- 
-  // check names of intertype methods
-  public void IntertypeMethodDecl.nameCheck() {
-    // 8.4.3.4
-    if(isNative() && hasBlock())
-      error("*** Semantic Error: native methods must have an empty semicolon body");
-    // 8.4.5
-    if(isAbstract() && hasBlock())
-      error("*** Semantic Error: abstract methods must have an empty semicolon body");
-    // 8.4.5
-    if(!hasBlock() && !(isNative() || isAbstract()))
-      error("*** Semantic Error: only abstract and native methods may have an empty semicolon body");
-    // 8.4.5
-    if(!isVoid() && hasBlock() && getBlock().canCompleteNormally())
-      error("*** Semantic Error: the body of a non void method may not complete normally");
-  }
-
 
   /* ------------------------------------------------------------------------------------------------------ */
   // named pointcut (sketch)

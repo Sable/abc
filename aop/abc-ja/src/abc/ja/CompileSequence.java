@@ -141,7 +141,7 @@ public class CompileSequence extends abc.main.CompileSequence {
               //return;
             }
             else {
-              unit.java2Transformation();
+              //unit.java2Transformation();
             }
           }
         }
@@ -153,6 +153,10 @@ public class CompileSequence extends abc.main.CompileSequence {
         System.err.println(e.getMessage());
         e.printStackTrace();
       }*/
+
+      program.generateIntertypeDecls();
+      program.java2Transformation();
+
       program.jimplify1();
       program.jimplify2();
 

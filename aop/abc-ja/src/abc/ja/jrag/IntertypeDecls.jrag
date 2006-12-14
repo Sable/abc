@@ -1,0 +1,47 @@
+import java.util.HashMap;
+import java.util.ArrayList;
+
+aspect GenerateSynCode {
+  public void Program.generateIntertypeDecls() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit cu = (CompilationUnit)iter.next();
+      if(cu.fromSource())
+        cu.generateIntertypeDecls();
+    }
+  }
+
+  protected void ASTNode.generateIntertypeDecls() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).generateIntertypeDecls();
+  }
+
+
+  eq Program.getCompilationUnit(int index).intertypeDecls(TypeDecl type) {
+    if(intertypeDecls().containsKey(type))
+      return (Collection)intertypeDecls().get(type);
+    return Collections.EMPTY_LIST;
+  }
+ 
+  inh Collection TypeDecl.intertypeDecls(TypeDecl type);
+  syn lazy Collection TypeDecl.intertypeDecls() =
+    intertypeDecls(this);
+
+  private HashMap Program.intertypeDecls = null;
+  private HashMap Program.intertypeDecls() {
+    if(intertypeDecls == null) {
+      intertypeDecls = new HashMap();
+      collectIntertypeDecls(intertypeDecls);
+      return intertypeDecls;
+    }
+    return intertypeDecls;
+  }
+  protected void ASTNode.collectIntertypeDecls(HashMap map) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChildNoTransform(i).collectIntertypeDecls(map);
+  }
+  protected void CompilationUnit.collectIntertypeDecls(HashMap map) {
+    // intertype declarations are only available in source files
+    if(fromSource())
+      super.collectIntertypeDecls(map);
+  }
+}
