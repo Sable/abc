@@ -912,6 +912,14 @@
           <message kind="error" line="18"/> 
           <message kind="error" line="18"/> 
           <ajcmessage kind="ignore" />
+          <jamessage kind="error" line="7"/> 
+          <jamessage kind="error" line="7"/> 
+          <jamessage kind="error" line="10"/> 
+          <jamessage kind="error" line="11"/> 
+          <jamessage kind="error" line="13"/> 
+          <jamessage kind="error" line="14"/> 
+          <jamessage kind="error" line="18"/> 
+          <jamessage kind="error" line="18"/> 
         </compile>
         <ajcrun class="KeywordAspect" />
     </ajc-test>
@@ -1006,6 +1014,10 @@
             <message kind="error" line="17"/>
             <message kind="error" line="17"/>
             <message kind="error" line="17"/>
+            <jamessage kind="error" line="5"/>
+            <jamessage kind="error" line="9"/>
+            <jamessage kind="error" line="13"/>
+            <jamessage kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1233,7 +1245,12 @@
       abccomment="abc doesn't do a good job on these,  needs a parser
                   that doesn't give up after the first error, and
                   then each case needs to be check.  jlc probably does
-                  not catch all of them either.  July 1/04 LJH"
+                  not catch all of them either.  July 1/04 LJH
+                  
+                  The last test is caught by the parser in JastAdd but
+                  the rest are caught during semantic analysis. These
+                  are tested in test case 14901. December 6/06 TE
+                  "
       keywords="from-java">
         <compile files="LiteralsCf.java">
             <message kind="error" line="8"/>
@@ -1254,6 +1271,30 @@
             <message kind="error" line="29"/>
             <message kind="error" line="30"/>
             <message kind="error" line="32"/>
+            <jamessage kind="error" line="32"/>
+        </compile>
+    </ajc-test>
+    <ajc-test num="14901" dir="pureJava" title="invalid numeric literals part II"
+      abccomment="partially cloned from 149. December 6/06 TE "
+      keywords="from-java">
+        <compile files="LiteralsCf2.java">
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="21"/>
+            <message kind="error" line="22"/>
+            <message kind="error" line="23"/>
+            <message kind="error" line="25"/>
+            <message kind="error" line="27"/>
+            <message kind="error" line="28"/>
+            <message kind="error" line="29"/>
+            <message kind="error" line="30"/>
         </compile>
     </ajc-test>
 
@@ -1464,6 +1505,7 @@
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <ajcmessage kind="error" line="3"/>
             <message kind="error" line="8"/>
+            <jamessage kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -1582,6 +1624,11 @@
             <ajcmessage kind="error" line="17"/>
             <message kind="error" line="13"/>
             <message kind="error" line="17"/>
+            <jamessage kind="error" line="13"/>
+            <jamessage kind="error" line="14"/>
+            <jamessage kind="error" line="15"/>
+            <jamessage kind="error" line="16"/>
+            <jamessage kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1768,6 +1815,8 @@
       keywords="from-java,purejava">
         <compile files="InvalidNewQualifier8CE.java">
             <message kind="error" line="8"/>
+            <jamessage kind="error" line="8"/>
+            <jamessage kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -1776,6 +1825,8 @@
       keywords="from-java,purejava">
         <compile files="InvalidNewQualifier9CE.java">
             <message kind="error" line="9"/>
+            <jamessage kind="error" line="9"/>
+            <jamessage kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -1784,6 +1835,8 @@
       keywords="from-java,purejava">
         <compile files="InvalidNewQualifier10CE.java">
             <message kind="error" line="10"/>
+            <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="10"/>
         </compile>
     </ajc-test>
 
@@ -1792,6 +1845,8 @@
       keywords="from-java,purejava">
         <compile files="InvalidNewQualifier14CE.java">
             <message kind="error" line="14"/>
+            <jamessage kind="error" line="14"/>
+            <jamessage kind="error" line="14"/>
         </compile>
     </ajc-test>
 
@@ -1800,6 +1855,8 @@
       keywords="from-java,purejava">
         <compile files="InvalidNewQualifier15CE.java">
             <message kind="error" line="15"/>
+            <jamessage kind="error" line="15"/>
+            <jamessage kind="error" line="15"/>
         </compile>
     </ajc-test>
 
@@ -1808,6 +1865,8 @@
       keywords="from-java,purejava">
         <compile files="InvalidNewQualifier16CE.java">
             <message kind="error" line="16"/>
+            <jamessage kind="error" line="16"/>
+            <jamessage kind="error" line="16"/>
         </compile>
     </ajc-test>
 
@@ -2600,6 +2659,9 @@
         <compile files="SimpleSpec.java">
             <message kind="error" line="4"/>
             <message kind="error" line="7"/>
+            <jamessage kind="error" line="4"/>
+            <jamessage kind="error" line="4"/>
+            <jamessage kind="error" line="7"/>
         </compile>
     </ajc-test>
 
@@ -2792,6 +2854,7 @@
         <compile files="BadContinueTarget.java">
             <ajcmessage kind="error" line="6"/>
             <message kind="error" line="5"/>
+            <jamessage kind="error" line="6"/>
         </compile>
     </ajc-test>
 
@@ -2828,6 +2891,16 @@
             <message kind="error" line="31"/>
             <message kind="error" line="35"/>
             <message kind="error" line="36"/>
+            <jamessage kind="error" line="11"/>
+            <jamessage kind="error" line="18"/>
+            <jamessage kind="error" line="19"/>
+            <jamessage kind="error" line="20"/>
+            <jamessage kind="error" line="21"/>
+            <jamessage kind="error" line="27"/>
+            <jamessage kind="error" line="28"/>
+            <jamessage kind="error" line="31"/>
+            <jamessage kind="error" line="35"/>
+            <jamessage kind="error" line="36"/>
         </compile>
     </ajc-test>
 
@@ -3078,6 +3151,7 @@
         <compile files="InnerFlow.java">
             <ajcmessage kind="error" line="5"/>
             <message kind="error" line="3"/>
+            <jamessage kind="error" line="5"/>
         </compile>
     </ajc-test>
 
@@ -5439,6 +5513,9 @@
             <ajcmessage kind="error" line="10"/>
             <ajcmessage kind="error" line="15"/>
             <message kind="error" line="15"/>
+            <jamessage kind="error" line="6"/>
+            <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="15"/>
         </compile>
     </ajc-test>
 
@@ -5557,6 +5634,9 @@
             <message kind="error" line="8"/>
             <message kind="error" line="11"/>
             <message kind="error" line="15"/>
+            <jamessage kind="error" line="5"/>
+            <jamessage kind="error" line="7"/>
+            <jamessage kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -5652,6 +5732,8 @@
             <message kind="error" line="13"/>
             <message kind="error" line="20"/>
             <message kind="error" line="21"/>
+            <jamessage kind="error" line="13"/>
+            <jamessage kind="error" line="21"/>
         </compile>
     </ajc-test>
 
