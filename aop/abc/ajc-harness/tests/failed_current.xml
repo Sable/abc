@@ -14,6 +14,7 @@
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <ajcmessage line="3" kind="error"></ajcmessage>
             <message line="8" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="nested finally blocks have interesting frame location problems" num="178" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">

@@ -432,6 +432,14 @@
           <message line="18" kind="error"></message> 
           <message line="18" kind="error"></message> 
           <ajcmessage kind="ignore"></ajcmessage>
+          <jamessage line="7" kind="error"></jamessage> 
+          <jamessage line="7" kind="error"></jamessage> 
+          <jamessage line="10" kind="error"></jamessage> 
+          <jamessage line="11" kind="error"></jamessage> 
+          <jamessage line="13" kind="error"></jamessage> 
+          <jamessage line="14" kind="error"></jamessage> 
+          <jamessage line="18" kind="error"></jamessage> 
+          <jamessage line="18" kind="error"></jamessage> 
         </compile>
         <ajcrun class="KeywordAspect"></ajcrun>
     </ajc-test>
@@ -482,6 +490,10 @@
             <message line="17" kind="error"></message>
             <message line="17" kind="error"></message>
             <message line="17" kind="error"></message>
+            <jamessage line="5" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="13" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="ajc treating Throwable as checked, issuing error if not found" num="121" keywords="from-java,purejava" dir="new">
@@ -602,7 +614,7 @@
         <compile files="LiteralsCp.java"></compile>
         <run class="LiteralsCp"></run>
     </ajc-test>
-<ajc-test title="invalid numeric literals" num="149" keywords="from-java" dir="pureJava" abccomment="abc doesn't do a good job on these,  needs a parser                   that doesn't give up after the first error, and                   then each case needs to be check.  jlc probably does                   not catch all of them either.  July 1/04 LJH">
+<ajc-test title="invalid numeric literals" num="149" keywords="from-java" dir="pureJava" abccomment="abc doesn't do a good job on these,  needs a parser                   that doesn't give up after the first error, and                   then each case needs to be check.  jlc probably does                   not catch all of them either.  July 1/04 LJH                                      The last test is caught by the parser in JastAdd but                   the rest are caught during semantic analysis. These                   are tested in test case 14901. December 6/06 TE                   ">
         <compile files="LiteralsCf.java">
             <message line="8" kind="error"></message>
             <message line="9" kind="error"></message>
@@ -622,6 +634,28 @@
             <message line="29" kind="error"></message>
             <message line="30" kind="error"></message>
             <message line="32" kind="error"></message>
+            <jamessage line="32" kind="error"></jamessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="invalid numeric literals part II" num="14901" keywords="from-java" dir="pureJava" abccomment="partially cloned from 149. December 6/06 TE ">
+        <compile files="LiteralsCf2.java">
+            <message line="8" kind="error"></message>
+            <message line="9" kind="error"></message>
+            <message line="10" kind="error"></message>
+            <message line="11" kind="error"></message>
+            <message line="12" kind="error"></message>
+            <message line="17" kind="error"></message>
+            <message line="18" kind="error"></message>
+            <message line="19" kind="error"></message>
+            <message line="20" kind="error"></message>
+            <message line="21" kind="error"></message>
+            <message line="22" kind="error"></message>
+            <message line="23" kind="error"></message>
+            <message line="25" kind="error"></message>
+            <message line="27" kind="error"></message>
+            <message line="28" kind="error"></message>
+            <message line="29" kind="error"></message>
+            <message line="30" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="inner types can't have the same simple name as an enclosing type" pr="538" num="150" keywords="from-java" dir="pureJava">
@@ -812,6 +846,11 @@
             <ajcmessage line="17" kind="error"></ajcmessage>
             <message line="13" kind="error"></message>
             <message line="17" kind="error"></message>
+            <jamessage line="13" kind="error"></jamessage>
+            <jamessage line="14" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="suggested by jacks 3.7-15 all comments must be closed" num="179" keywords="from-java,purejava" dir="pureJava" abccomment="we report missing end of comment at end of file                    whereas ajc reports it at the beginning of the                   comment.  I think our error is fine.  July 2/04 LJH">
@@ -910,31 +949,43 @@
 <ajc-test title="nested interface does not require new qualifier (8)" num="198" keywords="from-java,purejava" dir="pureJava">
         <compile files="InvalidNewQualifier8CE.java">
             <message line="8" kind="error"></message>
+            <jamessage line="8" kind="error"></jamessage>
+            <jamessage line="8" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="nested interface does not require new qualifier (9)" num="199" keywords="from-java,purejava" dir="pureJava">
         <compile files="InvalidNewQualifier9CE.java">
             <message line="9" kind="error"></message>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="nested interface does not require new qualifier (10)" num="200" keywords="from-java,purejava" dir="pureJava">
         <compile files="InvalidNewQualifier10CE.java">
             <message line="10" kind="error"></message>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="nested interface does not require new qualifier (14)" num="201" keywords="from-java,purejava" dir="pureJava">
         <compile files="InvalidNewQualifier14CE.java">
             <message line="14" kind="error"></message>
+            <jamessage line="14" kind="error"></jamessage>
+            <jamessage line="14" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="nested interface does not require new qualifier (15)" num="202" keywords="from-java,purejava" dir="pureJava">
         <compile files="InvalidNewQualifier15CE.java">
             <message line="15" kind="error"></message>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="nested interface does not require new qualifier (16)" num="203" keywords="from-java,purejava" dir="pureJava">
         <compile files="InvalidNewQualifier16CE.java">
             <message line="16" kind="error"></message>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Operands work correctly" num="204" keywords="from-bigjava" dir="pureJava" abccomment="More jlc constants problems ... reported to Nate and                    Jennifer, July 5/04 LJH">
@@ -1456,6 +1507,9 @@
         <compile files="SimpleSpec.java">
             <message line="4" kind="error"></message>
             <message line="7" kind="error"></message>
+            <jamessage line="4" kind="error"></jamessage>
+            <jamessage line="4" kind="error"></jamessage>
+            <jamessage line="7" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="checking the contra-variant errors for typing of proceed" num="283" keywords="from-errors,knownLimitation" dir="errors" abccomment="Still not implemented in ajc 1.2. abc is happy too. ODM July 7, 2004">
@@ -1599,6 +1653,7 @@
         <compile files="BadContinueTarget.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message line="5" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="qualified this to non-inner should be caught" num="299" keywords="from-errors" dir="pureJava">
@@ -1626,6 +1681,16 @@
             <message line="31" kind="error"></message>
             <message line="35" kind="error"></message>
             <message line="36" kind="error"></message>
+            <jamessage line="11" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="21" kind="error"></jamessage>
+            <jamessage line="27" kind="error"></jamessage>
+            <jamessage line="28" kind="error"></jamessage>
+            <jamessage line="31" kind="error"></jamessage>
+            <jamessage line="35" kind="error"></jamessage>
+            <jamessage line="36" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Given non-matching TypePattern, CE flags use of non-introduced method rather than failure to introduce" num="301" keywords="from-errors" dir="new" abccomment="abc gives precise root of the problem. ODM 07/07/04">
@@ -1790,6 +1855,7 @@
         <compile files="InnerFlow.java">
             <ajcmessage line="5" kind="error"></ajcmessage>
             <message line="3" kind="error"></message>
+            <jamessage line="5" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="bad proceed args good error messages" pr="664" num="319" keywords="from-errors" dir="errors">
@@ -3136,6 +3202,9 @@
             <ajcmessage line="10" kind="error"></ajcmessage>
             <ajcmessage line="15" kind="error"></ajcmessage>
             <message line="15" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="file order in type searching" pr="728" num="621" keywords="from-resolved_105" dir="new/pr728">
@@ -3205,6 +3274,9 @@
             <message line="8" kind="error"></message>
             <message line="11" kind="error"></message>
             <message line="15" kind="error"></message>
+            <jamessage line="5" kind="error"></jamessage>
+            <jamessage line="7" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="simple declare warning (NPE)" num="632" keywords="from-resolved_105" dir="new" abccomment="we move the warning to a different line">
@@ -3253,6 +3325,8 @@
             <message line="13" kind="error"></message>
             <message line="20" kind="error"></message>
             <message line="21" kind="error"></message>
+            <jamessage line="13" kind="error"></jamessage>
+            <jamessage line="21" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="The dynamic type, not the static one, should be used in if pcds" num="641" keywords="from-resolved_105" dir="new">
