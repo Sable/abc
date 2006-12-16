@@ -687,6 +687,10 @@
             <message line="2" kind="error"></message>
             <message line="4" kind="error"></message>
             <message line="6" kind="error"></message>
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="3" kind="error"></jamessage>
+            <jamessage line="4" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Error expected for constructor in interfaces" num="157" keywords="from-java,purejava" dir="new" abccomment="ajc only finds errors on lines 2 and 8.                    another example of jlc crashing after error detection.                   July 2/04 LJH. abc now finds all three errors. ODM 26/07/04">
@@ -698,6 +702,8 @@
             <message line="2" kind="error"></message>
             <message line="6" kind="error"></message>
             <message line="8" kind="error"></message>
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="2" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="class name for identifier as String should provoke error" pr="558" num="158" keywords="from-java,purejava" dir="new">
@@ -710,6 +716,8 @@
             <ajcmessage line="14" kind="error"></ajcmessage>
             <ajcmessage line="15" kind="error"></ajcmessage>
             <message line="15" kind="error"></message>
+            <jamessage line="14" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="cyclic class inheritance" pr="567" num="160" keywords="from-java,purejava" dir="new" abccomment="There are two kinds of errors in this program, one         due to cyclic inheritance and one due to missing bodies of the         constructors.  Abc finds the missing bodies, ajc finds the         cyclic inheritance.   If the bodies are fixed to have a body then         abc finds the cyclic inheritance and gives a fine error         message.  LJH July 2/04  abc now finds both cyclic inheritance and missing bodies - hence  extra message. PA/AGS">
@@ -719,6 +727,8 @@
             <message line="11" kind="error"></message>
             <message line="12" kind="error"></message>
             <message line="12" kind="error"></message>
+            <jamessage line="11" kind="error"></jamessage>
+            <jamessage line="12" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Type names are not expressions on their own" num="161" keywords="from-java,purejava" dir="pureJava" abccomment="jlc misses all errors after the first two.  Example sent to                   Nate on July 2/04.  LJH. Now find one more than ajc on line                   35. javac agrees it's an error, but ajc does not.                   ODM 26/07/04">
@@ -797,6 +807,8 @@
 <ajc-test title="Undefined inner class constructor" pr="588" num="169" keywords="from-java,purejava" dir="new">
         <compile files="UndefinedInner.java">
             <message line="6" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="try statements work sorta like scoped items for exception flow control" num="170" keywords="from-java" dir="pureJava">
@@ -879,6 +891,7 @@
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message kind="error"></message>
             <message line="6" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="invalid floating-point constant" pr="642" num="184" keywords="from-java,purejava,messages-vary" dir="new" abccomment="really has errors on lines 5 and 6.  July 3/04 LJH">
@@ -925,6 +938,8 @@
             <ajcmessage line="2" kind="error"></ajcmessage>
             <ajcmessage line="10" kind="error"></ajcmessage>
             <message line="0" kind="error"></message>
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two type declarations)" pr="701" num="194" keywords="from-java,purejava,messages-vary" dir="new">
@@ -936,6 +951,8 @@
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile options="!eclipse" files="AmbiguousClassReference4CE.java">
             <message line="10" kind="error"></message>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="final assignment in loop" pr="709" num="196" keywords="from-java,purejava" dir="new">
@@ -1002,6 +1019,9 @@
             <message line="7" kind="error"></message>
             <message line="8" kind="error"></message>
             <message line="9" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="7" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="reasonable error for introduction on type whose source isn't found" num="206" keywords="from-errors" dir="errors">
@@ -1039,11 +1059,14 @@
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message line="6" kind="error"></message>
             <message line="6" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="the designator for the introduction has no type after the | charcter" num="212" keywords="from-errors" dir="errors">
         <compile files="BadIntroductionDesignator.java">
             <message line="6" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="crosscut signature does not match" pr="140" num="213" keywords="from-errors" dir="errors">
@@ -1061,7 +1084,9 @@
             <ajcmessage line="16" kind="error"></ajcmessage>
             <message kind="error"></message>
             <message line="17" kind="error"></message>
-	    <message line="17" kind="error"></message>
+	          <message line="17" kind="error"></message>
+	          <jamessage line="17" kind="error"></jamessage>
+	          <jamessage line="18" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Non-static advice silently ignored" pr="209" num="216" keywords="from-errors" dir="errors">
@@ -1072,11 +1097,13 @@
 <ajc-test title="import statement within class body crashes compiler" pr="218" num="217" keywords="from-errors,purejava" dir="errors">
         <compile files="ImportWithinClassBody.java">
             <message line="8" kind="error"></message>
+            <jamessage line="8" kind="error"></jamessage>
+            <jamessage line="8" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="extra closing brace" pr="219" num="218" keywords="from-errors" dir="errors" abccomment="abc complains about both superfluous               braces -- quite correctly. PA/AGS. But when we reset the               lexer state correctly, it doesn't. ODM.">
         <compile files="ExtraClosingBrace.java">
-	    <ajcmessage line="8" kind="error"></ajcmessage>
+            <ajcmessage line="8" kind="error"></ajcmessage>
             <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
@@ -1147,6 +1174,7 @@
         <compile files="IntLiteral.java">
             <message line="17" kind="error"></message>
             <message line="17" kind="error"></message>
+            <jamessage line="17" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]" num="231" keywords="from-errors" dir="new" abccomment="Polyglot fails to check special modifier restrictions for interfaces.                   ODM 5/7/04. This has been fixed. ODM 11/08/04">
@@ -1172,6 +1200,9 @@
 <ajc-test title="Dominates with commas should signal an error." num="235" keywords="from-errors" dir="errors">
         <compile files="DominatesWithCommas.java">
             <message line="9" kind="error"></message>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="12" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Accessing instance fields and instance methods statically." num="236" keywords="from-errors,purejava" dir="errors" abccomment="all errors,  but it is completely reasonable to report                   only the non-statement error on line 30.  This is what                   javac does on the Java part of the benchmark.  Note                   that this is NOT a purejava benchmark, but has an                   aspect in it, dispite what the keyword says.                   July 4/04 LJH Polyglot now continues further, so we catch                   more of the errors July 7/04 ODM">
@@ -1192,6 +1223,7 @@
             <message line="26" kind="error"></message>
             <message line="30" kind="error"></message>
             <message line="39" kind="error"></message>
+            <jamessage line="30" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="stack overflow with recursive crosscut specifier" pr="95" num="237" keywords="from-errors" dir="errors" abccomment="abc continues with type error. ODM 07/07/04">
@@ -1265,6 +1297,7 @@
             <ajcmessage line="11" kind="error"></ajcmessage>
             <message kind="error"></message>
             <message line="12" kind="error"></message>
+            <jamessage line="13" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Crashes when a method name is missing in a call -- e.g. 'System.out.();'" num="248" keywords="from-errors,purejava" dir="errors">
@@ -1307,6 +1340,12 @@
             <message line="13" kind="error"></message>
             <message line="14" kind="error"></message>
             <message line="15" kind="error"></message>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="11" kind="error"></jamessage>
+            <jamessage line="12" kind="error"></jamessage>
+            <jamessage line="13" kind="error"></jamessage>
+            <jamessage line="14" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Stray characters cause a crash" num="254" keywords="from-errors,purejava" dir="errors" comment="XXX public class in wrong file" abccomment="syntax errors from abc perfectly reasonable                    July 4/04 LJH">
@@ -1357,6 +1396,7 @@
         <compile files="PR405.java">
             <message kind="error"></message>
             <message line="15" kind="error"></message>
+            <jamessage line="15" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="cast expressions should not allow casts between ifaces and array types" num="262" keywords="from-errors,purejava" dir="errors" abccomment="abc doesn't emit the second error, although it is found                   if first line commented out.   Need to establish how                   we will report errors.  July 5/04 LJH">
@@ -1371,6 +1411,11 @@
             <message line="5" kind="error"></message>
             <message line="6" kind="error"></message>
             <message line="7" kind="error"></message>
+            <jamessage line="4" kind="error"></jamessage>
+            <jamessage line="5" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="7" kind="error"></jamessage>
+            <jamessage line="7" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="good error for field name instead of type name" num="264" keywords="from-errors" dir="errors" abccomment="Polyglot bails out after the first four, but if we comment those out, the others are caught.                   ODM July 5, 2004.">
@@ -1385,6 +1430,13 @@
             <message line="4" kind="error"></message>
             <message line="6" kind="error"></message>
             <message line="8" kind="error"></message>
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="4" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="8" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="12" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="good error for bad field and inner class references" num="265" keywords="from-errors,purejava" dir="errors" abccomment="not pure java July 5/04 LJH                   polyglot does not find this error, sent to Nate,                        July 5/04 LJH Fixed in Polyglot 1.3. Not reporting                       the error on line 3 is deliberate in abc: it overrides                       both I1 and I2, so there is no conflict. ODM 18/08/04">
@@ -1392,6 +1444,8 @@
             <ajcmessage line="3" kind="error"></ajcmessage>
             <ajcmessage line="5" kind="error"></ajcmessage>
             <message line="5" kind="error"></message> 
+            <jamessage line="3" kind="error"></jamessage>
+            <jamessage line="5" kind="error"></jamessage>
        </compile>
     </ajc-test>
 <ajc-test title="errors in aspect inheritance - 1" num="266" keywords="from-errors" dir="errors" abccomment="abc gives a further error message. ODM July 7,2004">
@@ -1445,6 +1499,8 @@
 <ajc-test title="Should issue an error for using 'class' instead of 'aspect'" num="272" keywords="from-errors" dir="errors">
         <compile files="NoAspect.java">
             <message line="12" kind="error"></message>
+            <jamessage line="12" kind="error"></jamessage>
+            <jamessage line="12" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Should signal an error when we need an exposed value but don't provide it" num="273" keywords="from-errors" dir="errors">
@@ -1476,6 +1532,8 @@
             <ajcmessage line="7" kind="error"></ajcmessage>
             <ajcmessage line="9" kind="error"></ajcmessage>
             <message line="9" kind="error"></message>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Undefined pointcuts were throwing exceptions in 07b11 [callsto]" pr="396" num="278" keywords="from-errors" dir="errors" abccomment="An extra error from abc after the first parse error. ODM 07/07/04">
@@ -1544,6 +1602,15 @@
             <message line="19" kind="error"></message>
             <message line="21" kind="error"></message>
             <message line="35" kind="error"></message>
+            <jamessage line="7" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="21" kind="error"></jamessage>
+            <jamessage line="35" kind="error"></jamessage>
+            <jamessage line="38" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="multiple conflicting introductions 1" num="286" keywords="from-errors" dir="abctests/errors" abccomment="abc bails out earlier, split into several cases. ODM July 7">
@@ -1620,6 +1687,9 @@
 <ajc-test title="bad switch syntax" num="293" keywords="from-errors,purejava" dir="errors">
         <compile files="Switch.java">
             <message line="4" kind="error"></message>
+            <jamessage line="4" kind="error"></jamessage>
+            <jamessage line="5" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="javac correct compiler error if there is no return in around returning result" num="294" keywords="from-errors" dir="new">
@@ -1640,6 +1710,8 @@
             <ajcmessage line="12" kind="error"></ajcmessage>
             <ajcmessage line="18" kind="error"></ajcmessage>
             <message line="18" kind="error"></message>
+            <jamessage line="12" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="test for not folding circular constants" num="297" keywords="from-errors" dir="pureJava">
@@ -1735,7 +1807,16 @@
             <ajcmessage line="46" kind="error"></ajcmessage>
             <ajcmessage line="54" kind="error"></ajcmessage>
             <ajcmessage line="55" kind="error"></ajcmessage>
-	    <message line="37" kind="error"></message>
+	          <message line="37" kind="error"></message>
+            <jamessage line="26" kind="error"></jamessage>
+            <jamessage line="28" kind="error"></jamessage>
+            <jamessage line="29" kind="error"></jamessage>
+            <jamessage line="31" kind="error"></jamessage>
+            <jamessage line="37" kind="error"></jamessage>
+            <jamessage line="45" kind="error"></jamessage>
+            <jamessage line="46" kind="error"></jamessage>
+            <jamessage line="54" kind="error"></jamessage>
+            <jamessage line="55" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="parse-time illegal modifiers" num="307" keywords="from-errors,purejava" dir="errors" abccomment="abc bails out early, but ok. ODM 18/07/04">
@@ -1744,6 +1825,9 @@
             <ajcmessage line="3" kind="error"></ajcmessage>
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message line="2" kind="error"></message> 
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="3" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
        </compile>
     </ajc-test>
 <ajc-test title="check-time illegal modifiers" num="308" keywords="from-errors,purejava" dir="errors" abccomment="Errors on lines 8 and 11 not caught by jlc.  Reported to                   to Nate.  July 6/04 LJH">
@@ -1764,6 +1848,8 @@
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message kind="error"></message>
             <message line="6" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="modifiers on interface members" num="310" keywords="from-errors,purejava" dir="pureJava" abccomment="Errors on lines 2,3,7 and 8 missing for jlc. Reported to                   Nate. July 6/04">
@@ -1795,6 +1881,13 @@
             <ajcmessage line="10" kind="error"></ajcmessage>
             <ajcmessage line="14" kind="error"></ajcmessage>
             <ajcmessage line="16" kind="error"></ajcmessage>
+            <jamessage line="1" kind="error"></jamessage>
+            <jamessage line="2" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="14" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="expecting compile failures with subclass narrowing scope of superclass methods or accessing private superclass variables" pr="536" num="313" keywords="from-errors,purejava" dir="new" abccomment="jlc missing the error on line 46, reported to Nate,                    July 6/04 LJH">
@@ -1842,6 +1935,13 @@
 	    <message line="9" kind="error"></message>
 	    <message line="10" kind="error"></message>
 	    <message line="11" kind="error"></message>
+            <jamessage line="8" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="11" kind="error"></jamessage>
+            <jamessage line="11" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
 	</compile>
     </ajc-test>
 <ajc-test title="explicit constructor calls can throw exceptions" num="317" keywords="from-errors" dir="errors">
