@@ -543,7 +543,7 @@
 	
     <!-- default testing harness args-->
     	<property name="args" value="" />
-	    <target name="test" depends="abc-jar,testing">
+	    <target name="test" depends="abc-jar,testing,runtime">
 	      <java classname="abc.testing.Main" fork="true"
 	            dir="ajc-harness/tests">
 	        <jvmarg line="-Xmx512M" />
