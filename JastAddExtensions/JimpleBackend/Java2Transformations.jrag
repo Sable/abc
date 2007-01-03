@@ -42,11 +42,11 @@ aspect Java2Transformations {
       2) The method is always invoked using INVOKESTATIC
       3) The flags must indicate that the method is static and package private
       */
-      replace(this).with(decl().createAccessor().createBoundAccess(getArgList()));
+      replace(this).with(decl().createAccessor(methodQualifierType()).createBoundAccess(getArgList()));
       return;
     }
     else if(!m.isStatic() && isQualified() && prevExpr().isSuperAccess() && !hostType().instanceOf(prevExpr().type())) {
-      superAccessorTarget().createSuperAccessor(m);
+      decl().createSuperAccessor(superAccessorTarget());
     }
     super.java2Transformation();
   }
@@ -57,38 +57,54 @@ aspect Java2Transformations {
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
       if(requiresAccessor()) {
-        f.accessorIndex();
-        f.accessorWriteIndex();
+        TypeDecl typeDecl = fieldQualifierType();
+        if(isSource())
+          f.createAccessor(typeDecl);
+        if(isDest())
+          f.createAccessorWrite(typeDecl);
       }
     }
     super.java2Transformation();
   }
 
-  // remote collection / demand driven creation of accessor
-  public void ClassInstanceExpr.java2Transformation() {
+
+  public void ConstructorDecl.java2Transformation() {
+    // this$val as fields and constructor parameters
+    addEnclosingVariables();
     super.java2Transformation();
-    // touch accessorIndex to force creation of private constructorAccessor
-    if(decl().isPrivate() && type() != hostType()) {
-      decl().accessorIndex();
-    }
   }
 
   // remote collection / demand driven creation of accessor
   public void ConstructorAccess.java2Transformation() {
-    super.java2Transformation();
+    // this$val
+    addEnclosingVariables();
     // touch accessorIndex go force creation of private constructorAccessor
     if(decl().isPrivate() && decl().hostType() != hostType()) {
-      decl().accessorIndex();
+      decl().createAccessor();
     }
+    super.java2Transformation();
   }
 
   // remote collection / demand driven creation of accessor
   public void SuperConstructorAccess.java2Transformation() {
-    super.java2Transformation();
+    // this$val
+    addEnclosingVariables();
     // touch accessorIndex go force creation of private constructorAccessor
     if(decl().isPrivate() && decl().hostType() != hostType()) {
-      decl().accessorIndex();
+      decl().createAccessor();
     }
+    super.java2Transformation();
+  }
+  
+  // remote collection / demand driven creation of accessor
+  public void ClassInstanceExpr.java2Transformation() {
+    // this$val
+    addEnclosingVariables();
+    // touch accessorIndex to force creation of private constructorAccessor
+    if(decl().isPrivate() && type() != hostType()) {
+      decl().createAccessor();
+    }
+    super.java2Transformation();
   }
 
   // remote collection / demand driven creation of accessor
@@ -137,7 +153,7 @@ aspect Java2Transformations {
   
   // imperative transformation of the AST
   // syntax ASTNode.replace(sourcenode).with(destnode)
-  // 
+  // this syntax is used to allow for building the destnode using the sourcenode
   protected static ASTNode ASTNode.replace(ASTNode node) {
     replacePos = node.getParent().getIndexOfChild(node);
     return node.getParent();

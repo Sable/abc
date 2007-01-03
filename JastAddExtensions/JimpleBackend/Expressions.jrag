@@ -175,18 +175,6 @@ aspect Expressions {
     return lastAccess().eval(b);
   }
 
-
-  syn boolean VarAccess.requiresAccessor() {
-    Variable v = decl();
-    if(!(v instanceof FieldDeclaration))
-      return false;
-    FieldDeclaration f = (FieldDeclaration)v;
-    if(f.isPrivate() && !hostType().hasField(v.name()))
-      return true;
-    if(f.isProtected() && !f.hostPackage().equals(hostPackage()))
-      return true;
-    return false;
-  }
   public soot.Value VarAccess.eval(Body b) {
     Variable v = decl();
     if(v instanceof VariableDeclaration) {
@@ -211,15 +199,19 @@ aspect Expressions {
       if(f.isStatic()) {
         if(isQualified() && !qualifier().isTypeAccess())
           b.newTemp(qualifier().eval(b));
-        if(requiresAccessor())
-          return f.emitInvokeFieldAccessor(b, null, fieldQualifierType());
+        if(requiresAccessor()) {
+          ArrayList list = new ArrayList();
+          return Jimple.v().newStaticInvokeExpr(f.createAccessor(fieldQualifierType()).sootRef(), list);
+        }
         else
           return Jimple.v().newStaticFieldRef(sootRef());
       }
       else {
         if(requiresAccessor()) {
           soot.Local base = base(b);
-          return f.emitInvokeFieldAccessor(b, base, fieldQualifierType());
+          ArrayList list = new ArrayList();
+          list.add(base);
+          return Jimple.v().newStaticInvokeExpr(f.createAccessor(fieldQualifierType()).sootRef(), list);
         }
         else {
           soot.Local base = createLoadQualifier(b);
@@ -262,10 +254,18 @@ aspect Expressions {
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
       if(requiresAccessor()) {
-        if(f.isStatic())
-          return f.emitInvokeFieldAccessorWrite(b, null, rvalue, fieldQualifierType());
-        else
-          return f.emitInvokeFieldAccessorWrite(b, base(b), rvalue, fieldQualifierType());
+        if(f.isStatic()) {
+          ArrayList list = new ArrayList();
+          list.add(rvalue);
+          return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list));
+        }
+        else {
+          soot.Local base = base(b);
+          ArrayList list = new ArrayList();
+          list.add(base);
+          list.add(asLocal(b, rvalue));
+          return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list));
+        }
       }
     }
     return super.emitStore(b, lvalue, rvalue);
@@ -276,10 +276,7 @@ aspect Expressions {
   public soot.Value Access.emitLoadLocalInNestedClass(Body b, Variable v) {
     if(inExplicitConstructorInvocation() && enclosingBodyDecl() instanceof ConstructorDecl) {
       ConstructorDecl c = (ConstructorDecl)enclosingBodyDecl();
-      return asLocal(b, Jimple.v().newParameterRef(
-        v.type().getSootType(), 
-        c.localIndexOfEnclosingVariable(v)
-      ));
+      return ((ParameterDeclaration)c.parameterDeclaration(v.name()).iterator().next()).local;
     }
     else {
       return Jimple.v().newInstanceFieldRef(
@@ -306,30 +303,6 @@ aspect Expressions {
     throw new Error("createLoadQualifier not supported for " + v.getClass().getName());
   }
 
-  // no lazy since needed in phases when tree has been modified
-  public boolean TypeDecl.hasField(String name) {
-    if(!fields(name).isEmpty())
-      return true;
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof FieldDeclaration) {
-        FieldDeclaration decl = (FieldDeclaration)getBodyDecl(i);
-        if(decl.name().equals(name))
-          return true;
-      }
-    }
-    return false;
-  }
-
-  private TypeDecl VarAccess.fieldQualifierType() {
-    if(hasPrevExpr())
-      return prevExpr().type();
-    TypeDecl typeDecl = hostType();
-    while(typeDecl != null && !typeDecl.hasField(name()))
-      typeDecl = typeDecl.enclosingType();
-    if(typeDecl != null)
-      return typeDecl;
-    return decl().hostType();
-  }
 
   private ArrayList MethodAccess.buildArgList(Body b) {
     ArrayList list = new ArrayList();
@@ -351,8 +324,7 @@ aspect Expressions {
       ArrayList list = buildArgList(b);
       soot.Value result;
       if(!hostType().instanceOf(prevExpr().type())) {
-        TypeDecl typeDecl = superAccessorTarget();
-        MethodDecl m = typeDecl.createSuperAccessor(decl());
+        MethodDecl m = decl().createSuperAccessor(superAccessorTarget());
         if(decl().hostType().isInterfaceDecl())
           result = Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
         else
@@ -397,51 +369,6 @@ aspect Expressions {
     return ref;
   }
 
-  public TypeDecl MethodAccess.superAccessorTarget() {
-    TypeDecl targetDecl = prevExpr().type();
-    TypeDecl enclosing = hostType();
-    do {
-      enclosing = enclosing.enclosingType();
-    } while (!enclosing.instanceOf(targetDecl));
-    return enclosing;
-  }
-
-  private HashMap TypeDecl.createSuperAccessorMap = null;
-  public MethodDecl TypeDecl.createSuperAccessor(MethodDecl decl) {
-    if(createSuperAccessorMap == null) createSuperAccessorMap = new HashMap();
-    if(createSuperAccessorMap.containsKey(decl))
-      return (MethodDecl)createSuperAccessorMap.get(decl);
-      
-    List parameters = new List();
-    //parameters.add(new ParameterDeclaration(new Modifiers(new List()), createQualifiedAccess(), "self"));
-    List args = new List();
-    for(int i = 0; i < decl.getNumParameter(); i++) {
-      parameters.add(decl.getParameter(i).fullCopy());
-      args.add(new VarAccess(decl.getParameter(i).name()));
-    }
-    Stmt stmt;
-    if(decl.type().isVoid())
-      stmt = new ExprStmt(new SuperAccess("super").qualifiesAccess(new MethodAccess(args, decl.name())));
-    else 
-      stmt = new ReturnStmt(new Opt(new SuperAccess("super").qualifiesAccess(new MethodAccess(args, decl.name()))));
-    MethodDecl m = new MethodDecl(
-      new Modifiers(new List()./*add(new Modifier("static")).*/add(new Modifier("synthetic"))),
-      decl.type().createQualifiedAccess(),
-      "access$" + accessorCounter++,
-      parameters,
-      new List(),
-      new List(),
-      new Opt(
-        new Block(
-          new List().add(stmt)
-        )
-      )
-    );
-    m = addMemberMethod(m);
-    createSuperAccessorMap.put(decl, m);
-    return m;
-  }
-
   private soot.Value MethodAccess.createLoadQualifier(Body b) {
     MethodDecl m = decl();
     if(hasPrevExpr()) {
@@ -459,29 +386,6 @@ aspect Expressions {
       return emitThis(b, methodQualifierType());
     }
     throw new Error("createLoadQualifier not supported for " + m.getClass().getName());
-  }
-
-  private TypeDecl MethodAccess.methodQualifierType() {
-    if(hasPrevExpr())
-      return prevExpr().type();
-    TypeDecl typeDecl = hostType();
-    while(typeDecl != null && !typeDecl.hasMethod(name()))
-      typeDecl = typeDecl.enclosingType();
-    if(typeDecl != null)
-      return typeDecl;
-    return decl().hostType();
-  }
-
-  syn boolean TypeDecl.hasMethod(String id) {
-    if(!memberMethods(id).isEmpty()) return true;
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof MethodDecl) {
-        MethodDecl decl = (MethodDecl)getBodyDecl(i);
-        if(decl.name().equals(id))
-          return true;
-      }
-    }
-    return false;
   }
 
   public soot.Value ArrayAccess.eval(Body b) {
@@ -560,32 +464,19 @@ aspect Expressions {
       list.add(asImmediate(b, 
          getArg(i).type().emitCastTo(b, getArg(i), c.getParameter(i).type()))); // MethodInvocationConversion
 
-    // this$val
-    for(Iterator iter = c.hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
-      Variable v = (Variable)iter.next();
-      ConstructorDecl con = (ConstructorDecl)enclosingBodyDecl();
-      int localIndex = con.localIndexOfEnclosingVariable(v);
-      list.add(asImmediate(b,
-        Jimple.v().newParameterRef(v.type().getSootType(), localIndex)
-      ));
-    }
     if(decl().isPrivate() && decl().hostType() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
-      decl().emitInvokeConstructorAccessor(b, base, list);
+      b.add(
+        Jimple.v().newInvokeStmt(
+          Jimple.v().newSpecialInvokeExpr(base, decl().createAccessor().sootRef(), list)
+        )
+      );
       return base;
     }
     else {
       return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
     }
   }
-
-  protected TypeDecl Access.superConstructorQualifier(TypeDecl targetEnclosingType) {
-    TypeDecl enclosing = hostType();
-    while(!enclosing.instanceOf(targetEnclosingType))
-      enclosing = enclosing.enclosingType();
-    return enclosing;
-  }
-
 
   public soot.Value SuperConstructorAccess.eval(Body b) {
     ConstructorDecl c = decl();
@@ -616,36 +507,19 @@ aspect Expressions {
     for(int i = 0; i < getNumArg(); i++)
       list.add(asImmediate(b, 
          getArg(i).type().emitCastTo(b, getArg(i), c.getParameter(i).type()))); // MethodInvocationConversion
-
-    // this$val
-    for(Iterator iter = c.hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
-      Variable v = (Variable)iter.next();
-      ConstructorDecl con = (ConstructorDecl)enclosingBodyDecl();
-      int localIndex = con.localIndexOfEnclosingVariable(v);
-      list.add(asImmediate(b,
-        Jimple.v().newParameterRef(v.type().getSootType(), localIndex)
-      ));
-    }
+ 
     if(decl().isPrivate() && decl().hostType() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
-      decl().emitInvokeConstructorAccessor(b, base, list);
+      b.add(
+        Jimple.v().newInvokeStmt(
+          Jimple.v().newSpecialInvokeExpr(base, decl().createAccessor().sootRef(), list)
+        )
+      );
       return base;
     }
     else {
       return Jimple.v().newSpecialInvokeExpr(base, c.sootRef(), list);
     }
-  }
-
-
-  syn int ConstructorDecl.localIndexOfEnclosingVariable(Variable v) {
-    int localIndex  = offsetFirstEnclosingVariable();
-    Iterator iter = hostType().enclosingVariables().iterator();
-    Variable varDecl = (Variable)iter.next();
-    while(varDecl != v && iter.hasNext()) {
-      localIndex += varDecl.type().variableSize();
-      varDecl = (Variable)iter.next();
-    }
-    return localIndex;
   }
 
   private soot.Value ClassInstanceExpr.emitLocalEnclosing(Body b, TypeDecl localClass) {
@@ -704,29 +578,14 @@ aspect Expressions {
 
     for(int i = 0; i < getNumArg(); i++)
       list.add(asImmediate(b, getArg(i).type().emitCastTo(b, getArg(i), decl().getParameter(i).type()))); // MethodInvocationConversion
-
-    // local values of local variables in this class that are accessed from the instantiated anonymous class
-    for(Iterator iter = type().enclosingVariables().iterator(); iter.hasNext(); ) {
-      Variable v = (Variable)iter.next();
-      if(v instanceof VariableDeclaration) {
-        VariableDeclaration decl = (VariableDeclaration)v;
-        if(decl.hostType() == hostType())
-          list.add(asImmediate(b, decl.local));
-        else
-          list.add(asImmediate(b, emitLoadLocalInNestedClass(b, decl)));
-      }
-      else if(v instanceof ParameterDeclaration) {
-        ParameterDeclaration decl = (ParameterDeclaration)v;
-        if(decl.hostType() == hostType())
-          list.add(asImmediate(b, decl.local));
-        else
-          list.add(asImmediate(b, emitLoadLocalInNestedClass(b, decl)));
-      }
-    }
-
+  
     if(decl().isPrivate() && type() != hostType()) {
       list.add(asImmediate(b, soot.jimple.NullConstant.v()));
-      decl().emitInvokeConstructorAccessor(b, local, list);
+      b.add(
+        Jimple.v().newInvokeStmt(
+          Jimple.v().newSpecialInvokeExpr(local, decl().createAccessor().sootRef(), list)
+        )
+      );
       return local;
     }
     else {
@@ -786,22 +645,6 @@ aspect Expressions {
     if(hasExpr())
       return getExpr().eval(b);
     throw new Error("eval not supported for Dims without expression");
-  }
-
-
-  inh TypeDecl ArrayInit.expectedType();
-  eq Program.getCompilationUnit(int i).expectedType() = null;
-  eq ArrayCreationExpr.getArrayInit().expectedType() = type().componentType();
-  eq FieldDeclaration.getInit().expectedType() = type().componentType();
-  eq VariableDeclaration.getInit().expectedType() = type().componentType();
-  eq VariableDecl.getInit().expectedType() = null;
-  eq ArrayInit.getInit().expectedType() = expectedType().componentType();
-  
-  syn lazy int ArrayCreationExpr.numArrays() {
-    for(int i = 0; i < getNumDims(); i++)
-      if(!getDims(i).hasExpr())
-        return i;
-    return getNumDims();
   }
 
   public soot.Value Unary.eval(Body b) {
@@ -951,18 +794,6 @@ aspect Expressions {
     return asLocal(b, Jimple.v().newXorExpr(asImmediate(b, left), asImmediate(b, right)));
   }
 
-  syn String TypeDecl.stringPromotion() = "java.lang.Object";
-  eq ReferenceType.stringPromotion() = isString() ? "java.lang.String" : super.stringPromotion();
-  eq PrimitiveType.stringPromotion() = name();
-  eq ByteType.stringPromotion() = "int";
-  eq ShortType.stringPromotion() = "int";
-
-  syn boolean ASTNode.isStringAdd() = false;
-  eq AddExpr.isStringAdd() = type().isString();
-
-  syn boolean AddExpr.firstStringAddPart() = !getLeftOperand().isStringAdd() && type().isString();
-  syn boolean AddExpr.lastStringAddPart() = !getParent().isStringAdd();
-
   public soot.Value AddExpr.eval(Body b) {
     if(isStringAdd()) {
       if(isConstant())
@@ -1051,7 +882,7 @@ aspect Expressions {
       // emit string literal
         
       ArrayList list = new ArrayList();
-      list.add(new StringLiteral(prevExpr().type().referenceClassName()).eval(b));
+      list.add(new StringLiteral(prevExpr().type().jvmName()).eval(b));
       Local l = asLocal(b, Jimple.v().newStaticInvokeExpr(m.sootRef(), list));
       b.add(Jimple.v().newAssignStmt(
         Jimple.v().newStaticFieldRef(f.sootRef()),

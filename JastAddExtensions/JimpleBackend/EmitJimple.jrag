@@ -16,8 +16,6 @@ aspect EmitJimple {
     }
   }
   
-  syn String TypeDecl.jvmName() = constantPoolName().replace(java.io.File.separatorChar, '.');
-
   inh CompilationUnit TypeDecl.compilationUnit();
   eq CompilationUnit.getTypeDecl(int i).compilationUnit() = this;
   eq CompilationUnit.getImportDecl(int i).compilationUnit() = this;
@@ -191,9 +189,6 @@ aspect EmitJimple {
     // args
     for(int i = 0; i < getNumParameter(); i++)
       parameters.add(getParameter(i).type().getSootType());
-    // this$val
-    for(Iterator iter = typeDecl.enclosingVariables().iterator(); iter.hasNext(); )
-      parameters.add(((Variable)iter.next()).type().getSootType());
 
     soot.Type returnType = soot.VoidType.v();
     int modifiers = sootTypeModifiers();
@@ -246,9 +241,6 @@ aspect EmitJimple {
     // args
     for(int i = 0; i < getNumParameter(); i++)
       list.add(getParameter(i).type().getSootType());
-    // this$val
-    for(Iterator iter = typeDecl.enclosingVariables().iterator(); iter.hasNext(); )
-      list.add(((Variable)iter.next()).type().getSootType());
     return hostType().getSootClassDecl().getMethod("<init>", list, soot.VoidType.v());
   }
   syn lazy SootMethodRef ConstructorDecl.sootRef() = sootMethod().makeRef();
@@ -502,8 +494,8 @@ aspect EmitJimple {
       TypeDecl type = (TypeDecl)iter.next();
       tags.add(
         new soot.tagkit.InnerClassTag(
-          type.constantPoolName(),
-          type.isMemberType() ? type.enclosingType().constantPoolName() : null,
+          type.jvmName().replace('.', '/'),
+          type.isMemberType() ? type.enclosingType().jvmName().replace('.', '/') : null,
           type.isAnonymous() ? null : type.name(),
           type.sootTypeModifiers()
         )
@@ -572,7 +564,6 @@ aspect EmitJimple {
       }
     }
 
-    int localIndex = 0;
     if(hostType().needsEnclosing()) {
       TypeDecl type = hostType().enclosingType();
       b.add(Jimple.v().newAssignStmt(
@@ -580,24 +571,20 @@ aspect EmitJimple {
           b.emitThis(),
           hostType().getSootField("this$0", type).makeRef()
         ),
-        asLocal(b, Jimple.v().newParameterRef(type.getSootType(), localIndex))
+        asLocal(b, Jimple.v().newParameterRef(type.getSootType(), 0))
       ));
-      localIndex++;
     }
-    if(needsSuperEnclosing()) {
-      localIndex++;
-    }
-    localIndex += getNumParameter();
+    
     for(Iterator iter = hostType().enclosingVariables().iterator(); iter.hasNext(); ) {
       Variable v = (Variable)iter.next();
+      ParameterDeclaration p = (ParameterDeclaration)parameterDeclaration("val$" + v.name()).iterator().next();
       b.add(Jimple.v().newAssignStmt(
         Jimple.v().newInstanceFieldRef(
           b.emitThis(),
           hostType().getSootField("val$" + v.name(), v.type()).makeRef()
         ),
-        asLocal(b, Jimple.v().newParameterRef(v.type().getSootType(), localIndex))
+        p.local
       ));
-      localIndex++;
     }
 
     if(needsInit) {
