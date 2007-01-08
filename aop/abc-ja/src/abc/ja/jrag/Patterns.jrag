@@ -28,6 +28,7 @@ aspect Patterns
     
     syn boolean Pattern.isExplicitTypeName() = false;
     eq ExplicitTypeNamePattern.isExplicitTypeName() = true;
+    eq SubtypeNamePattern.isExplicitTypeName() = true;
     // Rewrite all DotNamePatterns that denote a type and contain no
     // wildcards to ExplicitTypeNamePatterns.
     rewrite DotNamePattern {

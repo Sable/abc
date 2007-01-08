@@ -129,11 +129,13 @@ aspect Pointcuts
     }
 
     inh SimpleSet PointcutAccess.lookupPointcut(String name);
+    inh SimpleSet TypeDecl.lookupPointcut(String name);
     eq Program.getCompilationUnit().lookupPointcut(String name) =
         SimpleSet.emptySet;
-    eq TypeDecl.getBodyDecl(int i).lookupPointcut(String name)
-    {
-        return lookupMemberPointcut(name);
+    eq TypeDecl.getBodyDecl(int i).lookupPointcut(String name) {
+        SimpleSet set = lookupMemberPointcut(name);
+        if(!set.isEmpty()) return set;
+        return lookupPointcut(name);
     }
     eq AbstractDot.getRight().lookupPointcut(String name) =
         getLeft().type().lookupMemberPointcut(name);
