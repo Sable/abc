@@ -271,7 +271,6 @@ aspect Expressions {
     return super.emitStore(b, lvalue, rvalue);
   }
 
-  inh BodyDecl Access.enclosingBodyDecl();
   inh boolean Access.inExplicitConstructorInvocation();
   public soot.Value Access.emitLoadLocalInNestedClass(Body b, Variable v) {
     if(inExplicitConstructorInvocation() && enclosingBodyDecl() instanceof ConstructorDecl) {
