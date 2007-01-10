@@ -34,6 +34,8 @@ aspect Pointcuts
     eq Program.getCompilationUnit().isPointcutVariable() = false;
     eq PointcutDecl.getParameter(int i).isPointcutVariable() = true;
 
+    eq IfPointcutExpr.getExpr().nameType() = NameType.EXPRESSION_NAME;
+
     // The advice/pointcut formal parameters should be visible
     // to the pointcut and the parameters themselves.
 

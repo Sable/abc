@@ -523,7 +523,8 @@ NamePattern classtype_dot_id =
 NamePattern classtype_dot_new =
      NEW.a
         {: ParserTrace.parserTrace("classtype_dot_new is NEW: ");
-	   return new SimpleNamePattern("<init>");
+	   return new DotNamePattern(new SimpleNamePattern("*"),
+	                             new SimpleNamePattern("<init>"));
         :}
   |  name_pattern.a DOT NEW.y 
         {: ParserTrace.parserTrace("classtype_dot_new is np . NEW");

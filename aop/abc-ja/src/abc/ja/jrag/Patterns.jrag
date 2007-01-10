@@ -73,6 +73,17 @@ aspect Patterns
     }
 
 
+    // Getting the base of a member-pattern...
+    syn Pattern Pattern.base()
+    {
+        throw new InternalCompilerError(
+            "base() is undefined for " + getClass().getName());
+    }
+    eq DotNamePattern.base() = getLhs();
+    eq TypeDotNamePattern.base() = getLhs();
+
+
+
     // syntactic classification of explicit names in patterns
     // (see SyntacticClassification.jrag)
     eq AdviceDecl.getPointcutExpr().nameType() =
@@ -113,4 +124,18 @@ aspect Patterns
     syn boolean MethodPattern.isMethodPattern() = true;
     syn boolean ConstructorPattern.isConstructorPattern() = true;
     syn boolean FieldPattern.isFieldPattern() = true;
+
+    // when does a constructor pattern match the empty
+    // argument list?
+    syn boolean ConstructorPattern.matchesEmptyArgList()
+    {
+        for (int i = 0; i < getNumFormalPattern(); i++)
+            if (!getFormalPattern(i).matchesEmptyArgList())
+                return false;
+                
+        return true;
+    }
+
+    syn boolean FormalPattern.matchesEmptyArgList() = false;
+    syn boolean WildcardFormalPattern.matchesEmptyArgList() = true;
 }

@@ -81,25 +81,23 @@ aspect PointcutCodegen
 
     // FIXME
     public Pointcut IfPointcutExpr.pointcut() {
-        // get vars
-        // get methodsig
         // get jp/jpsp/ejpsp info
-        return new If(null, null, -1, -1, -1, pos());
+        return new If(methodFormals(), methodSig(), -1, -1, -1, pos());
     }
 
-    // FIXME - interface init conditional on the pattern
-    //         matching the empty argument list
-    //       - supposed to get base() for interface-initialization
     public Pointcut InitializationPointcutExpr.pointcut() {
         Pointcut within_constructor =
             new WithinConstructor(getPattern().constructorPattern(), pos());
 
         Pointcut class_init = new ClassInitialization(pos());
 
+        if (!getPattern().matchesEmptyArgList())
+            return class_init;
+
         Pointcut interface_init =
             new InterfaceInitialization(
-                    getPattern().getMemberNamePattern().classnamePattern(),
-                    pos());
+                getPattern().getMemberNamePattern().base().classnamePattern(),
+                pos());
 
         return OrPointcut.construct(
                 AndPointcut.construct(within_constructor, class_init, pos()),
@@ -107,7 +105,6 @@ aspect PointcutCodegen
                 pos());
     }
 
-    // FIXME
     public Pointcut NamedPointcutExpr.pointcut() {
         java.util.List arg_patterns = new ArrayList();
 
@@ -268,5 +265,30 @@ aspect PointcutCodegen
     public void PointcutDecl.jimplify2()
     {
         globalAspectInfo().addPointcutDecl(pointcutDecl());
+    }
+
+
+
+    //
+    // Code generation for if-pointcuts
+    //
+    public void IfPointcutExpr.jimplify2()
+    {
+
+    }
+
+    syn lazy java.util.List IfPointcutExpr.methodFormals()
+    {
+        return null;
+    }
+
+    syn lazy SootMethod IfPointcutExpr.sootMethod()
+    {
+        return null;
+    }
+
+    syn lazy MethodSig IfPointcutExpr.methodSig()
+    {
+        return null;
     }
 }
