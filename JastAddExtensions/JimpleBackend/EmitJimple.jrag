@@ -130,7 +130,8 @@ aspect EmitJimple {
       typeDecl.jimplify1phase2();
     }
     for(int i = 0; i < getNumBodyDecl(); i++)
-      getBodyDecl(i).jimplify1phase2();
+      if(getBodyDecl(i).generate())
+        getBodyDecl(i).jimplify1phase2();
   }
 
   public void ClassDecl.jimplify1phase2() {
@@ -138,8 +139,9 @@ aspect EmitJimple {
     if(hasSuperclass()) {
       sc.setSuperclass(superclass().getSootClassDecl());
     }
-    for(int i = 0; i < getNumImplements(); i++) {
-      sc.addInterface(getImplements(i).type().getSootClassDecl());
+    for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      sc.addInterface(typeDecl.getSootClassDecl());
     }
     if(isNestedType())
       sc.setOuterClass(enclosingType().getSootClassDecl());
@@ -354,7 +356,7 @@ aspect EmitJimple {
       chains = new java.util.Stack();
       chains.push(body.getUnits());
       if(!body.getMethod().isStatic())
-        emitThis();
+        emitThis(typeDecl);
     }
     public Local getParam(int i)
     {
@@ -378,6 +380,8 @@ aspect EmitJimple {
     public Local newLocal(String name, soot.Type type) {
       Local local = Jimple.v().newLocal(name, type);
       body.getLocals().add(local);
+      if(name.equals("this") && thisName == null)
+        thisName = local;
       return local;
     }
     public Body add(soot.jimple.Stmt stmt) {
@@ -412,7 +416,7 @@ aspect EmitJimple {
       return this;
     }
 
-    public soot.Local emitThis() {
+    public soot.Local emitThis(TypeDecl typeDecl) {
       if(thisName == null) {
         thisName = newLocal("this", typeDecl.getSootType());
         if(body.getMethod().isStatic())
@@ -445,11 +449,11 @@ aspect EmitJimple {
       BodyDecl b = getBodyDecl(i);
       if(b instanceof FieldDeclaration) {
         FieldDeclaration f = (FieldDeclaration)b;
-        if(f.isStatic() && f.hasInit()) {
+        if(f.isStatic() && f.hasInit() && f.generate()) {
           return true;
         }
       }
-      else if(b instanceof StaticInitializer) {
+      else if(b instanceof StaticInitializer && b.generate()) {
         return true;
       }
     }
@@ -466,7 +470,7 @@ aspect EmitJimple {
       Body b = new Body(this, body);
       for(int i = 0; i < getNumBodyDecl(); i++) {
         BodyDecl bodyDecl = getBodyDecl(i);
-        if(bodyDecl instanceof FieldDeclaration && bodyDecl.isBytecodeField()) {
+        if(bodyDecl instanceof FieldDeclaration && bodyDecl.generate()) {
           FieldDeclaration f = (FieldDeclaration)bodyDecl;
           if(f.isStatic() && f.hasInit()) {
             Local l = asLocal(b, 
@@ -478,7 +482,7 @@ aspect EmitJimple {
             ));
           }
         }
-        else if(bodyDecl instanceof StaticInitializer) {
+        else if(bodyDecl instanceof StaticInitializer && bodyDecl.generate()) {
           bodyDecl.jimplify2(b);
         }
       }
@@ -520,6 +524,7 @@ aspect EmitJimple {
   }
 
   public void MethodDecl.jimplify2() {
+    if(!generate()) return;
     try {
     if(hasBlock()) {
       JimpleBody body = Jimple.v().newBody(sootMethod);
@@ -544,6 +549,7 @@ aspect EmitJimple {
   }
 
   public void ConstructorDecl.jimplify2() {
+    if(!generate()) return;
     JimpleBody body = Jimple.v().newBody(sootMethod);
     sootMethod.setActiveBody(body);
     Body b = new Body(hostType(), body);
@@ -568,7 +574,7 @@ aspect EmitJimple {
       TypeDecl type = hostType().enclosingType();
       b.add(Jimple.v().newAssignStmt(
         Jimple.v().newInstanceFieldRef(
-          b.emitThis(),
+          b.emitThis(hostType()),
           hostType().getSootField("this$0", type).makeRef()
         ),
         asLocal(b, Jimple.v().newParameterRef(type.getSootType(), 0))
@@ -580,7 +586,7 @@ aspect EmitJimple {
       ParameterDeclaration p = (ParameterDeclaration)parameterDeclaration("val$" + v.name()).iterator().next();
       b.add(Jimple.v().newAssignStmt(
         Jimple.v().newInstanceFieldRef(
-          b.emitThis(),
+          b.emitThis(hostType()),
           hostType().getSootField("val$" + v.name(), v.type()).makeRef()
         ),
         p.local
@@ -591,10 +597,10 @@ aspect EmitJimple {
       TypeDecl typeDecl = hostType();
       for(int i = 0; i < typeDecl.getNumBodyDecl(); i++) {
         BodyDecl bodyDecl = typeDecl.getBodyDecl(i);
-        if(bodyDecl instanceof FieldDeclaration && bodyDecl.isBytecodeField()) {
+        if(bodyDecl instanceof FieldDeclaration && bodyDecl.generate()) {
           FieldDeclaration f = (FieldDeclaration)bodyDecl;
           if(!f.isStatic() && f.hasInit()) {
-            soot.Local base = b.emitThis();
+            soot.Local base = b.emitThis(hostType());
             Local l = asLocal(b,
               f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
             );
@@ -604,7 +610,7 @@ aspect EmitJimple {
             ));
           }
         }
-        else if(bodyDecl instanceof InstanceInitializer) {
+        else if(bodyDecl instanceof InstanceInitializer && bodyDecl.generate()) {
           bodyDecl.jimplify2(b);
         }
       }
@@ -612,18 +618,4 @@ aspect EmitJimple {
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
   }
-
-
-
-
-
-  syn boolean BodyDecl.isBytecodeField() = false;
-  eq FieldDeclaration.isBytecodeField() = true;
-
-  syn boolean BodyDecl.isBytecodeMethod() = false;
-  eq MethodDecl.isBytecodeMethod() = true;
-  eq ConstructorDecl.isBytecodeMethod() = true;
-
-
-
 }

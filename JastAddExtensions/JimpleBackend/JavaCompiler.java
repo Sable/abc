@@ -78,7 +78,7 @@ class JavaCompiler {
             return false;
           }
           else {
-            unit.java2Transformation();
+            unit.transformation();
           }
         }
       }

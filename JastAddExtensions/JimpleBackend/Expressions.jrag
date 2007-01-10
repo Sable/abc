@@ -279,7 +279,7 @@ aspect Expressions {
     }
     else {
       return Jimple.v().newInstanceFieldRef(
-        b.emitThis(),
+        b.emitThis(hostType()),
         hostType().getSootField("val$" + v.name(), v.type()).makeRef()
       );
     }
@@ -409,7 +409,7 @@ aspect Expressions {
   // supporting inner classes and in explicit contructor invocations
   public soot.Local Access.emitThis(Body b, TypeDecl targetDecl) {
     if(targetDecl == hostType())
-      return b.emitThis();
+      return b.emitThis(hostType());
     else {
       TypeDecl enclosing = hostType();
       Local base;
@@ -420,7 +420,7 @@ aspect Expressions {
         enclosing = enclosing.enclosingType();
       }
       else {
-        base = b.emitThis();
+        base = b.emitThis(hostType());
       }
       while(enclosing != targetDecl) {
         Local next = b.newTemp(enclosing.enclosingType().getSootType());
@@ -443,7 +443,7 @@ aspect Expressions {
   public soot.Value ConstructorAccess.eval(Body b) {
     ConstructorDecl c = decl();
     // this
-    Local base = b.emitThis();
+    Local base = b.emitThis(hostType());
   
     int index = 0;
     ArrayList list = new ArrayList();
@@ -480,7 +480,7 @@ aspect Expressions {
   public soot.Value SuperConstructorAccess.eval(Body b) {
     ConstructorDecl c = decl();
     // this
-    Local base = b.emitThis();
+    Local base = b.emitThis(hostType());
 
     int index = 0;
     ArrayList list = new ArrayList();
@@ -554,7 +554,7 @@ aspect Expressions {
      // 15.9.2 first part
     if(type().isAnonymous()) {
       if(type().isAnonymousInNonStaticContext()) {
-        list.add(asImmediate(b, b.emitThis()));
+        list.add(asImmediate(b, b.emitThis(hostType())));
       }
       // 15.9.2 second part
       ClassDecl C = (ClassDecl)type();
