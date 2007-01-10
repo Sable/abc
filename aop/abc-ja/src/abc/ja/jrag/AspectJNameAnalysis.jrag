@@ -1,39 +1,4 @@
 aspect AspectJNameAnalysis {
-  // compute the set of intertype declarations
-  // this is an attribute at the very root of the
-  // program - we'll collect the intertype decls from
-  // all sources that are being compiled
-  syn lazy Collection Program.intertypeDeclarations() {
-    Collection c = new ArrayList();
-    for(int i = 0; i < getNumCompilationUnit(); i++) {
-      c.addAll(getCompilationUnit(i).intertypeDeclarations());
-    }
-    return c;
-  }
-  syn lazy Collection CompilationUnit.intertypeDeclarations() {
-    Collection c = new ArrayList();
-    if(fromSource())
-      collectIntertypeDeclarations(c);
-    return c;
-  }
-
-  // generic traversal code
-  protected void ASTNode.collectIntertypeDeclarations(Collection c) {
-    for(int i = 0; i < getNumChild(); i++)
-      getChild(i).collectIntertypeDeclarations(c);
-  }
-  // override generic traversal..
-  protected void BodyDecl.collectIntertypeDeclarations(Collection c) {
-  }
-  // ..to only process membertypes and not other body declarations
-  protected void MemberTypeDecl.collectIntertypeDeclarations(Collection c) {
-    for(int i = 0; i < getNumChild(); i++)
-      getChild(i).collectIntertypeDeclarations(c);
-  }
-  // ..and to add intertype declarations
-  protected void IntertypeMethodDecl.collectIntertypeDeclarations(Collection c) {
-    c.add(this);
-  }
 
   // transitive "implements" test
   syn boolean TypeDecl.implement(TypeDecl typeDecl) = false;
@@ -44,21 +9,9 @@ aspect AspectJNameAnalysis {
     return false;
   }
 
-  // mark normal methods as local, and intertype methods as nonlocal
-  syn boolean BodyDecl.isLocalMethod(/*String name*/) = false;
-  eq MethodDecl.isLocalMethod(/*String name*/) = true; //name().equals(name);
-  eq IntertypeMethodDecl.isLocalMethod(/*String name*/) = false;
-  
-  eq AspectDecl.localMethodsSignatureMap() {
+  refine IntertypeMethodErrorCheck eq AspectDecl.localMethodsSignatureMap() {
     addImplicitMethods();
-    HashMap map = new HashMap(getNumBodyDecl());
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i).isLocalMethod()) {
-        MethodDecl decl = (MethodDecl)getBodyDecl(i);
-        map.put(decl.signature(), decl);
-      }
-    }
-    return map;
+    return IntertypeMethodErrorCheck.AspectDecl.localMethodsSignatureMap();
   }
 
   private boolean AspectDecl.addImplicitMethods = true;

@@ -2,4 +2,6 @@
 abc.loc=../abc
 
 frontend=../Java1.4Frontend
+flattening=../JavaFlattening
+itds=../IntertypeDeclarations
 backend=../jastaddJimpleBackend

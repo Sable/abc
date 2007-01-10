@@ -44,8 +44,8 @@ DeclarePrecedence : BodyDecl ::= Pattern*;
 // ----------------------- Intertype declarations ----------
 
 //IntertypeMethodDecl : MethodDecl ::= TargetType:Access;
-IntertypeConstructorDecl : ConstructorDecl ::= HostType:Access;
-IntertypeFieldDecl : FieldDeclaration ::= HostType:Access;
+//IntertypeConstructorDecl : ConstructorDecl ::= HostType:Access;
+//IntertypeFieldDeclaration : FieldDeclaration ::= HostType:Access;
 
 
 // ----------------------- Pointcuts -----------------------

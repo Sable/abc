@@ -471,6 +471,23 @@ aspect PatternsCodegen
     eq ExplicitTypeNamePattern.matchesType(Type t) = 
         getAccess().type().name().equals(t.toString())
         && getAccess().isTypeAccess();
+
+    syn boolean Pattern.matchesType(TypeDecl t) = false;
+    eq SimpleNamePattern.matchesType(TypeDecl t) {
+      // TODO: add supertype check
+      Set set = new HashSet();
+      set.add(t);
+      for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+        t = (TypeDecl)iter.next();
+        String name = t.name();
+        if(matchesName(name))
+          return true;
+      }
+      return false;
+    }
+    eq ExplicitTypeNamePattern.matchesType(TypeDecl t) {
+      return getAccess().type() == t;
+    }
     
     syn boolean ModifierPattern.matches(int m) = (modifierMask() & m) != 0;
     eq NegModifierPattern.matches(int m) = !super.matches(m);

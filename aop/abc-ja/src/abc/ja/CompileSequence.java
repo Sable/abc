@@ -155,7 +155,7 @@ public class CompileSequence extends abc.main.CompileSequence {
       }*/
 
       program.generateIntertypeDecls();
-      program.java2Transformation();
+      program.transformation();
 
       program.jimplify1();
       program.jimplify2();
