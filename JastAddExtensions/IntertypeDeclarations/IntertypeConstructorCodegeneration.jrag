@@ -1,0 +1,83 @@
+aspect IntertypeMethodCodegeneration {
+  //eq IntertypeConstructorDecl.isBytecodeMethod() = false;
+  
+  syn TypeDecl IntroducedConstructorDecl.introducedType() = hostType();
+     
+  eq IntroducedConstructorDecl.getBlock().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    if(!c.isEmpty())
+      return c;
+    return getITDBodyDecl().lookupMethod(name);
+  }
+  
+  eq IntroducedConstructorDecl.getBlock().lookupVariable(String name) {
+    SimpleSet set = parameterDeclaration(name);
+    if(!set.isEmpty()) return set;
+    set = introducedType().memberFields(name);
+    if(!set.isEmpty()) return set;
+    return getITDBodyDecl().lookupVariable(name);
+  }
+
+
+
+  public void IntertypeConstructorDecl.generateIntertypeDecls() {
+    List args = new List();
+    args.add(new ThisAccess("this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      args.add(new VarAccess(getParameter(i).name()));
+    Block block = new Block(
+      new List().add(
+        new ExprStmt(
+          createBodyDelegate().createBoundAccess(args)
+        )
+      ).add(
+        new ReturnStmt(new Opt())
+      )
+    );
+    introducedType().addBodyDecl(
+      new IntroducedConstructorDecl(
+        (Modifiers)getModifiers().fullCopy(),
+        getID(),
+        copyParameterList(getParameterList()),
+        (List)getExceptionList().fullCopy(),
+        (Opt)getConstructorInvocationOpt().fullCopy(),
+        block,
+        this
+      )
+    );
+  }
+
+  syn String IntertypeConstructorDecl.constructorBodyName() =
+    "abc$interConstructorBody$" + abcMangledSignature();
+
+  syn String IntertypeConstructorDecl.abcMangledSignature() =
+    hostAspect().abcMangledName() + "$" + introducedType().abcMangledName();
+
+  public MethodDecl IntertypeConstructorDecl.createBodyDelegate() {
+    String name = "constructor_body";
+    TypeDecl typeDecl = hostAspect();
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(this, name);
+    if(m != null) return m;
+
+    List list = copyParameterList(getParameterList());
+    list.insertChild(new ParameterDeclaration(hostType(), "this"), 0);
+    Modifiers modifiers = createAccessorModifiers(true);
+    m = new IntroducedMethodDecl(
+      modifiers,
+      hostType().typeVoid().createQualifiedAccess(),
+      constructorBodyName(),
+      list,
+      new List(),
+      new List(),
+      new Opt(getBlock().fullCopy()),
+      introducedType(),
+      this
+    );
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(this, name, m);
+    return m;
+    //return buildAccessor(m, hostType().typeVoid(), "constructorInit", list, new Opt(getBlock().fullCopy()), hostAspect());
+  }
+
+
+}

@@ -1,0 +1,48 @@
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+
+aspect IntertypeDecls {
+  // generate code for inter-type declarations
+  public void Program.generateIntertypeDecls() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit cu = (CompilationUnit)iter.next();
+      if(cu.fromSource())
+        cu.generateIntertypeDecls();
+    }
+  }
+  protected void ASTNode.generateIntertypeDecls() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).generateIntertypeDecls();
+  }
+
+  // compute the set of inter-type declarations applicable to a specific type
+  syn lazy Collection TypeDecl.intertypeDecls() = intertypeDecls(this);
+  inh Collection TypeDecl.intertypeDecls(TypeDecl type);
+  eq Program.getCompilationUnit(int index).intertypeDecls(TypeDecl type) {
+    if(intertypeDecls().containsKey(type))
+      return (Collection)intertypeDecls().get(type);
+    return Collections.EMPTY_LIST;
+  }
+ 
+  // store all inter-type declarations in a map (TypeDecl -> List)
+  private HashMap Program.intertypeDecls() {
+    if(intertypeDecls == null) {
+      intertypeDecls = new HashMap();
+      collectIntertypeDecls(intertypeDecls);
+      return intertypeDecls;
+    }
+    return intertypeDecls;
+  }
+  private HashMap Program.intertypeDecls = null;
+  protected void ASTNode.collectIntertypeDecls(HashMap map) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChildNoTransform(i).collectIntertypeDecls(map);
+  }
+  protected void CompilationUnit.collectIntertypeDecls(HashMap map) {
+    // intertype declarations are only available in source files
+    if(fromSource())
+      super.collectIntertypeDecls(map);
+  }
+}

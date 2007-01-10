@@ -1,0 +1,38 @@
+aspect DeclarePrecedenceNameAnalysis {
+
+  syn lazy boolean TypeDecl.precedes(TypeDecl typeDecl) {
+    for(Iterator iter = declarePrecedence().iterator(); iter.hasNext(); ) {
+      DeclarePrecedence p = (DeclarePrecedence)iter.next();
+      boolean foundThis = false;
+      for(int i = 0; i < p.getNumPattern(); i++ ) {
+        if(!foundThis && p.getPattern(i).matchesType(this))
+          foundThis = true;
+        else if(foundThis && p.getPattern(i).matchesType(typeDecl)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  syn boolean Access.matchesType(TypeDecl typeDecl) = type() == typeDecl;
+
+  inh Collection TypeDecl.declarePrecedence();
+  eq Program.getCompilationUnit().declarePrecedence() {
+    String key = "declare_precedence";
+    if(intertypeDecls().containsKey(key))
+      return (Collection)intertypeDecls().get(key);
+    return Collections.EMPTY_LIST;
+  }
+
+  // add declare precedences to generic inter-type collection phase
+  protected void DeclarePrecedence.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    String key = "declare_precedence";
+    if(!map.containsKey(key))
+      map.put(key, new ArrayList());
+    Collection c = (Collection)map.get(key);
+    c.add(this);
+  }
+
+}

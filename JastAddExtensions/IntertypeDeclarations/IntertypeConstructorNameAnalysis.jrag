@@ -1,0 +1,95 @@
+aspect IntertypeMethodNameAnalysis {
+  eq IntertypeConstructorDecl.getTargetType().nameType() = NameType.TYPE_NAME;
+
+  syn TypeDecl IntertypeConstructorDecl.hostAspect() = (TypeDecl)getParent().getParent();
+  syn TypeDecl IntertypeConstructorDecl.introducedType() = getTargetType().type();
+
+  eq IntertypeConstructorDecl.getBlock().enclosingType() = introducedType();
+  eq IntertypeConstructorDecl.getBlock().isMemberType() = introducedType().isMemberType();
+  eq IntertypeConstructorDecl.getBlock().enclosingInstance() = introducedType();
+  eq IntertypeConstructorDecl.getConstructorInvocation().enclosingType() = introducedType();
+  eq IntertypeConstructorDecl.getConstructorInvocation().isMemberType() = introducedType().isMemberType();
+  eq IntertypeConstructorDecl.getConstructorInvocation().enclosingInstance() = introducedType();
+
+  syn TypeDecl IntertypeConstructorDecl.hostType() = introducedType();
+  eq IntertypeConstructorDecl.getBlock().hostType() = hostType();
+  eq IntertypeConstructorDecl.getConstructorInvocation().hostType() = hostType();
+  eq IntertypeConstructorDecl.getParameter(int index).hostType() = hostType();
+
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupConstructor() = hostType().constructors();
+  eq IntertypeConstructorDecl.getBlock().lookupConstructor() = hostType().constructors();
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupSuperConstructor() = hostType().lookupSuperConstructor();
+  eq IntertypeConstructorDecl.getBlock().lookupSuperConstructor() = hostType().lookupSuperConstructor();
+
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    return !c.isEmpty() ? c : lookupMethod(name);
+  }
+  eq IntertypeConstructorDecl.getBlock().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    return !c.isEmpty() ? c : lookupMethod(name);
+  }
+
+
+
+  eq IntertypeConstructorDecl.generate() = false;
+
+  // Hack to avoid multiple declared intertype constructors
+
+  syn boolean BodyDecl.isExactConstructorDecl() = false;
+  eq ConstructorDecl.isExactConstructorDecl() = true;
+  eq IntertypeConstructorDecl.isExactConstructorDecl() = false;
+
+  refine LookupConstructor eq TypeDecl.constructors() {
+    Collection c = new ArrayList();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i).isExactConstructorDecl()) {
+        c.add(getBodyDecl(i));
+      }
+    }
+    if(c.isEmpty() && isClassDecl()) {
+      Modifiers m = new Modifiers();
+      if(isPublic()) m.addModifier(new Modifier("public"));
+      else if(isProtected()) m.addModifier(new Modifier("protected"));
+      else if(isPrivate()) m.addModifier(new Modifier("private"));
+      addBodyDecl(
+          new ConstructorDecl(
+            m,
+            name(),
+            new List(),
+            new List(),
+            new Opt(),
+            new Block()
+          )
+      );
+      c.add(getBodyDecl(getNumBodyDecl()-1));
+    }
+    c.addAll(introducedConstructors());
+    return c;
+  }
+
+  protected void IntertypeConstructorDecl.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = introducedType();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+    c.add(this);
+  }
+
+  syn lazy Collection TypeDecl.introducedConstructors() {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
+      ASTNode node = (ASTNode)iter.next();
+      if(node instanceof IntertypeConstructorDecl)
+        c.add(node);
+    }
+    return c;
+  }
+
+  eq IntertypeConstructorDecl.name() = introducedType().name();
+
+  public void IntertypeConstructorDecl.nameCheck() {
+  }
+
+}

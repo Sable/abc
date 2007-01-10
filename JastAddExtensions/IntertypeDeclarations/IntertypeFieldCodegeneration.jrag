@@ -1,0 +1,277 @@
+aspect IntertypeFieldCodegeneration {
+
+  public void ClassDecl.generateIntertypeDecls() {
+    super.generateIntertypeDecls();
+    for(Iterator iter = introducedFieldsFromInterfaces().iterator(); iter.hasNext(); ) {
+      // add fields, introduced through interfaces, that are not visible in the super class
+      IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)iter.next();
+      if(!hasSuperclass() || superclass().memberFields(f.name()).isEmpty()) {
+        f.introduceFieldIn(this);
+        f.createInterfaceGetterImplementation(this);
+        f.createInterfaceSetterImplementation(this);
+      }
+    }
+  }
+
+  public void IntertypeFieldDeclaration.generateIntertypeDecls() {
+    createGetter();
+    createSetter();
+    if(hasInit())
+      createInit();
+    // add fields that are introduced directly into a class
+    if(!introducedType().isInterfaceDecl())
+      introduceFieldIn(introducedType());
+  }
+
+  public void IntertypeFieldDeclaration.introduceFieldIn(TypeDecl typeDecl) {
+    Modifiers m = new Modifiers(new List());
+    m.addModifier(new Modifier("public"));
+    if(isStatic())
+      m.addModifier(new Modifier("static"));
+    Opt init = new Opt();
+    if(hasInit()) {
+      List args = isStatic() ? new List() : new List().add(new ThisAccess("this"));
+      init.addChild(createInit().createBoundAccess(args));
+    }
+    FieldDeclaration f = typeDecl.addMemberField(
+      new IntroducedFieldDeclaration(
+        m,
+        type().createQualifiedAccess(),
+        introducedName(),
+        init,
+        hostAspect()
+      )
+    );
+    //((IntroducedFieldDeclaration)f).originalField = this;
+  }
+
+  //public FieldDeclaration IntroducedFieldDeclaration.originalField;
+  //eq IntroducedFieldDeclaration.accessorIndex() = originalField.accessorIndex();
+  //eq IntroducedFieldDeclaration.needsAccessor() = originalField.needsAccessor();
+  // TODO: the same for write
+  // TODO: the same for methods and constructors
+
+  refine Transformations public void VarAccess.transformation() {
+    Variable v = decl();
+    if(v instanceof IntertypeFieldDeclaration) {
+      IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)v;
+      if(!name().equals(f.introducedName())) {
+        replace(this).with(new VarAccess(f.introducedName()));
+        return;
+      }
+    }
+    Transformations.VarAccess.transformation();
+  }
+
+
+  syn boolean IntertypeFieldDeclaration.useAccessors() =
+    !isPublic() || introducedType().isInterfaceDecl();
+
+
+  // name mangling
+  syn String TypeDecl.abcMangledName() = jvmName().replace('.', '_');
+
+  syn String IntertypeFieldDeclaration.abcMangledSignature() =
+    hostAspect().abcMangledName() + "$" + introducedType().abcMangledName() + "$" + name();
+
+  syn String IntertypeFieldDeclaration.initName() =
+    "abc$interFieldInit$" + abcMangledSignature();
+
+  syn String IntertypeFieldDeclaration.getDispatchName() =
+    "abc$interFieldGetDispatch$" + abcMangledSignature();
+  syn String IntertypeFieldDeclaration.interfaceGetterName() =
+    "abc$interFieldGet$" + abcMangledSignature();
+
+  syn String IntertypeFieldDeclaration.setDispatchName() =
+    "abc$interFieldSetDispatch$" + abcMangledSignature();
+  syn String IntertypeFieldDeclaration.interfaceSetterName() =
+    "abc$interFieldSet$" + abcMangledSignature();
+
+  // the name of the introduced field
+  // all ITD fields that use accessors have mangled names
+  syn String IntertypeFieldDeclaration.introducedName() {
+    if(isPrivate() || introducedType().isInterfaceDecl())
+      return "abc$interField$" + hostAspect().abcMangledName() + "$" + name();
+    else if(isPublic())
+      return name();
+    else
+      return "abc$interField$" + hostAspect().packageName().replace('.', '_') + "$" + name();
+  }
+
+  public MethodDecl IntertypeFieldDeclaration.createInit() {
+    String name = "field_init";
+    TypeDecl typeDecl = hostAspect();
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(this, name);
+    if(m != null) return m;
+
+    Modifiers modifiers = createAccessorModifiers(true);
+    List parameters = !isStatic() ? new List().add(new ParameterDeclaration(introducedType(), "that")) : new List();
+    Stmt returnStmt = new ReturnStmt(new Opt(getInit().fullCopy()));
+    m = new IntroducedMethodDecl(
+      modifiers,
+      type().createQualifiedAccess(),
+      initName(),
+      parameters,
+      new List(),
+      new List(),
+      new Opt(new Block(new List().add(returnStmt))),
+      introducedType(),
+      this
+    );
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(this, name, m);
+    return m;
+    //return buildAccessor(modifiers, type(), initName(), parameters, returnStmt);
+  }
+
+
+  // create dispatch method in aspect that returns the value of the field
+  // if the introduced type is an interface then delegate to getter in interface
+  public MethodDecl IntertypeFieldDeclaration.createGetter() {
+    Modifiers m = createAccessorModifiers(isStatic());
+    List parameters;
+    Expr result;
+    if(isStatic()) {
+      parameters = new List();
+      result = introducedType().createQualifiedAccess().qualifiesAccess(new VarAccess(introducedName()));
+    }
+    else {
+      parameters = new List().add(new ParameterDeclaration(introducedType(), "that"));
+      if(introducedType().isInterfaceDecl())
+        result = new VarAccess("that").qualifiesAccess(new BoundMethodAccess(interfaceGetterName(), new List(), createInterfaceGetter()));
+      else
+        result = new VarAccess("that").qualifiesAccess(new VarAccess(introducedName()));
+    }
+    return buildAccessor(m, type(), getDispatchName(), parameters, new ReturnStmt(new Opt(result)));
+  }
+
+
+  public MethodDecl IntertypeFieldDeclaration.createInterfaceGetter() {
+    Modifiers m = createAccessorModifiers(false);
+    List parameters = new List();
+    return buildAccessor(m, type(), interfaceGetterName(), parameters, introducedType());
+  }
+
+  public MethodDecl IntertypeFieldDeclaration.createInterfaceGetterImplementation(TypeDecl typeDecl) {
+    Modifiers m = createAccessorModifiers(false);
+    List parameters = new List();
+    Expr result = new VarAccess(introducedName());
+    return buildAccessor(m, type(), interfaceGetterName(), parameters, new ReturnStmt(new Opt(result)), typeDecl);
+  }
+
+
+  public MethodDecl IntertypeFieldDeclaration.createSetter() {
+    Modifiers m = createAccessorModifiers(isStatic());
+    List parameters;
+    Expr result;
+    if(isStatic()) {
+      parameters = new List().add(new ParameterDeclaration(type(), "v"));
+      result = new AssignSimpleExpr(
+        introducedType().createQualifiedAccess().qualifiesAccess(new VarAccess(introducedName())),
+        new VarAccess("v")
+      );
+    }
+    else {
+      parameters = new List().add(new ParameterDeclaration(introducedType(), "that")).add(new ParameterDeclaration(type(), "v"));
+      if(introducedType().isInterfaceDecl())
+        result = new VarAccess("that").qualifiesAccess(new BoundMethodAccess(interfaceSetterName(), new List().add(new VarAccess("v")), createInterfaceSetter()));
+      else
+        result = new AssignSimpleExpr(
+          new VarAccess("that").qualifiesAccess(new VarAccess(introducedName())),
+          new VarAccess("v")
+        );
+    }
+    return buildAccessor(m, type(), setDispatchName(), parameters, new ReturnStmt(new Opt(result)));
+  }
+
+
+  public MethodDecl IntertypeFieldDeclaration.createInterfaceSetter() {
+    Modifiers m = createAccessorModifiers(false);
+    List parameters = new List().add(new ParameterDeclaration(type(), "v"));
+    return buildAccessor(m, type(), interfaceSetterName(), parameters, introducedType());
+  }
+
+  public MethodDecl IntertypeFieldDeclaration.createInterfaceSetterImplementation(TypeDecl typeDecl) {
+    Modifiers m = createAccessorModifiers(false);
+    List parameters = new List().add(new ParameterDeclaration(type(), "v"));
+    Expr result = new VarAccess(introducedName());
+    return buildAccessor(m, type(), interfaceSetterName(), parameters, new ReturnStmt(new Opt(result)), typeDecl);
+  }
+
+
+
+
+
+  protected MethodDecl BodyDecl.buildAccessor(Modifiers modifiers, TypeDecl type, 
+                                                             String name, List parameters, Opt body, TypeDecl typeDecl) {
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(this, name);
+    if(m != null) return m;
+    m = new MethodDecl(
+      modifiers,
+      type.createQualifiedAccess(),
+      name,
+      parameters,
+      new List(),
+      new List(),
+      body
+    );
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(this, name, m);
+    return m;
+  }
+  protected MethodDecl BodyDecl.buildAccessor(Modifiers modifiers, TypeDecl type, 
+                                                             String name, List parameters, Stmt stmt, TypeDecl typeDecl) {
+    Opt body = new Opt(new Block(new List().add(stmt)));
+    return buildAccessor(modifiers, type, name, parameters, body, typeDecl);
+  }
+  protected MethodDecl BodyDecl.buildAccessor(Modifiers modifiers, TypeDecl type, 
+                                                             String name, List parameters, TypeDecl typeDecl) {
+    return buildAccessor(modifiers, type, name, parameters, new Opt(), typeDecl);
+  }
+
+  private MethodDecl IntertypeFieldDeclaration.buildAccessor(Modifiers modifiers, TypeDecl type, 
+                                                             String name, List parameters, Stmt stmt) {
+    TypeDecl typeDecl = hostAspect();
+    return buildAccessor(modifiers, type, name, parameters, stmt, typeDecl);
+  }
+ 
+  protected static Modifiers BodyDecl.createAccessorModifiers(boolean isStatic) {
+    Modifiers modifiers = new Modifiers(new List());
+    modifiers.addModifier(new Modifier("synthetic"));
+    modifiers.addModifier(new Modifier("public"));
+    if(isStatic)
+      modifiers.addModifier(new Modifier("static"));
+    return modifiers;
+  }
+
+  eq IntertypeFieldDeclaration.generate() = false;
+  
+  // change name binding to search for methods in introducedType in IntroducedMethodDecl body
+  public IntroducedFieldDeclaration.IntroducedFieldDeclaration(Modifiers m, Access t, String d, Opt init, TypeDecl aspectType) {
+    this(m, t, d, init);
+    this.aspectType = aspectType;
+  }
+  private TypeDecl IntroducedFieldDeclaration.aspectType;
+  syn TypeDecl IntroducedFieldDeclaration.aspectType() = aspectType;
+
+  // used to allow inlining of init
+  eq IntroducedFieldDeclaration.getInit().lookupVariable(String name) {
+    SimpleSet set = lookupVariable(name);
+    if(!set.isEmpty())
+      return set;
+    return aspectType().memberFields(name); // TODO: Does this work for fields in nested aspects/classes?
+  }
+
+  // used to allow inlining of init
+  eq IntroducedFieldDeclaration.getInit().lookupType(String name) {
+    SimpleSet set = hostType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = aspectType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = aspectType().lookupType(name);
+    if(set.isEmpty())
+      System.err.println("Could not find " + name + " from " + name() + " in neither " + hostType().typeName() + " nor " + aspectType().typeName());
+    return set;
+  }
+
+}

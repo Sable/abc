@@ -1,0 +1,135 @@
+aspect IntertypeMethodNameAnalysis {
+  // the expected name kind for the target type of an ITD method is a type name
+  eq IntertypeMethodDecl.getTargetType().nameType() = NameType.TYPE_NAME;
+  
+  // hostAspect is the aspect the declares the intertype method decl
+  syn TypeDecl IntertypeMethodDecl.hostAspect() = (TypeDecl)getParent().getParent();
+  // introducedType is the type into which the intertype method decl is statically introduced
+  syn TypeDecl IntertypeMethodDecl.introducedType() = getTargetType().type();
+
+  // override ag-inherited attributes related to nested class structure 
+  // isNestedType() need not be changed since all types within a bodydecl are nested types
+  // isLocalClass() need not be changed
+  eq IntertypeMethodDecl.getBlock().enclosingType() = introducedType();
+  eq IntertypeMethodDecl.getBlock().isMemberType() = introducedType().isMemberType();
+  eq IntertypeMethodDecl.getBlock().enclosingInstance() = introducedType();
+
+  eq IntroducedMethodDecl.getBlock().enclosingType() = introducedType();
+  eq IntroducedMethodDecl.getBlock().enclosingInstance() = introducedType();
+
+  // override ag-inherited attribute, this will cause calls bound to an
+  // IntertypeMethodDecl to invoke a method in the introducedType instead of the hostAspect
+  syn TypeDecl IntertypeMethodDecl.hostType() = introducedType();
+  eq IntertypeMethodDecl.getBlock().hostType() = hostType();
+  eq IntertypeMethodDecl.getParameter(int index).hostType() = hostType();
+  eq IntertypeMethodDecl.getBlock().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    if(!c.isEmpty()) return c;
+    return lookupMethod(name);
+  }
+  eq IntertypeMethodDecl.getBlock().lookupVariable(String name) {
+    SimpleSet set = parameterDeclaration(name);
+    // A declaration of a method parameter name shadows any other variable declarations
+    if(!set.isEmpty()) return set;
+    // Search member fields
+    set = introducedType().memberFields(name);
+    if(!set.isEmpty()) return set;
+    // Delegate to other declarations in aspect
+    return lookupVariable(name);
+  }
+
+  // override behavior to allow multiple methods with the same signature (but in different types)
+  syn SimpleSet AspectDecl.localLookupMethod(MethodDecl signature) {
+    return SimpleSet.emptySet.add(signature);
+  }
+  
+  // include introduced methods in local methods map
+  refine LookupMethod eq TypeDecl.localMethodsSignatureMap() {
+    // Locally declared methods
+    HashMap map = LookupMethod.TypeDecl.localMethodsSignatureMap();
+    // Add intertype methods if there is no local declaration
+    for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
+      MethodDecl decl = (MethodDecl)iter.next();
+      if(decl.accessibleFrom(this) && (!map.containsKey(decl.signature()) || decl.zaps((MethodDecl)map.get(decl.signature()))))
+        map.put(decl.signature(), decl);
+    }
+    return map;
+  }
+
+  // zap takes precedence and inheritance into account to determine visibility
+  // double dispatch for modular implementation of binary methods
+  syn boolean MethodDecl.zaps(MethodDecl m) = m.zappedByMethodDecl(this);
+  eq IntertypeMethodDecl.zaps(MethodDecl m) = m.zappedByIntertypeMethodDecl(this);
+
+  syn boolean MethodDecl.zappedByMethodDecl(MethodDecl m) = m.overrides(this);
+  eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) = true;
+  syn boolean MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m)  = false;
+  eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
+    if(m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect())
+      return true;
+    return m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect());
+  }
+
+  // include methods introduced thorugh interfaces
+  eq ClassDecl.localMethodsSignatureMap() {
+    // Locally declared methods + intertype methods with exact type
+    HashMap map = super.localMethodsSignatureMap();
+    // Add intertype methods introduced through an interface
+    for(Iterator iter = interfacesMethodsIterator(); iter.hasNext(); ) {
+      MethodDecl decl = (MethodDecl)iter.next();
+      if(decl.accessibleFrom(this) && decl instanceof IntertypeMethodDecl && !decl.isAbstract() && !map.containsKey(decl.signature()))
+        map.put(decl.signature(), decl);
+    }
+    return map;
+  }
+
+  syn lazy boolean IntertypeMethodDecl.accessibleFrom(TypeDecl type) {
+    if(isPublic()) {
+      return true;
+    }
+    else if(isProtected()) {
+      if(hostPackage().equals(type.hostPackage()))
+        return true;
+      if(type.withinBodyThatSubclasses(hostAspect()) != null)
+        return true;
+      return false;
+    }
+    else if(isPrivate())
+      return hostAspect().topLevelType() == type.topLevelType();
+    else
+      return hostPackage().equals(type.hostPackage());
+  }
+
+
+  // compute the set of introduced methods in this type
+  syn lazy Collection TypeDecl.introducedMethods() {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
+      ASTNode node = (ASTNode)iter.next();
+      if(node instanceof IntertypeMethodDecl)
+        c.add(node);
+    }
+    return c;
+  }
+
+  refine LookupMethod eq ClassDecl.ancestorMethods(String signature) {
+    SimpleSet set = LookupMethod.ClassDecl.ancestorMethods(signature);
+    for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
+      IntertypeMethodDecl m = (IntertypeMethodDecl)iter.next();
+      if(m.signature().equals(signature) && m.zapped())
+        set = set.add(m);
+    }
+    return set;
+  }
+
+  // add inter-type methods to generic inter-type collection phase
+  protected void IntertypeMethodDecl.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = introducedType();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+    c.add(this);
+  }
+
+}

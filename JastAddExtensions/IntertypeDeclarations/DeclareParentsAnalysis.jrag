@@ -1,0 +1,230 @@
+aspect DeclareParentsAnalysis {
+
+/* Declare parents changes the type hierarchy for non-local non-anonymous classes and interfaces and aspects.
+   A superclass S may be added to a class C extends D as long as S is a subclass of D
+   New interfaces may be added to a class C
+   New superinterfaces may be added to an interface I
+
+   The subtype relation computation includes types from declare parents clauses
+  
+   Member methods in C include methods from declare parents clauses
+   Member fields in C include fields from declare parents clauses
+   Member types in C do NOT include types from declare parents clauses
+     unless a type with that name is visible in a superclass of C
+*/
+
+/* affected attributes:
+  LookupConstructor eq ClassDecl.lookupSuperConstructor()
+  LookupMethod eq ClassDecl.methodsSignatureMap()
+  LookupMethod/AncestorMethods eq ClassDecl.ancestorMethods(String signature)
+  LookupVariable eq ClassDecl.fields(String name)
+  Modifiers eq ClassDecl.unimplementedMethods()
+  TypeAnalysis eq ClassDecl.isSupertypeOfClassDecl(ClassDecl type)
+  TypeAnalysis eq InterfaceDecl.isSupertypeOfClassDecl(ClassDecl type)
+
+  alternatively modify:
+    LookupType eq ClassDecl.memberTypes(String name);
+  */
+
+
+/*
+ * NOTE: currently not used, trying demand driven arroach instead
+ * Bind all visible types including member types
+ * type check declare parents
+ * change hierarchy to include new parents
+ * flush caches
+ *   if a node is final then
+ *     flush its caches
+ *     visit its children
+ * continue computation
+ */
+
+  
+  public ClassDecl ClassDecl.superclassWithoutDeclareParents() {
+    if(isObject())
+      return null;
+    if(hasSuperClassAccess() && !isCircular() && getSuperClassAccess().type().isClassDecl())
+      return (ClassDecl)getSuperClassAccess().type();
+    return (ClassDecl)typeObject();
+  }
+
+  refine LookupType eq ClassDecl.memberTypes(String name) {
+    SimpleSet set = SimpleSet.emptySet;
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i).declaresType(name)) {
+        set = set.add(getBodyDecl(i).type(name));
+      }
+    }
+    if(!set.isEmpty()) return set;
+    for(Iterator outerIter = interfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)outerIter.next();
+      for(Iterator iter = type.memberTypes(name).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(!decl.isPrivate() && decl.accessibleFrom(this))
+          set = set.add(decl);
+      }
+    }
+    if(hasSuperclass()) {
+      for(Iterator iter = superclassWithoutDeclareParents().memberTypes(name).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(!decl.isPrivate() && decl.accessibleFrom(this)) {
+          boolean found = false;
+          if(introducedSuperclass() != null) {
+            ClassDecl c = introducedSuperclass();
+            for(int i = 0; i < c.getNumBodyDecl(); i++) {
+              if(c.getBodyDecl(i).declaresType(name)) {
+                set = set.add(c.getBodyDecl(i).type(name));
+                found = true;
+              }
+            }
+          }
+          if(!found)
+            set = set.add(decl);
+        }
+      }
+    }
+    return set;
+  }
+
+
+
+
+  refine TypeAnalysis public ClassDecl ClassDecl.superclass() {
+    if(introducedSuperclass() != null)
+      return introducedSuperclass();
+    return TypeAnalysis.ClassDecl.superclass();
+  }
+
+  refine TypeAnalysis public Iterator ClassDecl.interfacesIterator() {
+    return new Iterator() {
+      public boolean hasNext() {
+        computeNextCurrent();
+        return current != null;
+      }
+      public Object next() {
+        return current;
+      }
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+      private int index = 0;
+      private TypeDecl current = null;
+      private Iterator iter = null;
+      private void computeNextCurrent() {
+        current = null;
+        if(isObject() || isCircular())
+          return;
+        while(index < getNumImplements()) {
+          TypeDecl typeDecl = getImplements(index++).type();
+          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+            current = typeDecl;
+            return;
+          }
+        }
+        if(iter == null)
+          iter = introducedInterfaces().iterator();
+        if(iter.hasNext()) {
+          current = (TypeDecl)iter.next();
+          return;
+        }
+      }
+    };
+  }
+
+  public Iterator ClassDecl.interfacesIteratorWithoutDeclareParents() {
+    return new Iterator() {
+      public boolean hasNext() {
+        computeNextCurrent();
+        return current != null;
+      }
+      public Object next() {
+        return current;
+      }
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+      private int index = 0;
+      private TypeDecl current = null;
+      private void computeNextCurrent() {
+        current = null;
+        if(isObject() || isCircular())
+          return;
+        while(index < getNumImplements()) {
+          TypeDecl typeDecl = getImplements(index++).type();
+          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+            current = typeDecl;
+            return;
+          }
+        }
+      }
+    };
+  }
+
+  syn lazy ClassDecl ClassDecl.introducedSuperclass() {
+    for(Iterator iter = declareParentsExtends().iterator(); iter.hasNext(); ) {
+      DeclareParentsExtends e = (DeclareParentsExtends)iter.next();
+      if(e.getPattern().matchesType(this)) {
+        for(int i = 0; i < e.getNumTypeAccess(); i++) {
+          TypeDecl typeDecl = e.getTypeAccess(i).type();
+          if(typeDecl instanceof ClassDecl)
+            return (ClassDecl)typeDecl;
+        }
+      }
+    }
+    return null;
+  }
+
+  syn lazy Collection TypeDecl.introducedInterfaces() {
+    Collection c = new ArrayList();
+    for(Iterator iter = declareParentsImplements().iterator(); iter.hasNext(); ) {
+      DeclareParentsImplements e = (DeclareParentsImplements)iter.next();
+      if(e.getPattern().matchesType(this)) {
+        for(int i = 0; i < e.getNumTypeAccess(); i++) {
+          TypeDecl typeDecl = e.getTypeAccess(i).type();
+          if(typeDecl instanceof InterfaceDecl)
+            c.add(typeDecl);
+        }
+      }
+    }
+    return c;
+  }
+
+
+  inh Collection TypeDecl.declareParentsExtends();
+  eq Program.getCompilationUnit().declareParentsExtends() {
+    String key = "declare_parents_extends";
+    if(intertypeDecls().containsKey(key))
+      return (Collection)intertypeDecls().get(key);
+    return Collections.EMPTY_LIST;
+  }
+
+  // add declare precedences to generic inter-type collection phase
+  protected void DeclareParentsExtends.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    String key = "declare_parents_extends";
+    if(!map.containsKey(key))
+      map.put(key, new ArrayList());
+    Collection c = (Collection)map.get(key);
+    c.add(this);
+  }
+
+  inh Collection TypeDecl.declareParentsImplements();
+  eq Program.getCompilationUnit().declareParentsImplements() {
+    String key = "declare_parents_implements";
+    if(intertypeDecls().containsKey(key))
+      return (Collection)intertypeDecls().get(key);
+    return Collections.EMPTY_LIST;
+  }
+
+  // add declare precedences to generic inter-type collection phase
+  protected void DeclareParentsImplements.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    String key = "declare_parents_implements";
+    if(!map.containsKey(key))
+      map.put(key, new ArrayList());
+    Collection c = (Collection)map.get(key);
+    c.add(this);
+  }
+
+
+}

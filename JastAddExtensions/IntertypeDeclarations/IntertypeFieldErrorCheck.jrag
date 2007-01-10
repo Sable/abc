@@ -1,0 +1,13 @@
+aspect IntertypeFieldErrorCheck {
+  public void IntertypeFieldDeclaration.typeCheck() {
+    super.typeCheck();
+    if(introducedType().isInterfaceDecl() && isStatic())
+      error("static inter-type field on interface not supported");
+  }
+
+  // disable definite assignment in intertype field declarations
+  public void IntertypeFieldDeclaration.definiteAssignment() {
+  }
+
+  eq IntertypeFieldDeclaration.isStatic() = getModifiers().isStatic();
+}

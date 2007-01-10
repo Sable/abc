@@ -1,0 +1,97 @@
+aspect IntertypeFieldNameAnalysis {
+
+  eq IntertypeFieldDeclaration.getTargetType().nameType() = NameType.TYPE_NAME;
+  
+  // hostAspect is the aspect the declares the intertype field decl
+  syn TypeDecl IntertypeFieldDeclaration.hostAspect() = (TypeDecl)getParent().getParent();
+  // introducedType is the type into which the intertype field decl is statically introduced
+  syn TypeDecl IntertypeFieldDeclaration.introducedType() = getTargetType().type();
+
+  // override ag-inherited attributes related to nested class structure 
+  // isNestedType() need not be changed since all types within a bodydecl are nested types
+  // isLocalClass() need not be changed
+  eq IntertypeFieldDeclaration.getInit().enclosingType() = introducedType();
+  eq IntertypeFieldDeclaration.getInit().isMemberType() = introducedType().isMemberType();
+  eq IntertypeFieldDeclaration.getInit().enclosingInstance() = introducedType();
+
+  // override ag-inherited attribute, this will cause an access bound to an
+  // IntertypeFieldDeclaration to access a field in the introducedType instead of the hostAspect
+  syn TypeDecl IntertypeFieldDeclaration.hostType() = introducedType();
+  eq IntertypeFieldDeclaration.getInit().hostType() = hostType();
+  
+  eq IntertypeFieldDeclaration.getInit().lookupVariable(String name) {
+    SimpleSet set = introducedType().memberFields(name);
+    if(!set.isEmpty())
+      return set;
+    return lookupVariable(name);
+  }
+  eq IntertypeFieldDeclaration.getInit().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    if(!c.isEmpty()) return c;
+    return lookupMethod(name);
+  }
+
+  refine LookupVariable eq TypeDecl.localFields(String name) {
+    SimpleSet fields = LookupVariable.TypeDecl.localFields(name);
+    for(Iterator iter = introducedFields().iterator(); iter.hasNext(); ) {
+      FieldDeclaration f = (FieldDeclaration)iter.next();
+      if(f.name().equals(name) && f.accessibleFrom(this))
+        fields = fields.add(f);
+    }
+    return fields;
+  }
+
+  syn lazy boolean IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {
+    if(isPublic())
+      return true;
+    else if(isProtected()) {
+      if(hostPackage().equals(type.hostPackage()))
+        return true;
+      if(type.withinBodyThatSubclasses(hostAspect()) != null)
+        return true;
+      return false;
+    }
+    else if(isPrivate())
+      return hostAspect().topLevelType() == type.topLevelType();
+    else
+      return hostPackage().equals(type.hostPackage());
+  }
+
+
+  protected void IntertypeFieldDeclaration.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = introducedType();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+    c.add(this);
+  }
+
+  syn lazy Collection TypeDecl.introducedFields() {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
+      ASTNode node = (ASTNode)iter.next();
+      if(node instanceof IntertypeFieldDeclaration)
+        c.add(node);
+    }
+    return c;
+  }
+
+  syn lazy Collection InterfaceDecl.allIntroducedFields() {
+    Collection set = new HashSet();
+    for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
+      InterfaceDecl decl = (InterfaceDecl)iter.next();
+      set.addAll(decl.allIntroducedFields());
+    }
+    set.addAll(introducedFields());
+    return set;
+  }
+  syn Collection ClassDecl.introducedFieldsFromInterfaces() {
+    Collection set = new HashSet();
+    for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
+      InterfaceDecl decl = (InterfaceDecl)iter.next();
+      set.addAll(decl.allIntroducedFields());
+    }
+    return set;
+  }
+}

@@ -1,0 +1,97 @@
+aspect IntertypeMethodErrorCheck {
+
+  // public, private, default ok
+  public void IntertypeMethodDecl.checkModifiers() {
+    super.checkModifiers();
+    if(isProtected())
+      error("Inter-type method declarations may not be protected");
+    // TODO: not enforced by ajc? The access modifier of abstract inter-type
+    // methods has one constraint: It is illegal to declare an abstract
+    // non-public inter-type method on a public interface. This is illegal
+    // because it would say that a public interface has a constraint that only
+    // non-public implementors must fulfill. This would not be compatible with
+    // Java's type system.
+    if(isAbstract() && !isPublic() && introducedType().isInterfaceDecl() && introducedType().isPublic())
+      error("it is illegal to declare an abstract non-public inter-type method on a public interface");
+  }
+
+  // override behavior in MethodDecl to change the condition for multiply declared
+  public void IntertypeMethodDecl.nameCheck() {
+    // 8.4
+    // 8.4.2
+    if(!visibleOrZapped())
+      error("method with signature " + signature() + " is multiply declared in type " + hostType().typeName());
+    // 8.4.3.4
+    if(isNative() && hasBlock())
+      error("native methods must have an empty semicolon body");
+    // 8.4.5
+    if(isAbstract() && hasBlock())
+      error("abstract methods must have an empty semicolon body");
+    // 8.4.5
+    if(!hasBlock() && !(isNative() || isAbstract()))
+      error("only abstract and native methods may have an empty semicolon body");
+  }
+
+  syn boolean IntertypeMethodDecl.visibleOrZapped() {
+    SimpleSet set = hostType().methodsSignature(signature());
+    if(set.contains(this))
+      return true;
+    String signature = introducedType().fullName() + "." + signature();
+    if(hostAspect().localIntertypeMethodsSignatureMap().get(signature) != this)
+      return false;
+    return zapped();
+  }
+
+  syn boolean IntertypeMethodDecl.zapped() {
+    for(Iterator iter = hostType().introducedMethods().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.zaps(this)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Do not include intertype methods in an aspect as local methods
+  // override behavior in LookupMethod.jrag
+  // signature -> method declaration
+  eq AspectDecl.localMethodsSignatureMap() {
+    HashMap map = new HashMap(getNumBodyDecl());
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof MethodDecl && !(getBodyDecl(i) instanceof IntertypeMethodDecl)) {
+        MethodDecl decl = (MethodDecl)getBodyDecl(i);
+        map.put(decl.signature(), decl);
+      }
+    }
+    return map;
+  }
+
+  syn HashMap TypeDecl.localIntertypeMethodsSignatureMap() = new HashMap();
+  eq AspectDecl.localIntertypeMethodsSignatureMap() {
+    HashMap map = new HashMap(getNumBodyDecl());
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
+        IntertypeMethodDecl decl = (IntertypeMethodDecl)getBodyDecl(i);
+        map.put(decl.introducedType().fullName() + "." + decl.signature(), decl);
+      }
+    }
+    return map;
+  }
+
+  // Override behavior and remove non abstract methods introduced through interfaces
+  refine Modifiers eq ClassDecl.unimplementedMethods() {
+    Collection c = Modifiers.ClassDecl.unimplementedMethods();
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(!m.isAbstract()) {
+        iter.remove();
+      }
+    }
+    return c;
+  }
+
+  // Override behavior to not make IntertypeMethodDecl abstract in interfaces
+  eq IntertypeMethodDecl.isAbstract() = getModifiers().isAbstract();
+  // Override behavior to not make IntertypeMethodDecl implicilty public when introduced on interfaces
+  eq IntertypeMethodDecl.isPublic() = getModifiers().isPublic();
+}

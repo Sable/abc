@@ -1,0 +1,53 @@
+TypeDecl type_declaration =
+  aspect_declaration                                     {: return aspect_declaration; :}
+  ;
+
+BodyDecl class_member_declaration =
+  aspect_declaration.a                                 {: return new MemberClassDecl(a); :}
+  ;
+BodyDecl interface_member_declaration =
+  aspect_declaration.a                                 {: return new MemberClassDecl(a); :}
+  ;
+
+AspectDecl aspect_declaration =
+    modifiers.m ASPECT IDENTIFIER super_opt.c interfaces_opt.d aspect_body          {: return new AspectDecl(m, IDENTIFIER, aspect_body, c, d); :}
+  |             ASPECT IDENTIFIER super_opt.c interfaces_opt.d aspect_body          {: return new AspectDecl(new Modifiers(new List()), IDENTIFIER, aspect_body, c, d); :}
+  ;
+
+List aspect_body =
+    LBRACE RBRACE                                      {: return new List(); :}
+  | LBRACE aspect_body_declarations RBRACE             {: return aspect_body_declarations; :};
+
+List aspect_body_declarations =
+    aspect_body_declaration.d                            {: return d != null ? new List().add(d) : new List(); :}
+  | aspect_body_declarations.l aspect_body_declaration.d {: return d != null ? l.add(d) : l; :}
+  ;
+  
+BodyDecl aspect_body_declaration =
+    class_body_declaration                               {: return class_body_declaration; :}
+  ;
+
+
+List formal_parameter_list_opt =
+	{: return new List(); :}
+|	formal_parameter_list.l		{: return l; :}
+    ;
+
+List throws_opt = 
+	{: return new List(); :}
+| 	throws.l			{: return l; :}
+    ;
+
+
+Modifier modifier = PRIVILEGED {: return new Modifier("privileged"); :};
+
+
+Opt super_opt =
+	{: return new Opt(); :}
+|	super.s		{: return s; :}
+    ;
+
+List interfaces_opt =
+	{: return new List(); :}
+|	interfaces.i	{: return i; :}
+    ;

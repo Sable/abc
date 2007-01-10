@@ -1,0 +1,23 @@
+aspect AspectErrorCheck {
+  public void AspectDecl.checkModifiers() {
+    super.checkModifiers();
+    if(isNestedType() && !isStatic())
+      error("inner aspects must be static");
+  }
+  
+  syn boolean TypeDecl.isAspectDecl() = false;
+  eq AspectDecl.isAspectDecl() = true;
+
+  public void AspectDecl.typeCheck() {
+    super.typeCheck();
+    if(hasSuperclass() && superclass().isAspectDecl() && !superclass().isAbstract())
+      error("aspects may only extend abstract aspects");
+  }
+
+  public void ClassDecl.typeCheck() {
+    super.typeCheck();
+    if(!isAspectDecl() && hasSuperclass() && superclass().isAspectDecl())
+      error("classes may not extend aspects");
+  }
+
+}

@@ -1,0 +1,10 @@
+aspect Glue {
+  // defined in Patterns.jrag
+  eq DeclarePrecedence.getPattern().nameType() = NameType.TYPE_NAME;
+
+  eq DeclareParentsExtends.getPattern().nameType() = NameType.TYPE_NAME;
+  eq DeclareParentsExtends.getTypeAccess().nameType() = NameType.TYPE_NAME;
+
+  eq DeclareParentsImplements.getPattern().nameType() = NameType.TYPE_NAME;
+  eq DeclareParentsImplements.getTypeAccess().nameType() = NameType.TYPE_NAME;
+}
