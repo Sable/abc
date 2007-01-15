@@ -10484,5 +10484,10 @@
         <compile files="NullCheckElim.java"/>
         <run class="NullCheckElim"/>
     </ajc-test>
+
+    <ajc-test num="1218" dir="abctests/bugs" 
+	    title="Pointcut predecence, bug 81">
+        <compile files="PointcutPrecedence.java"/>
+    </ajc-test>
  
 </suite>
