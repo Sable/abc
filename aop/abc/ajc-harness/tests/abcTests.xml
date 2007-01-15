@@ -1961,12 +1961,12 @@
 
     <ajc-test num="211" dir="errors" pr="130"
       title="the designator has a wildcard for method name but no return type specified"
-      abccomment="abc finds 2 valid errors on that line. PA/AGS"
+      abccomment="abc finds 2 valid errors. PA/AGS"
       keywords="from-errors">
         <compile files="NoReturnTypeInDesignator.java">
             <ajcmessage kind="error" line="6"/>
             <message kind="error" line="6"/>
-            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
             <jamessage kind="error" line="6"/>
         </compile>
     </ajc-test>

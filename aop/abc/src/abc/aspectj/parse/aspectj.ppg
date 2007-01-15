@@ -146,7 +146,7 @@ non terminal AdviceSpec advice_spec;
 non terminal IntertypeDecl intertype_member_declaration;
 
 non terminal Pointcut pointcut_expr;
-non terminal Pointcut or_pointcut_expr;
+non terminal Pointcut and_pointcut_expr;
 non terminal Pointcut unary_pointcut_expr;
 non terminal Pointcut basic_pointcut_expr;
 
@@ -660,28 +660,30 @@ intertype_member_declaration ::=
 
 /* ------------------------- POINTCUT EXPRESSIONS ---------------------- */
 
-pointcut_expr ::= 
-      or_pointcut_expr:a
-        {: Grm.parserTrace("pointcut_expr is an or_pointcut_expr");
+pointcut_expr ::=
+    and_pointcut_expr:a {:
+                       Grm.parserTrace("pointcut_expr is an and_pointcut_expr");
            RESULT = a;
-        :}
-   |  pointcut_expr:a PC_ANDAND or_pointcut_expr:b
-        {: Grm.parserTrace("pointcut_expr && or_pointcut_expr");
-           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_AND,b);
-        :} 
-   ;
-
-or_pointcut_expr ::=
-      unary_pointcut_expr:a 
-        {: Grm.parserTrace("or_pointcut_expr is a unary_pointcut_expr");
-           RESULT = a;
-        :}
-   |  or_pointcut_expr:a PC_OROR unary_pointcut_expr:b 
-        {: Grm.parserTrace("or_pointcut_expr || unary_pointcut_expr");
+        
+                       :}
+ |  pointcut_expr:a PC_OROR and_pointcut_expr:b {:
+                                                 Grm.parserTrace("pointcut_expr || and_pointcut_expr");
            RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_OR,b);
-        :}
-   ;
+        
+                                                 :};
 
+and_pointcut_expr ::=
+    unary_pointcut_expr:a {:
+                          Grm.parserTrace("and_pointcut_expr is a unary_pointcut_expr");
+           RESULT = a;
+        
+                          :}
+ |  and_pointcut_expr:a PC_ANDAND unary_pointcut_expr:b {:
+                                                     Grm.parserTrace("and_pointcut_expr && unary_pointcut_expr");
+           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_AND,b);
+        
+                                                     :};
+                                                     
 unary_pointcut_expr ::=
       basic_pointcut_expr:a
         {: Grm.parserTrace("unary_pointcut_expr is a basic_pointcut_expr");

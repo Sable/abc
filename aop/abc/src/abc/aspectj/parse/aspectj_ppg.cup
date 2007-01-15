@@ -272,7 +272,7 @@ non terminal AdviceDecl advice_declaration;
 non terminal AdviceSpec advice_spec;
 non terminal IntertypeDecl intertype_member_declaration;
 non terminal Pointcut pointcut_expr;
-non terminal Pointcut or_pointcut_expr;
+non terminal Pointcut _pointcut_expr;
 non terminal Pointcut unary_pointcut_expr;
 non terminal Pointcut basic_pointcut_expr;
 non terminal NamePattern name_pattern;
@@ -1955,26 +1955,26 @@ intertype_member_declaration ::=
                                                                                        :};
 
 pointcut_expr ::=
-    or_pointcut_expr:a {:
-                       Grm.parserTrace("pointcut_expr is an or_pointcut_expr");
+    and_pointcut_expr:a {:
+                       Grm.parserTrace("pointcut_expr is an and_pointcut_expr");
            RESULT = a;
         
                        :}
- |  pointcut_expr:a PC_ANDAND or_pointcut_expr:b {:
-                                                 Grm.parserTrace("pointcut_expr && or_pointcut_expr");
-           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_AND,b);
+ |  pointcut_expr:a PC_OROR and_pointcut_expr:b {:
+                                                 Grm.parserTrace("pointcut_expr || and_pointcut_expr");
+           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_OR,b);
         
                                                  :};
 
-or_pointcut_expr ::=
+and_pointcut_expr ::=
     unary_pointcut_expr:a {:
-                          Grm.parserTrace("or_pointcut_expr is a unary_pointcut_expr");
+                          Grm.parserTrace("and_pointcut_expr is a unary_pointcut_expr");
            RESULT = a;
         
                           :}
- |  or_pointcut_expr:a PC_OROR unary_pointcut_expr:b {:
-                                                     Grm.parserTrace("or_pointcut_expr || unary_pointcut_expr");
-           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_OR,b);
+ |  and_pointcut_expr:a PC_ANDAND unary_pointcut_expr:b {:
+                                                     Grm.parserTrace("and_pointcut_expr && unary_pointcut_expr");
+           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_AND,b);
         
                                                      :};
 
