@@ -1054,11 +1054,11 @@
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="the designator has a wildcard for method name but no return type specified" pr="130" num="211" keywords="from-errors" dir="errors" abccomment="abc finds 2 valid errors on that line. PA/AGS">
+<ajc-test title="the designator has a wildcard for method name but no return type specified" pr="130" num="211" keywords="from-errors" dir="errors" abccomment="abc finds 2 valid errors. PA/AGS">
         <compile files="NoReturnTypeInDesignator.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
             <message line="6" kind="error"></message>
-            <message line="6" kind="error"></message>
+            <message line="7" kind="error"></message>
             <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
@@ -5674,6 +5674,9 @@
 <ajc-test title="bug in NullCheckEliminator" num="1217" dir="abctests/bugs/purejava">
         <compile files="NullCheckElim.java"></compile>
         <run class="NullCheckElim"></run>
+    </ajc-test>
+<ajc-test title="Pointcut predecence, bug 81" num="1218" dir="abctests/bugs">
+        <compile files="PointcutPrecedence.java"></compile>
     </ajc-test>
  
 </suite>
