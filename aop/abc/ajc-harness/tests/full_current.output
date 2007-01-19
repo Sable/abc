@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@f4cf7f
+creating: A@112376c
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@255dc4, [Ljava.lang.Object;@12f17f7, TwoAnonymous$3@255dc4
+calling run: TwoAnonymous$3@19886f4, [Ljava.lang.Object;@c4031e, TwoAnonymous$3@19886f4
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2400,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1e7912c.foo calls Outer$Inner@1ec0288.mi
+Outer@1092061.foo calls Outer$Inner@2cdb7a.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1ec0288.mi calls java.io.PrintStream@19a3afd.println
+Outer$Inner@2cdb7a.mi calls java.io.PrintStream@fd5d0b.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1e7912c.foo calls Outer$InnerRandom@cdae7.nextHook
+Outer@1092061.foo calls Outer$InnerRandom@1ec0288.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@cdae7.nextHook calls Outer$InnerRandom@cdae7.next
+Outer$InnerRandom@1ec0288.nextHook calls Outer$InnerRandom@1ec0288.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1e7912c.foo calls X.nextInt
+Outer@1092061.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@16e9d7c.foo calls Outer$Inner@12564bc.mi
+Outer@2820a4.foo calls Outer$Inner@76fb5f.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@12564bc.mi calls java.io.PrintStream@1f8829d.println
+Outer$Inner@76fb5f.mi calls java.io.PrintStream@17154ae.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@16e9d7c.foo calls Outer$InnerRandom@4d706e.nextHook
+Outer@2820a4.foo calls Outer$InnerRandom@12564bc.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@4d706e.nextHook calls Outer$InnerRandom@4d706e.next
+Outer$InnerRandom@12564bc.nextHook calls Outer$InnerRandom@12564bc.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@16e9d7c.foo calls X.nextInt
+Outer@2820a4.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4030,7 +4030,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@cc47e7.x:=-3
+test.Test3@74f853.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4113,8 +4113,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@133d48b
-o: Bar@133d48b, i: 10
+o: Bar@3116ab
+o: Bar@3116ab, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4267,11 +4267,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$7$around$2688(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4307,11 +4307,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$16$around$2688(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4647,7 +4647,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1928ca6
+LibraryAspect-defined run() for C@13d9885
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4970,7 +4970,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@f8e6e0
+? Util.read() obj=Test@e1c78d
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -4990,7 +4990,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@34b2af
+? Util.read() obj=ClinitTest@10743e2
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5000,7 +5000,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1872b9a
+? Util.read() obj=SuidTest@1959a6b
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5201,12 +5201,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1859b5b
-Invoking command bean:  Command@9a88a9
-hello(Command@9a88a9)
-Created a PerThis aspect : Testcase2@1821094
-Invoking command bean:  Command@e9dbd
-hello again(Command@e9dbd)
+Created a PerThis aspect : Testcase2@5ec315
+Invoking command bean:  Command@159a746
+hello(Command@159a746)
+Created a PerThis aspect : Testcase2@f51591
+Invoking command bean:  Command@5b1f9a
+hello again(Command@5b1f9a)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5536,23 +5536,23 @@ PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-f(java.lang.Object@11844cd)
-f(java.lang.Object@1349f9a)
-g(java.lang.Object@1349f9a)
-fg+(java.lang.Object@1349f9a)
-g(java.lang.Object@11844cd)
-fg+(java.lang.Object@11844cd)
-f(java.lang.Object@11844cd)
-g(java.lang.Object@1349f9a)
-fg+(java.lang.Object@1349f9a)
-f(java.lang.Object@11844cd)
-f(java.lang.Object@1349f9a)
-g(java.lang.Object@11844cd)
-fg+(java.lang.Object@11844cd)
-g(java.lang.Object@11844cd)
-fg+(java.lang.Object@11844cd)
-g(java.lang.Object@1349f9a)
-fg+(java.lang.Object@1349f9a)
+f(java.lang.Object@1a148a4)
+f(java.lang.Object@1b0c465)
+g(java.lang.Object@1b0c465)
+fg+(java.lang.Object@1b0c465)
+g(java.lang.Object@1a148a4)
+fg+(java.lang.Object@1a148a4)
+f(java.lang.Object@1a148a4)
+g(java.lang.Object@1b0c465)
+fg+(java.lang.Object@1b0c465)
+f(java.lang.Object@1a148a4)
+f(java.lang.Object@1b0c465)
+g(java.lang.Object@1a148a4)
+fg+(java.lang.Object@1a148a4)
+g(java.lang.Object@1a148a4)
+fg+(java.lang.Object@1a148a4)
+g(java.lang.Object@1b0c465)
+fg+(java.lang.Object@1b0c465)
 PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
@@ -5799,66 +5799,66 @@ PASS: Test 1109: "om/matchtest/Basic matching test" passed.
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibExtAspect: Before fib(5)
 In FibAspect: Before fib(5)
-In FibExtAspect: Before getPrevX
+In FibExtAspect: Before fib(5)
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(5)
 In FibAspect: Before fib(4)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(4)
 In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(1)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(1)
 5
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 9
 1
 10
@@ -6239,8 +6239,8 @@ PASS: Test 1121: "om/multimodtest/Multiple modules in a single file" passed.
 Running test 1122: om/iftest/If pointcut signatures
 Commandline: abc -d om/iftest -warn-unused-advice:off -ext abc.om om/iftest/Module.java om/iftest/AspectA.java om/iftest/AspectB.java om/iftest/IfTest.java 
 Test
-AspectB
 AspectA
+AspectB
 Test
 PASS: Test 1122: "om/iftest/If pointcut signatures" passed.
 
@@ -6282,13 +6282,13 @@ PASS: Test 1125: "om/roottest/Root module test" passed.
 Running test 1126: om/totest/To test
 Commandline: abc -d om/totest -warn-unused-advice:off -ext abc.om om/totest/Module.java om/totest/ToTestMain.java om/totest/A.java om/totest/ExtAspectA.java om/totest/ExtAspectB.java 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-ExtAspectA void A.f1()
 ExtAspectB void A.f1()
+ExtAspectA void A.f1()
 f1
 ExtAspectA void A.f2()
 f2
-ExtAspectA void A.f3()
 ExtAspectB void A.f3()
+ExtAspectA void A.f3()
 f3
 ExtAspectB void A.f4()
 f4
