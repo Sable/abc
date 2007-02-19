@@ -19,14 +19,24 @@
 
 package abc.eaj.weaving.matching;
 
-import java.util.*;
-import soot.*;
-import soot.jimple.*;
-import soot.util.*;
-import soot.tagkit.*;
-import abc.weaving.matching.SJPInfo;
+import java.util.ArrayList;
+import java.util.List;
+
+import soot.Immediate;
+import soot.IntType;
+import soot.RefType;
+import soot.Scene;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
+import soot.jimple.IntConstant;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
+import soot.tagkit.BytecodeOffsetTag;
+import soot.tagkit.Host;
 import abc.weaving.matching.AbcSJPInfo;
-import soot.javaToJimple.LocalGenerator;
+import abc.weaving.matching.SJPInfo;
 
 
 
@@ -92,7 +102,36 @@ public class ExtendedSJPInfo extends AbcSJPInfo implements SJPInfo
         return sb.toString();
     }
     
-    public void createSJPObject() {
+	public static String makeMonitorEnterSigData(SootMethod container,
+			Immediate syncValue) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("-");     // a monitorenter has no associated modifiers
+        sb.append("-");     // a monitorenter has no associated name-part
+        sb.append(container.getDeclaringClass().getName());
+        sb.append('-');
+        sb.append(AbcSJPInfo.getTypeString(syncValue.getType()));
+        sb.append('-');
+        sb.append(syncValue);
+        sb.append('-');
+        return sb.toString();
+	}
+	
+	public static String makeMonitorExitSigData(SootMethod container,
+			Immediate syncValue) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("-");     // a monitorenter has no associated modifiers
+        sb.append("-");     // a monitorenter has no associated name-part
+        sb.append(container.getDeclaringClass().getName());
+        sb.append('-');
+        sb.append(AbcSJPInfo.getTypeString(syncValue.getType()));
+        sb.append('-');
+        sb.append(syncValue);
+        sb.append('-');
+        return sb.toString();
+	}	
+
+	
+	public void createSJPObject() {
       // get the SJP object
       sjploc = lg.generateLocal(
 	 RefType.v("org.aspectj.lang.JoinPoint$StaticPart")); 
@@ -123,4 +162,5 @@ public class ExtendedSJPInfo extends AbcSJPInfo implements SJPInfo
 	  newVirtualInvokeExpr(factory_local,makeSJP,args));
       units.insertBefore(getSJP,ip);
     }
+
 }

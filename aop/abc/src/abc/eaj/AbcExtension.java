@@ -34,6 +34,7 @@ import java.util.*;
 /**
  * @author Julian Tibble
  * @author Pavel Avgustinov
+ * @author Eric Bodden
  */
 public class AbcExtension extends abc.main.AbcExtension
 {
@@ -60,6 +61,8 @@ public class AbcExtension extends abc.main.AbcExtension
         shadowTypes.add(ThrowShadowMatch.shadowType());
         shadowTypes.add(ArrayGetShadowMatch.shadowType());
         shadowTypes.add(ArraySetShadowMatch.shadowType());
+        shadowTypes.add(MonitorEnterShadowMatch.shadowType());
+        shadowTypes.add(MonitorExitShadowMatch.shadowType());
 
         return shadowTypes;
     }
@@ -119,6 +122,10 @@ public class AbcExtension extends abc.main.AbcExtension
         // keyword for the "let" pointcut extension
         lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET)));
         
+        // keywords for the "monitorenter/monitorexit" pointcut extension
+        lexer.addPointcutKeyword("monitorenter", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_MONITORENTER)));
+        lexer.addPointcutKeyword("monitorexit", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_MONITOREXIT)));
+
         if(!Debug.v().noContainsPointcut) {
         	//keyword for the "contains" pointcut extension
         	lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CONTAINS)));

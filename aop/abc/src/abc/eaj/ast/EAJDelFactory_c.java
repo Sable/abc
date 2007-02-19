@@ -208,4 +208,12 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
     public JL delPCArraySet() {
     	return delPointcutImpl();
     }
+
+	public JL delPCMonitorEnter() {
+    	return delPointcutImpl();
+	}
+
+	public JL delPCMonitorExit() {
+    	return delPointcutImpl();
+	}
 }

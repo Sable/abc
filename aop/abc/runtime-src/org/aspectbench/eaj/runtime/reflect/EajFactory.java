@@ -62,4 +62,16 @@ public class EajFactory extends Factory
     	ret.setLookupClassLoader(lookupClassLoader);
     	return ret;
     }
+    
+    public MonitorEnterSignature makeMonitorEnterSig(String stringRep) {
+        MonitorEnterSignatureImpl ret = new MonitorEnterSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+    
+    public MonitorExitSignature makeMonitorExitSig(String stringRep) {
+        MonitorExitSignatureImpl ret = new MonitorExitSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
 }

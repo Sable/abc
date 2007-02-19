@@ -10490,4 +10490,10 @@
         <compile files="PointcutPrecedence.java"/>
     </ajc-test>
  
-</suite>
+    <ajc-test num="1219" dir="abctests/eaj/monitorenter" 
+	    title="monitorenter/monitorexit pointcuts">
+        <compile files="MonitorEnterExit.java" options="-ext,abc.eaj"/>
+        <run class="MonitorEnterExit"/>
+    </ajc-test>
+ 
+ </suite>

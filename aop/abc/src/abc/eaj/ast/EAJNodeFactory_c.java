@@ -32,6 +32,7 @@ import java.util.*;
 /**
  * NodeFactory for Extended AspectJ extension.
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class EAJNodeFactory_c extends AJNodeFactory_c
                               implements EAJNodeFactory
@@ -138,4 +139,18 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     	n = (PCArraySet)n.del(((EAJDelFactory)delFactory()).delPCArraySet());
     	return n;
     }
+
+	public abc.eaj.ast.PCMonitorEnter PCMonitorEnter(Position pos, ArgPattern var) {
+    	PCMonitorEnter n = new PCMonitorEnter_c(pos, var);
+    	n = (PCMonitorEnter)n.ext(((EAJExtFactory)extFactory()).extPCMonitorEnter());
+    	n = (PCMonitorEnter)n.del(((EAJDelFactory)delFactory()).delPCMonitorEnter());
+    	return n;
+	}
+
+	public abc.eaj.ast.PCMonitorExit PCMonitorExit(Position pos, ArgPattern var) {
+    	PCMonitorExit n = new PCMonitorExit_c(pos, var);
+    	n = (PCMonitorExit)n.ext(((EAJExtFactory)extFactory()).extPCMonitorExit());
+    	n = (PCMonitorExit)n.del(((EAJDelFactory)delFactory()).delPCMonitorExit());
+    	return n;
+	}
 }

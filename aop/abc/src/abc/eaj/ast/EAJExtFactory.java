@@ -72,8 +72,24 @@ public interface EAJExtFactory {
      */
     public Ext extPCContains();
     
+	/**
+	 * @return extension for arrayget pointcuts
+	 */
     public Ext extPCArrayGet();
     
+	/**
+	 * @return extension for arrayset pointcuts
+	 */
     public Ext extPCArraySet();
+
+	/**
+	 * @return extension for monitorenter pointcuts
+	 */
+	public Ext extPCMonitorEnter();
+
+	/**
+	 * @return extension for monitorexit pointcuts
+	 */
+	public Ext extPCMonitorExit();
     
 }

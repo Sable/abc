@@ -72,8 +72,24 @@ public interface EAJDelFactory {
      */
     public JL delPCContains();
     
+	/**
+     * @return delegates for arrayget pointcuts
+	 */
     public JL delPCArrayGet();
     
+	/**
+     * @return delegates for arrayset pointcuts
+	 */
     public JL delPCArraySet();
+
+	/**
+     * @return delegates for monitorenter pointcuts
+	 */
+	public JL delPCMonitorEnter();
+
+	/**
+     * @return delegates for monitorexit pointcuts
+	 */
+	public JL delPCMonitorExit();
 
 }

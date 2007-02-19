@@ -29,6 +29,9 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+$abc now supports additional pointcuts, in partocular the arrayget/arrayset
+;pointcuts and the monitorenter/monitorexit pointcuts.
+
 %1.2.1 1154710255
 $abc now supports mutiple reweaving analyses. Those analyses are
 ;executed on the woven program and may change e.g. the residues

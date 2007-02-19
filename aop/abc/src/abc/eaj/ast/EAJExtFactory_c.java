@@ -209,5 +209,13 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     public Ext extPCArraySet() {
     	return extPointcut();
     }
+
+	public Ext extPCMonitorEnter() {
+    	return extPointcut();
+	}
+
+	public Ext extPCMonitorExit() {
+    	return extPointcut();
+	}
     
 }
