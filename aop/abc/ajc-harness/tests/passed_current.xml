@@ -5678,5 +5678,9 @@
 <ajc-test title="Pointcut predecence, bug 81" num="1218" dir="abctests/bugs">
         <compile files="PointcutPrecedence.java"></compile>
     </ajc-test>
+<ajc-test title="monitorenter/monitorexit pointcuts" num="1219" dir="abctests/eaj/monitorenter">
+        <compile options="-ext,abc.eaj" files="MonitorEnterExit.java"></compile>
+        <run class="MonitorEnterExit"></run>
+    </ajc-test>
  
 </suite>
