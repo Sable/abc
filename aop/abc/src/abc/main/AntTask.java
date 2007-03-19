@@ -43,6 +43,11 @@ public class AntTask extends MatchingTask {
         if( sourceroots == null ) sourceroots = new Path(getProject());
         sourceroots = appendToPath(sourceroots, path);
     }
+    public void setSourcepath(Path path) {
+	if( sourceroots == null ) sourceroots = new Path(getProject());
+	sourceroots = appendToPath(sourceroots, path);
+	System.err.println("Warning: Sourcepath is unsupported, appending " + path + " to sourceroots.");
+    }
     public Path createSourceroots() {
         if( sourceroots == null ) sourceroots = new Path(getProject());
         return sourceroots.createPath();
@@ -132,6 +137,9 @@ public class AntTask extends MatchingTask {
     public void setSourceRootCopyFilter(String arg) {
         System.err.println("Warning: Ignoring unsupported option SourceRootCopyFilter.");
     }
+    public void setDebuglevel(String arg) {
+	System.err.println("Warning: Ignoring unsupported option debuglevel.");
+    }
 
     private ArrayList args = new ArrayList();
     private void addArg( String s ) { args.add(s); }
@@ -147,6 +155,8 @@ public class AntTask extends MatchingTask {
         return old;
     }
     public void execute() throws BuildException {
+	Debug.v().traceAntTask = true;
+	//	Debug.v().printWeavableClasses = true;
         try {
             if( sourceroots != null ) {
                 addPath("-sourceroots", sourceroots);
