@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@17e89da
+creating: A@1ef37d6
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@cd6b76
+InterfaceAndObject$1@168bee9
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
