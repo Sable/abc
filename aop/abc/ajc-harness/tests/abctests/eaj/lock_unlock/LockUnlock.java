@@ -1,4 +1,4 @@
-public class MonitorEnterExit {
+public class LockUnlock {
 
 	static class Foo{}
 	
@@ -19,13 +19,13 @@ public class MonitorEnterExit {
 		}
 				
 		if(!log.equals("-bnf-bnFoo-anf-sf-bng-bnFoo-ang-sg-bxg-bxFoo-axg-bxf-bxFoo-axf")) {			            
-			throw new RuntimeException("MonitorEnterExit misbehaved; log:"+log);
+			throw new RuntimeException("LockUnlock misbehaved; log:"+log);
 		}
 	}
 	
 	static aspect TestAspect {
 		
-		before(Object o): monitorenter(o) {
+		before(Object o): lock() && args(o) {
 			if(o==f) {
 				log += "-bnf";
 			} else if(o==g) {
@@ -33,15 +33,15 @@ public class MonitorEnterExit {
 			}
 	    }
 		
-		before(): monitorenter(Foo) {
+		before(): lock() && args(Foo) {
 			log += "-bnFoo";
 	    }
 
-		before(): monitorenter(MonitorEnterExit /*some random "other class"*/) {
+		before(): lock() && args(LockUnlock /*some random "other class"*/) {
 			log += "-bnSHOULD_NOT_MATCH";
 	    }
 
-		before(Object o): monitorexit(o) {
+		before(Object o): unlock() && args(o) {
 			if(o==f) {
 				log += "-bxf";
 			} else if(o==g) {
@@ -49,15 +49,15 @@ public class MonitorEnterExit {
 			}
 	    }
 		
-		before(): monitorexit(Foo) {
+		before(): unlock() && args(Foo) {
 			log += "-bxFoo";
 	    }
 
-		before(): monitorexit(MonitorEnterExit /*some random "other class"*/) {
+		before(): unlock() && args(LockUnlock /*some random "other class"*/) {
 			log += "-bxSHOULD_NOT_MATCH";
 	    }
 
-		after(Object o): monitorenter(o) {
+		after(Object o): lock() && args(o) {
 			if(o==f) {
 				log += "-anf";
 			} else if(o==g) {
@@ -65,7 +65,7 @@ public class MonitorEnterExit {
 			}
 	    }
 
-		after(Object o): monitorexit(o) {
+		after(Object o): unlock() && args(o) {
 			if(o==f) {
 				log += "-axf";
 			} else if(o==g) {

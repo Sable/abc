@@ -55,6 +55,6 @@ public interface EAJNodeFactory extends AJNodeFactory {
     public PCArrayGet PCArrayGet(Position pos);
     public PCArraySet PCArraySet(Position pos);
     
-    public PCMonitorEnter PCMonitorEnter(Position pos, ArgPattern var);
-    public PCMonitorExit PCMonitorExit(Position pos, ArgPattern var);
+    public PCLock PCLock(Position pos);
+    public PCUnlock PCUnlock(Position pos);
 }

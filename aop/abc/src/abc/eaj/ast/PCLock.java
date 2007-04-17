@@ -21,9 +21,9 @@ package abc.eaj.ast;
 import abc.aspectj.ast.Pointcut;
 
 /**
- * monitorexit pointcut
+ * lock (monitorenter) pointcut
  * @author Eric Bodden
  */
-public interface PCMonitorExit extends Pointcut {
+public interface PCLock extends Pointcut {
 
 }

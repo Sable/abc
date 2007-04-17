@@ -140,17 +140,17 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     	return n;
     }
 
-	public abc.eaj.ast.PCMonitorEnter PCMonitorEnter(Position pos, ArgPattern var) {
-    	PCMonitorEnter n = new PCMonitorEnter_c(pos, var);
-    	n = (PCMonitorEnter)n.ext(((EAJExtFactory)extFactory()).extPCMonitorEnter());
-    	n = (PCMonitorEnter)n.del(((EAJDelFactory)delFactory()).delPCMonitorEnter());
+	public abc.eaj.ast.PCLock PCLock(Position pos) {
+    	PCLock n = new PCLock_c(pos);
+    	n = (PCLock)n.ext(((EAJExtFactory)extFactory()).extPCMonitorEnter());
+    	n = (PCLock)n.del(((EAJDelFactory)delFactory()).delPCMonitorEnter());
     	return n;
 	}
 
-	public abc.eaj.ast.PCMonitorExit PCMonitorExit(Position pos, ArgPattern var) {
-    	PCMonitorExit n = new PCMonitorExit_c(pos, var);
-    	n = (PCMonitorExit)n.ext(((EAJExtFactory)extFactory()).extPCMonitorExit());
-    	n = (PCMonitorExit)n.del(((EAJDelFactory)delFactory()).delPCMonitorExit());
+	public abc.eaj.ast.PCUnlock PCUnlock(Position pos) {
+    	PCUnlock n = new PCUnlock_c(pos);
+    	n = (PCUnlock)n.ext(((EAJExtFactory)extFactory()).extPCMonitorExit());
+    	n = (PCUnlock)n.del(((EAJDelFactory)delFactory()).delPCMonitorExit());
     	return n;
 	}
 }

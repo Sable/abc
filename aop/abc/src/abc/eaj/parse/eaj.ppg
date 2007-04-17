@@ -50,8 +50,8 @@ terminal Token PC_LET;
 terminal Token PC_CONTAINS;
 terminal Token PC_ARRAYGET;
 terminal Token PC_ARRAYSET;
-terminal Token PC_MONITORENTER;
-terminal Token PC_MONITOREXIT;
+terminal Token PC_LOCK;
+terminal Token PC_UNLOCK;
 
 // ------- new non-terminals -----------------------
 
@@ -124,16 +124,16 @@ extend basic_pointcut_expr ::=
     		RESULT = parser.nf.PCArraySet(parser.pos(x, y));
     	:}
     |
-        PC_MONITORENTER:x LPAREN type_id_star:i RPAREN:y
+        PC_LOCK:x LPAREN RPAREN:y
         {:
-            Grm.parserTrace("MONITORENTER pointcut");
-            RESULT = parser.nf.PCMonitorEnter(parser.pos(x,y), i);
+            Grm.parserTrace("LOCK pointcut");
+            RESULT = parser.nf.PCLock(parser.pos(x,y));
         :}
     |
-        PC_MONITOREXIT:x LPAREN type_id_star:i RPAREN:y
+        PC_UNLOCK:x LPAREN RPAREN:y
         {:
-            Grm.parserTrace("MONITOREXIT pointcut");
-            RESULT = parser.nf.PCMonitorExit(parser.pos(x,y), i);
+            Grm.parserTrace("UNLOCK pointcut");
+            RESULT = parser.nf.PCUnlock(parser.pos(x,y));
         :}
     ;
 

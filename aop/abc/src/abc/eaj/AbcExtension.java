@@ -61,8 +61,8 @@ public class AbcExtension extends abc.main.AbcExtension
         shadowTypes.add(ThrowShadowMatch.shadowType());
         shadowTypes.add(ArrayGetShadowMatch.shadowType());
         shadowTypes.add(ArraySetShadowMatch.shadowType());
-        shadowTypes.add(MonitorEnterShadowMatch.shadowType());
-        shadowTypes.add(MonitorExitShadowMatch.shadowType());
+        shadowTypes.add(LockShadowMatch.shadowType());
+        shadowTypes.add(UnlockShadowMatch.shadowType());
 
         return shadowTypes;
     }
@@ -123,8 +123,8 @@ public class AbcExtension extends abc.main.AbcExtension
         lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET)));
         
         // keywords for the "monitorenter/monitorexit" pointcut extension
-        lexer.addPointcutKeyword("monitorenter", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_MONITORENTER)));
-        lexer.addPointcutKeyword("monitorexit", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_MONITOREXIT)));
+        lexer.addPointcutKeyword("lock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LOCK)));
+        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_UNLOCK)));
 
         if(!Debug.v().noContainsPointcut) {
         	//keyword for the "contains" pointcut extension

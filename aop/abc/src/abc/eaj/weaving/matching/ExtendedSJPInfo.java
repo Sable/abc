@@ -22,7 +22,6 @@ package abc.eaj.weaving.matching;
 import java.util.ArrayList;
 import java.util.List;
 
-import soot.Immediate;
 import soot.IntType;
 import soot.RefType;
 import soot.Scene;
@@ -102,30 +101,24 @@ public class ExtendedSJPInfo extends AbcSJPInfo implements SJPInfo
         return sb.toString();
     }
     
-	public static String makeMonitorEnterSigData(SootMethod container,
-			Immediate syncValue) {
+	public static String makeMonitorEnterSigData(SootMethod container) {
         StringBuffer sb = new StringBuffer();
         sb.append("-");     // a monitorenter has no associated modifiers
         sb.append("-");     // a monitorenter has no associated name-part
         sb.append(container.getDeclaringClass().getName());
         sb.append('-');
-        sb.append(AbcSJPInfo.getTypeString(syncValue.getType()));
-        sb.append('-');
-        sb.append(syncValue);
+        //sb.append(AbcSJPInfo.getTypeString(cast_to));
         sb.append('-');
         return sb.toString();
 	}
 	
-	public static String makeMonitorExitSigData(SootMethod container,
-			Immediate syncValue) {
+	public static String makeMonitorExitSigData(SootMethod container) {
         StringBuffer sb = new StringBuffer();
         sb.append("-");     // a monitorenter has no associated modifiers
         sb.append("-");     // a monitorenter has no associated name-part
         sb.append(container.getDeclaringClass().getName());
         sb.append('-');
-        sb.append(AbcSJPInfo.getTypeString(syncValue.getType()));
-        sb.append('-');
-        sb.append(syncValue);
+        //sb.append(AbcSJPInfo.getTypeString(cast_to));
         sb.append('-');
         return sb.toString();
 	}	

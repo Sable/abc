@@ -18,14 +18,14 @@
  */
 package abc.eaj.weaving.matching;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import polyglot.util.InternalCompilerError;
 import soot.Immediate;
 import soot.SootMethod;
 import soot.Value;
-import soot.jimple.EnterMonitorStmt;
+import soot.jimple.ExitMonitorStmt;
 import soot.jimple.Stmt;
 import abc.weaving.matching.MethodPosition;
 import abc.weaving.matching.SJPInfo;
@@ -34,52 +34,43 @@ import abc.weaving.matching.ShadowType;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.StmtShadowMatch;
 import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.JimpleValue;
 import abc.weaving.weaver.ConstructorInliningMap;
 
 /**
- * Shadow match which matches entermonitor bytecodes. Exposes the value that is synchronized on.
+ * Shadow match which matches exitmonitor statements. Exposes the value that is synchronized on.
  * @author Eric Bodden
  */
-public class MonitorEnterShadowMatch extends StmtShadowMatch {
+public class UnlockShadowMatch extends StmtShadowMatch {
 
-	private Immediate syncValue;
-
-    private MonitorEnterShadowMatch(SootMethod container, Stmt stmt, Immediate syncValue)
+    private UnlockShadowMatch(SootMethod container, Stmt stmt)
     {
         super(container, stmt);
-		this.syncValue = syncValue;
     }
 
     public static ShadowType shadowType()
     {
         return new ShadowType() {
             public ShadowMatch matchesAt(MethodPosition pos) {
-                return MonitorEnterShadowMatch.matchesAt(pos);
+                return UnlockShadowMatch.matchesAt(pos);
             }
         };
     }
 
-    public Immediate getSyncValue()
-    {
-        return syncValue;
-    }
-
-    public static MonitorEnterShadowMatch matchesAt(MethodPosition pos)
+    public static UnlockShadowMatch matchesAt(MethodPosition pos)
     {
         if (!(pos instanceof StmtMethodPosition)) return null;
-        if (abc.main.Debug.v().traceMatcher) System.err.println("MonitorEnter");
+        if (abc.main.Debug.v().traceMatcher) System.err.println("Unlock");
 
         Stmt stmt = ((StmtMethodPosition) pos).getStmt();
 
-        if (!(stmt instanceof EnterMonitorStmt)) return null;
-        Value rhs = ((EnterMonitorStmt) stmt).getOp();
+        if (!(stmt instanceof ExitMonitorStmt)) return null;
+        Value rhs = ((ExitMonitorStmt) stmt).getOp();
         
         if(!(rhs instanceof Immediate)) {
-        	throw new IllegalStateException("Expected value of type Immediate at rhs of entermonitor statement.");
+        	throw new IllegalStateException("Expected value of type Immediate at rhs of exitmonitor statement.");
         }        
-        Immediate imm = (Immediate) rhs;
-
-        return new MonitorEnterShadowMatch(pos.getContainer(), stmt, imm);
+        return new UnlockShadowMatch(pos.getContainer(), stmt);
     }
 
     public ContextValue getTargetContextValue()
@@ -88,22 +79,24 @@ public class MonitorEnterShadowMatch extends StmtShadowMatch {
     }
     
     public List getArgsContextValues() {
-    	return Collections.EMPTY_LIST;
+    	ArrayList ret = new ArrayList(1);    	
+    	ExitMonitorStmt enterMonitor = (ExitMonitorStmt) stmt;
+    	ret.add(new JimpleValue((Immediate)enterMonitor.getOp()));    	
+    	return ret;
     }
 
     public SJPInfo makeSJPInfo()
     {
-    	//TODO write runtime class
         return abc.main.Main.v().getAbcExtension().createSJPInfo
-          ("monitorenter",
-           "org.aspectbench.eaj.lang.reflect.MonitorEnterSignature",
-           "makeMonitorEnterSig",
-           ExtendedSJPInfo.makeMonitorEnterSigData(container, syncValue), stmt);
+          ("monitorexit",
+           "org.aspectbench.eaj.lang.reflect.MonitorExitSignature",
+           "makeMonitorExitSig",
+           ExtendedSJPInfo.makeMonitorExitSigData(container), stmt);
     }
 
     
     public String joinpointName() {
-        return "monitorenter";
+        return "monitorexit";
     }
 
     public ShadowMatch inline(ConstructorInliningMap cim) {
@@ -111,7 +104,7 @@ public class MonitorEnterShadowMatch extends StmtShadowMatch {
         if(ret != null) return ret;
         if( cim.inlinee() != container ) throw new InternalCompilerError(
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
-        ret = new MonitorEnterShadowMatch(cim.target(), cim.map(stmt), syncValue);
+        ret = new UnlockShadowMatch(cim.target(), cim.map(stmt));
         cim.add(this, ret);
         return ret;
     }

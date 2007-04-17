@@ -10490,10 +10490,10 @@
         <compile files="PointcutPrecedence.java"/>
     </ajc-test>
  
-    <ajc-test num="1219" dir="abctests/eaj/monitorenter" 
-	    title="monitorenter/monitorexit pointcuts">
-        <compile files="MonitorEnterExit.java" options="-ext,abc.eaj"/>
-        <run class="MonitorEnterExit"/>
+    <ajc-test num="1219" dir="abctests/eaj/lock_unlock" 
+	    title="lock/unlock pointcuts">
+        <compile files="LockUnlock.java" options="-ext,abc.eaj"/>
+        <run class="LockUnlock"/>
     </ajc-test>
  
  </suite>
