@@ -166,11 +166,13 @@ public class IdentityHashMap implements Map {
    	
         protected KeyIterator(IdentityHashMap parent) {
         	this.parent = parent;
+        	/* All of the following happens when reset() is called...
         	this.expectedModCount = parent.modCount;
         	HashEntry[] data = parent.data;
         	int i = 0;
         	while(next == null && i < data.length) next = data[i++];
         	hashIndex = i;
+        	*/
         }
         
         public boolean hasNext() {
@@ -201,6 +203,14 @@ public class IdentityHashMap implements Map {
 			if(!last.live) return;
 			parent.remove(last.getKey());
 			expectedModCount = parent.modCount;
+		}
+		
+		public void reset() {
+			this.expectedModCount = parent.modCount;
+			HashEntry[] data = parent.data;
+			int i = 0;
+			while(next == null && i < data.length) next = data[i++];
+			hashIndex = i;
 		}
     }
 
@@ -471,10 +481,19 @@ public class IdentityHashMap implements Map {
 
 	/**
 	 * Constructs a KeyIterator object
+	 *
+	 * OPTIMISATION: Since update advice is either perthread or synchronised...
+	 * ... each indexing map will only be iterated by one thread at a time. Therefore,
+	 * with resettable iterators, we can avoid having to construct a new iterator
+	 * every time (which is a big cost, according to profiling), and reuse the same object.
 	 */
 	protected KeyIterator keyIterator() {
-		return new KeyIterator(this);
+		//return new KeyIterator(this);
+		keyIterator.reset();
+		return keyIterator;
 	}
+	
+	private KeyIterator keyIterator = new KeyIterator(this);
 	
 	public Collection values() {
 		notImplemented("values");
