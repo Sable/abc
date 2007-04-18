@@ -1,4 +1,4 @@
-public class NCWeakRefs4 {
+public class NCWeakRefs5 {
     public static void foo(Object o) { }
     public static void bar() { 
 	//System.out.println("Matched " + matched + " times."); 
@@ -13,7 +13,7 @@ public class NCWeakRefs4 {
 	for(int j = 0; j < 10; j++) {
 	    for(int i = 0; i < 10; i++) {
 		o = new BigObject();
-		foo(o);
+		foo(o); foo(o);
 	    }
 	    bar();
 	    bar();
@@ -29,8 +29,8 @@ aspect A {
 	sym foo before : call(* *.foo(Object)) && args(o);
 	sym bar before : call(* *.bar());
 
-	foo bar bar {
-	    NCWeakRefs4.matched++; System.out.print("+");
+	foo foo bar bar {
+	    NCWeakRefs5.matched++; System.out.print("+");
 	}
     }
 }

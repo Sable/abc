@@ -9725,6 +9725,13 @@
 	</compile>
 	<run class="NCWeakRefs4"/>
     </ajc-test>
+    <ajc-test num="1042" dir="abctests/tracematches"
+        title="Tracematches: Non-collectable weak bindings from collectable bindings">
+        <compile files="NCWeakRefs5.java" options="-ext,abc.tm,-debug,clashHashCodes">
+	    <message kind="warning"/>
+	</compile>
+	<run class="NCWeakRefs5"/>
+    </ajc-test>
 
 
 
