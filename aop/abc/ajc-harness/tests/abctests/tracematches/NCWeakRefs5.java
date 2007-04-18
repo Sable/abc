@@ -17,6 +17,7 @@ public class NCWeakRefs5 {
 	    }
 	    bar();
 	    bar();
+	    System.gc(); System.gc(); System.gc(); System.gc(); System.gc();
 	    System.out.print(".");
 	}
 	System.out.println();

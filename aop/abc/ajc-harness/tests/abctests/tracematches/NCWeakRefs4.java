@@ -18,6 +18,7 @@ public class NCWeakRefs4 {
 	    bar();
 	    bar();
 	    System.out.print(".");
+	    System.gc(); System.gc(); System.gc(); System.gc(); System.gc();
 	}
 	System.out.println();
 	if(matched != 100) throw new RuntimeException("Matched " + matched + " times, rather than 100.");
