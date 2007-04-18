@@ -225,7 +225,10 @@ public class IdentityHashMap implements Map {
 	}
 	
 	public IdentityHashMap(int initialCapacity, float loadFactor, int threshold) {
-		initialCapacity = calculateNewCapacity(initialCapacity);
+		// Avoid normalising if we're just using the default capacity, which is already
+		// a power of 2
+		if(initialCapacity != DEFAULT_CAPACITY)
+			initialCapacity = calculateNewCapacity(initialCapacity);
 		data = new HashEntry[initialCapacity];
 		this.loadFactor = loadFactor;
 		this.threshold = threshold;
