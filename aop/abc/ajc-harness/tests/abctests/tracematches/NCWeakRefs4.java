@@ -9,10 +9,9 @@ public class NCWeakRefs4 {
     static class BigObject { int[] big_array = new int[1024*1024]; }
 
     public static void main(String[] args) {
-	Object o;
 	for(int j = 0; j < 10; j++) {
 	    for(int i = 0; i < 10; i++) {
-		o = new BigObject();
+		Object o = new BigObject();
 		foo(o);
 	    }
 	    bar();
