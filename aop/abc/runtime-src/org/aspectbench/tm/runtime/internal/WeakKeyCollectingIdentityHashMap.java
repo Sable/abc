@@ -42,8 +42,22 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
 
 public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
-	ReferenceQueue queue = new ReferenceQueue();
-
+	private static ReferenceQueue theQueue = new ReferenceQueue();
+	private static boolean instancesExist = false;
+	
+	/**
+	 * Specialised MyWeakRef class that keeps a reference to the map it was created for.
+	 * Intended for easier map cleanups -- it can be registered in a centralised
+	 * reference queue, and when it expires the associated map can be retreived from it.
+	 */
+	class KeyWeakRef extends MyWeakRef {
+		protected WeakKeyCollectingIdentityHashMap theMap = WeakKeyCollectingIdentityHashMap.this; 
+		
+		public KeyWeakRef(Object o) {
+			super(o, theQueue);
+		}
+	}
+	
 	/**
 	 * This HashEntry uses weak references to the keys, and registers a queue which is
 	 * polled before any significant operation --- the GC puts expired weakrefs into
@@ -52,11 +66,11 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 	 * @author Pavel Avgustinov
 	 */
 	class WeakKeyHashEntry extends IdentityHashMap.HashEntry {
-		private MyWeakRef key;
+		private KeyWeakRef key;
 		
-		public WeakKeyHashEntry(HashEntry next, Object key, int hashCode, Object value, ReferenceQueue q) {
+		public WeakKeyHashEntry(HashEntry next, Object key, int hashCode, Object value) {
 			super(next, hashCode, value);
-			this.key = new MyWeakRef(key, q);
+			this.key = new KeyWeakRef(key);
 		}
 
 		protected Object getKey() {
@@ -73,75 +87,24 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 
 	}
 	
-	class WeakKeySet extends IdentityHashMap.KeySet {
-		private final WeakKeyCollectingIdentityHashMap parent;
-		
-		protected WeakKeySet(WeakKeyCollectingIdentityHashMap p) {
-			super(p);
-			parent = p;
-		}
-		
-		public Iterator iterator() {
-			parent.cleanup();
-			return super.iterator();
-		}
-
-		public int size() {
-			parent.cleanup();
-			return super.size();
-		}
-		
-	}
-	
-	class WeakKeyIterator extends IdentityHashMap.KeyIterator {
-		private final WeakKeyCollectingIdentityHashMap parent;
-		
-		protected WeakKeyIterator(WeakKeyCollectingIdentityHashMap p) {
-			super(p);
-			parent = p;
-		}
-
-		public boolean hasNext() {
-			parent.cleanup();
-			return super.hasNext();
-		}
-
-		public Object next() {
-			parent.cleanup();
-			return super.next();
-		}
-
-		public void remove() {
-			parent.cleanup();
-			super.remove();
-		}
-	}
-	
 	public WeakKeyCollectingIdentityHashMap() {
 		super();
+		instancesExist = true;
 	}
 
 	public WeakKeyCollectingIdentityHashMap(int initialCapacity, float loadFactor, int threshold) {
 		super(initialCapacity, loadFactor, threshold);
+		instancesExist = true;
 	}
 
 	public WeakKeyCollectingIdentityHashMap(int initialCapacity, float loadFactor) {
 		super(initialCapacity, loadFactor);
+		instancesExist = true;
 	}
 
 	public WeakKeyCollectingIdentityHashMap(int initialCapacity) {
 		super(initialCapacity);
-	}
-
-	/**
-	 * Perform the cleanup, i.e. drop all expired key/value pairs.
-	 */
-	public void cleanup() {
-		Reference ref = queue.poll();
-		while(ref != null) {
-			safeRemove(ref);
-			ref = queue.poll();
-		}
+		instancesExist = true;
 	}
 
     /**
@@ -149,71 +112,19 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
      * for _all_ instances of this map class.
      */
     public static void cleanupExpiredRefs() {
-        // TODO: implement
+    	if(!instancesExist) return;
+        KeyWeakRef ref = (KeyWeakRef)theQueue.poll();
+        while(ref != null) {
+        	ref.theMap.safeRemove(ref);
+        	ref = (KeyWeakRef)theQueue.poll();
+        }
     }
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void clear() {
-		// drain queue
-		while(queue.poll() != null);
-		super.clear();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Object get(Object key) {
-		cleanup();
-		return super.get(key);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	HashEntry createHashEntry(HashEntry next, Object key, int hash, Object value) {
-		return new WeakKeyHashEntry(next, key, hash, value, queue);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isEmpty() {
-		cleanup();
-		return super.isEmpty();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected KeyIterator keyIterator() {
-		cleanup();
-		return super.keyIterator();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Set keySet() {
-		cleanup();
-		return super.keySet();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Object put(Object key, Object value) {
-		cleanup();
-		return super.put(key, value);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Object remove(Object key) {
-		cleanup();
-		return super.remove(key);
+		return new WeakKeyHashEntry(next, key, hash, value);
 	}
 
 	/**
@@ -248,8 +159,12 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 			prev = cur;
 			cur = cur.next;
 		}
-		// Should never fall through here -- safeRemove only called on keys that are
-		// definitely in the mapping.
+		
+		/* With the centralised reference queue, it is actually possible to fall through without finding
+		 * a match. When this happens, we just return null.  If entries seem to be disappearing, it's
+		 * possible somewhere the wrong hashcode is used; uncomment this for diagnostics.
+		 
+		
 		try { throw new RuntimeException("safeRemove failed"); } catch(Exception e) { e.printStackTrace(); }
 		for(int i = 0; i < data.length; i++) {
 			for(cur = data[i]; cur != null; cur = cur.next) {
@@ -257,16 +172,7 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 					System.out.println("Attention -- found matching key at hash index " + i + ", rather than the expected " + index);
 				}
 			}
-		}
+		} */
 		return null;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public int size() {
-		cleanup();
-		return super.size();
-	}
-
 }
