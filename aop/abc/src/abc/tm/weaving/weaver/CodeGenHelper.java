@@ -49,6 +49,7 @@ public class CodeGenHelper
     protected SootClass disjunct;
     protected SootClass lock;
     protected SootClass set;
+    protected SootClass cleanup_map;
     protected Type object;
     protected Type object_array;
 
@@ -71,6 +72,9 @@ public class CodeGenHelper
         this.set = Scene.v().getSootClass("java.util.LinkedHashSet");
         this.object = Scene.v().getRefType("java.lang.Object");
         this.object_array = ArrayType.v(object, 1);
+        this.cleanup_map = Scene.v().getSootClass(
+                "org.aspectbench.tm.runtime.internal."
+                + "WeakKeyCollectingIdentityHashMap");
 
         this.local_count = 0;
         this.final_state = 0;
@@ -889,6 +893,20 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newAssignStmt(ref, val));
     }
  
+    /**
+     * Generate a call to the static method which cleans up
+     * the indexing maps if collectable weak references have
+     * expired.
+     */
+    protected void cleanupMaps(Chain units)
+    {
+        SootMethodRef ref =
+            cleanup_map.getMethodByName("cleanupExpiredRefs").makeRef();
+        List args = new LinkedList();
+        InvokeExpr cleanup_call = Jimple.v().newStaticInvokeExpr(ref, args);
+        units.addLast(Jimple.v().newInvokeStmt(cleanup_call));
+    }
+
     protected Local getLabelBase(Body body, Chain units, Local base)
     {
         if (! tm.isPerThread())
@@ -1316,6 +1334,10 @@ public class CodeGenHelper
         Local updated_base = getLabelBase(body, units, this_local);
         Local updated = getUpdated(body, units, updated_base);
         setUpdated(units, updated_base, IntConstant.v(0));
+
+        // generate call to clean up the indexing maps
+        // if any collectable weak references have expired
+        cleanupMaps(units);
 
         insertBeforeReturn(units, body.getUnits());
     }

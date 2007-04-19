@@ -144,6 +144,14 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 		}
 	}
 
+    /**
+     * Perform the cleanup, i.e., drop all expired key/values pairs
+     * for _all_ instances of this map class.
+     */
+    public static void cleanupExpiredRefs() {
+        // TODO: implement
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */
