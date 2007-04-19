@@ -48,8 +48,8 @@ import abc.weaving.weaver.UnusedMethodsRemover;
 public class CompileSequence {
 	protected AbcExtension abcExt = null;
 	
-    public ErrorQueue error_queue; // For reporting errors and warnings
-
+    protected ErrorQueue error_queue; // For reporting errors and warnings
+    
     public Collection/*<String>*/ aspect_sources = new ArrayList();
     public Collection/*<String>*/ jar_classes = new ArrayList();
 
