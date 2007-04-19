@@ -196,6 +196,7 @@ public class Debug {
     public boolean printIndices = false;
     public boolean useNFA = false;
     public boolean useIndexing = true;              // made useIndexing the default
+    public boolean originalIndexChoosing = true;
     public boolean onlyStrongRefs = false; 			//makes all references strong references 
     public boolean noCollectableWeakRefs = false;	//makes all collectable weak refs "normal" weak refs
     public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or

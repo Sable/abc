@@ -519,9 +519,7 @@ public class TMStateMachine implements StateMachine {
     }
 
     /**
-     * PROTOTYPE METHOD
-     *
-     * Prints out which variables should be used to index the disjuncts
+     * Chooses the variables that should be used to index the disjuncts
      * on each state.
      *
      * @param tm represents the tracematch for this automaton and has
@@ -531,9 +529,7 @@ public class TMStateMachine implements StateMachine {
     private void chooseIndices(TraceMatch tm)
     {
         if (abc.main.Debug.v().printIndices)
-        	System.out.println(this);
-
-        Collection frequentSymbols = tm.getFrequentSymbols();
+            System.out.println(this);
 
         Iterator nodeIt = nodes.iterator();
         while(nodeIt.hasNext()) {
@@ -543,31 +539,9 @@ public class TMStateMachine implements StateMachine {
             if (cur.isInitialNode() || cur.isFinalNode())
                 continue;
 
-            // calculate indices[i] = intersect[sym] (bound[i] /\ binds[sym])
-            //   BUT only for the symbols where the inner
-            //       intersection is not empty
-            //
-            // if some symbols have been annotated as frequent
-            // then only consider them when making indexing decisions
-
-            Iterator symIt =
-                frequentSymbols == null ? tm.getSymbols().iterator()
-                                        : frequentSymbols.iterator();
-
             HashSet indices = new HashSet(cur.boundVars);
-            while (symIt.hasNext()) {
-                String symbol = (String) symIt.next();
-
-                if (frequentSymbols != null
-                        && !frequentSymbols.contains(symbol))
-                    continue;
-
-                HashSet tmp = new HashSet(cur.boundVars);
-                tmp.retainAll(tm.getVariableOrder(symbol));
-
-                if (!tmp.isEmpty())
-                    indices.retainAll(tmp);
-            }
+            if (abc.main.Debug.v().originalIndexChoosing)
+                calculateIndicesByIntersection(tm, indices, cur);
 
             HashSet collectable = new HashSet(indices);
             collectable.retainAll(cur.collectableWeakRefs);
@@ -597,6 +571,38 @@ public class TMStateMachine implements StateMachine {
             cur.indices.addAll(indices);     cur.nStrong = indices.size();
         }
     }
+
+    /**
+     * calculate indices[i] = intersect[sym] (bound[i] /\ binds[sym])
+     *   BUT only for the symbols where the inner
+     *       intersection is not empty
+     *
+     * if some symbols have been annotated as frequent
+     * then only consider them when making indexing decisions
+     */
+    private void calculateIndicesByIntersection(TraceMatch tm,
+                                                HashSet indices,
+                                                SMNode cur)
+    {
+        Collection frequentSymbols = tm.getFrequentSymbols();
+        Iterator symIt =
+            frequentSymbols == null ? tm.getSymbols().iterator()
+                                    : frequentSymbols.iterator();
+
+        while (symIt.hasNext()) {
+            String symbol = (String) symIt.next();
+
+            if (frequentSymbols != null && !frequentSymbols.contains(symbol))
+                continue;
+
+            HashSet tmp = new HashSet(cur.boundVars);
+            tmp.retainAll(tm.getVariableOrder(symbol));
+
+            if (!tmp.isEmpty())
+                indices.retainAll(tmp);
+        }
+    }
+
 
     /**
      * Reverses the automaton (i.e. flip the direction of every edge, make final states initial

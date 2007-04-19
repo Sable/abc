@@ -1726,9 +1726,6 @@ public class ClassGenHelper {
      * 
      * public Disjunct$tm() {
      *      super();
-     *      #for(each Tracematch formal variable X) {
-     *          this.not$X = new LinkedHashSet();
-     *      #}
      *      if(debug) System.out.println("D");
      * }
      * 
@@ -1744,15 +1741,24 @@ public class ClassGenHelper {
      *              this.weak$X = curWeakBinding;
      *          #}
      *          if(curVarIsBound) goto skipNegBindingsSet;
+     *          
+     *          paramSet = param.not$x;
+     *          if(paramSet == null) goto skipNegBindingsSet;
      *          #if(X is primitive) {
-     *              this.not$x = new LinkedHashSet(param.not$x);
+     *              this.not$x = new LinkedHashSet(paramSet);
      *          #} else {
-     *              paramSet = param.not$x;
+     *              curSet = new LinkedHashSet();
      *              Iterator bindingIt = paramSet.iterator();
      *  loopBegin:
      *              if(!bindingIt.hasNext()) goto loopEnd;
-     *              if(((#WeakRef)bindingIt.next()).get() == null) goto loopBegin;
+     *              curVariable = ((#WeakRef)bindingIt.next()).get();
+     *              if(curVariable == null)
+     *                  bindingIt.remove();
+     *              else
+     *                  curSet.add(curVariable());
+     *              goto loopBegin;
      *  loopEnd:
+     *              this.not$x = curSet;
      *          #}
      *  skipNegBindingsSet:
      *      #}
@@ -1770,18 +1776,6 @@ public class ClassGenHelper {
         
         List varNames = null;
         Iterator varIt = null;
-        
-        if(!abc.main.Debug.v().noNegativeBindings) {
-            // Initialise each negative bindings set to a new set.
-            // TODO -- possible optimisation -- spot which variables are bound after every initial transition
-            // and don't allocate negative bindings sets for those. Probably small effect, though.
-            varNames = curTraceMatch.getFormalNames();
-            varIt = varNames.iterator();
-            while(varIt.hasNext()) {
-                String varName = (String)varIt.next();
-                doSetField(thisLocal, "not$" + varName, setType, getNewObject(setClass));
-            }
-        }
         
         // For debugging -- print a 'D' whenever a disjunct is constructed
         doPrintString("D");
@@ -1801,8 +1795,6 @@ public class ClassGenHelper {
         doConstructorCall(thisLocal, objectClass);
         
         // Initialise each negative bindings set to a new set.
-        // TODO -- possible optimisation -- spot which variables are bound after every initial transition
-        // and don't allocate negative bindings sets for those. Probably small effect, though.
         varNames = curTraceMatch.getFormalNames();
         varIt = varNames.iterator();
         Local curBinding, curWeakBinding, curVarIsBound, curSet;
@@ -1821,10 +1813,14 @@ public class ClassGenHelper {
             }
 
             doJumpIfTrue(curVarIsBound, labelSkipNegBindingsSet);
-            
+
+            // Don't copy empty negative-binding sets
+            Local paramSet = getFieldLocal(paramLocal, "not$" + varName, setType);
+            doJumpIfNull(paramSet, labelSkipNegBindingsSet);
+
             if(!abc.main.Debug.v().noNegativeBindings) {
                 if(curTraceMatch.isPrimitive(varName)) {
-                    curSet = getNewObject(setClass, singleCollectionType, getFieldLocal(paramLocal, "not$" + varName, setType));
+                    curSet = getNewObject(setClass, singleCollectionType, paramSet);
                 } else {
                     // We only want non-invalidated weak bindings to be contained in the newly constructed
                     // negative bindings set
@@ -1832,7 +1828,6 @@ public class ClassGenHelper {
                     Stmt labelLoopEnd = getNewLabel();
                     Stmt labelWeakRefExpired = getNewLabel();
                     curSet = getNewObject(setClass);
-                    Local paramSet = getFieldLocal(paramLocal, "not$" + varName, setType);
                     Local bindingIt = getMethodCallResult(paramSet, "iterator", iteratorType);
                     
                     doAddLabel(labelLoopBegin);
@@ -1897,7 +1892,8 @@ public class ClassGenHelper {
      * The method adds a negative binding for a single variable to the current disjunct. there are three cases:
      * 1. The variable is bound to the same value as the new binding -- return falseD.
      * 2. The variable is bound to a different value -- return this.copy() (no need to record new negative binding).
-     * 3. The variable is not bound -- return this.copy().not$var.add(new MyWeakRef(binding)).
+     * 3. The variable is not bound -- return this.copy().not$var.add(new MyWeakRef(binding))
+     *                                 (creating the not$var set, if necessary)
      * 
      * public Disjunct$tm AddNegativeBindingsForVariableX(TypeX binding) {
      *      if(!this.X$isBound) goto varNotBound;
@@ -1906,7 +1902,11 @@ public class ClassGenHelper {
      * 
      *  varNotBound:
      *      Disjunct$tm result = new Disjunct$tm(this);
-     *      result.not$.add(new #WeakRefClass(binding));
+     *      if (not$X != null) goto addNegBinding;
+     *      result.not$X = new LinkedHashSet();
+     *
+     *  addNegBinding:
+     *      result.not$X.add(new #WeakRefClass(binding));
      *      return result;
      *  
      *  returnFalse:
@@ -1926,6 +1926,7 @@ public class ClassGenHelper {
 
             Stmt labelReturnFalse = getNewLabel();
             Stmt labelVarNotBound = getNewLabel();
+            Stmt labelAddNegBinding = getNewLabel();
             
             Local thisLocal = getThisLocal();
             Local paramLocal = getParamLocal(0, varType);
@@ -1940,8 +1941,14 @@ public class ClassGenHelper {
             doReturn(getNewObject(disjunct, singleDisjunct, thisLocal));
             
             // variable isn't bound -- return this.copy().not$var.add(new WeakRef(paramLocal))
+            //                         (creating the not$var set, if necessary)
             doAddLabel(labelVarNotBound);
             Local result = getNewObject(disjunct, singleDisjunct, thisLocal);
+            doJumpIfNotNull(getFieldLocal(thisLocal, "not$" + varName, setType), labelAddNegBinding);
+            doSetField(result, "not$" + varName, setType, getNewObject(setClass));
+
+            // add new negative binding to the new disjunct
+            doAddLabel(labelAddNegBinding);
             Local targetSet = getFieldLocal(result, "not$" + varName, setType);
             Local weakRef = getWeakRef(paramLocal, varName);
             doMethodCall(targetSet, "add", singleObjectType, BooleanType.v(), weakRef);
@@ -2021,7 +2028,9 @@ public class ClassGenHelper {
      *          if(curThisVal != X) goto returnFalse;
      *          goto checkNextVar;
      *  curVarNotBound:
-     *          if(this.not$X.contains(new #WeakRef(X))) goto returnFalse;
+     *          LinkedHashSet notSet = this.not$X;
+     *          if(notSet == null) goto CheckNextVar;
+     *          if(notSet.contains(new #WeakRef(X))) goto returnFalse;
      *  checkNextVar:
      *      #}
      *      switch(to) {
@@ -2110,15 +2119,17 @@ public class ClassGenHelper {
                 
                 if(!abc.main.Debug.v().noNegativeBindings) {
                     // compare negative binding sets
-                    // The check we actually do is if(this.not$var.contains(new #WeakRef(curVar))), since only
+                    // The check we actually do is if(notSet.contains(new #WeakRef(curVar))), since only
                     // weak bindings are stored in the negative bindings sets. This relies on #WeakRef.equals()
                     // returning true if and only if there is reference equality between the two referents.
                     // 
                     // For reference types, we use the MyWeakRef class for the runtime, for primitive types it's
                     // the corresponding boxed type.
-                    doJumpIfTrue(getMethodCallResult(getFieldLocal(thisLocal, "not$" + varName, setType),
-                            "contains", singleObjectType, BooleanType.v(), getWeakRef(curVar, varName)), 
-                                    labelReturnFalse);
+                    Local notSet = getFieldLocal(thisLocal, "not$" + varName, setType);
+                    doJumpIfNull(notSet, labelCheckNextVar);
+                    doJumpIfTrue(getMethodCallResult(notSet, "contains", singleObjectType,
+                                    BooleanType.v(), getWeakRef(curVar, varName)),
+                                labelReturnFalse);
                 }
                 
                 doAddLabel(labelCheckNextVar);
@@ -2522,7 +2533,15 @@ public class ClassGenHelper {
      * 
      *  thisNotBound:
      *          if(paramDisjunct.X$isBound) goto returnFalse;
-     *          if(!this.not$X.equals(paramDisjunct.not$X)) goto returnFalse;
+     *          LinkedHashSet notSet = this.not$X;
+     *          LinkedHashSet otherNotSet = paramDisjunct.not$X;
+     *          if(notSet != null) goto thisNegNonNull;
+     *          if(otherNotSet != null) goto returnFalse;
+     *          goto checkNextVar;
+     *
+     *  thisNegNonNull:
+     *          if(!notSet.equals(otherNotSet)) goto returnFalse;
+     *
      *  checkNextVar:
      *      #}
      *  returnTrue:
@@ -2554,6 +2573,7 @@ public class ClassGenHelper {
             String varName = (String)varIt.next();
             
             Stmt labelThisNotBound = getNewLabel();
+            Stmt labelThisNegNotNull = getNewLabel();
             Stmt labelCheckNextVar = getNewLabel();
 
             doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelThisNotBound);
@@ -2587,11 +2607,16 @@ public class ClassGenHelper {
             // the variable is not bound by this -- if it's bound by the disjunct, return false
             doJumpIfTrue(getFieldLocal(paramDisjunct, varName + "$isBound", BooleanType.v()), labelReturnFalse);
             if(!abc.main.Debug.v().noNegativeBindings) {
-                // we now have to check whether the negative binding sets agree:
-                // if(!this.not$var.equals(paramDisjunct.not$var)) return false;
-                doJumpIfFalse(getMethodCallResult(getFieldLocal(thisLocal, "not$" + varName, setType), "equals",
-                        singleObjectType, BooleanType.v(), getFieldLocal(paramDisjunct, "not$" + varName, setType)),
-                        labelReturnFalse);
+                // we now have to check whether the negative binding sets agree
+ 
+                Local notSet = getFieldLocal(thisLocal, "not$" + varName, setType);
+                Local otherNotSet = getFieldLocal(paramDisjunct, "not$" + varName, setType);
+                doJumpIfNotNull(notSet, labelThisNegNotNull);
+                doJumpIfNotNull(otherNotSet, labelReturnFalse);
+                doJump(labelCheckNextVar);
+
+                doAddLabel(labelThisNegNotNull);
+                doJumpIfFalse(getMethodCallResult(notSet, "equals", singleObjectType, BooleanType.v(), otherNotSet), labelReturnFalse);
             }
             
             doAddLabel(labelCheckNextVar);
