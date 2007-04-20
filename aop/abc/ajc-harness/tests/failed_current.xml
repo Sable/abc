@@ -103,13 +103,19 @@
 	</compile>
 	<run class="NCWeakRefs2"></run>
     </ajc-test>
-<ajc-test title="Tracematches: Non-collectable weak bindings are propagated correctly (Strings)" num="1041" dir="abctests/tracematches">
+<ajc-test title="Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" num="1041" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm,-debug,clashHashCodes" files="NCWeakRefs3.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="NCWeakRefs3"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" num="1042" dir="abctests/tracematches">
         <compile options="-ext,abc.tm,-debug,clashHashCodes" files="NCWeakRefs4.java">
 	    <message kind="warning"></message>
 	</compile>
 	<run class="NCWeakRefs4"></run>
     </ajc-test>
-<ajc-test title="Tracematches: Non-collectable weak bindings from collectable bindings" num="1042" dir="abctests/tracematches">
+<ajc-test title="Tracematches: Non-collectable weak bindings from collectable bindings" num="1043" dir="abctests/tracematches">
         <compile options="-ext,abc.tm,-debug,clashHashCodes" files="NCWeakRefs5.java">
 	    <message kind="warning"></message>
 	</compile>
