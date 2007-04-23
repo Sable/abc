@@ -20,29 +20,30 @@ package org.aspectbench.tm.runtime.internal;
  */
 
 import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 
-public class PersistentWeakRef extends MyWeakRef {
+public class ClashPersistentWeakRef extends ClashWeakRef
+{
 	private static WeakKeyCollectingIdentityHashMap refMap = new WeakKeyCollectingIdentityHashMap();
 	
-	public static MyWeakRef getWeakRef(Object o) {
-		if(o instanceof PersistentWeakRef) return (MyWeakRef)o;
-		//if(o == null) throw new RuntimeException("Getting weak reference for null");
-		MyWeakRef ref = (MyWeakRef)refMap.get(o);
+	public static ClashWeakRef getWeakRef(Object o) {
+		ClashWeakRef ref = (ClashWeakRef)refMap.get(o);
 		if(ref == null) {
-			ref = new PersistentWeakRef(o);
+			ref = new ClashPersistentWeakRef(o);
 			refMap.put(o, ref);
 		}
 		return ref;
 	}
 	
-	protected PersistentWeakRef(Object ref) {
-		super(ref);
+	protected ClashPersistentWeakRef(Object arg0) {
+		super(arg0);
 	}
-	
-	protected PersistentWeakRef(Object ref, ReferenceQueue q) {
-		super(ref, q);
+
+	public ClashPersistentWeakRef(Object arg0, ReferenceQueue arg1)
+	{
+		super(arg0, arg1);
 	}
-	
+
 	/**
 	 * Only one PersistentWeakRef is ever constructed for a particular object. Thus,
 	 * this PWR is equal to obj iff they are the same weak reference, or if obj is

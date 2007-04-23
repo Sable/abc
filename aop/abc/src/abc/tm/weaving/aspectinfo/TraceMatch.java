@@ -94,6 +94,7 @@ public class TraceMatch
     protected SootClass labels = null;
     protected SootClass labels_thread_local = null;
     protected SootClass tm_weak_ref;
+    protected SootClass tm_persistent_weak_ref;
     protected Map primitive_to_box = null;
  
     protected CodeGenHelper helper;
@@ -446,6 +447,10 @@ public class TraceMatch
         else
             return (SootClass) primitive_to_box.get(type);
     }
+    
+    public SootClass persistentWeakRefClass() {
+    	return tm_persistent_weak_ref;
+    }
 
     public Type weakBindingConstructorArgType(String name)
     {
@@ -479,10 +484,13 @@ public class TraceMatch
                              Scene.v().getSootClass("java.lang.Short"));
 
 
-        tm_weak_ref = Scene.v().getSootClass(
-                        abc.main.Debug.v().clashHashCodes
-                        ? "org.aspectbench.tm.runtime.internal.ClashWeakRef"
-                        : "org.aspectbench.tm.runtime.internal.MyWeakRef");
+		if(abc.main.Debug.v().clashHashCodes) {
+			tm_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.ClashWeakRef");
+			tm_persistent_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.ClashPersistentWeakRef");
+		} else {
+			tm_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.MyWeakRef");
+			tm_persistent_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.PersistentWeakRef");
+		}
     }
 
     protected SootMethod getConstructor(SootClass constructed, Type param)

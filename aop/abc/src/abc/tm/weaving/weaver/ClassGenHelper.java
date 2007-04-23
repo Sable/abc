@@ -329,9 +329,19 @@ public class ClassGenHelper {
      * the tracematch formal of type varName, so the corresponding weakBindingClass is used.
      */
     protected Local getWeakRef(Value to, String varName) {
-        return getNewObject(curTraceMatch.weakBindingClass(varName), 
-                getList(curTraceMatch.weakBindingConstructorArgType(varName)), to);
+   		return getNewObject(curTraceMatch.weakBindingClass(varName), 
+   				getList(curTraceMatch.weakBindingConstructorArgType(varName)), to);
     }
+    
+    /**
+     * Constructs a new persistent weakref object for the given value (or retrieves the already-constructed
+     * one..)
+     */
+    protected Local getPWR(Value to, String name) {
+    	return getStaticMethodCallResult(curTraceMatch.persistentWeakRefClass(), "getWeakRef", 
+    			singleObjectType, curTraceMatch.weakBindingClass(name).getType(), to);
+    }
+    
     /**
      * Returns a new Nop to be used as a jump label
      */
@@ -457,7 +467,7 @@ public class ClassGenHelper {
      * @param arg The local to be passed as a parameter
      * @return A local of type returnType containing the return value of the method call.
      */
-    protected Local getStaticMethodCallResult(SootClass cl, String name, List formals, Type returnType, Local arg) {
+    protected Local getStaticMethodCallResult(SootClass cl, String name, List formals, Type returnType, Value arg) {
         Local result = curLGen.generateLocal(returnType, name + "$result");
         curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newStaticInvokeExpr(
                 Scene.v().makeMethodRef(cl, name, formals, returnType, true), arg)));
@@ -2176,6 +2186,11 @@ public class ClassGenHelper {
                 // guaranteed to have bound all tracematch variables, we want to return 'this' rather
                 // than a new disjunct object if we are coming from a state that also has all variables
                 // bound, and which agrees with the current state regarding needStrongRefs.
+                //
+                // This is slightly complicated by the presence of PersistentWeakRefs: A nonpersistent
+                // weakref could become persistent or strong, and a persistent weakref could become strong.
+                // Thus, the actual condition is "this state has the same strongref behaviour and the same
+                // persistent weakref behaviour as the predecessor state".
                 if(curState.boundVars.equals(new LinkedHashSet(curTraceMatch.getFormalNames()))) {
                     // the current state binds all variables.
                     // Great -- construct a list of all states S such that there is a transition labelled
@@ -2190,7 +2205,8 @@ public class ClassGenHelper {
                         if(incoming.getLabel().equals(symbol)) {
                             SMNode predecessor = incoming.getSource();
                             if(predecessor.boundVars.equals(curState.boundVars) 
-                                    && predecessor.needStrongRefs.equals(curState.needStrongRefs)) {
+                                    && predecessor.needStrongRefs.equals(curState.needStrongRefs)
+                                    && predecessor.weakRefs.equals(curState.weakRefs)) {
                                 int index; // lookupswitch values list must be sorted
                                 for(index = 0; index < skipStates.size(); index++) {
                                     if(((IntConstant)(skipStates.get(index))).value > predecessor.getNumber()) break;
@@ -2211,7 +2227,8 @@ public class ClassGenHelper {
                 // We only need to reassign those bindings who aren't already present.
                 // Given predecessor state S (with number 'from'), we want to reassign variable X only if
                 // (a) S doesn't bind X, or
-                // (b) S binds X weakly, but the current state binds it strongly.
+                // (b) S binds X weakly, but the current state binds it strongly, or
+                // (c) S has X as a collectable weakref, but the current state has it as non-collectable.
                 // Thus, we keep, for each predecessor state S, a list of variables which need to be reassigned.
                 Iterator nodeIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
                 List predecessorStates = new LinkedList();
@@ -2230,7 +2247,8 @@ public class ClassGenHelper {
                         while(it.hasNext()) {
                             String var = (String)it.next();
                             if(!pred.boundVars.contains(var) || 
-                                    (!pred.needStrongRefs.contains(var) && curState.needStrongRefs.contains(var))) {
+                                    (!pred.needStrongRefs.contains(var) && curState.needStrongRefs.contains(var)) ||
+                                    (!pred.weakRefs.contains(var) && curState.weakRefs.contains(var))) {
                                 varsToUpdate.add(var);
                             }
                         }
@@ -2277,8 +2295,12 @@ public class ClassGenHelper {
                                                 getNull());
                                     doSetField(result, "var$" + varName, curTraceMatch.bindingType(varName), binding);
                                 } else {
-                                    doSetField(result, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(), 
-                                            getWeakRef(binding, varName));
+                                	if(curState.weakRefs.contains(varName)) 
+                                		doSetField(result, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(),
+                                				getPWR(binding, varName));
+                                	else
+                                		doSetField(result, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(), 
+                                				getWeakRef(binding, varName));
                                 }
                             }
                         }

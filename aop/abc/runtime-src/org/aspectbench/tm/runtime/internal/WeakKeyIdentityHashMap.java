@@ -19,6 +19,8 @@
 
 package org.aspectbench.tm.runtime.internal;
 
+import org.aspectbench.tm.runtime.internal.IdentityHashMap.HashEntry;
+
 /**
  * Part of the Indexing Data Structure implementation. This is a HashMap-like
  * data structure that uses key identity as the basis for comparison. It isn't
@@ -37,6 +39,26 @@ package org.aspectbench.tm.runtime.internal;
 
 public class WeakKeyIdentityHashMap extends IdentityHashMap {
 
+	/**
+	 * HashEntrys for this kind of map return the object if getKey() is called
+	 * and the object is alive.
+	 */
+	public class HashEntry extends IdentityHashMap.HashEntry {
+		private PersistentWeakRef key;
+		
+		protected HashEntry(HashEntry next, PersistentWeakRef key, int hashCode, Object value) {
+			super(next, hashCode, value);
+		}
+
+		protected Object getKey() {
+			return key.get();
+		}
+		
+		protected int getKeyHash() {
+			return key.hashCode();
+		}
+	}
+	
 	/**
 	 * A map that associates keys with Marker objects. Mappings are dropped from
 	 * that map as keys are garbage-collected. Note it is static, i.e. shared
@@ -64,6 +86,8 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 * If the given object is already a Marker, it is returned unchanged. Otherwise,
 	 * the Marker representing that particular object is (constructed, if necessary,
 	 * and) returned.
+	 * 
+	 * Actually, the marker object scheme is deprecated in favour of persistent weakrefs.
 	 */
 	public static Object getMarker(Object key) {
 		if(key instanceof Marker) return key;
@@ -79,7 +103,7 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 * {@inheritDoc}
 	 */
 	public Object get(Object key) {
-		key = getMarker(key);
+		//key = getMarker(key);
 		return super.get(key);
 	}
 
@@ -87,7 +111,8 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 * {@inheritDoc}
 	 */
 	public Object put(Object key, Object value) {
-		key = getMarker(key);
+		//key = getMarker(key);
+		key = PersistentWeakRef.getWeakRef(key);
 		return super.put(key, value);
 	}
 
@@ -95,7 +120,7 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 * {@inheritDoc}
 	 */
 	public Object remove(Object key) {
-		key = getMarker(key);
+		//key = getMarker(key);
 		return super.remove(key);
 	}
 
