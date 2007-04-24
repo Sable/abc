@@ -690,4 +690,12 @@ public class AbcExtension
     public void setErrorQueue(ErrorQueue eq) {
     	error_queue = eq;
     }
+
+	/**
+	 * This method is called right after "declare parents" has been processed and
+	 * all Jimple bodies have been loaded. Subclasses can implement this method to
+	 * do restrucuring of bodies prior to weaving. This default implementation does nothing.
+	 */
+	public void doMethodRestructuring() {
+	}
 }

@@ -187,7 +187,7 @@ public class CompileSequence {
        		}
        }
     }
-
+    
     private class GotCheckedExceptionError implements ExceptionCheckerErrorReporter {
         public void reportError(ExceptionCheckerError err) {
             SootClass exctype=err.excType();
@@ -396,6 +396,9 @@ public class CompileSequence {
             }
             AbcTimer.mark("Jimplification");
             Debug.phaseDebug("Jimplification");
+            
+            //call hook for (optional) restructuring of methods
+            abcExt.doMethodRestructuring();
 
             // Fix up constructors in binary classes with newly declared parents
             new DeclareParentsConstructorFixup().weave();

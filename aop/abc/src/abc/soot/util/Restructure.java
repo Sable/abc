@@ -488,6 +488,8 @@ public class Restructure {
      *  UPDATE: Experiments show that the this-local never changes throughout the method,
      *  even if the byte-code assigns to slot 0. In this case, Jimple creates a new local
      *  to assign to.
+     *  FIXME relational aspects will actually set the this-local to another value...
+     *  (Eric)
      */
     public static Local getThisLocal(SootMethod m) {
 	//if(thiscopies.containsKey(m)) return ((Local) thiscopies.get(m));

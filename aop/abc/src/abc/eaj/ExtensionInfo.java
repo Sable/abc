@@ -19,24 +19,34 @@
 
 package abc.eaj;
 
-import polyglot.lex.Lexer;
-import abc.aspectj.parse.Lexer_c;
-import abc.eaj.parse.Grm;
-import abc.eaj.ast.*;
-import abc.eaj.types.*;
-import abc.eaj.visit.*;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.List;
 
 import polyglot.ast.NodeFactory;
-import polyglot.frontend.*;
+import polyglot.frontend.CupParser;
+import polyglot.frontend.FileSource;
+import polyglot.frontend.GlobalBarrierPass;
+import polyglot.frontend.Job;
+import polyglot.frontend.Parser;
+import polyglot.frontend.Pass;
+import polyglot.frontend.VisitorPass;
+import polyglot.lex.Lexer;
 import polyglot.types.TypeSystem;
 import polyglot.util.ErrorQueue;
-
-import java.util.*;
-import java.io.Reader;
+import abc.aspectj.parse.Lexer_c;
+import abc.eaj.ast.EAJNodeFactory;
+import abc.eaj.ast.EAJNodeFactory_c;
+import abc.eaj.parse.Grm;
+import abc.eaj.types.EAJTypeSystem;
+import abc.eaj.types.EAJTypeSystem_c;
+import abc.eaj.visit.CheckPCContainsStatic;
+import abc.eaj.visit.GlobalPointcuts;
 
 /**
  * Extension information for Extended AspectJ extension.
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo
 {
@@ -54,7 +64,7 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
     
     static {
         // force Topics to load
-        Topics t = new Topics();
+        new Topics();
     }
 
     public ExtensionInfo(Collection jar_classes, Collection source_files)

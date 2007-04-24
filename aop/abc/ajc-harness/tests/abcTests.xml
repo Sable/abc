@@ -10509,5 +10509,12 @@
         <compile files="LockUnlock.java" options="-ext,abc.eaj"/>
         <run class="LockUnlock"/>
     </ajc-test>
- 
+    
+     <ajc-test num="1220" dir="abctests/eaj/lock_unlock" 
+	    title="warning on restructuring for sync. methods and lock/unlock pointcuts">
+        <compile files="SyncMethods.java" options="-ext,abc.eaj,-debug,doValidate">
+	        <message kind="warning" line="11"/>
+        </compile>
+        <run class="SyncMethods"/>
+    </ajc-test>
  </suite>

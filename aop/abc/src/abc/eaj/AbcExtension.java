@@ -19,17 +19,26 @@
 
 package abc.eaj;
 
-import abc.eaj.weaving.matching.*;
-import abc.main.Debug;
-import abc.weaving.matching.SJPInfo;
-
-import abc.aspectj.parse.*;
+import java.util.Collection;
+import java.util.List;
 
 import soot.Scene;
 import soot.SootClass;
 import soot.tagkit.Host;
-
-import java.util.*;
+import abc.aspectj.parse.AbcLexer;
+import abc.aspectj.parse.LexerAction_c;
+import abc.eaj.weaving.matching.ArrayGetShadowMatch;
+import abc.eaj.weaving.matching.ArraySetShadowMatch;
+import abc.eaj.weaving.matching.CastShadowMatch;
+import abc.eaj.weaving.matching.ExtendedSJPInfo;
+import abc.eaj.weaving.matching.LockShadowMatch;
+import abc.eaj.weaving.matching.ThrowShadowMatch;
+import abc.eaj.weaving.matching.UnlockShadowMatch;
+import abc.eaj.weaving.weaver.SyncWarningWeaver;
+import abc.eaj.weaving.weaver.SynchronizedMethodRestructurer;
+import abc.main.Debug;
+import abc.weaving.matching.SJPInfo;
+import abc.weaving.weaver.Weaver;
 
 /**
  * @author Julian Tibble
@@ -95,7 +104,12 @@ public class AbcExtension extends abc.main.AbcExtension
                 signature, host);
     }
 
-
+    protected Weaver createWeaver() {
+    	//hook up extended weaver that warns about
+    	//restructured methods
+    	return new SyncWarningWeaver();
+    }
+    
     /* (non-Javadoc)
      * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
      */
@@ -134,5 +148,10 @@ public class AbcExtension extends abc.main.AbcExtension
         // Array set/get pointcut keywords
         lexer.addPointcutKeyword("arrayget", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYGET)));
         lexer.addPointcutKeyword("arrayset", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYSET)));
+    }
+    
+    public void doMethodRestructuring() {
+    	new SynchronizedMethodRestructurer().apply();
+    	super.doMethodRestructuring();
     }
 }
