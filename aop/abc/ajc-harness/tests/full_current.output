@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@17ed18b
+creating: A@128bc44
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@a1a0c7
+InterfaceAndObject$1@1e67b9b
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@4771ab, [Ljava.lang.Object;@779f07, TwoAnonymous$3@4771ab
+calling run: TwoAnonymous$3@3674e4, [Ljava.lang.Object;@13424d7, TwoAnonymous$3@3674e4
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2400,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@eb2a79.foo calls Outer$Inner@131a0ab.mi
+Outer@bc2f99.foo calls Outer$Inner@d8e736.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@131a0ab.mi calls java.io.PrintStream@12b59f0.println
+Outer$Inner@d8e736.mi calls java.io.PrintStream@3392de.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@eb2a79.foo calls Outer$InnerRandom@17e1d09.nextHook
+Outer@bc2f99.foo calls Outer$InnerRandom@1891f09.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@17e1d09.nextHook calls Outer$InnerRandom@17e1d09.next
+Outer$InnerRandom@1891f09.nextHook calls Outer$InnerRandom@1891f09.next
 Outer.foo() calls Random.nextInt(..)
-Outer@eb2a79.foo calls X.nextInt
+Outer@bc2f99.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@9ec00e.foo calls Outer$Inner@52dfa8.mi
+Outer@38b5d3.foo calls Outer$Inner@1294c7b.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@52dfa8.mi calls java.io.PrintStream@d9a240.println
+Outer$Inner@1294c7b.mi calls java.io.PrintStream@5c2910.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@9ec00e.foo calls Outer$InnerRandom@919b62.nextHook
+Outer@38b5d3.foo calls Outer$InnerRandom@1cbf08a.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@919b62.nextHook calls Outer$InnerRandom@919b62.next
+Outer$InnerRandom@1cbf08a.nextHook calls Outer$InnerRandom@1cbf08a.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@9ec00e.foo calls X.nextInt
+Outer@38b5d3.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2712,7 +2712,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$23$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4030,7 +4030,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1062622.x:=-3
+test.Test3@165118a.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4113,8 +4113,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@13f5cf3
-o: Bar@13f5cf3, i: 10
+o: Bar@1525e08
+o: Bar@1525e08, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4265,13 +4265,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
-	at aspects.Trace.inline$6$around$2688(Trace.aj:92)
+	at aspects.Trace.inline$7$around$2688(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$25$around$2688(Trace.aj:88)
-	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$2$around$2688(Trace.aj:135)
-	at cap.OptionList.shadow$47(OptionList.java:135)
 	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
+	at cap.OptionList.createListHtmlFromApi(OptionList.java)
+	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
+	at cap.OptionList.shadow$47(OptionList.java:135)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4305,13 +4305,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
-	at aspects.Trace.inline$15$around$2688(Trace.aj:119)
+	at aspects.Trace.inline$16$around$2688(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$25$around$2688(Trace.aj:88)
-	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$2$around$2688(Trace.aj:135)
-	at cap.OptionList.shadow$47(OptionList.java:135)
 	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
+	at cap.OptionList.createListHtmlFromApi(OptionList.java)
+	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
+	at cap.OptionList.shadow$47(OptionList.java:135)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4647,7 +4647,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1f67cce
+LibraryAspect-defined run() for C@be8e52
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4970,7 +4970,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@3dafb4
+? Util.read() obj=Test@1db646e
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -4990,7 +4990,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1e4fc25
+? Util.read() obj=ClinitTest@491dd4
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5000,7 +5000,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@e344b9
+? Util.read() obj=SuidTest@1e8b095
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5201,12 +5201,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@2a2020
-Invoking command bean:  Command@1a34111
-hello(Command@1a34111)
-Created a PerThis aspect : Testcase2@104f83f
-Invoking command bean:  Command@145f7cd
-hello again(Command@145f7cd)
+Created a PerThis aspect : Testcase2@1814fbb
+Invoking command bean:  Command@99bb48
+hello(Command@99bb48)
+Created a PerThis aspect : Testcase2@d69a3b
+Invoking command bean:  Command@127b190
+hello again(Command@127b190)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5536,23 +5536,23 @@ PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-f(java.lang.Object@8e8241)
-f(java.lang.Object@3bc73f)
-g(java.lang.Object@3bc73f)
-fg+(java.lang.Object@3bc73f)
-g(java.lang.Object@8e8241)
-fg+(java.lang.Object@8e8241)
-f(java.lang.Object@8e8241)
-g(java.lang.Object@3bc73f)
-fg+(java.lang.Object@3bc73f)
-f(java.lang.Object@8e8241)
-f(java.lang.Object@3bc73f)
-g(java.lang.Object@8e8241)
-fg+(java.lang.Object@8e8241)
-g(java.lang.Object@8e8241)
-fg+(java.lang.Object@8e8241)
-g(java.lang.Object@3bc73f)
-fg+(java.lang.Object@3bc73f)
+f(java.lang.Object@d02f51)
+f(java.lang.Object@44cfcd)
+g(java.lang.Object@44cfcd)
+fg+(java.lang.Object@44cfcd)
+g(java.lang.Object@d02f51)
+fg+(java.lang.Object@d02f51)
+f(java.lang.Object@d02f51)
+g(java.lang.Object@44cfcd)
+fg+(java.lang.Object@44cfcd)
+f(java.lang.Object@d02f51)
+f(java.lang.Object@44cfcd)
+g(java.lang.Object@d02f51)
+fg+(java.lang.Object@d02f51)
+g(java.lang.Object@d02f51)
+fg+(java.lang.Object@d02f51)
+g(java.lang.Object@44cfcd)
+fg+(java.lang.Object@44cfcd)
 PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
@@ -5656,39 +5656,13 @@ PASS: Test 1037: "abctests/tracematches/Tracematches: Primitive negative binding
 Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 2 times, rather than 10.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 2 times, rather than 10.
-	at NCWeakRefs.bar(NCWeakRefs.java:5)
-	at NCWeakRefs.main(NCWeakRefs.java:17)
-	... 7 more
-FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed.
+PASS: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" passed.
 
 
 Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs2.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 2 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 2 times, rather than 100.
-	at NCWeakRefs2.bar(NCWeakRefs2.java:5)
-	at NCWeakRefs2.main(NCWeakRefs2.java:18)
-	... 7 more
-FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed.
+PASS: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" passed.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
@@ -5702,58 +5676,22 @@ PASS: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings 
 Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs3.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-..........+
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 1 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 1 times, rather than 100.
-	at NCWeakRefs3.main(NCWeakRefs3.java:24)
-	... 7 more
-FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed.
+..........++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+PASS: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" passed.
 
 
 Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs4.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-++.++.++.++.++.++.++.++.++.++.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 20 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 20 times, rather than 100.
-	at NCWeakRefs4.main(NCWeakRefs4.java:23)
-	... 7 more
-FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed.
+++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.
+PASS: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" passed.
 
 
 Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs5.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-++.++.++.++.++.++.++.++.++.++.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 20 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 20 times, rather than 100.
-	at NCWeakRefs5.main(NCWeakRefs5.java:23)
-	... 7 more
-FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed.
+++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.
+PASS: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" passed.
 
 
 Running test 1101: om/simple/Simple module compile
@@ -5837,66 +5775,66 @@ PASS: Test 1109: "om/matchtest/Basic matching test" passed.
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibAspect: Before fib(5)
 In FibExtAspect: Before fib(5)
-In FibAspect: Before getPrevX
+In FibAspect: Before fib(5)
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(5)
 In FibAspect: Before fib(4)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(4)
 In FibAspect: Before fib(3)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(1)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(3)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 fib(1)
 5
-In FibAspect: Before getPrevX
 In FibExtAspect: Before getPrevX
-In FibAspect: Before setPrevX
+In FibAspect: Before getPrevX
 In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
 9
 1
 10

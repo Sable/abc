@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$23$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -219,101 +219,6 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
-
-
-Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 2 times, rather than 10.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 2 times, rather than 10.
-	at NCWeakRefs.bar(NCWeakRefs.java:5)
-	at NCWeakRefs.main(NCWeakRefs.java:17)
-	... 7 more
-FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed.
-
-
-Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs2.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 2 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 2 times, rather than 100.
-	at NCWeakRefs2.bar(NCWeakRefs2.java:5)
-	at NCWeakRefs2.main(NCWeakRefs2.java:18)
-	... 7 more
-FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed.
-
-
-Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs3.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-..........+
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 1 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 1 times, rather than 100.
-	at NCWeakRefs3.main(NCWeakRefs3.java:24)
-	... 7 more
-FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed.
-
-
-Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs4.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-++.++.++.++.++.++.++.++.++.++.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 20 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 20 times, rather than 100.
-	at NCWeakRefs4.main(NCWeakRefs4.java:23)
-	... 7 more
-FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed.
-
-
-Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs5.java 
-Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-++.++.++.++.++.++.++.++.++.++.
-InvocationTargetException while trying to run compiled class: java.lang.RuntimeException: Matched 20 times, rather than 100.
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:585)
-	at abc.testing.TestCase.runTest(TestCase.java:396)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.RuntimeException: Matched 20 times, rather than 100.
-	at NCWeakRefs5.main(NCWeakRefs5.java:23)
-	... 7 more
-FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
