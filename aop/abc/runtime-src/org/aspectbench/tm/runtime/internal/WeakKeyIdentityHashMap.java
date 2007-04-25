@@ -50,7 +50,7 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 			super(next, hashCode, value);
 		}
 
-		protected Object getKey() {
+		public Object getKey() {
 			return key.get();
 		}
 		

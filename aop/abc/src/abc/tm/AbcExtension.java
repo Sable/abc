@@ -113,6 +113,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
         	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IdentityHashMap", SootClass.SIGNATURES);
         	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityHashMap", SootClass.SIGNATURES);
         	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap", SootClass.SIGNATURES);
+        	   Scene.v().addBasicClass("java.util.Map$Entry", SootClass.SIGNATURES);
            }
 	   }
     

@@ -73,7 +73,7 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 			this.key = new KeyWeakRef(key);
 		}
 
-		protected Object getKey() {
+		public Object getKey() {
 			return key.get();
 		}
 		

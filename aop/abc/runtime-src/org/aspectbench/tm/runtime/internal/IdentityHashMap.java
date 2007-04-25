@@ -74,8 +74,8 @@ public class IdentityHashMap implements Map {
      * 
      * @author Pavel Avgustinov
      */
-    class HashEntry {
-    	// Next element in hash chain
+    class HashEntry implements java.util.Map.Entry {
+		// Next element in hash chain
     	protected HashEntry next;
     	// Cached hash code
     	protected int hashCode;
@@ -105,12 +105,21 @@ public class IdentityHashMap implements Map {
     		return hashCode;
     	}
 
-		protected Object getKey() {
+		public Object getKey() {
 			return key;
+		}
+		
+		public Object getValue() {
+			return value;
 		}
 		
 		protected int getKeyHash() {
 			return System.identityHashCode(key);
+		}
+    	
+		public Object setValue(Object value) {
+			notImplemented("HashEntry.setValue");
+			return null;
 		}
     }
     
@@ -191,6 +200,103 @@ public class IdentityHashMap implements Map {
 			} while(!last.live); 
 			hashIndex = i;
 			return last.getKey();
+		}
+
+		public void remove() {
+			if(parent.modCount != expectedModCount) {
+				throw new ConcurrentModificationException("Unsafe modification of hashmap");
+			}
+			if(last == null) throw new NoSuchElementException();
+			if(!last.live) return;
+			parent.remove(last.getKey());
+			expectedModCount = parent.modCount;
+		}
+    }
+
+    /**
+     * A wrapper around an IdentityHashMap (or derived classes) that is intended
+     * to be returned by entrySet() methods. It basically just returns an
+     * iterator over the entries.
+     * 
+     * @author Pavel Avgustinov
+     */
+    class EntrySet extends AbstractSet {
+    	private final IdentityHashMap parent;
+    	
+    	protected EntrySet(IdentityHashMap parent) {
+    		this.parent = parent;
+    	}
+    	
+    	public void clear() {
+    		parent.clear();
+    	}
+    	
+    	public Iterator iterator() {
+    		return parent.entryIterator();
+    	}
+    	
+    	public int size() {
+    		return parent.size();
+    	}
+    }
+    
+    /**
+     * An iterator over the entry set of an IdentityHashMap. This class doesn't quite 
+     * conform to the Iterator contract --- if keys can expire, it is impossible to
+     * guarantee that after hasNext() terminates and before next() is called, the
+     * key won't expire. Thus, if hasNext() here returns true, and next() returns
+     * non-null, then there is a further key/value pair.
+     * 
+     * Moreover, and more subtly, in the presence of concurrency it is possible for
+     * key/value pairs to expire *after* a HashEntry has been returned by the iterator.
+     * The only way to deal with this is to assign the result of getKey to a strong
+     * reference and check it for nullness -- if it turns out to be null, ignore the
+     * HashEntry and continue with the next() result.
+     * 
+     * Clever handling of keys expiring while the iteration is in progress ensures the
+     * most sensible possible behaviour.
+     * 
+     * @author Pavel Avgustinov
+     */
+    class EntryIterator implements Iterator {
+        /** The parent map */
+        private final IdentityHashMap parent;
+        /** The current index into the array of buckets */
+        protected int hashIndex;
+        /** The last returned entry */
+        protected HashEntry last = null;
+        /** The next entry */
+        protected HashEntry next = null;
+        /** The modification count expected */
+        protected int expectedModCount;
+   	
+        protected EntryIterator(IdentityHashMap parent) {
+        	this.parent = parent;
+        	this.expectedModCount = parent.modCount;
+        	HashEntry[] data = parent.data;
+        	int i = 0;
+        	while(next == null && i < data.length) next = data[i++];
+        	hashIndex = i;
+        }
+        
+        public boolean hasNext() {
+        	return (next != null);
+        }
+
+		public Object next() {
+			if(parent.modCount != expectedModCount) {
+				throw new ConcurrentModificationException("Unsafe modification of hashmap");
+			}
+			int i = hashIndex;
+			HashEntry[] data = parent.data;
+			do {
+				if(next == null) return null;
+				last = next;
+				next = last.next;
+				while(next == null && i < data.length) next = data[i++];
+			} while(!last.live); 
+			hashIndex = i;
+			return last;
 		}
 
 		public void remove() {
@@ -479,14 +585,20 @@ public class IdentityHashMap implements Map {
 		return new KeyIterator(this);
 	}
 	
+	/**
+	 * Constructs an EntryIterator object
+	 */
+	protected EntryIterator entryIterator() {
+		return new EntryIterator(this);
+	}
+	
 	public Collection values() {
 		notImplemented("values");
 		return null;
 	}
 
 	public Set entrySet() {
-		notImplemented("entrySet");
-		return null;
+		return new EntrySet(this);
 	}
 
 }

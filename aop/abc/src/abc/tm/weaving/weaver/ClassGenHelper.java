@@ -161,6 +161,7 @@ public class ClassGenHelper {
     static Type setType;
     static Type jusetType;
     static Type iteratorType;
+    static Type hashEntryType;
     static RefType mapType;
     
     // other often-needed constants
@@ -190,6 +191,7 @@ public class ClassGenHelper {
         setType = RefType.v("java.util.LinkedHashSet");
         jusetType = RefType.v("java.util.Set");
         iteratorType = RefType.v("java.util.Iterator");
+        hashEntryType = RefType.v("java.util.Map$Entry");
 
         if(useIndexing()) {
             if(abc.main.Debug.v().useCommonsCollections) {
@@ -919,29 +921,34 @@ public class ClassGenHelper {
             context.loopEnds[i] = getNewLabel();
             if(context.keys[i] == null) {
                 context.iterators[i] = getMethodCallResult(
-                        getMethodCallResult(context.maps[i], "keySet", jusetType),
+                        getMethodCallResult(context.maps[i], "entrySet", jusetType),
                         "iterator", iteratorType);
                 context.loopBegins[i] = getNewLabel();
                 doAddLabel(context.loopBegins[i]);
             	doJumpIfFalse(getMethodCallResult(context.iterators[i], "hasNext", 
             			BooleanType.v()), context.loopEnds[i]);
-            	context.keys[i] = getMethodCallResult(context.iterators[i], "next", objectType);
+            	Local hashEntry = getCastValue(getMethodCallResult(context.iterators[i], "next", objectType),
+            						hashEntryType);
 
             	if(!Debug.v().useCommonsCollections) {
 	            	// If we're using our custom (and correct!) indexing data structure maps,
 	            	// then the result of hasNext() is unreliable -- the key/value pair could
 	            	// have expired in the meantime. Thus, we check the result for nullness.
-	            	doJumpIfNull(context.keys[i], context.loopEnds[i]);
+	            	doJumpIfNull(hashEntry, context.loopEnds[i]);
+
+	            	context.keys[i] = getMethodCallResult(hashEntry, "getKey", objectType);
+	            	// Moreover, technically the key could expire in between us getting the
+            		// hash entry and getting a strong reference to the key. If this happens,
+            		// we just want to try to get the next entry.
+	            	doJumpIfNull(context.keys[i], context.loopBegins[i]);
             	}
 
             	if(i + 1 < context.depth) {
                     context.maps[i + 1] = getCastValue(
-                            getMethodCallResult(context.maps[i], "get", singleObjectType, 
-                            objectType, context.keys[i]), mapType);
+                            getMethodCallResult(hashEntry, "getValue", objectType), mapType);
                 } else {
                     context.relevantSet = getCastValue(
-                        getMethodCallResult(context.maps[context.depth - 1], "get", 
-                        singleObjectType, objectType, context.keys[context.depth - 1]), setType); 
+                        getMethodCallResult(hashEntry, "getValue", objectType), setType); 
                 }
             } else {
                 if(i + 1 < context.depth) {
