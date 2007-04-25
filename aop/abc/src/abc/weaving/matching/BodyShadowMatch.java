@@ -102,11 +102,9 @@ public abstract class BodyShadowMatch extends ShadowMatch {
 	Vector ret=new Vector(count);
 	ret.setSize(count);
 	Iterator stmtsIt=container.getActiveBody().getUnits().iterator();
-	// how much is the parameter list offset from the index into the args vector?
-	int offset=container.isStatic() ? 0 : 1; 
 	while(stmtsIt.hasNext()) {
 	    Stmt stmt=(Stmt) stmtsIt.next();
-	    if(!(stmt instanceof IdentityStmt)) break;
+	    if(!(stmt instanceof IdentityStmt)) continue;
 	    IdentityStmt istmt=(IdentityStmt) stmt;
 	    Value right=istmt.getRightOp();
 	    if(!(right instanceof ParameterRef)) continue;
