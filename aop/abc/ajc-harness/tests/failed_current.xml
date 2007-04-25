@@ -91,6 +91,10 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
+<ajc-test title="omants test" num="1127" keywords="openmod" dir="om/omantstest">
+        <compile options="-ext,abc.om" files="automaton/Automaton.java,       benchmark/Main.java,       command/Command.java,       command/Comment.java,       command/Condition.java,       command/Drop.java,       command/Flip.java,       command/Foe.java,       command/FoeHome.java,       command/FoeMarker.java,       command/FoeWithFood.java,       command/Food.java,       command/Friend.java,       command/FriendWithFood.java,       command/Home.java,       command/Mark.java,       command/Marker.java,       command/Move.java,       command/PickUp.java,       command/Rock.java,       command/Sense.java,       command/Turn.java,       command/Unmark.java,       debug/CheckScores.java,       debug/CommandTracer.java,       debug/LiveAnts.java,       debug/WorldDumper.java,       main/Main.java,       model/Ant.java,       model/Cell.java,       model/Color.java,       model/Combat.java,       model/Resting.java,       model/World.java,       modules/Modules.java,       parser/CommandParser.java,       profile/NoNewInCmd.java,       profile/NoNewInRound.java,       style/PublicAccessFields.java,       viewer/Board.java,       viewer/Bug.java,       viewer/Hexagon.java,       viewer/Update.java,       viewer/Viewer.java">
+        </compile>
+    </ajc-test>
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>

@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$23$around$1600(AroundAll.java:199)
+	at A.inline$26$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -219,6 +219,25 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
+
+
+Running test 1127: om/omantstest/omants test
+Commandline: abc -d om/omantstest -warn-unused-advice:off -ext abc.om om/omantstest/automaton/Automaton.java om/omantstest/benchmark/Main.java om/omantstest/command/Command.java om/omantstest/command/Comment.java om/omantstest/command/Condition.java om/omantstest/command/Drop.java om/omantstest/command/Flip.java om/omantstest/command/Foe.java om/omantstest/command/FoeHome.java om/omantstest/command/FoeMarker.java om/omantstest/command/FoeWithFood.java om/omantstest/command/Food.java om/omantstest/command/Friend.java om/omantstest/command/FriendWithFood.java om/omantstest/command/Home.java om/omantstest/command/Mark.java om/omantstest/command/Marker.java om/omantstest/command/Move.java om/omantstest/command/PickUp.java om/omantstest/command/Rock.java om/omantstest/command/Sense.java om/omantstest/command/Turn.java om/omantstest/command/Unmark.java om/omantstest/debug/CheckScores.java om/omantstest/debug/CommandTracer.java om/omantstest/debug/LiveAnts.java om/omantstest/debug/WorldDumper.java om/omantstest/main/Main.java om/omantstest/model/Ant.java om/omantstest/model/Cell.java om/omantstest/model/Color.java om/omantstest/model/Combat.java om/omantstest/model/Resting.java om/omantstest/model/World.java om/omantstest/modules/Modules.java om/omantstest/parser/CommandParser.java om/omantstest/profile/NoNewInCmd.java om/omantstest/profile/NoNewInRound.java om/omantstest/style/PublicAccessFields.java om/omantstest/viewer/Board.java om/omantstest/viewer/Bug.java om/omantstest/viewer/Hexagon.java om/omantstest/viewer/Update.java om/omantstest/viewer/Viewer.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
+	at abc.eaj.weaving.weaver.SynchronizedMethodRestructurer.transform(SynchronizedMethodRestructurer.java:112)
+	at abc.eaj.weaving.weaver.SynchronizedMethodRestructurer.apply(SynchronizedMethodRestructurer.java:64)
+	at abc.eaj.AbcExtension.doMethodRestructuring(AbcExtension.java:154)
+	at abc.main.CompileSequence.weave(CompileSequence.java:401)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 1127: "om/omantstest/omants test" failed.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
