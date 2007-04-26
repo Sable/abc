@@ -91,6 +91,7 @@ public class TraceMatch
  
     protected SootClass constraint = null;
     protected SootClass disjunct = null;
+    protected SootClass event = null;
     protected SootClass labels = null;
     protected SootClass labels_thread_local = null;
     protected SootClass tm_weak_ref;
@@ -385,6 +386,17 @@ public class TraceMatch
     public SootClass getDisjunctClass()
     {
         return disjunct;
+    }
+
+    public void setEventClass(SootClass event)
+    {
+        this.event = event;
+        helper.setEventClass(event);
+    }
+
+    public SootClass getEventClass()
+    {
+        return event;
     }
 
     public void setLabelsClass(SootClass labels)

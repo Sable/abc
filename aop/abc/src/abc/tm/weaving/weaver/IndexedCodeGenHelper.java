@@ -369,8 +369,6 @@ public class IndexedCodeGenHelper extends CodeGenHelper
         Chain units = newChain();
         Local label_base = getLabelBase(body, units, this_local);
 
-        setUpdated(units, label_base, IntConstant.v(1));
-
         Value from_state = getInt(from);
         Value to_state = getInt(to);
         Local lab_from = getLabel(body, units, label_base, from, LABEL);
@@ -387,7 +385,8 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
-     * Generate code to update a label with the constraint for
+     * Generate code to record the bindings for this symbol
+     * the current update a label with the constraint for
      * a skip transition.
      */
     public void genSkipLabelUpdate(int to, String symbol, SootMethod method)
@@ -398,8 +397,6 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
         Chain units = newChain();
         Local label_base = getLabelBase(body, units, this_local);
-
-        setUpdated(units, label_base, IntConstant.v(1));
 
         Value to_state = getInt(to);
         Local lab = getLabel(body, units, label_base, to, SKIP_LABEL);

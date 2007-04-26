@@ -47,6 +47,7 @@ public class CodeGenHelper
     protected SootClass thread_local;
     protected SootClass constraint;
     protected SootClass disjunct;
+    protected SootClass event;
     protected SootClass lock;
     protected SootClass set;
     protected SootClass cleanup_map;
@@ -88,6 +89,11 @@ public class CodeGenHelper
     public void setDisjunctClass(SootClass disjunct)
     {
         this.disjunct = disjunct;
+    }
+
+    public void setEventClass(SootClass event)
+    {
+        this.event = event;
     }
 
     public void setFinalState(int final_state)
@@ -721,10 +727,12 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newIfStmt(expr, jump_to));
     }
 
-    protected void insertNullChecks(SootMethod m, Chain units, Stmt jump_to)
+    protected void insertNullChecks(SootMethod m, Chain units)
     {
         Body body = m.getActiveBody();
         int params = m.getParameterCount();
+        Stmt return_label = newPlaceHolder();
+        Stmt finish_label = newPlaceHolder();
 
         for (int i = 0; i < params; i++) {
             Local param = body.getParameterLocal(i);
@@ -735,8 +743,16 @@ public class CodeGenHelper
 
             EqExpr test = Jimple.v().newEqExpr(param, NullConstant.v());
 
-            units.addLast(Jimple.v().newIfStmt(test, jump_to));
+            units.addLast(Jimple.v().newIfStmt(test, return_label));
         }
+
+        insertGoto(units, finish_label);
+        insertPlaceHolder(units, return_label);
+        insertReturn(units, null);
+        insertPlaceHolder(units, finish_label);
+        Local this_local = body.getThisLocal();
+        Local updated_base = getLabelBase(body, units, this_local);
+        setUpdated(units, updated_base, IntConstant.v(1));
     }
 
     /**
@@ -1294,23 +1310,7 @@ public class CodeGenHelper
         Body body = method.getActiveBody();
         Chain units = newChain();
 
-        null_checks_jump_target = newPlaceHolder();
-        insertNullChecks(method, units, null_checks_jump_target);
-        
-        insertBeforeReturn(units, body.getUnits());
-    }
-
-    /**
-     * Generate the target for the null-check jump
-     */
-    public void genNullChecksJumpTarget(SootMethod method)
-    {
-        Body body = method.getActiveBody();
-        Chain units = newChain();
-        
-        insertPlaceHolder(units, null_checks_jump_target);
-        null_checks_jump_target = null;
-
+        insertNullChecks(method, units);
         insertBeforeReturn(units, body.getUnits());
     }
 
@@ -1332,7 +1332,6 @@ public class CodeGenHelper
 
         // reset updated flag
         Local updated_base = getLabelBase(body, units, this_local);
-        Local updated = getUpdated(body, units, updated_base);
         setUpdated(units, updated_base, IntConstant.v(0));
 
         // generate call to clean up the indexing maps
@@ -1355,8 +1354,6 @@ public class CodeGenHelper
 
         Chain units = newChain();
         Local label_base = getLabelBase(body, units, this_local);
-
-        setUpdated(units, label_base, IntConstant.v(1));
 
         Value from_state = getInt(from);
         Value to_state = getInt(to);
@@ -1385,8 +1382,6 @@ public class CodeGenHelper
 
         Chain units = newChain();
         Local label_base = getLabelBase(body, units, this_local);
-
-        setUpdated(units, label_base, IntConstant.v(1));
 
         Value to_state = getInt(to);
         Local lab = getLabel(body, units, label_base, to, SKIP_LABEL);

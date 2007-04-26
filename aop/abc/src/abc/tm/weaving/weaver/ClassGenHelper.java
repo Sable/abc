@@ -138,8 +138,7 @@ public class ClassGenHelper {
 
     // Relevant members
     TraceMatch curTraceMatch;
-    SootClass constraint, disjunct;
-//  static SootClass myWeakRef;
+    SootClass constraint, disjunct, event;
     
     private SootClass curClass;
     private SootMethod curMethod;
@@ -150,6 +149,7 @@ public class ClassGenHelper {
     // often needed class and type constants
     static SootClass objectClass;
     static SootClass setClass;
+    static SootClass collectionClass;
     static SootClass iteratorClass;
     static SootClass ccMapClass;
     
@@ -159,6 +159,7 @@ public class ClassGenHelper {
     
     static Type objectType;
     static Type setType;
+    static Type collectionType;
     static Type jusetType;
     static Type iteratorType;
     static Type hashEntryType;
@@ -186,9 +187,11 @@ public class ClassGenHelper {
         // often needed class and type constants
         objectClass = Scene.v().getSootClass("java.lang.Object");
         setClass = Scene.v().getSootClass("java.util.LinkedHashSet");
+        collectionClass = Scene.v().getSootClass("java.util.Collection");
         iteratorClass = Scene.v().getSootClass("java.util.Iterator");
         objectType = RefType.v("java.lang.Object");
         setType = RefType.v("java.util.LinkedHashSet");
+        collectionType = RefType.v("java.util.Collection");
         jusetType = RefType.v("java.util.Set");
         iteratorType = RefType.v("java.util.Iterator");
         hashEntryType = RefType.v("java.util.Map$Entry");
@@ -220,18 +223,24 @@ public class ClassGenHelper {
         disjunct = new SootClass(curTraceMatch.getPackage() + "Disjunct$" + curTraceMatch.getName(), classModifiers);
         curTraceMatch.setDisjunctClass(disjunct);
 
+        event = new SootClass(curTraceMatch.getPackage() + "Event$" + curTraceMatch.getName(), classModifiers);
+        curTraceMatch.setEventClass(event);
+
         fillInConstraintClass();
         fillInDisjunctClass();
+        fillInEventClass();
 
         Scene.v().addClass(constraint);
         constraint.setApplicationClass();
-        constraint.setSuperclass(objectClass);/*
-        constraint.setSuperclass(Scene.v().getSootClass("java.lang.Object"));/**/
+        constraint.setSuperclass(objectClass);
 
         Scene.v().addClass(disjunct);
         disjunct.setApplicationClass();
-        disjunct.setSuperclass(objectClass);/*
-        disjunct.setSuperclass(Scene.v().getSootClass("java.lang.Object"));/**/
+        disjunct.setSuperclass(objectClass);
+
+        Scene.v().addClass(event);
+        event.setApplicationClass();
+        event.setSuperclass(objectClass);
     }
     
     //////////////// General Jimple manipulation functions
@@ -2335,46 +2344,22 @@ public class ClassGenHelper {
     }
     
     /**
-     * Add methods addNegativeBindingsForSymbolX(int to, Objects bindings..) for each tracematch symbol X.
+     * Add methods addNegativeBindingsForSymbolX(int to, Objects bindings.., Collection target) for each
+     * tracematch symbol X.
      * 
      * Depending on how many variables are bound by this symbol, one of three things can happen:
-     * - if no variables are bound, the result is falseD.
-     * - if one variable is bound, the result is a single disjunct.
-     * - if more than one variable is bound, the result is a set of disjuncts, since
+     * - if no variables are bound, no disjuncts are added to target
+     * - if one or more variables are bound, that number of disjuncts are added to target, since
      *    addNegBindings on a disjunct D is meant to return
      *           D && !(x1 == v1 && x2 == v2 && ...)
      *       <=> D && (x1 != v1 || x2 != v2 || ...)
      *       <=> (D && (x1 != v1)) || (D && (x2 != v2)) || ...
      *       
-     * Because of this, the methods return a single disjunct for symbols that bind 0 or 1 variable, and a set
-     * of disjuncts for other symbols. Note that all the elements of the set are easily computed by calling
-     * addNegativeBindingsForVariableV().
-     * 
      * For every tracematch symbol S0 binding no variables:
-     * public Disjunct$tm addNegativeBindingsForSymbolS0(int to) {
-     *      return this.falseD;
-     * }
+     * public Disjunct$tm addNegativeBindingsForSymbolS0(int to, Collection results) { }
      * 
-     * For every tracematch symbol S1 binding one variable X of type TypeX:
-     * public Disjunct$tm addNegativeBindingsForSymbolS1(int to, TypeX x) {
-     *      switch(to) {
-     *          case N: // #for every state N with a skip loop that binds all variables -- TODO: can we weaken this?
-     *              goto checkBindingsOnly;
-     *          default:
-     *              goto computeResultNormally;
-     *      }
-     *  computeResultNormally:
-     *          result = this.addNegativeBindingsForVariableX(x);
-     *          return result;
-     *  checkBindingsOnly:
-     *          if(this.get$X() != x) goto returnThis;
-     *          return this.falseD;
-     *  returnThis:
-     *          return this;
-     *  }
-     *  
      *  For every tracematch symbol S binding two or more variables x1, ..., xn of types Type1, ..., Typen:
-     *  public LinkedHashSet addNegativeBindingsForSymbolS(int to, Type1 x1, ..., Typen xn) {
+     *  public LinkedHashSet addNegativeBindingsForSymbolS(int to, Type1 x1, ..., Typen xn, Collection results) {
      *      switch(to) {
      *          case N: // #for every state N with a skip loop that binds all variables -- TODO: can we weaken this?
      *              goto checkBindingsOnly;
@@ -2385,19 +2370,18 @@ public class ClassGenHelper {
      *      resultSet = new LinkedHashSet();
      *      #for(each variable X bound by symbol S) {
      *          result = this.addNegativeBindingsForVariableX(x);
-     *          resultSet.add(result);
+     *          if (result != falseD)
+     *              results.add(result);
      *      #}
-     *      return resultSet;
+     *      return;
      *  checkBindingsOnly:
      *      #for(each variable X bound by symbol S) {
-     *          if(this.get$X() != x) goto returnThis;
+     *          if(this.get$X() != x) goto addThis;
      *      #}
-     *      result = this.falseD;
-     *      resultSet.add(result);
-     *      return resultSet;;
-     *  returnThis:
-     *      resultSet.add(this);
-     *      return resultSet;
+     *      return;
+     *  addThis:
+     *      results.add(this);
+     *      return;
      *  }
      */
     protected void addDisjunctAddNegBindingsForSymbolMethods() {
@@ -2415,14 +2399,12 @@ public class ClassGenHelper {
             for(Iterator it = variables.iterator(); it.hasNext(); ) {
                 parameterTypes.add(curTraceMatch.bindingType((String)it.next())); // one parameter for each bound variable
             }
+            parameterTypes.add(collectionType);
             
-            boolean returnSet = (varCount > 1);
-            Type returnType = (returnSet) ? setType : disjunct.getType();
-            
-            startMethod("addNegativeBindingsForSymbol" + symbol, parameterTypes, returnType, Modifier.PUBLIC);
+            startMethod("addNegativeBindingsForSymbol" + symbol, parameterTypes, VoidType.v(), Modifier.PUBLIC);
             
             if(varCount == 0) {
-                doReturn(getStaticFieldLocal(disjunct, "falseD", disjunct.getType()));
+                doReturnVoid();
                 continue;
             }
             
@@ -2436,13 +2418,14 @@ public class ClassGenHelper {
             while(varIt.hasNext()) {
                 bindings.add(getParamLocal(parameterIndex++, curTraceMatch.bindingType((String)varIt.next())));
             }
+            Local results = getParamLocal(parameterIndex, collectionType);
 
             // We implement the following optimisation:
             // If we are currently in a state that is guaranteed to bind all variables, then the actual underlying
             // disjuncts will never be changed by addNegativeBindings -- all that can happen is that the bindings
             // are incompatible, in which case we return falseD, or that the bindings *are* compatible, in which
             // case we can return this rather than this.copy();
-            // This relies on the fact that addNegativeBindings is only called on skip looks; thus the 'from' and
+            // This relies on the fact that addNegativeBindings is only called on skip loops; thus the 'from' and
             // the 'to' states of the transition always have the same strong-references behaviour, since they're
             // the same node, and therefore we would never have to 'strengthen' previously weak bindings when
             // doing this.
@@ -2463,9 +2446,6 @@ public class ClassGenHelper {
                 }
             }
             
-            Local resultSet = (returnSet ? getNewObject(setClass) : null);
-            Local result = null;
-
             // If we have found any states that allow the optimisation, then do it.
             if(!jumpToLabels.isEmpty()) {
                 doLookupSwitch(stateTo, jumpOnValues, jumpToLabels, labelComputeResultNormally);
@@ -2480,25 +2460,23 @@ public class ClassGenHelper {
                 String varName = (String)varIt.next();
                 Local binding = (Local)bindIt.next();
                 
-                result = getMethodCallResult(thisLocal, "addNegativeBindingForVariable" + varName,
-                        getList(curTraceMatch.bindingType(varName)), disjunct.getType(), binding);
+                Local falseD = getStaticFieldLocal(disjunct, "falseD", disjunct.getType());
+                Local result = getMethodCallResult(thisLocal, "addNegativeBindingForVariable" + varName,
+                                getList(curTraceMatch.bindingType(varName)), disjunct.getType(), binding);
                 
-                if(returnSet) {
-                    doMethodCall(resultSet, "add", singleObjectType, BooleanType.v(), result);
-                }
+                Stmt labelContinue = getNewLabel();
+                doJumpIfEqual(result, falseD, labelContinue);
+                doMethodCall(results, "add", singleObjectType, BooleanType.v(), result);
+                doAddLabel(labelContinue);
             }
             
-            if(returnSet) {
-                doReturn(resultSet);
-            } else {
-                doReturn(result);
-            }
+            doReturnVoid();
             
             // if the optimisation above applied -- suppose the disjunct is fully bound. Adding negative bindings
             // won't change it. They'll either be incompatible (result falseD) or compatible (result this).
             if(!jumpToLabels.isEmpty()) {
                 doAddLabel(labelCheckBindingsOnly);
-                Stmt labelReturnThis = getNewLabel();
+                Stmt labelAddThis = getNewLabel();
                 varIt = variables.iterator();
                 bindIt = bindings.iterator();
                 while(varIt.hasNext()) {
@@ -2506,27 +2484,17 @@ public class ClassGenHelper {
                     Local binding = (Local)bindIt.next();
                     
                     // if there's even just one variable whose binding doesn't contradict the new set of bindings,
-                    // then the resulting set of disjuncts would contain 'this', so we just return it.
+                    // then the resulting set of disjuncts would contain 'this', so we just add it to results.
                     doJumpIfNotEqual(getMethodCallResult(thisLocal, "get$" + varName, curTraceMatch.bindingType(varName)),
-                            binding, labelReturnThis);
+                            binding, labelAddThis);
                 }
                 
-                // if we fall through here, all bindings were incompatible, so we return false
-                result = getStaticFieldLocal(disjunct, "falseD", disjunct.getType());
-                if(returnSet) {
-                    doMethodCall(resultSet, "add", singleObjectType, BooleanType.v(), result);
-                    doReturn(resultSet);
-                } else {
-                    doReturn(result);
-                }
+                // if we fall through here, all bindings were incompatible, so we return
+                doReturnVoid();
                 
-                doAddLabel(labelReturnThis);
-                if(returnSet) {
-                    doMethodCall(resultSet, "add", singleObjectType, BooleanType.v(), thisLocal);
-                    doReturn(resultSet);
-                } else {
-                    doReturn(thisLocal);
-                }
+                doAddLabel(labelAddThis);
+                doMethodCall(results, "add", singleObjectType, BooleanType.v(), thisLocal);
+                doReturnVoid();
             }
         }
     }
@@ -3591,19 +3559,11 @@ public class ClassGenHelper {
             params.add(values[i].getType());
             args.add(values[i]);
         }
+        params.add(collectionType);
+        args.add(result);
 
-        // deal with optimisation:
-        //   Disjunct.addNegativeBindingsForX is of type Disjunct
-        //                                    if X binds less than 2 variables
-        //   otherwise it returns a set
-        boolean optimise = values.length < 2;
-        Type ret_type   = optimise ? disjunct.getType() : setType;
-        String add_name = optimise ? "add"              : "addAll";
-        List add_types  = optimise ? singleObjectType   : singleCollectionType;
- 
-        Local updated = getMethodCallResult(next_disjunct,
-            "addNegativeBindingsForSymbol" + symbol, params, ret_type, args);
-        doMethodCall(result, add_name, add_types, BooleanType.v(), updated);
+        doMethodCall(next_disjunct, "addNegativeBindingsForSymbol" + symbol,
+                        params, VoidType.v(), args);
         doJump(loop_test);
 
         doAddLabel(invalid);
@@ -4030,4 +3990,171 @@ public class ClassGenHelper {
 		
 		return stateToLabel;
 	}
+
+
+    /**
+     * The Event class contains the following:
+     *
+     * For each symbol Sym, which binds variables v1 to vN there is:
+     *
+     *    private boolean Sym;
+     *    private <type of v1> Sym$v1;
+     *    ...
+     *    private <type of vN> Sym$vN;
+     *
+     *    public void register$Sym(v1, ..., vN) {
+     *      Sym = true;
+     *      Sym$v1 = v1;
+     *      ...
+     *      Sym$vN = vN;
+     *    }
+     *
+     * There are two other methods:
+     *
+     *    public void reset() {
+     *        // set all booleans to false and all object-fields to null
+     *    }
+     *
+     *    public void doNegativeUpdates(Constraint constraint) {
+     *      <for each symbol Sym, which binds v1 to vN>
+     *        if (Sym)
+     *          constraint.queueNegativeBindingsForSymbolSym(v1,...,vN);
+     *      <end for>
+     *    }
+     */
+    protected void fillInEventClass()
+    {
+        startClass(event);
+        Iterator i = curTraceMatch.getSymbols().iterator();
+        while (i.hasNext()) {
+            String symbol = (String) i.next();
+            createEventFields(symbol);
+            createEventRegisterMethod(symbol);
+        }
+        createEventResetMethod();
+        createEventDoNegativeUpdatesMethod();
+        createEventConstructor();
+    }
+
+    protected void createEventFields(String symbol)
+    {
+        SootField field;
+        field = new SootField(symbol, BooleanType.v(), Modifier.PRIVATE);
+        event.addField(field);
+
+        Iterator i = curTraceMatch.getVariableOrder(symbol).iterator();
+        while (i.hasNext()) {
+            String var = (String) i.next();
+            Type type = curTraceMatch.bindingType(var);
+            field = new SootField(symbol + "$" + var, type, Modifier.PRIVATE);
+            event.addField(field);
+        }
+    }
+
+    protected void createEventRegisterMethod(String symbol)
+    {
+        String name = "register$" + symbol;
+        List argtypes = new ArrayList();
+        List bound = curTraceMatch.getVariableOrder(symbol);
+
+        Iterator i = bound.iterator();
+        while (i.hasNext()) {
+            String var = (String) i.next();
+            argtypes.add(curTraceMatch.bindingType(var));
+        }
+
+        startMethod(name, argtypes, VoidType.v(), Modifier.PUBLIC);
+
+        Local thislocal = getThisLocal();
+        List bindings = new ArrayList();
+        i = argtypes.iterator();
+        int param = 0;
+        while (i.hasNext()) {
+            Type type = (Type) i.next();
+            bindings.add(getParamLocal(param++, type));
+        }
+
+        doSetField(thislocal, symbol, BooleanType.v(), getInt(1));
+
+        i = bound.iterator();
+        param = 0;
+        while (i.hasNext()) {
+            String var = (String) i.next();
+            String fieldname = symbol + "$" + var;
+            Type type = curTraceMatch.bindingType(var);
+            Local val = (Local) bindings.get(param++);
+
+            doSetField(thislocal, fieldname, type, val);
+        }
+
+        doReturnVoid();
+    }
+
+    protected void createEventResetMethod()
+    {
+        startMethod("reset", emptyList, VoidType.v(), Modifier.PUBLIC);
+        Local thislocal = getThisLocal();
+
+        Iterator syms = curTraceMatch.getSymbols().iterator();
+        while (syms.hasNext()) {
+            String symbol = (String) syms.next();
+            doSetField(thislocal, symbol, BooleanType.v(), getInt(0));
+
+            Iterator vars = curTraceMatch.getVariableOrder(symbol).iterator();
+            while (vars.hasNext()) {
+                String var = (String) vars.next();
+                String fieldname = symbol + "$" + var;
+                Type type = curTraceMatch.bindingType(var);
+
+                if (!curTraceMatch.isPrimitive(var))
+                    doSetField(thislocal, fieldname, type, getNull());
+            }
+        }
+    }
+
+    protected void createEventDoNegativeUpdatesMethod()
+    {
+        List argtype = new ArrayList();
+        argtype.add(constraint.getType());
+        startMethod("doNegativeUpdates", argtype, VoidType.v(), Modifier.PUBLIC);
+
+        Local thislocal = getThisLocal();
+        Local constraintlocal = getParamLocal(0, constraint.getType());
+
+        Iterator syms = curTraceMatch.getSymbols().iterator();
+        while (syms.hasNext()) {
+            List argtypes = new ArrayList();
+            List args = new ArrayList();
+            String symbol = (String) syms.next();
+            String methodname = "queueNegativeBindingsForSymbol" + symbol;
+
+            Stmt labelSymbolNotMatched = getNewLabel();
+            Local matched = getFieldLocal(thislocal, symbol, BooleanType.v());
+            doJumpIfFalse(matched, labelSymbolNotMatched);
+
+            Iterator vars = curTraceMatch.getVariableOrder(symbol).iterator();
+            while (vars.hasNext()) {
+                String var = (String) vars.next();
+                String fieldname = symbol + "$" + var;
+                Type type = curTraceMatch.bindingType(var);
+                Local val = getFieldLocal(thislocal, fieldname, type);
+
+                argtypes.add(type);
+                args.add(val);
+            }
+
+            doMethodCall(constraintlocal, methodname, argtypes, VoidType.v(), args);
+            doAddLabel(labelSymbolNotMatched);
+        }
+        doReturnVoid();
+    }
+
+    protected void createEventConstructor()
+    {
+        startMethod(SootMethod.constructorName, emptyList,
+                        VoidType.v(), Modifier.PUBLIC);
+        Local thislocal = getThisLocal();
+        doMethodCall(thislocal, "reset", VoidType.v());
+        doReturnVoid();
+    }
 }

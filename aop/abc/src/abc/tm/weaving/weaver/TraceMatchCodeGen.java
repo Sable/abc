@@ -76,6 +76,8 @@ public class TraceMatchCodeGen {
         TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
         Iterator to_states = sm.getStateIterator();
 
+        helper.genNullChecks(method);
+
         while (to_states.hasNext()) {
             SMNode to = (SMNode) to_states.next();
             Iterator edges = to.getInEdgeIterator();
@@ -84,8 +86,6 @@ public class TraceMatchCodeGen {
             // initial states
             if (to.isInitialNode())
                 continue;
-
-            helper.genNullChecks(method);
 
             while (edges.hasNext()) {
                 SMEdge edge = (SMEdge) edges.next();
@@ -97,8 +97,6 @@ public class TraceMatchCodeGen {
                                             edge.getLabel(), method);
                 }
             }
-
-            helper.genNullChecksJumpTarget(method);
 
             if (to.hasEdgeTo(to, "") // (skip-loop)
                     && !to.hasEdgeTo(to, symbol)
