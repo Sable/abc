@@ -151,7 +151,10 @@ public class AbcExtension extends abc.main.AbcExtension
     }
     
     public void doMethodRestructuring() {
-    	new SynchronizedMethodRestructurer().apply();
-    	super.doMethodRestructuring();
+    	/*
+    	 * Broken restructuring pass; commenting out to prevent compilation breaks. ERIC: FIXME 
+    	 new SynchronizedMethodRestructurer().apply();
+    	 super.doMethodRestructuring();
+    	 */
     }
 }
