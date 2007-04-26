@@ -192,6 +192,16 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
+     * Return an invoke expression to the reset method on
+     * the event object.
+     */
+    protected InvokeExpr resetMethod(Local base)
+    {
+        SootMethodRef ref = event.getMethodByName("reset").makeRef();
+        return Jimple.v().newVirtualInvokeExpr(base, ref, new LinkedList());
+    }
+
+    /**
      * Return an invoke expression to a method which merges queued
      * positive and negative bindings into a constraint.
      */
@@ -412,6 +422,16 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
+     * Call the "reset" method on the event object
+     */
+    protected void callResetMethod(Body body, Chain units, Local container)
+    {
+        Local event_local = getEvent(body, units, container);
+        Value call = resetMethod(event_local);
+        units.addLast(Jimple.v().newInvokeStmt(call));
+    }
+
+    /**
      * Call the "merge" method, which merges queued positive
      * bindings into a contraint.
      */
@@ -482,6 +502,25 @@ public class IndexedCodeGenHelper extends CodeGenHelper
             assignToLabel(body, units, this_local, s_num, LABEL, con);
         }
 
+        insertBeforeReturn(units, body.getUnits());
+    }
+
+    /**
+     * When the tracematch lock is acquired, and the "updated"
+     * flag is set to false, the "event" object must also be
+     * reset.
+     */
+    public void genAcquireLock()
+    {
+        super.genAcquireLock();
+
+        SootMethod method = tm.getSynchAdviceMethod();
+        Body body = method.getActiveBody();
+        Local this_local = body.getThisLocal();
+        Chain units = newChain();
+        Local updated_base = getLabelBase(body, units, this_local);
+
+        callResetMethod(body, units, updated_base);
         insertBeforeReturn(units, body.getUnits());
     }
 
