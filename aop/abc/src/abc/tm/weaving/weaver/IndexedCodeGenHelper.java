@@ -137,7 +137,7 @@ public class IndexedCodeGenHelper extends CodeGenHelper
             args.add(to_state);
             name = "getBindingsForSymbol" + symbol;
         } else {
-            name = "queueNegativeBindingsForSymbol" + symbol;
+            name = "doNegativeBindingsForSymbol" + symbol;
         }
 
         for (int i = 0; i < params; i++)

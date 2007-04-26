@@ -149,6 +149,7 @@ public class ClassGenHelper {
     // often needed class and type constants
     static SootClass objectClass;
     static SootClass setClass;
+    static SootClass listClass;
     static SootClass collectionClass;
     static SootClass iteratorClass;
     static SootClass ccMapClass;
@@ -159,6 +160,7 @@ public class ClassGenHelper {
     
     static Type objectType;
     static Type setType;
+    static Type listType;
     static Type collectionType;
     static Type jusetType;
     static Type iteratorType;
@@ -187,10 +189,12 @@ public class ClassGenHelper {
         // often needed class and type constants
         objectClass = Scene.v().getSootClass("java.lang.Object");
         setClass = Scene.v().getSootClass("java.util.LinkedHashSet");
+        listClass = Scene.v().getSootClass("java.util.LinkedList");
         collectionClass = Scene.v().getSootClass("java.util.Collection");
         iteratorClass = Scene.v().getSootClass("java.util.Iterator");
         objectType = RefType.v("java.lang.Object");
         setType = RefType.v("java.util.LinkedHashSet");
+        listType = RefType.v("java.util.LinkedList");
         collectionType = RefType.v("java.util.Collection");
         jusetType = RefType.v("java.util.Set");
         iteratorType = RefType.v("java.util.Iterator");
@@ -1109,7 +1113,7 @@ public class ClassGenHelper {
             addIndConstraintGetDisjunctArrayMethod();
             addIndConstraintGetBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings) 
-                addIndConstraintQueueNegativeBindingsMethods();
+                addIndConstraintDoNegativeBindingsMethods();
         } else {
             addConstraintClassMembers();
             addConstraintInitialiser();
@@ -3042,10 +3046,14 @@ public class ClassGenHelper {
         List formals = new LinkedList(), actuals = new LinkedList();
         formals.add(mapType);
         formals.add(BooleanType.v());
+        /*
+         * Negative updates are destructive -- cf. doNegativeBindings* 
+         * 
         actuals.add(getFieldLocal(thisLocal, "indexedDisjuncts_skip", mapType));
         actuals.add(getInt(1));
         doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
         actuals.clear();
+        */
         actuals.add(getFieldLocal(thisLocal, "indexedDisjuncts_tmp", mapType));
         actuals.add(getInt(0));
         doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
@@ -3377,7 +3385,7 @@ public class ClassGenHelper {
      * The 'addNegativeBindingsForSymbol' methods in the indexed case are called 'queueNegativeBindingsForSymbol'
      * as they maintain a queue of changes.
      */
-    protected void addIndConstraintQueueNegativeBindingsMethods() {
+    protected void addIndConstraintDoNegativeBindingsMethods() {
         List params = new LinkedList();
         List args = new LinkedList();
 
@@ -3400,7 +3408,7 @@ public class ClassGenHelper {
                 params.add(type);
             }
 
-            startMethod("queueNegativeBindingsForSymbol" + symbol,
+            startMethod("doNegativeBindingsForSymbol" + symbol,
                         params, VoidType.v(), Modifier.PUBLIC);
             Local this_local = getThisLocal();
             Local state = getFieldLocal(this_local, "onState", IntType.v());
@@ -3418,14 +3426,14 @@ public class ClassGenHelper {
                 Stmt label = (Stmt) indices_to_labels.get(indices);
                 
                 doAddLabel(label);
-                addQueueNegativeBindingsBodyIndex(symbol, this_local,
+                addDoNegativeBindingsBodyIndex(symbol, this_local,
                         values, sym_binds, indices, state);
                 
                 doJump(method_end);
             }
 
             doAddLabel(no_index_case);
-            addQueueNegativeBindingsBodyNoIndex(symbol, this_local,
+            addDoNegativeBindingsBodyNoIndex(symbol, this_local,
                 values, sym_binds, state);
 
             doAddLabel(method_end);
@@ -3436,8 +3444,18 @@ public class ClassGenHelper {
     /**
      * Adding negative bindings in the case that the current
      * state uses indexing
+     * 
+     * Pseudocode:
+     * #for(each compatible hashset of disjuncts 'found') {
+     * 		LinkedList processed = new LinkedList();
+     * 		#for(each disjunct in found, 'd') {
+     * 			d.addNegBindingsForSym_sym(state, binding1, binding2, processed);
+     * 		}
+     * 		found.clear();
+     * 		found.addAll(processed);
+     * }
      */
-    protected void addQueueNegativeBindingsBodyIndex(String symbol,
+    protected void addDoNegativeBindingsBodyIndex(String symbol,
                                   Local this_local, Local[] values,
                                   List sym_binds, List indices, Local state)
     {
@@ -3463,45 +3481,20 @@ public class ClassGenHelper {
         // former are guaranteed to be a superset of those
         // used in the latter.
         Local map = getFieldLocal(this_local, "indexedDisjuncts", mapType);
-        Local skip_map = getFieldLocal(this_local,
-                "indexedDisjuncts_skip", mapType);
         
         IterationContext context = new IterationContext(depth, map, keys);
         
         startIteration(context);
         
-        // look the disjunct up in indexedDisjuncts_skip, but if the result is null,
-        // then get it from indexedDisjuncts
-        List params = new LinkedList();
-        List args = new LinkedList();
-        params.add(mapType);
-        args.add(skip_map);
-        for(int i = 0; i < keys.length; i++) {
-            params.add(objectType);
-            args.add(context.keys[i]);
-        }
-
-        Local source = getMethodCallResult(this_local, "lookup" + depth,
-                params, setType, args);
-        
-        Stmt end_if = getNewLabel();
-        doJumpIfNotNull(source, end_if);
-        Local original_source = getRelevantSet(context);
-        doAssign(source, original_source);
-        doAddLabel(end_if);
+        Local source = getRelevantSet(context);
         
         // do the actual negative bindings bit
-        Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
-                state, values);
+        Local result = addDoNegativeBindingsSetProcessing(symbol, source,
+                state, values, indices);
         
-        // put the result in indexedDisjunct_skip
-        // params and args still contain the values from the call to lookup()
-        params.add(setType);
-        args.add(result);
-        params.add(BooleanType.v());
-        args.add(getInt(0));
-        doMethodCall(this_local, "overwrite" + depth, params,
-                VoidType.v(), args);
+        // put the result back into indexedDisjunct -- destructive update!
+        doMethodCall(source, "clear", VoidType.v());
+        doMethodCall(source, "addAll", singleCollectionType, BooleanType.v(), result);
         
         endIteration(context);
     }
@@ -3510,14 +3503,15 @@ public class ClassGenHelper {
      * Adding negative bindings in the case that the current
      * state is not indexed.
      */
-    protected void addQueueNegativeBindingsBodyNoIndex(String symbol,
+    protected void addDoNegativeBindingsBodyNoIndex(String symbol,
                                   Local this_local, Local[] values,
                                   List sym_binds, Local state)
     {
         Local source = getFieldLocal(this_local, "disjuncts_skip", setType);
-        Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
-                           state, values);
-        doSetField(this_local, "disjuncts_skip", setType, result);
+        Local result = addDoNegativeBindingsSetProcessing(symbol, source,
+                           state, values, null);
+        doMethodCall(source, "clear", VoidType.v());
+        doMethodCall(source, "addAll", singleCollectionType, BooleanType.v(), result);
     }
 
     /**
@@ -3525,15 +3519,16 @@ public class ClassGenHelper {
      * bindings. This generates code that takes a set and calculates
      * the new set produced by adding negative bindings.
      */
-    protected Local addQueueNegativeBindingsSetProcessing(String symbol,
-                                        Local set, Local state, Local[] values)
+    protected Local addDoNegativeBindingsSetProcessing(String symbol,
+                                        Local set, Local state, Local[] values,
+                                        List indices)
     {
         // types and argument for calls
         List params = new LinkedList();
         List args = new LinkedList();
 
-        // create result set
-        Local result = getNewObject(setClass);
+        // create result list (quicker to construct than a set!)
+        Local result = getNewObject(listClass);
 
         Local iter = getMethodCallResult(set, "iterator", iteratorType);
         Stmt loop_test = getNewLabel();
@@ -3548,6 +3543,8 @@ public class ClassGenHelper {
             getCastValue(getMethodCallResult(iter, "next", objectType),
                          disjunct.getType());
 
+        // TODO: We only need to validate a disjunct if there exists a collectable
+        // weakref on which we don't index for the current state.
         params.add(IntType.v());
         args.add(state);
         Local is_valid =
@@ -3571,10 +3568,7 @@ public class ClassGenHelper {
         doJump(loop_test);
 
         doAddLabel(loop_end);
-        
-        // Remove Disjunct.falseD if it has ended up in the set
-        doMethodCall(result, "remove", singleObjectType, BooleanType.v(), 
-        		getStaticFieldLocal(disjunct, "falseD", disjunct.getType()));
+
         return result;
     }
 
@@ -4126,7 +4120,7 @@ public class ClassGenHelper {
             List argtypes = new ArrayList();
             List args = new ArrayList();
             String symbol = (String) syms.next();
-            String methodname = "queueNegativeBindingsForSymbol" + symbol;
+            String methodname = "doNegativeBindingsForSymbol" + symbol;
 
             Stmt labelSymbolNotMatched = getNewLabel();
             Local matched = getFieldLocal(thislocal, symbol, BooleanType.v());

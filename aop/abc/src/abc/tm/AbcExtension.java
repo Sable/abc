@@ -98,6 +98,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
 		   Scene.v().addBasicClass("java.util.Iterator", SootClass.SIGNATURES);
 		   Scene.v().addBasicClass("java.util.LinkedHashSet",
                                     SootClass.SIGNATURES);
+		   Scene.v().addBasicClass("java.util.LinkedList", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.lang.ref.WeakReference", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.lang.ThreadLocal", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
