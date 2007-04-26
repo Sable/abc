@@ -1371,6 +1371,15 @@ public class CodeGenHelper
     }
 
     /**
+     * temporary --- this should be removed when the
+     *               old-style codegen is removed
+     */
+    public void genRegisterSymbolBindings(String symbol, SootMethod method)
+    {
+        // do nothing
+    }
+
+    /**
      * Generate code to update a label with the constraint for
      * a skip transition.
      */

@@ -60,6 +60,33 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
+     * Create a Jimple reference to the "event" field
+     * on the tracematch container class.
+     */
+    protected InstanceFieldRef makeEventRef(Value base)
+    {
+        SootClass labelclass = tm.getLabelsClass();
+        String name = tm.getName() + "event";
+        Type type = event.getType();
+        SootFieldRef ref =
+            Scene.v().makeFieldRef(labelclass, name, type, false);
+
+        return Jimple.v().newInstanceFieldRef(base, ref);
+    }
+
+    /**
+     * Create the "event" field on the tracematch
+     * container class.
+     */
+    protected void makeEventField()
+    {
+        String name = tm.getName() + "event";
+        Type type = event.getType();
+        SootField field = new SootField(name, type, Modifier.PUBLIC);
+        tm.getLabelsClass().addField(field);
+    }
+
+    /**
      * Returns an invoke expression to the static "getTrue" method
      * on the constraint class.
      */
@@ -145,6 +172,26 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
+     * Return an invoke expression to a method which stores
+     * the variable bindings when a symbol pointcut matches.
+     */
+    protected InvokeExpr registerMethod(String symbol, Local base,
+                                        SootMethod caller)
+    {
+        Body body = caller.getActiveBody();
+        int params = tm.getVariableOrder(symbol).size();
+        String name = "register$" + symbol;
+        List args = new ArrayList(params);
+
+        for (int i = 0; i < params; i++)
+            args.add(body.getParameterLocal(i));
+
+        SootMethodRef ref = event.getMethodByName(name).makeRef();
+
+        return Jimple.v().newVirtualInvokeExpr(base, ref, args);
+    }
+
+    /**
      * Return an invoke expression to a method which merges queued
      * positive and negative bindings into a constraint.
      */
@@ -155,6 +202,25 @@ public class IndexedCodeGenHelper extends CodeGenHelper
                                     VoidType.v(), false);
 
         return Jimple.v().newVirtualInvokeExpr(base, ref, new LinkedList());
+    }
+
+    /**
+     * Return an invoke expression to a method which destructively
+     * does negative updates to a constraint, based on the bindings
+     * stored in the event object.
+     */
+    protected InvokeExpr doNegativeUpdatesMethod(Local base, Local arg)
+    {
+        ArrayList arg_types = new ArrayList(1);
+        ArrayList args = new ArrayList(1);
+        arg_types.add(constraint.getType());
+        args.add(arg);
+
+        SootMethodRef ref =
+            Scene.v().makeMethodRef(event, "doNegativeUpdates", arg_types,
+                                    VoidType.v(), false);
+
+        return Jimple.v().newVirtualInvokeExpr(base, ref, args);
     }
 
     ////////////// ACTUAL CODE GENERATION METHODS ////////////////////////
@@ -168,6 +234,42 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     {
         throw new InternalCompilerError(
                 "Called getConstant, but using indexed constraints");
+    }
+
+    /**
+     * Initialises the "event" field with a new event object.
+     */
+    protected void initEventField(Body body, Chain units, Local base)
+    {
+        // base.event = new Event();
+        Local new_event = addLocal(body, "event", event.getType());
+
+        SootMethodRef construct_ref =
+            Scene.v().makeConstructorRef(event, new LinkedList());
+        Expr new_expr =
+            Jimple.v().newNewExpr(event.getType());
+        Expr construct_expr =
+            Jimple.v().newSpecialInvokeExpr(new_event, construct_ref);
+
+        Ref event_ref = makeEventRef(base);
+
+        units.addLast(Jimple.v().newAssignStmt(new_event, new_expr));
+        units.addLast(Jimple.v().newInvokeStmt(construct_expr));
+        units.addLast(Jimple.v().newAssignStmt(event_ref, new_event));
+    }
+
+    /**
+     * Creates a Jimple local and assigns it the value of the
+     * "event" field on the tracematch container class.
+     */
+    protected Local getEvent(Body body, Chain units, Local base)
+    {
+        Ref ref = makeEventRef(base);
+
+        Local event_local = addLocal(body, "event", event.getType());
+        units.addLast(Jimple.v().newAssignStmt(event_local, ref));
+
+        return event_local;
     }
 
     /**
@@ -299,12 +401,37 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
-     * Call the "merge" method, which merges queued positive and
-     * negative bindings into a constraint.
+     * Call the "register" method, which stores the variable
+     * bindings when a symbol pointcut matches.
+     */
+    protected void callRegisterMethod(Body body, Chain units, String symbol,
+                                      Local base, SootMethod caller)
+    {
+        Value call = registerMethod(symbol, base, caller);
+        units.addLast(Jimple.v().newInvokeStmt(call));
+    }
+
+    /**
+     * Call the "merge" method, which merges queued positive
+     * bindings into a contraint.
      */
     protected void callMergeMethod(Body body, Chain units, Local base)
     {
         Value call = mergeMethod(base);
+        units.addLast(Jimple.v().newInvokeStmt(call));
+    }
+
+    /**
+     * Call the "doNegativeUpdates" method on the event class,
+     * passing it a constraint. This destructively updates the
+     * constraint with the negative updates for the current
+     * event.
+     */
+    protected void callDoNegativeUpdatesMethod(Body body, Chain units,
+                                               Local container, Local label)
+    {
+        Local event_local = getEvent(body, units, container);
+        Value call = doNegativeUpdatesMethod(event_local, label);
         units.addLast(Jimple.v().newInvokeStmt(call));
     }
 
@@ -342,6 +469,9 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
         makeUpdatedField();
         setUpdated(units, this_local, IntConstant.v(0));
+
+        makeEventField();
+        initEventField(body, units, this_local);
 
         while (states.hasNext()) {
             SMNode state = (SMNode) states.next();
@@ -386,10 +516,29 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
     /**
      * Generate code to record the bindings for this symbol
-     * the current update a label with the constraint for
-     * a skip transition.
+     * in the tracematch's event object, so that negative
+     * bindings can later be calculated destructively.
      */
-    public void genSkipLabelUpdate(int to, String symbol, SootMethod method)
+    public void genRegisterSymbolBindings(String symbol, SootMethod method)
+    {
+        Body body = method.getActiveBody();
+        Local this_local = body.getThisLocal();
+        Chain units = newChain();
+        Local label_base = getLabelBase(body, units, this_local);
+        Local event_local = getEvent(body, units, label_base);
+
+        callRegisterMethod(body, units, symbol, event_local, method);
+ 
+        insertBeforeReturn(units, body.getUnits());
+    }
+
+    /**
+     * Generate code to update a label with the constraint for
+     * a skip transition.
+     * FIXME - old method, needed?
+     */
+    public void genSkipLabelUpdate(int to, String symbol, SootMethod method) {}
+    public void genSkipLabelUpdate2(int to, String symbol, SootMethod method)
     {
         Body body = method.getActiveBody();
 
@@ -422,6 +571,7 @@ public class IndexedCodeGenHelper extends CodeGenHelper
         Local label_base = getLabelBase(body, units, this_local);
 
         Local label = getLabel(body, units, label_base, state, LABEL);
+        callDoNegativeUpdatesMethod(body, units, label_base, label);
         callMergeMethod(body, units, label);
 
         if (is_final && !tm.isPerThread())

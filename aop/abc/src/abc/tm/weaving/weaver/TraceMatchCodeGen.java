@@ -77,12 +77,13 @@ public class TraceMatchCodeGen {
         Iterator to_states = sm.getStateIterator();
 
         helper.genNullChecks(method);
+        helper.genRegisterSymbolBindings(symbol, method);
 
         while (to_states.hasNext()) {
             SMNode to = (SMNode) to_states.next();
             Iterator edges = to.getInEdgeIterator();
 
-            // we don't accumulate useless constraints for
+            // don't accumulate useless constraints for
             // initial states
             if (to.isInitialNode())
                 continue;
@@ -98,6 +99,7 @@ public class TraceMatchCodeGen {
                 }
             }
 
+            // FIXME: remove when old code-gen is removed
             if (to.hasEdgeTo(to, "") // (skip-loop)
                     && !to.hasEdgeTo(to, symbol)
                     && !abc.main.Debug.v().noNegativeBindings)
@@ -117,12 +119,12 @@ public class TraceMatchCodeGen {
             SMNode state = (SMNode) states.next();
             boolean skip_loop;
 
-            // there is only one final state, and we remember it
+            // there is only one final state, and it is recorded
             // in order to generate solution code later
             if (state.isFinalNode())
                 helper.setFinalState(state.getNumber());
 
-            // we don't want to accumulate useless constraints
+            // don't accumulate useless constraints
             // for initial states
             if (state.isInitialNode())
                 continue;

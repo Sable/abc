@@ -4086,7 +4086,6 @@ public class ClassGenHelper {
 
             doSetField(thislocal, fieldname, type, val);
         }
-
         doReturnVoid();
     }
 
@@ -4110,6 +4109,7 @@ public class ClassGenHelper {
                     doSetField(thislocal, fieldname, type, getNull());
             }
         }
+        doReturnVoid();
     }
 
     protected void createEventDoNegativeUpdatesMethod()
@@ -4154,6 +4154,7 @@ public class ClassGenHelper {
         startMethod(SootMethod.constructorName, emptyList,
                         VoidType.v(), Modifier.PUBLIC);
         Local thislocal = getThisLocal();
+        doConstructorCall(thislocal, objectClass);
         doMethodCall(thislocal, "reset", VoidType.v());
         doReturnVoid();
     }
