@@ -2822,6 +2822,7 @@ public class ClassGenHelper {
         SootField indDisjuncts = new SootField("indexedDisjuncts", mapType, Modifier.PUBLIC);
         SootField indDisjuncts_tmp = new SootField("indexedDisjuncts_tmp", mapType, Modifier.PUBLIC);
         SootField indDisjuncts_skip = new SootField("indexedDisjuncts_skip", mapType, Modifier.PUBLIC);
+        SootField incoming = new SootField("incoming", listType, Modifier.PUBLIC);
         SootField onState = new SootField("onState", IntType.v(), Modifier.PUBLIC);
         
         // The indexing variables are in the following order:
@@ -2842,6 +2843,7 @@ public class ClassGenHelper {
         constraint.addField(indDisjuncts);
         constraint.addField(indDisjuncts_tmp);
         constraint.addField(indDisjuncts_skip);
+        constraint.addField(incoming);
         constraint.addField(onState);
         constraint.addField(collectableUntil);
         constraint.addField(primitiveUntil);
@@ -2904,6 +2906,7 @@ public class ClassGenHelper {
             	doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewIdMap());
             	doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewIdMap());
             }
+            doSetField(thisLocal, "incoming", listType, getNewObject(listClass));
 
             doSetField(thisLocal, "collectableUntil", IntType.v(), getInt(node.nCollectable));
             doSetField(thisLocal, "primitiveUntil", IntType.v(), getInt(node.nCollectable + node.nPrimitive));

@@ -603,14 +603,14 @@ public class IndexedCodeGenHelper extends CodeGenHelper
                                         SootMethod method, boolean is_final)
     {
         Body body = method.getActiveBody();
-
         Local this_local = body.getThisLocal();
-
         Chain units = newChain();
         Local label_base = getLabelBase(body, units, this_local);
-
         Local label = getLabel(body, units, label_base, state, LABEL);
-        callDoNegativeUpdatesMethod(body, units, label_base, label);
+
+        if (!is_final)
+            callDoNegativeUpdatesMethod(body, units, label_base, label);
+
         callMergeMethod(body, units, label);
 
         if (is_final && !tm.isPerThread())
