@@ -1609,20 +1609,13 @@ public class ClassGenHelper {
                 
                 doAddLabel(labelDisjunctValid);
                 ////////// end cleanup code
-                
-                // addNegativeBindingsForSymbolX returns a Set if the symbol binds more than one variable,
-                // and a single disjunct otherwise.
-                if(varCount < 2) {
-                    // resultDisjunct = addNegativeBindingsForSymbolX(stateTo, [bindings]);
-                    Local resultDisjunct = getMethodCallResult(curDisjunct, "addNegativeBindingsForSymbol" + symbol, 
-                            parameterTypes, disjunct.getType(), parameterLocals);
-                    doMethodCall(resultDisjuncts, "add", singleObjectType, BooleanType.v(), resultDisjunct);
-                } else {
-                    // resultDisjunctSet = addNegativeBindingsForSymbolX(stateTo, [bindings]);
-                    Local resultDisjunctSet = getMethodCallResult(curDisjunct, "addNegativeBindingsForSymbol" + symbol, 
-                            parameterTypes, setType, parameterLocals);
-                    doMethodCall(resultDisjuncts, "addAll", singleCollectionType, BooleanType.v(), resultDisjunctSet);
-                }
+ 
+                List disjunctParameterTypes = new ArrayList();
+                disjunctParameterTypes.addAll(parameterTypes);
+                disjunctParameterTypes.add(collectionType);
+                parameterLocals.add(resultDisjuncts);
+                doMethodCall(curDisjunct, "addNegativeBindingsForSymbol" + symbol, 
+                            disjunctParameterTypes, VoidType.v(), parameterLocals);
                 
                 doJump(labelLoopBegin);
                 // end of loop
