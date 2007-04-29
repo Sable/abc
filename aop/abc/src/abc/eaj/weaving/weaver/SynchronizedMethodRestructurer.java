@@ -109,7 +109,7 @@ public class SynchronizedMethodRestructurer {
 		
 		//make sure we only have a single return statement
 		Stmt nopBeforeReturn = Restructure.restructureReturn(method);
-		ReturnStmt retStmt = (ReturnStmt) units.getSuccOf(nopBeforeReturn);
+		Stmt retStmt = (ReturnStmt) units.getSuccOf(nopBeforeReturn);
 		
 		//Throwable caughtEx;
 		SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
