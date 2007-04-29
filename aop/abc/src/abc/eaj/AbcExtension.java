@@ -150,11 +150,12 @@ public class AbcExtension extends abc.main.AbcExtension
         lexer.addPointcutKeyword("arrayset", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYSET)));
     }
     
-    public void doMethodRestructuring() {
-    	/*
-    	 * Broken restructuring pass; commenting out to prevent compilation breaks. ERIC: FIXME 
-    	 new SynchronizedMethodRestructurer().apply();
-    	 super.doMethodRestructuring();
-    	 */
+    /** 
+     * {@inheritDoc}
+     */
+    public void doMethodRestructuring() {    	
+    	//restructure synchronized methods (convert them to synchronized blocks for lock/unlock pointcuts)
+    	new SynchronizedMethodRestructurer().apply();
+		super.doMethodRestructuring();
     }
 }
