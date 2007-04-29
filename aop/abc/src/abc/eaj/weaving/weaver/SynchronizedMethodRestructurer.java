@@ -18,7 +18,6 @@ import soot.jimple.ExitMonitorStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
-import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.ThisRef;
 import abc.main.Debug;
@@ -109,7 +108,7 @@ public class SynchronizedMethodRestructurer {
 		
 		//make sure we only have a single return statement
 		Stmt nopBeforeReturn = Restructure.restructureReturn(method);
-		Stmt retStmt = (ReturnStmt) units.getSuccOf(nopBeforeReturn);
+		Stmt retStmt = (Stmt) units.getSuccOf(nopBeforeReturn);
 		
 		//Throwable caughtEx;
 		SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
