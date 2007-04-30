@@ -155,7 +155,7 @@ public class AbcExtension extends abc.main.AbcExtension
      */
     public void doMethodRestructuring() {    	
     	//restructure synchronized methods (convert them to synchronized blocks for lock/unlock pointcuts)
-    	new SynchronizedMethodRestructurer().apply();
-		super.doMethodRestructuring();
+    	//new SynchronizedMethodRestructurer().apply();
+		//super.doMethodRestructuring();
     }
 }
