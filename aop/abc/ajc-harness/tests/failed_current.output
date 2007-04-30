@@ -228,10 +228,3 @@ Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
 
 
-Running test 1220: abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts
-Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug doValidate abctests/eaj/lock_unlock/SyncMethods.java 
-Compilation produced an unexpected number of errors: 0, should be 1
-Actual errors found: 
-FAIL: Test 1220: "abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts" failed.
-
-
