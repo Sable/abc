@@ -20,31 +20,22 @@
 
 package abc.aspectj.ast;
 
-import polyglot.util.Position;
+import polyglot.ast.AmbExpr;
+import polyglot.ast.AmbTypeNode;
+import polyglot.ast.Local;
+import polyglot.ast.Node;
+import polyglot.ast.QualifierNode;
+import polyglot.ast.TypeNode;
+import polyglot.ext.jl.ast.AmbTypeNode_c;
+import polyglot.types.SemanticException;
 import polyglot.util.CodeWriter;
 import polyglot.util.InternalCompilerError;
-
-import polyglot.ast.Local;
-import polyglot.ast.AmbExpr;
-import polyglot.ast.Node;
-import polyglot.ast.AmbTypeNode;
-import polyglot.ast.TypeNode;
-import polyglot.ast.Prefix;
-import polyglot.ast.QualifierNode;
-
-import polyglot.types.SemanticException;
-
+import polyglot.util.Position;
 import polyglot.visit.AmbiguityRemover;
-import polyglot.visit.PrettyPrinter;
 import polyglot.visit.ExceptionChecker;
-import polyglot.visit.TypeChecker;
-import polyglot.visit.TypeBuilder;
 import polyglot.visit.NodeVisitor;
-import polyglot.types.UnknownType;
-
-import polyglot.ext.jl.ast.Node_c;
-import polyglot.ext.jl.ast.TypeNode_c;
-import polyglot.ext.jl.ast.AmbTypeNode_c;
+import polyglot.visit.PrettyPrinter;
+import polyglot.visit.TypeChecker;
 
 /** Represents either a type or a local. This is for arguments of <code>args(..)</code>,
  *  <code>this(..)</code>, <code>target(..)</code> as well as named pointcuts.
@@ -54,7 +45,7 @@ import polyglot.ext.jl.ast.AmbTypeNode_c;
  *  @author Aske Simon Christensen
  */
 public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
-	TypeNode type; // an identifier that is an advice formal or a type
+	protected TypeNode type; // an identifier that is an advice formal or a type
 	
 	public AmbTypeOrLocal_c(Position pos,TypeNode type) {
 		super(pos);
