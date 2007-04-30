@@ -80,20 +80,25 @@ public class SynchronizedMethodRestructurer {
 				
 		//remove "synchronized modifier from method declaration"
 		method.setModifiers((method.getModifiers() & ~Modifier.SYNCHRONIZED));
-		
+			
+		Local thisLocal = null;
+		if(!method.isStatic()) {
+			thisLocal = moveIdentityStatementForward(b);
+		}
+
 		PatchingChain units = b.getUnits();
 		LocalGenerator localGenerator = new LocalGenerator(b);
-		
+
 		//enter entermonitor(this), resp. entermonitor(<CurrType>.class) to beginning
-		RefType type;
+		
 		Local syncLocal;
 		//in static methods, we synchronize on the class, else on "this"
 		if(method.isStatic()) {
-			type = Scene.v().getSootClass("java.lang.Class").getType();
+			RefType classType = Scene.v().getSootClass("java.lang.Class").getType();
+			syncLocal = localGenerator.generateLocal(classType);
 		} else {
-			type = method.getDeclaringClass().getType();
+			syncLocal = thisLocal;
 		}
-		syncLocal = localGenerator.generateLocal(type);
 		NopStmt beginRealBody = Jimple.v().newNopStmt();
 		units.addFirst(beginRealBody);
 		units.addFirst(Jimple.v().newEnterMonitorStmt(syncLocal)); //add "entermonitor(thisLocal)"
@@ -101,10 +106,7 @@ public class SynchronizedMethodRestructurer {
 		if(method.isStatic()) {
 			ClassConstant classConstant = ClassConstant.v(method.getDeclaringClass().getName());
 			units.addFirst(Jimple.v().newAssignStmt(syncLocal, classConstant)); //add "thisLocal = @this" before
-		} else {
-			ThisRef newThisRef = Jimple.v().newThisRef(type);
-			units.addFirst(Jimple.v().newIdentityStmt(syncLocal, newThisRef)); //add "thisLocal = @this" before
-		}
+		} 
 		
 		//make sure we only have a single return statement
 		Stmt nopBeforeReturn = Restructure.restructureReturn(method);
@@ -140,5 +142,38 @@ public class SynchronizedMethodRestructurer {
 
 		//register method as rewritten to generate warning
 		SyncWarningWeaver.registerConvertedMethod(method);
+	}
+
+	/**
+	 * If an identity statement assigning <i>this</i> exists in b, this statement is moved to be the very first statement.
+	 * If not, such a statement is created.
+	 * If multiple such statements exist, only the first one is moved. 
+	 * @param b any Jimple body
+	 * @return the {@link Local} this identity statement assigns to 
+	 */
+	private Local moveIdentityStatementForward(Body b) {
+		IdentityStmt firstIdentityStmt = null;
+		for (Iterator unitIter = b.getUnits().iterator(); unitIter.hasNext();) {
+			Stmt stmt = (Stmt) unitIter.next();
+			if(stmt instanceof IdentityStmt) {
+				IdentityStmt identityStmt = (IdentityStmt) stmt;
+				if(identityStmt.getRightOp() instanceof ThisRef) {
+					firstIdentityStmt = identityStmt;					
+					break;
+				}
+			}
+		}
+		if(firstIdentityStmt!=null) {
+			b.getUnits().remove(firstIdentityStmt);
+		} else {
+			RefType thisType = b.getMethod().getDeclaringClass().getType();
+			Local thisLocal = new LocalGenerator(b).generateLocal(thisType);
+			ThisRef newThisRef = Jimple.v().newThisRef(thisType);
+			firstIdentityStmt = Jimple.v().newIdentityStmt(thisLocal, newThisRef);
+		}
+		
+		b.getUnits().addFirst(firstIdentityStmt);
+		
+		return (Local) firstIdentityStmt.getLeftOp();
 	}
 }
