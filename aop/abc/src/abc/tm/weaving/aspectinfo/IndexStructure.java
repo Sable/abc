@@ -107,7 +107,10 @@ public class IndexStructure
 
     public int hashCode()
     {
-        return names.hashCode() ^ Arrays.hashCode(kinds);
+        return names.hashCode();
+        // Java5 only:
+        // ^ Arrays.hashCode(kinds);
+        // (leaving it out shouldn't cause too many collisions)
     }
 
     public boolean equals(Object other)
