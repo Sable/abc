@@ -14,6 +14,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.ClassConstant;
+import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.Jimple;
@@ -90,7 +91,6 @@ public class SynchronizedMethodRestructurer {
 		LocalGenerator localGenerator = new LocalGenerator(b);
 
 		//enter entermonitor(this), resp. entermonitor(<CurrType>.class) to beginning
-		
 		Local syncLocal;
 		//in static methods, we synchronize on the class, else on "this"
 		if(method.isStatic()) {
@@ -99,9 +99,14 @@ public class SynchronizedMethodRestructurer {
 		} else {
 			syncLocal = thisLocal;
 		}
+		//find first statement after all identity statements
+		Stmt firstRealStmt = Restructure.findFirstRealStmt(method, units);
+		//add "entermonitor(thisLocal)"
+		EnterMonitorStmt monitorEnterStmt = Jimple.v().newEnterMonitorStmt(syncLocal);
+		units.insertAfter(monitorEnterStmt,firstRealStmt);
+		//add nop
 		NopStmt beginRealBody = Jimple.v().newNopStmt();
-		units.addFirst(beginRealBody);
-		units.addFirst(Jimple.v().newEnterMonitorStmt(syncLocal)); //add "entermonitor(thisLocal)"
+		units.insertAfter(beginRealBody,monitorEnterStmt);
 		//in static methods, we synchronize on the class, else on "this"
 		if(method.isStatic()) {
 			ClassConstant classConstant = ClassConstant.v(method.getDeclaringClass().getName());
@@ -140,6 +145,10 @@ public class SynchronizedMethodRestructurer {
 		//insert trap: from right after the entermonitor to the first exitmonitor, jumping to the assignment of the exception
 		b.getTraps().add(Jimple.v().newTrap(throwable, beginRealBody, exitMon, exceptionIdStmt));
 
+		if(Debug.v().doValidate) {
+			b.validate();
+		}
+		
 		//register method as rewritten to generate warning
 		SyncWarningWeaver.registerConvertedMethod(method);
 	}
