@@ -384,15 +384,14 @@ public class IndexedCodeGenHelper extends CodeGenHelper
         // if this state is indexed, and the symbol that
         // triggered this method call binds all the indices,
         // then add them to the "queue" call
-        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
-        SMNode node = sm.getStateByNumber(state);
+        IndexStructure index = tm.getIndexingScheme().getStructure(state);
         List sym_binds = tm.getVariableOrder(symbol);
 
-        if (sym_binds.containsAll(node.indices)) {
-            Local[] keys = new Local[node.indices.size()];
+        if (sym_binds.containsAll(index.varNames())) {
+            Local[] keys = new Local[index.height()];
 
             for (int i = 0; i < keys.length; i++) {
-                String var = (String) node.indices.get(i);
+                String var = index.varName(i);
                 int param_num = sym_binds.indexOf(var);
                 Local param = body.getParameterLocal(param_num);
 

@@ -138,6 +138,7 @@ public class ClassGenHelper {
 
     // Relevant members
     TraceMatch curTraceMatch;
+    IndexingScheme curIndScheme;
     SootClass constraint, disjunct, event;
     
     private SootClass curClass;
@@ -185,6 +186,7 @@ public class ClassGenHelper {
      */
     public ClassGenHelper(TraceMatch tm) {
         curTraceMatch = tm;
+        curIndScheme = tm.getIndexingScheme();
         
         // often needed class and type constants
         objectClass = Scene.v().getSootClass("java.lang.Object");
@@ -660,6 +662,28 @@ public class ClassGenHelper {
         
         return result;
     }
+
+    /**
+     * Constructs a new map of a particular kind.
+     * 
+     * @param int The kind of map (defined in abc.tm.weaving.aspectinfo.IndexingScheme)
+     * @return A local containing the new object.
+     */
+    protected Local getNewMap(int kind)
+    {
+        switch (kind) {
+            case IndexingScheme.COLL_MAP:
+                return getNewCollWeakIdMap();
+            case IndexingScheme.PRIM_MAP:
+                return getNewHashMap();
+            case IndexingScheme.WEAK_MAP:
+                return getNewHashMap();
+            case IndexingScheme.STRONG_MAP:
+                return getNewIdMap();
+            default:
+                return getNewObject(setClass);
+        }
+    }
     
     /**
      * Arithmetic helper function -- adds 'value' to the (primitive numeric type'd) 'local' and stores the
@@ -1109,6 +1133,7 @@ public class ClassGenHelper {
             addIndConstraintFinalizeMethod();
             addIndConstraintHelperMethods();
             addIndConstraintGetTrueMethod();
+            addIndConstraintOrMethod();
             addIndConstraintMergeMethod();
             addIndConstraintGetDisjunctArrayMethod();
             addIndConstraintGetBindingsMethods();
@@ -2876,34 +2901,21 @@ public class ClassGenHelper {
         
         for(Iterator nodeIt = nodeToLabel.keySet().iterator(); nodeIt.hasNext(); ) {
             SMNode node = (SMNode)nodeIt.next();
+            IndexStructure index = curIndScheme.getStructure(node);
             doAddLabel((Stmt)nodeToLabel.get(node));
             
-            if(node.nCollectable > 0) {
-            	// first-level index variable is a collectable weakref
-            	doSetField(thisLocal, "indexedDisjuncts", mapType, getNewCollWeakIdMap());
-            	doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewCollWeakIdMap());
-            	doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewCollWeakIdMap());
-            } else if(node.nPrimitive > 0) {
-            	// first-level index variable is a primitive binding
-                doSetField(thisLocal, "indexedDisjuncts", mapType, getNewHashMap());
-                doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewHashMap());
-                doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewHashMap());
-            } else if(node.nWeak > 0) {
-            	// first-level index variable is a non-collectable weakref
-            	doSetField(thisLocal, "indexedDisjuncts", mapType, getNewWeakIdMap());
-            	doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewWeakIdMap());
-            	doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewWeakIdMap());
-            } else {
-            	// first-level index variable is a strong ref
-            	doSetField(thisLocal, "indexedDisjuncts", mapType, getNewIdMap());
-            	doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewIdMap());
-            	doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewIdMap());
-            }
+            // get the kind of map used at the top of the index
+            int kind = index.kind(0);
+
+            doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(kind));
+            doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(kind));
+            doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(kind));
+
             doSetField(thisLocal, "incoming", listType, getNewObject(listClass));
 
-            doSetField(thisLocal, "collectableUntil", IntType.v(), getInt(node.nCollectable));
-            doSetField(thisLocal, "primitiveUntil", IntType.v(), getInt(node.nCollectable + node.nPrimitive));
-            doSetField(thisLocal, "weakUntil", IntType.v(), getInt(node.nCollectable + node.nPrimitive + node.nWeak));
+            doSetField(thisLocal, "collectableUntil", IntType.v(), getInt(index.collectableUntil()));
+            doSetField(thisLocal, "primitiveUntil", IntType.v(), getInt(index.primitiveUntil()));
+            doSetField(thisLocal, "weakUntil", IntType.v(), getInt(index.weakUntil()));
             
             doReturnVoid();
         }
@@ -3010,6 +3022,153 @@ public class ClassGenHelper {
         doReturn(getNewObject(constraint, int_and_set, args));
     }
     
+    /**
+     * Adds 'or' method which combines the disjuncts stored in 'incoming'
+     * (positive updates from other states) with this constraint.
+     */
+    protected void addIndConstraintOrMethod() {
+        startMethod("or", singleCollectionType, VoidType.v(), Modifier.PUBLIC);
+        Local thisLocal = getThisLocal();
+        Local incomingCollection = getParamLocal(0, collectionType);
+        Local incoming = getMethodCallResult(incomingCollection, "iterator", iteratorType);
+
+        Stmt defaultLabel = getNewLabel();
+        Map structureToLabel = addIndexStructureLookupSwitch(thisLocal, defaultLabel);
+        
+        Iterator i = structureToLabel.entrySet().iterator();
+        while (i.hasNext()) {
+            Map.Entry pair = (Map.Entry) i.next();
+            IndexStructure index = (IndexStructure) pair.getKey();
+            Stmt label = (Stmt) pair.getValue();
+
+            doAddLabel(label);
+            addIndConstraintOrClause(thisLocal, incoming, index);
+        }
+
+        doReturnVoid();
+        doAddLabel(defaultLabel);
+        doThrowException("no such state in or() method");
+    }
+
+    /**
+     * This method generates the code to add the new disjuncts in 'incoming'
+     * to this constraint, for a particular index structure.
+     */
+    protected void addIndConstraintOrClause(Local thisLocal, Local incoming,
+                                            IndexStructure index)
+    {
+        List putTypes = new ArrayList(2);
+        putTypes.add(objectType);
+        putTypes.add(objectType);
+
+        Local[] indices = new Local[index.height()];
+        Stmt[] lookupLabels = new Stmt[index.height()];
+        Stmt labelEnd = getNewLabel();
+
+        // TEST INCOMING
+        doJumpIfFalse(getMethodCallResult(incoming, "hasNext", BooleanType.v()),
+                        labelEnd);
+
+        // UNPACK
+        Local curDisjunct =
+            addIndConstraintOrUnpackDisjunct(incoming, null, indices, false, index);
+
+        // LOOKUP
+        Local current;
+        if (indices.length == 0)
+            current = getFieldLocal(thisLocal, "disjuncts", setType);
+        else
+            current = getFieldLocal(thisLocal, "indexedDisjuncts", mapType);
+
+        for (int i = 0; i < indices.length; i++) {
+            lookupLabels[i] = getNewLabel();
+            doAddLabel(lookupLabels[i]);
+            Local child = getMethodCallResult(current, "get",
+                                              singleObjectType,
+                                              objectType, indices[i]);
+            Stmt labelNotNull = getNewLabel();
+            Stmt labelContinue = getNewLabel();
+            doJumpIfNotNull(child, labelNotNull);
+
+            Local new_child = getNewMap(index.kind(i + 1));
+            List putArgs = new ArrayList(2);
+            putArgs.add(current);
+            putArgs.add(new_child);
+            doMethodCall(current, "put", putTypes, objectType, putArgs);
+            doJump(labelContinue);
+
+            doAddLabel(labelNotNull);
+            doAssign(new_child, getCastValue(child, new_child.getType()));
+
+            doAddLabel(labelContinue);
+            current = new_child;
+        }
+        
+        // INSERT
+        doMethodCall(current, "add", singleObjectType, BooleanType.v(), curDisjunct);
+ 
+        // TEST INCOMING
+        doJumpIfFalse(getMethodCallResult(incoming, "hasNext", BooleanType.v()),
+                        labelEnd);
+ 
+        // ASSIGN TO OLD-INDEX VARS
+        Local[] backups = new Local[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            String name = index.varName(i);
+            Type varType = curTraceMatch.bindingType(name);
+            backups[i] = getNewLocal(varType, indices[i], "backup$" + name);
+        }
+
+        // UNPACK
+        addIndConstraintOrUnpackDisjunct(incoming, null, indices, false, index);
+
+        // SMART LOOKUP
+        for (int i = 0; i < indices.length; i++)
+            doJumpIfNotEqual(indices[i], backups[i], lookupLabels[i]);
+ 
+        // END
+        doAddLabel(labelEnd);
+        doReturnVoid();
+    }
+
+    /**
+     * Retrieves a disjunct from an iterator and unpacks the values from the
+     * disjunct that are needed for the current index.
+     *
+     * @incoming    the Local for the iterator which is unpacked
+     * @curDisjunct the Local that the disjunct should be assigned to (or null)
+     * @indices     the array of Locals for the unpacked indices
+     * @assign      if false the method writes to indices and returns the disjunct local,
+     *              if true the method reads from indices and assigns to curDisjunct
+     * @index       the index structure to use
+     * @returns     the Local that the unpacked Disjunct is in
+     */
+    protected Local addIndConstraintOrUnpackDisjunct(Local incoming, Local curDisjunct, 
+                                                     Local[] indices, boolean assign,
+                                                     IndexStructure index)
+    {
+        Local next = getMethodCallResult(incoming, "next", objectType);
+        Local nextDisjunct = getCastValue(next, disjunct.getType());
+        if (assign)
+            doAssign(curDisjunct, nextDisjunct);
+
+        for (int i = 0; i < indices.length; i++) {
+            String varName = index.varName(i);
+            Type varType = curTraceMatch.bindingType(varName);
+            String getMethodName = "get$" + varName;
+            Local val = getMethodCallResult(nextDisjunct, getMethodName, varType);
+            if (curTraceMatch.isPrimitive(varName))
+                val = getWeakRef(val, varName);
+
+            if (assign)
+                doAssign(indices[i], val);
+            else
+                indices[i] = val;
+        }
+
+        return nextDisjunct;
+    }
+
     /**
      * Adds 'merge' method which combines the _skip and _tmp-labelled constraints and prepares the
      * constraint for the next event.
@@ -3572,12 +3731,15 @@ public class ClassGenHelper {
      * Adds small helper methods, like lookup(), lookup2(), overwrite() and queue().
      */
     protected void addIndConstraintHelperMethods() {
-        int[] index_depths = curTraceMatch.getIndexingDepths();
+        Iterator index_depths = curIndScheme.getIndexingDepths();
 
-        for (int i = 0; i < index_depths.length; i++) {
-            addIndConstraintLookupMethod(index_depths[i]);
-            addIndConstraintOverwriteMethod(index_depths[i]);
-            addIndConstraintQueueMethod(index_depths[i]);
+        while (index_depths.hasNext()) {
+            int depth = ((Integer) index_depths.next()).intValue();
+            if (depth == 0)
+                continue;
+            addIndConstraintLookupMethod(depth);
+            addIndConstraintOverwriteMethod(depth);
+            addIndConstraintQueueMethod(depth);
         }
 
         addIndConstraintUnindexedQueueMethod();
@@ -3915,15 +4077,16 @@ public class ClassGenHelper {
 
         while (states.hasNext()) {
             SMNode state = (SMNode) states.next();
+            IndexStructure index = curIndScheme.getStructure(state);
 
-            if (state.indices == null || state.indices.isEmpty())
+            if (index.height() == 0)
                 continue;
 
             Object table_case;
             if (names_matter)
-                table_case = state.indices;
+                table_case = index.varNames();
             else
-                table_case = new Integer(state.indices.size());
+                table_case = new Integer(index.height());
             
             Stmt label = (Stmt) case_to_label.get(table_case);
 
@@ -3960,8 +4123,9 @@ public class ClassGenHelper {
 		for(Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator(); 
 						stateIt.hasNext(); ) {
 			SMNode state = (SMNode) stateIt.next();
+            IndexStructure index = curIndScheme.getStructure(state);
 			
-			if((state.indices == null || state.indices.isEmpty()) && nonIndexingToDefault)
+            if (index.height() == 0 && nonIndexingToDefault) 
 				continue;
 			
 			Stmt label = (Stmt)stateToLabel.get(state);
@@ -3980,6 +4144,45 @@ public class ClassGenHelper {
 		
 		return stateToLabel;
 	}
+
+    /**
+     * Creates a lookup switch on state-number, which jumps to a
+     * different label for each index-structure.
+     *
+     * That is, two different states will only share a label if
+     * the same variables are indexed at both states with the
+     * same kind of references (strong/weak/etc.)
+     *
+     * @thisLocal    the Jimple Local referring to 'this' object
+     * @defaultLabel the label to jump to if the state number is invalid
+     */
+    protected Map addIndexStructureLookupSwitch(Local thisLocal, Stmt defaultLabel)
+    {
+        Map indexLabels = new HashMap();
+
+        List switchValues = new ArrayList();
+        List switchLabels = new ArrayList();
+
+        int numStates = curIndScheme.getNumStates();
+
+        for (int state = 0; state < numStates; state++) {
+            IndexStructure structure = curIndScheme.getStructure(state);
+            Stmt label = (Stmt) indexLabels.get(structure);
+
+            if (label == null) {
+                label = getNewLabel();
+                indexLabels.put(structure, label);
+            }
+
+            switchValues.add(getInt(state));
+            switchLabels.add(label);
+        }
+
+        Local key = getFieldLocal(thisLocal, "onState", IntType.v());
+
+        doLookupSwitch(key, switchValues, switchLabels, defaultLabel);
+        return indexLabels;
+    }
 
 
     /**

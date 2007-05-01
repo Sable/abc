@@ -32,6 +32,7 @@ import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 import abc.main.Debug;
 import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.aspectinfo.IndexingScheme;
 
 /**
  * Implementation of the StateMachine interface for tracematch matching
@@ -519,92 +520,6 @@ public class TMStateMachine implements StateMachine {
     }
 
     /**
-     * Chooses the variables that should be used to index the disjuncts
-     * on each state.
-     *
-     * @param tm represents the tracematch for this automaton and has
-     *           lists of the symbols used and the variables that they
-     *           bind
-     */
-    private void chooseIndices(TraceMatch tm)
-    {
-        if (abc.main.Debug.v().printIndices)
-            System.out.println(this);
-
-        Iterator nodeIt = nodes.iterator();
-        while(nodeIt.hasNext()) {
-            SMNode cur = (SMNode) nodeIt.next();
-
-            // we do not index on the initial or final node
-            if (cur.isInitialNode() || cur.isFinalNode())
-                continue;
-
-            HashSet indices = new HashSet(cur.boundVars);
-            if (abc.main.Debug.v().originalIndexChoosing)
-                calculateIndicesByIntersection(tm, indices, cur);
-
-            HashSet collectable = new HashSet(indices);
-            collectable.retainAll(cur.collectableWeakRefs);
-            HashSet primitive = new HashSet(indices);
-            primitive.removeAll(tm.getNonPrimitiveFormalNames());
-            HashSet weak = new HashSet(indices);
-            weak.retainAll(cur.weakRefs);
-
-            indices.removeAll(collectable);
-            indices.removeAll(primitive);
-            indices.removeAll(weak);
-
-
-            if (abc.main.Debug.v().printIndices) {
-                System.out.println("State " + cur.getNumber());
-                System.out.println(" - collectable indices: " + collectable);
-                System.out.println(" -   primitive indices: " + primitive);
-                System.out.println(" -        weak indices: " + weak);
-                System.out.println(" -       other indices: " + indices);
-            }
-
-            // index by collectable weak-references first, so that whole
-            // subtrees of the index will be automatically thrown away
-            cur.indices.addAll(collectable); cur.nCollectable = collectable.size();
-            cur.indices.addAll(primitive);   cur.nPrimitive = primitive.size();
-            cur.indices.addAll(weak);        cur.nWeak = weak.size();
-            cur.indices.addAll(indices);     cur.nStrong = indices.size();
-        }
-    }
-
-    /**
-     * calculate indices[i] = intersect[sym] (bound[i] /\ binds[sym])
-     *   BUT only for the symbols where the inner
-     *       intersection is not empty
-     *
-     * if some symbols have been annotated as frequent
-     * then only consider them when making indexing decisions
-     */
-    private void calculateIndicesByIntersection(TraceMatch tm,
-                                                HashSet indices,
-                                                SMNode cur)
-    {
-        Collection frequentSymbols = tm.getFrequentSymbols();
-        Iterator symIt =
-            frequentSymbols == null ? tm.getSymbols().iterator()
-                                    : frequentSymbols.iterator();
-
-        while (symIt.hasNext()) {
-            String symbol = (String) symIt.next();
-
-            if (frequentSymbols != null && !frequentSymbols.contains(symbol))
-                continue;
-
-            HashSet tmp = new HashSet(cur.boundVars);
-            tmp.retainAll(tm.getVariableOrder(symbol));
-
-            if (!tmp.isEmpty())
-                indices.retainAll(tmp);
-        }
-    }
-
-
-    /**
      * Reverses the automaton (i.e. flip the direction of every edge, make final states initial
      * and initial states final).
      */
@@ -757,7 +672,6 @@ public class TMStateMachine implements StateMachine {
 	}
 
         collectBindingInfo(formals, tm, notused, pos);
-        chooseIndices(tm);
     }
     
     public Iterator getStateIterator() {

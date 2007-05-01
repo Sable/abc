@@ -149,7 +149,7 @@ public class TraceMatchCodeGen {
 		Collection unused = tm.getUnusedFormals();
         
         tmsm.prepareForMatching(tm, tm.getFormalNames(), unused, tm.getPosition());
-        
+        tm.createIndexingScheme();
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 

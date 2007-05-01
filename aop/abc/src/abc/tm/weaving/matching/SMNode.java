@@ -59,25 +59,6 @@ public class SMNode implements State {
 	 */
 	public LinkedHashSet/*<String>*/ boundVars = new LinkedHashSet();
  
-	
-	/** The number of collectable index variables on this state. */
-	public int nCollectable;
-	
-	/** the number of primitive index variables on this state. */
-	public int nPrimitive;
-	
-	/** the number of weak index variables on this state. */
-	public int nWeak;
-	
-	/** the number of strong index variables on this state. */
-	public int nStrong;
-	
-    /** list of variables that should be used to index the disjuncts
-     *   stored for this state - the index is, in general, multi-level
-     *   and the variables are used in the order they appear in this
-     *   list
-     */
-    public List/*<String>*/ indices = new LinkedList();
 
     private TMStateMachine hostFSA;
     
