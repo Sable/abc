@@ -3113,7 +3113,7 @@ public class ClassGenHelper {
             if (curTraceMatch.isPrimitive(index.varName(i))) {
                 Local same = getMethodCallResult(indices[i], "equals",
                                 singleObjectType, BooleanType.v(), backups[i]);
-                doJumpIfTrue(same, lookupLabels[i]);
+                doJumpIfFalse(same, lookupLabels[i]);
             } else {
                 doJumpIfNotEqual(indices[i], backups[i], lookupLabels[i]);
             }
