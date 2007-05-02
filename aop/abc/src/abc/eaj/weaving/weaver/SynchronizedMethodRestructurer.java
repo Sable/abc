@@ -103,7 +103,7 @@ public class SynchronizedMethodRestructurer {
 		Stmt firstRealStmt = Restructure.findFirstRealStmt(method, units);
 		//add "entermonitor(thisLocal)"
 		EnterMonitorStmt monitorEnterStmt = Jimple.v().newEnterMonitorStmt(syncLocal);
-		units.insertAfter(monitorEnterStmt,firstRealStmt);
+		units.insertBefore(monitorEnterStmt,firstRealStmt);
 		//add nop
 		NopStmt beginRealBody = Jimple.v().newNopStmt();
 		units.insertAfter(beginRealBody,monitorEnterStmt);

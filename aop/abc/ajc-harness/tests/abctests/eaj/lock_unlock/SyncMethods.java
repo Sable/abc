@@ -7,6 +7,10 @@ public aspect SyncMethods {
 	synchronized static int foo(int x) {
 		return 3+x;
 	}
+
+	synchronized static int bar(int x) {
+		return foo(x);
+	}
 	
 	before(): execution(* *(..)) {
 		//does not matter; just exists to generate warning about restructuring
@@ -22,7 +26,8 @@ public aspect SyncMethods {
 	
 	public static void main(String[] args) {
 		foo(1);
-		Tester.checkEqual(s,"lu","Invalid sequence of locks and unlocks: "+s+" (should be lu)");
+		bar(1);
+		Tester.checkEqual(s,"lulluu","Invalid sequence of locks and unlocks: "+s+" (should be lulluu)");
 	}
 
 
