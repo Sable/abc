@@ -3347,15 +3347,19 @@ public class ClassGenHelper {
         for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
             methodFormals.add(curTraceMatch.bindingType((String)varIt.next()));
         }
-        startMethod("getBindingsForSymbol" + symbol, methodFormals, setType, Modifier.PUBLIC);
+        methodFormals.add(constraint.getType());
+        startMethod("getBindingsForSymbol" + symbol, methodFormals, VoidType.v(), Modifier.PUBLIC);
         
         Local thisLocal = getThisLocal();
         Local onState = getFieldLocal(thisLocal, "onState", IntType.v());
+        Local target = getParamLocal(methodFormals.size() - 1, constraint.getType());
+        
+        methodFormals.remove(methodFormals.size() - 1);
         methodFormals.add(0, IntType.v()); // for calling Disjunct.addBindings...
         
         if(varCount == 0) {
-            // if the symbol binds no variables, we simply return the contents of our current
-            // disjunct set. We may still be indexing, however..
+            // if the symbol binds no variables, we simply add the current disjunct set
+        	// to the list of incoming disjuncts. We may still be indexing, however...
 
         		Stmt labelNoIndexing = getNewLabel();
             
@@ -3368,20 +3372,20 @@ public class ClassGenHelper {
             		IterationContext context = new IterationContext(key.intValue(), 
             				getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
             		
-            		Local result = getNewObject(setClass);
-            		
             		startIteration(context);
-            		doMethodCall(result, "addAll", singleCollectionType, BooleanType.v(), 
-            				getRelevantSet(context));
+            		doMethodCall(getFieldLocal(target, "incoming", listType), "addAll", 
+            				singleCollectionType, BooleanType.v(), getRelevantSet(context));
             		endIteration(context, false);
             		
-            		doReturn(result);
+            		doReturnVoid();
             	}
             	
             	doAddLabel(labelNoIndexing);
-            	// In the non-indexing case, the result is this.disjuncts
-            	doReturn(getNewObject(setClass, singleCollectionType, 
-            			getFieldLocal(thisLocal, "disjuncts", setType)));
+            	// In the non-indexing case, the set to add is this.disjuncts
+            	doMethodCall(getFieldLocal(target, "incoming", listType), "addAll",
+            			singleCollectionType, BooleanType.v(), 
+            			getFieldLocal(thisLocal, "disjuncts", setType));
+            	doReturnVoid();
         } else {
             // Create locals for all the parameters
             List parameterLocals = new LinkedList();
@@ -3394,13 +3398,9 @@ public class ClassGenHelper {
                         curTraceMatch.bindingType((String)varIt.next())));
             }
             
-            // LinkedHashSet to store the result in
-            Local result = getNewObject(setClass);
-            
             // Disjunct.falseD -- for comparison
             Local falseDisjunct = getStaticFieldLocal(disjunct, "falseD", disjunct.getType());
  
-
             // Normally we'd do "if this == false then return false", however, our representation
             // of false depends on which state we're on, so we first do a jump based on states.
             
@@ -3476,7 +3476,8 @@ public class ClassGenHelper {
                 doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
                 
                 // if the disjunct is not false, add it
-                doMethodCall(result, "add", singleObjectType, BooleanType.v(), resultDisjunct);
+                doMethodCall(getFieldLocal(target, "incoming", listType), "add", 
+                		singleObjectType, BooleanType.v(), resultDisjunct);
                 
                 doJump(labelLoopBegin);
                 // end of loop
@@ -3485,7 +3486,7 @@ public class ClassGenHelper {
                 
                 endIteration(context);
                 
-                doReturn(result);
+                doReturnVoid();
             }
             
             // The case that doesn't require indexing...
@@ -3525,14 +3526,15 @@ public class ClassGenHelper {
             doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
             
             // if the disjunct is not false, add it
-            doMethodCall(result, "add", singleObjectType, BooleanType.v(), resultDisjunct);
+            doMethodCall(getFieldLocal(target, "incoming", listType), "add", 
+            		singleObjectType, BooleanType.v(), resultDisjunct);
             
             doJump(labelLoopBegin);
             // end of loop
             
             doAddLabel(labelLoopEnd);
             
-            doReturn(result);
+            doReturnVoid();
         }
     }
  
