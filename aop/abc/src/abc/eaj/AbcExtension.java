@@ -151,7 +151,11 @@ public class AbcExtension extends abc.main.AbcExtension
     }
     
     public void doMethodRestructuring() {
-    	new SynchronizedMethodRestructurer().apply();
+    	if(Debug.v().restructureSynchronizedMethods) {
+    	    //restructuring of synchronized methods for lock/unlock pointcuts;
+    	    //currently generates synchronized blocks which dava cannot deal with
+    		new SynchronizedMethodRestructurer().apply();
+    	}
     	super.doMethodRestructuring();
     }
 }

@@ -213,6 +213,10 @@ public class Debug {
     public boolean omOpenClassParentDebug = false;
     public boolean omOpenClassITDDebug = false;
     public boolean omNormalizeDebug = false;
+
+    //restructuring of synchronized methods for lock/unlock pointcuts;
+    //currently generates synchronized blocks which dava cannot deal with
+    public boolean restructureSynchronizedMethods = false;
     
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
