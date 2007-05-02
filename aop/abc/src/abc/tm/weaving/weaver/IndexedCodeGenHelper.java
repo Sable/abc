@@ -118,30 +118,25 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
-     * Return an invoke expression to a method which adds bindings
-     * to a constraint.
-     *
-     * If positive is true, it generates an addBindingForSymbolx
-     * call, otherwise an addNegativeBindingForSymbolx call.
+     * Return an invoke expression to the propogateBindings...
+     * method which propogates bindings from one constraint
+     * to another.
      */
     protected InvokeExpr bindingsMethod(String symbol, Local base,
+                                        Local target_constraint,
                                         SootMethod caller, Value from_state,
-                                        Value to_state, boolean positive)
+                                        Value to_state)
     {
         Body body = caller.getActiveBody();
         int params = tm.getVariableOrder(symbol).size();
-        String name;
-        List args = new ArrayList(params);
+        String name = "propogateBindingsForSymbol" + symbol;
 
-        if (positive) {
-            args.add(to_state);
-            name = "getBindingsForSymbol" + symbol;
-        } else {
-            name = "doNegativeBindingsForSymbol" + symbol;
-        }
+        List args = new ArrayList(params);
+        args.add(to_state);
 
         for (int i = 0; i < params; i++)
             args.add(body.getParameterLocal(i));
+        args.add(target_constraint);
 
         SootMethodRef ref = constraint.getMethodByName(name).makeRef();
 
@@ -337,28 +332,18 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
 
     /**
-     * Call a bindings method (addBindingsForSymbolx or
-     * addNegativeBindingsForSymbolx, depending on positive_bindings).
-     *
-     * Return the result as a Jimple local.
+     * Call the propogateBindingsForSymbolx method to propogate
+     * bindings from one constraint to another.
      */
-    protected Local callBindingsMethod(Body body, Chain units, String symbol,
-                                        Local base, SootMethod caller,
-                                        Value from_state, Value to_state,
-                                        boolean positive_bindings)
+    protected void callBindingsMethod(Body body, Chain units, String symbol,
+                                        Local base, Local target_constraint,
+                                        SootMethod caller,
+                                        Value from_state, Value to_state)
     {
-        Value call = bindingsMethod(symbol, base, caller, from_state,
-                                    to_state, positive_bindings);
-        Local result = null;
+        Value call = bindingsMethod(symbol, base, target_constraint,
+                                    caller, from_state, to_state);
 
-        if (positive_bindings) {
-            result = addLocal(body, "bind_result", set.getType());
-            units.addLast(Jimple.v().newAssignStmt(result, call));
-        } else {
-            units.addLast(Jimple.v().newInvokeStmt(call));
-        }
-
-        return result;
+        units.addLast(Jimple.v().newInvokeStmt(call));
     }
 
     /**
@@ -540,14 +525,10 @@ public class IndexedCodeGenHelper extends CodeGenHelper
         Value from_state = getInt(from);
         Value to_state = getInt(to);
         Local lab_from = getLabel(body, units, label_base, from, LABEL);
-        Local bind_result =
-            callBindingsMethod(body, units, symbol, lab_from,
-                                method, from_state, to_state, true);
-
         Local lab_to = getLabel(body, units, label_base, to, TMP_LABEL);
-        List args = new LinkedList();
-        args.add(bind_result);
-        callQueueMethod(body, units, lab_to, args, to, symbol);
+
+        callBindingsMethod(body, units, symbol, lab_from, lab_to,
+                            method, from_state, to_state);
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -572,26 +553,10 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
     /**
      * Generate code to update a label with the constraint for
-     * a skip transition.
-     * FIXME - old method, needed?
+     * a skip transition -- this is not needed for indexed
+     * constraints, which use an event object.
      */
     public void genSkipLabelUpdate(int to, String symbol, SootMethod method) {}
-    public void genSkipLabelUpdate2(int to, String symbol, SootMethod method)
-    {
-        Body body = method.getActiveBody();
-
-        Local this_local = body.getThisLocal();
-
-        Chain units = newChain();
-        Local label_base = getLabelBase(body, units, this_local);
-
-        Value to_state = getInt(to);
-        Local lab = getLabel(body, units, label_base, to, SKIP_LABEL);
-        callBindingsMethod(body, units, symbol, lab, method,
-                           to_state, to_state, false);
-
-        insertBeforeReturn(units, body.getUnits());
-    }
 
     /**
      * Generate the code for master-updating labels - i.e. the

@@ -1136,7 +1136,7 @@ public class ClassGenHelper {
             addIndConstraintOrMethod();
             addIndConstraintMergeMethod();
             addIndConstraintGetDisjunctArrayMethod();
-            addIndConstraintGetBindingsMethods();
+            addIndConstraintPropogateBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings) 
                 addIndConstraintDoNegativeBindingsMethods();
         } else {
@@ -2835,11 +2835,7 @@ public class ClassGenHelper {
      */
     protected void addIndConstraintClassMembers() {
         SootField disjuncts = new SootField("disjuncts", setType, Modifier.PUBLIC);
-        SootField disjuncts_tmp = new SootField("disjuncts_tmp", setType, Modifier.PUBLIC);
-        SootField disjuncts_skip = new SootField("disjuncts_skip", setType, Modifier.PUBLIC);
         SootField indDisjuncts = new SootField("indexedDisjuncts", mapType, Modifier.PUBLIC);
-        SootField indDisjuncts_tmp = new SootField("indexedDisjuncts_tmp", mapType, Modifier.PUBLIC);
-        SootField indDisjuncts_skip = new SootField("indexedDisjuncts_skip", mapType, Modifier.PUBLIC);
         SootField incoming = new SootField("incoming", listType, Modifier.PUBLIC);
         SootField onState = new SootField("onState", IntType.v(), Modifier.PUBLIC);
         
@@ -2856,11 +2852,7 @@ public class ClassGenHelper {
         SootField weakUntil = new SootField("weakUntil", IntType.v(), Modifier.PUBLIC);
         
         constraint.addField(disjuncts);
-        constraint.addField(disjuncts_tmp);
-        constraint.addField(disjuncts_skip);
         constraint.addField(indDisjuncts);
-        constraint.addField(indDisjuncts_tmp);
-        constraint.addField(indDisjuncts_skip);
         constraint.addField(incoming);
         constraint.addField(onState);
         constraint.addField(collectableUntil);
@@ -2906,10 +2898,7 @@ public class ClassGenHelper {
             
             // get the kind of map used at the top of the index
             int kind = index.kind(0);
-
             doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(kind));
-            doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(kind));
-            doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(kind));
 
             doSetField(thisLocal, "incoming", listType, getNewObject(listClass));
 
@@ -2923,8 +2912,7 @@ public class ClassGenHelper {
         // In any case, we will have to provide the 'default' behaviour of initialising the sets
         doAddLabel(labelDefault);
         doSetField(thisLocal, "disjuncts", setType, getNewObject(setClass));
-        doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
-        doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass));
+        doSetField(thisLocal, "incoming", listType, getNewObject(listClass));
         doSetField(thisLocal, "collectableUntil", IntType.v(), getInt(-1));
         doSetField(thisLocal, "primitiveUntil", IntType.v(), getInt(-1));
         doSetField(thisLocal, "weakUntil", IntType.v(), getInt(-1));
@@ -2958,11 +2946,7 @@ public class ClassGenHelper {
         doSetField(thisLocal, "weakUntil", IntType.v(), getInt(-1));
         
         doSetField(thisLocal, "disjuncts", setType, paramDisjuncts);
-        doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
-        
-        // we initialise this.disjuncts_skip to new LinkedHashSet(this.disjuncts);
-        args.clear(); args.add(Scene.v().getRefType("java.util.Collection"));
-        doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass, args, paramDisjuncts));
+        doSetField(thisLocal, "incoming", listType, getNewObject(listClass));
         
         doReturnVoid();
     }
@@ -3092,7 +3076,7 @@ public class ClassGenHelper {
 
             Local new_child = getNewMap(index.kind(i + 1));
             List putArgs = new ArrayList(2);
-            putArgs.add(current);
+            putArgs.add(indices[i]);
             putArgs.add(new_child);
             doMethodCall(current, "put", putTypes, objectType, putArgs);
             doJump(labelContinue);
@@ -3105,6 +3089,8 @@ public class ClassGenHelper {
         }
         
         // INSERT
+        Stmt labelInsert = getNewLabel();
+        doAddLabel(labelInsert);
         doMethodCall(current, "add", singleObjectType, BooleanType.v(), curDisjunct);
  
         // TEST INCOMING
@@ -3115,16 +3101,24 @@ public class ClassGenHelper {
         Local[] backups = new Local[indices.length];
         for (int i = 0; i < indices.length; i++) {
             String name = index.varName(i);
-            Type varType = curTraceMatch.bindingType(name);
+            Type varType = indices[i].getType();
             backups[i] = getNewLocal(varType, indices[i], "backup$" + name);
         }
 
         // UNPACK
-        addIndConstraintOrUnpackDisjunct(incoming, null, indices, false, index);
+        addIndConstraintOrUnpackDisjunct(incoming, curDisjunct, indices, true, index);
 
         // SMART LOOKUP
-        for (int i = 0; i < indices.length; i++)
-            doJumpIfNotEqual(indices[i], backups[i], lookupLabels[i]);
+        for (int i = 0; i < indices.length; i++) {
+            if (curTraceMatch.isPrimitive(index.varName(i))) {
+                Local same = getMethodCallResult(indices[i], "equals",
+                                singleObjectType, BooleanType.v(), backups[i]);
+                doJumpIfTrue(same, lookupLabels[i]);
+            } else {
+                doJumpIfNotEqual(indices[i], backups[i], lookupLabels[i]);
+            }
+        }
+        doJump(labelInsert);
  
         // END
         doAddLabel(labelEnd);
@@ -3170,140 +3164,28 @@ public class ClassGenHelper {
     }
 
     /**
-     * Adds 'merge' method which combines the _skip and _tmp-labelled constraints and prepares the
-     * constraint for the next event.
-     * 
-     * The actual implementation uses two methods called 'merge'. One takes no arguments, while the
-     * other takes a Map and a boolean operation flag. For descriptions, see comments in this method.
+     * Adds 'merge' method which combines the incoming disjuncts with
+     * this constraint, and prepares the constraint for the next event.
      */
     protected void addIndConstraintMergeMethod() {
-        // First version of merge checks if the current state is indexed. If not, disjuncts{"", "_tmp",
-        // "-skip"} are updated. Otherwise the indexedDisjunct* maps are updated, making use of the 
-        // other auxiliary merge() method.
         startMethod("merge", emptyList, VoidType.v(), Modifier.PUBLIC);
-        
         Local thisLocal = getThisLocal();
-        Local collectableUntil = getFieldLocal(thisLocal, "collectableUntil", IntType.v());
-        Stmt labelMergeIndices = getNewLabel();
-        
-        // If the current state uses indexing, we skip the simple case.
-        doJumpIfGreater(collectableUntil, getInt(-1), labelMergeIndices);
-        
-        // Otherwise, the current state doesn't use indexing, so we merely update the disjunct sets.
-        doSetField(thisLocal, "disjuncts", setType, getFieldLocal(thisLocal, "disjuncts_skip", setType));
-        doMethodCall(getFieldLocal(thisLocal, "disjuncts", setType), "addAll", singleCollectionType, BooleanType.v(),
-                    getFieldLocal(thisLocal, "disjuncts_tmp", setType));
-        doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
+
+        List formals = new ArrayList();
+        formals.add(collectionType);
+
+        Local incoming = getFieldLocal(thisLocal, "incoming", listType);
+
+        // don't waste time if there are no incoming disjuncts
+        Stmt labelNoIncoming = getNewLabel();
+        Local empty = getMethodCallResult(incoming, "isEmpty", BooleanType.v());
+        doJumpIfTrue(empty, labelNoIncoming);
+
+        doMethodCall(thisLocal, "or", formals, VoidType.v(), incoming);
+        doSetField(thisLocal, "incoming", listType, getNewObject(listClass));
+
+        doAddLabel(labelNoIncoming);
         doReturnVoid();
-        
-        // If the current state uses indexing -- we have to merge the maps.
-        doAddLabel(labelMergeIndices);
-        List formals = new LinkedList(), actuals = new LinkedList();
-        formals.add(mapType);
-        formals.add(BooleanType.v());
-        /*
-         * Negative updates are destructive -- cf. doNegativeBindings* 
-         * 
-        actuals.add(getFieldLocal(thisLocal, "indexedDisjuncts_skip", mapType));
-        actuals.add(getInt(1));
-        doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
-        actuals.clear();
-        */
-        actuals.add(getFieldLocal(thisLocal, "indexedDisjuncts_tmp", mapType));
-        actuals.add(getInt(0));
-        doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
-        
-        doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, 
-                getNewMapForDepth(thisLocal, getInt(0)));
-        doSetField(thisLocal, "indexedDisjuncts_skip", mapType, 
-                getNewMapForDepth(thisLocal, getInt(0)));
-        doReturnVoid();
-        
-        // The second version of merge takes a Map and a boolean flag. It merges the contents of the map
-        // onto this.indexedDisjuncts. If the flag is true, it replaces existing disjunct sets; otherwise,
-        // it computes set unions.
-        // Note that the local 'formals' still contains the correct list of types from above.
-        startMethod("merge", formals, VoidType.v(), Modifier.PUBLIC);
-        
-        thisLocal = getThisLocal();
-        Local paramMap = getParamLocal(0, mapType);
-        Local operation = getParamLocal(1, BooleanType.v());
-        
-        // The assumption is that (a) this method never gets called when we're not on a state that uses
-        // indexing, and (b) the map it gets passed has the same structure as this.indexedDisjuncts (with
-        // respect to order of indexing variables).
-        // We iterate over paramMap rather than this.indexedDisjuncts, assuming that it will in general 
-        // be smaller.
-        
-        Stmt labelNoIndices = getNewLabel();
-        Map keyToLabel = addIndLookupSwitch(
-                getFieldLocal(thisLocal, "onState", IntType.v()), 
-                labelNoIndices, false);
-        
-        for(Iterator keyIt = keyToLabel.keySet().iterator(); keyIt.hasNext(); ) {
-            Integer key = (Integer)keyIt.next();
-            int depth = key.intValue();
-
-            doAddLabel((Stmt)keyToLabel.get(key));
-            
-            // All this happens for every LinkedHashSet contained in the mapping structure:
-            IterationContext context = new IterationContext(depth, paramMap);
-            startIteration(context);
-            Local mergedSet = getRelevantSet(context);
-            
-            // We have finally reached a set in the mapping structure.
-            // We need to do `updated = lookup_depth(indexedDisjuncts, key[0], ..., key[depth-1]);`
-            List formalsLookup= new LinkedList();
-            List actualsLookup= new LinkedList();
-            formalsLookup.add(mapType);
-            actualsLookup.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
-            for(int j = 0; j < depth; j++) {
-                formalsLookup.add(objectType);
-                actualsLookup.add(context.keys[j]);
-            }
-            
-            Stmt labelThen = getNewLabel(), labelEndIf = getNewLabel();
-            // if(op || updated == null) 
-            doJumpIfTrue(operation, labelThen);
-
-            Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
-                    formalsLookup, setType, actualsLookup);
-            doJumpIfEqual(updatedSet, getNull(), labelThen);
-            
-            // The 'else' branch:
-            // updatedSet.addAll(mergedSet)
-            doMethodCall(updatedSet, "addAll", singleCollectionType, BooleanType.v(), mergedSet);
-            doJump(labelEndIf);
-            
-            // The 'then' branch:
-            // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
-            doAddLabel(labelThen);
-            List formalsOverwrite = new LinkedList();
-            List actualsOverwrite = new LinkedList();
-            formalsOverwrite.add(mapType);
-            actualsOverwrite.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
-            for(int j = 0; j < depth; j++) {
-                formalsOverwrite.add(objectType);
-                actualsOverwrite.add(context.keys[j]);
-            }
-            formalsOverwrite.add(setType);
-            actualsOverwrite.add(mergedSet);
-            formalsOverwrite.add(BooleanType.v());
-            actualsOverwrite.add(getInt(1));
-            doMethodCall(thisLocal, "overwrite" + depth, formalsOverwrite, VoidType.v(),
-                    actualsOverwrite);
-            
-            // endif
-            doAddLabel(labelEndIf);
-
-            // No cleanup is needed on this iteration since overwrite() does a cleanup already.
-            endIteration(context, false);
-            
-            doReturnVoid();
-        }
-        
-        doAddLabel(labelNoIndices);
-        doThrowException("merge(Map, boolean) called on a non-indexing state");
     }
     
     /**
@@ -3320,26 +3202,26 @@ public class ClassGenHelper {
     }
     
     /**
-     * The 'addBindingsForSymbol' methods in the indexed case are called 'getBindingsForSymbol', since
-     * they return a LinkedHashSet of the changed bindings.
+     * The 'addBindingsForSymbol' methods in the indexed case are called 'propogateBindingsForSymbol', since
+     * they pass the changed bindings to the target state.
      * 
      * The general plan is to determine the 'relevant' LinkedHashSets of disjuncts and iterate over them,
-     * calling addBindingsForSymbol on each disjunct, and storing the results in a set which is ultimately
-     * returned.
+     * calling addBindingsForSymbol on each disjunct, and queueing the resulting disjunct on the target
+     * state
      */
-    protected void addIndConstraintGetBindingsMethods() {
+    protected void addIndConstraintPropogateBindingsMethods() {
         Iterator symbolIt = curTraceMatch.getSymbols().iterator();
         while(symbolIt.hasNext()) {
             String symbol = (String)symbolIt.next();
-            addIndConstraintGetBindingsForSymbolMethod(symbol);
+            addIndConstraintPropogateBindingsForSymbolMethod(symbol);
         }
     }
     
     /**
-     * Adds a getBindingsForSymbol method for the specified symbol
+     * Adds a propogateBindingsForSymbol method for the specified symbol
      * @param symbol
      */
-    protected void addIndConstraintGetBindingsForSymbolMethod(String symbol) {
+    protected void addIndConstraintPropogateBindingsForSymbolMethod(String symbol) {
         List variables = curTraceMatch.getVariableOrder(symbol);
         List methodFormals = new LinkedList();
         methodFormals.add(IntType.v()); // number of the target state of the current transition
@@ -3348,7 +3230,7 @@ public class ClassGenHelper {
             methodFormals.add(curTraceMatch.bindingType((String)varIt.next()));
         }
         methodFormals.add(constraint.getType());
-        startMethod("getBindingsForSymbol" + symbol, methodFormals, VoidType.v(), Modifier.PUBLIC);
+        startMethod("propogateBindingsForSymbol" + symbol, methodFormals, VoidType.v(), Modifier.PUBLIC);
         
         Local thisLocal = getThisLocal();
         Local onState = getFieldLocal(thisLocal, "onState", IntType.v());
@@ -3539,8 +3421,8 @@ public class ClassGenHelper {
     }
  
     /**
-     * The 'addNegativeBindingsForSymbol' methods in the indexed case are called 'queueNegativeBindingsForSymbol'
-     * as they maintain a queue of changes.
+     * The 'addNegativeBindingsForSymbol' methods in the indexed case are called 'doNegativeBindingsForSymbol'
+     * and they make destructive changes to the constraint.
      */
     protected void addIndConstraintDoNegativeBindingsMethods() {
         List params = new LinkedList();
@@ -3633,10 +3515,6 @@ public class ClassGenHelper {
         }
         
         // Get the map to iterate over: indexedDisjuncts.
-        // Yes, we may actually end up getting disjuncts from
-        // indexedDisjuncts_skip, but the indices used in the
-        // former are guaranteed to be a superset of those
-        // used in the latter.
         Local map = getFieldLocal(this_local, "indexedDisjuncts", mapType);
         
         IterationContext context = new IterationContext(depth, map, keys);
@@ -3664,7 +3542,7 @@ public class ClassGenHelper {
                                   Local this_local, Local[] values,
                                   List sym_binds, Local state)
     {
-        Local source = getFieldLocal(this_local, "disjuncts_skip", setType);
+        Local source = getFieldLocal(this_local, "disjuncts", setType);
         Local result = addDoNegativeBindingsSetProcessing(symbol, source,
                            state, values, null);
         doMethodCall(source, "clear", VoidType.v());
@@ -3741,10 +3619,7 @@ public class ClassGenHelper {
                 continue;
             addIndConstraintLookupMethod(depth);
             addIndConstraintOverwriteMethod(depth);
-            addIndConstraintQueueMethod(depth);
         }
-
-        addIndConstraintUnindexedQueueMethod();
     }
 
     /**
@@ -3878,171 +3753,6 @@ public class ClassGenHelper {
         put_args.add(set);
         doMethodCall(maps[depth - 1], "put", put_types, objectType, put_args);
 
-        doReturnVoid();
-    }
-
-    /**
-     * Generate a method to queue disjuncts that will be ORd with the
-     * constraint when merge() is called on it. This version of the
-     * queue method queues the disjuncts using the indexing keys
-     * passed as parameters. It is specialised to a particular depth
-     * of index.
-     *
-     * We assume that the indexed versions of queue will never be
-     * called on unindexed states.
-     *
-     * @param depth the depth of the index to which this method is
-     *        specialised
-     */
-    protected void addIndConstraintQueueMethod(int depth)
-    {
-        List params = new LinkedList();
-        List args = new LinkedList();
-
-        // Declare the method signature
-        params.add(setType);
-        for (int i = 0; i < depth; i++)
-            params.add(objectType);
-        startMethod("queue", params, VoidType.v(), Modifier.PUBLIC);
-
-        // Assign "this" and each parameter to a local
-        Local this_local = getThisLocal();
-        Local disjuncts = getParamLocal(0, setType);
-        Local[] keys = new Local[depth];
-        for (int i = 0; i < depth; i++)
-            keys[i] = getParamLocal(i + 1, objectType);
-
-        // Lookup the keys in indexedDisjuncts_tmp
-        Local index_tmp =
-            getFieldLocal(this_local, "indexedDisjuncts_tmp", mapType);
-        params.clear();
-        params.add(0, mapType);
-        args.add(index_tmp);
-        for (int i = 0; i < depth; i++) {
-            params.add(objectType);
-            args.add(keys[i]);
-        }
-        Local updated = getMethodCallResult(this_local, "lookup" + depth,
-                                            params, setType, args);
-
-        // if updated is null, then we add a new entry to the map
-        // otherwise, we add the new disjuncts to the existing
-        // indexed set
-        Stmt non_null_case = getNewLabel();
-        doJumpIfNotNull(updated, non_null_case);
-
-        // overwriteN(indexedDisjuncts_tmp, key1--keyN, disjuncts, true);
-        params.add(setType);
-        params.add(BooleanType.v());
-        args.add(disjuncts);
-        args.add(getInt(1));
-        doMethodCall(this_local, "overwrite" + depth, params,
-                     VoidType.v(), args);
-        doReturnVoid();
-
-        // generate: updated.addAll(disjuncts);
-        doAddLabel(non_null_case);
-        params.clear();
-        args.clear();
-        params.add(Scene.v().getRefType("java.util.Collection"));
-        args.add(disjuncts);
-        doMethodCall(updated, "addAll", params, BooleanType.v(), args);
-        doReturnVoid();
-    }
-
-    /**
-     * Generate a method to queue disjuncts that will be ORd with the
-     * constraint when merge() is called on it. This version of the
-     * queue method queues the disjuncts one-by-one, examining each
-     * one in turn to find the keys to index it under.
-     */
-    protected void addIndConstraintUnindexedQueueMethod()
-    {
-        List params = new LinkedList();
-        List args = new LinkedList();
-        params.add(setType);
-
-        startMethod("queue", params, VoidType.v(), Modifier.PUBLIC);
-        Local this_local = getThisLocal();
-        Local disjuncts = getParamLocal(0, setType);
-        Local state = getFieldLocal(this_local, "onState", IntType.v());
-        Local index_tmp =
-            getFieldLocal(this_local, "indexedDisjuncts_tmp", mapType);
-
-        Stmt no_index_case = getNewLabel();
-        Map indices_to_label = addIndLookupSwitch(state, no_index_case, true);
-
-        Iterator index_lists = indices_to_label.keySet().iterator();
-        while (index_lists.hasNext()) {
-            List indices = (List) index_lists.next();
-            Stmt label = (Stmt) indices_to_label.get(indices);
-
-            doAddLabel(label);
-            Local iter =
-                getMethodCallResult(disjuncts, "iterator", iteratorType);
-
-            Stmt loop_test = getNewLabel();
-            Stmt loop_end = getNewLabel();
-
-            doAddLabel(loop_test);
-            Local has_next =
-                getMethodCallResult(iter, "hasNext", BooleanType.v());
-            doJumpIfFalse(has_next, loop_end);
-
-            Local next_disjunct =
-                getCastValue(getMethodCallResult(iter, "next", objectType),
-                             disjunct.getType());
-
-            params.clear();
-            args.clear();
-            params.add(mapType);
-            args.add(index_tmp);
-
-            // get keys from disjunct
-            int depth = indices.size();
-            for (int i = 0; i < depth; i++) {
-                String varname = (String) indices.get(i);
-                String name = "get$" + varname;
-                Type type = curTraceMatch.bindingType(varname);
-
-                Local var = getMethodCallResult(next_disjunct, name, type);
-                if (curTraceMatch.isPrimitive(varname))
-                    var = getWeakRef(var, varname);
-
-                params.add(objectType);
-                args.add(var);
-            }
-
-            Local updated = getMethodCallResult(this_local, "lookup" + depth,
-                                                params, setType, args);
-
-            Stmt end_if = getNewLabel();
-            doJumpIfNotNull(updated, end_if);
-            doAssign(updated, getNewObject(setClass));
-            params.add(setType);
-            params.add(BooleanType.v());
-            args.add(updated);
-            args.add(getInt(0));
-            doMethodCall(this_local, "overwrite" + depth, params,
-                         VoidType.v(), args);
-
-            doAddLabel(end_if);
-            params.clear();
-            doMethodCall(updated, "add", singleObjectType,
-                         BooleanType.v(), next_disjunct);
-
-            doJump(loop_test);
-            doAddLabel(loop_end);
-
-            doReturnVoid();
-        }
-
-        // the non-indexed case
-        doAddLabel(no_index_case);
-        Local disjuncts_tmp =
-            getFieldLocal(this_local, "disjuncts_tmp", setType);
-        doMethodCall(disjuncts_tmp, "addAll", singleCollectionType,
-                     BooleanType.v(), disjuncts);
         doReturnVoid();
     }
 
@@ -4213,7 +3923,7 @@ public class ClassGenHelper {
      *    public void doNegativeUpdates(Constraint constraint) {
      *      <for each symbol Sym, which binds v1 to vN>
      *        if (Sym)
-     *          constraint.queueNegativeBindingsForSymbolSym(v1,...,vN);
+     *          constraint.doNegativeBindingsForSymbolSym(v1,...,vN);
      *      <end for>
      *    }
      */
