@@ -23,7 +23,6 @@ import java.lang.InterruptedException;
 
 public class Lock
 {
-    protected boolean locked = false;
     protected Thread owner = null;
 
     /**
@@ -32,22 +31,21 @@ public class Lock
      */
     synchronized public void get()
     {
-        while (locked) {
+        while (owner != null) {
             try {
                 this.wait();
             } catch (InterruptedException e) { }
         }
 
-        locked = true;
         owner = Thread.currentThread();
     }
 
     /**
      * Returns true iff the current thread owns the lock.
      */
-    synchronized public boolean own()
+    public boolean own()
     {
-        return locked && owner == Thread.currentThread();
+        return owner == Thread.currentThread();
     }
 
     /**
@@ -56,8 +54,8 @@ public class Lock
      */
     synchronized public void release()
     {
-        if (locked && owner == Thread.currentThread()) {
-            locked = false;
+        if (owner == Thread.currentThread()) {
+            owner = null;
             this.notify();
         }
     }
