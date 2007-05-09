@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import soot.Body;
 import soot.Scene;
@@ -61,7 +62,8 @@ public class Weaver {
 
     protected final AspectCodeGen ag;
     
-    Map unitBindings = new HashMap();
+    protected Map unitBindings = new HashMap();
+    protected Map reverseUnitBindings;
 
     /**
      * Creates a new Weaver with a default aspect code generator.
@@ -85,8 +87,34 @@ public class Weaver {
     public Map getUnitBindings() {
         return unitBindings;
     }
+
+    /**
+     * Due to reweaving, there can be multiple versions (copies) of one and the
+     * same unit. This method returns for the original version of a unit the current unit,
+     * i.e. the unit after the original bodies were restored last.
+     * @param ut a possibly original unit, i.e. from before weaving
+     * @return the current version of ut or ut itself, if no current version exists
+     * @see #reverseRebind(Unit)
+     */
     public Unit rebind(Unit ut) {
         Unit result=(Unit)unitBindings.get(ut);
+        if (result!=null)
+                return result;
+        else
+                return ut;
+    }
+    
+    /**
+     * Due to reweaving, there can be multiple versions (copies) of one and the
+     * same unit. This method returns for the current version of a unit the original version
+     * that existed right before the first weaving. That way, by using this method
+     * one can get the same view on a unit across multiple reweaving steps. 
+     * @param ut a current unit
+     * @return the copy of this unit that existed right before the first weaving
+     * or ut itself, if there exists no such copy
+     */
+    public Unit reverseRebind(Unit ut) {
+        Unit result=(Unit)reverseUnitBindings.get(ut);
         if (result!=null)
                 return result;
         else
@@ -165,7 +193,7 @@ public class Weaver {
                 //store the unwoven state first
                 Unweaver unweaver = new Unweaver();
                 unweaver.save();
-                unitBindings = unweaver.restore();
+                storeBindings(unweaver);
                 //then do the initial weaving
                 weaveAdvice();
                 
@@ -185,7 +213,7 @@ public class Weaver {
                     if(reweaveNow) { 
                         
                         //restore the weaving state again (analysis could have tampered with it?)
-                        unitBindings = unweaver.restore();
+                        storeBindings(unweaver);
                         //reset weaver for reweaving
                         resetForReweaving();
                         //do stuff immediately prior to reweaving
@@ -199,7 +227,7 @@ public class Weaver {
                 }
                 
                 //restore the weaving state again (analysis could have tampered with it?)
-                unitBindings = unweaver.restore();
+                storeBindings(unweaver);
                 
                 //reset for the final weaving step
                 resetForReweaving();
@@ -373,5 +401,14 @@ public class Weaver {
                 AbcTimer.mark("Weaving advice");
                 abc.main.Debug.phaseDebug("Weaving advice");
         } // method weave
+
+		protected void storeBindings(Unweaver unweaver) {
+			unitBindings = unweaver.restore();			
+			reverseUnitBindings = new HashMap();
+			for (Iterator entryIter = unitBindings.entrySet().iterator(); entryIter.hasNext();) {
+				Entry entry = (Entry) entryIter.next();
+				reverseUnitBindings.put(entry.getValue(), entry.getKey());
+			}
+		}
 
 } // class Weaver
