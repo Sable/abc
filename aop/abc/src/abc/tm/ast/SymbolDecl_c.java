@@ -40,9 +40,9 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
 {
     final static boolean debug_tm_advice = false;
 
-    private String name;
-    private SymbolKind kind;
-    private Pointcut pc;
+    protected String name;
+    protected SymbolKind kind;
+    protected Pointcut pc;
 
     public SymbolDecl_c(Position pos, String name,
                             SymbolKind kind, Pointcut pc)
