@@ -1983,7 +1983,8 @@ public class ClassGenHelper {
                             labelVarNotBound);
             
             // variable bound -- return false if bound to same value
-            doJumpIfEqual(getMethodCallResult(thisLocal, "get$" + varName, varType), paramLocal, labelReturnFalse);
+            Type getType = curTraceMatch.isPrimitive(varName) ? curTraceMatch.bindingType(varName) : objectType;
+            doJumpIfEqual(getMethodCallResult(thisLocal, "get$" + varName, getType), paramLocal, labelReturnFalse);
             
             // bound to a different value -- return new Disjunct(this); (i.e. this.copy())
             doReturn(getNewObject(disjunct, singleDisjunct, thisLocal));
@@ -2033,7 +2034,8 @@ public class ClassGenHelper {
         Iterator varIt = varNames.iterator();
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
-            startMethod("get$" + varName, emptyList, curTraceMatch.bindingType(varName), Modifier.PUBLIC);
+            Type getType = curTraceMatch.isPrimitive(varName) ? curTraceMatch.bindingType(varName) : objectType;
+            startMethod("get$" + varName, emptyList, getType, Modifier.PUBLIC);
             Stmt labelThrowException = getNewLabel();
             Stmt labelBindingIsWeak = getNewLabel();
             
@@ -2052,7 +2054,7 @@ public class ClassGenHelper {
                 doAddLabel(labelBindingIsWeak);
                 var = getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType());
                 doJumpIfNull(var, labelThrowException);
-                doReturn(getCastValue(getMethodCallResult(var, "get", objectType), curTraceMatch.bindingType(varName)));
+                doReturn(getMethodCallResult(var, "get", objectType));
             }
             
             // attempt to get an unbound variable -- throw an exception
@@ -2157,7 +2159,8 @@ public class ClassGenHelper {
                 Stmt labelCheckNextVar = getNewLabel();
                 doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelCurVarNotBound);
                 
-                Local curThisVarVal = getMethodCallResult(thisLocal, "get$" + varName, curTraceMatch.bindingType(varName));
+                Type getType = curTraceMatch.isPrimitive(varName) ? curTraceMatch.bindingType(varName) : objectType;
+                Local curThisVarVal = getMethodCallResult(thisLocal, "get$" + varName, getType);
                 // return false if already incompatible
                 doJumpIfNotEqual(curThisVarVal, curVar, labelReturnFalse);
                 // since the current variable is bound, we skip the check of the negative binding sets
@@ -2507,7 +2510,8 @@ public class ClassGenHelper {
                     
                     // if there's even just one variable whose binding doesn't contradict the new set of bindings,
                     // then the resulting set of disjuncts would contain 'this', so we just add it to results.
-                    doJumpIfNotEqual(getMethodCallResult(thisLocal, "get$" + varName, curTraceMatch.bindingType(varName)),
+                    Type getType = curTraceMatch.isPrimitive(varName) ? curTraceMatch.bindingType(varName) : objectType;
+                    doJumpIfNotEqual(getMethodCallResult(thisLocal, "get$" + varName, getType),
                             binding, labelAddThis);
                 }
                 
@@ -3148,9 +3152,9 @@ public class ClassGenHelper {
 
         for (int i = 0; i < indices.length; i++) {
             String varName = index.varName(i);
-            Type varType = curTraceMatch.bindingType(varName);
             String getMethodName = "get$" + varName;
-            Local val = getMethodCallResult(nextDisjunct, getMethodName, varType);
+            Type getType = curTraceMatch.isPrimitive(varName) ? curTraceMatch.bindingType(varName) : objectType;
+            Local val = getMethodCallResult(nextDisjunct, getMethodName, getType);
             if (curTraceMatch.isPrimitive(varName))
                 val = getWeakRef(val, varName);
 
