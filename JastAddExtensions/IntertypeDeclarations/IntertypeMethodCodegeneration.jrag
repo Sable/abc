@@ -43,7 +43,7 @@ aspect IntertypeMethodCodegeneration {
   }
 
   syn lazy MethodDecl IntertypeMethodDecl.createAspectMethod() {
-    if(!isFinal) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
+    if(!is$Final) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
     // make aspect method static
     List modifierList = (List)getModifiers().getModifierList().fullCopy();
     if(!isStatic())
