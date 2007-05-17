@@ -20,6 +20,7 @@
 package abc.tm.weaving.aspectinfo;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 
 public class WeakSetSet
@@ -52,12 +53,12 @@ public class WeakSetSet
         return null;
     }
 
-    boolean hasVar(String var)
+    public boolean hasVar(String var)
     {
         return false;
     }
 
-    boolean hasSingleton(String var)
+    public boolean hasSingleton(String var)
     {
         return false;
     }
