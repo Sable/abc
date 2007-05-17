@@ -89,7 +89,7 @@ public class WeakSetSet
         return result;
     }
 
-    public WeakSetSet minimise(WeakSetSet other)
+    public WeakSetSet minimise()
     {
         return this;
     }
