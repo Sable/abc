@@ -91,7 +91,25 @@ public class WeakSetSet
 
     public WeakSetSet minimise()
     {
-        return this;
+        if (universal)
+            return this;
+
+        WeakSetSet minimised = new WeakSetSet();
+        minimised.collectsets.addAll(collectsets);
+
+        Iterator i = minimised.collectsets.iterator();
+        while (i.hasNext()) {
+            HashSet iset = (HashSet) i.next();
+            Iterator j = collectsets.iterator();
+            while (j.hasNext()) {
+                HashSet jset = (HashSet) j.next();
+                if (iset.containsAll(jset) && iset != jset) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+        return minimised;
     }
 
     public boolean hasVar(String var)
@@ -171,6 +189,8 @@ public class WeakSetSet
         System.out.println(weakyz);
         System.out.println(weakunion);
         System.out.println(weakcross);
+        System.out.println(weakx.union(weakcross));
+        System.out.println(weakx.union(weakcross).minimise());
         System.out.println(universal);
 
         assert empty.equals(empty);
@@ -201,6 +221,8 @@ public class WeakSetSet
         assert weakcross.hasVar("x");
         assert weakcross.hasVar("y");
         assert weakcross.hasVar("z");
+
+        assert weakx.union(weakcross).minimise().equals(weakx);
 
         System.out.println("all assertions passed");
     }
