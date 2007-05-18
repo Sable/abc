@@ -25,6 +25,8 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Set;
 
+import abc.tm.weaving.aspectinfo.CollectSetSet;
+
 /** 
  * A node in the state machine. Contains information about successors, whether it's
  * an initial/final node, and (eventually) variable binding tracking information.
@@ -59,7 +61,11 @@ public class SMNode implements State {
 	 */
 	public LinkedHashSet/*<String>*/ boundVars = new LinkedHashSet();
  
-
+	/**
+	 * Set of sets the complete garbage-collection of which implies the match is invalidated.
+	 */
+	public CollectSetSet/*<String>*/ collectSets;
+	
     private TMStateMachine hostFSA;
     
     public SMNode(TMStateMachine fsa, boolean isInitial, boolean isFinal) {

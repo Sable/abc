@@ -33,6 +33,7 @@ import polyglot.util.Position;
 import abc.main.Debug;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.aspectinfo.IndexingScheme;
+import abc.tm.weaving.aspectinfo.CollectSetSet;
 
 /**
  * Implementation of the StateMachine interface for tracematch matching
@@ -328,14 +329,9 @@ public class TMStateMachine implements StateMachine {
      * @param notused variables not used in tracematch body
      */
     protected void collectBindingInfo(List formals,TraceMatch tm,Collection notused,Position pos) {
-        // do a backwards analysis from the final nodes
-    	//  
-    	// for an edge e, the flow function is
-    	//  flowAlongEdge(e)(X) = X union e.boundVars
-    	//
-    	// we want to compute the meet-over-all-paths solution at each state
-    	initCollectableWeakRefs(tm);
-    	fixCollectableWeakRefs(tm);
+    	// New and improved space leak elimination analysis.
+    	computeCollectSets(tm);
+    	fillInCollectableWeakRefs(tm);
         collectableWeakRefsToOtherRefs(formals,notused,tm);
         initBoundVars(formals);
         fixBoundVars(tm);
@@ -343,25 +339,144 @@ public class TMStateMachine implements StateMachine {
         	generateLeakWarnings(pos);
     }
     
-   	
-	/**
-     * initialise the collectableWeakRefs fields for the meet-over-all-paths computation
+    /**
+     * New algorithm/analysis to compute collectable weakrefs (and some more general information):
      * 
-	 * @param formals all variables declared in the tracematch
-	 */
-	private void initCollectableWeakRefs(TraceMatch tm) {
-    	// we want a maximal fixpoint so for all final nodes the
-    	// starting value is the empty set
-		// and for all other nodes it is the set of all non-primitive formals
-    	for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
-        	SMNode node = (SMNode) edgeIter.next();
-        	if (node.isFinalNode())
-        		node.collectableWeakRefs = new LinkedHashSet();
-        	else
-        		node.collectableWeakRefs = new LinkedHashSet(tm.getNonPrimitiveFormalNames()); 
-        }
-	}
-	
+     * Inspired by the observation that if the final state has two incoming transitions, one binding
+     * x and one binding y, then neither x nor y will be collectable, and yet if both of them
+     * expire, we know we can never complete the match, we introduce the concept of "collect-sets".
+     * For an edge, a collect-set is a set of tracematch formals which, when completely expired,
+     * will prevent that edge from ever being taken again. For each non-skip edge, we compute the set
+     * of collect-sets. Naturally, this is just the set of singleton sets of every formal bound by 
+     * the symbol labelling the transition.
+     * 
+     * For a pair of states (i,j), a collect-set is a set of tracematch formals which, when completely
+     * expired, prevents any direct transition from state i to state j. We can obtain the set of such
+     * collect-sets for two states, collectSetsTransition(i, j), simply by taking the cross-union (x) 
+     * over the collect-set-sets of all edges leading from i to j. Here, we use the term cross-union  
+     * to denote the following operation:
+     * 
+     *  A (x) B = { a U b | a \in A && b \in B }
+     *  
+     *  The motivation for this is that we're looking for sufficient collect-sets that would prevent
+     *  *any* of the transitions from i to j; each set in the collect-set-set constructed above contains
+     *  some collect-set for each transition, and so is a collect-set for *all* transitions.
+     *  
+     *  To summarise,
+     *  
+     *  collectSetsTransition(i, j) = (X) : edge \in Delta : collectSets(edge).
+     *  
+     *  Note that to keep sets small, we apply *minimisation*, defined as follows:
+     *  
+     *  min(A) = { a \in A | there exists no b \in A such that b is a proper subset of A }.
+     *  
+     *  Intuitively, if both {x, y} and {x} are collect-sets, then we don't need to remember {x, y},
+     *  since whenever that has fully expired, the smaller set {x} has also fully expired.
+     *  
+     *  Now let us define collectSetsVia(i, j); this is the set of all collect-sets which would prevent
+     *  a partial match on state i from reaching the final state via a transition to j, and can be
+     *  computed simply as
+     *  
+     *  collectSetsVia(i, j) = collectSets(j) U collectSetsTransition(i, j).
+     *  
+     *  Intuitively, this says that we will not be able to reach the final state via j if either enough
+     *  variables expire for the final state to be unreachable from j (collectSets(j)), or enough
+     *  variables expire for any transition from i to j to be impossible.
+     *  
+     *  Finally, we can give an expression for the collect-set of a particular state i, collectSets(i).
+     *  This is just the cross-union over all immediately reachable next-states j of collectSetsVia(i, j):
+     *  
+     *  collectSets(i) = (X) : (i, _, j) \in Delta : collectSetsVia(i, j).
+     *  
+     *  Now, collectSets(i) is recursive, and so we need a fixpoint iteration to compute it. We start off
+     *  the final state with an empty collectSetSet, and all other states with universal collectSetSets (the
+     *  universal set is just the powerset of the set of tracematch formals). Pavel and Julian have proved
+     *  that the function in the above recursive equation is monotonic, so we will reach a fixpoint
+     *  (details available upon request). Moreover, we apply minimisation at various stages during the
+     *  computation, and so we also need the following to be true:
+     *  
+     *   min(A (x) B) = min(min(A) (x) min(B))
+     *   
+     *   This has also been proved by Pavel and Julian.
+     *   
+     *   Observe that the traditional concept of collectableWeakRef corresponds precisely to a singleton
+     *   collect-set. Also, we can do advanced disjunct cleanup by checking any other collect-sets that
+     *   may exist for a state. Note that if we have a collect-set of {x,y}, then x and y are still
+     *   strongRefs if they are used in the tracematch body and weakRefs otherwise.
+     */
+    private void computeCollectSets(TraceMatch tm) {
+    	int numStates = nodes.size();
+    	
+    	// Current and previous values for the fixpoint computation. Initialise...
+    	CollectSetSet[] oldState = new CollectSetSet[numStates];
+    	CollectSetSet[] newState = new CollectSetSet[numStates];
+    	for(int i = 0; i < numStates; i++) {
+    		if(getStateByNumber(i).isFinalNode()) {
+    			oldState[i] = new CollectSetSet();
+    			newState[i] = new CollectSetSet();
+    		} else {
+    			oldState[i] = CollectSetSet.universalSet();
+    		}
+    	}
+    	
+    	// Init collectSets for transitions between two particular states
+    	CollectSetSet[][] trans = new CollectSetSet[numStates][numStates];
+    	for(int i = 0; i < numStates; i++) {
+			for(Iterator edgeIt = getStateByNumber(i).getOutEdgeIterator(); edgeIt.hasNext(); ) {
+				SMEdge edge = (SMEdge) edgeIt.next();
+				if(edge.getLabel().equals(SMEdge.SKIP_LABEL))
+					continue;
+				int j = edge.getTarget().getNumber();
+				CollectSetSet tmp = new CollectSetSet(tm.getVariableOrder(edge.getLabel()));
+				trans[i][j] = (trans[i][j] == null? tmp : trans[i][j].cross(tmp));
+			}
+    	}
+    	
+    	// Do the fixpoint iteration
+    	boolean changed = true;
+    	while(changed) {
+    		changed = false;
+    		for(int i = 0; i < numStates; i++) {
+    			if(getStateByNumber(i).isFinalNode())
+    				continue;
+    			newState[i] = null;
+    			for(int j = 0; j < numStates; j++) {
+    				if(trans[i][j] != null) {
+    					CollectSetSet tmp = oldState[j].union(trans[i][j]);
+    					if(newState[i] == null) {
+    						newState[i] = tmp;
+    					} else {
+    						newState[i] = newState[i].cross(tmp).minimise();
+    					}
+    				}
+    			}
+    			if(!newState[i].equals(oldState[i]))
+    				changed = true;
+    		}
+    		CollectSetSet[] tmp = newState; newState = oldState; oldState = tmp;
+    	}
+    	
+    	// Now we have the final configuration in oldState...
+    	for(Iterator nodeIt = getStateIterator(); nodeIt.hasNext(); ) {
+    		SMNode state = (SMNode) nodeIt.next();
+    		state.collectSets = oldState[state.getNumber()];
+    	}
+    }
+    
+    private void fillInCollectableWeakRefs(TraceMatch tm) {
+    	for(Iterator nodeIt = getStateIterator(); nodeIt.hasNext(); ) {
+    		SMNode state = (SMNode) nodeIt.next();
+    		LinkedHashSet collWeakRefs = new LinkedHashSet();
+    		for(Iterator varIt = tm.getNonPrimitiveFormalNames().iterator(); varIt.hasNext(); ) {
+    			String var = (String) varIt.next();
+    			if(state.collectSets.hasSingleton(var)) {
+    				collWeakRefs.add(var);
+    			}
+    		}
+    		state.collectableWeakRefs = collWeakRefs;
+    	}
+    }
+    
 	/**
 		 * initialise the boundVars fields for the meet-over-all-paths computation
 		 * 
@@ -379,41 +494,6 @@ public class TMStateMachine implements StateMachine {
 					node.boundVars = new LinkedHashSet(formals); 
 			}
 		}
-
-	/**
-	 * do fixpoint iteration using a worklist of edges
-	 * 
-	 * @param tm tracematch, which provides a mapping from symbols
-     *           to sets of bound variables
-	 */
-	private void fixCollectableWeakRefs(TraceMatch tm) {
-		// the worklist contains edges whose target has changed value
-        List worklist = new LinkedList(edges);
-        while (!worklist.isEmpty()) {
-        	SMEdge edge = (SMEdge) worklist.remove(0);
-        	SMNode src = edge.getSource();
-        	SMNode tgt = edge.getTarget();
-        	// now compute the flow function along this edge
-        	Set flowAlongEdge = new LinkedHashSet(tgt.collectableWeakRefs);
-        	Collection c = tm.getVariableOrder(edge.getLabel());
-        	if (c != null)
-        	   flowAlongEdge.addAll(c);
-        	// if src.collectableWeakRefs is already smaller, skip
-        	if (!flowAlongEdge.containsAll(src.collectableWeakRefs)) {
-               // otherwise compute intersection of 
-        	   // src.collectableWeakRefs and flowAlongEdge
-        	   src.collectableWeakRefs.retainAll(flowAlongEdge);
-               // add any edges whose target has been affected to
-        	   // the worklist
-        	   for (Iterator edgeIter=edges.iterator(); edgeIter.hasNext(); ) {
-        	   	   SMEdge anotherEdge = (SMEdge) edgeIter.next();
-        	   	   if (anotherEdge.getTarget() == src && 
-        	   	   		!worklist.contains(anotherEdge))
-        	   	   	worklist.add(0,anotherEdge);	
-        	   }
-        	}
-        }
-	}
 
 	/**
 		 * do fixpoint iteration using a worklist of edges
@@ -715,6 +795,7 @@ public class TMStateMachine implements StateMachine {
             result += "needStrongRefs" + cur.needStrongRefs + ", ";
             result += "collectableWeakRefs" + cur.collectableWeakRefs + ", ";
 			result += "weakRefs" + cur.weakRefs + ", ";
+			result += "collectSets" + cur.collectSets + ", ";
 			result += "boundVars" + cur.boundVars + ")\n";
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
