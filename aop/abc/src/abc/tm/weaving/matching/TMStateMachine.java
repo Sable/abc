@@ -364,7 +364,7 @@ public class TMStateMachine implements StateMachine {
      *  
      *  To summarise,
      *  
-     *  collectSetsTransition(i, j) = (X) : edge \in Delta : collectSets(edge).
+     *  collectSetsTransition(i, j) = (X) : (i, s, j) \in Delta : collectSets((i, s, j)).
      *  
      *  Note that to keep sets small, we apply *minimisation*, defined as follows:
      *  
