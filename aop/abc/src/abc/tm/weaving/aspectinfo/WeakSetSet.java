@@ -58,10 +58,11 @@ public class WeakSetSet
 
         WeakSetSet result = new WeakSetSet();
         Iterator i = collectsets.iterator();
-        Iterator j = other.collectsets.iterator();
 
         while (i.hasNext()) {
             HashSet iset = (HashSet) i.next();
+            Iterator j = other.collectsets.iterator();
+
             while (j.hasNext()) {
                 HashSet jset = (HashSet) j.next();
 
@@ -171,6 +172,9 @@ public class WeakSetSet
         // that binds y and z...
         Collection x = new HashSet();
         x.add("x");
+        Collection xy = new HashSet();
+        xy.add("x");
+        xy.add("y");
         Collection yz = new HashSet();
         yz.add("y");
         yz.add("z");
@@ -178,6 +182,7 @@ public class WeakSetSet
         // tests...
         WeakSetSet empty = new WeakSetSet();
         WeakSetSet weakx = new WeakSetSet(x);
+        WeakSetSet weakxy = new WeakSetSet(xy);
         WeakSetSet weakyz = new WeakSetSet(yz);
         WeakSetSet universal = WeakSetSet.universalSet();
 
@@ -191,6 +196,7 @@ public class WeakSetSet
         System.out.println(weakcross);
         System.out.println(weakx.union(weakcross));
         System.out.println(weakx.union(weakcross).minimise());
+        System.out.println(weakxy.cross(weakx));
         System.out.println(universal);
 
         assert empty.equals(empty);
