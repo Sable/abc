@@ -157,6 +157,74 @@ public class CollectSetSet
 
     public void genCollectTests(TestCodeGen codegen)
     {
+        genCollectTests(codegen, collectsets);
+    }
+
+    private void genCollectTests(TestCodeGen codegen, HashSet collectsets)
+    {
+        if (collectsets.isEmpty()) {
+            codegen.genNoCollect();
+            return;
+        }
+        if (collectsets.contains(new HashSet())) {
+            codegen.genCollect();
+            return;
+        }
+
+        String testvar = getMostFrequentVar(collectsets);
+        HashSet containsvar = new HashSet();
+        HashSet rest = new HashSet();
+        partition(collectsets, testvar, containsvar, rest);
+
+        Object falsebranch = codegen.getNewBranch();
+        codegen.genTest(testvar, falsebranch);
+        genCollectTests(codegen, containsvar);
+        codegen.insertBranch(falsebranch);
+        genCollectTests(codegen, rest);
+    }
+
+    private String getMostFrequentVar(HashSet collectsets)
+    {
+        HashSet allvars = new HashSet();
+        Iterator i = collectsets.iterator();
+        while (i.hasNext())
+            allvars.addAll((HashSet) i.next());
+
+        String max_var = null;
+        int max_count = 0;
+        i = allvars.iterator();
+        while (i.hasNext()) {
+            String var = (String) i.next();
+            int count = 0;
+            Iterator j = collectsets.iterator();
+            while (j.hasNext()) {
+                HashSet set = (HashSet) j.next();
+                if (set.contains(var)) count++;
+            }
+            if (count > max_count) {
+                max_count = count;
+                max_var = var;
+            }
+        }
+
+        return max_var;
+    }
+
+    private void partition(HashSet collectsets, String testvar,
+                           HashSet containsvar, HashSet rest)
+    {
+        Iterator i = collectsets.iterator();
+        while (i.hasNext()) {
+            HashSet orig = (HashSet) i.next();
+            if (orig.contains(testvar)) {
+                HashSet newset = new HashSet();
+                newset.addAll(orig);
+                newset.remove(testvar);
+                containsvar.add(newset);
+            } else {
+                rest.add(orig);
+            }
+        }
     }
 
     public int hashCode()
@@ -268,5 +336,27 @@ public class CollectSetSet
         assert weakx.union(weakcross).minimise().equals(weakx);
 
         System.out.println("all assertions passed");
+
+        weakx.cross(weakyz).genCollectTests(
+            new TestCodeGen() {
+                private int i = 0;
+                public Object getNewBranch() {
+                    return new Integer(i++);
+                }
+                public void insertBranch(Object label) {
+                    System.out.println("Label " + label + ":");
+                }
+                public void genTest(String var, Object label) {
+                    System.out.println("  if " + var + " is alive goto "
+                                       + label);
+                }
+                public void genCollect() {
+                    System.out.println("  Collect this disjunct");
+                }
+                public void genNoCollect() {
+                    System.out.println("  Do not collect this disjunct");
+                }
+            }
+        );
     }
 }
