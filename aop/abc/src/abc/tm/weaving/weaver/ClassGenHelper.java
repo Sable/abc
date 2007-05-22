@@ -3428,7 +3428,7 @@ public class ClassGenHelper {
             List singleInt = new LinkedList();
             singleInt.add(IntType.v());
             doJumpIfTrue(getMethodCallResult(curDisjunct, "validateDisjunct", singleInt,
-                    BooleanType.v(), stateTo), labelDisjunctValid);
+                    BooleanType.v(), onState), labelDisjunctValid);
             doMethodCall(setIterator, "remove", VoidType.v());
             doJump(labelLoopBegin);
             
