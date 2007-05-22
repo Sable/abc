@@ -341,7 +341,12 @@ public class CollectSetSet
 
         System.out.println("all assertions passed");
 
-        weakx.cross(weakyz).genCollectTests(
+        weakx.cross(weakyz).printCollectTests();
+    }
+
+    public void printCollectTests()
+    {
+        this.genCollectTests(
             new TestCodeGen() {
                 private int i = 0;
                 public Object getNewBranch() {
