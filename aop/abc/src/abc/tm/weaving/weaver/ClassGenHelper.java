@@ -2733,18 +2733,17 @@ public class ClassGenHelper {
     
     /**
      * Adds a method with the signature "public boolean validateDisjunct(int state);".
-     * The idea is that the return value is false if one of the collectableWeakRefs of
+     * The idea is that the return value is false if one of the collectSets of
      * the disjuct has expired, and true otherwise. Validating a disjunct before calling 
      * add[Neg]Bindings on it will enable clean-up of unneeded disjuncts 
      * 
      * public boolean validateDisjunct(int state) {
      *      switch(state) {
-     *          case N: // #for each state N which has at least one collectableWeakRef
-     *              #for(each collectibleWeakRef variable x Of state N) {
-     *                  if(!this.x$isBound) goto curVarNotBound;
-     *                  if(this.weak$x.get() == null) goto returnFalse;
-     *  curVarNotBound:
-     *      #}
+     *          case N: // #for each state N which has some collectSet
+     *              #for(each collectSet S Of state N) {
+     *                  if(s.hasExpired) goto labelReturnFalse;
+     *      		#}
+     *      }
      *  labelReturnTrue:
      *      return true;
      *  labelReturnFalse:
@@ -3379,7 +3378,7 @@ public class ClassGenHelper {
                 List singleInt = new LinkedList();
                 singleInt.add(IntType.v());
                 doJumpIfTrue(getMethodCallResult(curDisjunct, "validateDisjunct", singleInt,
-                        BooleanType.v(), stateTo), labelDisjunctValid);
+                        BooleanType.v(), onState), labelDisjunctValid);
                 doMethodCall(setIterator, "remove", VoidType.v());
                 doJump(labelLoopBegin);
                 
