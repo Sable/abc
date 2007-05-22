@@ -427,7 +427,7 @@ public class TMStateMachine implements StateMachine {
 				if(edge.getLabel().equals(SMEdge.SKIP_LABEL))
 					continue;
 				int j = edge.getTarget().getNumber();
-				Collection vars = tm.getVariableOrder(edge.getLabel());
+				Collection vars = new LinkedList(tm.getVariableOrder(edge.getLabel()));
 				vars.retainAll(tm.getNonPrimitiveFormalNames());
 				CollectSetSet tmp = new CollectSetSet(vars);
 				trans[i][j] = (trans[i][j] == null? tmp : trans[i][j].cross(tmp));

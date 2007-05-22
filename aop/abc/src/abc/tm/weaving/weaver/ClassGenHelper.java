@@ -2818,19 +2818,14 @@ public class ClassGenHelper {
     		    }
     		    public void genTest(String var, Object label) {
     		    	// Does the current state guarantee the variable bound? If not,
-    		    	// we need to check it's bound first...
-    		    	Stmt labNotBound = null;
-    		    	if(!state.boundVars.contains(var)) {
-    		    		labNotBound = getNewLabel();
-    		    		doJumpIfFalse(getFieldLocal(thisLocal, var + "$isBound", BooleanType.v()), labNotBound);
-    		    	}
+    		    	// we need to check it's bound first... if not, it can't have expired.
+    		    	if(!state.boundVars.contains(var))
+    		    		doJumpIfFalse(getFieldLocal(thisLocal, var + "$isBound", BooleanType.v()), (Stmt)label);
+    		    	
     		    	doJumpIfFalse(getMethodCallResult(
     		    			getFieldLocal(thisLocal, "weak$" + var, 
     		    					curTraceMatch.weakBindingClass(var).getType()), 
     		    					"isExpired", BooleanType.v()), (Stmt)label);
-    		    	if(!state.boundVars.contains(var)) {
-    		    		doAddLabel(labNotBound);
-    		    	}
     		    }
     		    public void genCollect() {
     		    	doJump(labExpired);
@@ -2839,7 +2834,7 @@ public class ClassGenHelper {
     		    	doJump(labNotExpired);
     		    }
     		}
-            
+
             state.collectSets.genCollectTests(new ConcreteTestCodeGen(state, thisLocal, labelReturnTrue, labelReturnFalse));
 
         }
