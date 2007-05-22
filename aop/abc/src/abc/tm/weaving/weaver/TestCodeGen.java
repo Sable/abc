@@ -21,8 +21,8 @@ package abc.tm.weaving.weaver;
 
 public interface TestCodeGen
 {
-    Object getNewLabel();
-    void insertLabel(Object label);
+    Object getNewBranch();
+    void insertBranch(Object label);
     void genTest(String var, Object label);
     void genCollect();
     void genNoCollect();
