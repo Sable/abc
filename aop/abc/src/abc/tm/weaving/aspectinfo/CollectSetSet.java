@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import abc.tm.weaving.weaver.TestCodeGen;
+
 
 public class CollectSetSet
 {
@@ -151,6 +153,10 @@ public class CollectSetSet
                 result.collectsets.add(set);
         }
     	return result;
+    }
+
+    public void genCollectTests(TestCodeGen codegen)
+    {
     }
 
     public int hashCode()
