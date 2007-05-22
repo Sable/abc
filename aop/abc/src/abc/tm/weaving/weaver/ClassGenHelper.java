@@ -1136,7 +1136,7 @@ public class ClassGenHelper {
             addIndConstraintOrMethod();
             addIndConstraintMergeMethod();
             addIndConstraintGetDisjunctArrayMethod();
-            addIndConstraintPropogateBindingsMethods();
+            addIndConstraintPropagateBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings) 
                 addIndConstraintDoNegativeBindingsMethods();
         } else {
@@ -3236,26 +3236,26 @@ public class ClassGenHelper {
     }
     
     /**
-     * The 'addBindingsForSymbol' methods in the indexed case are called 'propogateBindingsForSymbol', since
+     * The 'addBindingsForSymbol' methods in the indexed case are called 'propagateBindingsForSymbol', since
      * they pass the changed bindings to the target state.
      * 
      * The general plan is to determine the 'relevant' LinkedHashSets of disjuncts and iterate over them,
      * calling addBindingsForSymbol on each disjunct, and queueing the resulting disjunct on the target
      * state
      */
-    protected void addIndConstraintPropogateBindingsMethods() {
+    protected void addIndConstraintPropagateBindingsMethods() {
         Iterator symbolIt = curTraceMatch.getSymbols().iterator();
         while(symbolIt.hasNext()) {
             String symbol = (String)symbolIt.next();
-            addIndConstraintPropogateBindingsForSymbolMethod(symbol);
+            addIndConstraintPropagateBindingsForSymbolMethod(symbol);
         }
     }
     
     /**
-     * Adds a propogateBindingsForSymbol method for the specified symbol
+     * Adds a propagateBindingsForSymbol method for the specified symbol
      * @param symbol
      */
-    protected void addIndConstraintPropogateBindingsForSymbolMethod(String symbol) {
+    protected void addIndConstraintPropagateBindingsForSymbolMethod(String symbol) {
         List variables = curTraceMatch.getVariableOrder(symbol);
         List methodFormals = new LinkedList();
         methodFormals.add(IntType.v()); // number of the target state of the current transition
@@ -3264,7 +3264,7 @@ public class ClassGenHelper {
             methodFormals.add(curTraceMatch.bindingType((String)varIt.next()));
         }
         methodFormals.add(constraint.getType());
-        startMethod("propogateBindingsForSymbol" + symbol, methodFormals, VoidType.v(), Modifier.PUBLIC);
+        startMethod("propagateBindingsForSymbol" + symbol, methodFormals, VoidType.v(), Modifier.PUBLIC);
         
         Local thisLocal = getThisLocal();
         Local onState = getFieldLocal(thisLocal, "onState", IntType.v());
