@@ -2789,29 +2789,58 @@ public class ClassGenHelper {
             Stmt label = (Stmt)labelIt.next();
             
             doAddLabel(label);
-            //////// Cleaning up invalidated collectableWeakRefs
-            // Each state is labelled with a set collectableWeakRefs. If one of these
-            // becomes invalid, the disjunct can never lead to a successful match and,
-            // accordingly, can/must be discarded.
-            //
-            // Since we don't allow null bindings and WeakRefs become null when they are
-            // invalidated, we check each bound variable in the collectableWeakRefs set
-            // for the current state for null-ness, and if it's null return false.
-            Iterator collectableWeakRefIt = state.collectableWeakRefs.iterator();
-            while(collectableWeakRefIt.hasNext()) {
-                String varName = (String)collectableWeakRefIt.next();
-                Stmt labelCurVarNotBound = getNewLabel();
-                
-                doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelCurVarNotBound);
-                
-                // variable is bound -- check it
-                doJumpIfNull(getMethodCallResult(getFieldLocal(thisLocal, "weak$" + varName, 
-                                curTraceMatch.weakBindingClass(varName).getType()), "get", objectType), 
-                        labelReturnFalse);
-                
-                doAddLabel(labelCurVarNotBound);
-            }
-            doJump(labelReturnTrue);
+            
+            // Cleaning up invalidated disjuncts:
+            // If one of the CollectSetSets has expired, return false.
+            // The main codegen logic is actually encapsulated in CollectSetSet...
+            
+            /**
+             * Implementation of the TestCodeGen interface, providing appropriate codegen functions.
+             */
+            class ConcreteTestCodeGen implements TestCodeGen {
+    			SMNode state;
+    			Local thisLocal;
+    			Stmt labExpired, labNotExpired;
+    			
+    			ConcreteTestCodeGen(SMNode s, Local tL, Stmt labTrue, Stmt labFalse) {
+    				this.state = s;
+    				this.thisLocal = tL;
+    				labExpired = labFalse;
+    				labNotExpired = labTrue;
+    			}
+    			
+    			public Object getNewBranch() {
+    				return getNewLabel();
+    			}
+    		    public void insertBranch(Object label) {
+    		    	doAddLabel((Stmt)label);
+    		    }
+    		    public void genTest(String var, Object label) {
+    		    	// Does the current state guarantee the variable bound? If not,
+    		    	// we need to check it's bound first...
+    		    	Stmt labNotBound = null;
+    		    	if(!state.boundVars.contains(var)) {
+    		    		labNotBound = getNewLabel();
+    		    		doJumpIfFalse(getFieldLocal(thisLocal, var + "$isBound", BooleanType.v()), labNotBound);
+    		    	}
+    		    	doJumpIfFalse(getMethodCallResult(
+    		    			getFieldLocal(thisLocal, "weak$" + var, 
+    		    					curTraceMatch.weakBindingClass(var).getType()), 
+    		    					"isExpred", BooleanType.v()), (Stmt)label);
+    		    	if(!state.boundVars.contains(var)) {
+    		    		doAddLabel(labNotBound);
+    		    	}
+    		    }
+    		    public void genCollect() {
+    		    	doJump(labExpired);
+    		    }
+    		    public void genNoCollect() {
+    		    	doJump(labNotExpired);
+    		    }
+    		}
+            
+            state.collectSets.genCollectTests(new ConcreteTestCodeGen(state, thisLocal, labelReturnTrue, labelReturnFalse));
+
         }
         // if we don't branch out, the disjunct is valid
         doAddLabel(labelReturnTrue);
