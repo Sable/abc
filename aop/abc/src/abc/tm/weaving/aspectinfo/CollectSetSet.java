@@ -170,7 +170,7 @@ public class CollectSetSet
         if (universal)
             return true;
 
-        return collectsets.equals(other.collectsets);
+        return this.minimise().collectsets.equals(other.minimise().collectsets);
     }
 
     public String toString()
@@ -194,6 +194,9 @@ public class CollectSetSet
         Collection yz = new HashSet();
         yz.add("y");
         yz.add("z");
+        Collection xz = new HashSet();
+        xz.add("x");
+        xz.add("z");
  
         // tests...
         CollectSetSet empty = new CollectSetSet();
@@ -213,6 +216,9 @@ public class CollectSetSet
         System.out.println(weakx.union(weakcross));
         System.out.println(weakx.union(weakcross).minimise());
         System.out.println(weakxy.cross(weakx));
+        System.out.println(weakxy.cross(weakyz));
+        System.out.println(weakxy.cross(weakyz)
+                                 .retainSingletonsAndSubsetsOf(xz));
         System.out.println(universal);
 
         assert empty.equals(empty);
@@ -243,6 +249,15 @@ public class CollectSetSet
         assert weakcross.hasVar("x");
         assert weakcross.hasVar("y");
         assert weakcross.hasVar("z");
+
+        assert weakxy.cross(weakyz).retainSingletonsAndSubsetsOf(xz)
+                                   .equals(weakxy.cross(weakyz));
+        assert !weakxy.cross(weakyz).retainSingletonsAndSubsetsOf(x)
+                                    .hasVar("x");
+        assert !weakxy.cross(weakyz).retainSingletonsAndSubsetsOf(x)
+                                    .hasVar("z");
+        assert weakxy.cross(weakyz).retainSingletonsAndSubsetsOf(x)
+                                   .hasVar("y");
 
         assert weakx.union(weakcross).minimise().equals(weakx);
 
