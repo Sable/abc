@@ -53,4 +53,8 @@ public class MyWeakRef extends WeakReference {
 	public int hashCode() {
 		return hashCode;
 	}
+	
+	public boolean isExpired() {
+		return get() == null;
+	}
 }
