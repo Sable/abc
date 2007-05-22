@@ -118,8 +118,8 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
-     * Return an invoke expression to the propogateBindings...
-     * method which propogates bindings from one constraint
+     * Return an invoke expression to the propagateBindings...
+     * method which propagates bindings from one constraint
      * to another.
      */
     protected InvokeExpr bindingsMethod(String symbol, Local base,
@@ -129,7 +129,7 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     {
         Body body = caller.getActiveBody();
         int params = tm.getVariableOrder(symbol).size();
-        String name = "propogateBindingsForSymbol" + symbol;
+        String name = "propagateBindingsForSymbol" + symbol;
 
         List args = new ArrayList(params);
         args.add(to_state);
@@ -332,7 +332,7 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
 
     /**
-     * Call the propogateBindingsForSymbolx method to propogate
+     * Call the propagateBindingsForSymbolx method to propagate
      * bindings from one constraint to another.
      */
     protected void callBindingsMethod(Body body, Chain units, String symbol,
