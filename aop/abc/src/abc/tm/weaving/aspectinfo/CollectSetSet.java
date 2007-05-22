@@ -137,8 +137,20 @@ public class CollectSetSet
         return collectsets.contains(singleton);
     }
     
-    public CollectSetSet retainSingletonsAndSubsetsOf(Collection vars) {
-    	return this;
+    public CollectSetSet retainSingletonsAndSubsetsOf(Collection vars)
+    {
+        if (universal)
+            return this;
+
+        CollectSetSet result = new CollectSetSet();
+        Iterator i = collectsets.iterator();
+
+        while (i.hasNext()) {
+            HashSet set = (HashSet) i.next();
+            if (set.size() == 1 || vars.containsAll(set))
+                result.collectsets.add(set);
+        }
+    	return result;
     }
 
     public int hashCode()
