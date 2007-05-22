@@ -2771,8 +2771,10 @@ public class ClassGenHelper {
         Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
         while(stateIt.hasNext()) {
             SMNode state = (SMNode)stateIt.next();
-            // States which have no collectableWeakRefs are always valid.
-            if(!state.collectableWeakRefs.isEmpty()) {
+            // States which have no collectSetSets are always valid, as are initial states (they 
+            // always have a *true* constraint). Final states also needn't be regarded, as they
+            // are reset to false every time the body is executed
+            if(!state.collectSets.isEmpty() && !state.isInitialNode() && !state.isFinalNode()) {
                 switchValues.add(getInt(state.getNumber()));
                 switchLabels.add(getNewLabel());
                 affectedStates.add(state);
@@ -2826,7 +2828,7 @@ public class ClassGenHelper {
     		    	doJumpIfFalse(getMethodCallResult(
     		    			getFieldLocal(thisLocal, "weak$" + var, 
     		    					curTraceMatch.weakBindingClass(var).getType()), 
-    		    					"isExpred", BooleanType.v()), (Stmt)label);
+    		    					"isExpired", BooleanType.v()), (Stmt)label);
     		    	if(!state.boundVars.contains(var)) {
     		    		doAddLabel(labNotBound);
     		    	}

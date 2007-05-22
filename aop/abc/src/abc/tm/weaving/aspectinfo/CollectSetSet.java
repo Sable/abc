@@ -254,6 +254,10 @@ public class CollectSetSet
 
         return collectsets.toString();
     }
+    
+    public boolean isEmpty() {
+    	return collectsets.isEmpty();
+    }
 
     // Tests
     public static void main(String[] args)

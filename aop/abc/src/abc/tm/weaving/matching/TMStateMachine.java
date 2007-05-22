@@ -781,19 +781,14 @@ public class TMStateMachine implements StateMachine {
     
     public String toString() {
         String result = "State machine:\n==============\n";
-        java.util.Map stateNumbers = new java.util.HashMap();
         SMNode cur; SMEdge edge;
-        int cnt = 0;
         Iterator it = nodes.iterator();
-        while(it.hasNext()) {
-            stateNumbers.put(it.next(), new Integer(cnt++));
-        }
         it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
             if(cur.isInitialNode()) result += "Initial ";
             if(cur.isFinalNode()) result += "Final ";
-            result += "State " + stateNumbers.get(cur) + " (";
+            result += "State " + cur.getNumber() + " (";
             result += "needStrongRefs" + cur.needStrongRefs + ", ";
             result += "collectableWeakRefs" + cur.collectableWeakRefs + ", ";
 			result += "weakRefs" + cur.weakRefs + ", ";
@@ -803,7 +798,7 @@ public class TMStateMachine implements StateMachine {
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();
                 result += "  -->[" + (edge.getLabel() == SMEdge.SKIP_LABEL ? "SKIP" : edge.getLabel()) 
-                        + "] to State " + stateNumbers.get(edge.getTarget()) + "\n";
+                        + "] to State " + edge.getTarget().getNumber() + "\n";
             }
         }
         return result;
