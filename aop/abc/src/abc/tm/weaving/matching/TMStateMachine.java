@@ -330,7 +330,7 @@ public class TMStateMachine implements StateMachine {
      */
     protected void collectBindingInfo(List formals,TraceMatch tm,Collection notused,Position pos) {
     	// New and improved space leak elimination analysis.
-    	computeCollectSets(tm);
+    	computeCollectSets(tm, notused);
     	fillInCollectableWeakRefs(tm);
         collectableWeakRefsToOtherRefs(formals,notused,tm);
         initBoundVars(formals);
@@ -404,7 +404,7 @@ public class TMStateMachine implements StateMachine {
      *   may exist for a state. Note that if we have a collect-set of {x,y}, then x and y are still
      *   strongRefs if they are used in the tracematch body and weakRefs otherwise.
      */
-    private void computeCollectSets(TraceMatch tm) {
+    private void computeCollectSets(TraceMatch tm, Collection notUsed) {
     	int numStates = nodes.size();
     	
     	// Current and previous values for the fixpoint computation. Initialise...
@@ -427,7 +427,9 @@ public class TMStateMachine implements StateMachine {
 				if(edge.getLabel().equals(SMEdge.SKIP_LABEL))
 					continue;
 				int j = edge.getTarget().getNumber();
-				CollectSetSet tmp = new CollectSetSet(tm.getVariableOrder(edge.getLabel()));
+				Collection vars = tm.getVariableOrder(edge.getLabel());
+				vars.retainAll(tm.getNonPrimitiveFormalNames());
+				CollectSetSet tmp = new CollectSetSet(vars);
 				trans[i][j] = (trans[i][j] == null? tmp : trans[i][j].cross(tmp));
 			}
     	}
@@ -459,7 +461,7 @@ public class TMStateMachine implements StateMachine {
     	// Now we have the final configuration in oldState...
     	for(Iterator nodeIt = getStateIterator(); nodeIt.hasNext(); ) {
     		SMNode state = (SMNode) nodeIt.next();
-    		state.collectSets = oldState[state.getNumber()];
+    		state.collectSets = oldState[state.getNumber()].retainSingletonsAndSubsetsOf(notUsed);
     	}
     }
     

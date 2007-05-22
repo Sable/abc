@@ -136,6 +136,10 @@ public class CollectSetSet
         singleton.add(var);
         return collectsets.contains(singleton);
     }
+    
+    public CollectSetSet retainSingletonsAndSubsetsOf(Collection vars) {
+    	return this;
+    }
 
     public int hashCode()
     {
