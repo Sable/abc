@@ -55,6 +55,6 @@ public class MyWeakRef extends WeakReference {
 	}
 	
 	public boolean isExpired() {
-		return get() == null;
+		return super.get() == null;
 	}
 }
