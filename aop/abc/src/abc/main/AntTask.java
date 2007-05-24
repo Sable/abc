@@ -22,6 +22,7 @@ package abc.main;
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.taskdefs.*;
 import org.apache.tools.ant.types.*;
+
 import java.util.*;
 import java.io.*;
 
@@ -108,6 +109,11 @@ public class AntTask extends MatchingTask {
     public Path createArgfiles() {
         if( argfiles == null ) argfiles = new Path(getProject());
         return argfiles.createPath();
+    }
+    public void setArgs(String args) {
+    	String[] list = args.split("[ \t]+");
+    	for(int i = 0; i < list.length; i++)
+    		addArg(list[i]);
     }
     public void setOutjar(File arg) {
         addArg( "-outjar", arg.getAbsolutePath());
