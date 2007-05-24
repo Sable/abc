@@ -21,6 +21,7 @@
 package abc.tm;
 
 import java.util.Collection;
+import java.util.List;
 
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
@@ -28,6 +29,8 @@ import soot.Scene;
 import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
+import abc.main.CompileSequence;
+import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
@@ -37,7 +40,10 @@ import abc.weaving.aspectinfo.CflowSetup;
 import abc.weaving.aspectinfo.DeclareMessage;
 import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.ReweavingAnalysis;
+import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
+import abc.weaving.weaver.ReweavingPass.ID;
 
 /*
  * @author Julian Tibble
@@ -45,6 +51,8 @@ import abc.weaving.weaver.Weaver;
  */
 public class AbcExtension extends abc.eaj.AbcExtension
 {
+
+    private static final ID PASS_TM_ANALYSIS = new ID("Tracematch analysis");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -117,6 +125,24 @@ public class AbcExtension extends abc.eaj.AbcExtension
         	   Scene.v().addBasicClass("java.util.Map$Entry", SootClass.SIGNATURES);
            }
 	   }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    protected void createReweavingPasses(List passes) {
+        super.createReweavingPasses(passes);
+        if(OptionsParser.v().tmopt()) {
+            try {
+                ReweavingAnalysis ana = (ReweavingAnalysis) Class.forName("abc.tm.weaving.weaver.tmanalysis.TracematchAnalysis").newInstance();                
+                passes.add( new ReweavingPass( PASS_TM_ANALYSIS, ana ) );
+            } catch( Exception e ) {
+                throw new InternalCompilerError("Couldn't load interprocedural analysis plugin 'abc.tm.weaving.weaver.tmanalysis.TracematchAnalysis'.",e);
+            }
+            
+            //we need instruction tags so that we can identify shadow IDs after weaving
+            OptionsParser.v().set_tag_instructions(true);
+        }
+    }
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
          the "some" advice has higher precedence than all symbols in the same tracematch
@@ -278,5 +304,20 @@ public class AbcExtension extends abc.eaj.AbcExtension
 		   throw new InternalCompilerError
 			   ("case not handled when comparing "+a+" and "+b);
 	   }
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CompileSequence createCompileSequence() {
+		return new CompileSequence(this) {
+			@Override
+			public void reset() {
+				super.reset();
+				//reset static nmembers for tracematches
+		        abc.tm.weaving.aspectinfo.TraceMatch.reset();
+			}
+		};
+	}
     
 }

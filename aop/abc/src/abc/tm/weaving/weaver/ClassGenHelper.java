@@ -2464,7 +2464,7 @@ public class ClassGenHelper {
             while(stateIt.hasNext()) {
                 SMNode curNode = (SMNode)stateIt.next();
                 // if all variables are bound and the state has a skip loop -- we want to optimise it.
-                if(curNode.hasEdgeTo(curNode, "") 
+                if(curNode.hasSkipLoop() 
                         && curNode.boundVars.equals(new LinkedHashSet(curTraceMatch.getFormalNames()))) {
                     jumpToLabels.add(labelCheckBindingsOnly);
                     jumpOnValues.add(getInt(curNode.getNumber()));

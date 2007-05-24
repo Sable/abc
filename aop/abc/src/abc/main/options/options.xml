@@ -280,6 +280,33 @@ any of their subdirectories.
       <long_desc>Retrieve the thread-local instance of each cflow stack only once per method.</long_desc>
     </boolopt>
   </section>
+  <section>
+    <name>Tracematch analysis options</name>
+      <boolopt>
+      <alias>tmopt</alias>
+      <default>false</default>
+      <short_desc>Turn on tracematch optimizations.</short_desc>
+      <long_desc>
+		Turns on static whole program analysis to speed up tracematches.
+		This analysis involves multiple stages which can be selected using the
+		-laststage option.
+		Default is false.
+      </long_desc>
+    </boolopt>
+    <stringopt>
+      <alias>laststage</alias>
+      <default>flowins</default>
+      <set_arg_label>stage</set_arg_label>
+      <short_desc>Specifies the last stage to be executed in the static
+      whole program analysis for tracematches. (quick|flowins|flowsens)</short_desc>
+      <long_desc>Specifies the last stage to be executed in the static
+      whole program analysis for tracematches. There are three stages:
+      (1) quick, (2) flowins (flow-insensitive analysis) and (3) flowsens
+      (flow-sensitive analysis). They are executed in this order.
+      Default is flowins.
+      </long_desc>
+    </stringopt>
+  </section>
   <section undoc="">
     <name>Debug options</name>
     <debugopt>

@@ -133,11 +133,19 @@ public class AbcExtension
                         "\n");
     }
 
-    public CompileSequence getCompileSequence() {
+    public final CompileSequence getCompileSequence() {
     	if(compileSequence == null)
-    		compileSequence = new CompileSequence(this);
+    		compileSequence = createCompileSequence();
     	return compileSequence;
     }
+
+	/**
+	 * Creates the unique compile sequence for this extension.
+	 * This method is called exactly once.
+	 */
+	protected CompileSequence createCompileSequence() {
+		return new CompileSequence(this);
+	}
 
     public void reportError(ErrorInfo ei) {
 		compileSequence.error_queue.enqueue(ei);

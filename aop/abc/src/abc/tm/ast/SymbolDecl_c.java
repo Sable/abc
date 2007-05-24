@@ -169,7 +169,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         // Generate the TMAdviceDecl
         return nf.PerSymbolAdviceDecl(position(), Flags.NONE, spec,
                                 tlist, pc, body(nf, name, voidn),
-                                tm_id, tm_pos);
+                                tm_id, this, tm_pos);
     }
 
     /**
@@ -216,15 +216,4 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
     {
         return kind.aroundVars();
     }
-
-	/**
-	 * Creates a unique and fully qualified ID for a tracematch symbol based on the tracematch
-	 * ID and the name of the symbol.
-	 * @param tm_id an ID unique to the tracematch
-	 * @param symbolName a symbol name unique for the given tracematch
-	 * @return a unique, fully qualified ID
-	 */
-	public static String uniqueSymbolID(String tm_id, String symbolName) {
-		return (tm_id + "$" + symbolName).intern();
-	}
 }

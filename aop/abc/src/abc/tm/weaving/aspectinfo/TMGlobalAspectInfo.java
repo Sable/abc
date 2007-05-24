@@ -33,17 +33,19 @@ import java.util.*;
  */
 public class TMGlobalAspectInfo extends GlobalAspectInfo
 {
-    private List tracematches = new LinkedList();
+    private Map<String,TraceMatch> tmNameToTracematch = new HashMap<String,TraceMatch>();
 
     public void addTraceMatch(TraceMatch tm)
     {
-        tracematches.add(tm);
+    	assert !tmNameToTracematch.containsKey(tm.getName());
+    	assert !tmNameToTracematch.containsValue(tm);
+        tmNameToTracematch.put(tm.getName(), tm);
     }
 
     public void computeAdviceLists() throws SemanticException
     {
         // transform the tracematch body advice methods
-        Iterator i = tracematches.iterator();
+        Iterator i = tmNameToTracematch.values().iterator();
 
         while (i.hasNext()) {
             TraceMatch tm = (TraceMatch) i.next();
@@ -56,8 +58,16 @@ public class TMGlobalAspectInfo extends GlobalAspectInfo
         super.computeAdviceLists();
     }
 
-    public List getTraceMatches()
+    public List<TraceMatch> getTraceMatches()
     {
-        return tracematches;
+        return new ArrayList<TraceMatch>(tmNameToTracematch.values());
+    }
+    
+    public TraceMatch traceMatchByName(String tmName) {
+    	assert tmNameToTracematch.containsKey(tmName);
+    	return tmNameToTracematch.get(tmName);
+}
+    public boolean removeTraceMatch(TraceMatch tm) {
+    	return tmNameToTracematch.values().remove(tm);
     }
 }

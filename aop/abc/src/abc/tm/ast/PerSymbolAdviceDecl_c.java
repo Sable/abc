@@ -45,14 +45,17 @@ public class PerSymbolAdviceDecl_c extends AdviceDecl_c
 {
     protected String tm_id;
     protected Position tm_pos;
-    
+    protected SymbolDecl sym;
+
     public PerSymbolAdviceDecl_c(Position pos, Flags flags, AdviceSpec spec,
                                 List throwTypes, Pointcut pc, Block body,
-                                String tm_id, Position tm_pos)
+                                String tm_id, SymbolDecl sym, Position tm_pos)
     {
         super(pos, flags, spec, throwTypes, pc, body);
         this.tm_id = tm_id;
         this.tm_pos = tm_pos;
+        assert sym != null;
+        this.sym = sym;
         if (tm_pos == null)
         	System.err.println("gen advice decl with null tm pos");
     }
@@ -109,8 +112,8 @@ public class PerSymbolAdviceDecl_c extends AdviceDecl_c
         }
 
         abc.tm.weaving.aspectinfo.TMAdviceDecl ad =
-	        new abc.tm.weaving.aspectinfo.TMAdviceDecl
-	            (spec.makeAIAdviceSpec(),
+	        new abc.tm.weaving.aspectinfo.TMAdviceDecl(
+	            spec.makeAIAdviceSpec(),
 	            pc.makeAIPointcut(),
 	            AbcFactory.MethodSig(this),
 	            current_aspect,

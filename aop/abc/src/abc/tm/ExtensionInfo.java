@@ -23,12 +23,14 @@ package abc.tm;
 import polyglot.ast.NodeFactory;
 import polyglot.frontend.*;
 import polyglot.util.ErrorQueue;
+import polyglot.util.InternalCompilerError;
 import polyglot.lex.Lexer;
 import polyglot.util.CodeWriter;
 import polyglot.types.TypeSystem;
 import polyglot.visit.PrettyPrinter;
 
 import abc.aspectj.parse.Lexer_c;
+import abc.main.options.OptionsParser;
 import abc.tm.parse.Grm;
 
 import abc.eaj.types.*;
@@ -51,7 +53,7 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo
 {
     static {
         // force Topics to load
-        Topics t = new Topics();
+        new Topics();
     }
 
     public ExtensionInfo(Collection jar_classes, Collection source_files)
@@ -70,7 +72,16 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo
     }
 
     protected NodeFactory createNodeFactory() {
-        return new TMNodeFactory_c();
+    	if(OptionsParser.v().tmopt()) {
+            try {
+                NodeFactory nf = (NodeFactory) Class.forName("abc.tm.ast.TMOptOptimizableTMNodeFactory_c").newInstance();                
+                return nf;
+            } catch( Exception e ) {
+                throw new InternalCompilerError("Couldn't load node factory for static TM optimization 'abc.tm.ast.TMOptOptimizableTMNodeFactory_c'.",e);
+            }
+    	} else {
+            return new TMNodeFactory_c();
+        }
     }
 
     protected TypeSystem createTypeSystem() {

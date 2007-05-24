@@ -51,9 +51,7 @@ import soot.Unit;
 import soot.jimple.IdentityStmt;
 import soot.jimple.ParameterRef;
 import abc.soot.util.UnUsedParams;
-import abc.tm.weaving.matching.SMNode;
 import abc.tm.weaving.matching.StateMachine;
-import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.CodeGenHelper;
 import abc.tm.weaving.weaver.IndexedCodeGenHelper;
 import abc.weaving.aspectinfo.Aspect;
@@ -106,6 +104,8 @@ public class TraceMatch
 	   
     protected Map symbolname_to_variablename_to_local;
     
+    protected static Map idToTracematch = new HashMap();
+    
     public TraceMatch(String name, List formals, List new_advice_body_formals,
                         StateMachine state_machine, boolean per_thread,
                         Map sym_to_vars, List frequent_symbols,
@@ -139,6 +139,18 @@ public class TraceMatch
             this.helper = new IndexedCodeGenHelper(this);
         else
             this.helper = new CodeGenHelper(this);
+        
+        if(idToTracematch.put(name, this)!=null) {
+        	throw new RuntimeException("Internal error: ambiguous tracematch id!");
+        }
+    }
+
+    public static TraceMatch forId(String id) {
+    	TraceMatch res = (TraceMatch) idToTracematch.get(id);
+    	if(res==null) {
+    		throw new RuntimeException("No such tracenmatch: "+id);
+    	}
+    	return res;
     }
 
     public boolean isPerThread()
@@ -259,9 +271,9 @@ public class TraceMatch
         return frequent_symbols;
     }
 
-    public List getVariableOrder(String symbol)
+    public List<String> getVariableOrder(String symbol)
     {
-        return (List) sym_to_vars.get(symbol);
+        return (List<String>) sym_to_vars.get(symbol);
     }
 
     public void createIndexingScheme()
@@ -580,6 +592,29 @@ public class TraceMatch
 			assert identityStatementCount == variableOrder.size();				
 
 		}
+	}
+		
+	/**
+	 * {@inheritDoc}
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
+		sb.append("Tracematch '" + getName() +"' in aspect '" + container.getName() + "':\n\n");
+		sb.append("  position:      " + getPosition() + "\n");
+		sb.append("  formals:       " + getFormals() + "\n");
+		sb.append("  symbols:       " + sym_to_vars + "\n");
+		sb.append("  frequent sym:  " + getFrequentSymbols() + "\n");
+		sb.append("  is around:     " + isAround() + "\n");
+		sb.append("  is perthread:  " + isPerThread() + "\n");
+		sb.append(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
+		sb.append(getStateMachine());
+		sb.append("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");		
+		return sb.toString();
+	}
+	
+	public static void reset() {
+		idToTracematch.clear();
 	}
 		
 }

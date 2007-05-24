@@ -42,10 +42,10 @@ import abc.tm.weaving.aspectinfo.CollectSetSet;
 
 public class TMStateMachine implements StateMachine {
 
-    protected LinkedHashSet edges = new LinkedHashSet();
+    protected LinkedHashSet<SMEdge> edges = new LinkedHashSet<SMEdge>();
 
 	/** List of nodes. The code generation relies on iteration order here. Hence, it has to be a *linked* hash set. */
-    protected LinkedHashSet nodes = new LinkedHashSet();
+    protected LinkedHashSet<SMNode> nodes = new LinkedHashSet<SMNode>();
     
     public State newState() {
         SMNode n = new SMNode(this, false, false);
@@ -63,16 +63,31 @@ public class TMStateMachine implements StateMachine {
     /**
      * Assumes the from and to variables are actually the relevant implementations from
      * the abc.tm.weaving.matching package -- will throw ClassCastException otherwise
+     * @return 
      */
-    public void newTransition(State from, State to, String s) {
+    public SMEdge newTransition(State from, State to, String s) {
         SMNode f = (SMNode)from;
         SMNode t = (SMNode)to;
         SMEdge edge = new SMEdge(f, t, s);
         f.addOutgoingEdge(edge);
         t.addIncomingEdge(edge);
         edges.add(edge);
+        return edge;
     }
 
+    /**
+     * Adds a new skip loop to <code>state</code> with label <code>label</code>.
+     * @param state the state to attach the skip loop to
+     * @param label the label for the skip loop
+     */
+    protected void newSkipLoop(State state, String label) {
+        SMNode s = (SMNode)state;
+        SMEdge edge = new SkipLoop(s,label);
+        s.addOutgoingEdge(edge);
+        s.addIncomingEdge(edge);
+        edges.add(edge);
+    }
+    
     /**
 	 * Eliminates epsilon transitions and unreachable states,
 	 * then renumbers the states.
@@ -147,8 +162,8 @@ public class TMStateMachine implements StateMachine {
      * compute all states that are forwards-reachable from an initial state
      * @return reachable states
      */
-    private Set initReachable() {
-    	Set result = new LinkedHashSet();
+    private Set<SMNode> initReachable() {
+    	Set<SMNode> result = new LinkedHashSet<SMNode>();
 		for(Iterator it=getStateIterator(); it.hasNext(); ) {
 				   SMNode node = (SMNode) it.next();
 				   if (node.isInitialNode())
@@ -161,8 +176,8 @@ public class TMStateMachine implements StateMachine {
      * compute all the states that are backwards reachable from a final state
      * @return set of reachable states
      */
-	private Set finalReachable() {
-		Set result = new LinkedHashSet();
+	private Set<SMNode> finalReachable() {
+		Set<SMNode> result = new LinkedHashSet<SMNode>();
 		for(Iterator it=getStateIterator(); it.hasNext(); ) {
 				SMNode node = (SMNode) it.next();
 				if (node.isFinalNode())
@@ -178,11 +193,11 @@ public class TMStateMachine implements StateMachine {
      */
     protected void compressStates() {
         // TODO: This might be better done with flags on the nodes...
-        Set initReachable = initReachable();
-        Set finalReachable = finalReachable();
+        Set<SMNode> initReachable = initReachable();
+        Set<SMNode> finalReachable = finalReachable();
        
         // The set of nodes we need to keep is (initReachable intersect finalReachable), 
-        LinkedHashSet nodesToRemove = new LinkedHashSet(nodes);
+        LinkedHashSet<SMNode> nodesToRemove = new LinkedHashSet<SMNode>(nodes);
         initReachable.retainAll(finalReachable); // nodes that are both init- and final-reachable
         nodesToRemove.removeAll(initReachable);  // -- we want to keep them
         
@@ -227,10 +242,19 @@ public class TMStateMachine implements StateMachine {
         Iterator it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
-	    // Initial states always have 'true' constraints anyway.
-	    if(!cur.isInitialNode()) 
-		newTransition(cur, cur, SMEdge.SKIP_LABEL); // add skip loop
-        }
+            // Initial states always have 'true' constraints anyway.
+	        if(!cur.isInitialNode()) { 
+	        	//for each symbol...
+	        	for (Iterator symIter = declaredSymbols.iterator(); symIter.hasNext();) {
+					String symbolName = (String) symIter.next();
+					//... for which there does not exist a loop already at the state...					
+					if(!cur.hasEdgeTo(cur, symbolName)) {
+						//... add a skip loop for that symbol
+						newSkipLoop(cur, symbolName);
+					}
+	            }
+	        }
+	    }
     }
     
     /**
@@ -267,7 +291,7 @@ public class TMStateMachine implements StateMachine {
 
 	// Try to find a final state in the current automaton that can be used, i.e. that only
 	// has an outgoing transition labelled with 'skip'.
-	LinkedHashSet finalNodes = new LinkedHashSet();
+	LinkedHashSet<SMNode> finalNodes = new LinkedHashSet<SMNode>();
         Iterator it = nodes.iterator();
 	while(it.hasNext()) {
 	    cur = (SMNode)it.next();
@@ -280,7 +304,7 @@ public class TMStateMachine implements StateMachine {
 	    Iterator edgeIt = cur.getOutEdgeIterator();
 	    while(edgeIt.hasNext()) {
 		edge = (SMEdge)edgeIt.next();
-		if(!edge.getLabel().equals(SMEdge.SKIP_LABEL) || (edge.getTarget() != cur)) {
+		if(!edge.isSkipEdge() || (edge.getTarget() != cur)) {
 		    suitable = false;
 		    break;
 		}
@@ -290,7 +314,7 @@ public class TMStateMachine implements StateMachine {
 		edgeIt = cur.getOutEdgeIterator();
 		while(edgeIt.hasNext()) {
 		    edge = (SMEdge)edgeIt.next();
-		    cur.removeOutEdge(edge);
+		    edgeIt.remove();
 		    edge.getTarget().removeInEdge(edge);
 		    edges.remove(edge);
 		}
@@ -307,7 +331,7 @@ public class TMStateMachine implements StateMachine {
                 Iterator edgeIt = cur.getInEdgeIterator();
                 while(edgeIt.hasNext()) {
                     edge = (SMEdge)edgeIt.next();
-                    if(!edge.getLabel().equals(SMEdge.SKIP_LABEL) && !edge.getSource().hasEdgeTo(newFinalNode, edge.getLabel())) { 
+                    if(!edge.isSkipEdge() && !edge.getSource().hasEdgeTo(newFinalNode, edge.getLabel())) { 
                     	// i.e. if not a skip-edge and not a duplicate
                         newTransition(edge.getSource(), newFinalNode, edge.getLabel());
                     }
@@ -424,10 +448,10 @@ public class TMStateMachine implements StateMachine {
     	for(int i = 0; i < numStates; i++) {
 			for(Iterator edgeIt = getStateByNumber(i).getOutEdgeIterator(); edgeIt.hasNext(); ) {
 				SMEdge edge = (SMEdge) edgeIt.next();
-				if(edge.getLabel().equals(SMEdge.SKIP_LABEL))
+				if(edge.isSkipEdge())
 					continue;
 				int j = edge.getTarget().getNumber();
-				Collection vars = new LinkedList(tm.getVariableOrder(edge.getLabel()));
+				Collection<String> vars = new LinkedList<String>(tm.getVariableOrder(edge.getLabel()));
 				vars.retainAll(tm.getNonPrimitiveFormalNames());
 				CollectSetSet tmp = new CollectSetSet(vars);
 				trans[i][j] = (trans[i][j] == null? tmp : trans[i][j].cross(tmp));
@@ -468,7 +492,7 @@ public class TMStateMachine implements StateMachine {
     private void fillInCollectableWeakRefs(TraceMatch tm) {
     	for(Iterator nodeIt = getStateIterator(); nodeIt.hasNext(); ) {
     		SMNode state = (SMNode) nodeIt.next();
-    		LinkedHashSet collWeakRefs = new LinkedHashSet();
+    		LinkedHashSet<String> collWeakRefs = new LinkedHashSet<String>();
     		for(Iterator varIt = tm.getNonPrimitiveFormalNames().iterator(); varIt.hasNext(); ) {
     			String var = (String) varIt.next();
     			if(state.collectSets.hasSingleton(var)) {
@@ -484,16 +508,16 @@ public class TMStateMachine implements StateMachine {
 		 * 
 		 * @param formals all variables declared in the tracematch
 		 */
-	private void initBoundVars(Collection formals) {
+	private void initBoundVars(Collection<String> formals) {
 			// we want a maximal fixpoint so for all final nodes the
 			// starting value is the empty set
 			// and for all other nodes it is the set of all formals
 			for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
 				SMNode node = (SMNode) edgeIter.next();
 				if (node.isInitialNode())
-					node.boundVars = new LinkedHashSet();
+					node.boundVars = new LinkedHashSet<String>();
 				else
-					node.boundVars = new LinkedHashSet(formals); 
+					node.boundVars = new LinkedHashSet<String>(formals); 
 			}
 		}
 
@@ -764,6 +788,19 @@ public class TMStateMachine implements StateMachine {
         return edges.iterator();
     }
 
+	public Set<SMNode> getInitialStates() {
+		// In principle, we could memoize this.
+		Set<SMNode> initialStates = new HashSet();
+
+		for (Iterator iterator = getStateIterator(); iterator.hasNext();) {
+			SMNode state = (SMNode) iterator.next();
+			if(state.isInitialNode()) {
+				initialStates.add(state);
+			}
+		}
+		return initialStates;
+	}
+
     public SMNode getStateByNumber(int n) {
         Iterator i = getStateIterator();
         while (i.hasNext()) {
@@ -781,24 +818,29 @@ public class TMStateMachine implements StateMachine {
     
     public String toString() {
         String result = "State machine:\n==============\n";
+        java.util.Map stateNumbers = new java.util.HashMap();
         SMNode cur; SMEdge edge;
+        int cnt = 0;
         Iterator it = nodes.iterator();
+        while(it.hasNext()) {
+            stateNumbers.put(it.next(), new Integer(cnt++));
+        }
         it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
             if(cur.isInitialNode()) result += "Initial ";
             if(cur.isFinalNode()) result += "Final ";
-            result += "State " + cur.getNumber() + " (";
+            result += "State " + stateNumbers.get(cur) + " (";
             result += "needStrongRefs" + cur.needStrongRefs + ", ";
             result += "collectableWeakRefs" + cur.collectableWeakRefs + ", ";
+            result += "collectSets" + cur.collectSets + ", ";
 			result += "weakRefs" + cur.weakRefs + ", ";
-			result += "collectSets" + cur.collectSets + ", ";
 			result += "boundVars" + cur.boundVars + ")\n";
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();
-                result += "  -->[" + (edge.getLabel() == SMEdge.SKIP_LABEL ? "SKIP" : edge.getLabel()) 
-                        + "] to State " + edge.getTarget().getNumber() + "\n";
+                result += "[" + edge+ "]" +
+                		"\n  --> to State " + stateNumbers.get(edge.getTarget()) + "\n";
             }
         }
         return result;

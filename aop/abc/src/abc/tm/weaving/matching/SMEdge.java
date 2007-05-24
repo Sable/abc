@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Pavel Avgustinov
+ * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,12 +26,11 @@ package abc.tm.weaving.matching;
  * Null labels mean epsilon transitions.
  *
  *  @author Pavel Avgustinov
+ *  @author Eric Bodden
  */
 
 public class SMEdge implements Cloneable {
 
-	public final static String SKIP_LABEL = ""; 
-	
     protected SMNode source, target;
     // TODO: Is SymbolDecl really the type to choose?
     //-> Yeah, String is not very extensible, really. (Eric)
@@ -49,9 +49,13 @@ public class SMEdge implements Cloneable {
         return label;
     }
     /**
+     * <b>Be careful when calling this, as it might change the hash code of the object!</b>
      * @param label The label to set.
      */
     public void setLabel(String label) {
+    	//the label "" was once used for skip loops
+    	//but should now not occur any more
+    	assert label==null || !label.equals(""); 
         this.label = label;
     }
     /**
@@ -61,6 +65,7 @@ public class SMEdge implements Cloneable {
         return source;
     }
     /**
+     * <b>Be careful when calling this, as it might change the hash code of the object!</b>
      * @param source The source to set.
      */
     public void setSource(SMNode source) {
@@ -73,6 +78,7 @@ public class SMEdge implements Cloneable {
         return target;
     }
     /**
+     * <b>Be careful when calling this, as it might change the hash code of the object!</b>
      * @param target The target to set.
      */
     public void setTarget(SMNode target) {
@@ -92,19 +98,45 @@ public class SMEdge implements Cloneable {
     		this.target.addIncomingEdge(this);
     }
     
-    public boolean equals(Object o) {
-        if(!(o instanceof SMEdge)) return false;
-        SMEdge edge = (SMEdge) o;
-        return (edge.getSource() == this.source && edge.getTarget() == this.target &&
-                edge.getLabel() == this.label);
-    }
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		result = PRIME * result + ((source == null) ? 0 : source.hashCode());
+		result = PRIME * result + ((target == null) ? 0 : target.hashCode());
+		result = PRIME * result + ((label == null) ? 0 : label.hashCode());
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		final SMEdge other = (SMEdge) obj;
+		if (source == null) {
+			if (other.source != null)
+				return false;
+		} else if (!source.equals(other.source))
+			return false;
+		if (target == null) {
+			if (other.target != null)
+				return false;
+		} else if (!target.equals(other.target))
+			return false;
+		if (label == null) {
+			if (other.label != null)
+				return false;
+		} else if (!label.equals(other.label))
+			return false;
+		return true;
+	}
     
     /**
      * Tells whether this edge is a skip edge.
-     * @return <code>true</code> if this edge is a skip edge
+     * @return <code>false</code>, since skip loops are represented by a subclass of this class
      */
     public boolean isSkipEdge() {
-    	return getLabel().equals(SKIP_LABEL) && this.getSource() == this.getTarget();
+    	return false;
     }
     
     /** 
@@ -112,5 +144,12 @@ public class SMEdge implements Cloneable {
      */
     protected Object clone() throws CloneNotSupportedException {
     	return super.clone();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+    	return getLabel();
     }
 }

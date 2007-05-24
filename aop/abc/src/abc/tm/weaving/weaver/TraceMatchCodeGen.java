@@ -91,7 +91,7 @@ public class TraceMatchCodeGen {
             while (edges.hasNext()) {
                 SMEdge edge = (SMEdge) edges.next();
 
-                if (edge.getLabel().equals(symbol)) {
+                if (!edge.isSkipEdge() && edge.getLabel().equals(symbol)) {
                     SMNode from = (SMNode) edge.getSource();
 
                     helper.genLabelUpdate(from.getNumber(), to.getNumber(),
@@ -100,7 +100,7 @@ public class TraceMatchCodeGen {
             }
 
             // FIXME: remove when old code-gen is removed
-            if (to.hasEdgeTo(to, "") // (skip-loop)
+            if (to.hasSkipLoop(symbol) 
                     && !to.hasEdgeTo(to, symbol)
                     && !abc.main.Debug.v().noNegativeBindings)
                 helper.genSkipLabelUpdate(to.getNumber(), symbol, method);
@@ -129,7 +129,7 @@ public class TraceMatchCodeGen {
             if (state.isInitialNode())
                 continue;
 
-            if (state.hasEdgeTo(state, "")) // (skip-loop)
+            if (state.hasSkipLoop())
                 skip_loop = true;
             else
                 skip_loop = false;

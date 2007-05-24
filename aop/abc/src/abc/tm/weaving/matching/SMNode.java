@@ -19,10 +19,8 @@
 
 package abc.tm.weaving.matching;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import abc.tm.weaving.aspectinfo.CollectSetSet;
@@ -36,30 +34,32 @@ import abc.tm.weaving.aspectinfo.CollectSetSet;
 
 public class SMNode implements State {
 
+	protected static final String ANY_LABEL = new String("ANY LABEL");
+    
     protected int number = -1;
     protected boolean initialNode = false;
     protected boolean finalNode = false;
-    protected LinkedHashSet/*<SMEdge>*/ incoming = new LinkedHashSet();
-    protected LinkedHashSet/*<SMEdge>*/ outgoing = new LinkedHashSet();
+    protected LinkedHashSet<SMEdge> incoming = new LinkedHashSet<SMEdge>();
+    protected LinkedHashSet<SMEdge> outgoing = new LinkedHashSet<SMEdge>();
     
     /** set of variables for which this state needs to keep strong refs */
-    public LinkedHashSet/*<String>*/ needStrongRefs = new LinkedHashSet();
+    public LinkedHashSet<String> needStrongRefs = new LinkedHashSet<String>();
     
     /** set of variables for which we may use weak references, 
          and any disjunct containing these variables may be garbage-collected
          when the weak reference is garbage-collected */
-    public LinkedHashSet/*<String>*/ collectableWeakRefs = new LinkedHashSet();
+    public LinkedHashSet<String> collectableWeakRefs = new LinkedHashSet<String>();
     
     /** set of variables for which we may use weak references,
          but disjuncts containing these cannot necessarily be garbage-collected
          when the weak reference is garbage-collected */
-	public LinkedHashSet/*<String>*/ weakRefs = new LinkedHashSet();
+	public LinkedHashSet<String> weakRefs = new LinkedHashSet<String>();
 	
 	/** set of variables that is guaranteed to be bound at this state.
 	 *   when adding a set of >1 negative bindings, we can decide based on this
 	 *   information whether it is necessary to create a set of disjuncts as the return value
 	 */
-	public LinkedHashSet/*<String>*/ boundVars = new LinkedHashSet();
+	public LinkedHashSet<String> boundVars = new LinkedHashSet<String>();
  
 	/**
 	 * Set of sets the complete garbage-collection of which implies the match is invalidated.
@@ -124,7 +124,7 @@ public class SMNode implements State {
      * @param result Set which is populated with the elements of the closure.
      * @param epsilonOnly specify whether only epsilon transitions should be considered.
      */
-    public void fillInClosure(Set result, boolean epsilonOnly) {
+    public void fillInClosure(Set<SMNode> result, boolean epsilonOnly) {
         fillInClosure(result, epsilonOnly, true);
     }
     /**
@@ -139,7 +139,7 @@ public class SMNode implements State {
      * @param epsilonOnly specify whether only epsilon transitions should be considered.
      * @param forward Specify whether we follow transitions forward or backward.
      */
-    public void fillInClosure(Set result, boolean epsilonOnly, boolean forward) {
+    public void fillInClosure(Set<SMNode> result, boolean epsilonOnly, boolean forward) {
         SMEdge cur;
         SMNode next;
         result.add(this);
@@ -206,6 +206,36 @@ public class SMNode implements State {
             edge = (SMEdge)it.next();
             if(edge.getTarget() == to && 
             		(edge.getLabel() == label || (label != null && label.equals(edge.getLabel())))) {
+            	return true;
+            }
+        }
+        return false;
+    }
+    
+        /**
+     * Determines whether this node has any skip loop at all, regardless of the
+     * label of this loop. This is equivalent to calling {@link #hasSkipLoop(String)}
+     * with {@link #ANY_LABEL}.
+     * @return <code>true</code> if this state has a skip loop
+     */
+    public boolean hasSkipLoop() {   	
+    	return hasSkipLoop(ANY_LABEL);
+    }
+    
+    
+    /**
+     * Determines whether there exists a skip loop (with the given label)
+     * on this node. 
+     * @param label the label to check for or {@link #ANY_LABEL} as <i>don't care</i>
+     * @return <code>true</code> if <code>label</code> is {@link #ANY_LABEL} and the state has any skip loop or
+     * <code>label==s</code> and the state has a skip loop with label <code>s</code>
+     */
+    public boolean hasSkipLoop(String label) {
+        SMEdge edge;
+        Iterator it = outgoing.iterator();
+        while(it.hasNext()) {
+            edge = (SMEdge)it.next();
+            if(edge.isSkipEdge() && (label==ANY_LABEL || label.equals(edge.getLabel()))) {
             	return true;
             }
         }

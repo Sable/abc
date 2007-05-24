@@ -19,6 +19,9 @@
 
 package abc.tm.weaving.matching;
 
+import java.util.Iterator;
+import java.util.Set;
+
 /** 
  * High-level representation of the state machine of the regex for tracematches -- interface
  * for creating the state machine
@@ -38,6 +41,14 @@ public interface StateMachine {
      * @param from Starting node for the transition
      * @param to Ending node for the transition
      * @param s The label -- name of the symbol, or null for epsilon transitions.
+     * @return the new transition 
      */
-    public void newTransition(State from, State to, String s);
+    public SMEdge newTransition(State from, State to, String s);
+
+    public int getNumberOfStates();
+    public Iterator<State> getStateIterator();
+    public Iterator<SMEdge> getEdgeIterator();
+    public SMNode getStateByNumber(int n);
+
+	public Set<SMNode> getInitialStates();
 }
