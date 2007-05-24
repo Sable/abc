@@ -209,6 +209,8 @@ public class AntTask extends MatchingTask {
             e.printStackTrace();
             throw new BuildException(e);
         }
+        // Reset static state (necessary if the ant task is used several times in the same ant run)
+        abc.main.Main.resetStatic();
     }
     public void addPath(String option, Path path) {
         if( path.size() == 0 ) return;
