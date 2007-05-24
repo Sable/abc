@@ -544,9 +544,8 @@
     <!-- default testing harness args-->
     	<property name="args" value="" />
 	    <target name="test" depends="abc-jar,testing,runtime">
-	      <java classname="abc.testing.Main" fork="true"
+	      <java classname="abc.testing.Main" fork="true" maxmemory="512m"
 	            dir="ajc-harness/tests">
-	        <jvmarg line="-Xmx512M" />
 	        <arg line="abcTests.xml ${args}"/>
 	    <!--    <arg line="abcTests.xml pureJava"/>    -->
 	        <classpath>
@@ -565,9 +564,8 @@
 	    </target>
 
 	    <target name="reweaving-test" depends="abc-jar">
-	      <java classname="abc.testing.Main" fork="true"
+	      <java classname="abc.testing.Main" fork="true" maxmemory="512m"
 	            dir="ajc-harness/tests">
-	        <jvmarg line="-Xmx512M" />
 	        <arg line="abcTests.xml +abc -debug debugUnweaver -abc ${args}"/>
 	    <!--    <arg line="abcTests.xml pureJava"/>    -->
 	        <classpath>
