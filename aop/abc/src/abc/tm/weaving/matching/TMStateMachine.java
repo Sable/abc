@@ -834,7 +834,7 @@ public class TMStateMachine implements StateMachine {
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();
-                result += "  -->[" + edge.getLabel() 
+                result += "  -->[" + edge 
                         + "] to State " + edge.getTarget().getNumber() + "\n";
             }
         }
