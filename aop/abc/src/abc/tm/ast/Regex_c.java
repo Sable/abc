@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,10 +25,9 @@ import polyglot.util.Position;
 
 import abc.tm.weaving.matching.*;
 
-import java.util.*;
-
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public abstract class Regex_c extends Node_c
                               implements Regex
@@ -37,6 +37,9 @@ public abstract class Regex_c extends Node_c
         super(pos);
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     public StateMachine makeSM()
     {
         StateMachine sm = new TMStateMachine();
@@ -50,4 +53,21 @@ public abstract class Regex_c extends Node_c
         makeSM(sm, start, finish, true);
         return sm;
     }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public StateMachine makeNecessarySymbolsSM() {
+        StateMachine sm = new TMStateMachine();
+
+        State start = sm.newState();
+        start.setInitial(true);
+
+        State finish = sm.newState();
+        finish.setFinal(true);
+
+        makeNecessarySymbolsSM(sm, start, finish, true);
+        return sm;
+    }
+    
 }

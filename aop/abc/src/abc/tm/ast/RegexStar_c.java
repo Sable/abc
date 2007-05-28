@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
- *
+ * Copyright (C) 2007 Eric Bodden
+ * 
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -30,6 +31,7 @@ import java.util.*;
 
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class RegexStar_c extends Regex_c
 {
@@ -63,6 +65,9 @@ public class RegexStar_c extends Regex_c
         return true;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     public void makeSM(StateMachine sm, State start, State finish,
                        boolean own_start)
     {
@@ -77,5 +82,15 @@ public class RegexStar_c extends Regex_c
 
         a.makeSM(sm, loop_node, loop_node, false);
         sm.newTransition(loop_node, finish, null);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void makeNecessarySymbolsSM(StateMachine sm, State start,
+    		State finish, boolean own_start) {
+    	//simply generate epsilon-transitions, as anything within a
+    	//Kleene-star is not necessary to reach a final state 
+        sm.newTransition(start, finish, null);
     }
 }

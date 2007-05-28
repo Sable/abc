@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +20,18 @@
 
 package abc.tm.ast;
 
-import polyglot.ext.jl.ast.Node_c;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
-
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 
-import java.util.*;
-
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class RegexCount_c extends Regex_c
 {
@@ -72,7 +74,10 @@ public class RegexCount_c extends Regex_c
     {
         return min == 0 || a.matchesEmptyString();
     }
-
+       
+    /** 
+     * {@inheritDoc}
+     */
     public void makeSM(StateMachine sm, State start, State finish,
                        boolean own_start)
     {
@@ -92,4 +97,32 @@ public class RegexCount_c extends Regex_c
 
         a.makeSM(sm, middle, finish, false);
     }
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void makeNecessarySymbolsSM(StateMachine sm, State start, State finish,
+	                   boolean own_start)
+	{
+	    if (min == 0)
+	        sm.newTransition(start, finish, null);
+	
+	    State middle = start;
+	
+	    // max is always >= 1
+	    for (int i = 1; i < max; i++) {
+	        State s = sm.newState();
+	        a.makeNecessarySymbolsSM(sm, middle, s, false);
+	        if (i >= min)
+	            sm.newTransition(s, finish, null);
+	        middle = s;
+	    }
+	
+	    a.makeNecessarySymbolsSM(sm, middle, finish, false);
+	}
+    
+    
+    
+
+    
 }

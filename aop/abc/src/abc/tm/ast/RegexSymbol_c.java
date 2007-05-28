@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +20,18 @@
 
 package abc.tm.ast;
 
-import polyglot.ext.jl.ast.Node_c;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
-
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 
-import java.util.*;
-
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class RegexSymbol_c extends Regex_c
 {
@@ -66,9 +68,20 @@ public class RegexSymbol_c extends Regex_c
         return false;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     public void makeSM(StateMachine sm, State start, State finish,
                        boolean own_start)
     {
+        sm.newTransition(start, finish, name);
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void makeNecessarySymbolsSM(StateMachine sm, State start,
+    		State finish, boolean own_start) {
         sm.newTransition(start, finish, name);
     }
 }

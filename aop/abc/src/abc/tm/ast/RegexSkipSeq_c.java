@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2006 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +31,7 @@ import java.util.*;
 
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class RegexSkipSeq_c extends Regex_c
 {
@@ -83,6 +85,9 @@ public class RegexSkipSeq_c extends Regex_c
         return false;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     public void makeSM(StateMachine sm, State start, State finish,
                        boolean own_start)
     {
@@ -96,4 +101,20 @@ public class RegexSkipSeq_c extends Regex_c
             sm.newTransition(middle, middle, name);
         }
     }
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void makeNecessarySymbolsSM(StateMachine sm, State start,
+			State finish, boolean own_start) {
+        State middle = sm.newState();
+        before.makeNecessarySymbolsSM(sm, start, middle, own_start);
+        after.makeNecessarySymbolsSM(sm, middle, finish, false);
+
+        Iterator i = allowed.iterator();
+        while (i.hasNext()) {
+            String name = (String) i.next();
+            sm.newTransition(middle, middle, name);
+        }        
+	}
 }

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +31,7 @@ import java.util.*;
 
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class RegexPlus_c extends Regex_c
 {
@@ -78,4 +80,12 @@ public class RegexPlus_c extends Regex_c
         a.makeSM(sm, loop_node, loop_node, false);
         a.makeSM(sm, loop_node, finish, false);
     }
+
+	public void makeNecessarySymbolsSM(StateMachine sm, State start, State finish,
+	                   boolean own_start)
+	{
+		//treat (r)+ simply as r
+		a.makeSM(sm, start, finish, own_start);
+	}
+
 }

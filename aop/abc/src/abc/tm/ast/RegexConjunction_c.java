@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +20,17 @@
 
 package abc.tm.ast;
 
-import polyglot.ext.jl.ast.Node_c;
+import java.util.Collection;
+import java.util.Map;
+
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
-
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 
-import java.util.*;
-
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class RegexConjunction_c extends Regex_c
 {
@@ -71,6 +72,9 @@ public class RegexConjunction_c extends Regex_c
         return a.matchesEmptyString() && b.matchesEmptyString();
     }
 
+    /** 
+     * {@inheritDoc}
+     */
     public void makeSM(StateMachine sm, State start,
                        State finish, boolean own_start)
     {
@@ -78,4 +82,14 @@ public class RegexConjunction_c extends Regex_c
         a.makeSM(sm, start, middle, own_start);
         b.makeSM(sm, middle, finish, true);
     }
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void makeNecessarySymbolsSM(StateMachine sm, State start,
+			State finish, boolean own_start) {
+        State middle = sm.newState();
+        a.makeNecessarySymbolsSM(sm, start, middle, own_start);
+        b.makeNecessarySymbolsSM(sm, middle, finish, true);
+	}
 }

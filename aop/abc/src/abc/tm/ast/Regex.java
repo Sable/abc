@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +22,6 @@ package abc.tm.ast;
 
 import polyglot.ast.Node;
 import polyglot.types.SemanticException;
-import polyglot.util.Position;
 
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
@@ -30,6 +30,7 @@ import java.util.*;
 
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public interface Regex extends Node
 {
@@ -70,9 +71,20 @@ public interface Regex extends Node
     public StateMachine makeSM();
 
     /**
+     * Creates a finite state machine similar to the one returned
+     * by {@link #makeSM()} but where a Kleene-Star just produces an
+     * epsilon edge and (r)+ is interpreted as r.
+     * The resulting state machine contains the transitions that 
+     * <i>must</i> be taken in order to reach a final state.
+     * This is necessary for a static analysis of trace matches.
+     */
+    public StateMachine makeNecessarySymbolsSM();
+
+    /**
      * Create a finite state machine for this regular
      * expression, given a start and finish node.
      *
+     * @see #makeSM()
      * @parm sm         the state machine under construction
      * @param start     the start node
      * @param finish    the finish node
@@ -82,4 +94,20 @@ public interface Regex extends Node
      *                  the start node
      */
     void makeSM(StateMachine sm, State start, State finish, boolean own_start);
+    
+    /**
+     * Create a finite state machine for this regular
+     * expression, given a start and finish node.
+     *
+     * @see #makeNecessarySymbolsSM()
+     * @parm sm         the state machine under construction
+     * @param start     the start node
+     * @param finish    the finish node
+     * @param own_start true if, and only if, the current
+     *                  regular expression is the only one
+     *                  to create outgoing transitions from
+     *                  the start node
+     */
+    void makeNecessarySymbolsSM(StateMachine sm, State start, State finish, boolean own_start);
+
 }
