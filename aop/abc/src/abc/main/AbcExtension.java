@@ -82,6 +82,7 @@ import abc.weaving.matching.SetFieldShadowType;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
+import abc.weaving.weaver.AbstractReweavingAnalysis;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.CflowCodeGenUtils;
 import abc.weaving.weaver.ReweavingAnalysis;
@@ -656,26 +657,12 @@ public class AbcExtension
         
         if(Debug.v().debugUnweaver) {
             //to debug the unweaver, add an empty reweaving analysis
-            passes.add( new ReweavingPass(PASS_DEBUG_UNWEAVER,new ReweavingAnalysis() {
-    
-                public boolean analyze() {
-                    return true;
-                }
-    
-                public void defaultSootArgs(List sootArgs) {
-                }
-    
-                public void enforceSootArgs(List sootArgs) {
-                }
-    
-                public void setupWeaving() {
-                }
-    
-                public void tearDownWeaving() {
-                }
-                
-                
-            }));
+            passes.add( new ReweavingPass(PASS_DEBUG_UNWEAVER,new AbstractReweavingAnalysis() {
+				public boolean analyze() {
+					//actually do reweave
+					return true;
+				}
+			}));
         }
     }
     

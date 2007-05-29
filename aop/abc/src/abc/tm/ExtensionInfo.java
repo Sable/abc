@@ -20,29 +20,28 @@
 
 package abc.tm;
 
-import polyglot.ast.NodeFactory;
-import polyglot.frontend.*;
-import polyglot.util.ErrorQueue;
-import polyglot.util.InternalCompilerError;
-import polyglot.lex.Lexer;
-import polyglot.util.CodeWriter;
-import polyglot.types.TypeSystem;
-import polyglot.visit.PrettyPrinter;
-
-import abc.aspectj.parse.Lexer_c;
-import abc.main.options.OptionsParser;
-import abc.tm.parse.Grm;
-
-import abc.eaj.types.*;
-
-import abc.tm.ast.*;
-import abc.tm.types.*;
-import abc.tm.visit.*;
-
-import abc.aspectj.types.*;
-
-import java.util.*;
 import java.io.Reader;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import polyglot.ast.NodeFactory;
+import polyglot.frontend.CupParser;
+import polyglot.frontend.FileSource;
+import polyglot.frontend.Job;
+import polyglot.frontend.Parser;
+import polyglot.frontend.Pass;
+import polyglot.frontend.VisitorPass;
+import polyglot.lex.Lexer;
+import polyglot.types.TypeSystem;
+import polyglot.util.ErrorQueue;
+import abc.aspectj.parse.Lexer_c;
+import abc.eaj.types.EAJTypeSystem;
+import abc.tm.ast.TMNodeFactory;
+import abc.tm.ast.TMNodeFactory_c;
+import abc.tm.parse.Grm;
+import abc.tm.types.TMTypeSystem_c;
+import abc.tm.visit.MoveTraceMatchMembers;
 
 /**
  * Extension information for TraceMatching extension.
@@ -72,16 +71,7 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo
     }
 
     protected NodeFactory createNodeFactory() {
-    	if(OptionsParser.v().tmopt()) {
-            try {
-                NodeFactory nf = (NodeFactory) Class.forName("abc.tm.ast.TMOptOptimizableTMNodeFactory_c").newInstance();                
-                return nf;
-            } catch( Exception e ) {
-                throw new InternalCompilerError("Couldn't load node factory for static TM optimization 'abc.tm.ast.TMOptOptimizableTMNodeFactory_c'.",e);
-            }
-    	} else {
             return new TMNodeFactory_c();
-        }
     }
 
     protected TypeSystem createTypeSystem() {

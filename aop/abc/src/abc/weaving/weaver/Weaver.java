@@ -249,6 +249,12 @@ public class Weaver {
             
             //do the final weaving
             weaveAdvice();            
+            
+            //allow all reweaving passes to clean up memory etc.
+            for (Iterator iter = reweavingPasses.iterator(); iter.hasNext();) {                    
+                ReweavingPass pass = (ReweavingPass) iter.next();
+                pass.cleanup();
+            }
         }
         
         public void doInlining() {

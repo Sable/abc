@@ -75,5 +75,11 @@ public interface ReweavingAnalysis {
      * if {@link #analyze()} returns <code>true</code>.
      */
     public void tearDownWeaving();
+
+	/**
+	 * This method is invoked after the last reweaving step. This allows the analysis
+	 * to perform cleanuo operations, e.g. free memory etc.
+	 */
+	public void cleanup();
     
 }

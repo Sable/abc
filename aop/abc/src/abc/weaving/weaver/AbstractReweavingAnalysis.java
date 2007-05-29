@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2006 Eric Bodden
+ * Copyright (C) 20067 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import java.util.List;
 
 
 /**
+ * A default (template) implementation of {@link ReweavingAnalysis} with empty bodies.
  * @author Eric Bodden
  */
 public abstract class AbstractReweavingAnalysis implements ReweavingAnalysis {
@@ -64,6 +65,13 @@ public abstract class AbstractReweavingAnalysis implements ReweavingAnalysis {
      * {@inheritDoc}
      */
     public void tearDownWeaving() {
+        //do nothing
+    }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public void cleanup() {
         //do nothing
     }
 

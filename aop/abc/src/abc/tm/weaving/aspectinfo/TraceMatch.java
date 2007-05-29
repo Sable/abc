@@ -30,16 +30,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import polyglot.util.Position;
-import soot.Body;
 import soot.BooleanType;
 import soot.ByteType;
 import soot.CharType;
 import soot.DoubleType;
 import soot.FloatType;
 import soot.IntType;
-import soot.Local;
 import soot.LongType;
 import soot.RefLikeType;
 import soot.Scene;
@@ -47,15 +46,17 @@ import soot.ShortType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
-import soot.Unit;
-import soot.jimple.IdentityStmt;
-import soot.jimple.ParameterRef;
+import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
+import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.StateMachine;
+import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.CodeGenHelper;
 import abc.tm.weaving.weaver.IndexedCodeGenHelper;
+import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.Formal;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /** 
  * Represents a TraceMatch.
@@ -102,8 +103,8 @@ public class TraceMatch
 
     protected Collection unused_formals = null;
 	   
-    protected Map symbolname_to_variablename_to_local;
-    
+    protected Map advice_name_to_sym_name;
+
     protected static Map idToTracematch = new HashMap();
     
     public TraceMatch(String name, List formals, List new_advice_body_formals,
@@ -143,6 +144,14 @@ public class TraceMatch
         if(idToTracematch.put(name, this)!=null) {
         	throw new RuntimeException("Internal error: ambiguous tracematch id!");
         }
+        
+    	//store reverse mapping because for the static TM analysis we need to be able to
+        //identify for each woven advice the symbol it was woven for
+    	advice_name_to_sym_name = new HashMap();
+		for (Iterator iterator = sym_to_advice_name.entrySet().iterator(); iterator.hasNext();) {
+			Entry entry = (Entry) iterator.next();
+			advice_name_to_sym_name.put(entry.getValue(), entry.getKey());
+		}
     }
 
     public static TraceMatch forId(String id) {
@@ -505,95 +514,117 @@ public class TraceMatch
         return constructed.getMethod(init_name, type_list);
     }
     
-    /**
-     * Returns for a given symbol name and the name of a variable bound by that symbol
-     * the Soot local representing this variable in the bytecode.
-     * @param symbolName a symbol of this tracematch
-     * @param variableName a variable bound by this symbol
-     * @return
-     */
-    public Local getLocalsForVariable(String symbolName, String variableName) {
-    	//assert that this tracematch contains such a symbol at all
-    	assert getSymbols().contains(symbolName);
-    	//assert that the symbol given binds such a variable at all
-    	assert getVariableOrder(symbolName).contains(variableName);
-    	
-    	if(symbolname_to_variablename_to_local==null) {
-    		initVariableNameToLocal();
-    	}
-    	
-    	Map variableToLocal = (Map) symbolname_to_variablename_to_local.get(symbolName);
-    	return (Local) variableToLocal.get(variableName);    	
-    }
-
 	/**
-	 * Initializes {@link #variableNameToLocal} by inspecting the woven advice
-	 * corresponding to each symbol, searching for the corresponding locals
-	 * in that advice definition.
+	 * For a given symbol advice method, returns the name of the symbol it was
+	 * generated for.
+	 * @param symbolAdviceMethod a symbol advice method
+	 * @return the name of the symbol this symbol advice method was generated for or
+	 * <code>null</code> if the name is not the name of a symbol advice for this tracematch
 	 */
-	protected void initVariableNameToLocal() {
-		symbolname_to_variablename_to_local = new HashMap();
-		
-		//for each symbol in the tracematch
-		for (Iterator symbolIter = getSymbols().iterator(); symbolIter.hasNext();) {
-			
-			//get the name of the symbol,
-			String symbolName = (String) symbolIter.next();
-			
-			//get the "variablename->local" mapping for this symbol
-			//and initialize it if necessary
-			Map variableNameToLocal = (Map) symbolname_to_variablename_to_local.get(symbolName);
-			if(variableNameToLocal==null) {
-				variableNameToLocal = new HashMap();
-				symbolname_to_variablename_to_local.put(symbolName, variableNameToLocal);
-			}
-
-			//get the variables it binds (in well-defined order)
-			List variableOrder = getVariableOrder(symbolName);
-			
-			//get its advice method and the body of that method
-			SootMethod symbolAdviceMethod = getSymbolAdviceMethod(symbolName);
-			Body body = symbolAdviceMethod.getActiveBody();
-			
-			int identityStatementCount = 0;
-			//iterate over all units
-			for (Iterator unitIter = body.getUnits().iterator(); unitIter.hasNext();) {
-				Unit unit = (Unit) unitIter.next();
-				
-				//if this unit is an identity statement
-				//(a statement which assigns "this = @this" or "v0 = @param0", etc. ...)
-				if(unit instanceof IdentityStmt) {
-					IdentityStmt istmt = (IdentityStmt) unit;
-					
-					//if the right operand is a parameter reference
-					if(istmt.getRightOp() instanceof ParameterRef) {
-						//get the local which the parameter is assigned to
-						Local local = (Local) istmt.getLeftOp();
-						//add a mapping from the variable name to that local
-						String tmVariableName = (String) variableOrder.get(identityStatementCount);
-						
-						variableNameToLocal.put(tmVariableName, local);
-						
-						//if this breaks, we are most likely mixing up tracematch variables
-						//and corresponding Jimple variables
-						assert tmVariableName.equals(local.getName()); 
-						
-						identityStatementCount++;
-					}
-				} else {
-					//we are only interested in identity statements
-					break;
-				}					
-			}				
-			
-			//if this fails, this means that the symbol advice method
-			//breaks the assumption of having n arguments when the symbol binds
-			//n values, an assumption under which we operate here
-			assert identityStatementCount == variableOrder.size();				
-
-		}
+	public String symbolNameForSymbolAdvice(SootMethod symbolAdviceMethod) {
+		return (String) advice_name_to_sym_name.get(symbolAdviceMethod.getName());
 	}
 		
+	/**
+	 * Implements the <i>quick check</i> as described in the ECOOP '07 paper.
+	 * Removes all the symbols from the tracematch alphabet for which
+	 * the related per-symbol advice never matched during the last weaving phase.
+	 * @return <code>true</code> if it is safe to remove this tracematch entirely because no final state can be reached any more
+	 */
+	public boolean quickCheck() {
+		GlobalAspectInfo gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		TMStateMachine sm = (TMStateMachine) getStateMachine();
+		
+		//determine all symbols for which there exists a per-symbol advice declaration
+		//with an application counter of more than 0 ; such symbols need to be retained 
+		Set symbolsToRetain = new HashSet();
+		
+		//for all advice declarations
+		for (Iterator iter = gai.getAdviceDecls().iterator(); iter.hasNext();) {
+			AdviceDecl ad = (AdviceDecl) iter.next();
+	
+			//of kind "per-symbol advice declaration"
+			if(ad instanceof PerSymbolTMAdviceDecl) {
+				PerSymbolTMAdviceDecl psad = (PerSymbolTMAdviceDecl) ad;
+				
+				//for this tracematch
+				if(psad.getTraceMatchID().equals(name)) {
+					
+					//if this advice was never applied
+					if(psad.getApplCount()>0) {
+	
+						//mark symbol as a symbol that must be retained
+						symbolsToRetain.add(psad.getSymbolId());
+					}
+				}
+			}
+		}
+		
+		//all symbols which do not have to be retained can naturally be removed
+		Set symbolsToRemove = new HashSet(sym_to_vars.keySet());
+		symbolsToRemove.removeAll(symbolsToRetain);
+		
+		if(symbolsToRemove.size()>0 && Debug.v().debugTmAnalysis) {
+			System.out.println("The following symbols do not match and will be removed " +
+					"in "+name+": "+symbolsToRemove);
+		}
+		
+		Set edgesToRemove = new HashSet();
+		//remove all edges for those symbols, including skip-loops labeled that way
+		for (Iterator symIter = symbolsToRemove.iterator(); symIter.hasNext();) {
+			String symbolName = (String) symIter.next();
+	
+			//for all edges in the state machine
+			for (Iterator iterator = sm.getEdgeIterator(); iterator.hasNext();) {
+				SMEdge edge = (SMEdge) iterator.next();
+				
+				//with the same symbol name as the advice that never applied 
+				if(edge.getLabel().equals(symbolName)) {
+					//mark edge as to be removed
+					edgesToRemove.add(edge);
+				}
+			}
+		}
+		//remove them
+		sm.removeEdges(edgesToRemove);
+		//compress the states (eliminate unreachable states)
+		sm.compressStates();
+	
+		//is the SM now empty?
+		boolean isEmpty = !sm.getStateIterator().hasNext();
+		
+		if(Debug.v().debugTmAnalysis && symbolsToRemove.size()>0 && !isEmpty) {
+			System.out.println("Remaining state machine:");
+			System.out.println(sm);
+		}
+	
+		if(isEmpty) {
+			//if the state machine is now empty, remove this tracematch entirely
+			
+			if(Debug.v().debugTmAnalysis) {
+				System.out.println("State machine now empty. Removing "+name+".");
+			}
+			
+			return true;
+		} else {
+			//else remove all the symbols which don't match from the tracematch;
+			//this will also remove the handling for skip loops for those symbols,
+			//which is safe cause we know the symbol can never occur anyway
+	
+			for (Iterator symIter = symbolsToRemove.iterator(); symIter.hasNext();) {
+				String symbolName = (String) symIter.next();
+				sym_to_advice_name.remove(symbolName);
+				sym_to_vars.remove(symbolName);
+			}
+	
+			if(Debug.v().debugTmAnalysis && symbolsToRemove.size()>0) {
+				System.out.println("Remaining alphabet of "+name+": "+getSymbols());				
+				System.out.println(sm);
+			}
+			return false;
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

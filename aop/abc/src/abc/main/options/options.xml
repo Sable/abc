@@ -281,11 +281,11 @@ any of their subdirectories.
     </boolopt>
   </section>
   <section>
-    <name>Tracematch analysis options</name>
+    <name>Static whole-program analysis for tracematches</name>
       <boolopt>
-      <alias>tmopt</alias>
+      <alias>wp-tmopt</alias>
       <default>false</default>
-      <short_desc>Turn on tracematch optimizations.</short_desc>
+      <short_desc>Turn on static whole-program optimizations for tracematches.</short_desc>
       <long_desc>
 		Turns on static whole program analysis to speed up tracematches.
 		This analysis involves multiple stages which can be selected using the

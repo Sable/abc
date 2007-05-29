@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Pavel Avgustinov
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,13 +32,13 @@ import java.util.Set;
 import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 import abc.main.Debug;
-import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.aspectinfo.IndexingScheme;
 import abc.tm.weaving.aspectinfo.CollectSetSet;
+import abc.tm.weaving.aspectinfo.TraceMatch;
 
 /**
  * Implementation of the StateMachine interface for tracematch matching
  * @author Pavel Avgustinov
+ * @author Eric Bodden
  */
 
 public class TMStateMachine implements StateMachine {
@@ -191,7 +192,7 @@ public class TMStateMachine implements StateMachine {
      * an initial state to a finnal state. Assumes there are no epsilon transitions (not
      * sure if this is necessary, though).
      */
-    protected void compressStates() {
+    public void compressStates() {
         // TODO: This might be better done with flags on the nodes...
         Set<SMNode> initReachable = initReachable();
         Set<SMNode> finalReachable = finalReachable();
@@ -811,6 +812,28 @@ public class TMStateMachine implements StateMachine {
         throw new RuntimeException("Looking up state number " + n +
                         ", but it does not exist.\n" + this);
     }
+    
+	/**
+	 * Removes the given edges from the state machine, also removing it from
+	 * its connected nodes.
+	 * @param toRemove collection of edges to remove
+	 */
+	public void removeEdges(Collection/*<SMEdge>*/ toRemove) {
+		Iterator edgeIterator = toRemove.iterator();
+		while(edgeIterator.hasNext()) {
+			SMEdge edge = (SMEdge) edgeIterator.next();
+			assert edges.contains(edge);
+			
+			//remove the edge p-->q from the list
+			edges.remove(edge);
+			
+			//remove it as outedge from p 
+			edge.getSource().removeOutEdge(edge);
+			
+			//remove it as inedge from q
+			edge.getTarget().removeInEdge(edge);
+		}
+	}
 
     public int getNumberOfStates() {
         return nodes.size();

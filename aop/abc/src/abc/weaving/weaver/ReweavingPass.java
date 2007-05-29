@@ -124,6 +124,13 @@ public class ReweavingPass {
     }
 
     /**
+     * @see abc.weaving.weaver.ReweavingAnalysis#cleanup()
+     */
+    public void cleanup() {
+        analysis.cleanup();
+    }
+
+    /**
      * @see abc.weaving.weaver.ReweavingAnalysis#defaultSootArgs(java.util.List)
      */
     public void defaultSootArgs(List sootArgs) {

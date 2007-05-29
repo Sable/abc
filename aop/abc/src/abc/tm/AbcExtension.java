@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
  * Copyright (C) 2005 Oege de Moor
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +35,7 @@ import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
+import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.CflowSetup;
@@ -45,14 +47,15 @@ import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 import abc.weaving.weaver.ReweavingPass.ID;
 
-/*
+/**
  * @author Julian Tibble
  * @author Oege de Moor
+ * @author Eric Bodden
  */
 public class AbcExtension extends abc.eaj.AbcExtension
 {
 
-    private static final ID PASS_TM_ANALYSIS = new ID("Tracematch analysis");
+    private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -131,13 +134,11 @@ public class AbcExtension extends abc.eaj.AbcExtension
      */
     protected void createReweavingPasses(List passes) {
         super.createReweavingPasses(passes);
-        if(OptionsParser.v().tmopt()) {
-            try {
-                ReweavingAnalysis ana = (ReweavingAnalysis) Class.forName("abc.tm.weaving.weaver.tmanalysis.TracematchAnalysis").newInstance();                
-                passes.add( new ReweavingPass( PASS_TM_ANALYSIS, ana ) );
-            } catch( Exception e ) {
-                throw new InternalCompilerError("Couldn't load interprocedural analysis plugin 'abc.tm.weaving.weaver.tmanalysis.TracematchAnalysis'.",e);
-            }
+        if(OptionsParser.v().wp_tmopt()) {
+        	//Quick check
+        	
+            ReweavingAnalysis ana = new OptQuickCheck();                
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, ana ) );
             
             //we need instruction tags so that we can identify shadow IDs after weaving
             OptionsParser.v().set_tag_instructions(true);

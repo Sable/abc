@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +36,7 @@ import java.util.*;
 
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  *
  * This class is for compiler-generated advice for implementing
  * TraceMatches. This advice requires different type-checking and
@@ -112,13 +114,13 @@ public class PerSymbolAdviceDecl_c extends AdviceDecl_c
         }
 
         abc.tm.weaving.aspectinfo.TMAdviceDecl ad =
-	        new abc.tm.weaving.aspectinfo.TMAdviceDecl(
+	        new abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl(
 	            spec.makeAIAdviceSpec(),
 	            pc.makeAIPointcut(),
 	            AbcFactory.MethodSig(this),
 	            current_aspect,
 	            jp, jpsp, ejp, methods,
-	            position(), tm_id, tm_pos, TMAdviceDecl.OTHER);
+	            position(), tm_id, tm_pos, sym.name(), TMAdviceDecl.OTHER);
 
         gai.addAdviceDecl(ad);
 	

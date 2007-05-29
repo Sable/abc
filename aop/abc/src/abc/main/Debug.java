@@ -217,7 +217,16 @@ public class Debug {
     //restructuring of synchronized methods for lock/unlock pointcuts;
     //currently generates synchronized blocks which dava cannot deal with
     public boolean restructureSynchronizedMethods = false;
-    
+
+    //verbose mode for static tracematch analysis
+    public boolean debugTmAnalysis = false;
+    //dump shadow statistics for static tracematch optimization 
+	public boolean tmShadowStatistics = false;
+	//use CSV format for statistics
+	public boolean csv = false;
+	//dump shadows as they are disabled
+	public boolean tmShadowDump = false;
+ 
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
         	String m="Done phase: "+s;        	

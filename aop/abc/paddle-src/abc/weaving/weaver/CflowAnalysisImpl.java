@@ -52,7 +52,7 @@ import abc.weaving.residues.ResidueBox;
  *  @author Eric Bodden
  */
 
-public class CflowAnalysisImpl implements ReweavingAnalysis {
+public class CflowAnalysisImpl extends AbstractReweavingAnalysis {
     
     private static void debug(String message) {
         if (abc.main.Debug.v().cflowAnalysis) 
@@ -283,23 +283,4 @@ public class CflowAnalysisImpl implements ReweavingAnalysis {
         sootArgs.add("backend:javabdd");
     }
 
-    /** 
-     * {@inheritDoc}
-     */
-    public void enforceSootArgs(List sootArgs) {
-        //we override no arguments
-    }
-    
-    /** 
-     * {@inheritDoc}
-     */
-    public void setupWeaving() {
-        //nothing to do here
-    }
-    /** 
-     * {@inheritDoc}
-     */
-    public void tearDownWeaving() {
-        //nothing to do here
-    }
 }
