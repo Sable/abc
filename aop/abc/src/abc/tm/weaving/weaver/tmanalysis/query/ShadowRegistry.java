@@ -34,7 +34,6 @@ import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
 import abc.main.Debug;
 import abc.main.Main;
-import abc.testing.SilentMain;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
@@ -140,8 +139,8 @@ public class ShadowRegistry {
 		AdviceApplication aa = (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);
 		aa.setResidue(NeverMatch.v());
 		
-		//if the test harness is active, print a warning message
-		if(Main.v() instanceof SilentMain)
+		//print a warning message (usually for test harness)
+		if(Debug.v().warnWhenDeactivatingShadow)
 			printWarning(aa,uniqueShadowId);
 		
 		boolean removed = enabledShadows.remove(uniqueShadowId);

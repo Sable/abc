@@ -10521,7 +10521,7 @@
     
     <ajc-test num="1301" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): QuickCheck">
-        <compile files="QuickCheck.java" options="-ext,abc.tm,-wp-tmopt">
+        <compile files="QuickCheck.java" options="-ext,abc.tm,-wp-tmopt,-debug,warnWhenDeactivatingShadow">
 	    	<message kind="warning" line="5"/>
 		</compile>
     </ajc-test>		
