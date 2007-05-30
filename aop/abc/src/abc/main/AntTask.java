@@ -57,6 +57,10 @@ public class AntTask extends MatchingTask {
         if( injars == null ) injars = new Path(getProject());
         injars = appendToPath(injars, path);
     }
+    public void setInPath(Path path) {
+    	if( inpath == null ) inpath = new Path(getProject());
+    	inpath = appendToPath(inpath, path);
+    }
     public Path createInjars() {
         if( injars == null ) injars = new Path(getProject());
         return injars.createPath();
@@ -113,7 +117,8 @@ public class AntTask extends MatchingTask {
     public void setArgs(String args) {
     	String[] list = args.split("[ \t]+");
     	for(int i = 0; i < list.length; i++)
-    		addArg(list[i]);
+    		if(list[i].trim().length() > 0)
+    			addArg(list[i].trim());
     }
     public void setOutjar(File arg) {
         addArg( "-outjar", arg.getAbsolutePath());
@@ -152,6 +157,7 @@ public class AntTask extends MatchingTask {
     private void addArg( String s, String s2 ) { args.add(s); args.add(s2); }
     private Path sourceroots = null;
     private Path injars = null;
+    private Path inpath = null;
     private Path classpath = null;
     private Path argfiles = null;
     private Path src = null;
@@ -174,6 +180,11 @@ public class AntTask extends MatchingTask {
                 if(Debug.v().traceAntTask)
                     System.err.println("injars: "+injars);
             }
+            if( inpath != null ) {
+            	addPath("-inpath", inpath);
+            	if(Debug.v().traceAntTask)
+            		System.err.println("inpath: "+inpath);
+            }
             if( classpath != null ) {
                 addPath("-classpath", classpath);
                 if(Debug.v().traceAntTask)
@@ -191,6 +202,7 @@ public class AntTask extends MatchingTask {
                 addArg("-soot");
             }
             if(DEBUG) System.out.println(args);
+
             Main main = new Main((String[]) args.toArray(new String[0]));
             main.run();
             Main.v().reset();
