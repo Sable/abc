@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +26,6 @@ import polyglot.util.*;
 import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
-import abc.aspectj.extension.*;
 import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.AbcFactory;
@@ -41,6 +41,7 @@ import java.util.*;
 
 /**
  * @author Julian Tibble
+ * @author Eric Bodden
  */
 public class TMDecl_c extends AdviceBody_c implements TMDecl
 {
@@ -684,7 +685,8 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         // create TraceMatch
         TraceMatch tm =
             new TraceMatch(tracematch_name, tm_formals, body_formals,
-                           regex.makeSM(), isPerThread, orderedSymToVars(),
+                           regex.makeSM(), regex.makeNecessarySymbolsSM(),
+                           isPerThread, orderedSymToVars(),
                            frequent_symbols, sym_to_advice_name,
                            synch_advice, some_advice, proceed_name,
                            current_aspect, position());

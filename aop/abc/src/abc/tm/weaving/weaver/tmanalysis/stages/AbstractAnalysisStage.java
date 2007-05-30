@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
-import abc.tm.weaving.weaver.tmanalysis.query.Naming;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
+import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 import abc.tm.weaving.weaver.tmanalysis.util.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.util.Timer;
 

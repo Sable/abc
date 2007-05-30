@@ -1,3 +1,5 @@
+import org.aspectj.testing.Tester;
+
 public class QuickCheck {
     public static void f() {  }
     public static void g() {  }
@@ -13,6 +15,10 @@ public class QuickCheck {
     	//a() and b() both exist but on different objects
     	new QuickCheck().a();
     	new QuickCheck().b();
+    	
+    	Tester.expectEvent("f g*");
+    	Tester.expectEvent("f g | f");    	
+    	Tester.checkAllEvents();
     }
 }
 
@@ -21,21 +27,27 @@ aspect FG {
 	  sym f after : call(* *.f(..));
 	  sym g after : call(* *.g(..));
 
-	  f g { } //cannot match
+	  f g {
+	    	Tester.event("f g");    	
+	  } //cannot match
     }
 
     tracematch() {
   	  sym f after : call(* *.f(..));
   	  sym g after : call(* *.g(..));
 
-  	  f g* { } //can match
+  	  f g* {
+	    	Tester.event("f g*");    	
+  	  } //matches
     }
 
     tracematch() {
   	  sym f after : call(* *.f(..));
   	  sym g after : call(* *.g(..));
 
-  	  f g | f { } //can match
+  	  f g | f {
+	    	Tester.event("f g | f");    	
+  	  } //matches
     }
 }
 
@@ -44,6 +56,8 @@ aspect AB {
     	sym a after : call(* *.a(..)) && target(o);
 		sym b after : call(* *.b(..)) && target(o);
 
-    	a b {} //does not match but quick check does not suffice to recognize that
+    	a b {
+	    	Tester.event("a b");    	
+    	} //does not match but quick check does not suffice to recognize that
     }
 }

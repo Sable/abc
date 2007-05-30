@@ -35,6 +35,7 @@ import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
+import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -56,6 +57,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
 {
 
     private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
+    private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -135,13 +137,19 @@ public class AbcExtension extends abc.eaj.AbcExtension
     protected void createReweavingPasses(List passes) {
         super.createReweavingPasses(passes);
         if(OptionsParser.v().wp_tmopt()) {
-        	//Quick check
-        	
-            ReweavingAnalysis ana = new OptQuickCheck();                
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, ana ) );
-            
             //we need instruction tags so that we can identify shadow IDs after weaving
             OptionsParser.v().set_tag_instructions(true);
+
+            //Quick check
+            ReweavingAnalysis quick = new OptQuickCheck();                
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
+            
+            if(OptionsParser.v().laststage().equals("quick")) return;
+            
+            ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
+            
+            
         }
     }
     

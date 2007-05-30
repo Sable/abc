@@ -561,6 +561,16 @@ public class Main {
         sb.append(File.separator);
         sb.append("rt.jar");
 
+        if(OptionsParser.v().wp_tmopt()) {
+            //necessary for some whole-program analyses
+            sb.append(File.pathSeparator);
+            sb.append(System.getProperty("java.home"));
+            sb.append(File.separator);
+            sb.append("lib");
+            sb.append(File.separator);
+            sb.append("jce.jar");
+        }
+
         if(System.getProperty("abc.home")!=null) {
             sb.append(File.pathSeparator);
             sb.append(System.getProperty("abc.home"));

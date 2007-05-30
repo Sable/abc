@@ -37,6 +37,7 @@ import soot.jimple.toolkits.pointer.FullObjectSet;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder.SymbolShadowMatch;
 
 /**

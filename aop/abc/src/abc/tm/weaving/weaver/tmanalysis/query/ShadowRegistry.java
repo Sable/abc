@@ -38,6 +38,7 @@ import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowMatchTag;
+import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder.SymbolShadowMatch;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
@@ -52,7 +53,7 @@ import abc.weaving.weaver.AdviceApplicationVisitor.AdviceApplicationHandler;
  */
 public class ShadowRegistry {
 	
-	protected static TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
+	protected TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 	
 	protected Map allShadowsToAdviceApplications;
 	

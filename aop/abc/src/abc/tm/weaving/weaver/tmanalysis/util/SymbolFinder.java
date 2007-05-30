@@ -35,7 +35,6 @@ import soot.toolkits.scalar.ForwardFlowAnalysis;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.weaver.tmanalysis.query.Naming;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.weaving.tagkit.InstructionShadowTag;

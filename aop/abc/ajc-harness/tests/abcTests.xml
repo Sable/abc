@@ -10518,12 +10518,22 @@
         </compile>
         <run class="SyncMethods"/>
     </ajc-test>
-    
+
     <ajc-test num="1301" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): QuickCheck">
         <compile files="QuickCheck.java" options="-ext,abc.tm,-wp-tmopt,-debug,warnWhenDeactivatingShadow">
-	    	<message kind="warning" line="10"/>
+	    	<message kind="warning" line="12"/>
 		</compile>
+		<run class="QuickCheck"/>
     </ajc-test>		
     
+    <ajc-test num="1302" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-insensitive stage">
+        <compile files="FlowIns.java" options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenDeactivatingShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot">
+	    	<message kind="warning" line="12"/>
+	    	<message kind="warning" line="13"/>
+		</compile>
+		<run class="FlowIns"/>
+    </ajc-test>
+    		
  </suite>

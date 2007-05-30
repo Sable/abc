@@ -295,7 +295,7 @@ any of their subdirectories.
     </boolopt>
     <stringopt>
       <alias>laststage</alias>
-      <default>flowins</default>
+      <default>quick</default>
       <set_arg_label>stage</set_arg_label>
       <short_desc>Specifies the last stage to be executed in the static
       whole program analysis for tracematches. (quick|flowins|flowsens)</short_desc>
@@ -303,7 +303,7 @@ any of their subdirectories.
       whole program analysis for tracematches. There are three stages:
       (1) quick, (2) flowins (flow-insensitive analysis) and (3) flowsens
       (flow-sensitive analysis). They are executed in this order.
-      Default is flowins.
+      Default is quick.
       </long_desc>
     </stringopt>
   </section>
