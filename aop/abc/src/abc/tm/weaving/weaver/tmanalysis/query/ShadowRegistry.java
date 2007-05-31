@@ -59,8 +59,6 @@ public class ShadowRegistry {
 	
 	protected Map tmNameToUniqueShadowIds;
 	
-	protected Map shadowIdToNumber;
-	
 	protected Set enabledShadows;  
 	
 	protected Set disabledShadows;  
@@ -71,8 +69,7 @@ public class ShadowRegistry {
 	
 		allShadowsToAdviceApplications= new HashMap();
 		tmNameToUniqueShadowIds = new HashMap();
-		shadowIdToNumber = new HashMap();
-		
+
 		for (Iterator tmIter = gai.getTraceMatches().iterator(); tmIter.hasNext();) {
 			TraceMatch tm = (TraceMatch) tmIter.next();
 			tmNameToUniqueShadowIds.put(tm.getName(), new HashSet());			
@@ -264,21 +261,6 @@ public class ShadowRegistry {
 	}
 
 	/**
-	 * Returns a unique int number for the given shadow id.
-	 * The numbers start with 0 and then increase by 1.
-	 * @param uniqueShadowId
-	 * @return
-	 */
-	public int numberOf(String uniqueShadowId) {
-		Integer number = (Integer) shadowIdToNumber.get(uniqueShadowId);
-		if(number==null) {
-			number = new Integer(shadowIdToNumber.size());
-			shadowIdToNumber.put(uniqueShadowId, number);
-		}
-		return number.intValue();
-	}
-	
-	/**
      * Returns <code>true</code> if the shadow with this unique id is still enabled.
 	 */
 	public boolean isEnabled(String uniqueShadowId) {
@@ -337,7 +319,7 @@ public class ShadowRegistry {
 			}			
 			pos = new Position(fileName,tag.startLn(),tag.startPos(),tag.endLn(),tag.endPos());
 		}
-		Main.v().getAbcExtension().reportError(
+		Main.v().getAbcExtension().getWeaver().reportErrorDuringReweaving(
 				ErrorInfo.WARNING,
 				"tracematch shadow "+uniqueShadowId+" disabled at this position",
 				pos

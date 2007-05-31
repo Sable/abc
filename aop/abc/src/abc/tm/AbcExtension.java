@@ -58,6 +58,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
 
     private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
     private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
+    private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -146,10 +147,21 @@ public class AbcExtension extends abc.eaj.AbcExtension
             
             if(OptionsParser.v().laststage().equals("quick")) return;
             
+            //hook up intraprocedural analysis, if present
+            try {
+				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
+	            ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
+	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
+	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations.");
+            } catch (ClassNotFoundException e) {
+			} catch (InstantiationException e) {
+			} catch (IllegalAccessException e) {
+			};
+            
+            if(OptionsParser.v().laststage().equals("intra")) return;
+            
             ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
-            
-            
         }
     }
     

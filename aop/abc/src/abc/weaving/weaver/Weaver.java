@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import polyglot.util.ErrorQueue;
+import polyglot.util.Position;
+import polyglot.util.SilentErrorQueue;
+
 import soot.Body;
 import soot.Scene;
 import soot.SootClass;
@@ -37,8 +41,10 @@ import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
+import abc.main.AbcExtension;
 import abc.main.AbcTimer;
 import abc.main.Debug;
+import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -64,6 +70,9 @@ public class Weaver {
     
     protected Map unitBindings = new HashMap();
     protected Map reverseUnitBindings;
+
+	protected Unweaver unweaver; 
+	protected ErrorQueue errorQueueBackup;
 
     /**
      * Creates a new Weaver with a default aspect code generator.
@@ -188,10 +197,15 @@ public class Weaver {
                 optimizeResidues();
             }
             
+            ReweavingPass lastPass = null; 
+            
             //if we do reweaving
             if(reweavingPasses.size() > 0) {
+            	//no warning output during reweaving
+            	silenceErrorQueue();
+            	
                 //store the unwoven state first
-                Unweaver unweaver = new Unweaver();
+                unweaver = new Unweaver();
                 unweaver.save();
                 storeBindings(unweaver);
                 //then do the initial weaving
@@ -209,6 +223,8 @@ public class Weaver {
                         //TODO should we recompute the advice lists here?
                     }
                     
+                    boolean isLastPassInList = !iter.hasNext();
+                    
                     //we need to reweave now
                     if(reweaveNow) { 
                         
@@ -218,11 +234,16 @@ public class Weaver {
                         resetForReweaving();
                         //do stuff immediately prior to reweaving
                         pass.setupWeaving();
-                        //reweave
-                        weaveAdvice();
-                        //do stuff immediately prior after reweaving
-                        pass.tearDownWeaving();
-
+                        //if this is the lass pass in the list, we reweave below anyway, so
+                        //do not reweave here but just store a handle so that it can tear down properly in the end
+                        if(!isLastPassInList) {
+	                        //reweave
+	                        weaveAdvice();
+	                        //do stuff immediately prior after reweaving
+	                        pass.tearDownWeaving();
+                        } else {
+                        	lastPass = pass;
+                        }
                     }
                 }
                 
@@ -237,6 +258,9 @@ public class Weaver {
                 optimizeResidues();
             }
 
+            //reenable the error queue
+            restoreErrorQueue();
+
             //don't forget to process declare warning/errors;
             //we don't do this earlier, cause the analyses can possibly
             //support declare warning/error through static analysis
@@ -248,7 +272,12 @@ public class Weaver {
             removeDeclareWarnings();
             
             //do the final weaving
-            weaveAdvice();            
+            weaveAdvice();        
+            
+            //let the last pass tear down
+            if(lastPass!=null) {
+            	lastPass.tearDownWeaving();
+            }
             
             //allow all reweaving passes to clean up memory etc.
             for (Iterator iter = reweavingPasses.iterator(); iter.hasNext();) {                    
@@ -257,7 +286,7 @@ public class Weaver {
             }
         }
         
-        public void doInlining() {
+		public void doInlining() {
         	Scene.v().releaseActiveHierarchy();
         	
         	if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining())          
@@ -417,4 +446,38 @@ public class Weaver {
 			}
 		}
 
+		/**
+		 * Replaces the standard error queue by a {@link SilentErrorQueue},
+		 * storing the original queue in {@link #errorQueueBackup}.
+		 */
+		protected void silenceErrorQueue() {
+			errorQueueBackup = Main.v().getAbcExtension().getErrorQueue();
+			Main.v().getAbcExtension().setErrorQueue(new SilentErrorQueue(100,"reweaving"));			
+		}
+		
+		/**
+		 * Restores the standard error queue to its original value,
+		 * as backup up in {@link #errorQueueBackup}.
+		 */
+		protected void restoreErrorQueue() {
+			assert errorQueueBackup!=null;
+			Main.v().getAbcExtension().setErrorQueue(errorQueueBackup);
+		}
+		
+		/**
+		 * The default error queue is disabled during reweaving so one has to use this method instead of
+		 * {@link AbcExtension#reportError(int, String, Position)} in order to actually report errors
+		 * during reweaving.
+		 */
+		public void reportErrorDuringReweaving(int type, String message, Position position) {
+			errorQueueBackup.enqueue(type, message, position);
+		}
+
+		/**
+		 * @return the unweaver
+		 */
+		public Unweaver getUnweaver() {
+			return unweaver;
+		}
+		
 } // class Weaver
