@@ -19,6 +19,7 @@
 
 package abc.weaving.weaver;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 
 import polyglot.util.Enum;
@@ -47,6 +48,8 @@ public class ReweavingPass {
     protected ReweavingAnalysis analysis;
     
     protected long timeout;
+    
+    protected volatile Throwable exception;
 
     /**
      * Creates a new reweaving analysis pass.
@@ -88,10 +91,17 @@ public class ReweavingPass {
      * @return <code>true</code> if we must reweave after this analysis
      */
     public boolean analyze() {
-        
+    	
         //set up the thread
         Worker worker = new Worker();
         Thread t = new Thread(worker);
+        
+        UncaughtExceptionHandler uh = new Thread.UncaughtExceptionHandler() {
+			public void uncaughtException(Thread t, Throwable e) {
+				exception = e;
+			}        	
+        };
+		t.setUncaughtExceptionHandler(uh);
         
         //run it
         t.start();
@@ -103,6 +113,12 @@ public class ReweavingPass {
             if(t.isInterrupted() && Debug.v().printReweavingAnalysisTimeouts) {
                 System.err.println("Reweaving pass '"+id+"' timed out after "+timeout+" ms.");
             }
+        }
+        
+        if(exception!=null) {
+        	Throwable e = exception;
+            exception = null;
+            throw new RuntimeException("Exception while executing reweaving pass '"+id+"'",e);        	
         }
 
         //is false, if the worker was aborted
