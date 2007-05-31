@@ -150,7 +150,6 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     public abstract WeavingContext makeWeavingContext();
 
     public void resetForReweaving() {
-    	applcount = 0;
     };
 
     // All this JoinPoint stuff ought to move to a residue or something.
