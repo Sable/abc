@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$23$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -140,8 +140,8 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.doCase(Main.java:283)
 	at abc.testing.Main.main(Main.java:117)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:621)
-	at abc.main.Main.loadSourceRoots(Main.java:638)
+	at abc.main.Main.findSourcesInDir(Main.java:631)
+	at abc.main.Main.loadSourceRoots(Main.java:648)
 	at abc.main.Main.run(Main.java:479)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -214,7 +214,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:98)
 	at soot.SootResolver.resolveClass(SootResolver.java:83)
-	at soot.Scene.loadClass(Scene.java:336)
+	at soot.Scene.loadClass(Scene.java:358)
 	at abc.main.CompileSequence.compile(CompileSequence.java:317)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
