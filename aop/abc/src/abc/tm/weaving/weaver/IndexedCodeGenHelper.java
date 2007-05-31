@@ -19,17 +19,36 @@
 
 package abc.tm.weaving.weaver;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-
-import abc.weaving.aspectinfo.Formal;
-import abc.tm.weaving.aspectinfo.*;
-import abc.tm.weaving.matching.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import polyglot.util.InternalCompilerError;
-
-import java.util.*;
+import soot.Body;
+import soot.IntType;
+import soot.Local;
+import soot.Modifier;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootFieldRef;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
+import soot.Value;
+import soot.VoidType;
+import soot.jimple.Expr;
+import soot.jimple.InstanceFieldRef;
+import soot.jimple.IntConstant;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Jimple;
+import soot.jimple.Ref;
+import soot.util.Chain;
+import abc.tm.weaving.aspectinfo.IndexStructure;
+import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.matching.TMStateMachine;
 
 /**
  * Helps with Jimple generation for updating the
@@ -382,7 +401,6 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
                 if (tm.isPrimitive(var)) {
                     SootClass box_class = tm.weakBindingClass(var);
-                    Type box_type = box_class.getType();
                     param = makeNewBox(body, units, box_class, param);
                 }
 
@@ -556,7 +574,7 @@ public class IndexedCodeGenHelper extends CodeGenHelper
      * a skip transition -- this is not needed for indexed
      * constraints, which use an event object.
      */
-    public void genSkipLabelUpdate(int to, String symbol, SootMethod method) {}
+    public void genSkipLabelUpdate(SMNode to, String symbol, SootMethod method) {}
 
     /**
      * Generate the code for master-updating labels - i.e. the

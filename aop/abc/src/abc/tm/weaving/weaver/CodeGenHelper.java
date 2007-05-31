@@ -359,7 +359,6 @@ public class CodeGenHelper
             container.getMethodByName(SootMethod.constructorName);
         Body body = init.getActiveBody();
 
-        Chain units = newChain();
         makeLabelsThreadLocalField();
         makeLabelsThreadLocal(body);
     }
@@ -1383,7 +1382,7 @@ public class CodeGenHelper
      * Generate code to update a label with the constraint for
      * a skip transition.
      */
-    public void genSkipLabelUpdate(int to, String symbol, SootMethod method)
+    public void genSkipLabelUpdate(SMNode to, String symbol, SootMethod method)
     {
         Body body = method.getActiveBody();
 
@@ -1392,13 +1391,14 @@ public class CodeGenHelper
         Chain units = newChain();
         Local label_base = getLabelBase(body, units, this_local);
 
-        Value to_state = getInt(to);
-        Local lab = getLabel(body, units, label_base, to, SKIP_LABEL);
+        int to_number = to.getNumber();
+		Value to_state = getInt(to_number);
+        Local lab = getLabel(body, units, label_base, to_number, SKIP_LABEL);
         Local result =
             callBindingsMethod(body, units, symbol, lab, method,
                                 to_state, to_state, false);
 
-        assignToLabel(body, units, label_base, to, SKIP_LABEL, result);
+        assignToLabel(body, units, label_base, to_number, SKIP_LABEL, result);
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -1532,8 +1532,6 @@ public class CodeGenHelper
         Body body = method.getActiveBody();
         Chain units = body.getUnits();
         Chain assignments = newChain();
-
-        Local this_local = body.getThisLocal();
 
         Object current = units.getFirst();
 
@@ -1746,7 +1744,6 @@ public class CodeGenHelper
      */
     protected void genRunSolutions()
     {
-        boolean is_around = tm.isAround();
         SootMethod method = tm.getBodyMethod();
         Body body = method.getActiveBody();
 
