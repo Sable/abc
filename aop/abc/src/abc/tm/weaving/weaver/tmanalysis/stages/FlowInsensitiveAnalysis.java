@@ -18,8 +18,6 @@
  */
 package abc.tm.weaving.weaver.tmanalysis.stages;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -35,7 +33,7 @@ import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.Shadow;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroup;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
-import abc.tm.weaving.weaver.tmanalysis.util.Naming;
+import abc.tm.weaving.weaver.tmanalysis.util.ShadowsPerTMSplitter;
 import abc.tm.weaving.weaver.tmanalysis.util.Timer;
 
 /**
@@ -60,7 +58,7 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
         removeShadowsWithEmptyMappings(reachableShadows);
         
         //split all remaining shadows by tracematch
-        Map tmNameToShadows = splitShadows(reachableShadows);
+        Map tmNameToShadows = ShadowsPerTMSplitter.splitShadows(reachableShadows);
         
         Set allConsistentShadowGroups = new LinkedHashSet();
         
@@ -121,32 +119,6 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
 			}
 		}
         logToStatistics("shadows-removed-due-to-empty-variable-mappings", emptyMappingCount);
-	}
-	
-	/**
-	 * Splits the shadows in the given set per tracematch.
-	 * @param shadows a set of {@link Shadow}s
-	 * @return a mapping from tracematch name ({@link String}) to a {@link Set} of {@link Shadow}s of that tracematch
-	 */
-	protected Map splitShadows(Collection shadows) {
-		Map tmNameToShadows = new HashMap();
-		
-		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			Shadow shadow = (Shadow) shadowIter.next();
-			
-			String uniqueShadowId = shadow.getUniqueShadowId();
-			String tracematchName = Naming.getTracematchName(uniqueShadowId);
-			
-			Set shadowsForTm = (Set) tmNameToShadows.get(tracematchName);
-			if(shadowsForTm==null) {
-				shadowsForTm = new HashSet();
-				tmNameToShadows.put(tracematchName, shadowsForTm);
-			}
-			
-			shadowsForTm.add(shadow);
-		}
-
-		return tmNameToShadows;		
 	}
 	
 	/**
