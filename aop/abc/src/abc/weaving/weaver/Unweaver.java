@@ -146,4 +146,13 @@ public class Unweaver {
         }
         return ret;
     }
+
+	/**
+	 * Retains a class that was added after storing the original state so that it does <i>not</i>
+	 * get deleted during restore.
+	 * @param c
+	 */
+	public void retainAddedClass(SootClass c) {
+		applicationClasses.add(c);
+	}
 }
