@@ -216,8 +216,8 @@ public class Debug {
 
     //restructuring of synchronized methods for lock/unlock pointcuts;
     //currently generates synchronized blocks which dava cannot deal with
-    public boolean restructureSynchronizedMethods = false;
-
+    public boolean enableLockPointcuts = false;
+    
     //verbose mode for static tracematch analysis
     public boolean debugTmAnalysis = false;
     //dump shadow statistics for static tracematch optimization 

@@ -137,8 +137,10 @@ public class AbcExtension extends abc.main.AbcExtension
         lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET)));
         
         // keywords for the "monitorenter/monitorexit" pointcut extension
-        lexer.addPointcutKeyword("lock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LOCK)));
-        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_UNLOCK)));
+        if(Debug.v().enableLockPointcuts) {
+	        lexer.addPointcutKeyword("lock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LOCK)));
+	        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_UNLOCK)));
+        }
 
         if(!Debug.v().noContainsPointcut) {
         	//keyword for the "contains" pointcut extension
@@ -151,7 +153,7 @@ public class AbcExtension extends abc.main.AbcExtension
     }
     
     public void doMethodRestructuring() {
-    	if(Debug.v().restructureSynchronizedMethods) {
+    	if(Debug.v().enableLockPointcuts) {
     	    //restructuring of synchronized methods for lock/unlock pointcuts;
     	    //currently generates synchronized blocks which dava cannot deal with
     		new SynchronizedMethodRestructurer().apply();
