@@ -110,6 +110,10 @@ public class AbcExtension
     private List reweavingPasses;
     
     private ErrorQueue error_queue = null;
+    
+    
+	/** If true, error reporting is suspended. */
+	private boolean suspendErrorReporting;
 
     /**
      * Constructs a version string for all loaded extensions
@@ -148,15 +152,37 @@ public class AbcExtension
 		return new CompileSequence(this);
 	}
 
+    /**
+     * Reports an error, if error reporting is not suspended.
+     * @see #suspendErrorReporting()
+     * @see #resumeErrorReporting()
+     */
     public void reportError(ErrorInfo ei) {
-		error_queue.enqueue(ei);
-    }
-    
-    public void reportError(int level, String s, Position pos) {    	
-    	error_queue.enqueue(level, s, pos);
+    	if(!suspendErrorReporting)
+    		error_queue.enqueue(ei);
     }
     
     /**
+     * Reports an error, if error reporting is not suspended.
+     * @see #suspendErrorReporting()
+     * @see #resumeErrorReporting()
+     */
+    public void reportError(int level, String s, Position pos) {    	
+    	if(!suspendErrorReporting)
+    		forceReportError(level, s, pos);
+    }
+    
+    /**
+     * Reports an error, even if error reporting is suspended.
+     * @see #suspendErrorReporting()
+     * @see #resumeErrorReporting()
+     */
+	public void forceReportError(int level, String message, Position position) {
+		error_queue.enqueue(level, message, position);
+	}
+
+	
+	/**
      * Creates an instance of the <code>ExtensionInfo</code> structure
      * used for extending the Polyglot-based frontend.
      */
@@ -684,8 +710,18 @@ public class AbcExtension
     public void setErrorQueue(ErrorQueue eq) {
     	error_queue = eq;
     }
+    
+    /** Suspends error reporting until {@link #resumeErrorReporting()} is called.  */
+    public void suspendErrorReporting() {
+    	suspendErrorReporting = true;
+    }
 
-	/**
+    /** Resumes error reporting after {@link #suspendErrorReporting()} was called.  */
+    public void resumeErrorReporting() {
+    	suspendErrorReporting = false;
+    }
+
+    /**
 	 * This method is called right after "declare parents" has been processed and
 	 * all Jimple bodies have been loaded. Subclasses can implement this method to
 	 * do restrucuring of bodies prior to weaving. This default implementation does nothing.

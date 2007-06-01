@@ -319,7 +319,7 @@ public class ShadowRegistry {
 			}			
 			pos = new Position(fileName,tag.startLn(),tag.startPos(),tag.endLn(),tag.endPos());
 		}
-		Main.v().getAbcExtension().getWeaver().reportErrorDuringReweaving(
+		Main.v().getAbcExtension().forceReportError(
 				ErrorInfo.WARNING,
 				"tracematch shadow "+uniqueShadowId+" disabled at this position",
 				pos
