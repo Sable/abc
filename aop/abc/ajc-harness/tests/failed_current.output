@@ -39,6 +39,28 @@ Semantic Error at InterfaceAndInner.java:8,34-59: Class "C" not found in scope o
 FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed.
 
 
+Running test 305: errors/declare error working with pointcut and-not (amp,amp,bang)
+Commandline: abc -d errors -warn-unused-advice:off errors/DeclareError.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 305: "errors/declare error working with pointcut and-not (amp,amp,bang)" failed.
+
+
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new -warn-unused-advice:off new/AroundAll.java 
 Test failed, compiled class behaved incorrectly
@@ -50,7 +72,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$23$around$1600(AroundAll.java:199)
+	at A.inline$30$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -60,6 +82,28 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.Main.doCase(Main.java:283)
 	at abc.testing.Main.main(Main.java:117)
 FAIL: Test 496: "new/elaborated into testing of around on all join points" failed.
+
+
+Running test 544: new/declare error and abstract pointcuts
+Commandline: abc -d new -warn-unused-advice:off new/AbstractDeclare.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 544: "new/declare error and abstract pointcuts" failed.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -78,6 +122,28 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
 FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed.
+
+
+Running test 632: new/simple declare warning (NPE)
+Commandline: abc -d new -warn-unused-advice:off new/DeclareWarningMain.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 632: "new/simple declare warning (NPE)" failed.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -117,6 +183,50 @@ Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 
+Running test 760: new/declare/omnibus declare warning context with no initializer/constructor
+Commandline: abc -d new/declare -warn-unused-advice:off new/declare/DeclareWarningEmpty.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 760: "new/declare/omnibus declare warning context with no initializer/constructor" failed.
+
+
+Running test 761: new/declare/omnibus declare warning context
+Commandline: abc -d new/declare -warn-unused-advice:off new/declare/DeclareWarning.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 761: "new/declare/omnibus declare warning context" failed.
+
+
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
@@ -129,6 +239,116 @@ Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
 FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed.
+
+
+Running test 793: new/binaryWarnings/src/declare warnings on main
+Commandline: abc -d new/binaryWarnings/src -warn-unused-advice:off new/binaryWarnings/src/aspects/MainWarnings.java new/binaryWarnings/src/app/Main.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 793: "new/binaryWarnings/src/declare warnings on main" failed.
+
+
+Running test 794: new/binaryWarnings/src/declare warnings on binary javac 1.4 classes
+Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-javac-1.4.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/MainWarnings.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 classes" failed.
+
+
+Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
+Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-ajc-1.1.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/MainWarnings.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed.
+
+
+Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
+Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/appStartLines-ajc-1.1.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed.
+
+
+Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
+Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/appStartLines-javac-1.4.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -160,10 +380,312 @@ Caused by: java.lang.OutOfMemoryError: Java heap space
 FAIL: Test 817: "bugs/lines/Weaving rt.jar results in stack overflow" failed.
 
 
+Running test 822: new/binaryWarnings/src/declare warnings on main - constructor execution
+Commandline: abc -d new/binaryWarnings/src -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java new/binaryWarnings/src/app/Main.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 822: "new/binaryWarnings/src/declare warnings on main - constructor execution" failed.
+
+
+Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
+Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-javac-1.4.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution" failed.
+
+
+Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
+Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-ajc-1.1.jar -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution" failed.
+
+
+Running test 825: bugs/handlers/advice on handler join points should not throw unpermitted checked exceptions
+Commandline: abc -d bugs/handlers -warn-unused-advice:off bugs/handlers/ExceptionCheckCE.java 
+Compilation produced an unexpected number of errors: 1, should be 2
+Actual errors found: 
+Semantic Error at bugs/handlers/ExceptionCheckCE.java:8,17-35: Advice from aspect A (ExceptionCheckCE.java, line 25) applies here, and throws exception java.lang.Exception which is not already thrown here
+FAIL: Test 825: "bugs/handlers/advice on handler join points should not throw unpermitted checked exceptions" failed.
+
+
+Running test 840: bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)
+Commandline: abc -d bugs/cflowAndJar -warn-unused-advice:off bugs/cflowAndJar/TestAspect.aj bugs/cflowAndJar/Test.java bugs/cflowAndJar/AbstractAspect.aj 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)" failed.
+
+
+Running test 848: bugs/interface call signatures when declaring method in aspect
+Commandline: abc -d bugs -warn-unused-advice:off bugs/DeclareWarningAndInterfaceMethodCW.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 848: "bugs/interface call signatures when declaring method in aspect" failed.
+
+
+Running test 872: bugs/throwsSignature/throw derivative pointcuts not advised
+Commandline: abc -d bugs/throwsSignature -warn-unused-advice:off bugs/throwsSignature/ExceptionBugTest.java bugs/throwsSignature/ExceptionAspect.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 872: "bugs/throwsSignature/throw derivative pointcuts not advised" failed.
+
+
+Running test 874: bugs/declareBinding/declare error fails on pointcuts composed from multiple classes
+Commandline: abc -d bugs/declareBinding -warn-unused-advice:off bugs/declareBinding/SampleExceptionHandling1.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 874: "bugs/declareBinding/declare error fails on pointcuts composed from multiple classes" failed.
+
+
+Running test 887: bugs/External pointcut refs not resolved if named pointcut used by declare
+Commandline: abc -d bugs -warn-unused-advice:off bugs/DeclareErrorNamedPointcutCE.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 887: "bugs/External pointcut refs not resolved if named pointcut used by declare" failed.
+
+
+Running test 916: bugs/declare warning on subtype constructor
+Commandline: abc -d bugs -warn-unused-advice:off bugs/SubtypeConstructorCW.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 916: "bugs/declare warning on subtype constructor" failed.
+
+
+Running test 930: bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
+Test.run()
+? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:ignore bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AroundClosureExecutionAdvice.aj 
+*** Option -Xlint:ignore ignored: abc does not support Xlint
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.weaver.around.AdviceApplicationInfo.<init>(AdviceApplicationInfo.java:175)
+	at abc.weaving.weaver.around.ProceedMethod.doWeave(ProceedMethod.java:209)
+	at abc.weaving.weaver.around.AdviceMethod.doWeave(AdviceMethod.java:250)
+	at abc.weaving.weaver.around.AroundWeaver.doWeave(AroundWeaver.java:154)
+	at abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:164)
+	at abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:359)
+	at abc.weaving.weaver.PointcutCodeGen.weaveInAspectsPass(PointcutCodeGen.java:109)
+	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:410)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:275)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" failed.
+
+
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
 FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed.
+
+
+Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
+Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-debug.jar -warn-unused-advice:off bugs/systemouts/A.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed.
+
+
+Running test 962: bugs/systemouts/declare error binary-weaving NPE 2 
+Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-nodebug.jar -warn-unused-advice:off bugs/systemouts/A.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 962: "bugs/systemouts/declare error binary-weaving NPE 2 " failed.
+
+
+Running test 963: bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult
+Commandline: abc -d bugs/tooManyErrors -injars bugs/tooManyErrors/Joinpoints101.jar -warn-unused-advice:off bugs/tooManyErrors/DecErrors.aj 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.aspectinfo.DeclareMessage.generateMessage(DeclareMessage.java:166)
+	at abc.weaving.aspectinfo.DeclareMessage.reportMessages(DeclareMessage.java:227)
+	at abc.weaving.matching.AdviceApplication.reportMessages(AdviceApplication.java:340)
+	at abc.weaving.weaver.Weaver.reportMessages(Weaver.java:358)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:267)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 963: "bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult" failed.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -219,6 +741,58 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
+
+
+Running test 1006: abctests/around/adviceexecution/around with circular adviceexecution advice
+Commandline: abc -d abctests/around/adviceexecution -warn-unused-advice:off abctests/around/adviceexecution/Foo.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.weaver.around.AdviceApplicationInfo.<init>(AdviceApplicationInfo.java:175)
+	at abc.weaving.weaver.around.ProceedMethod.doWeave(ProceedMethod.java:209)
+	at abc.weaving.weaver.around.AdviceMethod.doWeave(AdviceMethod.java:250)
+	at abc.weaving.weaver.around.AroundWeaver.doWeave(AroundWeaver.java:154)
+	at abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:164)
+	at abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:359)
+	at abc.weaving.weaver.PointcutCodeGen.weaveInAroundAdviceExecutionsPass(PointcutCodeGen.java:289)
+	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:420)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:275)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed.
+
+
+Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
+Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtractedProceed.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.NullPointerException
+	at abc.main.AbcExtension.reportError(AbcExtension.java:152)
+	at abc.weaving.weaver.around.AdviceApplicationInfo.<init>(AdviceApplicationInfo.java:175)
+	at abc.weaving.weaver.around.ProceedMethod.doWeave(ProceedMethod.java:209)
+	at abc.weaving.weaver.around.AdviceMethod.doWeave(AdviceMethod.java:250)
+	at abc.weaving.weaver.around.AroundWeaver.doWeave(AroundWeaver.java:154)
+	at abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:164)
+	at abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:359)
+	at abc.weaving.weaver.PointcutCodeGen.weaveInAspectsPass(PointcutCodeGen.java:109)
+	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:410)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:275)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
