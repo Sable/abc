@@ -10506,13 +10506,13 @@
  
     <ajc-test num="1219" dir="abctests/eaj/lock_unlock" 
 	    title="lock/unlock pointcuts">
-        <compile files="LockUnlock.java" options="-ext,abc.eaj,-debug,restructureSynchronizedMethods"/>
+        <compile files="LockUnlock.java" options="-ext,abc.eaj,-debug,enableLockPointcuts"/>
         <run class="LockUnlock"/>
     </ajc-test>
     
      <ajc-test num="1220" dir="abctests/eaj/lock_unlock" 
 	    title="warning on restructuring for sync. methods and lock/unlock pointcuts">
-        <compile files="SyncMethods.java" options="-ext,abc.eaj,-debug,doValidate,-debug,restructureSynchronizedMethods">
+        <compile files="SyncMethods.java" options="-ext,abc.eaj,-debug,doValidate,-debug,enableLockPointcuts">
 	        <message kind="warning" line="15"/>
 	        <message kind="warning" line="15"/>
         </compile>
