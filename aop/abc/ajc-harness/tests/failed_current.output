@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$31$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -226,17 +226,5 @@ Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off
 File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
-
-
-Running test 1219: abctests/eaj/lock_unlock/lock/unlock pointcuts
-Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug restructureSynchronizedMethods abctests/eaj/lock_unlock/LockUnlock.java 
-Illegal arguments: No such debug option: restructureSynchronizedMethods
-FAIL: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" failed.
-
-
-Running test 1220: abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts
-Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug doValidate -debug restructureSynchronizedMethods abctests/eaj/lock_unlock/SyncMethods.java 
-Illegal arguments: No such debug option: restructureSynchronizedMethods
-FAIL: Test 1220: "abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts" failed.
 
 

@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@15403e
+creating: A@1e3019a
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@8e3a81
+InterfaceAndObject$1@e8e6bf
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1d14b53, [Ljava.lang.Object;@1a83c34, TwoAnonymous$3@1d14b53
+calling run: TwoAnonymous$3@7cd9b8, [Ljava.lang.Object;@b9f18b, TwoAnonymous$3@7cd9b8
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2400,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1d8209b.foo calls Outer$Inner@44d24c.mi
+Outer@d079f3.foo calls Outer$Inner@f65887.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@44d24c.mi calls java.io.PrintStream@4a9663.println
+Outer$Inner@f65887.mi calls java.io.PrintStream@12e451b.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1d8209b.foo calls Outer$InnerRandom@173f11f.nextHook
+Outer@d079f3.foo calls Outer$InnerRandom@33145f.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@173f11f.nextHook calls Outer$InnerRandom@173f11f.next
+Outer$InnerRandom@33145f.nextHook calls Outer$InnerRandom@33145f.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1d8209b.foo calls X.nextInt
+Outer@d079f3.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@861dab.foo calls Outer$Inner@105f2f4.mi
+Outer@967a2.foo calls Outer$Inner@172d865.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@105f2f4.mi calls java.io.PrintStream@19198ad.println
+Outer$Inner@172d865.mi calls java.io.PrintStream@dce111.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@861dab.foo calls Outer$InnerRandom@1e5dd8f.nextHook
+Outer@967a2.foo calls Outer$InnerRandom@b949f8.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1e5dd8f.nextHook calls Outer$InnerRandom@1e5dd8f.next
+Outer$InnerRandom@b949f8.nextHook calls Outer$InnerRandom@b949f8.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@861dab.foo calls X.nextInt
+Outer@967a2.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2712,7 +2712,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$31$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4030,7 +4030,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@2ed8e.x:=-3
+test.Test3@13599f5.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4113,8 +4113,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@e0ca2d
-o: Bar@e0ca2d, i: 10
+o: Bar@148e7e0
+o: Bar@148e7e0, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4267,11 +4267,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$7$around$2688(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4307,11 +4307,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$16$around$2688(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4647,7 +4647,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@37d0dd
+LibraryAspect-defined run() for C@17a3895
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4970,7 +4970,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@a246e8
+? Util.read() obj=Test@148cbe8
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -4990,7 +4990,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@315710
+? Util.read() obj=ClinitTest@1f2ff51
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5000,7 +5000,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@6cb999
+? Util.read() obj=SuidTest@d5d909
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5201,12 +5201,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@d0d8d3
-Invoking command bean:  Command@14b3e82
-hello(Command@14b3e82)
-Created a PerThis aspect : Testcase2@f4d8db
-Invoking command bean:  Command@c91467
-hello again(Command@c91467)
+Created a PerThis aspect : Testcase2@163240a
+Invoking command bean:  Command@1d33c6c
+hello(Command@1d33c6c)
+Created a PerThis aspect : Testcase2@123e2ac
+Invoking command bean:  Command@f6a15b
+hello again(Command@f6a15b)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5536,23 +5536,23 @@ PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-f(java.lang.Object@edd1f6)
-f(java.lang.Object@1bb5d31)
-g(java.lang.Object@1bb5d31)
-fg+(java.lang.Object@1bb5d31)
-g(java.lang.Object@edd1f6)
-fg+(java.lang.Object@edd1f6)
-f(java.lang.Object@edd1f6)
-g(java.lang.Object@1bb5d31)
-fg+(java.lang.Object@1bb5d31)
-f(java.lang.Object@edd1f6)
-f(java.lang.Object@1bb5d31)
-g(java.lang.Object@edd1f6)
-fg+(java.lang.Object@edd1f6)
-g(java.lang.Object@edd1f6)
-fg+(java.lang.Object@edd1f6)
-g(java.lang.Object@1bb5d31)
-fg+(java.lang.Object@1bb5d31)
+f(java.lang.Object@b3fb48)
+f(java.lang.Object@18e462d)
+g(java.lang.Object@18e462d)
+fg+(java.lang.Object@18e462d)
+g(java.lang.Object@b3fb48)
+fg+(java.lang.Object@b3fb48)
+f(java.lang.Object@b3fb48)
+g(java.lang.Object@18e462d)
+fg+(java.lang.Object@18e462d)
+f(java.lang.Object@b3fb48)
+f(java.lang.Object@18e462d)
+g(java.lang.Object@b3fb48)
+fg+(java.lang.Object@b3fb48)
+g(java.lang.Object@b3fb48)
+fg+(java.lang.Object@b3fb48)
+g(java.lang.Object@18e462d)
+fg+(java.lang.Object@18e462d)
 PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
@@ -5744,15 +5744,15 @@ PASS: Test 1108: "om/duplicateclassinclude/Class included in multiple modules" p
 Running test 1109: om/matchtest/Basic matching test
 Commandline: abc -d om/matchtest -warn-unused-advice:off -ext abc.om om/matchtest/Module1.java om/matchtest/Module2.java om/matchtest/MatchTestA.java om/matchtest/MatchTestB.java om/matchtest/MatchTestMain.java om/matchtest/AspectA.aj om/matchtest/AspectB.aj om/matchtest/AspectC.aj 
 Compilation succeeded with 3 warnings, which were matched and verified against the expected warnings.
+Before MatchTestA.a() from AspectC
 Before MatchTestA.a() from AspectA
 Before MatchTestA.a() from AspectB
-Before MatchTestA.a() from AspectC
 MatchTestA.a
 Before MatchTestA.b() from AspectA
 MatchTestA.b
+Before MatchTestB.a() from AspectC
 Before MatchTestB.a() from AspectA
 Before MatchTestB.a() from AspectB
-Before MatchTestB.a() from AspectC
 MatchTestB.a
 Before MatchTestB.b() from AspectA
 Before MatchTestB.b() from AspectB
@@ -6144,37 +6144,37 @@ PASS: Test 1118: "om/privatesigtest/Private signature test" passed.
 Running test 1119: om/constraintest/Constrained module inclusion test
 Commandline: abc -d om/constraintest -warn-unused-advice:off -ext abc.om om/constraintest/ModuleA.java om/constraintest/ModuleB.java om/constraintest/ModuleC.java om/constraintest/A.java om/constraintest/B.java om/constraintest/C.java om/constraintest/AspectA.java om/constraintest/AspectB.java om/constraintest/AspectC.java om/constraintest/ConstrainTestMain.java om/constraintest/ExtAspectA.aj 
 Compilation succeeded with 9 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
 AspectA
 AspectB
 AspectC
-Before void A.f1()
 a.f1
 AspectA
 a.f2
 AspectA
 a.f3
-AspectA
-AspectB
-AspectC
 Before void B.f1()
-b.f1
 AspectA
 AspectB
 AspectC
+b.f1
 Before void B.f2()
+AspectA
+AspectB
+AspectC
 b.f2
 AspectA
 AspectB
 b.f3
-AspectA
-AspectB
-AspectC
 Before void C.f1()
-c.f1
 AspectA
 AspectB
 AspectC
+c.f1
 Before void C.f2()
+AspectA
+AspectB
+AspectC
 c.f2
 AspectA
 AspectB
@@ -6554,15 +6554,14 @@ PASS: Test 1218: "abctests/bugs/Pointcut predecence, bug 81" passed.
 
 
 Running test 1219: abctests/eaj/lock_unlock/lock/unlock pointcuts
-Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug restructureSynchronizedMethods abctests/eaj/lock_unlock/LockUnlock.java 
-Illegal arguments: No such debug option: restructureSynchronizedMethods
-FAIL: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" failed.
+Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug enableLockPointcuts abctests/eaj/lock_unlock/LockUnlock.java 
+PASS: Test 1219: "abctests/eaj/lock_unlock/lock/unlock pointcuts" passed.
 
 
 Running test 1220: abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts
-Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug doValidate -debug restructureSynchronizedMethods abctests/eaj/lock_unlock/SyncMethods.java 
-Illegal arguments: No such debug option: restructureSynchronizedMethods
-FAIL: Test 1220: "abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts" failed.
+Commandline: abc -d abctests/eaj/lock_unlock -warn-unused-advice:off -ext abc.eaj -debug doValidate -debug enableLockPointcuts abctests/eaj/lock_unlock/SyncMethods.java 
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+PASS: Test 1220: "abctests/eaj/lock_unlock/warning on restructuring for sync. methods and lock/unlock pointcuts" passed.
 
 
 Running test 1301: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): QuickCheck

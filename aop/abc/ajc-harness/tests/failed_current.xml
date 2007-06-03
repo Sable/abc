@@ -95,16 +95,5 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="lock/unlock pointcuts" num="1219" dir="abctests/eaj/lock_unlock">
-        <compile options="-ext,abc.eaj,-debug,restructureSynchronizedMethods" files="LockUnlock.java"></compile>
-        <run class="LockUnlock"></run>
-    </ajc-test>
-<ajc-test title="warning on restructuring for sync. methods and lock/unlock pointcuts" num="1220" dir="abctests/eaj/lock_unlock">
-        <compile options="-ext,abc.eaj,-debug,doValidate,-debug,restructureSynchronizedMethods" files="SyncMethods.java">
-	        <message line="15" kind="warning"></message>
-	        <message line="15" kind="warning"></message>
-        </compile>
-        <run class="SyncMethods"></run>
-    </ajc-test>
  
 </suite>
