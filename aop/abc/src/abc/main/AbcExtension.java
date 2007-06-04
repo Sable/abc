@@ -109,9 +109,6 @@ public class AbcExtension
     private CompileSequence compileSequence = null;
     private List reweavingPasses;
     
-    private ErrorQueue error_queue = null;
-    
-    
 	/** If true, error reporting is suspended. */
 	private boolean suspendErrorReporting;
 
@@ -159,7 +156,7 @@ public class AbcExtension
      */
     public void reportError(ErrorInfo ei) {
     	if(!suspendErrorReporting)
-    		error_queue.enqueue(ei);
+    		getErrorQueue().enqueue(ei);
     }
     
     /**
@@ -178,7 +175,7 @@ public class AbcExtension
      * @see #resumeErrorReporting()
      */
 	public void forceReportError(int level, String message, Position position) {
-		error_queue.enqueue(level, message, position);
+		getErrorQueue().enqueue(level, message, position);
 	}
 
 	
@@ -704,11 +701,11 @@ public class AbcExtension
     }
 
     public ErrorQueue getErrorQueue() {
-    	return error_queue;
+    	return compileSequence.error_queue;
     }
     
     public void setErrorQueue(ErrorQueue eq) {
-    	error_queue = eq;
+    	compileSequence.error_queue = eq;
     }
     
     /** Suspends error reporting until {@link #resumeErrorReporting()} is called.  */
