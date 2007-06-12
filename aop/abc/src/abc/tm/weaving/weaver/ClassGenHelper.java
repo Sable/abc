@@ -19,19 +19,43 @@
 
 package abc.tm.weaving.weaver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import soot.*;
-import soot.util.*;
-import soot.coffi.parameter_annotation;
-import soot.jimple.*;
-
+import soot.ArrayType;
+import soot.Body;
+import soot.BooleanType;
+import soot.IntType;
+import soot.Local;
+import soot.Modifier;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootFieldRef;
+import soot.SootMethod;
+import soot.Type;
+import soot.Value;
+import soot.VoidType;
+import soot.jimple.IntConstant;
+import soot.jimple.Jimple;
+import soot.jimple.NullConstant;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
+import soot.util.Chain;
 import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
-import abc.soot.util.UnUsedParams;
-import abc.tm.weaving.aspectinfo.*;
-import abc.tm.weaving.matching.*;
-import abc.weaving.aspectinfo.*;
+import abc.tm.weaving.aspectinfo.IndexStructure;
+import abc.tm.weaving.aspectinfo.IndexingScheme;
+import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.matching.SMEdge;
+import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.matching.TMStateMachine;
 
 /**
  * Helps with the generation of the Constraint and Disjunct classes in Jimple.
@@ -1911,7 +1935,7 @@ public class ClassGenHelper {
      * Initialise the two static fields, trueD and falseD.
      */
     protected void addDisjunctStaticInitialiser() {
-        startMethod(SootMethod.staticInitializerName, emptyList, VoidType.v(), Modifier.PUBLIC);
+        startMethod(SootMethod.staticInitializerName, emptyList, VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
         
         // Need to initialise static members -- trueD and falseD.
         doSetStaticField(disjunct, "trueD", disjunct.getType(), getNewObject(disjunct));
@@ -2127,7 +2151,6 @@ public class ClassGenHelper {
             List parameterTypes = new LinkedList();
             parameterTypes.add(IntType.v()); // number of originating state of the transition
             parameterTypes.add(IntType.v()); // number of the target state of the transition
-            int varCount = variables.size();
             for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
                 parameterTypes.add(curTraceMatch.bindingType((String)varIt.next())); // one parameter for each bound variable
             }
