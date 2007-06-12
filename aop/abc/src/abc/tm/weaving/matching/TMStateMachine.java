@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.ErrorInfo;
@@ -862,4 +863,102 @@ public class TMStateMachine implements StateMachine {
             }
         }
         return result;
-    }}
+    }
+    
+    /**
+     * Computes all determining symbols (if any).
+     * A determining symbol is a symbol that, after read on one single consistent variable binding, leads
+     * for sure to a certain set of states, <i>regardless</i> on what the previous state under this binding was.
+     * @param tm owning {@link TraceMatch}
+     * @return a mapping from each determining symbol to the set of states that the automaton is in after reading the symbol
+     */
+    public Map<String,Set<SMNode>> getDeterminingSymbols(TraceMatch tm) {
+    	Map<String,Set<SMNode>> res = new HashMap<String,Set<SMNode>>();
+
+    	//for each symbol
+		for (String symbolName : (Set<String>)tm.getSymbols()) {
+		
+			//get all non-initial states
+			Set<SMNode> allStates = new HashSet<SMNode>();
+			for (Iterator<SMNode> iterator = getStateIterator(); iterator.hasNext();) {
+				SMNode s = (SMNode) iterator.next();
+				allStates.add(s);
+			}
+			Set<SMNode> nonInitialStates = new HashSet<SMNode>(allStates);
+			nonInitialStates.removeAll(getInitialStates());
+			
+			//first, compute all sets of successor nodes reachable under the given symbol from all initial states;
+			//those states are always reached, in each configuration, due to the suffix semantics of tracematches
+			Set<Set<SMNode>> successorSetsFromInitialStates = getSuccessorsUnderSymbolFromStates(getInitialStates(), symbolName);
+
+			//now, compute the same for all remaining non-initial states
+			Set<Set<SMNode>> successorSetsFromNonInitialStates = getSuccessorsUnderSymbolFromStates(nonInitialStates, symbolName);
+
+			//we now have to add the successor states of all initial states to each set reachable from non-initial states (again, due to suffix semantics)
+			Set<Set<SMNode>> successorSets = new HashSet<Set<SMNode>>();
+			for (Set<SMNode> nonInitSet : successorSetsFromNonInitialStates) {
+				for (Set<SMNode> initSet : successorSetsFromInitialStates) {
+					Set<SMNode> join = new HashSet<SMNode>(nonInitSet);
+					join.addAll(initSet);
+					successorSets.add(join);
+				}
+			}
+			
+			//there really should at least be one set of states reachable under this symbol
+			assert !successorSets.isEmpty();
+			
+			//if the set of possible successor states for this symbol is unique, we have good news to report 
+	    	if(successorSets.size()==1) {
+	    		Set<SMNode> onlyElement = successorSets.iterator().next();
+				res.put(symbolName,onlyElement);
+	    	}
+		}
+		
+		return res;
+    }
+
+	/**
+	 * Computes the set of possible sets of successor nodes that can be reached from the given sourceStates under the symbol with the
+	 * given symbolName.
+	 * @param sourceStates a set of tracematch automaton states
+	 * @param symbolName a symbol name of the tracematch
+	 * @return a set s containing a set t if and only if the set of successor states t can be reached via transitions labeled with symbolName
+	 * from a state in sourceStates
+	 */
+	protected Set<Set<SMNode>> getSuccessorsUnderSymbolFromStates(Set<SMNode> sourceStates, String symbolName) {
+		Set<Set<SMNode>> allSuccessorSetsUnderAllSymbols;
+		allSuccessorSetsUnderAllSymbols = new HashSet<Set<SMNode>>(); 
+		
+		//for all possible incoming states
+		for (Iterator<SMNode> iterator = sourceStates.iterator(); iterator.hasNext();) {
+			SMNode s = iterator.next();
+			
+			//final nodes have no successors
+			if(s.isFinalNode()) continue;
+			
+			//compute successor states under that symbols
+			
+			Set<SMNode> successorsUnderSymbol = new HashSet<SMNode>();
+			//by default, we stay in the current node
+			successorsUnderSymbol.add(s);
+			for (Iterator<SMEdge> edgeIter = (Iterator<SMEdge>)s.getOutEdgeIterator(); edgeIter.hasNext();) {
+				SMEdge outEdge = edgeIter.next();
+				if(outEdge.getLabel().equals(symbolName)) {
+					if(outEdge.isSkipEdge()) {
+						//we do not stay in the current state if we have a skip-loop with that symbol
+						successorsUnderSymbol.remove(s);
+					} else {
+						//add successor state
+						successorsUnderSymbol.add(outEdge.getTarget());
+					}
+				}
+			}
+			//we also are always in all initial states
+			successorsUnderSymbol.addAll(getInitialStates());
+			
+			allSuccessorSetsUnderAllSymbols.add(successorsUnderSymbol);
+		}
+		return allSuccessorSetsUnderAllSymbols;
+	}
+    
+}
