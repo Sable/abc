@@ -20,11 +20,14 @@
 
 package abc.weaving.matching;
 
-import soot.jimple.*;
-import soot.util.*;
-import abc.weaving.aspectinfo.*;
+import polyglot.util.Position;
+import soot.jimple.Stmt;
+import soot.tagkit.LineNumberTag;
+import soot.tagkit.SourceLnNamePosTag;
+import soot.tagkit.SourceLnPosTag;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
-import abc.weaving.weaver.*;
+import abc.weaving.weaver.ConstructorInliningMap;
 
 /** Application of advice at a standard statement joinpoint
  *  @author Ganesh Sittampalam
@@ -41,13 +44,35 @@ public class StmtAdviceApplication extends AdviceApplication {
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+"stmt: "+stmt+"\n");
-	super.debugInfo(prefix,sb);
+    	sb.append(prefix+"stmt: "+stmt+"\n");
+    	Position statementPos = statementPosition();
+    	if(statementPos!=null) {
+    		sb.append(prefix+"position: "+statementPos+"\n");
+    	}
+    	super.debugInfo(prefix,sb);
     }
 
-    public String toString() {
-	return "stmt : "+stmt;
+    public Position statementPosition() {
+    	if(stmt.hasTag("SourceLnPosTag")) {
+    		SourceLnPosTag tag = (SourceLnPosTag) stmt.getTag("SourceLnPosTag");
+    		String fileName = "";
+    		if(tag instanceof SourceLnNamePosTag) {
+				SourceLnNamePosTag nameTag = (SourceLnNamePosTag) tag;
+    			fileName = nameTag.getFileName();
+    		}    		
+    		return new Position(fileName,tag.startLn(),tag.startPos(),tag.endLn(),tag.endPos());
+    	} else if(stmt.hasTag("LineNumberTag")) {
+    		LineNumberTag tag = (LineNumberTag) stmt.getTag("LineNumberTag");
+    		return new Position("",tag.getLineNumber());
+    	} else {
+    		return null;
+    	}
     }
+    
+    public String toString() {
+    	return "stmt : "+stmt;
+    }
+    
     public AdviceApplication inline( ConstructorInliningMap cim ) {
         StmtAdviceApplication ret = new StmtAdviceApplication(advice, getResidue().inline(cim), cim.map(stmt));
         ret.shadowmatch = shadowmatch.inline(cim);

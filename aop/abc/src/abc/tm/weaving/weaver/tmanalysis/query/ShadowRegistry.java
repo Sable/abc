@@ -37,9 +37,9 @@ import abc.main.Main;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowMatchTag;
+import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder.SymbolShadowMatch;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.AdviceApplicationVisitor;
@@ -268,10 +268,10 @@ public class ShadowRegistry {
 		return enabledShadows.contains(uniqueShadowId);
 	}
 
-	public Set allActiveShadowsForTag(SymbolShadowMatchTag tag, SootMethod container) {
+	public Set allActiveShadowsForTag(SymbolShadowTag tag, SootMethod container) {
 		Set result = new HashSet();
 
-		for (SymbolShadowMatch match : tag.getAllMatches()) {
+		for (SymbolShadow match : tag.getAllMatches()) {
 			if(match.isEnabled()) {
 				result.add(new Shadow(match,container));
 			}
@@ -280,8 +280,8 @@ public class ShadowRegistry {
 	}
 	
 	public Set<Shadow> allActiveShadowsForHost(Host h, SootMethod container) {
-		if(h.hasTag(SymbolShadowMatchTag.NAME)) {
-			SymbolShadowMatchTag tag = (SymbolShadowMatchTag) h.getTag(SymbolShadowMatchTag.NAME);
+		if(h.hasTag(SymbolShadowTag.NAME)) {
+			SymbolShadowTag tag = (SymbolShadowTag) h.getTag(SymbolShadowTag.NAME);
 			return allActiveShadowsForTag(tag, container);
 		} else {
 			return Collections.EMPTY_SET; 

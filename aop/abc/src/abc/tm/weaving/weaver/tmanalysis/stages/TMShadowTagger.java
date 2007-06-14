@@ -38,7 +38,7 @@ import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder.SymbolShadowMatch;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.MethodCategory;
 
@@ -63,17 +63,17 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 	protected Map<SootMethod,TraceMatch> syncMethodToTraceMatch;
 	
 	/**
-	 * A tag that holds a mapping from tracematches to {@link SymbolShadowMatch}es that
+	 * A tag that holds a mapping from tracematches to {@link SymbolShadow}es that
 	 * match at the annotated statement for that tracematch.
 	 * @author Eric Bodden
 	 */
-	public static class SymbolShadowMatchTag implements Tag {
+	public static class SymbolShadowTag implements Tag {
 		
-		public final static String NAME = SymbolShadowMatchTag.class.getName();
+		public final static String NAME = SymbolShadowTag.class.getName();
 
-		private final Map<TraceMatch, Set<SymbolShadowMatch>> tmToMatches;		
+		private final Map<TraceMatch, Set<SymbolShadow>> tmToMatches;		
 
-		private SymbolShadowMatchTag(Map<TraceMatch, Set<SymbolShadowMatch>> matches) {
+		private SymbolShadowTag(Map<TraceMatch, Set<SymbolShadow>> matches) {
 			this.tmToMatches = matches;
 		}
 
@@ -90,8 +90,8 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		 * @param tm any tracematch
 		 * @return all matches for the given tracematch or the empty set if there are no matches
 		 */
-		public Set<SymbolShadowMatch> getMatchesForTracematch(TraceMatch tm) {
-			Set<SymbolShadowMatch> symbolShadowMatch = tmToMatches.get(tm); 
+		public Set<SymbolShadow> getMatchesForTracematch(TraceMatch tm) {
+			Set<SymbolShadow> symbolShadowMatch = tmToMatches.get(tm); 
 			if(symbolShadowMatch==null) {
 				return Collections.emptySet();
 			} else {
@@ -102,9 +102,9 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		/**
 		 * Returns all matches for all tracematches.
 		 */
-		public Set<SymbolShadowMatch> getAllMatches() {
-			Set<SymbolShadowMatch> res = new HashSet<SymbolShadowMatch>();
-			for (Set<SymbolShadowMatch> matches : tmToMatches.values()) {
+		public Set<SymbolShadow> getAllMatches() {
+			Set<SymbolShadow> res = new HashSet<SymbolShadow>();
+			for (Set<SymbolShadow> matches : tmToMatches.values()) {
 				res.addAll(matches);
 			}
 			return res;
@@ -121,9 +121,9 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		//for each invoke-statement that calls a some-advice
 		for (Stmt call : symbolFinder.getSomeAdviceMethodCalls()) {
 			//get the symbols matching at this call
-			Map<TraceMatch,Set<SymbolShadowMatch>> matches = symbolFinder.getSymbolsAtSomeAdviceMethodCall(call);
+			Map<TraceMatch,Set<SymbolShadow>> matches = symbolFinder.getSymbolsAtSomeAdviceMethodCall(call);
 			//create the annotation
-			call.addTag(new SymbolShadowMatchTag(matches));
+			call.addTag(new SymbolShadowTag(matches));
 		}
 	}
 	

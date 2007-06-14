@@ -18,12 +18,10 @@
  */
 package abc.tm.weaving.weaver.tmanalysis.query;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -38,7 +36,7 @@ import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder.SymbolShadowMatch;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 
 /**
  * A Shadow represents a static point in the program where the state
@@ -75,7 +73,7 @@ public class Shadow {
 	 * @param match the shadow match for a symbol-shadow of a tracematch 
 	 * @param container the containing method
 	 */
-	public Shadow(SymbolShadowMatch match, SootMethod container) {
+	public Shadow(SymbolShadow match, SootMethod container) {
 		this.hasEmptyMapping = false;
 		this.container = container;
 		this.uniqueShadowId = match.getUniqueShadowId();
@@ -140,16 +138,11 @@ public class Shadow {
 	public String getVarNameForLocal(Local l) {
 		return (String) sootLocalToVar.get(l);
 	}
-
 	
 	public Set getBoundVariables() {
-		return Collections.unmodifiableSet(new HashSet(varToPointsToSet.keySet()));
+		return Collections.unmodifiableSet(new HashSet(varToSootLocal.keySet()));
 	}
 
-    public List<Local> getBoundLocals() {
-		return new ArrayList<Local>(sootLocalToVar.keySet());
-	}
-	
 	public boolean hasVariableMapping() {
 		return varToPointsToSet!=null;
 	}

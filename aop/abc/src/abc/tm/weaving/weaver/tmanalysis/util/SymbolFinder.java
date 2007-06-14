@@ -35,7 +35,6 @@ import soot.toolkits.scalar.ForwardFlowAnalysis;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.weaving.tagkit.InstructionShadowTag;
 
@@ -54,72 +53,6 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 	protected HashMap<SootMethod, TraceMatch> symbolAdviceMethodToTraceMatch;
 	
 	protected Set<Stmt> someAdviceMethodCalls;
-	
-	/**
-	 * A single shadow match for a tracematch symbol.
-	 * @author Eric Bodden
-	 */
-	public static class SymbolShadowMatch {
-		
-		protected String symbolName;
-		
-		protected TraceMatch owner;
-			
-		protected Map<String,Local> tmFormalToAdviceLocal;
-
-		protected final String uniqueShadowId;
-
-		private SymbolShadowMatch(String symbolName,
-				Map<String, Local> tmVarToAdviceLocal, int shadowId, TraceMatch owner) {
-			this.symbolName = symbolName;
-			this.tmFormalToAdviceLocal = tmVarToAdviceLocal;
-			this.owner = owner;
-			this.uniqueShadowId = Naming.uniqueShadowID(owner.getName(),symbolName,shadowId).intern();
-		}
-
-		/**
-		 * @return the symbolName
-		 */
-		public String getSymbolName() {
-			return symbolName;
-		}
-
-		/**
-		 * @return the owner
-		 */
-		public TraceMatch getOwner() {
-			return owner;
-		}
-
-		/**
-		 * @return the tmFormalToAdviceLocal
-		 */
-		public Map<String, Local> getTmFormalToAdviceLocal() {
-			return tmFormalToAdviceLocal;
-		}
-		
-		/**
-		 * @return <code>true</code> if this shadow is enabled in the {@link ShadowRegistry}
-		 */
-		public boolean isEnabled() {
-			return ShadowRegistry.v().isEnabled(getUniqueShadowId());
-		}
-		
-		/**
-		 * {@inheritDoc}
-		 */
-		public String toString() {
-			return "symbol:  " + symbolName + "\n" +
-				"tracematch: " + owner.getName()+ "\n" +
-				"variables:  " + tmFormalToAdviceLocal + "\n" +
-				"shadow:     " + uniqueShadowId;				
-		}
-
-		public String getUniqueShadowId() {
-			return uniqueShadowId;
-		}
-		
-	}
 	
 	/**
 	 * Constructs a new symbol finder for a given unit graph.
@@ -159,7 +92,7 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 		return new HashSet<Stmt>(someAdviceMethodCalls);
 	}
 	
-	public Map<TraceMatch,Set<SymbolShadowMatch>> getSymbolsAtSomeAdviceMethodCall(Stmt call) {
+	public Map<TraceMatch,Set<SymbolShadow>> getSymbolsAtSomeAdviceMethodCall(Stmt call) {
 		return (Map) getFlowBefore(call);
 	}
 
@@ -196,9 +129,9 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 				InstructionShadowTag tag = (InstructionShadowTag) stmt.getTag(InstructionShadowTag.NAME);
 				assert tag!=null;
 				int shadowId = tag.value();								
-				Set<SymbolShadowMatch> currSymbolSet = (Set<SymbolShadowMatch>) inMap.get(tm);
-				Set<SymbolShadowMatch> newSet = new HashSet<SymbolShadowMatch>(currSymbolSet);
-				newSet.add(new SymbolShadowMatch(symbolName,varMapping,shadowId,tm));
+				Set<SymbolShadow> currSymbolSet = (Set<SymbolShadow>) inMap.get(tm);
+				Set<SymbolShadow> newSet = new HashSet<SymbolShadow>(currSymbolSet);
+				newSet.add(new SymbolShadow(symbolName,varMapping,shadowId,tm));
 				outMap.put(tm,newSet);
 			} else if(someAdviceMethodToTraceMatch.containsKey(targetMethod)) {
 				TraceMatch tm = (TraceMatch) someAdviceMethodToTraceMatch.get(targetMethod);
