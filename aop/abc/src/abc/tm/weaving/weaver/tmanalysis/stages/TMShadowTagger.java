@@ -32,6 +32,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.tagkit.AttributeValueException;
+import soot.tagkit.Host;
 import soot.tagkit.Tag;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import abc.main.Main;
@@ -55,6 +56,8 @@ import abc.weaving.aspectinfo.MethodCategory;
  *
  * The analysis recovers that structure and then tags the call statement to the some-shadow
  * with a tag that is labeled {a,b}.
+ * <br><br>
+ * This is an idempotent operation.
  * @author Eric Bodden
  */
 public class TMShadowTagger extends BodyTransformer implements Stage {
@@ -115,6 +118,11 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 	
 	protected void internalTransform(Body b, String phaseName, Map options) {
 
+		//remove tags (if already present)
+		for (Host unit : (Collection<Host>)b.getUnits()) {
+			unit.removeTag(SymbolShadowTag.NAME);
+		}
+		
 		//perform analysis
 		SymbolFinder symbolFinder = new SymbolFinder(new ExceptionalUnitGraph(b));
 		
