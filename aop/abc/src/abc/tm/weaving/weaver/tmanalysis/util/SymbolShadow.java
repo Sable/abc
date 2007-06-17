@@ -69,5 +69,59 @@ public class SymbolShadow {
 	public String getUniqueShadowId() {
 		return uniqueShadowId;
 	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result
+				+ ((symbolName == null) ? 0 : symbolName.hashCode());
+		result = prime
+				* result
+				+ ((tmFormalToAdviceLocal == null) ? 0 : tmFormalToAdviceLocal
+						.hashCode());
+		result = prime * result
+				+ ((uniqueShadowId == null) ? 0 : uniqueShadowId.hashCode());
+		return result;
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final SymbolShadow other = (SymbolShadow) obj;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
+		if (symbolName == null) {
+			if (other.symbolName != null)
+				return false;
+		} else if (!symbolName.equals(other.symbolName))
+			return false;
+		if (tmFormalToAdviceLocal == null) {
+			if (other.tmFormalToAdviceLocal != null)
+				return false;
+		} else if (!tmFormalToAdviceLocal.equals(other.tmFormalToAdviceLocal))
+			return false;
+		if (uniqueShadowId == null) {
+			if (other.uniqueShadowId != null)
+				return false;
+		} else if (!uniqueShadowId.equals(other.uniqueShadowId))
+			return false;
+		return true;
+	}
 	
 }
