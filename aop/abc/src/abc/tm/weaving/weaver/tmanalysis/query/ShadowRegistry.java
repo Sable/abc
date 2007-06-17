@@ -70,11 +70,6 @@ public class ShadowRegistry {
 		allShadowsToAdviceApplications= new HashMap();
 		tmNameToUniqueShadowIds = new HashMap();
 
-		for (Iterator tmIter = gai.getTraceMatches().iterator(); tmIter.hasNext();) {
-			TraceMatch tm = (TraceMatch) tmIter.next();
-			tmNameToUniqueShadowIds.put(tm.getName(), new HashSet());			
-		}
-		
 		//traverse all advice applications
 		AdviceApplicationVisitor.v().traverse(
 				new AdviceApplicationHandler() {
@@ -95,6 +90,10 @@ public class ShadowRegistry {
 							assert old==null; //IDs should be unique
 							
 							Set shadowIds = (Set) tmNameToUniqueShadowIds.get(traceMatchID);
+							if(shadowIds==null) {
+								shadowIds = new HashSet();
+								tmNameToUniqueShadowIds.put(traceMatchID,shadowIds);
+							}
 							boolean added = shadowIds.add(qualifiedShadowId);
 							assert added; //IDs should be unique
 						}
