@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import soot.PointsToSet;
 import soot.jimple.toolkits.pointer.FullObjectSet;
@@ -39,15 +38,15 @@ import abc.tm.weaving.weaver.tmanalysis.query.ConsistentShadowGroupFinder.Consis
  */
 public class ShadowGroup {
 	
-	protected Set labelShadows;
+	protected Set<Shadow> labelShadows;
 	
-	protected Set skipShadows;
+	protected Set<Shadow> skipShadows;
 	
 	protected TraceMatch tm;
 	
 	/** mapping of variables to points-to sets; needed to narrow down
 	 *  points-to sets during inlining */
-	protected HashMap varToPts;
+	protected HashMap<String,PointsToSet> varToPts;
 	
 	protected int number;
 	
@@ -55,13 +54,13 @@ public class ShadowGroup {
 	
 	public ShadowGroup(TraceMatch tm, ConsistentShadowBag shadowSet) {
 		this.tm = tm;
-		this.labelShadows = new HashSet();
-		this.varToPts = new HashMap();
+		this.labelShadows = new HashSet<Shadow>();
+		this.varToPts = new HashMap<String, PointsToSet>();
 		for (Iterator iterator = shadowSet.iterator(); iterator.hasNext();) {
 			Shadow shadow = (Shadow) iterator.next();
 			add(shadow);
 		}
-		this.skipShadows = new HashSet();
+		this.skipShadows = new HashSet<Shadow>();
 		this.number = groupCount;
 		groupCount++;
 	}
@@ -73,7 +72,7 @@ public class ShadowGroup {
 	 */
 	protected boolean add(Shadow s) {
 		//TODO high code duplication with ConsistentShadowSet!
-		Map newVarToPts = new HashMap();
+		Map<String,PointsToSet> newVarToPts = new HashMap();
 		for (Iterator varIter = s.getBoundVariables().iterator(); varIter.hasNext();) {
 			String var = (String) varIter.next();
 			
@@ -98,10 +97,7 @@ public class ShadowGroup {
 		//so store the intersection and add the shadow to the set
 		
 		//store the intersections
-		for (Iterator intIter = newVarToPts.entrySet().iterator(); intIter.hasNext();) {
-			Entry entry = (Entry) intIter.next();
-			varToPts.put(entry.getKey(), entry.getValue());
-		}
+		varToPts.putAll(newVarToPts);
 		
 		//commit the shadow
 		return labelShadows.add(s);
@@ -217,6 +213,20 @@ public class ShadowGroup {
 	public int getNumber() {
 		return number;
 	}
-	
+
+	/**
+	 * Returns <code>true</code> if this variable binding has an overlapping
+	 * points-to set with the bindings in this group.
+	 * @param tmVar a tracematch variable
+	 * @param pts a variable binding modeled by a points-to set
+	 */
+	public boolean hasCompatibleBinding(String tmVar, PointsToSet pts) {
+		PointsToSet storedPts = varToPts.get(tmVar);
+		if(storedPts==null) {
+			throw new RuntimeException("This shadow group seems to have no binding for "+tmVar+"!\n"+toString());			
+		} else {
+			return storedPts.hasNonEmptyIntersection(pts);
+		}
+	}
 	
 }
