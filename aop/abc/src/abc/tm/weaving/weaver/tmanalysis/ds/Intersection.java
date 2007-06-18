@@ -23,7 +23,6 @@ import java.util.Set;
 
 import soot.PointsToSet;
 import soot.jimple.spark.sets.EmptyPointsToSet;
-import soot.jimple.spark.sets.PointsToSetInternal;
 import soot.jimple.toolkits.pointer.FullObjectSet;
 
 /**
@@ -130,10 +129,6 @@ public class Intersection implements PointsToSet {
 	 * Returns an object of type {@link PointsToSet} but not necessarily {@link Intersection}.
 	 */
 	public static PointsToSet intersect(PointsToSet p1, PointsToSet p2) {
-		//assert that we use Spark points-to sets;
-		//this is necessary because EmptyPointsToSet is specific to Spark
-		assert p1 instanceof PointsToSetInternal && p2 instanceof PointsToSetInternal;
-		
 		if(p1==null || p2==null || p1==EmptyPointsToSet.v() || p2==EmptyPointsToSet.v()) {
 			//if either is empty, the intersection is empty
 			return EmptyPointsToSet.v();
