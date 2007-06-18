@@ -42,6 +42,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
 import soot.jimple.toolkits.annotation.nullcheck.NullnessAnalysis;
+import soot.jimple.toolkits.pointer.CastCheckEliminatorDumper;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
 import soot.util.Chain;
@@ -53,6 +54,7 @@ import abc.aspectj.parse.sym;
 import abc.main.options.OptionsParser;
 import abc.soot.util.CastRemover;
 import abc.soot.util.FarJumpEliminator;
+import abc.soot.util.InstanceOfEliminator;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -327,13 +329,15 @@ public class AbcExtension
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
 		}
 		
+		// add before constant propagator and folder
+		PackManager.v().getPack("jop").insertBefore(new Transform("jop.ioe", InstanceOfEliminator.v()), "jop.cpf");
+		
 		if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining()) {
 			PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");
 		
 			// make this the very last pass after all optimizations
 			PackManager.v().getPack("jop").insertAfter(new Transform("jop.fje", FarJumpEliminator.v()), "jop.ule");
 		}
-		
 		
 		//if (Debug.v().aroundInliner) {
 		//	PackManager.v().getPack("jop").add(new Transform("jop.aroundinliner", AroundInliner.v()));

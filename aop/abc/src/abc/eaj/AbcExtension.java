@@ -124,7 +124,8 @@ public class AbcExtension extends abc.main.AbcExtension
         lexer.addPointcutKeyword("throw", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_THROW)));
 
         // keyword for the "global pointcut" extension
-        lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(abc.eaj.parse.sym.GLOBAL),
+        if(!Debug.v().noGlobalPointcut)
+        	lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(abc.eaj.parse.sym.GLOBAL),
                             new Integer(lexer.pointcut_state())));
 
         // keyword for the "cflowdepth" pointcut extension

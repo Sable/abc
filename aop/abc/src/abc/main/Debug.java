@@ -161,6 +161,7 @@ public class Debug {
     public boolean nullCheckElim=true;
     public boolean allowDynamicTests = false;
     public boolean switchFolder = false;
+    public boolean instanceOfEliminator = false;
     
     public boolean forceSingleThreadedCflow = false;
     public boolean forceStaticFieldCflow = false;
@@ -217,6 +218,13 @@ public class Debug {
     //restructuring of synchronized methods for lock/unlock pointcuts;
     //currently generates synchronized blocks which dava cannot deal with
     public boolean enableLockPointcuts = false;
+    
+    // Avoid clobbering the variable namespace with 'global'
+    public boolean noGlobalPointcut = false;
+    
+    // To compile java1.4 code in a java5 environment, you sometimes need to allow
+    // covariant return types (since the API uses them).
+    public boolean allowCovariantReturn = false;
     
     //verbose mode for static tracematch analysis
     public boolean debugTmAnalysis = false;

@@ -28,6 +28,8 @@ import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import soot.Scene;
 import soot.SootClass;
+import soot.Transform;
+import soot.jimple.toolkits.pointer.CastCheckEliminatorDumper;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.main.CompileSequence;
@@ -340,5 +342,5 @@ public class AbcExtension extends abc.eaj.AbcExtension
 			}
 		};
 	}
-    
+   
 }

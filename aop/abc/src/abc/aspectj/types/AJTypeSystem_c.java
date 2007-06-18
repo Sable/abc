@@ -48,6 +48,7 @@ import java.util.Stack;
 import java.util.Iterator;
 
 
+import polyglot.ext.jl.types.MethodInstance_c;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.frontend.Source;
 
@@ -59,6 +60,7 @@ import polyglot.types.*;
 import polyglot.ast.Typed;
 
 import abc.aspectj.ast.AdviceSpec;
+import abc.aspectj.ast.CovariantRetTypeMethodInstance_c;
 import abc.aspectj.types.AJFlags;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
@@ -73,7 +75,7 @@ public class AJTypeSystem_c
        extends JjTypeSystem_c 
        implements AJTypeSystem {
     
-    // Make sure we only load from class files
+	// Make sure we only load from class files
     public void initialize(LoadedClassResolver loadedResolver, ExtensionInfo extInfo)
                            throws SemanticException {
 	loadedResolver = new LoadedClassResolver(this, extInfo.getOptions().constructFullClasspath(),
@@ -738,5 +740,19 @@ public class AJTypeSystem_c
 		return result;
 	}
 	
+	public MethodInstance methodInstance(Position pos, ReferenceType container, 
+			Flags flags, Type returnType, String name, List argTypes, List excTypes) {
+		if(abc.main.Debug.v().allowCovariantReturn) {
+	        assert_(container);
+	        assert_(returnType);
+	        assert_(argTypes);
+	        assert_(excTypes);
+	        return new CovariantRetTypeMethodInstance_c(this, pos, container, flags,
+					    returnType, name, argTypes, excTypes);
+		} else {
+			return super.methodInstance(pos, container, flags, returnType, name, 
+					argTypes, excTypes);
+		}
+	}
 
 }
