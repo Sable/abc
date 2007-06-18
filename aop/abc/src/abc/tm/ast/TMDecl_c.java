@@ -68,7 +68,6 @@ import abc.aspectj.visit.AspectMethods;
 import abc.tm.visit.MoveTraceMatchMembers;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.matching.TMStateMachine;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -720,10 +719,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         
         //create tracematch state machine encoding the symbols necessary to reach a final state
         //(needed for flow-insensitive static analysis)
-        TMStateMachine necessarySymbolsSM = (TMStateMachine) regex.makeNecessarySymbolsSM();
-        necessarySymbolsSM.eliminateEpsilonTransitions();
-        necessarySymbolsSM.compressStates();
-        necessarySymbolsSM.renumberStates();
+        NecessarySymbolTMStateMachine necessarySymbolsSM = (NecessarySymbolTMStateMachine) regex.makeNecessarySymbolsSM();
         
         // create TraceMatch
 		TraceMatch tm =

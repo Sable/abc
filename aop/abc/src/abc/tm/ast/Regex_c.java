@@ -58,7 +58,7 @@ public abstract class Regex_c extends Node_c
      * {@inheritDoc}
      */
     public StateMachine makeNecessarySymbolsSM() {
-        StateMachine sm = new TMStateMachine();
+        StateMachine sm = new NecessarySymbolTMStateMachine();
 
         State start = sm.newState();
         start.setInitial(true);

@@ -48,6 +48,7 @@ import soot.SootMethod;
 import soot.Type;
 import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
+import abc.tm.ast.NecessarySymbolTMStateMachine;
 import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.matching.TMStateMachine;
@@ -78,7 +79,7 @@ public class TraceMatch
     protected int non_around_formals;
 
     protected StateMachine state_machine;
-	protected StateMachine necessary_sym_state_machine;
+	protected NecessarySymbolTMStateMachine necessary_sym_state_machine;
     protected IndexingScheme indexing_scheme;
 
     protected List frequent_symbols;
@@ -109,7 +110,7 @@ public class TraceMatch
     protected static Map idToTracematch = new HashMap();
     
     public TraceMatch(String name, List formals, List new_advice_body_formals,
-                        StateMachine state_machine, StateMachine necessary_sym_state_machine, boolean per_thread,
+                        StateMachine state_machine, NecessarySymbolTMStateMachine necessary_sym_state_machine, boolean per_thread,
                         Map sym_to_vars, List frequent_symbols,
                         Map sym_to_advice_name, String synch_advice_name,
                         String some_advice_name, String dummy_proceed_name,
@@ -154,6 +155,8 @@ public class TraceMatch
 			Entry entry = (Entry) iterator.next();
 			advice_name_to_sym_name.put(entry.getValue(), entry.getKey());
 		}
+		
+		necessary_sym_state_machine.prepare(this);
     }
 
     public static TraceMatch forId(String id) {
