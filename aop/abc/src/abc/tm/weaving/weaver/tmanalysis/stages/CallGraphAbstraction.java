@@ -72,6 +72,11 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
 	 * {@inheritDoc}
 	 */
 	protected void doAnalysis() {
+		//already applied
+		if(abstractedCallGraph!=null) {
+			throw new IllegalStateException("Stage applied twice without resetting!");
+		}
+		
         //set a main class from the options if none is set yet
         Scene.v().setMainClassFromOptions();
         
