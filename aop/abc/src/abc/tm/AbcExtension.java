@@ -28,8 +28,6 @@ import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import soot.Scene;
 import soot.SootClass;
-import soot.Transform;
-import soot.jimple.toolkits.pointer.CastCheckEliminatorDumper;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.main.CompileSequence;
@@ -149,6 +147,11 @@ public class AbcExtension extends abc.eaj.AbcExtension
             
             if(OptionsParser.v().laststage().equals("quick")) return;
             
+            ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
+
+            if(OptionsParser.v().laststage().equals("flowins")) return;
+
             //hook up intraprocedural analysis, if present
             try {
 				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
@@ -160,10 +163,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
 			} catch (IllegalAccessException e) {
 			};
             
-            if(OptionsParser.v().laststage().equals("intra")) return;
-            
-            ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
         }
     }
     
