@@ -20,24 +20,60 @@
 
 package abc.tm.ast;
 
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
-import polyglot.visit.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import abc.aspectj.ast.*;
-import abc.aspectj.types.*;
-import abc.aspectj.visit.*;
+import polyglot.ast.Block;
+import polyglot.ast.Expr;
+import polyglot.ast.Formal;
+import polyglot.ast.Local;
+import polyglot.ast.MethodDecl;
+import polyglot.ast.Node;
+import polyglot.ast.Return;
+import polyglot.ast.TypeNode;
+import polyglot.types.CodeInstance;
+import polyglot.types.ConstructorInstance;
+import polyglot.types.Context;
+import polyglot.types.Flags;
+import polyglot.types.MethodInstance;
+import polyglot.types.ParsedClassType;
+import polyglot.types.SemanticException;
+import polyglot.util.CodeWriter;
+import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
+import polyglot.util.UniqueID;
+import polyglot.visit.AmbiguityRemover;
+import polyglot.visit.CFGBuilder;
+import polyglot.visit.NodeVisitor;
+import polyglot.visit.PrettyPrinter;
+import polyglot.visit.TypeChecker;
+import abc.aspectj.ast.AJNodeFactory;
+import abc.aspectj.ast.AdviceBody_c;
+import abc.aspectj.ast.AdviceDecl;
+import abc.aspectj.ast.AdviceSpec;
+import abc.aspectj.ast.Around;
+import abc.aspectj.ast.PCBinary;
+import abc.aspectj.ast.Pointcut;
+import abc.aspectj.types.AJContext;
+import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.visit.AspectMethods;
+import abc.tm.visit.MoveTraceMatchMembers;
+import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.matching.TMStateMachine;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.MethodSig;
-
-import abc.tm.visit.*;
-import abc.tm.weaving.aspectinfo.*;
-
-import java.util.*;
 
 /**
  * @author Julian Tibble
@@ -682,10 +718,17 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         List tm_formals = weavingFormals(formals, true);
         List body_formals = weavingFormals(transformed_formals, false);
         
+        //create tracematch state machine encoding the symbols necessary to reach a final state
+        //(needed for flow-insensitive static analysis)
+        TMStateMachine necessarySymbolsSM = (TMStateMachine) regex.makeNecessarySymbolsSM();
+        necessarySymbolsSM.eliminateEpsilonTransitions();
+        necessarySymbolsSM.compressStates();
+        necessarySymbolsSM.renumberStates();
+        
         // create TraceMatch
-        TraceMatch tm =
+		TraceMatch tm =
             new TraceMatch(tracematch_name, tm_formals, body_formals,
-                           regex.makeSM(), regex.makeNecessarySymbolsSM(),
+                           regex.makeSM(), necessarySymbolsSM,
                            isPerThread, orderedSymToVars(),
                            frequent_symbols, sym_to_advice_name,
                            synch_advice, some_advice, proceed_name,

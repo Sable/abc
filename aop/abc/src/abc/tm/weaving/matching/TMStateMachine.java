@@ -115,7 +115,7 @@ public class TMStateMachine implements StateMachine {
      * one cannot reach a final node -- those should be deleted in a clean-up pass which
      * should be done anyway.
      */
-    protected void eliminateEpsilonTransitions() {
+    public void eliminateEpsilonTransitions() {
         LinkedHashSet closure = new LinkedHashSet();
         SMNode cur, next;
         SMEdge edge;
