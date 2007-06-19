@@ -20,17 +20,32 @@
 
 package abc.weaving.residues;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import soot.*;
+import soot.BooleanType;
+import soot.Local;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
+import soot.jimple.AssignStmt;
+import soot.jimple.Expr;
+import soot.jimple.IfStmt;
+import soot.jimple.IntConstant;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
 import soot.util.Chain;
-import soot.jimple.*;
-import abc.soot.util.Restructure;
 import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.Restructure;
 import abc.weaving.tagkit.Tagger;
+import abc.weaving.weaver.ConstructorInliningMap;
 import abc.weaving.weaver.WeavingContext;
-import java.util.*;
-import abc.weaving.weaver.*;
 
 /** The dynamic residue of an if(...) pointcut
  *  @author Ganesh Sittampalam
