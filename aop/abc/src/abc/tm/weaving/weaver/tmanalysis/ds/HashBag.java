@@ -217,8 +217,19 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 			throw new RuntimeException();
 		}
 	}
-	
-	
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public int countOf(E o) {
+		Integer val = backingMap.get(o);
+		if(val==null) {
+			return 0;
+		} else {
+			return val;
+		}
+	}
+		
 //	public static void main(String[] args) {
 //		HashBag<String> b = new HashBag<String>();
 //		b.add("a");

@@ -41,4 +41,9 @@ public interface Bag<E> extends Collection<E> {
 	 */
 	public Iterator<E> iterator();
 	
+	/**
+	 * Returns how often o is contained in this bag.
+	 */
+	public int countOf(E o);
+	
 }
