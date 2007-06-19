@@ -41,7 +41,9 @@ import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.matching.AdviceApplication;
+import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.NeverMatch;
+import abc.weaving.residues.Residue;
 import abc.weaving.weaver.AdviceApplicationVisitor;
 import abc.weaving.weaver.AdviceApplicationVisitor.AdviceApplicationHandler;
 
@@ -132,13 +134,8 @@ public class ShadowRegistry {
 		
 		//remove the tag from this registry
 		assert !shadowsToBeRetained.contains(uniqueShadowId);
-		assert allShadowsToAdviceApplications.containsKey(uniqueShadowId);
-		AdviceApplication aa = (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);
-		aa.setResidue(NeverMatch.v());
-		
-		//print a warning message (usually for test harness)
-		if(Debug.v().warnWhenDeactivatingShadow)
-			printWarning(aa,uniqueShadowId);
+		//modify residue
+		conjoinShadowWithResidue(uniqueShadowId, NeverMatch.v());
 		
 		boolean removed = enabledShadows.remove(uniqueShadowId);
 		assert removed;
@@ -149,6 +146,21 @@ public class ShadowRegistry {
 			System.err.println("disabled shadow: "+uniqueShadowId);
 		}
 
+	}
+
+	/**
+	 * Conjoins the residue for the given shadow with the given conjunct.
+	 * @param uniqueShadowId a valid ID of a given shadow
+	 * @param conjunct the residue to conjoin with
+	 */
+	public void conjoinShadowWithResidue(String uniqueShadowId, Residue conjunct) {
+		assert allShadowsToAdviceApplications.containsKey(uniqueShadowId);
+		AdviceApplication aa = (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);		
+		aa.setResidue(AndResidue.construct(aa.getResidue(), conjunct));
+
+		//print a warning message (usually for test harness), if shadow is now disabled
+		if(NeverMatch.neverMatches(conjunct) && Debug.v().warnWhenDeactivatingShadow)
+			printWarning(aa,uniqueShadowId);
 	}
 
 	public void removeTracematchesWithNoRemainingShadows() {
