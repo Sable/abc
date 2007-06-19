@@ -156,7 +156,7 @@ public class ShadowRegistry {
 	public void conjoinShadowWithResidue(String uniqueShadowId, Residue conjunct) {
 		assert allShadowsToAdviceApplications.containsKey(uniqueShadowId);
 		AdviceApplication aa = (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);		
-		aa.setResidue(AndResidue.construct(aa.getResidue(), conjunct));
+		aa.setResidue(AndResidue.construct(conjunct,aa.getResidue()));
 
 		//print a warning message (usually for test harness), if shadow is now disabled
 		if(NeverMatch.neverMatches(conjunct) && Debug.v().warnWhenDeactivatingShadow)
