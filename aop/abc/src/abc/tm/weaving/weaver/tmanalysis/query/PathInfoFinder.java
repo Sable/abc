@@ -44,14 +44,14 @@ public class PathInfoFinder {
 
 	protected transient Set allPaths;
 	
-	protected Set pathInfos;
+	protected Set<PathInfo> pathInfos;
 	
 	/**
 	 * Constructs a new analysis for the given state machine.
 	 * @param traceMatch a tracematch state machine.
 	 */
 	public PathInfoFinder(TraceMatch traceMatch) {
-		pathInfos = new HashSet();
+		pathInfos = new HashSet<PathInfo>();
 		
 		//get the special state machine we require for the analysis
 		//this state machine holds no cycles instead of skip-loops
@@ -71,7 +71,7 @@ public class PathInfoFinder {
 		//for every path, 
 		for (Iterator pathIter = allPaths.iterator(); pathIter.hasNext();) {
 			Collection path = (Collection) pathIter.next();
-			Bag labSet = new HashBag();
+			Bag<String> labSet = new HashBag();
 			Set skipLoopLabelSet = new HashSet();
 			for (Iterator edgeIter = path.iterator(); edgeIter.hasNext();) {
 				SMEdge edge = (SMEdge) edgeIter.next();
@@ -121,7 +121,7 @@ public class PathInfoFinder {
 	/**
 	 * @return all path infos cumputed for the given tracematch
 	 */
-	public Set getPathInfos() {
+	public Set<PathInfo> getPathInfos() {
 		return pathInfos;
 	}
 	
@@ -134,9 +134,9 @@ public class PathInfoFinder {
 	 */
 	public static class PathInfo {
 		
-		protected Bag dominatingLabels;
+		protected Bag<String> dominatingLabels;
 		
-		protected Set skipLoopLabels;
+		protected Set<String> skipLoopLabels;
 
 		public PathInfo(Bag dominatingLabels, Set skipLoopLabels) {
 			this.dominatingLabels = dominatingLabels;
@@ -146,14 +146,14 @@ public class PathInfoFinder {
 		/**
 		 * @return the dominating labels
 		 */
-		public Bag getDominatingLabels() {
+		public Bag<String> getDominatingLabels() {
 			return new HashBag(dominatingLabels);
 		}
 
 		/**
 		 * @return the skip loop labels
 		 */
-		public Set getSkipLoopLabels() {
+		public Set<String> getSkipLoopLabels() {
 			return new HashSet(skipLoopLabels);
 		}
 		
