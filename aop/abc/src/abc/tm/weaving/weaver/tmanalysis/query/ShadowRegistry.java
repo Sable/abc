@@ -159,7 +159,7 @@ public class ShadowRegistry {
 		aa.setResidue(AndResidue.construct(conjunct,aa.getResidue()));
 
 		//print a warning message (usually for test harness)
-		if(Debug.v().warnWhenDeactivatingShadow)
+		if(Debug.v().warnWhenAlteringShadow)
 			printWarning(aa,uniqueShadowId,conjunct);
 	}
 

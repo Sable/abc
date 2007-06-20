@@ -234,8 +234,8 @@ public class Debug {
 	public boolean csv = false;
 	//dump shadows as they are disabled
 	public boolean tmShadowDump = false;
-	//generate a warning when deactivating a shadow (for harness)
-	public boolean warnWhenDeactivatingShadow = false;
+	//generate a warning when changing a shadow (for harness)
+	public boolean warnWhenAlteringShadow = false;
  
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
