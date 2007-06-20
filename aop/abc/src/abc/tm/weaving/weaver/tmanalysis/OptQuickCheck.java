@@ -21,14 +21,8 @@ package abc.tm.weaving.weaver.tmanalysis;
 import abc.main.AbcTimer;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
-import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
-import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
-import abc.tm.weaving.weaver.tmanalysis.query.WeavableMethods;
-import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
-import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
-import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.tm.weaving.weaver.tmanalysis.util.Statistics;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
@@ -85,13 +79,7 @@ public class OptQuickCheck extends AbstractReweavingAnalysis {
 	 */
 	public void cleanup() {		
 		QuickCheck.reset();
-		ReachableShadowFinder.reset();
 		ShadowRegistry.reset();
-		ShadowGroupRegistry.reset();
-		WeavableMethods.reset();
-		CallGraphAbstraction.reset();
-		FlowInsensitiveAnalysis.reset();
-		TMShadowTagger.reset();
 	}
 
 
