@@ -158,9 +158,9 @@ public class ShadowRegistry {
 		AdviceApplication aa = (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);		
 		aa.setResidue(AndResidue.construct(conjunct,aa.getResidue()));
 
-		//print a warning message (usually for test harness), if shadow is now disabled
-		if(NeverMatch.neverMatches(conjunct) && Debug.v().warnWhenDeactivatingShadow)
-			printWarning(aa,uniqueShadowId);
+		//print a warning message (usually for test harness)
+		if(Debug.v().warnWhenDeactivatingShadow)
+			printWarning(aa,uniqueShadowId,conjunct);
 	}
 
 	public void removeTracematchesWithNoRemainingShadows() {
@@ -314,11 +314,12 @@ public class ShadowRegistry {
 	}
 	
 	/**
-	 * Prints a warning that the given advice application was disabled by the analysis.
+	 * Prints a warning that the given advice application was changed by the analysis.
 	 * @param aa any {@link AdviceApplication}
 	 * @param uniqueShadowId the unique shadow ID of the disabled shadow
+	 * @param conjunct the residue conjunct that was set
 	 */
-	private void printWarning(AdviceApplication aa, String uniqueShadowId) {
+	private void printWarning(AdviceApplication aa, String uniqueShadowId, Residue conjunct) {
 		Position pos = null;
 		Host host = aa.shadowmatch.getHost();
 		if(host.hasTag("SourceLnPosTag")) {
@@ -332,7 +333,7 @@ public class ShadowRegistry {
 		}
 		Main.v().getAbcExtension().forceReportError(
 				ErrorInfo.WARNING,
-				"tracematch shadow "+uniqueShadowId+" disabled at this position",
+				"tracematch shadow "+uniqueShadowId+" changed at this position (conjoined with "+conjunct+")",
 				pos
 		);
 	}
