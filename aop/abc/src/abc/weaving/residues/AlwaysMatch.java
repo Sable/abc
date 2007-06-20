@@ -41,6 +41,7 @@ public class AlwaysMatch extends Residue {
     public static AlwaysMatch v() {
         return v;
     }
+    private AlwaysMatch() {}
 
     public String toString() {
         return "always";

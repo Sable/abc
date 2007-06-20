@@ -40,6 +40,10 @@ import abc.weaving.weaver.WeavingContext;
  */
 public class OncePerMethodExecutionResidue extends Residue {
 
+    private final static OncePerMethodExecutionResidue v=new OncePerMethodExecutionResidue();
+    public static OncePerMethodExecutionResidue v() { return v; }
+    private OncePerMethodExecutionResidue() {}
+
 	/** 
 	 * {@inheritDoc}
 	 */
@@ -78,7 +82,7 @@ public class OncePerMethodExecutionResidue extends Residue {
 	 */
 	@Override
 	public Residue inline(ConstructorInliningMap cim) {
-		return new OncePerMethodExecutionResidue();
+		return this;
 	}
 
 	/** 

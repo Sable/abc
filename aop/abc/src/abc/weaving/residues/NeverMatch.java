@@ -36,7 +36,8 @@ import abc.weaving.weaver.*;
 
 public class NeverMatch extends Residue {
     private final static NeverMatch v=new NeverMatch();
-    public static NeverMatch v() { return v; }
+    public static NeverMatch v() { return v; }    
+    private NeverMatch() {}
 
     public Residue optimize() { return this; }
     public Residue inline(ConstructorInliningMap cim) {
