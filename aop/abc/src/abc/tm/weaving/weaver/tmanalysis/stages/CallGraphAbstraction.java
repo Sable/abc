@@ -29,7 +29,6 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.toolkits.callgraph.CallGraph;
-import abc.main.Main;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.NodePredicate;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
@@ -38,7 +37,7 @@ import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.Timer;
-import abc.weaving.weaver.Weaver;
+import abc.weaving.aspectinfo.MethodCategory;
 
 /**
  * This stage does not actually perform any real analysis. It merely applies the <i>cg</i> phase, constructing a call graph
@@ -146,16 +145,17 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
      */
 	private class TaggedMethods implements NodePredicate {
 		
-		protected Weaver weaver; 
-		
 		/** 
 	     * @return <code>true</code> if the method is tagged with matching symbols or it 
 	     * contains a unit that is tagged with matching symbols.
 	     */
 	    public boolean want(MethodOrMethodContext curr) {
-	    	if(weaver==null) weaver = Main.v().getAbcExtension().getWeaver();    	
-	    	
 	    	SootMethod method = curr.method();
+	    	
+	    	//explicitly has no effects on base code
+	    	if(MethodCategory.noEffectsOnBaseCode(method)) {
+	    		return false;
+	    	}
 
 	        if(method.hasActiveBody()) {
 	            Body body = method.getActiveBody();
