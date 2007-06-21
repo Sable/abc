@@ -125,7 +125,7 @@ public class PerSymbolAdviceDecl_c extends AdviceDecl_c
         gai.addAdviceDecl(ad);
 	
         // don't advise this method or calls to it
-        MethodCategory.register(this, MethodCategory.IF_EXPR);
+        MethodCategory.register(this, MethodCategory.NO_EFFECTS_ON_BASE_CODE);
         if (spec instanceof Around) {
             MethodCategory.register(((Around)spec).proceed(),
                                     MethodCategory.PROCEED);

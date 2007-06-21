@@ -20,21 +20,18 @@
 
 package abc.weaving.aspectinfo;
 
-import polyglot.util.InternalCompilerError;
-
-import soot.SootClass;
-import soot.SootMethod;
-import soot.SootMethodRef;
-import soot.SootField;
-import soot.SootFieldRef;
-import soot.Type;
-import soot.tagkit.Host;
-
 import polyglot.ast.MethodDecl;
 import polyglot.types.ClassType;
 import polyglot.types.Flags;
-
-import java.util.*;
+import polyglot.util.InternalCompilerError;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootFieldRef;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import abc.tm.ast.PerEventAdviceDecl_c;
+import abc.tm.ast.PerSymbolAdviceDecl_c;
 
 /** Decide what a field or method in jimple really is
  *  @author Aske Simon Christensen
@@ -123,6 +120,12 @@ public class MethodCategory {
 	// Generated in abc/weaving/weaver/IntertypeAdjuster.java
 	public static final int THIS_GET = 15;
 	
+    /** A generated (advice) method with no immediate side-effect. E.g. {@link PerEventAdviceDecl_c} and {@link PerSymbolAdviceDecl_c}.
+     *  A method in that category commits itself not to make any calls to base code, i.e. a weavable class. */
+    // Generated in abc/aspectj/ast/PCIf_c.java
+    public static final int NO_EFFECTS_ON_BASE_CODE = 16;
+
+	
     // CATEGORY PROPERTY TABLES
 
     // normal, aspect, advice, proceed, if,
@@ -137,7 +140,7 @@ public class MethodCategory {
 	true, false,
 	true, true, true,
 	true, true, false,
-	false, false, false
+	false, false, false, false
     };
 
     private static final boolean[] weave_execution =
@@ -146,7 +149,7 @@ public class MethodCategory {
 	true, false,
 	true, false, true,
 	false, true, false,
-	false/*?*/, false/*?*/, false
+	false/*?*/, false/*?*/, false, false
     };
 
     private static final boolean[] weave_calls =
@@ -155,7 +158,7 @@ public class MethodCategory {
 	false, true,
 	false, false, true,
 	false, true, true/*?*/,
-	false/*?*/, false/*?*/, false
+	false/*?*/, false/*?*/, false, false
     };
 
 
@@ -208,6 +211,20 @@ public class MethodCategory {
     public static boolean adviceBody(MethodSig m)
     { return adviceBody(getCategory(m)); }
 
+    public static boolean noEffectsOnBaseCode(int cat) {    	
+    	boolean rightCategory = (cat == NO_EFFECTS_ON_BASE_CODE);
+    	//if Object is application class, this means we weave into the JDK and hence, any method can have side-effects on the base code
+    	//because virtually everything *is* base code
+    	if(Scene.v().getSootClass("java.lang.Object").isApplicationClass()) {
+    		return false;
+    	} else {
+    		return rightCategory;
+    	}
+    }
+    
+    public static boolean noEffectsOnBaseCode(SootMethod m) {
+    	return noEffectsOnBaseCode(getCategory(m));
+    }
     
 
     // CATEGORY QUERY
@@ -402,7 +419,6 @@ public class MethodCategory {
 
 
     public static String getName(SootField f) {
-	FieldSig fs = AbcFactory.FieldSig(f);
 	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.FieldSig(f));
 	if (real_name == null) {
 	    return f.getName();
@@ -421,7 +437,6 @@ public class MethodCategory {
     }
 
     public static String getName(SootFieldRef fr) {
-	FieldSig fs = AbcFactory.FieldSig(fr);
 	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.FieldSig(fr));
 	if (real_name == null) {
 	    return fr.name();

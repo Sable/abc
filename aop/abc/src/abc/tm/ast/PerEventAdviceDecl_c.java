@@ -236,6 +236,6 @@ public class PerEventAdviceDecl_c extends AdviceBody_c
         }
 
         // don't advise this method or calls to it
-        MethodCategory.register(this, MethodCategory.IF_EXPR);
+        MethodCategory.register(this, MethodCategory.NO_EFFECTS_ON_BASE_CODE);
     }
 }
