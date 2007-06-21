@@ -329,8 +329,10 @@ public class AbcExtension
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
 		}
 		
-		// add before constant propagator and folder
-		PackManager.v().getPack("jop").insertBefore(new Transform("jop.ioe", InstanceOfEliminator.v()), "jop.cpf");
+		if (Debug.v().instanceOfEliminator) {
+			// add before constant propagator and folder, which crucially is before nullcheckelim
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.ioe", InstanceOfEliminator.v()), "jop.cpf");
+		}
 		
 		if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining()) {
 			PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");

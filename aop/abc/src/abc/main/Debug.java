@@ -161,7 +161,10 @@ public class Debug {
     public boolean nullCheckElim=true;
     public boolean allowDynamicTests = false;
     public boolean switchFolder = false;
-    public boolean instanceOfEliminator = false;
+    public boolean instanceOfEliminator = true;
+    public boolean traceInstanceOfEliminator = false;
+    public boolean assumeNoDynamicLoading = false; // tells the InstanceOfEliminator to ignore
+    					// the possibility of dynamic class loading introducing new types.
     
     public boolean forceSingleThreadedCflow = false;
     public boolean forceStaticFieldCflow = false;
