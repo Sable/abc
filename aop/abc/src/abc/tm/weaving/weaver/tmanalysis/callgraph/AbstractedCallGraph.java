@@ -125,18 +125,22 @@ public class AbstractedCallGraph extends CallGraph {
 			boolean currInteresting = nodePredicate.want(curr);
 
 			boolean childrenInteresting = false;
-			//recurse over all outgoing edges
-			//no shortcut evaluation allowed here (i.e. no 'break') because
-			//the recursion might have to add edges deeper down the call stack 
-			for (Iterator iter = delegate.edgesOutOf(curr); iter.hasNext();) {
-				Edge succEdge = (Edge) iter.next();
-				
-				if(abstractPath(succEdge)==TRUE) {
-					//found something in callee
-					addEdgeToThis(succEdge);
-					childrenInteresting = true;
+			
+			//if children are to be visited
+			if(nodePredicate.visitChildren(curr)) {
+				//recurse over all outgoing edges
+				//no shortcut evaluation allowed here (i.e. no 'break') because
+				//the recursion might have to add edges deeper down the call stack 
+				for (Iterator iter = delegate.edgesOutOf(curr); iter.hasNext();) {
+					Edge succEdge = (Edge) iter.next();
+					
+					if(abstractPath(succEdge)==TRUE) {
+						//found something in callee
+						addEdgeToThis(succEdge);
+						childrenInteresting = true;
+					}
+					
 				}
-				
 			}
 			
 			//keep this node if it is interesting in itself or if its children are

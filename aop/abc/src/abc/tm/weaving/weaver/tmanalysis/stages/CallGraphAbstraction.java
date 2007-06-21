@@ -177,6 +177,16 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
 	        
 	        return false;
 	    }
+
+		/** 
+		 * Returns <code>true</code> if the method can call back to weavable classes.
+		 */
+		public boolean visitChildren(MethodOrMethodContext curr) {
+	    	SootMethod method = curr.method();
+	    	
+	    	//explicitly has no effects on base code
+	    	return !MethodCategory.noEffectsOnBaseCode(method);
+	    }
 	}
 	
 	//singleton pattern

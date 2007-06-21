@@ -27,11 +27,16 @@ import soot.MethodOrMethodContext;
 public interface NodePredicate {
 
 	/**
-     * Returns <code>true</code> if the predicate holds for the node when coming over the edge
-     * into the node.
+     * Returns <code>true</code> if the predicate holds for the node.
 	 * @param node some method or method context
 	 * @return <code>true</code> if the predicate matches the node
 	 */
 	public boolean want(MethodOrMethodContext node);
 	
+	/**
+     * Returns <code>true</code> if children of this node should be visited.
+	 * @param node some method or method context
+	 * @return <code>true</code> if the predicate matches the node
+	 */
+	public boolean visitChildren(MethodOrMethodContext node);
 }
