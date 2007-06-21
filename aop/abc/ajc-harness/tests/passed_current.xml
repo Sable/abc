@@ -5720,13 +5720,13 @@
         <run class="SyncMethods"></run>
     </ajc-test>
 <ajc-test title="Tracematches (wp-tmopt): QuickCheck" num="1301" dir="abctests/tracematches/wp-opt">
-        <compile options="-ext,abc.tm,-wp-tmopt,-debug,warnWhenDeactivatingShadow" files="QuickCheck.java">
+        <compile options="-ext,abc.tm,-wp-tmopt,-debug,warnWhenAlteringShadow" files="QuickCheck.java">
 	    	<message line="12" kind="warning"></message>
 		</compile>
 		<run class="QuickCheck"></run>
     </ajc-test>
 <ajc-test title="Tracematches (wp-tmopt): flow-insensitive stage" num="1302" dir="abctests/tracematches/wp-opt">
-        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenDeactivatingShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="FlowIns.java">
+        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="FlowIns.java">
 	    	<message line="12" kind="warning"></message>
 	    	<message line="13" kind="warning"></message>
 		</compile>
