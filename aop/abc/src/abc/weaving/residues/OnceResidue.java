@@ -33,16 +33,34 @@ import abc.weaving.weaver.WeavingContext;
 
 /**
  * This is a residue that can be used to guard the execution of another residue <i>r</i> (by conjunction with an {@link AndResidue}).
- * When combined with <i>r</i> in such a way, <i>r</i> will only be executed exactly once per execution of the surrounding method.
- * This can make sense in cases where shadows are known to be invariant after their first execution inside a method. 
+ * When combined with <i>r</i> in such a way, <i>r</i> will only be executed exactly once after execution of {@link #stmtAfterInit}.
+ * This can make sense in cases where shadows are known to be invariant after their first execution. 
  * 
  * @author Eric Bodden
  */
-public class OncePerMethodExecutionResidue extends Residue {
+public class OnceResidue extends Residue {
 
-    private final static OncePerMethodExecutionResidue v=new OncePerMethodExecutionResidue();
-    public static OncePerMethodExecutionResidue v() { return v; }
-    private OncePerMethodExecutionResidue() {}
+	protected final Stmt stmtAfterInit;
+    
+    /**
+     * Constructs a new residue such that the shadow is executed once per execution of the method.
+     */
+    public OnceResidue() {
+    	this(null);
+    }
+    
+    /**
+     * Constructs a new residue such that the shadow is executed once only after each execution of
+     * stmtAfterInit.
+     * @param stmtAfterInit the statement before which the flag for the shadow is do be (re-)initialized;
+     * must not be <code>null</code>
+     */
+    public OnceResidue(Stmt stmtAfterInit) {
+    	if(stmtAfterInit==null) {
+    		throw new IllegalArgumentException();
+    	}
+		this.stmtAfterInit = stmtAfterInit;
+	}
 
 	/** 
 	 * {@inheritDoc}
@@ -56,10 +74,10 @@ public class OncePerMethodExecutionResidue extends Residue {
 		
 		//create a fresh boolean flag
 		Local flag = localgen.generateLocal(BooleanType.v());
-		//initialize if to false right after all identity statements
-		Stmt firstRealStmt = Restructure.findFirstRealStmt(method, units);
+		//initialize if to false
+		Stmt afterInit = (stmtAfterInit!=null) ? stmtAfterInit : Restructure.findFirstRealStmt(method, units); 
 		Stmt initStmt = Jimple.v().newAssignStmt(flag, IntConstant.v(0));
-		units.insertBefore(initStmt, firstRealStmt);
+		units.insertBefore(initStmt, afterInit);
 		
 		//now at the begin statement, check the status of the flag:
 		//if it is still false, set it to true and execute the shadow;
