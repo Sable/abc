@@ -46,10 +46,10 @@ import abc.weaving.aspectinfo.MethodCategory;
 public class WeavableMethods {
 	
 	/** set of all weavable methods in the program */
-	protected Set weavableMethods;
+	protected Set<SootMethod> weavableMethods;
 	
 	/** cache mapping each call graph to its set of reachable weavable methods */
-	protected Map cgToReachable;
+	protected Map<CallGraph,Set<SootMethod>> cgToReachable;
 	
 	/**
 	 * Standard constructor, only executed once on initialization.
@@ -83,7 +83,7 @@ public class WeavableMethods {
 	 * Returns the set of all weavable methods.
 	 * @return all weavable methods; those are assured to have an active body
 	 */
-	public Set getAll() {
+	public Set<SootMethod> getAll() {
 		return weavableMethods; 
 	}
 
@@ -95,7 +95,7 @@ public class WeavableMethods {
 	 * @return the set of all reachable weavable methods
 	 * @see EntryPoints#application()
 	 */
-	public Set getReachable(CallGraph cg) {
+	public Set<SootMethod> getReachable(CallGraph cg) {
 		//return cached value if present
 		if(cgToReachable.containsKey(cg)) {
 			return (Set) cgToReachable.get(cg);
@@ -106,7 +106,7 @@ public class WeavableMethods {
 		rm.update();
 		
 		QueueReader reader = rm.listener();
-		Set reachableWeavableMethods = new HashSet();
+		Set<SootMethod> reachableWeavableMethods = new HashSet<SootMethod>();
 		
 		//check for weavable ones
         while(reader.hasNext()) {
