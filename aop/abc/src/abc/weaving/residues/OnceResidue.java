@@ -124,7 +124,7 @@ public class OnceResidue extends Residue {
 	 */
 	@Override
 	public String toString() {
-		return "oncePerMethod()";
+		return "onceAfter("+ (stmtAfterInit!=null?stmtAfterInit:"methodEntry")+ ")";
 	}
 
 }
