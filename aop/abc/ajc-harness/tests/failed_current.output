@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$23$around$1600(AroundAll.java:199)
+	at A.inline$24$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -145,19 +145,6 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.run(Main.java:479)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
-
-
-Running test 817: bugs/lines/Weaving rt.jar results in stack overflow
-Commandline: abc -d bugs/lines -injars bugs/lines/big.jar -warn-unused-advice:off bugs/lines/A.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
-	at abc.main.Main.run(Main.java:487)
-	at abc.testing.TestCase.runTest(TestCase.java:286)
-	at abc.testing.Main.doCase(Main.java:283)
-	at abc.testing.Main.main(Main.java:117)
-Caused by: java.lang.OutOfMemoryError: Java heap space
-FAIL: Test 817: "bugs/lines/Weaving rt.jar results in stack overflow" failed.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?

@@ -68,12 +68,6 @@
             <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Weaving rt.jar results in stack overflow" pr="37758" num="817" dir="bugs/lines">
-        <compile files="A.java,big.jar">
- 			
-        </compile>
-        <run class="Big"></run>
-    </ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
             <message line="5" kind="warning"></message>

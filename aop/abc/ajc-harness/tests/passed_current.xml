@@ -4174,6 +4174,12 @@
         <compile files="FinalFields.java"></compile>
         <run class="FinalFields"></run>
     </ajc-test>
+<ajc-test title="Weaving rt.jar results in stack overflow" pr="37758" num="817" dir="bugs/lines">
+        <compile files="A.java,big.jar">
+ 			
+        </compile>
+        <run class="Big"></run>
+    </ajc-test>
 <ajc-test title="XLint:ignore suppresses XLint warnings" num="820" dir="harness">
         <compile options="-Xlint:ignore" files="XLintWarningTest.java"></compile>
     </ajc-test>
