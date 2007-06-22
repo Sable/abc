@@ -33,15 +33,15 @@ import abc.main.Debug;
  */
 public class ShadowGroupRegistry {
 	
-	protected Set shadowGroups;
+	protected Set<ShadowGroup> shadowGroups;
 	
 	/**
 	 * Registers a collection of {@link ShadowGroup}s with this registry.
 	 * @param groups
 	 */
-	public void registerShadowGroups(Collection groups) {
+	public void registerShadowGroups(Collection<ShadowGroup> groups) {
 		if(shadowGroups==null) {
-			shadowGroups = new HashSet();
+			shadowGroups = new HashSet<ShadowGroup>();
 		}		
 		shadowGroups.addAll(groups);
 	}
@@ -50,7 +50,7 @@ public class ShadowGroupRegistry {
 	 * Returns all shadow groups currently registered.
 	 * @return a set of all {@link ShadowGroup}s currently registered
 	 */
-	public Set getAllShadowGroups() {
+	public Set<ShadowGroup> getAllShadowGroups() {
 		if(shadowGroups==null) {
 			throw new RuntimeException("Shadow groups not yet available. Apply FlowInsensitiveAnalysis first.");
 		}		
@@ -106,8 +106,8 @@ public class ShadowGroupRegistry {
 		if(removedAGroup) {
 			//collect all shadows which are still active, i.e. still contained in a remaining shadow group
 			Set allShadowsStillActive = new HashSet();
-			for (Iterator groupIter = shadowGroups.iterator(); groupIter.hasNext();) {
-				ShadowGroup group = (ShadowGroup) groupIter.next();
+			for (Iterator<ShadowGroup> groupIter = shadowGroups.iterator(); groupIter.hasNext();) {
+				ShadowGroup group = groupIter.next();
 				allShadowsStillActive.addAll(group.getAllShadows());
 			}
 			

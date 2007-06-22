@@ -151,7 +151,7 @@ public class ShadowGroup {
 		return tm;
 	}
 	
-	public Set getAllShadows() {
+	public Set<Shadow> getAllShadows() {
 		Set result = new HashSet(labelShadows);
 		result.addAll(skipShadows);
 		return result;		
