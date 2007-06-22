@@ -29,6 +29,7 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.weaver.ConstructorInliningMap;
+import abc.weaving.weaver.Weaver;
 import abc.weaving.weaver.WeavingContext;
 
 /**
@@ -59,7 +60,7 @@ public class OnceResidue extends Residue {
     	if(stmtAfterInit==null) {
     		throw new IllegalArgumentException();
     	}
-		this.stmtAfterInit = stmtAfterInit;
+    	this.stmtAfterInit = stmtAfterInit;
 	}
 
 	/** 
@@ -74,8 +75,15 @@ public class OnceResidue extends Residue {
 		
 		//create a fresh boolean flag
 		Local flag = localgen.generateLocal(BooleanType.v());
-		//initialize if to false
-		Stmt afterInit = (stmtAfterInit!=null) ? stmtAfterInit : Restructure.findFirstRealStmt(method, units); 
+
+    	Weaver weaver = abc.main.Main.v().getAbcExtension().getWeaver();
+    	//initialize if to false
+		Stmt afterInit = (stmtAfterInit!=null) ? 
+				(Stmt) weaver.rebind(stmtAfterInit) :
+				Restructure.findFirstRealStmt(method, units);
+		
+		assert units.contains(afterInit);
+		
 		Stmt initStmt = Jimple.v().newAssignStmt(flag, IntConstant.v(0));
 		units.insertBefore(initStmt, afterInit);
 		
