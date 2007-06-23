@@ -89,5 +89,12 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
+<ajc-test title="Tracematches (wp-tmopt): flow-insensitive stage" num="1302" dir="abctests/tracematches/wp-opt">
+        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="FlowIns.java">
+	    	<message line="12" kind="warning"></message>
+	    	<message line="13" kind="warning"></message>
+		</compile>
+		<run class="FlowIns"></run>
+    </ajc-test>
  
 </suite>
