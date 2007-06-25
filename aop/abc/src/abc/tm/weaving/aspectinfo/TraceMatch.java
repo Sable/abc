@@ -288,11 +288,11 @@ public class TraceMatch
         return necessary_sym_state_machine;
     }
 
-    public Set getSymbols() {
+    public Set<String> getSymbols() {
         return sym_to_vars.keySet();
     }
 
-    public Collection getFrequentSymbols()
+    public Collection<String> getFrequentSymbols()
     {
         return frequent_symbols;
     }
