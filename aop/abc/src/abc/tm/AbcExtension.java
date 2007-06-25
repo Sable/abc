@@ -37,12 +37,21 @@ import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
+import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
+import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
+import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
+import abc.tm.weaving.weaver.tmanalysis.query.WeavableMethods;
+import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
+import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
+import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
+import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.CflowSetup;
 import abc.weaving.aspectinfo.DeclareMessage;
 import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.AbstractReweavingAnalysis;
 import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
@@ -59,6 +68,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
     private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
     private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
+    private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -141,6 +151,28 @@ public class AbcExtension extends abc.eaj.AbcExtension
             //we need instruction tags so that we can identify shadow IDs after weaving
             OptionsParser.v().set_tag_instructions(true);
 
+            //add a pass which just cleans up resources;
+            //this is necessary in order to reset static fields for the test harness
+            
+            ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
+
+                public boolean analyze() {
+                    return false;
+                }
+                
+                public void cleanup() {
+                    CallGraphAbstraction.reset();
+                    FlowInsensitiveAnalysis.reset();
+                    QuickCheck.reset();
+                    ReachableShadowFinder.reset();
+                    ShadowGroupRegistry.reset();
+                    ShadowRegistry.reset();
+                    TMShadowTagger.reset();
+                    WeavableMethods.reset();
+                }
+            };
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );
+
             //Quick check
             ReweavingAnalysis quick = new OptQuickCheck();                
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
@@ -162,7 +194,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
 			} catch (InstantiationException e) {
 			} catch (IllegalAccessException e) {
 			};
-            
         }
     }
     

@@ -73,12 +73,4 @@ public class OptQuickCheck extends AbstractReweavingAnalysis {
     	
 	}
 	
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void cleanup() {		
-		QuickCheck.reset();
-	}
-
-
 }
