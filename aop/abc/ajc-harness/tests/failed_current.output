@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$28$around$1600(AroundAll.java:199)
+	at A.inline$26$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -213,16 +213,5 @@ Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off
 File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
-
-
-Running test 1302: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-insensitive stage
-Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage flowins -debug warnWhenAlteringShadow -cp ../../lib/abc-runtime.jar:../../lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/FlowIns.java 
-Compilation produced an unexpected number of errors: 4, should be 2
-Actual errors found: 
-Warning at QuickCheck.java:12,5-8: tracematch shadow tracematch$3492$f@56614 changed at this position (conjoined with never)
-Warning at QuickCheck.java:12,5-8: tracematch shadow tracematch$3491$f@56614 changed at this position (conjoined with never)
-Warning at QuickCheck.java:16,22-25: tracematch shadow tracematch$3493$a@56616 changed at this position (conjoined with never)
-Warning at QuickCheck.java:17,22-25: tracematch shadow tracematch$3493$b@56618 changed at this position (conjoined with never)
-FAIL: Test 1302: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-insensitive stage" failed.
 
 

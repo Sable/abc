@@ -1,4 +1,4 @@
-<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="static and non-static before methods -- one file" num="7" keywords="from-base" dir="base/test100" abccomment="I have put this comment in as a test, and this is a very          long one over multiple lines too. LJH">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -5730,6 +5730,13 @@
 	    	<message line="12" kind="warning"></message>
 		</compile>
 		<run class="QuickCheck"></run>
+    </ajc-test>
+<ajc-test title="Tracematches (wp-tmopt): flow-insensitive stage" num="1302" dir="abctests/tracematches/wp-opt">
+        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="FlowIns.java">
+	    	<message line="12" kind="warning"></message>
+	    	<message line="13" kind="warning"></message>
+		</compile>
+		<run class="FlowIns"></run>
     </ajc-test>
  
 </suite>
