@@ -30,6 +30,7 @@ import soot.Body;
 import soot.BodyTransformer;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.Stmt;
 import soot.tagkit.AttributeValueException;
 import soot.tagkit.Host;
@@ -119,7 +120,7 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 	protected void internalTransform(Body b, String phaseName, Map options) {
 
 		//remove tags (if already present)
-		for (Host unit : (Collection<Host>)b.getUnits()) {
+		for (Host unit : (Collection<Unit>)b.getUnits()) {
 			unit.removeTag(SymbolShadowTag.NAME);
 		}
 		
