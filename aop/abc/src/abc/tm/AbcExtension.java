@@ -161,6 +161,9 @@ public class AbcExtension extends abc.eaj.AbcExtension
                 }
                 
                 public void cleanup() {
+                    //dump shadows in the end
+                    ShadowRegistry.v().dumpShadows();
+                    //reset state
                     CallGraphAbstraction.reset();
                     FlowInsensitiveAnalysis.reset();
                     QuickCheck.reset();
@@ -169,8 +172,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
                     ShadowRegistry.reset();
                     TMShadowTagger.reset();
                     WeavableMethods.reset();
-                    //dump shadows in the end
-                    ShadowRegistry.v().dumpShadows();
                 }
             };
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );
