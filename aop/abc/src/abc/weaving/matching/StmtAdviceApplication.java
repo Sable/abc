@@ -34,7 +34,7 @@ import abc.weaving.weaver.ConstructorInliningMap;
  *  @author Ondrej Lhotak
  */
 public class StmtAdviceApplication extends AdviceApplication {
-    public Stmt stmt;
+    protected Stmt stmt;
     
     public StmtAdviceApplication(AbstractAdviceDecl advice,
 				 Residue residue,
