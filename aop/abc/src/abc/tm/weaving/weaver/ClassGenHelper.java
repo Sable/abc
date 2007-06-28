@@ -3507,25 +3507,34 @@ public class ClassGenHelper {
             for (int i = 0; i < sym_binds.size(); i++)
                 values[i] = getParamLocal(i, (Type) params.get(i));
 
-            Stmt no_index_case = getNewLabel();
-            Map indices_to_labels =
-               addIndLookupSwitch(state, no_index_case, true);
+            Map nodes_to_labels =
+               addStateLookupSwitch(state, method_end, false);
 
-            Iterator index_lists = indices_to_labels.keySet().iterator();
-            while (index_lists.hasNext()) {
-                List indices = (List) index_lists.next();
-                Stmt label = (Stmt) indices_to_labels.get(indices);
+            Iterator nodes = nodes_to_labels.keySet().iterator();
+            while (nodes.hasNext()) {
+                SMNode node = (SMNode) nodes.next();
+				List indices = curIndScheme.getStructure(node).varNames();
+                Stmt label = (Stmt) nodes_to_labels.get(node);
                 
                 doAddLabel(label);
-                addDoNegativeBindingsBodyIndex(symbol, this_local,
-                        values, sym_binds, indices, state);
+
+                System.out.println(node.getNumber() + " self loop for " + symbol + "? " +
+                                    node.hasEdgeTo(node, symbol));
+
+                // optimisation - omit any symbol, A, from the skip
+                //                calculations if there is a self-loop on
+                //                this node for A 
+                if (!node.hasEdgeTo(node, symbol)) {
+                    if (indices.isEmpty())
+                        addDoNegativeBindingsBodyNoIndex(symbol, this_local,
+                            values, sym_binds, state);
+                    else
+                        addDoNegativeBindingsBodyIndex(symbol, this_local,
+                            values, sym_binds, indices, state);
+                }
                 
                 doJump(method_end);
             }
-
-            doAddLabel(no_index_case);
-            addDoNegativeBindingsBodyNoIndex(symbol, this_local,
-                values, sym_binds, state);
 
             doAddLabel(method_end);
             doReturnVoid();

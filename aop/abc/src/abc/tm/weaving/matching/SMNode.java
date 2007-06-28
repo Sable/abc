@@ -186,6 +186,7 @@ public class SMNode implements State {
     	Iterator it = incoming.iterator();
     	while(it.hasNext()) {
     		edge = (SMEdge) it.next();
+			if(edge.isSkipEdge()) continue;
     		if(edge.getLabel() == label || (label != null && label.equals(edge.getLabel()))) {
     			return true;
     		}
@@ -204,7 +205,7 @@ public class SMNode implements State {
         Iterator it = outgoing.iterator();
         while(it.hasNext()) {
             edge = (SMEdge)it.next();
-            if(edge.getTarget() == to && 
+            if(edge.getTarget() == to && !edge.isSkipEdge() &&
             		(edge.getLabel() == label || (label != null && label.equals(edge.getLabel())))) {
             	return true;
             }
