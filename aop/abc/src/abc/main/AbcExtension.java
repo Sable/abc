@@ -42,7 +42,6 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
 import soot.jimple.toolkits.annotation.nullcheck.NullnessAnalysis;
-import soot.jimple.toolkits.pointer.CastCheckEliminatorDumper;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
 import soot.util.Chain;
