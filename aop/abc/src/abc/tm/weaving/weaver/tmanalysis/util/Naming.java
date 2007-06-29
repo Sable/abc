@@ -71,11 +71,17 @@ public class Naming {
 	
 	/**
 	 * TODO comment
-	 * @param uniqueSymbolOrShadowId
+	 * @param uniqueSymbolOrShadowOrLocationId
 	 * @return
 	 */
-	public static String getTracematchName(String uniqueSymbolOrShadowId) {
-		return uniqueSymbolOrShadowId.substring(0, uniqueSymbolOrShadowId.lastIndexOf('$')).intern();
+	public static String getTracematchName(String uniqueSymbolOrShadowOrLocationId) {
+        if(uniqueSymbolOrShadowOrLocationId.indexOf('$')==uniqueSymbolOrShadowOrLocationId.lastIndexOf('$')) {
+            //if there is only one $ we have a location ID (of the form tracematch$0@12) 
+            return uniqueSymbolOrShadowOrLocationId.substring(0, uniqueSymbolOrShadowOrLocationId.lastIndexOf('@')).intern();
+        } else {
+            //else, we have a shadowId (tracematch$0$a@12) or symbolId (tracematch$0$a)
+            return uniqueSymbolOrShadowOrLocationId.substring(0, uniqueSymbolOrShadowOrLocationId.lastIndexOf('$')).intern();
+        }
 	}
 
 	/**
@@ -92,4 +98,15 @@ public class Naming {
 		}
 	}
 
+    public static String locationID(String traceMatchID, int shadowId) {
+        return (traceMatchID + "@" + shadowId).intern();
+    }
+
+    public static String locationID(String uniqueShadowIDOrLocationId) {
+        return locationID(getTracematchName(uniqueShadowIDOrLocationId),shadowId(uniqueShadowIDOrLocationId));
+    }
+    
+    public static int shadowId(String uniqueShadowID) {
+        return Integer.parseInt(uniqueShadowID.substring(uniqueShadowID.indexOf('@')+1));
+    }
 }

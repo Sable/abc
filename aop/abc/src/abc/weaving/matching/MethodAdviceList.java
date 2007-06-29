@@ -20,21 +20,19 @@
 
 package abc.weaving.matching;
 
-import java.util.List;
+import static abc.weaving.matching.MethodAdviceList.State.FLUSHED;
+import static abc.weaving.matching.MethodAdviceList.State.MODIFIED;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Iterator;
-import java.util.ListIterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
-import polyglot.util.ErrorQueue;
-
-import abc.main.Debug;
+import soot.jimple.Stmt;
 import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
 
 /** The lists of {@link AdviceApplication} structures applying to a method
  *  @author Ganesh Sittampalam
@@ -42,6 +40,12 @@ import abc.weaving.aspectinfo.AbstractAdviceDecl;
  */
 public class MethodAdviceList {
 
+    protected enum State {
+        MODIFIED, FLUSHED
+    };
+    
+    protected State state = MODIFIED;
+    
 	// find all members of an AdviceApplication list that have no successors
 	// in the precedence ordering
 	private static AdviceApplication noPreds(List/*<AdviceApplication>*/ aalist) {
@@ -138,14 +142,17 @@ public class MethodAdviceList {
      *  list for that shadow to the main list for the method.
      */
     public void flush() {
-	bodyAdvice.addAll(sortWithPrecedence(bodyAdviceP));
-    stmtAdvice.addAll(sortWithPrecedence(stmtAdviceP));
-	preinitializationAdvice.addAll(sortWithPrecedence(preinitializationAdviceP));
-	initializationAdvice.addAll(sortWithPrecedence(initializationAdviceP));
-	bodyAdviceP=new LinkedList();
-	stmtAdviceP=new LinkedList();
-	preinitializationAdviceP=new LinkedList();
-	initializationAdviceP=new LinkedList();
+        if(state==MODIFIED) {
+        	bodyAdvice.addAll(sortWithPrecedence(bodyAdviceP));
+            stmtAdvice.addAll(sortWithPrecedence(stmtAdviceP));
+        	preinitializationAdvice.addAll(sortWithPrecedence(preinitializationAdviceP));
+        	initializationAdvice.addAll(sortWithPrecedence(initializationAdviceP));
+        	bodyAdviceP=new LinkedList();
+        	stmtAdviceP=new LinkedList();
+        	preinitializationAdviceP=new LinkedList();
+        	initializationAdviceP=new LinkedList();
+            state=FLUSHED;
+        }
     }
 
     public List bodyAdviceP=new LinkedList();
@@ -157,30 +164,35 @@ public class MethodAdviceList {
 	execution joinpoints */
     public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
-	   bodyAdviceP.add(aa);
+	    bodyAdviceP.add(aa);
+        state=MODIFIED;
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
     public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
     public void addStmtAdvice(AdviceApplication aa) {
-	   stmtAdviceP.add(aa);
+	    stmtAdviceP.add(aa);
+        state=MODIFIED;
     }
 
     /** pre-initialization joinpoints */
     public List/*<AdviceApplication>*/ preinitializationAdvice
 	=new LinkedList();
     public void addPreinitializationAdvice(AdviceApplication aa) {
-	   preinitializationAdviceP.add(aa);
+	    preinitializationAdviceP.add(aa);
+        state=MODIFIED;
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
     public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
     public void addInitializationAdvice(AdviceApplication aa) {
-	  initializationAdviceP.add(aa);
+        initializationAdviceP.add(aa);
+        state=MODIFIED;
     }
 
     /** returns true if there is no advice */
     public boolean isEmpty() { 
+        flush();
         return(bodyAdvice.isEmpty() && 
 	       stmtAdvice.isEmpty() &&
 	       initializationAdvice.isEmpty() &&
@@ -189,25 +201,30 @@ public class MethodAdviceList {
 
     /** returns true if there is any body advice */
     public boolean hasBodyAdvice() { 
-      return !bodyAdvice.isEmpty();
+        flush();
+        return !bodyAdvice.isEmpty();
     }
 
     /** returns true if there is any stmt advice */
     public boolean hasStmtAdvice() {
-      return !stmtAdvice.isEmpty();
+        flush();
+        return !stmtAdvice.isEmpty();
     }
 
     /** returns true if there is any initialization advice */
     public boolean hasInitializationAdvice() {
-      return !initializationAdvice.isEmpty();
+        flush();
+        return !initializationAdvice.isEmpty();
     }
 
     /** returns true if there is any preinitialization advice */
     public boolean hasPreinitializationAdvice() {
-      return !preinitializationAdvice.isEmpty();
+        assert state==FLUSHED;
+        return !preinitializationAdvice.isEmpty();
     }
 
     public String toString() {
+        flush();
 	return "body advice: "+bodyAdvice+"\n"
 	    +"statement advice: "+stmtAdvice+"\n"
 	    +"preinitialization advice: "+preinitializationAdvice+"\n"
@@ -238,11 +255,59 @@ public class MethodAdviceList {
 	}
     }
     public List/*AdviceApplication*/ allAdvice() {
+        flush();
         List/*AdviceApplication*/ ret = new ArrayList();
         ret.addAll(bodyAdvice);
         ret.addAll(stmtAdvice);
         ret.addAll(preinitializationAdvice);
         ret.addAll(initializationAdvice);
         return ret;
+    }
+
+    /**
+     * Reopens the methods advice list again for modifications, after it has been flushed.
+     * Call {@link #flush()} again after modifications are done.
+     */
+    public void unflush() {
+        flush();
+        bodyAdviceP = new ArrayList(bodyAdvice);
+        initializationAdviceP = new ArrayList(initializationAdvice);
+        preinitializationAdviceP = new ArrayList(preinitializationAdvice);
+        stmtAdviceP = new ArrayList(stmtAdvice);
+        bodyAdvice.clear();
+        initializationAdvice.clear();
+        preinitializationAdvice.clear();
+        stmtAdvice.clear();
+        state = MODIFIED;
+    }
+    
+    /**
+     * Copies the given advice applciation so that it also applies at a new statement.
+     * The new advice application will be a {@link StmtAdviceApplication} that does not support
+     * around advice.
+     * @param aa the original advice application
+     * @param target the statement the copy applies to
+     */
+    public void copyAdviceApplication(AdviceApplication aa, Stmt target) {
+        assert bodyAdviceP.contains(aa) || initializationAdviceP.contains(aa) ||
+               preinitializationAdviceP.contains(aa) || stmtAdviceP.contains(aa);
+        
+        StmtShadowMatch newShadowMatch = new ReroutingShadowMatch(aa.shadowmatch,target);
+        newShadowMatch.addAdviceApplication(this, aa.advice, aa.getResidue());
+        
+        state = MODIFIED;
+    }
+
+    /**
+     * Removes the given advice application from the list.
+     */
+    public void removeAdviceApplication(AdviceApplication aa) {
+        boolean removedAA = false;
+        removedAA |= bodyAdviceP.remove(aa);
+        removedAA |= initializationAdviceP.remove(aa);
+        removedAA |= preinitializationAdviceP.remove(aa);
+        removedAA |= stmtAdviceP.remove(aa);
+        assert removedAA;
+        state = MODIFIED;
     }
 }

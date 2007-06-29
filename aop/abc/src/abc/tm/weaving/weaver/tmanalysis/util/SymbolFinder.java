@@ -131,7 +131,8 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 				int shadowId = tag.value();								
 				Set<SymbolShadow> currSymbolSet = (Set<SymbolShadow>) inMap.get(tm);
 				Set<SymbolShadow> newSet = new HashSet<SymbolShadow>(currSymbolSet);
-				newSet.add(new SymbolShadow(symbolName,varMapping,shadowId,tm));
+                UnitGraph g = (UnitGraph)graph;
+				newSet.add(new SymbolShadow(symbolName,varMapping,shadowId,g.getBody().getMethod(),tm));
 				outMap.put(tm,newSet);
 			} else if(someAdviceMethodToTraceMatch.containsKey(targetMethod)) {
 				TraceMatch tm = (TraceMatch) someAdviceMethodToTraceMatch.get(targetMethod);

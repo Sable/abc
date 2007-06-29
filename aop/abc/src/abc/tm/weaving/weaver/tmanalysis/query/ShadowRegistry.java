@@ -35,6 +35,7 @@ import soot.tagkit.SourceLnPosTag;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
+import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
@@ -57,19 +58,28 @@ public class ShadowRegistry {
 	
 	protected TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 	
-	protected Map allShadowsToAdviceApplications;
+	protected Map<String,AdviceApplication> allShadowsToSymbolAdviceApplications;
 	
-	protected Map tmNameToUniqueShadowIds;
+    protected Map<String,AdviceApplication> allShadowsToSyncAdviceApplications;
+
+    protected Map<String,AdviceApplication> allShadowsToSomeAdviceApplications;
+    
+    protected Map<String,AdviceApplication> allShadowsToBodyAdviceApplications;
+
+    protected Map<String,Set<String>> tmNameToUniqueShadowIds;
 	
-	protected Set enabledShadows;  
+	protected Set<String> enabledShadows;  
 	
-	protected Set disabledShadows;  
+	protected Set<String> disabledShadows;  
 	
-	protected Set shadowsToBeRetained;
+	protected Set<String> shadowsToBeRetained;
 	
 	protected ShadowRegistry() {
 	
-		allShadowsToAdviceApplications= new HashMap();
+		allShadowsToSymbolAdviceApplications= new HashMap();
+        allShadowsToSyncAdviceApplications= new HashMap();
+        allShadowsToSomeAdviceApplications= new HashMap();
+        allShadowsToBodyAdviceApplications= new HashMap();
 		tmNameToUniqueShadowIds = new HashMap();
 
 		//traverse all advice applications
@@ -88,25 +98,41 @@ public class ShadowRegistry {
 							String traceMatchID = decl.getTraceMatchID();
 
 							String qualifiedShadowId = Naming.uniqueShadowID(traceMatchID, decl.getSymbolId(),aa.shadowmatch.shadowId).intern();
-							Object old = allShadowsToAdviceApplications.put(qualifiedShadowId, aa);
+							Object old = allShadowsToSymbolAdviceApplications.put(qualifiedShadowId, aa);
 							assert old==null; //IDs should be unique
 							
-							Set shadowIds = (Set) tmNameToUniqueShadowIds.get(traceMatchID);
+							Set shadowIds = tmNameToUniqueShadowIds.get(traceMatchID);
 							if(shadowIds==null) {
 								shadowIds = new HashSet();
 								tmNameToUniqueShadowIds.put(traceMatchID,shadowIds);
 							}
 							boolean added = shadowIds.add(qualifiedShadowId);
 							assert added; //IDs should be unique
-						}
-						
-					}
-
+						} else if(aa.advice instanceof TMAdviceDecl) {
+                            TMAdviceDecl decl = (TMAdviceDecl) aa.advice;
+                            if(decl.isSynch()) {
+                                //get the tracematch for that advice application
+                                String traceMatchID = decl.getTraceMatchID();
+                                String qualifiedShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
+                                allShadowsToSyncAdviceApplications.put(qualifiedShadowId, aa);
+                            } else if(decl.isSome()) {
+                                //get the tracematch for that advice application
+                                String traceMatchID = decl.getTraceMatchID();
+                                String qualifiedShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
+                                allShadowsToSomeAdviceApplications.put(qualifiedShadowId, aa);
+                            } else if(decl.isBody()) {
+                                //get the tracematch for that advice application
+                                String traceMatchID = decl.getTraceMatchID();
+                                String qualifiedShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
+                                allShadowsToBodyAdviceApplications.put(qualifiedShadowId, aa);
+                            }
+                        }
+					} 
 				}
 		);
 		
 		//right now, all shadows are enabled, none are disabled, none to be retained
-		enabledShadows = new HashSet(allShadowsToAdviceApplications.keySet());
+		enabledShadows = new HashSet(allShadowsToSymbolAdviceApplications.keySet());
 		disabledShadows = new HashSet();
 		shadowsToBeRetained = new HashSet();
 		
@@ -154,8 +180,8 @@ public class ShadowRegistry {
 	 * @param conjunct the residue to conjoin with
 	 */
 	public void conjoinShadowWithResidue(String uniqueShadowId, Residue conjunct) {
-		assert allShadowsToAdviceApplications.containsKey(uniqueShadowId);
-		AdviceApplication aa = (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);		
+		assert allShadowsToSymbolAdviceApplications.containsKey(uniqueShadowId);
+		AdviceApplication aa = (AdviceApplication) allShadowsToSymbolAdviceApplications.get(uniqueShadowId);		
 		aa.setResidue(AndResidue.construct(aa.getResidue(),conjunct));
 
 		//print a warning message (usually for test harness)
@@ -168,7 +194,7 @@ public class ShadowRegistry {
 			TraceMatch tm = (TraceMatch) tmIter.next();
 			
 			//get all the enabled shadows for this TM
-			Set thisTMsShadowIDs = new HashSet((Set) tmNameToUniqueShadowIds.get(tm.getName()));
+			Set thisTMsShadowIDs = new HashSet(allShadowIDsForTraceMatch(tm.getName()));
 			thisTMsShadowIDs.retainAll(enabledShadows());
 			
 			if(thisTMsShadowIDs.isEmpty()) {
@@ -206,11 +232,11 @@ public class ShadowRegistry {
 	}
 
 	public Set allShadows() {
-		return new HashSet(allShadowsToAdviceApplications.keySet());
+		return new HashSet(allShadowsToSymbolAdviceApplications.keySet());
 	}
 	
-	public AdviceApplication getAdviceApplicationForShadow(String uniqueShadowId) {
-		return (AdviceApplication) allShadowsToAdviceApplications.get(uniqueShadowId);
+	public AdviceApplication getSymbolAdviceApplicationForShadow(String uniqueShadowId) {
+		return (AdviceApplication) allShadowsToSymbolAdviceApplications.get(uniqueShadowId);
 	}
 	
 	public void dumpShadows() {
@@ -220,7 +246,7 @@ public class ShadowRegistry {
 			System.err.println("DISABLED SHADOWS");
 			System.err.println("===============================================================================");
 			System.err.println("===============================================================================");
-			for (Iterator entryIter = allShadowsToAdviceApplications.entrySet().iterator(); entryIter.hasNext();) {
+			for (Iterator entryIter = allShadowsToSymbolAdviceApplications.entrySet().iterator(); entryIter.hasNext();) {
 				Entry entry = (Entry) entryIter.next();
 				String shadowId = (String) entry.getKey();
 				if(!enabledShadows.contains(shadowId)) {
@@ -239,7 +265,7 @@ public class ShadowRegistry {
 			System.err.println("REMAINING SHADOWS");
 			System.err.println("===============================================================================");
 			System.err.println("===============================================================================");
-			for (Iterator entryIter = allShadowsToAdviceApplications.entrySet().iterator(); entryIter.hasNext();) {
+			for (Iterator entryIter = allShadowsToSymbolAdviceApplications.entrySet().iterator(); entryIter.hasNext();) {
 				Entry entry = (Entry) entryIter.next();
 				String shadowId = (String) entry.getKey();
 				
@@ -267,7 +293,7 @@ public class ShadowRegistry {
 		Set all = new HashSet();
 		all.addAll(enabledShadows);
 		all.addAll(disabledShadows);
-		assert all.equals(allShadowsToAdviceApplications.keySet());
+		assert all.equals(allShadowsToSymbolAdviceApplications.keySet());
 		return true;
 	}
 
@@ -275,7 +301,7 @@ public class ShadowRegistry {
      * Returns <code>true</code> if the shadow with this unique id is still enabled.
 	 */
 	public boolean isEnabled(String uniqueShadowId) {
-		assert allShadowsToAdviceApplications.keySet().contains(uniqueShadowId);
+		assert allShadowsToSymbolAdviceApplications.keySet().contains(uniqueShadowId);
 		return enabledShadows.contains(uniqueShadowId);
 	}
 
@@ -312,8 +338,61 @@ public class ShadowRegistry {
 		}
 		return result;
 	}
+    
+    public AdviceApplication getSomeAdviceApplicationForSymbolShadow(String uniqueShadowId) {
+        AdviceApplication aa = allShadowsToSomeAdviceApplications.get(Naming.locationID(uniqueShadowId));
+        assert aa!=null;
+        return aa;
+    }
+    
+    public AdviceApplication getSyncAdviceApplicationForSymbolShadow(String uniqueShadowId) {
+        AdviceApplication aa = allShadowsToSyncAdviceApplications.get(Naming.locationID(uniqueShadowId));
+        assert aa!=null;
+        return aa;
+    }
 	
-	/**
+    public AdviceApplication getBodyAdviceApplicationForSymbolShadow(String uniqueShadowId) {
+        AdviceApplication aa = allShadowsToSyncAdviceApplications.get(Naming.locationID(uniqueShadowId));
+        return aa;
+    }
+
+    protected void disableSyncSomeAndBodyAdviceIfNotNeededAnyMore(String uniqueShadowIdOrLocationID) {
+        String locationID = Naming.locationID(uniqueShadowIdOrLocationID);
+        for (String enabledShadow : enabledShadows) {
+            if(Naming.locationID(enabledShadow).equals(locationID)) {
+                return;
+            }
+        }
+        //no enabled symbol shadows found for this location
+        System.err.print("No active symbol advice for location "+locationID+". ");
+        System.err.println("Disabling some-advice, sync-advice and body advice.");
+        AdviceApplication someAa = getSomeAdviceApplicationForSymbolShadow(uniqueShadowIdOrLocationID);
+        someAa.setResidue(NeverMatch.v());
+        AdviceApplication syncAa = getSyncAdviceApplicationForSymbolShadow(uniqueShadowIdOrLocationID);
+        syncAa.setResidue(NeverMatch.v());
+        AdviceApplication bodyAa = getBodyAdviceApplicationForSymbolShadow(uniqueShadowIdOrLocationID);
+        if(bodyAa!=null)//does not always have to be present, only if a symbol leads to a final state
+            bodyAa.setResidue(NeverMatch.v());
+    }
+    
+    public void disableAllUnneededSomeAndSyncAdvice() {
+        //build a set of all location IDs
+        Set<String> inactiveLocationIDs = new HashSet<String>();
+        inactiveLocationIDs.addAll(allShadowsToSomeAdviceApplications.keySet());
+        inactiveLocationIDs.addAll(allShadowsToSyncAdviceApplications.keySet());
+        
+        //remove all active ones
+        for (String shadowId : enabledShadows) {
+            inactiveLocationIDs.remove(Naming.locationID(shadowId));
+        }
+        
+        //disable for all inactive ones...
+        for (String inactiveLocationID : inactiveLocationIDs) {
+            disableSyncSomeAndBodyAdviceIfNotNeededAnyMore(inactiveLocationID);
+        }
+    }
+
+    /**
 	 * Prints a warning that the given advice application was changed by the analysis.
 	 * @param aa any {@link AdviceApplication}
 	 * @param uniqueShadowId the unique shadow ID of the disabled shadow

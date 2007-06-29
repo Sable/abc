@@ -195,7 +195,7 @@ public class Weaver {
             
             //if we do reweaving
             if(reweavingPasses.size() > 0) {
-            	//no warning output during reweaving
+                //no warning output during reweaving
             	Main.v().getAbcExtension().suspendErrorReporting();
             	
                 //store the unwoven state first
@@ -230,6 +230,8 @@ public class Weaver {
                         //if this is the lass pass in the list, we reweave below anyway, so
                         //do not reweave here but just store a handle so that it can tear down properly in the end
                         if(!isLastPassInList) {
+                            //recompute shadow points
+                            inlineConstructors();
 	                        //reweave
 	                        weaveAdvice();
 	                        //do stuff immediately prior after reweaving
@@ -248,6 +250,10 @@ public class Weaver {
 
                 //reenable the error queue
                 Main.v().getAbcExtension().resumeErrorReporting();
+                
+                inlineConstructors();
+
+                Debug.v().cleanupAfterAdviceWeave = true;
             }
             
             if( abc.main.Debug.v().optimizeResidues ) {

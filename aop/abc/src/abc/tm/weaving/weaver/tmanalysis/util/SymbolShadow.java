@@ -3,6 +3,7 @@ package abc.tm.weaving.weaver.tmanalysis.util;
 import java.util.Map;
 
 import soot.Local;
+import soot.SootMethod;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 
@@ -12,18 +13,21 @@ import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
  */
 public class SymbolShadow {
 	
-	protected String symbolName;
+	protected final String symbolName;
 	
-	protected TraceMatch owner;
+    protected final SootMethod container;
+
+    protected final TraceMatch owner;
 		
-	protected Map<String,Local> tmFormalToAdviceLocal;
+	protected final Map<String,Local> tmFormalToAdviceLocal;
 
 	protected final String uniqueShadowId;
 
 	SymbolShadow(String symbolName,
-			Map<String, Local> tmVarToAdviceLocal, int shadowId, TraceMatch owner) {
+			Map<String, Local> tmVarToAdviceLocal, int shadowId, SootMethod container, TraceMatch owner) {
 		this.symbolName = symbolName;
 		this.tmFormalToAdviceLocal = tmVarToAdviceLocal;
+        this.container = container;
 		this.owner = owner;
 		this.uniqueShadowId = Naming.uniqueShadowID(owner.getName(),symbolName,shadowId).intern();
 	}
@@ -123,5 +127,12 @@ public class SymbolShadow {
 			return false;
 		return true;
 	}
+
+    /**
+     * @return the container
+     */
+    public SootMethod getContainer() {
+        return container;
+    }
 	
 }

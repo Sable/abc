@@ -40,8 +40,6 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 
 	protected TMGlobalAspectInfo gai;
 	
-	protected boolean originalState_cleanupAfterAdviceWeave;
-
     public boolean analyze() {
     	gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 
@@ -126,25 +124,8 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
         //in order to generate points-to sets for weaving variables, we have to
         //disable the straightlinecode optimizations which take place right
         //after weaving;
-        //we store the old state and reset it after the analysis
-        disableStraightlineCodeOptimizations();
+        //will be reset by Weaver after the analysis
+        Debug.v().cleanupAfterAdviceWeave = false;
     }
     
-	/**
-	 * Disables optimizations on straightline code after weaving.
-	 */
-	protected void disableStraightlineCodeOptimizations() {
-		//store the old state
-        originalState_cleanupAfterAdviceWeave = Debug.v().cleanupAfterAdviceWeave;
-        //disable
-        Debug.v().cleanupAfterAdviceWeave = false;
-	}
-    
-	/**
-	 * Reenables optimizations of straightline code (if they were enabled originally).
-	 */
-	protected void reenableStraightlineCodeOptimizations() {
-		Debug.v().cleanupAfterAdviceWeave = originalState_cleanupAfterAdviceWeave;
-	}
-	
 }

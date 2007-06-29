@@ -34,6 +34,7 @@ import abc.main.CompileSequence;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import abc.tm.weaving.weaver.TMShadowJumpRestructurer;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
@@ -151,12 +152,40 @@ public class AbcExtension extends abc.eaj.AbcExtension
             //we need instruction tags so that we can identify shadow IDs after weaving
             OptionsParser.v().set_tag_instructions(true);
 
+            //Quick check
+            ReweavingAnalysis quick = new OptQuickCheck();                
+            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
+            
+            String laststage = OptionsParser.v().laststage();
+            
+            if(!laststage.equals("quick")) {
+            
+                ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
+                passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
+    
+                if(!laststage.equals("flowins")) {
+    
+                    //hook up intraprocedural analysis, if present
+                    try {
+        				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
+        	            ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
+        	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
+        	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations.");
+                    } catch (ClassNotFoundException e) {
+        			} catch (InstantiationException e) {
+        			} catch (IllegalAccessException e) {
+        			};
+                }
+            }
+
             //add a pass which just cleans up resources;
             //this is necessary in order to reset static fields for the test harness
             
             ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
 
                 public boolean analyze() {
+                    //disable all some and sync advice that became inactive
+                    ShadowRegistry.v().disableAllUnneededSomeAndSyncAdvice();
                     return false;
                 }
                 
@@ -175,28 +204,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
                 }
             };
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );
-
-            //Quick check
-            ReweavingAnalysis quick = new OptQuickCheck();                
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
-            
-            if(OptionsParser.v().laststage().equals("quick")) return;
-            
-            ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
-
-            if(OptionsParser.v().laststage().equals("flowins")) return;
-
-            //hook up intraprocedural analysis, if present
-            try {
-				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
-	            ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
-	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations.");
-            } catch (ClassNotFoundException e) {
-			} catch (InstantiationException e) {
-			} catch (IllegalAccessException e) {
-			};
         }
     }
     
@@ -375,5 +382,18 @@ public class AbcExtension extends abc.eaj.AbcExtension
 			}
 		};
 	}
+    
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public void doMethodRestructuring() {
+        super.doMethodRestructuring();
+        
+        String laststage = OptionsParser.v().laststage();
+        if(OptionsParser.v().wp_tmopt() && !laststage.equals("quick") && !laststage.equals("flowins")) {
+            TMShadowJumpRestructurer.apply();
+        }
+    }
    
 }

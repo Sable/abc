@@ -114,7 +114,7 @@ public class Debug {
 
     // Cleans up code (copy propagation, nop removal, dead code removal, etc) 
     // immediately after weaving advice
-    public boolean cleanupAfterAdviceWeave=true; 
+    public boolean cleanupAfterAdviceWeave=true; //warning: this currently is always set to TRUE for the last reweaving pass!
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
