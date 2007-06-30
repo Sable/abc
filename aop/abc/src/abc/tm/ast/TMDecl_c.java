@@ -683,7 +683,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
                      sig,
                      current_aspect,
                      jp, jpsp, ejp, methods,
-                     position(), name(), position(), TMAdviceDecl.BODY);
+                     position(), tracematch_name, position(), TMAdviceDecl.BODY);
 
             gai.addAdviceDecl(before_ad);
         }
