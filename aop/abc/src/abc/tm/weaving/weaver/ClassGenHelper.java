@@ -3518,9 +3518,6 @@ public class ClassGenHelper {
                 
                 doAddLabel(label);
 
-                System.out.println(node.getNumber() + " self loop for " + symbol + "? " +
-                                    node.hasEdgeTo(node, symbol));
-
                 // optimisation - omit any symbol, A, from the skip
                 //                calculations if there is a self-loop on
                 //                this node for A 
