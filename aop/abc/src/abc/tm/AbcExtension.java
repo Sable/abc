@@ -185,7 +185,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
 
                 public boolean analyze() {
                     //disable all some and sync advice that became inactive
-                    ShadowRegistry.v().disableAllUnneededSomeAndSyncAdvice();
+                    ShadowRegistry.v().disableAllUnneededSomeSyncAndBodyAdvice();
                     return false;
                 }
                 

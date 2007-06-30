@@ -113,18 +113,18 @@ public class ShadowRegistry {
                             if(decl.isSynch()) {
                                 //get the tracematch for that advice application
                                 String traceMatchID = decl.getTraceMatchID();
-                                String qualifiedShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
-                                allShadowsToSyncAdviceApplications.put(qualifiedShadowId, aa);
+                                String locationShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
+                                allShadowsToSyncAdviceApplications.put(locationShadowId, aa);
                             } else if(decl.isSome()) {
                                 //get the tracematch for that advice application
                                 String traceMatchID = decl.getTraceMatchID();
-                                String qualifiedShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
-                                allShadowsToSomeAdviceApplications.put(qualifiedShadowId, aa);
+                                String locationShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
+                                allShadowsToSomeAdviceApplications.put(locationShadowId, aa);
                             } else if(decl.isBody()) {
                                 //get the tracematch for that advice application
                                 String traceMatchID = decl.getTraceMatchID();
-                                String qualifiedShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
-                                allShadowsToBodyAdviceApplications.put(qualifiedShadowId, aa);
+                                String locationShadowId = Naming.locationID(traceMatchID, aa.shadowmatch.shadowId).intern();
+                                allShadowsToBodyAdviceApplications.put(locationShadowId, aa);
                             }
                         }
 					} 
@@ -341,18 +341,23 @@ public class ShadowRegistry {
     
     public AdviceApplication getSomeAdviceApplicationForSymbolShadow(String uniqueShadowId) {
         AdviceApplication aa = allShadowsToSomeAdviceApplications.get(Naming.locationID(uniqueShadowId));
-        assert aa!=null;
+        assert aa!=null && ((TMAdviceDecl)aa.advice).isSome();
         return aa;
     }
     
     public AdviceApplication getSyncAdviceApplicationForSymbolShadow(String uniqueShadowId) {
         AdviceApplication aa = allShadowsToSyncAdviceApplications.get(Naming.locationID(uniqueShadowId));
-        assert aa!=null;
+        assert aa!=null && ((TMAdviceDecl)aa.advice).isSynch();
         return aa;
     }
 	
+    /**
+     * @param uniqueShadowId
+     * @return may return <code>null</code>
+     */
     public AdviceApplication getBodyAdviceApplicationForSymbolShadow(String uniqueShadowId) {
-        AdviceApplication aa = allShadowsToSyncAdviceApplications.get(Naming.locationID(uniqueShadowId));
+        AdviceApplication aa = allShadowsToBodyAdviceApplications.get(Naming.locationID(uniqueShadowId));
+        assert aa==null || ((TMAdviceDecl)aa.advice).isBody();
         return aa;
     }
 
@@ -375,11 +380,12 @@ public class ShadowRegistry {
             bodyAa.setResidue(NeverMatch.v());
     }
     
-    public void disableAllUnneededSomeAndSyncAdvice() {
+    public void disableAllUnneededSomeSyncAndBodyAdvice() {
         //build a set of all location IDs
         Set<String> inactiveLocationIDs = new HashSet<String>();
         inactiveLocationIDs.addAll(allShadowsToSomeAdviceApplications.keySet());
         inactiveLocationIDs.addAll(allShadowsToSyncAdviceApplications.keySet());
+        inactiveLocationIDs.addAll(allShadowsToBodyAdviceApplications.keySet());
         
         //remove all active ones
         for (String shadowId : enabledShadows) {
