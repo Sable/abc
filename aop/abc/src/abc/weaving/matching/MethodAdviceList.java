@@ -33,6 +33,7 @@ import soot.jimple.Stmt;
 import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.residues.NeverMatch;
 
 /** The lists of {@link AdviceApplication} structures applying to a method
  *  @author Ganesh Sittampalam
@@ -78,7 +79,16 @@ public class MethodAdviceList {
 	}
 	
 	// topological sort in order of reverse precedence
-	private static List sortWithPrecedence(List/*<AdviceApplication>*/ aalist) {
+	private static List sortWithPrecedence(List<AdviceApplication> aalist) {
+        //remove advice applications that never match
+	    for (Iterator iterator = aalist.iterator(); iterator.hasNext();) {
+            AdviceApplication aa = (AdviceApplication) iterator.next();
+            if(NeverMatch.neverMatches(aa.getResidue())) {
+                iterator.remove();
+            }
+        }
+
+        //sort
 		List result = new ArrayList();
 		AdviceApplication start = noPreds(aalist);
 		while (start != null) {
@@ -224,7 +234,6 @@ public class MethodAdviceList {
     }
 
     public String toString() {
-        flush();
 	return "body advice: "+bodyAdvice+"\n"
 	    +"statement advice: "+stmtAdvice+"\n"
 	    +"preinitialization advice: "+preinitializationAdvice+"\n"
@@ -295,19 +304,6 @@ public class MethodAdviceList {
         StmtShadowMatch newShadowMatch = new ReroutingShadowMatch(aa.shadowmatch,target);
         newShadowMatch.addAdviceApplication(this, aa.advice, aa.getResidue());
         
-        state = MODIFIED;
-    }
-
-    /**
-     * Removes the given advice application from the list.
-     */
-    public void removeAdviceApplication(AdviceApplication aa) {
-        boolean removedAA = false;
-        removedAA |= bodyAdviceP.remove(aa);
-        removedAA |= initializationAdviceP.remove(aa);
-        removedAA |= preinitializationAdviceP.remove(aa);
-        removedAA |= stmtAdviceP.remove(aa);
-        assert removedAA;
         state = MODIFIED;
     }
 }
