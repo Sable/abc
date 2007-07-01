@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@1cca11e
+creating: A@148f4f
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@ef0aad
+InterfaceAndObject$1@a15185
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@b96047, [Ljava.lang.Object;@5fe619, TwoAnonymous$3@b96047
+calling run: TwoAnonymous$3@a2056, [Ljava.lang.Object;@d0f446, TwoAnonymous$3@a2056
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2400,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1a1a88c.foo calls Outer$Inner@40af5a.mi
+Outer@1988a4.foo calls Outer$Inner@59e6d5.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@40af5a.mi calls java.io.PrintStream@b84e40.println
+Outer$Inner@59e6d5.mi calls java.io.PrintStream@41eac1.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1a1a88c.foo calls Outer$InnerRandom@59e6d5.nextHook
+Outer@1988a4.foo calls Outer$InnerRandom@10782d4.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@59e6d5.nextHook calls Outer$InnerRandom@59e6d5.next
+Outer$InnerRandom@10782d4.nextHook calls Outer$InnerRandom@10782d4.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1a1a88c.foo calls X.nextInt
+Outer@1988a4.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@108b7d0.foo calls Outer$Inner@15be032.mi
+Outer@1c8a3a9.foo calls Outer$Inner@170d110.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@15be032.mi calls java.io.PrintStream@dc2fd6.println
+Outer$Inner@170d110.mi calls java.io.PrintStream@1ad950d.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@108b7d0.foo calls Outer$InnerRandom@170d110.nextHook
+Outer@1c8a3a9.foo calls Outer$InnerRandom@386c.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@170d110.nextHook calls Outer$InnerRandom@170d110.next
+Outer$InnerRandom@386c.nextHook calls Outer$InnerRandom@386c.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@108b7d0.foo calls X.nextInt
+Outer@1c8a3a9.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2712,7 +2712,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$22$around$1600(AroundAll.java:199)
+	at A.inline$29$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4030,7 +4030,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@175d667.x:=-3
+test.Test3@1f2f1e7.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4113,8 +4113,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@15f9a4a
-o: Bar@15f9a4a, i: 10
+o: Bar@530dd4
+o: Bar@530dd4, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4265,13 +4265,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
-	at aspects.Trace.inline$7$around$2688(Trace.aj:92)
+	at aspects.Trace.inline$6$around$2688(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4305,13 +4305,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
-	at aspects.Trace.inline$16$around$2688(Trace.aj:119)
+	at aspects.Trace.inline$15$around$2688(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$26$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2688(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$28$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4642,7 +4642,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@d12c4
+LibraryAspect-defined run() for C@4b6cbd
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4965,7 +4965,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@8032b2
+? Util.read() obj=Test@c7b2da
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -4985,7 +4985,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@95f86d
+? Util.read() obj=ClinitTest@cfed29
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -4995,7 +4995,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@bab8b5
+? Util.read() obj=SuidTest@160cd6b
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5196,12 +5196,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1ef7dca
-Invoking command bean:  Command@2b6c3b
-hello(Command@2b6c3b)
-Created a PerThis aspect : Testcase2@ce9cc1
-Invoking command bean:  Command@956631
-hello again(Command@956631)
+Created a PerThis aspect : Testcase2@18a3007
+Invoking command bean:  Command@157217c
+hello(Command@157217c)
+Created a PerThis aspect : Testcase2@15762f0
+Invoking command bean:  Command@209d1a
+hello again(Command@209d1a)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5492,12 +5492,6 @@ PASS: Test 1018: "abctests/bugs/internal around weaver error when trying to capt
 
 Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Basic.java 
-0 self loop for f? false
-1 self loop for f? false
-2 self loop for f? false
-0 self loop for g? false
-1 self loop for g? false
-2 self loop for g? false
 f
 g
 fg
@@ -5516,29 +5510,11 @@ PASS: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" passed.
 
 Running test 1020: abctests/tracematches/Tracematches: Plus and Star
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PlusStar.java 
-3 self loop for f? false
-1 self loop for f? false
-2 self loop for f? true
-0 self loop for f? false
-3 self loop for g? false
-1 self loop for g? true
-2 self loop for g? false
-0 self loop for g? false
 PASS: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" passed.
 
 
 Running test 1021: abctests/tracematches/Tracematches: Alternation
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Alternation.java 
-0 self loop for f? false
-4 self loop for f? false
-3 self loop for f? false
-2 self loop for f? false
-1 self loop for f? false
-0 self loop for g? false
-4 self loop for g? false
-3 self loop for g? false
-2 self loop for g? false
-1 self loop for g? false
 f
 f
 g
@@ -5555,91 +5531,43 @@ PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-1 self loop for f? false
-2 self loop for f? false
-0 self loop for f? false
-1 self loop for g? false
-2 self loop for g? true
-0 self loop for g? false
-f(java.lang.Object@8c4fc9)
-f(java.lang.Object@6d442b)
-g(java.lang.Object@6d442b)
-fg+(java.lang.Object@6d442b)
-g(java.lang.Object@8c4fc9)
-fg+(java.lang.Object@8c4fc9)
-f(java.lang.Object@8c4fc9)
-g(java.lang.Object@6d442b)
-fg+(java.lang.Object@6d442b)
-f(java.lang.Object@8c4fc9)
-f(java.lang.Object@6d442b)
-g(java.lang.Object@8c4fc9)
-fg+(java.lang.Object@8c4fc9)
-g(java.lang.Object@8c4fc9)
-fg+(java.lang.Object@8c4fc9)
-g(java.lang.Object@6d442b)
-fg+(java.lang.Object@6d442b)
+f(java.lang.Object@3a772)
+f(java.lang.Object@1bd6f7d)
+g(java.lang.Object@1bd6f7d)
+fg+(java.lang.Object@1bd6f7d)
+g(java.lang.Object@3a772)
+fg+(java.lang.Object@3a772)
+f(java.lang.Object@3a772)
+g(java.lang.Object@1bd6f7d)
+fg+(java.lang.Object@1bd6f7d)
+f(java.lang.Object@3a772)
+f(java.lang.Object@1bd6f7d)
+g(java.lang.Object@3a772)
+fg+(java.lang.Object@3a772)
+g(java.lang.Object@3a772)
+fg+(java.lang.Object@3a772)
+g(java.lang.Object@1bd6f7d)
+fg+(java.lang.Object@1bd6f7d)
 PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
 Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
 Commandline: abc -d abctests/tracematches/failsafe -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe/leaktest/LeakTest.java abctests/tracematches/failsafe/tracematches/FailSafeEnum.java 
-3 self loop for create_enum? false
-2 self loop for create_enum? false
-1 self loop for create_enum? false
-0 self loop for create_enum? false
-3 self loop for call_next? false
-2 self loop for call_next? false
-1 self loop for call_next? true
-0 self loop for call_next? false
-3 self loop for update_source? false
-2 self loop for update_source? true
-1 self loop for update_source? false
-0 self loop for update_source? false
 PASS: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" passed.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
 Commandline: abc -d abctests/tracematches/failsafe3 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe3/leaktest/LeakTest.java abctests/tracematches/failsafe3/tracematches/FailSafeEnum.java 
-3 self loop for create_enum? false
-0 self loop for create_enum? false
-2 self loop for create_enum? false
-1 self loop for create_enum? false
-3 self loop for call_next? false
-0 self loop for call_next? false
-2 self loop for call_next? false
-1 self loop for call_next? true
-3 self loop for update_source? false
-0 self loop for update_source? false
-2 self loop for update_source? true
-1 self loop for update_source? false
 PASS: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" passed.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
 Commandline: abc -d abctests/tracematches/failsafe4 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe4/leaktest/LeakTest.java abctests/tracematches/failsafe4/tracematches/FailSafeEnum.java 
-2 self loop for create_enum? false
-0 self loop for create_enum? false
-3 self loop for create_enum? false
-1 self loop for create_enum? false
-2 self loop for call_next? false
-0 self loop for call_next? false
-3 self loop for call_next? false
-1 self loop for call_next? true
-2 self loop for update_source? true
-0 self loop for update_source? false
-3 self loop for update_source? false
-1 self loop for update_source? false
 PASS: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" passed.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Test.java 
-1 self loop for f? false
-2 self loop for f? false
-0 self loop for f? false
-1 self loop for g? false
-2 self loop for g? false
-0 self loop for g? false
 MATCHED
 MATCHED
 PASS: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" passed.
@@ -5647,110 +5575,47 @@ PASS: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NegBindings.java 
-1 self loop for f? false
-0 self loop for f? false
-3 self loop for f? false
-2 self loop for f? false
-1 self loop for g? false
-0 self loop for g? false
-3 self loop for g? false
-2 self loop for g? false
-1 self loop for h? false
-0 self loop for h? false
-3 self loop for h? false
-2 self loop for h? false
 PASS: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." passed.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MoreBindings.java 
-1 self loop for r? false
-2 self loop for r? false
-0 self loop for r? false
-1 self loop for q? false
-2 self loop for q? false
-0 self loop for q? false
-1 self loop for p? false
-2 self loop for p? false
-0 self loop for p? false
 PASS: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" passed.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/BasicAround.java 
-0 self loop for foocall? false
-1 self loop for foocall? false
 PASS: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" passed.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MultipleBindingsForAround.java 
-0 self loop for foo? false
-1 self loop for foo? false
-2 self loop for foo? false
-0 self loop for bar? false
-1 self loop for bar? false
-2 self loop for bar? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." passed.
 
 
 Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PerThread.java 
-2 self loop for foo? false
-3 self loop for foo? false
-0 self loop for foo? false
-1 self loop for foo? false
-2 self loop for bar? false
-3 self loop for bar? false
-0 self loop for bar? false
-1 self loop for bar? false
-2 self loop for baz? false
-3 self loop for baz? false
-0 self loop for baz? false
-1 self loop for baz? false
 PASS: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" passed.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/AdviseSelf.java 
-2 self loop for foo? false
-0 self loop for foo? false
-1 self loop for foo? false
-2 self loop for bar? false
-0 self loop for bar? false
-1 self loop for bar? false
 PASS: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" passed.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IfTest.java 
-1 self loop for a1? false
-0 self loop for a1? false
-2 self loop for a1? false
-1 self loop for b1? false
-0 self loop for b1? false
-2 self loop for b1? false
 PASS: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" passed.
 
 
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NoUpdates.java 
-1 self loop for foo? false
-0 self loop for foo? false
-1 self loop for bar? false
-0 self loop for bar? false
 PASS: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" passed.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimitiveVariables.java 
-1 self loop for f? false
-0 self loop for f? false
-2 self loop for f? false
-1 self loop for g? false
-0 self loop for g? false
-2 self loop for g? true
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 f(1)
 f(2)
@@ -5774,61 +5639,29 @@ PASS: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable b
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IntVariable.java 
-0 self loop for f? false
-1 self loop for f? false
 PASS: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." passed.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimNegBindings.java 
-3 self loop for f? false
-1 self loop for f? false
-2 self loop for f? false
-0 self loop for f? false
-3 self loop for g? false
-1 self loop for g? false
-2 self loop for g? false
-0 self loop for g? false
-3 self loop for h? false
-1 self loop for h? false
-2 self loop for h? false
-0 self loop for h? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." passed.
 
 
 Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs.java 
-2 self loop for foo? false
-1 self loop for foo? false
-0 self loop for foo? false
-2 self loop for bar? false
-1 self loop for bar? false
-0 self loop for bar? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" passed.
 
 
 Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs2.java 
-1 self loop for foo? false
-0 self loop for foo? false
-2 self loop for foo? false
-1 self loop for bar? false
-0 self loop for bar? false
-2 self loop for bar? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" passed.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/CollWeakRefs.java 
-0 self loop for foo? false
-2 self loop for foo? false
-1 self loop for foo? false
-0 self loop for bar? false
-2 self loop for bar? false
-1 self loop for bar? false
 Matched orig
 Matched 19
 Matched 19
@@ -5837,14 +5670,6 @@ PASS: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings 
 
 Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs3.java 
-3 self loop for foo? false
-2 self loop for foo? false
-0 self loop for foo? false
-1 self loop for foo? false
-3 self loop for bar? false
-2 self loop for bar? false
-0 self loop for bar? false
-1 self loop for bar? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ..........++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 PASS: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" passed.
@@ -5852,14 +5677,6 @@ PASS: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindi
 
 Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs4.java 
-2 self loop for foo? false
-3 self loop for foo? false
-1 self loop for foo? false
-0 self loop for foo? false
-2 self loop for bar? false
-3 self loop for bar? false
-1 self loop for bar? false
-0 self loop for bar? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.
 PASS: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" passed.
@@ -5867,16 +5684,6 @@ PASS: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindi
 
 Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs5.java 
-0 self loop for foo? false
-4 self loop for foo? false
-2 self loop for foo? false
-3 self loop for foo? false
-1 self loop for foo? false
-0 self loop for bar? false
-4 self loop for bar? false
-2 self loop for bar? false
-3 self loop for bar? false
-1 self loop for bar? false
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.++++++++++.
 PASS: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" passed.
@@ -5963,66 +5770,66 @@ PASS: Test 1109: "om/matchtest/Basic matching test" passed.
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibExtAspect: Before fib(5)
 In FibAspect: Before fib(5)
-In FibExtAspect: Before getPrevX
+In FibExtAspect: Before fib(5)
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(5)
 In FibAspect: Before fib(4)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(4)
 In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(1)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(1)
 5
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 9
 1
 10
@@ -6654,8 +6461,6 @@ FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpat
 
 Running test 1209: abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/TracematchAndIfAndPPVs.java 
-1 self loop for foo? false
-0 self loop for foo? false
 PASS: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" passed.
 
 
@@ -6756,30 +6561,6 @@ PASS: Test 1220: "abctests/eaj/lock_unlock/warning on restructuring for sync. me
 
 Running test 1301: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): QuickCheck
 Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -debug warnWhenAlteringShadow abctests/tracematches/wp-opt/QuickCheck.java 
-1 self loop for f? false
-2 self loop for f? false
-0 self loop for f? false
-1 self loop for g? false
-2 self loop for g? false
-0 self loop for g? false
-0 self loop for f? false
-1 self loop for f? false
-2 self loop for f? false
-0 self loop for g? false
-1 self loop for g? false
-2 self loop for g? false
-2 self loop for f? false
-0 self loop for f? false
-1 self loop for f? false
-2 self loop for g? false
-0 self loop for g? false
-1 self loop for g? true
-1 self loop for a? false
-0 self loop for a? false
-2 self loop for a? false
-1 self loop for b? false
-0 self loop for b? false
-2 self loop for b? false
 No active symbol advice for location tracematch$3490@56614. Disabling some-advice, sync-advice and body advice.
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 1301: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): QuickCheck" passed.
@@ -6787,12 +6568,6 @@ PASS: Test 1301: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): QuickChe
 
 Running test 1302: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-insensitive stage
 Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage flowins -debug warnWhenAlteringShadow -cp ../../lib/abc-runtime.jar:../../lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/FlowIns.java 
-2 self loop for a? false
-1 self loop for a? false
-0 self loop for a? false
-2 self loop for b? false
-1 self loop for b? false
-0 self loop for b? false
 No active symbol advice for location tracematch$3510@56648. Disabling some-advice, sync-advice and body advice.
 No active symbol advice for location tracematch$3510@56646. Disabling some-advice, sync-advice and body advice.
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
