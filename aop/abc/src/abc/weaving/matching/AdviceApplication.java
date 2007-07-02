@@ -305,6 +305,7 @@ public abstract class AdviceApplication {
                 if(method.getName().equals(SootMethod.staticInitializerName))
                     hasclinit=true;
 
+                //TODO check method category?
                 if(method.isAbstract()) continue;
                 if(method.isNative()) continue;
 
