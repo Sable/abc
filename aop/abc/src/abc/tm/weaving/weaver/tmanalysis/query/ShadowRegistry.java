@@ -369,15 +369,21 @@ public class ShadowRegistry {
             }
         }
         //no enabled symbol shadows found for this location
-        System.err.print("No active symbol advice for location "+locationID+". ");
-        System.err.println("Disabling some-advice, sync-advice and body advice.");
         AdviceApplication someAa = getSomeAdviceApplicationForSymbolShadow(uniqueShadowIdOrLocationID);
-        someAa.setResidue(NeverMatch.v());
         AdviceApplication syncAa = getSyncAdviceApplicationForSymbolShadow(uniqueShadowIdOrLocationID);
-        syncAa.setResidue(NeverMatch.v());
         AdviceApplication bodyAa = getBodyAdviceApplicationForSymbolShadow(uniqueShadowIdOrLocationID);
-        if(bodyAa!=null)//does not always have to be present, only if a symbol leads to a final state
-            bodyAa.setResidue(NeverMatch.v());
+        //if not already all disabled
+        if(!NeverMatch.neverMatches(someAa.getResidue()) || !NeverMatch.neverMatches(syncAa.getResidue()) ||
+           (bodyAa!=null && !NeverMatch.neverMatches(bodyAa.getResidue()))) {
+            //disable
+            System.err.print("No active symbol advice for location "+locationID+". ");
+            System.err.println("Disabling some-advice, sync-advice and body advice.");
+            someAa.setResidue(NeverMatch.v());
+            syncAa.setResidue(NeverMatch.v());
+            if(bodyAa!=null)//does not always have to be present, only if a symbol leads to a final state
+                bodyAa.setResidue(NeverMatch.v());
+        }
+        
     }
     
     public void disableAllUnneededSomeSyncAndBodyAdvice() {
