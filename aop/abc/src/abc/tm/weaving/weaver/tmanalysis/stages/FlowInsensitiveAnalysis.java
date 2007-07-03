@@ -111,7 +111,7 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
         logToStatistics("cum-dominating-edges-time", domEdgesTimer);
         logToStatistics("cum-group-shadows-time", groupShadowsTimer);
 	}
-
+    
 	/**
 	 * remove and disable all shadows in <i>shadows</i> that have an empty variable mapping
 	 * @param shadows a set of {@link SymbolShadowWithPTS}s

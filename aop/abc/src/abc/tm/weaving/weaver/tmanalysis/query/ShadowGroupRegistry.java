@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import abc.main.Debug;
+import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 
 /**
  * A global registry for shadow groups.
@@ -58,27 +59,15 @@ public class ShadowGroupRegistry {
 	}
 	
 	/**
-	 * Prunes all shadow groups which have a label-shadow equal to one one of the shadows in deadShadows.
-	 * Disables all shadows in deadShadows.
-	 * Then disables all (other) shadows which are not member of a shadow group any more.
-	 * @param deadShadows a set of shadows which is known to be dead, i.e. unnecessary
+	 * Prunes all shadow groups which have a label-shadow that has become disabled in the meantime.
+	 * Then disables all shadows which are not member of a shadow group any more.
 	 * @return <code>true</code> if a shadow could actually be disabled
 	 * @see ShadowGroup#getLabelShadows()
 	 * @see {@link ShadowRegistry#disableShadow(String)}
 	 */
-	public boolean pruneShadowsAndIncompleteDependentGroups(Collection deadShadows) {
+	public boolean pruneShadowGroupsWhichHaveBecomeIncomplete() {
 		boolean removedAGroup = true;
 		Set allShadowsInAllShadowGroups = new HashSet();
-		
-		//disable all dead shadows
-		for (Iterator deadShadowIter = deadShadows.iterator(); deadShadowIter.hasNext();) {
-			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) deadShadowIter.next();
-			if(Debug.v().tmShadowDump) {
-				System.err.println("Disabling shadow "+shadow.getUniqueShadowId()+
-						" because it was marked as dead.");
-			}
-			ShadowRegistry.v().disableShadow(shadow.getUniqueShadowId());
-		}
 		
 		//prune all groups which have a dead shadow as a label-shadow
 		for (Iterator groupIter = shadowGroups.iterator(); groupIter.hasNext();) {
@@ -87,20 +76,19 @@ public class ShadowGroupRegistry {
 			//collect all shadows
 			allShadowsInAllShadowGroups.addAll(group.getAllShadows());
 			
-			Set labelShadows = group.getLabelShadows();
-			for (Iterator shadowIter = deadShadows.iterator(); shadowIter.hasNext();) {
-				SymbolShadowWithPTS deadShadow = (SymbolShadowWithPTS) shadowIter.next();
-				if(labelShadows.contains(deadShadow)) {
-					if(Debug.v().debugTmAnalysis) {
-						System.err.println("Removed shadow group #"+group.getNumber()+
-								" because it contains label-shadow "+deadShadow.getUniqueShadowId()+
-								", which is dead.");
-					}
-					groupIter.remove();
-					removedAGroup = true;
-					break;
-				}
-			}
+			Set<ISymbolShadow> labelShadows = group.getLabelShadows();
+            for (ISymbolShadow labelShadow : labelShadows) {
+                if(!labelShadow.isEnabled()) {
+                    if(Debug.v().debugTmAnalysis) {
+                        System.err.println("Removed shadow group #"+group.getNumber()+
+                                " because it contains label-shadow "+labelShadow.getUniqueShadowId()+
+                                ", which is dead.");
+                    }
+                    groupIter.remove();
+                    removedAGroup = true;
+                    break;
+                }
+            }
 		}
 		
 		if(removedAGroup) {

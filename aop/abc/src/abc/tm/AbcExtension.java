@@ -175,6 +175,17 @@ public class AbcExtension extends abc.eaj.AbcExtension
         			} catch (InstantiationException e) {
         			} catch (IllegalAccessException e) {
         			};
+
+                    //hook up reiteration of flow-insensitive analysis, if present
+                    try {
+                        Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptReiterationFlowInsensitiveAnalysis");              
+                        ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
+                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
+                        System.out.println("Found and installed plug-in for reiteration of flow-insensitive analysis.");
+                    } catch (ClassNotFoundException e) {
+                    } catch (InstantiationException e) {
+                    } catch (IllegalAccessException e) {
+                    };
                 }
             }
 
