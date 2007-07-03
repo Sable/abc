@@ -172,6 +172,9 @@ public class AbcExtension extends abc.eaj.AbcExtension
         	            ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
         	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
         	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations.");
+                        
+                        //need unique advice actuals for this analysis
+                        TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
                     } catch (ClassNotFoundException e) {
         			} catch (InstantiationException e) {
         			} catch (IllegalAccessException e) {

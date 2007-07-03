@@ -36,6 +36,7 @@ import soot.tagkit.AttributeValueException;
 import soot.tagkit.Host;
 import soot.tagkit.Tag;
 import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.scalar.LocalSplitter;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
@@ -64,6 +65,12 @@ import abc.weaving.aspectinfo.MethodCategory;
  */
 public class TMShadowTagger extends BodyTransformer implements Stage {
 
+    /**
+     * If set to <code>true</code>, the tagger will split local variables, resulting in the fact that
+     * advice actuals are unique.
+     */
+    public static boolean UNIQUE_ADVICE_ACTUALS = false;
+    
 	/** Mapping from a sync-advice method to its tracematch. */
 	protected Map<SootMethod,TraceMatch> syncMethodToTraceMatch;
 	
@@ -75,7 +82,7 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 	public static class SymbolShadowTag implements Tag {
 		
 		public final static String NAME = SymbolShadowTag.class.getName();
-
+        
 		private final Map<TraceMatch, Set<ISymbolShadow>> tmToMatches;		
 
 		public SymbolShadowTag(Map<TraceMatch, Set<ISymbolShadow>> matches) {
@@ -157,6 +164,9 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 			for (SootMethod method : (List<SootMethod>)sootClass.getMethods()) {
 				if(MethodCategory.weaveInside(method)) {
 					if(method.hasActiveBody()) {
+                        if(UNIQUE_ADVICE_ACTUALS) {
+                            LocalSplitter.v().transform(method.getActiveBody());
+                        }
 						transform(method.getActiveBody());
 					}
 				}
