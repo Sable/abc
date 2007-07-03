@@ -69,6 +69,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
     private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
     private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
+    private static final ID PASS_TM_ANALYSIS_FLOWINS_REITER = new ID("Tracematch analysis - reiteration of flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
 
     protected void collectVersions(StringBuffer versions)
@@ -180,7 +181,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
                     try {
                         Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptReiterationFlowInsensitiveAnalysis");              
                         ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
-                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
+                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS_REITER , intra ) );
                         System.out.println("Found and installed plug-in for reiteration of flow-insensitive analysis.");
                     } catch (ClassNotFoundException e) {
                     } catch (InstantiationException e) {
