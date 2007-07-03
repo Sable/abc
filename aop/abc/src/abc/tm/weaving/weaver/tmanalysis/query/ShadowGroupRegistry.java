@@ -67,7 +67,7 @@ public class ShadowGroupRegistry {
 	 */
 	public boolean pruneShadowGroupsWhichHaveBecomeIncomplete() {
 		boolean removedAGroup = true;
-		Set allShadowsInAllShadowGroups = new HashSet();
+		Set<ISymbolShadow> allShadowsInAllShadowGroups = new HashSet<ISymbolShadow>();
 		
 		//prune all groups which have a dead shadow as a label-shadow
 		for (Iterator groupIter = shadowGroups.iterator(); groupIter.hasNext();) {
@@ -100,15 +100,17 @@ public class ShadowGroupRegistry {
 			}
 			
 			//we can disable all shadows which were in a shadow group before but now are not any more
-			Set shadowsToDisable = new HashSet(allShadowsInAllShadowGroups);
+			Set<ISymbolShadow> shadowsToDisable = new HashSet<ISymbolShadow>(allShadowsInAllShadowGroups);
 			shadowsToDisable.removeAll(allShadowsStillActive);			
-			for (Iterator shadowIter = shadowsToDisable.iterator(); shadowIter.hasNext();) {
-				SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
-				ShadowRegistry.v().disableShadow(shadow.getUniqueShadowId());
-				if(Debug.v().tmShadowDump) {
-					System.err.println("Removed shadow "+shadow.getUniqueShadowId()+
-							" because it is no longer part of any active shadow group.");
-				}
+			for (Iterator<ISymbolShadow> shadowIter = shadowsToDisable.iterator(); shadowIter.hasNext();) {
+				ISymbolShadow shadow = shadowIter.next();
+                if(shadow.isEnabled()) {
+                    ShadowRegistry.v().disableShadow(shadow.getUniqueShadowId());
+                    if(Debug.v().tmShadowDump) {
+                        System.err.println("Removed shadow "+shadow.getUniqueShadowId()+
+                                " because it is no longer part of any active shadow group.");
+                    }
+                }
 			}			
 			return !shadowsToDisable.isEmpty();
 		} else {
