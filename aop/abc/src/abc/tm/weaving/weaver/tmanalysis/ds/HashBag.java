@@ -133,8 +133,6 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 	 */
 	@Override
 	public boolean remove(Object o) {
-		//why the f**k does this method have to have parameter type object???...
-		
 		int count = backingMap.get(o);
 		if(count==0) {
 			return false;
@@ -143,7 +141,7 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 			int newCount = count-1;
 			if(newCount==0) {
 				//actually remove the mapping to save space
-				backingMap.remove((E)o);
+				backingMap.remove(o);
 			} else {
 				backingMap.put((E)o,newCount);
 			}
