@@ -60,7 +60,7 @@ public class ConsistentShadowGroupFinder {
 	 *       note that {a_1(o1),a_2(o1),b_1(o1)} is missing although it could lead to a match;
 	 * </ul>
 	 * 
-	 * @param shadows a set of {@link Shadow}s of a single tracematch 
+	 * @param shadows a set of {@link SymbolShadowWithPTS}s of a single tracematch 
 	 * @param pathInfos the set of {@link PathInfo}s for the associated state machine
 	 * @see PathInfoFinder 
 	 */
@@ -70,7 +70,7 @@ public class ConsistentShadowGroupFinder {
 		
 		//build a mapping from symbol names to shadows with that symbol name
 		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			Shadow s = (Shadow) shadowIter.next();
+			SymbolShadowWithPTS s = (SymbolShadowWithPTS) shadowIter.next();
 			
 			String symbolName = Naming.getSymbolShortName(s.getUniqueShadowId());
 			Set shadowsForThisSymbol = (Set) symbolNameToShadows.get(symbolName);
@@ -113,7 +113,7 @@ public class ConsistentShadowGroupFinder {
 					Set shadowsWithThisLabel = (Set) symbolNameToShadows.get(label);
 					if(shadowsWithThisLabel!=null) {
 						for (Iterator iterator = shadowsWithThisLabel.iterator(); iterator.hasNext();) {
-							Shadow shadow = (Shadow) iterator.next();
+							SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) iterator.next();
 							//add it if points-to set overlap
 							shadowGroup.addSkipShadow(shadow);
 						}
@@ -202,21 +202,21 @@ public class ConsistentShadowGroupFinder {
 		/**
 		 * Adds the shadow o to this component, but only if its points-to set has a non-empty
 		 * intersection with the sets of the shadows contained already in this component.
-		 * @param o any {@link Shadow} 
+		 * @param o any {@link SymbolShadowWithPTS} 
 		 * @return true if the shadow was added
 		 */
 		public boolean add(Object o) {
 			Map newVarToPts = new HashMap();
-			if(o instanceof Shadow) {
-				Shadow s = (Shadow)o;
+			if(o instanceof SymbolShadowWithPTS) {
+				SymbolShadowWithPTS s = (SymbolShadowWithPTS)o;
 				
-				for (Iterator varIter = s.getBoundVariables().iterator(); varIter.hasNext();) {
+				for (Iterator varIter = s.getBoundTmFormals().iterator(); varIter.hasNext();) {
 					String var = (String) varIter.next();
 					
 					PointsToSet thisPts = (PointsToSet) varToPts.get(var);
 					if(thisPts==null) thisPts = FullObjectSet.v();
 					
-					PointsToSet othPts = s.getPointsToSet(var);  
+					PointsToSet othPts = s.getPointsToSetForVariable(var);  
 					if(othPts==null) othPts = FullObjectSet.v();
 					
 					PointsToSet intersection = Intersection.intersect(thisPts, othPts);
@@ -247,14 +247,14 @@ public class ConsistentShadowGroupFinder {
 			}			
 		}
 		
-		public boolean hasNonEmptyIntersection(Shadow s) {
-			for (Iterator varIter = s.getBoundVariables().iterator(); varIter.hasNext();) {
+		public boolean hasNonEmptyIntersection(SymbolShadowWithPTS s) {
+			for (Iterator varIter = s.getBoundTmFormals().iterator(); varIter.hasNext();) {
 				String var = (String) varIter.next();
 				
 				PointsToSet thisPts = (PointsToSet) varToPts.get(var);
 				if(thisPts==null) thisPts = FullObjectSet.v();
 				
-				PointsToSet othPts = s.getPointsToSet(var);  
+				PointsToSet othPts = s.getPointsToSetForVariable(var);  
 				if(othPts==null) othPts = FullObjectSet.v();
 				
 				PointsToSet intersection = Intersection.intersect(thisPts, othPts);

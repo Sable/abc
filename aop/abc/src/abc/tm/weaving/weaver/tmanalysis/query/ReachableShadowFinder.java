@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 
 import soot.Body;
 import soot.SootMethod;
@@ -50,7 +51,7 @@ public class ReachableShadowFinder {
 	 * Computes the reachable shadows of cg if it has not been computed before or
 	 * returns a cached result otherwise.
 	 * @param cg a call graph
-	 * @return a set of {@link Shadow}s rechable in cg
+	 * @return a set of {@link SymbolShadowWithPTS}s rechable in cg
 	 */
 	public Set reachableShadows(CallGraph cg) {
 		
@@ -76,12 +77,12 @@ public class ReachableShadowFinder {
 	 * Computes the reachable shadows of cg if it has not been computed before or
 	 * returns a cached result otherwise.
 	 * @param cg a call graph
-	 * @return a set of unique shadow IDs of {@link Shadow}s rechable in cg
+	 * @return a set of unique shadow IDs of {@link SymbolShadowWithPTS}s rechable in cg
 	 * @see Naming#uniqueShadowID(String, int)
 	 * @see Naming#uniqueShadowID(String, String, int)
 	 */
 	public Set reachableShadowIDs(CallGraph cg) {
-		return Shadow.uniqueShadowIDsOf(reachableShadows(cg));
+		return SymbolShadow.uniqueShadowIDsOf(reachableShadows(cg));
 	}
 	
 	/**

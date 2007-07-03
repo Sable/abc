@@ -39,8 +39,8 @@ import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
+import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.NeverMatch;
@@ -308,15 +308,15 @@ public class ShadowRegistry {
 	public Set allActiveShadowsForTag(SymbolShadowTag tag, SootMethod container) {
 		Set result = new HashSet();
 
-		for (SymbolShadow match : tag.getAllMatches()) {
+		for (ISymbolShadow match : tag.getAllMatches()) {
 			if(match.isEnabled()) {
-				result.add(new Shadow(match,container));
+				result.add(new SymbolShadowWithPTS(match,container));
 			}
 		}
 		return result;
 	}
 	
-	public Set<Shadow> allActiveShadowsForHost(Host h, SootMethod container) {
+	public Set<SymbolShadowWithPTS> allActiveShadowsForHost(Host h, SootMethod container) {
 		if(h.hasTag(SymbolShadowTag.NAME)) {
 			SymbolShadowTag tag = (SymbolShadowTag) h.getTag(SymbolShadowTag.NAME);
 			return allActiveShadowsForTag(tag, container);
@@ -329,7 +329,7 @@ public class ShadowRegistry {
 		Set result = new HashSet();
 		Set allShadowsForHost = allActiveShadowsForHost(h, container);
 		for (Iterator shadowIter = allShadowsForHost.iterator(); shadowIter.hasNext();) {
-			Shadow shadow = (Shadow) shadowIter.next();
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
 			String shadowId = shadow.getUniqueShadowId();
 			String tracematchName = Naming.getTracematchName(shadowId);
 			if(tracematchName.equals(tm.getName())) {

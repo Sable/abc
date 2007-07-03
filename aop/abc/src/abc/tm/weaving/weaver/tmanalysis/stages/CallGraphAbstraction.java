@@ -34,8 +34,8 @@ import abc.tm.weaving.weaver.tmanalysis.callgraph.NodePredicate;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
+import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.Timer;
 import abc.weaving.aspectinfo.MethodCategory;
 
@@ -166,7 +166,7 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
 	                if(u.hasTag(SymbolShadowTag.NAME)) {
 	                	SymbolShadowTag tag = (SymbolShadowTag) u.getTag(SymbolShadowTag.NAME);
 						//if any shadows in the tag are still enabled 
-	                	for (SymbolShadow match : tag.getAllMatches()) {
+	                	for (ISymbolShadow match : tag.getAllMatches()) {
 							if(match.isEnabled()) {
 								return true;
 							}

@@ -1,17 +1,29 @@
 package abc.tm.weaving.weaver.tmanalysis.util;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import soot.Local;
 import soot.SootMethod;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
+import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
 
 /**
- * A single shadow match for a tracematch symbol.
+ * A symbol shadow represents a static point in the program where the state
+ * machine may make a transition with a certain symbol. Each Shadow belongs to a container
+ * method and has a uniqueShadowId. Further, it has a mapping from
+ * tracematch variables to Soot {@link Local}s (<i>advice actuals</i>)
+ * that bind those tracematch variables at the shadow. 
+ *
  * @author Eric Bodden
  */
-public class SymbolShadow {
+public class SymbolShadow implements ISymbolShadow {
 	
 	protected final String symbolName;
 	
@@ -32,49 +44,78 @@ public class SymbolShadow {
 		this.uniqueShadowId = Naming.uniqueShadowID(owner.getName(),symbolName,shadowId).intern();
 	}
 
-	/**
-	 * @return the symbolName
+	/** 
+	 * {@inheritDoc}
 	 */
 	public String getSymbolName() {
 		return symbolName;
 	}
 
-	/**
-	 * @return the owner
+	/** 
+	 * {@inheritDoc}
 	 */
 	public TraceMatch getOwner() {
 		return owner;
 	}
 
-	/**
-	 * @return the tmFormalToAdviceLocal
+	/** 
+	 * {@inheritDoc}
 	 */
-	public Map<String, Local> getTmFormalToAdviceLocal() {
-		return tmFormalToAdviceLocal;
+	public Set<String> getBoundTmFormals() {
+		return tmFormalToAdviceLocal.keySet();
 	}
 	
-	/**
-	 * @return <code>true</code> if this shadow is enabled in the {@link ShadowRegistry}
+	/** 
+	 * {@inheritDoc}
+	 */
+	public Collection<Local> getAdviceLocals() {
+		return tmFormalToAdviceLocal.values();
+	}
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	public Local getAdviceLocalForVariable(String tracematchVariable){
+		assert getBoundTmFormals().contains(tracematchVariable);
+		return tmFormalToAdviceLocal.get(tracematchVariable);
+	}
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	public Map<String,Local> getTmFormalToAdviceLocal() {
+		return new HashMap<String,Local>(tmFormalToAdviceLocal);
+	}
+	
+	/** 
+	 * {@inheritDoc}
 	 */
 	public boolean isEnabled() {
 		return ShadowRegistry.v().isEnabled(getUniqueShadowId());
 	}
-	
-	/**
+
+	/** 
 	 * {@inheritDoc}
 	 */
-	public String toString() {
-		return "symbol:  " + symbolName + "\n" +
-			"tracematch: " + owner.getName()+ "\n" +
-			"variables:  " + tmFormalToAdviceLocal + "\n" +
-			"shadow:     " + uniqueShadowId;				
-	}
-
 	public String getUniqueShadowId() {
 		return uniqueShadowId;
 	}
-
+	
 	/** 
+	 * {@inheritDoc}
+	 */
+	public String getLocationId() {
+		return Naming.locationID(uniqueShadowId);
+	}
+	
+    /** 
+	 * {@inheritDoc}
+	 */
+    public SootMethod getContainer() {
+        return container;
+    }
+
+    /** 
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -128,11 +169,30 @@ public class SymbolShadow {
 		return true;
 	}
 
-    /**
-     * @return the container
-     */
-    public SootMethod getContainer() {
-        return container;
-    }
-	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String toString() {
+		return "symbol:  " + symbolName + "\n" +
+			"tracematch: " + owner.getName()+ "\n" +
+			"variables:  " + tmFormalToAdviceLocal + "\n" +
+			"shadow:     " + uniqueShadowId;				
+	}
+
+	/**
+	 * For a given set of {@link SymbolShadowWithPTS}s, returns the set of their
+	 * unique shadow IDs.
+	 * @param shadows a set of {@link SymbolShadowWithPTS}s
+	 * @return the set of their shadow IDs
+	 * @see Naming#uniqueShadowID(String, int)
+	 * @see Naming#uniqueShadowID(String, String, int)
+	 */
+	public static Set uniqueShadowIDsOf(Set shadows) {
+		Set ids = new HashSet();
+		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
+			ids.add(shadow.getUniqueShadowId());
+		}
+		return Collections.unmodifiableSet(ids);
+	}
 }

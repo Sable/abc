@@ -38,9 +38,9 @@ import abc.tm.weaving.weaver.tmanalysis.query.ConsistentShadowGroupFinder.Consis
  */
 public class ShadowGroup {
 	
-	protected Set<Shadow> labelShadows;
+	protected Set<SymbolShadowWithPTS> labelShadows;
 	
-	protected Set<Shadow> skipShadows;
+	protected Set<SymbolShadowWithPTS> skipShadows;
 	
 	protected TraceMatch tm;
 	
@@ -54,13 +54,13 @@ public class ShadowGroup {
 	
 	public ShadowGroup(TraceMatch tm, ConsistentShadowBag shadowSet) {
 		this.tm = tm;
-		this.labelShadows = new HashSet<Shadow>();
+		this.labelShadows = new HashSet<SymbolShadowWithPTS>();
 		this.varToPts = new HashMap<String, PointsToSet>();
 		for (Iterator iterator = shadowSet.iterator(); iterator.hasNext();) {
-			Shadow shadow = (Shadow) iterator.next();
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) iterator.next();
 			add(shadow);
 		}
-		this.skipShadows = new HashSet<Shadow>();
+		this.skipShadows = new HashSet<SymbolShadowWithPTS>();
 		this.number = groupCount;
 		groupCount++;
 	}
@@ -68,18 +68,18 @@ public class ShadowGroup {
 	/**
 	 * Adds the shadow o to this component, but only if its points-to set has a non-empty
 	 * intersection with the sets of the shadows contained already in this component.
-	 * @param o any {@link Shadow} 
+	 * @param o any {@link SymbolShadowWithPTS} 
 	 */
-	protected boolean add(Shadow s) {
+	protected boolean add(SymbolShadowWithPTS s) {
 		//TODO high code duplication with ConsistentShadowSet!
 		Map<String,PointsToSet> newVarToPts = new HashMap();
-		for (Iterator varIter = s.getBoundVariables().iterator(); varIter.hasNext();) {
+		for (Iterator varIter = s.getBoundTmFormals().iterator(); varIter.hasNext();) {
 			String var = (String) varIter.next();
 			
 			PointsToSet thisPts = (PointsToSet) varToPts.get(var);
 			if(thisPts==null) thisPts = FullObjectSet.v();
 			
-			PointsToSet othPts = s.getPointsToSet(var);  
+			PointsToSet othPts = s.getPointsToSetForVariable(var);  
 			if(othPts==null) othPts = FullObjectSet.v();
 			
 			PointsToSet intersection = Intersection.intersect(thisPts, othPts);
@@ -103,14 +103,14 @@ public class ShadowGroup {
 		return labelShadows.add(s);
 	}
 	
-	protected boolean hasNonEmptyIntersection(Shadow s) {
-		for (Iterator varIter = s.getBoundVariables().iterator(); varIter.hasNext();) {
+	protected boolean hasNonEmptyIntersection(SymbolShadowWithPTS s) {
+		for (Iterator varIter = s.getBoundTmFormals().iterator(); varIter.hasNext();) {
 			String var = (String) varIter.next();
 			
 			PointsToSet thisPts = (PointsToSet) varToPts.get(var);
 			if(thisPts==null) thisPts = FullObjectSet.v();
 			
-			PointsToSet othPts = s.getPointsToSet(var);  
+			PointsToSet othPts = s.getPointsToSetForVariable(var);  
 			if(othPts==null) othPts = FullObjectSet.v();
 			
 			PointsToSet intersection = Intersection.intersect(thisPts, othPts);
@@ -123,7 +123,7 @@ public class ShadowGroup {
 		return true;			
 	}
 	
-	public boolean addSkipShadow(Shadow s) {
+	public boolean addSkipShadow(SymbolShadowWithPTS s) {
 		if(hasNonEmptyIntersection(s))
 			return skipShadows.add(s);
 		else
@@ -151,7 +151,7 @@ public class ShadowGroup {
 		return tm;
 	}
 	
-	public Set<Shadow> getAllShadows() {
+	public Set<SymbolShadowWithPTS> getAllShadows() {
 		Set result = new HashSet(labelShadows);
 		result.addAll(skipShadows);
 		return result;		

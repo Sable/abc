@@ -39,6 +39,7 @@ import soot.toolkits.graph.ExceptionalUnitGraph;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolFinder;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.aspectinfo.AbcClass;
@@ -75,9 +76,9 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		
 		public final static String NAME = SymbolShadowTag.class.getName();
 
-		private final Map<TraceMatch, Set<SymbolShadow>> tmToMatches;		
+		private final Map<TraceMatch, Set<ISymbolShadow>> tmToMatches;		
 
-		private SymbolShadowTag(Map<TraceMatch, Set<SymbolShadow>> matches) {
+		public SymbolShadowTag(Map<TraceMatch, Set<ISymbolShadow>> matches) {
 			this.tmToMatches = matches;
 		}
 
@@ -94,8 +95,8 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		 * @param tm any tracematch
 		 * @return all matches for the given tracematch or the empty set if there are no matches
 		 */
-		public Set<SymbolShadow> getMatchesForTracematch(TraceMatch tm) {
-			Set<SymbolShadow> symbolShadowMatch = tmToMatches.get(tm); 
+		public Set<ISymbolShadow> getMatchesForTracematch(TraceMatch tm) {
+			Set<ISymbolShadow> symbolShadowMatch = tmToMatches.get(tm); 
 			if(symbolShadowMatch==null) {
 				return Collections.emptySet();
 			} else {
@@ -106,9 +107,9 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		/**
 		 * Returns all matches for all tracematches.
 		 */
-		public Set<SymbolShadow> getAllMatches() {
-			Set<SymbolShadow> res = new HashSet<SymbolShadow>();
-			for (Set<SymbolShadow> matches : tmToMatches.values()) {
+		public Set<ISymbolShadow> getAllMatches() {
+			Set<ISymbolShadow> res = new HashSet<ISymbolShadow>();
+			for (Set<ISymbolShadow> matches : tmToMatches.values()) {
 				res.addAll(matches);
 			}
 			return res;
@@ -130,7 +131,7 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		//for each invoke-statement that calls a some-advice
 		for (Stmt call : symbolFinder.getSomeAdviceMethodCalls()) {
 			//get the symbols matching at this call
-			Map<TraceMatch,Set<SymbolShadow>> matches = symbolFinder.getSymbolsAtSomeAdviceMethodCall(call);
+			Map<TraceMatch,Set<ISymbolShadow>> matches = symbolFinder.getSymbolsAtSomeAdviceMethodCall(call);
 			//create the annotation
 			call.addTag(new SymbolShadowTag(matches));
 		}

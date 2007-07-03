@@ -72,7 +72,7 @@ public class ShadowGroupRegistry {
 		
 		//disable all dead shadows
 		for (Iterator deadShadowIter = deadShadows.iterator(); deadShadowIter.hasNext();) {
-			Shadow shadow = (Shadow) deadShadowIter.next();
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) deadShadowIter.next();
 			if(Debug.v().tmShadowDump) {
 				System.err.println("Disabling shadow "+shadow.getUniqueShadowId()+
 						" because it was marked as dead.");
@@ -89,7 +89,7 @@ public class ShadowGroupRegistry {
 			
 			Set labelShadows = group.getLabelShadows();
 			for (Iterator shadowIter = deadShadows.iterator(); shadowIter.hasNext();) {
-				Shadow deadShadow = (Shadow) shadowIter.next();
+				SymbolShadowWithPTS deadShadow = (SymbolShadowWithPTS) shadowIter.next();
 				if(labelShadows.contains(deadShadow)) {
 					if(Debug.v().debugTmAnalysis) {
 						System.err.println("Removed shadow group #"+group.getNumber()+
@@ -115,7 +115,7 @@ public class ShadowGroupRegistry {
 			Set shadowsToDisable = new HashSet(allShadowsInAllShadowGroups);
 			shadowsToDisable.removeAll(allShadowsStillActive);			
 			for (Iterator shadowIter = shadowsToDisable.iterator(); shadowIter.hasNext();) {
-				Shadow shadow = (Shadow) shadowIter.next();
+				SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
 				ShadowRegistry.v().disableShadow(shadow.getUniqueShadowId());
 				if(Debug.v().tmShadowDump) {
 					System.err.println("Removed shadow "+shadow.getUniqueShadowId()+

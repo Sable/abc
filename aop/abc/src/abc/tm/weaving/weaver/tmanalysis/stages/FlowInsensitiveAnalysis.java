@@ -18,6 +18,7 @@
  */
 package abc.tm.weaving.weaver.tmanalysis.stages;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -30,9 +31,10 @@ import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.query.ConsistentShadowGroupFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.PathInfoFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
-import abc.tm.weaving.weaver.tmanalysis.query.Shadow;
+import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroup;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
+import abc.tm.weaving.weaver.tmanalysis.query.PathInfoFinder.PathInfo;
 import abc.tm.weaving.weaver.tmanalysis.util.ShadowsPerTMSplitter;
 import abc.tm.weaving.weaver.tmanalysis.util.Timer;
 
@@ -46,6 +48,8 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
 	protected Timer domEdgesTimer = new Timer("dominating-edges");
 	protected Timer groupShadowsTimer = new Timer("group-shadows");
 
+	protected Map<TraceMatch,Integer> tmToLongestPathToFinalState = new HashMap<TraceMatch,Integer>();
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -71,8 +75,15 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
 			
 			//find the sets of labels that dominate final states along each path
 			domEdgesTimer.startOrResume();
-			Set pathInfos = new PathInfoFinder(traceMatch).getPathInfos();
+			Set<PathInfo> pathInfos = new PathInfoFinder(traceMatch).getPathInfos();
 			domEdgesTimer.stop();
+			
+			int lengthOfLongestPath = -1;
+			for (PathInfo pathInfo : pathInfos) {
+				lengthOfLongestPath = Math.max(lengthOfLongestPath, pathInfo.length());
+			}
+			assert lengthOfLongestPath >= 0;
+			tmToLongestPathToFinalState.put(traceMatch, lengthOfLongestPath);
 			
 			Set thisTMsShadows = (Set) tmNameToShadows.get(tmName);
 			assert thisTMsShadows!=null;
@@ -103,12 +114,12 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
 
 	/**
 	 * remove and disable all shadows in <i>shadows</i> that have an empty variable mapping
-	 * @param shadows a set of {@link Shadow}s
+	 * @param shadows a set of {@link SymbolShadowWithPTS}s
 	 */
 	protected void removeShadowsWithEmptyMappings(Set shadows) {
         int emptyMappingCount=0;
         for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			Shadow shadow = (Shadow) shadowIter.next();
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
 			if(shadow.hasEmptyMapping()) {
 				shadowIter.remove();
 				//such a shadow can safely be disabled due to the tracematch semantics which say
@@ -122,13 +133,22 @@ public class FlowInsensitiveAnalysis extends AbstractAnalysisStage {
 	}
 	
 	/**
+	 * Returns the length of the longest path through the state machine for tm that
+	 * can reach a final state. (modulo loops)
+	 */
+	public int lengthOfLongestPathFor(TraceMatch tm) {
+		assert tmToLongestPathToFinalState.containsKey(tm);
+		return tmToLongestPathToFinalState.get(tm);
+	}
+	
+	/**
 	 * Disables all given shadows.
-	 * @param shadows a set os {@link Shadow}s
+	 * @param shadows a set of {@link SymbolShadowWithPTS}s
 	 */
 	protected void disableShadows(Set shadows) {
 		Set shadowIDsToDisable = new HashSet();
 		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			Shadow shadow = (Shadow) shadowIter.next();
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
 			shadowIDsToDisable.add(shadow.getUniqueShadowId());
 		}
 		disableAll(shadowIDsToDisable);

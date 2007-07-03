@@ -92,7 +92,7 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 		return new HashSet<Stmt>(someAdviceMethodCalls);
 	}
 	
-	public Map<TraceMatch,Set<SymbolShadow>> getSymbolsAtSomeAdviceMethodCall(Stmt call) {
+	public Map<TraceMatch,Set<ISymbolShadow>> getSymbolsAtSomeAdviceMethodCall(Stmt call) {
 		return (Map) getFlowBefore(call);
 	}
 
@@ -129,8 +129,8 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 				InstructionShadowTag tag = (InstructionShadowTag) stmt.getTag(InstructionShadowTag.NAME);
 				assert tag!=null;
 				int shadowId = tag.value();								
-				Set<SymbolShadow> currSymbolSet = (Set<SymbolShadow>) inMap.get(tm);
-				Set<SymbolShadow> newSet = new HashSet<SymbolShadow>(currSymbolSet);
+				Set<ISymbolShadow> currSymbolSet = (Set<ISymbolShadow>) inMap.get(tm);
+				Set<ISymbolShadow> newSet = new HashSet<ISymbolShadow>(currSymbolSet);
                 UnitGraph g = (UnitGraph)graph;
 				newSet.add(new SymbolShadow(symbolName,varMapping,shadowId,g.getBody().getMethod(),tm));
 				outMap.put(tm,newSet);

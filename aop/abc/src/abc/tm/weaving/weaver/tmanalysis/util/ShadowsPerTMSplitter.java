@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import abc.tm.weaving.weaver.tmanalysis.query.Shadow;
+import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
 
 /**
  * This class splits a given set of shadows into multiple sets so that each set holds only shadows of one tracematch. 
@@ -36,14 +36,14 @@ public class ShadowsPerTMSplitter {
 	
 	/**
 	 * Splits the shadows in the given set per tracematch.
-	 * @param shadows a set of {@link Shadow}s
-	 * @return a mapping from tracematch name ({@link String}) to a {@link Set} of {@link Shadow}s of that tracematch
+	 * @param shadows a set of {@link SymbolShadowWithPTS}s
+	 * @return a mapping from tracematch name ({@link String}) to a {@link Set} of {@link SymbolShadowWithPTS}s of that tracematch
 	 */
 	public static Map splitShadows(Collection shadows) {
 		Map tmNameToShadows = new HashMap();
 		
 		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			Shadow shadow = (Shadow) shadowIter.next();
+			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
 			
 			String uniqueShadowId = shadow.getUniqueShadowId();
 			String tracematchName = Naming.getTracematchName(uniqueShadowId);

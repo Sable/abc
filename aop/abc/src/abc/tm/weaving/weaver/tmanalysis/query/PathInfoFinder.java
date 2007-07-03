@@ -158,6 +158,15 @@ public class PathInfoFinder {
 		}
 		
 		/**
+		 * Returns the length of this path info, i.e.
+		 * the number of labels that have to be taken
+		 * in order to reach a final state along this path.
+		 */
+		public int length() {
+			return getDominatingLabels().size();
+		}
+		
+		/**
 		 * {@inheritDoc}
 		 */
 		public String toString() {
