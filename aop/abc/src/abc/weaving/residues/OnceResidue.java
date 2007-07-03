@@ -20,6 +20,7 @@ package abc.weaving.residues;
 
 import soot.BooleanType;
 import soot.Local;
+import soot.PatchingChain;
 import soot.SootMethod;
 import soot.jimple.EqExpr;
 import soot.jimple.IntConstant;
@@ -85,6 +86,9 @@ public class OnceResidue extends Residue {
 		assert units.contains(afterInit);
 		
 		Stmt initStmt = Jimple.v().newAssignStmt(flag, IntConstant.v(0));
+        //units should not be a patching chain because otherwise jumps to afterInit
+        //would be reroutet to initStmt and hence, the flag would be reset on every loop iteration
+		assert !(units instanceof PatchingChain); 
 		units.insertBefore(initStmt, afterInit);
 		
 		//now at the begin statement, check the status of the flag:
