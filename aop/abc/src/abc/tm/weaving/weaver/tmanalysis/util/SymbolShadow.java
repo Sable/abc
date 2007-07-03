@@ -187,10 +187,10 @@ public class SymbolShadow implements ISymbolShadow {
 	 * @see Naming#uniqueShadowID(String, int)
 	 * @see Naming#uniqueShadowID(String, String, int)
 	 */
-	public static Set uniqueShadowIDsOf(Set shadows) {
+	public static Set<String> uniqueShadowIDsOf(Set<ISymbolShadow> shadows) {
 		Set ids = new HashSet();
-		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			SymbolShadowWithPTS shadow = (SymbolShadowWithPTS) shadowIter.next();
+		for (Iterator<ISymbolShadow> shadowIter = shadows.iterator(); shadowIter.hasNext();) {
+            ISymbolShadow shadow = shadowIter.next();
 			ids.add(shadow.getUniqueShadowId());
 		}
 		return Collections.unmodifiableSet(ids);
