@@ -18,6 +18,7 @@
  */
 package abc.tm.weaving.weaver.tmanalysis.query;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import soot.EntryPoints;
+import soot.MethodOrMethodContext;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.toolkits.callgraph.CallGraph;
@@ -102,7 +104,10 @@ public class WeavableMethods {
 		}
 		
 		//get all reachable methods
-		ReachableMethods rm = new ReachableMethods(cg,EntryPoints.v().application());
+		ReachableMethods rm = new ReachableMethods(
+				cg,
+				new ArrayList<MethodOrMethodContext>(EntryPoints.v().application())
+		);
 		rm.update();
 		
 		QueueReader reader = rm.listener();
