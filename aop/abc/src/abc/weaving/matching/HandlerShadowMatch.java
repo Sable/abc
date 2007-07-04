@@ -20,20 +20,29 @@
 
 package abc.weaving.matching;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import soot.*;
-import soot.jimple.*;
-import soot.tagkit.Host;
-
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.residues.*;
-import abc.weaving.weaver.*;
 import polyglot.util.InternalCompilerError;
+import soot.Immediate;
+import soot.PatchingChain;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Trap;
+import soot.Unit;
+import soot.jimple.IdentityStmt;
+import soot.jimple.Stmt;
+import soot.jimple.internal.JNopStmt;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.JimpleValue;
+import abc.weaving.residues.Residue;
+import abc.weaving.weaver.ConstructorInliningMap;
 
 /** The results of matching at a handler shadow
  *  @author Ganesh Sittampalam
  *  @author Ondrej Lhotak
+ *  @author Eric Bodden
  *  @date 05-May-04
  */
 public class HandlerShadowMatch extends StmtShadowMatch {
@@ -67,6 +76,13 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 
 	Trap trap=((TrapMethodPosition) pos).getTrap();
 	Stmt stmt=(Stmt) trap.getHandlerUnit();
+	//due to method restructuring, the identity statement "ex = @caughtexception"
+	//might be preceded by nop-statements; hence, consume those...
+	PatchingChain<Unit> units = pos.getContainer().getActiveBody().getUnits();
+	while(stmt instanceof JNopStmt) {
+		stmt = (Stmt) units.getSuccOf(stmt);
+	}	
+	assert stmt instanceof IdentityStmt;
 	return new HandlerShadowMatch(pos.getContainer(),stmt,trap.getException());
     }
 
