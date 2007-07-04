@@ -365,7 +365,16 @@ public class ShadowRegistry {
         String locationID = Naming.locationID(uniqueShadowIdOrLocationID);
         for (String enabledShadow : enabledShadows) {
             if(Naming.locationID(enabledShadow).equals(locationID)) {
-                return;
+                AdviceApplication symAa = allShadowsToSymbolAdviceApplications.get(enabledShadow);
+                //the if-check is for the following reason:
+                //if a shadow was moved, it still shows up as "enabled" not to confuse subsequent steps;
+                //however, its residue is nevermatch and hence, we can safely disable all surrounding
+                //helper advice
+                //FIXME do this properly...
+                if(!NeverMatch.neverMatches(symAa.getResidue())) {
+                    //is not yet disabled
+                    return;
+                }
             }
         }
         //no enabled symbol shadows found for this location
@@ -388,18 +397,13 @@ public class ShadowRegistry {
     
     public void disableAllUnneededSomeSyncAndBodyAdvice() {
         //build a set of all location IDs
-        Set<String> inactiveLocationIDs = new HashSet<String>();
-        inactiveLocationIDs.addAll(allShadowsToSomeAdviceApplications.keySet());
-        inactiveLocationIDs.addAll(allShadowsToSyncAdviceApplications.keySet());
-        inactiveLocationIDs.addAll(allShadowsToBodyAdviceApplications.keySet());
+        Set<String> locationIDs = new HashSet<String>();
+        locationIDs.addAll(allShadowsToSomeAdviceApplications.keySet());
+        locationIDs.addAll(allShadowsToSyncAdviceApplications.keySet());
+        locationIDs.addAll(allShadowsToBodyAdviceApplications.keySet());
         
-        //remove all active ones
-        for (String shadowId : enabledShadows) {
-            inactiveLocationIDs.remove(Naming.locationID(shadowId));
-        }
-        
-        //disable for all inactive ones...
-        for (String inactiveLocationID : inactiveLocationIDs) {
+        //disable all, if they can be disabled
+        for (String inactiveLocationID : locationIDs) {
             disableSyncSomeAndBodyAdviceIfNotNeededAnyMore(inactiveLocationID);
         }
     }
