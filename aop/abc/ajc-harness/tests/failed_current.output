@@ -201,7 +201,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:98)
 	at soot.SootResolver.resolveClass(SootResolver.java:83)
-	at soot.Scene.loadClass(Scene.java:361)
+	at soot.Scene.loadClass(Scene.java:357)
 	at abc.main.CompileSequence.compile(CompileSequence.java:317)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
