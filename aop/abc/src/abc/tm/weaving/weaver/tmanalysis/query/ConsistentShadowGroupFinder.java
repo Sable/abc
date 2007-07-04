@@ -29,12 +29,15 @@ import java.util.Map.Entry;
 
 import soot.PointsToSet;
 import soot.jimple.toolkits.pointer.FullObjectSet;
+import abc.main.Debug;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.ds.Bag;
+import abc.tm.weaving.weaver.tmanalysis.ds.FixedUniverse;
 import abc.tm.weaving.weaver.tmanalysis.ds.HashBag;
 import abc.tm.weaving.weaver.tmanalysis.ds.Intersection;
 import abc.tm.weaving.weaver.tmanalysis.query.PathInfoFinder.PathInfo;
 import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
+import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 
 /**
@@ -46,6 +49,8 @@ import abc.tm.weaving.weaver.tmanalysis.util.Naming;
  */
 public class ConsistentShadowGroupFinder {
 	
+    protected FixedUniverse<ISymbolShadow> fixedUniverse;
+    
 	/**
 	 * Computes consistent shadow groups based on the set of shadows that is passed in.
 	 * A group is consistent if the points-to sets of all its shadows overlap (per variable)
@@ -66,11 +71,11 @@ public class ConsistentShadowGroupFinder {
 	 */
 	public Set consistentShadowGroups(TraceMatch tm, Set shadows, Set pathInfos) {
 		Map symbolNameToShadows = new HashMap();
-		
+		Set<ISymbolShadow> allShadowsForTM = new HashSet<ISymbolShadow>();
 		
 		//build a mapping from symbol names to shadows with that symbol name
 		for (Iterator shadowIter = shadows.iterator(); shadowIter.hasNext();) {
-			SymbolShadowWithPTS s = (SymbolShadowWithPTS) shadowIter.next();
+		    ISymbolShadow s = (ISymbolShadow) shadowIter.next();
 			
 			String symbolName = Naming.getSymbolShortName(s.getUniqueShadowId());
 			Set shadowsForThisSymbol = (Set) symbolNameToShadows.get(symbolName);
@@ -79,7 +84,10 @@ public class ConsistentShadowGroupFinder {
 				symbolNameToShadows.put(symbolName, shadowsForThisSymbol);
 			}
 			shadowsForThisSymbol.add(s);
+			allShadowsForTM.add(s);
 		}
+		
+		this.fixedUniverse = new FixedUniverse<ISymbolShadow>(allShadowsForTM);
 		
 		Set shadowGroups = new HashSet();
 		
@@ -90,7 +98,11 @@ public class ConsistentShadowGroupFinder {
 
 			Bag toCross = new HashBag();
 			
-			for (Iterator labIter = domLabels.iterator(); labIter.hasNext();) {
+            if(Debug.v().debugTmAnalysis) {
+                System.err.println("Cross product over: ");
+            }
+
+            for (Iterator labIter = domLabels.iterator(); labIter.hasNext();) {
 				String domLabel = (String) labIter.next();
 				
 				Set shadowsWithDomLabel = (Set) symbolNameToShadows.get(domLabel);
@@ -98,6 +110,9 @@ public class ConsistentShadowGroupFinder {
 				
 				toCross.add(shadowsWithDomLabel);
 				
+                if(Debug.v().debugTmAnalysis) {
+                    System.err.println(shadowsWithDomLabel.size()+" shadows, times...");
+                }
 			}
 
 			Set crossProduct = consistentCrossProduct(toCross);			
@@ -196,6 +211,7 @@ public class ConsistentShadowGroupFinder {
 		 * @param shadow the shadow to associate this component with
 		 */
 		protected ConsistentShadowBag() {
+		    super(fixedUniverse);
 			varToPts = new HashMap();
 		}
 		

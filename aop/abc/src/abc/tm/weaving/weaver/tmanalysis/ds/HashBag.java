@@ -24,7 +24,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Map.Entry;
+
+import soot.util.IdentityHashSet;
+import abc.tm.weaving.weaver.tmanalysis.ds.FixedUniverse.FixedUniverseMap;
 
 /**
  * A {@link Bag} that uses a {@link HashMap} as backing map.
@@ -46,7 +50,22 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 		protected E lastObject;
 		
 		protected HashBagIterator() {
-			backingMapIterator = backingMap.entrySet().iterator();
+		    Set<Entry<E, Integer>> entrySet = backingMap.entrySet();
+            Set<Entry<E, Integer>> filteredEntrySet;
+		    if(backingMap instanceof FixedUniverseMap) {    		    
+    		    //only retain all entries with a value > 0
+		        filteredEntrySet = new IdentityHashSet<Entry<E,Integer>>();
+                for (Entry<E, Integer> entry : entrySet) {
+                    if(entry.getValue()>0) {
+                        filteredEntrySet.add(entry);
+                    }
+                }
+		    } else {
+		        //for normal hash maps as backing map, such entries are directly removed
+		        //(see remove(Object))
+		        filteredEntrySet = entrySet;
+		    }
+			backingMapIterator = filteredEntrySet.iterator();
 		}
 		
 		public boolean hasNext() {
@@ -93,10 +112,13 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 
 	}
 
-	protected HashMap<E,Integer> backingMap;
+	protected Map<E,Integer> backingMap;
 	
 	protected int size;
 	
+	/**
+	 * Constructs a new, empty hash bag.
+	 */
 	public HashBag() {
 		backingMap = new HashMap<E,Integer>() {
 			@Override
@@ -110,9 +132,22 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 		size = 0;
 	}
 	
+    /**
+     * Constructs a new hash bag where each element in c is contained once.
+     */
 	public HashBag(Collection<E> c) {
 		this();
 		addAll(c);
+	}
+	
+    /**
+     * Constructs a new, empty hash bag over values of the given fixed universe.
+     * This is generally more efficient than using {@link #HashBag()} in cases
+     * where multiple HashBags exist over the same values.
+     */
+	public HashBag(FixedUniverse<E> fixedUniverse) {
+	    backingMap = fixedUniverse.newIntMap();
+	    size = 0;
 	}
 	
 	/** 
@@ -140,8 +175,10 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 			//..anyway, if we get here we know that o must be of type E because it's contained in the map 
 			int newCount = count-1;
 			if(newCount==0) {
-				//actually remove the mapping to save space
-				backingMap.remove(o);
+			    if(backingMap instanceof HashMap) {
+			        //actually remove the mapping to save space
+			        backingMap.remove(o);
+			    }			    
 			} else {
 				backingMap.put((E)o,newCount);
 			}
@@ -208,7 +245,12 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 	protected HashBag<E> clone() {
 		try {
 			HashBag<E> clone = (HashBag<E>) super.clone();
-			clone.backingMap = (HashMap<E, Integer>) backingMap.clone();
+			if(backingMap instanceof HashMap) {
+	            clone.backingMap = (HashMap<E, Integer>) ((HashMap)backingMap).clone();
+			} else {
+                clone.backingMap = (FixedUniverseMap) ((FixedUniverseMap)backingMap).clone();
+			}
+			
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			//cannot occur
