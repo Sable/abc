@@ -75,8 +75,8 @@
             destdir="runtime-classes"
             debug="true"
             deprecation="true"
-            target="1.5"
-            source="1.5"
+            target="1.4"
+            source="1.4"
         >
             <src path="runtime-src"/>
             <classpath>
