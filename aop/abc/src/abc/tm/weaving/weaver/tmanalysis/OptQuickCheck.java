@@ -21,6 +21,7 @@ package abc.tm.weaving.weaver.tmanalysis;
 import abc.main.AbcTimer;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
 import abc.tm.weaving.weaver.tmanalysis.util.Statistics;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -70,6 +71,10 @@ public class OptQuickCheck extends AbstractReweavingAnalysis {
     	QuickCheck.v().apply();
 
     	AbcTimer.mark("Quick check");
+    	
+    	ShadowRegistry.v().disableAllUnneededSomeSyncAndBodyAdvice();
+
+    	AbcTimer.mark("Disabling helper advice");    	
     	
 	}
 	

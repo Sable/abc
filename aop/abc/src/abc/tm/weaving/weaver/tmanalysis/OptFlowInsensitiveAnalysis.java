@@ -85,6 +85,10 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 		FlowInsensitiveAnalysis.v().apply();
 
     	AbcTimer.mark("Flow-insensitive analysis");    	
+    	
+    	ShadowRegistry.v().disableAllUnneededSomeSyncAndBodyAdvice();
+
+    	AbcTimer.mark("Disabling helper advice");    	
 	}
 	
 	/** 
