@@ -60,6 +60,8 @@ import abc.weaving.aspectinfo.MethodCategory;
  * The analysis recovers that structure and then tags the call statement to the some-shadow
  * with a tag that is labeled {a,b}.
  * <br><br>
+ * Assumes that <code>OptionsParser.v().set_tag_instructions(true);</code> has been called prior to weaving.
+ * 
  * This is an idempotent operation.
  * @author Eric Bodden
  */
