@@ -28,9 +28,7 @@ import soot.PointsToSet;
 import soot.PrimType;
 import soot.Scene;
 import soot.SootMethod;
-import soot.jimple.spark.ondemand.WrappedPointsToSet;
 import soot.jimple.spark.sets.EqualsSupportingPointsToSet;
-import soot.jimple.spark.sets.PointsToSetInternal;
 import soot.jimple.spark.sets.PointsToSetEqualsWrapper;
 import soot.jimple.toolkits.pointer.FullObjectSet;
 import abc.tm.weaving.aspectinfo.TraceMatch;
@@ -93,10 +91,6 @@ public class SymbolShadowWithPTS implements ISymbolShadow {
 				assert l!=null;
 				pts = (PointsToSet) Scene.v().getPointsToAnalysis().reachingObjects(l);
 				//wrap in equals-wrapper
-				if(pts instanceof WrappedPointsToSet) {
-                    WrappedPointsToSet wrappedPointsToSet = (WrappedPointsToSet) pts;
-				    pts = wrappedPointsToSet.getWrapped();
-				}
 				pts = new PointsToSetEqualsWrapper( (EqualsSupportingPointsToSet) pts);
 				
 				if(pts.isEmpty()) {
