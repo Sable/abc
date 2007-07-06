@@ -46,6 +46,7 @@ import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
 import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.CflowSetup;
@@ -216,6 +217,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
                     ShadowRegistry.reset();
                     TMShadowTagger.reset();
                     WeavableMethods.reset();
+                    SymbolShadow.reset();
                 }
             };
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );

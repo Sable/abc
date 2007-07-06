@@ -20,12 +20,15 @@ package abc.tm.weaving.weaver.tmanalysis.query;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import abc.main.Debug;
 import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 
 /**
  * A global registry for shadow groups.
@@ -35,6 +38,7 @@ import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 public class ShadowGroupRegistry {
 	
 	protected Set<ShadowGroup> shadowGroups;
+	protected Map<String,Set<String>> shadowIdToShadowIDsInSameShadowGroup;
 	
 	/**
 	 * Registers a collection of {@link ShadowGroup}s with this registry.
@@ -45,6 +49,33 @@ public class ShadowGroupRegistry {
 			shadowGroups = new HashSet<ShadowGroup>();
 		}		
 		shadowGroups.addAll(groups);
+		
+        if(shadowIdToShadowIDsInSameShadowGroup==null) {
+            shadowIdToShadowIDsInSameShadowGroup = new HashMap<String,Set<String>>();
+        }       
+
+        //TODO this can be done lazily when calling getShadowIdsOfShadowsInSameGroups(ISymbolShadow shadow)
+        //but then we cannot measure timing that accurately
+        if(Debug.v().debugTmAnalysis) {
+            System.err.println("Computing shadow IDs of shadows in the same groups...");
+        }
+        //create mapping from shadow ID to containing groups
+		for (ShadowGroup shadowGroup : groups) {
+            Set allShadowsInGroup = shadowGroup.getAllShadows();
+            Set<String> uniqueShadowIDsOfAllShadowsInGroup = SymbolShadow.uniqueShadowIDsOf(allShadowsInGroup);
+            for (ISymbolShadow shadow : (Set<ISymbolShadow>)allShadowsInGroup) {
+                String uniqueShadowId = shadow.getUniqueShadowId();
+                Set<String> shadowIDsInSameShadowGroup = shadowIdToShadowIDsInSameShadowGroup.get(uniqueShadowId);
+                if(shadowIDsInSameShadowGroup==null) {
+                    shadowIDsInSameShadowGroup = new HashSet<String>();
+                    shadowIdToShadowIDsInSameShadowGroup.put(uniqueShadowId, shadowIDsInSameShadowGroup);
+                }
+                shadowIDsInSameShadowGroup.addAll(uniqueShadowIDsOfAllShadowsInGroup);
+            }
+        }
+        if(Debug.v().debugTmAnalysis) {
+            System.err.println("Done.");
+        }
 	}
 	
 	/**
@@ -57,6 +88,21 @@ public class ShadowGroupRegistry {
 		}		
 		return Collections.unmodifiableSet(shadowGroups);
 	}
+	
+	/**
+	 * Returns the set of unique shadow IDs of shadows sharing a group with the given shadow.
+	 * @param shadow any symbolShadow
+	 * @return the set of unique shadow IDs of shadows sharing a group with the given shadow or the empty set if there are no such shadows
+	 */
+	public Set<String> getShadowIdsOfShadowsInSameGroups(ISymbolShadow shadow) {
+	    Set<String> set = shadowIdToShadowIDsInSameShadowGroup.get(shadow.getUniqueShadowId());
+	    if(set==null) {
+	        return Collections.emptySet();
+	    } else {
+	        return set;
+	    }
+	}
+	
 	
 	/**
 	 * Prunes all shadow groups which have a label-shadow that has become disabled in the meantime.
@@ -112,6 +158,13 @@ public class ShadowGroupRegistry {
                     }
                 }
 			}			
+			
+			//re-register shadow groups to refresh the mapping, pruning removed groups
+			Set<ShadowGroup> handle = shadowGroups;
+			shadowGroups = null;
+			shadowIdToShadowIDsInSameShadowGroup = null;
+			registerShadowGroups(handle);
+			
 			return !shadowsToDisable.isEmpty();
 		} else {
 			return false;

@@ -38,21 +38,25 @@ import abc.tm.weaving.weaver.tmanalysis.query.ConsistentShadowGroupFinder.Consis
  */
 public class ShadowGroup {
 	
-	protected Set<SymbolShadowWithPTS> labelShadows;
+	protected final Set<SymbolShadowWithPTS> labelShadows;
 	
-	protected Set<SymbolShadowWithPTS> skipShadows;
+	protected final Set<SymbolShadowWithPTS> skipShadows;
 	
-	protected TraceMatch tm;
+	protected final TraceMatch tm;
 	
-	/** mapping of variables to points-to sets; needed to narrow down
+    /** mapping of variables to points-to sets; needed to narrow down
 	 *  points-to sets during inlining */
-	protected HashMap<String,PointsToSet> varToPts;
+	protected final HashMap<String,PointsToSet> varToPts;
 	
-	protected int number;
+	protected final int number;
+
+    private final int hashCode;
 	
 	protected static int groupCount = 0;
 	
-	public ShadowGroup(TraceMatch tm, ConsistentShadowBag shadowSet) {
+    protected transient Set<SymbolShadowWithPTS> allShadows;
+
+    public ShadowGroup(TraceMatch tm, ConsistentShadowBag shadowSet) {
 		this.tm = tm;
 		this.labelShadows = new HashSet<SymbolShadowWithPTS>();
 		this.varToPts = new HashMap<String, PointsToSet>();
@@ -61,8 +65,10 @@ public class ShadowGroup {
 			add(shadow);
 		}
 		this.skipShadows = new HashSet<SymbolShadowWithPTS>();
+        this.allShadows = new HashSet<SymbolShadowWithPTS>();
 		this.number = groupCount;
 		groupCount++;
+		this.hashCode = computeHashCode();
 	}
 	
 	/**
@@ -88,7 +94,7 @@ public class ShadowGroup {
 				//not intersecting and hence no consistent binding is possible
 				throw new IllegalArgumentException("shadow set has no overlapping variable binding!");
 			} else {
-				//store intersection
+				//store intersectionhashCode
 				newVarToPts.put(var,intersection);					
 			}
 		}
@@ -98,6 +104,9 @@ public class ShadowGroup {
 		
 		//store the intersections
 		varToPts.putAll(newVarToPts);
+		
+		//reset cache
+		this.allShadows = null;
 		
 		//commit the shadow
 		return labelShadows.add(s);
@@ -124,10 +133,13 @@ public class ShadowGroup {
 	}
 	
 	public boolean addSkipShadow(SymbolShadowWithPTS s) {
-		if(hasNonEmptyIntersection(s))
+		if(hasNonEmptyIntersection(s)) {
+	        //reset cache
+	        this.allShadows = null;
 			return skipShadows.add(s);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -152,15 +164,25 @@ public class ShadowGroup {
 	}
 	
 	public Set<SymbolShadowWithPTS> getAllShadows() {
-		Set result = new HashSet(labelShadows);
-		result.addAll(skipShadows);
-		return result;		
+	    if(allShadows==null) {
+        	allShadows = new HashSet(labelShadows);
+        	allShadows.addAll(skipShadows);
+	    }
+		return allShadows;		
+	}
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+	    return hashCode;
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Computes the constant hash code.
 	 */
-	public int hashCode() {
+	private int computeHashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result

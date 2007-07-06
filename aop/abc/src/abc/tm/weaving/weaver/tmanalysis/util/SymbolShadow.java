@@ -35,6 +35,10 @@ public class SymbolShadow implements ISymbolShadow {
 
 	protected final String uniqueShadowId;
 
+	protected static Map<String,SymbolShadow> uniqueIdToShadow;
+
+	private final int hashCode;
+	
 	SymbolShadow(String symbolName,
 			Map<String, Local> tmVarToAdviceLocal, int shadowId, SootMethod container, TraceMatch owner) {
 		this.symbolName = symbolName;
@@ -42,6 +46,17 @@ public class SymbolShadow implements ISymbolShadow {
         this.container = container;
 		this.owner = owner;
 		this.uniqueShadowId = Naming.uniqueShadowID(owner.getName(),symbolName,shadowId).intern();
+		this.hashCode = computeHashCode();
+		if(uniqueIdToShadow==null) {
+		    uniqueIdToShadow = new HashMap<String, SymbolShadow>();
+		}
+		
+		//if a shadow is already associated with the same shadow ID it should better equal the new one
+		SymbolShadow existingShadow = uniqueIdToShadow.get(this.uniqueShadowId);
+		if(existingShadow!=null) {
+		    assert existingShadow.deepEquals(existingShadow);
+		}
+		uniqueIdToShadow.put(this.uniqueShadowId, this);
 	}
 
 	/** 
@@ -116,10 +131,17 @@ public class SymbolShadow implements ISymbolShadow {
     }
 
     /** 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+    
+    /**
+     * Computes the (constant) hashCode.
+     */
+    protected int computeHashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
@@ -135,7 +157,7 @@ public class SymbolShadow implements ISymbolShadow {
 	}
 
 	/** 
-	 * {@inheritDoc}
+	 * Computes equals() based on the unique shadow ID. 
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -146,30 +168,50 @@ public class SymbolShadow implements ISymbolShadow {
 		if (getClass() != obj.getClass())
 			return false;
 		final SymbolShadow other = (SymbolShadow) obj;
-		if (owner == null) {
-			if (other.owner != null)
-				return false;
-		} else if (!owner.equals(other.owner))
-			return false;
-		if (symbolName == null) {
-			if (other.symbolName != null)
-				return false;
-		} else if (!symbolName.equals(other.symbolName))
-			return false;
-		if (tmFormalToAdviceLocal == null) {
-			if (other.tmFormalToAdviceLocal != null)
-				return false;
-		} else if (!tmFormalToAdviceLocal.equals(other.tmFormalToAdviceLocal))
-			return false;
-		if (uniqueShadowId == null) {
-			if (other.uniqueShadowId != null)
-				return false;
-		} else if (!uniqueShadowId.equals(other.uniqueShadowId))
-			return false;
-		return true;
+		//the unique shadow ID should uniquely identify equal shadows
+		if(uniqueShadowId.equals(other.uniqueShadowId)) {
+		    assert deepEquals(obj);
+		    return true;
+		} else {
+		    return false;
+		}
 	}
 
-	/**
+    /** 
+     * Used as a sanity check: Computes equals() deeply.
+     */
+    private boolean deepEquals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final SymbolShadow other = (SymbolShadow) obj;
+        if (owner == null) {
+            if (other.owner != null)
+                return false;
+        } else if (!owner.equals(other.owner))
+            return false;
+        if (symbolName == null) {
+            if (other.symbolName != null)
+                return false;
+        } else if (!symbolName.equals(other.symbolName))
+            return false;
+        if (tmFormalToAdviceLocal == null) {
+            if (other.tmFormalToAdviceLocal != null)
+                return false;
+        } else if (!tmFormalToAdviceLocal.equals(other.tmFormalToAdviceLocal))
+            return false;
+        if (uniqueShadowId == null) {
+            if (other.uniqueShadowId != null)
+                return false;
+        } else if (!uniqueShadowId.equals(other.uniqueShadowId))
+            return false;
+        return true;
+    }
+
+    /**
 	 * {@inheritDoc}
 	 */
 	public String toString() {
@@ -194,5 +236,23 @@ public class SymbolShadow implements ISymbolShadow {
 			ids.add(shadow.getUniqueShadowId());
 		}
 		return Collections.unmodifiableSet(ids);
+	}
+	
+	/**
+	 * Returns the symbol shadow associated with that ID.
+	 * There can exist multiple such shadows with the same ID but they should all be equal
+	 * in terms of equals/hashCode.
+	 */
+	public static SymbolShadow getSymbolShadowForUniqueID(String uniqueShadowID) {
+	    SymbolShadow symbolShadow = uniqueIdToShadow.get(uniqueShadowID);
+	    assert symbolShadow!=null;
+        return symbolShadow;
+	}
+	
+	/**
+	 * Resets the association between unique shadow IDs and shadows. 
+	 */
+	public static void reset() {
+	    uniqueIdToShadow=null;
 	}
 }
