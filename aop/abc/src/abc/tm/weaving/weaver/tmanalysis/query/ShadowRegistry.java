@@ -56,7 +56,7 @@ import abc.weaving.weaver.AdviceApplicationVisitor.AdviceApplicationHandler;
  */
 public class ShadowRegistry {
 	
-	protected TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
+    protected TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 	
 	protected Map<String,AdviceApplication> allShadowsToSymbolAdviceApplications;
 	
@@ -74,13 +74,16 @@ public class ShadowRegistry {
 	
 	protected Set<String> shadowsToBeRetained;
 	
-	protected ShadowRegistry() {
+    protected boolean residueBoxesChanged;
+
+    protected ShadowRegistry() {
 	
 		allShadowsToSymbolAdviceApplications= new HashMap();
         allShadowsToSyncAdviceApplications= new HashMap();
         allShadowsToSomeAdviceApplications= new HashMap();
         allShadowsToBodyAdviceApplications= new HashMap();
 		tmNameToUniqueShadowIds = new HashMap();
+		residueBoxesChanged = false;
 
 		//traverse all advice applications
 		AdviceApplicationVisitor.v().traverse(
@@ -183,11 +186,24 @@ public class ShadowRegistry {
 		assert allShadowsToSymbolAdviceApplications.containsKey(uniqueShadowId);
 		AdviceApplication aa = (AdviceApplication) allShadowsToSymbolAdviceApplications.get(uniqueShadowId);		
 		aa.setResidue(AndResidue.construct(aa.getResidue(),conjunct));
+		residueBoxesChanged = true;
 
 		//print a warning message (usually for test harness)
 		if(Debug.v().warnWhenAlteringShadow)
 			printWarning(aa,uniqueShadowId,conjunct);
 	}
+	
+    /**
+     * Tells whether any residue was set since the last time this method was called
+     * (or since startup of the program).
+     * @return <code>true</code> is any residue box was changed since the last
+     * call to this method or program startup
+     */
+    public boolean wasAnyResidueChanged() {
+        boolean val = residueBoxesChanged;
+        residueBoxesChanged = false;
+        return val;
+    }
 
 	public void removeTracematchesWithNoRemainingShadows() {
 		for (Iterator tmIter = gai.getTraceMatches().iterator(); tmIter.hasNext();) {
