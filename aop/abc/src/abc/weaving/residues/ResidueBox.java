@@ -54,7 +54,7 @@ public class ResidueBox {
      * Tells whether any residue was set since the last time this method was called
      * (or since startup of the program).
      * @return <code>true</code> is any residue box was changed since the last
-     * call to {@link #resetResiduesChanged()}.
+     * call to this method or program startup
      */
     public static boolean wasAnyResidueChanged() {
         boolean val = residueBoxesChanged;
