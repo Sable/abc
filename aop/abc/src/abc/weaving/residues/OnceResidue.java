@@ -87,7 +87,7 @@ public class OnceResidue extends Residue {
 		
 		Stmt initStmt = Jimple.v().newAssignStmt(flag, IntConstant.v(0));
         //units should not be a patching chain because otherwise jumps to afterInit
-        //would be reroutet to initStmt and hence, the flag would be reset on every loop iteration
+        //would be rerouted to initStmt and hence, the flag would be reset on every loop iteration
 		assert !(units instanceof PatchingChain); 
 		units.insertBefore(initStmt, afterInit);
 		
