@@ -58,13 +58,13 @@ public abstract class AbstractAnalysisStage implements Stage {
 	protected Set validationChecks;
 	
 	/** name of this analysis stage; inferred from class name; used for statistical output */
-	private final String name;
+	protected final String name;
 	
 	/** timer to time the duration of this stage */
-	private final Timer stageTimer;
+	protected final Timer stageTimer;
 	
 	/** timer to time the duration of shadow updating */
-	private final Timer shadowUpdateTimer;
+	protected final Timer shadowUpdateTimer;
 
 	/**
 	 * Creates a new analysis stage without any assertion checks.
@@ -233,7 +233,7 @@ public abstract class AbstractAnalysisStage implements Stage {
 	/**
 	 * Outputs some statistics such as analysis time and number of removed and remaining shadows.
 	 */
-	private void defaultStatistics() {
+	protected void defaultStatistics() {
 		int numRemovedShadows = shadowsToDisable.size();
 		int numRetainedShadows = shadowsToRetain.size();
 		int numRemainingShadows = ShadowRegistry.v().enabledShadows().size();
@@ -244,7 +244,5 @@ public abstract class AbstractAnalysisStage implements Stage {
 		logToStatistics("stage-time", stageTimer);
 		logToStatistics("shadow-update-time", shadowUpdateTimer);
 	}
-	
-
 
 }
