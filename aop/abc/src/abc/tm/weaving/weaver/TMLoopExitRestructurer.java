@@ -19,8 +19,8 @@
  
  package abc.tm.weaving.weaver;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import soot.Body;
 import soot.PatchingChain;
@@ -28,19 +28,22 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.UnitBox;
-import soot.jimple.IfStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.annotation.logic.Loop;
+import soot.toolkits.graph.LoopNestTree;
+import abc.main.Debug;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
 
 /**
- * Inserts Nop-statements at all targets of jumps in all weavable methods.
+ * For statements that are targets of loop exists, inserts nop-statements.
  * This is in order to allow shadows to be rerouted to those positions.
  * @author Eric Bodden
  */
-public class TMShadowJumpRestructurer {
+public class TMLoopExitRestructurer {
 
 	/** 
 	 * Transforms all concrete methods in all weavable classes for which the {@link MethodCategory}
@@ -63,54 +66,38 @@ public class TMShadowJumpRestructurer {
 
 	protected static void transform(Body b) {
 		
-        PatchingChain<Unit> units = b.getUnits();
-        for (Iterator<Unit> iter = b.getUnits().snapshotIterator(); iter.hasNext();) {
-            Unit unit = iter.next();
-            
-            boolean isBranchTarget = false;
-            //if the unit is referred to (presumably in a goto statement or if statement)
-            List<UnitBox> boxesPointingToThis = unit.getBoxesPointingToThis();
-            for (UnitBox box : boxesPointingToThis) {
-                if(box.isBranchTarget()) {
-                    isBranchTarget = true;
-                    break;
+	    PatchingChain<Unit> units = b.getUnits();
+	    
+	    //for all loops in the body
+	    LoopNestTree loopNestTree = new LoopNestTree(b);
+	    for (Loop loop : loopNestTree) {
+	        	        
+	        Collection<Stmt> loopExits = loop.getLoopExits();
+	        //for all loop exists
+	        //(loop exists can either be a goto statement or a fall-through through an if-statement)
+	        for (Stmt exit : loopExits) {
+	            Collection<Stmt> targetsOfLoopExit = loop.targetsOfLoopExit(exit);
+	            //for each successor statement of the loop exit
+	            for (Stmt target : targetsOfLoopExit) {
+	                //insert a nop
+	                NopStmt targetNop = Jimple.v().newNopStmt();
+	                units.insertBeforeNoRedirect(targetNop, target);
+	                //patch the exit (and the exit only!) to jump to the nop instead 
+	                if(exit.branches()) {
+	                    for (UnitBox box : exit.getUnitBoxes()) {
+                            Unit jumpTarget = box.getUnit();
+                            if(target==jumpTarget) {
+                                box.setUnit(targetNop);
+                            }
+                        }
+	                }
                 }
-            }
-            
-            //also need to take into accoun cases where there is a predecessor unit and
-            //this unit may be the end of a loop but may fall through
-            //(this can only be the case if it's an if-statement)
-            if(!isBranchTarget) {
-                if(units.getFirst()!=unit && (units.getPredOf(unit) instanceof IfStmt)) {
-                    isBranchTarget = true;
-                }
-            }
-            
-            if(isBranchTarget) {
-                
-                //insert a new nop statement before jump the target;
-                //this automatically reroutes all jumps going to the unit to the nop instead 
-                NopStmt targetNop = Jimple.v().newNopStmt();
-                units.insertBefore(targetNop, unit);
-
             }
         }
-        
-        assert onlyJumpsToNops(units); 
+	    
+        if(Debug.v().doValidate) {
+            b.validate();
+        }        
 	}
-
-    protected static boolean onlyJumpsToNops(PatchingChain<Unit> units) {
-        for (Unit unit : units) {
-            List<UnitBox> unitBoxes = unit.getUnitBoxes();
-            for (UnitBox unitBox : unitBoxes) {
-                if(unitBox.isBranchTarget()) {
-                    if(!(unitBox.getUnit() instanceof NopStmt)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
 
 }
