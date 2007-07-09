@@ -135,7 +135,8 @@ public class AbcExtension extends abc.main.AbcExtension
         lexer.addPointcutKeyword("cflowbelowdepth", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CFLOWBELOWDEPTH)));
 
         // keyword for the "let" pointcut extension
-        lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET)));
+        lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET),
+                new Integer(lexer.pointcutifexpr_state())));
         
         // keywords for the "monitorenter/monitorexit" pointcut extension
         if(Debug.v().enableLockPointcuts) {
