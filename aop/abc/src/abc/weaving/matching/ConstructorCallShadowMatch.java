@@ -63,7 +63,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     
     private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,
     		                           Stmt next,SpecialInvokeExpr invoke,boolean issuper) {
-	super(container,stmt);
+	super(container,next);
 	this.next=next;
         this.invoke=invoke;
         this.isSuperCall = issuper;
