@@ -19,7 +19,16 @@
 package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.List;
+import java.util.Set;
 
+import soot.Body;
+import soot.Local;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
+import soot.jimple.toolkits.scalar.CopyPropagator;
+import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
+import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
 import abc.main.Debug;
 import abc.main.Main;
@@ -29,6 +38,8 @@ import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
 import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.tm.weaving.weaver.tmanalysis.util.Statistics;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
 /**
@@ -48,8 +59,12 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     	   !ShadowRegistry.v().enabledShadowsLeft()) {
     		return false;
     	}
+
+    	runIntraProcOptimizations();
     	
-    	try {
+        AbcTimer.mark("Intrap. optimizations to ensure correctness of weaving");
+
+        try {
     		doAnalyze();
     	} catch (Error e) {
     		Statistics.errorOccured = true;
@@ -61,6 +76,29 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     	
 		//we do not need to reweave right away
         return false;
+    }
+
+    /**
+     * Runs intraprocedural optimizations after weaving. Those are necessary for soundness.
+     * We do <i>not</i> run {@link ConstantPropagatorAndFolder} here, since that would potentially eliminate
+     * {@link Local}s that we need for variable bindings in the tracematch analysis.
+     */
+    protected void runIntraProcOptimizations() {
+        GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
+        for (AbcClass abcClass : (Set<AbcClass>)gai.getWeavableClasses()) {
+            SootClass sc = abcClass.getSootClass();
+            for (SootMethod m : sc.getMethods()) {
+                if(m.hasActiveBody()) {
+                    Body b = m.getActiveBody();
+                    CopyPropagator.v().transform(b);            //probably not strictly necessary
+                    DeadAssignmentEliminator.v().transform(b);  //necessary for soundness
+                    UnusedLocalEliminator.v().transform(b);     //probably not strictly necessary
+                    if(Debug.v().doValidate)
+                        b.validate();
+                }
+            }
+        }
+        
     }
 
     /**
