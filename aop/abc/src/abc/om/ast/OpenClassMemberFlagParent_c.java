@@ -24,7 +24,6 @@ import polyglot.util.Position;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.om.visit.OpenClassFlagSet;
 
 /**
  * @author Neil Ongkingco

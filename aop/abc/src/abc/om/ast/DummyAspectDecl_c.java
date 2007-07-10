@@ -36,8 +36,6 @@ import polyglot.visit.NodeVisitor;
 import abc.aspectj.ast.AspectBody_c;
 import abc.aspectj.ast.AspectDecl_c;
 import abc.aspectj.ast.IsSingleton_c;
-import abc.aspectj.ast.PerClause_c;
-import abc.om.AbcExtension;
 
 /**
  * Dummy aspect declaration used by modules. 

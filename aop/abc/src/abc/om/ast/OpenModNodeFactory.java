@@ -23,13 +23,15 @@
  */
 package abc.om.ast;
 
-import polyglot.types.Flags;
-import polyglot.util.*;
-import abc.aspectj.ast.*;
-import abc.aspectj.types.AJFlags;
-import abc.eaj.ast.EAJNodeFactory;
+import java.util.List;
 
-import java.util.*;
+import polyglot.types.Flags;
+import polyglot.util.Position;
+import abc.aspectj.ast.AspectDecl;
+import abc.aspectj.ast.CPEName;
+import abc.aspectj.ast.ClassnamePatternExpr;
+import abc.aspectj.ast.Pointcut;
+import abc.eaj.ast.EAJNodeFactory;
 
 /**
  * @author Neil Ongkingco

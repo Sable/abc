@@ -23,18 +23,15 @@
  */
 package abc.om.visit;
 
-import abc.om.ExtensionInfo;
-import abc.om.ast.ModuleBody;
-import abc.om.ast.ModuleDecl;
-import abc.om.ast.OpenModNodeFactory;
 import polyglot.ast.Node;
 import polyglot.frontend.Job;
 import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
-import polyglot.util.CodeWriter;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
-import polyglot.visit.PrettyPrinter;
+import abc.om.ExtensionInfo;
+import abc.om.ast.ModuleDecl;
+import abc.om.ast.OpenModNodeFactory;
 
 /**
  * Adds all module names to ExtensionInfo.modules. Throws an error if a duplicate

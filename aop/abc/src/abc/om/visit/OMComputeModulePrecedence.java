@@ -19,17 +19,20 @@
 
 package abc.om.visit;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
 import polyglot.frontend.Job;
 import polyglot.frontend.Pass;
 import polyglot.util.ErrorInfo;
 import abc.aspectj.visit.OncePass;
-import abc.aspectj.visit.PCStructure;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
-import abc.polyglot.util.ErrorInfoFactory;
-
-import java.security.InvalidParameterException;
-import java.util.*;
 
 
 /**
@@ -140,7 +143,6 @@ public class OMComputeModulePrecedence extends OncePass {
             
         //	foreach aspect in the top level module
             Collection currAspects = currModule.getAspectNames();
-            memberaspects:
             for (Iterator aspectIter = currAspects.iterator(); 
             		aspectIter.hasNext();) {
                 String currAspect = (String) aspectIter.next();

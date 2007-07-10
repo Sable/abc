@@ -25,24 +25,31 @@ package abc.om;
 
 import java.io.Reader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import abc.om.parse.Lexer_c;
+import polyglot.ast.NodeFactory;
+import polyglot.frontend.AbstractPass;
+import polyglot.frontend.CupParser;
+import polyglot.frontend.FileSource;
+import polyglot.frontend.GlobalBarrierPass;
+import polyglot.frontend.Job;
+import polyglot.frontend.Parser;
+import polyglot.frontend.Pass;
+import polyglot.frontend.VisitorPass;
+import polyglot.lex.Lexer;
+import polyglot.types.TypeSystem;
+import polyglot.util.ErrorQueue;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.AspectReflectionInspect;
 import abc.aspectj.visit.AspectReflectionRewrite;
 import abc.aspectj.visit.CleanAspectMembers;
-import abc.aspectj.visit.OncePass;
-import abc.aspectj.visit.ParentDeclarer;
-import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
 import abc.om.ast.OpenModNodeFactory_c;
 import abc.om.parse.Grm;
+import abc.om.parse.Lexer_c;
 import abc.om.visit.CheckDeclareParents;
 import abc.om.visit.CheckDuplicateClassInclude;
 import abc.om.visit.CheckITDs;
@@ -57,20 +64,6 @@ import abc.om.visit.NormalizeOpenClassMembers;
 import abc.om.visit.OMComputeModulePrecedence;
 import abc.om.visit.OMComputePrecedence;
 import abc.om.visit.PrintVisitor;
-
-import polyglot.ast.NodeFactory;
-import polyglot.frontend.AbstractPass;
-import polyglot.frontend.CupParser;
-import polyglot.frontend.FileSource;
-import polyglot.frontend.GlobalBarrierPass;
-import polyglot.frontend.Job;
-import polyglot.frontend.Parser;
-import polyglot.frontend.Pass;
-import polyglot.frontend.VisitorPass;
-import polyglot.lex.Lexer;
-import polyglot.types.SemanticException;
-import polyglot.types.TypeSystem;
-import polyglot.util.ErrorQueue;
 
 /**
  * @author Neil Ongkingco

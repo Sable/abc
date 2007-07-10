@@ -18,15 +18,9 @@
  */
 package abc.om.visit;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
-
 import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.aspectj.visit.PCNode;
 import abc.om.ast.OpenClassMemberFlag;
 import abc.om.ast.OpenClassMemberFlagParent;
 

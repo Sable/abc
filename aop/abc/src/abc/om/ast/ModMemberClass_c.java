@@ -23,18 +23,13 @@
  */
 package abc.om.ast;
 
-import java.util.List;
-
-import abc.aspectj.ast.*;
-
 import polyglot.ast.Node;
-import polyglot.ast.Term;
-import polyglot.ext.jl.ast.*;
+import polyglot.ext.jl.ast.Node_c;
 import polyglot.util.CodeWriter;
 import polyglot.util.Position;
-import polyglot.visit.CFGBuilder;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
+import abc.aspectj.ast.ClassnamePatternExpr;
 
 /**
  * Represents a class member in the AST.

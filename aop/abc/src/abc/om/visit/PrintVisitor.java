@@ -28,33 +28,24 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import abc.aspectj.ast.PointcutDecl;
-import abc.aspectj.visit.PCNode;
-import abc.aspectj.visit.PCStructure;
-import abc.eaj.ast.GlobalPointcutDecl;
-import abc.eaj.extension.EAJAdviceDecl;
-import abc.om.AbcExtension;
-import abc.om.ExtensionInfo;
-import abc.om.ast.ModuleDecl;
-import abc.om.ast.OpenModNodeFactory;
-import abc.om.ast.SigMember;
-import abc.weaving.aspectinfo.Pointcut;
-import polyglot.ast.ClassDecl;
 import polyglot.ast.Node;
-import polyglot.ast.NodeFactory;
 import polyglot.frontend.Job;
 import polyglot.types.TypeSystem;
 import polyglot.util.CodeWriter;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
+import abc.om.AbcExtension;
+import abc.om.ExtensionInfo;
+import abc.om.ast.ModuleDecl;
+import abc.om.ast.OpenModNodeFactory;
+import abc.weaving.aspectinfo.Pointcut;
 
 /**
  * @author Neil Ongkingco
  *  
  */
 public class PrintVisitor extends ContextVisitor {
-    private OpenModNodeFactory nf;
 
     private ExtensionInfo ext;
 
@@ -70,7 +61,6 @@ public class PrintVisitor extends ContextVisitor {
             return super.enter(parent, n);
         }
         if (n instanceof ModuleDecl) {
-            ModuleDecl decl = (ModuleDecl) n;
             CodeWriter w = new CodeWriter(System.out, 80);
             PrettyPrinter p = new PrettyPrinter();
             w.write("From AST: ");

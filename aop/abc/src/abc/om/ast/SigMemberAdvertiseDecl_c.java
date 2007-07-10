@@ -23,22 +23,8 @@
  */
 package abc.om.ast;
 
-import java.util.Collections;
-import java.util.LinkedList;
-
-import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.MakesAspectMethods;
-import abc.aspectj.ast.MethodConstructorPattern;
-import abc.aspectj.ast.PCCall_c;
-import abc.aspectj.types.AJTypeSystem;
-import abc.aspectj.visit.AspectMethods;
-import abc.weaving.aspectinfo.Pointcut;
-import polyglot.ast.Node;
-import polyglot.ext.jl.ast.Node_c;
-import polyglot.util.CodeWriter;
-import polyglot.visit.NodeVisitor;
-import polyglot.visit.PrettyPrinter;
 
 /**
  * Represents an advertise signature member.

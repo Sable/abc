@@ -26,27 +26,19 @@ package abc.om.visit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import polyglot.types.ClassType;
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
-import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-
 import abc.aspectj.ast.CPEName;
 import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.aspectj.ast.NamePattern;
-import abc.aspectj.ast.PointcutDecl;
-import abc.aspectj.types.AspectType_c;
 import abc.aspectj.visit.PCNode;
 import abc.aspectj.visit.PCStructure;
 import abc.om.AbcExtension;
@@ -54,18 +46,12 @@ import abc.om.ExtensionInfo;
 import abc.om.ast.SigMember;
 import abc.om.weaving.matching.OMMatchingContext;
 import abc.polyglot.util.ErrorInfoFactory;
-import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.CflowSetup;
-import abc.weaving.aspectinfo.ClassnamePattern;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.OrPointcut;
-import abc.weaving.aspectinfo.Per;
 import abc.weaving.aspectinfo.Pointcut;
-import abc.weaving.aspectinfo.Singleton;
 import abc.weaving.matching.ConstructorCallShadowMatch;
 import abc.weaving.matching.GetFieldShadowMatch;
 import abc.weaving.matching.MatchingContext;
@@ -75,9 +61,7 @@ import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.NeverMatch;
-import abc.weaving.residues.OrResidue;
 import abc.weaving.residues.Residue;
-import abc.weaving.weaver.Weaver;
 
 /**
  * Internal representation of the entire module specification.
@@ -93,11 +77,11 @@ public class ModuleStructure {
 
     private Map /* <String, ModuleNodeClass> */classNodes;
 
-    private ExtensionInfo ext;
-
     //pseudo-singleton, just so that OMMethodCall can access ModuleStructure
     // without knowing ext.
     private static ModuleStructure instance;
+    
+    protected ExtensionInfo ext;
 
     //caches
     // Caching seems to make openmod run a bit slower (at least for ants)

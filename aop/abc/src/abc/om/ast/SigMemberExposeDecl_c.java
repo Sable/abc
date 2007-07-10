@@ -23,24 +23,8 @@
  */
 package abc.om.ast;
 
-import java.util.*;
-
-import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.MakesAspectMethods;
-import abc.aspectj.types.AJTypeSystem;
-import abc.aspectj.visit.AspectMethods;
-import abc.om.weaving.aspectinfo.OMClassnamePattern;
-import abc.weaving.aspectinfo.Pointcut;
-import polyglot.ast.Node;
-import polyglot.ast.Term;
-import polyglot.ext.jl.ast.Node_c;
-import polyglot.ext.jl.ast.Term_c;
-import polyglot.util.CodeWriter;
-import polyglot.util.Position;
-import polyglot.visit.CFGBuilder;
-import polyglot.visit.NodeVisitor;
-import polyglot.visit.PrettyPrinter;
 
 /**
  * Represents an expose signature member.

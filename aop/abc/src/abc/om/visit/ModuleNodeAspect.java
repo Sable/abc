@@ -42,7 +42,6 @@ import polyglot.util.Position;
  */
 public class ModuleNodeAspect extends ModuleNode {
     private PCNode aspectNode; //PCNode for TYPE_ASPECT nodes
-    private NamePattern aspectNamePattern; //Name pattern for the aspect
     CPEName cpe;
     
     public ModuleNodeAspect(String name, CPEName cpe, Position pos) {

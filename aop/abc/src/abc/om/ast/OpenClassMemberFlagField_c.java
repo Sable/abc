@@ -18,7 +18,6 @@
  */
 package abc.om.ast;
 
-import abc.om.visit.OpenClassFlagSet;
 import polyglot.util.CodeWriter;
 import polyglot.util.Position;
 import polyglot.visit.PrettyPrinter;

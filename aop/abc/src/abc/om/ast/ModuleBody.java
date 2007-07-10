@@ -23,12 +23,10 @@
  */
 package abc.om.ast;
 
-import polyglot.ast.ClassBody;
+import java.util.List;
+
 import polyglot.ast.Node;
 import polyglot.types.SemanticException;
-
-import java.util.*;
-
 import abc.om.ExtensionInfo;
 
 /**

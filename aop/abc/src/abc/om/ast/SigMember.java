@@ -23,9 +23,8 @@
  */
 package abc.om.ast;
 
-import abc.weaving.aspectinfo.Pointcut;
-import polyglot.ast.ClassMember;
 import polyglot.ast.Node;
+import abc.weaving.aspectinfo.Pointcut;
 
 /**
  * @author Neil Ongkingco

@@ -23,23 +23,18 @@
  */
 package abc.om.visit;
 
-import java.util.Stack;
-
-import abc.aspectj.ast.AspectBody;
-import abc.aspectj.ast.AspectDecl;
-import abc.aspectj.visit.PCNode;
-import abc.aspectj.visit.PCStructure;
-import abc.om.ExtensionInfo;
-import abc.om.ast.ModuleDecl;
-import abc.om.ast.OpenModNodeFactory;
 import polyglot.ast.ClassBody;
-import polyglot.ast.ClassDecl;
 import polyglot.ast.Node;
 import polyglot.frontend.Job;
 import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
+import abc.aspectj.ast.AspectBody;
+import abc.aspectj.visit.PCNode;
+import abc.aspectj.visit.PCStructure;
+import abc.om.ExtensionInfo;
+import abc.om.ast.OpenModNodeFactory;
 
 /**
  * Checks if a class has been included in more than one module.

@@ -23,6 +23,12 @@
  */
 package abc.om.visit;
 
+import polyglot.ast.Node;
+import polyglot.frontend.Job;
+import polyglot.types.SemanticException;
+import polyglot.types.TypeSystem;
+import polyglot.visit.ContextVisitor;
+import polyglot.visit.NodeVisitor;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
 import abc.om.ast.DummyAspectDecl_c;
@@ -30,13 +36,6 @@ import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-import polyglot.ast.Node;
-import polyglot.frontend.Job;
-import polyglot.types.SemanticException;
-import polyglot.types.TypeSystem;
-import polyglot.visit.ContextVisitor;
-import polyglot.visit.NodeVisitor;
 
 /**
  * Attaches the dummy aspect to a module.

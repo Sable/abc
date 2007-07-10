@@ -18,16 +18,9 @@
  */
 package abc.om.visit;
 
-import java.util.LinkedList;
-
-import polyglot.types.reflect.ClassPathLoader;
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
 import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.aspectj.visit.PCNode;
-import abc.om.ExtensionInfo;
-
-import java.util.*;
 
 /**
  * @author Neil Ongkingco

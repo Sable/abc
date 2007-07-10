@@ -18,8 +18,6 @@
  */
 package abc.om.visit;
 
-import java.util.List;
-
 import abc.aspectj.visit.PCNode;
 
 /**

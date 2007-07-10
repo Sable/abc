@@ -30,15 +30,9 @@ import java.util.List;
 import java.util.Set;
 
 import polyglot.util.Position;
-
-import soot.SootClass;
-
-import abc.aspectj.ast.CPEName_c;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.visit.PCNode;
-import abc.aspectj.visit.PatternMatcher;
 import abc.om.AbcExtension;
-import abc.om.ExtensionInfo;
 import abc.om.ast.OpenClassMember;
 import abc.om.ast.SigMember;
 import abc.om.ast.SigMemberAdvertiseDecl;

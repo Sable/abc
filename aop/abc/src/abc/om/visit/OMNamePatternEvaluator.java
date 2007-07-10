@@ -25,7 +25,6 @@ package abc.om.visit;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import polyglot.ast.ClassDecl;
 import polyglot.ast.Import;

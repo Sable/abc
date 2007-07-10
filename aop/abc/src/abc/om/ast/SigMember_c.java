@@ -22,10 +22,13 @@ package abc.om.ast;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import polyglot.ast.Node;
+import polyglot.ext.jl.ast.Node_c;
+import polyglot.util.CodeWriter;
+import polyglot.visit.NodeVisitor;
+import polyglot.visit.PrettyPrinter;
 import abc.aspectj.ast.AJNodeFactory;
-import abc.aspectj.ast.CPEUniversal_c;
 import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.aspectj.ast.ClassnamePatternExpr_c;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectMethods;
@@ -35,11 +38,6 @@ import abc.om.weaving.aspectinfo.ThisAspectPointcut;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.ClassnamePattern;
 import abc.weaving.aspectinfo.Pointcut;
-import polyglot.ast.Node;
-import polyglot.ext.jl.ast.Node_c;
-import polyglot.util.CodeWriter;
-import polyglot.visit.NodeVisitor;
-import polyglot.visit.PrettyPrinter;
 
 /**
  * An abstract signature member. Extended by exposeDecl and advertiseDecl

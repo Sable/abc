@@ -23,19 +23,17 @@
  */
 package abc.om.ast;
 
-import java.util.LinkedList;
-
-import abc.aspectj.types.AJFlags;
-
 import polyglot.ast.Node;
 import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.Flags;
-import polyglot.util.*;
-import polyglot.visit.NodeVisitor;
-import polyglot.visit.PrettyPrinter;
 import polyglot.types.Named;
 import polyglot.types.TypeObject;
 import polyglot.types.TypeSystem;
+import polyglot.util.CodeWriter;
+import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
+import polyglot.visit.PrettyPrinter;
+import abc.aspectj.types.AJFlags;
 
 /**
  * Represents the entire module declarations. Contains the module

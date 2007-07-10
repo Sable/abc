@@ -23,20 +23,17 @@
  */
 package abc.om.visit;
 
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
-import abc.om.ExtensionInfo;
-import abc.om.ast.ModuleBody;
-import abc.om.ast.ModuleDecl;
-import abc.om.ast.OpenModNodeFactory;
 import polyglot.ast.Node;
 import polyglot.frontend.Job;
 import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
+import abc.om.ExtensionInfo;
+import abc.om.ast.ModuleDecl;
+import abc.om.ast.OpenModNodeFactory;
 
 /**
  * Checks for any cycles in the module hierarchy. Rather inefficient.

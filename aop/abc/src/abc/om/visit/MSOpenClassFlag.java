@@ -20,7 +20,6 @@ package abc.om.visit;
 
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
-import abc.aspectj.visit.PCNode;
 
 /**
  * @author Neil Ongkingco

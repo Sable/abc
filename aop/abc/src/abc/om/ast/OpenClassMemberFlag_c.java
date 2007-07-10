@@ -18,8 +18,6 @@
  */
 package abc.om.ast;
 
-import abc.om.visit.OpenClassFlagSet;
-import polyglot.ast.Node;
 import polyglot.ext.jl.ast.Node_c;
 import polyglot.util.Position;
 

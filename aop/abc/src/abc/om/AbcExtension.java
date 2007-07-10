@@ -30,8 +30,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import polyglot.types.SemanticException;
 import polyglot.util.Position;
-
+import soot.SootClass;
+import soot.SootMethod;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.main.Debug;
@@ -42,14 +44,10 @@ import abc.om.weaving.aspectinfo.OMGlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Pointcut;
-import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.matching.AdviceApplication.ResidueConjunct;
 import abc.weaving.residues.Residue;
-import polyglot.types.SemanticException;
-import soot.*;
-import abc.weaving.matching.*;
 
 /**
  * @author Neil Ongkingco
@@ -67,7 +65,7 @@ public class AbcExtension extends abc.eaj.AbcExtension {
     public static final OMDebug PARENT_DEBUG = new OMDebug();
     public static final OMDebug ITD_DEBUG = new OMDebug();
     public static final OMDebug NORMALIZE_DEBUG = new OMDebug();
-    protected static Set debugSet = null; 
+    protected static Set<OMDebug> debugSet = null; 
     
     private static boolean isLoaded = false;
 
@@ -77,7 +75,7 @@ public class AbcExtension extends abc.eaj.AbcExtension {
         super();
         isLoaded = true;
         
-        this.debugSet = new HashSet();
+        debugSet = new HashSet<OMDebug>();
         if (Debug.v().omASTPrintDebug) {
             debugSet.add(AST_PRINT_DEBUG);
         }

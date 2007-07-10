@@ -18,17 +18,16 @@
  */
 package abc.om.visit;
 
-import abc.om.ExtensionInfo;
-import abc.om.ast.ModuleBody;
-import abc.om.ast.ModuleDecl;
-import abc.om.ast.OpenClassMember;
-import abc.om.ast.OpenModNodeFactory;
 import polyglot.ast.Node;
 import polyglot.frontend.Job;
 import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
+import abc.om.ExtensionInfo;
+import abc.om.ast.ModuleBody;
+import abc.om.ast.ModuleDecl;
+import abc.om.ast.OpenModNodeFactory;
 
 /**
  * @author Neil Ongkingco Add open class members to the module representation

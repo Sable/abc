@@ -20,15 +20,12 @@
 package abc.om.visit;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
-
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.om.ast.OpenClassMemberFlag;
 import abc.om.ast.OpenClassMemberFlagField;

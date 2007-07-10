@@ -21,15 +21,6 @@ package abc.om.visit;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import abc.aspectj.ast.AspectBody;
-import abc.aspectj.ast.AspectDecl;
-import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.aspectj.ast.DeclareParents;
-import abc.aspectj.visit.PCNode;
-import abc.aspectj.visit.PCStructure;
-import abc.om.AbcExtension;
-import abc.om.ExtensionInfo;
-import abc.om.ast.OpenModNodeFactory;
 import polyglot.ast.Node;
 import polyglot.ast.TypeNode;
 import polyglot.frontend.Job;
@@ -38,6 +29,14 @@ import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
+import abc.aspectj.ast.AspectDecl;
+import abc.aspectj.ast.ClassnamePatternExpr;
+import abc.aspectj.ast.DeclareParents;
+import abc.aspectj.visit.PCNode;
+import abc.aspectj.visit.PCStructure;
+import abc.om.AbcExtension;
+import abc.om.ExtensionInfo;
+import abc.om.ast.OpenModNodeFactory;
 
 /**
  * @author Neil Ongkingco
