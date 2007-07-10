@@ -112,6 +112,7 @@ public class TraceMatchCodeGen {
     {
         TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
         Iterator states = sm.getStateIterator();
+        int final_state_num = -1;
 
         helper.genReturnIfNotUpdated(method);
 
@@ -121,8 +122,12 @@ public class TraceMatchCodeGen {
 
             // there is only one final state, and it is recorded
             // in order to generate solution code later
-            if (state.isFinalNode())
-                helper.setFinalState(state.getNumber());
+            // the update for this state is also done last because
+            // it may release the tracematch lock
+            if (state.isFinalNode()) {
+                final_state_num = state.getNumber();
+                continue;
+            }
 
             // don't accumulate useless constraints
             // for initial states
@@ -135,8 +140,11 @@ public class TraceMatchCodeGen {
                 skip_loop = false;
 
             helper.genLabelMasterUpdate(skip_loop, state.getNumber(),
-                                            method, state.isFinalNode());
+                                            method, false);
         }
+
+        helper.genLabelMasterUpdate(false, final_state_num, method, true);
+        helper.setFinalState(final_state_num);
     }
  
     /**
@@ -146,7 +154,7 @@ public class TraceMatchCodeGen {
     public void fillInTraceMatch(TraceMatch tm) {
         TMStateMachine tmsm = (TMStateMachine)tm.getStateMachine();
 
-		Collection unused = tm.getUnusedFormals();
+        Collection unused = tm.getUnusedFormals();
         
         tmsm.prepareForMatching(tm, tm.getFormalNames(), unused, tm.getPosition());
         tm.createIndexingScheme();
