@@ -5,14 +5,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import polyglot.util.Position;
 import soot.Local;
 import soot.SootMethod;
+import soot.tagkit.Host;
+import soot.tagkit.LineNumberTag;
+import soot.tagkit.SourceLnNamePosTag;
+import soot.tagkit.SourceLnPosTag;
+import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
 
 /**
  * A symbol shadow represents a static point in the program where the state
@@ -34,6 +44,8 @@ public class SymbolShadow implements ISymbolShadow {
 	protected final Map<String,Local> tmFormalToAdviceLocal;
 
 	protected final String uniqueShadowId;
+	
+	protected final Position pos;
 
 	protected static Map<String,SymbolShadow> uniqueIdToShadow;
 
@@ -51,6 +63,8 @@ public class SymbolShadow implements ISymbolShadow {
 		    uniqueIdToShadow = new HashMap<String, SymbolShadow>();
 		}
 		
+		pos = computePosition(shadowId);
+		
 		//if a shadow is already associated with the same shadow ID it should better equal the new one
 		SymbolShadow existingShadow = uniqueIdToShadow.get(this.uniqueShadowId);
 		if(existingShadow!=null) {
@@ -59,7 +73,33 @@ public class SymbolShadow implements ISymbolShadow {
 		uniqueIdToShadow.put(this.uniqueShadowId, this);
 	}
 
-	/** 
+    private Position computePosition(int shadowId) {
+        GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
+        MethodAdviceList adviceList = gai.getAdviceList(container);
+        List<AdviceApplication> applications = adviceList.allAdvice();
+        for (AdviceApplication aa : applications) {
+            if(aa.shadowmatch.shadowId==shadowId) {
+                Host host = aa.shadowmatch.getHost();
+                if(host.hasTag("SourceLnPosTag")) {
+                    SourceLnPosTag tag = (SourceLnPosTag) host.getTag("SourceLnPosTag");
+                    String fileName = "";
+                    if(tag instanceof SourceLnNamePosTag) {
+                        SourceLnNamePosTag nameTag = (SourceLnNamePosTag) tag;
+                        fileName = nameTag.getFileName();
+                    }           
+                    return new Position(fileName,tag.startLn(),tag.startPos(),tag.endLn(),tag.endPos());
+                } else if(host.hasTag("LineNumberTag")) {
+                    LineNumberTag tag = (LineNumberTag) host.getTag("LineNumberTag");
+                    return new Position("",tag.getLineNumber());
+                } else {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** 
 	 * {@inheritDoc}
 	 */
 	public String getSymbolName() {
@@ -215,10 +255,17 @@ public class SymbolShadow implements ISymbolShadow {
 	 * {@inheritDoc}
 	 */
 	public String toString() {
-		return "symbol:  " + symbolName + "\n" +
+		String ret =
+		    "symbol:     " + symbolName + "\n" +
 			"tracematch: " + owner.getName()+ "\n" +
 			"variables:  " + tmFormalToAdviceLocal + "\n" +
-			"shadow:     " + uniqueShadowId;				
+			"shadow:     " + uniqueShadowId;
+		
+		if(pos!=null) {
+		    ret += "\nposition:   " + pos;
+		}
+		
+		return ret;
 	}
 
 	/**
