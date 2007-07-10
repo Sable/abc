@@ -112,6 +112,12 @@ public class CompileSequence {
 	            AbcTimer.mark("Soot Packs");
 	            Debug.phaseDebug("Soot Packs");
 	
+	            if(Debug.v().doValidate) {
+	                validate();
+                    AbcTimer.mark("Validation");
+                    Debug.phaseDebug("Validation");
+	            }
+	            
 	            output();
 	            AbcTimer.mark("Soot Writing Output");
 	            Debug.phaseDebug("Soot Writing Output");
