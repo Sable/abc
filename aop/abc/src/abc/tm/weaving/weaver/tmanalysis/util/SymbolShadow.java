@@ -12,10 +12,6 @@ import java.util.Set;
 import polyglot.util.Position;
 import soot.Local;
 import soot.SootMethod;
-import soot.tagkit.Host;
-import soot.tagkit.LineNumberTag;
-import soot.tagkit.SourceLnNamePosTag;
-import soot.tagkit.SourceLnPosTag;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
@@ -23,6 +19,7 @@ import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.matching.StmtAdviceApplication;
 
 /**
  * A symbol shadow represents a static point in the program where the state
@@ -79,20 +76,9 @@ public class SymbolShadow implements ISymbolShadow {
         List<AdviceApplication> applications = adviceList.allAdvice();
         for (AdviceApplication aa : applications) {
             if(aa.shadowmatch.shadowId==shadowId) {
-                Host host = aa.shadowmatch.getHost();
-                if(host.hasTag("SourceLnPosTag")) {
-                    SourceLnPosTag tag = (SourceLnPosTag) host.getTag("SourceLnPosTag");
-                    String fileName = "";
-                    if(tag instanceof SourceLnNamePosTag) {
-                        SourceLnNamePosTag nameTag = (SourceLnNamePosTag) tag;
-                        fileName = nameTag.getFileName();
-                    }           
-                    return new Position(fileName,tag.startLn(),tag.startPos(),tag.endLn(),tag.endPos());
-                } else if(host.hasTag("LineNumberTag")) {
-                    LineNumberTag tag = (LineNumberTag) host.getTag("LineNumberTag");
-                    return new Position("",tag.getLineNumber());
-                } else {
-                    return null;
+                if(aa instanceof StmtAdviceApplication) {
+                    StmtAdviceApplication stmtAA = (StmtAdviceApplication) aa;
+                    return stmtAA.statementPosition();
                 }
             }
         }
