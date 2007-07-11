@@ -28,6 +28,7 @@ import soot.SootMethod;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
+import soot.jimple.toolkits.scalar.UnconditionalBranchFolder;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
@@ -97,6 +98,7 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
                     new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
                     UnreachableCodeEliminator.v().transform(b);		//necessary for soundness
                     DeadAssignmentEliminator.v().transform(b);  	//necessary for soundness
+                    UnconditionalBranchFolder.v().transform(b);     //mostly for better readability of code during debugging
                     UnusedLocalEliminator.v().transform(b);     	//probably not strictly necessary
                     if(Debug.v().doValidate)
                         b.validate();
