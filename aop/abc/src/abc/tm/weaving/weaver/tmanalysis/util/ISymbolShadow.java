@@ -63,6 +63,13 @@ public interface ISymbolShadow {
 	 * location ID. 
 	 */
 	public String getLocationId();
+	
+	/**
+	 * Returns <code>true</code> if this is an artificial shadow that does not have to be
+	 * taken into account for side-effect information. We use such shadows occasionally
+	 * to reset a tracematch state machine between two runs.  
+	 */
+	public boolean isArtificial();
 
 	/**
 	 * @return the method containing this shadow

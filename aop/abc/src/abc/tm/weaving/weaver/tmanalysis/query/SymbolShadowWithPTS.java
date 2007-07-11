@@ -235,6 +235,13 @@ public class SymbolShadowWithPTS implements ISymbolShadow {
 	 */
 	public Map<String, Local> getTmFormalToAdviceLocal() {
 		return symbolShadow.getTmFormalToAdviceLocal();
-	}	
+	}
+
+    /** 
+     * {@inheritDoc}
+     */
+    public boolean isArtificial() {
+        return symbolShadow.isArtificial();
+    }	
 
 }

@@ -288,4 +288,11 @@ public class SymbolShadow implements ISymbolShadow {
 	public static void reset() {
 	    uniqueIdToShadow=null;
 	}
+
+    /** 
+     * {@inheritDoc}
+     */
+    public boolean isArtificial() {
+        return getSymbolName().equals("newDaCapoRun");
+    }
 }
