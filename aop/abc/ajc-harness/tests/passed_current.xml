@@ -2117,10 +2117,6 @@
         <message line="29" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="advice on implied empty constructor" num="347" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOnEmptyConstructor.java"></compile>
-        <run class="AdviceOnEmptyConstructor"></run>
-    </ajc-test>
 <ajc-test title="advice on * *(..) not mapping to initializers" num="348" keywords="from-resolved_10x" dir="new">
         <compile files="InitializerAdvice.java"></compile>
         <run class="InitializerAdvice"></run>
@@ -2180,10 +2176,6 @@
 <ajc-test title="advice on calls to static methods using several syntax" pr="246" num="362" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
         <compile files="StaticCalls.java"></compile>
         <run class="StaticCalls"></run>
-    </ajc-test>
-<ajc-test title=", PR#249, PR#250 advice on constructor sites" pr="248" num="363" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
-        <compile files="NewSiteAdvice.java"></compile>
-        <run class="NewSiteAdvice"></run>
     </ajc-test>
 <ajc-test title="test after throwing advice in several ways" num="364" keywords="from-resolved_10x" dir="new" abccomment="the usual problem with around and exception checker. ODM 09/07/04">
         <compile files="AfterThrowing.java"></compile>
@@ -2827,10 +2819,6 @@
         <compile files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"></compile>
         <run class="driver.PrivilegedAspect"></run>
     </ajc-test>
-<ajc-test title="cflow alone with around produces compiler bcg StackOverflowError" num="526" keywords="from-resolved_10x" dir="new">
-        <compile files="CflowAlone.java"></compile>
-        <run class="CflowAlone"></run>
-    </ajc-test>
 <ajc-test title="get/set join points run for complex assignment operators (+=, etc.) (working)" num="527" keywords="from-resolved_10x" dir="new">
         <compile files="AssignOps.java"></compile>
         <run class="AssignOps"></run>
@@ -3097,10 +3085,6 @@
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
-    </ajc-test>
-<ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" num="582" keywords="from-resolved_10rc3" dir="new">
-        <compile files="PR559.java"></compile>
-        <run class="PR559"></run>
     </ajc-test>
 <ajc-test title="more issues with abstract aspects and cflow pointcuts" pr="559" num="583" keywords="from-resolved_10rc3,fail-unimplemented" dir="new">
         <compile files="AbstractCflows.java"></compile>
@@ -3892,10 +3876,6 @@
             <message text="adviceExecution() &amp;&amp; within(A)" line="72" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
-        <compile files="CflowCycles.java"></compile>
-        <run class="CflowCycles"></run>
-    </ajc-test>
 <ajc-test title="incompatible advice throws clause are a compile-time error" num="763" keywords="from-resolved_10x" dir="new" abccomment="we don't report the advice positions too">
         <compile files="AdviceThrowsCf.java">
             <ajcmessage line="13" kind="error"></ajcmessage>
@@ -3985,23 +3965,9 @@
         <compile files="Privilege.java"></compile>
         <run class="Privilege"></run>
     </ajc-test>
-<ajc-test title="Internal compiler error with thisJoinPoint.getStaticPart()" pr="36564" num="782" dir="bugs">
-        <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"></compile>
-        <run class="tjpStaticPart.Test"></run>
-    </ajc-test>
 <ajc-test title="Inconsistant stack height with around" pr="29665" num="783" dir="bugs">
         <compile files="StackError.java"></compile>
         <run class="StackError"></run>
-    </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" pr="36056" num="78401" dir="abctests/bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-                <ajcmessage line="102" kind="warning"></ajcmessage>
-        	<ajcmessage line="124" kind="warning"></ajcmessage>
-        	<ajcmessage line="138" kind="warning"></ajcmessage>
-		<message line="102" kind="warning"></message>
-        	<message line="124" kind="warning"></message>
-        </compile>
-        <run class="cap.OptionList"></run>
     </ajc-test>
 <ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="TryFinallyInAround.java"></compile>
@@ -5658,14 +5624,6 @@
             <message line="17" kind="error"></message>
             <message line="22" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="Preinit weaving problem" num="1205" dir="abctests/bugs">
-        <compile files="Preinit.java"></compile>
-        <run class="Preinit"></run>
-    </ajc-test>
-<ajc-test title="Preinit weaving problem (test 2)" num="1206" dir="abctests/bugs">
-        <compile files="Preinit2.java"></compile>
-        <run class="Preinit2"></run>
     </ajc-test>
 <ajc-test title="Problem with privileged ITD access to private fields" num="1207" dir="abctests/bugs">
         <compile files="ITDPrivate.java"></compile>
