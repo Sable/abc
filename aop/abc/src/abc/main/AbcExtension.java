@@ -34,14 +34,9 @@ import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.SootMethodRef;
 import soot.Transform;
 import soot.Trap;
-import soot.Value;
-import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
-import soot.jimple.toolkits.annotation.nullcheck.NullnessAnalysis;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
 import soot.util.Chain;
@@ -54,6 +49,7 @@ import abc.main.options.OptionsParser;
 import abc.soot.util.CastRemover;
 import abc.soot.util.FarJumpEliminator;
 import abc.soot.util.InstanceOfEliminator;
+import abc.soot.util.OptimizedNullCheckEliminator;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
@@ -65,7 +61,6 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.PerCflowSetup;
 import abc.weaving.aspectinfo.PerTargetSetup;
 import abc.weaving.aspectinfo.PerThisSetup;
-import abc.weaving.aspectinfo.Singleton;
 import abc.weaving.matching.AbcSJPInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ClassInitializationShadowMatch;
@@ -290,37 +285,8 @@ public class AbcExtension
 		
 		
 		if (Debug.v().nullCheckElim) {
-			// Add a null check eliminator that knows about abc specific stuff
-			NullCheckEliminator.AnalysisFactory f = new NullCheckEliminator.AnalysisFactory() {
-				public NullnessAnalysis newAnalysis(soot.toolkits.graph.UnitGraph g) {
-					return new NullnessAnalysis(g) {
-						public boolean isAlwaysNonNull(Value v) {
-							if (super.isAlwaysNonNull(v))
-								return true;
-							if (v instanceof InvokeExpr) {
-								InvokeExpr ie = (InvokeExpr) v;
-								SootMethodRef m = ie.getMethodRef();
-								if (m.name().equals("makeJP") && m.declaringClass().getName().equals("org.aspectbench.runtime.reflect.Factory"))
-									return true;
-								if (CflowCodeGenUtils.isFactoryMethod(m))
-									return true;
-								if (m.name().equals("aspectOf") && 
-										m.isStatic() && 
-										m.parameterTypes().size()==0 &&
-										abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspectFromSootClass(m.declaringClass())!=null && // it's an aspect
-										abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspectFromSootClass(m.declaringClass()).getPer() instanceof Singleton &&
-										m.returnType().equals(m.declaringClass().getType()) // correct return type
-										) {
-									return true;
-								}
-							}
-							return false;
-						}
-					};
-				}
-			};
 			// want this to run before Dead assignment eliminiation
-			PackManager.v().getPack("jop").insertBefore(new Transform("jop.nullcheckelim", new NullCheckEliminator(f)), "jop.dae");
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.nullcheckelim", new OptimizedNullCheckEliminator()), "jop.dae");
 		}
 
 		if (Debug.v().switchFolder) {

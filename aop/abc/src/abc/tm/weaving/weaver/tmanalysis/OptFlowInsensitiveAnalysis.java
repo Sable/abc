@@ -28,10 +28,12 @@ import soot.SootMethod;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
+import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
 import abc.main.Debug;
 import abc.main.Main;
+import abc.soot.util.OptimizedNullCheckEliminator;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
@@ -90,9 +92,12 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
             for (SootMethod m : sc.getMethods()) {
                 if(m.hasActiveBody()) {
                     Body b = m.getActiveBody();
-                    CopyPropagator.v().transform(b);            //probably not strictly necessary
-                    DeadAssignmentEliminator.v().transform(b);  //necessary for soundness
-                    UnusedLocalEliminator.v().transform(b);     //probably not strictly necessary
+                    CopyPropagator.v().transform(b);            	//probably not strictly necessary
+                    ConstantPropagatorAndFolder.v().transform(b);
+                    new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
+                    UnreachableCodeEliminator.v().transform(b);		//necessary for soundness
+                    DeadAssignmentEliminator.v().transform(b);  	//necessary for soundness
+                    UnusedLocalEliminator.v().transform(b);     	//probably not strictly necessary
                     if(Debug.v().doValidate)
                         b.validate();
                 }
