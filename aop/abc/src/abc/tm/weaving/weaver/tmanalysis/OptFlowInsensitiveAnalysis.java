@@ -28,7 +28,6 @@ import soot.SootMethod;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
-import soot.jimple.toolkits.scalar.UnconditionalBranchFolder;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
@@ -87,6 +86,9 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
      * {@link Local}s that we need for variable bindings in the tracematch analysis.
      */
     protected void runIntraProcOptimizations() {
+        /*
+         * NOTE TO SELF: Must NOT use UnconditionalBranchFolder here, as this would undo the efforts by TMLoopExitRestructurer. 
+         */        
         GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
         for (AbcClass abcClass : (Set<AbcClass>)gai.getWeavableClasses()) {
             SootClass sc = abcClass.getSootClass();
@@ -98,7 +100,6 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
                     new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
                     UnreachableCodeEliminator.v().transform(b);		//necessary for soundness
                     DeadAssignmentEliminator.v().transform(b);  	//necessary for soundness
-                    UnconditionalBranchFolder.v().transform(b);     //mostly for better readability of code during debugging
                     UnusedLocalEliminator.v().transform(b);     	//probably not strictly necessary
                     if(Debug.v().doValidate)
                         b.validate();
