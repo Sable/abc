@@ -28,6 +28,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.UnitBox;
+import soot.jimple.GotoStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
@@ -64,6 +65,32 @@ public class TMLoopExitRestructurer {
 		}
 	}
 
+	/**
+	 * We do the following transformation. We define the target of a loop exit as a statement
+	 * that is reached from a loop but is not part of the loop. This can be either (a) a fall-through
+	 * of a statement <code>if(x) goto loop-header</code> or the target of a branch statement.
+	 * 
+	 * First, for each target or a loop exit, add a nop before the target (not rerouting jumps).
+	 * Then we add a goto to the original target. Finally, the loop exit itself, if it is a branch statement,
+	 * is rerouted to the nop that was inserted. 
+	 * 
+	 * For instance, if we have two loop exists <code>if(x) goto labeli;</code> and <code>if(y) goto labeli;</code>,
+	 * we would change the code to the following:
+	 * 
+	 * <code>
+	 * if(x) goto label1;
+	 * ...
+	 * if(y) goto labeli;
+	 * ...
+	 * label1:
+	 *   nop;
+	 *   goto label3;
+	 * label2:
+	 *   nop;
+	 *   goto labeli;
+	 * </code>
+	 * 
+	 */
 	protected static void transform(Body b) {
 		
 	    PatchingChain<Unit> units = b.getUnits();
@@ -82,6 +109,11 @@ public class TMLoopExitRestructurer {
 	                //insert a nop
 	                NopStmt targetNop = Jimple.v().newNopStmt();
 	                units.insertBeforeNoRedirect(targetNop, target);
+	                //and insert a goto to the target;
+	                //this *might* just jump to the next statement but not necessarily, for instance not if multiple loop
+	                //exits jump to the same target
+                    GotoStmt gotoTarget = Jimple.v().newGotoStmt(target);
+	                units.insertBeforeNoRedirect(gotoTarget, target);
 	                //patch the exit (and the exit only!) to jump to the nop instead 
 	                if(exit.branches()) {
 	                    for (UnitBox box : exit.getUnitBoxes()) {
