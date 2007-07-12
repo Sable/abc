@@ -27,6 +27,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
+import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
@@ -81,8 +82,9 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 
     /**
      * Runs intraprocedural optimizations after weaving. Those are necessary for soundness.
-     * We do <i>not</i> run {@link ConstantPropagatorAndFolder} here, since that would potentially eliminate
-     * {@link Local}s that we need for variable bindings in the tracematch analysis.
+     * We do <i>not</i> run {@link ConstantPropagatorAndFolder} nor {@link DeadAssignmentEliminator} here,
+     * since that would potentially eliminate {@link Local}s that we need for variable bindings in the
+     * tracematch analysis.
      */
     protected void runIntraProcOptimizations() {
         /*
