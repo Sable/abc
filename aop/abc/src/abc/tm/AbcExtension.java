@@ -31,6 +31,7 @@ import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.main.CompileSequence;
+import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
@@ -38,6 +39,7 @@ import abc.tm.weaving.weaver.TMLoopExitRestructurer;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
+import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
@@ -72,6 +74,8 @@ public class AbcExtension extends abc.eaj.AbcExtension
     private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
     private static final ID PASS_TM_ANALYSIS_FLOWINS_REITER = new ID("Tracematch analysis - reiteration of flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
+    private static final ID PASS_DYNAMIC_INSTRUMENTATION = new ID("Dynamic instrumentation");
+    
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -143,6 +147,10 @@ public class AbcExtension extends abc.eaj.AbcExtension
         	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap", SootClass.SIGNATURES);
         	   Scene.v().addBasicClass("java.util.Map$Entry", SootClass.SIGNATURES);
            }
+           if(Debug.v().dynaInstr) {
+               Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
+               Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);               
+           }
 	   }
     
     /** 
@@ -158,7 +166,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
             ReweavingAnalysis quick = new OptQuickCheck();                
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
             
-            String laststage = OptionsParser.v().laststage();
+            final String laststage = OptionsParser.v().laststage();
             
             if(!laststage.equals("quick")) {
             
@@ -193,18 +201,37 @@ public class AbcExtension extends abc.eaj.AbcExtension
                     };
                 }
             }
+            
+            //pass for dynamic instrumentation 
+
+            if(Debug.v().dynaInstr) {
+                ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
+                    @Override
+                    public boolean analyze() {
+                        DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
+                        return false;
+                    }
+                    @Override
+                    public void cleanup() {                        
+                        DynamicInstrumenter.v().insertDumpCall();
+                    }
+                };
+                passes.add( new ReweavingPass( PASS_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
+            }
 
             //add a pass which just cleans up resources;
             //this is necessary in order to reset static fields for the test harness
             
             ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
 
+                @Override
                 public boolean analyze() {
                     //disable all some and sync advice that became inactive
                     ShadowRegistry.v().disableAllUnneededSomeSyncAndBodyAdvice();
                     return false;
                 }
                 
+                @Override
                 public void cleanup() {
                     //dump shadows in the end
                     ShadowRegistry.v().dumpShadows();

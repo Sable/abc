@@ -240,7 +240,9 @@ public class Debug {
 	//dump shadows as they are disabled
 	public boolean tmShadowDump = false;
 	//generate a warning when changing a shadow (for harness)
-	public boolean warnWhenAlteringShadow = false;
+	public boolean warnWhenAlteringShadow = false;    
+	//enable dynamic instrumentation
+	public boolean dynaInstr = false;
  
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
