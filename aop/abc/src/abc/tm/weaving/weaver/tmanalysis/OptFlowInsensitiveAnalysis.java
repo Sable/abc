@@ -18,13 +18,18 @@
  */
 package abc.tm.weaving.weaver.tmanalysis;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import soot.Body;
 import soot.Local;
+import soot.RefLikeType;
+import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
@@ -128,6 +133,9 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     	if(!ShadowRegistry.v().enabledShadowsLeft()) {
     		return;
     	}
+    	
+    	//customize the analysis so that e.g. Iterators are treated with more precision
+    	customizePointsToAnalysis();
 
 		FlowInsensitiveAnalysis.v().apply();
 
@@ -137,7 +145,7 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 
     	AbcTimer.mark("Disabling helper advice");    	
 	}
-	
+
 	/** 
      * {@inheritDoc}
      */
@@ -178,5 +186,18 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
         //will be reset by Weaver after the analysis
         Debug.v().cleanupAfterAdviceWeave = false;
     }
+    
+    protected void customizePointsToAnalysis() {
+        DemandCSPointsTo pointsToAnalysis = (DemandCSPointsTo) Scene.v().getPointsToAnalysis();
+        CustomizedDemandCSPointsTo customizedPointsTo =
+            new CustomizedDemandCSPointsTo(
+                    pointsToAnalysis,
+                    Collections.<RefLikeType>singleton(
+                            RefType.v("java.util.Iterator")
+                    )
+            );
+        Scene.v().setPointsToAnalysis(customizedPointsTo);
+    }
+
     
 }
