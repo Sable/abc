@@ -18,18 +18,16 @@
  */
 package abc.tm.weaving.weaver.tmanalysis;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import soot.Body;
 import soot.Local;
-import soot.RefLikeType;
-import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
+import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
@@ -38,6 +36,7 @@ import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
 import abc.main.Debug;
 import abc.main.Main;
+import abc.soot.util.InstanceOfEliminator;
 import abc.soot.util.OptimizedNullCheckEliminator;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
@@ -105,6 +104,8 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
                     CopyPropagator.v().transform(b);            	//probably not strictly necessary
                     ConstantPropagatorAndFolder.v().transform(b);
                     new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
+                    new InstanceOfEliminator().transform(b);        //might get rid of spurious shadows
+                    ConditionalBranchFolder.v().transform(b);       //necessary to exploit optimizations by InstanceOfEliminator 
                     UnreachableCodeEliminator.v().transform(b);		//necessary for soundness
                     UnusedLocalEliminator.v().transform(b);     	//probably not strictly necessary
                     if(Debug.v().doValidate)
@@ -189,14 +190,16 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     
     protected void customizePointsToAnalysis() {
         DemandCSPointsTo pointsToAnalysis = (DemandCSPointsTo) Scene.v().getPointsToAnalysis();
-        CustomizedDemandCSPointsTo customizedPointsTo =
-            new CustomizedDemandCSPointsTo(
-                    pointsToAnalysis,
-                    Collections.<RefLikeType>singleton(
-                            RefType.v("java.util.Iterator")
-                    )
-            );
-        Scene.v().setPointsToAnalysis(customizedPointsTo);
+        //never refine call graph
+        pointsToAnalysis.setRefineCallGraph(false);
+//        CustomizedDemandCSPointsTo customizedPointsTo =
+//            new CustomizedDemandCSPointsTo(
+//                    pointsToAnalysis,
+//                    Collections.<RefLikeType>singleton(
+//                            RefType.v("java.util.Iterator")
+//                    )
+//            );
+//        Scene.v().setPointsToAnalysis(customizedPointsTo);
     }
 
     
