@@ -169,7 +169,7 @@ public class ShadowRegistry {
 		boolean removed = enabledShadows.remove(uniqueShadowId);
 		assert removed;
 		boolean added = disabledShadows.add(uniqueShadowId);
-		assert added;
+        assert added;
 		
 		if(Debug.v().tmShadowDump) {
 			System.err.println("disabled shadow: "+uniqueShadowId);

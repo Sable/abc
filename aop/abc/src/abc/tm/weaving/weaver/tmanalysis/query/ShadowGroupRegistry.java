@@ -112,6 +112,8 @@ public class ShadowGroupRegistry {
 	 * @see {@link ShadowRegistry#disableShadow(String)}
 	 */
 	public boolean pruneShadowGroupsWhichHaveBecomeIncomplete() {
+        if(shadowGroups==null) return false;
+        
 		boolean removedAGroup = true;
 		Set<ISymbolShadow> allShadowsInAllShadowGroups = new HashSet<ISymbolShadow>();
 		
@@ -169,6 +171,10 @@ public class ShadowGroupRegistry {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean hasShadowGroupInfo() {
+	    return shadowGroups != null;
 	}
 
 	//singleton pattern

@@ -243,6 +243,8 @@ public class Debug {
 	public boolean warnWhenAlteringShadow = false;    
 	//enable dynamic instrumentation
 	public boolean dynaInstr = false;
+    //execute first one iteration of the intraprocedural unnecessary shadow elimination
+    public boolean firstUnnecessary = false;
  
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 

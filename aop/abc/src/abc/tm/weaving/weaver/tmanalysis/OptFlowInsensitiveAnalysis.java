@@ -91,6 +91,10 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
      * tracematch analysis.
      */
     protected void runIntraProcOptimizations() {
+        //necessary for InstanceOfEliminator below, as it uses type information;
+        //have to release hierarchy as it could have been changed during weaving
+        Scene.v().releaseActiveHierarchy();
+        
         /*
          * NOTE TO SELF: Must NOT use UnconditionalBranchFolder nor DeadAssignmentEliminator here,
          * as this would undo the efforts by TMLoopExitRestructurer. 
@@ -127,7 +131,8 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 		AbcTimer.mark("Tag shadows");
 		
         //build the abstracted call graph
-        CallGraphAbstraction.v().apply();
+		if(CallGraphAbstraction.v().abstractedCallGraph()==null)
+		    CallGraphAbstraction.v().apply();
 
     	AbcTimer.mark("Build and abstract call graph");
 

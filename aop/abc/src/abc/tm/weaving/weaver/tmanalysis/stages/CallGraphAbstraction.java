@@ -118,6 +118,7 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
 	 */
 	public void rebuildAbstractedCallGraph() {
 		CallGraph callGraph = Scene.v().getCallGraph();
+        ReachableShadowFinder.v().freeCallGraph(abstractedCallGraph);
         abstractedCallGraph = new AbstractedCallGraph(callGraph, ONLY_METHODS_WITH_MATCHED_UNITS);
 	}
 	

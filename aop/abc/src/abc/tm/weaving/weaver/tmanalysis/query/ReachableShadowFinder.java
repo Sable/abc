@@ -26,13 +26,12 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import abc.tm.weaving.weaver.tmanalysis.util.Naming;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
-
 import soot.Body;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.toolkits.callgraph.CallGraph;
+import abc.tm.weaving.weaver.tmanalysis.util.Naming;
+import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 
 /**
  * Finds all reachable shadows in a callgraph. It uses result caching, i.e. assumes that the call graph does not change over time.
@@ -104,6 +103,16 @@ public class ReachableShadowFinder {
 	protected void addShadowIfPresent(Unit h, SootMethod container) {
 		reachableShadows.addAll(ShadowRegistry.v().allActiveShadowsForHost(h, container));
 	}
+	
+    /**
+     * Removes information on cg from the cache.
+     */
+    public void freeCallGraph(CallGraph cg) {
+        if(cgToReachableShadows!=null) {
+            cgToReachableShadows.remove(cg);
+        }
+    }
+
 
 	//singleton pattern
 	
@@ -126,6 +135,5 @@ public class ReachableShadowFinder {
 	public static void reset() {
 		instance = null;
 	}
-
 
 }
