@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import soot.Body;
-import soot.Local;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
@@ -30,7 +29,6 @@ import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
-import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
@@ -85,33 +83,26 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     }
 
     /**
-     * Runs intraprocedural optimizations after weaving. Those are necessary for soundness.
-     * We do <i>not</i> run {@link ConstantPropagatorAndFolder} nor {@link DeadAssignmentEliminator} nor
-     * {@link CopyPropagator} here, since that would potentially eliminate {@link Local}s
-     * that we need for variable bindings in the tracematch analysis.
+     * Runs intraprocedural optimizations after weaving. 
      */
     protected void runIntraProcOptimizations() {
         //necessary for InstanceOfEliminator below, as it uses type information;
         //have to release hierarchy as it could have been changed during weaving
         Scene.v().releaseActiveHierarchy();
         
-        /*
-         * NOTE TO SELF: Be careful what to put here! 
-         * UnreachableCodeEliminator is necessary for soundness after weaving.
-         * Anything else is optional. We must *not* do anything that might fold
-         * constants, as this could lead to increased aliasing! 
-         */        
         GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
         for (AbcClass abcClass : (Set<AbcClass>)gai.getWeavableClasses()) {
             SootClass sc = abcClass.getSootClass();
             for (SootMethod m : sc.getMethods()) {
                 if(m.hasActiveBody()) {
                     Body b = m.getActiveBody();
+                    CopyPropagator.v().transform(b);                //probably not strictly necessary
+                    ConstantPropagatorAndFolder.v().transform(b);   //probably not strictly necessary
                     new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
                     new InstanceOfEliminator().transform(b);        //might get rid of spurious shadows
                     ConditionalBranchFolder.v().transform(b);       //necessary to exploit optimizations by InstanceOfEliminator 
-                    UnreachableCodeEliminator.v().transform(b);		//necessary for soundness
-                    UnusedLocalEliminator.v().transform(b);     	//probably not strictly necessary
+                    UnreachableCodeEliminator.v().transform(b);     //necessary for soundness
+                    UnusedLocalEliminator.v().transform(b);         //probably not strictly necessary
                     if(Debug.v().doValidate)
                         b.validate();
                 }
