@@ -36,21 +36,16 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootFieldRef;
 import soot.SootMethod;
-import soot.Type;
 import soot.VoidType;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.IntConstant;
-import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.StaticFieldRef;
-import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import abc.main.Debug;
 import abc.main.Main;
-import abc.soot.util.Restructure;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
@@ -126,18 +121,6 @@ public class DynamicInstrumenter {
             }
         );
 	}
-
-    public void insertDumpCall() {
-        SootMethod mainMethod = Scene.v().getMainMethod();
-        Stmt nopAtReturn = Restructure.restructureReturn(mainMethod);
-        Body b = mainMethod.getActiveBody();
-        StaticInvokeExpr invokeExpr =
-            Jimple.v().newStaticInvokeExpr(
-                    Scene.v().makeMethodRef(Scene.v().getSootClass(SHADOW_SWITCH_CLASS_NAME), "dumpShadowCounts", Collections.<Type>emptyList(), VoidType.v(), true)
-            );
-        InvokeStmt dumpStmt = Jimple.v().newInvokeStmt(invokeExpr);
-        b.getUnits().insertAfter(dumpStmt, nopAtReturn);
-    }
 
     /**
 	 * Creates a class with a single method that initializes the data structures

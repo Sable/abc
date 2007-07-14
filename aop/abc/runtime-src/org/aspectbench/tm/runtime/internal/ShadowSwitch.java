@@ -46,6 +46,13 @@ public class ShadowSwitch {
 			for(int i=0;i<enabled.length;i++) {
 			    enabled[i] = true;
 			}
+			
+			//dump shadows at shutdown time
+			Runtime.getRuntime().addShutdownHook( new Thread() {
+				public void run() {
+					dumpShadowCounts();
+				}
+			});			
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -92,7 +99,7 @@ public class ShadowSwitch {
 	    }
 	}
 
-	public static void enableShadowGroup(int groupNumber) {
+	private static void enableShadowGroup(int groupNumber) {
     	System.out.println("enabled shadow group #"+groupNumber);
 		for (int i = 0; i < groupTable[groupNumber].length; i++) {
 			boolean toEnable = groupTable[groupNumber][i];
@@ -101,13 +108,13 @@ public class ShadowSwitch {
 	}
 
 
-	public static void disableAllGroups() {
+	private static void disableAllGroups() {
 		for (int i = 0; i < enabled.length; i++) {
 			enabled[i] = false;			
 		}
 	}
 
-    public static void dumpShadowCounts() {
+    private static synchronized void dumpShadowCounts() {
         System.err.println("*** Printing out shadow counts ***");
 
         int sum = 0;

@@ -231,10 +231,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
                         DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
                         return false;
                     }
-                    @Override
-                    public void cleanup() {                        
-                        DynamicInstrumenter.v().insertDumpCall();
-                    }
                 };
                 passes.add( new ReweavingPass( PASS_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
             }
