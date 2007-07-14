@@ -86,9 +86,9 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 
     /**
      * Runs intraprocedural optimizations after weaving. Those are necessary for soundness.
-     * We do <i>not</i> run {@link ConstantPropagatorAndFolder} nor {@link DeadAssignmentEliminator} here,
-     * since that would potentially eliminate {@link Local}s that we need for variable bindings in the
-     * tracematch analysis.
+     * We do <i>not</i> run {@link ConstantPropagatorAndFolder} nor {@link DeadAssignmentEliminator} nor
+     * {@link CopyPropagator} here, since that would potentially eliminate {@link Local}s
+     * that we need for variable bindings in the tracematch analysis.
      */
     protected void runIntraProcOptimizations() {
         //necessary for InstanceOfEliminator below, as it uses type information;
@@ -96,8 +96,10 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
         Scene.v().releaseActiveHierarchy();
         
         /*
-         * NOTE TO SELF: Must NOT use UnconditionalBranchFolder nor DeadAssignmentEliminator here,
-         * as this would undo the efforts by TMLoopExitRestructurer. 
+         * NOTE TO SELF: Be careful what to put here! 
+         * UnreachableCodeEliminator is necessary for soundness after weaving.
+         * Anything else is optional. We must *not* do anything that might fold
+         * constants, as this could lead to increased aliasing! 
          */        
         GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
         for (AbcClass abcClass : (Set<AbcClass>)gai.getWeavableClasses()) {
@@ -105,8 +107,6 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
             for (SootMethod m : sc.getMethods()) {
                 if(m.hasActiveBody()) {
                     Body b = m.getActiveBody();
-                    CopyPropagator.v().transform(b);            	//probably not strictly necessary
-                    ConstantPropagatorAndFolder.v().transform(b);
                     new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
                     new InstanceOfEliminator().transform(b);        //might get rid of spurious shadows
                     ConditionalBranchFolder.v().transform(b);       //necessary to exploit optimizations by InstanceOfEliminator 
