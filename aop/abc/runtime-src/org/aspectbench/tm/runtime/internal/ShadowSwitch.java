@@ -21,10 +21,8 @@ package org.aspectbench.tm.runtime.internal;
 
 import java.util.StringTokenizer;
 
-import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
-
 /**
- * ShadowSwitch - stub for shadow switching. Is extended by {@link DynamicInstrumenter}.
+ * ShadowSwitch - stub for shadow switching. Is extended by DynamicInstrumenter.
  *
  * @author Eric Bodden
  * @author Patrick Lam
