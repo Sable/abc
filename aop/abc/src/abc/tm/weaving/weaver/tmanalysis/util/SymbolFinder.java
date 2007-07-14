@@ -24,12 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import soot.Local;
 import soot.SootMethod;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
+import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
 import abc.main.Main;
@@ -56,9 +57,10 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 	
 	/**
 	 * Constructs a new symbol finder for a given unit graph.
-	 * @param graph
+	 * @param graph must be a {@link BriefUnitGraph}! Do not attempt to use an {@link ExceptionalUnitGraph} or anything similar,
+	 * since {@link SymbolFinder} relies on proper sequence of sync, symbol and some advice!
 	 */
-	public SymbolFinder(UnitGraph graph) {
+	public SymbolFinder(BriefUnitGraph graph) {
 		super(graph);
 		
 		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
@@ -168,19 +170,28 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 	 */
 	@Override
 	protected void merge(Object in1, Object in2, Object out) {
-		Map left = (Map) in1;
-		Map right = (Map) in2;
-		Map res = (Map) out;
+	    Map<TraceMatch,Set<ISymbolShadow>> left = (Map) in1;
+	    Map<TraceMatch,Set<ISymbolShadow>> right = (Map) in2;
+	    Map<TraceMatch,Set<ISymbolShadow>> res = (Map) out;
 		res.clear();
-		res.putAll(left);
-		for (Entry rightEntry : (Collection<Entry>)right.entrySet()) {
-			if(res.containsKey(rightEntry.getKey())) {
-				Set set = (Set) res.get(rightEntry.getKey());
-				set.addAll((Set)rightEntry.getValue());
-			} else {
-				res.put(rightEntry.getKey(), rightEntry.getValue());
-			}
-		}
+
+		//fill in all shadows from the left
+		for (Map.Entry<TraceMatch,Set<ISymbolShadow>> leftEntry : left.entrySet()) {
+            res.put(leftEntry.getKey(), new HashSet<ISymbolShadow>(leftEntry.getValue()));
+        }
+
+		//then the ones from the right
+		for (Map.Entry<TraceMatch,Set<ISymbolShadow>> rightEntry : right.entrySet()) {
+		    //get set filled in from left side
+		    Set<ISymbolShadow> setFromLeft = res.get(rightEntry.getKey());
+		    if(setFromLeft==null) {
+		        //if was not present left, initialize it
+		        setFromLeft = new HashSet<ISymbolShadow>();		        
+		    }
+		    //add from right
+		    setFromLeft.addAll(rightEntry.getValue());		    
+            res.put(rightEntry.getKey(), setFromLeft);
+        }	
 	}
 
 	/**

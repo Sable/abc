@@ -35,8 +35,9 @@ import soot.jimple.Stmt;
 import soot.tagkit.AttributeValueException;
 import soot.tagkit.Host;
 import soot.tagkit.Tag;
-import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.scalar.LocalSplitter;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
@@ -135,12 +136,12 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 		}
 		
 		//perform analysis
-		SymbolFinder symbolFinder = new SymbolFinder(new ExceptionalUnitGraph(b));
+		SymbolFinder symbolFinder = new SymbolFinder(new BriefUnitGraph(b));
 		
 		//for each invoke-statement that calls a some-advice
 		for (Stmt call : symbolFinder.getSomeAdviceMethodCalls()) {
 			//get the symbols matching at this call
-			Map<TraceMatch,Set<ISymbolShadow>> matches = symbolFinder.getSymbolsAtSomeAdviceMethodCall(call);
+			Map<TraceMatch,Set<ISymbolShadow>> matches = symbolFinder.getSymbolsAtSomeAdviceMethodCall(call);			
 			//create the annotation
 			call.addTag(new SymbolShadowTag(matches));
 		}
@@ -168,6 +169,9 @@ public class TMShadowTagger extends BodyTransformer implements Stage {
 					if(method.hasActiveBody()) {
                         if(UNIQUE_ADVICE_ACTUALS) {
                             LocalSplitter.v().transform(method.getActiveBody());
+                            if(Debug.v().doValidate) {
+                                method.getActiveBody().validate();
+                            }
                         }
 						transform(method.getActiveBody());
 					}
