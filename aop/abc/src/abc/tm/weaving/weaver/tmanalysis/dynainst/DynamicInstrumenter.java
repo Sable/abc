@@ -111,9 +111,13 @@ public class DynamicInstrumenter {
                         Residue originalResidue = aa.getResidue();
                         //conjoin residue
                         aa.setResidue(
+//                                AndResidue.construct(                   
+//                                        new DynamicInstrumentationResidue(numberOf(uniqueShadowId)),
+//                                        originalResidue
+//                                )
                                 AndResidue.construct(                   
-                                        new DynamicInstrumentationResidue(numberOf(uniqueShadowId)),
-                                        originalResidue
+                                        originalResidue,
+                                        new ShadowCountResidue(numberOf(uniqueShadowId))
                                 )
                         );          
                     }
