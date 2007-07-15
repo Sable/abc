@@ -112,7 +112,11 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 		if(stmt.containsInvokeExpr()) {
 			InvokeExpr invokeExpr = stmt.getInvokeExpr();
 			SootMethod targetMethod = invokeExpr.getMethod();
-			if(symbolAdviceMethodToTraceMatch.containsKey(targetMethod)) {
+			if(syncAdviceMethodToTraceMatch.containsKey(targetMethod)) {
+				//have a sync advice; create new set to accumulate symbols in
+				TraceMatch tm = syncAdviceMethodToTraceMatch.get(targetMethod);
+				outMap.put(tm, new HashSet());
+			} else if(symbolAdviceMethodToTraceMatch.containsKey(targetMethod)) {
 				TraceMatch tm = (TraceMatch) symbolAdviceMethodToTraceMatch.get(targetMethod);
 				String symbolName = tm.symbolNameForSymbolAdvice(targetMethod);
 				List<String> tmVariables = tm.getVariableOrder(symbolName);
@@ -127,14 +131,13 @@ public class SymbolFinder extends ForwardFlowAnalysis {
 				InstructionShadowTag tag = (InstructionShadowTag) stmt.getTag(InstructionShadowTag.NAME);
 				assert tag!=null;
 				int shadowId = tag.value();								
-                Set<ISymbolShadow> newSet = new HashSet<ISymbolShadow>();
 				Set<ISymbolShadow> currSymbolSet = (Set<ISymbolShadow>) inMap.get(tm);
-				if(currSymbolSet!=null) {
-				    newSet.addAll(currSymbolSet);
+				if(currSymbolSet!=null) { //may be null in some exceptional flow, which we do not consider here //FIXME is this 100% sound?
+	                Set<ISymbolShadow> newSet = new HashSet<ISymbolShadow>(currSymbolSet);
+	                UnitGraph g = (UnitGraph)graph;
+	                newSet.add(new SymbolShadow(symbolName,varMapping,shadowId,g.getBody().getMethod(),tm));
+	                outMap.put(tm,newSet);
 				}
-                UnitGraph g = (UnitGraph)graph;
-				newSet.add(new SymbolShadow(symbolName,varMapping,shadowId,g.getBody().getMethod(),tm));
-				outMap.put(tm,newSet);
 			} else if(someAdviceMethodToTraceMatch.containsKey(targetMethod)) {
 				TraceMatch tm = (TraceMatch) someAdviceMethodToTraceMatch.get(targetMethod);
 				outMap.remove(tm);
