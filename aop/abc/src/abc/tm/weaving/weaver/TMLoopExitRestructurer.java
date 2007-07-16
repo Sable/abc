@@ -21,7 +21,6 @@
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import soot.Body;
 import soot.PatchingChain;
@@ -66,6 +65,32 @@ public class TMLoopExitRestructurer {
 		}
 	}
 
+	/**
+	 * We do the following transformation. We define the target of a loop exit as a statement
+	 * that is reached from a loop but is not part of the loop. This can be either (a) a fall-through
+	 * of a statement <code>if(x) goto loop-header</code> or the target of a branch statement.
+	 * 
+	 * First, for each target or a loop exit, add a nop before the target (not rerouting jumps).
+	 * Then we add a goto to the original target. Finally, the loop exit itself, if it is a branch statement,
+	 * is rerouted to the nop that was inserted. 
+	 * 
+	 * For instance, if we have two loop exists <code>if(x) goto labeli;</code> and <code>if(y) goto labeli;</code>,
+	 * we would change the code to the following:
+	 * 
+	 * <code>
+	 * if(x) goto label1;
+	 * ...
+	 * if(y) goto labeli;
+	 * ...
+	 * label1:
+	 *   nop;
+	 *   goto label3;
+	 * label2:
+	 *   nop;
+	 *   goto labeli;
+	 * </code>
+	 * 
+	 */
 	protected static void transform(Body b) {
 		
 	    PatchingChain<Unit> units = b.getUnits();
@@ -81,38 +106,22 @@ public class TMLoopExitRestructurer {
 	            Collection<Stmt> targetsOfLoopExit = loop.targetsOfLoopExit(exit);
 	            //for each successor statement of the loop exit
 	            for (Stmt target : targetsOfLoopExit) {
-	                if(units.getSuccOf(exit).equals(target)) {
-	                    //we have an exit of the form "if(p) goto header", i.e. we exit the loop by falling through;
-	                    //just add a nop in this case - that's all
-	                    units.insertAfter(Jimple.v().newNopStmt(),exit);
-	                } else {
-	                    /* we exit by "if(p) goto <target>" (where <target> is outside the loop)
-	                     * convert this block...
-	                     * 
-	                     *   if(p) goto <target>
-	                     *   <fallThrough>
-	                     * 
-	                     * ... to ...
-	                     * 
-	                     *   if(p) goto label1
-	                     *   goto label2
-	                     * label1:
-	                     *   nop
-	                     *   goto <target>
-	                     * label2:
-	                     *   <fallThrough>
-	                     */
-	                    Unit fallThrough = units.getSuccOf(exit);
-	                    GotoStmt gotoFallThrough = Jimple.v().newGotoStmt(fallThrough);
-                        units.insertAfter(gotoFallThrough, exit);
-                        NopStmt nop = Jimple.v().newNopStmt();
-                        units.insertAfter(nop, gotoFallThrough);
-                        List<UnitBox> unitBoxes = exit.getUnitBoxes();
-                        assert unitBoxes.size()==1;
-                        assert unitBoxes.get(0)==target;
-                        unitBoxes.get(0).setUnit(nop);
-                        Unit gotoTarget = Jimple.v().newGotoStmt(target); 
-                        units.insertAfter(gotoTarget, nop);
+	                //insert a nop
+	                NopStmt targetNop = Jimple.v().newNopStmt();
+	                units.insertBeforeNoRedirect(targetNop, target);
+	                //and insert a goto to the target;
+	                //this *might* just jump to the next statement but not necessarily, for instance not if multiple loop
+	                //exits jump to the same target
+                    GotoStmt gotoTarget = Jimple.v().newGotoStmt(target);
+	                units.insertBeforeNoRedirect(gotoTarget, target);
+	                //patch the exit (and the exit only!) to jump to the nop instead 
+	                if(exit.branches()) {
+	                    for (UnitBox box : exit.getUnitBoxes()) {
+                            Unit jumpTarget = box.getUnit();
+                            if(target==jumpTarget) {
+                                box.setUnit(targetNop);
+                            }
+                        }
 	                }
                 }
             }
