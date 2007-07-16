@@ -245,6 +245,10 @@ public class Debug {
 	public boolean dynaInstr = false;
     //execute first one iteration of the intraprocedural unnecessary shadow elimination
     public boolean firstUnnecessary = false;
+    
+    public boolean useUnnecessaryShadow = true;
+    public boolean useCannotTriggerFinal = true;
+    public boolean useShadowMotion = true;
  
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
