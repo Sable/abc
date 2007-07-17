@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         id="jastaddBuilder"
+         name="JastAdd Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="org.jastadd.plugin.builder.JastAddBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="jastaddNature"
+         name="JastAdd Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.jastadd.plugin.builder.JastAddNature">
+         </run>
+      </runtime>
+      <builder
+            id="org.jastadd.plugin.jastaddBuilder">
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="org.jastadd.plugin.contribution1">
+         <action
+               label="Add/Remove JastAdd Nature"
+               class="org.jastadd.plugin.builder.ToggleNatureAction"
+               menubarPath="additions"
+               enablesFor="+"
+               id="org.jastadd.plugin.addRemoveNatureAction">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+
+</plugin>
