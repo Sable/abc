@@ -53,5 +53,32 @@
             value="true">
       </persistent>
    </extension>
+   
+   <extension point = "org.eclipse.debug.core.launchConfigurationTypes">
+   <launchConfigurationType
+   	   id="org.jastadd.plugin.launchConfigurationType"
+	   name="JastAdd Launcher"
+	   delegate="org.jastadd.plugin.launcher.JastAddLaunchDelegate"
+	   modes= "run, debug"
+	   >
+   </launchConfigurationType>
+	</extension>
+   
+	<extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+    	<launchConfigurationTabGroup
+        	type="org.eclipse.jdt.launching.javaApplication"
+        	class="org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab"
+        	id="org.eclipse.jdt.debug.ui.launchConfigurationTabGroup.javaApplication">
+    	</launchConfigurationTabGroup>
+	</extension>
+	
+	<extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            name="JastAdd Source Locator"
+            class="org.jastadd.plugin.launcher.JastAddSourceLocator"
+            id="org.jastadd.plugin.launcher.SourceLocator">
+      </sourceLocator>
+   </extension>
 
 </plugin>

@@ -19,6 +19,13 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.core.LaunchManager;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 
@@ -120,8 +127,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			program.initPackageExtractor(new scanner.JavaScanner());
 			program.initOptions();
 			program.addKeyValueOption("-classpath");
-			//String location = resourcethis.getProject().getRawLocation().toString();
-			program.addOptions(new String[] { "-classpath", ".", file.getRawLocation().toOSString() });
+			program.addOptions(new String[] { file.getRawLocation().toOSString() });
 			Collection files = program.files();
 		      try {
 		          for(Iterator iter = files.iterator(); iter.hasNext(); ) {
@@ -156,7 +162,9 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		              }
 		              else {
 		                //processWarnings(warnings, unit);
-		                //processNoErrors(unit);
+		            	unit.java2Transformation();
+		           	    unit.generateClassfile();
+		           	    //run();
 		              }
 		            }
 		          }
@@ -180,6 +188,22 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		          e.printStackTrace();
 		        }
 			
+		}
+	}
+	
+	private void run() {
+		try {
+			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+			ILaunchConfigurationType type = manager.getLaunchConfigurationType("org.jastadd.plugin.launchConfigurationType");
+			ILaunchConfigurationWorkingCopy wc = type.newInstance(null, "SampleConfig");
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "Java");
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "Hello");
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
+			ILaunchConfiguration config = wc.doSave();	
+			config.launch(ILaunchManager.DEBUG_MODE, null);
+			//config.launch(ILaunchManager.RUN_MODE, null);
+		} catch(CoreException e) {
+
 		}
 	}
 
