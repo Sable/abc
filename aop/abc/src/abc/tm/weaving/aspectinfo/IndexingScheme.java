@@ -95,7 +95,7 @@ public class IndexingScheme
     {
         IndexStructure structure;
 
-        if (state.isInitialNode() || state.isFinalNode()) {
+        if (state.isInitialNode() || state.isFinalNode() || !abc.main.Debug.v().useIndexing) {
             // do not index on any variables
             structure = new IndexStructure();
         } else {
