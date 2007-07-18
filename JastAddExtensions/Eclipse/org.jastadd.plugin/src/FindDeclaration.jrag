@@ -1,0 +1,6 @@
+aspect FindDeclaration {
+	syn ASTNode ASTNode.declaration() = null;
+	eq VarAccess.declaration() = (ASTNode)decl();
+	eq TypeAccess.declaration() = type();
+	eq MethodAccess.declaration() = decl();
+}
