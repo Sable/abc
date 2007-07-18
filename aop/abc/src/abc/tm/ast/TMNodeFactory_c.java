@@ -40,9 +40,14 @@ public class TMNodeFactory_c extends EAJNodeFactory_c
 
     public TMNodeFactory_c()
     {
-        extFactory = new AJAbstractExtFactory_c() {};
-        delFactory = new TMAbstractDelFactory_c() {};
+        this(new AJAbstractExtFactory_c() {},new TMAbstractDelFactory_c() {});
     }
+    
+    public TMNodeFactory_c(AJExtFactory extFactory, AJDelFactory delFactory) {
+        this.extFactory = extFactory;
+        this.delFactory = delFactory;
+    }
+    
 
     public TMDecl
         TMDecl(Position pos, Position body_pos, TMModsAndType mods_and_type,
