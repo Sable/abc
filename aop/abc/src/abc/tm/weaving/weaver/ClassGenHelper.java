@@ -226,16 +226,14 @@ public class ClassGenHelper {
         iteratorType = RefType.v("java.util.Iterator");
         hashEntryType = RefType.v("java.util.Map$Entry");
 
-        if(useIndexing()) {
-            if(abc.main.Debug.v().useCommonsCollections) {
-                ccMapClass = Scene.v().getSootClass("org.apache.commons.collections.map.ReferenceIdentityMap");
-            } else {
-            	idMapClass = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.IdentityHashMap");
-            	weakIdMapClass = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityHashMap");
-            	collWeakIdMapClass = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap");
-            }
-        	mapType = RefType.v("java.util.Map");
-        }
+	if(abc.main.Debug.v().useCommonsCollections) {
+	    ccMapClass = Scene.v().getSootClass("org.apache.commons.collections.map.ReferenceIdentityMap");
+	} else {
+	    idMapClass = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.IdentityHashMap");
+	    weakIdMapClass = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityHashMap");
+	    collWeakIdMapClass = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap");
+	}
+	mapType = RefType.v("java.util.Map");
 
         singleObjectType.add(objectType);
         singleCollectionType.add(RefType.v("java.util.Collection"));
@@ -1150,31 +1148,18 @@ public class ClassGenHelper {
      */
     protected void fillInConstraintClass() {
         startClass(constraint);
-        if(useIndexing()) {
-            addIndConstraintClassMembers();
-            addIndConstraintInitialiser();
-            addIndConstraintStaticInitialiser();
-            addIndConstraintFinalizeMethod();
-            addIndConstraintHelperMethods();
-            addIndConstraintGetTrueMethod();
-            addIndConstraintOrMethod();
-            addIndConstraintMergeMethod();
-            addIndConstraintGetDisjunctArrayMethod();
-            addIndConstraintPropagateBindingsMethods();
-            if(!abc.main.Debug.v().noNegativeBindings) 
-                addIndConstraintDoNegativeBindingsMethods();
-        } else {
-            addConstraintClassMembers();
-            addConstraintInitialiser();
-            addConstraintStaticInitialiser();
-            addConstraintFinalizeMethod();
-            addConstraintOrMethod();
-            addConstraintCopyMethod();
-            addConstraintGetDisjunctArrayMethod();
-            addConstraintAddBindingsMethods();
-            if(!abc.main.Debug.v().noNegativeBindings)
-                    addConstraintAddNegativeBindingsMethods();
-        }
+	addIndConstraintClassMembers();
+	addIndConstraintInitialiser();
+	addIndConstraintStaticInitialiser();
+	addIndConstraintFinalizeMethod();
+	addIndConstraintHelperMethods();
+	addIndConstraintGetTrueMethod();
+	addIndConstraintOrMethod();
+	addIndConstraintMergeMethod();
+	addIndConstraintGetDisjunctArrayMethod();
+	addIndConstraintPropagateBindingsMethods();
+	if(!abc.main.Debug.v().noNegativeBindings) 
+	    addIndConstraintDoNegativeBindingsMethods();
     }
     
     /**

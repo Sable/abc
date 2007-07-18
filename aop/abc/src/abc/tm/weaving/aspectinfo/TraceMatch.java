@@ -139,10 +139,7 @@ public class TraceMatch
         makeFormalMaps();
         makePrimitiveMaps();
 
-        if (abc.main.Debug.v().useIndexing)
-            this.helper = new IndexedCodeGenHelper(this);
-        else
-            this.helper = new CodeGenHelper(this);
+	this.helper = new IndexedCodeGenHelper(this);
         
         if(idToTracematch.put(name, this)!=null) {
         	throw new RuntimeException("Internal error: ambiguous tracematch id!");
