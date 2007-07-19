@@ -127,16 +127,17 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			);
 			program.initPackageExtractor(new scanner.JavaScanner());
 			program.initOptions();
-			//program.addKeyValueOption("-classpath");
+			program.addKeyValueOption("-classpath");
 			//program.addOptions(new String[] { file.getRawLocation().toOSString() });
 
 			// project.getRawLocation() returns null. Why? Using hack until fixed
 			IPath fileRawLocation = file.getRawLocation();
 			String fileRawPath = fileRawLocation.toOSString();
-			String projectPath = fileRawPath.substring(0, fileRawPath.length()-file.getName().length());
+			int endIndex = fileRawPath.length() - file.getName().length();
+			String projectPath = fileRawPath.substring(0, endIndex);
 			
 			//program.addOptions(new String[] { file.getRawLocation().toOSString() });
-			program.addOptions(new String[] {"-classpath", projectPath, fileRawPath });
+			program.addOptions(new String[] {"-classpath", projectPath, fileRawPath});
 			
 			Collection files = program.files();
 		      try {
