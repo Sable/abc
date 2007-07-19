@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -126,8 +127,17 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			);
 			program.initPackageExtractor(new scanner.JavaScanner());
 			program.initOptions();
-			program.addKeyValueOption("-classpath");
-			program.addOptions(new String[] { file.getRawLocation().toOSString() });
+			//program.addKeyValueOption("-classpath");
+			//program.addOptions(new String[] { file.getRawLocation().toOSString() });
+
+			// project.getRawLocation() returns null. Why? Using hack until fixed
+			IPath fileRawLocation = file.getRawLocation();
+			String fileRawPath = fileRawLocation.toOSString();
+			String projectPath = fileRawPath.substring(0, fileRawPath.length()-file.getName().length());
+			
+			//program.addOptions(new String[] { file.getRawLocation().toOSString() });
+			program.addOptions(new String[] {"-classpath", projectPath, fileRawPath });
+			
 			Collection files = program.files();
 		      try {
 		          for(Iterator iter = files.iterator(); iter.hasNext(); ) {

@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
@@ -28,7 +32,7 @@ public class JastAddModel {
 	}
 	
 	public ASTNode findNodeInFile(IFile file, int line, int column) {
-		if(file == null)
+ 		if(file == null)
 			return null;
 		Program program = new Program();
 		program.initBytecodeReader(new bytecode.Parser());
@@ -42,14 +46,40 @@ public class JastAddModel {
 		program.initPackageExtractor(new scanner.JavaScanner());
 		program.initOptions();
 		program.addKeyValueOption("-classpath");
-		program.addOptions(new String[] { file.getRawLocation().toOSString() });
-		Collection files = program.files();
-		try {
-			for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-				String name = (String)iter.next();
-				program.addSourceFile(name);
-			}
+		
+		IProject project = file.getProject();
 
+		// project.getRawLocation() returns null. Why? Using hack until fixed
+		IPath fileRawLocation = file.getRawLocation();
+		String fileRawPath = fileRawLocation.toOSString();
+		String projectPath = fileRawPath.substring(0, fileRawPath.length()-file.getName().length());
+		
+		//program.addOptions(new String[] { file.getRawLocation().toOSString() });
+		program.addOptions(new String[] {"-classpath", projectPath, fileRawPath });
+		
+		/* Move to save operation
+		try {
+		  IResource[] filesInProject = file.getProject().members();
+		  for(int i = 0; i < filesInProject.length; i++) {
+				IResource resource = filesInProject[i];
+				if(resource instanceof IFile) {
+					IFile resFile = (IFile)resource;
+					String resFileName = resFile.getRawLocation().toOSString();
+					if (resFileName.endsWith(".java")) {
+						  program.addSourceFile(resFileName);
+					}		
+				}
+		  }
+		} catch (CoreException e) { }
+		*/
+		
+		try {
+			Collection files = program.files();
+			for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+		        String name = (String)iter.next();
+   	            program.addSourceFile(name);
+		    }
+			
 			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 				CompilationUnit unit = (CompilationUnit)iter.next();
 				if(unit.fromSource()) {
