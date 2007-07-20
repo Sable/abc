@@ -2764,6 +2764,12 @@ public class ClassGenHelper {
         singleInt.add(IntType.v());
         startMethod("validateDisjunct", singleInt, BooleanType.v(), Modifier.PUBLIC);
         
+        if(abc.main.Debug.v().onlyStrongRefs || abc.main.Debug.v().noCollectableWeakRefs) {
+        	// in these cases, no disjunct invalidation occurs
+        	doReturn(getInt(1));
+        	return;
+        }
+        
         Local thisLocal = getThisLocal();
         Local stateTo = getParamLocal(0, IntType.v());
 
