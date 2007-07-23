@@ -1,5 +1,7 @@
 package org.jastadd.plugin.builder;
 
+import org.eclipse.core.internal.events.BuildCommand;
+import org.eclipse.core.internal.events.InternalBuilder;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -21,6 +23,8 @@ public class JastAddNature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#configure()
 	 */
 	public void configure() throws CoreException {
+		
+		/* Builder is added via the plugin.xml file
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
 
@@ -34,9 +38,11 @@ public class JastAddNature implements IProjectNature {
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
 		command.setBuilderName(JastAddBuilder.BUILDER_ID);
+		
 		newCommands[newCommands.length - 1] = command;
 		desc.setBuildSpec(newCommands);
 		project.setDescription(desc, null);
+		*/
 	}
 
 	/*
@@ -45,6 +51,7 @@ public class JastAddNature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
 	public void deconfigure() throws CoreException {
+		/* Builder is added via the plugin.xml file
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
@@ -57,6 +64,7 @@ public class JastAddNature implements IProjectNature {
 				return;
 			}
 		}
+		*/
 	}
 
 	/*

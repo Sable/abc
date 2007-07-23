@@ -19,8 +19,10 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.jastadd.plugin.JastAddModel;
 
 public class JastAddLaunchDelegate extends JavaLaunchDelegate {
+	
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
 		if (!saveBeforeLaunch(configuration, mode, monitor)) {
 			return false;
@@ -59,14 +61,22 @@ public class JastAddLaunchDelegate extends JavaLaunchDelegate {
 	}
 	
 	public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException {
-		
 		String projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
 		if ((projectName == null) || (projectName.trim().length() < 1)) {
 			return null;
 		}
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		String path = project.getLocation().toOSString();
-		return new String[] { path } ;
+		
+		String[] classpathEntries = JastAddModel.getInstance().getClasspathEntries();
+		
+		String[] res = new String[classpathEntries.length + 1];
+		res[0] = path;
+		for (int i=0; i < classpathEntries.length; i++) {
+			res[i+1] = classpathEntries[i];
+		}
+		
+		return res;
 	}
 
 	protected void setDefaultSourceLocator(ILaunch launch,

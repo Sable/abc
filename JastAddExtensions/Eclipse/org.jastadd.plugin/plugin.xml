@@ -2,10 +2,17 @@
 <?eclipse version="3.2"?>
 <plugin>
 
+<!-- OLD
    <extension
          id="jastaddBuilder"
          name="JastAdd Builder"
          point="org.eclipse.core.resources.builders">
+         -->
+    <extension
+         id="org.jastadd.plugin.jastaddBuilder"
+         name="JastAdd Builder"
+         point="org.eclipse.core.resources.builders">
+         
       <builder
             hasNature="true">
          <run
@@ -13,8 +20,9 @@
          </run>
       </builder>
    </extension>
+   
    <extension
-         id="jastaddNature"
+         id="org.jastadd.plugin.jastaddNature"
          name="JastAdd Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
@@ -26,6 +34,7 @@
             id="org.jastadd.plugin.jastaddBuilder">
       </builder>
    </extension>
+   
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
@@ -41,7 +50,21 @@
                id="org.jastadd.plugin.addRemoveNatureAction">
          </action>
       </objectContribution>
+     
+      <viewerContribution 
+         id="org.jastadd.plugin.editor.JastAddPopupAction"
+         targetID="#TextEditorContext">
+        <action
+           id="org.jastadd.plugin.editor.jastAddAction" 
+           label="JastAdd Action"
+           menubarPath="additions" 
+           class="org.jastadd.plugin.editor.JastAddActionDelegate"> 
+        </action> 
+      </viewerContribution>
+      
    </extension>
+   
+   
    <extension
          id="xmlProblem"
          name="XML Problem"
@@ -55,11 +78,20 @@
    </extension>
    
    <extension point = "org.eclipse.debug.core.launchConfigurationTypes">
+         <!-- Currently the delegate class is subclassing org.eclipse.jdt.launching.JavaLaunchDelegate
+         which is a subclass of org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate
+         which is a subclass of org.eclipse.debug.core.model.ILaunchConfigurationDelegate
+         The ILaunchconfigurationDelegate is mentioned as the super class for the value
+         of the delegate class attribute. Maybe it is better to try and subclass that class
+         and avoid the Java specific launch classes.. ? -->
    <launchConfigurationType
          delegate="org.jastadd.plugin.launcher.JastAddLaunchDelegate"
          id="org.jastadd.plugin.launchConfigurationType"
          modes="run, debug"
          name="JastAdd Launcher">
+         <!-- This could be declared here. It seems to be used even if it's excluded
+         sourceLocatorId="org.jastadd.plugin.launcher.SourceLocator">
+         -->
    </launchConfigurationType>
 	</extension>
    
@@ -79,5 +111,17 @@
             id="org.jastadd.plugin.launcher.SourceLocator">
       </sourceLocator>
    </extension>
-
+   
+   
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.jastadd.plugin.editor.JastAddEditor"
+            extensions="java"
+            icon="icons/obj16/java.gif"
+            id="org.jastadd.plugin.editor.JastAddEditor"
+            name="JastAdd Editor">
+      </editor>
+   </extension>
+   
 </plugin>

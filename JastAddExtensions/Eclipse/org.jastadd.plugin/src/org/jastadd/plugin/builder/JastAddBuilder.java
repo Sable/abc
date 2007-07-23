@@ -15,6 +15,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -29,6 +31,7 @@ import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
+import org.jastadd.plugin.JastAddModel;
 
 import AST.*;
 
@@ -127,18 +130,27 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			);
 			program.initPackageExtractor(new scanner.JavaScanner());
 			program.initOptions();
+		
+			// Add classpaths and filepath 
 			program.addKeyValueOption("-classpath");
-			//program.addOptions(new String[] { file.getRawLocation().toOSString() });
-
-			// project.getRawLocation() returns null. Why? Using hack until fixed
-			IPath fileRawLocation = file.getRawLocation();
-			String fileRawPath = fileRawLocation.toOSString();
-			int endIndex = fileRawPath.length() - file.getName().length();
-			String projectPath = fileRawPath.substring(0, endIndex);
-			
-			//program.addOptions(new String[] { file.getRawLocation().toOSString() });
-			program.addOptions(new String[] {"-classpath", projectPath, fileRawPath});
-			
+			IProject project = getProject();
+			IWorkspace workspace = project.getWorkspace();
+			IWorkspaceRoot workspaceRoot = workspace.getRoot();
+			String workspacePath = workspaceRoot.getRawLocation().toOSString();			
+			String fileRawPath = file.getFullPath().toOSString();
+			String projectFullPath = project.getFullPath().toOSString();
+			JastAddModel model = JastAddModel.getInstance();
+			String[] classpathEntries = model.getClasspathEntries();
+			String[] classpath = new String[classpathEntries.length + 4];
+			classpath[0] = "-classpath";
+			classpath[1] = workspacePath;
+			classpath[2] = workspacePath + projectFullPath;
+			classpath[3] = fileRawPath;
+			for (int i=0; i <  classpathEntries.length; i++) {
+				classpath[i+4] = classpathEntries[i];
+			}
+			program.addOptions(classpath);
+					
 			Collection files = program.files();
 		      try {
 		          for(Iterator iter = files.iterator(); iter.hasNext(); ) {

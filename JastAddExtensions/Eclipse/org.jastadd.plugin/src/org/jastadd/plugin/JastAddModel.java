@@ -2,18 +2,16 @@ package org.jastadd.plugin;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
 import AST.JavaParser;
-import AST.LexicalError;
-import AST.ParseError;
 import AST.Program;
 
 
@@ -21,9 +19,12 @@ public class JastAddModel {
 
 	private static JastAddModel instance = null;
 	
+	private LinkedList classpathEntry;
+	
 	public JastAddModel() {
 		if (instance == null) {
 		  JastAddModel.instance = this;
+		  classpathEntry = new LinkedList();
 		}
 	}
 	
@@ -45,18 +46,27 @@ public class JastAddModel {
 		);
 		program.initPackageExtractor(new scanner.JavaScanner());
 		program.initOptions();
+		
+		// Add classpaths and filepath 
 		program.addKeyValueOption("-classpath");
-		
 		IProject project = file.getProject();
-
-		// project.getRawLocation() returns null. Why? Using hack until fixed
-		IPath fileRawLocation = file.getRawLocation();
-		String fileRawPath = fileRawLocation.toOSString();
-		String projectPath = fileRawPath.substring(0, fileRawPath.length()-file.getName().length());
-		
-		//program.addOptions(new String[] { file.getRawLocation().toOSString() });
-		program.addOptions(new String[] {"-classpath", projectPath, fileRawPath });
-		
+		IWorkspace workspace = project.getWorkspace();
+		IWorkspaceRoot workspaceRoot = workspace.getRoot();
+		String workspacePath = workspaceRoot.getRawLocation().toOSString();			
+		String fileRawPath = file.getFullPath().toOSString();
+		String projectFullPath = project.getFullPath().toOSString();
+		JastAddModel model = JastAddModel.getInstance();
+		String[] classpathEntries = model.getClasspathEntries();
+		String[] classpath = new String[classpathEntries.length + 4];
+		classpath[0] = "-classpath";
+		classpath[1] = workspacePath;
+		classpath[2] = workspacePath + projectFullPath;
+		classpath[3] = fileRawPath;
+		for (int i=0; i <  classpathEntries.length; i++) {
+			classpath[i+4] = classpathEntries[i];
+		}
+		program.addOptions(classpath);
+				
 		/* Move to save operation
 		try {
 		  IResource[] filesInProject = file.getProject().members();
@@ -119,5 +129,34 @@ public class JastAddModel {
 			return node;
 		}
 		return null;
+	}
+	
+	public void addEntryToClasspath(String path) {
+		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();) {
+			String s = (String)itr.next();
+			if (path.equals(s)) {
+				return;
+			}
+		}
+		classpathEntry.add(path);
+	}
+	
+	public void removeEntryFromClasspath(String path) {
+		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();) {
+			String s = (String)itr.next();
+			if (path.equals(s)) {
+				classpathEntry.remove(s);
+				return;
+			}    
+		}
+	}
+	
+	public String[] getClasspathEntries() {
+		String[] res = new String[classpathEntry.size()];
+		int i = 0;
+		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();i++) {
+			res[i] = (String)itr.next();
+		}
+		return res;
 	}
 }
