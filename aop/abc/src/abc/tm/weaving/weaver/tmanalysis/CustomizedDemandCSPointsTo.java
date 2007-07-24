@@ -18,38 +18,37 @@
  */
 package abc.tm.weaving.weaver.tmanalysis;
 
-import java.util.Collection;
-
 import soot.Context;
 import soot.Local;
 import soot.PointsToAnalysis;
 import soot.PointsToSet;
-import soot.RefLikeType;
 import soot.SootField;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
+import soot.jimple.spark.ondemand.WrappedPointsToSet;
 
 /**
- * A special version of {@link DemandCSPointsTo} that queries the on demand analysis without call graph refinement for certain types. 
+ * A special version of {@link DemandCSPointsTo} that first queries the on demand analysis with call graph refinement and in case it fails
+ * then tries again without refinement. 
  *
  * @author Eric Bodden
  */
 public class CustomizedDemandCSPointsTo implements PointsToAnalysis {
     
     protected final DemandCSPointsTo delegate;
-    protected final Collection<RefLikeType> typesNoCallgraphRefinement;
 
-    public CustomizedDemandCSPointsTo(DemandCSPointsTo delegate, Collection<RefLikeType> typesNoCallgraphRefinement) {
+    public CustomizedDemandCSPointsTo(DemandCSPointsTo delegate) {
         this.delegate = delegate;
-        this.typesNoCallgraphRefinement = typesNoCallgraphRefinement;
     }
 
     public PointsToSet reachingObjects(Local l) {
-        boolean oldValue = delegate.isRefineCallGraph();
-        if(typesNoCallgraphRefinement.contains(l.getType())) {
-            delegate.setRefineCallGraph(false);
-        } 
+        delegate.setRefineCallGraph(true);
         PointsToSet reachingObjects = delegate.reachingObjects(l);
-        delegate.setRefineCallGraph(oldValue);
+        if(reachingObjects instanceof WrappedPointsToSet) {
+            //had to abort, returning Spark's points-to set;
+            //try again without call-graph refinement
+            delegate.setRefineCallGraph(false);
+            reachingObjects = delegate.reachingObjects(l);
+        }
         return reachingObjects;
     }
 

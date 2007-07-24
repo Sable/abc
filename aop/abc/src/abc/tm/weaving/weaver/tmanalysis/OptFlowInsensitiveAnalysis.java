@@ -25,7 +25,6 @@ import soot.Body;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.CopyPropagator;
@@ -130,9 +129,6 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     	if(!ShadowRegistry.v().enabledShadowsLeft()) {
     		return;
     	}
-    	
-    	//customize the analysis so that e.g. Iterators are treated with more precision
-    	customizePointsToAnalysis();
 
 		FlowInsensitiveAnalysis.v().apply();
 
@@ -183,13 +179,4 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
         //will be reset by Weaver after the analysis
         Debug.v().cleanupAfterAdviceWeave = false;
     }
-    
-    protected void customizePointsToAnalysis() {
-        DemandCSPointsTo pointsToAnalysis = (DemandCSPointsTo) Scene.v().getPointsToAnalysis();
-        //never refine call graph
-        pointsToAnalysis.setRefineCallGraph(false);
-        pointsToAnalysis.enableCache();
-    }
-
-    
 }

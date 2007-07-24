@@ -28,7 +28,9 @@ import soot.PackManager;
 import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import soot.jimple.toolkits.callgraph.CallGraph;
+import abc.tm.weaving.weaver.tmanalysis.CustomizedDemandCSPointsTo;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.AbstractedCallGraph;
 import abc.tm.weaving.weaver.tmanalysis.callgraph.NodePredicate;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
@@ -86,6 +88,11 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
 
         cgTimer.stop();
 		logToStatistics("cg-phase-time", cgTimer);
+		
+        //enable caching and automatic refining of call graph 
+        DemandCSPointsTo onDemandAnalysis = (DemandCSPointsTo) Scene.v().getPointsToAnalysis();
+        onDemandAnalysis.enableCache();
+        Scene.v().setPointsToAnalysis(new CustomizedDemandCSPointsTo(onDemandAnalysis));
 
 		CallGraph callGraph = Scene.v().getCallGraph();
 
