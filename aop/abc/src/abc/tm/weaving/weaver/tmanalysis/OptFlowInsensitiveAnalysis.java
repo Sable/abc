@@ -188,14 +188,7 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
         DemandCSPointsTo pointsToAnalysis = (DemandCSPointsTo) Scene.v().getPointsToAnalysis();
         //never refine call graph
         pointsToAnalysis.setRefineCallGraph(false);
-//        CustomizedDemandCSPointsTo customizedPointsTo =
-//            new CustomizedDemandCSPointsTo(
-//                    pointsToAnalysis,
-//                    Collections.<RefLikeType>singleton(
-//                            RefType.v("java.util.Iterator")
-//                    )
-//            );
-//        Scene.v().setPointsToAnalysis(customizedPointsTo);
+        pointsToAnalysis.enableCache();
     }
 
     
