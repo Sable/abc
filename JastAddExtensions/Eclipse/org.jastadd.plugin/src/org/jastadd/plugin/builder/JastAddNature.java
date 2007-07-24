@@ -24,7 +24,8 @@ public class JastAddNature implements IProjectNature {
 	 */
 	public void configure() throws CoreException {
 		
-		/* Builder is added via the plugin.xml file
+		System.out.println("Adding Java Nature");
+		/* Builder is added via the plugin.xml file */
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
 
@@ -42,7 +43,6 @@ public class JastAddNature implements IProjectNature {
 		newCommands[newCommands.length - 1] = command;
 		desc.setBuildSpec(newCommands);
 		project.setDescription(desc, null);
-		*/
 	}
 
 	/*
@@ -51,7 +51,8 @@ public class JastAddNature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
 	public void deconfigure() throws CoreException {
-		/* Builder is added via the plugin.xml file
+		System.out.println("Removing Java Nature");
+		/* Builder is added via the plugin.xml file */
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
@@ -64,7 +65,6 @@ public class JastAddNature implements IProjectNature {
 				return;
 			}
 		}
-		*/
 	}
 
 	/*

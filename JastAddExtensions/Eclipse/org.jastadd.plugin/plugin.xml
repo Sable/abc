@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-
-<!-- OLD
-   <extension
-         id="jastaddBuilder"
-         name="JastAdd Builder"
-         point="org.eclipse.core.resources.builders">
-         -->
-    <extension
-         id="org.jastadd.plugin.jastaddBuilder"
-         name="JastAdd Builder"
-         point="org.eclipse.core.resources.builders">
-         
-      <builder
-            hasNature="true">
-         <run
-               class="org.jastadd.plugin.builder.JastAddBuilder">
-         </run>
-      </builder>
-   </extension>
-   
    <extension
          id="org.jastadd.plugin.jastaddNature"
          name="JastAdd Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
-         <run
-               class="org.jastadd.plugin.builder.JastAddNature">
-         </run>
+         <run class="org.jastadd.plugin.builder.JastAddNature"/>
       </runtime>
-      <builder
-            id="org.jastadd.plugin.jastaddBuilder">
+      <builder id="org.jastadd.plugin.jastaddBuilder"/>
+   </extension>
+
+   <extension
+         id="jastaddBuilder"
+         name="JastAdd Builder"
+         point="org.eclipse.core.resources.builders">         
+<!--         
+    <extension
+         id="org.jastadd.plugin.jastaddBuilder"
+         name="JastAdd Builder"
+         point="org.eclipse.core.resources.builders">
+-->         
+      <builder hasNature="true">
+         <run class="org.jastadd.plugin.builder.JastAddBuilder"/>
       </builder>
    </extension>
+   
    
    <extension
          point="org.eclipse.ui.popupMenus">

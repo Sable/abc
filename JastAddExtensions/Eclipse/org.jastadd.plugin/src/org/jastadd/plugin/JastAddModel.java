@@ -53,19 +53,19 @@ public class JastAddModel {
 		IWorkspace workspace = project.getWorkspace();
 		IWorkspaceRoot workspaceRoot = workspace.getRoot();
 		String workspacePath = workspaceRoot.getRawLocation().toOSString();			
-		String fileRawPath = file.getFullPath().toOSString();
+		String fileFullPath = file.getFullPath().toOSString();
 		String projectFullPath = project.getFullPath().toOSString();
 		JastAddModel model = JastAddModel.getInstance();
 		String[] classpathEntries = model.getClasspathEntries();
-		String[] classpath = new String[classpathEntries.length + 4];
-		classpath[0] = "-classpath";
-		classpath[1] = workspacePath;
-		classpath[2] = workspacePath + projectFullPath;
-		classpath[3] = fileRawPath;
+		String[] paths = new String[3];
+		paths[0] = "-classpath";
+		paths[1] = workspacePath;
+		paths[1] += ":" + workspacePath + projectFullPath;
 		for (int i=0; i <  classpathEntries.length; i++) {
-			classpath[i+4] = classpathEntries[i];
+			paths[1] += ":" + classpathEntries[i];
 		}
-		program.addOptions(classpath);
+		paths[2] = workspacePath + fileFullPath;
+		program.addOptions(paths);
 				
 		/* Move to save operation
 		try {
@@ -158,5 +158,16 @@ public class JastAddModel {
 			res[i] = (String)itr.next();
 		}
 		return res;
+	}
+
+	public boolean compilationUnitInProject(CompilationUnit unit) {
+		String relativeName = unit.relativeName();
+		String destPathName = unit.destinationPath();
+		String pathName = unit.pathName();
+		String packageName = unit.packageName();
+		
+		
+
+		return false;
 	}
 }
