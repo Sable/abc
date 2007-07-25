@@ -54,7 +54,7 @@ import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.CodeGenHelper;
 import abc.tm.weaving.weaver.IndexedCodeGenHelper;
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.Formal;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -555,7 +555,7 @@ public class TraceMatch
 		
 		//for all advice declarations
 		for (Iterator iter = gai.getAdviceDecls().iterator(); iter.hasNext();) {
-			AdviceDecl ad = (AdviceDecl) iter.next();
+			AbstractAdviceDecl ad = (AbstractAdviceDecl) iter.next();
 	
 			//of kind "per-symbol advice declaration"
 			if(ad instanceof PerSymbolTMAdviceDecl) {
