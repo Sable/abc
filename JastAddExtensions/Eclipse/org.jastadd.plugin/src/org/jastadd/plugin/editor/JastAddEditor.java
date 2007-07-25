@@ -1,20 +1,32 @@
 package org.jastadd.plugin.editor;
 
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
-import org.eclipse.ui.texteditor.TextOperationAction;
-import org.jastadd.plugin.Activator;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 
 public class JastAddEditor extends TextEditor {
+	
+	private JastAddContentOutlinePage fOutlinePage;
+	
 	protected void initializeEditor() {
 		super.initializeEditor();
 		setSourceViewerConfiguration(new JastAddSourceViewerConfiguration());
 		setDocumentProvider(new JastAddDocumentProvider());
 	}
+
+	
+	public Object getAdapter(Class required) {
+		if (IContentOutlinePage.class.equals(required)) {
+			if (fOutlinePage == null) {
+				fOutlinePage= new JastAddContentOutlinePage(getDocumentProvider(), this);
+				if (getEditorInput() != null)
+					fOutlinePage.setInput(getEditorInput());
+			}
+			return fOutlinePage;
+		}
+		return super.getAdapter(required);
+	}
+	
 	/*
 	public void editorContextMenuAboutToShow(MenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);

@@ -1,0 +1,8 @@
+aspect ContentOutline {
+   syn boolean ASTNode.showInContentOutline() = false;
+   eq ClassDecl.showInContentOutline() = true;
+   eq InterfaceDecl.showInContentOutline() = true;
+   eq MethodDecl.showInContentOutline() = true;
+   eq FieldDecl.showInContentOutline() = true;
+   eq ConstructorDecl.showInContentOutline() = true;
+}
