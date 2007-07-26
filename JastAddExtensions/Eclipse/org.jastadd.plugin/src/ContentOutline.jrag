@@ -3,6 +3,62 @@ aspect ContentOutline {
    eq ClassDecl.showInContentOutline() = true;
    eq InterfaceDecl.showInContentOutline() = true;
    eq MethodDecl.showInContentOutline() = true;
-   eq FieldDecl.showInContentOutline() = true;
+   eq FieldDeclaration.showInContentOutline() = true;
    eq ConstructorDecl.showInContentOutline() = true;
+   
+   syn String ASTNode.contentOutlineLabel() = this.getClass().getName();
+   eq ClassDecl.contentOutlineLabel() = getID();
+   eq InterfaceDecl.contentOutlineLabel() = getID();
+   eq FieldDeclaration.contentOutlineLabel() = getID();
+   eq MethodDecl.contentOutlineLabel() {
+     String res = "";
+     Access access = getTypeAccess();
+     if (access instanceof TypeAccess) 
+        res = ((TypeAccess)access).getID();
+     else res = "--";
+     if (access instanceof ArrayTypeAccess) {
+       ArrayTypeAccess arrayAccess = (ArrayTypeAccess)access;
+       for(int k = 0; k < arrayAccess.getDimension(); k++) {
+         res += "[]";
+       }
+     }
+     res += " " + getID() + "(";
+        
+     for (int i = 0; i < getNumParameter(); i++) {
+       access = getParameter(i).getTypeAccess();
+       if (access instanceof TypeAccess) {
+         res += ((TypeAccess)access).getID();
+       } else res += "--";
+       if (access instanceof ArrayTypeAccess) {
+         ArrayTypeAccess arrayAccess = (ArrayTypeAccess)access;
+         for(int k = 0; k < arrayAccess.getDimension(); k++) {
+           res += "[]";
+         }
+       }
+       if (getNumParameter()-i > 1) {
+         res += ",";
+       }
+     } 
+     return res + ")";
+   }
+   eq ConstructorDecl.contentOutlineLabel() {
+     String res = getID() + "(";
+     for (int i = 0; i < getNumParameter(); i++) {
+       Access access = getParameter(i).getTypeAccess();
+       if (access instanceof TypeAccess) {
+         res += ((TypeAccess)access).getID();
+       } else res += "--";
+       if (access instanceof ArrayTypeAccess) {
+         ArrayTypeAccess arrayAccess = (ArrayTypeAccess)access;
+         for(int k = 0; k < arrayAccess.getDimension(); k++) {
+           res += "[]";
+         }
+       }
+       if (getNumParameter()-i > 1) {
+         res += ",";
+       }
+     } 
+     return res + ")";
+   }
+   
 }

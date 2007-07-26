@@ -67,21 +67,6 @@ public class JastAddModel {
 		paths[2] = workspacePath + fileFullPath;
 		program.addOptions(paths);
 				
-		/* Move to save operation
-		try {
-		  IResource[] filesInProject = file.getProject().members();
-		  for(int i = 0; i < filesInProject.length; i++) {
-				IResource resource = filesInProject[i];
-				if(resource instanceof IFile) {
-					IFile resFile = (IFile)resource;
-					String resFileName = resFile.getRawLocation().toOSString();
-					if (resFileName.endsWith(".java")) {
-						  program.addSourceFile(resFileName);
-					}		
-				}
-		  }
-		} catch (CoreException e) { }
-		*/
 		
 		try {
 			Collection files = program.files();

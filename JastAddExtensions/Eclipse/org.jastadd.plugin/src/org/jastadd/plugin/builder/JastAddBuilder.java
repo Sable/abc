@@ -3,10 +3,13 @@ package org.jastadd.plugin.builder;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -27,7 +30,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
@@ -117,7 +119,6 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	void checkFile(IResource resource) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			IFile file = (IFile) resource;
-			deleteMarkers(file);
 			
 			Program program = new Program();
 			program.initBytecodeReader(new bytecode.Parser());
@@ -141,15 +142,42 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			String projectFullPath = project.getFullPath().toOSString();
 			JastAddModel model = JastAddModel.getInstance();
 			String[] classpathEntries = model.getClasspathEntries();
-			String[] paths = new String[3];
+			String[] paths = new String[2];
 			paths[0] = "-classpath";
 			paths[1] = workspacePath;
 			paths[1] += ":" + workspacePath + projectFullPath;
 			for (int i=0; i <  classpathEntries.length; i++) {
 				paths[1] += ":" + classpathEntries[i];
 			}
-			paths[2] = workspacePath + fileFullPath;
+			//paths[2] = workspacePath + fileFullPath;
 			program.addOptions(paths);
+			
+			
+			// Temporary thing? - Add all file on the top level in the project
+			HashMap<String,IFile> pathToFile = new HashMap<String,IFile>();
+			try {
+			  IResource[] filesInProject = file.getProject().members();
+			  List<String> fileList = new ArrayList<String>();
+			  for(int i = 0; i < filesInProject.length; i++) {
+					IResource res = filesInProject[i];
+					if(res instanceof IFile) {
+						IFile resFile = (IFile)res;
+						String resFilePath = resFile.getRawLocation().toOSString();
+						if (resFilePath.endsWith(".java")) {
+							 deleteMarkers(resFile);
+							 fileList.add(resFilePath);
+							 pathToFile.put(resFilePath, resFile);
+						}		
+					}
+			  }
+			  Object[] tmpObjs = fileList.toArray();
+			  String[] stringObjs = new String[tmpObjs.length];
+			  for (int k = 0; k < tmpObjs.length; k++) {
+			    stringObjs[k] = (String)tmpObjs[k];
+			  }
+			  program.addOptions(stringObjs);
+			} catch (CoreException e) { }
+			
 					
 			Collection files = program.files();
 		      try {
@@ -164,7 +192,9 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 
 		          for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 		            CompilationUnit unit = (CompilationUnit)iter.next();
+		            
 		            if(unit.fromSource()) {
+		            	
 		              Collection errors = new LinkedList();
 		              Collection warnings = new LinkedList();
 		              unit.errorCheck(errors, warnings);
@@ -173,13 +203,14 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		            		  String error = (String)i2.next();
 		            		  int index1 = error.indexOf(':');
 		            		  String fileName = error.substring(0, index1);
+		            		  IFile unitFile = pathToFile.get(fileName);
 		            		  int index2 = error.indexOf(':', index1 + 1);
 	            			  int lineNumber = Integer.parseInt(error.substring(index1+1, index2).trim());
 	            			  int index3 = error.indexOf(':', index2 + 1);
 	            			  // skip string *** Semantic Error
 	            			  //int index4 = error.indexOf(':', index3 + 1);
 	            			  String message = error.substring(index3+1, error.length());
-	            			  JastAddBuilder.this.addMarker(file, message, lineNumber, IMarker.SEVERITY_ERROR);
+	            			  JastAddBuilder.this.addMarker(unitFile, message, lineNumber, IMarker.SEVERITY_ERROR);
 		            	  }
 		                //processErrors(errors, unit);
 		              }
@@ -221,7 +252,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			ILaunchConfigurationWorkingCopy wc = type.newInstance(null, "SampleConfig");
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "Java");
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "Hello");
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, true);
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, false);
 			ILaunchConfiguration config = wc.doSave();	
 			config.launch(ILaunchManager.DEBUG_MODE, null);
 			//config.launch(ILaunchManager.RUN_MODE, null);

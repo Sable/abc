@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DefaultPositionUpdater;
@@ -56,6 +57,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		TreeViewer viewer= getTreeViewer();
+		// For testing: viewer.setContentProvider(new JastAddShowAllContentProvider());
 		viewer.setContentProvider(new JastAddContentProvider());
 		viewer.setLabelProvider(new JastAddLabelProvider());
 		viewer.addSelectionChangedListener(this);
@@ -78,7 +80,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 				IDocument document = fDocumentProvider.getDocument(fInput);
 				if (beginLine != 0 || endLine != 0) {
 					try {
-						int offset = document.getLineOffset(beginLine);
+						int offset = document.getLineOffset(beginLine-1);
 						int end = document.getLineOffset(document.getNumberOfLines() == endLine ? endLine-1 : endLine);
 						int length = end - offset;
 						//Position p = new Position(offset, length);
@@ -115,9 +117,11 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 		public String getText(Object element) {
 			
 			if (element instanceof ASTNode) {
-				return ((ASTNode)element).getClass().getName();
-			} 
-			return "ASTNode";
+				return ((ASTNode)element).contentOutlineLabel();
+			} else if (element instanceof String) {
+				return (String)element;
+			}
+			return "Unknown";
 		}
 		public Image getImage(Object element) {
 			/*
@@ -142,7 +146,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 		protected final static String JASTADD_JAVA_CODE = "__jastadd_java_code"; //$NON-NLS-1$
 		protected IPositionUpdater fPositionUpdater =
 			new DefaultPositionUpdater(JASTADD_JAVA_CODE);
-		protected ASTNode content = null;
+		protected Program content = null;
 		public HashMap<ASTNode,Position> positions = new HashMap<ASTNode,Position>();
 
 		protected void parse(IDocument document) {
@@ -190,37 +194,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 						throw new LexicalError(name + ": " + e.getMessage());
 					}
 				}
+				content = program;
 
-				for (Iterator iter = program.compilationUnitIterator(); iter
-						.hasNext();) {
-					CompilationUnit unit = (CompilationUnit) iter.next();
-					if (unit.fromSource()) {
-						for (int i = 0; i < unit.getNumTypeDecl(); i++) {
-							TypeDecl t = unit.getTypeDecl(i);
-							if (t instanceof ClassDecl) {
-								ClassDecl c = (ClassDecl)t;
-								content = c;
-								String className = c.name();
-								System.out.println(className);
-							}
-							int beginLine = ASTNode.getLine(t.getStart());
-							int endLine = ASTNode.getLine(t.getEnd());
-						
-							if (beginLine != 0 || endLine != 0) {
-								try {
-									int offset = document.getLineOffset(beginLine);
-									int end = document.getLineOffset(document.getNumberOfLines() == endLine ? endLine-1 : endLine);
-									int length = end - offset;
-									Position p = new Position(offset, length);
-									document.addPosition(JASTADD_JAVA_CODE, p);
-									positions.put(t, p);
-								} catch (BadPositionCategoryException e) {
-								} catch (BadLocationException e) {
-								}
-							}
-						}
-					}
-				}
 			} catch (ParseError e) {
 				System.err.println(e.getMessage());
 			} catch (LexicalError e) {
@@ -268,10 +243,44 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 		}
 
 		public Object[] getElements(Object element) {
-			if (content != null)
-				return new Object[] { content };
-			else
+			if (content != null) {
+				List<Object> contentList = new ArrayList<Object>();
+
+				for (Iterator iter = content.compilationUnitIterator(); iter
+						.hasNext();) {
+					CompilationUnit unit = (CompilationUnit) iter.next();
+					if (unit.fromSource()) {
+						String packageName = unit.getPackageDecl();
+						if (packageName.length() > 0) {
+						  contentList.add(unit.getPackageDecl());
+						}
+						for (int i = 0; i < unit.getNumTypeDecl(); i++) {
+							TypeDecl t = unit.getTypeDecl(i);
+							if (t instanceof ClassDecl) {
+								contentList.add(t);
+							}
+							/*
+							 * int beginLine = ASTNode.getLine(t.getStart());
+							 * int endLine = ASTNode.getLine(t.getEnd());
+							 * 
+							 * if (beginLine != 0 || endLine != 0) { try { int
+							 * offset = document .getLineOffset(beginLine); int
+							 * end = document .getLineOffset(document
+							 * .getNumberOfLines() == endLine ? endLine - 1 :
+							 * endLine); int length = end - offset; Position p =
+							 * new Position(offset, length);
+							 * document.addPosition(JASTADD_JAVA_CODE, p);
+							 * positions.put(t, p); } catch
+							 * (BadPositionCategoryException e) { } catch
+							 * (BadLocationException e) { } }
+							 */
+						}
+					}
+				}
+				return contentList.toArray();
+			} else {
 				return new Object[0];
+			}
 		}
 
 		public boolean hasChildren(Object element) {
@@ -279,14 +288,18 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 				return false;
 			if(element instanceof ASTNode) {
 				ASTNode node = (ASTNode)element;
+				//String clazz = node.getClass().getName();
 				for (int i=0; i < node.getNumChild(); i++) {
 					 ASTNode child = node.getChild(i);
-					 if (child.showInContentOutline()) {
+					// String clazzChild = child.getClass().getName();
+					  if (child.showInContentOutline()) {
 						 return true;
-					 } else if ((child instanceof List || 
-							 child instanceof Opt) && 
-							 hasChildren(child)) {
-						 return true;
+					 } else if (child instanceof AST.List || 
+							 child instanceof AST.Opt ||
+							 child instanceof AST.MemberClassDecl) {
+						 if (hasChildren(child)) {
+						   return true;
+						 }
 					 }
  				}
 			}
@@ -316,10 +329,12 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 					ASTNode child = node.getChild(i);
 					if (child.showInContentOutline()) {
 					  list.add(child);
-					} else if (child instanceof List || child instanceof Opt) {
+					} else if (child instanceof AST.List || 
+							child instanceof AST.Opt ||
+							child instanceof AST.MemberClassDecl) {
 						Object[] subChildren = getChildren(child);
 						for (int k = 0; k < subChildren.length; k++) {
-							list.add((ASTNode)subChildren[i]);
+							list.add((ASTNode)subChildren[k]);
 						}
 					}
 				}
@@ -327,5 +342,148 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 			}
 			return new Object[0];
 		}
+	};
+	
+	
+	
+	/*
+	 *  Only for testing - to show the whole three
+	 */
+	protected class JastAddShowAllContentProvider implements ITreeContentProvider {
+		protected Program content = null;
+		
+		protected void parse(IDocument document) {
+			IFile file = JastAddDocumentProvider.documentToFile(document);
+
+			Program program = new Program();
+			program.initBytecodeReader(new bytecode.Parser());
+			program.initJavaParser(new JavaParser() {
+				public CompilationUnit parse(java.io.InputStream is,
+						String fileName) throws java.io.IOException,
+						beaver.Parser.Exception {
+					return new parser.JavaParser().parse(is, fileName);
+				}
+			});
+			program.initPackageExtractor(new scanner.JavaScanner());
+			program.initOptions();
+
+			// Add classpaths and filepath
+			program.addKeyValueOption("-classpath");
+			IProject project = file.getProject();
+			IWorkspace workspace = project.getWorkspace();
+			IWorkspaceRoot workspaceRoot = workspace.getRoot();
+			String workspacePath = workspaceRoot.getRawLocation().toOSString();
+			String fileFullPath = file.getFullPath().toOSString();
+			String projectFullPath = project.getFullPath().toOSString();
+			JastAddModel model = JastAddModel.getInstance();
+			String[] classpathEntries = model.getClasspathEntries();
+			String[] paths = new String[3];
+			paths[0] = "-classpath";
+			paths[1] = workspacePath;
+			paths[1] += ":" + workspacePath + projectFullPath;
+			for (int i = 0; i < classpathEntries.length; i++) {
+				paths[1] += ":" + classpathEntries[i];
+			}
+			paths[2] = workspacePath + fileFullPath;
+			program.addOptions(paths);
+
+			Collection files = program.files();
+			try {
+				for (Iterator iter = files.iterator(); iter.hasNext();) {
+					String name = (String) iter.next();
+					try {
+						program.addSourceFile(name);
+					} catch (LexicalError e) {
+						throw new LexicalError(name + ": " + e.getMessage());
+					}
+				}
+				content = program;
+
+			} catch (ParseError e) {
+				System.err.println(e.getMessage());
+			} catch (LexicalError e) {
+				System.err.println(e.getMessage());
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+				e.printStackTrace();
+			}
+		}	
+		
+		
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			content = null;
+			if (newInput != null) {
+				IDocument document = fDocumentProvider.getDocument(newInput);
+				if (document != null) {
+					parse(document);
+				}
+			}
+		}
+
+		public void dispose() {
+			if (content != null) {
+				content = null;
+			}
+		}
+
+		public boolean isDeleted(Object element) {
+			return false;
+		}
+
+		public Object[] getElements(Object element) {
+			if (content != null) {
+				List<Object> contentList = new ArrayList<Object>();
+
+				for (Iterator iter = content.compilationUnitIterator(); iter
+						.hasNext();) {
+					CompilationUnit unit = (CompilationUnit) iter.next();
+					if (unit.fromSource()) {
+						contentList.add(unit.getPackageDecl());
+						for (int i = 0; i < unit.getNumTypeDecl(); i++) {
+							TypeDecl t = unit.getTypeDecl(i);
+							if (t instanceof ClassDecl) {
+								contentList.add(t);
+							}
+						}
+					}
+				}
+				return contentList.toArray();
+			} else {
+				return new Object[0];
+			}
+		}
+
+		public boolean hasChildren(Object element) {
+			if(element == null)
+				return false;
+			if(element instanceof ASTNode) {
+				return ((ASTNode)element).getNumChild() > 0; 
+			}
+			return false;
+		}
+
+		public Object getParent(Object element) {
+			if(element == null)
+				return null;
+			if(element instanceof ASTNode) {
+				return ((ASTNode)element).getParent();
+			}
+			return null;
+		}
+
+		public Object[] getChildren(Object element) {
+			if(element == null)
+				return new Object[0];
+			if(element instanceof ASTNode) {
+				ASTNode node = (ASTNode)element;
+				List<ASTNode> list = new ArrayList<ASTNode>();
+				for(int i = 0; i < node.getNumChild(); i++) {
+					list.add(node.getChild(i));
+				}
+				return list.toArray();
+			}
+			return new Object[0];
+		}
 	};	
+
 }

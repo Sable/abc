@@ -57,6 +57,11 @@
    </extension>
    
    
+   <extension id="jastaddBreakpointMarker" point="org.eclipse.core.resources.markers">
+	<super type="org.eclipse.debug.core.breakpointMarker"/>
+   </extension>
+   
+   
    <extension
          id="xmlProblem"
          name="XML Problem"
