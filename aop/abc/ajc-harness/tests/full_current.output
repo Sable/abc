@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@898ae0
+creating: A@1fc8cea
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@e631d4, [Ljava.lang.Object;@d16525, TwoAnonymous$3@e631d4
+calling run: TwoAnonymous$3@75c4af, [Ljava.lang.Object;@1c3d811, TwoAnonymous$3@75c4af
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2400,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@a9bd6.foo calls Outer$Inner@7d28ae.mi
+Outer@6e3fd6.foo calls Outer$Inner@21126a.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@7d28ae.mi calls java.io.PrintStream@f9d374.println
+Outer$Inner@21126a.mi calls java.io.PrintStream@1401224.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@a9bd6.foo calls Outer$InnerRandom@fa7285.nextHook
+Outer@6e3fd6.foo calls Outer$InnerRandom@ae2258.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@fa7285.nextHook calls Outer$InnerRandom@fa7285.next
+Outer$InnerRandom@ae2258.nextHook calls Outer$InnerRandom@ae2258.next
 Outer.foo() calls Random.nextInt(..)
-Outer@a9bd6.foo calls X.nextInt
+Outer@6e3fd6.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@877a6f.foo calls Outer$Inner@7710c2.mi
+Outer@b07a2.foo calls Outer$Inner@222902.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@7710c2.mi calls java.io.PrintStream@ed454f.println
+Outer$Inner@222902.mi calls java.io.PrintStream@b281f9.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@877a6f.foo calls Outer$InnerRandom@170e9e2.nextHook
+Outer@b07a2.foo calls Outer$InnerRandom@bbd9eb.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@170e9e2.nextHook calls Outer$InnerRandom@170e9e2.next
+Outer$InnerRandom@bbd9eb.nextHook calls Outer$InnerRandom@bbd9eb.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@877a6f.foo calls X.nextInt
+Outer@b07a2.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2712,7 +2712,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$26$around$1600(AroundAll.java:199)
+	at A.inline$27$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4030,7 +4030,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@19dd1ec.x:=-3
+test.Test3@1d31421.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4113,8 +4113,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@1cf3af2
-o: Bar@1cf3af2, i: 10
+o: Bar@d59fd8
+o: Bar@d59fd8, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4267,11 +4267,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$6$around$2688(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$25$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$2$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$25$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4307,11 +4307,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:1581)
 	at aspects.Trace.inline$15$around$2688(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$25$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$2$around$2688(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$27$around$2688(Trace.aj:88)
+	at aspects.Trace.inline$25$around$2688(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4642,7 +4642,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@10baf07
+LibraryAspect-defined run() for C@ed92e3
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4965,7 +4965,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1f382f2
+? Util.read() obj=Test@16edbf8
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5196,12 +5196,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@185c98b
-Invoking command bean:  Command@72c782
-hello(Command@72c782)
-Created a PerThis aspect : Testcase2@1883144
-Invoking command bean:  Command@5a7eb6
-hello again(Command@5a7eb6)
+Created a PerThis aspect : Testcase2@6c5228
+Invoking command bean:  Command@185c98b
+hello(Command@185c98b)
+Created a PerThis aspect : Testcase2@72c782
+Invoking command bean:  Command@1883144
+hello again(Command@1883144)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5531,23 +5531,23 @@ PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-f(java.lang.Object@10704d6)
-f(java.lang.Object@1878f66)
-g(java.lang.Object@1878f66)
-fg+(java.lang.Object@1878f66)
-g(java.lang.Object@10704d6)
-fg+(java.lang.Object@10704d6)
-f(java.lang.Object@10704d6)
-g(java.lang.Object@1878f66)
-fg+(java.lang.Object@1878f66)
-f(java.lang.Object@10704d6)
-f(java.lang.Object@1878f66)
-g(java.lang.Object@10704d6)
-fg+(java.lang.Object@10704d6)
-g(java.lang.Object@10704d6)
-fg+(java.lang.Object@10704d6)
-g(java.lang.Object@1878f66)
-fg+(java.lang.Object@1878f66)
+f(java.lang.Object@1e710e8)
+f(java.lang.Object@1277552)
+g(java.lang.Object@1277552)
+fg+(java.lang.Object@1277552)
+g(java.lang.Object@1e710e8)
+fg+(java.lang.Object@1e710e8)
+f(java.lang.Object@1e710e8)
+g(java.lang.Object@1277552)
+fg+(java.lang.Object@1277552)
+f(java.lang.Object@1e710e8)
+f(java.lang.Object@1277552)
+g(java.lang.Object@1e710e8)
+fg+(java.lang.Object@1e710e8)
+g(java.lang.Object@1e710e8)
+fg+(java.lang.Object@1e710e8)
+g(java.lang.Object@1277552)
+fg+(java.lang.Object@1277552)
 PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
