@@ -25,6 +25,7 @@ import java.util.Set;
 import soot.Body;
 import soot.MethodOrMethodContext;
 import soot.PackManager;
+import soot.PointsToAnalysis;
 import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
@@ -89,10 +90,13 @@ public class CallGraphAbstraction extends AbstractAnalysisStage {
         cgTimer.stop();
 		logToStatistics("cg-phase-time", cgTimer);
 		
-        //enable caching and automatic refining of call graph 
-        DemandCSPointsTo onDemandAnalysis = (DemandCSPointsTo) Scene.v().getPointsToAnalysis();
-        onDemandAnalysis.enableCache();
-        Scene.v().setPointsToAnalysis(new CustomizedDemandCSPointsTo(onDemandAnalysis));
+		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
+		if(pta instanceof DemandCSPointsTo) {
+	        //enable caching and automatic refining of call graph 
+	        DemandCSPointsTo onDemandAnalysis = (DemandCSPointsTo) pta;
+	        onDemandAnalysis.enableCache();
+	        Scene.v().setPointsToAnalysis(new CustomizedDemandCSPointsTo(onDemandAnalysis));
+		}
 
 		CallGraph callGraph = Scene.v().getCallGraph();
 
