@@ -34,6 +34,7 @@
             objectClass="org.eclipse.core.resources.IProject"
             nameFilter="*"
             id="org.jastadd.plugin.contribution1">
+            
          <action
                label="Add/Remove JastAdd Nature"
                class="org.jastadd.plugin.builder.ToggleNatureAction"
@@ -41,23 +42,76 @@
                enablesFor="+"
                id="org.jastadd.plugin.addRemoveNatureAction">
          </action>
+      
       </objectContribution>
      
       <viewerContribution 
          id="org.jastadd.plugin.editor.JastAddPopupAction"
          targetID="#TextEditorContext">
+         
+         <menu
+           id="org.jastadd.plugin.editor.JastAddMenu"
+           label="JastAdd"
+           path="additions">
+        <separator name="group1"/>
+        </menu>
+        
         <action
            id="org.jastadd.plugin.editor.jastAddAction" 
-           label="JastAdd Action"
-           menubarPath="additions" 
-           class="org.jastadd.plugin.editor.JastAddActionDelegate"> 
+           label="Find declaration"
+           menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
+           class="org.jastadd.plugin.editor.JastAddActionDelegate"
+           definitionId="org.jastadd.plugin.findDeclaration"> 
         </action> 
+        
       </viewerContribution>
       
+      
+   </extension>
+   <!--
+   <extension
+	point="org.eclipse.ui.contexts">
+	<context
+		name="%context.editingText.name"
+		description="%context.editingText.description"
+		id="org.jastadd.plugin.editor.context"
+		parentId="org.eclipse.ui.contexts.window">
+	</context>
+  </extension>
+  
+    <extension point="org.eclipse.ui.actionSets">
+      <actionSet label="JastAdd ActionSet"
+            id="org.jastadd.plugin.actionSet">
+      <action
+               label="JastAdd find declaration"
+               id="org.jastadd.plugin.findDeclaration"
+               class="org.jastadd.plugin.editor.JastAddActionDelegate">
+         </action>
+      </actionSet>
+   </extension>
+  
+  
+  <extension point="org.eclipse.ui.bindings">
+     <key sequence="F3"
+            commandId="org.jastadd.plugin.findDeclaration"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+  </extension>
+  -->
+  
+   
+   <extension
+      point="org.eclipse.debug.core.breakpoints">
+    <breakpoint
+        class="org.jastadd.plugin.debug.JastAddBreakpoint"
+        id="org.jastadd.plugin.debug.jastaddBreakpoint"
+        markerType="org.jastadd.plugin.debug.jastaddBreakpointMarker"
+        name="JastAdd Breakpoint"/>
    </extension>
    
-   
-   <extension id="jastaddBreakpointMarker" point="org.eclipse.core.resources.markers">
+   <extension 
+     id="org.jastadd.plugin.debug.jastaddBreakpointMarker" 
+     name="JastAdd Breakpoint Marker"
+     point="org.eclipse.core.resources.markers">
 	<super type="org.eclipse.debug.core.breakpointMarker"/>
    </extension>
    

@@ -1,13 +1,18 @@
 package org.jastadd.plugin;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
@@ -57,16 +62,36 @@ public class JastAddModel {
 		String projectFullPath = project.getFullPath().toOSString();
 		JastAddModel model = JastAddModel.getInstance();
 		String[] classpathEntries = model.getClasspathEntries();
-		String[] paths = new String[3];
+		String[] paths = new String[2];
 		paths[0] = "-classpath";
 		paths[1] = workspacePath;
 		paths[1] += ":" + workspacePath + projectFullPath;
 		for (int i=0; i <  classpathEntries.length; i++) {
 			paths[1] += ":" + classpathEntries[i];
 		}
-		paths[2] = workspacePath + fileFullPath;
 		program.addOptions(paths);
-				
+		
+//		 Temporary thing? - Add all file on the top level in the project
+		try {
+		  IResource[] filesInProject = file.getProject().members();
+		  List<String> fileList = new ArrayList<String>();
+		  for(int i = 0; i < filesInProject.length; i++) {
+				IResource res = filesInProject[i];
+				if(res instanceof IFile) {
+					IFile resFile = (IFile)res;
+					String resFilePath = resFile.getRawLocation().toOSString();
+					if (resFilePath.endsWith(".java")) {
+						 fileList.add(resFilePath);
+					}		
+				}
+		  }
+		  Object[] tmpObjs = fileList.toArray();
+		  String[] stringObjs = new String[tmpObjs.length];
+		  for (int k = 0; k < tmpObjs.length; k++) {
+		    stringObjs[k] = (String)tmpObjs[k];
+		  }
+		  program.addOptions(stringObjs);
+		} catch (CoreException e) { }
 		
 		try {
 			Collection files = program.files();
