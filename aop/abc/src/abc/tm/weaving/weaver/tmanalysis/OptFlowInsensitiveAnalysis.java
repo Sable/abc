@@ -19,15 +19,31 @@
 package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.List;
+import java.util.Set;
 
+import soot.Body;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
+import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
+import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
+import soot.jimple.toolkits.scalar.CopyPropagator;
+import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
+import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
+import abc.main.Debug;
 import abc.main.Main;
+import abc.soot.util.InstanceOfEliminator;
+import abc.soot.util.OptimizedNullCheckEliminator;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
 import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.tm.weaving.weaver.tmanalysis.util.Statistics;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
 /**
@@ -48,7 +64,7 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
     		return false;
     	}
 
-    	//runIntraProcOptimizations();
+//    	runIntraProcOptimizations();
     	
         AbcTimer.mark("Intrap. optimizations to ensure correctness of weaving");
 
@@ -74,9 +90,6 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 //        //have to release hierarchy as it could have been changed during weaving
 //        Scene.v().releaseActiveHierarchy();
 //        
-    
-    //FIXME ONE OF THOSE CAUSES NPEs in antlr/Reader
-    
 //        GlobalAspectInfo gai = Main.v().getAbcExtension().getGlobalAspectInfo();
 //        for (AbcClass abcClass : (Set<AbcClass>)gai.getWeavableClasses()) {
 //            SootClass sc = abcClass.getSootClass();
@@ -85,7 +98,7 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 //                    Body b = m.getActiveBody();
 //                    CopyPropagator.v().transform(b);                //probably not strictly necessary
 //                    ConstantPropagatorAndFolder.v().transform(b);   //probably not strictly necessary
-////                    new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
+//                    new OptimizedNullCheckEliminator().transform(b);//mostly for better readability of code during debugging
 //                    new InstanceOfEliminator().transform(b);        //might get rid of spurious shadows
 //                    ConditionalBranchFolder.v().transform(b);       //necessary to exploit optimizations by InstanceOfEliminator 
 //                    UnreachableCodeEliminator.v().transform(b);     //necessary for soundness
