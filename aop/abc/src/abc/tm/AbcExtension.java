@@ -26,11 +26,14 @@ import java.util.List;
 
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
+import soot.CompilationDeathException;
 import soot.Scene;
 import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.main.CompileSequence;
+import abc.main.CompilerAbortedException;
+import abc.main.CompilerFailedException;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
@@ -167,6 +170,10 @@ public class AbcExtension extends abc.eaj.AbcExtension
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
             
             final String laststage = OptionsParser.v().laststage();
+            
+            if(Debug.v().dynaInstr && laststage.equals("quick")) {
+            	throw new IllegalArgumentException("Dynamic instrumentation only possible with flow-insensitive analysis enabled.");
+            }
             
             if(!laststage.equals("quick")) {
             

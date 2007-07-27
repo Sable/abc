@@ -19,12 +19,16 @@
 package abc.tm.weaving.weaver.tmanalysis.dynainst;
 
 import soot.ArrayType;
-import soot.IntType;
+import soot.BooleanType;
 import soot.Local;
 import soot.Scene;
 import soot.SootFieldRef;
 import soot.SootMethod;
+import soot.Unit;
+import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
+import soot.jimple.IfStmt;
+import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
@@ -62,27 +66,33 @@ public class DynamicInstrumentationResidue extends Residue {
 	 * {@inheritDoc}
 	 */
 	public Stmt codeGen(SootMethod method, LocalGeneratorEx localgen,
-			Chain units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {
-		if(!sense) {
-			throw new RuntimeException("This residue should not be used under negation.");
-		}		
+			Chain<Unit> units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {
+		if(!sense) return reverseSense(method, localgen, units, begin, fail, sense, wc);
 		
 		//fetch the boolean array to a local variable
 		//boolean[] enabled_array = ShadowSwitch.enabled;
-		Local array = localgen.generateLocal(ArrayType.v(IntType.v(),1),"enabled_array");
+		Local array = localgen.generateLocal(ArrayType.v(BooleanType.v(),1),"enabled_array");
 		SootFieldRef fieldRef = Scene.v().makeFieldRef(
 			Scene.v().getSootClass(DynamicInstrumenter.SHADOW_SWITCH_CLASS_NAME),
-			"counts",
-			ArrayType.v(IntType.v(),1),
+			"enabled",
+			ArrayType.v(BooleanType.v(),1),
 			true
 		);		
 		StaticFieldRef staticFieldRef = Jimple.v().newStaticFieldRef(fieldRef);
 		AssignStmt assignStmt = Jimple.v().newAssignStmt(array, staticFieldRef);
 		units.insertAfter(assignStmt, begin);
-		
-		throw new RuntimeException("ERIC TODO: still need to jump if the array value is false");
+	
+		//boolean enabled = enabled_array[shadowNumber];
+		Local enabled = localgen.generateLocal(BooleanType.v(),"enabled");
+		ArrayRef arrayRef = Jimple.v().newArrayRef(array, IntConstant.v(shadowNumber));
+		AssignStmt countLoadStmt = Jimple.v().newAssignStmt(enabled, arrayRef);
+		units.insertAfter(countLoadStmt, assignStmt);
 
-		//return assignStmt;
+		//if(enabled==false) goto fail;
+		IfStmt testStmt = Jimple.v().newIfStmt(Jimple.v().newEqExpr(enabled, IntConstant.v(0)), fail);
+		units.insertAfter(testStmt, countLoadStmt);
+		
+		return testStmt;
 	}
 
 	/**

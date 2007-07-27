@@ -28,10 +28,10 @@ import java.util.List;
 
 import soot.Local;
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.*;
 
 /** The base class defining dynamic residues of pointcuts
@@ -62,7 +62,7 @@ public abstract class Residue {
      *  @author Ganesh Sittampalam
      */
     public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-                                 Chain units,Stmt begin,Stmt fail,boolean sense,
+                                 Chain<Unit> units,Stmt begin,Stmt fail,boolean sense,
                                  WeavingContext wc);
 
     /** This is a helper method for codeGen; it is called when an implementation of
@@ -74,7 +74,7 @@ public abstract class Residue {
      *  @param fail The place to jump if sense is false
      *  @param sense Indicates the sense of the residue
      */
-    protected static Stmt succeed(Chain units,Stmt begin,Stmt fail,boolean sense) {
+    protected static Stmt succeed(Chain<Unit> units,Stmt begin,Stmt fail,boolean sense) {
         if(sense) return begin;
         else            {
             Stmt jump=Jimple.v().newGotoStmt(fail);
@@ -92,7 +92,7 @@ public abstract class Residue {
      * insert all the gotos needed to make it work.
      */
     protected Stmt reverseSense(SootMethod method,LocalGeneratorEx localgen,
-        Chain units,Stmt begin,Stmt fail,boolean sense,
+        Chain<Unit> units,Stmt begin,Stmt fail,boolean sense,
         WeavingContext wc ) {
         Stmt nop = Jimple.v().newNopStmt();
         Stmt last = codeGen(method, localgen, units, begin, nop, !sense, wc);

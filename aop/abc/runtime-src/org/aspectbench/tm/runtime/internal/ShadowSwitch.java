@@ -21,6 +21,8 @@ package org.aspectbench.tm.runtime.internal;
 
 import java.util.StringTokenizer;
 
+import org.aspectbench.tm.runtime.internal.labelshadows.LabelShadowSwitchFactory;
+
 /**
  * ShadowSwitch - stub for shadow switching. Is extended by DynamicInstrumenter.
  *
@@ -29,8 +31,7 @@ import java.util.StringTokenizer;
  */
 public class ShadowSwitch {
 	
-	public static boolean groupTable[][];
-	
+	public static boolean groupTable[][];	
 	public static boolean enabled[];
 	public static int counts[];
 	
@@ -42,17 +43,17 @@ public class ShadowSwitch {
 		try {
 			IShadowSwitchInitializer initializer = (IShadowSwitchInitializer) Class.forName("org.aspectbench.tm.runtime.internal.ShadowSwitchInitializer").newInstance();
 			initializer.initialize();
-			//enable all
-			for(int i=0;i<enabled.length;i++) {
-			    enabled[i] = true;
-			}
 			
+			String argString = System.getProperty("SHADOWGROUPS","");
+			parse(argString);
+
 			//dump shadows at shutdown time
 			Runtime.getRuntime().addShutdownHook( new Thread() {
 				public void run() {
 					dumpShadowCounts();
 				}
-			});			
+			});		
+			LabelShadowSwitchFactory.start();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -64,22 +65,38 @@ public class ShadowSwitch {
 			System.exit(1);
 		}				
 		
-		//FIXME improve and enable UI
-		
-//		String argString = System.getProperty("SHADOWGROUPS","");
-//		parse(argString);
 	}
 
+
 	private static void parse(String argString) {
-		String[] split = argString.split(":");
-		String format = split[0];
-		if(format.equals("enum")) {
-			byNumber(split[1]);
-		} else if(format.equals("upto")) {
-			upToNumber(split[1]);
+		if(argString.length()>0) {
+			if(argString.equals("all")) {
+				all();
+				return;
+			}
+			
+			String[] split = argString.split(":");
+			String format = split[0];
+			String arg = split[1];		
+			if(format.equals("enum")) {
+				byNumber(arg);
+			} else if(format.equals("upto")) {
+				upToNumber(arg);
+			} else {
+				System.err.println("No shadow groups enabled.");
+			}
+		} else {
+			System.err.println("No shadow groups enabled.");
 		}
 	}
 	
+	private static void all() {
+		for(int i=0;i<groupTable.length;i++) {
+			enableShadowGroup(i);
+		}
+		System.err.println("Enabled all shadow groups.");
+	}
+
 	private static void upToNumber(String arg) {
 		int bound = Integer.parseInt(arg);
 		if(bound<0) {
@@ -88,6 +105,7 @@ public class ShadowSwitch {
 		for(int i=0;i<bound;i++) {
 			enableShadowGroup(i);
 		}
+		System.err.println("Enabled all shadow groups up to #"+bound);
 	}
 
 	private static void byNumber(String enumeration) {
@@ -97,10 +115,10 @@ public class ShadowSwitch {
 	    	int groupId = Integer.parseInt(token);
 	    	enableShadowGroup(groupId);
 	    }
+		System.err.println("Enabled shadow groups: "+enumeration);
 	}
 
-	private static void enableShadowGroup(int groupNumber) {
-    	System.out.println("enabled shadow group #"+groupNumber);
+	public static void enableShadowGroup(int groupNumber) {
 		for (int i = 0; i < groupTable[groupNumber].length; i++) {
 			boolean toEnable = groupTable[groupNumber][i];
 			enabled[i] = enabled[i] | toEnable;
@@ -108,12 +126,12 @@ public class ShadowSwitch {
 	}
 
 
-	private static void disableAllGroups() {
+	public static void disableAllGroups() {
 		for (int i = 0; i < enabled.length; i++) {
 			enabled[i] = false;			
 		}
 	}
-
+		
     private static synchronized void dumpShadowCounts() {
         System.err.println("*** Printing out shadow counts ***");
 

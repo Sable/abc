@@ -74,6 +74,9 @@ public class ShadowRegistry {
 	
 	protected Set<String> shadowsToBeRetained;
 	
+	/** maps a shadow ID to a unique number for that id */
+	protected Map<String,Integer> shadowIdToNumber = new HashMap<String,Integer>();
+	
     protected boolean residueBoxesChanged;
 
     protected ShadowRegistry() {
@@ -447,6 +450,24 @@ public class ShadowRegistry {
 				"tracematch shadow "+uniqueShadowId+" changed at this position (conjoined with "+conjunct+")",
 				pos
 		);
+	}
+	
+	/**
+	 * Returns a unique int number for the given shadow id.
+	 * The numbers start with 0 and then increase by 1.
+	 * @param uniqueShadowId
+	 * @return
+	 */
+	public int numberOf(String uniqueShadowId) {
+		Integer number = (Integer) shadowIdToNumber.get(uniqueShadowId);
+		if(number==null) {
+			number = new Integer(shadowIdToNumber.size());
+			shadowIdToNumber.put(uniqueShadowId, number);
+		}
+		if(Debug.v().debugTmAnalysis) {
+		    System.err.println("number of "+uniqueShadowId+": "+number);
+		}
+		return number;
 	}
 
 	//singleton pattern

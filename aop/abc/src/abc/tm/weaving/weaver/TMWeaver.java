@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
  * Copyright (C) 2005 Pavel Avgustinov
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +22,9 @@
 package abc.tm.weaving.weaver;
 
 import abc.weaving.weaver.Weaver;
+import abc.main.Debug;
 import abc.tm.weaving.aspectinfo.*;
+import abc.tm.weaving.weaver.tmanalysis.dynainst.ShadowCountManager;
 
 import java.util.*;
 
@@ -30,9 +33,21 @@ import java.util.*;
  *
  *  @author Julian Tibble
  *  @author Pavel Avgustinov
+ *  @author Eric Bodden
  */
 public class TMWeaver extends Weaver
 {
+	
+    /**
+     * set to true before the last (re)weaving pass
+     */
+    protected boolean nowLastWeavingPass = false;
+    
+    public void removeDeclareWarnings() {
+    	nowLastWeavingPass = true;
+    	super.removeDeclareWarnings();
+    }
+
     // TODO: Add a dedicated flag for tracematch codegen debugging
     private void debug(String message)
     { if (abc.main.Debug.v().weaverDriver)
@@ -73,5 +88,14 @@ public class TMWeaver extends Weaver
             helper.transformRealBodyMethod();
             helper.genRunSolutions();
         }
+    }
+    
+    public void weaveAdvice() {
+    	if(Debug.v().shadowCount && nowLastWeavingPass) {
+    		//conjoin all residues with a residue for counting shadows
+    		ShadowCountManager.setCountResidues();
+    	}
+    	
+    	super.weaveAdvice();
     }
 }

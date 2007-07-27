@@ -32,6 +32,7 @@ import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
+import soot.Unit;
 import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
@@ -85,7 +86,7 @@ public class DynamicSwitchIndexedCodeGenHelper extends IndexedCodeGenHelper {
     {
         
         Body body = method.getActiveBody();
-        Chain units = body.getUnits();
+        Chain<Unit> units = body.getUnits();
         LocalGenerator localGen = new LocalGenerator(body);
         
         //create new nop-statement as jump target
@@ -99,7 +100,7 @@ public class DynamicSwitchIndexedCodeGenHelper extends IndexedCodeGenHelper {
         genDisableMethod(method.getDeclaringClass());
         
         //create branch if(!labelShadowsEnabled) goto jumpTarget
-        Chain branchUnits = newChain();
+        Chain<Unit> branchUnits = newChain();
         //lse = labelShadowsEnabled;
         InstanceFieldRef booleanFieldRef = Jimple.v().newInstanceFieldRef(
         		body.getThisLocal(),

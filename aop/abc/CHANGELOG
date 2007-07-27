@@ -32,6 +32,10 @@
 $abc now supports additional pointcuts, in particular the arrayget/arrayset
 ;pointcuts and the lock/unlock pointcuts.
 ;see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=123759
+$We now support dynamic instrumentation residues (see RV'07 paper)
+;and residues for counting shadow execution.
+;For details see debug options dynaInstr and shadowCount as well as
+;org.aspectbench.tm.runtime.internal.ShadowSwitch
 
 %1.2.1 1154710255
 $abc now supports mutiple reweaving analyses. Those analyses are

@@ -243,6 +243,8 @@ public class Debug {
 	public boolean warnWhenAlteringShadow = false;    
 	//enable dynamic instrumentation
 	public boolean dynaInstr = false;
+	//enable shadow counting
+	public boolean shadowCount = false;
     //execute first one iteration of the intraprocedural unnecessary shadow elimination
     public boolean firstUnnecessary = false;
     
