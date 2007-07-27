@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public abstract class AbstractLabelShadowSwitch implements Runnable {
 
-	protected Set<String> disabled = new HashSet<String>();
+	protected Set disabled = new HashSet();
 	
 	public abstract void run();
 
@@ -42,7 +42,7 @@ public abstract class AbstractLabelShadowSwitch implements Runnable {
 	protected boolean switchTraceMatch(String className) {
 		boolean isEnabled = !disabled.contains(className);
 		try {
-			Class<?> cl = Class.forName(className);
+			Class cl = Class.forName(className);
 			
 			String methodName;
 			if(isEnabled) {
