@@ -2,10 +2,13 @@ package org.jastadd.plugin.editor;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -131,53 +134,94 @@ public class JastAddActionDelegate implements IEditorActionDelegate {
 	}
 	*/
 	
-	private void openFileFromSource(CompilationUnit unit, int line, int column, int length) {	
+	private void openFileFromSource(CompilationUnit unit, int line, int column,
+			int length) {
 		if (editorPart == null)
 			return;
-		
-		String relativeName = unit.relativeName();
-		String destPathName = unit.destinationPath();
-		String pathName = unit.pathName();
-		String packageName = unit.packageName();
 
-		int startIndex = relativeName.lastIndexOf('/');
-		if (startIndex > 0) {
-			relativeName = relativeName.substring(startIndex + 1);
-		}
-		if (relativeName.endsWith(".class")) {
-			relativeName = relativeName.replaceFirst(".class", ".java");
-		}
+		String pathName = unit.pathName();
+		if (pathName.endsWith(".class")) {
+			pathName = pathName.replace(".class", ".java");
+		} 
 		
 		IEditorInput editorInput = editorPart.getEditorInput();
-
+		
 		if (editorInput instanceof IFileEditorInput) {
+			boolean finishedTrying = false;
+			while (!finishedTrying) {
 
-			IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
-			IFile targetFile = fileEditorInput.getFile().getProject().getFile(relativeName);
-			IEditorInput targetEditorInput = new FileEditorInput(targetFile);
-			
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-	        IWorkbenchPage page = window.getActivePage();
-			try {
-				page.openEditor(targetEditorInput,
-						"org.jastadd.plugin.editor.JastAddEditor", true);
-				
-				IDocument targetDoc = JastAddDocumentProvider.fileToDocument(targetFile);
-				int lineOffset = 0;
-				try {
-				  lineOffset = targetDoc.getLineOffset(line-1) + column-1;
-				} catch (BadLocationException e) {}
-				
-				
-				IEditorPart targetEditorPart = page
-						.findEditor(targetEditorInput);
-				if (targetEditorPart instanceof ITextEditor) {
-					ITextEditor textEditor = (ITextEditor)targetEditorPart;
-					textEditor.selectAndReveal(lineOffset, length);
+				if (pathName.endsWith(".java")) {
+					
+					// Try to open java file
+					try {
+						IPath path = URIUtil.toPath(new URI("file:/" + pathName));
+						IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+						if (files.length >= 1) {
+							IEditorInput targetEditorInput = new FileEditorInput(files[0]);
+							IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+							IWorkbenchPage page = window.getActivePage();
+
+							page.openEditor(targetEditorInput,
+									"org.jastadd.plugin.editor.JastAddEditor",
+									true);
+
+							IDocument targetDoc = JastAddDocumentProvider
+									.fileToDocument(files[0]);
+							int lineOffset = 0;
+							try {
+								lineOffset = targetDoc.getLineOffset(line - 1) + column - 1;
+							} catch (BadLocationException e) {
+							}
+
+							IEditorPart targetEditorPart = page.findEditor(targetEditorInput);
+							if (targetEditorPart instanceof ITextEditor) {
+								ITextEditor textEditor = (ITextEditor) targetEditorPart;
+								textEditor.selectAndReveal(lineOffset, length);
+							}
+						}
+						finishedTrying = true;
+						
+					} catch (PartInitException e) {
+						finishedTrying = true;
+					} catch (URISyntaxException e1) {
+						// Switch to java and try again
+						if (pathName.endsWith(".java")) {
+							pathName = pathName.replace(".java", ".class");
+						}
+					}
+
+				} else if (pathName.endsWith(".class") || pathName.endsWith(".jar")) {
+
+					/*
+					if (pathName.endsWith(".jar")) {
+						pathName = unit.relativeName().replace(".class.class", ".class");
+					}
+					*/
+					
+					// Try to open class file
+					try {
+						IPath path = URIUtil.toPath(new URI("file:/" + pathName));
+						IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+						if (files.length > 0) {
+							IWorkbench workbench = PlatformUI.getWorkbench();
+							IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+							IWorkbenchPage page = window.getActivePage();
+							IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(files[0].getName());
+							page.openEditor(new FileEditorInput(files[0]), desc.getId());
+
+							// page.openEditor(targetFileEditorInput,"org.eclipse.jdt.ui.ClassFileEditor",
+							// false);
+							// "org.eclipse.jdt.ui.CompilationUnitEditor",
+							// false);
+						}
+					} catch (URISyntaxException e) {
+					} catch (PartInitException e) {
+						System.out.println(e.getMessage());
+					}
+					finishedTrying = true;
 				}
-			} catch (PartInitException e) {
 			}
-	    }
+		}
 	}
 	
 
@@ -196,10 +240,11 @@ public class JastAddActionDelegate implements IEditorActionDelegate {
 					int line = doc.getLineOfOffset(offset);
 					int column = offset - doc.getLineOffset(line);
 					selectedNode = model.findNodeInFile(file, line, column);
+					System.out.println(t.getOffset() + ", line: " + line + ", col: " + column);
 				} catch (BadLocationException e) {
 				}
 			}
-			System.out.println(t.getOffset());
+			
 		}
 	}
 

@@ -55,8 +55,10 @@ public class JastAddTextHover implements ITextHover {
 			return "Unknown";
 		JastAddModel model = JastAddModel.getInstance();
 		ASTNode node = model.findNodeInFile(file, line, column);
-		if(node != null)
-			return node.getClass().getName();
+		if(node != null) {
+			String comment = node.hoverComment();
+			return comment != null ? comment : "";
+	    }
 		return "NoNode";
 
 	}

@@ -33,6 +33,7 @@ public class JastAddModel {
 		}
 	}
 	
+	
 	public static JastAddModel getInstance() {
 		return JastAddModel.instance;
 	}
@@ -93,6 +94,8 @@ public class JastAddModel {
 		  program.addOptions(stringObjs);
 		} catch (CoreException e) { }
 		
+		String rawFilePath = file.getRawLocation().toOSString();
+		
 		try {
 			Collection files = program.files();
 			for(Iterator iter = files.iterator(); iter.hasNext(); ) {
@@ -102,7 +105,8 @@ public class JastAddModel {
 			
 			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 				CompilationUnit unit = (CompilationUnit)iter.next();
-				if(unit.fromSource()) {
+				String pathName = unit.pathName();
+				if(rawFilePath.equals(pathName)) {
 					ASTNode node = findLocation(unit, line+1, column+1);
 					if(node != null)
 						return node;

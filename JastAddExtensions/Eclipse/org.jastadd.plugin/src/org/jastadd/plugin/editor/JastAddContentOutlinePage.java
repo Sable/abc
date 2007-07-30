@@ -288,6 +288,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 				return false;
 			if(element instanceof ASTNode) {
 				ASTNode node = (ASTNode)element;
+				return !node.outlineChildren().isEmpty();
+				/*
 				//String clazz = node.getClass().getName();
 				for (int i=0; i < node.getNumChild(); i++) {
 					 ASTNode child = node.getChild(i);
@@ -302,6 +304,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 						 }
 					 }
  				}
+ 				*/
 			}
 			return false;
 		}
@@ -324,6 +327,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 				return new Object[0];
 			if(element instanceof ASTNode) {
 				ASTNode node = (ASTNode)element;
+				return node.outlineChildren().toArray();
+				/*
 				List<ASTNode> list = new ArrayList<ASTNode>();
 				for(int i = 0; i < node.getNumChild(); i++) {
 					ASTNode child = node.getChild(i);
@@ -339,6 +344,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 					}
 				}
 				return list.toArray();
+				*/
 			}
 			return new Object[0];
 		}

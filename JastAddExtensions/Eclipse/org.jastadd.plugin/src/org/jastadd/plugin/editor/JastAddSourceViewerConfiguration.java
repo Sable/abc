@@ -3,6 +3,8 @@ package org.jastadd.plugin.editor;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
@@ -38,4 +40,16 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	public IAutoEditStrategy[] getAutoIndentStrategies(ISourceViewer sourceViewer, String contentType) {
 		return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
 	}
+	
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+
+		ContentAssistant assistant= new ContentAssistant();
+		assistant.enableAutoActivation(true);
+		assistant.setAutoActivationDelay(500);
+		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
+		assistant.setContentAssistProcessor(new JastAddCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		
+		return assistant;
+	}
+
 }

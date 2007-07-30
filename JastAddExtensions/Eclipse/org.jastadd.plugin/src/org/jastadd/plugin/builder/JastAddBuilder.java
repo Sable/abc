@@ -153,7 +153,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			program.addOptions(paths);
 			
 			
-			// Temporary thing? - Add all file on the top level in the project
+			// Temporary thing? - Add all files on the top level of the project
 			HashMap<String,IFile> pathToFile = new HashMap<String,IFile>();
 			try {
 			  IResource[] filesInProject = file.getProject().members();

@@ -7,58 +7,59 @@ aspect ContentOutline {
    eq ConstructorDecl.showInContentOutline() = true;
    
    syn String ASTNode.contentOutlineLabel() = this.getClass().getName();
-   eq ClassDecl.contentOutlineLabel() = getID();
-   eq InterfaceDecl.contentOutlineLabel() = getID();
-   eq FieldDeclaration.contentOutlineLabel() = getID();
+   eq ClassDecl.contentOutlineLabel() = name();
+   eq InterfaceDecl.contentOutlineLabel() = name();
+   eq FieldDeclaration.contentOutlineLabel() = name();
    eq MethodDecl.contentOutlineLabel() {
-     String res = "";
-     Access access = getTypeAccess();
-     if (access instanceof TypeAccess) 
-        res = ((TypeAccess)access).getID();
-     else res = "--";
-     if (access instanceof ArrayTypeAccess) {
-       ArrayTypeAccess arrayAccess = (ArrayTypeAccess)access;
-       for(int k = 0; k < arrayAccess.getDimension(); k++) {
-         res += "[]";
-       }
-     }
-     res += " " + getID() + "(";
-        
+     StringBuffer res = new StringBuffer(type().typeName());
+     res.append(" " + name() + "(");
      for (int i = 0; i < getNumParameter(); i++) {
-       access = getParameter(i).getTypeAccess();
-       if (access instanceof TypeAccess) {
-         res += ((TypeAccess)access).getID();
-       } else res += "--";
-       if (access instanceof ArrayTypeAccess) {
-         ArrayTypeAccess arrayAccess = (ArrayTypeAccess)access;
-         for(int k = 0; k < arrayAccess.getDimension(); k++) {
-           res += "[]";
-         }
-       }
-       if (getNumParameter()-i > 1) {
-         res += ",";
+       res.append(getParameter(i).type().typeName());
+       if (i != 0) {
+         res.append(",");
        }
      } 
-     return res + ")";
+     res.append(")");
+     return res.toString();
    }
    eq ConstructorDecl.contentOutlineLabel() {
-     String res = getID() + "(";
+     StringBuffer res = new StringBuffer();
+     res.append(" " + name() + "(");
      for (int i = 0; i < getNumParameter(); i++) {
-       Access access = getParameter(i).getTypeAccess();
-       if (access instanceof TypeAccess) {
-         res += ((TypeAccess)access).getID();
-       } else res += "--";
-       if (access instanceof ArrayTypeAccess) {
-         ArrayTypeAccess arrayAccess = (ArrayTypeAccess)access;
-         for(int k = 0; k < arrayAccess.getDimension(); k++) {
-           res += "[]";
-         }
-       }
-       if (getNumParameter()-i > 1) {
-         res += ",";
+       res.append(getParameter(i).type().typeName());
+       if (i != 0) {
+         res.append(",");
        }
      } 
-     return res + ")";
+     res.append(")");
+     return res.toString();
    }
+   
+   /**
+     hasVisibleChildren
+   */
+   syn boolean ASTNode.hasVisibleChildren() {
+     if(showInContentOutline())
+       return true;
+     for(int i = 0; i < getNumChild(); i++)
+       if(getChild(i).hasVisibleChildren())
+         return true;
+     return false;
+   }
+   
+   /**
+     outline children
+   */
+   syn ArrayList ASTNode.outlineChildren() {
+     ArrayList list = new ArrayList();
+     for(int i = 0; i < getNumChild(); i++) {
+       if(getChild(i).showInContentOutline())
+         list.add(getChild(i));
+       else if(getChild(i).hasVisibleChildren())
+         list.addAll(getChild(i).outlineChildren());
+     }
+     return list;
+   }
+     
    
 }

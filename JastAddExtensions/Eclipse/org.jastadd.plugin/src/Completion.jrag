@@ -1,0 +1,18 @@
+aspect Completion {
+  syn String[] ASTNode.completion() = new String[] { };
+  eq Expr.completion() {
+    ArrayList list = new ArrayList();
+    for(Iterator iter = type().methodsIterator(); iter.hasNext(); ) {
+    	list.add(iter.next());
+    }
+    String[] res = new String[list.size()];
+    int i = 0;
+    for(Iterator iter = list.iterator(); iter.hasNext(); i++) {
+    	MethodDecl m = (MethodDecl)iter.next();
+    	res[i] = m.signature();
+   	}
+   	return res;
+  }
+  eq AbstractDot.completion() = new String[] { };
+  
+}
