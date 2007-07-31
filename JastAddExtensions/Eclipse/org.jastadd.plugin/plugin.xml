@@ -185,12 +185,11 @@
       </editor>
    </extension>
    
-   <!--
    <extension point="org.eclipse.core.runtime.adapters">
-     <factory class="org.jastadd.plugin.eclipse.debug.examples.ui.pda.model.PDABreakpointAdapterFactory"
+     <factory class="org.jastadd.plugin.editor.JastAddBreakpointAdapterFactory"
        adaptableType="org.jastadd.plugin.editor.JastAddEditor">
        <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
      </factory>
    </extension>
-   -->
+   
 </plugin>
