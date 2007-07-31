@@ -1,29 +1,15 @@
 package org.jastadd.plugin.builder;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -31,15 +17,108 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultLineTracker;
 import org.jastadd.plugin.JastAddModel;
 
-import AST.*;
 
 public class JastAddBuilder extends IncrementalProjectBuilder {
+	
 	public static final String BUILDER_ID = "org.jastadd.plugin.jastaddBuilder";
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
+	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+		if (kind == FULL_BUILD) {
+			fullBuild(monitor);
+		} else {
+			IResourceDelta delta = getDelta(getProject());
+			if (delta == null) {
+				fullBuild(monitor);
+			} else {
+				incrementalBuild(delta, monitor);
+			}
+		}
+		return null;
+	}
+	
+	protected void clean(IProgressMonitor monitor) throws CoreException {
+		JastAddModel.getInstance().fullBuild(getProject());
+	}
+		
+	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
+		JastAddModel.getInstance().fullBuild(getProject());
+		//getProject().accept(new ResourceVisitor());
+	}
 
+	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
+		// the visitor does the work.
+		delta.accept(new DeltaVisitor());
+	}
+
+	
+	
+	private void run() {
+		try {
+			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+			ILaunchConfigurationType type = manager.getLaunchConfigurationType("org.jastadd.plugin.launchConfigurationType");
+			ILaunchConfigurationWorkingCopy wc = type.newInstance(null, "SampleConfig");
+			//TODO change project name and main name 
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "Java");
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "Hello");
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, false);
+			ILaunchConfiguration config = wc.doSave();	
+			config.launch(ILaunchManager.DEBUG_MODE, null);
+			//config.launch(ILaunchManager.RUN_MODE, null);
+		} catch(CoreException e) {
+		}
+	}
+	
+	
+	private class ResourceVisitor implements IResourceVisitor {
+		public boolean visit(IResource resource) {
+			JastAddModel.getInstance().fullBuild(resource.getProject());
+			//checkFile(resource);
+			//return true to continue visiting children.
+			return true;
+		}
+	}
+	
+	private class DeltaVisitor implements IResourceDeltaVisitor {
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.core.resources.IResourceDelta)
+		 */
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			IResource resource = delta.getResource();
+			switch (delta.getKind()) {
+			case IResourceDelta.ADDED:
+				// handle added resource
+				JastAddModel.getInstance().fullBuild(resource.getProject());
+				//checkFile(resource);
+				break;
+			case IResourceDelta.REMOVED:
+				// handle removed resource
+				break;
+			case IResourceDelta.CHANGED:
+				// handle changed resource
+				JastAddModel.getInstance().fullBuild(resource.getProject());
+				//checkFile(resource);
+				break;
+			}
+			//return true to continue visiting children.
+			return true;
+		}
+	}
+
+	
+	
+	
+	
+	/*
 	private static final String MARKER_TYPE = "org.jastadd.plugin.xmlProblem";
 
 	private void addMarker(IFile file, String message, int lineNumber, int severity) {
@@ -95,27 +174,9 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		} catch (CoreException ce) {
 		}
 	}
+*/
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
-	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-		if (kind == FULL_BUILD) {
-			fullBuild(monitor);
-		} else {
-			IResourceDelta delta = getDelta(getProject());
-			if (delta == null) {
-				fullBuild(monitor);
-			} else {
-				incrementalBuild(delta, monitor);
-			}
-		}
-		return null;
-	}
-
 	void checkFile(IResource resource) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			IFile file = (IFile) resource;
@@ -222,7 +283,8 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		              }
 		            }
 		          }
-		        } catch (ParseError e) {
+		        }
+		      catch (ParseError e) {
 		        	// FileName.java: line, row\n *** Syntactic error: reason
 		        	String error = e.getMessage();
 		        	int index1 = error.indexOf(':');
@@ -244,66 +306,6 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			
 		}
 	}
-	
-	private void run() {
-		try {
-			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
-			ILaunchConfigurationType type = manager.getLaunchConfigurationType("org.jastadd.plugin.launchConfigurationType");
-			ILaunchConfigurationWorkingCopy wc = type.newInstance(null, "SampleConfig");
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "Java");
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "Hello");
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, false);
-			ILaunchConfiguration config = wc.doSave();	
-			config.launch(ILaunchManager.DEBUG_MODE, null);
-			//config.launch(ILaunchManager.RUN_MODE, null);
-		} catch(CoreException e) {
+	*/
 
-		}
-	}
-
-	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
-		try {
-			getProject().accept(new ResourceVisitor());
-		} catch (CoreException e) {
-		}
-	}
-
-	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
-		// the visitor does the work.
-		delta.accept(new DeltaVisitor());
-	}
-
-	private class ResourceVisitor implements IResourceVisitor {
-		public boolean visit(IResource resource) {
-			checkFile(resource);
-			//return true to continue visiting children.
-			return true;
-		}
-	}
-	
-	private class DeltaVisitor implements IResourceDeltaVisitor {
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.core.resources.IResourceDelta)
-		 */
-		public boolean visit(IResourceDelta delta) throws CoreException {
-			IResource resource = delta.getResource();
-			switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-				// handle added resource
-				checkFile(resource);
-				break;
-			case IResourceDelta.REMOVED:
-				// handle removed resource
-				break;
-			case IResourceDelta.CHANGED:
-				// handle changed resource
-				checkFile(resource);
-				break;
-			}
-			//return true to continue visiting children.
-			return true;
-		}
-	}
 }

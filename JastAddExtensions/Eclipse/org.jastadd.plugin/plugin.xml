@@ -65,9 +65,8 @@
         </action> 
         
       </viewerContribution>
-      
-      
    </extension>
+   
    <!--
    <extension
 	point="org.eclipse.ui.contexts">
@@ -117,8 +116,8 @@
    
    
    <extension
-         id="xmlProblem"
-         name="XML Problem"
+         id="org.jastadd.plugin.marker.ErrorMarker"
+         name="JastAdd Error"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">
@@ -127,6 +126,17 @@
             value="true">
       </persistent>
    </extension>
+      <extension
+         id="org.jastadd.plugin.marker.ParseErrorMarker"
+         name="JastAdd Parse Error"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>   
    
    <extension point = "org.eclipse.debug.core.launchConfigurationTypes">
          <!-- Currently the delegate class is subclassing org.eclipse.jdt.launching.JavaLaunchDelegate
@@ -175,4 +185,12 @@
       </editor>
    </extension>
    
+   <!--
+   <extension point="org.eclipse.core.runtime.adapters">
+     <factory class="org.jastadd.plugin.eclipse.debug.examples.ui.pda.model.PDABreakpointAdapterFactory"
+       adaptableType="org.jastadd.plugin.editor.JastAddEditor">
+       <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
+     </factory>
+   </extension>
+   -->
 </plugin>

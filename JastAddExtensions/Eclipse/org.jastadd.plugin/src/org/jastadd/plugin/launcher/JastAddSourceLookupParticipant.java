@@ -123,7 +123,7 @@ public class JastAddSourceLookupParticipant extends AbstractSourceLookupParticip
 		/*if (director != null) {
 			return director.getSourceContainers();
 		}*/
-		return new ISourceContainer[] {
+		return new ISourceContainer[] { //TODO Java? Should probably be the current project
 				new FolderSourceContainer(ResourcesPlugin.getWorkspace().getRoot().getProject("Java"), true)
 		};
 	}

@@ -57,7 +57,6 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		TreeViewer viewer= getTreeViewer();
-		// For testing: viewer.setContentProvider(new JastAddShowAllContentProvider());
 		viewer.setContentProvider(new JastAddContentProvider());
 		viewer.setLabelProvider(new JastAddLabelProvider());
 		viewer.addSelectionChangedListener(this);
@@ -143,69 +142,17 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 	}
 
 	protected class JastAddContentProvider implements ITreeContentProvider {
+		
 		protected final static String JASTADD_JAVA_CODE = "__jastadd_java_code"; //$NON-NLS-1$
-		protected IPositionUpdater fPositionUpdater =
-			new DefaultPositionUpdater(JASTADD_JAVA_CODE);
+		protected IPositionUpdater fPositionUpdater = new DefaultPositionUpdater(JASTADD_JAVA_CODE);
 		protected Program content = null;
 		public HashMap<ASTNode,Position> positions = new HashMap<ASTNode,Position>();
 
 		protected void parse(IDocument document) {
 			IFile file = JastAddDocumentProvider.documentToFile(document);
-
-			Program program = new Program();
-			program.initBytecodeReader(new bytecode.Parser());
-			program.initJavaParser(new JavaParser() {
-				public CompilationUnit parse(java.io.InputStream is,
-						String fileName) throws java.io.IOException,
-						beaver.Parser.Exception {
-					return new parser.JavaParser().parse(is, fileName);
-				}
-			});
-			program.initPackageExtractor(new scanner.JavaScanner());
-			program.initOptions();
-
-			// Add classpaths and filepath
-			program.addKeyValueOption("-classpath");
-			IProject project = file.getProject();
-			IWorkspace workspace = project.getWorkspace();
-			IWorkspaceRoot workspaceRoot = workspace.getRoot();
-			String workspacePath = workspaceRoot.getRawLocation().toOSString();
-			String fileFullPath = file.getFullPath().toOSString();
-			String projectFullPath = project.getFullPath().toOSString();
 			JastAddModel model = JastAddModel.getInstance();
-			String[] classpathEntries = model.getClasspathEntries();
-			String[] paths = new String[3];
-			paths[0] = "-classpath";
-			paths[1] = workspacePath;
-			paths[1] += ":" + workspacePath + projectFullPath;
-			for (int i = 0; i < classpathEntries.length; i++) {
-				paths[1] += ":" + classpathEntries[i];
-			}
-			paths[2] = workspacePath + fileFullPath;
-			program.addOptions(paths);
-
-			Collection files = program.files();
-			try {
-				for (Iterator iter = files.iterator(); iter.hasNext();) {
-					String name = (String) iter.next();
-					try {
-						program.addSourceFile(name);
-					} catch (LexicalError e) {
-						throw new LexicalError(name + ": " + e.getMessage());
-					}
-				}
-				content = program;
-
-			} catch (ParseError e) {
-				System.err.println(e.getMessage());
-			} catch (LexicalError e) {
-				System.err.println(e.getMessage());
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-			}
+			content = model.buildFile(file);
 		}	
-		
 		
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if (oldInput != null) {
@@ -289,22 +236,6 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 			if(element instanceof ASTNode) {
 				ASTNode node = (ASTNode)element;
 				return !node.outlineChildren().isEmpty();
-				/*
-				//String clazz = node.getClass().getName();
-				for (int i=0; i < node.getNumChild(); i++) {
-					 ASTNode child = node.getChild(i);
-					// String clazzChild = child.getClass().getName();
-					  if (child.showInContentOutline()) {
-						 return true;
-					 } else if (child instanceof AST.List || 
-							 child instanceof AST.Opt ||
-							 child instanceof AST.MemberClassDecl) {
-						 if (hasChildren(child)) {
-						   return true;
-						 }
-					 }
- 				}
- 				*/
 			}
 			return false;
 		}
@@ -328,168 +259,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 			if(element instanceof ASTNode) {
 				ASTNode node = (ASTNode)element;
 				return node.outlineChildren().toArray();
-				/*
-				List<ASTNode> list = new ArrayList<ASTNode>();
-				for(int i = 0; i < node.getNumChild(); i++) {
-					ASTNode child = node.getChild(i);
-					if (child.showInContentOutline()) {
-					  list.add(child);
-					} else if (child instanceof AST.List || 
-							child instanceof AST.Opt ||
-							child instanceof AST.MemberClassDecl) {
-						Object[] subChildren = getChildren(child);
-						for (int k = 0; k < subChildren.length; k++) {
-							list.add((ASTNode)subChildren[k]);
-						}
-					}
-				}
-				return list.toArray();
-				*/
 			}
 			return new Object[0];
 		}
 	};
-	
-	
-	
-	/*
-	 *  Only for testing - to show the whole three
-	 */
-	protected class JastAddShowAllContentProvider implements ITreeContentProvider {
-		protected Program content = null;
-		
-		protected void parse(IDocument document) {
-			IFile file = JastAddDocumentProvider.documentToFile(document);
-
-			Program program = new Program();
-			program.initBytecodeReader(new bytecode.Parser());
-			program.initJavaParser(new JavaParser() {
-				public CompilationUnit parse(java.io.InputStream is,
-						String fileName) throws java.io.IOException,
-						beaver.Parser.Exception {
-					return new parser.JavaParser().parse(is, fileName);
-				}
-			});
-			program.initPackageExtractor(new scanner.JavaScanner());
-			program.initOptions();
-
-			// Add classpaths and filepath
-			program.addKeyValueOption("-classpath");
-			IProject project = file.getProject();
-			IWorkspace workspace = project.getWorkspace();
-			IWorkspaceRoot workspaceRoot = workspace.getRoot();
-			String workspacePath = workspaceRoot.getRawLocation().toOSString();
-			String fileFullPath = file.getFullPath().toOSString();
-			String projectFullPath = project.getFullPath().toOSString();
-			JastAddModel model = JastAddModel.getInstance();
-			String[] classpathEntries = model.getClasspathEntries();
-			String[] paths = new String[3];
-			paths[0] = "-classpath";
-			paths[1] = workspacePath;
-			paths[1] += ":" + workspacePath + projectFullPath;
-			for (int i = 0; i < classpathEntries.length; i++) {
-				paths[1] += ":" + classpathEntries[i];
-			}
-			paths[2] = workspacePath + fileFullPath;
-			program.addOptions(paths);
-
-			Collection files = program.files();
-			try {
-				for (Iterator iter = files.iterator(); iter.hasNext();) {
-					String name = (String) iter.next();
-					try {
-						program.addSourceFile(name);
-					} catch (LexicalError e) {
-						throw new LexicalError(name + ": " + e.getMessage());
-					}
-				}
-				content = program;
-
-			} catch (ParseError e) {
-				System.err.println(e.getMessage());
-			} catch (LexicalError e) {
-				System.err.println(e.getMessage());
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-			}
-		}	
-		
-		
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			content = null;
-			if (newInput != null) {
-				IDocument document = fDocumentProvider.getDocument(newInput);
-				if (document != null) {
-					parse(document);
-				}
-			}
-		}
-
-		public void dispose() {
-			if (content != null) {
-				content = null;
-			}
-		}
-
-		public boolean isDeleted(Object element) {
-			return false;
-		}
-
-		public Object[] getElements(Object element) {
-			if (content != null) {
-				List<Object> contentList = new ArrayList<Object>();
-
-				for (Iterator iter = content.compilationUnitIterator(); iter
-						.hasNext();) {
-					CompilationUnit unit = (CompilationUnit) iter.next();
-					if (unit.fromSource()) {
-						contentList.add(unit.getPackageDecl());
-						for (int i = 0; i < unit.getNumTypeDecl(); i++) {
-							TypeDecl t = unit.getTypeDecl(i);
-							if (t instanceof ClassDecl) {
-								contentList.add(t);
-							}
-						}
-					}
-				}
-				return contentList.toArray();
-			} else {
-				return new Object[0];
-			}
-		}
-
-		public boolean hasChildren(Object element) {
-			if(element == null)
-				return false;
-			if(element instanceof ASTNode) {
-				return ((ASTNode)element).getNumChild() > 0; 
-			}
-			return false;
-		}
-
-		public Object getParent(Object element) {
-			if(element == null)
-				return null;
-			if(element instanceof ASTNode) {
-				return ((ASTNode)element).getParent();
-			}
-			return null;
-		}
-
-		public Object[] getChildren(Object element) {
-			if(element == null)
-				return new Object[0];
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				List<ASTNode> list = new ArrayList<ASTNode>();
-				for(int i = 0; i < node.getNumChild(); i++) {
-					list.add(node.getChild(i));
-				}
-				return list.toArray();
-			}
-			return new Object[0];
-		}
-	};	
-
 }
