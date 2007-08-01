@@ -98,13 +98,16 @@
 	    <fileset dir="../../Java1.4Frontend">
 	      <include name="parser/java14.parser"/>
 	    </fileset>
+	    <fileset dir=".">
+	      <include name="*.parser"/>
+	    </fileset>
 	</concat>
 	<!-- generate the parser phase 2, translating .lalr to .beaver -->
 		<java fork="true" dir="${basedir}" classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main">
 			<arg line="parser/JavaParser.all parser/JavaParser.beaver"/>
 		</java>
 	<!-- generate the parser phase 3, translating .beaver to .java -->
-	<beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="yes"/>
+	<beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="no" useSwitch="yes"/>
 </target>
 
 <!-- remove .class files also -->

@@ -1,18 +1,17 @@
 aspect Completion {
-  syn String[] ASTNode.completion() = new String[] { };
-  eq Expr.completion() {
+  syn Collection ASTNode.completion(String filter) = Collections.EMPTY_LIST;
+  eq Expr.completion(String filter) {
     ArrayList list = new ArrayList();
-    for(Iterator iter = type().methodsIterator(); iter.hasNext(); ) {
-    	list.add(iter.next());
+    if(!type().isUnknown()) {
+      for(Iterator iter = type().methodsIterator(); iter.hasNext(); ) {
+      	  MethodDecl m = (MethodDecl)iter.next();
+      	  if(m.signature().startsWith(filter))
+	      	  list.add(m.signature());
+      }
     }
-    String[] res = new String[list.size()];
-    int i = 0;
-    for(Iterator iter = list.iterator(); iter.hasNext(); i++) {
-    	MethodDecl m = (MethodDecl)iter.next();
-    	res[i] = m.signature();
-   	}
-   	return res;
+    Collections.sort(list);
+   	return list;
   }
-  eq AbstractDot.completion() = new String[] { };
+  eq AbstractDot.completion(String filter) = lastAccess().completion(filter);
   
 }

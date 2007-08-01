@@ -60,7 +60,7 @@
            id="org.jastadd.plugin.editor.jastAddAction" 
            label="Find declaration"
            menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
-           class="org.jastadd.plugin.editor.JastAddActionDelegate"
+           class="org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate"
            definitionId="org.jastadd.plugin.findDeclaration"> 
         </action> 
         
@@ -184,12 +184,27 @@
             name="JastAdd Editor">
       </editor>
    </extension>
-   
+   <!--
    <extension point="org.eclipse.core.runtime.adapters">
      <factory class="org.jastadd.plugin.editor.JastAddBreakpointAdapterFactory"
        adaptableType="org.jastadd.plugin.editor.JastAddEditor">
        <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
      </factory>
+   </extension>
+   -->
+   
+  <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            targetID="org.jastadd.plugin.editor.JastAddEditor"
+            id="org.jastadd.plugin.editor.JastAddEditor.BreakpointRulerActions">
+         <action
+               label="%AddBreakpoint.label"
+               class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+               actionID="RulerDoubleClick"
+               id="org.jastadd.plugin.editor.actions.ManageBreakpointRulerAction">
+         </action>
+      </editorContribution>
    </extension>
    
 </plugin>

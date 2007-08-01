@@ -1,42 +1,37 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.actions;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.MarkSelection;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.editor.JastAddDocumentProvider;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
 
 
-public class JastAddActionDelegate implements IEditorActionDelegate {
+public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 	
 	private IEditorPart editorPart;
 	private ASTNode selectedNode;

@@ -198,7 +198,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 					CompilationUnit unit = (CompilationUnit) iter.next();
 					if (unit.fromSource()) {
 						String packageName = unit.getPackageDecl();
-						if (packageName.length() > 0) {
+						if (packageName != null && packageName.length() > 0) {
 						  contentList.add(unit.getPackageDecl());
 						}
 						for (int i = 0; i < unit.getNumTypeDecl(); i++) {

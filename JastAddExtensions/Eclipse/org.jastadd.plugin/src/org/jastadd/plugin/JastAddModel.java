@@ -24,10 +24,8 @@ import org.eclipse.jface.text.DefaultLineTracker;
 import AST.ASTNode;
 import AST.CompilationUnit;
 import AST.JavaParser;
-import AST.LexicalError;
-import AST.ParseError;
 import AST.Program;
-
+import AST.Problem;
 
 public class JastAddModel {
 
@@ -69,15 +67,12 @@ public class JastAddModel {
 		Program program = initProgram();
 		fillInClasspaths(program, file.getProject());
 
-		try {
-			HashMap<String, IFile> pathToFileMap = new HashMap<String, IFile>();
-			addSourceFiles(program, new IResource[] { file }, pathToFileMap);
-			compileFiles(program, pathToFileMap);
-			return program;
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		return null;
+		// addSourceFiles(program, new IResource[] { file }, pathToFileMap);
+
+		String filePath = file.getRawLocation().toOSString();
+		program.addOptions(new String[] { filePath });
+		compileFiles(program);
+		return program;
 	}
 
 	/**
@@ -93,19 +88,22 @@ public class JastAddModel {
 		if (file == null)
 			return null;
 
-		Program program = buildProject(file.getProject(), false);
+		//Program program = buildProject(file.getProject(), false);
+		Program program = buildFile(file);
 
 		if (program == null)
-			return null;
+			return null;		
 
 		String rawFilePath = file.getRawLocation().toOSString();
 		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 			CompilationUnit unit = (CompilationUnit) iter.next();
-			String pathName = unit.pathName();
-			if (rawFilePath.equals(pathName)) {
-				ASTNode node = findLocation(unit, line + 1, column + 1);
-				if (node != null)
-					return node;
+			if(unit.fromSource()) {
+				String pathName = unit.pathName();
+				if (rawFilePath.equals(pathName)) {
+					ASTNode node = findLocation(unit, line + 1, column + 1);
+					if (node != null)
+						return node;
+				}
 			}
 		}
 
@@ -181,11 +179,8 @@ public class JastAddModel {
 	    	HashMap<String,IFile> pathToFileMap = new HashMap<String,IFile>();
 			addSourceFiles(program, project.members(), pathToFileMap);
 			deleteParseErrorMarkers(project.members()); 
-			compileFiles(program, pathToFileMap);
-			if (doErrorChecks) {
-			  deleteErrorMarkers(project.members());
-			  checkErrors(program, pathToFileMap);
-			}
+			compileFiles(program);
+			checkErrors(program, pathToFileMap, doErrorChecks, project);
 			return program;
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -301,50 +296,43 @@ public class JastAddModel {
 	 * Checks for errors in a Program node
 	 * @param program
 	 */
-	private void checkErrors(Program program, HashMap<String,IFile> pathToFileMap) throws CoreException {
+	private void checkErrors(Program program, HashMap<String,IFile> pathToFileMap, boolean doErrorChecks, IProject project) throws CoreException {
+		if (doErrorChecks) {
+			 deleteErrorMarkers(project.members());
+		}
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
             CompilationUnit unit = (CompilationUnit)iter.next();
             
             if(unit.fromSource()) {
             	
-              Collection errors = new LinkedList();
+              Collection errors = unit.parseErrors();
               Collection warnings = new LinkedList();
-              unit.errorCheck(errors, warnings);
-              
+              if(doErrorChecks) {
+                unit.errorCheck(errors, warnings);
+              }
+              boolean build = errors.isEmpty() && doErrorChecks;
+              errors.addAll(warnings);
               if(!errors.isEmpty()) {
             	  for(Iterator i2 = errors.iterator(); i2.hasNext(); ) {
-            		  String error = (String)i2.next();
-            		  
-            		  int index1 = error.indexOf(':');
-            		  String fileName = error.substring(0, index1);
-            		  IFile unitFile = pathToFileMap.get(fileName);
-            		  
-            		  int index2 = error.indexOf(':', index1 + 1);
-        			  int lineNumber = Integer.parseInt(error.substring(index1+1, index2).trim());
-        			  int index3 = error.indexOf(':', index2 + 1);
-        			  // skip string *** Semantic Error
-        			  //int index4 = error.indexOf(':', index3 + 1);
-        			  
-        			  String message = error.substring(index3+1, error.length());
-        			  addErrorMarker(unitFile, message, lineNumber, IMarker.SEVERITY_ERROR);
+            		  Problem error = (Problem)i2.next();
+            		  int line = error.line();
+            		  int column = error.column();
+            		  String message = error.message();
+            		  IFile unitFile = pathToFileMap.get(error.fileName());
+            		  int severity = IMarker.SEVERITY_INFO;
+            		  if(error.severity() == Problem.Severity.ERROR)
+            			  severity = IMarker.SEVERITY_ERROR;
+            		  else if(error.severity() == Problem.Severity.WARNING)
+            			  severity = IMarker.SEVERITY_WARNING;
+            		  if(error.kind() == Problem.Kind.LEXICAL || error.kind() == Problem.Kind.SYNTACTIC) {
+            			  addParseErrorMarker(unitFile, message, line, column, severity);
+            		  }
+            		  else if(error.kind() == Problem.Kind.SEMANTIC) {
+                		  addErrorMarker(unitFile, message, line, severity);
+            		  }
             	  }
-              } else {
-            	  for(Iterator i2 = warnings.iterator(); i2.hasNext(); ) {
-            		  String warning = (String)i2.next();
-
-            		  int index1 = warning.indexOf(':');
-            		  String fileName = warning.substring(0, index1);
-            		  IFile unitFile = pathToFileMap.get(fileName);
-
-            		  int index2 = warning.indexOf(':', index1 + 1);
-            		  int lineNumber = Integer.parseInt(warning.substring(index1+1, index2).trim());
-            		  int index3 = warning.indexOf(':', index2 + 1);
-            		  // skip string *** Semantic Error
-            		  //int index4 = error.indexOf(':', index3 + 1);
-
-            		  String message = warning.substring(index3+1, warning.length());
-            		  addErrorMarker(unitFile, message, lineNumber, IMarker.SEVERITY_WARNING);
-            	  }
+              }
+              if(build) {
             	  unit.java2Transformation();
             	  unit.generateClassfile();
               }
@@ -390,39 +378,21 @@ public class JastAddModel {
 	 * @param program
 	 * @param pathToFileMap
 	 */
-	private void compileFiles(Program program, HashMap<String,IFile> pathToFileMap) {
+	private void compileFiles(Program program) {
 		Collection files = program.files();
 		try {
 			for (Iterator iter = files.iterator(); iter.hasNext();) {
 				String name = (String) iter.next();
-				try {
-					program.addSourceFile(name);
-				} catch (LexicalError e) {
-					throw new LexicalError(name + ": " + e.getMessage());
-				}
+				program.addSourceFile(name);
 			}
-		} catch (ParseError e) {
-			// FileName.java: line, row\n *** Syntactic error: reason
-			String error = e.getMessage();
-			int index1 = error.indexOf(':');
-			int index2 = error.indexOf(',', index1 + 1);
-			int index3 = error.indexOf('\n', index2 + 1);
-			int index4 = error.indexOf(':', index3 + 1);
-			String fileName = error.substring(0, index1);
-			IFile file = pathToFileMap.get(fileName);
-			int line = Integer.parseInt(error.substring(index1 + 1, index2).trim());
-			int column = Integer.parseInt(error.substring(index2 + 1, index3).trim());
-			String message = error.substring(index4 + 1, error.length());
-			addParseErrorMarker(file, message, line, column, IMarker.SEVERITY_ERROR);
-
-		} catch (LexicalError e) {
-			System.err.println(e.getMessage());
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 		}
+		
 	}
-	
+
 	/**
 	 * Adds classpaths based on the given project to the given Program node.
 	 * @param program
@@ -431,6 +401,8 @@ public class JastAddModel {
 	private void fillInClasspaths(Program program, IProject project) {
 		
 		program.addKeyValueOption("-classpath");
+		//program.addKeyOption("-verbose");
+		//program.addOptions(new String[] { "-verbose" });
 		
 		IWorkspace workspace = project.getWorkspace();
 		IWorkspaceRoot workspaceRoot = workspace.getRoot();
@@ -466,7 +438,6 @@ public class JastAddModel {
 					}
 				}
 		);
-		program.initPackageExtractor(new scanner.JavaScanner());
 		program.initOptions();
         
 		return program;
@@ -482,6 +453,7 @@ public class JastAddModel {
 	 * @return A node on with the right line and column or null
 	 */
 	private ASTNode findLocation(ASTNode node, int line, int column) {
+		if(node == null) return node;
 		int beginLine = ASTNode.getLine(node.getStart());
 		int beginColumn = ASTNode.getColumn(node.getStart());
 		int endLine = ASTNode.getLine(node.getEnd());
@@ -489,9 +461,11 @@ public class JastAddModel {
 
 		if(beginLine == 0 && beginColumn == 0 && endLine == 0 && endColumn == 0) {
 			for(int i = 0; i < node.getNumChild(); i++) {
-				ASTNode result = findLocation(node.getChild(i), line, column);
-				if(result != null)
-					return result;
+				if(node.getChild(i) != null) {
+					ASTNode result = findLocation(node.getChild(i), line, column);
+					if(result != null)
+						return result;
+				}
 			}
 			return null;
 		}
@@ -500,9 +474,11 @@ public class JastAddModel {
 		   (line == beginLine && column >= beginColumn || line != beginLine) &&
 		   (line == endLine && column <= endColumn || line != endLine)) {
 			for(int i = 0; i < node.getNumChild(); i++) {
-				ASTNode result = findLocation(node.getChild(i), line, column);
-				if(result != null)
-					return result;
+				if(node.getChild(i) != null) {
+					ASTNode result = findLocation(node.getChild(i), line, column);
+					if(result != null)
+						return result;
+				}
 			}
 			return node;
 		}

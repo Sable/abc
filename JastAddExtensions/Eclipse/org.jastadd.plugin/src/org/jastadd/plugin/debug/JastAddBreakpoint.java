@@ -11,6 +11,7 @@ public class JastAddBreakpoint extends LineBreakpoint {
 
 	public String getModelIdentifier() {
 		// TODO Auto-generated method stub
-		return null;
+		return "org.jastadd.plugin";
 	}
+	
 }
