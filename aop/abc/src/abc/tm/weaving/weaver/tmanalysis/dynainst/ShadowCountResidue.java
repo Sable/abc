@@ -68,7 +68,7 @@ public class ShadowCountResidue extends Residue {
 	 * {@inheritDoc}
 	 */
 	public Stmt codeGen(SootMethod method, LocalGeneratorEx localgen,
-			Chain<Unit> units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {		
+			Chain units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {		
 		//fetch the boolean array to a local variable
 		//boolean[] counts = ShadowSwitch.counts;
 		Local array = localgen.generateLocal(ArrayType.v(IntType.v(),1),"counts");

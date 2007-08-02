@@ -66,7 +66,7 @@ public class DynamicInstrumentationResidue extends Residue {
 	 * {@inheritDoc}
 	 */
 	public Stmt codeGen(SootMethod method, LocalGeneratorEx localgen,
-			Chain<Unit> units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {
+			Chain units, Stmt begin, Stmt fail, boolean sense, WeavingContext wc) {
 		if(!sense) return reverseSense(method, localgen, units, begin, fail, sense, wc);
 		
 		//fetch the boolean array to a local variable

@@ -62,7 +62,7 @@ public abstract class Residue {
      *  @author Ganesh Sittampalam
      */
     public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-                                 Chain<Unit> units,Stmt begin,Stmt fail,boolean sense,
+                                 Chain units,Stmt begin,Stmt fail,boolean sense,
                                  WeavingContext wc);
 
     /** This is a helper method for codeGen; it is called when an implementation of
