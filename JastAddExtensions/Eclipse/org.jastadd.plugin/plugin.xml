@@ -150,9 +150,6 @@
          id="org.jastadd.plugin.launchConfigurationType"
          modes="run, debug"
          name="JastAdd Launcher">
-         <!-- This could be declared here. It seems to be used even if it's excluded
-         sourceLocatorId="org.jastadd.plugin.launcher.SourceLocator">
-         -->
    </launchConfigurationType>
 	</extension>
    
@@ -163,16 +160,6 @@
         	id="org.jastadd.plugin.launcher.TabGroup">
     	</launchConfigurationTabGroup>
 	</extension>
-	
-	<extension
-         point="org.eclipse.debug.core.sourceLocators">
-      <sourceLocator
-            name="JastAdd Source Locator"
-            class="org.jastadd.plugin.launcher.JastAddSourceLocator"
-            id="org.jastadd.plugin.launcher.SourceLocator">
-      </sourceLocator>
-   </extension>
-   
    
    <extension
          point="org.eclipse.ui.editors">
@@ -184,14 +171,6 @@
             name="JastAdd Editor">
       </editor>
    </extension>
-   <!--
-   <extension point="org.eclipse.core.runtime.adapters">
-     <factory class="org.jastadd.plugin.editor.JastAddBreakpointAdapterFactory"
-       adaptableType="org.jastadd.plugin.editor.JastAddEditor">
-       <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
-     </factory>
-   </extension>
-   -->
    
   <extension
          point="org.eclipse.ui.editorActions">

@@ -24,6 +24,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
 import beaver.Parser.Exception;

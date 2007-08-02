@@ -20,13 +20,6 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		return new JastAddTextHover();
 	}
 	
-	
-	/*
-	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE };
-	}
-	*/
-	
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler= new PresentationReconciler();
 		

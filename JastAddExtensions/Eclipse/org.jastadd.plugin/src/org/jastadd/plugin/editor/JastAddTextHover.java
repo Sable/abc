@@ -9,6 +9,7 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Point;
+import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
 import AST.ASTNode;

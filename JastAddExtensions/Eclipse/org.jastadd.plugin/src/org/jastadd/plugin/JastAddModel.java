@@ -67,8 +67,6 @@ public class JastAddModel {
 		Program program = initProgram();
 		fillInClasspaths(program, file.getProject());
 
-		// addSourceFiles(program, new IResource[] { file }, pathToFileMap);
-
 		String filePath = file.getRawLocation().toOSString();
 		program.addOptions(new String[] { filePath });
 		compileFiles(program);

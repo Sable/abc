@@ -24,8 +24,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.editor.JastAddDocumentProvider;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
@@ -56,7 +56,7 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 					int line = doc.getLineOfOffset(offset);
 					int column = offset - doc.getLineOffset(line);
 					selectedNode = model.findNodeInFile(file, line, column);
-					System.out.println(t.getOffset() + ", line: " + line + ", col: " + column);
+					//System.out.println(t.getOffset() + ", line: " + line + ", col: " + column);
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
