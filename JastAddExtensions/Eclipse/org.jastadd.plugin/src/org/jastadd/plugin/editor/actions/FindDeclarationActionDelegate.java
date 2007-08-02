@@ -1,12 +1,11 @@
 package org.jastadd.plugin.editor.actions;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -146,7 +145,7 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 		
 	private void openJavaFile(String pathName, int line, int column, int length)
 			throws PartInitException, URISyntaxException {
-		IPath path = URIUtil.toPath(new URI("file:/" + pathName));
+		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
 		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 				.findFilesForLocation(path);
 		if (files.length >= 1) {
@@ -177,7 +176,8 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 	private void openClassFile(String pathName, String relativeName,
 			boolean inJarFile, int line, int column, int length)
 			throws PartInitException, URISyntaxException {
-		IPath path = URIUtil.toPath(new URI("file:/" + pathName));
+		
+		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
 		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 				.findFilesForLocation(path);
 		if (files.length > 0) {
