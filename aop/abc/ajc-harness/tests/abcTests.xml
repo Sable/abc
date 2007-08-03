@@ -1420,8 +1420,6 @@
         <compile files="CyclicClassInheritance.java">
             <ajcmessage kind="error" line="11"/>
             <ajcmessage kind="error" line="12"/>
-            <message kind="error" line="11"/>
-            <message kind="error" line="12"/>
             <message kind="error" line="12"/>
             <jamessage kind="error" line="11"/>
             <jamessage kind="error" line="12"/>
