@@ -8,5 +8,5 @@ public class CyclicClassInheritance {
 }
 
 
-class A extends B { A(); void a(){} }
-class B extends A { B(); void b(){} }
+class A extends B { A() {} void a(){} }
+class B extends A { B() {} void b(){} }
