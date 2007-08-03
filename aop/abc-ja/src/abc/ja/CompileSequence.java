@@ -34,38 +34,15 @@ public class CompileSequence extends abc.main.CompileSequence {
     super(ext);
   }
 
-  private void addError(String s) {
-    Position p = new Position("FileName", 10);
-    try {
-    int first = s.indexOf(':');
-    int second = s.indexOf('\n');
-    if(first != -1 && second != -1) {
-      String fileName = s.substring(0, first);
-      String sub = s.substring(first+1, second);
-      String splitString = ",";
-      if(sub.indexOf(':') != -1)
-        splitString = ":";
-      String pos[] = sub.split(splitString);
-      int line = 0;
-      try {
-        line = Integer.parseInt(pos[0].trim());
-      } catch (Exception e) {
-      }
-      int column = 0;
-      try {
-        column = Integer.parseInt(pos[1].trim());
-      } catch (Exception e) {
-      }
-      if(column != 0)
-        p = new Position(fileName, line, column);
-      else
-        p = new Position(fileName, line);
-      s = s.substring(second+1, s.length());
-    }
-    } catch (Exception e) {
-    }
-    error_queue().enqueue(ErrorInfo.SEMANTIC_ERROR, s, p);
+  private void addError(Problem problem) {
+    Position p;
+    if(problem.column() != -1)
+      p = new Position(problem.fileName(), problem.line(), problem.column());
+    else
+      p = new Position(problem.fileName(), problem.line());
+    error_queue().enqueue(ErrorInfo.SEMANTIC_ERROR, problem.message(), p);
   }
+
   public ErrorQueue error_queue() {
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
@@ -101,8 +78,6 @@ public class CompileSequence extends abc.main.CompileSequence {
           }
         }
       );
-      // extract package name from a source file without parsing the entire file
-      program.initPackageExtractor(new abc.ja.parse.JavaScanner());
 
       program.initOptions();
       program.addKeyValueOption("-classpath");
@@ -110,7 +85,6 @@ public class CompileSequence extends abc.main.CompileSequence {
       program.addOptions(args);
       Collection files = program.files();
 
-      try {
         for(Iterator iter = files.iterator(); iter.hasNext(); ) {
           String name = (String)iter.next();
           program.addSourceFile(name);
@@ -133,8 +107,8 @@ public class CompileSequence extends abc.main.CompileSequence {
             if(!errors.isEmpty()) {
               //System.out.println("Errors:");
               for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
-                String s = (String)iter2.next();
-                addError(s);
+                Problem p = (Problem)iter2.next();
+                addError(p);
                 //System.out.println(s);
               }
               throw new CompilerFailedException("There were errors.");
@@ -145,14 +119,6 @@ public class CompileSequence extends abc.main.CompileSequence {
             }
           }
         }
-      } catch (ParseError e) {
-        //System.err.println(e.getMessage());
-        addError(e.getMessage());
-        throw new CompilerFailedException("There were errors.");
-      } /*catch (Exception e) {
-        System.err.println(e.getMessage());
-        e.printStackTrace();
-      }*/
 
       program.generateIntertypeDecls();
       program.transformation();

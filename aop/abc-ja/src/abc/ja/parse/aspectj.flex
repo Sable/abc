@@ -31,7 +31,6 @@ import beaver.Scanner;
 import abc.ja.parse.JavaParser.Terminals;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction;
-import abc.ja.jrag.LexicalError;
 
 import polyglot.lex.*;
 import polyglot.util.Position;
@@ -50,10 +49,9 @@ import java.io.*;
 %class JavaScanner
 %extends Scanner
 %implements AbcLexer
-%implements abc.ja.jrag.PackageExtractor
 %type Symbol
 %function nextToken
-%yylexthrow LexicalError
+%yylexthrow Scanner.Exception
 
 %unicode
 %pack
@@ -72,34 +70,12 @@ import java.io.*;
     return new Symbol((short)id, yyline + 1, yycolumn + 1, len(), value);
   }
 
-
-  public JavaScanner() {
-  }
-
-  public String extractPackageName(String fileName) {
-    StringBuffer packageName = new StringBuffer();
-    try {
-      Reader reader = new FileReader(fileName);
-      JavaScanner scanner = new JavaScanner(new Unicode(reader));
-      Symbol sym = scanner.nextToken();
-      if(sym.getId() == Terminals.PACKAGE) {
-        while(true) {
-          sym = scanner.nextToken();
-          if(sym.getId() == Terminals.SEMICOLON)
-            break;
-          packageName.append(sym.value);
-        }
-      }
-      reader.close();
-      if(packageName.length() != 0)
-        packageName.append(".");
-    } catch (java.lang.Exception e) {
-    }
-    return packageName.toString();
-  }
-
   private String str() { return yytext(); }
   private int len() { return yylength(); }
+
+  private void error(String msg) throws Scanner.Exception {
+    throw new Scanner.Exception(yyline + 1, yycolumn + 1, msg);
+  }
 
 /* -------------------------- added for AspectJ ---------------------- */
 

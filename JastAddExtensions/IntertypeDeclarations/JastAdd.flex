@@ -1,12 +1,9 @@
-package parser;
+package scanner;
 
 import beaver.Symbol;
 import beaver.Scanner;
 import parser.JavaParser.Terminals;
-import AST.LexicalError;
 import java.io.*;
-
-
 
 %%
 
@@ -14,11 +11,10 @@ import java.io.*;
 %final 
 %class JavaScanner
 %extends Scanner
-%implements AST.PackageExtractor
 
 %type Symbol 
 %function nextToken 
-%yylexthrow LexicalError
+%yylexthrow Scanner.Exception
 
 %unicode
 %line %column
@@ -39,29 +35,8 @@ import java.io.*;
   private String str() { return yytext(); }
   private int len() { return yylength(); }
 
-  public JavaScanner() {
-  }
-
-  public String extractPackageName(String fileName) {
-    StringBuffer packageName = new StringBuffer();
-    try {
-      Reader reader = new FileReader(fileName);
-      JavaScanner scanner = new JavaScanner(new Unicode(reader));
-      Symbol sym = scanner.nextToken();
-      if(sym.getId() == Terminals.PACKAGE) {
-        while(true) {
-          sym = scanner.nextToken();
-          if(sym.getId() == Terminals.SEMICOLON)
-            break;
-          packageName.append(sym.value);
-        }
-      }
-      reader.close();
-      if(packageName.length() != 0)
-        packageName.append(".");
-    } catch (java.lang.Exception e) {
-    }
-    return packageName.toString();
+  private void error(String msg) throws Scanner.Exception {
+    throw new Scanner.Exception(yyline + 1, yycolumn + 1, msg);
   }
 
   // Added for JastAdd
@@ -265,8 +240,8 @@ ZeroToThree = [0-3]
   \'{OctalEscape}\'              { int val = Integer.parseInt(str().substring(2,len()-1),8);
 			                             return sym(Terminals.CHARACTER_LITERAL, new Character((char)val).toString()); }
   // Character Literal errors
-  \'\\.                          { throw new RuntimeException("Illegal escape sequence \""+str()+"\""); }
-  \'{LineTerminator}             { throw new RuntimeException("Unterminated character literal at end of line"); }
+  \'\\.                          { error("Illegal escape sequence \""+str()+"\""); }
+  \'{LineTerminator}             { error("Unterminated character literal at end of line"); }
 
   // 3.10.5 String Literals
   \"                             { enterTempState(STRING); strbuf.setLength(0); }
@@ -346,8 +321,8 @@ ZeroToThree = [0-3]
   {OctalEscape}                  { strbuf.append((char)Integer.parseInt(str().substring(1),8)); }
 
   // String Literal errors
-  \\.                            { throw new RuntimeException("Illegal escape sequence \""+str()+"\""); }
-  {LineTerminator}               { throw new RuntimeException("Unterminated string at end of line"); }
+  \\.                            { error("Illegal escape sequence \""+str()+"\""); }
+  {LineTerminator}               { error("Unterminated string at end of line"); }
 }
 
 // hack to detect the SUB character as the last input character
@@ -356,9 +331,9 @@ ZeroToThree = [0-3]
                                    } 
                                  }
 // fall through errors
-.|\n                             { throw new RuntimeException("Illegal character \""+str()+ "\" at line "+yyline+", column "+yycolumn); }
+.|\n                             { error("Illegal character \""+str()+ "\" at line "+yyline+", column "+yycolumn); }
 <<EOF>>                          { // detect position of first SUB character
                                    if(!(sub_line == 0 && sub_column == 0) && (sub_line != yyline || sub_column != yycolumn-1))
-                                     throw new RuntimeException("Error");
+                                     error("Error");
                                    return sym(Terminals.EOF);
                                  }

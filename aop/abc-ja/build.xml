@@ -103,7 +103,7 @@
     </fileset>
   </concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->
-	<java classpath="${tools}/proj.jar:${tools}/beaver-rt.jar"
+	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
               classname="Main" fork="true" dir="${parserdir}">
 		<arg line="JavaParser.all JavaParser.beaver"/>
 	</java>

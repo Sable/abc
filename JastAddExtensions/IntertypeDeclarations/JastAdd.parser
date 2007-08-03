@@ -10,8 +10,8 @@ BodyDecl interface_member_declaration =
   ;
 
 AspectDecl aspect_declaration =
-    modifiers.m ASPECT IDENTIFIER super_opt.c interfaces_opt.d aspect_body          {: return new AspectDecl(m, IDENTIFIER, aspect_body, c, d); :}
-  |             ASPECT IDENTIFIER super_opt.c interfaces_opt.d aspect_body          {: return new AspectDecl(new Modifiers(new List()), IDENTIFIER, aspect_body, c, d); :}
+    modifiers.m ASPECT IDENTIFIER.id super_opt.c interfaces_opt.d aspect_body          {: return new AspectDecl(m, id, aspect_body, c, d); :}
+  |             ASPECT IDENTIFIER.id super_opt.c interfaces_opt.d aspect_body          {: return new AspectDecl(new Modifiers(new List()), id, aspect_body, c, d); :}
   ;
 
 List aspect_body =
