@@ -24,7 +24,7 @@ aspect AspectJNameAnalysis {
       parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
     addBodyDecl(
       new MethodDecl(
-        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
         createQualifiedAccess(),
         "aspectOf",
         parameters,
@@ -38,7 +38,7 @@ aspect AspectJNameAnalysis {
       parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
     addBodyDecl(
       new MethodDecl(
-        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
         typeBoolean().createQualifiedAccess(),
         "hasAspect",
         parameters,
