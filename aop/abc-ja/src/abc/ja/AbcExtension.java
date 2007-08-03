@@ -7,15 +7,13 @@ import abc.ja.parse.JavaParser.Terminals;
 
 public class AbcExtension extends abc.main.AbcExtension {
 	public void reportError(ErrorInfo ei) {
-    compileSequence.error_queue().enqueue(ei);
+    getErrorQueue().enqueue(ei);
 	}
 
 	public void reportError(int level, String s, Position pos) {
-    compileSequence.error_queue().enqueue(level, s, pos);
+    getErrorQueue().enqueue(level, s, pos);
 	}
 
-	private CompileSequence compileSequence = null;
-	
     /**
      * Override this method to add the version information
      * for this extension, calling the same method in the
