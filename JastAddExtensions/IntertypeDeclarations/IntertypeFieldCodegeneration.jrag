@@ -1,5 +1,12 @@
 aspect IntertypeFieldCodegeneration {
 
+  // make sure that fields added using addMemberField are visible without having to flush all name binding attributes
+  refine BoundNames public FieldDeclaration TypeDecl.addMemberField(FieldDeclaration f) {
+    f = BoundNames.TypeDecl.addMemberField(f);
+    localFieldsMap_value.put(f.name(), f);
+    return f;
+  }
+
   public void ClassDecl.generateIntertypeDecls() {
     super.generateIntertypeDecls();
     for(Iterator iter = introducedFieldsFromInterfaces().iterator(); iter.hasNext(); ) {

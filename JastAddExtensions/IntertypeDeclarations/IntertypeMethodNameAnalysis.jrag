@@ -70,7 +70,7 @@ aspect IntertypeMethodNameAnalysis {
     return m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect());
   }
 
-  // include methods introduced thorugh interfaces
+  // include methods introduced through interfaces
   eq ClassDecl.localMethodsSignatureMap() {
     // Locally declared methods + intertype methods with exact type
     HashMap map = super.localMethodsSignatureMap();

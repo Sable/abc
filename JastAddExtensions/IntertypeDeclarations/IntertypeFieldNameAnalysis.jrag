@@ -31,14 +31,40 @@ aspect IntertypeFieldNameAnalysis {
     return lookupMethod(name);
   }
 
+  // add all introduced fields
   refine LookupVariable eq TypeDecl.localFields(String name) {
     SimpleSet fields = LookupVariable.TypeDecl.localFields(name);
     for(Iterator iter = introducedFields().iterator(); iter.hasNext(); ) {
       FieldDeclaration f = (FieldDeclaration)iter.next();
-      if(f.name().equals(name) && f.accessibleFrom(this))
+      if(f.name().equals(name))
         fields = fields.add(f);
     }
     return fields;
+  }
+
+  // filter fields that are not accessible from this context
+  refine LookupVariable eq VarAccess.decls() {
+    SimpleSet set = lookupVariable(name());
+    if(set.size() > 1) {
+      SimpleSet s = SimpleSet.emptySet;
+      for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+        Variable v = (Variable)iter.next();
+        if(v instanceof FieldDeclaration) {
+          FieldDeclaration f = (FieldDeclaration)v;
+          if(f.accessibleFrom(hostType()))
+            s = s.add(v);
+        }
+        else
+          s = s.add(v);
+      }
+      set = s;
+    }
+    if(set.size() == 1 && (isQualified() ? qualifier().staticContextQualifier() : inStaticContext())) {
+      Variable v = (Variable)set.iterator().next();
+      if(v.isInstanceVariable())
+        return SimpleSet.emptySet;
+    }
+    return set;
   }
 
   syn lazy boolean IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {

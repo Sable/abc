@@ -175,7 +175,7 @@ aspect DeclareParentsAnalysis {
   }
 
   syn lazy Collection TypeDecl.introducedInterfaces() {
-    Collection c = new ArrayList();
+    Collection c = new HashSet(); // the same interface may be introduced multiple times
     for(Iterator iter = declareParentsImplements().iterator(); iter.hasNext(); ) {
       DeclareParentsImplements e = (DeclareParentsImplements)iter.next();
       if(e.getPattern().matchesType(this)) {
@@ -188,7 +188,19 @@ aspect DeclareParentsAnalysis {
     }
     return c;
   }
-
+  eq ClassDecl.introducedInterfaces() {
+    Collection c = super.introducedInterfaces();
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      boolean found = false;
+      for(Iterator i2 = interfacesIteratorWithoutDeclareParents(); !found && i2.hasNext(); )
+        if(i2.next() == typeDecl)
+          found = true;
+      if(found)
+        iter.remove();
+    }
+    return c;
+  }
 
   inh Collection TypeDecl.declareParentsExtends();
   eq Program.getCompilationUnit().declareParentsExtends() {
@@ -225,6 +237,5 @@ aspect DeclareParentsAnalysis {
     Collection c = (Collection)map.get(key);
     c.add(this);
   }
-
 
 }
