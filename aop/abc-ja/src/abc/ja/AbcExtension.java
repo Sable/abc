@@ -30,10 +30,8 @@ public class AbcExtension extends abc.main.AbcExtension {
                         "\n");
     }
 
-	public CompileSequence getCompileSequence() {
-    	if(compileSequence == null)
-    		compileSequence = new CompileSequence(this);
-    	return compileSequence;
+	public CompileSequence createCompileSequence() {
+    	return new CompileSequence(this);
 	}
 
     /**
