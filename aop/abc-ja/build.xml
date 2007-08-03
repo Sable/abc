@@ -15,6 +15,9 @@
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="abc.ja.jrag"/>
 
+<!-- Arguments passed to runtests -->
+<property name="test.opts" value=""/>
+
 <!-- "tools" is the directory where generators and libraries are located. -->
 <property name="tools" value="${frontend}/tools"/>
 
@@ -134,8 +137,8 @@
         dir="${abc.loc}/ajc-harness/tests">
     <jvmarg line="-Xmx512M" />
     <arg line="+abc -ext abc.ja -abc -messageOverride ja"/>
-    <arg value="abcTests.xml"/>
-    <!--arg line="-n 528 abcTests.xml"/-->
+    <!--<arg value="abcTests.xml"/>-->
+    <arg line="${test.opts} abcTests.xml"/>
     <!--arg line="abcTests.xml pureJava"/-->
     <classpath>
       <pathelement location="classes"/>
