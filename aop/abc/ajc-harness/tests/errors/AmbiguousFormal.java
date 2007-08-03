@@ -3,7 +3,7 @@ public class AmbiguousFormal {
 }
 
 aspect A {
-    before(int n): execution(void *.m(.., n, ..)) {
+    before(int n): execution(void *.m(..)) && args(.., n, ..) {
 	System.out.println(n);
     }
 }
