@@ -1,4 +1,4 @@
-<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="packages and generated inner types (for I.class)" num="132" keywords="from-java" dir="pureJava" abccomment="InterfaceAndClass.java not in directory p.  javac                     and jlc can compile without it being in correct directory.                   abc requires it to be in the directory p. July 1/04  LJH">
         <abckeywords><skip></skip></abckeywords>
 	<compile files="InterfaceAndClass.java"></compile>
