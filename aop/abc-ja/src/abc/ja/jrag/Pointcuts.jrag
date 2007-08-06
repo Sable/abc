@@ -11,6 +11,8 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isConstructorParameter() = false;
     eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
     eq PointcutDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;
+    
+    eq NamedPointcutExpr.getPattern(int i).nameType() = NameType.AMBIGUOUS_NAME;
 
 
     // Modifiers allowed for pointcut declarations
