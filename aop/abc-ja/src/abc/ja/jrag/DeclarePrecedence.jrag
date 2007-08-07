@@ -11,4 +11,16 @@ aspect DeclarePrecedence {
     );
   }
 
+  syn SimpleSet SimpleNamePattern.decls() = lookupType(getPattern());
+  inh SimpleSet SimpleNamePattern.lookupType(String name);
+  inh TypeDecl SimpleNamePattern.unknownType();
+  eq SimpleNamePattern.type() = decls().size() == 1 ? (TypeDecl)decls().iterator().next() : unknownType();
+  
+  syn boolean Pattern.isTypeAccess() {
+    System.out.println(getClass().getName());
+    return false;
+  }
+  eq SimpleNamePattern.isTypeAccess() = !type().isUnknown();
+  eq ExplicitTypeNamePattern.isTypeAccess() = true;
+
 }

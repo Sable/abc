@@ -35,4 +35,11 @@ aspect DeclarePrecedenceNameAnalysis {
     c.add(this);
   }
 
+  public void DeclarePrecedence.typeCheck() {
+    super.typeCheck();
+    for(int i = 0; i < getNumPattern(); i++)
+      if(getPattern(i).isTypeAccess() && !getPattern(i).type().isAspectDecl())
+        error("non aspect type " + getPattern(i).type().typeName() + " can not be used in a declare precendence statement");
+  }
+
 }

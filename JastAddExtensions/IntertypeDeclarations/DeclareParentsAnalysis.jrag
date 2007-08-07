@@ -39,6 +39,38 @@ aspect DeclareParentsAnalysis {
  * continue computation
  */
 
+  refine AccessControl eq TypeDecl.accessibleFrom(TypeDecl type) {
+    if(AccessControl.TypeDecl.accessibleFrom(type))
+      return true;
+    if(type instanceof ClassDecl && ((ClassDecl)type).introducedSuperclass() == this)
+      return true;
+    for(Iterator iter = type.introducedInterfaces().iterator(); iter.hasNext(); )
+      if(iter.next() == this) 
+        return true;
+    return false;
+  }
+  refine AccessControl eq TypeDecl.accessibleFromExtend(TypeDecl type) {
+    if(AccessControl.TypeDecl.accessibleFromExtend(type))
+      return true;
+    if(type instanceof ClassDecl && ((ClassDecl)type).introducedSuperclass() == this)
+      return true;
+    return false;
+  }
+  refine AccessControl eq ConstructorDecl.accessibleFrom(TypeDecl type) {
+    if(AccessControl.ConstructorDecl.accessibleFrom(type))
+      return true;
+    if(type instanceof ClassDecl && ((ClassDecl)type).introducedSuperclass() == hostType())
+      return true;
+    return false;
+  }
+
+  refine AspectErrorCheck public void ClassDecl.typeCheck() {
+    AspectErrorCheck.ClassDecl.typeCheck();
+    if(introducedSuperclass() != null && superclassWithoutDeclareParents() != null
+       && !introducedSuperclass().instanceOf(superclassWithoutDeclareParents()))
+      error("declared parent " + introducedSuperclass().typeName() + " is not a subclass of " + 
+            superclassWithoutDeclareParents().typeName());
+  }
   
   public ClassDecl ClassDecl.superclassWithoutDeclareParents() {
     if(isObject())
@@ -85,9 +117,6 @@ aspect DeclareParentsAnalysis {
     }
     return set;
   }
-
-
-
 
   refine TypeAnalysis public ClassDecl ClassDecl.superclass() {
     if(introducedSuperclass() != null)
@@ -160,6 +189,114 @@ aspect DeclareParentsAnalysis {
     };
   }
 
+  refine LookupType eq InterfaceDecl.memberTypes(String name) {
+    SimpleSet set = SimpleSet.emptySet;
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i).declaresType(name)) {
+        set = set.add(getBodyDecl(i).type(name));
+      }
+    }
+    if(!set.isEmpty()) return set;
+    for(Iterator outerIter = superinterfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)outerIter.next();
+      for(Iterator iter = typeDecl.memberTypes(name).iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(!decl.isPrivate())
+          set = set.add(decl);
+      }
+    }
+    return set;
+  }
+
+  refine TypeAnalysis public Iterator InterfaceDecl.superinterfacesIterator() {
+    return new Iterator() {
+      public boolean hasNext() {
+        computeNextCurrent();
+        return current != null;
+      }
+      public Object next() {
+        return current;
+      }
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+      private int index = 0;
+      private Iterator iter = null;
+      private TypeDecl current = null;
+      private void computeNextCurrent() {
+        current = null;
+        if(isCircular()) return;
+        while(index < getNumSuperInterfaceId()) {
+          TypeDecl typeDecl = getSuperInterfaceId(index++).type();
+          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+            current = typeDecl;
+            return;
+          }
+        }
+        if(iter == null)
+          iter = introducedInterfaces().iterator();
+        while(iter.hasNext()) {
+          TypeDecl typeDecl = (TypeDecl)iter.next();
+          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+            current = typeDecl;
+            return;
+          }
+        }
+      }
+    };
+  }
+
+  refine TypeAnalysis eq InterfaceDecl.isCircular() {
+    if(TypeAnalysis.InterfaceDecl.isCircular())
+      return true;
+    for(Iterator iter = introducedInterfaces().iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      if(typeDecl.isCircular())
+        return true;
+    }
+    return false;
+  }
+  refine TypeAnalysis eq ClassDecl.isCircular() {
+    if(TypeAnalysis.ClassDecl.isCircular())
+      return true;
+    if(introducedSuperclass() != null && introducedSuperclass().isCircular())
+      return true;
+    for(Iterator iter = introducedInterfaces().iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      if(typeDecl.isCircular())
+        return true;
+    }
+    return false;
+  }
+
+  public Iterator InterfaceDecl.superinterfacesIteratorWithoutDeclareParents() {
+    return new Iterator() {
+      public boolean hasNext() {
+        computeNextCurrent();
+        return current != null;
+      }
+      public Object next() {
+        return current;
+      }
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+      private int index = 0;
+      private TypeDecl current = null;
+      private void computeNextCurrent() {
+        current = null;
+        if(isCircular()) return;
+        while(index < getNumSuperInterfaceId()) {
+          TypeDecl typeDecl = getSuperInterfaceId(index++).type();
+          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+            current = typeDecl;
+            return;
+          }
+        }
+      }
+    };
+  }
+
   syn lazy ClassDecl ClassDecl.introducedSuperclass() {
     for(Iterator iter = declareParentsExtends().iterator(); iter.hasNext(); ) {
       DeclareParentsExtends e = (DeclareParentsExtends)iter.next();
@@ -193,7 +330,24 @@ aspect DeclareParentsAnalysis {
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
       boolean found = false;
+      if(typeDecl == this)
+        found  = true;
       for(Iterator i2 = interfacesIteratorWithoutDeclareParents(); !found && i2.hasNext(); )
+        if(i2.next() == typeDecl)
+          found = true;
+      if(found)
+        iter.remove();
+    }
+    return c;
+  }
+  eq InterfaceDecl.introducedInterfaces() {
+    Collection c = super.introducedInterfaces();
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      boolean found = false;
+      if(typeDecl == this)
+        found  = true;
+      for(Iterator i2 = superinterfacesIteratorWithoutDeclareParents(); !found && i2.hasNext(); )
         if(i2.next() == typeDecl)
           found = true;
       if(found)

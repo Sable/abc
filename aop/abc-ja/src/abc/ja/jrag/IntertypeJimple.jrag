@@ -1,4 +1,5 @@
 aspect IntertypeJimple {
+
   refine Expressions public soot.Value VarAccess.eval(Body b) {
     if(decl() instanceof IntertypeFieldDeclaration && fieldQualifierType().isInterfaceDecl()) {
       soot.Local base = base(b);
@@ -38,6 +39,14 @@ aspect IntertypeJimple {
     return Expressions.MethodAccess.sootRef();
   }
 
+  eq AspectDecl.sootTypeModifiers() {
+    int result = 0;
+    result |= soot.Modifier.PUBLIC;
+    if(isFinal()) result |= soot.Modifier.FINAL;
+    if(isStatic()) result |= soot.Modifier.STATIC;
+    if(isAbstract()) result |= soot.Modifier.ABSTRACT;
+    return result;
+  }
 
 }
 

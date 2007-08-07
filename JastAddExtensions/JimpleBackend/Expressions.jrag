@@ -324,7 +324,7 @@ aspect Expressions {
       soot.Value result;
       if(!hostType().instanceOf(prevExpr().type())) {
         MethodDecl m = decl().createSuperAccessor(superAccessorTarget());
-        if(decl().hostType().isInterfaceDecl())
+        if(methodQualifierType().isInterfaceDecl())
           result = Jimple.v().newInterfaceInvokeExpr(left, m.sootRef(), list);
         else
           result = Jimple.v().newVirtualInvokeExpr(left, m.sootRef(), list);
@@ -338,7 +338,7 @@ aspect Expressions {
       if(!decl().isStatic()) {
         Local left = asLocal(b, createLoadQualifier(b));
         ArrayList list = buildArgList(b);
-        if(decl().hostType().isInterfaceDecl())
+        if(methodQualifierType().isInterfaceDecl())
           result = Jimple.v().newInterfaceInvokeExpr(left, sootRef(), list);
         else
           result = Jimple.v().newVirtualInvokeExpr(left, sootRef(), list);

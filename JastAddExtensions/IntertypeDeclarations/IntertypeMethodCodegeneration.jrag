@@ -22,7 +22,16 @@ aspect IntertypeMethodCodegeneration {
   // the IntroducedMethodDecl node type is used to specialize name analysis
   public void IntertypeMethodDecl.createIntertypeMethod(TypeDecl introducedType) {
     if(introducedType.isInterfaceDecl() || isAbstract()) {
+      boolean found = false;
+      for(int i = 0; !found && i < introducedType.getNumBodyDecl(); i++) {
+        if(introducedType.getBodyDecl(i) instanceof MethodDecl) {
+          MethodDecl m = (MethodDecl)introducedType.getBodyDecl(i);
+          if(m.signature().equals(signature()) && m.name().equals(delegateName()))
+            found = true;
+        }
+      }
       // create abstract signature
+      if(!found)
       introducedType.addMemberMethod(
         new MethodDecl(
           getModifiers().makePublic(),

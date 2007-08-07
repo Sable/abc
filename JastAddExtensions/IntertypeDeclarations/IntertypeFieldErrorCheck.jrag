@@ -5,6 +5,19 @@ aspect IntertypeFieldErrorCheck {
       error("static inter-type field on interface not supported");
   }
 
+  public void IntertypeFieldDeclaration.checkModifiers() {
+    if(isPrivate() && hostType().isInterfaceDecl()) {
+      if(isProtected())
+        error("an interface field may not be protected");
+      if(isTransient())
+        error("an interface field may not be transient");
+      if(isVolatile())
+        error("an interface field may not be volatile");
+    }
+    else 
+      super.typeCheck();
+  }
+
   refine NameCheck public void FieldDeclaration.nameCheck() {
     for(Iterator iter = hostType().memberFields(name()).iterator(); iter.hasNext(); ) {
       FieldDeclaration v = (FieldDeclaration)iter.next();

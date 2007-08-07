@@ -82,13 +82,21 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeMethodDecl.zaps(MethodDecl m) = m.zappedByIntertypeMethodDecl(this);
 
   syn boolean MethodDecl.zappedByMethodDecl(MethodDecl m) = m.overrides(this);
-  eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) = true;
-  syn boolean MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m)  = false;
+  eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) = isAbstract();
+  syn boolean MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m)  = !m.isAbstract();
   eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
     if(m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect())
       return true;
     return m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect());
   }
+
+
+  refine LookupType eq SuperAccess.decl() {
+    if(hostType().isInterfaceDecl())
+      return typeObject();
+    return LookupType.SuperAccess.decl();
+  }
+  inh TypeDecl SuperAccess.typeObject();
 
   // include methods introduced through interfaces
   eq ClassDecl.localMethodsSignatureMap() {
