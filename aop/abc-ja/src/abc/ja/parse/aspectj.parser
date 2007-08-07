@@ -184,13 +184,26 @@ BodyDecl declare_declaration =
   ;
 
 BodyDecl pointcut_declaration =
-     modifiers_opt.a POINTCUT IDENTIFIER.b 
+     POINTCUT IDENTIFIER.b 
+             LPAREN formal_parameter_list_opt.c RPAREN SEMICOLON.e
+     /* must check that modifiers include ABSTRACT */
+     {: ParserTrace.parserTrace("abstract pointcut declaration");
+        return new PointcutDecl(new Modifiers(new List()), b, c, new Opt());
+     :}
+  |  modifiers.a POINTCUT IDENTIFIER.b 
              LPAREN formal_parameter_list_opt.c RPAREN SEMICOLON.e
      /* must check that modifiers include ABSTRACT */
      {: ParserTrace.parserTrace("abstract pointcut declaration");
         return new PointcutDecl(a, b, c, new Opt());
      :}
-  |  modifiers_opt.a POINTCUT IDENTIFIER.b 
+  |  POINTCUT IDENTIFIER.b 
+             LPAREN formal_parameter_list_opt.c RPAREN 
+             COLON pointcut_expr.d SEMICOLON.e 
+     /* must check that modifiers DO NOT include ABSTRACT */
+     {: ParserTrace.parserTrace("non-abstract pointcut declaration");
+        return new PointcutDecl(new Modifiers(new List()), b, c, new Opt(d));
+     :}
+  |  modifiers.a POINTCUT IDENTIFIER.b 
              LPAREN formal_parameter_list_opt.c RPAREN 
              COLON pointcut_expr.d SEMICOLON.e 
      /* must check that modifiers DO NOT include ABSTRACT */
