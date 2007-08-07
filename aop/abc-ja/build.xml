@@ -16,7 +16,7 @@
 <property name="package" value="abc.ja.jrag"/>
 
 <!-- Arguments passed to runtests -->
-<property name="test.opts" value=""/>
+<property name="test.args" value=""/>
 
 <!-- "tools" is the directory where generators and libraries are located. -->
 <property name="tools" value="${frontend}/tools"/>
@@ -160,7 +160,7 @@
     <jvmarg line="-Xmx512M" />
     <arg line="+abc -ext abc.ja -abc -messageOverride ja"/>
     <!--<arg value="abcTests.xml"/>-->
-    <arg line="${test.opts} abcTests.xml"/>
+    <arg line="${test.args} abcTests.xml"/>
     <!--arg line="abcTests.xml pureJava"/-->
     <classpath>
       <pathelement location="classes"/>

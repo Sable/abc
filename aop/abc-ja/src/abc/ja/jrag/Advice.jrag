@@ -101,4 +101,18 @@ aspect Advice
       }
     }
   }
+  
+  // Pointcuts should bind the variables they declare (unless they are abstract?)
+  public void AdviceDecl.typeCheck() {
+	  AdviceSpec spec = getAdviceSpec();
+	  for(int i = 0; i < spec.getNumParameter(); i++) {
+		  if(getPointcutExpr().binds(spec.getParameter(i).getID()) > 1) {
+			  error("Advice formal " + spec.getParameter(i).getID() + " is bound " +
+			  		"multiple times in pointcut.");
+		  } else if(getPointcutExpr().binds(spec.getParameter(i).getID()) == 0) {
+			  error("Advice formal " + spec.getParameter(i).getID() + " is not bound " +
+		  		"in pointcut.");
+		  }		
+	  }
+  }
 }

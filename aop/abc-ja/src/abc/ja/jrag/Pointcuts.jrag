@@ -232,9 +232,30 @@ aspect Pointcuts
     eq CflowPointcutExpr.binds(String var) = getPointcut().binds(var);
     eq CflowBelowPointcutExpr.binds(String var) = getPointcut().binds(var);
 
-    // FIXME!!!
-    eq ThisPointcutExpr.binds(String var) = 1;
-    eq TargetPointcutExpr.binds(String var) = 1;
-    eq ArgsPointcutExpr.binds(String var) = 1;
-    eq NamedPointcutExpr.binds(String var) = 1;
+    // this() and target() are easy...
+    eq ThisPointcutExpr.binds(String var) = getPattern().binds(var) ? 1 : 0;
+    eq TargetPointcutExpr.binds(String var) = getPattern().binds(var) ? 1 : 0;
+    
+    // args() and named pointcuts might bind a variable several times -- count them.
+    eq ArgsPointcutExpr.binds(String var) {
+    	int result = 0;
+    	for(int i = 0; i < getNumPattern(); i++) {
+    		if(getPattern(i).binds(var))
+    			result++;
+    	}
+    	return (result > 2 ? 2 : result);
+    }
+    eq NamedPointcutExpr.binds(String var) {
+    	int result = 0;
+    	for(int i = 0; i < getNumPattern(); i++) {
+    		if(getPattern(i).binds(var))
+    			result++;
+    	}
+    	return (result > 2 ? 2 : result);
+    }
+    
+    // The only BindingPattern that binds is actually the NameBindingPattern, if invoked
+    // with a variable name rather than a type name.
+    syn boolean BindingPattern.binds(String var) = false;
+    eq NameBindingPattern.binds(String var) = getPattern().isVariable() && getPattern().variableName().equals(var); 
 }
