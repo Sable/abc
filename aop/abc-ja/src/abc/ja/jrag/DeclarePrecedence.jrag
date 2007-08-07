@@ -1,0 +1,14 @@
+aspect DeclarePrecedence {
+  // TODO: this does not work, why? how to provide arguments to aspect info
+  public void DeclarePrecedence.jimplify2() {
+    super.jimplify2();
+    System.out.println("Adding precedence declaration");
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumPattern(); i++)
+      list.add(getPattern(i).classnamePattern());
+    globalAspectInfo().addDeclarePrecedence(
+      new abc.weaving.aspectinfo.DeclarePrecedence(list, aspectClass(), pos())
+    );
+  }
+
+}

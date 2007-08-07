@@ -62,7 +62,7 @@ aspect IntertypeFieldCodegeneration {
     Variable v = decl();
     if(v instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)v;
-      if(!name().equals(f.introducedName())) {
+      if(!f.hostType().isInterfaceDecl() && !name().equals(f.introducedName())) {
         replace(this).with(new VarAccess(f.introducedName()));
         return;
       }
@@ -97,7 +97,7 @@ aspect IntertypeFieldCodegeneration {
   // the name of the introduced field
   // all ITD fields that use accessors have mangled names
   syn String IntertypeFieldDeclaration.introducedName() {
-    if(isPrivate() || introducedType().isInterfaceDecl())
+    if(isPrivate())
       return "abc$interField$" + hostAspect().abcMangledName() + "$" + name();
     else if(isPublic())
       return name();

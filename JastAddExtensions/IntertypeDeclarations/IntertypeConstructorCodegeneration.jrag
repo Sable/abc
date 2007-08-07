@@ -21,6 +21,10 @@ aspect IntertypeMethodCodegeneration {
 
 
   public void IntertypeConstructorDecl.generateIntertypeDecls() {
+    if(isPrivate()) {
+      createAccessor();
+      return;
+    }
     List args = new List();
     args.add(new ThisAccess("this"));
     for(int i = 0; i < getNumParameter(); i++)
@@ -34,17 +38,61 @@ aspect IntertypeMethodCodegeneration {
         new ReturnStmt(new Opt())
       )
     );
+    //Modifiers m = (Modifiers)getModifiers().fullCopy();
+    Modifiers m = new Modifiers(new List().add(new Modifier("public")));
+    List parameters = copyParameterList(getParameterList());
     introducedType().addBodyDecl(
       new IntroducedConstructorDecl(
-        (Modifiers)getModifiers().fullCopy(),
+        m,
         getID(),
-        copyParameterList(getParameterList()),
+        parameters,
         (List)getExceptionList().fullCopy(),
         (Opt)getConstructorInvocationOpt().fullCopy(),
         block,
         this
       )
     );
+  }
+
+  public ConstructorDecl IntertypeConstructorDecl.createAccessor() {
+    ConstructorDecl c = (ConstructorDecl)hostType().getAccessor(this, "constructor");
+    if(c != null) return c;
+
+    // make sure enclosing varibles are added as parameters prior to building accessor
+    addEnclosingVariables();
+
+    Modifiers modifiers = new Modifiers(new List());
+    modifiers.addModifier(new Modifier("synthetic"));
+    modifiers.addModifier(new Modifier("public"));
+
+    List parameters = createAccessorParameters();
+    
+    // add all parameters as arguments except for the dummy parameter
+    List args = new List();
+    args.add(new ThisAccess("this"));
+    for(int i = 0; i < parameters.getNumChild() - 1; i++)
+      args.add(new VarAccess("p" + i));
+
+    c = new ConstructorDecl(
+      modifiers,
+      name(),
+      parameters,
+      (List)getExceptionList().fullCopy(),
+      (Opt)getConstructorInvocationOpt().fullCopy(),
+      new Block(
+        new List().add(
+          new ExprStmt(
+            createBodyDelegate().createBoundAccess(args)
+          )
+        ).add(
+          new ReturnStmt(new Opt())
+        )
+      )
+    );
+    c = hostType().addConstructor(c);
+    c.addEnclosingVariables = false;
+    hostType().addAccessor(this, "constructor", c);
+    return c;
   }
 
   syn String IntertypeConstructorDecl.constructorBodyName() =

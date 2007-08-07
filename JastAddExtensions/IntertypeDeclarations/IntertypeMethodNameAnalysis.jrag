@@ -50,8 +50,28 @@ aspect IntertypeMethodNameAnalysis {
     // Add intertype methods if there is no local declaration
     for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
       MethodDecl decl = (MethodDecl)iter.next();
+      SimpleSet set = map.containsKey(decl.signature()) ? (SimpleSet)map.get(decl.signature()) : SimpleSet.emptySet;
+      // check if decl is zapped and therefore not to be included 
+      boolean zapped = false;
+      for(Iterator i2 = set.iterator(); !zapped && i2.hasNext(); ) {
+        MethodDecl m = (MethodDecl)i2.next();
+        zapped = m.zaps(decl);
+      }
+      if(!zapped) {
+        SimpleSet newSet = SimpleSet.emptySet.add(decl);
+        // remove all methods zapped by this method
+        for(Iterator i2 = set.iterator(); i2.hasNext(); ) {
+          MethodDecl m = (MethodDecl)i2.next();
+          if(!decl.zaps(m))
+            newSet = newSet.add(m);
+        }
+        set = newSet;
+      }
+      map.put(decl.signature(), set);
+      /*
       if(decl.accessibleFrom(this) && (!map.containsKey(decl.signature()) || decl.zaps((MethodDecl)map.get(decl.signature()))))
         map.put(decl.signature(), decl);
+      */
     }
     return map;
   }
@@ -77,8 +97,15 @@ aspect IntertypeMethodNameAnalysis {
     // Add intertype methods introduced through an interface
     for(Iterator iter = interfacesMethodsIterator(); iter.hasNext(); ) {
       MethodDecl decl = (MethodDecl)iter.next();
+      if(decl instanceof IntertypeMethodDecl && !decl.isAbstract() && !map.containsKey(decl.signature())) {
+        SimpleSet set = map.containsKey(decl.signature()) ? (SimpleSet)map.get(decl.signature()) : SimpleSet.emptySet;
+        set = set.add(decl);
+        map.put(decl.signature(), set);
+      }
+      /*
       if(decl.accessibleFrom(this) && decl instanceof IntertypeMethodDecl && !decl.isAbstract() && !map.containsKey(decl.signature()))
         map.put(decl.signature(), decl);
+      */
     }
     return map;
   }

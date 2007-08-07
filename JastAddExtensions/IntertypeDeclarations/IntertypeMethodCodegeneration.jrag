@@ -25,9 +25,9 @@ aspect IntertypeMethodCodegeneration {
       // create abstract signature
       introducedType.addMemberMethod(
         new MethodDecl(
-          (Modifiers)getModifiers().fullCopy(),
+          getModifiers().makePublic(),
           type().createQualifiedAccess(),
-          name(),
+          delegateName(),
           copyParameterList(getParameterList()),
           new List(),
           new List(),
@@ -42,22 +42,24 @@ aspect IntertypeMethodCodegeneration {
     }
   }
 
+  syn String IntertypeMethodDecl.delegateName() = isPrivate() ? (hostAspect().fullName().replace('.', '$').replace('@', '_') + "$" + name()) : name(); 
+
   syn lazy MethodDecl IntertypeMethodDecl.createAspectMethod() {
     if(!is$Final) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
     // make aspect method static
-    List modifierList = (List)getModifiers().getModifierList().fullCopy();
+    Modifiers modifiers = getModifiers().makePublic();
     if(!isStatic())
-      modifierList.add(new Modifier("static"));
+      modifiers.addModifier(new Modifier("static"));
     
     // add that for instance methods
     List parameterList = new List();
     if(!isStatic())
-    	parameterList.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    	parameterList.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "this"));
     for(int i = 0; i < getNumParameter(); i++)
       parameterList.add(getParameter(i).qualifiedCopy());
       
     MethodDecl aspectMethod = new IntroducedMethodDecl(
-      new Modifiers(modifierList),
+      modifiers,
       type().createQualifiedAccess(),
       "impl$body$" + name(),
       parameterList,
@@ -231,15 +233,27 @@ aspect IntertypeMethodCodegeneration {
     	statements.add(new ReturnStmt(aspectMethod.createBoundAccess(args)));
       
     return new MethodDecl(
-      (Modifiers)getModifiers().fullCopy(),
+      getModifiers().makePublic(),
       type().createQualifiedAccess(),
-      name(),
+      delegateName(),
       copyParameterList(getParameterList()),
       new List(),
       new List(),
       new Opt(new Block(statements))
     );
   }
+
+  public Modifiers Modifiers.makePublic() {
+    List list = new List();
+    for(int i = 0; i < getNumModifier(); i++) {
+      String s = getModifier(i).getID();
+      if(!s.equals("public") && !s.equals("protected") && !s.equals("private"))
+        list.add(getModifier(i));
+    }
+    list.add(new Modifier("public"));
+    return new Modifiers(list);
+  }
+
   
   // Do not generate bytecode for this node type even though it is a subtype of MethodDecl
   // the IntertypeMethodDecl is a placeholder used during error checking, but code

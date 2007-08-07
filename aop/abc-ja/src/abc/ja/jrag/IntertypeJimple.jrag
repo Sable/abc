@@ -1,0 +1,46 @@
+aspect IntertypeJimple {
+  refine Expressions public soot.Value VarAccess.eval(Body b) {
+    if(decl() instanceof IntertypeFieldDeclaration && fieldQualifierType().isInterfaceDecl()) {
+      soot.Local base = base(b);
+      IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
+      ArrayList list = new ArrayList();
+      return Jimple.v().newInterfaceInvokeExpr(base, f.createInterfaceGetterImplementation(decl().hostType()).sootRef(), list);
+    }
+    return Expressions.VarAccess.eval(b);
+  }
+
+  refine Expressions public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+    if(decl() instanceof IntertypeFieldDeclaration && fieldQualifierType().isInterfaceDecl()) {
+      soot.Local base = base(b);
+      IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
+      ArrayList list = new ArrayList();
+      list.add(asLocal(b, rvalue));
+      return asLocal(b, Jimple.v().newInterfaceInvokeExpr(base, f.createInterfaceSetterImplementation(decl().hostType()).sootRef(), list));
+    }
+    return Expressions.VarAccess.emitStore(b, lvalue, rvalue);
+  }
+
+  refine Expressions private SootMethodRef MethodAccess.sootRef() {
+    if(decl() instanceof IntertypeMethodDecl) {
+      IntertypeMethodDecl decl = (IntertypeMethodDecl)decl();
+      ArrayList parameters = new ArrayList();
+      for(int i = 0; i < decl.getNumParameter(); i++)
+        parameters.add(decl.getParameter(i).type().getSootType());
+      SootMethodRef ref = Scene.v().makeMethodRef(
+        methodQualifierType().getSootClassDecl(),
+        decl.delegateName(),
+        parameters,
+        decl.type().getSootType(),
+        decl.isStatic()
+      );
+      return ref;
+    }
+    return Expressions.MethodAccess.sootRef();
+  }
+
+
+}
+
+
+
+

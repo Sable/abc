@@ -31,6 +31,16 @@ aspect IntertypeMethodNameAnalysis {
   }
 
 
+  eq TypeDecl.getChild().visibilityContext() = this;
+  eq Program.getChild().visibilityContext() = null;
+  inh TypeDecl Expr.visibilityContext();
+
+ refine LookupConstructor eq ConstructorAccess.applicableAndAccessible(ConstructorDecl decl) =
+    decl.applicable(getArgList()) && decl.accessibleFrom(visibilityContext());
+  refine LookupConstructor eq ClassInstanceExpr.applicableAndAccessible(ConstructorDecl decl) = 
+    decl.applicable(getArgList()) && decl.accessibleFrom(visibilityContext()) && 
+    (!decl.isProtected() || hasTypeDecl() || decl.hostPackage().equals(hostPackage()));
+
 
   eq IntertypeConstructorDecl.generate() = false;
 
@@ -81,8 +91,9 @@ aspect IntertypeMethodNameAnalysis {
     Collection c = new ArrayList();
     for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
       ASTNode node = (ASTNode)iter.next();
-      if(node instanceof IntertypeConstructorDecl)
+      if(node instanceof IntertypeConstructorDecl) {
         c.add(node);
+      }
     }
     return c;
   }
@@ -91,5 +102,21 @@ aspect IntertypeMethodNameAnalysis {
 
   public void IntertypeConstructorDecl.nameCheck() {
   }
+
+  eq IntertypeConstructorDecl.accessibleFrom(TypeDecl type) {
+    if(!hostAspect().accessibleFrom(type))
+      return false;
+    else if(isPublic())
+      return true;
+    else if(isProtected()) {
+      return true;
+    }
+    else if(isPrivate()) {
+      return hostAspect().topLevelType() == type.topLevelType();
+    }
+    else
+      return hostAspect().hostPackage().equals(type.hostPackage());
+  }
+
 
 }

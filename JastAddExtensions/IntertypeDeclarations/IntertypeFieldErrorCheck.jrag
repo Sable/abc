@@ -29,7 +29,5 @@ aspect IntertypeFieldErrorCheck {
   public void IntertypeFieldDeclaration.definiteAssignment() {
   }
 
-  eq IntertypeFieldDeclaration.isStatic() = getModifiers().isStatic();
-
   eq IntertypeFieldDeclaration.getModifiers().mayBeProtected() = false;
 }

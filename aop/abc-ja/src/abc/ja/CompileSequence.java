@@ -150,7 +150,7 @@ public class CompileSequence extends abc.main.CompileSequence {
 
       // Adjust Soot types for intertype decls
       IntertypeAdjuster ita = new IntertypeAdjuster();
-      ita.adjust();
+      //ita.adjust();
       AbcTimer.mark("Intertype Adjuster");
       Debug.phaseDebug("Intertype Adjuster");
 
@@ -188,7 +188,7 @@ public class CompileSequence extends abc.main.CompileSequence {
 
       // any references made by itd initialisers will appear in a delegate method,
       // and thus have already been processed by j2j; all resolving ok.
-      ita.initialisers(); // weave the field initialisers into the constructors
+      //ita.initialisers(); // weave the field initialisers into the constructors
       AbcTimer.mark("Weave Initializers");
       Debug.phaseDebug("Weave Initializers");
 
@@ -251,7 +251,7 @@ public class CompileSequence extends abc.main.CompileSequence {
       }
       // the intertype adjuster has put dummy fields into interfaces,
       // which now have to be removed
-      ita.removeFakeFields();
+      //ita.removeFakeFields();
     } catch(SemanticException e) {
       abcExt.reportError(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
     }

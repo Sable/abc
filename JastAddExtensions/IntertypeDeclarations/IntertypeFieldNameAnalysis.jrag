@@ -1,5 +1,11 @@
 aspect IntertypeFieldNameAnalysis {
 
+  eq IntertypeFieldDeclaration.isFinal() = getModifiers().isFinal();
+  eq IntertypeFieldDeclaration.isStatic() = getModifiers().isStatic();
+  eq IntertypeFieldDeclaration.isPublic() = getModifiers().isPublic();
+  eq IntertypeFieldDeclaration.isClassVariable() = isStatic();
+  eq IntertypeFieldDeclaration.isInstanceVariable() = !isStatic();
+
   eq IntertypeFieldDeclaration.getTargetType().nameType() = NameType.TYPE_NAME;
   
   // hostAspect is the aspect the declares the intertype field decl
@@ -51,7 +57,7 @@ aspect IntertypeFieldNameAnalysis {
         Variable v = (Variable)iter.next();
         if(v instanceof FieldDeclaration) {
           FieldDeclaration f = (FieldDeclaration)v;
-          if(f.accessibleFrom(hostType()))
+          if(f.accessibleFrom(visibilityContext()))
             s = s.add(v);
         }
         else
@@ -120,4 +126,23 @@ aspect IntertypeFieldNameAnalysis {
     }
     return set;
   }
+
+
+  refine LookupVariable eq Expr.qualifiedLookupVariable(String name) {
+    if(type().accessibleFrom(visibilityContext()))
+      return keepAccessibleFields(type().memberFields(name));
+    return SimpleSet.emptySet;
+  }
+  refine LookupVariable eq TypeAccess.qualifiedLookupVariable(String name) {
+    if(type().accessibleFrom(visibilityContext())) {
+      SimpleSet c = type().memberFields(name);
+      c = keepAccessibleFields(c);
+      if(type().isClassDecl() && c.size() == 1)
+        c = removeInstanceVariables(c);
+      return c;
+    }
+    return SimpleSet.emptySet;
+  }
+
+
 }
