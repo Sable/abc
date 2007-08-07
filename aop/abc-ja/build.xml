@@ -3,7 +3,7 @@
        build (default) - generates java files and compiles them
        clean           - removes all generated files and class files
 -->
-<project name="Bytecode backend" default="build">
+<project name="AspectJ JastAdd Frontend" default="build">
 
 <property file="ant.settings"/>
 <fail message="Please fix ant.settings" unless="abc.loc"/>
@@ -30,6 +30,28 @@
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
 <taskdef name="jastadd" classname="jastadd.JastAddTask"
                         classpath="${tools}/jastadd2.jar"/>
+
+<!-- update dependencies from CVS -->
+<target name="update">
+	<exec executable="cvs" dir="${frontend}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${backend}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${flattening}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${itds}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${abc.loc}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs">
+		<arg line="-q up -dP"/>
+	</exec>
+</target>
 
 <!-- compile sources -->
 <target name="build" depends="gen">
