@@ -2789,6 +2789,13 @@
             <ajcmessage kind="error" line="27"/>
             <ajcmessage kind="error" line="30"/>
             <message kind="error" line="16"/>
+            <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="16"/>
+            <jamessage kind="error" line="18"/>
+            <jamessage kind="error" line="19"/>
+            <jamessage kind="error" line="22"/>
+            <jamessage kind="error" line="27"/>
+            <jamessage kind="error" line="30"/>
         </compile>
     </ajc-test>
 <ajc-test num="287" dir="abctests/errors" title="multiple conflicting introductions 2"
@@ -2803,6 +2810,11 @@
             <ajcmessage kind="error" line="27"/>
             <ajcmessage kind="error" line="30"/>
             <message kind="error" line="18"/>
+            <jamessage kind="error" line="18"/>
+            <jamessage kind="error" line="19"/>
+            <jamessage kind="error" line="22"/>
+            <jamessage kind="error" line="27"/>
+            <jamessage kind="error" line="30"/>
         </compile>
     </ajc-test>
 <ajc-test num="288" dir="abctests/errors" title="multiple conflicting introductions 3"
@@ -2817,6 +2829,9 @@
             <ajcmessage kind="error" line="27"/>
             <ajcmessage kind="error" line="30"/>
             <message kind="error" line="27"/>
+            <jamessage kind="error" line="22"/>
+            <jamessage kind="error" line="27"/>
+            <jamessage kind="error" line="30"/>
         </compile>
     </ajc-test>
 <ajc-test num="289" dir="abctests/errors" title="multiple conflicting introductions 4"
@@ -2831,6 +2846,7 @@
             <ajcmessage kind="error" line="27"/>
             <ajcmessage kind="error" line="30"/>
             <message kind="error" line="22"/>
+            <jamessage kind="error" line="22"/>
         </compile>
     </ajc-test>
 <ajc-test num="290" dir="abctests/errors" title="multiple conflicting introductions 5"
@@ -2892,6 +2908,8 @@
             <ajcmessage kind="error" line="14"/>
             <ajcmessage kind="error" line="16"/>
             <message kind="error" line="14"/>
+            <jamessage kind="error" line="14"/>
+            <jamessage kind="error" line="16"/>
         </compile>
     </ajc-test>
 
@@ -2991,6 +3009,9 @@
               text="undefined for the type TargetClass"/>
             <message kind="error"
               file="pack1/IntroErrorLocation.java" line="28"/>
+            <jamessage kind="error" line="28"/>
+            <jamessage kind="error" line="33"/>
+            <jamessage kind="error" line="39"/>
         </compile>
     </ajc-test>
 
@@ -3006,6 +3027,8 @@
             	file="RecognizeAspectCE.java"
             	text="Syntax error"/>
             <message kind="error" line="6"/>
+            <jamessage kind="error" line="6"/>
+            <jamessage kind="error" line="6"/>
         </compile>
     </ajc-test>
 
@@ -3194,6 +3217,15 @@
             <ajcmessage kind="error" line="50"/>
             <ajcmessage kind="error" line="58"/>
             <message kind="error" line="58"/>
+            <jamessage kind="error" line="18"/>
+            <jamessage kind="error" line="19"/>
+            <jamessage kind="error" line="20"/>
+            <jamessage kind="error" line="24"/>
+            <jamessage kind="error" line="42"/>
+            <jamessage kind="error" line="45"/>
+            <jamessage kind="error" line="48"/>
+            <jamessage kind="error" line="50"/>
+            <jamessage kind="error" line="58"/>
         </compile>
     </ajc-test>
 
@@ -7025,6 +7057,7 @@
       keywords="from-new">
         <compile files="IllegalAdoption.java">
             <message kind="error" line="13"/>
+            <jamessage kind="error" line="10"/>
         </compile>
     </ajc-test>
     
@@ -8346,6 +8379,7 @@
         <compile files="singlesource/C.java">
         	<ajcmessage kind="error" line="9"/>
                 <message kind="error" line="4"/>
+        	<jamessage kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -9436,6 +9470,8 @@
         title="declare parents causes interface to implement itself">
 	<compile files="foo/Foo.java">
 	    <message kind="error" file="foo/Foo.java" line="11"/>
+	    <jamessage kind="error" file="foo/Foo.java" line="3"/>
+	    <jamessage kind="error" file="foo/Foo.java" line="6"/>
 	</compile>
     </ajc-test>
 
