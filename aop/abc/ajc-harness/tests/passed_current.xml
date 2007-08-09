@@ -1621,6 +1621,13 @@
             <ajcmessage line="27" kind="error"></ajcmessage>
             <ajcmessage line="30" kind="error"></ajcmessage>
             <message line="16" kind="error"></message>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="22" kind="error"></jamessage>
+            <jamessage line="27" kind="error"></jamessage>
+            <jamessage line="30" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="multiple conflicting introductions 2" num="287" keywords="from-errors" dir="abctests/errors" abccomment="abc bails out earlier, split into several cases. ODM July 7">
@@ -1633,6 +1640,11 @@
             <ajcmessage line="27" kind="error"></ajcmessage>
             <ajcmessage line="30" kind="error"></ajcmessage>
             <message line="18" kind="error"></message>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="22" kind="error"></jamessage>
+            <jamessage line="27" kind="error"></jamessage>
+            <jamessage line="30" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="multiple conflicting introductions 3" num="288" keywords="from-errors" dir="abctests/errors" abccomment="abc bails out earlier, split into several cases. ODM July 7">
@@ -1645,6 +1657,9 @@
             <ajcmessage line="27" kind="error"></ajcmessage>
             <ajcmessage line="30" kind="error"></ajcmessage>
             <message line="27" kind="error"></message>
+            <jamessage line="22" kind="error"></jamessage>
+            <jamessage line="27" kind="error"></jamessage>
+            <jamessage line="30" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="multiple conflicting introductions 4" num="289" keywords="from-errors" dir="abctests/errors" abccomment="abc bails out earlier, cloned to expose each error. ODM July 7">
@@ -1657,6 +1672,7 @@
             <ajcmessage line="27" kind="error"></ajcmessage>
             <ajcmessage line="30" kind="error"></ajcmessage>
             <message line="22" kind="error"></message>
+            <jamessage line="22" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="multiple conflicting introductions 5" num="290" keywords="from-errors" dir="abctests/errors" abccomment="abc bails out earlier, cloned to expose each error. ODM July 7">
@@ -1701,6 +1717,8 @@
             <ajcmessage line="14" kind="error"></ajcmessage>
             <ajcmessage line="16" kind="error"></ajcmessage>
             <message line="14" kind="error"></message>
+            <jamessage line="14" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="wimpy test for undeclared and uncaught exceptions" num="296" keywords="from-errors" dir="errors" abccomment="abc bails out after reachability fails. ODM 07/07/04">
@@ -1769,6 +1787,9 @@
             <ajcmessage text="no match for this type name: TargetClass" line="33" kind="warning" file="pack1/IntroErrorLocation.java"></ajcmessage>
             <ajcmessage text="undefined for the type TargetClass" line="39" kind="error" file="pack1/IntroErrorLocation.java"></ajcmessage>
             <message line="28" kind="error" file="pack1/IntroErrorLocation.java"></message>
+            <jamessage line="28" kind="error"></jamessage>
+            <jamessage line="33" kind="error"></jamessage>
+            <jamessage line="39" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class" pr="457" num="302" keywords="from-errors,poorErrorMessages" dir="new" abccomment="Good message from abc. ODM 07/07/04">
@@ -1776,6 +1797,8 @@
             <ajcmessage text="Syntax error" line="3" kind="error" file="RecognizeAspectCE.java"></ajcmessage>
             <ajcmessage text="Syntax error" line="6" kind="error" file="RecognizeAspectCE.java"></ajcmessage>
             <message line="6" kind="error"></message>
+            <jamessage line="6" kind="error"></jamessage>
+            <jamessage line="6" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Some expressions are illegal expression statements" num="303" keywords="from-errors,purejava" dir="errors">
@@ -1912,6 +1935,15 @@
             <ajcmessage line="50" kind="error"></ajcmessage>
             <ajcmessage line="58" kind="error"></ajcmessage>
             <message line="58" kind="error"></message>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="24" kind="error"></jamessage>
+            <jamessage line="42" kind="error"></jamessage>
+            <jamessage line="45" kind="error"></jamessage>
+            <jamessage line="48" kind="error"></jamessage>
+            <jamessage line="50" kind="error"></jamessage>
+            <jamessage line="58" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="aspects may not implement Serializable or Cloneable" num="315" keywords="from-errors" dir="errors">
@@ -3960,6 +3992,7 @@
 <ajc-test title="Declare parents removing ancestor" num="776" keywords="from-new" dir="new/declareParents">
         <compile files="IllegalAdoption.java">
             <message line="13" kind="error"></message>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="options -injars checking declare parents interactions" pr="35865" num="777" dir="options/injars/simple">
@@ -4509,6 +4542,7 @@
         <compile files="singlesource/C.java">
         	<ajcmessage line="9" kind="error"></ajcmessage>
                 <message line="4" kind="error"></message>
+        	<jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Introduced abstract method on abstract class with introduced concrete method (single source file)" pr="49784" num="904" dir="bugs/abstractMethods">
@@ -5146,6 +5180,8 @@
 <ajc-test title="declare parents causes interface to implement itself" num="991" dir="abctests/bugs">
 	<compile files="foo/Foo.java">
 	    <message line="11" kind="error" file="foo/Foo.java"></message>
+	    <jamessage line="3" kind="error" file="foo/Foo.java"></jamessage>
+	    <jamessage line="6" kind="error" file="foo/Foo.java"></jamessage>
 	</compile>
     </ajc-test>
 <ajc-test title="Try all advice types on the throw joinpoint" num="993" dir="abctests/eaj/throw_pointcut">
