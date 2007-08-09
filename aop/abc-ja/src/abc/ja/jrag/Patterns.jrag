@@ -142,4 +142,42 @@ aspect Patterns
 
     syn boolean FormalPattern.matchesEmptyArgList() = false;
     syn boolean WildcardFormalPattern.matchesEmptyArgList() = true;
+    
+    // ASTNode.toString() is "" unless overridden, so let's do something 
+    // more useful for patterns (possibly better off in a PrettyPrint
+    // jrag?):
+    public String AndPattern.toString() {
+    	return "(" + getLhs() + ") && (" + getRhs() + ")";
+    }
+    public String OrPattern.toString() {
+    	return "(" + getLhs() + ") || (" + getRhs() + ")";
+    }
+    public String NegPattern.toString() {
+    	return "!(" + getPattern() + ")";
+    }
+    public String SimpleNamePattern.toString() {
+    	return getPattern();
+    }
+    public String DotNamePattern.toString() {
+    	return getLhs() + "." + getRhs();
+    }
+    public String DotDotNamePattern.toString() {
+    	return getLhs() + ".." + getRhs();
+    }
+    public String TypeDotNamePattern.toString() {
+    	return getLhs() + "." + getRhs();
+    }
+    public String ExplicitTypeNamePattern.toString() {
+    	return getAccess().toString();
+    }
+    public String SubtypeNamePattern.toString() {
+    	return getPattern() + "+";
+    }
+    public String ArraytypeNamePattern.toString() {
+    	String dims = "";
+    	for(int i = 0; i < getNumDims(); i++) {
+    		dims += "[]";
+    	}
+    	return getPattern() + dims;
+    }
 }
