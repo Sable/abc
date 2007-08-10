@@ -3349,6 +3349,16 @@
             <message kind="error" line="42"/>
             <message kind="error" line="42"/>
             <message kind="error" line="46"/>
+            <jamessage kind="error" line="7"/>
+            <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="21"/>
+            <jamessage kind="error" line="21"/>
+            <jamessage kind="error" line="21"/>
+            <jamessage kind="error" line="41"/>
+            <jamessage kind="error" line="42"/>
+            <jamessage kind="error" line="43"/>
+            <jamessage kind="error" line="45"/>
+            <jamessage kind="error" line="46"/>
         </compile>
     </ajc-test>
 
@@ -3364,6 +3374,9 @@
             <ajcmessage kind="error" line="45"/>
             <ajcmessage kind="error" line="46"/>
             <message kind="error" line="43"/>
+            <jamessage kind="error" line="7"/>
+            <jamessage kind="error" line="41"/>
+            <jamessage kind="error" line="43"/>
         </compile>
     </ajc-test>
 
@@ -3379,6 +3392,9 @@
             <ajcmessage kind="error" line="45"/>
             <ajcmessage kind="error" line="46"/>
             <message kind="error" line="41"/>
+            <jamessage kind="error" line="7"/>
+            <jamessage kind="error" line="21"/>
+            <jamessage kind="error" line="41"/>
         </compile>
     </ajc-test>
 
@@ -3405,6 +3421,8 @@
             <ajcmessage kind="error" line="8"/>
             <ajcmessage kind="error" line="23"/>
             <message kind="error" line="23"/> 
+            <jamessage kind="error" line="8"/> 
+            <jamessage kind="error" line="23"/> 
        </compile>
     </ajc-test>
 
