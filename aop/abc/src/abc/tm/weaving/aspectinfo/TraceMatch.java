@@ -79,7 +79,6 @@ public class TraceMatch
     protected int non_around_formals;
 
     protected StateMachine state_machine;
-	protected NecessarySymbolTMStateMachine necessary_sym_state_machine;
     protected IndexingScheme indexing_scheme;
 
     protected List frequent_symbols;
@@ -110,14 +109,13 @@ public class TraceMatch
     protected static Map idToTracematch = new HashMap();
     
     public TraceMatch(String name, List formals, List new_advice_body_formals,
-                        StateMachine state_machine, NecessarySymbolTMStateMachine necessary_sym_state_machine, boolean per_thread,
+                        StateMachine state_machine, boolean per_thread,
                         Map sym_to_vars, List frequent_symbols,
                         Map sym_to_advice_name, String synch_advice_name,
                         String some_advice_name, String dummy_proceed_name,
                         Aspect container, Position pos)
     {
         this.name = name;
-		this.necessary_sym_state_machine = necessary_sym_state_machine;
         this.per_thread = per_thread;
 
         this.formals = formals;
@@ -152,8 +150,6 @@ public class TraceMatch
 			Entry entry = (Entry) iterator.next();
 			advice_name_to_sym_name.put(entry.getValue(), entry.getKey());
 		}
-		
-		necessary_sym_state_machine.prepare(this);
     }
 
     public static TraceMatch forId(String id) {
@@ -271,18 +267,6 @@ public class TraceMatch
 
     public StateMachine getStateMachine() {
         return state_machine;
-    }
-
-    /**
-     * Returns a finite state machine similar to the one returned
-     * by {@link #getStateMachine()} but where a Kleene-Star in the regular expression
-     * just produces an epsilon edge and (r)+ is interpreted as r.
-     * The resulting state machine contains the transitions that 
-     * <i>must</i> be taken in order to reach a final state.
-     * This is necessary for a static analysis of trace matches.
-     */
-    public StateMachine getNecessarySymbolsStateMachine() {
-        return necessary_sym_state_machine;
     }
 
     public Set<String> getSymbols() {

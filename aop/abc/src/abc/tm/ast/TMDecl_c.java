@@ -717,14 +717,10 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         List tm_formals = weavingFormals(formals, true);
         List body_formals = weavingFormals(transformed_formals, false);
         
-        //create tracematch state machine encoding the symbols necessary to reach a final state
-        //(needed for flow-insensitive static analysis)
-        NecessarySymbolTMStateMachine necessarySymbolsSM = (NecessarySymbolTMStateMachine) regex.makeNecessarySymbolsSM();
-        
         // create TraceMatch
 		TraceMatch tm =
             new TraceMatch(tracematch_name, tm_formals, body_formals,
-                           regex.makeSM(), necessarySymbolsSM,
+                           regex.makeSM(), 
                            isPerThread, orderedSymToVars(),
                            frequent_symbols, sym_to_advice_name,
                            synch_advice, some_advice, proceed_name,

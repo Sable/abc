@@ -97,29 +97,6 @@ public class RegexCount_c extends Regex_c
 
         a.makeSM(sm, middle, finish, false);
     }
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void makeNecessarySymbolsSM(StateMachine sm, State start, State finish,
-	                   boolean own_start)
-	{
-	    if (min == 0)
-	        sm.newTransition(start, finish, null);
-	
-	    State middle = start;
-	
-	    // max is always >= 1
-	    for (int i = 1; i < max; i++) {
-	        State s = sm.newState();
-	        a.makeNecessarySymbolsSM(sm, middle, s, false);
-	        if (i >= min)
-	            sm.newTransition(s, finish, null);
-	        middle = s;
-	    }
-	
-	    a.makeNecessarySymbolsSM(sm, middle, finish, false);
-	}
     
     
     

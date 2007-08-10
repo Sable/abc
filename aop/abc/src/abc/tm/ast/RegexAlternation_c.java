@@ -79,13 +79,4 @@ public class RegexAlternation_c extends Regex_c
         a.makeSM(sm, start, finish, false);
         b.makeSM(sm, start, finish, false);
     }
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void makeNecessarySymbolsSM(StateMachine sm, State start,
-			State finish, boolean own_start) {
-        a.makeNecessarySymbolsSM(sm, start, finish, false);
-        b.makeNecessarySymbolsSM(sm, start, finish, false);
-	}
 }

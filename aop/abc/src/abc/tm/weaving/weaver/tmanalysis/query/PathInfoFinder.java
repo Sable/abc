@@ -18,11 +18,10 @@
  */
 package abc.tm.weaving.weaver.tmanalysis.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +32,7 @@ import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.weaver.tmanalysis.ds.Bag;
 import abc.tm.weaving.weaver.tmanalysis.ds.HashBag;
+import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.Naming;
 
 /**
@@ -53,8 +53,6 @@ public class PathInfoFinder {
 		
 	}
 
-	protected transient Set allPaths;
-	
 	protected Set<PathInfo> pathInfos;
 	
 	/**
@@ -78,33 +76,20 @@ public class PathInfoFinder {
 	public PathInfoFinder(TraceMatch traceMatch, StatePredicate pred) {
 		pathInfos = new HashSet<PathInfo>();
 		
-		//get the special state machine we require for the analysis
-		//this state machine holds no cycles, except skip-loops
-		StateMachine sm = traceMatch.getNecessarySymbolsStateMachine();
+		StateMachine sm = traceMatch.getStateMachine();
 		
-		allPaths = new HashSet();
-		//find all paths in SM:
-		//recurse into the automaton starting at each initial nodel
-		//this will fill "allPaths"
-		for (Iterator nodeITer = sm.getStateIterator(); nodeITer.hasNext();) {
-			SMNode node = (SMNode) nodeITer.next();
-			if(node.isInitialNode()) {
-				recurse(node,new ArrayList(),pred);
-			}
-		}
-		
-		//for every path, 
-		for (Iterator pathIter = allPaths.iterator(); pathIter.hasNext();) {
-			Collection path = (Collection) pathIter.next();
-			Bag<String> labSet = new HashBag();
-			Set skipLoopLabelSet = new HashSet();
-			for (Iterator edgeIter = path.iterator(); edgeIter.hasNext();) {
-				SMEdge edge = (SMEdge) edgeIter.next();
+		Set<List<SMEdge>> allPaths = findAllPaths(sm,pred);
+
+		for (List<SMEdge> path : allPaths) {
+			Bag<String> labSet = new HashBag<String>();
+			Set<String> skipLoopLabelSet = new HashSet<String>();
+			for (Iterator<SMEdge> edgeIter = path.iterator(); edgeIter.hasNext();) {
+				SMEdge edge = edgeIter.next();
 				String lab = Naming.getSymbolShortName(edge.getLabel());
 				labSet.add(lab);
 				SMNode tgt = edge.getTarget();
-				for (Iterator outIter = tgt.getOutEdgeIterator(); outIter.hasNext();) {
-					SMEdge outEdge = (SMEdge) outIter.next();
+				for (Iterator<SMEdge> outIter = tgt.getOutEdgeIterator(); outIter.hasNext();) {
+					SMEdge outEdge = outIter.next();
 					if(outEdge.isSkipEdge()) {
 						skipLoopLabelSet.add(outEdge.getLabel());
 					}
@@ -120,30 +105,82 @@ public class PathInfoFinder {
 	}
 
 	/**
-	 * Computes all paths which contain <i>prefix</i> as a prefix and
-	 * for which the remainder of the path starts at <i>node</i> and ends in a final state.
-	 * The resulting paths are added to allPaths.
-	 * @param node a node of a {@link StateMachine} which holds no cycles apart from skip-loops
-	 * @param prefix any list of nodes
-	 * @param pred a predicate that decides which states to treat as a final state
+	 * Computes all paths through the given state machine that end in a node
+	 * matched by the given predicate. Loops are not taken into account, i.e.
+	 * back-jumps are not followed.
+	 * @param sm any tracematch state machine
+	 * @param pred any state predicate
+	 * @return a set of paths, where each path is stored as a list of edges,
+	 * stored in the order induced by the automaton structure
 	 */
-	private void recurse(SMNode node, List prefix, StatePredicate pred) {
-		boolean reachedEnd = pred.match(node);
-		if(reachedEnd) {
-			allPaths.add(prefix);
-		} else {
-			for (Iterator outIter = node.getOutEdgeIterator(); outIter.hasNext();) {
-				reachedEnd = false;
-				SMEdge edge = (SMEdge) outIter.next();
-				if(!edge.isSkipEdge()) {
-					assert !edge.getTarget().equals(edge.getSource()); //no loops
-					SMNode next = edge.getTarget();
-					List subpath = new ArrayList(prefix);
-					subpath.add(edge);
-					recurse(next,subpath,pred);
-				}
+	private Set<List<SMEdge>> findAllPaths(StateMachine sm, StatePredicate pred) {
+		//first build a worklist of dummy edges, pointing to the initial states
+		//of the automaton
+		Set<List<SMEdge>> worklist = new HashSet<List<SMEdge>>(); 
+		for (Iterator<State> stateIter = sm.getStateIterator(); stateIter.hasNext();) {
+			SMNode s = (SMNode) stateIter.next();
+			if(s.isInitialNode()) {
+				LinkedList<SMEdge> path = new LinkedList<SMEdge>();
+				path.add(new SMEdge(null,s,null));
+				worklist.add(path);
 			}
 		}
+		
+		Set<List<SMEdge>> completePaths = new HashSet<List<SMEdge>>(); 		
+		boolean changed = false;
+		//no do a fixed point iteration...
+		do {
+			Set<List<SMEdge>> newWorklist = new HashSet<List<SMEdge>>();
+			//for each partial path currently in the list, see if we can make it longer
+			//by adding another edge to it...
+			for (List<SMEdge> path : worklist) {
+				//get last edge on path
+				SMEdge inEdge = path.get(path.size()-1);
+				//get the last node on the path
+				SMNode s = inEdge.getTarget();
+				//if the predicate matches, the partial path is indeed complete...
+				if(pred.match(s)) {
+					//cut off artificial start edge
+					List<SMEdge> realPath = new LinkedList<SMEdge>(path.subList(1, path.size()));
+					//store result
+					completePaths.add(realPath);
+				} else {
+					//else, it is incomplete; look at all outgoing edges
+					for (Iterator<SMEdge> iterator = s.getOutEdgeIterator(); iterator.hasNext();) {
+						SMEdge outEdge = iterator.next();
+						SMNode target = outEdge.getTarget();
+						//if the target node is not yet part of the path (i.e. no cycle),
+						//add the edge to the path and then add the new path to the new worklist 
+						if(!containsState(path, target)) {
+							List<SMEdge> newPath = new LinkedList<SMEdge>(path);
+							newPath.add(outEdge);
+							newWorklist.add(newPath);
+						}
+					}
+				}
+			}
+			//have to iterate if the worklist changed
+			changed = !worklist.equals(newWorklist);
+			worklist = newWorklist;
+		} while(changed);
+
+		return completePaths;
+	}
+	
+	/**
+	 * Returns true if the given path contains the given state.
+	 * @param path any list of edges
+	 * @param s any state
+	 * @return <code>true</code> if s is source or target state of any edge in path 
+	 */
+	protected boolean containsState(List<SMEdge> path, State s) {
+		for (SMEdge edge : path) {
+			if((edge.getSource()!=null && edge.getSource().equals(s))
+			|| (edge.getTarget()!=null && edge.getTarget().equals(s))) {
+				return true;
+			}
+		} 
+		return false;
 	}
 
 	/**
@@ -192,6 +229,23 @@ public class PathInfoFinder {
 		 */
 		public int length() {
 			return getDominatingLabels().size();
+		}
+		
+		/**
+		 * Returns <code>true</code>, if the path info can be satisfied by the given
+		 * set of shadows, i.e. if the set of shadows holds at least one shadow
+		 * with the same label as in the bag of dominating labels for this path info.
+		 * Note that multiplicity is not taken into account, i.e. a single shadow
+		 * with label <i>l</i> can satisfy a path info with a bag of
+		 * dominating labels <i>[l,l]</i>. 
+		 * @param shadows a set of symbol shadows
+		 */
+		public boolean isSatisfiedByShadowSet(Set<? extends ISymbolShadow> shadows) {
+			Set<String> containedLabels = new HashSet<String>();
+			for (ISymbolShadow symbolShadow : shadows) {
+				containedLabels.add(symbolShadow.getSymbolName());
+			}
+			return containedLabels.containsAll(dominatingLabels);
 		}
 		
 		/**

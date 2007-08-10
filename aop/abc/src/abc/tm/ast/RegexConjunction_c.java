@@ -82,14 +82,4 @@ public class RegexConjunction_c extends Regex_c
         a.makeSM(sm, start, middle, own_start);
         b.makeSM(sm, middle, finish, true);
     }
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void makeNecessarySymbolsSM(StateMachine sm, State start,
-			State finish, boolean own_start) {
-        State middle = sm.newState();
-        a.makeNecessarySymbolsSM(sm, start, middle, own_start);
-        b.makeNecessarySymbolsSM(sm, middle, finish, true);
-	}
 }
