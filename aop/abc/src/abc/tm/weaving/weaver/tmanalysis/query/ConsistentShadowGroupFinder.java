@@ -55,7 +55,7 @@ public class ConsistentShadowGroupFinder {
 	 * Computes consistent shadow groups based on the set of shadows that is passed in.
 	 * A group is consistent if the points-to sets of all its shadows overlap (per variable)
 	 * and all the symbols required for a match are present in the group.
-	 * The result is soted in {@link #shadowGroups}.
+	 * The result is sorted in {@link #shadowGroups}.
 	 * 
 	 * A few examples: (different oi's represent non-overlapping points-to sets) 
 	 * <ul>

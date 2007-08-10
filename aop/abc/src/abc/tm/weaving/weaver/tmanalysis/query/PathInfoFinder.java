@@ -29,6 +29,7 @@ import java.util.Set;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.weaver.tmanalysis.ds.Bag;
 import abc.tm.weaving.weaver.tmanalysis.ds.HashBag;
@@ -41,6 +42,16 @@ import abc.tm.weaving.weaver.tmanalysis.util.Naming;
  * @author Eric Bodden
  */
 public class PathInfoFinder {
+	
+	/**
+	 * A predicate over a tracematch state machine state.
+	 * @author Eric Bodden
+	 */
+	public interface StatePredicate {
+		
+		boolean match(State s);
+		
+	}
 
 	protected transient Set allPaths;
 	
@@ -51,10 +62,24 @@ public class PathInfoFinder {
 	 * @param traceMatch a tracematch state machine.
 	 */
 	public PathInfoFinder(TraceMatch traceMatch) {
+		this(traceMatch, new StatePredicate() {
+			public boolean match(State s) {
+				//treat only final states as final
+				return s.isFinalNode();
+			}			
+		});
+	}
+	
+	/**
+	 * Constructs a new analysis for the given state machine.
+	 * @param traceMatch a tracematch state machine.
+	 * @param pred a predicate that decides which states to treat as a final state
+	 */
+	public PathInfoFinder(TraceMatch traceMatch, StatePredicate pred) {
 		pathInfos = new HashSet<PathInfo>();
 		
 		//get the special state machine we require for the analysis
-		//this state machine holds no cycles instead of skip-loops
+		//this state machine holds no cycles, except skip-loops
 		StateMachine sm = traceMatch.getNecessarySymbolsStateMachine();
 		
 		allPaths = new HashSet();
@@ -64,7 +89,7 @@ public class PathInfoFinder {
 		for (Iterator nodeITer = sm.getStateIterator(); nodeITer.hasNext();) {
 			SMNode node = (SMNode) nodeITer.next();
 			if(node.isInitialNode()) {
-				recurse(node,new ArrayList());
+				recurse(node,new ArrayList(),pred);
 			}
 		}
 		
@@ -95,26 +120,29 @@ public class PathInfoFinder {
 	}
 
 	/**
-	 * Computes all paths which are contain <i>prefix</i> as a prefix and
-	 * for which the remainder of the path startes at <i>node</i> and ends in a final state.
+	 * Computes all paths which contain <i>prefix</i> as a prefix and
+	 * for which the remainder of the path starts at <i>node</i> and ends in a final state.
 	 * The resulting paths are added to allPaths.
 	 * @param node a node of a {@link StateMachine} which holds no cycles apart from skip-loops
 	 * @param prefix any list of nodes
+	 * @param pred a predicate that decides which states to treat as a final state
 	 */
-	private void recurse(SMNode node, List prefix) {
-		boolean reachedEnd = true;
-		for (Iterator outIter = node.getOutEdgeIterator(); outIter.hasNext();) {
-			reachedEnd = false;
-			SMEdge edge = (SMEdge) outIter.next();
-			if(!edge.isSkipEdge()) {
-				SMNode next = edge.getTarget();
-				List subpath = new ArrayList(prefix);
-				subpath.add(edge);
-				recurse(next,subpath);
-			}
-		}
+	private void recurse(SMNode node, List prefix, StatePredicate pred) {
+		boolean reachedEnd = pred.match(node);
 		if(reachedEnd) {
 			allPaths.add(prefix);
+		} else {
+			for (Iterator outIter = node.getOutEdgeIterator(); outIter.hasNext();) {
+				reachedEnd = false;
+				SMEdge edge = (SMEdge) outIter.next();
+				if(!edge.isSkipEdge()) {
+					assert !edge.getTarget().equals(edge.getSource()); //no loops
+					SMNode next = edge.getTarget();
+					List subpath = new ArrayList(prefix);
+					subpath.add(edge);
+					recurse(next,subpath,pred);
+				}
+			}
 		}
 	}
 
