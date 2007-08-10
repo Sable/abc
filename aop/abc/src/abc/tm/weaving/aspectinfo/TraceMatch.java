@@ -48,7 +48,6 @@ import soot.SootMethod;
 import soot.Type;
 import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
-import abc.tm.ast.NecessarySymbolTMStateMachine;
 import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.matching.TMStateMachine;
