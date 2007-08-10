@@ -3,12 +3,13 @@ aspect IntertypeFieldCodegeneration {
   // make sure that fields added using addMemberField are visible without having to flush all name binding attributes
   refine BoundNames public FieldDeclaration TypeDecl.addMemberField(FieldDeclaration f) {
     f = BoundNames.TypeDecl.addMemberField(f);
-    localFieldsMap_value.put(f.name(), f);
+    if(localFieldsMap_value != null)
+      localFieldsMap_value.put(f.name(), f);
     return f;
   }
 
-  public void ClassDecl.generateIntertypeDecls() {
-    super.generateIntertypeDecls();
+  refine IntertypeMethodCodegeneration public void ClassDecl.generateIntertypeDecls() {
+    IntertypeMethodCodegeneration.ClassDecl.generateIntertypeDecls();
     for(Iterator iter = introducedFieldsFromInterfaces().iterator(); iter.hasNext(); ) {
       // add fields, introduced through interfaces, that are not visible in the super class
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)iter.next();
@@ -98,7 +99,7 @@ aspect IntertypeFieldCodegeneration {
   // all ITD fields that use accessors have mangled names
   syn String IntertypeFieldDeclaration.introducedName() {
     if(isPrivate())
-      return "abc$interField$" + hostAspect().abcMangledName() + "$" + name();
+      return "abc$interField$" + hostAspect().topLevelType().abcMangledName() + "$" + name();
     else if(isPublic())
       return name();
     else

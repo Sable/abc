@@ -1,7 +1,7 @@
 aspect IntertypeMethodCodegeneration {
   
   // generate code for each inter-type method that is visible in this type
-  public void TypeDecl.generateIntertypeDecls() {
+  public void InterfaceDecl.generateIntertypeDecls() {
     super.generateIntertypeDecls();
     for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
       MethodDecl m = (MethodDecl)iter.next();
@@ -14,6 +14,21 @@ aspect IntertypeMethodCodegeneration {
       }
     }
   }
+
+  public void ClassDecl.generateIntertypeDecls() {
+    super.generateIntertypeDecls();
+    for(Iterator iter = methodsIterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof IntertypeMethodDecl && (!hasSuperclass() || !superclass().methodsSignature(m.signature()).contains(m))) {
+        IntertypeMethodDecl methodDecl = (IntertypeMethodDecl)m;
+        if(methodDecl.hostAspect() != this)
+          methodDecl.createIntertypeMethod(this);
+      }
+    }
+  }
+
+  // for each class decl that has a memberMethod with an implementation that is also an intertype method decl
+  //   if that method is not a member method of the superclass then generate code for that method
 
   // Each IntertypeMethodDecl generates two methods
   //   IntroducedMethodDecl m1 in the aspect, holding the method body
@@ -39,7 +54,7 @@ aspect IntertypeMethodCodegeneration {
           delegateName(),
           copyParameterList(getParameterList()),
           new List(),
-          new List(),
+          (List)getExceptionList().fullCopy(),
           new Opt()
         )
       );
@@ -51,7 +66,7 @@ aspect IntertypeMethodCodegeneration {
     }
   }
 
-  syn String IntertypeMethodDecl.delegateName() = isPrivate() ? (hostAspect().fullName().replace('.', '$').replace('@', '_') + "$" + name()) : name(); 
+  syn String IntertypeMethodDecl.delegateName() = isPrivate() ? (hostAspect().topLevelType().fullName().replace('.', '$').replace('@', '_') + "$" + name()) : name(); 
 
   syn lazy MethodDecl IntertypeMethodDecl.createAspectMethod() {
     if(!is$Final) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
@@ -73,7 +88,7 @@ aspect IntertypeMethodCodegeneration {
       "impl$body$" + name(),
       parameterList,
       new List(),
-      new List(),
+      (List)getExceptionList().fullCopy(),
       (Opt)getBlockOpt().fullCopy(),
       introducedType(),
       this
@@ -122,32 +137,6 @@ aspect IntertypeMethodCodegeneration {
     }
   }
 
-  refine Transformations public void MethodAccess.transformation() {
-    if(needsSuperDispatchDelegate()) {
-      System.out.println("May need super dispatch delegate");
-      SimpleSet maxSpecific = SimpleSet.emptySet;
-      for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
-        MethodDecl decl = (MethodDecl)iter.next();
-        if(applicable(decl) && accessible(decl)) {
-          if(maxSpecific.isEmpty())
-            maxSpecific = maxSpecific.add(decl);
-          else {
-            if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
-              maxSpecific = SimpleSet.emptySet.add(decl);
-            else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
-              maxSpecific = maxSpecific.add(decl);
-          }
-        }
-      }
-      if(maxSpecific.size() == 1) {
-        MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
-        m.createSuperDispatchDelegate(hostType());
-      }
-    }
-    Transformations.MethodAccess.transformation();
-  }
-
- 
 
   /*
   TODO: fixme
@@ -247,7 +236,7 @@ aspect IntertypeMethodCodegeneration {
       delegateName(),
       copyParameterList(getParameterList()),
       new List(),
-      new List(),
+      (List)getExceptionList().fullCopy(),
       new Opt(new Block(statements))
     );
   }
@@ -306,4 +295,47 @@ aspect IntertypeMethodCodegeneration {
 
   // TODO: make this use the modifier prior to transformation instead of hardcoded false
   eq IntroducedMethodDecl.getBlock().inStaticContext() = false;
+
+  refine Transformations public void MethodAccess.transformation() {
+    if(needsSuperDispatchDelegate()) {
+      System.out.println("May need super dispatch delegate");
+      SimpleSet maxSpecific = SimpleSet.emptySet;
+      for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
+        MethodDecl decl = (MethodDecl)iter.next();
+        if(applicable(decl) && accessible(decl)) {
+          if(maxSpecific.isEmpty())
+            maxSpecific = maxSpecific.add(decl);
+          else {
+            if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
+              maxSpecific = SimpleSet.emptySet.add(decl);
+            else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
+              maxSpecific = maxSpecific.add(decl);
+          }
+        }
+      }
+      if(maxSpecific.size() == 1) {
+        MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
+        m.createSuperDispatchDelegate(hostType());
+      }
+    }
+    MethodDecl m = decl();
+    if(!(m instanceof IntertypeMethodDecl) && m.isPrivate() && !hostType().hasMethod(name())) {
+      /* Access to private methods in enclosing types:
+      The original MethodAccess is replaced with an access to an accessor method
+      built by createAccessor(). This method is built lazily and differs from
+      normal MethodDeclarations in the following ways:
+      1) The method in the class file should always be static and the signature
+         is thus changed to include a possible this reference as the first argument. 
+      2) The method is always invoked using INVOKESTATIC
+      3) The flags must indicate that the method is static and package private
+      */
+      replace(this).with(decl().createAccessor(methodQualifierType()).createBoundAccess(getArgList()));
+      return;
+    }
+    else if(!m.isStatic() && isQualified() && prevExpr().isSuperAccess() && !hostType().instanceOf(prevExpr().type())) {
+      decl().createSuperAccessor(superAccessorTarget());
+    }
+    super.transformation();
+
+  }
 }

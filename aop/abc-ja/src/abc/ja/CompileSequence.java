@@ -85,40 +85,32 @@ public class CompileSequence extends abc.main.CompileSequence {
       program.addOptions(args);
       Collection files = program.files();
 
-        for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-          String name = (String)iter.next();
-          program.addSourceFile(name);
-        }
+      for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+        String name = (String)iter.next();
+        program.addSourceFile(name);
+      }
 
-        for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-          CompilationUnit unit = (CompilationUnit)iter.next();
-          if(unit.fromSource()) {
-            // abort if there were syntax or lexical errors
-            if(error_queue().errorCount() > 0)
-              throw new CompilerFailedException("There were errors.");
-            Collection errors = new LinkedList();
-            if(Program.verbose())
-              System.out.println("Error checking " + unit.relativeName());
-            long time = System.currentTimeMillis();
-            unit.errorCheck(errors);
-            time = System.currentTimeMillis()-time;
-            if(Program.verbose())
-              System.out.println("Error checking " + unit.relativeName() + " done in " + time + " ms");
-            if(!errors.isEmpty()) {
-              //System.out.println("Errors:");
-              for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
-                Problem p = (Problem)iter2.next();
-                addError(p);
-                //System.out.println(s);
-              }
-              throw new CompilerFailedException("There were errors.");
-              //return;
-            }
-            else {
-              //unit.java2Transformation();
-            }
-          }
+      for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+        CompilationUnit unit = (CompilationUnit)iter.next();
+        if(unit.fromSource()) {
+          // abort if there were syntax or lexical errors
+          if(error_queue().errorCount() > 0)
+            throw new CompilerFailedException("There were errors.");
         }
+      }
+      if(Program.verbose())
+        System.out.println("Error checking");
+      ArrayList errors = new ArrayList();
+      Collection warnings = new ArrayList();
+      program.errorCheck(errors, warnings);
+      if(!errors.isEmpty()) {
+        Collections.sort(errors);
+        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
+          Problem p = (Problem)iter2.next();
+          addError(p);
+        }
+        throw new CompilerFailedException("There were errors.");
+      }
 
       program.generateIntertypeDecls();
       program.transformation();

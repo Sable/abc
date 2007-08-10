@@ -26,8 +26,45 @@ public class JavaCompiler extends Frontend {
   }
 
   public boolean process(String[] args, BytecodeReader reader, JavaParser parser) {
-    if(!super.process(args, reader, parser))
-      return false;
+    program.initBytecodeReader(reader);
+    program.initJavaParser(parser);
+
+    initOptions();
+    processArgs(args);
+
+    Collection files = program.files();
+
+    try {
+      for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+        String name = (String)iter.next();
+        program.addSourceFile(name);
+      }
+
+      for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+        CompilationUnit unit = (CompilationUnit)iter.next();
+        if(unit.fromSource()) {
+          Collection errors = unit.parseErrors();
+          if(!errors.isEmpty()) {
+            processErrors(errors, unit);
+            return false;
+          }
+        }
+      }
+      ArrayList errors = new ArrayList();
+      Collection warnings = new ArrayList();
+      program.errorCheck(errors, warnings);
+      if(!errors.isEmpty()) {
+        Collections.sort(errors);
+        System.out.println("Errors:");
+        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
+          System.out.println(iter2.next());
+        }
+        return false;
+      }
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+    }
     program.generateIntertypeDecls();
     program.transformation();
   
