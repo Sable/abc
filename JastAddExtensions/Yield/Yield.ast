@@ -1,0 +1,12 @@
+abstract YieldStmt : Stmt;
+YieldReturnStmt : YieldStmt ::= Expr;
+YieldBreakStmt : YieldStmt;
+
+// Goto is used during code generation to
+// jump to the next position in the code after a yield
+GotoStmt : Stmt ::= <LabeledStmt:LabeledStmt>;
+// Escape is used to return from an iterator while
+// still being able to complete normally in the
+// reachability analysis
+Escape : ReturnStmt;
+

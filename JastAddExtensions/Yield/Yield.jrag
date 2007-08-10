@@ -1,0 +1,63 @@
+aspect Yield {
+  eq YieldReturnStmt.getExpr().nameType() = NameType.EXPRESSION_NAME;
+  eq YieldReturnStmt.canCompleteNormally() = reachable();
+  eq YieldReturnStmt.isDUafter(Variable v) = getExpr().isDUafter(v);
+  eq YieldReturnStmt.isDAafter(Variable v) = getExpr().isDAafter(v);
+
+  eq YieldBreakStmt.canCompleteNormally() = false;
+  eq YieldBreakStmt.isDUafter(Variable v) = true;
+  eq YieldBreakStmt.isDAafter(Variable v) = true;
+
+  public void YieldStmt.typeCheck() {
+    if(!returnType().iterableParameterization())
+      error("yield may only be used in methods that return a value assign convertible to java.lang.Iterable");
+  }
+  public void YieldReturnStmt.typeCheck() {
+    super.typeCheck();
+    if(!getExpr().type().assignConversionTo(yieldElement(), getExpr()))
+      error("yield value must be an instance of " + yieldElement().typeName() + " which " + getExpr().type().typeName() + " is not");
+  }
+  refine TypeCheck public void MethodDecl.typeCheck() {
+    if(isIteratorMethod()) {
+      // if it is then an iterator method we should not do the
+      // can complete normally check but still do the exception check
+      TypeDecl exceptionType = typeThrowable();
+      for(int i = 0; i < getNumException(); i++) {
+        TypeDecl typeDecl = getException(i).type();
+        if(!typeDecl.instanceOf(exceptionType))
+          error(signature() + " throws non throwable type " + typeDecl.fullName());
+      }
+    }
+    else {
+      TypeCheck.MethodDecl.typeCheck();
+    }
+  }
+  inh TypeDecl YieldStmt.returnType();
+
+  // a method with a return value which is a paramterization of iterable  may be an iterator method
+  // an iterator method contains one or more yield return or yield break statements
+  // an iterator method may not use the normal return statement
+  // an iterator method may complete normally
+  // a yield statement may not be used in a non iterable method
+
+  syn boolean MethodDecl.isIteratorMethod() =
+    type().iterableParameterization() && hasYieldStmt();
+  syn boolean ASTNode.hasYieldStmt() {
+    for(int i = 0; i < getNumChild(); i++)
+      if(getChild(i).hasYieldStmt())
+        return true;
+    return false;
+  }
+  eq YieldStmt.hasYieldStmt() = true;
+
+  syn TypeDecl YieldStmt.yieldElement() =
+    returnType().iterableParameterization() ? ((ParInterfaceDecl)returnType()).typeArgument(0) : unknownType();
+  inh TypeDecl YieldStmt.unknownType();
+
+  syn TypeDecl MethodDecl.yieldElement() =
+    type().iterableParameterization() ? ((ParInterfaceDecl)type()).typeArgument(0) : unknownType();
+  inh TypeDecl MethodDecl.unknownType();
+
+  syn boolean TypeDecl.iterableParameterization() = false;
+  eq ParInterfaceDecl.iterableParameterization() = lookupType("java.lang", "Iterable") == genericDecl();
+}

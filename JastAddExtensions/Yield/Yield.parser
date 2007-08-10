@@ -1,0 +1,4 @@
+Stmt statement_without_trailing_substatement =
+    YIELD RETURN expression.e SEMICOLON {: return new YieldReturnStmt(e); :}
+  | YIELD BREAK SEMICOLON {: return new YieldBreakStmt(); :}
+  ;

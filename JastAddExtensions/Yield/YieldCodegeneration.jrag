@@ -1,0 +1,371 @@
+aspect YieldCodegeneration {
+  refine GenericsCodegen public void MethodDecl.java2Transformation() {
+    if(isIteratorMethod()) {
+      // replace the body of the iterable method with a generated iterator
+      setBlock(
+        new Block(
+          new List().add(
+            // build a local class declaration that implements both
+            // java.util.Iterator and java.lang.Iterable
+            new LocalClassDeclStmt(
+              new ClassDecl(
+                new Modifiers(new List()),
+                "Iterator",
+                new Opt(),
+                new List().add(new TypeAccess("java.util", "Iterator")).add(new TypeAccess("java.lang", "Iterable")),
+                // build iterator body
+                iteratorBody()
+              )
+            )
+          ).add(
+            // return an instance of that class as the iterable entity
+            new ReturnStmt(
+              new Opt(
+                new ClassInstanceExpr(new TypeAccess("Iterator"), new List(), new Opt())
+              )
+            )
+          )
+        )
+      );
+    }
+    // flush caches to force recomputation of all changed bindings
+    getBlock().flushCaches();
+    GenericsCodegen.MethodDecl.java2Transformation();
+  }
+
+  // call flush cache on all nodes in this subtree
+  public void ASTNode.flushCaches() {
+    flushCache();
+    for(int i = 0; i < getNumChild(); i++)
+      getChildNoTransform(i).flushCaches();
+  }
+
+  // generate the iterator body
+  private List MethodDecl.iteratorBody() {
+    List list = new List();
+    int fieldCounter = 0;
+    // replace declarations and uses of local variables with fields
+    for(Iterator iter = localVariables().iterator(); iter.hasNext(); fieldCounter++) {
+      VariableDeclaration v = (VariableDeclaration)iter.next();
+      // mangle local variable names to unique field names
+      // a single method may have multiple variables with the same name
+      String name = v.name() + fieldCounter;
+      // add field declaration
+      list.add(new FieldDeclaration(new Modifiers(new List()), v.type().createBoundAccess(), name));
+      // replace all uses with accesses to the new name
+      for(Iterator i2 = v.uses().iterator(); i2.hasNext(); ) {
+        VarAccess use = (VarAccess)i2.next();
+        replace(use).with(new VarAccess(name));
+      }
+      // replace declaration...
+      if(v.hasInit())
+        // ...with assignment if it is initialized
+        replace(v).with(AssignExpr.asStmt(new VarAccess(name), v.getInit()));
+      else
+        // ...with the empty statement if it is not initialized
+        replace(v).with(new EmptyStmt());
+    }
+    list.add(new FieldDeclaration(new Modifiers(new List()), new PrimitiveTypeAccess("boolean"), "yield$next", new BooleanLiteral("true")));
+    list.add(new FieldDeclaration(new Modifiers(new List()), yieldElement().createBoundAccess(), "yield$value"));
+    list.add(new FieldDeclaration(new Modifiers(new List()), new PrimitiveTypeAccess("int"), "yield$state", new IntegerLiteral("0")));
+    list.add(buildHasNext());
+    list.add(buildNext());
+    list.add(buildRemove());
+    list.add(buildAdvance());
+    list.add(buildIterator());
+
+    return list;
+  }
+
+  /* generate the hasNext() method:
+       public boolean hasNext() {
+         if(yield$next) advance();
+         return yield$state != -1;
+       }
+  */
+  private BodyDecl MethodDecl.buildHasNext() {
+    return createPublicMethodNoArgs(
+      new PrimitiveTypeAccess("boolean"),
+      "hasNext",
+      new List().add(
+        new IfStmt(
+          new VarAccess("yield$next"),
+          new ExprStmt(
+            new MethodAccess("advance", new List())
+          )
+        )
+      ).add(
+        new ReturnStmt(
+          new NEExpr(new VarAccess("yield$state"), new IntegerLiteral(Integer.toString(-1)))
+        )
+      )
+    );
+  }
+
+  /* generate the next() method:
+       public Object next() {
+         if(yield$next) advance();
+         if(yield$state == -1) throw new java.util.NoSuchElementException();
+         yield$next = true;
+         return yield$value;
+       }
+  */
+  private BodyDecl MethodDecl.buildNext() {
+    return createPublicMethodNoArgs(
+      yieldElement().createBoundAccess(),
+      "next",
+      new List().add(
+        new IfStmt(
+          new VarAccess("yield$next"),
+          new ExprStmt(
+            new MethodAccess("advance", new List())
+          )
+        )
+      ).add(
+        new IfStmt(
+          new EQExpr(new VarAccess("yield$state"), new IntegerLiteral(Integer.toString(-1))),
+          new ThrowStmt(
+            new ClassInstanceExpr(
+              lookupType("java.util", "NoSuchElementException").createBoundAccess(),
+              new List(),
+              new Opt()
+            )
+          )
+        )
+      ).add(
+        AssignExpr.asStmt(
+          new VarAccess("yield$next"),
+          new BooleanLiteral("true")
+        )
+      ).add(
+        new ReturnStmt(
+          new VarAccess("yield$value")
+        )
+      )
+    );
+  }
+  /* generate the remove() method:
+       public void remove() {
+         throw new java.lang.UnsupportedOperationException();
+       }
+  */
+  private BodyDecl MethodDecl.buildRemove() {
+    return createPublicMethodNoArgs(
+      new PrimitiveTypeAccess("void"),
+      "remove",
+      new List().add(
+        new ThrowStmt(
+          new ClassInstanceExpr(
+            lookupType("java.lang", "UnsupportedOperationException").createBoundAccess(),
+            new List(),
+            new Opt()
+          )
+        )
+      )
+    );
+  }
+  /* generate the iterator() method:
+       public java.util.Iterator iterator() {
+         return this;
+       }
+  */
+  private BodyDecl MethodDecl.buildIterator() {
+    return createPublicMethodNoArgs(
+      new TypeAccess("java.util", "Iterator"),
+      "iterator",
+      new List().add(
+        new ReturnStmt(
+          new ThisAccess("this")
+        )
+      )
+    );
+  }
+  /* generate the advance method
+     void advance() {
+       yield$next = false;
+       switch(yield$state) {
+         case 1: goto L1
+         case n: goto Ln
+       { ... old block with replaced yield yield$statements ... }
+       yield$state = -1;
+     }
+     yield return 5 is transformed into:
+       yield$value = 5;
+       yield$state = 1;
+       escape;
+       L1: ;
+     yield break is transformed into:
+       yield$state = -1;
+       escape;
+  */
+  private BodyDecl MethodDecl.buildAdvance() {
+    List list = new List();
+    list.add(
+      // indicate that a new element has been computed
+      AssignExpr.asStmt(
+        new VarAccess("yield$next"),
+        new BooleanLiteral("false")
+      )
+    );
+    List cases = new List();
+    list.add(
+      new SwitchStmt(
+        new VarAccess("yield$state"),
+        cases
+      )
+    );
+    int index = 1;
+    // iterator over all yield statements and transform them
+    for(Iterator iter = yieldStmts().iterator(); iter.hasNext(); index++) {
+      YieldStmt s = (YieldStmt)iter.next();
+      if(s instanceof YieldReturnStmt) {
+        YieldReturnStmt stmt = (YieldReturnStmt)s;
+        // build a labeled statement where execution will continue
+        // after this yield statement
+        LabeledStmt label = new LabeledStmt("dummy", new EmptyStmt());
+        // add if conditional goto that jumps to the label
+        // if it is the next state. this code is inserted first in the
+        // advance method
+        cases.add(
+          new ConstCase(
+            new IntegerLiteral(Integer.toString(index)),
+            new List().add(
+              new GotoStmt(
+                label
+              )
+            )
+          )
+        );
+        // replace each yield statement with...
+        replace(stmt).with(
+          new Block(
+            new List().add(
+              // update value to the returned expression from yield
+              AssignExpr.asStmt(
+                new VarAccess("yield$value"),
+                stmt.getExpr()
+              )
+            ).add(
+              // the next state is the label following this yield statement
+              AssignExpr.asStmt(
+                new VarAccess("yield$state"),
+                new IntegerLiteral(Integer.toString(index))
+              )
+            ).add(
+              // return unconditionally
+              new Escape(new Opt())
+            ).add(
+              // add a label where the evaluation will continue
+              label
+            )
+          )
+        );
+      }
+      else if(s instanceof YieldBreakStmt) {
+        YieldBreakStmt stmt = (YieldBreakStmt)s;
+        replace(stmt).with(
+          new Block(
+            new List().add(
+              AssignExpr.asStmt(
+                new VarAccess("yield$state"),
+                new IntegerLiteral(Integer.toString(-1))
+              )
+            ).add(
+              new Escape(new Opt())
+            )
+          )
+        );
+      }
+    }
+    // insert the original block
+    list.add(getBlock());
+    // set state to no more elements if the end of the block is reached
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("yield$state"),
+        new IntegerLiteral(Integer.toString(-1))
+      )
+    );
+
+    return createPublicMethodNoArgs(
+      new PrimitiveTypeAccess("void"),
+      "advance",
+      list
+    );
+  }
+
+  private MethodDecl MethodDecl.createPublicMethodNoArgs(Access type, String name, List statements) {
+    return new MethodDecl(
+      new Modifiers(new List().add(new Modifier("public"))),
+      type,
+      name,
+      new List(),
+      new List(),
+      new List(),
+      new Opt(
+        new Block(
+          statements
+        )
+      )
+    );
+  }
+
+  // Generate bytecode for the GotoStmt:
+  // branch unconditionally to the labeled statement
+  public void GotoStmt.createBCode(CodeGeneration gen) {
+    super.createBCode(gen);
+    gen.emitGoto(getLabeledStmt().label());
+  }
+
+  eq Escape.canCompleteNormally() = true;
+
+  // find all yield statements in this method declaration
+  syn Collection MethodDecl.yieldStmts() {
+    ArrayList list = new ArrayList();
+    collectYieldStatements(list);
+    return list;
+  }
+  // collect all yield statements in this subtree
+  public void ASTNode.collectYieldStatements(Collection c) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectYieldStatements(c);
+  }
+  public void YieldStmt.collectYieldStatements(Collection c) {
+    c.add(this);
+    super.collectYieldStatements(c);
+  }
+
+  // find all local variables in this method declaration
+  syn Collection MethodDecl.localVariables() {
+    ArrayList list = new ArrayList();
+    collectLocalVariables(list);
+    return list;
+  }
+  // collect all local variables in this subtree
+  public void ASTNode.collectLocalVariables(Collection c) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectLocalVariables(c);
+  }
+  public void VariableDeclaration.collectLocalVariables(Collection c) {
+    c.add(this);
+    super.collectLocalVariables(c);
+  }
+
+  // find all uses of this variable declaration
+  syn Collection VariableDeclaration.uses() {
+    ArrayList list = new ArrayList();
+    // the variable declaration can not be visible outside the list in which it is declared
+    getParent().getParent().collectUses(list, this);
+    return list;
+  }
+  // collect all uses of declaration in this subtree
+  public void ASTNode.collectUses(Collection c, ASTNode declaration) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectUses(c, declaration);
+  }
+  public void VarAccess.collectUses(Collection c, ASTNode declaration) {
+    super.collectUses(c, declaration);
+    if(decl() == declaration)
+      c.add(this);
+  }
+}
