@@ -22,6 +22,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 
 import AST.ASTNode;
+import AST.ClassDecl;
 import AST.CompilationUnit;
 import AST.JavaParser;
 import AST.Program;
@@ -33,7 +34,8 @@ public class JastAddModel {
 	public JastAddModel() {
 		if (instance == null) {
 		  JastAddModel.instance = this;
-		  classpathEntry = new LinkedList();
+		  classpathEntry = new ArrayList<String>();
+		  mainClassList = new ArrayList<String>();
 		}
 	}	
 	
@@ -71,6 +73,16 @@ public class JastAddModel {
 		program.addOptions(new String[] { filePath });
 		compileFiles(program);
 		return program;
+	}
+	
+	/**
+	 * Searches for maintypes within the given project.
+	 * @param project the project to search in
+	 * @return A String array of main Types
+	 */
+	public ClassDecl[] getMainTypes(IProject project) {
+		Program program = buildProject(project, false);
+		return program.mainTypes();
 	}
 
 	/**
@@ -155,7 +167,8 @@ public class JastAddModel {
 	
 	
     
-	private LinkedList classpathEntry;
+	private ArrayList<String> classpathEntry;
+	private ArrayList<String> mainClassList;
 	
 	private static JastAddModel instance = null;	
 	private static final String ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ErrorMarker";
@@ -223,7 +236,6 @@ public class JastAddModel {
 	 * @param severity
 	 * @throws CoreException
 	 */
-	
 	private void addErrorMarker(IFile file, String message, int lineNumber, int severity) throws CoreException {
 		IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
 		marker.setAttribute(IMarker.MESSAGE, message);
@@ -298,6 +310,10 @@ public class JastAddModel {
 		if (doErrorChecks) {
 			 deleteErrorMarkers(project.members());
 		}
+		
+		mainClassList = null;
+		mainClassList = new ArrayList<String>();
+		
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
             CompilationUnit unit = (CompilationUnit)iter.next();
             

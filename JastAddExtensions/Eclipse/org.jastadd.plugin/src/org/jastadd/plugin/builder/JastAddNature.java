@@ -1,6 +1,5 @@
-package org.jastadd.plugin.builder;
+ package org.jastadd.plugin.builder;
 
-import org.eclipse.core.internal.events.BuildCommand;
 import org.eclipse.core.internal.events.InternalBuilder;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;

@@ -1,27 +1,17 @@
 package org.jastadd.plugin.builder;
 
 import java.util.Map;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.jastadd.plugin.JastAddModel;
 
-
 public class JastAddBuilder extends IncrementalProjectBuilder {
-	
+
 	public static final String BUILDER_ID = "org.jastadd.plugin.jastaddBuilder";
 	
 	/*
@@ -59,15 +49,21 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	}
 
 	
-	
+	/*
 	private void run() {
 		try {
 			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 			ILaunchConfigurationType type = manager.getLaunchConfigurationType("org.jastadd.plugin.launchConfigurationType");
 			ILaunchConfigurationWorkingCopy wc = type.newInstance(null, "SampleConfig");
-			//TODO change project name and main name 
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "Java");
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "Hello");
+			
+			IProject project = getProject();
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
+			
+			JastAddModel model = JastAddModel.getInstance();
+			String[] mainClassList = model.getMainClassList();
+			String mainClass = mainClassList.length > 0 ? mainClassList[0] : "";
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, mainClass);
+			
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_STOP_IN_MAIN, false);
 			ILaunchConfiguration config = wc.doSave();	
 			config.launch(ILaunchManager.DEBUG_MODE, null);
@@ -75,8 +71,9 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		} catch(CoreException e) {
 		}
 	}
+	*/
 	
-	
+/*	
 	private class ResourceVisitor implements IResourceVisitor {
 		public boolean visit(IResource resource) {
 			JastAddModel.getInstance().fullBuild(resource.getProject());
@@ -85,6 +82,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			return true;
 		}
 	}
+	*/
 	
 	private class DeltaVisitor implements IResourceDeltaVisitor {
 		/*
