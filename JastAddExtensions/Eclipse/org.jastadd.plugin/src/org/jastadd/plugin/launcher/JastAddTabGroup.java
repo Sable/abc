@@ -17,8 +17,8 @@ public class JastAddTabGroup extends AbstractLaunchConfigurationTabGroup {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 			new JastAddMainTab(),
 			new JavaArgumentsTab(),
-			new JavaJRETab(),
-			new JavaClasspathTab(),
+		//	new JavaJRETab(),
+		    new JastAddClasspathTab(), //	new JavaClasspathTab(),
 		//	new SourceLookupTab(),	
 			new CommonTab()
 		};
