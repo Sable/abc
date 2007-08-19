@@ -82,6 +82,11 @@ aspect Patterns
     eq DotNamePattern.base() = getLhs();
     eq TypeDotNamePattern.base() = getLhs();
 
+    syn NameType Pattern.predNameType() = NameType.AMBIGUOUS_NAME;
+    eq DotNamePattern.getLhs().nameType() = getRhs().predNameType();
+    eq DotNamePattern.predNameType() = getLhs().predNameType();
+    eq ExplicitTypeNamePattern.predNameType() = getAccess().predNameType();
+    eq SimpleNamePattern.predNameType() = NameType.AMBIGUOUS_NAME;
 
 
     // syntactic classification of explicit names in patterns

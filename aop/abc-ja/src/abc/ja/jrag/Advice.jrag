@@ -114,6 +114,9 @@ aspect Advice
 		  		"in pointcut.");
 		  }		
 	  }
+    if(spec instanceof AroundSpec && !((AroundSpec)spec).getTypeAccess().type().isVoid() &&
+       getBlock().canCompleteNormally())
+      error("the body of non void around advice must return a value");
   }
   
   // Pointcut decls should bind their variables, unless they're marked abstract.
