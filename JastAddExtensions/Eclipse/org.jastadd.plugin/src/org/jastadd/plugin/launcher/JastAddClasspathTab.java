@@ -1,7 +1,6 @@
 package org.jastadd.plugin.launcher;
 
 import java.util.ArrayList;
-
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -11,9 +10,13 @@ import org.eclipse.jdt.internal.debug.ui.launcher.LauncherMessages;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -27,9 +30,10 @@ import org.eclipse.swt.widgets.List;
 public class JastAddClasspathTab extends AbstractLaunchConfigurationTab {
 
 	// -- Widget stuff --
-	private List content;
+	private ClasspathContentProvider content;
 	
 	public void createControl(Composite parent) {
+		
 		Font font = parent.getFont();
 		
 		Composite comp = new Composite(parent, SWT.NONE);
@@ -45,10 +49,16 @@ public class JastAddClasspathTab extends AbstractLaunchConfigurationTab {
 		gd.horizontalSpan = 2;
 		label.setLayoutData(gd);
 		
-		content = new List(parent, SWT.SINGLE);
-		ListViewer viewer = new ListViewer(content);
+		content = new ClasspathContentProvider();
+		TreeViewer viewer = new TreeViewer(comp);
 		viewer.setLabelProvider(new JastAddLabelProvider());
+		viewer.setContentProvider(content);
+		viewer.setInput("root");
 		viewer.getControl().setFont(font);
+		gd = new GridData(GridData.FILL_BOTH);
+		gd.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
+		gd.heightHint = viewer.getTree().getItemHeight();
+		viewer.getTree().setLayoutData(gd);
 		
 		Composite pathButtonComp = new Composite(comp, SWT.NONE);
 		GridLayout pathButtonLayout = new GridLayout();
@@ -98,14 +108,58 @@ public class JastAddClasspathTab extends AbstractLaunchConfigurationTab {
 		public void removeListener(ILabelProviderListener listener) {
 		}		
 	}
+	
+	private class ClasspathContentProvider implements ITreeContentProvider {
+
+		private ArrayList list;
+		private TreeViewer treeViewer;
+		
+		public ClasspathContentProvider() {
+			list = new ArrayList();
+			list.add("Default classpath");
+			list.add("Another classpath");
+		}
+		
+		public void add(String path) {
+		    list.add(path);
+		    /*
+			treeViewer.add(null, path);
+			treeViewer.setExpandedState(null, true);
+			treeViewer.reveal(path);
+			
+			treeViewer.refresh();
+			*/
+		}
+		
+		public Object[] getChildren(Object parentElement) {
+			return list.toArray();
+		}
+
+		public Object getParent(Object element) {
+			return null;
+		}
+
+		public boolean hasChildren(Object element) {
+			return false;
+		}
+
+		public Object[] getElements(Object inputElement) {
+			return list.toArray();
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			treeViewer = (TreeViewer) viewer;
+		}		
+	}
 
 	
 	
 	// -- Tab life-cycle stuff --
 	
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		content.add("The default classpath");
-		content.add("Some other classpath");
 		//java.util.List classPathList = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, null);
 		
 	}

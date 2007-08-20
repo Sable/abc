@@ -186,4 +186,20 @@
       </editorContribution>
    </extension>
    
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            objectClass="org.eclipse.core.resources.IProject"
+            name="JastAdd Build Path"        
+            class="org.jastadd.plugin.builder.JastAddBuildPathsPropertyPage"
+            id="org.jastadd.plugin.builder.jastaddBuildPathsPropertyPage">
+         <filter
+               name="nature"
+               value="org.jastadd.plugin.jastaddNature">
+         </filter>
+       <!--  <keywordReference id="org.eclipse.jdt.ui.buildpath"/> -->
+      </page>
+   </extension>
+   
+   
 </plugin>
