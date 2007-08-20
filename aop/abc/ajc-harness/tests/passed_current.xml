@@ -567,6 +567,9 @@
 <ajc-test title="NullPointerException (not compiler error) when extending non-static inner class" num="137" keywords="from-java,purejava" dir="new">
         <compile files="ExtendInnerCE.java">
             <message line="3" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
+            <jamessage line="3" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="compiler flags final static variable as indefinite in member assignment." num="138" keywords="from-java,purejava" dir="new">
