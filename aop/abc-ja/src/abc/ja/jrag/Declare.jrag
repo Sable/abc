@@ -1,0 +1,73 @@
+aspect Declare {
+  public void DeclareWarning.typeCheck() {
+    HashSet set = new HashSet();
+    collectNonStaticPointcuts(set);
+    if(!set.isEmpty()) {
+      StringBuffer s = new StringBuffer();
+      for(Iterator iter = set.iterator(); iter.hasNext(); )
+        s.append(iter.next() + " ");
+      s.append("pointcut designator cannot be used in declare statement");
+      error(s.toString());
+    }
+  }
+  public void DeclareError.typeCheck() {
+    HashSet set = new HashSet();
+    collectNonStaticPointcuts(set);
+    if(!set.isEmpty()) {
+      StringBuffer s = new StringBuffer();
+      for(Iterator iter = set.iterator(); iter.hasNext(); )
+        s.append(iter.next() + " ");
+      s.append("pointcut designator cannot be used in declare statement");
+      error(s.toString());
+    }
+  }
+  public void DeclareSoft.typeCheck() {
+    HashSet set = new HashSet();
+    collectNonStaticPointcuts(set);
+    if(!set.isEmpty()) {
+      StringBuffer s = new StringBuffer();
+      for(Iterator iter = set.iterator(); iter.hasNext(); )
+        s.append(iter.next() + " ");
+      s.append("pointcut designator cannot be used in declare statement");
+      error(s.toString());
+    }
+    if(!getAccess().type().instanceOf(typeThrowable()))
+      error(getAccess().type().typeName() + " is not a subtype of Throwable");
+  }
+
+  public void ASTNode.collectNonStaticPointcuts(HashSet set) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectNonStaticPointcuts(set);
+  }
+  public void NamedPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    super.collectNonStaticPointcuts(set);
+    PointcutAccess access = (PointcutAccess) getName().lastAccess();
+    PointcutDecl decl = access.decl();
+    if(decl != null)
+      decl.collectNonStaticPointcuts(set);
+  }
+  public void CflowPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    set.add("cflow()");
+    super.collectNonStaticPointcuts(set);
+  }
+  public void CflowBelowPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    set.add("cflowbelow()");
+    super.collectNonStaticPointcuts(set);
+  }
+  public void IfPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    set.add("if()");
+    super.collectNonStaticPointcuts(set);
+  }
+  public void ThisPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    set.add("this()");
+    super.collectNonStaticPointcuts(set);
+  }
+  public void TargetPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    set.add("target()");
+    super.collectNonStaticPointcuts(set);
+  }
+  public void ArgsPointcutExpr.collectNonStaticPointcuts(HashSet set) {
+    set.add("args()");
+    super.collectNonStaticPointcuts(set);
+  }
+}

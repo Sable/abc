@@ -102,6 +102,8 @@ aspect Patterns
         NameType.TYPE_NAME;
     eq DeclareSoft.getPointcutExpr().nameType() =
         NameType.TYPE_NAME;
+    eq DeclareSoft.getAccess().nameType() =
+        NameType.TYPE_NAME;
     eq DeclareParentsExtends.getPattern().nameType() =
         NameType.TYPE_NAME;
     eq DeclareParentsExtends.getTypeAccess().nameType() =
