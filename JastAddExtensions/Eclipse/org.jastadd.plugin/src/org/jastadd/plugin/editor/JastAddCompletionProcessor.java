@@ -30,6 +30,7 @@ import org.jastadd.plugin.JastAddModel;
 import beaver.Parser.Exception;
 
 import AST.ASTNode;
+import AST.ParExpr;
 
 public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
@@ -46,7 +47,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 				String nameWithParan = "(" + linePart[0] + ")"; // Create a valid expression in case name is empty
 				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
 				scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-				ASTNode newNode = (ASTNode) new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.expression);
+				ASTNode newNode = ((ParExpr) new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.expression)).getExprNoTransform();
 
 				if (newNode != null) {
 					String modContent = replaceActiveLine(document,	documentOffset);
@@ -163,14 +164,11 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	 * @return The offset of the beginning of the identifier
 	 */
 	private int extractIdentifier(String s, int offset, int endOffset) {
-		while (offset > 0
-				&& Character.isJavaIdentifierPart(s.charAt(offset))) {
+		int incomingOffset = offset;
+		while (offset > 0 && Character.isJavaIdentifierPart(s.charAt(offset)))
 			offset--;
-		}
-		while (offset < endOffset
-				&& !Character.isJavaIdentifierStart(s.charAt(offset)))
+		while (offset < endOffset && offset < incomingOffset && !Character.isJavaIdentifierStart(s.charAt(offset)))
 			offset++;
-		
 		return offset;
 	}
 	
@@ -221,20 +219,19 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	 */
 	private String extractName(String s, int offset) {
 		int endOffset = offset;
-		offset--; // Don't look at the first dot
-		offset = extractIdentifier(s, offset, endOffset); // Jump over potential filter
-		char c = s.charAt(--offset); // Move to first character
-		
-		while (c == '.') {
-
+		offset--; // start at the character before the caret
+		offset = extractIdentifier(s, offset, endOffset); // extract possible filter
+		do {
+			offset--; // remove '.'
 			offset = extractParanBracketPairs(s, offset);
 			if (offset <= 0)
 				return "";			
 			offset = extractIdentifier(s, offset, endOffset);
-			c = s.charAt(--offset);
-		}
+		} while (s.charAt(offset-1) == '.');
 		
-		offset++; // Don't include the leftmost character which ended the loop
+		//offset++; // Don't include the leftmost character which ended the loop
+		
+		System.out.println(s.substring(offset, endOffset));
 		
 		return s.substring(offset, endOffset);
 	}
