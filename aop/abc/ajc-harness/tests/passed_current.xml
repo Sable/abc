@@ -4671,6 +4671,24 @@
          <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
          <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
          <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
+
+         <jamessage text="if() pointcut designator cannot be used" line="27" kind="error"></jamessage>
+         <jamessage text="if() pointcut designator cannot be used" line="29" kind="error"></jamessage>
+         <jamessage text="cflow() pointcut designator cannot be used" line="31" kind="error"></jamessage>
+         <jamessage text="cflow() pointcut designator cannot be used" line="33" kind="error"></jamessage>
+         
+         <jamessage text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></jamessage>
+         <jamessage text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></jamessage>
+         
+         <jamessage text="this() pointcut designator cannot be used" line="39" kind="error"></jamessage>
+         <jamessage text="this() pointcut designator cannot be used" line="41" kind="error"></jamessage>
+         
+         <jamessage text="target() pointcut designator cannot be used" line="43" kind="error"></jamessage>
+         <jamessage text="target() pointcut designator cannot be used" line="45" kind="error"></jamessage>
+         
+         <jamessage text="args() pointcut designator cannot be used" line="47" kind="error"></jamessage>
+         <jamessage text="args() pointcut designator cannot be used" line="49" kind="error"></jamessage>
+
         </compile>
     </ajc-test>
 <ajc-test title="ClasscastException on concretization of if(false) 1-1" pr="51320" num="92601" dir="abctests/bugs" abccomment="cloned from 926">
@@ -4716,6 +4734,19 @@
          <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
          
          <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
+
+         <jamessage text="if() pointcut designator cannot be used" line="27" kind="error"></jamessage>
+         <jamessage text="if() pointcut designator cannot be used" line="29" kind="error"></jamessage>
+         <jamessage text="cflow() pointcut designator cannot be used" line="31" kind="error"></jamessage>
+         <jamessage text="cflow() pointcut designator cannot be used" line="33" kind="error"></jamessage>
+         <jamessage text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></jamessage>
+         <jamessage text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></jamessage>
+         <jamessage text="this() pointcut designator cannot be used" line="39" kind="error"></jamessage>
+         <jamessage text="this() pointcut designator cannot be used" line="41" kind="error"></jamessage>
+         <jamessage text="target() pointcut designator cannot be used" line="43" kind="error"></jamessage>
+         <jamessage text="target() pointcut designator cannot be used" line="45" kind="error"></jamessage>
+         <jamessage text="args() pointcut designator cannot be used" line="47" kind="error"></jamessage>
+         <jamessage text="args() pointcut designator cannot be used" line="49" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="ClasscastException on concretization of if(false) 2-2" pr="51320" num="92701" dir="abctests/bugs">
