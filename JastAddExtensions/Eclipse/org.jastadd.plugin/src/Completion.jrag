@@ -1,17 +1,153 @@
 aspect Completion {
   syn Collection ASTNode.completion(String filter) = Collections.EMPTY_LIST;
-  eq Expr.completion(String filter) {
+  eq Access.completion(String filter) {
     ArrayList list = new ArrayList();
-    if(!type().isUnknown()) {
-      for(Iterator iter = type().methodsIterator(); iter.hasNext(); ) {
-      	  MethodDecl m = (MethodDecl)iter.next();
-      	  if(m.signature().startsWith(filter))
-	      	  list.add(m.signature());
-      }
+    for(Iterator iter = visibleDecls().iterator(); iter.hasNext(); ) {
+      String s = (String)iter.next();
+      if(s.startsWith(filter))
+        list.add(s);
     }
     Collections.sort(list);
    	return list;
   }
   eq AbstractDot.completion(String filter) = lastAccess().completion(filter);
   
+  inh Collection Expr.visibleTypes();
+  inh Collection Expr.visibleMethods();
+  inh Collection TypeDecl.visibleMethods();
+  inh Collection Expr.visibleVariables();
+  
+  eq Program.getChild().visibleTypes() = Collections.EMPTY_LIST;
+  eq Program.getChild().visibleMethods() = Collections.EMPTY_LIST;
+  eq Program.getChild().visibleVariables() = Collections.EMPTY_LIST;
+
+  eq TypeDecl.getBodyDecl().visibleMethods() {
+    Collection c = new ArrayList();
+    for(Iterator iter = methodsNameMap().values().iterator(); iter.hasNext(); ) {
+      Collection methods = (Collection)iter.next();
+      for(Iterator i2 = methods.iterator(); i2.hasNext(); ) {
+        MethodDecl m = (MethodDecl)i2.next();
+        c.add(m);
+      }
+    }
+    for(Iterator iter = visibleMethods().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(!methodsNameMap().containsKey(m.name()) || 
+         ((Collection)methodsNameMap().get(m.name())).isEmpty())
+        c.add(m);
+    }
+    return c;
+  }
+
+  eq AbstractDot.getRight().visibleMethods() {
+    Collection c = new ArrayList();
+    for(Iterator iter = getLeft().type().methodsNameMap().values().iterator(); iter.hasNext(); ) {
+      Collection methods = (Collection)iter.next();
+      for(Iterator i2 = methods.iterator(); i2.hasNext(); ) {
+        MethodDecl m = (MethodDecl)i2.next();
+        c.add(m);
+      }
+    }
+    return c;
+  }
+
+  eq AbstractDot.getRight().visibleVariables() = getLeft().type().fields();
+
+  syn Collection TypeDecl.fields() {
+    Collection c = new ArrayList();
+    for(Iterator iter = localFieldsMap().values().iterator(); iter.hasNext(); ) {
+      SimpleSet set = (SimpleSet)iter.next();
+      for(Iterator i2 = set.iterator(); i2.hasNext(); ) {
+        FieldDeclaration f = (FieldDeclaration)i2.next();
+        c.add(f);
+      }
+    }
+    return c;
+  }
+  eq ClassDecl.fields() {
+    Collection c = super.fields();
+    if(hasSuperclass()) {
+      for(Iterator iter = superclass().fields().iterator(); iter.hasNext(); ) {
+        Variable v = (Variable)iter.next();
+        if(!fields(v.name()).contains(v))
+          c.add(v);
+      }
+    }
+    for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)outerIter.next();
+      for(Iterator iter = type.fields().iterator(); iter.hasNext(); ) {
+        Variable v = (Variable)iter.next();
+        if(!fields(v.name()).contains(v))
+          c.add(v);
+      }
+    }
+    return c;
+  }
+  eq InterfaceDecl.fields() {
+    Collection c = super.fields();
+    for(Iterator outerIter = superinterfacesIterator(); outerIter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)outerIter.next();
+      for(Iterator iter = type.fields().iterator(); iter.hasNext(); ) {
+        Variable v = (Variable)iter.next();
+        if(!fields(v.name()).contains(v))
+          c.add(v);
+      }
+    }
+    return c;
+  }
+
+
+
+
+  // methods, types, variables
+  syn Collection Access.visibleDecls() {
+    Collection c = new ArrayList();
+    for(Iterator iter = visibleMethods().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      // protection
+      boolean accessible = true;
+      if(!m.accessibleFrom(hostType()) || !qualifier().type().accessibleFrom(hostType()))
+        accessible = false;
+      if(accessible && m.isProtected() && !m.hostPackage().equals(hostPackage()) && !m.isStatic() && !qualifier().isSuperAccess()) {
+        TypeDecl C = m.hostType();
+        TypeDecl S = hostType().subclassWithinBody(C);
+        TypeDecl Q = qualifier().type();
+        if(S == null || !Q.instanceOf(S))
+          accessible = false;
+      }
+      // static context
+      boolean staticContext = isQualified() ? 
+        qualifier().staticContextQualifier() : inStaticContext();
+      if(accessible && (!staticContext || m.isStatic())) {
+          //c.add(m);
+          c.add(m.signature());
+      }
+    }
+    for(Iterator iter = visibleVariables().iterator(); iter.hasNext(); ) {
+      Variable v = (Variable)iter.next();
+      if(v instanceof FieldDeclaration) {
+        FieldDeclaration f = (FieldDeclaration)v;
+        // protection
+        if(f.accessibleFrom(hostType())) {
+          // static context
+          boolean staticContext = isQualified() ? 
+            qualifier().staticContextQualifier() : inStaticContext();
+          if(!staticContext || f.isStatic()) {
+            //c.add(f);
+            c.add(f.name());
+          }
+        }
+      }
+      else
+        c.add(v);
+    }
+    for(Iterator iter = visibleTypes().iterator(); iter.hasNext(); ) {
+      TypeDecl t = (TypeDecl)iter.next();
+      if(t.accessibleFrom(hostType())) {
+        //c.add(t);
+        c.add(t.name());
+      }
+    }
+    return c;
+  }
 }

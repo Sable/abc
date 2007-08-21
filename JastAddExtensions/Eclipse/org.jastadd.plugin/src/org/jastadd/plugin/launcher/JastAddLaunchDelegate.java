@@ -1,8 +1,5 @@
 package org.jastadd.plugin.launcher;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
@@ -17,8 +14,6 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.ui.IWorkbench;
-import org.jastadd.plugin.JastAddModel;
 
 public class JastAddLaunchDelegate extends JavaLaunchDelegate {
 	
@@ -49,14 +44,14 @@ public class JastAddLaunchDelegate extends JavaLaunchDelegate {
 		
 		//IWorkspaceRoot workspaceRoot= ResourcesPlugin.getWorkspace().getRoot();
 		//IProject project = getProject();
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "EmmaPemma");
+		//wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "Test");
 		
 		/*
 		JastAddModel model = JastAddModel.getInstance();
 		String[] mainClassList = model.getMainClassList();
 		String mainClass = mainClassList.length > 0 ? mainClassList[0] : "";
 		*/
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "MainMain");
+		//wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "MainMain");
 		//wc.setAttribute(attributeName, value)
 		// no enabled breakpoints... continue launch
 		return true;
@@ -72,6 +67,7 @@ public class JastAddLaunchDelegate extends JavaLaunchDelegate {
 		return bootpathInfo;
 	}
 	
+	/*
 	public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException {
 		String projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
 		if ((projectName == null) || (projectName.trim().length() < 1)) {
@@ -90,6 +86,7 @@ public class JastAddLaunchDelegate extends JavaLaunchDelegate {
 		
 		return res;
 	}
+	*/
 
 	protected void setDefaultSourceLocator(ILaunch launch,
 			ILaunchConfiguration configuration) throws CoreException {

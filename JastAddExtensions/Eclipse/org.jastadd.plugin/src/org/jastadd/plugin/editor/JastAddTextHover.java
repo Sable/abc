@@ -38,6 +38,9 @@ public class JastAddTextHover implements ITextHover {
 		return "Empty"; 
 	}
 	
+	
+	
+	
 	private String elementAt(ITextViewer textViewer, int line, int column) {
 		IDocument document = textViewer.getDocument();
 		IFile file = JastAddDocumentProvider.documentToFile(document);

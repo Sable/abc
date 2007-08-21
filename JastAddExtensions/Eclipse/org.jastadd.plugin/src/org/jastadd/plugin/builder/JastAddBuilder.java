@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.JastAddProject;
 
 public class JastAddBuilder extends IncrementalProjectBuilder {
 
@@ -35,11 +36,11 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	}
 	
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		JastAddModel.getInstance().fullBuild(getProject());
+		buildJastAddProject(getProject());
 	}
 		
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
-		JastAddModel.getInstance().fullBuild(getProject());
+		buildJastAddProject(getProject());
 		//getProject().accept(new ResourceVisitor());
 	}
 
@@ -84,6 +85,12 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	}
 	*/
 	
+	private void buildJastAddProject(IProject project) {
+		JastAddModel model = JastAddModel.getInstance();
+		JastAddProject jaProject = model.getJastAddProject(getProject());
+		model.fullBuild(jaProject);	
+	}
+	
 	private class DeltaVisitor implements IResourceDeltaVisitor {
 		/*
 		 * (non-Javadoc)
@@ -92,10 +99,11 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		 */
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			IResource resource = delta.getResource();
+			
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 				// handle added resource
-				JastAddModel.getInstance().fullBuild(resource.getProject());
+				buildJastAddProject(getProject());
 				//checkFile(resource);
 				break;
 			case IResourceDelta.REMOVED:
@@ -103,7 +111,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
-				JastAddModel.getInstance().fullBuild(resource.getProject());
+				buildJastAddProject(getProject());
 				//checkFile(resource);
 				break;
 			}

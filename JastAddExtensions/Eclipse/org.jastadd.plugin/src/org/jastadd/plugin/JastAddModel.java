@@ -15,30 +15,22 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
-
 import AST.ASTNode;
-import AST.ClassDecl;
 import AST.CompilationUnit;
-import AST.JavaParser;
 import AST.Program;
 import AST.Problem;
 
 public class JastAddModel {
 
-	
 	public JastAddModel() {
 		if (instance == null) {
 		  JastAddModel.instance = this;
-		  classpathEntry = new ArrayList<String>();
-		  mainClassList = new ArrayList<String>();
+		  jastAddProjects = new ArrayList<JastAddProject>();
 		}
 	}	
-	
 	
 	/**
 	 * Returns a references to the JastAddModel
@@ -49,41 +41,90 @@ public class JastAddModel {
 	}
 	
 	/**
-	 * Builds all files ending with ".java" in the given project
-	 * @param project
+	 * Finds or creates a related JastAdd project
+	 * @param project 
+	 * @return The related JastAdd project or null for non JastAdd projects
 	 */
-	public void fullBuild(IProject project) {
-		buildProject(project, true);
+	public JastAddProject getJastAddProject(IProject project) {
+		// Try to find jastaddproject
+		JastAddProject jaProject = null;
+		for (Iterator itr = jastAddProjects.iterator(); itr.hasNext();) {
+			jaProject = (JastAddProject) itr.next();
+			if (jaProject.getProject() == project) {
+				break;
+			} else {
+				jaProject = null;
+			}
+		}
+		// No matching JastAddProject found
+		if (jaProject == null) {
+			jaProject = JastAddProject.createJastAddProject(project);
+		}
+		return jaProject;
 	}
 
+	
+	/**
+	 * Fully builds a JastAdd project
+	 * @param jaProject The project to build
+	 */
+	public void fullBuild(JastAddProject jaProject) {
+		buildProject(jaProject, true);
+	}
+	
+	
+	
 	/**
 	 * Builds a single file without error checks.
 	 * @param file
 	 * @return The Program node if successful, otherwise null
 	 */
 	public Program buildFile(IFile file) {
-
+		
+		// TODO Map this to a compilation unit ...
+		
 		if (file == null)
 			return null;
 
-		Program program = initProgram();
-		fillInClasspaths(program, file.getProject());
-
+		// Only build file in JastAdd projects
+		JastAddProject jaProject = getJastAddProject(file.getProject());
+		if (jaProject == null) {
+			return null;
+		}
+		
+		Program program = jaProject.getProgram();
+		program.flushSourceFiles();
+		
 		String filePath = file.getRawLocation().toOSString();
 		program.addOptions(new String[] { filePath });
+		
 		compileFiles(program);
 		return program;
 	}
+	
 	
 	/**
 	 * Searches for maintypes within the given project.
 	 * @param project the project to search in
 	 * @return A String array of main Types
 	 */
+	/* Moved to JastAddProject
 	public ClassDecl[] getMainTypes(IProject project) {
-		Program program = buildProject(project, false);
+        // Find corresponding jastAddProject
+		JastAddProject jaProject = getJastAddProject(project);
+		
+		// Project is not a JastAdd project
+		Program program = null;
+		if (jaProject == null) {
+			// Try to build anyway?
+			program = buildProject(project, false);
+		} else {
+			buildProject(jaProject, false);
+			program = jaProject.getProgramNode();
+		}
 		return program.mainTypes();
 	}
+	*/
 
 	/**
 	 * Finds an ASTNode which corresponds to the position in the given IFile.
@@ -124,6 +165,9 @@ public class JastAddModel {
 	 * Returns classpath entries.
 	 * @return
 	 */
+	/* the JastAddProject object will handle build classpaths and user classpaths 
+	 * will be contained in the LaunchConfiguration
+	 *  
 	public String[] getClasspathEntries() {
 		String[] res = new String[classpathEntry.size()];
 		int i = 0;
@@ -132,71 +176,37 @@ public class JastAddModel {
 		}
 		return res;
 	}
-
-	
-	
-	
-	
-	/* 
-	 * In case handling of classpaths will be included..
-	 * 
-	public void addEntryToClasspath(String path) {
-		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();) {
-			String s = (String)itr.next();
-			if (path.equals(s)) {
-				return;
-			}
-		}
-		classpathEntry.add(path);
-	}
-	
-	public void removeEntryFromClasspath(String path) {
-		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();) {
-			String s = (String)itr.next();
-			if (path.equals(s)) {
-				classpathEntry.remove(s);
-				return;
-			}    
-		}
-	}
 	*/
 	
 	
-
+   // ---- JastAddProject / Workspace stuff ----
 	
+   private ArrayList<JastAddProject> jastAddProjects;   
 	
-	
+	// ---- Build stuff ----
     
-	private ArrayList<String> classpathEntry;
-	private ArrayList<String> mainClassList;
-	
 	private static JastAddModel instance = null;	
 	private static final String ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ErrorMarker";
 	private static final String PARSE_ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ParseErrorMarker";
 
-
 	/**
-	 * Builds all files in the given project with  or without errors checks.
-	 * @param project
-	 * @param doErrorChecks true if errors checks should be included
-	 * @return A Program node or null if the build was unsuccessfull
+	 * Builds a JastAdd project with or without error checks
+	 * @param jaProject The project to build
+	 * @param doErrorChecks true of error checks should be made
 	 */
-	private Program buildProject(IProject project, boolean doErrorChecks) {
-	     if (project == null)
-	    	 return null;     
-	     Program program = initProgram();
-	     fillInClasspaths(program, project);
-	     try {
-	    	HashMap<String,IFile> pathToFileMap = new HashMap<String,IFile>();
+	private void buildProject(JastAddProject jaProject, boolean doErrorChecks) {
+		Program program = jaProject.getProgram();
+		program.flushSourceFiles();
+		IProject project = jaProject.getProject();
+		try {
+			HashMap<String, IFile> pathToFileMap = new HashMap<String, IFile>();
 			addSourceFiles(program, project.members(), pathToFileMap);
-			deleteParseErrorMarkers(project.members()); 
+			deleteParseErrorMarkers(project.members());
 			compileFiles(program);
 			checkErrors(program, pathToFileMap, doErrorChecks, project);
-			return program;
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 	
 	/**
@@ -311,9 +321,6 @@ public class JastAddModel {
 			 deleteErrorMarkers(project.members());
 		}
 		
-		mainClassList = null;
-		mainClassList = new ArrayList<String>();
-		
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
             CompilationUnit unit = (CompilationUnit)iter.next();
             
@@ -412,6 +419,9 @@ public class JastAddModel {
 	 * @param program
 	 * @param project
 	 */
+	/*
+	 * The JastAddProject object will handle build classpaths
+	 *
 	private void fillInClasspaths(Program program, IProject project) {
 		
 		program.addKeyValueOption("-classpath");
@@ -434,11 +444,14 @@ public class JastAddModel {
 		
 		program.addOptions(paths);	
 	}
+	*/
 	
 	/**
 	 * Creates and initializes a Program node.
 	 * @return An initialized Program node.
 	 */
+	/* Moved to JastAddProject 
+	 * 
 	private Program initProgram() {
 		
 		Program program = new Program();
@@ -456,7 +469,7 @@ public class JastAddModel {
         
 		return program;
 	}
-	
+	*/
 	
 	/**
 	 * Find location of a node in an abstract syntax tree based on the line and column

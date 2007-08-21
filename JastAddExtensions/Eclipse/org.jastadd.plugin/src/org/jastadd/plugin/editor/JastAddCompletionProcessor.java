@@ -30,7 +30,10 @@ import org.jastadd.plugin.JastAddModel;
 import beaver.Parser.Exception;
 
 import AST.ASTNode;
+import AST.Access;
+import AST.Expr;
 import AST.ParExpr;
+import AST.VarAccess;
 
 public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
@@ -47,7 +50,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 				String nameWithParan = "(" + linePart[0] + ")"; // Create a valid expression in case name is empty
 				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
 				scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-				ASTNode newNode = ((ParExpr) new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.expression)).getExprNoTransform();
+				Expr newNode = (Expr)((ParExpr) new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.expression)).getExprNoTransform();
+				newNode = newNode.qualifiesAccess(new VarAccess("X"));
 
 				if (newNode != null) {
 					String modContent = replaceActiveLine(document,	documentOffset);
@@ -132,6 +136,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			int childIndex = node.getNumChild();
 			node.addChild(newNode);
 			node = node.getChild(childIndex);
+			if(node instanceof Access)
+				node = ((Access)node).lastAccess();
 			// System.out.println(node.dumpTreeNoRewrite());
 
 			// Use the connection to the dummy AST to do name completion
@@ -167,7 +173,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		int incomingOffset = offset;
 		while (offset > 0 && Character.isJavaIdentifierPart(s.charAt(offset)))
 			offset--;
-		while (offset < endOffset && offset < incomingOffset && !Character.isJavaIdentifierStart(s.charAt(offset)))
+		while (offset < endOffset && offset < incomingOffset && !Character.isJavaIdentifierStart(s.charAt(offset+1)))
 			offset++;
 		return offset;
 	}
@@ -180,7 +186,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	 */
 	private int extractParanBracketPairs(String s, int offset) {
 		Stack<Character> stack = new Stack<Character>();
-		char c = s.charAt(--offset);
+		char c = s.charAt(offset);
 		if (c == ')' || c == ']') {
 			stack.push(c);
 			while (--offset > 0 && !stack.isEmpty()) {
@@ -219,19 +225,16 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	 */
 	private String extractName(String s, int offset) {
 		int endOffset = offset;
-		offset--; // start at the character before the caret
-		offset = extractIdentifier(s, offset, endOffset); // extract possible filter
-		do {
+		offset--; // current position is last char in string
+		offset = extractIdentifier(s, offset, endOffset); // extract possible filter, offset at letter before identifier
+		while(s.charAt(offset) == '.') {
 			offset--; // remove '.'
 			offset = extractParanBracketPairs(s, offset);
 			if (offset <= 0)
 				return "";			
 			offset = extractIdentifier(s, offset, endOffset);
-		} while (s.charAt(offset-1) == '.');
-		
-		//offset++; // Don't include the leftmost character which ended the loop
-		
-		System.out.println(s.substring(offset, endOffset));
+		}
+		offset++; // exclude delimiting character
 		
 		return s.substring(offset, endOffset);
 	}

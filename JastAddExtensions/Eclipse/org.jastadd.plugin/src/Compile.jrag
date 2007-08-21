@@ -1,0 +1,13 @@
+aspect Compile {
+  public void Program.flushSourceFiles() {
+    lookupType_String_String_values = new HashMap();
+    hasPackage_String_values = new HashMap();
+    List list = new List();
+    for(int i = 0; i < getNumCompilationUnit(); i++) {
+      if(!getCompilationUnit(i).fromSource())
+        list.add(getCompilationUnit(i));
+    }
+    setCompilationUnitList(list);
+  }
+
+}
