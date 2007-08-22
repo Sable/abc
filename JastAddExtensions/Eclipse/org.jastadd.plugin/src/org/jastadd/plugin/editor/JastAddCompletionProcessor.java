@@ -43,18 +43,32 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
 		IDocument document = viewer.getDocument();
 		linePart = extractLineParts(document.get(), documentOffset); // pos 0 - name, pos 1 - filter
+		
+		// Model testing
+		String content = document.get();
+		StructuralModel model = StructuralModel.createModel(content, documentOffset);
+		int[] activeScope = model.getActiveScope();
+		int[] activeSegment = model.getActiveSegment();
+		System.out.println("ActiveScope:\n" + content.substring(activeScope[0], activeScope[1]));
+		System.out.println("ActiveSegment:\n" + content.substring(activeSegment[0], activeSegment[1]));
+		
+		try {
 
-		if (!linePart[0].equals("")) {
+			if (!linePart[0].equals("")) {
 
-			try {
-				String nameWithParan = "(" + linePart[0] + ")"; // Create a valid expression in case name is empty
-				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
-				scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-				Expr newNode = (Expr)((ParExpr) new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.expression)).getExprNoTransform();
+				// Create a valid expression in case name is empty
+				String nameWithParan = "(" + linePart[0] + ")"; 
+				ByteArrayInputStream is = new ByteArrayInputStream(
+						nameWithParan.getBytes());
+				scanner.JavaScanner scanner = new scanner.JavaScanner(
+						new scanner.Unicode(is));
+				Expr newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+						scanner, parser.JavaParser.AltGoals.expression))
+						.getExprNoTransform();
 				newNode = newNode.qualifiesAccess(new VarAccess("X"));
 
 				if (newNode != null) {
-					String modContent = replaceActiveLine(document,	documentOffset);
+					String modContent = replaceActiveLine(document, documentOffset);
 					IFile dummyFile = createDummyFile(document, modContent);
 					if (dummyFile != null) {
 						int line = document.getLineOfOffset(documentOffset);
@@ -62,16 +76,26 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 						dummyFile.delete(true, null);
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			} catch (CoreException e) {
-				e.printStackTrace();
+			} else {
+				String modContent = replaceActiveLine(document, documentOffset);
+				IFile dummyFile = createDummyFile(document, modContent);
+				if (dummyFile != null) {
+					int line = document.getLineOfOffset(documentOffset);
+					proposals = collectProposals(dummyFile, line, new VarAccess("X"), linePart[1]);
+					dummyFile.delete(true, null);
+				}
 			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
+
 
 		// Bundle up proposals and return
 		ICompletionProposal[] result = new ICompletionProposal[proposals.size()];
@@ -262,6 +286,183 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		return content;
 	}
 
+	
+	
+	
+	
+	private static class StructuralModel {
+		
+		/**
+		 * Creates a structural model of the given content. Currently this means
+		 * that the active enclosing is located and divided with an appropiate
+		 * delimiter.
+		 * @param content The content as a String
+		 * @param offset The current offset which should correspond to a '.'
+		 */
+		public static StructuralModel createModel(String content, int offset) {
+			
+			StructuralModel model = new StructuralModel(0, content.length(), offset);
+			model.resolve(content);
+			
+			return model;
+		}
+		
+		/**
+		 * @return The position of the '.'
+		 */
+		public int getDotPosition() {
+			return currentOffset;
+		}
+		
+		/** 
+		 * @return The start and end offset of the active scope including enclosing characters
+		 */
+		public int[] getActiveScope() {
+			return new int[] { firstLeftEnclosing, firstRightEnclosing };
+		}
+		
+		/**
+		 * @return The start and end offset of the active segment including delimiter characters
+		 */
+		public int[] getActiveSegment() {
+			int[] res = new int[2];
+			res[1] = activeSegment; // The segment position means the end position
+			if (activeSegment == 0) { // If first segment in active interval
+				res[0] = firstLeftEnclosing + 1; // One right of firstLeftEnclosing
+			} else { // otherwise take previous segments end position
+				res[0] = segments[activeSegment - 1]; 
+			}
+			return res;
+		}
+		
+		
+		// --- private ---
+		
+		private int startOffset;
+		private int endOffset;
+		private int currentOffset;
+		
+		private static final char ENCLOSE_LPARAN = '(';
+		private static final char ENCLOSE_RPARAN = ')';
+		private static final char ENCLOSE_LBRACE = '{';
+		private static final char ENCLOSE_RBRACE = '}';
+		private static final char NO_ENCLOSE = 0;
+		
+		private static final char DELIM_SEMICOLON = ';';
+		private static final char DELIM_COMMA = ',';
+		private static final char DELIM_BRACES = '}';
+		private static final char NO_DELIM = 0;
+		
+		private int firstLeftEnclosing = NO_ENCLOSE;
+		private int firstRightEnclosing = NO_ENCLOSE; 
+		private char leftEnclosing = NO_ENCLOSE;
+		private char rightEnclosing = NO_ENCLOSE;
+		private char delimiter = NO_DELIM;
+		
+		private int[] segments;
+		private int activeSegment;
+		
+		private StructuralModel(int start, int end, int current) {
+			startOffset = start;
+			endOffset = end;
+			currentOffset = current;
+		}
+		
+		private boolean reachedStartOffset(int offset) {
+			return offset == startOffset;
+		}
+		
+		private boolean reachedEndOffset(int offset) {
+			return offset == endOffset;
+		}
+		
+		private void findFirstOpenLeftEnclose(String content, int offset) {
+			Stack<Character> stack = new Stack<Character>();
+			char c = content.charAt(offset); // Searches right to left
+			while (!reachedStartOffset(offset)) {
+				switch (c) {
+				case ENCLOSE_RPARAN:
+					rightEnclosing = c;
+					stack.push(c);
+					break;
+				case ENCLOSE_RBRACE:
+					rightEnclosing = c;
+					stack.push(c);
+					break;
+				case ENCLOSE_LPARAN:
+					leftEnclosing = c;
+					if (stack.peek() == ENCLOSE_RPARAN) {
+						stack.pop();
+					} else if (stack.isEmpty()) {
+						firstLeftEnclosing = offset;
+						return;
+					}
+					break;
+				case ENCLOSE_LBRACE:
+					leftEnclosing = c;
+					if (stack.isEmpty()) {
+						firstLeftEnclosing = offset;
+						return;
+					}
+					else if (stack.peek() == ENCLOSE_RBRACE) {
+						stack.pop();
+					} 
+					break;
+				}
+				c = content.charAt(--offset); // Move one left
+			}
+			firstLeftEnclosing = NO_ENCLOSE;
+		}
+		
+		private void divideInterval(String content, int start, int end, ArrayList<Integer> delimList) {
+			int offset = start; // Search left to right
+			while (offset < end) {
+				char c = content.charAt(offset);
+				if (c == DELIM_SEMICOLON || c == DELIM_COMMA || c == DELIM_BRACES) {
+					delimList.add(offset);
+				}
+				offset++; // Move one right
+			}
+		}
+		
+		private void findMatchingRightEnclose(String content, int offset) {
+			char target = ENCLOSE_RBRACE;
+			if (leftEnclosing == ENCLOSE_LPARAN) {
+				target = ENCLOSE_RPARAN;
+			}
+			char c = content.charAt(offset);
+			while (!reachedEndOffset(offset)) {
+				if (c == target) {
+					rightEnclosing = target;
+					firstRightEnclosing = offset;
+					return;
+				}
+				offset++; // Move one right
+			}
+		}
+		
+			
+		private void resolve(String content) {
+			
+			findFirstOpenLeftEnclose(content, currentOffset - 1); // Move one left of the dot
+			findMatchingRightEnclose(content, currentOffset + 1); // Move one right of the dot
+		    
+		    ArrayList<Integer> delimList = new ArrayList<Integer>();
+		    divideInterval(content, firstLeftEnclosing, firstRightEnclosing, delimList);
+		    segments = new int[delimList.size()];
+		    int i = 0;
+		    for (Iterator itr = delimList.iterator(); itr.hasNext(); i++) {
+		    	int pos = ((Integer)itr.next()).intValue();
+		    	if (currentOffset < pos) {
+		    		activeSegment = i;
+		    	}
+		    	segments[i] = pos;
+		    }
+		 }
+	}
+	
+	
+	
 	
 	
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
