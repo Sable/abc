@@ -55,9 +55,9 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		*/
 		try {
 
-			if (!linePart[0].equals("")) {
+			if (!linePart[0].equals("")) { // Non empty left side
 
-				if (linePart[1].equals("")) {
+				if (linePart[1].equals("")) { // empty right side
 					SimpleDocument doc = new SimpleDocument(content);
 					doc.replace(documentOffset-1, 1, ".X()");
 					IFile dummyFile = createDummyFile(document, doc.get());
@@ -68,6 +68,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 						if(node == null) {
 							// fix document
 							System.out.println("No tree built");
+							// Try a structural recovery
+							doStructuralRecovery(doc, documentOffset - 1);
 						}
 						else if(node instanceof Access) {
 							System.out.println("Automatic recovery");
@@ -96,12 +98,13 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
 							// Use the connection to the dummy AST to do name completion
 							proposals = node.completion(linePart[1]);
-							
-						
-						}
-						
+						}						
 						dummyFile.delete(true, null);
 					}
+					
+					
+				} else { // Non empty right side
+					
 				}
 				
 				/*
@@ -126,7 +129,13 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					}
 				}
 				*/
-			} else {
+			} else { // Empty left side
+				
+				if (linePart[1].equals("")) { // Empty right side
+					
+				} else { // Non empty right side
+					
+				}
 				String modContent = replaceActiveLine(document, documentOffset);
 				IFile dummyFile = createDummyFile(document, modContent);
 				if (dummyFile != null) {
@@ -159,6 +168,90 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	}
 	
 	
+	private void doStructuralRecovery(SimpleDocument doc, int dotOffset) {
+        final char ENCLOSE_LPARAN = '(';
+		final char ENCLOSE_RPARAN = ')';
+		final char ENCLOSE_LBRACE = '{';
+		final char ENCLOSE_RBRACE = '}';
+		
+		// find left scope trace
+		// build stack of open eclose characters to the left - eat even pairs
+		Stack<Character> stack = new Stack<Character>();
+		String content = doc.get();
+		int offset = dotOffset;
+		char c;
+		while (offset > 0) {
+			c = content.charAt(offset);
+			switch (c) {
+			case ENCLOSE_RPARAN:
+				stack.push(c);
+				break;
+			case ENCLOSE_RBRACE:
+				stack.push(c);
+				break;
+			case ENCLOSE_LPARAN:
+				if (!stack.isEmpty() && stack.peek() == ENCLOSE_RPARAN) {
+					stack.pop();
+				} else {
+					stack.push(c);
+				}
+				break;
+			case ENCLOSE_LBRACE:
+				if (!stack.isEmpty() && stack.peek() == ENCLOSE_RBRACE) {
+					stack.pop();
+				} else {
+					stack.push(c);
+				}
+				break;
+			}
+			offset--; // Move one left
+		}
+		
+		// try to empty stack with eclose characters found to the right
+		offset = dotOffset;
+		while (!stack.isEmpty() && offset < content.length()) {
+			c = content.charAt(offset);
+			switch (c) {
+			case ENCLOSE_RPARAN:
+				if (stack.peek() == ENCLOSE_LPARAN) {
+					stack.pop();
+				} else {
+					// Mismatch!? - (}
+				}
+				break;
+			case ENCLOSE_RBRACE:
+				if (stack.peek() == ENCLOSE_LBRACE) {
+					stack.pop();
+				} else {
+					// Mismatch !? {)
+				}
+				break;
+			case ENCLOSE_LPARAN:
+				stack.push(c);
+				break;
+			case ENCLOSE_LBRACE:
+				stack.push(c);
+				break;
+			}
+			offset++; // Move one right
+		}
+		
+		// if stack isn't empty add corresponding enclose characters to the end until stack is empty
+		if (stack.isEmpty()) {
+			for (Iterator itr = stack.iterator(); itr.hasNext();) {
+				c = ((Character)itr.next()).charValue();
+				if (c == ENCLOSE_LPARAN) {
+				   // add ENLOSE_RPARAN
+					doc.replace(doc.getLength() - 1, 0, ")");
+				} else if (c == ENCLOSE_LBRACE) {
+					// add ENCLOSE_RBRACE
+					doc.replace(doc.getLength() - 1, 0, "}");
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * Create a dummy file where the active line has been replaced with an empty stmt.
 	 * @param document The current document.
@@ -397,7 +490,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			char[] matchArray = new char[] {'e', 'c', 'a', 'f', 'r', 'e', 't', 'n', 'i'};
 			return hasMatchBeforeScope(content, matchArray);
 		}
-		
 		
 		// --- private ---
 		
