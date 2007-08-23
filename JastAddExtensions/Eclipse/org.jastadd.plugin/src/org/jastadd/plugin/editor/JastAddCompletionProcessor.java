@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.internal.core.util.SimpleDocument;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -46,16 +47,64 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		
 		// Model testing
 		String content = document.get();
-		StructuralModel model = StructuralModel.createModel(content, documentOffset);
+		/*StructuralModel model = StructuralModel.createModel(content, documentOffset - 1); // Move to the offset of the dot
 		int[] activeScope = model.getActiveScope();
 		int[] activeSegment = model.getActiveSegment();
-		System.out.println("ActiveScope:\n" + content.substring(activeScope[0], activeScope[1]));
-		System.out.println("ActiveSegment:\n" + content.substring(activeSegment[0], activeSegment[1]));
-		
+		System.out.println("ActiveScope: ##\n" + content.substring(activeScope[0], activeScope[1] + 1) + "##");
+		System.out.println("ActiveSegment: ##\n" + content.substring(activeSegment[0], activeSegment[1] + 1) + "##");
+		*/
 		try {
 
 			if (!linePart[0].equals("")) {
 
+				if (linePart[1].equals("")) {
+					SimpleDocument doc = new SimpleDocument(content);
+					doc.replace(documentOffset-1, 1, ".X()");
+					IFile dummyFile = createDummyFile(document, doc.get());
+					int line = document.getLineOfOffset(documentOffset);
+					int col = documentOffset - document.getLineOffset(line);
+					if (dummyFile != null) {
+						ASTNode node = JastAddModel.getInstance().findNodeInFile(dummyFile, line, col);
+						if(node == null) {
+							// fix document
+							System.out.println("No tree built");
+						}
+						else if(node instanceof Access) {
+							System.out.println("Automatic recovery");
+							proposals = node.completion(linePart[1]);
+							System.out.println(node.getParent().getParent().dumpTree());
+						}
+						else {
+							System.out.println("Manual recovery");
+							// Create a valid expression in case name is empty
+							String nameWithParan = "(" + linePart[0] + ")"; 
+							ByteArrayInputStream is = new ByteArrayInputStream(
+									nameWithParan.getBytes());
+							scanner.JavaScanner scanner = new scanner.JavaScanner(
+									new scanner.Unicode(is));
+							Expr newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+									scanner, parser.JavaParser.AltGoals.expression))
+									.getExprNoTransform();
+							newNode = newNode.qualifiesAccess(new VarAccess("X"));
+
+							int childIndex = node.getNumChild();
+							node.addChild(newNode);
+							node = node.getChild(childIndex);
+							if(node instanceof Access)
+								node = ((Access)node).lastAccess();
+							// System.out.println(node.dumpTreeNoRewrite());
+
+							// Use the connection to the dummy AST to do name completion
+							proposals = node.completion(linePart[1]);
+							
+						
+						}
+						
+						dummyFile.delete(true, null);
+					}
+				}
+				
+				/*
 				// Create a valid expression in case name is empty
 				String nameWithParan = "(" + linePart[0] + ")"; 
 				ByteArrayInputStream is = new ByteArrayInputStream(
@@ -76,6 +125,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 						dummyFile.delete(true, null);
 					}
 				}
+				*/
 			} else {
 				String modContent = replaceActiveLine(document, documentOffset);
 				IFile dummyFile = createDummyFile(document, modContent);
@@ -155,7 +205,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		ASTNode node = model.findNodeInFile(dummyFile, line, 1);
 
 		if (node != null) {
-
 			// Add nameNode to EmptyStmt
 			int childIndex = node.getNumChild();
 			node.addChild(newNode);
@@ -326,13 +375,27 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		 */
 		public int[] getActiveSegment() {
 			int[] res = new int[2];
-			res[1] = activeSegment; // The segment position means the end position
-			if (activeSegment == 0) { // If first segment in active interval
-				res[0] = firstLeftEnclosing + 1; // One right of firstLeftEnclosing
-			} else { // otherwise take previous segments end position
-				res[0] = segments[activeSegment - 1]; 
-			}
+			res[0] = segmentStart;
+			res[1] = segmentEnd;
 			return res;
+		}
+		
+		public boolean withInParanScope() {
+			return leftEnclosing == ENCLOSE_LPARAN;
+		}
+		
+		public boolean withInBraceScope() {
+			return leftEnclosing == ENCLOSE_LBRACE;
+		}
+		
+		public boolean withInClassContext(String content) {
+			char[] matchArray = new char[] {'s', 's', 'a', 'l', 'c'};
+			return hasMatchBeforeScope(content, matchArray);
+		}
+		
+		public boolean withInInterfaceContext(String content) {
+			char[] matchArray = new char[] {'e', 'c', 'a', 'f', 'r', 'e', 't', 'n', 'i'};
+			return hasMatchBeforeScope(content, matchArray);
 		}
 		
 		
@@ -342,30 +405,59 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		private int endOffset;
 		private int currentOffset;
 		
+		private static final char END_OF_LINE = '\n';
+		
 		private static final char ENCLOSE_LPARAN = '(';
 		private static final char ENCLOSE_RPARAN = ')';
 		private static final char ENCLOSE_LBRACE = '{';
 		private static final char ENCLOSE_RBRACE = '}';
-		private static final char NO_ENCLOSE = 0;
+		private static final char UNKNOWN_ENCLOSE = 0;
+		private static final int NO_ENCLOSE = -1;
 		
 		private static final char DELIM_SEMICOLON = ';';
 		private static final char DELIM_COMMA = ',';
-		private static final char DELIM_BRACES = '}';
-		private static final char NO_DELIM = 0;
+		private static final char UNKNOWN_DELIM = 0;
+		private static final int NO_DELIM = -1;
 		
 		private int firstLeftEnclosing = NO_ENCLOSE;
-		private int firstRightEnclosing = NO_ENCLOSE; 
-		private char leftEnclosing = NO_ENCLOSE;
-		private char rightEnclosing = NO_ENCLOSE;
-		private char delimiter = NO_DELIM;
+		private int firstRightEnclosing = NO_ENCLOSE;
+		private int firstLeftDelim = NO_DELIM;
+		private int firstRightDelim = NO_DELIM;
 		
-		private int[] segments;
-		private int activeSegment;
+		private char leftEnclosing = UNKNOWN_ENCLOSE;
+		private char rightEnclosing = UNKNOWN_ENCLOSE;
+		private char leftDelim = UNKNOWN_DELIM;
+		private char rightDelim = UNKNOWN_DELIM;
+		
+		private int segmentStart = -1;
+		private int segmentEnd = -1;
 		
 		private StructuralModel(int start, int end, int current) {
 			startOffset = start;
 			endOffset = end;
 			currentOffset = current;
+		}
+		
+		private boolean hasMatchBeforeScope(String content, char[] matchArray) {
+			int offset = firstLeftEnclosing;
+			int matchCount = 0; // If matchCount reaches array length - match found
+			
+			// Try to match array right of firstLeftEnclosing and left ';' or '}'
+			char c = content.charAt(offset);
+			while (!reachedStartOffset(offset)) {
+				if (c == DELIM_SEMICOLON || c == ENCLOSE_RBRACE) {
+					return false;
+				} else if (c == matchArray[matchCount]) {
+					matchCount++;
+					if (matchCount == matchArray.length) {
+						return true;
+					}
+				} else {
+					matchCount = 0;
+				}
+				c = content.charAt(--offset);
+			}
+			return false;
 		}
 		
 		private boolean reachedStartOffset(int offset) {
@@ -391,11 +483,11 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					break;
 				case ENCLOSE_LPARAN:
 					leftEnclosing = c;
-					if (stack.peek() == ENCLOSE_RPARAN) {
-						stack.pop();
-					} else if (stack.isEmpty()) {
+					if (stack.isEmpty()) {
 						firstLeftEnclosing = offset;
 						return;
+					} else if (stack.peek() == ENCLOSE_RPARAN) {
+						stack.pop();
 					}
 					break;
 				case ENCLOSE_LBRACE:
@@ -411,33 +503,124 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 				}
 				c = content.charAt(--offset); // Move one left
 			}
+			leftEnclosing = UNKNOWN_ENCLOSE;
 			firstLeftEnclosing = NO_ENCLOSE;
 		}
 		
+		/*
 		private void divideInterval(String content, int start, int end, ArrayList<Integer> delimList) {
 			int offset = start; // Search left to right
+			char c = content.charAt(offset);
+			Stack<Character> stack = new Stack<Character>(); // Stack to keep trace of internal scopes
 			while (offset < end) {
-				char c = content.charAt(offset);
-				if (c == DELIM_SEMICOLON || c == DELIM_COMMA || c == DELIM_BRACES) {
+				if (c == ENCLOSE_LBRACE) {
+					stack.push(c);
+				} else if (c == ENCLOSE_RBRACE) {
+					stack.pop(); 
+					// There should only be even matched pairs since firstLeftEnclose and firstRightEnlcose 
+					// matches the first "broken" pair -- the stack should not be empty and hence safe to pop
+					if (stack.isEmpty()) { // If this emptied the stack we're back on track
+						delimList.add(offset);
+					}
+				} else if (stack.isEmpty() && (c == DELIM_SEMICOLON || c == DELIM_COMMA)) { // Only consider ';' or ',' if the scope stack is empty
 					delimList.add(offset);
 				}
-				offset++; // Move one right
+				c = content.charAt(++offset); // Move one right
 			}
+			delimList.add(end); // Always add the last offset to get at least one segment
 		}
+		*/
 		
 		private void findMatchingRightEnclose(String content, int offset) {
-			char target = ENCLOSE_RBRACE;
+			char rTarget = ENCLOSE_RBRACE;
 			if (leftEnclosing == ENCLOSE_LPARAN) {
-				target = ENCLOSE_RPARAN;
+				rTarget = ENCLOSE_RPARAN;
+			} else if (leftEnclosing == UNKNOWN_ENCLOSE) {
+				rTarget = END_OF_LINE;
 			}
+			
+			Stack<Character> stack = new Stack<Character>();
 			char c = content.charAt(offset);
 			while (!reachedEndOffset(offset)) {
-				if (c == target) {
-					rightEnclosing = target;
-					firstRightEnclosing = offset;
-					return;
+				if (c == rTarget) {
+					if (stack.isEmpty()) {
+						rightEnclosing = rTarget;
+						firstRightEnclosing = offset;
+						return;
+					} else {
+						stack.pop();
+					}
+				} else if (c == leftEnclosing) { 
+					stack.push(c);
+				} 
+				c = content.charAt(++offset); // Move one right
+			}
+			rightEnclosing = UNKNOWN_ENCLOSE;
+			firstRightEnclosing = NO_ENCLOSE;
+		}
+		
+		private void resolveClosestDelims(String content) {
+			if (leftEnclosing == UNKNOWN_ENCLOSE) {
+				firstLeftDelim = firstLeftEnclosing;
+				firstRightDelim = firstRightEnclosing;
+			} else if (leftEnclosing == ENCLOSE_LPARAN) {
+				// Lock to the left for ',' or start of scope
+				int offset = currentOffset - 1; // Move one left of '.'
+				while (offset > firstLeftEnclosing) {
+					char c = content.charAt(offset);
+					if (c == DELIM_COMMA) {
+						leftDelim = c;
+						firstLeftDelim = offset;
+						break;
+					}
+					offset--;
 				}
-				offset++; // Move one right
+				if (firstLeftDelim == NO_DELIM) {
+					firstLeftDelim = firstLeftEnclosing;
+				}
+				// Lock to the right for ',' or end of scope
+				offset = currentOffset + 1; // Move one right of '.'
+				while (offset < firstRightEnclosing) {
+					char c = content.charAt(offset);
+					if (c == DELIM_COMMA) {
+						rightDelim = c;
+						firstRightDelim = offset;
+						break;
+					}
+					offset++;
+				}
+				if (firstRightDelim == NO_DELIM) {
+					firstRightDelim = firstRightEnclosing;
+				}
+			} else if (leftEnclosing == ENCLOSE_LBRACE) {
+				// Lock to the left for ';' or '}' or start of scope
+				int offset = currentOffset - 1; // Move one left of '.'
+				while (offset > firstLeftEnclosing) {
+					char c = content.charAt(offset);
+					if (c == DELIM_SEMICOLON || c == ENCLOSE_RBRACE) {
+						leftDelim = c;
+						firstLeftDelim = offset;
+						break;
+					}
+					offset--;
+				}
+				if (firstLeftDelim == NO_DELIM) {
+					firstLeftDelim = firstLeftEnclosing;
+				}
+				// Lock to the right for ';' or '{' or end of scope
+				offset = currentOffset + 1; // Move one right of '.'
+				while (offset < firstRightEnclosing) {
+					char c = content.charAt(offset);
+					if (c == DELIM_SEMICOLON || c == ENCLOSE_LBRACE) {
+						rightDelim = c;
+						firstRightDelim = offset;
+						break;
+					}
+					offset++;
+				}
+				if (firstRightDelim == NO_DELIM) {
+					firstRightDelim = firstRightEnclosing;
+				}
 			}
 		}
 		
@@ -445,19 +628,26 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		private void resolve(String content) {
 			
 			findFirstOpenLeftEnclose(content, currentOffset - 1); // Move one left of the dot
+			if (firstLeftEnclosing == NO_ENCLOSE) { // Outside of scopes
+				firstLeftEnclosing = 0; // Include the entire left side
+				
+			}
 			findMatchingRightEnclose(content, currentOffset + 1); // Move one right of the dot
+			if (firstRightEnclosing == NO_ENCLOSE) {
+				firstRightEnclosing = content.length(); // Include the entire right side
+				rightEnclosing = leftEnclosing == ENCLOSE_LBRACE ? ENCLOSE_RBRACE : ENCLOSE_RPARAN; // Pick a right enclose which match the left enclose  
+			}
 		    
-		    ArrayList<Integer> delimList = new ArrayList<Integer>();
-		    divideInterval(content, firstLeftEnclosing, firstRightEnclosing, delimList);
-		    segments = new int[delimList.size()];
-		    int i = 0;
-		    for (Iterator itr = delimList.iterator(); itr.hasNext(); i++) {
-		    	int pos = ((Integer)itr.next()).intValue();
-		    	if (currentOffset < pos) {
-		    		activeSegment = i;
-		    	}
-		    	segments[i] = pos;
-		    }
+			resolveClosestDelims(content);
+			// Resolve active segment
+			segmentStart = firstLeftDelim + 1; // One right of left delimiter
+			segmentEnd = firstRightDelim - 1; // One left of right delimiter
+			if (rightDelim == DELIM_SEMICOLON || rightDelim == ENCLOSE_LBRACE) {
+				char c = content.charAt(segmentEnd); 
+				while (c != '\n' || segmentEnd == currentOffset || segmentEnd == firstLeftDelim) {
+					c = content.charAt(--segmentEnd);
+				}
+			} 
 		 }
 	}
 	
