@@ -52,6 +52,7 @@ aspect Completion {
   }
 
   eq AbstractDot.getRight().visibleVariables() = getLeft().type().fields();
+  eq AbstractDot.getRight().visibleTypes() = getLeft().type().types();
 
   syn Collection TypeDecl.fields() {
     Collection c = new ArrayList();
@@ -96,14 +97,53 @@ aspect Completion {
     return c;
   }
 
-
+  syn Collection TypeDecl.types() = Collections.EMPTY_SET;
+  eq ClassDecl.types() {
+    Collection c = new ArrayList();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof MemberTypeDecl)
+        c.add(((MemberTypeDecl)getBodyDecl(i)).typeDecl());
+    }
+    for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)outerIter.next();
+      for(Iterator iter = type.types().iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(memberTypes(decl.name()).contains(decl))
+          c.add(decl);
+      }
+    }
+    if(hasSuperclass()) {
+      for(Iterator iter = superclass().types().iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(memberTypes(decl.name()).contains(decl))
+          c.add(decl);
+      }
+    }
+    return c;
+  }
+  eq InterfaceDecl.types() {
+    Collection c = new ArrayList();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof MemberTypeDecl)
+        c.add(((MemberTypeDecl)getBodyDecl(i)).typeDecl());
+    }
+    for(Iterator outerIter = superinterfacesIterator(); outerIter.hasNext(); ) {
+      TypeDecl type = (TypeDecl)outerIter.next();
+      for(Iterator iter = type.types().iterator(); iter.hasNext(); ) {
+        TypeDecl decl = (TypeDecl)iter.next();
+        if(memberTypes(decl.name()).contains(decl))
+          c.add(decl);
+      }
+    }
+    return c;
+  }
 
   inh NameType Access.nameType();
   syn boolean Access.showMethods() = nameType() != NameType.TYPE_NAME && 
     nameType() != NameType.PACKAGE_NAME && nameType() != NameType.PACKAGE_OR_TYPE_NAME;
   syn boolean Access.showVariables() = nameType() != NameType.TYPE_NAME && 
     nameType() != NameType.PACKAGE_NAME && nameType() != NameType.PACKAGE_OR_TYPE_NAME;
-  syn boolean Access.showTypes() = nameType() != NameType.EXPRESSION_NAME;
+  syn boolean Access.showTypes() = (!isQualified() && nameType() != NameType.EXPRESSION_NAME) || qualifier().isTypeAccess();
 
   // methods, types, variables
   syn Collection Access.visibleDecls() {
@@ -116,7 +156,7 @@ aspect Completion {
       if(!m.accessibleFrom(hostType()))
       	accessible = false;
       if(isQualified()) {
-        if(qualifier().type().accessibleFrom(hostType()))
+        if(!qualifier().type().accessibleFrom(hostType()))
           accessible = false;
         if(accessible && m.isProtected() && !m.hostPackage().equals(hostPackage()) && !m.isStatic() && !qualifier().isSuperAccess()) {
           TypeDecl C = m.hostType();
