@@ -215,6 +215,8 @@ public class JastAddMainTab extends AbstractLaunchConfigurationTab {
 	
 	protected IProject getProject() {
 		String projectName = projText.getText();
+		if(projectName == null || projectName.equals(""))
+			return null;
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = root.getProject(projectName);
 		return project.exists() ? project : null;
