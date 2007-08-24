@@ -11,6 +11,7 @@ import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
 import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 
 /**
  * A source lookup participant that searches for Java source code.
@@ -120,12 +121,16 @@ public class JastAddSourceLookupParticipant extends AbstractSourceLookupParticip
 	
 	protected ISourceContainer[] getSourceContainers() {
 		ISourceLookupDirector director = getDirector();
-		/*if (director != null) {
-			return director.getSourceContainers();
-		}*/
-		return new ISourceContainer[] { //TODO Java? Should probably be the current project
-				new FolderSourceContainer(ResourcesPlugin.getWorkspace().getRoot().getProject("Java"), true)
-		};
+		if (director != null) {
+			try {
+				String projectName = director.getLaunchConfiguration().getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
+				return new ISourceContainer[] { 
+					new FolderSourceContainer(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName), true)
+				};
+			} catch (CoreException e) {
+			}
+		}
+		return new ISourceContainer[] { };
 	}
 
 }
