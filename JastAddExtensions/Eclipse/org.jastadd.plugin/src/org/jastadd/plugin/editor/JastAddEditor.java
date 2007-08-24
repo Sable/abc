@@ -23,6 +23,7 @@ public class JastAddEditor extends TextEditor {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null) {
 				fOutlinePage= new JastAddContentOutlinePage(getDocumentProvider(), this);
+				this.addPropertyListener(fOutlinePage);
 				if (getEditorInput() != null)
 					fOutlinePage.setInput(getEditorInput());
 			}

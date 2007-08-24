@@ -28,6 +28,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -38,7 +40,7 @@ import org.jastadd.plugin.JastAddModel;
 
 import AST.*;
 
-public class JastAddContentOutlinePage extends ContentOutlinePage {
+public class JastAddContentOutlinePage extends ContentOutlinePage implements IPropertyListener {
 	
 	private IEditorInput fInput;
 	private IDocumentProvider fDocumentProvider;
@@ -112,6 +114,13 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 			}
 		}
 	}
+	
+	public void propertyChanged(Object source, int propId) {
+		if(propId == IWorkbenchPartConstants.PROP_DIRTY) {
+			update();
+		}
+	}
+	
 	
 	protected class JastAddLabelProvider extends LabelProvider {
 		public String getText(Object element) {
@@ -263,5 +272,6 @@ public class JastAddContentOutlinePage extends ContentOutlinePage {
 			}
 			return new Object[0];
 		}
-	};
+	}
+
 }
