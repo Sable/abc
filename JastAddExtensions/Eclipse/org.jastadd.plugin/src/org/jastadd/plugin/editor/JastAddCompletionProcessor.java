@@ -8,6 +8,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 import org.eclipse.core.filesystem.URIUtil;
@@ -70,6 +72,38 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 							System.out.println("No tree built");
 							// Try a structural recovery
 							doStructuralRecovery(doc, documentOffset - 1);
+							System.out.println("After structural recovery:\n" + doc.get());
+							node = JastAddModel.getInstance().findNodeInFile(dummyFile, line, col);
+							if (node == null) {
+								System.out.println("Structural recovery failed");
+							} else if (node instanceof Access) {
+								System.out.println("Automatic recovery after structural recovery");
+								proposals = node.completion(linePart[1]);
+								System.out.println(node.getParent().getParent().dumpTree());								
+							} else {
+							    System.out.println("Manual recovery after structural recovery");
+                                // Create a valid expression in case name is empty
+							    String nameWithParan = "(" + linePart[0] + ")"; 
+								ByteArrayInputStream is = new ByteArrayInputStream(
+										nameWithParan.getBytes());
+								scanner.JavaScanner scanner = new scanner.JavaScanner(
+										new scanner.Unicode(is));
+								Expr newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+										scanner, parser.JavaParser.AltGoals.expression))
+										.getExprNoTransform();
+								newNode = newNode.qualifiesAccess(new VarAccess("X"));
+
+								int childIndex = node.getNumChild();
+								node.addChild(newNode);
+								node = node.getChild(childIndex);
+								if(node instanceof Access)
+									node = ((Access)node).lastAccess();
+								// System.out.println(node.dumpTreeNoRewrite());
+
+								// Use the connection to the dummy AST to do name completion
+								proposals = node.completion(linePart[1]);
+							}
+							
 						}
 						else if(node instanceof Access) {
 							System.out.println("Automatic recovery");
@@ -168,89 +202,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	}
 	
 	
-	private void doStructuralRecovery(SimpleDocument doc, int dotOffset) {
-        final char ENCLOSE_LPARAN = '(';
-		final char ENCLOSE_RPARAN = ')';
-		final char ENCLOSE_LBRACE = '{';
-		final char ENCLOSE_RBRACE = '}';
-		
-		// find left scope trace
-		// build stack of open eclose characters to the left - eat even pairs
-		Stack<Character> stack = new Stack<Character>();
-		String content = doc.get();
-		int offset = dotOffset;
-		char c;
-		while (offset > 0) {
-			c = content.charAt(offset);
-			switch (c) {
-			case ENCLOSE_RPARAN:
-				stack.push(c);
-				break;
-			case ENCLOSE_RBRACE:
-				stack.push(c);
-				break;
-			case ENCLOSE_LPARAN:
-				if (!stack.isEmpty() && stack.peek() == ENCLOSE_RPARAN) {
-					stack.pop();
-				} else {
-					stack.push(c);
-				}
-				break;
-			case ENCLOSE_LBRACE:
-				if (!stack.isEmpty() && stack.peek() == ENCLOSE_RBRACE) {
-					stack.pop();
-				} else {
-					stack.push(c);
-				}
-				break;
-			}
-			offset--; // Move one left
-		}
-		
-		// try to empty stack with eclose characters found to the right
-		offset = dotOffset;
-		while (!stack.isEmpty() && offset < content.length()) {
-			c = content.charAt(offset);
-			switch (c) {
-			case ENCLOSE_RPARAN:
-				if (stack.peek() == ENCLOSE_LPARAN) {
-					stack.pop();
-				} else {
-					// Mismatch!? - (}
-				}
-				break;
-			case ENCLOSE_RBRACE:
-				if (stack.peek() == ENCLOSE_LBRACE) {
-					stack.pop();
-				} else {
-					// Mismatch !? {)
-				}
-				break;
-			case ENCLOSE_LPARAN:
-				stack.push(c);
-				break;
-			case ENCLOSE_LBRACE:
-				stack.push(c);
-				break;
-			}
-			offset++; // Move one right
-		}
-		
-		// if stack isn't empty add corresponding enclose characters to the end until stack is empty
-		if (stack.isEmpty()) {
-			for (Iterator itr = stack.iterator(); itr.hasNext();) {
-				c = ((Character)itr.next()).charValue();
-				if (c == ENCLOSE_LPARAN) {
-				   // add ENLOSE_RPARAN
-					doc.replace(doc.getLength() - 1, 0, ")");
-				} else if (c == ENCLOSE_LBRACE) {
-					// add ENCLOSE_RBRACE
-					doc.replace(doc.getLength() - 1, 0, "}");
-				}
-			}
-		}
-	}
-
 
 	/**
 	 * Create a dummy file where the active line has been replaced with an empty stmt.
@@ -429,18 +380,532 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	}
 
 	
+	// ---- Structural analysis stuff ----
+	
+	private final int UNKNOWN_OFFSET = -1;
+	
+	private final char ENCLOSE_LPARAN = '(';
+	private final char ENCLOSE_RPARAN = ')';
+	private final char ENCLOSE_LBRACE = '{';
+	private final char ENCLOSE_RBRACE = '}';
+	
+	private abstract class Enclose implements Comparable {
+		protected int offset;
+		protected int indent;
+		
+		protected Enclose(int offset, int indent) {
+			this.offset = offset;
+			this.indent = indent;
+		}	
+		public int getOffset() {
+			return offset;
+		}
+		public int getIndent() {
+			return indent;
+		}
+		public int compareTo(Object obj) {
+            if (obj instanceof Enclose) {
+            	Enclose enclose = (Enclose)obj;
+            	if (enclose.indent == indent) {
+            		return 0;
+            	} else if (indent > enclose.indent) {
+            		return 1;
+            	} else {
+            		return -1;
+            	}
+            }
+			return 0;
+		}
+		public abstract void print(String indent);
+		public abstract String toString();
+	}
+
+	private abstract class OpenEnclose extends Enclose {
+		protected OpenEnclose(int offset, int indent) {
+			super(offset, indent);
+		}
+	}
+	private class EncloseLParan extends OpenEnclose {
+		public EncloseLParan(int offset, int indent) {
+			super(offset, indent);
+		}
+		public void print(String indent) {
+			System.out.println(indent + "--");
+			System.out.println(indent + toString());
+			System.out.println(indent + "--");
+		}
+        public String toString() {
+			return "(LPARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+		}
+	}
+	private class EncloseLBrace extends OpenEnclose {
+		public EncloseLBrace(int offset, int indent) {
+			super(offset, indent);
+		}
+		public void print(String indent) {
+			System.out.println(indent + "--");
+			System.out.println(indent + toString());
+			System.out.println(indent + "--");
+		}
+		public String toString() {
+			return "(LBRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+		}
+	}
+	private class UnknownOpenEnclose extends OpenEnclose {
+		public UnknownOpenEnclose(int offset, int indent) {
+			super(offset, indent);
+		}
+		public void print(String indent) {
+			System.out.println(indent + "--");
+			System.out.println(indent + toString());
+			System.out.println(indent + "--");
+		}
+		public String toString() {
+			return "(UO," + String.valueOf(offset) + "," + String.valueOf(indent);
+		}
+	}
+
+	private abstract class CloseEnclose extends Enclose {
+		protected CloseEnclose(int offset, int indent) {
+			super(offset, indent);
+		}
+	}
+	private class EncloseRParan extends CloseEnclose {
+		public EncloseRParan(int offset, int indent) {
+			super(offset, indent);
+		}
+		public void print(String indent) {
+			System.out.println(indent + "--");
+			System.out.println(indent + toString());
+			System.out.println(indent + "--");
+		}
+		public String toString() {
+			return "(RPARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+		}
+	}
+	private class EncloseRBrace extends CloseEnclose {
+		public EncloseRBrace(int offset, int indent) {
+			super(offset, indent);
+		}
+		public void print(String indent) {
+			System.out.println(indent + "--");
+			System.out.println(indent + toString());
+			System.out.println(indent + "--");
+		}
+		public String toString() {
+			return "(RBRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+		}
+	}
+	private class UnknownCloseEnclose extends CloseEnclose {
+		public UnknownCloseEnclose(int offset, int indent) {
+			super(offset, indent);
+		}
+		public void print(String indent) {
+			System.out.println(indent + "--");
+			System.out.println(indent + toString());
+			System.out.println(indent + "--");
+		}
+		public String toString() {
+			return "(UC," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+		}
+	}
+
+	private abstract class EnclosePair {
+		protected EnclosePair parent;
+		protected ArrayList<EnclosePair> children;
+		protected OpenEnclose open;
+		protected CloseEnclose close;
+		
+		public EnclosePair(EnclosePair parent, OpenEnclose open, CloseEnclose close) {
+			this.parent = parent;
+			this.open = open;
+			this.close = close;
+			children = new ArrayList<EnclosePair>();
+		}
+		public void addChild(EnclosePair child) {
+			children.add(child);
+		}
+		public boolean possibleParentOf(Enclose current) {
+			return open.offset <= current.offset && close.offset >= current.offset; 
+		}
+		public void setOpen(OpenEnclose open) {
+		  	this.open = open;
+		}
+		public void setClose(CloseEnclose close) {
+			this.close = close;
+		}
+		public void print(String indent) {
+			open.print(indent);
+			for (Iterator itr = children.iterator(); itr.hasNext();) {
+				Enclose enclose = (Enclose)itr.next();
+				enclose.print(indent + "\t");
+			}
+			close.print(indent);
+		}
+	}
+	
+	private class BraceEnclosePair extends EnclosePair {
+		public BraceEnclosePair(EnclosePair parent, OpenEnclose open, CloseEnclose close) {
+			super(parent, open, close);
+		}
+		public boolean isBroken() {
+			return !(open instanceof EncloseLBrace && close instanceof EncloseRBrace);
+		}	
+	}
+	private class ParanEnclosePair extends EnclosePair {
+		public ParanEnclosePair(EnclosePair parent, OpenEnclose open, CloseEnclose close) {
+			super(parent, open, close);
+		}
+		public boolean isBroken() {
+			return !(open instanceof EncloseLParan && close instanceof EncloseRParan);
+		}
+	}
 	
 	
+	private PriorityQueue<Enclose> createTuples(String content) {
+		PriorityQueue<Enclose> queue = new PriorityQueue<Enclose>();
+		int offset = 0;
+	    while (offset < content.length()) {
+	      char c = content.charAt(offset);
+	      switch (c) {
+	      case ENCLOSE_LPARAN: queue.add(new EncloseLParan(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_RPARAN: queue.add(new EncloseRParan(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_LBRACE: queue.add(new EncloseLBrace(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_RBRACE: queue.add(new EncloseRBrace(offset,resolveIndent(content, offset))); break;
+	      }
+	      offset++;
+	    }
+	    return queue;
+	}
 	
+	private int resolveIndent(String content, int offset) {
+		int posOffset = offset;
+		// Locate the first '\n' to the left
+		while (offset > 0) {
+			char c = content.charAt(offset);
+			if (c == '\n') {
+				break;
+			}
+			offset--; // Move one left
+		}
+		// Move one right and count '\t' or whitespace
+		offset++;
+		int tabSize = 4;
+		int wsCount = 0;
+		while (offset < posOffset) {
+			char c = content.charAt(offset);
+			if (c == '\t') {
+				wsCount += tabSize;
+			} else if (c == ' ') {
+				wsCount++;
+			} else {
+				break;
+			}
+			offset++; // Move one right
+		}
+		return wsCount;
+	}	
+		
+	private ArrayList<EnclosePair> createPairTree(PriorityQueue<Enclose> tupleQueue) {
+		ArrayList<EnclosePair> list = new ArrayList<EnclosePair>();
+		
+		Enclose previousEnclose = null;
+		boolean expectingOpen = true;
+		
+		EnclosePair parent = null;
+		boolean moveToNextEnclose = true;
+		Enclose current = null;
+		
+		// sort tupleList after indent
+		for (Iterator itr = tupleQueue.iterator(); itr.hasNext();) {
+		    if (moveToNextEnclose) {
+			    previousEnclose = current;
+				current = (Enclose)itr.next();
+		    } else {
+		    	moveToNextEnclose = true;
+		    }
+			
+			// Change level?
+			if (previousEnclose != null) {
+				// Level increased?
+				
+				if (previousEnclose.compareTo(current) < 0) {
+					// if expecting close from the previous level   
+					if (!expectingOpen) {
+						EnclosePair pair = null;
+						if (previousEnclose instanceof EncloseLParan) {
+							pair = new ParanEnclosePair(parent,
+									(EncloseLParan) previousEnclose,
+									new UnknownCloseEnclose(current.offset,
+											current.indent));
+						} else if (previousEnclose instanceof EncloseLBrace) {
+							pair = new BraceEnclosePair(parent,
+									(EncloseLBrace) previousEnclose,
+									new UnknownCloseEnclose(current.offset,
+											current.indent));
+						}
+						expectingOpen = true;
+						assert(pair != null); // sanity check
+						if (parent == null) {
+							list.add(pair);
+						} else {
+							parent.addChild(pair);
+						}	
+					}
+					for (Iterator pItr = list.iterator(); pItr.hasNext();) {
+						EnclosePair pair = (EnclosePair)pItr.next();
+						if (pair.possibleParentOf(current)) {
+							parent = pair;
+							
+						}
+					}
+				}
+		    }
+			
+			// Expecting open
+			if (expectingOpen) {
+				// Expected open
+				if (current instanceof OpenEnclose) {
+					expectingOpen = false;
+				}
+				// Unexpected close
+				else {
+					EnclosePair pair = null;
+					if (current instanceof EncloseRParan) {
+					   pair = new ParanEnclosePair(parent, new UnknownOpenEnclose(current.offset, current.indent), (EncloseRParan)current);
+					} else if (current instanceof EncloseRBrace) {
+						pair = new BraceEnclosePair(parent, new UnknownOpenEnclose(current.offset, current.indent), (EncloseRBrace)current);
+					}
+					if (parent == null) {
+						list.add(pair);
+					} else {
+						parent.addChild(pair);
+					}
+				}
+			}
+			// Expecting close
+			else {
+				// Expected close
+				if (current instanceof CloseEnclose) {
+					expectingOpen = true;
+					EnclosePair pair = null;
+					// Match
+					if (current instanceof EncloseRParan && previousEnclose instanceof EncloseLParan) {
+						pair = new ParanEnclosePair(parent, (EncloseLParan)previousEnclose, (EncloseRParan)current);
+				    } else if (current instanceof EncloseRBrace && previousEnclose instanceof EncloseLBrace) {
+						pair = new BraceEnclosePair(parent, (EncloseLBrace)previousEnclose, (EncloseRBrace)current);
+					}
+					// No match - take care of previousEnclose
+				    else {
+						if (previousEnclose instanceof EncloseLParan) {
+							pair = new ParanEnclosePair(parent, (EncloseLParan)previousEnclose, new UnknownCloseEnclose(current.offset, current.indent));
+						} else if (previousEnclose instanceof EncloseLBrace) {
+							pair = new BraceEnclosePair(parent, (EncloseLBrace)previousEnclose, new UnknownCloseEnclose(current.offset, current.indent));
+						}
+						// The next run will handle current if it stays the same
+						moveToNextEnclose = false;
+					}
+					assert(pair != null); // To make sure, this should not happen
+					if (parent == null) {
+						list.add(pair);
+					} else {
+						parent.addChild(pair);
+					}
+				}
+				// Unexpected open
+				else {
+					EnclosePair pair = null;
+					if (previousEnclose instanceof EncloseLParan) {
+						pair = new ParanEnclosePair(parent, (EncloseLParan)previousEnclose, new UnknownCloseEnclose(current.offset, current.indent));
+					} else if (previousEnclose instanceof EncloseLBrace) {
+						pair = new BraceEnclosePair(parent, (EncloseLBrace)previousEnclose, new UnknownCloseEnclose(current.offset, current.indent));
+					}
+                    // The next run will handle current if it stays the same
+					moveToNextEnclose = false;
+					expectingOpen = true;
+					assert(pair != null); // To make sure, this should not happen
+					if (parent == null) {
+						list.add(pair);
+					} else {
+						parent.addChild(pair);
+					}
+				}
+			}
+			
+			
+		}
+		
+		return list;
+	}
+
+	
+	private void printTree(ArrayList<EnclosePair> pairList) {
+		for (Iterator itr = pairList.iterator(); itr.hasNext();) {
+			EnclosePair pair = (EnclosePair)itr.next();
+			pair.print("");
+		}
+	}
+
+ 	private void doStructuralRecovery(SimpleDocument doc, int dotOffset) {
+ 		System.out.println(doc.get());
+      PriorityQueue<Enclose> tupleList = createTuples(doc.get()); 
+      ArrayList<EnclosePair> pairList = createPairTree(tupleList);
+      printTree(pairList);
+	}
+	
+	/*
+	
+    
+	private void doStructuralRecovery(SimpleDocument doc, int dotOffset) {
+    	
+		// find left scope trace
+		// build stack of open eclose characters to the left - eat even pairs
+		Stack<Enclose> stack = new Stack<Enclose>();
+		String content = doc.get();
+		int offset = dotOffset;
+		char c;
+		
+		while (offset > 0) {
+			c = content.charAt(offset);
+			switch (c) {
+			case ENCLOSE_RPARAN:
+				stack.push(new Enclose(ENCLOSE_RPARAN, offset, resolveIndent(content, offset)));
+				break;
+			case ENCLOSE_RBRACE:
+				stack.push(new Enclose(ENCLOSE_RBRACE, offset, resolveIndent(content, offset)));
+				break;
+			case ENCLOSE_LPARAN:
+				if (!stack.isEmpty()) {
+					Enclose enclose = stack.peek();
+				    if (enclose.encloseType == ENCLOSE_RPARAN) {
+					    stack.pop();
+				    } else {
+				    	// This means '..(...}...' - an ENCLOSE_RPARAN is probably missing between this point and the previous enclose
+				    	new MissingEnclose(ENCLOSE_RPARAN, offset, enclose.offset);
+				    }
+				} else {
+					stack.push(new Enclose(c, offset, resolveIndent(content, offset)));
+				}
+				break;
+			case ENCLOSE_LBRACE:
+				if (!stack.isEmpty()) {
+					Enclose enclose = stack.peek();
+					if (enclose.encloseType == ENCLOSE_RBRACE) {
+						stack.pop();
+					} else {
+						// This means '..{...)...' - an ENCLOSE_RBRACE is probably missing between this point and the previous enclose
+						new MissingEnclose(ENCLOSE_RBRACE, offset, enclose.offset);
+					}
+				} else {
+					stack.push(new Enclose(c, offset, resolveIndent(content, offset)));
+				}
+				break;
+			}
+			offset--; // Move one left
+		}
+		
+		ArrayList<MissingEnclose> list = new ArrayList<MissingEnclose>();
+		
+		// try to empty stack with eclose characters found to the right
+		offset = dotOffset;
+		while (!stack.isEmpty() && offset < content.length()) {
+			c = content.charAt(offset);
+			switch (c) {
+			case ENCLOSE_RPARAN:
+				if (stack.peek() == ENCLOSE_LPARAN) {
+					stack.pop();
+				} else {
+					// Mismatch!? - (} - ENCLOSE_RPARAN should be added somewhere between dot and this offset
+					list.add(new MissingEnclose(ENCLOSE_RPARAN, dotOffset, offset));
+				}
+				break;
+			case ENCLOSE_RBRACE:
+				if (stack.peek() == ENCLOSE_LBRACE) {
+					stack.pop();
+				} else {
+					// Mismatch !? {) - ENCLOSE_RBRACE should be added somewhere between dot and this offset
+					list.add(new MissingEnclose(ENCLOSE_RBRACE, dotOffset, offset));
+				}
+				break;
+			case ENCLOSE_LPARAN:
+				stack.push(c);
+				break;
+			case ENCLOSE_LBRACE:
+				stack.push(c);
+				break;
+			}
+			offset++; // Move one right
+		}
+		
+		// if stack isn't empty add corresponding enclose characters to the end until stack is empty
+		if (!stack.isEmpty()) {
+			for (Iterator itr = stack.iterator(); itr.hasNext();) {
+				c = ((Character)itr.next()).charValue();
+				if (c == ENCLOSE_LPARAN) {
+				   // add ENLOSE_RPARAN
+					doc.replace(doc.getLength() - 1, 0, ")");
+				} else if (c == ENCLOSE_LBRACE) {
+					// add ENCLOSE_RBRACE
+					doc.replace(doc.getLength() - 1, 0, "}");
+				}
+			}
+		}
+	}
+	
+	private int resolveIndent(String content, int offset) {
+		int posOffset = offset;
+		// Locate the first '\n' to the left
+		while (offset > 0) {
+			char c = content.charAt(offset);
+			if (c == '\n') {
+				break;
+			}
+		} 
+		// Move one right and count '\t' or whitespace
+		offset++;
+		int tabSize = 4;
+		int wsCount = 0;
+		while (offset < posOffset) {
+			char c = content.charAt(offset);
+			if (c == '\t') {
+				wsCount += tabSize;
+			} else if (c == ' ') {
+				wsCount++;
+			} else {
+				break;
+			}
+		}
+		// Return the number of complete tabs
+		return wsCount % tabSize;
+	}
+	
+	private class Enclose {
+		public char encloseType;
+		public int indent;
+		public int offset;
+		public Enclose(char c, int offset, int indent) {
+			encloseType = c;
+			this.offset = offset;
+			this.indent = indent;
+		}
+	}
+	
+	private class MissingEnclose extends Enclose {
+		public int startOffset;
+		public int endOffset;
+		public char missingEnclose;
+		public MissingEnclose(char c, int start, int end) {
+		   super(c, -1, -1);
+		   startOffset = start;
+		   endOffset = end;
+		}
+	}
+	*/
+
+	
+/*	
 	private static class StructuralModel {
 		
-		/**
-		 * Creates a structural model of the given content. Currently this means
-		 * that the active enclosing is located and divided with an appropiate
-		 * delimiter.
-		 * @param content The content as a String
-		 * @param offset The current offset which should correspond to a '.'
-		 */
 		public static StructuralModel createModel(String content, int offset) {
 			
 			StructuralModel model = new StructuralModel(0, content.length(), offset);
@@ -449,23 +914,14 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			return model;
 		}
 		
-		/**
-		 * @return The position of the '.'
-		 */
 		public int getDotPosition() {
 			return currentOffset;
 		}
 		
-		/** 
-		 * @return The start and end offset of the active scope including enclosing characters
-		 */
 		public int[] getActiveScope() {
 			return new int[] { firstLeftEnclosing, firstRightEnclosing };
 		}
 		
-		/**
-		 * @return The start and end offset of the active segment including delimiter characters
-		 */
 		public int[] getActiveSegment() {
 			int[] res = new int[2];
 			res[0] = segmentStart;
@@ -599,29 +1055,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			firstLeftEnclosing = NO_ENCLOSE;
 		}
 		
-		/*
-		private void divideInterval(String content, int start, int end, ArrayList<Integer> delimList) {
-			int offset = start; // Search left to right
-			char c = content.charAt(offset);
-			Stack<Character> stack = new Stack<Character>(); // Stack to keep trace of internal scopes
-			while (offset < end) {
-				if (c == ENCLOSE_LBRACE) {
-					stack.push(c);
-				} else if (c == ENCLOSE_RBRACE) {
-					stack.pop(); 
-					// There should only be even matched pairs since firstLeftEnclose and firstRightEnlcose 
-					// matches the first "broken" pair -- the stack should not be empty and hence safe to pop
-					if (stack.isEmpty()) { // If this emptied the stack we're back on track
-						delimList.add(offset);
-					}
-				} else if (stack.isEmpty() && (c == DELIM_SEMICOLON || c == DELIM_COMMA)) { // Only consider ';' or ',' if the scope stack is empty
-					delimList.add(offset);
-				}
-				c = content.charAt(++offset); // Move one right
-			}
-			delimList.add(end); // Always add the last offset to get at least one segment
-		}
-		*/
 		
 		private void findMatchingRightEnclose(String content, int offset) {
 			char rTarget = ENCLOSE_RBRACE;
@@ -742,9 +1175,11 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			} 
 		 }
 	}
+	*/
 	
 	
-	
+
+	//============================================================================================
 	
 	
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
