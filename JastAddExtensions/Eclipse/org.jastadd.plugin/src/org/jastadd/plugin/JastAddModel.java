@@ -328,7 +328,7 @@ public class JastAddModel {
             	
               Collection errors = unit.parseErrors();
               Collection warnings = new LinkedList();
-              if(doErrorChecks) {
+              if(doErrorChecks && errors.isEmpty()) { // only run semantic checks if there are no parse errors
                 unit.errorCheck(errors, warnings);
               }
               boolean build = errors.isEmpty() && doErrorChecks;
