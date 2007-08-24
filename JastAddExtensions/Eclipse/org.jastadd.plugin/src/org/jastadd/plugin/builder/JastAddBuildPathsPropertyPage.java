@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.debug.internal.ui.PixelConverter;
 import org.eclipse.debug.internal.ui.SWTUtil;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -19,6 +20,8 @@ import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -137,7 +140,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		pathButtonComp.setLayoutData(gd);
 		pathButtonComp.setFont(parent.getFont());
 	
-		Button addJarButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addjar_button, null);
+		Button addJarButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addjar_button, null);
 		addJarButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -146,7 +149,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 			}
 		});
 		
-		Button addExtJarButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addextjar_button, null);
+		Button addExtJarButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addextjar_button, null);
 		addExtJarButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -155,7 +158,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 			}
 		});
 		
-		Button addVarButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addvariable_button, null);
+		Button addVarButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addvariable_button, null);
 		addVarButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -165,7 +168,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		});
 		addVarButton.setEnabled(false);
 
-		Button addLibButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addlibrary_button, null);
+		Button addLibButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addlibrary_button, null);
 		addLibButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -175,7 +178,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		});
 		addLibButton.setEnabled(false);
 
-		Button addClassFolderButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addclassfolder_button, null);
+		Button addClassFolderButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_addclassfolder_button, null);
 		addClassFolderButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -194,7 +197,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		gd.verticalIndent= 4;
 		separator.setLayoutData(gd);
 		
-		Button editButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_edit_button, null);
+		Button editButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_edit_button, null);
 		editButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -204,7 +207,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		});
 		editButton.setEnabled(false);
 
-		Button removeButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_remove_button, null);
+		Button removeButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_remove_button, null);
 		removeButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -223,7 +226,7 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		gd.verticalIndent= 4;
 		separator.setLayoutData(gd);
 		
-		Button libReplaceButton = SWTUtil.createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_replace_button, null);
+		Button libReplaceButton = createPushButton(pathButtonComp, NewWizardMessages.LibrariesWorkbookPage_libraries_replace_button, null);
 		libReplaceButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -234,6 +237,35 @@ public class JastAddBuildPathsPropertyPage extends PropertyPage {
 		libReplaceButton.setEnabled(false);
 		
 		return comp;
+	}
+	
+	public Button createPushButton(Composite parent, String label, Image image) {
+		Button button = new Button(parent, SWT.PUSH);
+		button.setFont(parent.getFont());
+		if (image != null) {
+			button.setImage(image);
+		}
+		if (label != null) {
+			button.setText(label);
+		}
+		GridData gd = new GridData();
+		button.setLayoutData(gd);	
+		
+		Assert.isNotNull(button);
+		Object gd2 = button.getLayoutData();
+		if (gd instanceof GridData) {
+			
+			((GridData)gd2).widthHint= getButtonWidthHint(button);	
+			((GridData)gd2).horizontalAlignment = GridData.FILL;	 
+		}
+		return button;	
+	}	
+	
+	public int getButtonWidthHint(Button button) {
+		button.setFont(JFaceResources.getDialogFont());
+		PixelConverter converter= new PixelConverter(button);
+		int widthHint= converter.convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+		return Math.max(widthHint, button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
 	}
 
 	
