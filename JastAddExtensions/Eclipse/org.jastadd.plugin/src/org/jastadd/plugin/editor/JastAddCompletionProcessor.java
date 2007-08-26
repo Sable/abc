@@ -425,8 +425,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 	}
-	private class EncloseLParan extends OpenEnclose {
-		public EncloseLParan(int offset, int indent) {
+	private class OpenParan extends OpenEnclose {
+		public OpenParan(int offset, int indent) {
 			super(offset, indent);
 		}
 		public void print(String indent) {
@@ -438,8 +438,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			return "(LPARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
-	private class EncloseLBrace extends OpenEnclose {
-		public EncloseLBrace(int offset, int indent) {
+	private class OpenBrace extends OpenEnclose {
+		public OpenBrace(int offset, int indent) {
 			super(offset, indent);
 		}
 		public void print(String indent) {
@@ -451,8 +451,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			return "(LBRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
-	private class UnknownOpenEnclose extends OpenEnclose {
-		public UnknownOpenEnclose(int offset, int indent) {
+	private class UnknownOpen extends OpenEnclose {
+		public UnknownOpen(int offset, int indent) {
 			super(offset, indent);
 		}
 		public void print(String indent) {
@@ -470,8 +470,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 	}
-	private class EncloseRParan extends CloseEnclose {
-		public EncloseRParan(int offset, int indent) {
+	private class CloseParan extends CloseEnclose {
+		public CloseParan(int offset, int indent) {
 			super(offset, indent);
 		}
 		public void print(String indent) {
@@ -483,8 +483,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			return "(RPARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
-	private class EncloseRBrace extends CloseEnclose {
-		public EncloseRBrace(int offset, int indent) {
+	private class CloseBrace extends CloseEnclose {
+		public CloseBrace(int offset, int indent) {
 			super(offset, indent);
 		}
 		public void print(String indent) {
@@ -496,8 +496,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			return "(RBRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
-	private class UnknownCloseEnclose extends CloseEnclose {
-		public UnknownCloseEnclose(int offset, int indent) {
+	private class UnknownClose extends CloseEnclose {
+		public UnknownClose(int offset, int indent) {
 			super(offset, indent);
 		}
 		public void print(String indent) {
@@ -537,46 +537,100 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		public void print(String indent) {
 			open.print(indent);
 			for (Iterator itr = children.iterator(); itr.hasNext();) {
-				Enclose enclose = (Enclose)itr.next();
-				enclose.print(indent + "\t");
+				EnclosePair pair = (EnclosePair)itr.next();
+				pair.print(indent + "\t");
 			}
 			close.print(indent);
 		}
+		public abstract boolean fixWith(Enclose enclose);
 	}
 	
-	private class BraceEnclosePair extends EnclosePair {
-		public BraceEnclosePair(EnclosePair parent, OpenEnclose open, CloseEnclose close) {
+	private class BracePair extends EnclosePair {
+		public BracePair(EnclosePair parent, OpenBrace open) {
+			super(parent, open, new UnknownClose(open.offset, open.indent));
+		}
+		public BracePair(EnclosePair parent, CloseBrace close) {
+			super(parent, new UnknownOpen(close.offset, close.indent), close);
+		}
+		public BracePair(EnclosePair parent, OpenBrace open, CloseBrace close) {
 			super(parent, open, close);
 		}
 		public boolean isBroken() {
-			return !(open instanceof EncloseLBrace && close instanceof EncloseRBrace);
-		}	
+			return !(open instanceof OpenBrace && close instanceof CloseBrace);
+		}
+		public boolean fixWith(Enclose enclose) {
+			if (open instanceof OpenBrace && enclose instanceof CloseBrace) {
+				close = (CloseBrace) enclose;
+				return true;
+			} else if (close instanceof CloseBrace
+					&& enclose instanceof OpenBrace) {
+				open = (OpenBrace) enclose;
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
-	private class ParanEnclosePair extends EnclosePair {
-		public ParanEnclosePair(EnclosePair parent, OpenEnclose open, CloseEnclose close) {
+	private class ParanPair extends EnclosePair {
+		public ParanPair(EnclosePair parent, OpenParan open) {
+			super(parent, open, new UnknownClose(open.offset, open.indent));
+		}
+		public ParanPair(EnclosePair parent, CloseParan close) {
+			super(parent, new UnknownOpen(close.offset, close.indent), close);
+		}
+		public ParanPair(EnclosePair parent, OpenParan open, CloseParan close) {
 			super(parent, open, close);
 		}
 		public boolean isBroken() {
-			return !(open instanceof EncloseLParan && close instanceof EncloseRParan);
+			return !(open instanceof OpenParan && close instanceof CloseParan);
+		}
+		public boolean fixWith(Enclose enclose) {
+			if (open instanceof OpenParan && enclose instanceof CloseParan) {
+				close = (CloseParan) enclose;
+				return true;
+			} else if (close instanceof CloseParan
+					&& enclose instanceof OpenParan) {
+				open = (OpenParan) enclose;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 	
 	
-	private PriorityQueue<Enclose> createTuples(String content) {
+	private PriorityQueue<Enclose> createTupleQueue(String content) {
 		PriorityQueue<Enclose> queue = new PriorityQueue<Enclose>();
 		int offset = 0;
 	    while (offset < content.length()) {
 	      char c = content.charAt(offset);
 	      switch (c) {
-	      case ENCLOSE_LPARAN: queue.add(new EncloseLParan(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_RPARAN: queue.add(new EncloseRParan(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_LBRACE: queue.add(new EncloseLBrace(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_RBRACE: queue.add(new EncloseRBrace(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_LPARAN: queue.add(new OpenParan(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_RPARAN: queue.add(new CloseParan(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_LBRACE: queue.add(new OpenBrace(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_RBRACE: queue.add(new CloseBrace(offset,resolveIndent(content, offset))); break;
 	      }
 	      offset++;
 	    }
 	    return queue;
 	}
+	
+	private ArrayList<Enclose> createTupleList(String content) {
+		ArrayList<Enclose> list = new ArrayList<Enclose>();
+		int offset = 0;
+	    while (offset < content.length()) {
+	      char c = content.charAt(offset);
+	      switch (c) {
+	      case ENCLOSE_LPARAN: list.add(new OpenParan(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_RPARAN: list.add(new CloseParan(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_LBRACE: list.add(new OpenBrace(offset,resolveIndent(content, offset))); break;
+	      case ENCLOSE_RBRACE: list.add(new CloseBrace(offset,resolveIndent(content, offset))); break;
+	      }
+	      offset++;
+	    }
+	    return list;
+	}
+	
 	
 	private int resolveIndent(String content, int offset) {
 		int posOffset = offset;
@@ -606,8 +660,109 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		return wsCount;
 	}	
 		
+	private ArrayList<EnclosePair> createPairTree(ArrayList<Enclose> tupleList) {
+		ArrayList<EnclosePair> list = new ArrayList<EnclosePair>();
+		
+		EnclosePair parent = null;
+		Enclose current = null;
+		Enclose previous = null;
+		
+		Stack<Stack<EnclosePair>> levelStack = new Stack<Stack<EnclosePair>>();
+		levelStack.push(new Stack<EnclosePair>());
+		
+		for (Iterator itr = tupleList.iterator(); itr.hasNext();) {
+			current = (Enclose)itr.next();
+			
+			// Level change -> parent change -> stack prepaired
+			if (previous != null) {
+				// Increase ?
+				if (previous.compareTo(current) < 0) {
+					// Find parent
+					while (!levelStack.isEmpty() && levelStack.peek().isEmpty()) {
+						levelStack.pop();
+					}
+					if (levelStack.isEmpty()) {
+						parent = null;
+					} else {
+						parent = levelStack.peek().peek();
+					}
+					levelStack.push(new Stack<EnclosePair>());
+			    } 
+				// Decrease ?
+				else if (previous.compareTo(current) > 0) {
+					if (parent == null) {
+					    // parent null should correspond to the outer level and the last stack which we don't want to pop	
+				    } else {
+						parent = parent.parent;
+						levelStack.pop();
+					}
+			    }
+			} 
+		    
+			// match with current stack
+			if (levelStack.peek().isEmpty()) {
+				EnclosePair pair = createEnclosePair(parent, current);
+				levelStack.peek().push(pair);
+				if (pair.close instanceof UnknownClose) {
+					parent = pair; 
+				}
+			} else {
+				EnclosePair top = levelStack.peek().peek();
+				if (top.fixWith(current)) {
+					EnclosePair pair = levelStack.peek().pop();
+					parent = pair.parent;
+					if (parent == null) {
+						list.add(pair);
+					} else parent.addChild(pair);
+				} else {
+					if (current instanceof OpenEnclose) {
+						EnclosePair pair = createEnclosePair(parent, current);
+						levelStack.peek().push(pair);
+						parent = pair;	
+					} else {
+						EnclosePair pair = levelStack.peek().pop();
+						parent = pair.parent;
+						if (parent == null) {
+							list.add(pair);
+						} else parent.addChild(pair);
+				    }
+				}
+			}
+
+			// Move on
+			previous = current;
+		}
+		
+		while (!levelStack.isEmpty()) {
+			while (!levelStack.peek().isEmpty()) { 
+				EnclosePair pair = levelStack.peek().pop();
+				if (pair.parent == null) {
+					list.add(pair);
+				}
+			}
+			levelStack.pop();
+		}
+		
+		return list;
+	}
+	
+	private EnclosePair createEnclosePair(EnclosePair parent, Enclose enclose) {
+		if (enclose instanceof OpenEnclose) {
+			if (enclose instanceof OpenParan) {
+				return new ParanPair(parent, (OpenParan)enclose);
+			} else {
+				return new BracePair(parent, (OpenBrace)enclose);
+			}
+		} else {
+			if (enclose instanceof CloseParan) {
+				return new ParanPair(parent, (CloseParan)enclose);
+			} else return new BracePair(parent, (OpenBrace)enclose);
+		}
+	}
+	/*
 	private ArrayList<EnclosePair> createPairTree(PriorityQueue<Enclose> tupleQueue) {
 		ArrayList<EnclosePair> list = new ArrayList<EnclosePair>();
+		
 		
 		Enclose previousEnclose = null;
 		boolean expectingOpen = true;
@@ -616,7 +771,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		boolean moveToNextEnclose = true;
 		Enclose current = null;
 		
-		// sort tupleList after indent
 		for (Iterator itr = tupleQueue.iterator(); itr.hasNext();) {
 		    if (moveToNextEnclose) {
 			    previousEnclose = current;
@@ -737,7 +891,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		
 		return list;
 	}
-
+*/
 	
 	private void printTree(ArrayList<EnclosePair> pairList) {
 		for (Iterator itr = pairList.iterator(); itr.hasNext();) {
@@ -748,7 +902,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
  	private void doStructuralRecovery(SimpleDocument doc, int dotOffset) {
  		System.out.println(doc.get());
-      PriorityQueue<Enclose> tupleList = createTuples(doc.get()); 
+      ArrayList<Enclose> tupleList = createTupleList(doc.get()); 
       ArrayList<EnclosePair> pairList = createPairTree(tupleList);
       printTree(pairList);
 	}
