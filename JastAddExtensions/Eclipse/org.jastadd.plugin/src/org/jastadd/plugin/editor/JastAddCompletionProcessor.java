@@ -384,10 +384,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	
 	private final int UNKNOWN_OFFSET = -1;
 	
-	private final char ENCLOSE_LPARAN = '(';
-	private final char ENCLOSE_RPARAN = ')';
-	private final char ENCLOSE_LBRACE = '{';
-	private final char ENCLOSE_RBRACE = '}';
+	private final char OPEN_PARAN = '(';
+	private final char CLOSE_PARAN = ')';
+	private final char OPEN_BRACE = '{';
+	private final char CLOSE_BRACE = '}';
 	
 	private abstract class Enclose implements Comparable {
 		protected int offset;
@@ -429,13 +429,11 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		public OpenParan(int offset, int indent) {
 			super(offset, indent);
 		}
-		public void print(String indent) {
-			System.out.println(indent + "--");
+		public void print(String indent) {			
 			System.out.println(indent + toString());
-			System.out.println(indent + "--");
 		}
         public String toString() {
-			return "(LPARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+			return "(OPEN_PARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
 	private class OpenBrace extends OpenEnclose {
@@ -443,12 +441,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 		public void print(String indent) {
-			System.out.println(indent + "--");
 			System.out.println(indent + toString());
-			System.out.println(indent + "--");
 		}
 		public String toString() {
-			return "(LBRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+			return "(OPEN_BRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
 	private class UnknownOpen extends OpenEnclose {
@@ -456,12 +452,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 		public void print(String indent) {
-			System.out.println(indent + "--");
 			System.out.println(indent + toString());
-			System.out.println(indent + "--");
 		}
 		public String toString() {
-			return "(UO," + String.valueOf(offset) + "," + String.valueOf(indent);
+			return "(UNKNOWN_OPEN," + String.valueOf(offset) + "," + String.valueOf(indent);
 		}
 	}
 
@@ -475,12 +469,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 		public void print(String indent) {
-			System.out.println(indent + "--");
 			System.out.println(indent + toString());
-			System.out.println(indent + "--");
 		}
 		public String toString() {
-			return "(RPARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+			return "(CLOSE_PARAN," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
 	private class CloseBrace extends CloseEnclose {
@@ -488,12 +480,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 		public void print(String indent) {
-			System.out.println(indent + "--");
 			System.out.println(indent + toString());
-			System.out.println(indent + "--");
 		}
 		public String toString() {
-			return "(RBRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+			return "(CLOSE_BRACE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
 	private class UnknownClose extends CloseEnclose {
@@ -501,12 +491,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			super(offset, indent);
 		}
 		public void print(String indent) {
-			System.out.println(indent + "--");
 			System.out.println(indent + toString());
-			System.out.println(indent + "--");
 		}
 		public String toString() {
-			return "(UC," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
+			return "(UNKNOWN_CLOSE," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
 
@@ -535,12 +523,14 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			this.close = close;
 		}
 		public void print(String indent) {
+			System.out.println(indent + "--");
 			open.print(indent);
 			for (Iterator itr = children.iterator(); itr.hasNext();) {
 				EnclosePair pair = (EnclosePair)itr.next();
 				pair.print(indent + "\t");
 			}
 			close.print(indent);
+			System.out.println(indent + "--");
 		}
 		public abstract boolean fixWith(Enclose enclose);
 	}
@@ -605,10 +595,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	    while (offset < content.length()) {
 	      char c = content.charAt(offset);
 	      switch (c) {
-	      case ENCLOSE_LPARAN: queue.add(new OpenParan(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_RPARAN: queue.add(new CloseParan(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_LBRACE: queue.add(new OpenBrace(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_RBRACE: queue.add(new CloseBrace(offset,resolveIndent(content, offset))); break;
+	      case OPEN_PARAN: queue.add(new OpenParan(offset,resolveIndent(content, offset))); break;
+	      case CLOSE_PARAN: queue.add(new CloseParan(offset,resolveIndent(content, offset))); break;
+	      case OPEN_BRACE: queue.add(new OpenBrace(offset,resolveIndent(content, offset))); break;
+	      case CLOSE_BRACE: queue.add(new CloseBrace(offset,resolveIndent(content, offset))); break;
 	      }
 	      offset++;
 	    }
@@ -621,10 +611,10 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	    while (offset < content.length()) {
 	      char c = content.charAt(offset);
 	      switch (c) {
-	      case ENCLOSE_LPARAN: list.add(new OpenParan(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_RPARAN: list.add(new CloseParan(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_LBRACE: list.add(new OpenBrace(offset,resolveIndent(content, offset))); break;
-	      case ENCLOSE_RBRACE: list.add(new CloseBrace(offset,resolveIndent(content, offset))); break;
+	      case OPEN_PARAN: list.add(new OpenParan(offset,resolveIndent(content, offset))); break;
+	      case CLOSE_PARAN: list.add(new CloseParan(offset,resolveIndent(content, offset))); break;
+	      case OPEN_BRACE: list.add(new OpenBrace(offset,resolveIndent(content, offset))); break;
+	      case CLOSE_BRACE: list.add(new CloseBrace(offset,resolveIndent(content, offset))); break;
 	      }
 	      offset++;
 	    }
@@ -667,70 +657,95 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		Enclose current = null;
 		Enclose previous = null;
 		
+		boolean moveToNext = true;
+		
 		Stack<Stack<EnclosePair>> levelStack = new Stack<Stack<EnclosePair>>();
 		levelStack.push(new Stack<EnclosePair>());
 		
 		for (Iterator itr = tupleList.iterator(); itr.hasNext();) {
-			current = (Enclose)itr.next();
+			if (moveToNext) {
+				previous = current;
+			    current = (Enclose)itr.next();
+			} else {
+				moveToNext = true;
+			}
 			
-			// Level change -> parent change -> stack prepaired
+			// Level change -> parent change -> stack change
 			if (previous != null) {
 				// Increase ?
 				if (previous.compareTo(current) < 0) {
-					// Find parent
-					while (!levelStack.isEmpty() && levelStack.peek().isEmpty()) {
-						levelStack.pop();
-					}
-					if (levelStack.isEmpty()) {
-						parent = null;
-					} else {
-						parent = levelStack.peek().peek();
+					parent = null;
+					while (levelStack.size() >= 1) {
+						if (levelStack.peek().isEmpty()) {
+						  levelStack.pop();
+						} else {
+							parent = levelStack.peek().peek();
+							break;
+						}
 					}
 					levelStack.push(new Stack<EnclosePair>());
 			    } 
 				// Decrease ?
 				else if (previous.compareTo(current) > 0) {
-					if (parent == null) {
-					    // parent null should correspond to the outer level and the last stack which we don't want to pop	
-				    } else {
-						parent = parent.parent;
-						levelStack.pop();
-					}
-			    }
+					while (levelStack.size() >= 1) {
+						parent = null;
+						if (!levelStack.peek().isEmpty()) {
+							EnclosePair pair = levelStack.peek().peek();
+				    	    int indent = pair.open.indent;
+				    		if (indent > current.indent) {
+				    			levelStack.pop();
+				    		} else if (indent < current.indent) {
+				    			parent = null;
+				    			levelStack.push(new Stack<EnclosePair>());
+				    			break;
+				    		} else {
+				    			parent = pair;
+				    			break;
+				    		}
+				    	} else {
+							levelStack.pop();
+				    	}
+				    }
+				}
 			} 
 		    
 			// match with current stack
 			if (levelStack.peek().isEmpty()) {
 				EnclosePair pair = createEnclosePair(parent, current);
-				levelStack.peek().push(pair);
+				if (parent == null) {
+					list.add(pair);
+				} else parent.addChild(pair);
+				// If new potential parent add
 				if (pair.close instanceof UnknownClose) {
-					parent = pair; 
+				  levelStack.peek().push(pair);
+				  parent = pair; 
 				}
 			} else {
 				EnclosePair top = levelStack.peek().peek();
 				if (top.fixWith(current)) {
+					// When top of stack fixed pop and take its parent
 					EnclosePair pair = levelStack.peek().pop();
 					parent = pair.parent;
-					if (parent == null) {
-						list.add(pair);
-					} else parent.addChild(pair);
 				} else {
+					// When top of stack not fixed
 					if (current instanceof OpenEnclose) {
+						// If new openEnclose push broken pair to stack
 						EnclosePair pair = createEnclosePair(parent, current);
-						levelStack.peek().push(pair);
-						parent = pair;	
-					} else {
-						EnclosePair pair = levelStack.peek().pop();
-						parent = pair.parent;
 						if (parent == null) {
 							list.add(pair);
 						} else parent.addChild(pair);
+						levelStack.peek().push(pair);
+						// Set pair as parent
+						parent = pair;	
+					} else {
+						// If the closeEnclose doesn't match pop
+						EnclosePair pair = levelStack.peek().pop();
+						parent = pair.parent;
+						// Reprocess the current tuple
+						moveToNext = false;
 				    }
 				}
 			}
-
-			// Move on
-			previous = current;
 		}
 		
 		while (!levelStack.isEmpty()) {
@@ -928,7 +943,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			case ENCLOSE_RBRACE:
 				stack.push(new Enclose(ENCLOSE_RBRACE, offset, resolveIndent(content, offset)));
 				break;
-			case ENCLOSE_LPARAN:
+			case OPEN_PARAN:
 				if (!stack.isEmpty()) {
 					Enclose enclose = stack.peek();
 				    if (enclose.encloseType == ENCLOSE_RPARAN) {
@@ -966,7 +981,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			c = content.charAt(offset);
 			switch (c) {
 			case ENCLOSE_RPARAN:
-				if (stack.peek() == ENCLOSE_LPARAN) {
+				if (stack.peek() == OPEN_PARAN) {
 					stack.pop();
 				} else {
 					// Mismatch!? - (} - ENCLOSE_RPARAN should be added somewhere between dot and this offset
@@ -981,7 +996,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					list.add(new MissingEnclose(ENCLOSE_RBRACE, dotOffset, offset));
 				}
 				break;
-			case ENCLOSE_LPARAN:
+			case OPEN_PARAN:
 				stack.push(c);
 				break;
 			case ENCLOSE_LBRACE:
@@ -995,7 +1010,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		if (!stack.isEmpty()) {
 			for (Iterator itr = stack.iterator(); itr.hasNext();) {
 				c = ((Character)itr.next()).charValue();
-				if (c == ENCLOSE_LPARAN) {
+				if (c == OPEN_PARAN) {
 				   // add ENLOSE_RPARAN
 					doc.replace(doc.getLength() - 1, 0, ")");
 				} else if (c == ENCLOSE_LBRACE) {
@@ -1084,7 +1099,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		}
 		
 		public boolean withInParanScope() {
-			return leftEnclosing == ENCLOSE_LPARAN;
+			return leftEnclosing == OPEN_PARAN;
 		}
 		
 		public boolean withInBraceScope() {
@@ -1109,7 +1124,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		
 		private static final char END_OF_LINE = '\n';
 		
-		private static final char ENCLOSE_LPARAN = '(';
+		private static final char OPEN_PARAN = '(';
 		private static final char ENCLOSE_RPARAN = ')';
 		private static final char ENCLOSE_LBRACE = '{';
 		private static final char ENCLOSE_RBRACE = '}';
@@ -1183,12 +1198,12 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					rightEnclosing = c;
 					stack.push(c);
 					break;
-				case ENCLOSE_LPARAN:
+				case OPEN_PARAN:
 					leftEnclosing = c;
 					if (stack.isEmpty()) {
 						firstLeftEnclosing = offset;
 						return;
-					} else if (stack.peek() == ENCLOSE_RPARAN) {
+					} else if (stack.peek() == CLOSE_PARAN) {
 						stack.pop();
 					}
 					break;
@@ -1212,8 +1227,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		
 		private void findMatchingRightEnclose(String content, int offset) {
 			char rTarget = ENCLOSE_RBRACE;
-			if (leftEnclosing == ENCLOSE_LPARAN) {
-				rTarget = ENCLOSE_RPARAN;
+			if (leftEnclosing == OPEN_PARAN) {
+				rTarget = CLOSE_PARAN;
 			} else if (leftEnclosing == UNKNOWN_ENCLOSE) {
 				rTarget = END_OF_LINE;
 			}
@@ -1242,8 +1257,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			if (leftEnclosing == UNKNOWN_ENCLOSE) {
 				firstLeftDelim = firstLeftEnclosing;
 				firstRightDelim = firstRightEnclosing;
-			} else if (leftEnclosing == ENCLOSE_LPARAN) {
-				// Lock to the left for ',' or start of scope
+			} else if (leftEnclosing == CLOSE_PARANto the left for ',' or start of scope
 				int offset = currentOffset - 1; // Move one left of '.'
 				while (offset > firstLeftEnclosing) {
 					char c = content.charAt(offset);
@@ -1314,7 +1328,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			findMatchingRightEnclose(content, currentOffset + 1); // Move one right of the dot
 			if (firstRightEnclosing == NO_ENCLOSE) {
 				firstRightEnclosing = content.length(); // Include the entire right side
-				rightEnclosing = leftEnclosing == ENCLOSE_LBRACE ? ENCLOSE_RBRACE : ENCLOSE_RPARAN; // Pick a right enclose which match the left enclose  
+				rightEnclosing = leftEnclosing == ENCLOSE_LBRACE ? ENCLOSE_RBRACE : CLOSE_PARANlose which match the left enclose  
 			}
 		    
 			resolveClosestDelims(content);
