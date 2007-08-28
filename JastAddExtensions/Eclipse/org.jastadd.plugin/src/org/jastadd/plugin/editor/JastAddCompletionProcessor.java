@@ -29,6 +29,8 @@ import beaver.Parser.Exception;
 import AST.ASTNode;
 import AST.Access;
 import AST.Expr;
+import AST.List;
+import AST.MethodAccess;
 import AST.ParExpr;
 import AST.VarAccess;
 
@@ -60,138 +62,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		 */
 		try {
 
-			if (!linePart[0].equals("")) { // Non empty left side
-
-				if (linePart[1].equals("")) { // empty right side
-					SimpleDocument doc = new SimpleDocument(content);
-					doc.replace(documentOffset - 1, 1, ".X()");
-					IFile dummyFile = JastAddModel.createDummyFile(document, doc.get());
-					int line = document.getLineOfOffset(documentOffset);
-					int col = documentOffset - document.getLineOffset(line);
-					if (dummyFile != null) {
-						ASTNode node = JastAddModel.getInstance()
-								.findNodeInFile(dummyFile, line, col);
-						if (node == null) {
-							// fix document
-							System.out.println("No tree built");
-							// Try a structural recovery
-							doStructuralRecovery(doc, documentOffset - 1);
-							System.out.println("After structural recovery:\n"
-									+ doc.get());
-							node = JastAddModel.getInstance().findNodeInFile(
-									dummyFile, line, col);
-							if (node == null) {
-								System.out
-										.println("Structural recovery failed");
-							} else if (node instanceof Access) {
-								System.out
-										.println("Automatic recovery after structural recovery");
-								proposals = node.completion(linePart[1]);
-								System.out.println(node.getParent().getParent()
-										.dumpTree());
-							} else {
-								System.out
-										.println("Manual recovery after structural recovery");
-								// Create a valid expression in case name is
-								// empty
-								String nameWithParan = "(" + linePart[0] + ")";
-								ByteArrayInputStream is = new ByteArrayInputStream(
-										nameWithParan.getBytes());
-								scanner.JavaScanner scanner = new scanner.JavaScanner(
-										new scanner.Unicode(is));
-								Expr newNode = (Expr) ((ParExpr) new parser.JavaParser()
-										.parse(
-												scanner,
-												parser.JavaParser.AltGoals.expression))
-										.getExprNoTransform();
-								newNode = newNode
-										.qualifiesAccess(new VarAccess("X"));
-
-								int childIndex = node.getNumChild();
-								node.addChild(newNode);
-								node = node.getChild(childIndex);
-								if (node instanceof Access)
-									node = ((Access) node).lastAccess();
-								// System.out.println(node.dumpTreeNoRewrite());
-
-								// Use the connection to the dummy AST to do
-								// name completion
-								proposals = node.completion(linePart[1]);
-							}
-
-						} else if (node instanceof Access) {
-							System.out.println("Automatic recovery");
-							proposals = node.completion(linePart[1]);
-							System.out.println(node.getParent().getParent()
-									.dumpTree());
-						} else {
-							System.out.println("Manual recovery");
-							// Create a valid expression in case name is empty
-							String nameWithParan = "(" + linePart[0] + ")";
-							ByteArrayInputStream is = new ByteArrayInputStream(
-									nameWithParan.getBytes());
-							scanner.JavaScanner scanner = new scanner.JavaScanner(
-									new scanner.Unicode(is));
-							Expr newNode = (Expr) ((ParExpr) new parser.JavaParser()
-									.parse(
-											scanner,
-											parser.JavaParser.AltGoals.expression))
-									.getExprNoTransform();
-							newNode = newNode
-									.qualifiesAccess(new VarAccess("X"));
-
-							int childIndex = node.getNumChild();
-							node.addChild(newNode);
-							node = node.getChild(childIndex);
-							if (node instanceof Access)
-								node = ((Access) node).lastAccess();
-							// System.out.println(node.dumpTreeNoRewrite());
-
-							// Use the connection to the dummy AST to do name
-							// completion
-							proposals = node.completion(linePart[1]);
-						}
-						dummyFile.delete(true, null);
-					}
-
-				} else { // Non empty right side
-
-				}
-
-				/*
-				 * // Create a valid expression in case name is empty String
-				 * nameWithParan = "(" + linePart[0] + ")"; ByteArrayInputStream
-				 * is = new ByteArrayInputStream( nameWithParan.getBytes());
-				 * scanner.JavaScanner scanner = new scanner.JavaScanner( new
-				 * scanner.Unicode(is)); Expr newNode = (Expr) ((ParExpr) new
-				 * parser.JavaParser().parse( scanner,
-				 * parser.JavaParser.AltGoals.expression))
-				 * .getExprNoTransform(); newNode = newNode.qualifiesAccess(new
-				 * VarAccess("X"));
-				 * 
-				 * if (newNode != null) { String modContent =
-				 * replaceActiveLine(document, documentOffset); IFile dummyFile =
-				 * createDummyFile(document, modContent); if (dummyFile != null) {
-				 * int line = document.getLineOfOffset(documentOffset);
-				 * proposals = collectProposals(dummyFile, line, newNode,
-				 * linePart[1]); dummyFile.delete(true, null); } }
-				 */
-			} else { // Empty left side
-
-				if (linePart[1].equals("")) { // Empty right side
-
-				} else { // Non empty right side
-
-				}
-				String modContent = replaceActiveLine(document, documentOffset);
-				IFile dummyFile = JastAddModel.createDummyFile(document, modContent);
-				if (dummyFile != null) {
-					int line = document.getLineOfOffset(documentOffset);
-					proposals = collectProposals(dummyFile, line,
-							new VarAccess("X"), linePart[1]);
-					dummyFile.delete(true, null);
-				}
-			}
+			proposals = computeProposal(documentOffset, linePart,
+					document, content);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -208,11 +80,81 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		int i = 0;
 		for (Iterator iter = proposals.iterator(); iter.hasNext(); i++) {
 			String proposal = (String) iter.next();
-			result[i] = new CompletionProposal(proposal, documentOffset
-					- linePart[1].length(), linePart[1].length(), proposal
-					.length());
+			if(linePart[0].length() == 0)
+				  result[i] = new CompletionProposal(proposal, documentOffset - linePart[1].length() - 1, 
+                          linePart[1].length() + 1, proposal.length());
+			else
+			  result[i] = new CompletionProposal(proposal, documentOffset - linePart[1].length(), 
+					                           linePart[1].length(), proposal.length());
 		}
 		return result;
+	}
+
+	private Collection computeProposal(int documentOffset, String[] linePart, IDocument document, String content) 
+	                                   throws BadLocationException, IOException, Exception, CoreException {
+		SimpleDocument doc = new SimpleDocument(content);
+		if(linePart[0].equals(""))
+			doc.replace(documentOffset - 1, 1 + linePart[1].length(), "X()");  // replace ".abc" with "X()"
+		else if (linePart[1].equals(""))
+			doc.replace(documentOffset - 1, 1, ".X()");  // replace "abc." with "abc.X()"
+		else                             
+			doc.replace(documentOffset - 1, 1, "X()"); // replace "abc.def" with "abc.dX()"
+		
+		int line = document.getLineOfOffset(documentOffset);
+		int col = documentOffset - document.getLineOffset(line);
+		IFile dummyFile = JastAddModel.createDummyFile(document, doc.get());
+		try {
+			if (dummyFile != null) {
+				ASTNode node = JastAddModel.getInstance().findNodeInFile(dummyFile, line, col);
+				if(node == null) {
+					// fix document
+					System.out.println("No tree built");
+					// Try a structural recovery
+					doStructuralRecovery(doc, documentOffset - 1);
+					System.out.println("After structural recovery:\n" + doc.get());
+					node = JastAddModel.getInstance().findNodeInFile(dummyFile, line, col);
+					if (node == null) {
+						System.out.println("Structural recovery failed");
+						return new ArrayList();
+					}
+				}
+				if(node instanceof Access) {
+					System.out.println("Automatic recovery");
+					System.out.println(node.getParent().getParent().dumpTree());
+					return node.completion(linePart[1]);
+				} 
+				else if(node instanceof ASTNode) {
+					System.out.println("Manual recovery");
+					Expr newNode;
+					if(linePart[0].length() != 0) {
+						String nameWithParan = "(" + linePart[0] + ")";
+						ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
+						scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+						newNode = (Expr)((ParExpr)new parser.JavaParser().parse(
+								scanner,parser.JavaParser.AltGoals.expression)
+						).getExprNoTransform();
+						newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
+					}
+					else {
+						newNode = new MethodAccess("X", new List());
+					}
+
+					int childIndex = node.getNumChild();
+					node.addChild(newNode);
+					node = node.getChild(childIndex);
+					if (node instanceof Access)
+						node = ((Access) node).lastAccess();
+					// System.out.println(node.dumpTreeNoRewrite());
+
+					// Use the connection to the dummy AST to do name
+					// completion
+					return node.completion(linePart[1]);
+				}
+			}
+		} finally {
+			dummyFile.delete(true, null);
+		}
+		return new ArrayList();
 	}
 
 	/**
