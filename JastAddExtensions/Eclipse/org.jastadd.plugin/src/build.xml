@@ -70,13 +70,19 @@
     <mkdir dir="scanner"/>
 		<!-- compose the scanner -->
 		<concat destfile="scanner/JavaScanner.flex" binary="true" force="false">
-      <filelist dir="../../Java1.4Frontend/scanner">
+      <filelist dir=".">
         <file name="preamble.flex"/>
+      </filelist>
+      <filelist dir="../../Java1.4Frontend/scanner">
         <file name="macros.flex"/>
         <file name="rules_preamble.flex"/>
         <file name="WhiteSpace.flex"/>
+      </filelist>
+      <filelist dir=".">
         <file name="Comments.flex"/>
-        <file name="Keywords.flex"/>
+      </filelist>
+      <filelist dir="../../Java1.4Frontend/scanner">
+		<file name="Keywords.flex"/>
         <file name="Literals.flex"/>
         <file name="Separators.flex"/>
         <file name="Operators.flex"/>
