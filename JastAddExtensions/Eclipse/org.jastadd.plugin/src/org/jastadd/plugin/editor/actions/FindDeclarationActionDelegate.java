@@ -47,20 +47,8 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 			if (editorInput instanceof IFileEditorInput) {
 				IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
 				IFile file = fileEditorInput.getFile();
-				IDocument doc = JastAddDocumentProvider.fileToDocument(file);
-				JastAddModel model = JastAddModel.getInstance();
-
-				try {
-					int offset = t.getOffset();
-					int line = doc.getLineOfOffset(offset);
-					int column = offset - doc.getLineOffset(line);
-					selectedNode = model.findNodeInFile(file, line, column);
-					//System.out.println(t.getOffset() + ", line: " + line + ", col: " + column);
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
+				selectedNode = JastAddModel.getInstance().findNodeInFile(file, t.getOffset());
 			}
-			
 		}
 	}
 
@@ -68,32 +56,20 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 		if (editorPart != null) {
 			
 			if (selectedNode != null) {
-				if (selectedNode.declaration() != null) {
-					// Find the file and position of the declaration node
-					ASTNode target = selectedNode.declaration();
-					int targetLine = ASTNode.getLine(target.getStart());
-					int targetColumn = ASTNode.getColumn(target.getStart());
-					int targetLength = ASTNode.getColumn(target.getEnd()) - targetColumn + 1;
-
-					while (target != null && !(target instanceof CompilationUnit))
-						target = target.getParent();
-
-					if (target instanceof CompilationUnit) {
-						CompilationUnit unit = (CompilationUnit) target;
-						String relativeName = unit.relativeName();
-						if (relativeName != null) {
-						   openFile(unit, targetLine, targetColumn, targetLength);
-						} else {
-							System.out.println("Unknown declaration");
-						}
-					} else {
+				// Find the file and position of the declaration node
+				ASTNode target = selectedNode.declaration();
+					
+				if(target != null) {
+					int targetLine = target.declarationLocationLine();
+					int targetColumn = target.declarationLocationColumn();
+					int targetLength = target.declarationLocationLength();
+					CompilationUnit cu = target.declarationCompilationUnit();
+					if(cu != null)
+						openFile(cu, targetLine, targetColumn, targetLength);
+					else
 						System.out.println("Cannot find CompilationUnit");
-					}
-				} else {
-					System.out.println("Unknown declaration");
 				}
-			} else {
-				System.out.println("Unkown construct");
+				System.out.println("Node does not bind to a declaration");
 			}
 		}
 	}

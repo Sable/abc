@@ -1,18 +1,9 @@
 package org.jastadd.plugin.editor;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DefaultPositionUpdater;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IPositionUpdater;
@@ -37,8 +28,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
-
-import AST.*;
+import AST.ASTNode;
 
 public class JastAddContentOutlinePage extends ContentOutlinePage implements IPropertyListener {
 	
@@ -155,7 +145,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 		
 		protected final static String JASTADD_JAVA_CODE = "__jastadd_java_code"; //$NON-NLS-1$
 		protected IPositionUpdater fPositionUpdater = new DefaultPositionUpdater(JASTADD_JAVA_CODE);
-		protected Program content = null;
+		protected ASTNode content = null;
 		public HashMap<ASTNode,Position> positions = new HashMap<ASTNode,Position>();
 
 		protected void parse(IDocument document) {
@@ -201,40 +191,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 
 		public Object[] getElements(Object element) {
 			if (content != null) {
-				List<Object> contentList = new ArrayList<Object>();
-
-				for (Iterator iter = content.compilationUnitIterator(); iter
-						.hasNext();) {
-					CompilationUnit unit = (CompilationUnit) iter.next();
-					if (unit.fromSource()) {
-						String packageName = unit.getPackageDecl();
-						if (packageName != null && packageName.length() > 0) {
-						  contentList.add(unit.getPackageDecl());
-						}
-						for (int i = 0; i < unit.getNumTypeDecl(); i++) {
-							TypeDecl t = unit.getTypeDecl(i);
-							if (t instanceof ClassDecl) {
-								contentList.add(t);
-							}
-							/*
-							 * int beginLine = ASTNode.getLine(t.getStart());
-							 * int endLine = ASTNode.getLine(t.getEnd());
-							 * 
-							 * if (beginLine != 0 || endLine != 0) { try { int
-							 * offset = document .getLineOffset(beginLine); int
-							 * end = document .getLineOffset(document
-							 * .getNumberOfLines() == endLine ? endLine - 1 :
-							 * endLine); int length = end - offset; Position p =
-							 * new Position(offset, length);
-							 * document.addPosition(JASTADD_JAVA_CODE, p);
-							 * positions.put(t, p); } catch
-							 * (BadPositionCategoryException e) { } catch
-							 * (BadLocationException e) { } }
-							 */
-						}
-					}
-				}
-				return contentList.toArray();
+				return content.outlineChildren().toArray(); 
 			} else {
 				return new Object[0];
 			}

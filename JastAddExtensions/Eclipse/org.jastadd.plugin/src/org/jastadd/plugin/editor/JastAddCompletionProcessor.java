@@ -1,10 +1,7 @@
 package org.jastadd.plugin.editor;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,11 +10,8 @@ import java.util.ListIterator;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
-import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.core.util.SimpleDocument;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -28,7 +22,6 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
 import beaver.Parser.Exception;
@@ -72,7 +65,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 				if (linePart[1].equals("")) { // empty right side
 					SimpleDocument doc = new SimpleDocument(content);
 					doc.replace(documentOffset - 1, 1, ".X()");
-					IFile dummyFile = createDummyFile(document, doc.get());
+					IFile dummyFile = JastAddModel.createDummyFile(document, doc.get());
 					int line = document.getLineOfOffset(documentOffset);
 					int col = documentOffset - document.getLineOffset(line);
 					if (dummyFile != null) {
@@ -191,7 +184,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
 				}
 				String modContent = replaceActiveLine(document, documentOffset);
-				IFile dummyFile = createDummyFile(document, modContent);
+				IFile dummyFile = JastAddModel.createDummyFile(document, modContent);
 				if (dummyFile != null) {
 					int line = document.getLineOfOffset(documentOffset);
 					proposals = collectProposals(dummyFile, line,
@@ -220,42 +213,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					.length());
 		}
 		return result;
-	}
-
-	/**
-	 * Create a dummy file where the active line has been replaced with an empty
-	 * stmt.
-	 * 
-	 * @param document
-	 *            The current document.
-	 * @param modContent
-	 *            The modified content of the document
-	 * @return A reference to the dummy file, null if something failed
-	 */
-	private IFile createDummyFile(IDocument document, String modContent) {
-		// Write modified file content to dummy file
-		IFile file = JastAddDocumentProvider.documentToFile(document);
-		String fileName = file.getRawLocation().toString();
-		String pathName = fileName + ".dummy";
-		FileWriter w;
-		try {
-			w = new FileWriter(pathName);
-			w.write(modContent, 0, modContent.length());
-			w.close();
-
-			// Create IFile corresponding to the dummy file
-			IPath path = URIUtil.toPath(new URI("file:/" + pathName));
-			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-					.findFilesForLocation(path);
-			if (files.length == 1) {
-				return files[0];
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**

@@ -3,4 +3,18 @@ aspect FindDeclaration {
 	eq VarAccess.declaration() = (ASTNode)decl();
 	eq TypeAccess.declaration() = type();
 	eq MethodAccess.declaration() = decl();
+	
+	syn int ASTNode.declarationLocationLine() = getLine(getStart());
+	syn int ASTNode.declarationLocationColumn() = getColumn(getStart());
+	syn int ASTNode.declarationLocationLength() = getColumn(getEnd()) - declarationLocationColumn() + 1;
+	
+	syn CompilationUnit ASTNode.declarationCompilationUnit() {
+	  ASTNode target = this;
+	  while (target != null && !(target instanceof CompilationUnit))
+        target = target.getParent();
+
+      if (target instanceof CompilationUnit)
+        return (CompilationUnit)target;
+      return null;
+    }
 }

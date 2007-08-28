@@ -36,9 +36,33 @@ aspect HoverComments {
   eq FieldDeclaration.hoverComment() {
      StringBuffer res = new StringBuffer(type().typeName());
      res.append(" " + name());
+     String javaDoc = javaDocComment();
+     if (javaDoc != null) 
+       res.append("\n\n" + javaDoc);
      return res.toString();
   }  
+
+  eq VariableDeclaration.hoverComment() {
+     StringBuffer res = new StringBuffer(type().typeName());
+     res.append(" " + name());
+     String javaDoc = javaDocComment();
+     if (javaDoc != null) 
+       res.append("\n\n" + javaDoc);
+     return res.toString();
+  }  
+
+  eq ParameterDeclaration.hoverComment() {
+     StringBuffer res = new StringBuffer(type().typeName());
+     res.append(" " + name());
+     String javaDoc = javaDocComment();
+     if (javaDoc != null) 
+       res.append("\n\n" + javaDoc);
+     return res.toString();
+  }  
+  
+  
   eq MethodAccess.hoverComment() = decl().hoverComment();
   eq TypeAccess.hoverComment() = decl().hoverComment();
   eq TypeDecl.hoverComment() = typeName();
+  eq VarAccess.hoverComment() = ((ASTNode)decl()).hoverComment();
 }

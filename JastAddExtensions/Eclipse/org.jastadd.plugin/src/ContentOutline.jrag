@@ -60,6 +60,7 @@ aspect ContentOutline {
      }
      return list;
    }
-     
    
+   eq CompilationUnit.outlineChildren() =
+     fromSource() ? super.outlineChildren() : new ArrayList();
 }

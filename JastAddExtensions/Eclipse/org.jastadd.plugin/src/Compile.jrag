@@ -1,13 +1,25 @@
 aspect Compile {
-  public void Program.flushSourceFiles() {
+  // flush 
+  public void Program.flushSourceFiles(String name) {
     lookupType_String_String_values = new HashMap();
     hasPackage_String_values = new HashMap();
+    files = new HashSet();
+  
+    //System.out.println("Flush to rebuild " + name);
+    String suffix = org.jastadd.plugin.JastAddModel.DUMMY_SUFFIX;
+  	if(name.endsWith(suffix))
+  	  name = name.substring(0, name.length() - suffix.length());
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
-      if(!getCompilationUnit(i).fromSource())
-        list.add(getCompilationUnit(i));
+    	CompilationUnit cu = getCompilationUnit(i);
+    	String relName = cu.relativeName();
+    	if(!cu.fromSource())
+    		list.add(cu);
+    	else if(name != null && !cu.relativeName().equals(name) && !cu.relativeName().endsWith(suffix)) {
+    		list.add(cu);
+    		//System.out.println("Keeping " + relName);
+    	}
     }
     setCompilationUnitList(list);
   }
-
 }

@@ -143,7 +143,7 @@ aspect Completion {
     nameType() != NameType.PACKAGE_NAME && nameType() != NameType.PACKAGE_OR_TYPE_NAME;
   syn boolean Access.showVariables() = nameType() != NameType.TYPE_NAME && 
     nameType() != NameType.PACKAGE_NAME && nameType() != NameType.PACKAGE_OR_TYPE_NAME;
-  syn boolean Access.showTypes() = (!isQualified() && nameType() != NameType.EXPRESSION_NAME) || qualifier().isTypeAccess();
+  syn boolean Access.showTypes() = !isQualified() ? nameType() != NameType.EXPRESSION_NAME : qualifier().isTypeAccess();
 
   // methods, types, variables
   syn Collection Access.visibleDecls() {

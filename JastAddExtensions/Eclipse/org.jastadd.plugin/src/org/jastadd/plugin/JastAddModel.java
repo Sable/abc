@@ -2,22 +2,29 @@ package org.jastadd.plugin;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
+import org.eclipse.jface.text.IDocument;
+
 import AST.ASTNode;
 import AST.CompilationUnit;
 import AST.Program;
@@ -59,6 +66,7 @@ public class JastAddModel {
 		// No matching JastAddProject found
 		if (jaProject == null) {
 			jaProject = JastAddProject.createJastAddProject(project);
+			jastAddProjects.add(jaProject);
 		}
 		return jaProject;
 	}
@@ -79,7 +87,7 @@ public class JastAddModel {
 	 * @param file
 	 * @return The Program node if successful, otherwise null
 	 */
-	public Program buildFile(IFile file) {
+	public CompilationUnit buildFile(IFile file) {
 		
 		// TODO Map this to a compilation unit ...
 		
@@ -92,14 +100,26 @@ public class JastAddModel {
 			return null;
 		}
 		
-		Program program = jaProject.getProgram();
-		program.flushSourceFiles();
 		
 		String filePath = file.getRawLocation().toOSString();
+		Program program = jaProject.getProgram();
+		program.flushSourceFiles(filePath);
 		program.addOptions(new String[] { filePath });
+		//System.out.println("Adding " + filePath);
 		
 		compileFiles(program);
-		return program;
+		
+		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+			CompilationUnit cu = (CompilationUnit)iter.next();
+			if(cu.fromSource()) {
+				String name = cu.relativeName();
+				if(name == null)
+					System.out.println(cu);
+				if(name.equals(filePath))
+					return cu;
+			}
+		}
+		throw new Error("Did not manage to build " + filePath);
 	}
 	
 	
@@ -126,6 +146,17 @@ public class JastAddModel {
 	}
 	*/
 
+	public ASTNode findNodeInFile(IFile file, int offset) {
+		try {
+			IDocument doc = JastAddDocumentProvider.fileToDocument(file);
+			int line = doc.getLineOfOffset(offset);
+			int column = offset - doc.getLineOffset(line);
+			return findNodeInFile(file, line, column);
+		} catch (BadLocationException e) {
+			return null;
+		}
+	}
+	
 	/**
 	 * Finds an ASTNode which corresponds to the position in the given IFile.
 	 * 
@@ -140,25 +171,13 @@ public class JastAddModel {
 			return null;
 
 		//Program program = buildProject(file.getProject(), false);
-		Program program = buildFile(file);
+		CompilationUnit cu = buildFile(file);
 
-		if (program == null)
-			return null;		
-
-		String rawFilePath = file.getRawLocation().toOSString();
-		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
-			CompilationUnit unit = (CompilationUnit) iter.next();
-			if(unit.fromSource()) {
-				String pathName = unit.pathName();
-				if (rawFilePath.equals(pathName)) {
-					ASTNode node = findLocation(unit, line + 1, column + 1);
-					if (node != null)
-						return node;
-				}
-			}
-		}
-
-		return null;
+		if (cu == null)
+			return null;
+		
+		ASTNode node = findLocation(cu, line + 1, column + 1);
+		return node;
 	}
 
 	/**
@@ -196,11 +215,11 @@ public class JastAddModel {
 	 */
 	private void buildProject(JastAddProject jaProject, boolean doErrorChecks) {
 		Program program = jaProject.getProgram();
-		program.flushSourceFiles();
+		program.flushSourceFiles(null);
 		IProject project = jaProject.getProject();
 		try {
 			HashMap<String, IFile> pathToFileMap = new HashMap<String, IFile>();
-			addSourceFiles(program, project.members(), pathToFileMap);
+			JastAddProject.addSourceFiles(program, project.members(), pathToFileMap);
 			deleteParseErrorMarkers(project.members());
 			compileFiles(program);
 			checkErrors(program, pathToFileMap, doErrorChecks, project);
@@ -362,39 +381,6 @@ public class JastAddModel {
 	}
 	
 	/**
-	 * Adds source files ending with ".java" to the given Program node. 
-	 * @param program
-	 * @param resources Array corresponding to the members of a project or folder.
-	 * @throws CoreException
-	 */
-	private void addSourceFiles(Program program, IResource[] resources, HashMap<String,IFile> pathToFileMap)
-			throws CoreException {
-		
-		List<String> fileList = new ArrayList<String>();
-		
-		for (int i = 0; i < resources.length; i++) {
-			IResource res = resources[i];
-			if (res instanceof IFile && res.getName().endsWith(".java")) {
-				IFile file = (IFile) res;
-				String filePath = file.getRawLocation().toOSString();
-				fileList.add(filePath);
-				pathToFileMap.put(filePath, file);
-				
-			} else if (res instanceof IFolder) {
-				IFolder folder = (IFolder) res;
-				addSourceFiles(program, folder.members(), pathToFileMap);
-			}
-		}
-		
-		Object[] tmpObjs = fileList.toArray();
-		String[] stringObjs = new String[tmpObjs.length];
-		for (int k = 0; k < tmpObjs.length; k++) {
-			stringObjs[k] = (String) tmpObjs[k];
-		}
-		program.addOptions(stringObjs);
-	}
-	
-	/**
 	 * Compiles all files added to the Program object.
 	 * @param program
 	 * @param pathToFileMap
@@ -511,4 +497,41 @@ public class JastAddModel {
 		}
 		return null;
 	}
+
+	/**
+	 * Create a dummy file where the active line has been replaced with an empty
+	 * stmt.
+	 * 
+	 * @param document
+	 *            The current document.
+	 * @param modContent
+	 *            The modified content of the document
+	 * @return A reference to the dummy file, null if something failed
+	 */
+	public static IFile createDummyFile(IDocument document, String modContent) {
+		// Write modified file content to dummy file
+		IFile file = JastAddDocumentProvider.documentToFile(document);
+		String fileName = file.getRawLocation().toString();
+		String pathName = fileName + DUMMY_SUFFIX; // if this suffix changes then code in Compile.jrag needs to change
+		FileWriter w;
+		try {
+			w = new FileWriter(pathName);
+			w.write(modContent, 0, modContent.length());
+			w.close();
+	
+			// Create IFile corresponding to the dummy file
+			IPath path = URIUtil.toPath(new URI("file:/" + pathName));
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+					.findFilesForLocation(path);
+			if (files.length == 1) {
+				return files[0];
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static final String DUMMY_SUFFIX = ".dummy";
 }
