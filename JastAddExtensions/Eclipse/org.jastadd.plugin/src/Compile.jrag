@@ -7,7 +7,7 @@ aspect Compile {
   
     //System.out.println("Flush to rebuild " + name);
     String suffix = org.jastadd.plugin.JastAddModel.DUMMY_SUFFIX;
-  	if(name.endsWith(suffix))
+  	if(name != null && name.endsWith(suffix))
   	  name = name.substring(0, name.length() - suffix.length());
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {

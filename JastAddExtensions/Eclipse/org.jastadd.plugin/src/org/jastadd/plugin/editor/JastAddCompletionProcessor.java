@@ -337,15 +337,31 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
 	private final char CLOSE_BRACE = '}';
 
+	// ========== Enclose classes =========
+	
 	private abstract class Enclose {
 		protected int offset;
+		protected int searchStart;
+		protected int searchEnd;
 		protected int indent;
 		protected boolean mended;
+		protected EnclosePair parentPair;
 
 		protected Enclose(int offset, int indent, boolean mended) {
 			this.offset = offset;
+			this.searchStart = offset;
+			this.searchEnd = offset;
 			this.indent = indent;
 			this.mended = mended;
+			parentPair = null;
+		}
+		
+		public void setParentPair(EnclosePair parentPair) {
+			this.parentPair = parentPair;
+		}
+		
+		public EnclosePair getParentPair() {
+			return parentPair;
 		}
 
 		public boolean isMended() {
@@ -361,8 +377,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		}
 
 		public abstract void print(String indent);
-
-		public abstract String toString();
+		public abstract String toString();	
 	}
 
 	private abstract class OpenEnclose extends Enclose {
@@ -408,17 +423,28 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	}
 
 	private class UnknownOpen extends OpenEnclose {
-		public UnknownOpen(int offset, int indent) {
-			super(offset, indent, false);
+		public UnknownOpen(int indent) {
+			super(-1, indent, false);
 		}
-
 		public void print(String indent) {
 			System.out.println(indent + toString());
 		}
-
 		public String toString() {
 			return "(UNKNOWN_OPEN," + String.valueOf(offset) + ","
-					+ String.valueOf(indent);
+					+ String.valueOf(indent) + ") [" + String.valueOf(searchStart) 
+					+ " - " + String.valueOf(searchEnd) + "]";
+		}
+	}
+	
+	private class StartOfFile extends OpenEnclose {
+		protected StartOfFile() {
+			super(0, 0, false);
+		}
+		public void print(String indent) {
+            System.out.println(indent + toString());			
+		}
+		public String toString() {
+			return "(SOF,0,0)";
 		}
 	}
 
@@ -465,20 +491,35 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	}
 
 	private class UnknownClose extends CloseEnclose {
-		public UnknownClose(int offset, int indent) {
-			super(offset, indent, false);
+		public UnknownClose(int indent) {
+			super(-1, indent, false);
 		}
-
 		public void print(String indent) {
 			System.out.println(indent + toString());
 		}
-
 		public String toString() {
 			return "(UNKNOWN_CLOSE," + String.valueOf(offset) + ","
-					+ String.valueOf(indent) + ")";
+					+ String.valueOf(indent) + ") [" + String.valueOf(searchStart) 
+					+ " - " + String.valueOf(searchEnd) + "]";
+		}
+	}
+	
+	private class EndOfFile extends CloseEnclose {
+		private int contentLength;
+		protected EndOfFile(int contentLength) {
+			super(contentLength, 0, false);
+			this.contentLength = contentLength;
+		}
+		public void print(String indent) {
+			System.out.println(indent + toString());
+		}
+		public String toString() {
+			return "(EOF, " + String.valueOf(contentLength) + ",0)";
 		}
 	}
 
+	// =========== EnclosePair classes ============
+	
 	private abstract class EnclosePair {
 		protected EnclosePair parent;
 
@@ -494,6 +535,54 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			this.open = open;
 			this.close = close;
 			children = new LinkedList<EnclosePair>();
+			open.setParentPair(this);
+			close.setParentPair(this);
+		}
+		
+		protected int getPrevOffset(EnclosePair child) {
+			boolean found = false;
+			int prevOffset = -1;
+			for (ListIterator itr = children.listIterator(); prevOffset < 0 && itr.hasPrevious();) {
+				EnclosePair pair = (EnclosePair)itr.previous();
+				if (found) {
+					prevOffset = pair.getRightMostSearchOffset();
+				} else if (pair == child) { 
+					found = true;
+				}
+			}
+			return prevOffset;
+		}
+		
+		protected int getSuccOffset(EnclosePair child) {
+			boolean found = false;
+			int succOffset = -1;
+			for (Iterator itr = children.iterator(); succOffset < 0 && itr.hasNext();) {
+				EnclosePair pair = (EnclosePair)itr.next();
+				if (found) {
+					succOffset = pair.getLeftMostSearchOffset();
+				} else if (pair == child) { 
+					found = true;
+				}
+			}
+			return succOffset;
+		}
+		
+		protected int getLeftMostSearchOffset() {
+			int leftOffset = open.searchEnd;
+			for (Iterator itr = children.iterator(); leftOffset < 0 && itr.hasNext();) {
+				EnclosePair child = (EnclosePair)itr.next();
+				leftOffset = child.getLeftMostSearchOffset();
+			}
+			return leftOffset < 0 ? close.searchStart : leftOffset;
+		}
+		
+		protected int getRightMostSearchOffset() {
+			int rightOffset = close.searchStart;
+			for (ListIterator itr = children.listIterator(); rightOffset < 0 && itr.hasPrevious();) {
+				EnclosePair child = (EnclosePair)itr.previous();
+				rightOffset = child.getRightMostSearchOffset();
+			}
+			return rightOffset < 0 ? close.searchEnd : rightOffset;
 		}
 
 		public void addChild(EnclosePair child) {
@@ -524,20 +613,75 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			close.print(indent);
 			System.out.println(indent + "--");
 		}
+		
+		public boolean isBroken() {
+			return open instanceof UnknownOpen || close instanceof UnknownClose;
+		}
+
+		public void mendTree() {
+			if (isBroken()) {
+				if (open instanceof UnknownOpen) {
+					// Find search start
+					open.searchStart = parent.getPrevOffset(this);
+					if (open.searchStart < 0) {
+						open.searchStart = parent.open.searchEnd;
+					}
+					// Find search end
+					open.searchEnd = close.offset;
+				} else if (close instanceof UnknownClose) {
+					// Find search start
+					close.searchStart = open.offset;
+					
+					// Find search end
+					close.searchEnd = parent.getSuccOffset(this);
+					if (close.searchEnd < 0) {
+						close.searchEnd = parent.close.searchStart;
+					}
+				}
+			} 			
+			for (Iterator itr = children.iterator(); itr.hasNext();) {
+				EnclosePair pair = (EnclosePair)itr.next();
+				pair.mendTree();
+			}
+		}
+		
+		public void mendDoc(SimpleDocument doc) {
+			for (Iterator itr = children.iterator(); itr.hasNext();) {
+				EnclosePair pair = (EnclosePair)itr.next();
+				pair.mendDoc(doc);
+			}			
+		}
 
 		public abstract boolean fixWith(Enclose enclose);
-		public abstract void mend(SimpleDocument doc, int intervalStart, int intervalEnd);
 		public abstract int findFirstDelimiter(String content, int startOffset, int endOffset);
 		public abstract int findLastDelimiter(String content, int startOffset, int endOffset);
 	}
 
+	private class RootPair extends EnclosePair {
+		
+		public RootPair(int contentLength) {
+			super(null, new StartOfFile(), new EndOfFile(contentLength));
+		}
+
+		public boolean fixWith(Enclose enclose) {
+			return false;
+		}
+		
+		public int findFirstDelimiter(String content, int startOffset, int endOffset) {
+			return findFirstBraceDelimiter(content, startOffset, endOffset);
+		}
+		public int findLastDelimiter(String content, int startOffset, int endOffset) {
+		    return findLastBraceDelimiter(content, startOffset, endOffset); 
+		}
+	}
+	
 	private class BracePair extends EnclosePair {
 		public BracePair(EnclosePair parent, OpenBrace open) {
-			super(parent, open, new UnknownClose(open.offset, open.indent));
+			super(parent, open, new UnknownClose(open.indent));
 		}
 
 		public BracePair(EnclosePair parent, CloseBrace close) {
-			super(parent, new UnknownOpen(close.offset, close.indent), close);
+			super(parent, new UnknownOpen(close.indent), close);
 		}
 
 		public BracePair(EnclosePair parent, OpenBrace open, CloseBrace close) {
@@ -549,56 +693,34 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		}
 
 		public boolean fixWith(Enclose enclose) {
-			
 			if (close instanceof UnknownClose) {
 				close.offset = enclose.offset;
 			}
-			
 			if (open instanceof OpenBrace && enclose instanceof CloseBrace) {
 				close = (CloseBrace) enclose;
+				close.setParentPair(this);
 				return true;
 			} else if (close instanceof CloseBrace
 					&& enclose instanceof OpenBrace) {
 				open = (OpenBrace) enclose;
+				open.setParentPair(this);
 				return true;
 			} else {
 				return false;
 			}
 		}
-
-		public void mend(SimpleDocument doc, int intervalStart, int intervalEnd) {
-			
-			intervalStart = open instanceof UnknownOpen ? intervalStart : open.offset;
-			intervalEnd = close instanceof UnknownClose ? intervalStart : close.offset;
-			
-			for (Iterator itr = children.iterator(); itr.hasNext();) {
-				EnclosePair pair = (EnclosePair)itr.next();
-				pair.mend(doc, intervalStart, intervalEnd);
- 			}
-			
-			int startChildOffset = startOfChildInterval();
-			int endChildOffset = endOfChildInterval();
-			
-			// If missing open add one after intervalStart and before start of children
-			if (open instanceof UnknownOpen) {
-				if (parent != null) {
-					intervalStart = parent.findFirstDelimiter(doc.get(), intervalStart, startChildOffset);
-				} else {
-					intervalStart = findFirstBraceDelimiter(doc.get(), intervalStart, startChildOffset);
+		
+		public void mendDoc(SimpleDocument doc) {
+			super.mendDoc(doc);
+			if (isBroken()) {
+				if (open instanceof UnknownOpen) {
+					open.offset = parent.findFirstDelimiter(doc.get(), open.searchStart, open.searchEnd);
+					doc.replace(open.offset, 0, String.valueOf(OPEN_BRACE));
+				} else if (close instanceof UnknownClose) {
+					close.offset = parent.findLastDelimiter(doc.get(), close.searchStart, close.searchEnd);
+					doc.replace(close.offset, 0, ";" + String.valueOf(CLOSE_BRACE)); 
 				}
-				open = new OpenBrace(intervalStart, close.indent, true);
-				doc.replace(intervalStart, 0, String.valueOf(OPEN_BRACE));
 			}
-			// If missing close add one after end of children and before intervalEnd
-			else if (close instanceof UnknownClose) {
-				if (parent != null) {
-					intervalEnd = parent.findLastDelimiter(doc.get(), endChildOffset, intervalEnd);
-				} else {
-					intervalEnd = findLastBraceDelimiter(doc.get(), endChildOffset, intervalEnd);
-				}
-				close = new CloseBrace(intervalEnd, open.indent, true);
-				doc.replace(intervalEnd, 0, String.valueOf(CLOSE_BRACE));
-			}		
 		}
 		
 		public int findFirstDelimiter(String content, int startOffset, int endOffset) {
@@ -611,11 +733,11 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
 	private class ParanPair extends EnclosePair {
 		public ParanPair(EnclosePair parent, OpenParan open) {
-			super(parent, open, new UnknownClose(open.offset, open.indent));
+			super(parent, open, new UnknownClose(open.indent));
 		}
 
 		public ParanPair(EnclosePair parent, CloseParan close) {
-			super(parent, new UnknownOpen(close.offset, close.indent), close);
+			super(parent, new UnknownOpen(close.indent), close);
 		}
 
 		public ParanPair(EnclosePair parent, OpenParan open, CloseParan close) {
@@ -634,48 +756,29 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			
 			if (open instanceof OpenParan && enclose instanceof CloseParan) {
 				close = (CloseParan) enclose;
+				close.setParentPair(this);
 				return true;
 			} else if (close instanceof CloseParan
 					&& enclose instanceof OpenParan) {
 				open = (OpenParan) enclose;
+				open.setParentPair(this);
 				return true;
 			} else {
 				return false;
 			}
 		}
-		public void mend(SimpleDocument doc, int intervalStart, int intervalEnd) {
-			
-			intervalStart = open instanceof UnknownOpen ? intervalStart : open.offset;
-			intervalEnd = close instanceof UnknownClose ? intervalStart : close.offset;
-			
-			for (Iterator itr = children.iterator(); itr.hasNext();) {
-				EnclosePair pair = (EnclosePair)itr.next();
-				pair.mend(doc, intervalStart, intervalEnd);
- 			}
-			
-			int startChildOffset = startOfChildInterval();
-			int endChildOffset = endOfChildInterval();
-			
-			// If missing open add one after intervalStart and before start of children
-			if (open instanceof UnknownOpen) {
-				if (parent != null) {
-					intervalStart = parent.findFirstDelimiter(doc.get(), intervalStart, startChildOffset);
-				} else {
-					intervalStart = findFirstBraceDelimiter(doc.get(), intervalStart, startChildOffset);
+		
+		public void mendDoc(SimpleDocument doc) {
+			super.mendDoc(doc);
+			if (isBroken()) {
+				if (open instanceof UnknownOpen) {
+					open.offset = parent.findLastDelimiter(doc.get(), open.searchStart, open.searchEnd);
+					doc.replace(open.offset, 0, String.valueOf(OPEN_PARAN));
+				} else if (close instanceof UnknownClose) {
+					close.offset = parent.findFirstDelimiter(doc.get(), close.searchStart, close.searchEnd);
+					doc.replace(close.offset, 0, String.valueOf(CLOSE_PARAN));
 				}
-				open = new OpenParan(intervalStart, close.indent, true);
-				doc.replace(intervalStart, 0, String.valueOf(OPEN_PARAN));
 			}
-			// If missing close add one after end of children and before intervalEnd
-			else if (close instanceof UnknownClose) {
-				if (parent != null) {
-					intervalEnd = parent.findLastDelimiter(doc.get(), endChildOffset, intervalEnd);
-				} else {
-					intervalEnd = findLastBraceDelimiter(doc.get(), endChildOffset, intervalEnd);
-				}
-				close = new CloseParan(intervalEnd, open.indent, true);
-				doc.replace(intervalEnd, 0, String.valueOf(CLOSE_PARAN));
-			}		
 		}
 		
 		public int findFirstDelimiter(String content, int startOffset, int endOffset) {
@@ -687,22 +790,23 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		}
 	}
 	
+	// ============= LevelStack ====================
 	
 	private class LevelStack {
 		
 		private int contentStart;
 		private int contentEnd;
 		private LinkedList<Level> levelList;
-		private ArrayList<EnclosePair> rootPairList;
+		private RootPair rootPair;
 		
 		private Enclose previous; 
 		
-		public LevelStack(ArrayList<EnclosePair> rootPairList, int contentStart, int contentEnd) {
-			this.rootPairList = rootPairList;
+		public LevelStack(RootPair rootPair, int contentStart, int contentEnd) {
+			this.rootPair = rootPair;
 			this.contentStart = contentStart;
 			this.contentEnd = contentStart;
 			levelList = new LinkedList<Level>();
-			levelList.addLast(new Level(null, 0));
+			levelList.addLast(new Level(rootPair, 0));
 			previous = null;
 		}
 		
@@ -714,7 +818,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		public void doEmpty() {
 			while (!levelList.isEmpty()) {
 				Level level = levelList.removeLast();
-				level.doEmpty(contentEnd);
+				level.doEmpty();
 			}
 		}
 				
@@ -723,7 +827,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 				if (previous.indent < current.indent) {	// Increase ?		
 					increaseLevel(current.indent);
 				} else if (previous.indent > current.indent) { // Decrease ?
-                    decreaseLevel(current.offset, current.indent);
+                    decreaseLevel(current.indent);
 				}
 			}
 			previous = current;
@@ -733,13 +837,13 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			levelList.addLast(new Level(levelList.getLast().currentParent, indent));
 		}
 		
-		private void decreaseLevel(int levelEnd, int indent) {
+		private void decreaseLevel(int indent) {
 			// Always keep the outer most level
 			while (levelList.size() > 1) {
 				Level level = levelList.getLast();
 				if (level.indent > indent) { 	// Level indent larger pop level
 					levelList.removeLast();
-					level.doEmpty(levelEnd);
+					level.doEmpty();
 				}
 				else if (level.indent < indent) { 	// Level indent smaller push level
 					levelList.addLast(new Level(levelList.getLast().currentParent, indent));
@@ -756,22 +860,24 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			private EnclosePair currentParent;
 			private Stack<EnclosePair> stack;
 			private int indent;
+			private int lastOffset;
 			
 			public Level(EnclosePair parent, int indent) {
 				this.currentParent = parent;
 				this.indent = indent;
 				stack = new Stack<EnclosePair>();
+				lastOffset = parent.open.offset;
 			}
 
 			public boolean isEmpty() {
 				return stack.isEmpty();
 			}
 			
-			public void doEmpty(int endOffset) {
+			public void doEmpty() {
 				while (!stack.isEmpty()) {
 					EnclosePair pair = stack.pop();
 					if (pair.close instanceof UnknownClose) {
-						pair.close.offset = endOffset;
+						pair.close.offset = lastOffset;
 					}
 				}
 			}
@@ -796,6 +902,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 						moveToNext = false;
 					}
 				}
+				lastOffset = current.offset;
 				return moveToNext;
 			}
 			
@@ -827,13 +934,14 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					} else
 						pair = new BracePair(parent, (OpenBrace) enclose);
 				}
-				if (parent == null) {
-					rootPairList.add(pair);
-				} else parent.addChild(pair);
+				parent.addChild(pair);
 				return pair;
 			}			
 		}
 	}
+	
+	
+	
 	
 	
 	private final char DELIM_COMMA = ','; 
@@ -892,8 +1000,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 	}
 
 	
-	private ArrayList<Enclose> createTupleList(String content) {
-		ArrayList<Enclose> list = new ArrayList<Enclose>();
+	private LinkedList<Enclose> createTupleList(String content) {
+		LinkedList<Enclose> list = new LinkedList<Enclose>();
 		int offset = 0;
 		while (offset < content.length()) {
 			char c = content.charAt(offset);
@@ -944,9 +1052,12 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		return wsCount;
 	}
 
-	private ArrayList<EnclosePair> createPairTree(String content, ArrayList<Enclose> tupleList) {
-		ArrayList<EnclosePair> list = new ArrayList<EnclosePair>();
-		LevelStack levelStack = new LevelStack(list, 0, content.length());
+	private RootPair createRoot(String content) {
+		
+		LinkedList<Enclose> tupleList = createTupleList(content);
+		
+		RootPair root = new RootPair(content.length());
+		LevelStack levelStack = new LevelStack(root, 0, content.length());
 		Enclose current = null;
 		boolean moveToNext = true;
 
@@ -961,184 +1072,25 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		}
 		levelStack.doEmpty();
 
-		return list;
-	}
-
-
-	private void printTree(ArrayList<EnclosePair> pairList) {
-		for (Iterator itr = pairList.iterator(); itr.hasNext();) {
-			EnclosePair pair = (EnclosePair) itr.next();
-			pair.print("");
-		}
-	}
-
-	private void mendBrokenPairs(ArrayList<EnclosePair> pairList, SimpleDocument doc) {
-		for (Iterator itr = pairList.iterator(); itr.hasNext();) {
-			EnclosePair pair = (EnclosePair) itr.next();
-			pair.mend(doc, 0, doc.get().length());
-		}
+		return root;
 	}
 
 	private void doStructuralRecovery(SimpleDocument doc, int dotOffset) {
 		System.out.println(doc.get());
-		ArrayList<Enclose> tupleList = createTupleList(doc.get());
-		ArrayList<EnclosePair> pairList = createPairTree(doc.get(), tupleList);
-		printTree(pairList);
-		mendBrokenPairs(pairList, doc);
-		printTree(pairList);
+		RootPair root = createRoot(doc.get());
+		root.print("");
+		root.mendTree();
+		root.print("");
+		root.mendDoc(doc);
 		System.out.println(doc.get());
 	}
 
-	/*
-	 * private static class StructuralModel {
-	 * 
-	 * public static StructuralModel createModel(String content, int offset) {
-	 * 
-	 * StructuralModel model = new StructuralModel(0, content.length(), offset);
-	 * model.resolve(content);
-	 * 
-	 * return model; }
-	 * 
-	 * public int getDotPosition() { return currentOffset; }
-	 * 
-	 * public int[] getActiveScope() { return new int[] { firstLeftEnclosing,
-	 * firstRightEnclosing }; }
-	 * 
-	 * public int[] getActiveSegment() { int[] res = new int[2]; res[0] =
-	 * segmentStart; res[1] = segmentEnd; return res; }
-	 * 
-	 * public boolean withInParanScope() { return leftEnclosing == OPEN_PARAN; }
-	 * 
-	 * public boolean withInBraceScope() { return leftEnclosing ==
-	 * ENCLOSE_LBRACE; }
-	 * 
-	 * public boolean withInClassContext(String content) { char[] matchArray =
-	 * new char[] {'s', 's', 'a', 'l', 'c'}; return hasMatchBeforeScope(content,
-	 * matchArray); }
-	 * 
-	 * public boolean withInInterfaceContext(String content) { char[] matchArray =
-	 * new char[] {'e', 'c', 'a', 'f', 'r', 'e', 't', 'n', 'i'}; return
-	 * hasMatchBeforeScope(content, matchArray); }
-	 *  // --- private ---
-	 * 
-	 * private int startOffset; private int endOffset; private int
-	 * currentOffset;
-	 * 
-	 * private static final char END_OF_LINE = '\n';
-	 * 
-	 * private static final char OPEN_PARAN = '('; private static final char
-	 * ENCLOSE_RPARAN = ')'; private static final char ENCLOSE_LBRACE = '{';
-	 * private static final char ENCLOSE_RBRACE = '}'; private static final char
-	 * UNKNOWN_ENCLOSE = 0; private static final int NO_ENCLOSE = -1;
-	 * 
-	 * private static final char DELIM_SEMICOLON = ';'; private static final
-	 * char DELIM_COMMA = ','; private static final char UNKNOWN_DELIM = 0;
-	 * private static final int NO_DELIM = -1;
-	 * 
-	 * private int firstLeftEnclosing = NO_ENCLOSE; private int
-	 * firstRightEnclosing = NO_ENCLOSE; private int firstLeftDelim = NO_DELIM;
-	 * private int firstRightDelim = NO_DELIM;
-	 * 
-	 * private char leftEnclosing = UNKNOWN_ENCLOSE; private char rightEnclosing =
-	 * UNKNOWN_ENCLOSE; private char leftDelim = UNKNOWN_DELIM; private char
-	 * rightDelim = UNKNOWN_DELIM;
-	 * 
-	 * private int segmentStart = -1; private int segmentEnd = -1;
-	 * 
-	 * private StructuralModel(int start, int end, int current) { startOffset =
-	 * start; endOffset = end; currentOffset = current; }
-	 * 
-	 * private boolean hasMatchBeforeScope(String content, char[] matchArray) {
-	 * int offset = firstLeftEnclosing; int matchCount = 0; // If matchCount
-	 * reaches array length - match found
-	 *  // Try to match array right of firstLeftEnclosing and left ';' or '}'
-	 * char c = content.charAt(offset); while (!reachedStartOffset(offset)) { if
-	 * (c == DELIM_SEMICOLON || c == ENCLOSE_RBRACE) { return false; } else if
-	 * (c == matchArray[matchCount]) { matchCount++; if (matchCount ==
-	 * matchArray.length) { return true; } } else { matchCount = 0; } c =
-	 * content.charAt(--offset); } return false; }
-	 * 
-	 * private boolean reachedStartOffset(int offset) { return offset ==
-	 * startOffset; }
-	 * 
-	 * private boolean reachedEndOffset(int offset) { return offset ==
-	 * endOffset; }
-	 * 
-	 * private void findFirstOpenLeftEnclose(String content, int offset) { Stack<Character>
-	 * stack = new Stack<Character>(); char c = content.charAt(offset); //
-	 * Searches right to left while (!reachedStartOffset(offset)) { switch (c) {
-	 * case ENCLOSE_RPARAN: rightEnclosing = c; stack.push(c); break; case
-	 * ENCLOSE_RBRACE: rightEnclosing = c; stack.push(c); break; case
-	 * OPEN_PARAN: leftEnclosing = c; if (stack.isEmpty()) { firstLeftEnclosing =
-	 * offset; return; } else if (stack.peek() == CLOSE_PARAN) { stack.pop(); }
-	 * break; case ENCLOSE_LBRACE: leftEnclosing = c; if (stack.isEmpty()) {
-	 * firstLeftEnclosing = offset; return; } else if (stack.peek() ==
-	 * ENCLOSE_RBRACE) { stack.pop(); } break; } c = content.charAt(--offset); //
-	 * Move one left } leftEnclosing = UNKNOWN_ENCLOSE; firstLeftEnclosing =
-	 * NO_ENCLOSE; }
-	 * 
-	 * 
-	 * private void findMatchingRightEnclose(String content, int offset) { char
-	 * rTarget = ENCLOSE_RBRACE; if (leftEnclosing == OPEN_PARAN) { rTarget =
-	 * CLOSE_PARAN; } else if (leftEnclosing == UNKNOWN_ENCLOSE) { rTarget =
-	 * END_OF_LINE; }
-	 * 
-	 * Stack<Character> stack = new Stack<Character>(); char c =
-	 * content.charAt(offset); while (!reachedEndOffset(offset)) { if (c ==
-	 * rTarget) { if (stack.isEmpty()) { rightEnclosing = rTarget;
-	 * firstRightEnclosing = offset; return; } else { stack.pop(); } } else if
-	 * (c == leftEnclosing) { stack.push(c); } c = content.charAt(++offset); //
-	 * Move one right } rightEnclosing = UNKNOWN_ENCLOSE; firstRightEnclosing =
-	 * NO_ENCLOSE; }
-	 * 
-	 * private void resolveClosestDelims(String content) { if (leftEnclosing ==
-	 * UNKNOWN_ENCLOSE) { firstLeftDelim = firstLeftEnclosing; firstRightDelim =
-	 * firstRightEnclosing; } else if (leftEnclosing == CLOSE_PARANto the left
-	 * for ',' or start of scope int offset = currentOffset - 1; // Move one
-	 * left of '.' while (offset > firstLeftEnclosing) { char c =
-	 * content.charAt(offset); if (c == DELIM_COMMA) { leftDelim = c;
-	 * firstLeftDelim = offset; break; } offset--; } if (firstLeftDelim ==
-	 * NO_DELIM) { firstLeftDelim = firstLeftEnclosing; } // Lock to the right
-	 * for ',' or end of scope offset = currentOffset + 1; // Move one right of
-	 * '.' while (offset < firstRightEnclosing) { char c =
-	 * content.charAt(offset); if (c == DELIM_COMMA) { rightDelim = c;
-	 * firstRightDelim = offset; break; } offset++; } if (firstRightDelim ==
-	 * NO_DELIM) { firstRightDelim = firstRightEnclosing; } } else if
-	 * (leftEnclosing == ENCLOSE_LBRACE) { // Lock to the left for ';' or '}' or
-	 * start of scope int offset = currentOffset - 1; // Move one left of '.'
-	 * while (offset > firstLeftEnclosing) { char c = content.charAt(offset); if
-	 * (c == DELIM_SEMICOLON || c == ENCLOSE_RBRACE) { leftDelim = c;
-	 * firstLeftDelim = offset; break; } offset--; } if (firstLeftDelim ==
-	 * NO_DELIM) { firstLeftDelim = firstLeftEnclosing; } // Lock to the right
-	 * for ';' or '{' or end of scope offset = currentOffset + 1; // Move one
-	 * right of '.' while (offset < firstRightEnclosing) { char c =
-	 * content.charAt(offset); if (c == DELIM_SEMICOLON || c == ENCLOSE_LBRACE) {
-	 * rightDelim = c; firstRightDelim = offset; break; } offset++; } if
-	 * (firstRightDelim == NO_DELIM) { firstRightDelim = firstRightEnclosing; } } }
-	 * 
-	 * 
-	 * private void resolve(String content) {
-	 * 
-	 * findFirstOpenLeftEnclose(content, currentOffset - 1); // Move one left of
-	 * the dot if (firstLeftEnclosing == NO_ENCLOSE) { // Outside of scopes
-	 * firstLeftEnclosing = 0; // Include the entire left side
-	 *  } findMatchingRightEnclose(content, currentOffset + 1); // Move one
-	 * right of the dot if (firstRightEnclosing == NO_ENCLOSE) {
-	 * firstRightEnclosing = content.length(); // Include the entire right side
-	 * rightEnclosing = leftEnclosing == ENCLOSE_LBRACE ? ENCLOSE_RBRACE :
-	 * CLOSE_PARANlose which match the left enclose }
-	 * 
-	 * resolveClosestDelims(content); // Resolve active segment segmentStart =
-	 * firstLeftDelim + 1; // One right of left delimiter segmentEnd =
-	 * firstRightDelim - 1; // One left of right delimiter if (rightDelim ==
-	 * DELIM_SEMICOLON || rightDelim == ENCLOSE_LBRACE) { char c =
-	 * content.charAt(segmentEnd); while (c != '\n' || segmentEnd ==
-	 * currentOffset || segmentEnd == firstLeftDelim) { c =
-	 * content.charAt(--segmentEnd); } } } }
-	 */
-
+	
+	
 	// ============================================================================================
 
+	
+	
 	public IContextInformation[] computeContextInformation(ITextViewer viewer,
 			int documentOffset) {
 		String[] proposals = new String[] { "public", "private", "protected",
