@@ -1,6 +1,7 @@
 package org.jastadd.plugin;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -81,6 +82,27 @@ public class JastAddModel {
 	}
 	
 	
+	public CompilationUnit buildDocument(IDocument document, String fileName, IProject project) {
+		try {
+			StringBuffer buf = new StringBuffer(document.get());
+			new StructuralRecovery().doStructuralRecovery(buf, 0);
+
+			String pathName = fileName + DUMMY_SUFFIX; // if this suffix changes then code in Compile.jrag needs to change
+			FileWriter w = new FileWriter(pathName);
+			String modContent = buf.toString();
+			w.write(modContent, 0, modContent.length());
+			w.close();
+	
+			CompilationUnit cu = buildFile(project, pathName);
+			new File(pathName).delete();
+			return cu;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	/**
 	 * Builds a single file without error checks.
@@ -88,27 +110,29 @@ public class JastAddModel {
 	 * @return The Program node if successful, otherwise null
 	 */
 	public CompilationUnit buildFile(IFile file) {
-		
-		// TODO Map this to a compilation unit ...
-		
-		if (file == null)
+		try {
+			return buildFile(file.getProject(), file.getRawLocation().toOSString());
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public CompilationUnit buildFile(IProject project, String filePath) {
+		if(filePath == null)
 			return null;
-
-		// Only build file in JastAdd projects
-		JastAddProject jaProject = getJastAddProject(file.getProject());
+		JastAddProject jaProject = getJastAddProject(project);
 		if (jaProject == null) {
 			return null;
 		}
-		
-		
-		String filePath = file.getRawLocation().toOSString();
+
+
 		Program program = jaProject.getProgram();
 		program.flushSourceFiles(filePath);
 		program.addOptions(new String[] { filePath });
-		//System.out.println("Adding " + filePath);
-		
+
 		compileFiles(program);
-		
+
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 			CompilationUnit cu = (CompilationUnit)iter.next();
 			if(cu.fromSource()) {
@@ -119,42 +143,47 @@ public class JastAddModel {
 					return cu;
 			}
 		}
-		throw new Error("Did not manage to build " + filePath);
+		return null;
 	}
 	
 	
-	/**
-	 * Searches for maintypes within the given project.
-	 * @param project the project to search in
-	 * @return A String array of main Types
-	 */
-	/* Moved to JastAddProject
-	public ClassDecl[] getMainTypes(IProject project) {
-        // Find corresponding jastAddProject
-		JastAddProject jaProject = getJastAddProject(project);
-		
-		// Project is not a JastAdd project
-		Program program = null;
-		if (jaProject == null) {
-			// Try to build anyway?
-			program = buildProject(project, false);
-		} else {
-			buildProject(jaProject, false);
-			program = jaProject.getProgramNode();
-		}
-		return program.mainTypes();
+	public ASTNode findNodeInDocument(IDocument document, int offset) {
+		return findNodeInDocument(JastAddDocumentProvider.documentToFile(document), offset);
 	}
-	*/
 
-	public ASTNode findNodeInFile(IFile file, int offset) {
+	public ASTNode findNodeInDocument(IDocument document, int line, int column) {
+		return findNodeInDocument(JastAddDocumentProvider.documentToFile(document), line, column);
+	}
+	
+	public ASTNode findNodeInDocument(IFile file, int offset) {
+		IProject project = file.getProject();
+		String fileName = file.getRawLocation().toOSString();
+		IDocument document = JastAddDocumentProvider.fileToDocument(file);
+		return findNodeInDocument(project, fileName, document, offset);
+	}
+
+	public ASTNode findNodeInDocument(IFile file, int line, int column) {
+		IProject project = file.getProject();
+		String fileName = file.getRawLocation().toOSString();
+		IDocument document = JastAddDocumentProvider.fileToDocument(file);
+		return findNodeInDocument(project, fileName, document, line, column);
+	}
+
+	public ASTNode findNodeInDocument(IProject project, String fileName, IDocument document, int offset) {
 		try {
-			IDocument doc = JastAddDocumentProvider.fileToDocument(file);
-			int line = doc.getLineOfOffset(offset);
-			int column = offset - doc.getLineOffset(line);
-			return findNodeInFile(file, line, column);
+			int line = document.getLineOfOffset(offset);
+			int column = offset - document.getLineOffset(line);
+			return findNodeInDocument(project, fileName, document, line, column);
 		} catch (BadLocationException e) {
 			return null;
 		}
+	}
+
+	public ASTNode findNodeInDocument(IProject project, String fileName, IDocument document, int line, int column) {
+		CompilationUnit cu = buildDocument(document, fileName, project);
+		if(cu != null)
+			return findLocation(cu, line + 1, column + 1);
+		return null;
 	}
 	
 	/**
@@ -165,6 +194,7 @@ public class JastAddModel {
 	 * @param column
 	 * @return An ASTNode or null if no node was found.
 	 */
+	/*
 	public ASTNode findNodeInFile(IFile file, int line, int column) {
 
 		if (file == null)
@@ -179,6 +209,7 @@ public class JastAddModel {
 		ASTNode node = findLocation(cu, line + 1, column + 1);
 		return node;
 	}
+	*/
 
 	/**
 	 * Returns classpath entries.
@@ -393,11 +424,8 @@ public class JastAddModel {
 				program.addSourceFile(name);
 			}
 		} 
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+		catch (Throwable e) {
 		}
-		
 	}
 
 	/**

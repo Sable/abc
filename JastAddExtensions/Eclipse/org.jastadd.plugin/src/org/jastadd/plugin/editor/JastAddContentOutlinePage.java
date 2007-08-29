@@ -3,6 +3,7 @@ package org.jastadd.plugin.editor;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultPositionUpdater;
 import org.eclipse.jface.text.IDocument;
@@ -150,8 +151,16 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 
 		protected void parse(IDocument document) {
 			IFile file = JastAddDocumentProvider.documentToFile(document);
+			String fileName = file.getRawLocation().toOSString();
+			IProject project = file.getProject();
+
+			content = JastAddModel.getInstance().buildDocument(document, fileName, project);
+			/*if(content != null)
+				System.out.println(content.dumpTree());*/
+
+/*			IFile file = JastAddDocumentProvider.documentToFile(document);
 			JastAddModel model = JastAddModel.getInstance();
-			content = model.buildFile(file);
+			content = model.buildFile(file);*/
 		}	
 		
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -213,7 +222,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 			if(element instanceof ASTNode) {
 				ASTNode node = (ASTNode)element;
 				ASTNode parent = node.getParent();
-				if (parent.showInContentOutline())
+				if (parent != null && parent.showInContentOutline())
 					return parent;
 				else getParent(parent);
 			}

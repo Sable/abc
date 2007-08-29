@@ -3,6 +3,7 @@ package org.jastadd.plugin.editor.actions;
 import java.net.URISyntaxException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -42,12 +43,12 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 	
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (selection instanceof TextSelection) {
-			TextSelection t = (TextSelection) selection;
+			TextSelection textSelection = (TextSelection) selection;
 			IEditorInput editorInput = editorPart.getEditorInput();
 			if (editorInput instanceof IFileEditorInput) {
 				IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
 				IFile file = fileEditorInput.getFile();
-				selectedNode = JastAddModel.getInstance().findNodeInFile(file, t.getOffset());
+				selectedNode = JastAddModel.getInstance().findNodeInDocument(file, textSelection.getOffset());
 			}
 		}
 	}
