@@ -26,6 +26,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.StructuralRecovery;
 
 import beaver.Parser.Exception;
 
@@ -116,11 +117,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 				ASTNode node = JastAddModel.getInstance().findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 		
 				if(node == null) {
-					// fix document
-					System.out.println("No tree built");
 					// Try a structural recovery
-					documentOffset = doStructuralRecovery(buf, documentOffset);
-					System.out.println("After structural recovery:\n" + buf);
+					documentOffset = (new StructuralRecovery()).doStructuralRecovery(buf, documentOffset);
 					
 					node = JastAddModel.getInstance().findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 					if (node == null) {
@@ -301,6 +299,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		return content;
 	}
 
+	/*
 	// ---- Structural analysis stuff ----
 
 	private final char OPEN_PARAN = '(';
@@ -1117,7 +1116,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		System.out.println(buf);
 		return rootPair.getDotOffset();
 	}
-
+*/
 	
 	
 	// ============================================================================================
