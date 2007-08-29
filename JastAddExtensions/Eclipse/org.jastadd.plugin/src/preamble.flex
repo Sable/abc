@@ -42,6 +42,17 @@ import java.util.HashMap;
   
   private HashMap comments = new HashMap();
   public HashMap comments() { return comments; }
+  private void registerComment() {
+    String comment = str();
+    int line = yyline;
+    // the extra loop accounts from yyline starting at 0
+    int pos = 0;
+    do {
+      line++;
+      pos = comment.indexOf('\n', pos);
+    } while(pos != -1);
+    comments.put(new Integer(yyline + 1), str());
+  }
   
 %}
 

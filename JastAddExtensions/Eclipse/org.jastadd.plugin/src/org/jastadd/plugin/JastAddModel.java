@@ -112,7 +112,7 @@ public class JastAddModel {
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 			CompilationUnit cu = (CompilationUnit)iter.next();
 			if(cu.fromSource()) {
-				String name = cu.relativeName();
+				String name = cu.pathName();
 				if(name == null)
 					System.out.println(cu);
 				if(name.equals(filePath))

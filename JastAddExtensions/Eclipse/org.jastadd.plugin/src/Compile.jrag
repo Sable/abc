@@ -12,10 +12,10 @@ aspect Compile {
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
     	CompilationUnit cu = getCompilationUnit(i);
-    	String relName = cu.relativeName();
+    	String pathName = cu.pathName();
     	if(!cu.fromSource())
     		list.add(cu);
-    	else if(name != null && !cu.relativeName().equals(name) && !cu.relativeName().endsWith(suffix)) {
+    	else if(name != null && !name.equals(pathName) && !pathName.endsWith(suffix)) {
     		list.add(cu);
     		//System.out.println("Keeping " + relName);
     	}
