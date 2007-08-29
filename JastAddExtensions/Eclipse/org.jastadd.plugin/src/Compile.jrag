@@ -1,14 +1,20 @@
 aspect Compile {
   // flush 
   public void Program.flushSourceFiles(String name) {
+    //flushCache();
     lookupType_String_String_values = new HashMap();
     hasPackage_String_values = new HashMap();
-    files = new HashSet();
   
     //System.out.println("Flush to rebuild " + name);
     String suffix = org.jastadd.plugin.JastAddModel.DUMMY_SUFFIX;
   	if(name != null && name.endsWith(suffix))
   	  name = name.substring(0, name.length() - suffix.length());
+  	  
+  	if(name != null) {
+  	  files.remove(name);
+  	  files.remove(name + suffix);
+  	}
+  	  
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
     	CompilationUnit cu = getCompilationUnit(i);
@@ -16,10 +22,17 @@ aspect Compile {
     	if(!cu.fromSource())
     		list.add(cu);
     	else if(name != null && !name.equals(pathName) && !pathName.endsWith(suffix)) {
+    	    //cu.flushAttributes();
     		list.add(cu);
     		//System.out.println("Keeping " + relName);
     	}
     }
     setCompilationUnitList(list);
+  }
+  public void ASTNode.flushAttributes() {
+    flushCache();
+    for(int i = 0; i < getNumChild(); i++)
+      if(getChildNoTransform(i) != null)
+        getChildNoTransform(i).flushAttributes();
   }
 }

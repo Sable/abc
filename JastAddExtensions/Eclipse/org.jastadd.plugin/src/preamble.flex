@@ -49,9 +49,9 @@ import java.util.HashMap;
     int pos = 0;
     do {
       line++;
-      pos = comment.indexOf('\n', pos);
+      pos = comment.indexOf('\n', pos + 1);
     } while(pos != -1);
-    comments.put(new Integer(yyline + 1), str());
+    comments.put(new Integer(line), str());
   }
   
 %}

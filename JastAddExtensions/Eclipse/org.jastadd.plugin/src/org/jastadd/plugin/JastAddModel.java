@@ -67,7 +67,7 @@ public class JastAddModel {
 		// No matching JastAddProject found
 		if (jaProject == null) {
 			jaProject = JastAddProject.createJastAddProject(project);
-			jastAddProjects.add(jaProject);
+            jastAddProjects.add(jaProject);
 		}
 		return jaProject;
 	}
@@ -118,6 +118,31 @@ public class JastAddModel {
 		return null;
 	}
 	
+	private ArrayList allSourceFiles(IProject project) {
+		ArrayList result = new ArrayList();
+		try {
+		  allSourceFiles(project.members(), result);
+		} catch (CoreException e) {
+		}
+		return result;
+	}
+	private void allSourceFiles(IResource[] resources, Collection collection) {
+		for (int i = 0; i < resources.length; i++) {
+			IResource res = resources[i];
+			if (res instanceof IFile && res.getName().endsWith(".java")) {
+				IFile file = (IFile) res;
+				String filePath = file.getRawLocation().toOSString();
+				collection.add(filePath);
+			} else if (res instanceof IFolder) {
+				IFolder folder = (IFolder) res;
+				try {
+					allSourceFiles(folder.members(), collection);
+				} catch(CoreException e) {
+				}
+			}
+		}
+	}
+	
 	public CompilationUnit buildFile(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
@@ -128,6 +153,8 @@ public class JastAddModel {
 
 
 		Program program = jaProject.getProgram();
+		program.files().clear();
+		program.files().addAll(allSourceFiles(project));
 		program.flushSourceFiles(filePath);
 		program.addOptions(new String[] { filePath });
 
@@ -417,6 +444,18 @@ public class JastAddModel {
 	 * @param pathToFileMap
 	 */
 	private void compileFiles(Program program) {
+		
+		/*System.out.println("List of files:");
+		for(int i = 0; i < program.getNumCompilationUnit(); i++) {
+			if(program.getCompilationUnit(i).fromSource()) {
+				System.out.println("reusing " + program.getCompilationUnit(i).pathName());
+			}
+		}
+		for (Iterator iter = program.files().iterator(); iter.hasNext();) {
+			System.out.println("adding " + iter.next());
+		}
+		*/
+		
 		Collection files = program.files();
 		try {
 			for (Iterator iter = files.iterator(); iter.hasNext();) {

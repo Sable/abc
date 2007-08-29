@@ -85,6 +85,9 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 		if (pathName.endsWith(".class")) {
 			pathName = pathName.replace(".class", ".java");
 		} 
+		else if(pathName.endsWith(JastAddModel.DUMMY_SUFFIX)) {
+			pathName = pathName.substring(0, pathName.length() - JastAddModel.DUMMY_SUFFIX.length());
+		}
 		
 		IEditorInput editorInput = editorPart.getEditorInput();
 		
