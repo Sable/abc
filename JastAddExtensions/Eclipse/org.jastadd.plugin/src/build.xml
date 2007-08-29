@@ -101,11 +101,15 @@
 	<!-- generate the parser phase 1, create a full .lalr specification from fragments-->
 		<echo message = "Running parser phase 1"/>
 		<concat destfile="parser/JavaParser.all" binary="true" force="false">
-	    <fileset dir="../../Java1.4Frontend">
-	      <include name="parser/java14.parser"/>
-	    </fileset>
+	    <filelist dir=".">
+	      <file name="preamble.parser"/>
+	    </filelist>
+	    <filelist dir="../../Java1.4Frontend">
+	      <file name="parser/java14.parser"/>
+	    </filelist>
 	    <fileset dir=".">
 	      <include name="*.parser"/>
+	      <exclude name="preamble.parser"/>
 	    </fileset>
 	</concat>
 	<!-- generate the parser phase 2, translating .lalr to .beaver -->

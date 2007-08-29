@@ -13,15 +13,19 @@ ImportDecl import_declaration =
 TypeDecl type_declaration =
   error SEMICOLON {: return new EmptyType(new Modifiers(), "EmptyType", new Opt(), new List()); :}
   ;
-
-// class_body_declaration
+  
+BodyDecl class_body_declaration =
+  error SEMICOLON {: return new InstanceInitializer(new Block()); :}
+  ;
 
 BodyDecl interface_member_declaration =
   error SEMICOLON {: return new StaticInitializer(new Block()); :}
   ;
 
-// statement
-
+Stmt statement =
+  error SEMICOLON {: return new EmptyStmt(); :}
+  ;
+  
 // error productions for COMMA
 // ===========================
 
@@ -60,7 +64,9 @@ List argument_list =
 // error productions for  { }
 // ==========================
 
-// class_body_declaration
+BodyDecl class_body_declaration =
+  error LBRACE {: return new InstanceInitializer(new Block()); :}
+  ;
 
 ConstructorDecl constructor_body =
   error RBRACE {: return new ConstructorDecl(new Modifiers(), null, new List(), new List(), new Opt(), new Block(new List())); :}
@@ -74,8 +80,10 @@ List array_initializer =
   LBRACE error RBRACE {: return new ArrayInit(new List()); :}
   ;
 
-// block
-
+Block block =
+    error RBRACE {: return new Block(new List()); :}
+  ;
+  
 List switch_block =
   LBRACE error RBRACE {: return new List(); :}
   ;
