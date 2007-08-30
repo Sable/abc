@@ -37,7 +37,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			IFile file = (IFile)element;
 			if(file.getFileExtension().equals("java")) {
 				ASTNode node = JastAddModel.getInstance().buildFile(file);
-				return new Object[] { node.outlineChildren().toArray() };
+				return node.outlineChildren().toArray();
 			}
 		}
 		return parent.getChildren(element);
