@@ -1,5 +1,6 @@
 package org.jastadd.plugin.editor;
 
+import org.eclipse.jdt.internal.ui.text.java.JavaAutoIndentStrategy;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
@@ -31,6 +32,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	}
 	
 	public IAutoEditStrategy[] getAutoIndentStrategies(ISourceViewer sourceViewer, String contentType) {
+		//return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
 		return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
 	}
 	

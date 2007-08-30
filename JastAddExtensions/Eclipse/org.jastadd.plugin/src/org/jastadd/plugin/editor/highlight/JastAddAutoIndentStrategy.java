@@ -1,12 +1,44 @@
 package org.jastadd.plugin.editor.highlight;
 
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
 import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextUtilities;
 
-public class JastAddAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
+public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 
+	public void customizeDocumentCommand(IDocument doc, DocumentCommand cmd) {
+		// cmd.length == 0 - when no text is markes
+		// cmd.text - the text to insert
+		// cmd.doit - false if nothing should be done??
+
+		if (cmd.doit == false)
+			return;
+
+		if (cmd.length == 0 && cmd.text != null && isLineDelimiter(doc, cmd.text))
+			smartIndentAfterNewLine(doc, cmd);
+		else if (cmd.text.length() == 1)
+			smartIndentOnKeypress(doc, cmd);
+	}
+
+	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) {
+		
+	}
+
+	private void smartIndentAfterNewLine(IDocument doc, DocumentCommand cmd) {
+		
+	}
+
+	private boolean isLineDelimiter(IDocument document, String text) {
+		String[] delimiters = document.getLegalLineDelimiters();
+		if (delimiters != null)
+			return TextUtilities.equals(delimiters, text) > -1;
+		return false;
+	}
+
+	
+	
+	/* Old stuff
 	// evaluate the line with the opening bracket that matches the closing bracket on the given line
 	protected int findMatchingOpenBracket(IDocument d, int line, int end, int closingBracketIncrease) throws BadLocationException {
 
@@ -165,14 +197,6 @@ public class JastAddAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 			} else {
 				int start= d.getLineOffset(line);
 				// if line just ended a javadoc comment, take the indent from the comment's begin line
-				/*
-				IDocumentPartitioner partitioner= d.getDocumentPartitioner();
-				if (partitioner != null) {
-					ITypedRegion region= partitioner.getPartition(start);
-					if (JavaPartitionScanner.JAVA_DOC.equals(region.getType()))
-						start= d.getLineInformationOfOffset(region.getOffset()).getOffset();
-				}	
-				*/			
 				int whiteend= findEndOfWhiteSpace(d, start, c.offset);
 				buf.append(d.get(start, whiteend - start));
 				if (getBracketCount(d, start, c.offset, true) > 0) {
@@ -189,9 +213,6 @@ public class JastAddAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 		return String.valueOf('\t');
 	}	
 	
-	/**
-	 * Returns whether the text ends with one of the given search strings.
-	 */
 	private boolean endsWithDelimiter(IDocument d, String txt) {
 		
 		String[] delimiters= d.getLegalLineDelimiters();
@@ -204,9 +225,6 @@ public class JastAddAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 		return false;
 	}	
 
-	/*
-	 * @see org.eclipse.jface.text.IAutoIndentStrategy#customizeDocumentCommand(org.eclipse.jface.text.IDocument, org.eclipse.jface.text.DocumentCommand)
-	 */
 	public void customizeDocumentCommand(IDocument d, DocumentCommand c) {
 		if (c.length == 0 && c.text != null && endsWithDelimiter(d, c.text))
 			smartIndentAfterNewLine(d, c);
@@ -214,4 +232,5 @@ public class JastAddAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 			smartInsertAfterBracket(d, c);
 		}
 	}
+	*/
 }

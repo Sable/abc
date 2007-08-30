@@ -85,7 +85,7 @@ public class JastAddModel {
 	public CompilationUnit buildDocument(IDocument document, String fileName, IProject project) {
 		try {
 			StringBuffer buf = new StringBuffer(document.get());
-			new StructuralRecovery().doStructuralRecovery(buf, 0);
+			new StructureModel(buf).doRecovery(0);
 
 			String pathName = fileName + DUMMY_SUFFIX; // if this suffix changes then code in Compile.jrag needs to change
 			FileWriter w = new FileWriter(pathName);

@@ -26,7 +26,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.StructuralRecovery;
+import org.jastadd.plugin.StructureModel;
 
 import beaver.Parser.Exception;
 
@@ -118,7 +118,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		
 				if(node == null) {
 					// Try a structural recovery
-					documentOffset = (new StructuralRecovery()).doStructuralRecovery(buf, documentOffset);
+					documentOffset = (new StructureModel(buf)).doRecovery(documentOffset);
 					
 					node = JastAddModel.getInstance().findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 					if (node == null) {

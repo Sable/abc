@@ -6,23 +6,141 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Stack;
 
-public class StructuralRecovery {
+public class StructureModel {
 	
-	public static final int TABSIZE = 4;
-	// ---- Structural analysis stuff ----
+	// ============= Public =======================
+	
+	public StructureModel(StringBuffer buf) {
+		this.buf = buf;
+		rootPair = createRoot(buf.toString());
+		rootPair.print("");
+	}
+	
+	public int doRecovery(int dotOffset) {
+		rootPair.setDotOffset(dotOffset);
+		System.out.println("Before structure recovery:\n" + buf);
+		rootPair.mendIntervals();
+		rootPair.print("");
+		rootPair.mendOffsets();
+		rootPair.print("");
+		rootPair.mendDoc(buf);
+		System.out.println("After structure recovery:\n" + buf);
+		return rootPair.getDotOffset();
+	}		
+	
+	
+	// ============= Private ======================
 
+	private final int TABSIZE = 4;
 	private final char OPEN_PARAN = '(';
 	private final char CLOSE_PARAN = ')';
 	private final char OPEN_BRACE = '{';
 	private final char CLOSE_BRACE = '}';
 	private final char DELIM_COMMA = ',';
 	private final char DELIM_SEMICOLON = ';';
-
 	private final char NEW_LINE = '\n';
 	
+	private LinkedList<CharacterNode> tupleList;
 	private RootPair rootPair = null;
+	private StringBuffer buf;
+
+	private RootPair createRoot(String content) {
+		
+		tupleList = createTupleList(content);
+		
+		RootPair root = new RootPair(content.length());
+		LevelStack levelStack = new LevelStack(root);
+		CharacterNode current = null;
+		boolean moveToNext = true;
+
+		for (Iterator itr = tupleList.iterator(); itr.hasNext();) {
+			if (moveToNext) {
+				current = (CharacterNode) itr.next();
+			} else moveToNext = true;
+			
+			levelStack.checkLevel(current);
+			if (current instanceof Enclose)
+                moveToNext = levelStack.pushEnclose((Enclose)current);
+			else levelStack.pushDelimiter((Delimiter)current);
+		}
+		levelStack.doEmpty();
+
+		return root;
+	}
+	
+	private LinkedList<CharacterNode> createTupleList(String content) {
+		LinkedList<CharacterNode> list = new LinkedList<CharacterNode>();
+		int offset = 0;
+		int line = 0;
+		int col = 0;
+		while (offset < content.length()) {
+			char c = content.charAt(offset);
+			col++;
+			switch (c) {
+			case OPEN_PARAN:
+				list.add(new OpenParan(offset, resolveIndent(content, offset)));
+				break;
+			case CLOSE_PARAN:
+				list.add(new CloseParan(offset, resolveIndent(content, offset)));
+				break;
+			case OPEN_BRACE:
+				list.add(new OpenBrace(offset, resolveIndent(content, offset)));
+				break;
+			case CLOSE_BRACE:
+				list.add(new CloseBrace(offset, resolveIndent(content, offset)));
+				break;
+			case DELIM_SEMICOLON:
+				list.add(new Semicolon(offset, resolveIndent(content, offset), col));
+				break;
+			case DELIM_COMMA:
+				list.add(new Comma(offset, resolveIndent(content, offset)));
+				break;
+			case NEW_LINE:
+				line++;
+				col = 0;
+				break;
+			}
+			offset++;
+		}
+		return list;
+	}
+
+	private int resolveIndent(String content, int offset) {
+		int posOffset = offset;
+		// Locate the first '\n' to the left
+		while (offset > 0) {
+			char c = content.charAt(offset);
+			if (c == '\n') {
+				break;
+			}
+			offset--; // Move one left
+		}
+		// Move one right and count '\t' or whitespace
+		offset++;
+		int wsCount = 0;
+		while (offset < posOffset) {
+			char c = content.charAt(offset);
+			if (c == '\t') {
+				wsCount += TABSIZE;
+			} else if (c == ' ') {
+				wsCount++;
+			} else {
+				break;
+			}
+			offset++; // Move one right
+		}
+		return wsCount;
+	}
+
 	
 	
+	
+	
+	// ===================================================================
+	// ================= Inner classes ===================================
+	// ===================================================================
+	
+
 	private abstract class StructNode {
 		protected int indent;
 		protected int searchStart;
@@ -147,6 +265,7 @@ public class StructuralRecovery {
 			super(offset, indent);
 		}
 	}
+	
 	private class Semicolon extends Delimiter {
 		protected Semicolon(int offset, int indent, int col) {
 			super(offset, indent);
@@ -159,6 +278,7 @@ public class StructuralRecovery {
 			return "(SEMICOLON," + String.valueOf(offset) + "," + String.valueOf(indent) + ")";
 		}
 	}
+	
 	private class Comma extends Delimiter {
 		protected Comma(int offset, int indent) {
 			super(offset, indent);
@@ -437,9 +557,8 @@ public class StructuralRecovery {
 		
 		private int dotOffset;
 		
-		public RootPair(int contentLength, int dotOffset) {
+		public RootPair(int contentLength) {
 			super(null, new StartOfFile(), new EndOfFile(contentLength));
-			this.dotOffset = dotOffset;
 		}
 
 		public boolean fixWith(Enclose enclose) {
@@ -451,6 +570,10 @@ public class StructuralRecovery {
 				dotOffset += change;
 			}
 			super.propagateOffsetChange(insertOffset, change);
+		}
+
+		public void setDotOffset(int dotOffset) {
+			this.dotOffset = dotOffset;
 		}
 		
         public int getDotOffset() {
@@ -733,106 +856,5 @@ public class StructuralRecovery {
 				return pair;
 			}			
 		}
-	}
-		
-	private LinkedList<CharacterNode> createTupleList(String content) {
-		LinkedList<CharacterNode> list = new LinkedList<CharacterNode>();
-		int offset = 0;
-		int line = 0;
-		int col = 0;
-		while (offset < content.length()) {
-			char c = content.charAt(offset);
-			col++;
-			switch (c) {
-			case OPEN_PARAN:
-				list.add(new OpenParan(offset, resolveIndent(content, offset)));
-				break;
-			case CLOSE_PARAN:
-				list.add(new CloseParan(offset, resolveIndent(content, offset)));
-				break;
-			case OPEN_BRACE:
-				list.add(new OpenBrace(offset, resolveIndent(content, offset)));
-				break;
-			case CLOSE_BRACE:
-				list.add(new CloseBrace(offset, resolveIndent(content, offset)));
-				break;
-			case DELIM_SEMICOLON:
-				list.add(new Semicolon(offset, resolveIndent(content, offset), col));
-				break;
-			case DELIM_COMMA:
-				list.add(new Comma(offset, resolveIndent(content, offset)));
-				break;
-			case NEW_LINE:
-				line++;
-				col = 0;
-				break;
-			}
-			offset++;
-		}
-		return list;
-	}
-
-	private int resolveIndent(String content, int offset) {
-		int posOffset = offset;
-		// Locate the first '\n' to the left
-		while (offset > 0) {
-			char c = content.charAt(offset);
-			if (c == '\n') {
-				break;
-			}
-			offset--; // Move one left
-		}
-		// Move one right and count '\t' or whitespace
-		offset++;
-		int wsCount = 0;
-		while (offset < posOffset) {
-			char c = content.charAt(offset);
-			if (c == '\t') {
-				wsCount += TABSIZE;
-			} else if (c == ' ') {
-				wsCount++;
-			} else {
-				break;
-			}
-			offset++; // Move one right
-		}
-		return wsCount;
-	}
-
-	private RootPair createRoot(String content, int dotOffset) {
-		
-		LinkedList<CharacterNode> tupleList = createTupleList(content);
-		
-		RootPair root = new RootPair(content.length(), dotOffset);
-		LevelStack levelStack = new LevelStack(root);
-		CharacterNode current = null;
-		boolean moveToNext = true;
-
-		for (Iterator itr = tupleList.iterator(); itr.hasNext();) {
-			if (moveToNext) {
-				current = (CharacterNode) itr.next();
-			} else moveToNext = true;
-			
-			levelStack.checkLevel(current);
-			if (current instanceof Enclose)
-                moveToNext = levelStack.pushEnclose((Enclose)current);
-			else levelStack.pushDelimiter((Delimiter)current);
-		}
-		levelStack.doEmpty();
-
-		return root;
-	}
-
-	public int doStructuralRecovery(StringBuffer buf, int dotOffset) {
-		System.out.println("Before structure recovery:\n" + buf);
-		rootPair = createRoot(buf.toString(), dotOffset);
-		rootPair.print("");
-		rootPair.mendIntervals();
-		rootPair.print("");
-		rootPair.mendOffsets();
-		rootPair.print("");
-		rootPair.mendDoc(buf);
-		System.out.println("After structure recovery:\n" + buf);
-		return rootPair.getDotOffset();
-	}
+	}	
 }
