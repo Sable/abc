@@ -41,7 +41,7 @@ public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 	}
 
 	private void smartIndentAfterNewLine(IDocument doc, DocumentCommand cmd) {
-		LinkedList<JastAddDocAction> todoList = JastAddModel.getInstance().getDocInsertionAfterNewline(doc, cmd.offset);
+		LinkedList<JastAddDocAction> todoList = JastAddModel.getInstance().getDocInsertionAfterNewline(doc, cmd);
 		for (Iterator itr = todoList.iterator();itr.hasNext();) {
 			JastAddDocAction action = (JastAddDocAction)itr.next();
 			action.perform();

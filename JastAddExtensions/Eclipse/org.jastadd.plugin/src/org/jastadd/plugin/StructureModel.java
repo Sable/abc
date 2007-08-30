@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Stack;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.editor.actions.JastAddDocAction;
 import org.jastadd.plugin.editor.actions.JastAddDocMove;
@@ -41,34 +43,53 @@ public class StructureModel {
 		return rootPair.getDotOffset();
 	}		
 	
-	public LinkedList<JastAddDocAction> insertionAfterNewline(IDocument doc, int activeOffset, int recoveryChange) {
+	public LinkedList<JastAddDocAction> insertionAfterNewline(IDocument doc, DocumentCommand cmd, int recoveryChange) {
 
-		LinkedList<JastAddDocAction> todoList = new LinkedList<JastAddDocAction>();
+ 		LinkedList<JastAddDocAction> todoList = new LinkedList<JastAddDocAction>();
 		
 		// Find activePair
-		EnclosePair activePair = rootPair.findActivePair(activeOffset);
+ 		/*
+ 		int firstNonWs = cmd.offset;
+ 		while (Character.isWhitespace(buf.charAt(firstNonWs)) && buf.charAt(firstNonWs) != NEW_LINE)
+ 			firstNonWs--;
+ 			*/
+		EnclosePair activePair = rootPair.findActivePair(cmd.offset); // Start before EOL
 		if (activePair == null) { // If there are no enclose pairs
-			return null;
+			return todoList;
 		}
 		
-		// Add indent
+		// Add indent add move caret
 		
-		String indent = activePair.getChildIndent();
-		JastAddDocReplace indentInsert = new JastAddDocReplace(doc, activeOffset, indent, indent.length());
-		todoList.add(indentInsert);
-		
-		// Add move to end of indent
-		
-		JastAddDocMove moveIndent = new JastAddDocMove(activeOffset + indent.length());
-		todoList.add(moveIndent);
-		
+		int parentIndent = activePair.indent/TABSIZE;
+		int insertIndent = parentIndent + 1;
+	    String indent = "";
+	    for (int i = 0; i < insertIndent;i++,indent+="\t");
+	    
+	    cmd.caretOffset = cmd.offset + insertIndent + 1;
+	    cmd.shiftsCaret = false;
+	    cmd.text += indent;
+	    		
 		if (activePair.open instanceof OpenBrace && activePair.close instanceof UnknownClose) {
 		    
-			// Add insertion CLOSE_BRACE
-			int braceOffset = activePair.close.offset - ((UnknownClose)activePair.close).recoveryOffsetChange();
-			JastAddDocReplace braceInsert = new JastAddDocReplace(doc, activeOffset, indent, indent.length());
-			todoList.add(indentInsert);			
+		    
+		    // Remove old child content
+			try {
+				int childTextEnd = activePair.close.offset - (activePair.open.offset + 1);
+				String childText = doc.get(activePair.open.offset + 1, childTextEnd < 0 ? 0 : childTextEnd);
+				doc.replace(activePair.open.offset + 1, childText.length(), ""); // One right of the open brace
 
+				String content = doc.get();
+				
+				// Add insertion CLOSE_BRACE
+			    String braceIndent = childText.endsWith("\n") ? "" : "\n"; 
+			    for (int i = 0; i < parentIndent;i++,braceIndent+="\t");		    
+			    cmd.text += childText + braceIndent + String.valueOf(CLOSE_BRACE) + "\n";			
+
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		} 
 		
 	    return todoList;
@@ -273,7 +294,7 @@ public class StructureModel {
 			EnclosePair activePair = null;
 			for (Iterator itr = children.iterator(); activePair == null && itr.hasNext();) {
 				StructNode child = (StructNode) itr.next();
-				child.findActivePair(activeOffset);
+				activePair = child.findActivePair(activeOffset);
 			}
 			return activePair;
 		}
@@ -602,20 +623,11 @@ public class StructureModel {
 		}
 		
 		public EnclosePair findActivePair(int activeOffset) {
-			if (open.offset <= activeOffset && close.offset > activeOffset) {
+			if (open.offset <= activeOffset && close.offset >= activeOffset) {
 				EnclosePair activePair = super.findActivePair(activeOffset);
 				return activePair == null ? this : activePair;
 			}
 			return null;
-		}
-		
-		public String getChildIndent() {
-			String res = "";
-			for (int i = 0; i < indent; i++) {
-				res += "\t";
-			}
-			res += "\t";
-			return res;
 		}
 		
 		public String toString() {
@@ -792,6 +804,15 @@ public class StructureModel {
 		
 		public boolean pushEnclose(Enclose enclose) {
 			assert(!levelList.isEmpty());
+
+			/*
+			Level level = levelList.getLast();
+			if (!level.checkIndent(enclose)) {
+				// Push new level
+				increaseLevel(enclose.indent);
+			}
+			*/
+
 			return levelList.getLast().pushEnclose(enclose);
 		}
 		
@@ -850,6 +871,23 @@ public class StructureModel {
 				this.indent = indent;
 				stack = new Stack<EnclosePair>();
 			}
+
+			/*
+			public boolean checkIndent(Enclose enclose) {
+				if (stack.isEmpty()) 
+					return true;
+				EnclosePair topPair =  stack.peek();
+				if (topPair.open  instanceof OpenBrace) {
+					if (enclose.indent > topPair.open.indent) {
+						return false;
+					} else if (enclose.indent == topPair.open.indent) {
+						popPair();
+						return true;
+					}
+				}
+				return true;
+			}
+			*/
 
 			public boolean isEmpty() {
 				return stack.isEmpty();

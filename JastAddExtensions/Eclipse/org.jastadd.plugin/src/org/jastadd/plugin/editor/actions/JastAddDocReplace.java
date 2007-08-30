@@ -1,27 +1,26 @@
 package org.jastadd.plugin.editor.actions;
 
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 
 public class JastAddDocReplace extends JastAddDocAction {
 
 	private IDocument doc; 
-	private int offset;
 	private String replaceText;
 	private int replaceLength;
+	private DocumentCommand cmd;
 	
-	public JastAddDocReplace(IDocument doc, int offset, String replaceText, int replaceLength) {
+	public JastAddDocReplace(IDocument doc, DocumentCommand cmd, String replaceText, int replaceLength) {
 		this.doc = doc;
-		this.offset = offset;
+		this.cmd = cmd;
 		this.replaceText = replaceText;
 		this.replaceLength = replaceLength;
 	}
 
 	public void perform() {
-		try {
-			doc.replace(offset, replaceLength, replaceText);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
+		String content = doc.get();
+		System.out.println("text=#" + replaceText + "# length=" + replaceLength + " offset=" + cmd.offset);
+		cmd.text = replaceText;
 	}
 }

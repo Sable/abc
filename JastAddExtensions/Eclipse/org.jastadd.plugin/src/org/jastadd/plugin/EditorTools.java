@@ -25,7 +25,7 @@ import AST.CompilationUnit;
 public class EditorTools {
 
 	public static void setActiveEditorPosition(int offset) {
-		setActiveEditorPosition(offset, 0);	
+		setActiveEditorPosition(offset, 0);
 	}
 	
 	public static void setActiveEditorPosition(int offset, int length) {
@@ -36,7 +36,7 @@ public class EditorTools {
 		IEditorPart editorPart = page.getActiveEditor();
 		if (editorPart instanceof ITextEditor) {			
 			ITextEditor textEditor = (ITextEditor) editorPart;
-			textEditor.selectAndReveal(offset, length);
+			textEditor.selectAndReveal(offset, 1);
 		}
  	}
 	
