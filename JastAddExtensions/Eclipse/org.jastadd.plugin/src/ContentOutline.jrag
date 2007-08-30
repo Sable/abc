@@ -1,3 +1,5 @@
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
+
 aspect ContentOutline {
    syn boolean ASTNode.showInContentOutline() = false;
    eq ClassDecl.showInContentOutline() = true;
@@ -34,7 +36,54 @@ aspect ContentOutline {
      res.append(")");
      return res.toString();
    }
+   eq ImportDecl.contentOutlineLabel() = toString();
+   eq ImportDecl.showInContentOutline() = true;
    
+   syn org.eclipse.swt.graphics.Image ASTNode.contentOutlineImage() = null;
+   eq ClassDecl.contentOutlineImage() {
+     if(isNestedType()) {
+       if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_PRIVATE);
+       if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_PUBLIC);
+       if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_PROTECTED);
+       return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_DEFAULT);
+     }
+     else {
+       if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS);
+       else return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_CLASS_DEFAULT);
+     }
+   }
+   eq InterfaceDecl.contentOutlineImage() {
+     if(isNestedType()) {
+       if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_INTERFACE_PRIVATE);
+       if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_INTERFACE_PUBLIC);
+       if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_INTERFACE_PROTECTED);
+       return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_INTERFACE_DEFAULT);
+     }
+     else {
+       if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INTERFACE);
+       else return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INTERFACE_DEFAULT);
+     }
+   }
+   eq FieldDeclaration.contentOutlineImage() {
+     if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PRIVATE);
+     if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PUBLIC);
+     if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PROTECTED);
+     return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_DEFAULT);
+   }
+   eq MethodDecl.contentOutlineImage() {
+     if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PRIVATE);
+     if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);
+     if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PROTECTED);
+     return JavaPluginImages.get(JavaPluginImages.IMG_MISC_DEFAULT);
+   }
+   eq ConstructorDecl.contentOutlineImage() {
+     if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PRIVATE);
+     if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);
+     if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PROTECTED);
+     return JavaPluginImages.get(JavaPluginImages.IMG_MISC_DEFAULT);
+   }
+   eq ImportDecl.contentOutlineImage() = JavaPluginImages.get(JavaPluginImages.IMG_OBJS_IMPDECL);
+    
    /**
      hasVisibleChildren
    */

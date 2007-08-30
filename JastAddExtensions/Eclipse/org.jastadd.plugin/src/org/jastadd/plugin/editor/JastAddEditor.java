@@ -4,6 +4,7 @@ import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jastadd.plugin.JastAddDocumentProvider;
+import org.jastadd.plugin.outline.JastAddContentOutlinePage;
 
 
 public class JastAddEditor extends TextEditor {
