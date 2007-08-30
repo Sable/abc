@@ -82,6 +82,16 @@ public class JastAddModel {
 	public void fullBuild(JastAddProject jaProject) {
 		buildProject(jaProject, true);
 	}
+
+	public CompilationUnit buildDocument(IDocument document) {
+		IFile file = JastAddDocumentProvider.documentToFile(document);
+		if(file != null) {
+			String fileName = file.getRawLocation().toOSString();
+			IProject project = file.getProject();
+			return buildDocument(document, fileName, project);
+		}
+		throw new UnsupportedOperationException("Can only build documents that belong to a JastAdd project");
+	}
 	
 	
 	public CompilationUnit buildDocument(IDocument document, String fileName, IProject project) {

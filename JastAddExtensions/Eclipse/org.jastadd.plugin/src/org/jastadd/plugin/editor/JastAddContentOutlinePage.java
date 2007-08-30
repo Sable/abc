@@ -1,46 +1,30 @@
 package org.jastadd.plugin.editor;
 
-import java.util.HashMap;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultPositionUpdater;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IPositionUpdater;
-import org.eclipse.jface.text.Position;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPartConstants;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.EditorTools;
-import org.jastadd.plugin.JastAddDocumentProvider;
-import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.providers.JastAddContentProvider;
+import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 import AST.ASTNode;
 
 public class JastAddContentOutlinePage extends ContentOutlinePage implements IPropertyListener {
 	
 	private IEditorInput fInput;
-	private IDocumentProvider fDocumentProvider;
 	private TextEditor fTextEditor;
 	
-	public JastAddContentOutlinePage(IDocumentProvider docProvider, TextEditor editor) {
+	public JastAddContentOutlinePage(TextEditor editor) {
 		super();
-	    fDocumentProvider = docProvider;
 	    fTextEditor = editor;
 	}
 	
@@ -93,133 +77,4 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 			update();
 		}
 	}
-	
-	
-	protected class JastAddLabelProvider extends LabelProvider {
-		public String getText(Object element) {
-			
-			if (element instanceof ASTNode) {
-				return ((ASTNode)element).contentOutlineLabel();
-			} else if (element instanceof String) {
-				return (String)element;
-			}
-			return "Unknown";
-		}
-		public Image getImage(Object element) {
-			/*
-			String imageKey = null;
-			if(element instanceof ASTDecl) {
-				imageKey = ISharedImages.IMG_OBJ_FOLDER;
-			}
-			else if(element instanceof ListComponents) {
-				imageKey = org.eclipse.ui.ide.IDE.SharedImages.IMG_OBJ_PROJECT;
-			}
-			else if(element instanceof Components) {
-				imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			}
-			return imageKey == null ? null : PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
-			*/
-			String imageKey = org.eclipse.ui.ide.IDE.SharedImages.IMG_OPEN_MARKER;
-			return imageKey == null ? null : PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
-		}
-	}
-
-	protected class JastAddContentProvider implements ITreeContentProvider {
-		
-		protected final static String JASTADD_JAVA_CODE = "__jastadd_java_code"; //$NON-NLS-1$
-		protected IPositionUpdater fPositionUpdater = new DefaultPositionUpdater(JASTADD_JAVA_CODE);
-		protected ASTNode content = null;
-		public HashMap<ASTNode,Position> positions = new HashMap<ASTNode,Position>();
-
-		protected void parse(IDocument document) {
-			IFile file = JastAddDocumentProvider.documentToFile(document);
-			String fileName = file.getRawLocation().toOSString();
-			IProject project = file.getProject();
-
-			content = JastAddModel.getInstance().buildDocument(document, fileName, project);
-			/*if(content != null)
-				System.out.println(content.dumpTree());*/
-
-/*			IFile file = JastAddDocumentProvider.documentToFile(document);
-			JastAddModel model = JastAddModel.getInstance();
-			content = model.buildFile(file);*/
-		}	
-		
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			if (oldInput != null) {
-				IDocument document = fDocumentProvider.getDocument(oldInput);
-				if (document != null) {
-					//try {
-					//	document.removePositionCategory(JASTADD_JAVA_CODE);
-					//} catch (BadPositionCategoryException x) {
-					//}
-					//document.removePositionUpdater(fPositionUpdater);
-				}
-			}
-			content = null;
-			//positions = new HashMap<ASTNode,Position>();
-
-			if (newInput != null) {
-				IDocument document = fDocumentProvider.getDocument(newInput);
-				if (document != null) {
-					//document.addPositionCategory(JASTADD_JAVA_CODE);
-					//document.addPositionUpdater(fPositionUpdater);
-
-					parse(document);
-				}
-			}
-		}
-
-		public void dispose() {
-			if (content != null) {
-				content = null;
-			}
-		}
-
-		public boolean isDeleted(Object element) {
-			return false;
-		}
-
-		public Object[] getElements(Object element) {
-			if (content != null) {
-				return content.outlineChildren().toArray(); 
-			} else {
-				return new Object[0];
-			}
-		}
-
-		public boolean hasChildren(Object element) {
-			if(element == null)
-				return false;
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				return !node.outlineChildren().isEmpty();
-			}
-			return false;
-		}
-
-		public Object getParent(Object element) {
-			if(element == null)
-				return null;
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				ASTNode parent = node.getParent();
-				if (parent != null && parent.showInContentOutline())
-					return parent;
-				else getParent(parent);
-			}
-			return null;
-		}
-
-		public Object[] getChildren(Object element) {
-			if(element == null)
-				return new Object[0];
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				return node.outlineChildren().toArray();
-			}
-			return new Object[0];
-		}
-	}
-
 }
