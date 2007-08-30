@@ -18,7 +18,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourcePatternFilter;
-import org.jastadd.plugin.FileTools;
+import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.JastAddModel;
 import org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate;
 
@@ -52,7 +52,7 @@ public class ResourceNavigator extends org.eclipse.ui.views.navigator.ResourceNa
         boolean expandable = viewer.isExpandable(element) && !(element instanceof IFile);
         if(element instanceof ASTNode) {
 			ASTNode node = (ASTNode)element;
-        	FileTools.openFile(node);
+        	EditorTools.openFile(node);
         }
         else if (expandable) {
             viewer.setExpandedState(element, !viewer.getExpandedState(element));

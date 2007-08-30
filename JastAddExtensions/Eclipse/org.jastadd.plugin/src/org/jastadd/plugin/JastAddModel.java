@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
+import org.jastadd.plugin.editor.actions.JastAddDocAction;
+import org.jastadd.plugin.editor.actions.JastAddDocReplace;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
@@ -601,4 +603,12 @@ public class JastAddModel {
 		return null;
 	}
 	public static final String DUMMY_SUFFIX = ".dummy";
+
+	
+	public LinkedList<JastAddDocAction> getDocInsertionAfterNewline(IDocument doc, int offset) {
+		StringBuffer buf = new StringBuffer(doc.get());
+		StructureModel structModel = new StructureModel(buf);
+		int change = structModel.doRecovery(offset);
+		return structModel.insertionAfterNewline(doc, offset, change);
+	}
 }

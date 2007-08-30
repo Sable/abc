@@ -1,9 +1,13 @@
 package org.jastadd.plugin.editor.highlight;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
+import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.editor.actions.JastAddDocAction;
 
 public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 
@@ -21,12 +25,26 @@ public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 			smartIndentOnKeypress(doc, cmd);
 	}
 
+	
 	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) {
-		
+		/*
+		JastAddDocReplace replace = JastAddModel.getInstance().getDocInsertionAftere(doc, cmd.offset, cmd.text.charAt(0));
+		if (replace == null) {
+			try {
+			  doc.replace(replace.offset, replace.length, replace.text);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+		}
+		*/
 	}
 
 	private void smartIndentAfterNewLine(IDocument doc, DocumentCommand cmd) {
-		
+		LinkedList<JastAddDocAction> todoList = JastAddModel.getInstance().getDocInsertionAfterNewline(doc, cmd.offset);
+		for (Iterator itr = todoList.iterator();itr.hasNext();) {
+			JastAddDocAction action = (JastAddDocAction)itr.next();
+			action.perform();
+		}
 	}
 
 	private boolean isLineDelimiter(IDocument document, String text) {

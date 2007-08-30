@@ -26,7 +26,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
-import org.jastadd.plugin.FileTools;
+import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
@@ -69,7 +69,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 			Object obj = structSelect.getFirstElement();
 			if (obj instanceof ASTNode) {
 				ASTNode node = (ASTNode)obj;
-				FileTools.openFile(node);
+				EditorTools.openFile(node);
 			}
 		}
 	}

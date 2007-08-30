@@ -22,7 +22,24 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import AST.ASTNode;
 import AST.CompilationUnit;
 
-public class FileTools {
+public class EditorTools {
+
+	public static void setActiveEditorPosition(int offset) {
+		setActiveEditorPosition(offset, 0);	
+	}
+	
+	public static void setActiveEditorPosition(int offset, int length) {
+
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchPage page = window.getActivePage();
+
+		IEditorPart editorPart = page.getActiveEditor();
+		if (editorPart instanceof ITextEditor) {			
+			ITextEditor textEditor = (ITextEditor) editorPart;
+			textEditor.selectAndReveal(offset, length);
+		}
+ 	}
+	
 	public static void openFile(ASTNode node) {
 		int targetLine = node.declarationLocationLine();
 		int targetColumn = node.declarationLocationColumn();

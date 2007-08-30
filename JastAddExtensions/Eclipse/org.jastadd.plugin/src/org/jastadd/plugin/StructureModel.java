@@ -6,9 +6,22 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Stack;
 
+import org.eclipse.jface.text.IDocument;
+import org.jastadd.plugin.editor.actions.JastAddDocAction;
+import org.jastadd.plugin.editor.actions.JastAddDocMove;
+import org.jastadd.plugin.editor.actions.JastAddDocReplace;
+
 public class StructureModel {
 	
+	
 	// ============= Public =======================
+
+	public static final char OPEN_PARAN = '(';
+	public static final char CLOSE_PARAN = ')';
+	public static final char OPEN_BRACE = '{';
+	public static final char CLOSE_BRACE = '}';
+	public static final char DELIM_COMMA = ',';
+	public static final char DELIM_SEMICOLON = ';';
 	
 	public StructureModel(StringBuffer buf) {
 		this.buf = buf;
@@ -28,16 +41,43 @@ public class StructureModel {
 		return rootPair.getDotOffset();
 	}		
 	
+	public LinkedList<JastAddDocAction> insertionAfterNewline(IDocument doc, int activeOffset, int recoveryChange) {
+
+		LinkedList<JastAddDocAction> todoList = new LinkedList<JastAddDocAction>();
+		
+		// Find activePair
+		EnclosePair activePair = rootPair.findActivePair(activeOffset);
+		if (activePair == null) { // If there are no enclose pairs
+			return null;
+		}
+		
+		// Add indent
+		
+		String indent = activePair.getChildIndent();
+		JastAddDocReplace indentInsert = new JastAddDocReplace(doc, activeOffset, indent, indent.length());
+		todoList.add(indentInsert);
+		
+		// Add move to end of indent
+		
+		JastAddDocMove moveIndent = new JastAddDocMove(activeOffset + indent.length());
+		todoList.add(moveIndent);
+		
+		if (activePair.open instanceof OpenBrace && activePair.close instanceof UnknownClose) {
+		    
+			// Add insertion CLOSE_BRACE
+			int braceOffset = activePair.close.offset - ((UnknownClose)activePair.close).recoveryOffsetChange();
+			JastAddDocReplace braceInsert = new JastAddDocReplace(doc, activeOffset, indent, indent.length());
+			todoList.add(indentInsert);			
+
+		} 
+		
+	    return todoList;
+	}
+	
 	
 	// ============= Private ======================
 
 	private final int TABSIZE = 4;
-	private final char OPEN_PARAN = '(';
-	private final char CLOSE_PARAN = ')';
-	private final char OPEN_BRACE = '{';
-	private final char CLOSE_BRACE = '}';
-	private final char DELIM_COMMA = ',';
-	private final char DELIM_SEMICOLON = ';';
 	private final char NEW_LINE = '\n';
 	
 	private LinkedList<CharacterNode> tupleList;
@@ -229,6 +269,15 @@ public class StructureModel {
 			}
 		}
 		
+		public EnclosePair findActivePair(int activeOffset) {
+			EnclosePair activePair = null;
+			for (Iterator itr = children.iterator(); activePair == null && itr.hasNext();) {
+				StructNode child = (StructNode) itr.next();
+				child.findActivePair(activeOffset);
+			}
+			return activePair;
+		}
+		
 		public abstract void print(String indent);
 		
 		public abstract String toString();	
@@ -236,6 +285,7 @@ public class StructureModel {
 
 	private abstract class CharacterNode extends StructNode {
 		protected int offset;
+		protected int recoveryChange;
 		protected CharacterNode(int offset, int indent) {
 			super(indent);
 			this.offset = offset;
@@ -250,10 +300,15 @@ public class StructureModel {
 			return (EnclosePair)super.getParent();
 		}
 		
+		public int recoveryOffsetChange() {
+			return recoveryChange;
+		}
+		
 		public void propagateOffsetChange(int insertOffset, int change) {
 			super.propagateOffsetChange(insertOffset, change);
 			if (offset > insertOffset) {
 				offset += change;
+				recoveryChange += change;
 			}
 		}
 	}
@@ -546,6 +601,23 @@ public class StructureModel {
 			close.mendOffsets();
 		}
 		
+		public EnclosePair findActivePair(int activeOffset) {
+			if (open.offset <= activeOffset && close.offset > activeOffset) {
+				EnclosePair activePair = super.findActivePair(activeOffset);
+				return activePair == null ? this : activePair;
+			}
+			return null;
+		}
+		
+		public String getChildIndent() {
+			String res = "";
+			for (int i = 0; i < indent; i++) {
+				res += "\t";
+			}
+			res += "\t";
+			return res;
+		}
+		
 		public String toString() {
 			return open.toString() + " -- " + close.toString(); 
 		}
@@ -556,6 +628,7 @@ public class StructureModel {
 	private class RootPair extends EnclosePair {
 		
 		private int dotOffset;
+		private int recoveryChange;
 		
 		public RootPair(int contentLength) {
 			super(null, new StartOfFile(), new EndOfFile(contentLength));
@@ -567,7 +640,7 @@ public class StructureModel {
 	
 		public void propagateOffsetChange(int insertOffset, int change) {
 			if (dotOffset > insertOffset) {
-				dotOffset += change;
+				recoveryChange += change;
 			}
 			super.propagateOffsetChange(insertOffset, change);
 		}

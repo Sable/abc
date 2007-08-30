@@ -118,7 +118,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		
 				if(node == null) {
 					// Try a structural recovery
-					documentOffset = (new StructureModel(buf)).doRecovery(documentOffset);
+					documentOffset += (new StructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
 					
 					node = JastAddModel.getInstance().findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 					if (node == null) {

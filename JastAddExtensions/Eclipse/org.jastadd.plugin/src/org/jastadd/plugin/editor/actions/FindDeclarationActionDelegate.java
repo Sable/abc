@@ -24,7 +24,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jastadd.plugin.FileTools;
+import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
@@ -61,7 +61,7 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 				// Find the file and position of the declaration node
 				ASTNode target = selectedNode.declaration();
 				if(target != null) {
-					FileTools.openFile(target);
+					EditorTools.openFile(target);
 				}
 			}
 		}
