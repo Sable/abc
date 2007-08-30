@@ -2,6 +2,7 @@ package org.jastadd.plugin.editor.highlight;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -10,7 +11,7 @@ import org.jastadd.plugin.JastAddModel;
 import org.jastadd.plugin.editor.actions.JastAddDocAction;
 
 public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
-
+	
 	public void customizeDocumentCommand(IDocument doc, DocumentCommand cmd) {
 		// cmd.length == 0 - when no text is markes
 		// cmd.text - the text to insert

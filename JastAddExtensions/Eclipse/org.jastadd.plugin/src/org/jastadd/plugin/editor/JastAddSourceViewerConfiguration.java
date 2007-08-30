@@ -1,6 +1,6 @@
 package org.jastadd.plugin.editor;
 
-import org.eclipse.jdt.internal.ui.text.java.JavaAutoIndentStrategy;
+import org.eclipse.jface.text.DefaultAutoIndentStrategy;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
@@ -27,15 +27,14 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		DefaultDamagerRepairer dr= new DefaultDamagerRepairer(new JastAddScanner(new JastAddColors()));
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
-		
+		 
 		return reconciler;
 	}
 	
-	public IAutoEditStrategy[] getAutoIndentStrategies(ISourceViewer sourceViewer, String contentType) {
-		//return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
-		return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
+	@Override public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+		return new IAutoEditStrategy[] { IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new JastAddAutoIndentStrategy() : new DefaultAutoIndentStrategy() };
 	}
-	
+		
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
 		ContentAssistant assistant= new ContentAssistant();
