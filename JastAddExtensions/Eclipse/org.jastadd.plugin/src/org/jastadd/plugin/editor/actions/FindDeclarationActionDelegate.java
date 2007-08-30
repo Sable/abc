@@ -24,6 +24,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jastadd.plugin.FileTools;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
@@ -59,119 +60,11 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 			if (selectedNode != null) {
 				// Find the file and position of the declaration node
 				ASTNode target = selectedNode.declaration();
-					
 				if(target != null) {
-					int targetLine = target.declarationLocationLine();
-					int targetColumn = target.declarationLocationColumn();
-					int targetLength = target.declarationLocationLength();
-					CompilationUnit cu = target.declarationCompilationUnit();
-					if(cu != null)
-						openFile(cu, targetLine, targetColumn, targetLength);
-					else
-						System.out.println("Cannot find CompilationUnit");
-				}
-				System.out.println("Node does not bind to a declaration");
-			}
-		}
-	}
-	
-	
-	
-	private void openFile(CompilationUnit unit, int line, int column, int length) {
-		if (editorPart == null)
-			return;
-
-		String pathName = unit.pathName();
-		if (pathName.endsWith(".class")) {
-			pathName = pathName.replace(".class", ".java");
-		} 
-		else if(pathName.endsWith(JastAddModel.DUMMY_SUFFIX)) {
-			pathName = pathName.substring(0, pathName.length() - JastAddModel.DUMMY_SUFFIX.length());
-		}
-		
-		IEditorInput editorInput = editorPart.getEditorInput();
-		
-		if (editorInput instanceof IFileEditorInput) {
-			boolean finishedTrying = false;
-			while (!finishedTrying) {
-
-				if (pathName.endsWith(".java")) {
-				
-					try {
-					  openJavaFile(pathName, line, column, length);
-					  finishedTrying = true;
-				    } catch (PartInitException e) {
-					  finishedTrying = true;
-				    } catch (URISyntaxException e1) {
-					  if (pathName.endsWith(".java")) {
-					    pathName = pathName.replace(".java", ".class");
-					  }
-				    }
-				    
-				} else if (pathName.endsWith(".class") || pathName.endsWith(".jar")) {
-
-					try {
-						openClassFile(pathName, unit.relativeName(), pathName.endsWith(".jar"), line, column, length);
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					} catch (PartInitException e) {
-						e.printStackTrace();
-					}	
-					finishedTrying = true;
+					FileTools.openFile(target);
 				}
 			}
 		}
 	}
-		
-	private void openJavaFile(String pathName, int line, int column, int length)
-			throws PartInitException, URISyntaxException {
-		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-				.findFilesForLocation(path);
-		if (files.length >= 1) {
-			IEditorInput targetEditorInput = new FileEditorInput(files[0]);
-			IWorkbenchWindow window = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-
-			page.openEditor(targetEditorInput,
-					"org.jastadd.plugin.editor.JastAddEditor", true);
-
-			IDocument targetDoc = JastAddDocumentProvider
-					.fileToDocument(files[0]);
-			int lineOffset = 0;
-			try {
-				lineOffset = targetDoc.getLineOffset(line - 1) + column - 1;
-			} catch (BadLocationException e) {
-			}
-
-			IEditorPart targetEditorPart = page.findEditor(targetEditorInput);
-			if (targetEditorPart instanceof ITextEditor) {
-				ITextEditor textEditor = (ITextEditor) targetEditorPart;
-				textEditor.selectAndReveal(lineOffset, length);
-			}
-		}
-	}
-
-	private void openClassFile(String pathName, String relativeName,
-			boolean inJarFile, int line, int column, int length)
-			throws PartInitException, URISyntaxException {
-		
-		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-				.findFilesForLocation(path);
-		if (files.length > 0) {
-			IWorkbench workbench = PlatformUI.getWorkbench();
-			IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-			IEditorDescriptor desc = PlatformUI.getWorkbench()
-					.getEditorRegistry().getDefaultEditor(files[0].getName());
-			page.openEditor(new FileEditorInput(files[0]), desc.getId());
-
-			// page.openEditor(targetFileEditorInput,"org.eclipse.jdt.ui.ClassFileEditor",
-			// false);
-			// "org.eclipse.jdt.ui.CompilationUnitEditor",
-			// false);
-		}
-	}
+	
 }

@@ -26,6 +26,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.jastadd.plugin.FileTools;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 
@@ -68,26 +69,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements IPr
 			Object obj = structSelect.getFirstElement();
 			if (obj instanceof ASTNode) {
 				ASTNode node = (ASTNode)obj;
-				int beginLine = ASTNode.getLine(node.getStart());
-				int endLine = ASTNode.getLine(node.getEnd());
-				IDocument document = fDocumentProvider.getDocument(fInput);
-				if (beginLine != 0 || endLine != 0) {
-					try {
-						int offset = document.getLineOffset(beginLine-1);
-						int end = document.getLineOffset(document.getNumberOfLines() == endLine ? endLine-1 : endLine);
-						int length = end - offset;
-						//Position p = new Position(offset, length);
-						//document.addPosition(JASTADD_JAVA_CODE, p);
-						//positions.put(t, p);
-						try {
-						  fTextEditor.setHighlightRange(offset, length, true);
-						} catch (IllegalArgumentException x) {
-							fTextEditor.resetHighlightRange();
-						}
-					} catch (BadLocationException e) {
-					}
-				}
-	
+				FileTools.openFile(node);
 			}
 		}
 	}
