@@ -206,6 +206,22 @@
          name="org.jastadd.plugin.classfilter">
       <filter pattern="*.class" selected="true"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.jastadd.plugin.perspective.PerspectiveFactory"
+            id="org.jastadd.plugin.perspective"
+            name="JastAdd">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.jastadd.plugin.navigator.ResourceNavigator"
+            id="org.jastadd.plugin.navigator"
+            name="JastAddNavigator">
+      </view>
+   </extension>
    
    
 </plugin>
