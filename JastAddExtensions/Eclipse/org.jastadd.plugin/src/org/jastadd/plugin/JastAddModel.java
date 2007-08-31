@@ -622,4 +622,18 @@ public class JastAddModel {
 		int change = structModel.doRecovery(cmd.offset);
 		return structModel.insertionAfterNewline(doc, cmd, change);
 	}
+	
+	public LinkedList<JastAddDocAction> getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
+		char c = cmd.text.charAt(0);
+		if (StructureModel.OPEN_PARAN == c) {
+		    cmd.caretOffset = cmd.offset + 1;
+		    cmd.shiftsCaret = false;
+			cmd.text += String.valueOf(StructureModel.CLOSE_PARAN);
+		} else if ('[' == c) {
+		    cmd.caretOffset = cmd.offset + 1;
+		    cmd.shiftsCaret = false;
+			cmd.text += "]";
+		}
+		return new LinkedList<JastAddDocAction>();
+	}
 }
