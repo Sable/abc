@@ -1,4 +1,5 @@
 import abc.weaving.aspectinfo.*;
+import abc.weaving.aspectinfo.MethodCategory;
 
 aspect AspectJCodegen {
 
@@ -7,6 +8,57 @@ aspect AspectJCodegen {
   }
 
   syn lazy AbcClass TypeDecl.abcClass() = AbcFactory.AbcClass(sootClass());
+
+  public int MethodDecl.category = MethodCategory.NORMAL;
+  refine EmitJimple public void MethodDecl.jimplify2() {
+    EmitJimple.MethodDecl.jimplify2();
+    MethodCategory.register(sootMethod, category);
+  }
+  refine IntertypeMethodCodegeneration eq IntertypeMethodDecl.createAspectMethod() {
+    MethodDecl m = IntertypeMethodCodegeneration.IntertypeMethodDecl.createAspectMethod();
+    m.category = MethodCategory.INTERTYPE_METHOD_SOURCE;
+    return m;
+  }
+  refine IntertypeMethodCodegeneration public MethodDecl IntertypeMethodDecl.createDelegateMethod(MethodDecl aspectMethod) {
+    MethodDecl m = IntertypeMethodCodegeneration.IntertypeMethodDecl.createDelegateMethod(aspectMethod);
+    m.category = MethodCategory.INTERTYPE_METHOD_DELEGATOR;
+    return m;
+  }
+
+  refine EmitJimple public void Program.jimplify1() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit u = (CompilationUnit)iter.next();
+      if(u.weavable())
+        u.jimplify1phase1();
+    }
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit u = (CompilationUnit)iter.next();
+      if(u.weavable())
+        u.jimplify1phase2();
+    }
+  }
+
+  refine EmitJimple public void Program.jimplify2() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit u = (CompilationUnit)iter.next();
+      if(u.weavable())
+        u.jimplify2();
+    }
+  }
+
+  refine EmitJimple eq TypeDecl.getSootClassDecl() {
+    if(compilationUnit().weavable()) {
+      return sootClass();
+    }
+    else {
+      if(Program.verbose())
+        System.out.println("Loading .class file " + jvmName());
+      SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
+      sc.setLibraryClass();
+      return sc;
+    }
+  }
+
 
   public void ClassDecl.jimplify1phase1() {
     super.jimplify1phase1();

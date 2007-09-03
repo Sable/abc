@@ -89,6 +89,13 @@ public class CompileSequence extends abc.main.CompileSequence {
         String name = (String)iter.next();
         program.addSourceFile(name);
       }
+      
+      for(Iterator iter = jar_classes.iterator(); iter.hasNext(); ) {
+    	  String name = (String)iter.next();
+    	  CompilationUnit u = program.getCompilationUnit(name);
+    	  u.weavableClass = true;
+    	  program.addCompilationUnit(u);
+      }
 
       for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
         CompilationUnit unit = (CompilationUnit)iter.next();
@@ -153,7 +160,7 @@ public class CompileSequence extends abc.main.CompileSequence {
         for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
           final SootMethod method = (SootMethod) methodIt.next();
           try {
-            if( !method.isConcrete() ) continue;
+            if( method == null || !method.isConcrete() ) continue;
             // System.out.println("retrieve "+method+ " from "+cl);
             method.retrieveActiveBody();
           } catch(InternalCompilerError e) {
