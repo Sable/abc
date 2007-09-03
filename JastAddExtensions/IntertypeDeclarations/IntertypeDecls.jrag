@@ -4,11 +4,15 @@ import java.util.Collections;
 import java.util.HashMap;
 
 aspect IntertypeDecls {
+
+  syn boolean CompilationUnit.weavable() = fromSource() || weavableClass;
+  public boolean CompilationUnit.weavableClass = false;
+
   // generate code for inter-type declarations
   public void Program.generateIntertypeDecls() {
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
       CompilationUnit cu = (CompilationUnit)iter.next();
-      if(cu.fromSource())
+      if(cu.weavable())
         cu.generateIntertypeDecls();
     }
   }
