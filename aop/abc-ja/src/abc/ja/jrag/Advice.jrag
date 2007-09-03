@@ -25,16 +25,10 @@ aspect Advice
     return lookupVariable(name);
   }
   syn SimpleSet AdviceSpec.localLookupVariable(String name) {
-    if (name.equals("thisJoinPoint")
-        || name.equals("thisJoinPointStaticPart")
-        || name.equals("thisEnclosingJoinPointStaticPart"))
-    {
-      return SimpleSet.emptySet.add(implicitVarDecl(name));
-    }
     for(int i = 0; i < getNumParameter(); i++)
       if(getParameter(i).name().equals(name))
         return SimpleSet.emptySet.add(getParameter(i));
-    return SimpleSet.emptySet;
+    return localLookupImplicitVariable(name);
   }
   syn SimpleSet AfterReturningSpec.localLookupVariable(String name) {
     if(hasReturnParameter() &&
@@ -104,33 +98,39 @@ aspect Advice
   
   // Pointcuts attached to advice should bind the variables the advice declares
   public void AdviceDecl.typeCheck() {
-	  AdviceSpec spec = getAdviceSpec();
-	  for(int i = 0; i < spec.getNumParameter(); i++) {
-		  if(getPointcutExpr().binds(spec.getParameter(i).getID()) > 1) {
-			  error("Advice formal " + spec.getParameter(i).getID() + " is bound " +
-			  		"multiple times in pointcut.");
-		  } else if(getPointcutExpr().binds(spec.getParameter(i).getID()) == 0) {
-			  error("Advice formal " + spec.getParameter(i).getID() + " is not bound " +
-		  		"in pointcut.");
-		  }		
-	  }
-    if(spec instanceof AroundSpec && !((AroundSpec)spec).getTypeAccess().type().isVoid() &&
-       getBlock().canCompleteNormally())
+    AdviceSpec spec = getAdviceSpec();
+    for(int i = 0; i < spec.getNumParameter(); i++) {
+      int bindings = getPointcutExpr().binds(spec.getParameter(i).getID());
+
+      if(bindings > 1) {
+        error("Advice formal " + spec.getParameter(i).getID() + " is bound " +
+              "multiple times in pointcut.");
+      } else if(bindings == 0) {
+        error("Advice formal " + spec.getParameter(i).getID() +
+              " is not bound " + "in pointcut.");
+      }		
+    }
+    AroundSpec aroundspec = spec.aroundSpec();
+    if (aroundspec != null && !aroundspec.getTypeAccess().type().isVoid()
+        && getBlock().canCompleteNormally())
       error("the body of non void around advice must return a value");
   }
-  
+
   // Pointcut decls should bind their variables, unless they're marked abstract.
   public void PointcutDecl.typeCheck() {
-	  if(!getModifiers().isAbstract()) {
-		  for(int i = 0; i < getNumParameter(); i++) {
-			  if(!hasPointcutExpr() || getPointcutExpr().binds(getParameter(i).getID()) == 0) {
-				  error("Concrete pointcut " + getID() + " should bind its formal argument " + 
-						  getParameter(i).getID());
-			  } else if(getPointcutExpr().binds(getParameter(i).getID()) > 1) {
-				  error("Pointcut " + getID() + " binds formal argument " + getParameter(i).getID()
-						  + " multiple times.");
-			  }
-		  }
-	  }
+    if(!getModifiers().isAbstract()) {
+      for(int i = 0; i < getNumParameter(); i++) {
+        if(!hasPointcutExpr()) continue;
+        int bindings = getPointcutExpr().binds(getParameter(i).getID());
+        
+        if(bindings == 0) {
+          error("Concrete pointcut " + getID() +
+                " should bind its formal argument " + getParameter(i).getID());
+        } else if(bindings > 1) {
+          error("Pointcut " + getID() + " binds formal argument " +
+                getParameter(i).getID() + " multiple times.");
+        }
+      }
+    }
   }
 }

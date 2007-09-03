@@ -8,13 +8,7 @@ aspect ImplicitVariables
     //  (1) thisJoinPointStaticPart
     //  (2) thisEnclosingJoinPointStaticPart
 
-    inh TypeDecl AdviceSpec.lookupType(String packageName, String typeName);
-    eq AdviceDecl.getAdviceSpec().lookupType(String packageName, String typeName)
-    {
-        return lookupType(packageName, typeName);
-    }
-
-    syn lazy Variable AdviceSpec.implicitVarDecl(String name)
+    eq Program.getCompilationUnit(int i).implicitVarDecl(String name)
     {
         // compute a declaration for this implicit variable
         Modifiers final_mod =
@@ -30,16 +24,33 @@ aspect ImplicitVariables
         ParameterDeclaration decl =
             new ImplicitParameterDeclaration(final_mod, type_access,
                                              name, new List());
-
-        // add decl to tree (as parameter to the advice method)
-        // and force possible rewrites to this decl (by reading it)
-        addParameter(decl);
-        getParameter(getNumParameter() - 1);
-
-        // return the new declaration
         return decl;
     }
+
+    inh ParameterDeclaration PointcutDecl.implicitVarDecl(String name);
+    inh ParameterDeclaration AdviceSpec.implicitVarDecl(String name);
  
+    syn lazy List PointcutDecl.getImplicitList() =
+        new List().add(implicitVarDecl("thisJoinPoint"))
+                  .add(implicitVarDecl("thisJoinPointStaticPart"))
+                  .add(implicitVarDecl("thisEnclosingJoinPointStaticPart"));
+
+    syn SimpleSet AdviceSpec.localLookupImplicitVariable(String name)
+    {
+        if (name.equals("thisJoinPoint")
+            || name.equals("thisJoinPointStaticPart")
+            || name.equals("thisEnclosingJoinPointStaticPart"))
+        {
+            ParameterDeclaration decl = implicitVarDecl(name);
+            // add decl to tree (as parameter to the advice method)
+            // and force possible rewrites to this decl (by reading it)
+            addParameter(decl);
+            getParameter(getNumParameter() - 1);
+            return SimpleSet.emptySet.add(decl);
+        }
+        return SimpleSet.emptySet;
+    }
+
     syn boolean ParameterDeclaration.isImplicit() = false;
     eq ImplicitParameterDeclaration.isImplicit() = true;
 
@@ -69,19 +80,23 @@ aspect ImplicitVariables
     public void AdviceSpec.nameCheck()
     {
         super.nameCheck();
-
-        for (int i = 0; i < getNumParameter(); i++) {
-            String name = getParameter(i).name();
-
-            if (name.equals("thisJoinPoint") ||
-                name.equals("thisJoinPointStaticPart") ||
-                name.equals("thisEnclosingJoinPointStaticPart"))
-            {
-                getParameter(i).error(
-                    "The variable \"" + name +
-                    "\" is implicitly defined in advice bodies");
-            }
-        }
+        for (int i = 0; i < getNumParameter(); i++)
+            getParameter(i).errorIfImplicitName("advice bodies");
+    }
+    public void PointcutDecl.nameCheck()
+    {
+        super.nameCheck();
+        for (int i = 0; i < getNumParameter(); i++)
+            getParameter(i).errorIfImplicitName("pointcut declarations");
+    }
+    public void ParameterDeclaration.errorIfImplicitName(String context)
+    {
+        String name = name();
+        if (name.equals("thisJoinPoint") ||
+            name.equals("thisJoinPointStaticPart") ||
+            name.equals("thisEnclosingJoinPointStaticPart"))
+                error("The variable \"" + name +
+                      "\" is implicitly defined in " + context);
     }
 
 
@@ -116,5 +131,52 @@ aspect ImplicitVariables
                     params[i] = j;
         }
         return params;
+    }
+
+
+    // this needs to go somewhere else...
+    syn boolean ASTNode.refersTo(Variable decl)
+    {
+        for (int i = 0; i < getNumChild(); i++)
+            if (getChild(i).refersTo(decl))
+                return true;
+        return false;
+    }
+    eq VarAccess.refersTo(Variable decl) = decl() == decl;
+
+    inh java.util.List PointcutExpr.pointcutFormals();
+
+    // FIXME: per-clauses, and declare-warning/error/soft
+    eq Program.getCompilationUnit(int i).pointcutFormals() = new LinkedList();
+
+    eq PointcutDecl.getPointcutExpr().pointcutFormals()
+    {
+        ArrayList result = new ArrayList();
+        for (int i = 0; i < getNumParameter(); i++)
+            result.add(getParameter(i));
+        for (int i = 0; i < getNumImplicit(); i++)
+            result.add(getImplicit(i));
+        return result;
+    }
+
+    eq AdviceDecl.getPointcutExpr().pointcutFormals()
+    {
+        AdviceSpec spec = getAdviceSpec();
+        ArrayList result = new ArrayList();
+        for (int i = 0; i < spec.getNumParameter(); i++)
+            result.add(spec.getParameter(i));
+        return result;
+    }
+
+    syn java.util.List IfPointcutExpr.usedPointcutFormals()
+    {
+        ArrayList result = new ArrayList();
+        Iterator i = pointcutFormals().iterator();
+        while (i.hasNext()) {
+            ParameterDeclaration decl = (ParameterDeclaration) i.next();
+            if (this.refersTo(decl))
+                result.add(decl);
+        }
+        return result;
     }
 }

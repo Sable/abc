@@ -1,0 +1,8 @@
+aspect DeclareCodegen
+{
+    // the following declare-statements have pointcuts as
+    // children, which may need to generate Jimple
+    public void DeclareWarning.jimplify2() { getPointcutExpr().jimplify2(); }
+    public void DeclareError.jimplify2()   { getPointcutExpr().jimplify2(); }
+    public void DeclareSoft.jimplify2()    { getPointcutExpr().jimplify2(); }
+}

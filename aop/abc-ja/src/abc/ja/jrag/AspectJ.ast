@@ -53,6 +53,7 @@ DeclarePrecedence : BodyDecl ::= Pattern*;
 PointcutDecl : BodyDecl ::= Modifiers
                             <ID:String>
                             Parameter:ParameterDeclaration*
+                            /Implicit:ParameterDeclaration*/
                             [PointcutExpr];
 
 abstract PointcutExpr;

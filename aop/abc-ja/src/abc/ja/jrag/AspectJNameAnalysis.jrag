@@ -54,6 +54,8 @@ aspect AspectJNameAnalysis {
   eq PerTarget.isPerObject() = true;
   eq PerThis.isPerObject() = true;
 
+  eq AspectDecl.getPerClause().hostType() = this;
+
   /* ------------------------------------------------------------------------------------------------------ */
   // named pointcut (sketch)
   // the main difficulty here is to check that there are no cycles

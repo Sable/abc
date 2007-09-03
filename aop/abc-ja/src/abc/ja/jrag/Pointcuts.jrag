@@ -12,6 +12,11 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isExceptionHandlerParameter() = false;
     eq PointcutDecl.getParameter(int i).nameType() = NameType.TYPE_NAME;
     
+    eq PointcutDecl.getImplicit(int i).isMethodParameter() = false;
+    eq PointcutDecl.getImplicit(int i).isConstructorParameter() = false;
+    eq PointcutDecl.getImplicit(int i).isExceptionHandlerParameter() = false;
+    eq PointcutDecl.getImplicit(int i).nameType() = NameType.TYPE_NAME;
+    
     eq NamedPointcutExpr.getPattern(int i).nameType() = NameType.AMBIGUOUS_NAME;
 
 
@@ -35,8 +40,10 @@ aspect Pointcuts
     inh boolean Variable.isPointcutVariable();
     eq Program.getCompilationUnit().isPointcutVariable() = false;
     eq PointcutDecl.getParameter(int i).isPointcutVariable() = true;
+    eq PointcutDecl.getImplicit(int i).isPointcutVariable() = true;
 
     eq IfPointcutExpr.getExpr().nameType() = NameType.EXPRESSION_NAME;
+
 
     // The advice/pointcut formal parameters should be visible
     // to the pointcut and the parameters themselves.
@@ -56,6 +63,9 @@ aspect Pointcuts
     }
 
     syn SimpleSet PointcutDecl.localLookupVariable(String name) {
+        for (int i = 0; i < getNumImplicit(); i++)
+            if (getImplicit(i).name().equals(name))
+                return SimpleSet.emptySet.add(getImplicit(i));
         for(int i = 0; i < getNumParameter(); i++)
             if(getParameter(i).name().equals(name))
                 return SimpleSet.emptySet.add(getParameter(i));

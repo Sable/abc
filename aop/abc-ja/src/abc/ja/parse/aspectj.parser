@@ -506,6 +506,94 @@ SimpleNamePattern simple_name_pattern =
         {: ParserTrace.parserTrace("name_pattern is identifer: " + a);
            return new SimpleNamePattern(a);
         :}
+   | ASPECT.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_ADVICEEXECUTION.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_ARGS.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_CALL.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_CFLOW.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_CFLOWBELOW.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_ERROR.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_EXECUTION.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_GET.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_HANDLER.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_INITIALIZATION.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_PARENTS.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_PRECEDENCE.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_PREINITIALIZATION.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_RETURNING.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_SET.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_SOFT.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_STATICINITIALIZATION.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_TARGET.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_THROWING.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_WARNING.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
+   | PC_WITHINCODE.a
+     {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
+        return new SimpleNamePattern(a.toString());
+     :}
    ;
 
 

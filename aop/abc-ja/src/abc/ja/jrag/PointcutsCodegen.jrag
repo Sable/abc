@@ -79,10 +79,14 @@ aspect PointcutCodegen
         return new Handler(getPattern().classnamePattern(), pos());
     }
 
-    // FIXME
     public Pointcut IfPointcutExpr.pointcut() {
-        // get jp/jpsp/ejpsp info
-        return new If(methodFormals(), methodSig(), -1, -1, -1, pos());
+        java.util.List vars = methodVars();
+
+        int jp = vars.indexOf(new Var("thisJoinPoint", null));
+        int jpsp = vars.indexOf(new Var("thisJoinPointStaticPart", null));
+        int ejp = vars.indexOf(new Var("thisEnclosingJoinPointStaticPart", null));
+
+        return new If(vars, methodSig(), jp, jpsp, ejp, pos());
     }
 
     public Pointcut InitializationPointcutExpr.pointcut() {
@@ -265,6 +269,7 @@ aspect PointcutCodegen
     public void PointcutDecl.jimplify2()
     {
         globalAspectInfo().addPointcutDecl(pointcutDecl());
+        getPointcutExpr().jimplify2();
     }
 
 
@@ -274,21 +279,65 @@ aspect PointcutCodegen
     //
     public void IfPointcutExpr.jimplify2()
     {
+        SootMethod method = sootMethod();
+        JimpleBody body = Jimple.v().newBody(method);
+        method.setActiveBody(body);
+        Body b = new Body(hostType(), body);
 
+        Iterator i = pointcutFormals().iterator();
+        int count = 0;
+        while (i.hasNext()) {
+            ParameterDeclaration param = (ParameterDeclaration) i.next();
+            if (this.refersTo(param)) {
+                Type type = param.type().getSootType();
+                param.local = b.newLocal(param.name(), type);
+                b.add(Jimple.v().newIdentityStmt(param.local,
+                    Jimple.v().newParameterRef(type, count++)));
+            }
+        }
+
+        b.add(Jimple.v().newReturnStmt(
+            getExpr().asImmediate(b, getExpr().eval(b))));
     }
 
-    syn lazy java.util.List IfPointcutExpr.methodFormals()
+    syn lazy java.util.List IfPointcutExpr.methodVars()
     {
-        return null;
+        java.util.List vars = new java.util.ArrayList();
+        Iterator i = pointcutFormals().iterator();
+        while (i.hasNext()) {
+            ParameterDeclaration param = (ParameterDeclaration) i.next();
+            if (this.refersTo(param))
+                vars.add(new Var(param.name(), polyglot.util.
+                                 Position.COMPILER_GENERATED));
+        }
+        return vars;
     }
+
+    inh TypeDecl PointcutExpr.hostType();
 
     syn lazy SootMethod IfPointcutExpr.sootMethod()
     {
-        return null;
+        String name = "if$" + hostType().adviceCounter++;
+        java.util.List paramtypes = new java.util.ArrayList();
+        Type returntype = soot.BooleanType.v();
+        int modifiers = soot.Modifier.STATIC | soot.Modifier.PUBLIC;
+
+        Iterator i = pointcutFormals().iterator();
+        while (i.hasNext()) {
+            ParameterDeclaration param = (ParameterDeclaration) i.next();
+            if (this.refersTo(param))
+                paramtypes.add(param.type().getSootType());
+        }
+
+        SootMethod method =
+            new SootMethod(name, paramtypes, returntype, modifiers);
+        hostType().getSootClassDecl().addMethod(method);
+
+        return method;
     }
 
     syn lazy MethodSig IfPointcutExpr.methodSig()
     {
-        return null;
+        return AbcFactory.MethodSig(sootMethod());
     }
 }
