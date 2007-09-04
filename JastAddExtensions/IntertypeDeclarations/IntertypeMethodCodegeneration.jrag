@@ -47,23 +47,25 @@ aspect IntertypeMethodCodegeneration {
       }
       // create abstract signature
       if(!found)
-      introducedType.addMemberMethod(
-        new MethodDecl(
-          getModifiers().makePublic(),
-          type().createQualifiedAccess(),
-          delegateName(),
-          copyParameterList(getParameterList()),
-          new List(),
-          (List)getExceptionList().fullCopy(),
-          new Opt()
-        )
-      );
+        introducedType.addMemberMethod(createAbstractMethod());
     }
     else {
       MethodDecl aspectMethod = createAspectMethod();
       MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
       introducedType.addMemberMethod(delegateMethod);
     }
+  }
+
+  public MethodDecl IntertypeMethodDecl.createAbstractMethod() {
+    return new MethodDecl(
+      getModifiers().makePublic(),
+      type().createQualifiedAccess(),
+      delegateName(),
+      copyParameterList(getParameterList()),
+      new List(),
+      (List)getExceptionList().fullCopy(),
+      new Opt()
+    );
   }
 
   syn String IntertypeMethodDecl.delegateName() = isPrivate() ? (hostAspect().topLevelType().fullName().replace('.', '$').replace('@', '_') + "$" + name()) : name(); 

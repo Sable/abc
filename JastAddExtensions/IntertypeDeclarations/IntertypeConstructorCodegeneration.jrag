@@ -25,6 +25,10 @@ aspect IntertypeMethodCodegeneration {
       createAccessor();
       return;
     }
+    introducedType().addBodyDecl(createDelegate());
+  }
+
+  public ConstructorDecl IntertypeConstructorDecl.createDelegate() {
     List args = new List();
     args.add(new ThisAccess("this"));
     for(int i = 0; i < getNumParameter(); i++)
@@ -38,19 +42,16 @@ aspect IntertypeMethodCodegeneration {
         new ReturnStmt(new Opt())
       )
     );
-    //Modifiers m = (Modifiers)getModifiers().fullCopy();
     Modifiers m = new Modifiers(new List().add(new Modifier("public")));
     List parameters = copyParameterList(getParameterList());
-    introducedType().addBodyDecl(
-      new IntroducedConstructorDecl(
-        m,
-        getID(),
-        parameters,
-        (List)getExceptionList().fullCopy(),
-        (Opt)getConstructorInvocationOpt().fullCopy(),
-        block,
-        this
-      )
+    return new IntroducedConstructorDecl(
+      m,
+      getID(),
+      parameters,
+      (List)getExceptionList().fullCopy(),
+      (Opt)getConstructorInvocationOpt().fullCopy(),
+      block,
+      this
     );
   }
 
