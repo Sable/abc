@@ -616,14 +616,18 @@ public class JastAddModel {
 	public static final String DUMMY_SUFFIX = ".dummy";
 
 	
-	public LinkedList<JastAddDocAction> getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd) {
+	public void getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd) {
 		StringBuffer buf = new StringBuffer(doc.get());
-		StructureModel structModel = new StructureModel(buf);
-		int change = structModel.doRecovery(cmd.offset);
-		return structModel.insertionAfterNewline(doc, cmd, change);
+		try {
+			StructureModel structModel = new StructureModel(buf);
+			int change = structModel.doRecovery(cmd.offset);
+			structModel.insertionAfterNewline(doc, cmd, change);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public LinkedList<JastAddDocAction> getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
+	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
 		char c = cmd.text.charAt(0);
 		if (StructureModel.OPEN_PARAN == c) {
 		    cmd.caretOffset = cmd.offset + 1;
@@ -634,6 +638,5 @@ public class JastAddModel {
 		    cmd.shiftsCaret = false;
 			cmd.text += "]";
 		}
-		return new LinkedList<JastAddDocAction>();
 	}
 }

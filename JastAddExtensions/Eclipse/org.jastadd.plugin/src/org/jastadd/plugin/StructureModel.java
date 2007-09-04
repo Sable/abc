@@ -30,6 +30,9 @@ public class StructureModel {
 		createTuples();
 		checkStructure();
 		createRoot();
+		if (structureCorrect && rootPair.treeBroken()) {
+			System.err.println("StructureModel: Correct program generated a broken tree");
+		}
 		rootPair.print("");
 		
 	}
@@ -71,6 +74,7 @@ public class StructureModel {
 		    
 			try {
 				
+				
 				// Resolve child content
 				int childTextEnd = activePair.close.offset - (activePair.open.offset + 1);
 				String childText = doc.get(activePair.open.offset + 1, childTextEnd < 0 ? 0 : childTextEnd);
@@ -78,7 +82,7 @@ public class StructureModel {
 				System.out.println(childText);
 				
 				// Make sure tabCount is as expected
-			    if (activePair.needsSanityCheck() && indentSanityCheck(childText, activePair.childIndentTabCount())) {
+			    if (false) { //activePair.indentSanityCheck()) {
 				    // Remove old child content
 			    	doc.replace(activePair.open.offset + 1, childText.length(), ""); // One right of the open brace
 			    } else {
@@ -156,10 +160,14 @@ public class StructureModel {
 				} else {
 					tupleList.add(new NewLine(offset));
 				}
-				curIndentOffset = resolveIndentAfterNewline(content, offset + 1); // After '\n'
-				curIndentTabCount = resolveTabCount(content, offset+1, curIndentOffset);
-				lastIndent = new Indent(curIndentTabCount, offset+1, curIndentOffset);
-				tupleList.add(lastIndent);
+				curIndentOffset = resolveIndentAfterNewline(content, offset); // After '\n'
+				curIndentTabCount = resolveTabCount(content, offset, curIndentOffset);
+				
+				if (curIndentOffset < content.length()) { 
+					lastIndent = new Indent(curIndentTabCount, offset+1, curIndentOffset);
+					tupleList.add(lastIndent);
+				}
+				
 				offset = curIndentOffset-1;
 				col = 0;
 				break;
@@ -210,7 +218,7 @@ public class StructureModel {
 			if (moveToNext) {
 				current = (StructNode)itr.next();
 			} else moveToNext = true;
-			
+			rootPair.print("");
 			if (current instanceof Indent) {
 			    levelStack.pushIndent((Indent)current);
 			} else if (current instanceof Enclose) {
@@ -229,7 +237,7 @@ public class StructureModel {
 
 	private int resolveIndentAfterNewline(String content, int offset) {
 
-		int indentOffset = offset;
+		int indentOffset = offset + 1; // Right of the new line
 		if (indentOffset > content.length())
 			return  indentOffset;
 		
@@ -246,10 +254,11 @@ public class StructureModel {
 	
 	private int resolveTabCount(String content, int startOffset, int endOffset) {
 		
-		int offset = startOffset;
+		int offset = startOffset + 1; // After new line
 		int wsCount = 0;
-		char c = content.charAt(offset);
+		
 		while (offset < endOffset) {
+			char c = content.charAt(offset);
 			if (c == '\t') {
 				wsCount += TABSIZE;
 			} else if (Character.isWhitespace(c)) {
@@ -275,8 +284,8 @@ public class StructureModel {
 	
 	private boolean indentSanityCheck(String text, int expectedTabCount) {
 		int offset = 0;
-		char c = text.charAt(offset);
 		while (offset < text.length()) {
+			char c = text.charAt(offset);
 			if (c == '\n') {
 				int indentOffset = resolveIndentAfterNewline(text, offset+1);
 				int tabCount = resolveTabCount(text, offset+1, indentOffset);
@@ -297,22 +306,13 @@ public class StructureModel {
 
 	private abstract class StructNode {
 		
-		/*
-		protected int indentTabCount;
-		protected int indentOffset;
-		*/
-		
 		protected int searchStart;
 		protected int searchEnd;
 		
 		protected StructNode parent;
 		protected LinkedList<StructNode> children;
 		
-		protected StructNode() { //int indentTabCount, int indentOffset) {
-			/*
-			this.indentTabCount = indentTabCount;
-			this.indentOffset = indentOffset;
-			*/
+		protected StructNode() {
 			
 			this.searchStart = this.searchEnd = -1;
 			children = new LinkedList<StructNode>();
@@ -413,8 +413,8 @@ public class StructureModel {
 	private abstract class CharacterNode extends StructNode {
 		protected int offset;
 		protected int recoveryChange;
-		protected CharacterNode(int offset) { //, int indentTabCount, int indentOffset) {
-			super();//indentTabCount, indentOffset);
+		protected CharacterNode(int offset) { 
+			super();
 			this.offset = offset;
 			searchStart = searchEnd = offset;
 		}
@@ -447,7 +447,7 @@ public class StructureModel {
 			super(offset);
 		}
 		public void print(String indent) {
-			System.out.println(toString());
+			System.out.println(indent + toString());
 		}
 		public String toString() {
 			return "(NEWLINE," + String.valueOf(offset) + ") " + super.toString();
@@ -466,13 +466,11 @@ public class StructureModel {
 		}
 
 		public void print(String indent) {
-			System.out.println(toString());
+			System.out.println(indent + toString());
 		}
 
 		public String toString() {
-			String indent = "(INDENT, " + String.valueOf(tabCount) + ")" + super.toString() + "\t";
-			for (int i = 0; i < tabCount; i++, indent += "....");
-			return indent;
+			return "(INDENT, " + String.valueOf(tabCount) + ")" + super.toString();
 		}
 	}
 	
@@ -483,20 +481,24 @@ public class StructureModel {
 			searchEnd = endOffset;
 		}
 		public void print(String indent) {
+			System.out.println(indent + toString());
+		}
+		public String toString() {
+			return "(EMPTYLINE) " + super.toString(); 
 		}
 	}
 	
 	// ========== Delimiter classes =======
 	
 	private abstract class Delimiter extends CharacterNode {
-		protected Delimiter(int offset) { //, int indentTabCount, int indentOffset) {
-			super(offset); //, indentTabCount, indentOffset);
+		protected Delimiter(int offset) { 
+			super(offset); 
 		}
 	}
 	
 	private class Semicolon extends Delimiter {
-		protected Semicolon(int offset, int col) { //int indentTabCount, int indentOffset, int col) {
-			super(offset); //, indentTabCount, indentOffset);
+		protected Semicolon(int offset, int col) { 
+			super(offset); 
 			searchStart = offset - col;
 		}
 		public void print(String indent) {
@@ -508,8 +510,8 @@ public class StructureModel {
 	}
 	
 	private class Comma extends Delimiter {
-		protected Comma(int offset) { //, int indentTabCount, int indentOffset) {
-			super(offset); //, indentTabCount, indentOffset);
+		protected Comma(int offset) {
+			super(offset);
 		}
 		public void print(String indent) {
 			System.out.println(indent + toString());
@@ -522,8 +524,8 @@ public class StructureModel {
 	// ========== Enclose classes =========
 	
 	private abstract class Enclose extends CharacterNode {
-		protected Enclose(int offset) { //, int indentTabCount, int indentOffset) {
-            super(offset); //, indentTabCount, indentOffset);
+		protected Enclose(int offset) {
+            super(offset);
 		}
 		public void setParent(EnclosePair parentPair) {
 			super.setParent(parent);
@@ -532,8 +534,8 @@ public class StructureModel {
 
 	private abstract class OpenEnclose extends Enclose {
 		private Indent indent;
-		protected OpenEnclose(int offset, Indent indent) { //, int indentTabCount, int indentOffset) {
-			super(offset); //, indentTabCount, indentOffset);
+		protected OpenEnclose(int offset, Indent indent) {
+			super(offset); 
 			this.indent = indent;
 		}
 	}
@@ -576,7 +578,7 @@ public class StructureModel {
 		public void mendOffsets() {
 			EnclosePair parentPair = getParent();
 			if (parentPair instanceof BracePair) {
-			    offset = searchEnd; // To end upp right of previous sibling
+			    offset = searchEnd; // To end up right of previous sibling
 			} else {
 				offset = searchStart + 1;
 			}
@@ -678,14 +680,15 @@ public class StructureModel {
 			} else searchStart = open.offset;
 		}
 		
-		public boolean needsSanityCheck() {
+		public boolean indentSanityCheck() {
+			int childTabCount = childIndentTabCount();
 			for( Iterator itr = children.iterator(); itr.hasNext();) {
 				StructNode node = (StructNode)itr.next();
-				if (node instanceof Indent) {
-					return true;
+				if (node instanceof Indent && ((Indent)node).tabCount < childTabCount) {
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 
 		public void setParent(EnclosePair parentPair) {
@@ -704,7 +707,9 @@ public class StructureModel {
 			int leftOffset = open.getLeftMostSearchOffset();
 			for (Iterator itr = children.iterator(); leftOffset < 0 && itr.hasNext();) {
 				StructNode child = (StructNode)itr.next();
-				leftOffset = child.getLeftMostSearchOffset();
+				if (!(child instanceof EmptyLine)) {
+					leftOffset = child.getLeftMostSearchOffset();
+				}
 			}
 			return leftOffset < 0 ? close.getLeftMostSearchOffset() : leftOffset;
 		}
@@ -713,7 +718,9 @@ public class StructureModel {
 			int rightOffset = close.getRightMostSearchOffset();
 			for (ListIterator itr = children.listIterator(children.size()); rightOffset < 0 && itr.hasPrevious();) {
 			    StructNode child = (StructNode)itr.previous();
-				rightOffset = child.getRightMostSearchOffset();
+			    if (!(child instanceof EmptyLine)) {
+			    	rightOffset = child.getRightMostSearchOffset();
+			    }
 			}
 			return rightOffset < 0 ? open.getRightMostSearchOffset() : rightOffset;
 		}
@@ -738,6 +745,20 @@ public class StructureModel {
 		public boolean isBroken() {
 			return open instanceof UnknownOpen || close instanceof UnknownClose;
 		}
+		
+		public boolean treeBroken() {
+			if (isBroken()) 
+				return true;
+			for (Iterator itr = children.iterator(); itr.hasNext();) {
+				StructNode child = (StructNode)itr.next();
+				if (child instanceof EnclosePair) {
+					if (((EnclosePair)child).treeBroken()) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 
 		public void mendIntervals() {
 			if (isBroken()) {
@@ -754,7 +775,17 @@ public class StructureModel {
 					close.searchStart = getRightMostSearchOffset();
 					
 					// Find search end
-					close.searchEnd = getParent().getSuccOffset(this);
+					for (ListIterator itr = children.listIterator(children.size()); itr.hasPrevious();) {
+						StructNode child = (StructNode)itr.previous();
+						if (!(child instanceof EmptyLine)) {
+							break;
+						} else {
+							close.searchEnd = ((EmptyLine)child).searchStart;
+						}
+					}
+					if (close.searchEnd < 0) {
+						close.searchEnd = getParent().getSuccOffset(this);
+					}
 					if (close.searchEnd < 0) {
 						close.searchEnd = getParent().close.searchStart;
 					}
@@ -990,23 +1021,15 @@ public class StructureModel {
 			Level curLevel = levelList.getLast();
 			
 			// No indent change
-			if (curLevel.indentTabCount() == newIndent.tabCount) {
-			
+			if (curLevel.indentTabCount() <= newIndent.tabCount) {			
 				curLevel.pushIndent(newIndent);
-				
-            // Indent increased		
-			} else if (curLevel.indentTabCount() < newIndent.tabCount) {
-				
-				// Make a new level
-				increaseLevel(curLevel.currentParent, newIndent.tabCount);
-			}
-			
+
 			// Indent decreased
-			else {
-				
+			} else {
+
 				while (levelList.size() >= 1) {
 					curLevel = levelList.getLast();
-					
+
 					// Descendant of the level we're looking for -- continue
 					if (curLevel.indentTabCount() > newIndent.tabCount) {
 						
@@ -1016,8 +1039,8 @@ public class StructureModel {
 					// The parent of the level we're looking for -- stop 
 					} else if (curLevel.indentTabCount() < newIndent.tabCount) {
 						
-						// No parent only ancestors -- make a new level 
-						increaseLevel(curLevel.currentParent, newIndent.tabCount);
+						// No parent only ancestors -- make a new level? 
+						increaseLevel(curLevel.parent, curLevel.indentTabCount + 1);
 						curLevel.pushIndent(newIndent);
 						break;
 			
@@ -1051,17 +1074,34 @@ public class StructureModel {
 				level.doEmpty();
 			}
 		}
+		
+		public String toString() {
+			String res = "";
+			for (Iterator itr = levelList.iterator(); itr.hasNext();) {
+				res += itr.next().toString() + "\n";
+			}
+		    return res;			
+		}
 						
 		private class Level {
 
-			private EnclosePair currentParent;
+			private EnclosePair parent;
 			private Stack<EnclosePair> stack;
 			int indentTabCount;
 			
 			public Level(EnclosePair parent, int startIndentTabCount) {
-				this.currentParent = parent;
+				this.parent = parent;
 				this.indentTabCount = startIndentTabCount;
 				stack = new Stack<EnclosePair>();
+			}
+			
+			
+			public String toString() {
+				String res = "[parent=" + parent.toString() + ",indentTabCount=" + String.valueOf(indentTabCount) + ",content=";
+				for (Iterator itr = stack.iterator(); itr.hasNext();) {
+					res += itr.next().toString() + " ";
+				}
+				return res + "]";
 			}
 			
 			public int indentTabCount() {
@@ -1079,18 +1119,18 @@ public class StructureModel {
 			}
 			
 			public void pushEmptyLine(EmptyLine emptyLine) {
-				emptyLine.setParent(currentParent);
-				currentParent.addChild(emptyLine);
+				emptyLine.setParent(parent);
+				parent.addChild(emptyLine);
 			}
 			
 			public void pushNewLine(NewLine newLine) {
-				newLine.setParent(currentParent);
-				currentParent.addChild(newLine);								
+				newLine.setParent(parent);
+				parent.addChild(newLine);								
 			}
 			
 			public void pushIndent(Indent indent) {
-				indent.setParent(currentParent);
-				currentParent.addChild(indent);				
+				indent.setParent(parent);
+				parent.addChild(indent);				
 			}
 			
 			public void pushDelimiter(Delimiter current) {
@@ -1098,70 +1138,78 @@ public class StructureModel {
 				   	// semicolon isn't allowed in paran pairs
 				    popPair();
 				}
-				current.setParent(currentParent);
-				currentParent.addChild(current);
+				current.setParent(parent);
+				parent.addChild(current);
 			}
 			
 			public boolean pushEnclose(Enclose current) {
+			
 				boolean moveToNext = true;
-				if (stack.isEmpty()) {
-					EnclosePair newPair = createEnclosePair(currentParent, current);
-					if (newPair.close instanceof UnknownClose) {
-						pushPair(newPair);
-					}
-				} else {
-				    EnclosePair topPair = stack.peek();
-				    if (topPair.fixWith(current)) {
-				    	popPair();
-					} else if (current instanceof OpenEnclose) { // Push potential parents
-												
-						if (topPair.open instanceof OpenParan && current instanceof OpenBrace) {
+				
+				// Open enclose -- always add?
+				if (current instanceof OpenEnclose) {
+					
+					while (!stack.isEmpty()) {
+						EnclosePair topPair = stack.peek();
+						if (topPair instanceof ParanPair && current instanceof OpenParan) {
+							break;
+						} else {
 							popPair();
-							currentParent = topPair.getParent(); // siblings							
 						}
-						EnclosePair newPair = createEnclosePair(currentParent, current);
-						pushPair(newPair);
-					} else { // If the closeEnclose doesn't match, pop and reprocess current
-						popPair();
-						moveToNext = false;
+					}
+					EnclosePair newPair = createEnclosePair(current);
+					pushPair(newPair);
+				}
+				
+				//	Close enclose .. always try to reduce stack
+				else if (current instanceof CloseEnclose) {
+					if (!stack.isEmpty()) {
+						EnclosePair topPair = stack.peek();	
+						if (topPair.fixWith(current)) {
+							popPair();
+						} else {
+							moveToNext = false;
+						}
+					} else {
+						createEnclosePair(current);
 					}
 				}
+				
 				return moveToNext;
 			}
 			
 			private void pushPair(EnclosePair pair) {
 				stack.push(pair);
-				currentParent = pair; 
 				if (pair instanceof BracePair) {
-					increaseLevel(pair,indentTabCount+1);
+					increaseLevel(pair, indentTabCount + 1);
 				}
 			}
 			
 			private EnclosePair popPair() {
 				if (!stack.isEmpty()) {
 					EnclosePair pair = stack.pop();
-					currentParent = pair.getParent();
 					return pair;
 				}
 				return null;
 			}
 
-			private EnclosePair createEnclosePair(EnclosePair parent, Enclose enclose) {
+			private EnclosePair createEnclosePair(Enclose enclose) {
 				EnclosePair pair = null;
+				EnclosePair curParent = stack.isEmpty() ? parent : stack.peek();
 				if (enclose instanceof OpenEnclose) {
 					if (enclose instanceof OpenParan) {
-						pair = new ParanPair(parent, (OpenParan) enclose);
+						pair = new ParanPair(curParent, (OpenParan) enclose);
 					} else {
-						pair = new BracePair(parent, (OpenBrace) enclose);
+						pair = new BracePair(curParent, (OpenBrace) enclose);
 					}
 				} else {
 					if (enclose instanceof CloseParan) {
-						pair = new ParanPair(parent, (CloseParan) enclose);
+						pair = new ParanPair(curParent, (CloseParan) enclose);
 					} else
-						pair = new BracePair(parent, (CloseBrace) enclose);
+						pair = new BracePair(curParent, (CloseBrace) enclose);
 				}
-				parent.addChild(pair);
-				pair.setParent(parent);
+				curParent.addChild(pair);
+				pair.setParent(curParent);
 				return pair;
 			}			
 		}
