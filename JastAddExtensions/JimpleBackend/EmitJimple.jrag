@@ -1,6 +1,8 @@
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
+import soot.coffi.ClassFile;
+import soot.coffi.method_info;
 
 aspect EmitJimple {
   public void Program.jimplify1() {
@@ -507,6 +509,85 @@ aspect EmitJimple {
     }
     if(!tags.isEmpty())
       getSootClassDecl().addTag(new soot.tagkit.InnerClassAttribute(tags));
+    /*
+    if(!compilationUnit().fromSource()) {
+    	Program p = (Program)compilationUnit().getParent().getParent();
+    	String className = hostType().jvmName();
+    	InputStream is = p.getInputStream(className);
+    	ClassFile coffiClass = new ClassFile(className);
+    	if(coffiClass.loadClassFile(is)) {
+    		for(int i = 0; i < coffiClass.methods.length; i++) {
+          method_info info = coffiClass.methods[i];
+    			String s = info.prototype(coffiClass.constant_pool);
+    			for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
+    				MethodDecl m = (MethodDecl)iter.next();
+    				if(s.endsWith(m.signature())) {
+    					SootMethod sootMethod = m.sootMethod;
+    					JimpleBody jb = Jimple.v().newBody(sootMethod);
+    					if(!sootMethod.isAbstract() && !sootMethod.isNative() && !sootMethod.isPhantom()) {
+    						coffiClass.parseMethod(info);
+    						new soot.coffi.CFG(info);
+    						boolean oldPhantomValue = Scene.v().getPhantomRefs();
+    						info.cfg.jimplify(coffiClass.constant_pool, coffiClass.this_class, jb);
+    						Scene.v().setPhantomRefs(oldPhantomValue);
+    						info.instructions = null;
+    						info.cfg = null;
+    						info.attributes = null;
+    						info.code_attr = null;
+    						info.jmethod = null;
+    						PackManager.v().getPack("jb").apply(jb);
+    					}
+    					sootMethod.setActiveBody(jb);
+    				}
+    			}
+    		}
+    	}
+    }
+    */
+  }
+
+  protected ClassFile TypeDecl.loadClassFile = null;
+  protected ClassFile TypeDecl.loadClassFile() {
+    if(loadClassFile == null && !compilationUnit().fromSource()) {
+    	Program p = (Program)compilationUnit().getParent().getParent();
+    	String className = hostType().jvmName();
+    	InputStream is = p.getInputStream(className);
+    	ClassFile coffiClass = new ClassFile(className);
+    	if(coffiClass.loadClassFile(is))
+        loadClassFile = coffiClass;
+    }
+    return loadClassFile;
+  }
+  public JimpleBody TypeDecl.loadBodyFromBytecode(SootMethod sootMethod) {
+    JimpleBody jb = Jimple.v().newBody(sootMethod);
+    ClassFile coffiClass = loadClassFile();
+    if(sootMethod.isAbstract() || sootMethod.isNative() || sootMethod.isPhantom() || coffiClass == null)
+      return jb;
+    String s1 = sootMethod.getSignature();
+    s1 = s1.substring(s1.indexOf(':') + 2, s1.length() - 1);
+    for(int i = 0; i < coffiClass.methods.length; i++) {
+      method_info info = coffiClass.methods[i];
+      String s2 = info.prototype(coffiClass.constant_pool);
+      if(s2.startsWith("public") || s2.startsWith("private") || s2.startsWith("protected"))
+    	  s2 = s2.substring(s2.indexOf(' ') + 1);
+      if(s1.equals(s2)) {
+        coffiClass.parseMethod(info);
+        new soot.coffi.CFG(info);
+        boolean oldPhantomValue = Scene.v().getPhantomRefs();
+        info.cfg.jimplify(coffiClass.constant_pool, coffiClass.this_class, jb);
+        Scene.v().setPhantomRefs(oldPhantomValue);
+        /*
+        info.instructions = null;
+        info.cfg = null;
+        info.attributes = null;
+        info.code_attr = null;
+        info.jmethod = null;
+        */
+        PackManager.v().getPack("jb").apply(jb);
+        return jb;
+      }
+    }
+    return jb;
   }
 
   syn lazy Collection TypeDecl.innerClassesAttributeEntries() {
@@ -526,16 +607,20 @@ aspect EmitJimple {
   public void MethodDecl.jimplify2() {
     if(!generate()) return;
     try {
-    if(hasBlock()) {
-      JimpleBody body = Jimple.v().newBody(sootMethod);
-      sootMethod.setActiveBody(body);
-      Body b = new Body(hostType(), body);
-      for(int i = 0; i < getNumParameter(); i++)
-        getParameter(i).jimplify2(b);
-      getBlock().jimplify2(b);
-      if(type() instanceof VoidType)
-        b.add(Jimple.v().newReturnVoidStmt());
-    }
+      if(!hostType().compilationUnit().fromSource() && (!hasBlock() || getBlock().getNumStmt() == 0)) {
+    		JimpleBody body = hostType().loadBodyFromBytecode(sootMethod);
+    		sootMethod.setActiveBody(body);
+    	}
+      else if(hasBlock()) {
+        JimpleBody body = Jimple.v().newBody(sootMethod);
+        sootMethod.setActiveBody(body);
+        Body b = new Body(hostType(), body);
+        for(int i = 0; i < getNumParameter(); i++)
+          getParameter(i).jimplify2(b);
+        getBlock().jimplify2(b);
+        if(type() instanceof VoidType)
+          b.add(Jimple.v().newReturnVoidStmt());
+      }
     } catch (RuntimeException e) {
       System.err.println("Error generating " + hostType().typeName() + ": " + this); 
       throw e;
@@ -550,6 +635,12 @@ aspect EmitJimple {
 
   public void ConstructorDecl.jimplify2() {
     if(!generate()) return;
+    if(!hostType().compilationUnit().fromSource()) {
+      JimpleBody body = hostType().loadBodyFromBytecode(sootMethod);
+      sootMethod.setActiveBody(body);
+      return;
+    }
+
     JimpleBody body = Jimple.v().newBody(sootMethod);
     sootMethod.setActiveBody(body);
     Body b = new Body(hostType(), body);
