@@ -1,4 +1,5 @@
-aspect AspectErrorCheck {
+aspect AspectErrorCheck
+{
   public void AspectDecl.checkModifiers() {
     if(isNestedType() && !isStatic())
       error("inner aspects must be static");
@@ -23,4 +24,21 @@ aspect AspectErrorCheck {
       super.typeCheck();
   }
 
+  // aspects cannot be instantiated using new
+  refine TypeCheck public void ClassInstanceExpr.typeCheck()
+  {
+    if (type().isAspectDecl())
+      error("Cannot instantiate " + type().typeName() +
+            " with 'new' because it is an aspect.");
+    TypeCheck.ClassInstanceExpr.typeCheck();
+  }
+
+  // aspect constructors must take no arguments
+  refine TypeCheck public void ConstructorDecl.typeCheck()
+  {
+    if (hostType().isAspectDecl() && getNumParameter() > 0)
+      error(hostType().typeName() + " is an aspect, so its " +
+            "constructor must have no parameters.");
+    TypeCheck.ConstructorDecl.typeCheck();
+  }
 }
