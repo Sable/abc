@@ -132,11 +132,17 @@ aspect AdviceCodegen {
       getParameter(i).jimplify2(b);
   }
 
+  // in order to jimplify the return parameter correctly
+  eq AfterReturningSpec.getReturnParameter().localNum() = getNumParameter();
+
   public void AfterReturningSpec.jimplify2(Body b) {
     super.jimplify2(b);
     if (hasReturnParameter())
       getReturnParameter().jimplify2(b);
   }
+
+  // in order to jimplify the exception parameter correctly
+  eq AfterThrowingSpec.getExceptionParameter().localNum() = getNumParameter();
 
   public void AfterThrowingSpec.jimplify2(Body b) {
     super.jimplify2(b);
