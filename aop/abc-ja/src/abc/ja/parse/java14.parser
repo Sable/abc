@@ -5,10 +5,17 @@
 %embed {:
   class Events extends Parser.Events {
     public void reportError(Symbol token, String msg) {
+      polyglot.util.Position pos;
+      if (token.getId() == Terminals.EOF) {
+        pos = new polyglot.util.Position(fileName, token.getLine(token.getStart()) - 1);
+        msg = "Unexpected end of file.";
+      } else
+        pos = new polyglot.util.Position(fileName, token.getLine(token.getStart()), token.getColumn(token.getStart()));
+
       abc.main.Main.v().getAbcExtension().reportError(
         polyglot.util.ErrorInfo.SYNTAX_ERROR,
         msg,
-        new polyglot.util.Position(fileName, token.getLine(token.getStart()), token.getColumn(token.getStart()))
+        pos
       );
     }
     public void syntaxError(Symbol token) {
