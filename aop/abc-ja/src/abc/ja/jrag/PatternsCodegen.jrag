@@ -352,6 +352,10 @@ aspect PatternsCodegen
         // match type part
         SootClass classR = smr.declaringClass();
 
+        // constructors matching is simpler
+        if (smr.name().equals(SootMethod.constructorName))
+            return getLhs().matchesType(classR);
+
         // find supertypes of R that matches the type pattern
         Set supertypes = superTypes(classR);
 
@@ -459,6 +463,10 @@ aspect PatternsCodegen
         }
         return false;
     }
+    // the subtyping part is handled by the matchSubtype() inherited
+    // attribute - all we have to do here is recurse
+    eq SubtypeNamePattern.matchesType(SootClass c) =
+        getPattern().matchesType(c);
 
     syn boolean Pattern.matchesType(Type t) = false;
     eq SimpleNamePattern.matchesType(Type t) {
