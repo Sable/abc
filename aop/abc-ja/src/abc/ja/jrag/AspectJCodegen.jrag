@@ -12,12 +12,12 @@ aspect AspectJCodegen {
   public int MethodDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void MethodDecl.jimplify2() {
     EmitJimple.MethodDecl.jimplify2();
-    MethodCategory.register(sootMethod, category);
+    MethodCategory.register(sootMethod(), category);
   }
   public int ConstructorDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void ConstructorDecl.jimplify2() {
     EmitJimple.ConstructorDecl.jimplify2();
-    MethodCategory.register(sootMethod, category);
+    MethodCategory.register(sootMethod(), category);
   }
 
   refine IntertypeMethodCodegeneration eq IntertypeMethodDecl.createAspectMethod() {
