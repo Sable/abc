@@ -10,10 +10,12 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -62,17 +64,15 @@ public class JastAddEditor extends TextEditor {
 	    ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
 
 	    projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-	    projectionSupport.install();
-	    projectionSupport.addSummarizableAnnotationType("org.jastadd.plugin.marker.ErrorMarker");
-	    projectionSupport.addSummarizableAnnotationType("org.jastadd.plugin.marker.ParseErrorMarker");
-	    
-	    /*
+	    projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); //$NON-NLS-1$
+		projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
 	    projectionSupport.setHoverControlCreator(new IInformationControlCreator() {
 	    	   public IInformationControl createInformationControl(Shell shell) {
-	    	     return new CustomSourceInformationControl(shell, IDocument.DEFAULT_CONTENT_TYPE);
+	    	     return new JastAddSourceInformationControl(shell);
 	    	   }
 	    	});
-	    */
+	    projectionSupport.install();
+	    
 
 	    //turn projection mode on
 	    viewer.doOperation(ProjectionViewer.TOGGLE);
@@ -82,8 +82,7 @@ public class JastAddEditor extends TextEditor {
 	}
 
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
-				getOverviewRuler(), isOverviewRulerVisible(), styles);
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 
 		// ensure decoration support has been created and configured.
 		getSourceViewerDecorationSupport(viewer);
