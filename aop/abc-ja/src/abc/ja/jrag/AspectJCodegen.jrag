@@ -17,7 +17,8 @@ aspect AspectJCodegen {
   public int ConstructorDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void ConstructorDecl.jimplify2() {
     EmitJimple.ConstructorDecl.jimplify2();
-    MethodCategory.register(sootMethod(), category);
+    if(generate())
+      MethodCategory.register(sootMethod(), category);
   }
 
   refine IntertypeMethodCodegeneration eq IntertypeMethodDecl.createAspectMethod() {
@@ -30,6 +31,7 @@ aspect AspectJCodegen {
     m.category = MethodCategory.INTERTYPE_METHOD_DELEGATOR;
     return m;
   }
+  /*
   refine IntertypeMethodCodegeneration eq MethodDecl.createSuperDispatchDelegate(TypeDecl qualifierType) {
     MethodDecl m = IntertypeMethodCodegeneration.MethodDecl.createSuperDispatchDelegate(qualifierType);
     m.category = MethodCategory.INTERTYPE_SPECIAL_CALL_DELEGATOR;
@@ -39,7 +41,7 @@ aspect AspectJCodegen {
     MethodDecl m = IntertypeMethodCodegeneration.IntertypeMethodDecl.createAbstractMethod();
     m.category = MethodCategory.INTERTYPE_METHOD_SOURCE;
     return m;
-  }
+  }*/
 
   refine IntertypeConstructorCodegeneration public ConstructorDecl IntertypeConstructorDecl.createDelegate() {
     ConstructorDecl c = IntertypeConstructorCodegeneration.IntertypeConstructorDecl.createDelegate();
@@ -63,7 +65,8 @@ aspect AspectJCodegen {
     m.category = MethodCategory.INTERTYPE_FIELD_INITIALIZER;
     return m;
   }
-
+  
+  /*
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createGetter() {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createGetter();
     m.category = MethodCategory.ACCESSOR_GET;
@@ -94,6 +97,7 @@ aspect AspectJCodegen {
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
+  */
 
 
   refine EmitJimple public void Program.jimplify1() {
@@ -118,18 +122,20 @@ aspect AspectJCodegen {
   }
 
   refine EmitJimple eq TypeDecl.getSootClassDecl() {
-    if(compilationUnit().weavable()) {
+    if(compilationUnit().fromSource()) {
       return sootClass();
     }
     else {
       if(Program.verbose())
         System.out.println("Loading .class file " + jvmName());
       SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
-      sc.setLibraryClass();
+      if(compilationUnit().weavable())
+        sc.setApplicationClass();
+      else
+        sc.setLibraryClass();
       return sc;
     }
   }
-
 
   public void ClassDecl.jimplify1phase1() {
     super.jimplify1phase1();
