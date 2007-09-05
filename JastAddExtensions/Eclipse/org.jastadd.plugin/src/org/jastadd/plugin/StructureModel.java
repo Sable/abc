@@ -26,14 +26,13 @@ public class StructureModel {
 	public StructureModel(StringBuffer buf) {
 		
 		this.buf = buf;
-		System.out.println(buf);
 		createTuples();
 		checkStructure();
 		createRoot();
 		if (structureCorrect && rootPair.treeBroken()) {
 			System.err.println("StructureModel: Correct program generated a broken tree");
+			rootPair.print("");
 		}
-		rootPair.print("");
 		
 	}
 	
@@ -41,26 +40,67 @@ public class StructureModel {
 		
 		if (!structureCorrect) {
 			rootPair.setDotOffset(dotOffset);
-			System.out.println("Before structure recovery:\n" + buf);
+			//System.out.println("Before structure recovery:\n" + buf);
 			rootPair.mendIntervals();
-			rootPair.print("");
+			//rootPair.print("");
 			rootPair.mendOffsets();
-			rootPair.print("");
+			//rootPair.print("");
 			rootPair.mendDoc(buf);
-			System.out.println("After structure recovery:\n" + buf);
-			return rootPair.getDotOffset();
-		} else return dotOffset;
+			//System.out.println("After structure recovery:\n" + buf);
+			return rootPair.getRecoveryOffsetChange();
+		} else return 0;
 		
 	}		
-	
-	public LinkedList<JastAddDocAction> insertionAfterNewline(IDocument doc, DocumentCommand cmd, int recoveryChange) {
 
- 		LinkedList<JastAddDocAction> todoList = new LinkedList<JastAddDocAction>();
+
+	public void insertionCloseBrace(IDocument doc, DocumentCommand cmd, int recoveryChange) {
+
+		EnclosePair activePair = rootPair.findActivePair(cmd.offset);
+		if (activePair == null) {
+			return;
+		}
 		
-		// Find activePair
+		rootPair.print("");
+		
+		if (activePair.open instanceof OpenBrace && activePair.close instanceof UnknownClose) {
+
+			StructNode node = activePair.findActiveNode(cmd.offset - 1 + recoveryChange);
+			boolean changeLine = (node instanceof Indent || node instanceof EmptyLine) ? false : true;
+			while (node != null && !(node instanceof Indent || node instanceof EmptyLine)) {
+				node = activePair.findActiveNode(node.searchStart-1);
+			}
+			
+			if (node != null) {
+				Indent indentNode = node instanceof Indent ? (Indent)node : ((EmptyLine)node).indent;
+				int curIndent = indentNode.tabCount;
+				int openIndent = activePair.open.indent.tabCount;
+				if (curIndent > openIndent) {
+					if (changeLine) {
+						cmd.text = "\n";
+					} else {
+						cmd.text = "";
+						try {
+							doc.replace(indentNode.searchStart, indentNode.searchEnd - indentNode.searchStart, "");
+						} catch (BadLocationException e) {
+							e.printStackTrace();
+						}	
+						System.out.println(doc.get());
+					}
+					String braceIndent = "";
+					for (int i = 0; i < openIndent;i++,braceIndent+="\t");		    
+					cmd.text += braceIndent + String.valueOf(CLOSE_BRACE) + "\n" + braceIndent; 
+					cmd.offset -= (indentNode.searchEnd - indentNode.searchStart);
+				}
+			}
+		}
+	}	
+	
+	public void insertionAfterNewline(IDocument doc, DocumentCommand cmd, int recoveryChange) {
+
+ 		// Find activePair
 		EnclosePair activePair = rootPair.findActivePair(cmd.offset); // Start before EOL
 		if (activePair == null) { // If there are no enclose pairs
-			return todoList;
+			return;
 		}
 		
 		// Add indent add move caret		
@@ -72,39 +112,21 @@ public class StructureModel {
 	    		
 		if (activePair.open instanceof OpenBrace && activePair.close instanceof UnknownClose) {
 		    
-			try {
-				
-				
-				// Resolve child content
-				int childTextEnd = activePair.close.offset - (activePair.open.offset + 1);
-				String childText = doc.get(activePair.open.offset + 1, childTextEnd < 0 ? 0 : childTextEnd);
-		
-				System.out.println(childText);
-				
-				// Make sure tabCount is as expected
-			    if (false) { //activePair.indentSanityCheck()) {
-				    // Remove old child content
-			    	doc.replace(activePair.open.offset + 1, childText.length(), ""); // One right of the open brace
-			    } else {
-			    	// If sanity tabCount check failed don't add child text
-			    	childText = "";
-			    }
-			    
-                // Add insertion CLOSE_BRACE
-		    	String braceIndent = childText.endsWith("\n") ? "" : "\n";
-		    	int braceIndentTabCount = activePair.indentTabCount();
-		    	for (int i = 0; i < braceIndentTabCount;i++,braceIndent+="\t");		    
-		    	cmd.text += childText + braceIndent + String.valueOf(CLOSE_BRACE) + "\n";
-			    
-
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			boolean insertBraceClose = true;
+			for (Iterator itr = activePair.children.iterator(); insertBraceClose && itr.hasNext();) {
+				StructNode child = (StructNode)itr.next();
+				if (child instanceof Semicolon || child instanceof EnclosePair || child instanceof Indent) {
+					insertBraceClose = false;
+				}
+			}
+			if (insertBraceClose) {
+				String braceIndent = "\n";
+				int braceIndentTabCount = activePair.indentTabCount();
+				for (int i = 0; i < braceIndentTabCount;i++,braceIndent+="\t");		    
+				cmd.text += braceIndent + String.valueOf(CLOSE_BRACE) + "\n";
 			}
 			
 		} 
-		
-	    return todoList;
 	}
 	
 	
@@ -153,10 +175,11 @@ public class StructureModel {
 				break;
 			case NEW_LINE:
 				line++;
-				if (tupleList.getLast() instanceof Indent) {
+				
+				if (!tupleList.isEmpty() && tupleList.getLast() instanceof Indent) {
 					// Add empty line instead of indent and newLine
 					Indent indent = (Indent)tupleList.removeLast();
-					tupleList.add(new EmptyLine(indent.searchStart, offset));
+					tupleList.add(new EmptyLine(indent, new NewLine(offset)));
 				} else {
 					tupleList.add(new NewLine(offset));
 				}
@@ -189,6 +212,10 @@ public class StructureModel {
 				if (node instanceof OpenEnclose) {
 					stack.push((OpenEnclose)node);
 				} else {
+					if (stack.isEmpty()) {
+						structureCorrect = false;
+						return;
+					}
 				    OpenEnclose open = stack.peek();
 				    if (open instanceof OpenBrace && node instanceof CloseBrace) {
 				    	stack.pop();
@@ -201,7 +228,6 @@ public class StructureModel {
 				}
 			}
 		}
-		
 		structureCorrect = stack.isEmpty();
 		
 	}
@@ -218,7 +244,7 @@ public class StructureModel {
 			if (moveToNext) {
 				current = (StructNode)itr.next();
 			} else moveToNext = true;
-			rootPair.print("");
+			//rootPair.print("");
 			if (current instanceof Indent) {
 			    levelStack.pushIndent((Indent)current);
 			} else if (current instanceof Enclose) {
@@ -397,7 +423,9 @@ public class StructureModel {
 			EnclosePair activePair = null;
 			for (Iterator itr = children.iterator(); activePair == null && itr.hasNext();) {
 				StructNode child = (StructNode) itr.next();
-				activePair = child.findActivePair(activeOffset);
+				if (child instanceof EnclosePair) {
+					activePair = child.findActivePair(activeOffset);
+				}
 			}
 			return activePair;
 		}
@@ -406,6 +434,18 @@ public class StructureModel {
 		
 		public String toString() {
 			return "[" + String.valueOf(searchStart) + " - " + String.valueOf(searchEnd) + "]";
+		}
+
+		public StructNode findActiveNode(int activeOffset) {
+			if (searchStart <= activeOffset && searchEnd >= activeOffset) {
+				StructNode activeNode = null;
+				for (Iterator itr = children.iterator(); activeNode == null && itr.hasNext();) {
+					StructNode child = (StructNode) itr.next();
+					activeNode = child.findActiveNode(activeOffset);
+				}
+				return activeNode == null ? this : activeNode;
+			}
+			return null;
 		}
 	}
 
@@ -475,10 +515,14 @@ public class StructureModel {
 	}
 	
 	private class EmptyLine extends StructNode {
-		protected EmptyLine(int startOffset, int endOffset) {
+		private Indent indent;
+		private NewLine newline;
+		protected EmptyLine(Indent indent, NewLine newline) {
 			super();
-			searchStart = startOffset;
-			searchEnd = endOffset;
+			this.indent = indent;
+			this.newline = newline;
+			searchStart = indent.searchStart;
+			searchEnd = newline.searchEnd;
 		}
 		public void print(String indent) {
 			System.out.println(indent + toString());
@@ -680,6 +724,7 @@ public class StructureModel {
 			} else searchStart = open.offset;
 		}
 		
+		
 		public boolean indentSanityCheck() {
 			int childTabCount = childIndentTabCount();
 			for( Iterator itr = children.iterator(); itr.hasNext();) {
@@ -707,9 +752,9 @@ public class StructureModel {
 			int leftOffset = open.getLeftMostSearchOffset();
 			for (Iterator itr = children.iterator(); leftOffset < 0 && itr.hasNext();) {
 				StructNode child = (StructNode)itr.next();
-				if (!(child instanceof EmptyLine)) {
+				//if (!(child instanceof EmptyLine)) {
 					leftOffset = child.getLeftMostSearchOffset();
-				}
+				//}
 			}
 			return leftOffset < 0 ? close.getLeftMostSearchOffset() : leftOffset;
 		}
@@ -718,9 +763,9 @@ public class StructureModel {
 			int rightOffset = close.getRightMostSearchOffset();
 			for (ListIterator itr = children.listIterator(children.size()); rightOffset < 0 && itr.hasPrevious();) {
 			    StructNode child = (StructNode)itr.previous();
-			    if (!(child instanceof EmptyLine)) {
+			    //if (!(child instanceof EmptyLine)) {
 			    	rightOffset = child.getRightMostSearchOffset();
-			    }
+			    //}
 			}
 			return rightOffset < 0 ? open.getRightMostSearchOffset() : rightOffset;
 		}
@@ -775,6 +820,7 @@ public class StructureModel {
 					close.searchStart = getRightMostSearchOffset();
 					
 					// Find search end
+					/*
 					for (ListIterator itr = children.listIterator(children.size()); itr.hasPrevious();) {
 						StructNode child = (StructNode)itr.previous();
 						if (!(child instanceof EmptyLine)) {
@@ -783,6 +829,7 @@ public class StructureModel {
 							close.searchEnd = ((EmptyLine)child).searchStart;
 						}
 					}
+					*/
 					if (close.searchEnd < 0) {
 						close.searchEnd = getParent().getSuccOffset(this);
 					}
@@ -833,7 +880,18 @@ public class StructureModel {
 			}
 			return null;
 		}
-		
+
+		public StructNode findActiveNode(int activeOffset) {
+			if (open.offset <= activeOffset && close.offset >= activeOffset) {
+				StructNode activeNode = null;
+				for (Iterator itr = children.iterator(); activeNode == null && itr.hasNext();) {
+					StructNode child = (StructNode) itr.next();
+					activeNode = child.findActiveNode(activeOffset);
+				}
+				return activeNode == null ? this : activeNode;				
+			}
+			return null;
+		}
 		
 		public String toString() {
 			return open.toString() + " -- " + close.toString(); 
@@ -868,6 +926,10 @@ public class StructureModel {
 		
         public int getDotOffset() {
         	return dotOffset;
+        }
+        
+        public int getRecoveryOffsetChange() {
+        	return recoveryChange;
         }
 	}
 	
@@ -910,15 +972,14 @@ public class StructureModel {
 				if (open instanceof UnknownOpen) {
 					buf.replace(open.offset, open.offset, String.valueOf(OPEN_BRACE));
 					rootPair.propagateOffsetChange(open.offset,1);
-					rootPair.print("");
-					System.out.println(buf);
+					//rootPair.print("");
+					//System.out.println(buf);
 					
 				} else if (close instanceof UnknownClose) {
 					buf.replace(close.offset, close.offset, ";" + String.valueOf(CLOSE_BRACE));
 					rootPair.propagateOffsetChange(close.offset,2);
-					rootPair.print("");
-					System.out.println(buf);
-					
+					//rootPair.print("");
+					//System.out.println(buf);			
 				}	
 			}
 		}
@@ -1033,8 +1094,7 @@ public class StructureModel {
 					// Descendant of the level we're looking for -- continue
 					if (curLevel.indentTabCount() > newIndent.tabCount) {
 						
-						curLevel.doEmpty();
-						levelList.removeLast();
+						decreaseLevel();
 						
 					// The parent of the level we're looking for -- stop 
 					} else if (curLevel.indentTabCount() < newIndent.tabCount) {
@@ -1051,6 +1111,13 @@ public class StructureModel {
 					}
 				}
 			}
+		}
+		
+		private void decreaseLevel() {
+			assert(!levelList.isEmpty());
+			Level curLevel = levelList.getLast();
+			curLevel.doEmpty();
+			levelList.removeLast();
 		}
 		
 		private void increaseLevel(EnclosePair parent, int indentTabCount) {
@@ -1163,15 +1230,24 @@ public class StructureModel {
 				
 				//	Close enclose .. always try to reduce stack
 				else if (current instanceof CloseEnclose) {
+					
 					if (!stack.isEmpty()) {
 						EnclosePair topPair = stack.peek();	
 						if (topPair.fixWith(current)) {
 							popPair();
+						} else if (current instanceof CloseBrace) {
+							decreaseLevel();
+							moveToNext = false;							
 						} else {
 							moveToNext = false;
 						}
 					} else {
-						createEnclosePair(current);
+						if (current instanceof CloseBrace) {
+							decreaseLevel();
+							moveToNext = false;
+						} else {
+							createEnclosePair(current);
+						}
 					}
 				}
 				
@@ -1213,5 +1289,5 @@ public class StructureModel {
 				return pair;
 			}			
 		}
-	}	
+	}
 }

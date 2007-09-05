@@ -1,0 +1,65 @@
+
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.BadLocationException;
+
+aspect Folding {
+
+	syn ArrayList ASTNode.foldingPositions(IDocument document) {
+		ArrayList list = new ArrayList();
+		if (hasFolding()) {
+			try {
+				int lineStart = ASTNode.getLine(getStart());
+				int lineEnd = ASTNode.getLine(getEnd());
+				int startOffset = document.getLineOffset(lineStart - 1);
+				int endOffset = document.getLineOffset(lineEnd);
+				int foldLength = endOffset - startOffset;
+				if ((lineEnd - lineStart) > 0) {
+					list.add(new Position(startOffset, foldLength));
+				}
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+		}
+		for (int i = 0; i < getNumChild(); i++) {
+			list.addAll(getChild(i).foldingPositions(document));
+		}
+		return list;
+	}
+	
+	syn boolean ASTNode.hasFolding() = false;
+	eq TypeDecl.hasFolding() = true;
+	eq MethodDecl.hasFolding() = true;
+	
+		
+	eq CompilationUnit.foldingPositions(IDocument document) {
+		ArrayList list = new ArrayList();
+	    int importLineStart = -1;
+	    ImportDecl decl = null;
+		
+		for (int i = 0; i < getNumImportDecl(); i++) {
+			decl = getImportDecl(i);
+			if (importLineStart < 0) {
+				importLineStart = ASTNode.getLine(decl.getStart());
+			}
+		}
+		
+		try {
+			if (decl != null) {
+				int importLineEnd = ASTNode.getLine(decl.getEnd());
+				int importStartOffset = document.getLineOffset(importLineStart-1);
+				int importEndOffset = document.getLineOffset(importLineEnd);
+				int foldLength = importEndOffset - importStartOffset;
+				if ((importLineEnd - importLineStart) > 0) {
+					list.add(new Position(importStartOffset, foldLength));
+				}
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	
+	    list.addAll(super.foldingPositions(document));
+	    return list;
+	}
+	
+}

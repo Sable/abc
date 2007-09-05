@@ -8,6 +8,8 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -16,6 +18,13 @@ import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.editor.highlight.JastAddScanner;
 
 public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration {
+	
+	private JastAddEditor editor;
+	
+	public JastAddSourceViewerConfiguration(JastAddEditor editor) {
+		super();
+		this.editor = editor;
+	}
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new JastAddTextHover();
@@ -31,7 +40,8 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		return reconciler;
 	}
 	
-	@Override public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+	@Override 
+	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		return new IAutoEditStrategy[] { IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new JastAddAutoIndentStrategy() : new DefaultAutoIndentStrategy() };
 	}
 		
@@ -45,5 +55,15 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		
 		return assistant;
 	}
+
+	@Override
+    public IReconciler getReconciler(ISourceViewer sourceViewer)
+    {
+        JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy();
+        strategy.setEditor(editor);
+        MonoReconciler reconciler = new MonoReconciler(strategy, false);
+        
+        return reconciler;
+    }
 
 }

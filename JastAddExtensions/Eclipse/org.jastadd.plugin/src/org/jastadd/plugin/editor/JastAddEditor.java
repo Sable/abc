@@ -1,6 +1,21 @@
 package org.jastadd.plugin.editor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
+import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
+import org.eclipse.jface.text.source.projection.ProjectionSupport;
+import org.eclipse.jface.text.source.projection.ProjectionViewer;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jastadd.plugin.JastAddDocumentProvider;
@@ -14,10 +29,9 @@ public class JastAddEditor extends TextEditor {
 	
 	protected void initializeEditor() {
 		super.initializeEditor();
-		setSourceViewerConfiguration(new JastAddSourceViewerConfiguration());
+		setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(this));
 		setDocumentProvider(new JastAddDocumentProvider());
 	}
-
 	
 	public Object getAdapter(Class required) {
 		//System.out.println("JastAddEditor.getAdapter(Class): required.getName() = " + required.getName());
@@ -38,6 +52,63 @@ public class JastAddEditor extends TextEditor {
 		return super.getAdapter(required);
 	}
 	
+	
+	private ProjectionSupport projectionSupport;
+	private ProjectionAnnotationModel annotationModel;
+	private Annotation[] oldAnnotations;
+	
+	public void createPartControl(Composite parent) {
+	    super.createPartControl(parent);
+	    ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
+
+	    projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
+	    projectionSupport.install();
+	    projectionSupport.addSummarizableAnnotationType("org.jastadd.plugin.marker.ErrorMarker");
+	    projectionSupport.addSummarizableAnnotationType("org.jastadd.plugin.marker.ParseErrorMarker");
+	    
+	    /*
+	    projectionSupport.setHoverControlCreator(new IInformationControlCreator() {
+	    	   public IInformationControl createInformationControl(Shell shell) {
+	    	     return new CustomSourceInformationControl(shell, IDocument.DEFAULT_CONTENT_TYPE);
+	    	   }
+	    	});
+	    */
+
+	    //turn projection mode on
+	    viewer.doOperation(ProjectionViewer.TOGGLE);
+
+	    annotationModel = viewer.getProjectionAnnotationModel();
+
+	}
+
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		ISourceViewer viewer = new ProjectionViewer(parent, ruler,
+				getOverviewRuler(), isOverviewRulerVisible(), styles);
+
+		// ensure decoration support has been created and configured.
+		getSourceViewerDecorationSupport(viewer);
+
+		return viewer;
+	}
+
+	public void updateFoldingStructure(ArrayList positions) {
+		
+		Annotation[] annotations = new Annotation[positions.size()];
+		//this will hold the new annotations along
+		//with their corresponding positions
+		HashMap newAnnotations = new HashMap();
+		
+		for(int i = 0; i < positions.size(); i++)
+		{
+			ProjectionAnnotation annotation = new ProjectionAnnotation();
+			newAnnotations.put(annotation, positions.get(i));
+			annotations[i] = annotation;
+		}
+		
+		annotationModel.modifyAnnotations(oldAnnotations, newAnnotations, null);
+		oldAnnotations = annotations;
+	}
+
 	
 	/*
 	public void editorContextMenuAboutToShow(MenuManager menu) {

@@ -26,6 +26,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
 import org.jastadd.plugin.editor.actions.JastAddDocAction;
 import org.jastadd.plugin.editor.actions.JastAddDocReplace;
 
@@ -139,6 +140,7 @@ public class JastAddModel {
 		}
 		return result;
 	}
+	
 	private void allSourceFiles(IResource[] resources, Collection collection) {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
@@ -637,6 +639,28 @@ public class JastAddModel {
 		    cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
 			cmd.text += "]";
+		} else if ('"' == c) {
+			cmd.caretOffset = cmd.offset + 1;
+		    cmd.shiftsCaret = false;
+			cmd.text += '"';
+		} else if (StructureModel.CLOSE_BRACE == c) {
+		
+			StringBuffer buf = new StringBuffer(doc.get());
+			try {
+				StructureModel structModel = new StructureModel(buf);
+				int change = structModel.doRecovery(cmd.offset);
+				structModel.insertionCloseBrace(doc, cmd, change);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}			
 		}
+	}
+
+	public ArrayList<Position> getFoldingPositions(IDocument document) {
+		CompilationUnit cu = buildDocument(document);
+		if (cu != null) {
+			return cu.foldingPositions(document);
+		}
+		return new ArrayList<Position>();
 	}
 }
