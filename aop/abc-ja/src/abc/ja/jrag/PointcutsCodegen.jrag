@@ -269,7 +269,8 @@ aspect PointcutCodegen
     public void PointcutDecl.jimplify2()
     {
         globalAspectInfo().addPointcutDecl(pointcutDecl());
-        getPointcutExpr().jimplify2();
+        if (hasPointcutExpr())
+            getPointcutExpr().jimplify2();
     }
 
 
