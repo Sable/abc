@@ -26,9 +26,15 @@ public class StructureModel {
 	public StructureModel(StringBuffer buf) {
 		
 		this.buf = buf;
-		createTuples();
-		checkStructure();
-		createRoot();
+		treeBuilt = true;
+		try {
+			createTuples();
+			checkStructure();
+			createRoot();
+		} catch (Throwable t) {
+			treeBuilt = false;
+			System.err.println("StructureModel: Problem bulding structure tree");
+		}
 		if (structureCorrect && rootPair.treeBroken()) {
 			System.err.println("StructureModel: Correct program generated a broken tree");
 			rootPair.print("");
@@ -38,7 +44,7 @@ public class StructureModel {
 	
 	public int doRecovery(int dotOffset) {
 		
-		if (!structureCorrect) {
+		if (!structureCorrect && treeBuilt) {
 			rootPair.setDotOffset(dotOffset);
 			//System.out.println("Before structure recovery:\n" + buf);
 			rootPair.mendIntervals();
@@ -139,6 +145,7 @@ public class StructureModel {
 	private RootPair rootPair = null;
 	private StringBuffer buf;
 	private boolean structureCorrect;
+	private boolean treeBuilt;
 
 	
 	private void createTuples() {

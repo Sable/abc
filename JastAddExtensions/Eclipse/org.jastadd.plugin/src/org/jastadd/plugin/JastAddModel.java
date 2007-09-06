@@ -413,6 +413,7 @@ public class JastAddModel {
 			 deleteErrorMarkers(project.members());
 		}
 		
+		boolean build = doErrorChecks;
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
             CompilationUnit unit = (CompilationUnit)iter.next();
             
@@ -423,7 +424,8 @@ public class JastAddModel {
               if(doErrorChecks && errors.isEmpty()) { // only run semantic checks if there are no parse errors
                 unit.errorCheck(errors, warnings);
               }
-              boolean build = errors.isEmpty() && doErrorChecks;
+              if(!errors.isEmpty())
+            	  build = false;
               errors.addAll(warnings);
               if(!errors.isEmpty()) {
             	  for(Iterator i2 = errors.iterator(); i2.hasNext(); ) {
@@ -451,6 +453,14 @@ public class JastAddModel {
               }
             }
 		}
+		/*
+           // Use for the bootstrapped version of JastAdd
+		if(build) {
+			program.generateIntertypeDecls();
+			program.java2Transformation();
+			program.generateClassfile();
+		}
+		*/
 	}
 	
 	/**

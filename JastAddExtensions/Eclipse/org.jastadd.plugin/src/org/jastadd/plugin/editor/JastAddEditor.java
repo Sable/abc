@@ -66,11 +66,7 @@ public class JastAddEditor extends TextEditor {
 	    projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
 	    projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); //$NON-NLS-1$
 		projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
-	    projectionSupport.setHoverControlCreator(new IInformationControlCreator() {
-	    	   public IInformationControl createInformationControl(Shell shell) {
-	    	     return new JastAddSourceInformationControl(shell);
-	    	   }
-	    	});
+	    projectionSupport.setHoverControlCreator(new JastAddControlCreator());
 	    projectionSupport.install();
 	    
 
@@ -79,6 +75,12 @@ public class JastAddEditor extends TextEditor {
 
 	    annotationModel = viewer.getProjectionAnnotationModel();
 
+	}
+	
+	private class JastAddControlCreator implements IInformationControlCreator {
+ 	   public IInformationControl createInformationControl(Shell shell) {
+  	     return new JastAddSourceInformationControl(shell);
+  	   }	
 	}
 
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {

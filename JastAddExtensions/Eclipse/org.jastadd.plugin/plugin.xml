@@ -206,6 +206,7 @@
          name="org.jastadd.plugin.classfilter">
       <filter pattern="*.class" selected="true"/>
    </extension>
+   
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -223,5 +224,24 @@
       </view>
    </extension>
    
+	<extension point = "org.eclipse.ui.ide.projectNatureImages">
+		<image id = "org.eclipse.ui.jastAddNatureImage" 
+			natureId = "org.jastadd.plugin.jastaddNature"
+			icon = "icons/obj16/ja_fldr_obj.gif">
+		</image>
+	</extension>
+	
+	<extension point = "org.eclipse.ui.newWizards">
+ 		<wizard id = "org.jastadd.plugin.wizards.newProjectWizard"
+			name = "New JastAdd Project"
+			icon = "icons/obj16/ja_fldr_obj.gif"
+			preferredPerspectives = "org.jastadd.plugin.perspective"
+			class = "org.jastadd.plugin.wizards.NewProjectWizard">
+ 			<description>
+              Create a new JastAdd project
+ 			</description>
+ 			<selection class = "org.eclipse.core.resources.IResource"/>
+		</wizard>
+	</extension>
    
 </plugin>

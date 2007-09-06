@@ -180,7 +180,7 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 			fStatusTextFont.dispose();
 
 		fStatusTextFont= null;
-		fShell= null;
-		fText= null;
+		fShell = null;
+		fText = null;
 	}
 }
