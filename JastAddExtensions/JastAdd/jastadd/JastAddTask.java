@@ -46,6 +46,12 @@ public class JastAddTask extends Task {
   // generate last cycle cache optimization for circular attributes
   private boolean noCacheCycle = false;
   public void setNoCacheCycle(boolean b) { noCacheCycle = b; }
+
+  private boolean weaveInline = false;
+  public void setWeaveInline(boolean b) { weaveInline = b; }
+
+  private boolean inhInASTNode = false;
+  public void setInhInASTNode(boolean b) { inhInASTNode = b; }
   
   public void execute() throws BuildException {
     if(files.size() == 0)
@@ -75,6 +81,8 @@ public class JastAddTask extends Task {
     if(novisitcheck)        args.add("-no_visit_check");
     if(!componentCheck)	  args.add("-no_component_check");
     if(!cacheCycle) args.add("-no_cache_cycle");
+    if(weaveInline) args.add("-weave_inline");
+    if(inhInASTNode) args.add("-inh_in_astnode");
     args.addAll(files);
 
     int i = 0;

@@ -1,14 +1,15 @@
 import java.util.*;
 
 aspect ASTGrammar {
-
+  eq CompilationUnit.getTypeDecl(int i).astNode() = (TypeDecl)localLookupType("ASTNode").iterator().next();
+  eq CompilationUnit.getTypeDecl(int i).listNode() = (TypeDecl)localLookupType("List").iterator().next();
   // Change the packageName() to a specific jastadd package??
-  eq CompilationUnit.getTypeDecl(int i).astNode() = lookupType(packageName(), "ASTNode");
+  //eq CompilationUnit.getTypeDecl(int i).astNode() = lookupType(packageName(), "ASTNode");
   inh lazy TypeDecl ASTDecl.astNode();
-  inh lazy TypeDecl InhDecl.astNode();
+  inh lazy TypeDecl AttributeDecl.astNode();
   inh lazy TypeDecl ClassDecl.astNode();
   inh lazy TypeDecl Rewrite.astNode();
-  eq CompilationUnit.getTypeDecl(int i).listNode() = lookupType(packageName(), "List");
+  //eq CompilationUnit.getTypeDecl(int i).listNode() = lookupType(packageName(), "List");
   inh lazy TypeDecl Rewrite.listNode();
   
   refine ClassPath public void Program.addSourceFile(String name) {
@@ -21,9 +22,9 @@ aspect ASTGrammar {
   private void Program.loadASTFile(String name) {
     try {
       FileInputStream is = new FileInputStream(name);
-      parser.JavaScanner scanner = new parser.JavaScanner(new parser.Unicode(is));
+      scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
       scanner.enterJastAdd();
-      CompilationUnit cu = (CompilationUnit)PathPart.parser().parse(scanner, JavaParser.AltGoals.ast_file);
+      CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.ast_file);
       scanner.previousState();
       is.close();
       List importList = cu.getImportDeclList();
@@ -230,6 +231,7 @@ aspect ASTGrammar {
 
     //if(list.getNumChild() > 0) {
       statements = new List();
+      /*
       index = 0;
       for(Iterator iter = components().iterator(); iter.hasNext(); ) {
         ASTChild child = (ASTChild)iter.next();
@@ -249,7 +251,7 @@ aspect ASTGrammar {
         }
         if(!(child instanceof ASTTokenChild))
           index++;
-      }
+      }*/
 
       /*
          if(isRootNode()) {
@@ -289,7 +291,58 @@ aspect ASTGrammar {
         )
       );
     }
-  
+
+    // create and add init$children
+    statements = new List();
+    int n = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild c = (ASTChild)iter.next();
+      if(!(c instanceof ASTTokenChild))
+        n++;
+    }
+    statements.add(
+    new ExprStmt(
+    new AssignSimpleExpr(
+      new VarAccess("children"),
+      new ArrayCreationExpr(
+        astNode().createQualifiedAccess(),
+        new List().add(new Dims(new Opt(new IntegerLiteral(n)))),
+        new Opt()
+      )
+    )
+    )
+    );
+    index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA() && (child instanceof ASTListChild || child instanceof ASTOptionalChild)) {
+        statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  child.createDefaultInit()
+                  ).add(
+                    new IntegerLiteral(index)
+                    )
+                )
+              )
+            );
+      }
+      if(!(child instanceof ASTTokenChild))
+        index++;
+    }
+    bodyDeclList.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("synthetic"))),
+        new PrimitiveTypeAccess("void"),
+        "init$children",
+        new List(),
+        new List(),
+        new List(),
+        new Opt(new Block((List)statements.fullCopy()))
+      )
+    );
     //}
     return bodyDeclList;
   }
@@ -307,12 +360,12 @@ aspect ASTGrammar {
     if(statements.getNumChild() != 0) {
       statements.add(
           new ReturnStmt(
-            new SuperAccess(
-              "super"
-            ).qualifiesAccess(
+            astNode().createQualifiedAccess().qualifiesAccess(
               new MethodAccess(
                 "getChild",
                 new List().add(
+                  new ThisAccess("this")
+                ).add(
                   new VarAccess("i")
                 )
               )

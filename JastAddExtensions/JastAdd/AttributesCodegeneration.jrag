@@ -48,14 +48,12 @@ aspect GenerateSynCode {
     SynDecl synDecl = decl();
     MethodDecl aspectMethod = aspectMethod();
     int lineNum = getParameterList().sourceLineNumber();
-    synDecl.generateAttributeDecl(introducedType, aspectMethod, lineNum);
+    synDecl.generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached());
   }
   syn lazy MethodDecl SynEq.aspectMethod() {
-    List modifierList = (List)decl().getModifiers().getModifierList().fullCopy();
-    modifierList.add(new Modifier("static")).add(new Modifier("public"));
     MethodDecl aspectMethod =
       new IntroducedMethodDecl(
-          new Modifiers(modifierList),
+          createModifiers(),
           type().createQualifiedAccess(),
           name(),
           createParameterList(),
@@ -64,11 +62,26 @@ aspect GenerateSynCode {
           new Opt(
             getBlock().fullCopy()
             ),
-          introducedType()
+          introducedType(),
+          this
           );
-    hostType().addMemberMethod(aspectMethod);
+    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+      aspectMethod = introducedType().addMemberMethod(aspectMethod);
+    else
+      aspectMethod = hostType().addMemberMethod(aspectMethod);
     return aspectMethod;
   }
+
+  /*
+  rewrite TypeAccess {
+    when(!duringSyntacticClassification() && !duringResolveAmbiguousNames() && getPackage().equals("") && !decl().isNestedType() && !decl().packageName().equals(""))
+    to TypeAccess {
+      System.out.println("Qualifying " + name() + " with " + decl().packageName());
+      setPackage(decl().packageName());
+      return this;
+    }
+  }
+  */
 
 
   public void SynDecl.createIntertypeMethod(TypeDecl introducedType) {
@@ -90,10 +103,9 @@ aspect GenerateSynCode {
     if(hasEqBody()) {
       // public type name(p0, ..., PN-1) { ... }
       List modifierList = (List)getModifiers().getModifierList().fullCopy();
-      modifierList.add(new Modifier("static")).add(new Modifier("public"));
       MethodDecl aspectMethod =
           new IntroducedMethodDecl(
-            new Modifiers(modifierList),
+            createModifiers(),
             type().createQualifiedAccess(),
             name(),
             createParameterList(),
@@ -102,11 +114,15 @@ aspect GenerateSynCode {
             new Opt(
               getBlock().fullCopy()
             ),
-            introducedType/*()*/
+            introducedType/*()*/,
+            this
           );
-      hostAspect().addMemberMethod(aspectMethod);
+      if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+        aspectMethod = introducedType().addMemberMethod(aspectMethod);
+      else
+        aspectMethod = hostAspect().addMemberMethod(aspectMethod);
       int lineNum = getParameterList().sourceLineNumber();
-      generateAttributeDecl(introducedType/*()*/, aspectMethod, lineNum);
+      generateAttributeDecl(introducedType/*()*/, aspectMethod, lineNum, shouldBeCached());
     }
     else if(introducedType/*()*/ instanceof ASTDecl && !((ASTDecl)introducedType/*()*/).hasEquation(this) && introducedType == introducedType()) {
       // public abstract type name(p0, ..., PN-1);
@@ -127,13 +143,42 @@ aspect GenerateSynCode {
 
   public void InhDecl.createIntertypeMethod(TypeDecl introducedType) {
   //public void InhDecl.generateIntertypeDecls() {
-    addDefiningInterface();
+    if(!Program.hasOption("-inh_in_astnode")) {
+      addDefiningInterface();
+    }
     addInterfaceTagging();
     int lineNum = getParameterList().sourceLineNumber();
     generateAttributeDecl(introducedType/*()*/, lineNum);
   }
 
   syn lazy TypeDecl SynEq.type() = decl().type();
+
+
+  public Modifiers SynDecl.createModifiers() {
+    List list = new List();
+    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+      list.add(new Modifier("static")).add(new Modifier("private"));
+    else
+      list.add(new Modifier("static")).add(new Modifier("public"));
+    return new Modifiers(list);
+  }
+
+  public Modifiers SynEq.createModifiers() {
+    List list = new List();
+    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+      list.add(new Modifier("static")).add(new Modifier("private"));
+    else
+      list.add(new Modifier("static")).add(new Modifier("public"));
+    return new Modifiers(list);
+  }
+
+  public List AttributeDecl.createParameterList() {
+    List list = new List();
+    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).qualifiedCopy());
+    return list;
+  }
 
   public List SynEq.createParameterList() {
     List list = new List();
@@ -185,14 +230,6 @@ aspect GenerateSynCode {
     return args;
   }
   
-  public List AttributeDecl.createParameterList() {
-    List list = new List();
-    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
-    for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).qualifiedCopy());
-    return list;
-  }
-
   syn boolean AttributeDecl.isNTA() {
     if(!name().startsWith("get") || getNumParameter() != 0 || !(introducedType() instanceof ASTDecl))
       return false;
@@ -210,17 +247,17 @@ aspect GenerateSynCode {
     ((ASTDecl)introducedType()).lookupChild(name().substring(3)) instanceof ASTTokenChild;
   
   // Add a possibly cached delegate in typeDecl that calls aspectMethod
-  public void SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
-    if(isLazy()) {
+  public void SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
+    if(isLazy) {
       // Add re-init of attribute cache in node clone method
       nodeCopyClearCache(typeDecl);
     }
     
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
-    if(isLazy() || !Program.hasOption("-no_visit_check"))
+    if(isLazy || !Program.hasOption("-no_visit_check"))
       addParameterStructure(statements);
-    if(isLazy())
+    if(isLazy)
       addComputedCheck(statements, typeDecl);
       
     if (!Program.hasOption("-no_component_check")) 
@@ -234,7 +271,7 @@ aspect GenerateSynCode {
     if (!Program.hasOption("-no_component_check"))
       addCheckInterruptCircle(statements);
     
-    if(isLazy())
+    if(isLazy)
       addCacheComputeCall(statements, typeDecl, aspectMethod);
     else
       addComputeCall(statements, aspectMethod);
@@ -250,7 +287,7 @@ aspect GenerateSynCode {
     if (!Program.hasOption("-no_component_check"))
     	  addClearInterruptedCircle(statements);
     
-    addReturnStmt(statements, typeDecl);
+    addReturnStmt(statements, typeDecl, isLazy);
 
     //statements.getChildNoTransform(0).setSourceLineNumber(lineNum);
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
@@ -421,7 +458,7 @@ aspect GenerateSynCode {
      if (!Program.hasOption("-no_component_check"))
     	  addClearInterruptedCircle(statements);
     
-    addReturnStmt(statements, typeDecl);
+    addReturnStmt(statements, typeDecl, isLazy());
 
     //statements.getChildNoTransform(0).setSourceLineNumber(lineNum);
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
@@ -699,6 +736,23 @@ aspect GenerateSynCode {
       list.add(
         new IfStmt(
           fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          // return (List)ASTNode.getChild(this, getDynamicTypeListChildPosition());
+          new ReturnStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              astNode().createQualifiedAccess().qualifiesAccess(
+                new MethodAccess(
+                  "getChild",
+                  new List().add(
+                    new ThisAccess("this")
+                  ).add(
+                    new MethodAccess(name() + "ChildPosition", new List())
+                  )
+                )
+              )
+            )
+          )
+          /*
           // return (List)getChildNoTransform(getDynamicTypeListChildPosition());
           new ReturnStmt(
             new CastExpr(
@@ -709,6 +763,7 @@ aspect GenerateSynCode {
               )
             )
           )
+          */
         )
       );
     }
@@ -988,15 +1043,10 @@ aspect GenerateSynCode {
       if(typeDecl instanceof ClassDecl) {
         ClassDecl classDecl = (ClassDecl)typeDecl;
 
-        // Add implements tag
-        classDecl.addImplementedInterface(definingInterfaceName());
-        /*
-        classDecl.addImplements(
-          astNode().createQualifiedAccess().qualifiesAccess(
-            new TypeAccess(definingInterfaceName())
-          )
-        );
-        */
+        if(!Program.hasOption("-inh_in_astnode")) {
+          // Add implements tag
+          classDecl.addImplementedInterface(definingInterfaceName());
+        }
 
         // statements in delegation method
         List statements = new List(); 
@@ -1087,7 +1137,7 @@ aspect GenerateSynCode {
   syn lazy MethodDecl InhEq.addEqToAspect(TypeDecl returnType) {
           MethodDecl methodDecl =
             new IntroducedMethodDecl(
-              new Modifiers(new List()),
+              new Modifiers(new List().add(new Modifier("static"))),
               returnType.createQualifiedAccess(),
               name() + "$" + childName(),
               createParameterList(),
@@ -1096,9 +1146,13 @@ aspect GenerateSynCode {
               new Opt(
                 getBlock().fullCopy()
               ),
-              introducedType()
+              introducedType(),
+              this
             );
-          return hostType().addMemberMethod(methodDecl);
+          if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+            return introducedType().addMemberMethod(methodDecl);
+          else
+            return hostType().addMemberMethod(methodDecl);
   }
 
   Expr ASTChild.createFromCorrectChildCheck() {
@@ -1131,29 +1185,70 @@ aspect GenerateSynCode {
   }
   
 
-  // TODO: currently needs to update remote attributes after this operation
-  protected void InhDecl.addDefiningInterface() {
-    if(astNode().firstDefiningInterfaceQuery(definingInterfaceName()))
-    astNode().addBodyDecl(
-      new MemberInterfaceDecl(
-        new InterfaceDecl(
-          new Modifiers(new List().add(new Modifier("public"))),
-          definingInterfaceName(),
-          new List(),
-          new List().add(
-            new MethodDecl(
-              new Modifiers(new List().add(new Modifier("public"))),
-              type().createQualifiedAccess(),
-              definingInterfaceName(),
-              createDefiningInterfaceParameterList(),
-              new List(),
-              new List(),
-              new Opt()
-            )
+  private HashMap TypeDecl.inhEqDelegate;
+  public MethodDecl TypeDecl.inhEqDelegate(String name) {
+    return inhEqDelegate == null ? null : (MethodDecl)inhEqDelegate.get(name);
+  }
+  public void TypeDecl.addInhEqDelegate(String name, MethodDecl m) {
+    if(inhEqDelegate == null)
+      inhEqDelegate = new HashMap();
+    inhEqDelegate.put(name, m);
+  }
+  public MethodDecl InhDecl.inhEqDelegate() {
+    MethodDecl m = astNode().inhEqDelegate(definingInterfaceName());
+    if(m == null) {
+      List statements = new List();
+      m = new MethodDecl(
+        (Modifiers)getModifiers().fullCopy(),
+        type().createQualifiedAccess(),
+        definingInterfaceName(),
+        createDefiningInterfaceParameterList(),
+        new List(),
+        new List(),
+        new Opt(new Block(statements))
+      );
+      List args = new List();
+      args.add(new ThisAccess("this"));
+      args.add(new VarAccess("caller"));
+      for(int i = 0; i < getNumParameter(); i++)
+        args.add(new VarAccess(getParameter(i).name()));
+      statements.add(
+        new ReturnStmt(
+          new MethodAccess("getParent", new List()).qualifiesAccess(
+            new BoundMethodAccess(definingInterfaceName(), args, m)
           )
         )
-      )
-    );
+      );
+      m = astNode().addMemberMethod(m);
+      astNode().addInhEqDelegate(definingInterfaceName(), m);
+    }
+    return m;
+  }
+
+  // TODO: currently needs to update remote attributes after this operation
+  protected void InhDecl.addDefiningInterface() {
+    if(astNode().firstDefiningInterfaceQuery(definingInterfaceName())) {
+      astNode().addBodyDecl(
+          new MemberInterfaceDecl(
+            new InterfaceDecl(
+              new Modifiers(new List().add(new Modifier("public"))),
+              definingInterfaceName(),
+              new List(),
+              new List().add(
+                new MethodDecl(
+                  new Modifiers(new List().add(new Modifier("public"))),
+                  type().createQualifiedAccess(),
+                  definingInterfaceName(),
+                  createDefiningInterfaceParameterList(),
+                  new List(),
+                  new List(),
+                  new Opt()
+                  )
+                )
+              )
+            )
+          );
+    }
   }
 
   private HashSet TypeDecl.hasDefiningInterface = null;
@@ -1167,6 +1262,10 @@ aspect GenerateSynCode {
   }
     
   protected void InhDecl.addSearchAncestorForEquation(List list) {
+    if(Program.hasOption("-inh_in_astnode")) {
+      return;
+    }
+    // TODO: make this only call getParent() when other policy for inherited attributes
     // ASTNode n = getParent();
     // ASTNode caller = this;
     // ASTNode child = null;
@@ -1244,6 +1343,18 @@ aspect GenerateSynCode {
   }
   
   protected Expr InhDecl.createComputeCall() {
+    if(Program.hasOption("-inh_in_astnode")) {
+      List args = new List();
+      args.add(new ThisAccess("this"));
+      args.add(new NullLiteral("null"));
+      for(int i = 0; i < getNumParameter(); i++)
+       args.add(getParameter(i).createAccess());
+      return
+        new MethodAccess("getParent", new List()).qualifiesAccess(
+          new BoundMethodAccess(definingInterfaceName(), args, inhEqDelegate())
+        );
+    }
+    
     // ((hostType.definingInterfaceName)n).definingInterfaceName(caller, child, arg0, ... argN-1)
     List args = new List();
     args.add(new VarAccess("caller"));
@@ -1328,10 +1439,27 @@ aspect GenerateSynCode {
     }
   }
 
-  protected void AttributeDecl.addReturnStmt(List list, TypeDecl typeDecl) {
+  protected void AttributeDecl.addReturnStmt(List list, TypeDecl typeDecl, boolean isLazy) {
     // return computed_value;
     if(isNTA() && !bindsToTokenChild()) {
       list.add(
+        // return (List)ASTNode.getChild(this, getDynamicTypeListChildPosition());
+        new ReturnStmt(
+          new CastExpr(
+            type().createQualifiedAccess(),
+            astNode().createQualifiedAccess().qualifiesAccess(
+              new MethodAccess(
+                "getChild",
+                new List().add(
+                  new ThisAccess("this")
+                ).add(
+                  new MethodAccess(name() + "ChildPosition", new List())
+                )
+              )
+            )
+          )
+        )
+        /*
         // return (List)getChildNoTransform(getDynamicTypeListChildPosition());
         new ReturnStmt(
           new CastExpr(
@@ -1342,9 +1470,10 @@ aspect GenerateSynCode {
             )
           )
         )
+        */
       );
     }
-    else if(isLazy() && getNumParameter() == 0)
+    else if(isLazy && getNumParameter() == 0)
       list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));
     else
       list.add(new ReturnStmt(new VarAccess(computedValueName())));

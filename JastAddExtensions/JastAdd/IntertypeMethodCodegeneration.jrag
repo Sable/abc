@@ -24,13 +24,30 @@ aspect IntertypeMethodCodegeneration {
   }
 
   public void IntertypeMethodDecl.createIntertypeMethod(TypeDecl introducedType) {
-    MethodDecl aspectMethod = createAspectMethod();
-    MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
-    introducedType.addMemberMethod(delegateMethod);
+    /*
+    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl()) {
+      MethodDecl m = new IntroducedMethodDecl(
+        (Modifiers)getModifiers().fullCopy(),
+        type().createQualifiedAccess(),
+        name(),
+        copyParameterList(getParameterList()),
+        new List(),
+        (List)getExceptionList().fullCopy(),
+        new Opt(getBlock().fullCopy()),
+        introducedType,
+        this
+      );
+      introducedType.addMemberMethod(m);
+    }
+    else*/ {
+      MethodDecl aspectMethod = createAspectMethod();
+      MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
+      introducedType.addMemberMethod(delegateMethod);
+    }
   }
 
   syn lazy MethodDecl IntertypeMethodDecl.createAspectMethod() {
-    if(!isFinal) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
+    if(!is$Final) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
     // make aspect method static
     List modifierList = (List)getModifiers().getModifierList().fullCopy();
     if(!isStatic())
@@ -46,16 +63,21 @@ aspect IntertypeMethodCodegeneration {
     MethodDecl aspectMethod = new IntroducedMethodDecl(
       new Modifiers(modifierList),
       type().createQualifiedAccess(),
-      name(),
+      "impl$body$" + name(),
       parameterList,
       new List(),
       new List(),
       new Opt(
         getBlock().fullCopy()
       ),
-      introducedType()
+      introducedType(),
+      this
     );
-    hostAspect().addMemberMethod(aspectMethod);
+    /*
+    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+      aspectMethod = introducedType().addMemberMethod(aspectMethod);
+    else*/
+      aspectMethod = hostAspect().addMemberMethod(aspectMethod);
     return aspectMethod;
   }
 
@@ -64,9 +86,19 @@ aspect IntertypeMethodCodegeneration {
   }
 
 
+  syn boolean MethodAccess.needsSuperDispatchDelegate() {
+    if(!hasPrevExpr() || !prevExpr().isSuperAccess())
+      return false;
+    BodyDecl bodyDecl = enclosingBodyDecl();
+    if(!(bodyDecl instanceof IntroducedMethodDecl))
+      return false;
+    IntroducedMethodDecl m = (IntroducedMethodDecl)bodyDecl;
+    return m.introducedType() != bodyDecl.hostType();
+  }
+
   public void MethodAccess.generateIntertypeDecls() {
     super.generateIntertypeDecls();
-    if(hasPrevExpr() && prevExpr().isSuperAccess() && enclosingBodyDecl() instanceof IntroducedMethodDecl) {
+    if(needsSuperDispatchDelegate()) {
       SimpleSet maxSpecific = SimpleSet.emptySet;
       for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
         MethodDecl decl = (MethodDecl)iter.next();
@@ -89,7 +121,7 @@ aspect IntertypeMethodCodegeneration {
   }
 
   refine CreateBCode public void MethodAccess.createBCode(CodeGeneration gen) {
-    if(hasPrevExpr() && prevExpr().isSuperAccess() && enclosingBodyDecl() instanceof IntroducedMethodDecl) {
+    if(needsSuperDispatchDelegate()) {
       SimpleSet maxSpecific = SimpleSet.emptySet;
       for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
         MethodDecl decl = (MethodDecl)iter.next();
@@ -132,7 +164,8 @@ aspect IntertypeMethodCodegeneration {
   }
     
   syn lazy MethodDecl MethodDecl.createSuperDispatchDelegate(TypeDecl qualifierType) {
-    String name = "superDispatch$" + hostType().fullName().replace('.', '$').replace('@', '_') + "$" + name();
+    //String name = "superDispatch$" + hostType().fullName().replace('.', '$').replace('@', '_') + "$" + name();
+    String name = "superDispatch$" + qualifierType.fullName().replace('.', '$').replace('@', '_') + "$" + name();
     List statements = new List();
     List args = new List();
     for(int i = 0; i < getNumParameter(); i++)
@@ -201,7 +234,7 @@ aspect IntertypeMethodCodegeneration {
     Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;
-    return lookupMethod(name);
+    return getITDBodyDecl().lookupMethod(name);
   }
   inh Collection BodyDecl.lookupMethod(String name);
   
@@ -210,8 +243,22 @@ aspect IntertypeMethodCodegeneration {
     if(!set.isEmpty()) return set;
     set = introducedType().memberFields(name);
     if(!set.isEmpty()) return set;
-    return lookupVariable(name);
+    return getITDBodyDecl().lookupVariable(name);
   }
+
+  eq IntroducedMethodDecl.getTypeAccess().lookupType(String name) {
+    SimpleSet set = introducedType().memberTypes(name);
+    if(!set.isEmpty())
+      return set;
+    return getITDBodyDecl().lookupType(name);
+  }
+  eq IntroducedMethodDecl.getBlock().lookupType(String name) {
+    SimpleSet set = introducedType().memberTypes(name);
+    if(!set.isEmpty())
+      return set;
+    return getITDBodyDecl().lookupType(name);
+  }
+  inh SimpleSet BodyDecl.lookupType(String name);
 
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();
   eq IntroducedMethodDecl.getParameter(int index).hostType() = introducedType();

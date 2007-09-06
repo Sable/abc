@@ -3,8 +3,8 @@ aspect CircularAttributes {
   eq CircularInhDecl.isLazy() = true;
 
   // Add a possibly cached delegate in typeDecl that calls aspectMethod
-  public void CircularSynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
-    if(isLazy()) {
+  public void CircularSynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
+    if(isLazy) {
       // Add re-init of attribute cache in node clone method
       nodeCopyClearCache(typeDecl);
     }
@@ -12,7 +12,7 @@ aspect CircularAttributes {
     List statements = new List();
     
     
-    if(isLazy()) {
+    if(isLazy) {
       // build structure that hashes parameters to same value
       addParameterStructure(statements);
       // return computed value if stored in cache
@@ -25,11 +25,11 @@ aspect CircularAttributes {
     // lazily add bottom value initialization (may depend on other lazy attributes)
     addBottomInit(statements, typeDecl);
     // if not in cycle then start new cyclic evaluation phase
-    addInCircleComputation(statements, typeDecl, aspectMethod);
+    addInCircleComputation(statements, typeDecl, aspectMethod, isLazy);
     // if not visited then compute next iteration of this value
-    addNotVisitedComputation(statements, typeDecl, aspectMethod);
+    addNotVisitedComputation(statements, typeDecl, aspectMethod, isLazy);
     // else return value from last iteration
-    addReturnStmt(statements, typeDecl);
+    addReturnStmt(statements, typeDecl, isLazy);
 
     // public type name(p0, ... , pN-1) { ... }
     typeDecl.addMemberMethod(
@@ -69,11 +69,11 @@ aspect CircularAttributes {
     // lazily add bottom value initialization (may depend on other lazy attributes)
     addBottomInit(statements, typeDecl);
     // if not in cycle then start new cyclic evaluation phase
-    addInCircleComputation(statements, typeDecl, aspectMethod);
+    addInCircleComputation(statements, typeDecl, aspectMethod, isLazy());
     // if not visited then compute next iteration of this value
-    addNotVisitedComputation(statements, typeDecl, aspectMethod);
+    addNotVisitedComputation(statements, typeDecl, aspectMethod, isLazy());
     // else return value from last iteration
-    addReturnStmt(statements, typeDecl);
+    addReturnStmt(statements, typeDecl, isLazy());
 
     // public type name(p0, ... , pN-1) { ... }
     typeDecl.addMemberMethod(
@@ -146,7 +146,7 @@ aspect CircularAttributes {
   	  );
   }
 
-  protected void AttributeDecl.addInCircleComputation(List inCircleStmt, TypeDecl typeDecl, MethodDecl targetMethod) {
+  protected void AttributeDecl.addInCircleComputation(List inCircleStmt, TypeDecl typeDecl, MethodDecl targetMethod, boolean isLazy) {
     List doList = new List();
     List list = new List();
     
@@ -191,7 +191,7 @@ aspect CircularAttributes {
     // IN_CIRCLE = false;
     addClearIN_CIRCLE(list);
     // return value;
-    addReturnStmt(list, typeDecl);
+    addReturnStmt(list, typeDecl, isLazy);
 
     // DO_BLOCK - compute next iteration of value
 
@@ -227,7 +227,7 @@ aspect CircularAttributes {
     );
   }
   
-  protected void AttributeDecl.addNotVisitedComputation(List notVisitedStmt, TypeDecl typeDecl, MethodDecl targetMethod) {
+  protected void AttributeDecl.addNotVisitedComputation(List notVisitedStmt, TypeDecl typeDecl, MethodDecl targetMethod, boolean isLazy) {
     List list = new List();
 
     if(getNumParameter() == 0) {
@@ -282,7 +282,7 @@ aspect CircularAttributes {
     // visited = false;
     addClearVisited(list, typeDecl);
     // return value;
-    addReturnStmt(list, typeDecl);
+    addReturnStmt(list, typeDecl, isLazy);
 
   }
 
@@ -675,7 +675,7 @@ aspect CircularAttributes {
     }
   }
 
-  protected void CircularSynDecl.addReturnStmt(List list, TypeDecl typeDecl) {
+  protected void CircularSynDecl.addReturnStmt(List list, TypeDecl typeDecl, boolean isLazy) {
     // return computed_value;
     if(getNumParameter() == 0)
       list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));
@@ -693,7 +693,7 @@ aspect CircularAttributes {
         )
       );
   }
-  protected void CircularInhDecl.addReturnStmt(List list, TypeDecl typeDecl) {
+  protected void CircularInhDecl.addReturnStmt(List list, TypeDecl typeDecl, boolean isLazy) {
     // return computed_value;
     if(getNumParameter() == 0)
       list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));

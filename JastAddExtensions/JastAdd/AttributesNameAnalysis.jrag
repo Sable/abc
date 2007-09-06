@@ -22,6 +22,12 @@ aspect JastAdd {
   eq InhEq.getParameter().nameType() = NameType.TYPE_NAME;
   eq InhEq.getChildParameter().nameType() = NameType.TYPE_NAME;
 
+  inh TypeDecl SynEq.unknownType();
+  inh TypeDecl InhEq.unknownType();
+  eq SynEq.getBlock().returnType() = decl() != null ? decl().type() : unknownType();
+  // TODO: fixme
+  eq InhEq.getBlock().returnType() = unknownType();
+
   syn boolean SynDecl.hasEqBody() = hasBlock() && !getBlock().isDummy();
   public boolean Block.isDummy() {
     return false;

@@ -98,6 +98,8 @@ public class RunTests {
     if(verbose)
       list.add("-verbose");
     
+    list.add("-weave_inline");
+    list.add("-inh_in_astnode");
 
     // create String[] from ArrayList
     String[] args = new String[list.size()];

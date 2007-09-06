@@ -4,6 +4,8 @@ aspect Rewrite {
   eq RewriteListDecl.getChildName().nameType() = NameType.METHOD_NAME;
 
   eq Rewrite.getAccess().nameType() = NameType.TYPE_NAME;
+
+  eq Rewrite.getBlock().returnType() = getAccess().type();
   
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
@@ -335,7 +337,7 @@ aspect Rewrite {
     List parameters = new List().add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "self"));
     Access returnType = (isListRewrite() ? listNode() : astNode()).createQualifiedAccess();
     // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
-    MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new List(), new Opt(getBlock().fullCopy()), introducedType());
+    MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new List(), new Opt(getBlock().fullCopy()), introducedType(), enclosingBodyDecl());
     return enclosingBodyDecl().hostType().addMemberMethod(decl);
   }
   public int TypeDecl.rewriteCounter;
