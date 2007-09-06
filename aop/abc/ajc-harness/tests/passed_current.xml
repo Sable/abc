@@ -1169,6 +1169,7 @@
             <ajcmessage line="12" kind="error"></ajcmessage>
             <message line="12" kind="error"></message>
             <message line="13" kind="error"></message>
+            <jamessage line="12" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="ClassCastException on the int literal" num="230" keywords="from-errors" dir="errors">
@@ -1232,6 +1233,7 @@
             <ajcmessage line="10" kind="error"></ajcmessage>
             <message line="10" kind="error"></message>
             <message line="12" kind="error"></message>
+            <jamessage line="10" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Throwing a NullPointerException when formals can't be bound in named pointcut" num="238" keywords="from-errors" dir="errors">
@@ -1253,6 +1255,7 @@
             <ajcmessage line="3" kind="error"></ajcmessage>
             <message line="3" kind="error"></message>
             <message line="8" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="a class can't extend an aspect" num="241" keywords="from-errors,fail-unimplemented" dir="errors">
@@ -1265,6 +1268,7 @@
             <ajcmessage line="3" kind="error"></ajcmessage>
             <message line="3" kind="error"></message>
             <message line="7" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="an after() clause at the class-level causes an EmptyStackException" num="243" keywords="from-errors" dir="errors" abccomment="abc gives type error after parse error. ODM 07/07/04">
@@ -1272,6 +1276,7 @@
             <ajcmessage line="3" kind="error"></ajcmessage>
             <message line="3" kind="error"></message>
             <message line="7" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="an around() clause at the class-level causes an EmptyStackException" num="244" keywords="from-errors" dir="errors" abccomment="abc gives type error after parse error. ODM 07/07/04">
@@ -1279,6 +1284,7 @@
             <ajcmessage line="3" kind="error"></ajcmessage>
             <message line="3" kind="error"></message>
             <message line="7" kind="error"></message>
+            <jamessage line="3" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Crashes when a cast is within another cast" num="245" keywords="from-errors,purejava" dir="errors">
@@ -1542,6 +1548,7 @@
             <ajcmessage line="8" kind="error"></ajcmessage>
             <message line="8" kind="error"></message>
             <message line="9" kind="error"></message>
+            <jamessage line="8" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="advice on abstract pointcuts" pr="240" num="279" keywords="from-errors" dir="errors" abccomment="abc catches one more error than ajc. ODM 20/07/04">
@@ -2856,6 +2863,10 @@
             <ajcmessage line="37" kind="error"></ajcmessage>
             <message line="28" kind="error"></message>
             <message line="36" kind="error"></message>
+            <ajcmessage line="28" kind="error"></ajcmessage>
+            <jamessage line="29" kind="error"></jamessage>
+            <jamessage line="36" kind="error"></jamessage>
+            <jamessage line="37" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="advice throws clauses must be compatible with joinpoints they apply to" num="521" keywords="from-resolved_10x" dir="new">
@@ -2872,6 +2883,8 @@
             <ajcmessage line="20" kind="error"></ajcmessage>
             <ajcmessage line="28" kind="error"></ajcmessage>
             <message line="28" kind="error"></message>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="28" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="access to all members of class and inner class from privileged aspect" pr="35593" num="525" keywords="from-resolved_10x" dir="new/privilegedAspects">
@@ -3107,6 +3120,19 @@
             <message line="39" kind="error"></message>
             <message line="43" kind="error"></message>
             <message line="46" kind="error"></message>
+            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="22" kind="error"></jamessage>
+            <jamessage line="22" kind="error"></jamessage>
+            <jamessage line="27" kind="error"></jamessage>
+            <jamessage line="29" kind="error"></jamessage>
+            <jamessage line="31" kind="error"></jamessage>
+            <jamessage line="37" kind="error"></jamessage>
+            <jamessage line="39" kind="error"></jamessage>
+            <jamessage line="43" kind="error"></jamessage>
+            <jamessage line="46" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="after returning advice order" pr="694" num="572" keywords="from-resolved_10x" dir="new">
@@ -3296,6 +3322,13 @@
             <message line="18" kind="error"></message>
             <message line="19" kind="error"></message>
             <message line="20" kind="error"></message>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="21" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="incrementing objects, arrays - 3" pr="715" num="611" keywords="from-resolved_104,purejava" dir="new">
@@ -3305,6 +3338,13 @@
             <message line="17" kind="error"></message>
             <message line="18" kind="error"></message>
             <message line="19" kind="error"></message>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="incrementing objects, arrays" pr="715" num="612" keywords="from-resolved_104,purejava" dir="new">
@@ -3613,6 +3653,7 @@
           <ajcmessage line="2" kind="error"></ajcmessage>
           <message line="3" kind="error"></message>
           <message line="12" kind="error"></message>
+          <jamessage line="3" kind="error"></jamessage>
         </compile>
         <ajcrun class="ImportFromUnnamed"></ajcrun>
     </ajc-test>
@@ -3717,6 +3758,9 @@
             <ajcmessage line="4" kind="error"></ajcmessage>
             <message line="5" kind="error"></message>
             <message line="7" kind="error"></message>
+            <jamessage line="5" kind="error"></jamessage>
+            <jamessage line="7" kind="error"></jamessage>
+            <jamessage line="11" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="expect CE for declaration collision between subaspects instead of domination order" num="715" dir="new">
@@ -3776,6 +3820,10 @@
 <ajc-test title="circularity in declare dominates" pr="902" num="727" dir="bugs">
         <compile files="CircularDominates.java">
 		  <message line="18" kind="error"></message>
+                  <jamessage line="18" kind="error"></jamessage>
+                  <jamessage line="18" kind="error"></jamessage>
+                  <jamessage line="18" kind="error"></jamessage>
+                  <jamessage line="29" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="percflow code hangs compiler" pr="28702" num="728" dir="bugs">
@@ -4522,6 +4570,11 @@
 			<message line="21" kind="error"></message>
                         <message line="22" kind="error"></message>
 			<message line="23" kind="error"></message>
+                        <jamessage line="21" kind="error"></jamessage>
+                        <jamessage line="21" kind="error"></jamessage>
+                        <jamessage line="21" kind="error"></jamessage>
+                        <jamessage line="21" kind="error"></jamessage>
+                        <jamessage line="27" kind="error"></jamessage>
                 </compile>
 	</ajc-test>
 <ajc-test title="inner aspect containing declare soft" pr="46750" num="894" dir="bugs">
