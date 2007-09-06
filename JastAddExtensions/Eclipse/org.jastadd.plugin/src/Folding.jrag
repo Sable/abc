@@ -11,13 +11,12 @@ aspect Folding {
 			try {
 				int lineStart = ASTNode.getLine(getStart());
 				int lineEnd = ASTNode.getLine(getEnd());
-				if (lineStart > 0 && lineEnd >= document.getNumberOfLines()) {
-					int startOffset = document.getLineOffset(lineStart - 1);
-					int endOffset = document.getLineOffset(lineEnd);
-					int foldLength = endOffset - startOffset;
-					if ((lineEnd - lineStart) > 0) {
-						list.add(new Position(startOffset, foldLength));
-					}
+				int nbrOfLines = document.getNumberOfLines();
+				int startOffset = document.getLineOffset(lineStart > 1 ? lineStart - 1 : 0);
+				int endOffset = document.getLineOffset(lineEnd < nbrOfLines ? lineEnd : lineEnd - 1);
+				int foldLength = endOffset - startOffset;
+				if ((lineEnd - lineStart) > 0) {
+					list.add(new Position(startOffset, foldLength));
 				}
 			} catch (BadLocationException e) {
 				e.printStackTrace();
