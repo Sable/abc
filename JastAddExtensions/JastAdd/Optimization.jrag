@@ -1,0 +1,58 @@
+aspect Optimization {
+
+  syn boolean SynEq.shouldBeCached() = decl().isLazy();
+    //decl().isLazy() && (getBlock().cost() >= Cost.top() || decl().isNTA());
+  syn boolean SynDecl.shouldBeCached() = isLazy();
+    //isLazy() && (getBlock().cost() >= Cost.top() || isNTA());
+
+  class Cost {
+    private static final int TOP = 3;
+
+    public static int sum(int v1, int v2) {
+      return Math.min(TOP, v1 + v2);
+    }
+
+    public static int top() { return TOP; }
+  }
+
+  syn int MethodDecl.cost() circular [Cost.top()] = Cost.top();
+  eq SynDecl.cost() = isLazy() ? 1 : Cost.top();
+
+  syn int Stmt.cost() = Cost.top();
+  eq Block.cost() {
+    int cost = 0;
+    for(int i = 0; i < getNumStmt(); i++)
+      cost = Cost.sum(cost, getStmt(i).cost());
+    return cost;
+  }
+  eq EmptyStmt.cost() = 0;
+  eq LabeledStmt.cost() = getStmt().cost();
+  eq ExprStmt.cost() = getExpr().cost();
+  eq ReturnStmt.cost() = hasResult() ? getResult().cost() : 0;
+  eq LocalClassDeclStmt.cost() = 0;
+  eq IfStmt.cost() {
+    int elseCost = hasElse() ? getElse().cost() : 0;
+    return Cost.sum(getCondition().cost(), Math.max(getThen().cost(), elseCost));
+  }
+  eq VariableDeclaration.cost() = hasInit() ? getInit().cost() : 0;
+
+  syn int Expr.cost() = 1;
+  eq Access.cost() = 0;
+  eq AbstractDot.cost() = Cost.sum(getLeft().cost(), getRight().cost());
+  eq VarAccess.cost() = 1;
+  eq MethodAccess.cost() = Cost.sum(decl().cost(), 1);
+  eq ArrayAccess.cost() = Cost.top();
+  eq ClassInstanceExpr.cost() = Cost.top();
+
+  eq AssignExpr.cost() = Cost.sum(getDest().cost(), getSource().cost());
+  eq Literal.cost() = 1;
+  eq ParExpr.cost() = getExpr().cost();
+  eq ArrayCreationExpr.cost() = Cost.top();
+  eq Unary.cost() = getOperand().cost();
+  eq CastExpr.cost() = Cost.sum(1, getExpr().cost());
+  eq Binary.cost() = Cost.sum(getLeftOperand().cost(), getRightOperand().cost());
+  eq InstanceOfExpr.cost() = Cost.sum(1, getExpr().cost());
+
+  eq ConditionalExpr.cost() = Cost.sum(getCondition().cost(), Math.max(getTrueExpr().cost(), getFalseExpr().cost()));
+
+}
