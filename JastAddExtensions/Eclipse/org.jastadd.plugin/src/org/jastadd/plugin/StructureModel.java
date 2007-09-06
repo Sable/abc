@@ -1192,28 +1192,35 @@ public class StructureModel {
 				}
 			}
 			
+			private EnclosePair curParent() {
+				return stack.isEmpty() ? parent : stack.peek();	
+			}
+			
 			public void pushEmptyLine(EmptyLine emptyLine) {
-				emptyLine.setParent(parent);
-				parent.addChild(emptyLine);
+				emptyLine.setParent(curParent());
+				curParent().addChild(emptyLine);
 			}
 			
 			public void pushNewLine(NewLine newLine) {
-				newLine.setParent(parent);
-				parent.addChild(newLine);								
+				newLine.setParent(curParent());
+				curParent().addChild(newLine);								
 			}
 			
 			public void pushIndent(Indent indent) {
-				indent.setParent(parent);
-				parent.addChild(indent);				
+				indent.setParent(curParent());
+				curParent().addChild(indent);				
 			}
 			
+			
 			public void pushDelimiter(Delimiter current) {
+				/* 
 				if (current instanceof Semicolon) {
-				   	// semicolon isn't allowed in paran pairs
+				   	// semicolon isn't allowed in paran pairs -- They are allowed inside for (..;..;..)
 				    popPair();
 				}
-				current.setParent(parent);
-				parent.addChild(current);
+				*/
+				current.setParent(curParent());
+				curParent().addChild(current);
 			}
 			
 			public boolean pushEnclose(Enclose current) {
@@ -1278,21 +1285,20 @@ public class StructureModel {
 
 			private EnclosePair createEnclosePair(Enclose enclose) {
 				EnclosePair pair = null;
-				EnclosePair curParent = stack.isEmpty() ? parent : stack.peek();
 				if (enclose instanceof OpenEnclose) {
 					if (enclose instanceof OpenParan) {
-						pair = new ParanPair(curParent, (OpenParan) enclose);
+						pair = new ParanPair(curParent(), (OpenParan) enclose);
 					} else {
-						pair = new BracePair(curParent, (OpenBrace) enclose);
+						pair = new BracePair(curParent(), (OpenBrace) enclose);
 					}
 				} else {
 					if (enclose instanceof CloseParan) {
-						pair = new ParanPair(curParent, (CloseParan) enclose);
+						pair = new ParanPair(curParent(), (CloseParan) enclose);
 					} else
-						pair = new BracePair(curParent, (CloseBrace) enclose);
+						pair = new BracePair(curParent(), (CloseBrace) enclose);
 				}
-				curParent.addChild(pair);
-				pair.setParent(curParent);
+				curParent().addChild(pair);
+				pair.setParent(curParent());
 				return pair;
 			}			
 		}

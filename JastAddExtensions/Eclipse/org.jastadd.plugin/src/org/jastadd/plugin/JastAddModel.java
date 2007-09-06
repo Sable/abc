@@ -339,13 +339,15 @@ public class JastAddModel {
 	 * @throws CoreException
 	 */
 	private void addErrorMarker(IFile file, String message, int lineNumber, int severity) throws CoreException {
-		IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
-		marker.setAttribute(IMarker.MESSAGE, message);
-		marker.setAttribute(IMarker.SEVERITY, severity);
-		if (lineNumber == -1) {
-			lineNumber = 1;
+		if (file != null) {
+			IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, message);
+			marker.setAttribute(IMarker.SEVERITY, severity);
+			if (lineNumber == -1) {
+				lineNumber = 1;
+			}
+			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 		}
-		marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 	}
 	
 	/** 
@@ -641,6 +643,7 @@ public class JastAddModel {
 	
 	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
 		char c = cmd.text.charAt(0);
+		/*
 		if (StructureModel.OPEN_PARAN == c) {
 		    cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
@@ -649,7 +652,9 @@ public class JastAddModel {
 		    cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
 			cmd.text += "]";
-		} else if ('"' == c) {
+		} else 
+		*/	
+		if ('"' == c) {
 			cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
 			cmd.text += '"';
