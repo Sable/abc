@@ -1,11 +1,18 @@
 package org.jastadd.plugin.editor;
 
+import org.eclipse.jdt.internal.ui.text.java.hover.SourceViewerInformationControl;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlExtension;
+import org.eclipse.jface.text.presentation.IPresentationReconciler;
+import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -23,6 +30,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.jastadd.plugin.editor.highlight.JastAddColors;
+import org.jastadd.plugin.editor.highlight.JastAddScanner;
 
 public class JastAddSourceInformationControl implements IInformationControl, IInformationControlExtension, DisposeListener {
 
@@ -41,25 +50,29 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 		GridLayout layout;
 		GridData gd;
 
-		fShell = new Shell(parent, SWT.NO_FOCUS | SWT.ON_TOP);
+		
+		int shellStyle = SWT.TOOL | SWT.NO_TRIM | SWT.LEFT_TO_RIGHT;
+		
+		fShell = new Shell(parent, SWT.NO_FOCUS | SWT.ON_TOP | shellStyle);
 		Display display = fShell.getDisplay();
 		fShell.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 
 		Composite composite = fShell;
 		layout = new GridLayout(1, false);
-		int border = ((SWT.NO_TRIM) == 0) ? 0 : BORDER;
+		int border = ((shellStyle & SWT.NO_TRIM) == 0) ? 0 : BORDER;
 		layout.marginHeight = border;
 		layout.marginWidth = border;
 		composite.setLayout(layout);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		composite.setLayoutData(gd);
-
+		
 		// Source viewer
-		fViewer = new ProjectionViewer(composite, null, null, false, SWT.NONE);
+		fViewer = new SourceViewer(composite, null, null, false, SWT.NONE);
+		fViewer.configure(new SourceInformationControlConfiguration());
 		fViewer.setEditable(false);
 
 		fText = fViewer.getTextWidget();
-		gd= new GridData(GridData.BEGINNING | GridData.FILL_BOTH);
+		gd = new GridData(GridData.BEGINNING | GridData.FILL_BOTH);
 		fText.setLayoutData(gd);
 		fText.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 		fText.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
@@ -79,6 +92,18 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 		});
 
 		addDisposeListener(this);
+	}
+	
+	private class SourceInformationControlConfiguration extends SourceViewerConfiguration {
+	    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+			PresentationReconciler reconciler= new PresentationReconciler();
+			
+			DefaultDamagerRepairer dr= new DefaultDamagerRepairer(new JastAddScanner(new JastAddColors()));
+			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+			 
+			return reconciler;
+		}
 	}
 	
 	
@@ -137,7 +162,7 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 		fText.setForeground(foreground);
 	}
 
-	public void setInformation(String information) {
+	public void setInformation(String content) {
 		if (content == null) {
 			fViewer.setInput(null);
 			return;

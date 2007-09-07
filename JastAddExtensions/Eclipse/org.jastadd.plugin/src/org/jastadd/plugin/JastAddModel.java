@@ -487,6 +487,7 @@ public class JastAddModel {
 		try {
 			for (Iterator iter = files.iterator(); iter.hasNext();) {
 				String name = (String) iter.next();
+				// TODO Check name in some way -- potential IOException/NullPointerException
 				program.addSourceFile(name);
 			}
 		} 

@@ -7,6 +7,7 @@ import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.IInformationControlCreatorExtension;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -61,6 +62,7 @@ public class JastAddEditor extends TextEditor {
 	
 	public void createPartControl(Composite parent) {
 	    super.createPartControl(parent);
+	    
 	    ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
 
 	    projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
@@ -68,7 +70,7 @@ public class JastAddEditor extends TextEditor {
 		projectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
 	    projectionSupport.setHoverControlCreator(new JastAddControlCreator());
 	    projectionSupport.install();
-	    
+	    getSourceViewerConfiguration();
 
 	    //turn projection mode on
 	    viewer.doOperation(ProjectionViewer.TOGGLE);
@@ -77,13 +79,19 @@ public class JastAddEditor extends TextEditor {
 
 	}
 	
+	
 	private class JastAddControlCreator implements IInformationControlCreator {
  	   public IInformationControl createInformationControl(Shell shell) {
   	     return new JastAddSourceInformationControl(shell);
-  	   }	
+  	   }
 	}
+	
 
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		
+		fAnnotationAccess = getAnnotationAccess();
+		fOverviewRuler = createOverviewRuler(getSharedColors());
+		
 		ISourceViewer viewer = new ProjectionViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
 
 		// ensure decoration support has been created and configured.
