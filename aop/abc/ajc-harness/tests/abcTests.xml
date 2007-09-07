@@ -1162,7 +1162,7 @@
             <message kind="error" line="3"/>
             <jamessage kind="error" line="3"/>
             <jamessage kind="error" line="3"/>
-            <jamessage kind="error" line="9"/>
+            <jamessage kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -1546,7 +1546,7 @@
         <compile files="UndefinedInner.java">
             <message kind="error" line="6"/>
             <jamessage kind="error" line="6"/>
-            <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -2006,9 +2006,9 @@
             <ajcmessage kind="error" line="16"/>
             <message kind="error"/>
             <message kind="error" line="17"/>
-	          <message kind="error" line="17"/>
-	          <jamessage kind="error" line="17"/>
-	          <jamessage kind="error" line="18"/>
+            <message kind="error" line="17"/>
+            <jamessage kind="error" line="17"/>
+            <jamessage kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -2185,7 +2185,7 @@
             <message kind="error" line="9"/>
             <jamessage kind="error" line="9"/>
             <jamessage kind="error" line="9"/>
-            <jamessage kind="error" line="12"/>
+            <jamessage kind="error" line="11"/>
         </compile>
     </ajc-test>
 
@@ -2337,7 +2337,7 @@
             <ajcmessage kind="error" line="11"/>
             <message kind="error" />
             <message kind="error" line="12"/>
-            <jamessage kind="error" line="13"/>
+            <jamessage kind="error" line="12"/>
         </compile>
     </ajc-test>
 
@@ -2677,7 +2677,7 @@
             <ajcmessage kind="error" line="9"/>
             <message kind="error" line="9"/>
             <jamessage kind="error" line="9"/>
-            <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -3135,7 +3135,7 @@
             <message kind="error"/>
             <message kind="error" line="6"/>
             <jamessage kind="error" line="6"/>
-            <jamessage kind="error" line="9"/>
+            <jamessage kind="error" line="8"/>
         </compile>
     </ajc-test>
 
