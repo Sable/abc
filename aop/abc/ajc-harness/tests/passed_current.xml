@@ -1,4 +1,4 @@
-<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="static and non-static before methods -- one file" num="7" keywords="from-base" dir="base/test100" abccomment="I have put this comment in as a test, and this is a very          long one over multiple lines too. LJH">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -569,7 +569,7 @@
             <message line="3" kind="error"></message>
             <jamessage line="3" kind="error"></jamessage>
             <jamessage line="3" kind="error"></jamessage>
-            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="8" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="compiler flags final static variable as indefinite in member assignment." num="138" keywords="from-java,purejava" dir="new">
@@ -809,7 +809,7 @@
         <compile files="UndefinedInner.java">
             <message line="6" kind="error"></message>
             <jamessage line="6" kind="error"></jamessage>
-            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="try statements work sorta like scoped items for exception flow control" num="170" keywords="from-java" dir="pureJava">
@@ -1085,9 +1085,9 @@
             <ajcmessage line="16" kind="error"></ajcmessage>
             <message kind="error"></message>
             <message line="17" kind="error"></message>
-	          <message line="17" kind="error"></message>
-	          <jamessage line="17" kind="error"></jamessage>
-	          <jamessage line="18" kind="error"></jamessage>
+            <message line="17" kind="error"></message>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="17" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Non-static advice silently ignored" pr="209" num="216" keywords="from-errors" dir="errors">
@@ -1204,7 +1204,7 @@
             <message line="9" kind="error"></message>
             <jamessage line="9" kind="error"></jamessage>
             <jamessage line="9" kind="error"></jamessage>
-            <jamessage line="12" kind="error"></jamessage>
+            <jamessage line="11" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Accessing instance fields and instance methods statically." num="236" keywords="from-errors,purejava" dir="errors" abccomment="all errors,  but it is completely reasonable to report                   only the non-statement error on line 30.  This is what                   javac does on the Java part of the benchmark.  Note                   that this is NOT a purejava benchmark, but has an                   aspect in it, dispite what the keyword says.                   July 4/04 LJH Polyglot now continues further, so we catch                   more of the errors July 7/04 ODM">
@@ -1304,7 +1304,7 @@
             <ajcmessage line="11" kind="error"></ajcmessage>
             <message kind="error"></message>
             <message line="12" kind="error"></message>
-            <jamessage line="13" kind="error"></jamessage>
+            <jamessage line="12" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Crashes when a method name is missing in a call -- e.g. 'System.out.();'" num="248" keywords="from-errors,purejava" dir="errors">
@@ -1540,7 +1540,7 @@
             <ajcmessage line="9" kind="error"></ajcmessage>
             <message line="9" kind="error"></message>
             <jamessage line="9" kind="error"></jamessage>
-            <jamessage line="10" kind="error"></jamessage>
+            <jamessage line="9" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="Undefined pointcuts were throwing exceptions in 07b11 [callsto]" pr="396" num="278" keywords="from-errors" dir="errors" abccomment="An extra error from abc after the first parse error. ODM 07/07/04">
@@ -1880,7 +1880,7 @@
             <message kind="error"></message>
             <message line="6" kind="error"></message>
             <jamessage line="6" kind="error"></jamessage>
-            <jamessage line="9" kind="error"></jamessage>
+            <jamessage line="8" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="modifiers on interface members" num="310" keywords="from-errors,purejava" dir="pureJava" abccomment="Errors on lines 2,3,7 and 8 missing for jlc. Reported to                   Nate. July 6/04">
