@@ -22,7 +22,7 @@ aspect AspectJNameAnalysis {
     List parameters = new List();
     if(getPerClause().isPerObject())
       parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
-    addBodyDecl(
+    MethodDecl aspectOf = 
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
         createQualifiedAccess(),
@@ -31,12 +31,11 @@ aspect AspectJNameAnalysis {
         new List(),
         new List(),
         new Opt(new Block(new List().add(new ReturnStmt(new Opt(new NullLiteral())))))
-      )
-    );
+      );
     parameters = new List();
     if(getPerClause().isPerObject())
       parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
-    addBodyDecl(
+    MethodDecl hasAspect =
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
         typeBoolean().createQualifiedAccess(),
@@ -45,8 +44,11 @@ aspect AspectJNameAnalysis {
         new List(),
         new List(),
         new Opt(new Block(new List().add(new ReturnStmt(new Opt(new BooleanLiteral("true"))))))
-      )
-    );
+      );
+    aspectOf.category = MethodCategory.ASPECT_INSTANCE;
+    hasAspect.category = MethodCategory.ASPECT_INSTANCE;
+    addBodyDecl(aspectOf);
+    addBodyDecl(hasAspect);
   }
   inh TypeDecl AspectDecl.typeBoolean();
 

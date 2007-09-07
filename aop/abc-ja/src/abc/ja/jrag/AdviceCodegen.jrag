@@ -159,6 +159,7 @@ aspect AdviceCodegen {
     b.add(Jimple.v().newReturnVoidStmt());
     getAdviceSpec().jimplify2();
     getPointcutExpr().jimplify2();
+    MethodCategory.register(sootMethod(), MethodCategory.ADVICE_BODY);
   }
   eq AdviceSpec.getParameter(int index).localNum() = index;
 
