@@ -240,7 +240,7 @@ aspect PatternsCodegen
         new ClassnamePattern() {
             public boolean matchesClass(SootClass cl)
             {
-                return matchesType(cl.getType());
+                return matchesType(cl);
             }
 
             public boolean equivalent(ClassnamePattern p)
@@ -476,14 +476,29 @@ aspect PatternsCodegen
         SootClass c = ((RefType) t).getSootClass();
         return matchesType(c);
     }
-    eq ExplicitTypeNamePattern.matchesType(Type t) = 
-        getAccess().type().name().equals(t.toString())
-        && getAccess().isTypeAccess();
+    eq ExplicitTypeNamePattern.matchesType(Type t) {
+        boolean builtin_pat = getAccess().type().isPrimitive()
+                                || getAccess().type().isVoid();
+        boolean builtin_type = ! (t instanceof RefType);
+
+        if (builtin_pat && builtin_type) {
+            return getAccess().type().name().equals(t.toString())
+                    && getAccess().isTypeAccess();
+        }
+        if (builtin_pat || builtin_type) {
+            return false;
+        }
+        SootClass c = ((RefType) t).getSootClass();
+        return matchesType(c);
+    }
+    // the subtyping part is handled by the matchSubtype() inherited
+    // attribute - all we have to do here is recurse
+    eq SubtypeNamePattern.matchesType(Type t) =
+        getPattern().matchesType(t);
 
     syn boolean Pattern.matchesType(TypeDecl t) = false;
     eq SimpleNamePattern.matchesType(TypeDecl t) {
-      // TODO: add supertype check
-      Set set = new HashSet();
+      Set set = matchSubtype() ? t.superTypes() : new HashSet();
       set.add(t);
       for(Iterator iter = set.iterator(); iter.hasNext(); ) {
         t = (TypeDecl)iter.next();
@@ -495,6 +510,47 @@ aspect PatternsCodegen
     }
     eq ExplicitTypeNamePattern.matchesType(TypeDecl t) {
       return getAccess().type() == t;
+    }
+    // the subtyping part is handled by the matchSubtype() inherited
+    // attribute - all we have to do here is recurse
+    eq SubtypeNamePattern.matchesType(TypeDecl t) =
+        getPattern().matchesType(t);
+
+
+
+    // find super types
+    syn lazy Set TypeDecl.superTypes()
+    {
+        Set set = new HashSet();
+        addSuperTypes(set);
+        return set;
+    }
+    public void TypeDecl.addSuperTypes(Set set) { }
+    public void ClassDecl.addSuperTypes(Set set)
+    {
+        if (hasSuperclass() && !set.contains(superclass())) {
+            set.add(superclass());
+            superclass().addSuperTypes(set);
+        }
+        Iterator i = interfacesIterator();
+        while (i.hasNext()) {
+            TypeDecl iface = (TypeDecl) i.next();
+            if (!set.contains(iface)) {
+                set.add(iface);
+                iface.addSuperTypes(set);
+            }
+        }
+    }
+    public void InterfaceDecl.addSuperTypes(Set set)
+    {
+        Iterator i = superinterfacesIterator();
+        while (i.hasNext()) {
+            TypeDecl iface = (TypeDecl) i.next();
+            if (!set.contains(iface)) {
+                set.add(iface);
+                iface.addSuperTypes(set);
+            }
+        }
     }
     
     syn boolean ModifierPattern.matches(int m) = (modifierMask() & m) != 0;
