@@ -85,7 +85,7 @@ public class JastAddModel {
 		buildProject(jaProject, true);
 	}
 
-	public CompilationUnit buildDocument(IDocument document) {
+	public synchronized CompilationUnit buildDocument(IDocument document) {
 		IFile file = JastAddDocumentProvider.documentToFile(document);
 		if(file != null) {
 			String fileName = file.getRawLocation().toOSString();
@@ -96,7 +96,7 @@ public class JastAddModel {
 	}
 	
 	
-	public CompilationUnit buildDocument(IDocument document, String fileName, IProject project) {
+	public synchronized CompilationUnit buildDocument(IDocument document, String fileName, IProject project) {
 		try {
 			StringBuffer buf = new StringBuffer(document.get());
 			new StructureModel(buf).doRecovery(0);
@@ -123,7 +123,7 @@ public class JastAddModel {
 	 * @param file
 	 * @return The Program node if successful, otherwise null
 	 */
-	public CompilationUnit buildFile(IFile file) {
+	public synchronized CompilationUnit buildFile(IFile file) {
 		try {
 			return buildFile(file.getProject(), file.getRawLocation().toOSString());
 		} catch (Throwable e) {
@@ -286,8 +286,10 @@ public class JastAddModel {
 	 * @param jaProject The project to build
 	 * @param doErrorChecks true of error checks should be made
 	 */
-	private void buildProject(JastAddProject jaProject, boolean doErrorChecks) {
+	private synchronized void buildProject(JastAddProject jaProject, boolean doErrorChecks) {
 		Program program = jaProject.getProgram();
+		program.files().clear();
+		program.files().addAll(allSourceFiles(jaProject.getProject()));
 		program.flushSourceFiles(null);
 		IProject project = jaProject.getProject();
 		try {

@@ -186,15 +186,23 @@ public class StructureModel {
 				if (!tupleList.isEmpty() && tupleList.getLast() instanceof Indent) {
 					// Add empty line instead of indent and newLine
 					Indent indent = (Indent)tupleList.removeLast();
-					tupleList.add(new EmptyLine(indent, new NewLine(offset)));
+					tupleList.add(new EmptyLine(indent, new NewLine(offset, line-1)));
 				} else {
-					tupleList.add(new NewLine(offset));
+					tupleList.add(new NewLine(offset, line-1));
 				}
 				curIndentOffset = resolveIndentAfterNewline(content, offset); // After '\n'
-				curIndentTabCount = resolveTabCount(content, offset, curIndentOffset);
 				
+				/*
+				curIndentTabCount = resolveTabCount(content, offset, curIndentOffset);
 				if (curIndentOffset < content.length()) { 
 					lastIndent = new Indent(curIndentTabCount, offset+1, curIndentOffset);
+					tupleList.add(lastIndent);
+				}
+				*/
+		
+				if (curIndentOffset < content.length()) {
+					int curIndentWsCount = resolveWhitespaceCount(content, offset, curIndentOffset);
+					lastIndent = new Indent(curIndentWsCount, offset+1, curIndentOffset);
 					tupleList.add(lastIndent);
 				}
 				
@@ -312,6 +320,27 @@ public class StructureModel {
 		}
 		
 		return tabCount;
+		
+	}
+
+	private int resolveWhitespaceCount(String content, int startOffset, int endOffset) {
+		
+		int offset = startOffset + 1; // After new line
+		int wsCount = 0;
+		
+		while (offset < endOffset) {
+			char c = content.charAt(offset);
+			if (c == '\t') {
+				wsCount += TABSIZE;
+			} else if (Character.isWhitespace(c)) {
+				wsCount++;
+			} else {
+				break;
+			}
+			offset++; // Move one right
+		}
+		
+		return wsCount;
 		
 	}
 	
@@ -490,14 +519,17 @@ public class StructureModel {
 	// ========== Layout classes ========
 	
 	private class NewLine extends CharacterNode {
-		protected NewLine(int offset) {
+		private int lineNumber;
+		protected NewLine(int offset, int lineNumber) {
 			super(offset);
+			this.lineNumber = lineNumber;
 		}
 		public void print(String indent) {
 			System.out.println(indent + toString());
 		}
 		public String toString() {
-			return "(NEWLINE," + String.valueOf(offset) + ") " + super.toString();
+			return "(NEWLINE," + String.valueOf(lineNumber) + "," + 
+				String.valueOf(offset) + ") " + super.toString();
 		}
 	}
 	

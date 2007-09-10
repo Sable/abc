@@ -236,12 +236,24 @@
 			name = "New JastAdd Project"
 			icon = "icons/obj16/ja_fldr_obj.gif"
 			preferredPerspectives = "org.jastadd.plugin.perspective"
+            project="true"
+            finalPerspective="org.jastadd.plugin.perspective"
 			class = "org.jastadd.plugin.wizards.NewProjectWizard">
  			<description>
               Create a new JastAdd project
  			</description>
  			<selection class = "org.eclipse.core.resources.IResource"/>
 		</wizard>
+	</extension>
+	
+	<extension 
+		point="org.eclipse.search.searchResultViewPages"
+		id="JastAddSearchResultPage">
+	<viewPage
+		id="org.jastadd.plugin.search.JastAddSearchResultPage"
+		searchResultClass="org.jastadd.plugin.search.JastAddSearchResult"
+		class="org.jastadd.plugin.search.JastAddSearchResultPage">
+	</viewPage>
 	</extension>
    
 </plugin>

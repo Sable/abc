@@ -9,6 +9,8 @@ import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -24,17 +26,21 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
+import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.jastadd.plugin.builder.JastAddBuilder;
 import org.jastadd.plugin.builder.JastAddNature;
 
-public class NewProjectWizard extends Wizard implements INewWizard {
+public class NewProjectWizard extends Wizard implements INewWizard, IExecutableExtension {
 
 	private WizardNewProjectCreationPage projectPage;
 	private IProject newProject;
+	private IConfigurationElement fConfigElement;
 
 	@Override
 	public boolean performFinish() {
 		createNewProject();
+
+		BasicNewProjectResourceWizard.updatePerspective(fConfigElement);
 
 		if (newProject == null)
 			return false;
@@ -156,4 +162,9 @@ public class NewProjectWizard extends Wizard implements INewWizard {
 			monitor.done();
 		}
 	}
+
+	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
+	    fConfigElement = config;
+	}
+	
 }
