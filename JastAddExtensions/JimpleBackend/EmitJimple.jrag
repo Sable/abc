@@ -63,6 +63,7 @@ aspect EmitJimple {
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers()); 
     Scene.v().addClass(sc);
     sc.setApplicationClass();
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceFile()));
     return sc;
   }
   eq InterfaceDecl.sootClass() {
@@ -71,6 +72,7 @@ aspect EmitJimple {
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers());
     Scene.v().addClass(sc);
     sc.setApplicationClass();
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceFile()));
     return sc;
   }
   
@@ -290,6 +292,7 @@ aspect EmitJimple {
 
 
   public void VariableDeclaration.jimplify2(Body b) {
+    b.setLine(this);
     local = b.newLocal(name(), type().getSootType());
     if(hasInit()) {
       b.add(
@@ -308,6 +311,7 @@ aspect EmitJimple {
   public Local VariableDeclaration.local;
 
   public void ParameterDeclaration.jimplify2(Body b) {
+    b.setLine(this);
     local = b.newLocal(name(), type().getSootType());
     b.add(Jimple.v().newIdentityStmt(local, Jimple.v().newParameterRef(type().getSootType(), localNum())));
   }
@@ -361,11 +365,12 @@ aspect EmitJimple {
     soot.jimple.JimpleBody body;
     java.util.Stack chains;
     TypeDecl typeDecl;
-    public Body(TypeDecl typeDecl, soot.jimple.JimpleBody body) {
+    public Body(TypeDecl typeDecl, soot.jimple.JimpleBody body, ASTNode container) {
       this.typeDecl = typeDecl;
       this.body = body;
       chains = new java.util.Stack();
       chains.push(body.getUnits());
+      setLine(container);
       if(!body.getMethod().isStatic())
         emitThis(typeDecl);
     }
@@ -395,7 +400,19 @@ aspect EmitJimple {
         thisName = local;
       return local;
     }
+
+    private soot.tagkit.LineNumberTag lineTag;
+    public void setLine(ASTNode node)
+    {
+      lineTag = new soot.tagkit.LineNumberTag(node.lineNumber());
+    }
+    private soot.tagkit.LineNumberTag currentSourceRangeTag()
+    {
+      return lineTag;
+    }
+
     public Body add(soot.jimple.Stmt stmt) {
+      stmt.addTag(currentSourceRangeTag());
       soot.PatchingChain chain = (soot.PatchingChain)chains.peek();
       if(stmt instanceof IdentityStmt && chain.size() != 0) {
         IdentityStmt idstmt = (IdentityStmt) stmt;
@@ -478,7 +495,7 @@ aspect EmitJimple {
       getSootClassDecl().addMethod(m);
       JimpleBody body = Jimple.v().newBody(m);
       m.setActiveBody(body);
-      Body b = new Body(this, body);
+      Body b = new Body(this, body, this);
       for(int i = 0; i < getNumBodyDecl(); i++) {
         BodyDecl bodyDecl = getBodyDecl(i);
         if(bodyDecl instanceof FieldDeclaration && bodyDecl.generate()) {
@@ -487,6 +504,7 @@ aspect EmitJimple {
             Local l = asLocal(b, 
               f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
             );
+            b.setLine(f);
             b.add(Jimple.v().newAssignStmt(
               Jimple.v().newStaticFieldRef(f.sootRef()),
               l
@@ -540,7 +558,8 @@ aspect EmitJimple {
       if(hasBlock() && !sootMethod().hasActiveBody()) {
         JimpleBody body = Jimple.v().newBody(sootMethod());
         sootMethod().setActiveBody(body);
-        Body b = new Body(hostType(), body);
+        Body b = new Body(hostType(), body, this);
+        b.setLine(this);
         for(int i = 0; i < getNumParameter(); i++)
           getParameter(i).jimplify2(b);
         getBlock().jimplify2(b);
@@ -563,7 +582,8 @@ aspect EmitJimple {
     if(!generate() || sootMethod().hasActiveBody()) return;
     JimpleBody body = Jimple.v().newBody(sootMethod());
     sootMethod().setActiveBody(body);
-    Body b = new Body(hostType(), body);
+    Body b = new Body(hostType(), body, this);
+    b.setLine(this);
     for(int i = 0; i < getNumParameter(); i++)
       getParameter(i).jimplify2(b);
 
@@ -615,6 +635,7 @@ aspect EmitJimple {
             Local l = asLocal(b,
               f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
             );
+            b.setLine(this);
             b.add(Jimple.v().newAssignStmt(
               Jimple.v().newInstanceFieldRef(base, f.sootRef()),
               l

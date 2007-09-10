@@ -94,6 +94,7 @@ aspect BooleanExpressions {
   public soot.Value LogNotExpr.eval(Body b) { return emitBooleanCondition(b); }
   public soot.Value LogicalExpr.eval(Body b) { return emitBooleanCondition(b); }
   protected soot.Value Expr.emitBooleanCondition(Body b) {
+    b.setLine(this);
     emitEvalBranch(b);
     soot.jimple.Stmt end_label = newLabel();
     b.addLabel(false_label());
@@ -107,6 +108,7 @@ aspect BooleanExpressions {
   }
 
   public soot.Value ConditionalExpr.eval(Body b) {
+    b.setLine(this);
     if(type().isBoolean())
       return emitBooleanCondition(b);
     else {
@@ -143,6 +145,7 @@ aspect BooleanExpressions {
   syn lazy soot.jimple.Stmt ConditionalExpr.then_branch_label() = newLabel();
   
   public void Expr.emitEvalBranch(Body b) {
+    b.setLine(this);
     if(isTrue())
       b.add(Jimple.v().newGotoStmt(true_label()));
     else if(isFalse())
@@ -166,6 +169,7 @@ aspect BooleanExpressions {
   public void LogNotExpr.emitEvalBranch(Body b)  { getOperand().emitEvalBranch(b); }
   
   public void AndLogicalExpr.emitEvalBranch(Body b) {
+    b.setLine(this);
     getLeftOperand().emitEvalBranch(b);
     b.addLabel(next_test_label());
     if(getLeftOperand().canBeTrue()) {
@@ -177,6 +181,7 @@ aspect BooleanExpressions {
   syn lazy soot.jimple.Stmt AndLogicalExpr.next_test_label() = newLabel();
   
   public void OrLogicalExpr.emitEvalBranch(Body b) {
+    b.setLine(this);
     getLeftOperand().emitEvalBranch(b);
     b.addLabel(next_test_label());
     if(getLeftOperand().canBeFalse()) {
@@ -189,6 +194,7 @@ aspect BooleanExpressions {
   syn lazy soot.jimple.Stmt OrLogicalExpr.next_test_label() = newLabel();
 
   public void ConditionalExpr.emitEvalBranch(Body b) {
+    b.setLine(this);
     soot.jimple.Stmt endBranch = newLabel();
     getCondition().emitEvalBranch(b);
     b.addLabel(then_branch_label());
@@ -204,6 +210,7 @@ aspect BooleanExpressions {
   }
   
   public void RelationalExpr.emitEvalBranch(Body b) {
+    b.setLine(this);
     if(isTrue())
       b.add(Jimple.v().newGotoStmt(true_label()));
     else if(isFalse())

@@ -283,7 +283,7 @@ aspect PointcutCodegen
         SootMethod method = sootMethod();
         JimpleBody body = Jimple.v().newBody(method);
         method.setActiveBody(body);
-        Body b = new Body(hostType(), body);
+        Body b = new Body(hostType(), body, this);
 
         Iterator i = pointcutFormals().iterator();
         int count = 0;
@@ -292,6 +292,7 @@ aspect PointcutCodegen
             if (this.refersTo(param)) {
                 Type type = param.type().getSootType();
                 param.local = b.newLocal(param.name(), type);
+                b.setLine(param);
                 b.add(Jimple.v().newIdentityStmt(param.local,
                     Jimple.v().newParameterRef(type, count++)));
             }

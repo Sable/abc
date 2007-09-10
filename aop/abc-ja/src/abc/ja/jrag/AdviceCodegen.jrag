@@ -153,7 +153,7 @@ aspect AdviceCodegen {
   public void AdviceDecl.jimplify2() {
     JimpleBody body = Jimple.v().newBody(sootMethod());
     sootMethod().setActiveBody(body);
-    Body b = new Body(hostType(), body);
+    Body b = new Body(hostType(), body, this);
     getAdviceSpec().jimplify2(b);
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
@@ -255,7 +255,7 @@ aspect AdviceCodegen {
   {
     JimpleBody body = Jimple.v().newBody(proceedMethod());
     proceedMethod().setActiveBody(body);
-    Body b = new Body(hostType(), body);
+    Body b = new Body(hostType(), body, this);
     jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
   }
