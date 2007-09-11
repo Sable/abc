@@ -4,13 +4,20 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.search.ui.ISearchResultPage;
 import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
+import org.jastadd.plugin.providers.JastAddContentProvider;
 
 public class JastAddSearchResultPage extends AbstractTextSearchViewPage implements ISearchResultPage {
 
+	public static final String SEARCH_ID = "org.jastadd.plugin.search.JastAddSearchResultPage";
+	
+	private JastAddContentProvider fContentProvider;
+	
 	@Override
 	protected void clear() {
-		// TODO Auto-generated method stub
-		
+		/*
+		if (fContentProvider != null)
+			fContentProvider.clear();
+		*/
 	}
 
 	@Override
@@ -27,8 +34,10 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 
 	@Override
 	protected void elementsChanged(Object[] objects) {
-		// TODO Auto-generated method stub
-		
+		/*
+		if (fContentProvider != null)
+			fContentProvider.elementsChanged(objects);
+		*/
 	}
 
 }

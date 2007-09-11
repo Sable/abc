@@ -1,13 +1,13 @@
 package org.jastadd.plugin.perspective;
 
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.search.ui.NewSearchUI;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
+import org.jastadd.plugin.search.JastAddSearchResultPage;
 
 public class PerspectiveFactory implements IPerspectiveFactory {
 	public PerspectiveFactory() {
@@ -23,14 +23,19 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		//folder.addView(JavaUI.ID_TYPE_HIERARCHY);
 		folder.addPlaceholder(IPageLayout.ID_RES_NAV);
 		
+		
 		IFolderLayout outputfolder= layout.createFolder("bottom", IPageLayout.BOTTOM, (float)0.75, editorArea); //$NON-NLS-1$
 		outputfolder.addView(IPageLayout.ID_PROBLEM_VIEW);
 		//outputfolder.addView(JavaUI.ID_JAVADOC_VIEW);
 		//outputfolder.addView(JavaUI.ID_SOURCE_VIEW);
-		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
+		
+		//outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
+		
 		outputfolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
+		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
+		//outputfolder.addView(JastAddSearchResultPage.SEARCH_ID);
 		
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);
 		
@@ -46,7 +51,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		//layout.addShowViewShortcut(JavaUI.ID_JAVADOC_VIEW);
 
 		// views - search
-		layout.addShowViewShortcut(NewSearchUI.SEARCH_VIEW_ID);
+		layout.addShowViewShortcut(JastAddSearchResultPage.SEARCH_ID);
 		
 		// views - debugging
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);

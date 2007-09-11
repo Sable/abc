@@ -1,0 +1,28 @@
+aspect Search {
+	coll HashSet TypeDecl.implementors() [new HashSet()] with add;
+	syn Collection TypeDecl.directImplements() = Collections.EMPTY_LIST;
+	eq InterfaceDecl.directImplements() {
+		HashSet set = new HashSet();
+		for(Iterator iter = superinterfacesIterator(); iter.hasNext(); )
+			set.add(iter.next());
+		return set;
+	}
+	eq ClassDecl.directImplements() {
+		HashSet set = new HashSet();
+		for(Iterator iter = interfacesIterator(); iter.hasNext(); )
+			set.add(iter.next());
+		return set;
+	}
+	TypeDecl contributes
+	  this
+	to TypeDecl.implementors()
+	for each directImplements();
+	
+	syn Collection ASTNode.findImplementors() = Collections.EMPTY_LIST;
+	eq InterfaceDecl.findImplementors() = implementors();
+	eq TypeAccess.findImplementors() = 
+	  type().isInterfaceDecl() ? type().findImplementors() : super.findImplementors();
+	
+		
+		
+}

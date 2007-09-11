@@ -27,13 +27,11 @@ import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
-import org.jastadd.plugin.editor.actions.JastAddDocAction;
-import org.jastadd.plugin.editor.actions.JastAddDocReplace;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
-import AST.Program;
 import AST.Problem;
+import AST.Program;
 
 public class JastAddModel {
 
@@ -646,7 +644,10 @@ public class JastAddModel {
 	
 	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
 		char c = cmd.text.charAt(0);
-		/*
+		
+		String content = doc.get();
+		char previousKeypress = content.charAt(cmd.offset-1);
+		
 		if (StructureModel.OPEN_PARAN == c) {
 		    cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
@@ -655,12 +656,21 @@ public class JastAddModel {
 		    cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
 			cmd.text += "]";
-		} else 
-		*/	
-		if ('"' == c) {
+		} else if (StructureModel.CLOSE_PARAN == c && previousKeypress == StructureModel.OPEN_PARAN) {
+			cmd.text = "";
 			cmd.caretOffset = cmd.offset + 1;
-		    cmd.shiftsCaret = false;
-			cmd.text += '"';
+		} else if (']' == c &&  previousKeypress == '[') {
+			cmd.text = "";
+			cmd.caretOffset = cmd.offset + 1;
+		} else if ('"' == c) {
+			if (previousKeypress != '"') {	
+				cmd.caretOffset = cmd.offset + 1;
+				cmd.shiftsCaret = false;
+				cmd.text += '"';
+			} else {
+				cmd.text = "";
+				cmd.caretOffset = cmd.offset + 1;
+			}
 		} else if (StructureModel.CLOSE_BRACE == c) {
 		
 			StringBuffer buf = new StringBuffer(doc.get());
@@ -672,6 +682,7 @@ public class JastAddModel {
 				e.printStackTrace();
 			}			
 		}
+		previousKeypress = c;
 	}
 
 	public ArrayList<Position> getFoldingPositions(IDocument document) {

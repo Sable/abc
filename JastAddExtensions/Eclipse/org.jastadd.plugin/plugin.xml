@@ -57,47 +57,24 @@
         </menu>
         
         <action
-           id="org.jastadd.plugin.editor.jastAddAction" 
+           id="org.jastadd.plugin.editor.jastAddFindDeclAction" 
            label="Find declaration"
            menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
            class="org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate"
            definitionId="org.jastadd.plugin.findDeclaration"> 
         </action> 
+
+        <action
+           id="org.jastadd.plugin.editor.jastAddFindRefAction" 
+           label="Find references"
+           menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
+           class="org.jastadd.plugin.editor.actions.FindReferencesActionDelegate"
+           definitionId="org.jastadd.plugin.search.references"> 
+        </action> 
         
       </viewerContribution>
    </extension>
-   
-   <!--
-   <extension
-	point="org.eclipse.ui.contexts">
-	<context
-		name="%context.editingText.name"
-		description="%context.editingText.description"
-		id="org.jastadd.plugin.editor.context"
-		parentId="org.eclipse.ui.contexts.window">
-	</context>
-  </extension>
-  
-    <extension point="org.eclipse.ui.actionSets">
-      <actionSet label="JastAdd ActionSet"
-            id="org.jastadd.plugin.actionSet">
-      <action
-               label="JastAdd find declaration"
-               id="org.jastadd.plugin.findDeclaration"
-               class="org.jastadd.plugin.editor.JastAddActionDelegate">
-         </action>
-      </actionSet>
-   </extension>
-  
-  
-  <extension point="org.eclipse.ui.bindings">
-     <key sequence="F3"
-            commandId="org.jastadd.plugin.findDeclaration"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-  </extension>
-  -->
-  
-   
+    
    <extension
       point="org.eclipse.debug.core.breakpoints">
     <breakpoint
@@ -139,12 +116,6 @@
    </extension>   
    
    <extension point = "org.eclipse.debug.core.launchConfigurationTypes">
-         <!-- Currently the delegate class is subclassing org.eclipse.jdt.launching.JavaLaunchDelegate
-         which is a subclass of org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate
-         which is a subclass of org.eclipse.debug.core.model.ILaunchConfigurationDelegate
-         The ILaunchconfigurationDelegate is mentioned as the super class for the value
-         of the delegate class attribute. Maybe it is better to try and subclass that class
-         and avoid the Java specific launch classes.. ? -->
    <launchConfigurationType
          delegate="org.jastadd.plugin.launcher.JastAddLaunchDelegate"
          id="org.jastadd.plugin.launchConfigurationType"
@@ -246,6 +217,7 @@
 		</wizard>
 	</extension>
 	
+	
 	<extension 
 		point="org.eclipse.search.searchResultViewPages"
 		id="JastAddSearchResultPage">
@@ -254,6 +226,45 @@
 		searchResultClass="org.jastadd.plugin.search.JastAddSearchResult"
 		class="org.jastadd.plugin.search.JastAddSearchResultPage">
 	</viewPage>
+	</extension>
+	
+	<!--
+	
+	<extension point="org.eclipse.search.searchPages">
+   	<page id="org.jastadd.plugin.search.JastAddSearchPage"
+		label="JastAdd Search Page"
+		sizeHint="460,160"
+		extensions="java:90, jav:90"
+		showScopeSection="true"
+		canSearchEnclosingProjects="true"
+		class="org.jastadd.plugin.search.JastAddSearchPage">
+	</page>
+	
+    </extension>
+    -->
+    
+   <extension
+         point="org.eclipse.ui.commands">
+      <!-- categories -->
+      <category
+            name="JastAdd Search"
+            description="JastAdd Search Commands"
+            id="org.jastadd.plugin.category.search">
+      </category>
+      <!-- commands -->
+      <command
+            name="JastAdd Reference Search"
+            description="JastAdd Reference Search"
+            categoryId="org.jastadd.plugin.category.search"
+            id="org.jastadd.plugin.search.references">
+      </command>
+   </extension>
+   
+   <extension point = "org.eclipse.ui.bindings">
+		<key sequence = "F3"
+			commandId = "org.jastadd.plugin.search.references"
+			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId = "#TextEditorContext"/>
 	</extension>
    
 </plugin>

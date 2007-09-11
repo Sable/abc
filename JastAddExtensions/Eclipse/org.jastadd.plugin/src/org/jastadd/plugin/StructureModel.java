@@ -9,7 +9,6 @@ import java.util.Stack;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
-import org.jastadd.plugin.editor.actions.JastAddDocAction;
 
 public class StructureModel {
 	
@@ -66,7 +65,7 @@ public class StructureModel {
 			return;
 		}
 		
-		rootPair.print("");
+		//rootPair.print("");
 		
 		if (activePair.open instanceof OpenBrace && activePair.close instanceof UnknownClose) {
 
