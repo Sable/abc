@@ -7,7 +7,13 @@ aspect AspectJCodegen {
     return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
   }
 
-  syn lazy AbcClass TypeDecl.abcClass() = AbcFactory.AbcClass(sootClass());
+  syn lazy AbcClass TypeDecl.abcClass() {
+    throw new InternalCompilerError(
+        "Trying to get an abcClass() from a non-reftype");
+  }
+  eq ClassDecl.abcClass() = AbcFactory.AbcClass(sootClass());
+  eq InterfaceDecl.abcClass() = AbcFactory.AbcClass(sootClass());
+  syn lazy AbcType TypeDecl.abcType() = AbcFactory.AbcType(getSootType());
 
   public int MethodDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void MethodDecl.jimplify2() {

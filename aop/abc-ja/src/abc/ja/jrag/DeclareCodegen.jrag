@@ -1,8 +1,53 @@
+import abc.weaving.aspectinfo.DeclareMessage;
+
 aspect DeclareCodegen
 {
     // the following declare-statements have pointcuts as
     // children, which may need to generate Jimple
-    public void DeclareWarning.jimplify2() { getPointcutExpr().jimplify2(); }
-    public void DeclareError.jimplify2()   { getPointcutExpr().jimplify2(); }
-    public void DeclareSoft.jimplify2()    { getPointcutExpr().jimplify2(); }
+    public void DeclareWarning.jimplify2()
+    {
+        getPointcutExpr().jimplify2();
+        globalAspectInfo().addDeclareMessage(declareMessage());
+    }
+
+    public void DeclareError.jimplify2()
+    {
+        getPointcutExpr().jimplify2();
+        globalAspectInfo().addDeclareMessage(declareMessage());
+    }
+
+    syn DeclareMessage DeclareWarning.declareMessage() =
+        new DeclareMessage(DeclareMessage.WARNING,
+                           getPointcutExpr().pointcut(),
+                           getMessage(),
+                           aspectClass(),
+                           pos());
+
+    syn DeclareMessage DeclareError.declareMessage() =
+        new DeclareMessage(DeclareMessage.ERROR,
+                           getPointcutExpr().pointcut(),
+                           getMessage(),
+                           aspectClass(),
+                           pos());
+
+
+    public void DeclareSoft.jimplify2()
+    {
+        getPointcutExpr().jimplify2();
+        globalAspectInfo().addDeclareSoft(
+            new abc.weaving.aspectinfo.DeclareSoft(
+                getAccess().type().abcType(),
+                getPointcutExpr().pointcut(),
+                aspectClass(),
+                pos()));
+    }
+
+    refine ExceptionHandling public void MethodAccess.exceptionHandling() { }
+    refine ExceptionHandling public void ConstructorAccess.exceptionHandling() { }
+    refine ExceptionHandling public void ThrowStmt.exceptionHandling() { }
+
+    protected boolean Proceed.reachedException(TypeDecl type)
+    {
+        return true; // assume that proceed() can throw anything
+    }
 }
