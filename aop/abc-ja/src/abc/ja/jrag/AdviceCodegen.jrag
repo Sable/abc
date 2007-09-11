@@ -6,7 +6,15 @@ aspect AdviceCodegen {
   eq Program.getCompilationUnit().aspectClass() { throw new Error("Missing equation for aspectClass()"); }
 
   public int TypeDecl.adviceCounter = 0;
-  syn lazy String AdviceDecl.name() = "advice$" + hostType().adviceCounter++;
+  syn lazy String AdviceDecl.name() =
+    getAdviceSpec().kind() + "$" + hostType().adviceCounter++;
+
+  syn String AdviceSpec.kind();
+  eq BeforeSpec.kind() = "before";
+  eq AfterSpec.kind() = "after";
+  eq AfterReturningSpec.kind() = "after";
+  eq AfterThrowingSpec.kind() = "after";
+  eq AroundSpec.kind() = "around";
 
   public void AdviceDecl.jimplify1phase2() {
     hostType().getSootClassDecl().addMethod(sootMethod());
@@ -156,7 +164,8 @@ aspect AdviceCodegen {
     Body b = new Body(hostType(), body, this);
     getAdviceSpec().jimplify2(b);
     getBlock().jimplify2(b);
-    b.add(Jimple.v().newReturnVoidStmt());
+    if (getBlock().canCompleteNormally())
+        b.add(Jimple.v().newReturnVoidStmt());
     getAdviceSpec().jimplify2();
     getPointcutExpr().jimplify2();
     MethodCategory.register(sootMethod(), MethodCategory.ADVICE_BODY);
@@ -198,7 +207,7 @@ aspect AdviceCodegen {
       soot.Modifier.PUBLIC | soot.Modifier.FINAL | soot.Modifier.STATIC,
       AbcFactory.AbcClass(hostType().getSootClassDecl()),
       AbcFactory.AbcType(returnType().getSootType()),
-      "proceed$" + name(),
+      "proceed" + name().substring(6),
       getAdviceSpec().aroundSpec().proceedFormals(),
       new ArrayList(),
       pos());
