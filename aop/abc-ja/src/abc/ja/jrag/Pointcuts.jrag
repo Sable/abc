@@ -151,6 +151,11 @@ aspect Pointcuts
         if(!set.isEmpty()) return set;
         return lookupPointcut(name);
     }
+    eq AspectDecl.getPerClause().lookupPointcut(String name) {
+        SimpleSet set = lookupMemberPointcut(name);
+        if(!set.isEmpty()) return set;
+        return lookupPointcut(name);
+    }
     eq AbstractDot.getRight().lookupPointcut(String name) =
         getLeft().type().lookupMemberPointcut(name);
 

@@ -83,7 +83,7 @@ aspect ImplicitVariables
         for (int i = 0; i < getNumParameter(); i++)
             getParameter(i).errorIfImplicitName("advice bodies");
     }
-    public void PointcutDecl.nameCheck()
+    public void PointcutDecl.implicitNameCheck()
     {
         super.nameCheck();
         for (int i = 0; i < getNumParameter(); i++)

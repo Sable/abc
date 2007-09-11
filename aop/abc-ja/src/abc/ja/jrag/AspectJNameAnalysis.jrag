@@ -58,40 +58,35 @@ aspect AspectJNameAnalysis {
 
   eq AspectDecl.getPerClause().hostType() = this;
 
-  /* ------------------------------------------------------------------------------------------------------ */
-  // named pointcut (sketch)
-  // the main difficulty here is to check that there are no cycles
-  // in pointcut declarations. In JastAdd, that can be done via
-  // circular attributes.
-  
-  /*
-  // quick hack: we only find pcs in the declaring aspect
-  inh PCDecl PCName.lookupPC(String name);
-  inh PCDecl PCDecl.lookupPC(String name);
-  eq Program.getCompilationUnit(int i).lookupPC(String name) = null;
-  eq AspectDecl.getBodyDecl(int index).lookupPC(String name) {
-    for(int i = 0; i < getNumBodyDecl(); i++)
-      if(getBodyDecl(i).isPC(name))
-        return (PCDecl)getBodyDecl(i);
-    return null;
-  }
-  syn boolean BodyDecl.isPC(String name) = false;
-  eq PCDecl.isPC(String name) = getID().equals(name);
-  syn PCDecl PCName.decl() = lookupPC(getID());
-  
-  // checking the name for circular use
-  public void PCDecl.nameCheck() {
+
+  // TODO: move
+  public void PointcutDecl.nameCheck()
+  {
     super.nameCheck();
+    implicitNameCheck();
+    circularNameCheck();
+  }
+
+
+  // Check for cycles in named pointcuts
+  public void PointcutDecl.circularNameCheck()
+  {
     if(isCircular())
-      error("Semantic Error: pointcut " + getID() + " in " + hostType().fullName() + " is circular");
+      error("The pointcut " + getID() + " has a circular dependency.");
   }
 
   // do a fixpoint computation over the boolean domain
-  syn lazy boolean PCDecl.isCircular() circular [true] = getPC().isCircular();
-  syn lazy boolean PC.isCircular() circular [true];
-  eq PCAnd.isCircular() = getLeft().isCircular() || getRight().isCircular();
-  eq PCCall.isCircular() = false;
-  eq PCName.isCircular() = decl().isCircular();
-  */
+  syn lazy boolean PointcutDecl.isCircular() circular [true] =
+    hasPointcutExpr() ? getPointcutExpr().isCircular() : false;
 
+  syn lazy boolean PointcutExpr.isCircular() circular [true] = false;
+  eq NamedPointcutExpr.isCircular() = decl().isCircular();
+  eq BinaryPointcutExpr.isCircular() = getLhs().isCircular()
+                                       || getRhs().isCircular();
+  eq NegPointcutExpr.isCircular() = getPointcutExpr().isCircular();
+  eq CflowPointcutExpr.isCircular() = getPointcut().isCircular();
+  eq CflowBelowPointcutExpr.isCircular() = getPointcut().isCircular();
+
+  syn PointcutDecl NamedPointcutExpr.decl() =
+    ((PointcutAccess) getName().lastAccess()).decl();
 }

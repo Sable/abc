@@ -130,12 +130,8 @@ aspect PatternsCodegen
     {
     	// Check these in roughly increasing order of complexity...
     	
-    	// Check name of field
+    	// Check name and type of field
     	if(!getMemberNamePattern().matchesTypeAndName(sfr))
-    		return false;
-    	
-    	// Check type of field
-    	if(!getTypePattern().matchesType(sfr.type()))
     		return false;
     	
     	// Check modifier list
@@ -291,34 +287,12 @@ aspect PatternsCodegen
     
     eq DotNamePattern.matchesTypeAndName(SootFieldRef sfr) {
     	// abc-2006-2, section 4.1.2
-    	// -------------------------
-    	// C (the context) is implicit
-    	// R is the static type of the field access in the shadow
-    	// X is the field in question (matching the rhs)
-    	// Z is a (reflexive transitive) supertype of R and matches the pattern
-    	// P is the class that contains X
-    	
+        // -------------------------
     	// member part
     	if(!getRhs().matchesName(sfr.name()))
     		return false;
-    	
-    	// match type part
-    	SootClass classR = sfr.declaringClass();
-    	
-    	// find supertypes of R that match the type pattern
-    	Set supertypes = superTypes(classR);
-    	
-        Iterator i = supertypes.iterator();
-        while (i.hasNext()) {
-            SootClass classZ = (SootClass) i.next();
-            if (!getLhs().matchesType(classZ))
-                continue;
-
-            // If the supertype contains our field, we match.
-            if(declaresField(classZ, sfr))
-            	return true;
-        }
-        return false;
+        // type part
+        return getLhs().matchesType(sfr.resolve().getDeclaringClass());
     }
 
     syn boolean Pattern.matchesTypeAndName(SootMethodRef smr) = false;
