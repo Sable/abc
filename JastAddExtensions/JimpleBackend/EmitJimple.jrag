@@ -511,7 +511,8 @@ aspect EmitJimple {
           FieldDeclaration f = (FieldDeclaration)bodyDecl;
           if(f.isStatic() && f.hasInit()) {
             Local l = asLocal(b, 
-              f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
+              f.getInit().type().emitCastTo(b, f.getInit(), f.type()), // AssignConversion
+              f.type().getSootType()
             );
             b.setLine(f);
             b.add(Jimple.v().newAssignStmt(
@@ -645,7 +646,7 @@ aspect EmitJimple {
               f.getInit().type().emitCastTo(b, f.getInit(), f.type()), // AssignConversion
               f.type().getSootType()
             );
-            b.setLine(this);
+            b.setLine(f);
             b.add(Jimple.v().newAssignStmt(
               Jimple.v().newInstanceFieldRef(base, f.sootRef()),
               l
