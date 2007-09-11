@@ -246,7 +246,7 @@ aspect Expressions {
     b.add(
       Jimple.v().newAssignStmt(
         lvalue,
-        asLocal(b, rvalue)
+        asLocal(b, rvalue, lvalue.getType())
       )
     );
     return rvalue;
@@ -265,7 +265,7 @@ aspect Expressions {
           soot.Local base = base(b);
           ArrayList list = new ArrayList();
           list.add(base);
-          list.add(asLocal(b, rvalue));
+          list.add(asLocal(b, rvalue, lvalue.getType()));
           return asLocal(b, Jimple.v().newStaticInvokeExpr(f.createAccessorWrite(fieldQualifierType()).sootRef(), list));
         }
       }

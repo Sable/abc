@@ -15,7 +15,7 @@ aspect IntertypeJimple {
       soot.Local base = base(b);
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
       ArrayList list = new ArrayList();
-      list.add(asLocal(b, rvalue));
+      list.add(asLocal(b, rvalue, lvalue.getType()));
       return asLocal(b, Jimple.v().newInterfaceInvokeExpr(base, f.createInterfaceSetterImplementation(decl().hostType()).sootRef(), list));
     }
     return Expressions.VarAccess.emitStore(b, lvalue, rvalue);

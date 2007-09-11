@@ -241,7 +241,8 @@ aspect AdviceCodegen {
 
     soot.Value result = Jimple.v().newStaticInvokeExpr(ref, args);
 
-    return spec.returnType().isVoid() ? result : asLocal(b, result);
+    return spec.returnType().isVoid() ?
+                result : asLocal(b, result, type().getSootType());
   }
 
   syn lazy SootMethod AroundSpec.proceedMethod()

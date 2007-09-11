@@ -326,6 +326,12 @@ aspect EmitJimple {
     if(v instanceof soot.Local) return (soot.Local)v;
     return b.newTemp(v);
   }
+  public soot.Local ASTNode.asLocal(Body b, soot.Value v, Type t) {
+    if(v instanceof soot.Local) return (soot.Local)v;
+    soot.Local local = b.newTemp(t);
+    b.add(Jimple.v().newAssignStmt(local, v));
+    return local;
+  }
   public soot.Value ASTNode.asRValue(Body b, soot.Value v) {
     if(v instanceof soot.Local) return v;
     if(v instanceof soot.jimple.Constant) return v;
@@ -384,6 +390,9 @@ aspect EmitJimple {
       return local;
     }
     public Local newTemp(soot.Value v) {
+      if (v == NullConstant.v())
+        throw new UnsupportedOperationException(
+            "Cannot create a temporary local for null literal");
       Local local = newTemp(v.getType());
       if(v instanceof soot.jimple.ParameterRef) {
         add(Jimple.v().newIdentityStmt(local, (soot.jimple.ParameterRef)v));
@@ -633,7 +642,8 @@ aspect EmitJimple {
           if(!f.isStatic() && f.hasInit()) {
             soot.Local base = b.emitThis(hostType());
             Local l = asLocal(b,
-              f.getInit().type().emitCastTo(b, f.getInit(), f.type()) // AssignConversion
+              f.getInit().type().emitCastTo(b, f.getInit(), f.type()), // AssignConversion
+              f.type().getSootType()
             );
             b.setLine(this);
             b.add(Jimple.v().newAssignStmt(
