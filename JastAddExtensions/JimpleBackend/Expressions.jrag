@@ -676,10 +676,10 @@ aspect Expressions {
   public soot.Value CastExpr.eval(Body b) {
     if(isConstant())
       return emitConstant(constant());
-    return getExpr().type().emitCastTo(b,
-      asLocal(b, getExpr().eval(b), type().getSootType()),
-      type()
-    );
+    soot.Value operand = getExpr().eval(b);
+    if (operand == NullConstant.v())
+        return getExpr().type().emitCastTo(b, operand, type());
+    return getExpr().type().emitCastTo(b, asLocal(b, operand), type());
   }
 
   public static soot.Value ASTNode.emitConstant(Constant constant) {
