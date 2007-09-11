@@ -74,6 +74,9 @@ aspect Advice
   // semantic checks for proceed-calls
   //
 
+  eq Proceed.type() = aroundSpec() != null ? aroundSpec().returnType()
+                                           : unknownType();
+
   public void Proceed.typeCheck() {
     AroundSpec spec = aroundSpec();
     if (spec == null)

@@ -467,6 +467,7 @@ aspect PatternsCodegen
     // attribute - all we have to do here is recurse
     eq SubtypeNamePattern.matchesType(SootClass c) =
         getPattern().matchesType(c);
+    eq ArraytypeNamePattern.matchesType(SootClass c) = false;
 
     syn boolean Pattern.matchesType(Type t) = false;
     eq SimpleNamePattern.matchesType(Type t) {
@@ -495,6 +496,14 @@ aspect PatternsCodegen
     // attribute - all we have to do here is recurse
     eq SubtypeNamePattern.matchesType(Type t) =
         getPattern().matchesType(t);
+    eq ArraytypeNamePattern.matchesType(Type t) {
+        if (! (t instanceof ArrayType))
+            return false;
+        ArrayType arraytype = (ArrayType) t;
+        return arraytype.numDimensions == getNumDims()
+               && getPattern().matchesType(arraytype.baseType);
+    }
+        
 
     syn boolean Pattern.matchesType(TypeDecl t) = false;
     eq SimpleNamePattern.matchesType(TypeDecl t) {
@@ -515,6 +524,9 @@ aspect PatternsCodegen
     // attribute - all we have to do here is recurse
     eq SubtypeNamePattern.matchesType(TypeDecl t) =
         getPattern().matchesType(t);
+    eq ArraytypeNamePattern.matchesType(TypeDecl t) =
+        getNumDims() == t.dimension()
+        && getPattern().matchesType(t.elementType());
 
 
 
