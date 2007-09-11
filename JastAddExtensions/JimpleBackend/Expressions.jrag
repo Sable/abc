@@ -677,7 +677,7 @@ aspect Expressions {
     if(isConstant())
       return emitConstant(constant());
     return getExpr().type().emitCastTo(b,
-      asLocal(b, getExpr().eval(b)),
+      asLocal(b, getExpr().eval(b), type().getSootType()),
       type()
     );
   }
