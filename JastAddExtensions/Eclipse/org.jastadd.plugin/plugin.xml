@@ -55,22 +55,30 @@
            path="additions">
         <separator name="group1"/>
         </menu>
-        
+
         <action
-           id="org.jastadd.plugin.editor.jastAddFindDeclAction" 
-           label="Find declaration"
+           id="org.jastadd.plugin.editor.jastAddFindImplAction" 
+           label=" Find implements "
            menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
-           class="org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate"
-           definitionId="org.jastadd.plugin.findDeclaration"> 
+           class="org.jastadd.plugin.editor.actions.FindImplementsActionDelegate"
+           definitionId="org.jastadd.plugin.search.implements"> 
         </action> 
 
         <action
            id="org.jastadd.plugin.editor.jastAddFindRefAction" 
-           label="Find references"
+           label=" Find references "
            menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
            class="org.jastadd.plugin.editor.actions.FindReferencesActionDelegate"
            definitionId="org.jastadd.plugin.search.references"> 
         </action> 
+        
+        <action
+           id="org.jastadd.plugin.editor.jastAddFindDeclAction" 
+           label=" Find declaration "
+           menubarPath="org.jastadd.plugin.editor.JastAddMenu/group1" 
+           class="org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate"
+           definitionId="org.jastadd.plugin.search.declaration"> 
+        </action>
         
       </viewerContribution>
    </extension>
@@ -227,22 +235,7 @@
 		class="org.jastadd.plugin.search.JastAddSearchResultPage">
 	</viewPage>
 	</extension>
-	
-	<!--
-	
-	<extension point="org.eclipse.search.searchPages">
-   	<page id="org.jastadd.plugin.search.JastAddSearchPage"
-		label="JastAdd Search Page"
-		sizeHint="460,160"
-		extensions="java:90, jav:90"
-		showScopeSection="true"
-		canSearchEnclosingProjects="true"
-		class="org.jastadd.plugin.search.JastAddSearchPage">
-	</page>
-	
-    </extension>
-    -->
-    
+	    
    <extension
          point="org.eclipse.ui.commands">
       <!-- categories -->
@@ -253,18 +246,48 @@
       </category>
       <!-- commands -->
       <command
+            name="JastAdd Declaration Search"
+            description="JastAdd Declaration Search"
+            categoryId="org.jastadd.plugin.category.search"
+            id="org.jastadd.plugin.search.declaration">
+      </command>
+      <command
             name="JastAdd Reference Search"
             description="JastAdd Reference Search"
             categoryId="org.jastadd.plugin.category.search"
             id="org.jastadd.plugin.search.references">
       </command>
+      <command
+            name="JastAdd Implements Search"
+            description="JastAdd Implements Search"
+            categoryId="org.jastadd.plugin.category.search"
+            id="org.jastadd.plugin.search.implements">
+      </command>
    </extension>
    
    <extension point = "org.eclipse.ui.bindings">
-		<key sequence = "F3"
+   		<key sequence = "F3"
+			commandId = "org.jastadd.plugin.search.declaration"
+			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId = "#TextEditorContext"/>
+   
+   		<key sequence = "F4"
 			commandId = "org.jastadd.plugin.search.references"
 			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
 			contextId = "#TextEditorContext"/>
+   
+		<key sequence = "F5"
+			commandId = "org.jastadd.plugin.search.implements"
+			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId = "#TextEditorContext"/>
 	</extension>
+	
+	<!--
+	<extension point = "org.eclipse.ui.actionSets">
+ 		<actionSet id = "org.jastadd.plugin.search.actionSet"
+ 				label = "JastAdd Search Actions">
+ 		</actionSet>
+	</extension>
+	-->
    
 </plugin>

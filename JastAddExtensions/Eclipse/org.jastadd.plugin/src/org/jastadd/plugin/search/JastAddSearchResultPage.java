@@ -1,15 +1,17 @@
 package org.jastadd.plugin.search;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.ISearchResultPage;
 import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 import AST.ASTNode;
@@ -41,7 +43,7 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		
 	private class JastAddSearchContentProvider implements ITreeContentProvider {
 
-		private JastAddSearchResult result = null;
+		private Object[] content = null;
 		
 		public Object[] getChildren(Object parentElement) {
 			if(parentElement instanceof ASTNode) {
@@ -52,7 +54,7 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		}
 
 		public void clear() {
-			result = null;
+			content = null;
 		}
 
 		public Object getParent(Object element) {
@@ -75,8 +77,7 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		}
 
 		public Object[] getElements(Object inputElement) {
-			return new String[] {"Result1", "Result2"};
-			//return fInput == null ? new Object[0] : result.getResults().toArray();
+			return content;
 		}
 
 		public void dispose() {
@@ -85,19 +86,16 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if (newInput instanceof JastAddSearchResult) {
-				result = (JastAddSearchResult)newInput;
+				content = ((JastAddSearchResult)newInput).getElements();
 			}			
 		}
 
 		public void elementsChanged(Object[] objects) {
-			System.out.println("JastAddSearchContentProvider: elementsChanged");
-		}
-		
-		public void newSearchResult(JastAddSearchResult result) {
-			this.result = result;
+			content = objects;
 		}
 	}
 	
+	/*
 	private class JastAddSearchLabelProvider extends LabelProvider {
 		public String getText(Object element) {
 			if (element instanceof String) {
@@ -106,7 +104,19 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 			return "";
 		}
 	}
+	*/
 	
+	private class JastAddDoubleClickListener implements IDoubleClickListener {
+		public void doubleClick(DoubleClickEvent event) {
+			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+			Object element = selection.getFirstElement();
+
+			if(element instanceof ASTNode) {
+				ASTNode node = (ASTNode)element;
+				EditorTools.openFile(node);
+			}
+		}
+	}
 	
 	@Override
 	protected TreeViewer createTreeViewer(Composite parent) {
@@ -117,45 +127,11 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 	@Override
 	protected void configureTreeViewer(TreeViewer viewer) {
 		viewer.setContentProvider(new JastAddSearchContentProvider());
-		viewer.setLabelProvider(new JastAddSearchLabelProvider());
+		viewer.setLabelProvider(new JastAddLabelProvider());
+		viewer.addDoubleClickListener(new JastAddDoubleClickListener());
 		if (fInput != null)
 			viewer.setInput(fInput);
 	}
-	
-	public void setInput(ISearchResult newSearch, Object viewState) {
-		/*
-		if (newSearch != null && !(newSearch instanceof AbstractTextSearchResult))
-			return; // ignore
-		
-		AbstractTextSearchResult oldSearch= fInput;
-		if (oldSearch != null) {
-			disconnectViewer();
-			oldSearch.removeListener(fListener);
-			AnnotationManagers.removeSearchResult(getSite().getWorkbenchWindow(), oldSearch);
-		}
-		fInput= (AbstractTextSearchResult) newSearch;
-		
-		if (fInput != null) {
-			AnnotationManagers.addSearchResult(getSite().getWorkbenchWindow(), fInput);
-			
-			fInput.addListener(fListener);
-			connectViewer(fInput);
-			if (viewState instanceof ISelection)
-				fViewer.setSelection((ISelection) viewState, true);
-			else
-				navigateNext(true);
-			
-			updateBusyLabel();
-			turnOffDecoration();
-			scheduleUIUpdate();
-		}
-		*/
-		if (newSearch instanceof JastAddSearchResult) {
-			fInput = (JastAddSearchResult)newSearch;
-			fContentProvider.newSearchResult(fInput);
-			fViewer.expandAll();
-		} else fInput = null;
-	}	
 
 	@Override
 	protected void elementsChanged(Object[] objects) {

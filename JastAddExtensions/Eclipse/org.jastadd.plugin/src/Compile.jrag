@@ -4,6 +4,7 @@ aspect Compile {
     //flushCache();
     lookupType_String_String_values = new HashMap();
     hasPackage_String_values = new HashMap();
+    collect_contributors_TypeDecl_implementors = false;
   
     //System.out.println("Flush to rebuild " + name);
     String suffix = org.jastadd.plugin.JastAddModel.DUMMY_SUFFIX;

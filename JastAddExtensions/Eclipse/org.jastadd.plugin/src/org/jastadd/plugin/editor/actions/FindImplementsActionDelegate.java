@@ -1,7 +1,6 @@
 package org.jastadd.plugin.editor.actions;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
@@ -13,24 +12,37 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.JastAddModel;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
 import AST.ASTNode;
 import AST.TypeDecl;
 
+public class FindImplementsActionDelegate implements IEditorActionDelegate {
 
-public class FindDeclarationActionDelegate implements IEditorActionDelegate {
-	
 	private IEditorPart editorPart;
 	private ASTNode selectedNode;
-
 	
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		editorPart = targetEditor;
 	}
-	
+
+	public void run(IAction action) {
+		if (editorPart != null) {
+			
+			if (selectedNode != null) {
+				
+				Collection implementors = selectedNode.findImplementors();
+				StringBuffer s = new StringBuffer();
+				s.append("Find implementors of ");
+				if(selectedNode instanceof TypeDecl)
+					s.append(((TypeDecl)selectedNode).typeName());
+				JastAddSearchQuery query = new JastAddSearchQuery(implementors, s.toString());
+				NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);				
+			}
+		}
+	}
+
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (selection instanceof TextSelection) {
 			TextSelection textSelection = (TextSelection) selection;
@@ -42,26 +54,4 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 			}
 		}
 	}
-
-	public void run(IAction action) {
-		if (editorPart != null) {
-			
-			if (selectedNode != null) {
-				// Find the file and position of the declaration node
-				ASTNode target = selectedNode.declaration();
-				if(target != null) {
-					Collection declarations = new LinkedList();
-					declarations.add(target);
-					EditorTools.openFile(target);
-					StringBuffer s = new StringBuffer();
-					s.append("Find declaration of ");
-					if(selectedNode instanceof TypeDecl)
-						s.append(((TypeDecl)selectedNode).typeName());
-					JastAddSearchQuery query = new JastAddSearchQuery(declarations, s.toString());
-					NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);
-				}
-			}
-		}
-	}
-	
 }
