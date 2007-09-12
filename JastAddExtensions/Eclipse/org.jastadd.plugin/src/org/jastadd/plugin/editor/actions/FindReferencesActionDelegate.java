@@ -44,13 +44,14 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate {
 		if (editorPart != null) {
 			
 			if (selectedNode != null) {
-				/*
+				
 				Collection implementors = selectedNode.findImplementors();
 				for(Iterator iter = implementors.iterator(); iter.hasNext(); ) {
 					TypeDecl typeDecl = (TypeDecl)iter.next();
 					System.out.println(typeDecl.typeName());
 				}
-				*/
+				
+				JastAddSearchResult result = new JastAddSearchResult(implementors);
 				// Find the files and positions of referencing nodes
 				/*
 				ASTNode target = selectedNode.declaration();
@@ -73,7 +74,7 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate {
 					}
 				}
 				*/
-				activateSearchView(true);
+				activateSearchView(true, result);
 				
 			}
 		}
@@ -91,7 +92,7 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate {
 		}
 	}
 	
-	public ISearchResultViewPart activateSearchView(boolean useForNewSearch) {
+	public ISearchResultViewPart activateSearchView(boolean useForNewSearch, JastAddSearchResult result) {
 		IWorkbenchPage activePage= SearchPlugin.getActivePage();
 		
 		String defaultPerspectiveId= NewSearchUI.getDefaultPerspectiveId();
@@ -109,7 +110,8 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate {
 		if (activePage != null) {
 			try {
 				
-				ISearchResultViewPart viewPart= findLRUSearchResultView(activePage, useForNewSearch);
+				ISearchResultViewPart viewPart = findLRUSearchResultView(activePage, useForNewSearch, result);
+				
 				/*
 				String secondaryId= null;
 				if (viewPart == null) {
@@ -128,7 +130,7 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate {
 		return null;
 	}
 	
-	private ISearchResultViewPart findLRUSearchResultView(IWorkbenchPage page, boolean avoidPinnedViews) {
+	private ISearchResultViewPart findLRUSearchResultView(IWorkbenchPage page, boolean avoidPinnedViews, JastAddSearchResult result) {
 		/*
 		boolean viewFoundInPage= false;
 		for (Iterator iter= fLRUSearchViews.iterator(); iter.hasNext();) {
@@ -148,7 +150,7 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate {
 				IViewReference curr= viewReferences[i];
 				if (NewSearchUI.SEARCH_VIEW_ID.equals(curr.getId()) && page.equals(curr.getPage())) {
 					SearchView view= (SearchView) curr.getView(true);
-					view.showSearchResult(new JastAddSearchResult());
+					view.showSearchResult(result);
 					if (view != null && (!avoidPinnedViews || !view.isPinned())) {
 						return view;
 					}
