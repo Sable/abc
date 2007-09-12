@@ -522,7 +522,6 @@ public class IndexedCodeGenHelper extends CodeGenHelper
         Chain units = newChain();
         Local updated_base = getLabelBase(body, units, this_local);
 
-        callResetMethod(body, units, updated_base);
         insertBeforeReturn(units, body.getUnits());
     }
 
@@ -595,8 +594,13 @@ public class IndexedCodeGenHelper extends CodeGenHelper
 
         callMergeMethod(body, units, label);
 
-        if (is_final && !tm.isPerThread())
-            genLockRelease(body, units, label, true);
+        // cleanup code
+        // (this method is always called last on the final state)
+        if (is_final) {
+            if (!tm.isPerThread())
+                genLockRelease(body, units, label, true);
+            callResetMethod(body, units, label_base);
+        }
 
         insertBeforeReturn(units, body.getUnits());
     }
