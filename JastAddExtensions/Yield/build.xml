@@ -3,7 +3,7 @@
        build (default) - generates java files and compiles them
        clean           - removes all generated files and class files
 -->
-<project name="Java 5 Bytecode backend" default="build">
+<project name="Java 5 + yield" default="build">
 
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
@@ -115,9 +115,11 @@
 	<!-- generate the parser phase 1, create a full .lalr specification from fragments-->
 		<echo message = "Running parser phase 1"/>
 		<concat destfile="parser/JavaParser.all" binary="true" force="false">
-	    <fileset dir="../Java1.4Frontend">
-	      <include name="parser/java14.parser"/>
-	    </fileset>
+      <filelist dir="../Java1.4Frontend">
+	      <file name="parser/preamble.parser"/>
+	      <file name="parser/java14.parser"/>
+	      <file name="parser/errorrecovery.parser"/>
+	    </filelist>
 	    <fileset dir="../Java1.5Frontend">
 	      <include name="*.parser"/>
 	    </fileset>
