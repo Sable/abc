@@ -53,9 +53,6 @@ public class EditorTools {
 		if (pathName.endsWith(".class")) {
 			pathName = pathName.replace(".class", ".java");
 		} 
-		else if(pathName.endsWith(JastAddModel.DUMMY_SUFFIX)) {
-			pathName = pathName.substring(0, pathName.length() - JastAddModel.DUMMY_SUFFIX.length());
-		}
 		boolean finishedTrying = false;
 		while (!finishedTrying) {
 			if (pathName.endsWith(".java")) {

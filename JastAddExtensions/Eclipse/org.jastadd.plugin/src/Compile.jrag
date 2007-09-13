@@ -6,25 +6,22 @@ aspect Compile {
     hasPackage_String_values = new HashMap();
     collect_contributors_TypeDecl_implementors = false;
   
-    //System.out.println("Flush to rebuild " + name);
-    String suffix = org.jastadd.plugin.JastAddModel.DUMMY_SUFFIX;
-  	if(name != null && name.endsWith(suffix))
-  	  name = name.substring(0, name.length() - suffix.length());
-  	  
   	if(name != null) {
   	  files.remove(name);
-  	  files.remove(name + suffix);
   	}
   	  
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
     	CompilationUnit cu = getCompilationUnit(i);
     	String pathName = cu.pathName();
-    	if(!cu.fromSource())
+    	if(!cu.fromSource()) {
     		list.add(cu);
-    	else if(name != null && !name.equals(pathName) && !pathName.endsWith(suffix)) {
+    		files.remove(pathName);
+    	}
+    	else if(name != null && !name.equals(pathName)) {
     	    //cu.flushAttributes();
     		list.add(cu);
+    		files.remove(pathName);
     		//System.out.println("Keeping " + relName);
     	}
     }
@@ -35,5 +32,19 @@ aspect Compile {
     for(int i = 0; i < getNumChild(); i++)
       if(getChildNoTransform(i) != null)
         getChildNoTransform(i).flushAttributes();
+  }
+  
+  public void Program.addSourceFile(String name, String contents) {
+    try {
+  	java.io.InputStream is = new java.io.ByteArrayInputStream(contents.getBytes());
+    CompilationUnit u = javaParser.parse(is, name);
+    is.close();
+       
+    u.setPathName(name);
+    u.setRelativeName(name);
+    u.setFromSource(true);
+    addCompilationUnit(u);
+    } catch(Exception e) {
+    }
   }
 }

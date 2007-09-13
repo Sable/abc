@@ -36,6 +36,8 @@ public class JastAddReconcilingStrategy implements IReconcilingStrategy, IReconc
 
 	public void initialReconcile() {
 		
+		JastAddModel.getInstance().updateProjectModel(document);
+		
 		fPositions.clear();
 		fPositions = JastAddModel.getInstance().getFoldingPositions(document);
 

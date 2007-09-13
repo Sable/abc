@@ -1,14 +1,13 @@
 package org.jastadd.plugin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
@@ -58,17 +57,12 @@ public class JastAddProject {
 	}
 
 	public ClassDecl[] getMainTypes() {
-		if (project != null) {
-		  if (program == null) {
-			  JastAddModel.getInstance().fullBuild(this);
-		  }
-		  return program.mainTypes();
-		}
-		return new ClassDecl[0];
+		return project != null ? getProgram().mainTypes() : new ClassDecl[0];
 	}
 	
-	
-	
+	public Program createProgram() {
+		return initProgram();
+	}
 	
 	private Program initProgram() {
         Program program = new Program();
@@ -90,60 +84,20 @@ public class JastAddProject {
 		//program.addKeyOption("-verbose");
 		//program.addOptions(new String[] { "-verbose" });
 		
-		IWorkspace workspace = project.getWorkspace();
-		IWorkspaceRoot workspaceRoot = workspace.getRoot();
+		IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
 		
 		String workspacePath = workspaceRoot.getRawLocation().toOSString();			
 		String projectFullPath = project.getFullPath().toOSString();
 		
-		String[] paths = new String[2];
-		paths[0] = "-classpath";
-		paths[1] = workspacePath + projectFullPath;
-		
-		program.addOptions(paths);
-		
+		program.addOptions(new String[] { "-classpath", workspacePath + projectFullPath });
+
 		try {
-			HashMap<String, IFile> pathToFileMap = new HashMap<String, IFile>();
-			addSourceFiles(program, project.members(), pathToFileMap);
-		} catch (CoreException e) {
+			Map<String,IFile> map = JastAddModel.sourceMap(project);
+			for(String fileName : map.keySet())
+				program.addSourceFile(fileName);
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-
-		
 		return program;
 	}
-
-	/**
-	 * Adds source files ending with ".java" to the given Program node. 
-	 * @param program
-	 * @param resources Array corresponding to the members of a project or folder.
-	 * @throws CoreException
-	 */
-	public static void addSourceFiles(Program program, IResource[] resources, HashMap<String,IFile> pathToFileMap)
-			throws CoreException {
-		
-		List<String> fileList = new ArrayList<String>();
-		
-		for (int i = 0; i < resources.length; i++) {
-			IResource res = resources[i];
-			if (res instanceof IFile && res.getName().endsWith(".java")) {
-				IFile file = (IFile) res;
-				String filePath = file.getRawLocation().toOSString();
-				fileList.add(filePath);
-				pathToFileMap.put(filePath, file);
-				
-			} else if (res instanceof IFolder) {
-				IFolder folder = (IFolder) res;
-				addSourceFiles(program, folder.members(), pathToFileMap);
-			}
-		}
-		
-		Object[] tmpObjs = fileList.toArray();
-		String[] stringObjs = new String[tmpObjs.length];
-		for (int k = 0; k < tmpObjs.length; k++) {
-			stringObjs[k] = (String) tmpObjs[k];
-		}
-		program.addOptions(stringObjs);
-	}
-
 }

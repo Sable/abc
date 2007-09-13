@@ -1,10 +1,12 @@
 package org.jastadd.plugin;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
@@ -75,88 +78,53 @@ public class JastAddModel {
 	}
 
 	
+	
 	/**
-	 * Fully builds a JastAdd project
-	 * @param jaProject The project to build
+	 * Update the model using the document instead of the compilation unit fileName.
+	 * @param document
+	 * @param fileName
+	 * @param project
+	 * @return
 	 */
-	public void fullBuild(JastAddProject jaProject) {
-		buildProject(jaProject, true);
-	}
-
-	public synchronized CompilationUnit buildDocument(IDocument document) {
-		IFile file = JastAddDocumentProvider.documentToFile(document);
-		if(file != null) {
-			String fileName = file.getRawLocation().toOSString();
-			IProject project = file.getProject();
-			return buildDocument(document, fileName, project);
-		}
-		throw new UnsupportedOperationException("Can only build documents that belong to a JastAdd project");
-	}
-	
-	
 	public synchronized CompilationUnit buildDocument(IDocument document, String fileName, IProject project) {
 		try {
-			StringBuffer buf = new StringBuffer(document.get());
-			new StructureModel(buf).doRecovery(0);
-
-			String pathName = fileName + DUMMY_SUFFIX; // if this suffix changes then code in Compile.jrag needs to change
-			FileWriter w = new FileWriter(pathName);
-			String modContent = buf.toString();
-			w.write(modContent, 0, modContent.length());
-			w.close();
-	
-			CompilationUnit cu = buildFile(project, pathName);
-			new File(pathName).delete();
-			return cu;
-		} catch (IOException e) {
-			e.printStackTrace();
+			updateProjectModel(document, fileName, project);
+			return getCompilationUnit(project, fileName);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Builds a single file without error checks.
+	 * Get the latest built compilation unit for a project document.
+	 * @param document
+	 * @return
+	 */
+	public CompilationUnit getCompilationUnit(IDocument document) {
+		IFile file = JastAddDocumentProvider.documentToFile(document);
+		if(file != null) {
+			return getCompilationUnit(file);
+		}
+		throw new UnsupportedOperationException("Can only get the current " +
+			"compilation unit for a document that belongs to a JastAdd project");
+	}
+
+	/**
+	 * Get the latest built compilation unit for a project file.
 	 * @param file
 	 * @return The Program node if successful, otherwise null
 	 */
-	public synchronized CompilationUnit buildFile(IFile file) {
+	public CompilationUnit getCompilationUnit(IFile file) {
 		try {
-			return buildFile(file.getProject(), file.getRawLocation().toOSString());
+			return getCompilationUnit(file.getProject(), file.getRawLocation().toOSString());
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	private ArrayList allSourceFiles(IProject project) {
-		ArrayList result = new ArrayList();
-		try {
-		  allSourceFiles(project.members(), result);
-		} catch (CoreException e) {
-		}
-		return result;
-	}
-	
-	private void allSourceFiles(IResource[] resources, Collection collection) {
-		for (int i = 0; i < resources.length; i++) {
-			IResource res = resources[i];
-			if (res instanceof IFile && res.getName().endsWith(".java")) {
-				IFile file = (IFile) res;
-				String filePath = file.getRawLocation().toOSString();
-				collection.add(filePath);
-			} else if (res instanceof IFolder) {
-				IFolder folder = (IFolder) res;
-				try {
-					allSourceFiles(folder.members(), collection);
-				} catch(CoreException e) {
-				}
-			}
-		}
-	}
-	
-	public CompilationUnit buildFile(IProject project, String filePath) {
+	public synchronized CompilationUnit getCompilationUnit(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
 		JastAddProject jaProject = getJastAddProject(project);
@@ -164,15 +132,7 @@ public class JastAddModel {
 			return null;
 		}
 
-
 		Program program = jaProject.getProgram();
-		program.files().clear();
-		program.files().addAll(allSourceFiles(project));
-		program.flushSourceFiles(filePath);
-		program.addOptions(new String[] { filePath });
-
-		compileFiles(program);
-
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 			CompilationUnit cu = (CompilationUnit)iter.next();
 			if(cu.fromSource()) {
@@ -184,6 +144,37 @@ public class JastAddModel {
 			}
 		}
 		return null;
+	}
+	
+	public void updateProjectModel(IDocument document) {
+		IFile file = JastAddDocumentProvider.documentToFile(document);
+		if(file == null) return;
+		
+		String fileName = file.getRawLocation().toOSString();
+
+		updateProjectModel(document, fileName, file.getProject());
+	}
+	
+	public synchronized void updateProjectModel(IDocument document, String fileName, IProject project) {
+		JastAddProject jaProject = getJastAddProject(project);
+		if (jaProject == null) return;
+
+		Program program = jaProject.getProgram();
+		program.files().clear();
+		Map<String,IFile> map = JastAddModel.sourceMap(project);
+		program.files().addAll(map.keySet());
+		// remove files already built and the current document from worklist
+		program.flushSourceFiles(fileName);
+		// build new files
+		for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+			String name = (String)iter.next();
+			program.addSourceFile(name);
+		}
+		// recover the current document
+		StringBuffer buf = new StringBuffer(document.get());
+		new StructureModel(buf).doRecovery(0);
+		// build the current document
+		program.addSourceFile(fileName, buf.toString());
 	}
 	
 	
@@ -226,48 +217,6 @@ public class JastAddModel {
 		return null;
 	}
 	
-	/**
-	 * Finds an ASTNode which corresponds to the position in the given IFile.
-	 * 
-	 * @param file
-	 * @param line
-	 * @param column
-	 * @return An ASTNode or null if no node was found.
-	 */
-	/*
-	public ASTNode findNodeInFile(IFile file, int line, int column) {
-
-		if (file == null)
-			return null;
-
-		//Program program = buildProject(file.getProject(), false);
-		CompilationUnit cu = buildFile(file);
-
-		if (cu == null)
-			return null;
-		
-		ASTNode node = findLocation(cu, line + 1, column + 1);
-		return node;
-	}
-	*/
-
-	/**
-	 * Returns classpath entries.
-	 * @return
-	 */
-	/* the JastAddProject object will handle build classpaths and user classpaths 
-	 * will be contained in the LaunchConfiguration
-	 *  
-	public String[] getClasspathEntries() {
-		String[] res = new String[classpathEntry.size()];
-		int i = 0;
-		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();i++) {
-			res[i] = (String)itr.next();
-		}
-		return res;
-	}
-	*/
-	
 	
    // ---- JastAddProject / Workspace stuff ----
 	
@@ -282,21 +231,68 @@ public class JastAddModel {
 	/**
 	 * Builds a JastAdd project with or without error checks
 	 * @param jaProject The project to build
-	 * @param doErrorChecks true of error checks should be made
 	 */
-	private synchronized void buildProject(JastAddProject jaProject, boolean doErrorChecks) {
-		Program program = jaProject.getProgram();
-		program.files().clear();
-		program.files().addAll(allSourceFiles(jaProject.getProject()));
-		program.flushSourceFiles(null);
-		IProject project = jaProject.getProject();
+	public synchronized void fullBuild(JastAddProject jaProject) {
+		// Build a new project from saved files only.
 		try {
-			HashMap<String, IFile> pathToFileMap = new HashMap<String, IFile>();
-			JastAddProject.addSourceFiles(program, project.members(), pathToFileMap);
+			Program program = jaProject.createProgram();
+			IProject project = jaProject.getProject();
+
 			deleteParseErrorMarkers(project.members());
-			compileFiles(program);
-			checkErrors(program, pathToFileMap, doErrorChecks, project);
+			deleteErrorMarkers(project.members());
+			
+			Map<String,IFile> map = sourceMap(project);
+			boolean build = true;
+			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+			    CompilationUnit unit = (CompilationUnit)iter.next();
+			    
+			    if(unit.fromSource()) {
+			    	
+			      Collection errors = unit.parseErrors();
+			      Collection warnings = new LinkedList();
+			      if(errors.isEmpty()) { // only run semantic checks if there are no parse errors
+			        unit.errorCheck(errors, warnings);
+			      }
+			      if(!errors.isEmpty())
+			    	  build = false;
+			      errors.addAll(warnings);
+			      if(!errors.isEmpty()) {
+			    	  for(Iterator i2 = errors.iterator(); i2.hasNext(); ) {
+			    		  Problem error = (Problem)i2.next();
+			    		  int line = error.line();
+			    		  int column = error.column();
+			    		  String message = error.message();
+			    		  IFile unitFile = map.get(error.fileName());
+			    		  int severity = IMarker.SEVERITY_INFO;
+			    		  if(error.severity() == Problem.Severity.ERROR)
+			    			  severity = IMarker.SEVERITY_ERROR;
+			    		  else if(error.severity() == Problem.Severity.WARNING)
+			    			  severity = IMarker.SEVERITY_WARNING;
+			    		  if(error.kind() == Problem.Kind.LEXICAL || error.kind() == Problem.Kind.SYNTACTIC) {
+			    			  addParseErrorMarker(unitFile, message, line, column, severity);
+			    		  }
+			    		  else if(error.kind() == Problem.Kind.SEMANTIC) {
+			        		  addErrorMarker(unitFile, message, line, severity);
+			    		  }
+			    	  }
+			      }
+			      if(build) {
+			    	  unit.java2Transformation();
+			    	  unit.generateClassfile();
+			      }
+			    }
+			}
+			/*
+			   // Use for the bootstrapped version of JastAdd
+			if(build) {
+				program.generateIntertypeDecls();
+				program.java2Transformation();
+				program.generateClassfile();
+			}
+			*/
 		} catch (CoreException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
@@ -407,152 +403,6 @@ public class JastAddModel {
 	
 	
 	/**
-	 * Checks for errors in a Program node
-	 * @param program
-	 */
-	private void checkErrors(Program program, HashMap<String,IFile> pathToFileMap, boolean doErrorChecks, IProject project) throws CoreException {
-		if (doErrorChecks) {
-			 deleteErrorMarkers(project.members());
-		}
-		
-		boolean build = doErrorChecks;
-		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-            CompilationUnit unit = (CompilationUnit)iter.next();
-            
-            if(unit.fromSource()) {
-            	
-              Collection errors = unit.parseErrors();
-              Collection warnings = new LinkedList();
-              if(doErrorChecks && errors.isEmpty()) { // only run semantic checks if there are no parse errors
-                unit.errorCheck(errors, warnings);
-              }
-              if(!errors.isEmpty())
-            	  build = false;
-              errors.addAll(warnings);
-              if(!errors.isEmpty()) {
-            	  for(Iterator i2 = errors.iterator(); i2.hasNext(); ) {
-            		  Problem error = (Problem)i2.next();
-            		  int line = error.line();
-            		  int column = error.column();
-            		  String message = error.message();
-            		  IFile unitFile = pathToFileMap.get(error.fileName());
-            		  int severity = IMarker.SEVERITY_INFO;
-            		  if(error.severity() == Problem.Severity.ERROR)
-            			  severity = IMarker.SEVERITY_ERROR;
-            		  else if(error.severity() == Problem.Severity.WARNING)
-            			  severity = IMarker.SEVERITY_WARNING;
-            		  if(error.kind() == Problem.Kind.LEXICAL || error.kind() == Problem.Kind.SYNTACTIC) {
-            			  addParseErrorMarker(unitFile, message, line, column, severity);
-            		  }
-            		  else if(error.kind() == Problem.Kind.SEMANTIC) {
-                		  addErrorMarker(unitFile, message, line, severity);
-            		  }
-            	  }
-              }
-              if(build) {
-            	  unit.java2Transformation();
-            	  unit.generateClassfile();
-              }
-            }
-		}
-		/*
-           // Use for the bootstrapped version of JastAdd
-		if(build) {
-			program.generateIntertypeDecls();
-			program.java2Transformation();
-			program.generateClassfile();
-		}
-		*/
-	}
-	
-	/**
-	 * Compiles all files added to the Program object.
-	 * @param program
-	 * @param pathToFileMap
-	 */
-	private void compileFiles(Program program) {
-		
-		/*System.out.println("List of files:");
-		for(int i = 0; i < program.getNumCompilationUnit(); i++) {
-			if(program.getCompilationUnit(i).fromSource()) {
-				System.out.println("reusing " + program.getCompilationUnit(i).pathName());
-			}
-		}
-		for (Iterator iter = program.files().iterator(); iter.hasNext();) {
-			System.out.println("adding " + iter.next());
-		}
-		*/
-		
-		Collection files = program.files();
-		try {
-			for (Iterator iter = files.iterator(); iter.hasNext();) {
-				String name = (String) iter.next();
-				// TODO Check name in some way -- potential IOException/NullPointerException
-				program.addSourceFile(name);
-			}
-		} 
-		catch (Throwable e) {
-		}
-	}
-
-	/**
-	 * Adds classpaths based on the given project to the given Program node.
-	 * @param program
-	 * @param project
-	 */
-	/*
-	 * The JastAddProject object will handle build classpaths
-	 *
-	private void fillInClasspaths(Program program, IProject project) {
-		
-		program.addKeyValueOption("-classpath");
-		//program.addKeyOption("-verbose");
-		//program.addOptions(new String[] { "-verbose" });
-		
-		IWorkspace workspace = project.getWorkspace();
-		IWorkspaceRoot workspaceRoot = workspace.getRoot();
-		
-		String workspacePath = workspaceRoot.getRawLocation().toOSString();			
-		String projectFullPath = project.getFullPath().toOSString();
-		
-		String[] paths = new String[2];
-		paths[0] = "-classpath";
-		paths[1] = workspacePath;
-		paths[1] += ":" + workspacePath + projectFullPath;
-		for (Iterator itr = classpathEntry.iterator(); itr.hasNext();) {
-			paths[1] += ":" + (String)itr.next();
-		}
-		
-		program.addOptions(paths);	
-	}
-	*/
-	
-	/**
-	 * Creates and initializes a Program node.
-	 * @return An initialized Program node.
-	 */
-	/* Moved to JastAddProject 
-	 * 
-	private Program initProgram() {
-		
-		Program program = new Program();
-		
-		program.initBytecodeReader(new bytecode.Parser());
-		program.initJavaParser(
-				new JavaParser() {
-					public CompilationUnit parse(java.io.InputStream is, String fileName) 
-					  throws java.io.IOException, beaver.Parser.Exception {
-						return new parser.JavaParser().parse(is, fileName);
-					}
-				}
-		);
-		program.initOptions();
-        
-		return program;
-	}
-	*/
-	
-	/**
 	 * Find location of a node in an abstract syntax tree based on the line and column
 	 * provided by an editor.
 	 * @param node
@@ -593,44 +443,6 @@ public class JastAddModel {
 		return null;
 	}
 
-	/**
-	 * Create a dummy file where the active line has been replaced with an empty
-	 * stmt.
-	 * 
-	 * @param document
-	 *            The current document.
-	 * @param modContent
-	 *            The modified content of the document
-	 * @return A reference to the dummy file, null if something failed
-	 */
-	public static IFile createDummyFile(IDocument document, String modContent) {
-		// Write modified file content to dummy file
-		IFile file = JastAddDocumentProvider.documentToFile(document);
-		String fileName = file.getRawLocation().toString();
-		String pathName = fileName + DUMMY_SUFFIX; // if this suffix changes then code in Compile.jrag needs to change
-		FileWriter w;
-		try {
-			w = new FileWriter(pathName);
-			w.write(modContent, 0, modContent.length());
-			w.close();
-	
-			// Create IFile corresponding to the dummy file
-			IPath path = URIUtil.toPath(new URI("file:/" + pathName));
-			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-					.findFilesForLocation(path);
-			if (files.length == 1) {
-				return files[0];
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	public static final String DUMMY_SUFFIX = ".dummy";
-
-	
 	public void getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd) {
 		StringBuffer buf = new StringBuffer(doc.get());
 		try {
@@ -686,10 +498,49 @@ public class JastAddModel {
 	}
 
 	public ArrayList<Position> getFoldingPositions(IDocument document) {
-		CompilationUnit cu = buildDocument(document);
+		try {
+		CompilationUnit cu = getCompilationUnit(document);
 		if (cu != null) {
 			return cu.foldingPositions(document);
 		}
+		} catch (Exception e) {
+			
+		}
 		return new ArrayList<Position>();
+	}
+
+	/**
+	 * A map from source files ending with ".java" to IFiles.
+	 * @param resources
+	 * @return
+	 * @throws CoreException
+	 */
+	public static Map<String, IFile> sourceMap(IProject project) {
+		HashMap<String, IFile> map = new HashMap<String,IFile>();
+		try {
+			JastAddModel.buildSourceMap(project.members(), map);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+	/**
+	 * Populate map with entries mapping java source file names to IFiles. 
+	 * @param resources
+	 * @param sourceMap
+	 * @throws CoreException
+	 */
+	public static void buildSourceMap(IResource[] resources, Map<String,IFile> sourceMap) throws CoreException {
+		for (int i = 0; i < resources.length; i++) {
+			IResource res = resources[i];
+			if (res instanceof IFile && res.getName().endsWith(".java")) {
+				IFile file = (IFile) res;
+				String fileName = file.getRawLocation().toOSString();
+				sourceMap.put(fileName, file);
+			} else if (res instanceof IFolder) {
+				IFolder folder = (IFolder) res;
+				buildSourceMap(folder.members(), sourceMap);
+			}
+		}
 	}
 }

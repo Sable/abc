@@ -36,7 +36,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
 			if(file.getFileExtension().equals("java")) {
-				ASTNode node = JastAddModel.getInstance().buildFile(file);
+				ASTNode node = JastAddModel.getInstance().getCompilationUnit(file);
 				return node.outlineChildren().toArray();
 			}
 		}
@@ -72,7 +72,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			IFileEditorInput input = (IFileEditorInput)element;
 			IFile file = input.getFile();
 			IDocument document = JastAddDocumentProvider.fileToDocument(file);
-			ASTNode content = JastAddModel.getInstance().buildDocument(document);
+			ASTNode content = JastAddModel.getInstance().getCompilationUnit(document);
 			if(content != null)
 				return content.outlineChildren().toArray();
 		}
