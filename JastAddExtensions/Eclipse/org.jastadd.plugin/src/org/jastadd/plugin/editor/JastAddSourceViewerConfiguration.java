@@ -1,7 +1,6 @@
 package org.jastadd.plugin.editor;
 
 import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -17,16 +16,8 @@ import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
@@ -34,11 +25,8 @@ import org.jastadd.plugin.editor.highlight.JastAddScanner;
 
 public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration {
 	
-	private JastAddEditor editor;
-	
-	public JastAddSourceViewerConfiguration(JastAddEditor editor) {
+	public JastAddSourceViewerConfiguration() {
 		super();
-		this.editor = editor;
 	}
 	
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
@@ -84,11 +72,9 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		};
 	}
 	
-	@Override
-    public IReconciler getReconciler(ISourceViewer sourceViewer)
+	@Override public IReconciler getReconciler(ISourceViewer sourceViewer)
     {
         JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy();
-        strategy.setEditor(editor);
         MonoReconciler reconciler = new MonoReconciler(strategy, false);
         
         return reconciler;

@@ -134,6 +134,7 @@
     <delete dir="beaver"/>
     <delete dir="bytecode"/>
     <delete dir="parser"/>
+    <delete dir="scanner"/>
 </target>
 
 <target name="jar" depends="build">
