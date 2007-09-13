@@ -24,16 +24,18 @@ import AST.TypeDecl;
 public class FindReferencesActionDelegate implements IEditorActionDelegate, IWorkbenchWindowActionDelegate {
 
 	private IEditorPart editorPart;
-	private ASTNode selectedNode;
+	private TextSelection selection;
 	
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		editorPart = targetEditor;
 	}
 
 	public void run(IAction action) {
-		if (editorPart != null) {
-			
-			if (selectedNode != null) {
+		if (editorPart != null && editorPart.getEditorInput() instanceof IFileEditorInput) {
+			IFileEditorInput fileEditorInput = (IFileEditorInput)editorPart.getEditorInput();
+			IFile file = fileEditorInput.getFile();
+			if(selection != null && file != null) {
+				ASTNode selectedNode = JastAddModel.getInstance().findNodeInDocument(file, selection.getOffset());
 				
 				Collection references = selectedNode.findReferences();
 				StringBuffer s = new StringBuffer();
@@ -48,13 +50,7 @@ public class FindReferencesActionDelegate implements IEditorActionDelegate, IWor
 
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (selection instanceof TextSelection) {
-			TextSelection textSelection = (TextSelection) selection;
-			IEditorInput editorInput = editorPart.getEditorInput();
-			if (editorInput instanceof IFileEditorInput) {
-				IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
-				IFile file = fileEditorInput.getFile();
-				selectedNode = JastAddModel.getInstance().findNodeInDocument(file, textSelection.getOffset());
-			}
+			this.selection = (TextSelection) selection;
 		}
 	}
 
