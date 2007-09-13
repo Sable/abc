@@ -42,7 +42,56 @@ aspect Pointcuts
     eq PointcutDecl.getParameter(int i).isPointcutVariable() = true;
     eq PointcutDecl.getImplicit(int i).isPointcutVariable() = true;
 
+
+
     eq IfPointcutExpr.getExpr().nameType() = NameType.EXPRESSION_NAME;
+
+    // Is a pointcut empty?
+    syn boolean PointcutExpr.isEmpty() = false;
+    eq EmptyPointcutExpr.isEmpty() = true;
+
+    // check that variables used in an if-pointcut are bound --- not
+    // just by the whole pointcut, but within the containing cflow
+    public void IfPointcutExpr.typeCheck()
+    {
+        super.typeCheck();
+        Iterator i = pointcutFormals().iterator();
+        while (i.hasNext()) {
+            ParameterDeclaration param = (ParameterDeclaration) i.next();
+            if (!param.isImplicit() && this.refersTo(param) &&
+                !bindsInCurrentCflow(param.getID()))
+            {
+                error("Pointcut formal " + param.getID() +
+                      " is not bound within the enclosing cflow:" +
+                      " it cannot be used within this if(..)");
+            }
+        }
+    }
+
+    inh boolean PointcutExpr.bindsInCurrentCflow(String name);
+    eq AdviceDecl.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq PointcutDecl.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq DeclareSoft.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq DeclareWarning.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq DeclareError.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq PerTarget.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq PerThis.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq PerCflow.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq PerCflowBelow.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+    eq CflowPointcutExpr.getPointcut().bindsInCurrentCflow(String name) =
+        getPointcut().binds(name) > 0;
+    eq CflowBelowPointcutExpr.getPointcut().bindsInCurrentCflow(String name) =
+        getPointcut().binds(name) > 0;
+
 
 
     // The advice/pointcut formal parameters should be visible
@@ -123,7 +172,7 @@ aspect Pointcuts
         while (i.hasNext()) {
             PointcutDecl decl = (PointcutDecl) i.next();
             if (decl.isAbstract())
-                abstr = SimpleSet.emptySet.add(decl);
+                abstr = abstr.add(decl);
             else
                 concrete = concrete.add(decl);
         }
@@ -137,9 +186,9 @@ aspect Pointcuts
     {
         SimpleSet decls = decls();
         if (decls.size() == 0)
-            error("cannot find pointcut " + name());
+            error("Cannot find pointcut " + name());
         else if (decls.size() > 1)
-            error("found multiple definitions of pointcut " + name());
+            error("Ambiguous reference to pointcut " + name());
     }
 
     inh SimpleSet PointcutAccess.lookupPointcut(String name);
@@ -168,12 +217,15 @@ aspect Pointcuts
             if (decls.size() > 0)
                 return decls;
         }
-        return SimpleSet.emptySet;
+        return lookupInheritedPointcut(name);
     }
 
-    eq ClassDecl.lookupMemberPointcut(String name)
+    syn SimpleSet TypeDecl.lookupInheritedPointcut(String name) =
+        SimpleSet.emptySet;
+
+    eq ClassDecl.lookupInheritedPointcut(String name)
     {
-        SimpleSet decls = super.lookupMemberPointcut(name);
+        SimpleSet decls = SimpleSet.emptySet;
 
         if (hasSuperclass()) {
             Iterator i = superclass().lookupMemberPointcut(name).iterator();
@@ -190,14 +242,11 @@ aspect Pointcuts
         }
 
         return decls;
-        // hasSuperclass(), superclass(), interfacesIterator()
     }
 
-    // InterfaceDecl
-    // superInterfacesIterator()
-    eq InterfaceDecl.lookupMemberPointcut(String name)
+    eq InterfaceDecl.lookupInheritedPointcut(String name)
     {
-        SimpleSet decls = super.lookupMemberPointcut(name);
+        SimpleSet decls = SimpleSet.emptySet;
 
         Iterator i = superinterfacesIterator();
         while (i.hasNext()) {
@@ -220,6 +269,240 @@ aspect Pointcuts
     }
 
     eq PointcutAccess.dumpString() = super.dumpString() + " " + decl().name();
+
+    
+    // check for overriding pointcuts with the wrong number/types of parameters
+    public void PointcutDecl.overrideParameterCheck()
+    {
+        Iterator i = hostType().lookupInheritedPointcut(name()).iterator();
+        while (i.hasNext()) {
+            PointcutDecl decl = (PointcutDecl) i.next();
+            if (differentParams(decl))
+                error("The pointcut " + hostType().typeName() + "." + name()
+                      + " cannot override definition in "
+                      + decl.hostType().typeName() 
+                      + " because parameter types differ.");
+                     
+        }
+    }
+
+    syn boolean PointcutDecl.differentParams(PointcutDecl other)
+    {
+        if (getNumParameter() != other.getNumParameter())
+            return true;
+        for (int i = 0 ; i < getNumParameter(); i++)
+            if (!getParameter(i).type().equals(other.getParameter(i).type()))
+                return true;
+        return false;
+    }
+
+
+    public void PointcutDecl.checkModifiers()
+    {
+        super.checkModifiers();
+        if (isAbstract()) {
+            if (!hostType().isAspectDecl())
+                error("Abstract pointcuts are only allowed in aspects.");
+            else if (!hostType().isAbstract())
+                error("Pointcut " + hostType().typeName() + "." + name() +
+                      " cannot be abstract because " + hostType().typeName() +
+                      " is not abstract.");
+
+            if (!getPointcutExpr().isEmpty())
+                error("The pointcut " + hostType().typeName() + "." + name() +
+                      " is abstract but has a body.");
+        }
+        if (hostType().isInterfaceDecl() && (isProtected() || isPrivate()))
+            error("Pointcuts in interfaces must be public.");
+
+        // check that this pointcut is not overriding another pointcut
+        // that has stronger access privileges
+        Iterator i = hostType().lookupInheritedPointcut(name()).iterator();
+        while (i.hasNext()) {
+            PointcutDecl decl = (PointcutDecl) i.next();
+            if (weakerAccessPrivilegesThan(decl))
+                error("The pointcut " + hostType().typeName() + "." + name() +
+                      " cannot override " + decl.hostType().typeName() + "." +
+                      decl.name() + " with weaker access privileges");
+        }
+    }
+
+    syn boolean PointcutDecl.weakerAccessPrivilegesThan(PointcutDecl other)
+    {
+        // overriding public with non-public
+        if (other.isPublic() && !isPublic()) return true;
+        // overriding protected with non-public non-protected
+        if (other.isProtected() && !isPublic() && !isProtected()) return true;
+        // overriding package scope with private
+        if (!other.isPrivate() && !other.isProtected() && !other.isPublic()
+            && isPrivate()) return true;
+        return false;
+    }
+
+    public void PointcutDecl.nameCheck()
+    {
+        super.nameCheck();
+        implicitNameCheck();
+        circularNameCheck();
+        if (hostType().lookupMemberPointcut(name()).iterator().next() != this)
+            error("Duplicate definition of pointcut " + name() + ".");
+    }
+
+
+    // Check for cycles in named pointcuts
+    public void PointcutDecl.circularNameCheck()
+    {
+        if(isCircular())
+            error("The pointcut " + getID() + " has a circular dependency.");
+    }
+
+    syn PointcutDecl NamedPointcutExpr.decl() =
+        ((PointcutAccess) getName().lastAccess()).decl();
+
+    syn boolean PointcutDecl.isCircular() =
+        checkCallGraph(hostType()) == 2;
+
+    // check that a concrete pointcut doesn't call an abstract pointcut
+    public void NamedPointcutExpr.checkModifiers()
+    {
+        if (!hostType().isAbstract() && hostType().isAspectDecl() &&
+            callsAbstractPointcut())
+        {
+            error("Cannot refer to the abstract pointcut " +
+                  decl().hostType().typeName() + "." + decl().name() +
+                  " from a concrete aspect.");
+        }
+    }
+
+    syn boolean NamedPointcutExpr.callsAbstractPointcut() =
+        checkCallGraph(hostType()) == 1;
+
+    // checkCallGraph(TypeDecl context) is
+    //      0 -- if the graph is ok
+    //      1 -- if this pointcut depends on an abstract pointcut, but no cycle 
+    //      2 -- if this pointcut has a circular dependency
+    syn lazy int PointcutDecl.checkCallGraph(TypeDecl context) circular [2] =
+        isAbstract() ? 1 : getPointcutExpr().checkCallGraph(context);
+
+    syn lazy int PointcutExpr.checkCallGraph(TypeDecl context) circular [2] = 0;
+    eq BinaryPointcutExpr.checkCallGraph(TypeDecl context)
+    {
+        int left = getLhs().checkCallGraph(context);
+        int right = getRhs().checkCallGraph(context);
+        return left > right ? left : right;
+    }
+    eq NegPointcutExpr.checkCallGraph(TypeDecl context) =
+        getPointcutExpr().checkCallGraph(context);
+    eq CflowPointcutExpr.checkCallGraph(TypeDecl context) =
+        getPointcut().checkCallGraph(context);
+    eq CflowBelowPointcutExpr.checkCallGraph(TypeDecl context) =
+        getPointcut().checkCallGraph(context);
+    eq NamedPointcutExpr.checkCallGraph(TypeDecl context)
+    {
+        // don't give additional error if a pointcut can't be
+        // resolved anyway
+        if (decl() == null)
+            return 0;
+
+        // if the call is qualified, look up normally and use the
+        // declaring type as the context
+        if (! (getName() instanceof PointcutAccess))
+            return decl().checkCallGraph(decl().hostType());
+
+        String name = ((PointcutAccess) getName()).getID();
+        Iterator i = context.lookupMemberPointcut(name).iterator();
+        while (i.hasNext()) {
+            PointcutDecl decl = (PointcutDecl) i.next();
+            if (!decl.isAbstract())
+                return decl.checkCallGraph(context);
+        }
+        i = context.lookupPointcut(name).iterator();
+        while (i.hasNext()) {
+            PointcutDecl decl = (PointcutDecl) i.next();
+            if (!decl.isAbstract())
+                return decl.checkCallGraph(context);
+        }
+        return 1;
+    }
+
+
+
+    // check for abstract pointcuts which should be overridden
+    refine IntertypeMethodErrorCheck public void TypeDecl.typeCheck()
+    {
+        IntertypeMethodErrorCheck.TypeDecl.typeCheck();
+
+        if (isAbstract()) return;
+
+        // get all pointcuts _names_ in ancestors
+        Iterator i = inheritedPointcuts().iterator();
+        while (i.hasNext()) {
+            String name = (String) i.next();
+
+            boolean unimplemented = true;
+            Iterator j = lookupMemberPointcut(name).iterator();
+            PointcutDecl lastdecl = null;
+            while (j.hasNext() && unimplemented) {
+                lastdecl = (PointcutDecl) j.next();
+                unimplemented = lastdecl.isAbstract();
+            }
+            if (unimplemented) {
+                error("The inherited pointcut " +
+                      lastdecl.hostType().typeName() + "." + name +
+                      " is abstract but not overridden in " + typeName());
+            }
+        }
+    }
+
+    syn lazy Set TypeDecl.inheritedPointcuts()
+    {
+        Set visited = new HashSet();
+        Set names = new HashSet();
+        addInheritedPointcuts(visited, names);
+        return names;
+    }
+
+    public void TypeDecl.addInheritedPointcuts(Set visited, Set names) { }
+    public void ClassDecl.addInheritedPointcuts(Set visited, Set names)
+    {
+        visited.add(this);
+        if (hasSuperclass() && !visited.contains(superclass())) {
+            superclass().addLocalPointcuts(names);
+            superclass().addInheritedPointcuts(visited, names);
+        }
+
+        Iterator i = interfacesIterator();
+        while (i.hasNext()) {
+            TypeDecl iface = (TypeDecl) i.next();
+            if (!visited.contains(iface)) {
+                iface.addLocalPointcuts(names);
+                iface.addInheritedPointcuts(visited, names);
+            }
+        }
+    }
+    public void InterfaceDecl.addInheritedPointcuts(Set visited, Set names)
+    {
+        visited.add(this);
+        Iterator i = superinterfacesIterator();
+        while (i.hasNext()) {
+            TypeDecl iface = (TypeDecl) i.next();
+            if (!visited.contains(iface)) {
+                iface.addLocalPointcuts(names);
+                iface.addInheritedPointcuts(visited, names);
+            }
+        }
+    }
+    protected void TypeDecl.addLocalPointcuts(Set names)
+    {
+        for (int i = 0; i < getNumBodyDecl(); i++)
+            getBodyDecl(i).addLocalPointcuts(names);
+    }
+    public void BodyDecl.addLocalPointcuts(Set names) { }
+    public void PointcutDecl.addLocalPointcuts(Set names)
+    {
+        names.add(getID());
+    }
+
 
 
     // ----------------------------------------------------

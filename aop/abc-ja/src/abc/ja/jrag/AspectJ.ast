@@ -54,7 +54,7 @@ PointcutDecl : BodyDecl ::= Modifiers
                             <ID:String>
                             Parameter:ParameterDeclaration*
                             /Implicit:ParameterDeclaration*/
-                            [PointcutExpr];
+                            PointcutExpr;
 
 abstract PointcutExpr;
 abstract BinaryPointcutExpr : PointcutExpr ::= Lhs:PointcutExpr Rhs:PointcutExpr;
@@ -88,6 +88,8 @@ TargetPointcutExpr : PointcutExpr ::= Pattern:BindingPattern;
 ArgsPointcutExpr : PointcutExpr ::= Pattern:BindingPattern*;
 
 NamedPointcutExpr : PointcutExpr ::= Name:Access Pattern:BindingPattern*;
+
+EmptyPointcutExpr : PointcutExpr;
 
 
 

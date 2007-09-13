@@ -60,6 +60,10 @@ aspect PointcutCodegen
         return new CflowBelow(getPointcut().pointcut(), pos());
     }
 
+    public Pointcut EmptyPointcutExpr.pointcut() {
+        return new EmptyPointcut(pos());
+    }
+
     public Pointcut ExecutionPointcutExpr.pointcut() {
         Pointcut withincode;
         if (getPattern().isMethodPattern())
@@ -252,7 +256,7 @@ aspect PointcutCodegen
         return new abc.weaving.aspectinfo.PointcutDecl(
                     name(),
                     formals(),
-                    hasPointcutExpr() ? getPointcutExpr().pointcut() : null,
+                    isAbstract() ? null : getPointcutExpr().pointcut(),
                     aspectClass(),
                     pos());
     }
@@ -268,8 +272,7 @@ aspect PointcutCodegen
     public void PointcutDecl.jimplify2()
     {
         globalAspectInfo().addPointcutDecl(pointcutDecl());
-        if (hasPointcutExpr())
-            getPointcutExpr().jimplify2();
+        getPointcutExpr().jimplify2();
     }
 
 

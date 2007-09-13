@@ -12,10 +12,14 @@ aspect Advice
   eq AdviceDecl.getAdviceSpec().lookupVariable(String name) {
     SimpleSet v = getAdviceSpec().localLookupVariable(name);
     if(!v.isEmpty()) return v;
+    v = getAdviceSpec().lookupAfterVariable(name);
+    if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
   eq AdviceDecl.getBlock().lookupVariable(String name) {
     SimpleSet v = getAdviceSpec().localLookupVariable(name);
+    if(!v.isEmpty()) return v;
+    v = getAdviceSpec().lookupAfterVariable(name);
     if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
@@ -30,17 +34,19 @@ aspect Advice
         return SimpleSet.emptySet.add(getParameter(i));
     return localLookupImplicitVariable(name);
   }
-  syn SimpleSet AfterReturningSpec.localLookupVariable(String name) {
+  syn SimpleSet AdviceSpec.lookupAfterVariable(String name) =
+    SimpleSet.emptySet;
+  eq AfterReturningSpec.lookupAfterVariable(String name) {
     if(hasReturnParameter() &&
        getReturnParameter().name().equals(name))
       return SimpleSet.emptySet.add(getReturnParameter());
-    return super.localLookupVariable(name);
+    return SimpleSet.emptySet;
   }
-  syn SimpleSet AfterThrowingSpec.localLookupVariable(String name) {
+  eq AfterThrowingSpec.lookupAfterVariable(String name) {
     if(hasExceptionParameter() &&
        getExceptionParameter().name().equals(name))
       return SimpleSet.emptySet.add(getExceptionParameter());
-    return super.localLookupVariable(name);
+    return SimpleSet.emptySet;
   }
   inh SimpleSet AdviceDecl.lookupVariable(String name);
 
@@ -121,19 +127,20 @@ aspect Advice
 
   // Pointcut decls should bind their variables, unless they're marked abstract.
   public void PointcutDecl.typeCheck() {
-    if(!getModifiers().isAbstract()) {
+    if(!isAbstract()) {
       for(int i = 0; i < getNumParameter(); i++) {
-        if(!hasPointcutExpr()) continue;
         int bindings = getPointcutExpr().binds(getParameter(i).getID());
         
         if(bindings == 0) {
-          error("Concrete pointcut " + getID() +
+          error("Concrete pointcut " + hostType().typeName() + "." + getID() +
                 " should bind its formal argument " + getParameter(i).getID());
         } else if(bindings > 1) {
-          error("Pointcut " + getID() + " binds formal argument " +
-                getParameter(i).getID() + " multiple times.");
+          error("Pointcut " + hostType().typeName() + "." + getID() +
+                " binds formal argument " + getParameter(i).getID() +
+                " multiple times.");
         }
       }
     }
+    overrideParameterCheck();
   }
 }

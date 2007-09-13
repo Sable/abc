@@ -57,36 +57,4 @@ aspect AspectJNameAnalysis {
   eq PerThis.isPerObject() = true;
 
   eq AspectDecl.getPerClause().hostType() = this;
-
-
-  // TODO: move
-  public void PointcutDecl.nameCheck()
-  {
-    super.nameCheck();
-    implicitNameCheck();
-    circularNameCheck();
-  }
-
-
-  // Check for cycles in named pointcuts
-  public void PointcutDecl.circularNameCheck()
-  {
-    if(isCircular())
-      error("The pointcut " + getID() + " has a circular dependency.");
-  }
-
-  // do a fixpoint computation over the boolean domain
-  syn lazy boolean PointcutDecl.isCircular() circular [true] =
-    hasPointcutExpr() ? getPointcutExpr().isCircular() : false;
-
-  syn lazy boolean PointcutExpr.isCircular() circular [true] = false;
-  eq NamedPointcutExpr.isCircular() = decl().isCircular();
-  eq BinaryPointcutExpr.isCircular() = getLhs().isCircular()
-                                       || getRhs().isCircular();
-  eq NegPointcutExpr.isCircular() = getPointcutExpr().isCircular();
-  eq CflowPointcutExpr.isCircular() = getPointcut().isCircular();
-  eq CflowBelowPointcutExpr.isCircular() = getPointcut().isCircular();
-
-  syn PointcutDecl NamedPointcutExpr.decl() =
-    ((PointcutAccess) getName().lastAccess()).decl();
 }
