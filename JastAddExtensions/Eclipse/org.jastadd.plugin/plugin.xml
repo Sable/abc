@@ -269,17 +269,17 @@
    		<key sequence = "F3"
 			commandId = "org.jastadd.plugin.search.declaration"
 			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-			contextId = "#TextEditorContext"/>
+			contextId = "org.eclipse.ui.textEditorScope"/>
    
    		<key sequence = "F4"
 			commandId = "org.jastadd.plugin.search.references"
 			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-			contextId = "#TextEditorContext"/>
+			contextId = "org.jastadd.plugin.jastAddEditorScope"/>
    
 		<key sequence = "F5"
 			commandId = "org.jastadd.plugin.search.implements"
 			schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-			contextId = "#TextEditorContext"/>
+			contextId = "org.jastadd.plugin.jastAddEditorScope"/>
 	</extension>
 	
 	
@@ -290,8 +290,8 @@
  		<actionSet id="org.jastadd.plugin.search.actionSet"
  				label="JastAdd Search Actions"
             	visible="false">
-         <menu
-               label="Search"
+         		<menu
+                    label="Search"
  		       		path="navigate"
                		id="org.eclipse.search.menu">
 					<groupMarker name="internalDialogGroup"/>   
@@ -318,6 +318,7 @@
                		label="Find declarations"
                		class="org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate"
                		menubarPath="org.eclipse.search.menu/dialogGroup"
+               		definitionId="org.jastadd.plugin.search.declaration"
                		id="org.jastadd.plugin.search.FindDeclarationAction">
          		</action>
       		
@@ -331,6 +332,16 @@
                id="org.jastadd.plugin.editor.JastAddEditor">
          </part>
       </actionSetPartAssociation>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            name="JastAddEditing Scope"
+            description="JastAdd Editing Scope"
+            parentId="org.eclipse.ui.textEditorScope"
+            id="org.jastadd.plugin.jastAddEditorScope">
+      </context>
    </extension>
    
 </plugin>

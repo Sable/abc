@@ -5,31 +5,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.PriorityQueue;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.internal.core.util.SimpleDocument;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.swt.graphics.Image;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
 import org.jastadd.plugin.StructureModel;
-
-import beaver.Parser.Exception;
 
 import AST.ASTNode;
 import AST.Access;
@@ -37,7 +29,7 @@ import AST.Expr;
 import AST.List;
 import AST.MethodAccess;
 import AST.ParExpr;
-import AST.VarAccess;
+import beaver.Parser.Exception;
 
 public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
@@ -64,7 +56,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		 */
 
 		proposals = computeProposal(documentOffset, linePart, document, content);
-		
 		
 
 
@@ -108,8 +99,6 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 
 	}
 
-	private int x;
-	
 	private Collection computeProposal(int documentOffset, String[] linePart, IDocument document, String content) 
 	                                   throws BadLocationException, IOException, Exception, CoreException {
 		StringBuffer buf = new StringBuffer(content);

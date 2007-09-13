@@ -1,5 +1,6 @@
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.swt.graphics.Image;
+import java.util.Comparator;
 
 aspect Completion {
 
@@ -98,8 +99,6 @@ aspect Completion {
 
   
 
-
-
   syn Collection ASTNode.completion(String filter) = Collections.EMPTY_LIST;
   eq Access.completion(String filter) {
     ArrayList list = new ArrayList();
@@ -109,7 +108,39 @@ aspect Completion {
         list.add(node);
       }
     }
-    //Collections.sort(list);
+    java.util.Collections.sort(list, new Comparator() {
+		public int compare(Object o1, Object o2) {
+			if (o1 instanceof ASTNode && o2 instanceof ASTNode) {
+				ASTNode node1 = (ASTNode)o1;
+				ASTNode node2 = (ASTNode)o2;
+				
+				if ((node1 instanceof FieldDeclaration && node2 instanceof FieldDeclaration) ||
+					(node1 instanceof MethodDecl && node2 instanceof MethodDecl) ||
+					(node1 instanceof TypeDecl && node2 instanceof TypeDecl)) {
+						return node1.completionLabel().compareTo(node2.completionLabel());
+				} 
+					
+				// FieldDeclaration < (MethodDecl || TypeDecl) -- Always smaller 
+				if (node1 instanceof FieldDeclaration) {
+					return -1;
+				}
+				// TypeDecl > (MethodDecl || FieldDeclaration) -- Always bigger
+				else if (node1 instanceof TypeDecl) {
+					return 1;
+				}
+				// MethodDecl > FieldDeclaration -- Bigger
+				else if (node1 instanceof MethodDecl && node2 instanceof FieldDeclaration) {
+					return 1;
+				} 
+				// MethodDecl < TypeDecl -- Smaller
+				else {
+					return -1;
+				}
+			} 
+			return 0;
+		}
+	});
+    
    	return list;
   }
   eq AbstractDot.completion(String filter) = lastAccess().completion(filter);
