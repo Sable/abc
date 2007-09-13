@@ -13,6 +13,8 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.JastAddModel;
 import org.jastadd.plugin.search.JastAddSearchQuery;
@@ -21,7 +23,7 @@ import AST.ASTNode;
 import AST.TypeDecl;
 
 
-public class FindDeclarationActionDelegate implements IEditorActionDelegate {
+public class FindDeclarationActionDelegate implements IEditorActionDelegate, IWorkbenchWindowActionDelegate {
 	
 	private IEditorPart editorPart;
 	private ASTNode selectedNode;
@@ -62,6 +64,15 @@ public class FindDeclarationActionDelegate implements IEditorActionDelegate {
 				}
 			}
 		}
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void init(IWorkbenchWindow window) {
+		editorPart = window.getActivePage().getActiveEditor();
 	}
 	
 }

@@ -282,12 +282,55 @@
 			contextId = "#TextEditorContext"/>
 	</extension>
 	
-	<!--
-	<extension point = "org.eclipse.ui.actionSets">
- 		<actionSet id = "org.jastadd.plugin.search.actionSet"
- 				label = "JastAdd Search Actions">
+	
+	
+	
+	<extension point="org.eclipse.ui.actionSets">
+	
+ 		<actionSet id="org.jastadd.plugin.search.actionSet"
+ 				label="JastAdd Search Actions"
+            	visible="false">
+         <menu
+               label="Search"
+ 		       		path="navigate"
+               		id="org.eclipse.search.menu">
+					<groupMarker name="internalDialogGroup"/>   
+					<groupMarker name="dialogGroup"/>           
+					<separator name="fileSearchContextMenuActionsGroup"/> 
+	         		<separator name="contextMenuActionsGroup"/> 
+	         		<separator name="occurencesActionsGroup"/> 
+	         		<separator name="extraSearchGroup"/> 
+         		</menu>
+    
+         		<action
+               		label="Find implements"
+               		class="org.jastadd.plugin.editor.actions.FindImplementsActionDelegate"
+               		menubarPath="org.eclipse.search.menu/dialogGroup"
+               		id="org.jastadd.plugin.search.FindImplementsAction">
+         		</action>
+         		<action
+               		label="Find references"
+               		class="org.jastadd.plugin.editor.actions.FindReferencesActionDelegate"
+               		menubarPath="org.eclipse.search.menu/dialogGroup"
+               		id="org.jastadd.plugin.search.FindReferencesAction">
+         		</action>
+         		<action
+               		label="Find declarations"
+               		class="org.jastadd.plugin.editor.actions.FindDeclarationActionDelegate"
+               		menubarPath="org.eclipse.search.menu/dialogGroup"
+               		id="org.jastadd.plugin.search.FindDeclarationAction">
+         		</action>
+      		
  		</actionSet>
 	</extension>
-	-->
+	<extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.jastadd.plugin.search.actionSet">
+         <part
+               id="org.jastadd.plugin.editor.JastAddEditor">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
    
 </plugin>
