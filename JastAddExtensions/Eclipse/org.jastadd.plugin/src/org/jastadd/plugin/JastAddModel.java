@@ -29,7 +29,9 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.viewers.ISelection;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
@@ -176,7 +178,6 @@ public class JastAddModel {
 		// build the current document
 		program.addSourceFile(fileName, buf.toString());
 	}
-	
 	
 	public ASTNode findNodeInDocument(IDocument document, int offset) {
 		return findNodeInDocument(JastAddDocumentProvider.documentToFile(document), offset);

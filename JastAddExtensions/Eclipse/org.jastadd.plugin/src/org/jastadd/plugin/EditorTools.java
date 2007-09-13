@@ -8,9 +8,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -39,6 +42,19 @@ public class EditorTools {
 			textEditor.selectAndReveal(offset, 1);
 		}
  	}
+	
+	public static ASTNode findNode(IEditorPart editorPart, ISelection selection) {
+		if (editorPart != null && editorPart.getEditorInput() instanceof IFileEditorInput) {
+			IFileEditorInput fileEditorInput = (IFileEditorInput)editorPart.getEditorInput();
+			IFile file = fileEditorInput.getFile();
+			if(selection instanceof ITextSelection && file != null) {
+				return JastAddModel.getInstance().findNodeInDocument(file, ((ITextSelection)selection).getOffset());
+			}
+		}
+		return null;
+	}
+	
+
 	
 	public static void openFile(ASTNode node) {
 		int targetLine = node.declarationLocationLine();
