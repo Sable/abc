@@ -2251,6 +2251,7 @@
             <message kind="error" line="4"/>
             <message kind="error" line="5"/>
             <message kind="error" line="5"/>
+            <jamessage kind="error" line="5"/>
         </compile>
     </ajc-test>
 
@@ -2559,6 +2560,8 @@
             <ajcmessage kind="error" line="17"/>
             <message kind="error" line="15"/>
             <message kind="error" line="17"/>
+            <jamessage kind="error" line="17"/>
+            <jamessage kind="error" line="20"/>
         </compile>
     </ajc-test>
 
@@ -2577,6 +2580,12 @@
             <message kind="error" line="23"/>
             <message kind="error" line="24"/>
             <message kind="error" line="30"/>
+            <jamessage kind="error" line="16"/>
+            <jamessage kind="error" line="20"/>
+            <jamessage kind="error" line="24"/>
+            <jamessage kind="error" line="24"/>
+            <jamessage kind="error" line="26"/>
+            <jamessage kind="error" line="30"/>
         </compile>
     </ajc-test>
 
@@ -2590,6 +2599,10 @@
             <ajcmessage kind="error" line="24"/>
             <message kind="error" line="15"/>
             <message kind="error" line="19"/>
+            <jamessage kind="error" line="15"/>
+            <jamessage kind="error" line="15"/>
+            <jamessage kind="error" line="19"/>
+            <jamessage kind="error" line="24"/>
         </compile>
     </ajc-test>
 
@@ -4364,6 +4377,8 @@
       keywords="from-resolved_10x,fail-unimplemented">
         <compile files="AspectInheritance.java">
 	<message kind="error" line="24"/>
+	<jamessage kind="error" line="24"/>
+	<jamessage kind="error" line="24"/>
 	</compile>
         <!-- run class="AspectInheritance"/> -->
 	
@@ -5387,6 +5402,18 @@
             <message kind="error" line="32"/>
             <message kind="error" line="40"/>
             <message kind="error" line="43"/>
+            <jamessage kind="error" line="11"/>
+            <jamessage kind="error" line="14"/>
+            <jamessage kind="error" line="15"/>
+            <jamessage kind="error" line="18"/>
+            <jamessage kind="error" line="19"/>
+            <jamessage kind="error" line="20"/>
+            <jamessage kind="error" line="26"/>
+            <jamessage kind="error" line="29"/>
+            <jamessage kind="error" line="32"/>
+            <jamessage kind="error" line="37"/>
+            <jamessage kind="error" line="40"/>
+            <jamessage kind="error" line="43"/>
         </compile>
     </ajc-test>
 
@@ -7863,6 +7890,8 @@
                         <message kind="error" line="4"/>
                         <message kind="error" line="5"/>
                         <message kind="error" line="9"/>
+			<jamessage kind="error" line="5"/>
+			<jamessage kind="error" line="10"/>
 		</compile>
 	</ajc-test>
 	
