@@ -1,32 +1,22 @@
 aspect Compile {
   // flush 
   public void Program.flushSourceFiles(String name) {
-    //flushCache();
-    lookupType_String_String_values = new HashMap();
-    hasPackage_String_values = new HashMap();
-    collect_contributors_TypeDecl_implementors = false;
-  
-  	if(name != null) {
+  	if(name != null)
   	  files.remove(name);
-  	}
   	  
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
     	CompilationUnit cu = getCompilationUnit(i);
     	String pathName = cu.pathName();
-    	if(!cu.fromSource()) {
+    	if(!cu.fromSource() || name != null && !name.equals(pathName)) {
     		list.add(cu);
     		files.remove(pathName);
-    	}
-    	else if(name != null && !name.equals(pathName)) {
-    	    //cu.flushAttributes();
-    		list.add(cu);
-    		files.remove(pathName);
-    		//System.out.println("Keeping " + relName);
     	}
     }
     setCompilationUnitList(list);
+    flushAttributes();
   }
+  
   public void ASTNode.flushAttributes() {
     flushCache();
     for(int i = 0; i < getNumChild(); i++)
@@ -36,14 +26,14 @@ aspect Compile {
   
   public void Program.addSourceFile(String name, String contents) {
     try {
-  	java.io.InputStream is = new java.io.ByteArrayInputStream(contents.getBytes());
-    CompilationUnit u = javaParser.parse(is, name);
-    is.close();
+  	  java.io.InputStream is = new java.io.ByteArrayInputStream(contents.getBytes());
+      CompilationUnit u = javaParser.parse(is, name);
+      is.close();
        
-    u.setPathName(name);
-    u.setRelativeName(name);
-    u.setFromSource(true);
-    addCompilationUnit(u);
+      u.setPathName(name);
+      u.setRelativeName(name);
+      u.setFromSource(true);
+      addCompilationUnit(u);
     } catch(Exception e) {
     }
   }

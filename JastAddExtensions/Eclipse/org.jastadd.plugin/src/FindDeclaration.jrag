@@ -4,6 +4,12 @@ aspect FindDeclaration {
 	eq TypeAccess.declaration() = type();
 	eq MethodAccess.declaration() = decl();
 	
+	eq TypeDecl.declaration() = this;
+	eq MethodDecl.declaration() = this;
+	eq ParameterDeclaration.declaration() = this;
+	eq FieldDeclaration.declaration() = this;
+	eq VariableDeclaration.declaration() = this;
+	
 	syn int ASTNode.declarationLocationLine() = getLine(getStart());
 	syn int ASTNode.declarationLocationColumn() = getColumn(getStart());
 	syn int ASTNode.declarationLocationLength() = getColumn(getEnd()) - declarationLocationColumn() + 1;
