@@ -32,7 +32,7 @@ public class StructureModel {
 			createRoot();
 		} catch (Throwable t) {
 			treeBuilt = false;
-			System.err.println("StructureModel: Problem bulding structure tree");
+			System.err.println("StructureModel: Problem building structure tree");
 		}
 		if (structureCorrect && rootPair.treeBroken()) {
 			System.err.println("StructureModel: Correct program generated a broken tree");
@@ -110,8 +110,10 @@ public class StructureModel {
 		
 		// Add indent add move caret		
 		String indent = "";
-	    for (int i = 0; i < activePair.childIndentTabCount();i++,indent+="\t");
-	    cmd.caretOffset = cmd.offset + activePair.childIndentTabCount() + 1;
+		int wsIndent = activePair.childIndentTabCount();
+		int tabIndent = wsIndent / TABSIZE;
+	    for (int i = 0; i < tabIndent;i++,indent+="\t");
+	    cmd.caretOffset = cmd.offset + tabIndent + 1;
 	    cmd.shiftsCaret = false;
 	    cmd.text += indent;
 	    		
@@ -1030,9 +1032,9 @@ public class StructureModel {
 		
 		public int childIndentTabCount() {
 			if (!(open instanceof UnknownOpen)) {
-				return open.indent.tabCount + 1;
+				return open.indent.tabCount + TABSIZE;
 			} else if (!(close instanceof UnknownClose)) {
-				return close.indent.tabCount + 1;
+				return close.indent.tabCount + TABSIZE;
 			}
 			return 0; 
 		}

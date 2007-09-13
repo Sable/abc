@@ -1,14 +1,6 @@
 aspect HoverComments {
   
-  syn String ASTNode.javaDocComment() {
-    CompilationUnit cu = declarationCompilationUnit();
-    if(cu != null) {
-      String s = cu.comment(declarationLocationLine());
-      if(s != null && s.startsWith("/**"))
-        return s;
-    }
-    return null;
-  }
+
   
   syn String ASTNode.hoverComment() = "[" + ASTNode.getLine(getStart()) + "," + ASTNode.getColumn(getStart()) + "->" + 
        ASTNode.getLine(getEnd()) + "," + ASTNode.getColumn(getEnd()) + "]";

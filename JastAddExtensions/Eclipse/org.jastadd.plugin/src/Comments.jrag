@@ -1,4 +1,15 @@
 aspect Comments {
+
+  syn String ASTNode.javaDocComment() {
+    CompilationUnit cu = declarationCompilationUnit();
+    if(cu != null) {
+      String s = cu.comment(declarationLocationLine());
+      if(s != null && s.startsWith("/**"))
+        return s;
+    }
+    return null;
+  }
+
   public void CompilationUnit.setComments(HashMap map) {
     comments = map;
   }

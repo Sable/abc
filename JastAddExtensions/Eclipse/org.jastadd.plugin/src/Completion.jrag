@@ -1,13 +1,115 @@
+import org.eclipse.jface.text.contentassist.CompletionProposal;
+import org.eclipse.swt.graphics.Image;
+
 aspect Completion {
+
+	syn CompletionProposal ASTNode.getCompletionProposal(String filter, int documentOffset, boolean keepDot) {
+		String label = completionLabel();
+		Image image = contentOutlineImage();
+		String proposal = completionProposal();
+		String comment = javaDocComment();
+		int cursorOffset = completionProposalOffset();
+		if (comment == null) comment = "No JavaDoc Comment";
+		
+		if(keepDot) {
+			return new CompletionProposal(proposal, documentOffset - filter.length(), 
+				      filter.length(), cursorOffset, image, label, null, comment);
+		}
+		return new CompletionProposal(proposal, documentOffset - filter.length() - 1, 
+                 filter.length() + 1, cursorOffset, image, label, null, comment);
+	}
+
+
+   syn String ASTNode.completionLabel() = this.getClass().getName();
+   eq ClassDecl.completionLabel() = name();
+   eq InterfaceDecl.completionLabel() = name();
+   eq FieldDeclaration.completionLabel() = name() + " : " + type().typeName();
+   eq MethodDecl.completionLabel() {
+     StringBuffer res = new StringBuffer();
+     res.append(" " + name() + "(");
+     for (int i = 0; i < getNumParameter(); i++) {
+       res.append(getParameter(i).type().typeName() + " " + getParameter(i).name());
+       if (i != 0) {
+         res.append(",");
+       }
+     } 
+     res.append(") : " + type().typeName());
+     return res.toString();
+   }
+   eq ConstructorDecl.completionLabel() {
+     StringBuffer res = new StringBuffer();
+     res.append(" " + name() + "(");
+     for (int i = 0; i < getNumParameter(); i++) {
+       res.append(getParameter(i).type().typeName() + " " + getParameter(i).name());
+       if (i != 0) {
+         res.append(",");
+       }
+     } 
+     res.append(")");
+     return res.toString();
+   }
+
+
+
+   syn String ASTNode.completionProposal() = this.getClass().getName();
+   eq ClassDecl.completionProposal() = name();
+   eq InterfaceDecl.completionProposal() = name();
+   eq FieldDeclaration.completionProposal() = name();
+   eq MethodDecl.completionProposal() {
+     StringBuffer res = new StringBuffer();
+     res.append(name() + "(");
+     for (int i = 0; i < getNumParameter(); i++) {
+       res.append(getParameter(i).name());
+       if (i != 0) {
+         res.append(",");
+       }
+     } 
+     res.append(")");
+     return res.toString();
+   }
+   eq ConstructorDecl.completionProposal() {
+     StringBuffer res = new StringBuffer();
+     res.append(name() + "(");
+     for (int i = 0; i < getNumParameter(); i++) {
+       res.append(getParameter(i).name());
+       if (i != 0) {
+         res.append(",");
+       }
+     } 
+     res.append(")");
+     return res.toString();
+   }
+
+
+   
+   syn int ASTNode.completionProposalOffset() = completionProposal().length();
+   eq MethodDecl.completionProposalOffset() {
+     if (getNumParameter() > 0) {
+     	return name().length() + 1;
+     } 
+     return super.completionProposalOffset();
+   }
+   eq ConstructorDecl.completionProposalOffset() {
+     if (getNumParameter() > 0) {
+     	return name().length() + 1;
+     } 
+     return super.completionProposalOffset();
+   }
+
+  
+
+
+
   syn Collection ASTNode.completion(String filter) = Collections.EMPTY_LIST;
   eq Access.completion(String filter) {
     ArrayList list = new ArrayList();
     for(Iterator iter = visibleDecls().iterator(); iter.hasNext(); ) {
-      String s = (String)iter.next();
-      if(s.startsWith(filter))
-        list.add(s);
+      ASTNode node = (ASTNode)iter.next();
+      if (node.contentOutlineLabel().startsWith(filter)) {
+        list.add(node);
+      }
     }
-    Collections.sort(list);
+    //Collections.sort(list);
    	return list;
   }
   eq AbstractDot.completion(String filter) = lastAccess().completion(filter);
@@ -170,8 +272,8 @@ aspect Completion {
       boolean staticContext = isQualified() ? 
         qualifier().staticContextQualifier() : inStaticContext();
       if(accessible && (!staticContext || m.isStatic())) {
-          //c.add(m);
-          c.add(m.signature());
+          c.add(m);
+          //c.add(m.signature());
       }
     }
     if(showVariables())
@@ -185,8 +287,8 @@ aspect Completion {
           boolean staticContext = isQualified() ? 
             qualifier().staticContextQualifier() : inStaticContext();
           if(!staticContext || f.isStatic()) {
-            //c.add(f);
-            c.add(f.name());
+            c.add(f);
+            //c.add(f.name());
           }
         }
       }
@@ -197,8 +299,8 @@ aspect Completion {
     for(Iterator iter = visibleTypes().iterator(); iter.hasNext(); ) {
       TypeDecl t = (TypeDecl)iter.next();
       if(t.accessibleFrom(hostType())) {
-        //c.add(t);
-        c.add(t.name());
+        c.add(t);
+        //c.add(t.name());
       }
     }
     return c;

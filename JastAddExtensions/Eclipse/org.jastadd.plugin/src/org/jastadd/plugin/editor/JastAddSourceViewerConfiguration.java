@@ -1,7 +1,12 @@
 package org.jastadd.plugin.editor;
 
+import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -12,7 +17,17 @@ import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.editor.highlight.JastAddScanner;
@@ -56,10 +71,19 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		assistant.setAutoActivationDelay(500);
 		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
 		assistant.setContentAssistProcessor(new JastAddCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 		
 		return assistant;
 	}
-
+	
+	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
+			}
+		};
+	}
+	
 	@Override
     public IReconciler getReconciler(ISourceViewer sourceViewer)
     {
