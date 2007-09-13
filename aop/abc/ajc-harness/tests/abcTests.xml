@@ -7923,7 +7923,10 @@
 	                <message kind="error" line="7"/>
 			<message kind="error" line="11"/>
                         <message kind="error" line="14"/>		
-			<message kind="error" line="15"/>                        
+			<message kind="error" line="15"/>
+                        <jamessage kind="error" line="7"/>
+                        <jamessage kind="error" line="11"/>
+                        <jamessage kind="error" line="15"/>
 		</compile>
 	</ajc-test>
 
@@ -8264,6 +8267,8 @@
                 <message kind="error" line="4"/>
                 <message kind="error" line="6"/>
         	<message kind="error" line="7"/>
+                <jamessage kind="error" line="4"/>
+                <jamessage kind="error" line="7"/>
         </compile>
     </ajc-test>
     
@@ -8283,6 +8288,7 @@
                 <message kind="error" line="19"/>
         	<message kind="error" line="20"/>
                 <message kind="error" line="21"/>
+                <jamessage kind="error" line="16"/>
         </compile>
     </ajc-test>
 
