@@ -10,7 +10,6 @@ aspect Completion {
 		String proposal = completionProposal();
 		String comment = javaDocComment();
 		int cursorOffset = completionProposalOffset();
-		if (comment == null) comment = "No JavaDoc Comment";
 		
 		if(keepDot) {
 			return new CompletionProposal(proposal, documentOffset - filter.length(), 
@@ -59,24 +58,24 @@ aspect Completion {
    eq MethodDecl.completionProposal() {
      StringBuffer res = new StringBuffer();
      res.append(name() + "(");
-     for (int i = 0; i < getNumParameter(); i++) {
-       res.append(getParameter(i).name());
-       if (i != 0) {
-         res.append(",");
-       }
-     } 
+     //for (int i = 0; i < getNumParameter(); i++) {
+     //  res.append(getParameter(i).name());
+     //  if (i != 0) {
+     //    res.append(",");
+     //  }
+     //} 
      res.append(")");
      return res.toString();
    }
    eq ConstructorDecl.completionProposal() {
      StringBuffer res = new StringBuffer();
      res.append(name() + "(");
-     for (int i = 0; i < getNumParameter(); i++) {
-       res.append(getParameter(i).name());
-       if (i != 0) {
-         res.append(",");
-       }
-     } 
+     //for (int i = 0; i < getNumParameter(); i++) {
+     //  res.append(getParameter(i).name());
+     //  if (i != 0) {
+     //    res.append(",");
+     //  }
+     //} 
      res.append(")");
      return res.toString();
    }

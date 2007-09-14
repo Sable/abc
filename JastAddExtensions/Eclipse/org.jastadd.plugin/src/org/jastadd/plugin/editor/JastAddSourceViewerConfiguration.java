@@ -14,10 +14,12 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
@@ -30,7 +32,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	}
 	
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new JastAddAnnotationHover(sourceViewer);
+		return new DefaultAnnotationHover(); //JastAddAnnotationHover();
 	}
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
@@ -60,6 +62,9 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
 		assistant.setContentAssistProcessor(new JastAddCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
 		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
+		assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
+		assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
+		assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));
 		
 		return assistant;
 	}

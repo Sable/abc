@@ -12,6 +12,7 @@ aspect ContentOutline {
    eq ClassDecl.contentOutlineLabel() = name();
    eq InterfaceDecl.contentOutlineLabel() = name();
    eq FieldDeclaration.contentOutlineLabel() = name();
+   eq MethodAccess.contentOutlineLabel() = decl().contentOutlineLabel();
    eq MethodDecl.contentOutlineLabel() {
      StringBuffer res = new StringBuffer(type().typeName());
      res.append(" " + name() + "(");
@@ -24,6 +25,7 @@ aspect ContentOutline {
      res.append(")");
      return res.toString();
    }
+   eq ConstructorAccess.contentOutlineLabel() = decl().contentOutlineLabel();
    eq ConstructorDecl.contentOutlineLabel() {
      StringBuffer res = new StringBuffer();
      res.append(" " + name() + "(");
@@ -70,12 +72,14 @@ aspect ContentOutline {
      if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_PROTECTED);
      return JavaPluginImages.get(JavaPluginImages.IMG_FIELD_DEFAULT);
    }
+   eq MethodAccess.contentOutlineImage() = decl().contentOutlineImage();
    eq MethodDecl.contentOutlineImage() {
      if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PRIVATE);
      if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);
      if(isProtected()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PROTECTED);
      return JavaPluginImages.get(JavaPluginImages.IMG_MISC_DEFAULT);
    }
+   eq ConstructorAccess.contentOutlineImage() = decl().contentOutlineImage();
    eq ConstructorDecl.contentOutlineImage() {
      if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PRIVATE);
      if(isPublic()) return JavaPluginImages.get(JavaPluginImages.IMG_MISC_PUBLIC);

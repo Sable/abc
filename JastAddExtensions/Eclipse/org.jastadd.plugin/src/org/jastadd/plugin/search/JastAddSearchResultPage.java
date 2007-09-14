@@ -4,15 +4,18 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.search.ui.ISearchResultPage;
 import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
+import org.jastadd.plugin.providers.Node;
 
 import AST.ASTNode;
 
@@ -46,9 +49,9 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		private Object[] content = null;
 		
 		public Object[] getChildren(Object parentElement) {
-			if(parentElement instanceof ASTNode) {
-				ASTNode node = (ASTNode)parentElement;
-				return node.outlineChildren().toArray();
+			if(parentElement instanceof Node) {
+				Node node = (Node)parentElement;
+				return node.getChildren().toArray();
 			} 
 			return null;
 		}
@@ -58,20 +61,18 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		}
 
 		public Object getParent(Object element) {
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				ASTNode parent = node.getParent();
-				if (parent != null && parent.showInContentOutline())
-					return parent;
-				else getParent(parent);
+			if(element instanceof Node) {
+				Node node = (Node)element;
+				Node parent = node.getParent();
+				return parent;
 			}
 			return null;
 		}
 
 		public boolean hasChildren(Object element) {
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				return !node.outlineChildren().isEmpty();
+			if(element instanceof Node) {
+				Node node = (Node)element;
+				return !node.getChildren().isEmpty();
 			}
 			return false;
 		}
@@ -95,25 +96,30 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		}
 	}
 	
-	/*
+	
 	private class JastAddSearchLabelProvider extends LabelProvider {
 		public String getText(Object element) {
-			if (element instanceof String) {
-				return (String)element;
+			if (element instanceof Node) {
+				return ((Node)element).getLabel();
 			} 
 			return "";
 		}
+		public Image getImage(Object element) {
+			if(element instanceof Node) {
+				return ((Node)element).getImage();
+			}
+			return null;
+		}
 	}
-	*/
 	
 	private class JastAddDoubleClickListener implements IDoubleClickListener {
 		public void doubleClick(DoubleClickEvent event) {
 			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 			Object element = selection.getFirstElement();
 
-			if(element instanceof ASTNode) {
-				ASTNode node = (ASTNode)element;
-				EditorTools.openFile(node);
+			if(element instanceof Node) {
+				Node node = (Node)element;
+				EditorTools.openFile(node.getASTNode());
 			}
 		}
 	}
@@ -121,13 +127,19 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 	@Override
 	protected TreeViewer createTreeViewer(Composite parent) {
 		fViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		m();
+		m();
 		return fViewer;
+	}
+
+	private void m() {
+		
 	}
 	
 	@Override
 	protected void configureTreeViewer(TreeViewer viewer) {
 		viewer.setContentProvider(new JastAddSearchContentProvider());
-		viewer.setLabelProvider(new JastAddLabelProvider());
+		viewer.setLabelProvider(new JastAddSearchLabelProvider());
 		viewer.addDoubleClickListener(new JastAddDoubleClickListener());
 		if (fInput != null)
 			viewer.setInput(fInput);
