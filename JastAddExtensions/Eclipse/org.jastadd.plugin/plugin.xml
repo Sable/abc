@@ -150,7 +150,7 @@
 	<extension point = "org.eclipse.ui.ide.projectNatureImages">
 		<image id = "org.eclipse.ui.jastAddNatureImage" 
 			natureId = "org.jastadd.plugin.jastaddNature"
-			icon = "icons/obj16/ja_fldr_obj.gif">
+			icon = "icons/eview16/projects.gif">
 		</image>
 	</extension>
 	

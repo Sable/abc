@@ -61,7 +61,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 		}
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
-			if(file.getFileExtension().equals("java"))
+			String extension = file.getFileExtension();
+			if(extension != null & extension.equals("java"))
 				return true;
 		}
 		return parent.hasChildren(element);

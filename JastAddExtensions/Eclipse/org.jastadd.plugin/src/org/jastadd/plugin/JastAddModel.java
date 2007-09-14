@@ -304,14 +304,16 @@ public class JastAddModel {
 			      }
 			    }
 			}
-			/*
+			
 			   // Use for the bootstrapped version of JastAdd
+			/*
 			if(build) {
 				program.generateIntertypeDecls();
 				program.java2Transformation();
 				program.generateClassfile();
 			}
 			*/
+			
 		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (Throwable e) {
