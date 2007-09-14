@@ -1,4 +1,4 @@
-<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="static and non-static before methods -- one file" num="7" keywords="from-base" dir="base/test100" abccomment="I have put this comment in as a test, and this is a very          long one over multiple lines too. LJH">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -1248,6 +1248,7 @@
             <message line="4" kind="error"></message>
             <message line="5" kind="error"></message>
             <message line="5" kind="error"></message>
+            <jamessage line="5" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="pre 0.7 introduction form outside aspect body causes an EmptyStackException" num="240" keywords="from-errors" dir="errors" abccomment="abc gives further error after parse error. ODM 07/07/04">
@@ -1460,6 +1461,8 @@
             <ajcmessage line="17" kind="error"></ajcmessage>
             <message line="15" kind="error"></message>
             <message line="17" kind="error"></message>
+            <jamessage line="17" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="errors in aspect inheritance - 2" num="267" keywords="from-errors" dir="errors" abccomment="More accurate messages from abc. ODM July 5, 2004">
@@ -1475,6 +1478,12 @@
             <message line="23" kind="error"></message>
             <message line="24" kind="error"></message>
             <message line="30" kind="error"></message>
+            <jamessage line="16" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="24" kind="error"></jamessage>
+            <jamessage line="24" kind="error"></jamessage>
+            <jamessage line="26" kind="error"></jamessage>
+            <jamessage line="30" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="errors in aspect inheritance - 3" num="268" keywords="from-errors" dir="errors" abccomment="ajc fails to find an additional error involving unbound                   pointcut formals at line 15; abc bails out earlier, but ok.                   ODM July 5, 2004">
@@ -1483,6 +1492,10 @@
             <ajcmessage line="24" kind="error"></ajcmessage>
             <message line="15" kind="error"></message>
             <message line="19" kind="error"></message>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="24" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="errors in aspect inheritance - 4" num="269" keywords="from-errors" dir="errors">
@@ -2622,6 +2635,8 @@
 <ajc-test title="different version of aspect inheritance, particularly empty pointcuts and abstract cflows [eachcflow]" num="458" keywords="from-resolved_10x,fail-unimplemented" dir="new" abccomment="There is an unbound formal in a pointcut which we correctly report as an error">
         <compile files="AspectInheritance.java">
 	<message line="24" kind="error"></message>
+	<jamessage line="24" kind="error"></jamessage>
+	<jamessage line="24" kind="error"></jamessage>
 	</compile>
         
 	
@@ -3203,6 +3218,18 @@
             <message line="32" kind="error"></message>
             <message line="40" kind="error"></message>
             <message line="43" kind="error"></message>
+            <jamessage line="11" kind="error"></jamessage>
+            <jamessage line="14" kind="error"></jamessage>
+            <jamessage line="15" kind="error"></jamessage>
+            <jamessage line="18" kind="error"></jamessage>
+            <jamessage line="19" kind="error"></jamessage>
+            <jamessage line="20" kind="error"></jamessage>
+            <jamessage line="26" kind="error"></jamessage>
+            <jamessage line="29" kind="error"></jamessage>
+            <jamessage line="32" kind="error"></jamessage>
+            <jamessage line="37" kind="error"></jamessage>
+            <jamessage line="40" kind="error"></jamessage>
+            <jamessage line="43" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="pertarget stack overflow getting name of anonymous (Interface) class" pr="573" num="586" keywords="from-resolved_10rc3" dir="new">
@@ -4381,6 +4408,8 @@
                         <message line="4" kind="error"></message>
                         <message line="5" kind="error"></message>
                         <message line="9" kind="error"></message>
+			<jamessage line="5" kind="error"></jamessage>
+			<jamessage line="10" kind="error"></jamessage>
 		</compile>
 	</ajc-test>
 <ajc-test title="subtype-qualified pointcut reference" pr="40876" num="845" dir="bugs">
@@ -4401,7 +4430,10 @@
 	                <message line="7" kind="error"></message>
 			<message line="11" kind="error"></message>
                         <message line="14" kind="error"></message>		
-			<message line="15" kind="error"></message>                        
+			<message line="15" kind="error"></message>
+                        <jamessage line="7" kind="error"></jamessage>
+                        <jamessage line="11" kind="error"></jamessage>
+                        <jamessage line="15" kind="error"></jamessage>
 		</compile>
 	</ajc-test>
 <ajc-test title="interface call signatures when declaring method in aspect" pr="40805" num="848" dir="bugs">
@@ -4523,6 +4555,8 @@
                 <message line="4" kind="error"></message>
                 <message line="6" kind="error"></message>
         	<message line="7" kind="error"></message>
+                <jamessage line="4" kind="error"></jamessage>
+                <jamessage line="7" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="No error on overloaded pointcuts unless binding variables" pr="49457" num="883" dir="bugs" abccomment="abc text different but ok. ODM 19/07/04">
@@ -4539,6 +4573,7 @@
                 <message line="19" kind="error"></message>
         	<message line="20" kind="error"></message>
                 <message line="21" kind="error"></message>
+                <jamessage line="16" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="alias getCause for getWrappedThrowable in SoftException" pr="49250" num="884" dir="bugs">
