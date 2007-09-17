@@ -1,5 +1,12 @@
 package org.jastadd.plugin.editor;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -9,14 +16,22 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.contexts.IContextActivation;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jastadd.plugin.JastAddDocumentProvider;
 import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.editor.actions.FindDeclarationHandler;
+import org.jastadd.plugin.editor.actions.FindImplementsHandler;
+import org.jastadd.plugin.editor.actions.FindReferencesHandler;
 import org.jastadd.plugin.outline.JastAddContentOutlinePage;
 
 
 public class JastAddEditor extends TextEditor {
+	
+	public static final String ID = "org.jastadd.plugin.editor.JastAddEditor";
 	
 	private JastAddContentOutlinePage fOutlinePage;
 	private JastAddBreakpointAdapter breakpointAdapter;
@@ -48,6 +63,7 @@ public class JastAddEditor extends TextEditor {
 	
 	private ProjectionSupport projectionSupport;
 	private JastAddEditorFolder folder;
+	private IContextActivation contextActivation;
 	
 	public void createPartControl(Composite parent) {
 	    super.createPartControl(parent);
@@ -66,11 +82,24 @@ public class JastAddEditor extends TextEditor {
 	    
 	    folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this);
 	    JastAddModel.getInstance().addListener(folder);
+	    
+	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
+	    contextActivation = contextService.activateContext("org.jastadd.plugin.jastAddEditorScope");
+	    
+	    //IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
+	    //IHandler handler = new FindDeclarationHandler();
+	    //handlerService.activateHandler("org.jastadd.plugin.search.declaration", handler);
+	    //handler = new FindReferencesHandler();
+	    //handlerService.activateHandler("org.jastadd.plugin.search.references", handler);
+	    //handler = new FindImplementsHandler();
+	    //handlerService.activateHandler("org.jastadd.plugin.search.implements", handler);
 	}
 	
 	@Override public void dispose() {
 		super.dispose();
 	    JastAddModel.getInstance().removeListener(folder);
+	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
+	    contextService.deactivateContext(contextActivation);
 	}
 
 	private class JastAddControlCreator implements IInformationControlCreator {

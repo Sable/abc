@@ -11,6 +11,7 @@ aspect ContentOutline {
    syn String ASTNode.contentOutlineLabel() = this.getClass().getName();
    eq ClassDecl.contentOutlineLabel() = name();
    eq InterfaceDecl.contentOutlineLabel() = name();
+   eq TypeAccess.contentOutlineLabel() = decl().contentOutlineLabel();
    eq FieldDeclaration.contentOutlineLabel() = name();
    eq MethodAccess.contentOutlineLabel() = decl().contentOutlineLabel();
    eq MethodDecl.contentOutlineLabel() {
@@ -42,6 +43,7 @@ aspect ContentOutline {
    eq ImportDecl.showInContentOutline() = true;
    
    syn org.eclipse.swt.graphics.Image ASTNode.contentOutlineImage() = null;
+   eq TypeAccess.contentOutlineImage() = decl().contentOutlineImage();
    eq ClassDecl.contentOutlineImage() {
      if(isNestedType()) {
        if(isPrivate()) return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INNER_CLASS_PRIVATE);

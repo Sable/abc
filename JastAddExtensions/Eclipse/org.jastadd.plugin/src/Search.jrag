@@ -23,6 +23,7 @@ aspect Search {
 	eq TypeAccess.findImplementors() = 
 	  type().isInterfaceDecl() ? type().findImplementors() : super.findImplementors();
 	
+	
 		
 	coll HashSet TypeDecl.references() [new HashSet()] with add;
 	TypeAccess contributes this to TypeDecl.references() for decl();
