@@ -266,6 +266,18 @@ aspect EmitJimple {
     if(!hostType().getSootClassDecl().declaresFieldByName(name)) {
       SootField f = new SootField(name, type, modifiers);
       hostType().getSootClassDecl().addField(f);
+      if(isStatic() && isFinal() && isConstant() && (type().isPrimitive() || type().isString())) {
+        if(type().isString())
+          f.addTag(new soot.tagkit.StringConstantValueTag(constant().stringValue()));
+        else if(type().isLong())
+          f.addTag(new soot.tagkit.LongConstantValueTag(constant().longValue()));
+        else if(type().isDouble())
+          f.addTag(new soot.tagkit.DoubleConstantValueTag(constant().doubleValue()));
+        else if(type().isFloat())
+          f.addTag(new soot.tagkit.FloatConstantValueTag(constant().floatValue()));
+        else if(type().isIntegralType())
+          f.addTag(new soot.tagkit.IntegerConstantValueTag(constant().intValue()));
+      }
       sootField = f;
     }
   }
