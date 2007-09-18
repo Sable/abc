@@ -575,9 +575,9 @@ aspect EmitJimple {
   }
 
   public void MethodDecl.jimplify2() {
-    if(!generate()) return;
+    if(!generate() || sootMethod().hasActiveBody() || sootMethod().getSource() != null) return;
     try {
-      if(hasBlock() && !sootMethod().hasActiveBody()) {
+      if(hasBlock()) {
         JimpleBody body = Jimple.v().newBody(sootMethod());
         sootMethod().setActiveBody(body);
         Body b = new Body(hostType(), body, this);
@@ -601,7 +601,7 @@ aspect EmitJimple {
   }
 
   public void ConstructorDecl.jimplify2() {
-    if(!generate() || sootMethod().hasActiveBody()) return;
+    if(!generate() || sootMethod().hasActiveBody() || sootMethod().getSource() != null) return;
     JimpleBody body = Jimple.v().newBody(sootMethod());
     sootMethod().setActiveBody(body);
     Body b = new Body(hostType(), body, this);
