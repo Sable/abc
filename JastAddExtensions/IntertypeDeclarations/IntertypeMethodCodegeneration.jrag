@@ -63,7 +63,7 @@ aspect IntertypeMethodCodegeneration {
       delegateName(),
       copyParameterList(getParameterList()),
       new List(),
-      (List)getExceptionList().fullCopy(),
+      copyTypeList(getExceptionList()),
       new Opt()
     );
   }
@@ -90,7 +90,7 @@ aspect IntertypeMethodCodegeneration {
       "impl$body$" + name(),
       parameterList,
       new List(),
-      (List)getExceptionList().fullCopy(),
+      copyTypeList(getExceptionList()),
       (Opt)getBlockOpt().fullCopy(),
       introducedType(),
       this
@@ -184,6 +184,14 @@ aspect IntertypeMethodCodegeneration {
     }
     return list;
   }
+  protected static List ASTNode.copyTypeList(List l) {
+    List list = new List();
+    for(int i = 0; i < l.getNumChild(); i++) {
+      Access a = (Access)l.getChild(i);
+      list.add(a.type().createBoundAccess());
+    }
+    return list;
+  }
     
   syn lazy MethodDecl MethodDecl.createSuperDispatchDelegate(TypeDecl qualifierType) {
     String name = "superDispatch$" + qualifierType.fullName().replace('.', '$').replace('@', '_') + "$" + name();
@@ -202,7 +210,7 @@ aspect IntertypeMethodCodegeneration {
       name,
       copyParameterList(getParameterList()),
       new List(),
-      (List)getExceptionList().fullCopy(),
+      copyTypeList(getExceptionList()),
       new Opt(new Block(statements))
     );
     return qualifierType.addMemberMethod(m);
@@ -238,7 +246,7 @@ aspect IntertypeMethodCodegeneration {
       delegateName(),
       copyParameterList(getParameterList()),
       new List(),
-      (List)getExceptionList().fullCopy(),
+      copyTypeList(getExceptionList()),
       new Opt(new Block(statements))
     );
   }
