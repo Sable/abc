@@ -36,7 +36,7 @@ aspect IntertypeFieldErrorCheck {
           error("field named " + name() + " is multiply declared in type " + hostType().typeName());
       }
     }
-    if(!introducedType().compilationUnit().weavable())
+    if(!introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
       error("Host of an intertype declaration must be a weavable class");
 
   }

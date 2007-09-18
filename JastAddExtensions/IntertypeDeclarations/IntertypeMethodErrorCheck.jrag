@@ -69,7 +69,7 @@ aspect IntertypeMethodErrorCheck {
     // 8.4.5
     if(!hasBlock() && !(isNative() || isAbstract()))
       error("only abstract and native methods may have an empty semicolon body");
-    if(hasBlock() && !introducedType().compilationUnit().weavable())
+    if(hasBlock() && !introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
       error("Host of an intertype declaration must be a weavable class");
   }
 
