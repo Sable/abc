@@ -141,7 +141,7 @@ public class CompileSequence extends abc.main.CompileSequence {
   public void weave() throws CompilerFailedException {
     try {
       // Perform the declare parents
-      new DeclareParentsWeaver().weave();
+      //new DeclareParentsWeaver().weave();
       // FIXME: put re-resolving here, from declareparents weaver
       AbcTimer.mark("Declare Parents");
       Debug.phaseDebug("Declare Parents");

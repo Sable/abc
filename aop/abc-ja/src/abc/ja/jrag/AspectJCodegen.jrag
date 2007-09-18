@@ -11,8 +11,8 @@ aspect AspectJCodegen {
     throw new InternalCompilerError(
         "Trying to get an abcClass() from a non-reftype");
   }
-  eq ClassDecl.abcClass() = AbcFactory.AbcClass(sootClass());
-  eq InterfaceDecl.abcClass() = AbcFactory.AbcClass(sootClass());
+  eq ClassDecl.abcClass() = AbcFactory.AbcClass(getSootClassDecl());
+  eq InterfaceDecl.abcClass() = AbcFactory.AbcClass(getSootClassDecl());
   syn lazy AbcType TypeDecl.abcType() = AbcFactory.AbcType(getSootType());
 
   public int MethodDecl.category = MethodCategory.NORMAL;
@@ -107,6 +107,9 @@ aspect AspectJCodegen {
 
 
   refine EmitJimple public void Program.jimplify1() {
+    // clear the set of extended classes
+    // each class affected by a declare parents will register itself
+    globalAspectInfo().setExtendedClasses(new HashSet());
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
       CompilationUnit u = (CompilationUnit)iter.next();
       if(u.weavable())
@@ -134,12 +137,16 @@ aspect AspectJCodegen {
     else {
       if(Program.verbose())
         System.out.println("Loading .class file " + jvmName());
-      SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
-      if(compilationUnit().weavable())
+      if(compilationUnit().weavable()) {
+        SootClass sc = Scene.v().loadClass(jvmName(), SootClass.BODIES);
         sc.setApplicationClass();
-      else
+        return sc;
+      }
+      else {
+        SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
         sc.setLibraryClass();
-      return sc;
+        return sc;
+      }
     }
   }
 
@@ -147,12 +154,20 @@ aspect AspectJCodegen {
     super.jimplify1phase1();
     AbcClass abc = abcClass();
     globalAspectInfo().addWeavableClass(abc);
+    // register types affected by a declare parents introduction
+    // in the global aspect info structure
+    if(affectedByDeclareParents())
+      globalAspectInfo().getExtendedClasses().add(getSootClassDecl());
   }
   
   public void InterfaceDecl.jimplify1phase1() {
     super.jimplify1phase1();
     AbcClass abc = abcClass();
     globalAspectInfo().addWeavableClass(abc);
+    // register types affected by a declare parents introduction
+    // in the global aspect info structure
+    if(affectedByDeclareParents())
+      globalAspectInfo().getExtendedClasses().add(getSootClassDecl());
   }
 
   public void AspectDecl.jimplify1phase1() {
