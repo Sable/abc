@@ -57,4 +57,37 @@ aspect AspectJNameAnalysis {
   eq PerThis.isPerObject() = true;
 
   eq AspectDecl.getPerClause().hostType() = this;
+
+  eq AspectDecl.getPerClause().lookupVariable(String name) {
+    SimpleSet list = memberFields(name);
+    if(!list.isEmpty()) return list;
+    list = lookupVariable(name);
+    if(inStaticContext() || isStatic() || (isAnonymous() && inExplicitConstructorInvocation()))
+      list = removeInstanceVariables(list);
+    return list;
+  }
+  eq AspectDecl.getPerClause().lookupMethod(String name) = unqualifiedLookupMethod(name);
+  eq AspectDecl.getPerClause().lookupType(String name) {
+    SimpleSet c = memberTypes(name);
+    if(!c.isEmpty()) 
+      return c;
+    if(name().equals(name))
+      return SimpleSet.emptySet.add(this);
+
+    c = lookupType(name);
+    // 8.5.2
+    if(isClassDecl() && isStatic() && !isTopLevelType()) {
+      SimpleSet newSet = SimpleSet.emptySet;
+      for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+        TypeDecl d = (TypeDecl)iter.next();
+        //if(d.isStatic() || d.isTopLevelType() || this.instanceOf(d.enclosingType())) {
+          newSet = newSet.add(d);
+        //}
+      }
+      c = newSet;
+    }
+    return c;
+  }
+  eq AspectDecl.getPerClause().inStaticContext() = true;
+
 }
