@@ -5,8 +5,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IFileEditorInput;
-import org.jastadd.plugin.JastAddDocumentProvider;
-import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 

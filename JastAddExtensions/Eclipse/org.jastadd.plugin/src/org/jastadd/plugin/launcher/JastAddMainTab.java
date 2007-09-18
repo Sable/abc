@@ -31,8 +31,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.JastAddProject;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ClassDecl;
 

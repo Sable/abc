@@ -21,41 +21,59 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
+import org.jastadd.plugin.editor.completion.JastAddCompletionProcessor;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.editor.highlight.JastAddScanner;
+import org.jastadd.plugin.editor.hover.JastAddTextHover;
 
+/**
+ * Connects various JastAdd features to the text editor.
+ */
 public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration {
 	
-	public JastAddSourceViewerConfiguration() {
-		super();
-	}
-	
+	/**
+	 * Annotation hover showing marker messages in the vertical bar on the left
+	 * in the editor
+	 */
+	@Override
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new DefaultAnnotationHover(); //JastAddAnnotationHover();
+		return new DefaultAnnotationHover();
 	}
 	
+	/**
+	 * Text hover showing appearing when ever the mouse pointer hovers over some text.
+	 */
+	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new JastAddTextHover();
 	}
 	
+	/**
+	 * Provides syntax highlighting via the JastAddScanner and JastAddColors classes
+	 */
+	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler= new PresentationReconciler();
-		
 		DefaultDamagerRepairer dr= new DefaultDamagerRepairer(new JastAddScanner(new JastAddColors()));
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
-		 
 		return reconciler;
 	}
 	
+	/**
+	 * Provides auto identation via the JastAddAutoIndentStrategy class
+	 */
 	@Override 
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
 	}
 		
+	/**
+	 * Provides a content assistant providing name completion via the JastAddCompletionProcessor class
+	 */
+	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-
 		ContentAssistant assistant= new ContentAssistant();
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
@@ -64,11 +82,14 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 		assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
 		assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
-		assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));
-		
+		assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));	
 		return assistant;
 	}
 	
+	/**
+	 * Provides a ControlCreator, used to create annoration hover controls 
+	 */
+	@Override
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
 			public IInformationControl createInformationControl(Shell parent) {
@@ -77,11 +98,13 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		};
 	}
 	
-	@Override public IReconciler getReconciler(ISourceViewer sourceViewer)
-    {
+	/**
+	 * Provides a reconciling strategy via the JastAddReconcilingStrategy class
+	 */
+	@Override 
+	public IReconciler getReconciler(ISourceViewer sourceViewer) {
         JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy();
         MonoReconciler reconciler = new MonoReconciler(strategy, false);
-        
         return reconciler;
     }
 

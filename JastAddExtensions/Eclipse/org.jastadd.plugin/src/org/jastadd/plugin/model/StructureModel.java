@@ -1,5 +1,5 @@
 
-package org.jastadd.plugin;
+package org.jastadd.plugin.model;
 
 import java.util.Iterator;
 import java.util.LinkedList;

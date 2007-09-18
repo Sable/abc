@@ -1,4 +1,4 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.hover;
 
 
 import org.eclipse.core.resources.IFile;
@@ -9,8 +9,8 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Point;
-import org.jastadd.plugin.JastAddDocumentProvider;
-import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 

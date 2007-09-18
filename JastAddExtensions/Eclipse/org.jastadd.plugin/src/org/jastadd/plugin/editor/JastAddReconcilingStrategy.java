@@ -6,7 +6,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
-import org.jastadd.plugin.JastAddModel;
+import org.jastadd.plugin.model.JastAddModel;
 
 public class JastAddReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 

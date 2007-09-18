@@ -9,6 +9,7 @@ import org.eclipse.jdt.debug.ui.launchConfigurations.JavaJRETab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
 import org.eclipse.debug.ui.CommonTab;
+import org.jastadd.plugin.launcher.classpaths.JastAddClasspathTab;
 
 
 public class JastAddTabGroup extends AbstractLaunchConfigurationTabGroup {

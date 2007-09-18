@@ -1,9 +1,10 @@
-package org.jastadd.plugin.providers;
+package org.jastadd.plugin.providers.model;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
 
 import AST.ASTNode;
 

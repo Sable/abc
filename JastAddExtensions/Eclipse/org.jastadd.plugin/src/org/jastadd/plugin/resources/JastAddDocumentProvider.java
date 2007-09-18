@@ -1,4 +1,4 @@
-package org.jastadd.plugin;
+package org.jastadd.plugin.resources;
 
 import java.util.HashMap;
 import java.util.Iterator;

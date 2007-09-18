@@ -21,16 +21,35 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput; 
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jastadd.plugin.editor.JastAddEditor;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 import AST.CompilationUnit;
 
+/**
+ * Collection of useful editor operations
+ */
 public class EditorTools {
 
+	private static final String JAVA_FILE_EXT = ".java";
+	private static final String JAR_FILE_EXT = ".jar";
+	private static final String CLASS_FILE_EXT = ".class";
+	
+	/**
+	 * Sets the position in the active editor to the given offset.
+	 * @param offset The editor offset.
+	 */
 	public static void setActiveEditorPosition(int offset) {
 		setActiveEditorPosition(offset, 0);
 	}
 	
+	/**
+	 * Sets the given offset and length in the active editor.
+	 * @param offset The editor offset
+	 * @param length The selection length
+	 */
 	public static void setActiveEditorPosition(int offset, int length) {
 
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -43,6 +62,12 @@ public class EditorTools {
 		}
  	}
 	
+	/**
+	 * Locates the abstract syntax node corresponding to the given selection
+	 * @param editorPart The editor part related to the selection
+	 * @param selection The selection, which should be a text selection
+	 * @return A corresponding ASTNode object or null if no match was found
+	 */
 	public static ASTNode findNode(IEditorPart editorPart, ISelection selection) {
 		if (editorPart != null && editorPart.getEditorInput() instanceof IFileEditorInput) {
 			IFileEditorInput fileEditorInput = (IFileEditorInput)editorPart.getEditorInput();
@@ -55,7 +80,10 @@ public class EditorTools {
 	}
 	
 
-	
+	/**
+	 * Opens the file from which the given ASTNode origins
+	 * @param node The node to look up
+	 */
 	public static void openFile(ASTNode node) {
 		int targetLine = node.declarationLocationLine();
 		int targetColumn = node.declarationLocationColumn();
@@ -64,14 +92,22 @@ public class EditorTools {
 		openFile(cu, targetLine, targetColumn, targetLength);
 	}
 	
+	/**
+	 * Opens the file corresponding to the given compilation unit with a selection
+	 * corresponding to the given line, column and length.
+	 * @param unit The compilation unit to open.
+	 * @param line The line on which to start the selection
+	 * @param column The column on which to start the selection
+	 * @param length The length of the selection
+	 */
 	private static void openFile(CompilationUnit unit, int line, int column, int length) {
 		String pathName = unit.pathName();
-		if (pathName.endsWith(".class")) {
-			pathName = pathName.replace(".class", ".java");
+		if (pathName.endsWith(CLASS_FILE_EXT)) {
+			pathName = pathName.replace(CLASS_FILE_EXT, JAVA_FILE_EXT);
 		} 
 		boolean finishedTrying = false;
 		while (!finishedTrying) {
-			if (pathName.endsWith(".java")) {
+			if (pathName.endsWith(JAVA_FILE_EXT)) {
 
 				try {
 					openJavaFile(pathName, line, column, length);
@@ -79,15 +115,15 @@ public class EditorTools {
 				} catch (PartInitException e) {
 					finishedTrying = true;
 				} catch (URISyntaxException e1) {
-					if (pathName.endsWith(".java")) {
-						pathName = pathName.replace(".java", ".class");
+					if (pathName.endsWith(JAVA_FILE_EXT)) {
+						pathName = pathName.replace(JAVA_FILE_EXT, CLASS_FILE_EXT);
 					}
 				}
 
-			} else if (pathName.endsWith(".class") || pathName.endsWith(".jar")) {
+			} else if (pathName.endsWith(CLASS_FILE_EXT) || pathName.endsWith(JAR_FILE_EXT)) {
 
 				try {
-					openClassFile(pathName, unit.relativeName(), pathName.endsWith(".jar"), line, column, length);
+					openClassFile(pathName, unit.relativeName(), pathName.endsWith(JAR_FILE_EXT), line, column, length);
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				} catch (PartInitException e) {
@@ -98,6 +134,16 @@ public class EditorTools {
 		}
 	}
 		
+	/**
+	 * Opens the file corresponding to the given pathName with a selection corresponding
+	 * to line, column and length. 
+	 * @param pathName Path to a java file
+	 * @param line Line on which to start the selection
+	 * @param column Column on which to start the selection 
+	 * @param length The length of the selection
+	 * @throws PartInitException Thrown when somethings wrong with the path
+	 * @throws URISyntaxException Thrown when somethings wrong with the URI syntax of the path
+	 */
 	private static void openJavaFile(String pathName, int line, int column, int length)
 			throws PartInitException, URISyntaxException {
 		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
@@ -105,12 +151,10 @@ public class EditorTools {
 				.findFilesForLocation(path);
 		if (files.length >= 1) {
 			IEditorInput targetEditorInput = new FileEditorInput(files[0]);
-			IWorkbenchWindow window = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow();
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 
-			page.openEditor(targetEditorInput,
-					"org.jastadd.plugin.editor.JastAddEditor", true);
+			page.openEditor(targetEditorInput, JastAddEditor.ID, true);
 
 			IDocument targetDoc = JastAddDocumentProvider
 					.fileToDocument(files[0]);
@@ -128,6 +172,18 @@ public class EditorTools {
 		}
 	}
 
+	/**
+	 * Opens a class corresponding to the given path name and makes a selection
+	 * corresponding to line, column and length.
+	 * @param pathName The path to the class
+	 * @param relativeName The relative name of the class
+	 * @param inJarFile true if the class resides in a jar file
+	 * @param line Line on which to start selection
+	 * @param column Column on which to start selection
+	 * @param length The length of the selection
+	 * @throws PartInitException Thrown if somethings wrong with the path
+	 * @throws URISyntaxException Thrown if somethings wrong with the URI syntax of the path
+	 */
 	private static void openClassFile(String pathName, String relativeName,
 			boolean inJarFile, int line, int column, int length)
 			throws PartInitException, URISyntaxException {

@@ -1,4 +1,4 @@
-package org.jastadd.plugin.providers;
+package org.jastadd.plugin.providers.model;
 
 import java.util.*;
 

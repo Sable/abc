@@ -13,8 +13,8 @@ import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.EditorTools;
-import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.JastAddModelListener;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelListener;
 import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
 

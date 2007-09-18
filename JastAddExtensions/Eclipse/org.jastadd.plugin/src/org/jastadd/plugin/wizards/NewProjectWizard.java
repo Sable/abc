@@ -28,7 +28,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.jastadd.plugin.builder.JastAddBuilder;
-import org.jastadd.plugin.builder.JastAddNature;
+import org.jastadd.plugin.resources.JastAddNature;
 
 public class NewProjectWizard extends Wizard implements INewWizard, IExecutableExtension {
 

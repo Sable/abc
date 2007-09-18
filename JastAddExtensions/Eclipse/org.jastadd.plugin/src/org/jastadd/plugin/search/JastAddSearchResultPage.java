@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
-import org.jastadd.plugin.providers.Node;
+import org.jastadd.plugin.providers.model.Node;
 
 import AST.ASTNode;
 

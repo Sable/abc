@@ -1,4 +1,4 @@
-package org.jastadd.plugin;
+package org.jastadd.plugin.model;
 
 public interface JastAddModelListener {
 	void modelChangedEvent();

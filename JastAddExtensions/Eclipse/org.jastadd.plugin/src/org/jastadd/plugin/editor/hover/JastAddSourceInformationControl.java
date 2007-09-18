@@ -1,4 +1,4 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.hover;
 
 import org.eclipse.jdt.internal.ui.text.java.hover.SourceViewerInformationControl;
 import org.eclipse.jface.resource.JFaceResources;

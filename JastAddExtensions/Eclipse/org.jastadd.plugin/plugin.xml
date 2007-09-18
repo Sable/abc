@@ -6,7 +6,7 @@
          name="JastAdd Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
-         <run class="org.jastadd.plugin.builder.JastAddNature"/>
+         <run class="org.jastadd.plugin.resources.JastAddNature"/>
       </runtime>
       <builder id="org.jastadd.plugin.jastaddBuilder"/>
    </extension>
@@ -287,7 +287,7 @@
             id="org.jastadd.plugin.contribution1">
          <action
                label="Toggle JastAdd Nature"
-               class="org.jastadd.plugin.builder.ToggleNatureAction"
+               class="org.jastadd.plugin.resources.actions.ToggleNatureAction"
                menubarPath="additions"
                enablesFor="+"
                id="org.jastadd.plugin.addRemoveNatureAction">

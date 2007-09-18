@@ -1,4 +1,4 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.debug;
 
 import java.util.HashMap;
 
@@ -14,8 +14,8 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.JastAddProject;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ASTNode;
 import AST.ClassDecl;

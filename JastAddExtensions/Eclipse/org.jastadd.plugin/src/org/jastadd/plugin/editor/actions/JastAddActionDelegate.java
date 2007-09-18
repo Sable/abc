@@ -26,36 +26,43 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 	private boolean selectionSet = false;
 
 	
+	// Inherited from IEditorActionDelegate - needed when actions are added to editor contexts such as the editor popup
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		editorPartSet = true;
 		editorPart = targetEditor;
 	}
 
+	// Inherited from IEditorActionDelegate via IActionDelegate - ...
 	public void selectionChanged(IAction action, ISelection selection) {
 		selectionSet = true;
 		this.selection = selection;
 	}
+	
+	// Inherited from IEditorActionDelegate via IActionDelegate - ...
+	public abstract void run(IAction action);
 
+
+	// Inherited from IWorkbenchWindowActionDelegate - needed when actions are added to the workbench menus via actionSets
 	public void dispose() {
 		editorPartSet = false;
 		selectionSet = false;
 		editorPart = null;
 	}
 
+	// Inherited from IWorkbenchWindowActionDelegate - ...
 	public void init(IWorkbenchWindow window) {
 		editorPartSet = true;
 		editorPart = window.getActivePage().getActiveEditor();
 	}
 
 	
-	// When this object acts as a command handler this method is called 
+	// Inherited from AbstractHandler via IHandler - needed for command handlers reacting on key events
 	public Object execute(ExecutionEvent arg0) throws ExecutionException {
+		System.out.println("Keyevent");
 		run(null);
 		return null;
 	}
 	
-	// When this object acts as a action this method is called
-	public abstract void run(IAction action);
 	
 	
 	protected ASTNode selectedNode() {
@@ -63,8 +70,8 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 	}
 	
 	protected IEditorPart activeEditorPart() {
-		if (editorPartSet && editorPart != null) 
-			return editorPart;
+//		if (editorPartSet && editorPart != null) 
+//			return editorPart;
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();
@@ -74,8 +81,8 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 	}
 	
 	protected ISelection activeSelection() {
-		if (selectionSet && selection != null) 
-			return selection;
+//		if (selectionSet && selection != null) 
+//			return selection;
 		IEditorSite editorSite = activeEditorPart().getEditorSite();
 		if (editorPart == null) return null;
 		ISelectionProvider provider = editorSite.getSelectionProvider();

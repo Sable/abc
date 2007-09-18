@@ -1,4 +1,4 @@
-package org.jastadd.plugin;
+package org.jastadd.plugin.model;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -35,6 +35,8 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.viewers.ISelection;
 import org.jastadd.plugin.outline.JastAddContentOutlinePage;
+import org.jastadd.plugin.resources.JastAddDocumentProvider;
+import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ASTNode;
 import AST.CompilationUnit;

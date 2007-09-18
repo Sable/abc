@@ -1,4 +1,4 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.completion;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,9 +19,9 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.jastadd.plugin.JastAddDocumentProvider;
-import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.StructureModel;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.StructureModel;
+import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 import AST.Access;

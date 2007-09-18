@@ -1,4 +1,4 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.folding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +12,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.jastadd.plugin.JastAddDocumentProvider;
-import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.JastAddModelListener;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelListener;
+import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 public class JastAddEditorFolder implements JastAddModelListener {
 	private ProjectionAnnotationModel annotationModel;

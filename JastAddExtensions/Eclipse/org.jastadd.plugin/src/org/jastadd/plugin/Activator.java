@@ -2,6 +2,7 @@ package org.jastadd.plugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jastadd.plugin.model.JastAddModel;
 import org.osgi.framework.BundleContext;
 
 /**

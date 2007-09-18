@@ -1,4 +1,4 @@
-package org.jastadd.plugin.editor;
+package org.jastadd.plugin.editor.hover;
 
 import java.util.ArrayList;
 import java.util.HashMap;

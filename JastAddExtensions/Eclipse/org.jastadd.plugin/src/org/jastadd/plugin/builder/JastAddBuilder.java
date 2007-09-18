@@ -8,8 +8,8 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jastadd.plugin.JastAddModel;
-import org.jastadd.plugin.JastAddProject;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.resources.JastAddProject;
 
 public class JastAddBuilder extends IncrementalProjectBuilder {
 

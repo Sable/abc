@@ -10,7 +10,6 @@ import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
 import AST.ASTNode;
-import AST.MethodDecl;
 import AST.TypeDecl;
 
 public class FindDeclarationHandler extends JastAddActionDelegate {

@@ -1,4 +1,4 @@
-package org.jastadd.plugin.launcher;
+package org.jastadd.plugin.launcher.classpaths;
 
 import java.util.ArrayList;
 import org.eclipse.debug.core.ILaunchConfiguration;
