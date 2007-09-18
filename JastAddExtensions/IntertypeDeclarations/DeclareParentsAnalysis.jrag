@@ -392,4 +392,7 @@ aspect DeclareParentsAnalysis {
     c.add(this);
   }
 
+  syn boolean TypeDecl.affectedByDeclareParents() =
+    !declareParentsImplements().isEmpty() || !declareParentsExtends().isEmpty();
+
 }

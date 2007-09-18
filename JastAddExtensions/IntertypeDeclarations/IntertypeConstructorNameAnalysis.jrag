@@ -100,9 +100,6 @@ aspect IntertypeMethodNameAnalysis {
 
   eq IntertypeConstructorDecl.name() = introducedType().name();
 
-  public void IntertypeConstructorDecl.nameCheck() {
-  }
-
   eq IntertypeConstructorDecl.accessibleFrom(TypeDecl type) {
     if(!hostAspect().accessibleFrom(type))
       return false;

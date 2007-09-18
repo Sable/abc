@@ -1,0 +1,8 @@
+aspect IntertypeConstructorErrorCheck {
+
+  public void IntertypeConstructorDecl.nameCheck() {
+    if(introducedType().compilationUnit().weavable())
+      error("Host of an intertype declaration must be a weavable class");
+  }
+
+}
