@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jastaddj Plug-in
+Bundle-SymbolicName: org.jastadd.plugin.jastaddj
+Bundle-Version: 1.0.0
+Bundle-Activator: org.jastadd.plugin.jastaddj.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-LazyStart: true
