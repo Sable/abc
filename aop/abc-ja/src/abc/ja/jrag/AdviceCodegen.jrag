@@ -43,10 +43,35 @@ aspect AdviceCodegen {
     return list;
   }
 
+  syn lazy ArrayList AdviceSpec.paramNameList() {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).name());
+    return list;
+  }
+
+  syn lazy ArrayList AfterReturningSpec.paramNameList() {
+    ArrayList list = super.paramNameList();
+    if(hasReturnParameter())
+      list.add(getReturnParameter().name());
+    return list;
+  }
+
+  syn lazy ArrayList AfterThrowingSpec.paramNameList() {
+    ArrayList list = super.paramNameList();
+    if(hasExceptionParameter())
+      list.add(getExceptionParameter().name());
+    return list;
+  }
+
   syn lazy SootMethod AdviceDecl.sootMethod() {
-    return new SootMethod(name(), getAdviceSpec().paramList(),
-                          returnType().getSootType(),
-                          sootTypeModifiers(), new ArrayList());
+    SootMethod advice =
+        new SootMethod(name(), getAdviceSpec().paramList(),
+                       returnType().getSootType(),
+                       sootTypeModifiers(), new ArrayList());
+    advice.addTag(
+        new soot.tagkit.ParamNamesTag(getAdviceSpec().paramNameList()));
+    return advice;
   }
 
   protected void AdviceDecl.createAspectInfo() {

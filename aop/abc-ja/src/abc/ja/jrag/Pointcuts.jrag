@@ -534,7 +534,8 @@ aspect Pointcuts
     eq ThisPointcutExpr.binds(String var) = getPattern().binds(var) ? 1 : 0;
     eq TargetPointcutExpr.binds(String var) = getPattern().binds(var) ? 1 : 0;
     
-    // args() and named pointcuts might bind a variable several times -- count them.
+    // args() and named pointcuts might bind a variable several
+    // times, so count them.
     eq ArgsPointcutExpr.binds(String var) {
     	int result = 0;
     	for(int i = 0; i < getNumPattern(); i++) {
@@ -552,18 +553,37 @@ aspect Pointcuts
     	return (result > 2 ? 2 : result);
     }
     
-    // The only BindingPattern that binds is actually the NameBindingPattern, if invoked
+    // The only BindingPattern that binds is the NameBindingPattern, if invoked
     // with a variable name rather than a type name.
     syn boolean BindingPattern.binds(String var) = false;
-    eq NameBindingPattern.binds(String var) = getPattern().isVariable() && getPattern().variableName().equals(var); 
+    eq NameBindingPattern.binds(String var) =
+        getPattern().isVariable() && getPattern().variableName().equals(var); 
 
-
-
-    public void ConstructorPattern.typeCheck() {
-      super.typeCheck();
-      if(getMemberNamePattern() instanceof DotNamePattern &&
-         ((DotNamePattern)getMemberNamePattern()).getLhs() instanceof ExplicitTypeNamePattern &&
-         ((DotNamePattern)getMemberNamePattern()).getLhs().type().isInterfaceDecl())
-        warning("Interface constructor execution is not a join point (consider (..)+ to capture constructors of implementors)");
+    // args is only allowed '..' once
+    public void ArgsPointcutExpr.nameCheck()
+    {
+    	int dotdots = 0;
+    	for(int i = 0; i < getNumPattern(); i++) {
+    		if(getPattern(i).isDotDot())
+    			dotdots++;
+    	}
+        if (dotdots > 1)
+            error("The args() pointcut cannot contain more than one \"..\"");
     }
+    syn boolean BindingPattern.isDotDot() = false;
+    eq DotDotBindingPattern.isDotDot() = true;
+
+
+    public void ConstructorPattern.typeCheck()
+    {
+        super.typeCheck();
+        if (getMemberNamePattern().refersToInterface())
+            warning("Interface constructor execution is not a join point" +
+                " (consider (..)+ to capture constructors of implementors)");
+    }
+
+    syn boolean NamePattern.refersToInterface() = false;
+    eq DotNamePattern.refersToInterface() = getLhs().explicitInterface();
+    syn boolean NamePattern.explicitInterface() = false;
+    eq ExplicitTypeNamePattern.explicitInterface() = type().isInterfaceDecl();
 }
