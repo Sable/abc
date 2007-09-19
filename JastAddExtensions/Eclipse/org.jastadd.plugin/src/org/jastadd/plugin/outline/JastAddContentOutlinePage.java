@@ -13,8 +13,6 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
-import org.jastadd.plugin.providers.JastAddContentProvider;
-import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 import AST.ASTNode;
 
