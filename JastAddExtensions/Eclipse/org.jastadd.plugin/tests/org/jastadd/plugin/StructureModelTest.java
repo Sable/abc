@@ -2,7 +2,7 @@ package org.jastadd.plugin;
 
 import java.io.File;
 
-import org.jastadd.plugin.model.StructureModel;
+import org.jastadd.plugin.model.repair.StructureModel;
 
 import junit.framework.TestCase;
 

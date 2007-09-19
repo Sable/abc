@@ -8,8 +8,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.EditorTools;
@@ -24,16 +22,20 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	
 	private IEditorInput fInput;
 	private TextEditor fTextEditor;
+	private JastAddModel model;
 	
-	public JastAddContentOutlinePage(TextEditor editor) {
+	public JastAddContentOutlinePage(TextEditor editor, JastAddModel model) {
 		super();
 	    fTextEditor = editor;
-	    JastAddModel.getInstance().addListener(this);
+	    this.model = model;
+	    if (model != null)
+	    	model.addListener(this);
 	}
 	
 	@Override public void dispose() {
 		super.dispose();
-		JastAddModel.getInstance().removeListener(this);
+		if (model != null)
+			model.removeListener(this);
 	}
 
 	public void setInput(IEditorInput input) {
@@ -43,9 +45,9 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		TreeViewer viewer= getTreeViewer();
-		viewer.setContentProvider(new JastAddContentProvider());
-		viewer.setLabelProvider(new JastAddLabelProvider());
+		TreeViewer viewer = getTreeViewer();
+		viewer.setContentProvider(model.getContentProvider());
+		viewer.setLabelProvider(model.getLabelProvider());
 		viewer.addSelectionChangedListener(this);
 		if (fInput != null)
 			viewer.setInput(fInput);
@@ -68,7 +70,6 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	
 	public void update() {
 		TreeViewer viewer= getTreeViewer();
-
 		if (viewer != null) {
 			Control control= viewer.getControl();
 			if (control != null && !control.isDisposed()) {

@@ -8,6 +8,12 @@ import org.jastadd.plugin.model.JastAddModel;
 
 public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 	
+	private JastAddModel model;
+	
+	public JastAddAutoIndentStrategy(JastAddModel model) {
+		this.model = model;
+	}
+	
 	public void customizeDocumentCommand(IDocument doc, DocumentCommand cmd) {
 		// cmd.length == 0 - when no text is markes
 		// cmd.text - the text to insert
@@ -24,11 +30,13 @@ public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 
 	
 	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) {
-		JastAddModel.getInstance().getDocInsertionOnKeypress(doc, cmd);
+		if (model != null)
+			model.getDocInsertionOnKeypress(doc, cmd);
 	}
 
 	private void smartIndentAfterNewLine(IDocument doc, DocumentCommand cmd) {
-		JastAddModel.getInstance().getDocInsertionAfterNewline(doc, cmd);
+		if (model != null)
+			model.getDocInsertionAfterNewline(doc, cmd);
 	}
 
 	private boolean isLineDelimiter(IDocument document, String text) {

@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ASTNode;
@@ -51,14 +52,17 @@ public class JastAddBreakpointAdapter implements IToggleBreakpointsTargetExtensi
 			}
 			if(resource instanceof IFile) {
 				IFile file = (IFile)resource;
-				ASTNode node = JastAddModel.getInstance().findNodeInDocument(file, lineNumber + 1, 1);
-				while(node != null && !(node instanceof TypeDecl))
-					node = node.getParent();
-				if(node instanceof TypeDecl) {
-					TypeDecl typeDecl = (TypeDecl)node;
-					String name = typeDecl.constantPoolName();
-					IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource, name, lineNumber + 1, -1, -1, 0, true, new HashMap());
-					DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					ASTNode node = model.findNodeInDocument(file, lineNumber + 1, 1);
+					while(node != null && !(node instanceof TypeDecl))
+						node = node.getParent();
+					if(node instanceof TypeDecl) {
+						TypeDecl typeDecl = (TypeDecl)node;
+						String name = typeDecl.constantPoolName();
+						IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource, name, lineNumber + 1, -1, -1, 0, true, new HashMap());
+						DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
+					}
 				}
 			}
 		}

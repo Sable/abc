@@ -1,5 +1,7 @@
 package org.jastadd.plugin.editor;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -9,6 +11,8 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -17,6 +21,7 @@ import org.jastadd.plugin.editor.debug.JastAddBreakpointAdapter;
 import org.jastadd.plugin.editor.folding.JastAddEditorFolder;
 import org.jastadd.plugin.editor.hover.JastAddSourceInformationControl;
 import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.outline.JastAddContentOutlinePage;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
@@ -35,8 +40,21 @@ public class JastAddEditor extends TextEditor {
 	private ProjectionSupport projectionSupport;
 	private JastAddEditorFolder folder;
 	private IContextActivation contextActivation;
+	
+	private JastAddModel model;
 
 	
+	@Override
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		if (input instanceof IFileEditorInput) {
+			IFileEditorInput fileInput = (IFileEditorInput)input;
+			IFile file = fileInput.getFile();
+			model = JastAddModelProvider.getModel(file);
+			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model));		
+		}
+		super.doSetInput(input);
+	}
+
 	/** 
 	 * Overriden method from TextEditor which adds a JastAdd specific SourceViewerConfiguration
 	 * and DocumentProvider.
@@ -44,7 +62,6 @@ public class JastAddEditor extends TextEditor {
 	@Override
 	protected void initializeEditor() {
 		super.initializeEditor();
-		setSourceViewerConfiguration(new JastAddSourceViewerConfiguration());
 		setDocumentProvider(new JastAddDocumentProvider());
 	}
 	
@@ -56,7 +73,7 @@ public class JastAddEditor extends TextEditor {
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (fOutlinePage == null) {
-				fOutlinePage= new JastAddContentOutlinePage(this);
+				fOutlinePage=  new JastAddContentOutlinePage(this, model);
 				if (getEditorInput() != null)
 					fOutlinePage.setInput(getEditorInput());
 			}
@@ -89,8 +106,9 @@ public class JastAddEditor extends TextEditor {
 	    //turn projection mode on
 	    viewer.doOperation(ProjectionViewer.TOGGLE);
 	    
-	    folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this);
-	    JastAddModel.getInstance().addListener(folder);
+	    folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this, model);
+	    if (model != null)
+	    	model.addListener(folder);
 	    
 	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 	    contextActivation = contextService.activateContext(CONTEXT_ID);
@@ -110,7 +128,8 @@ public class JastAddEditor extends TextEditor {
 	@Override 
 	public void dispose() {
 		super.dispose();
-	    JastAddModel.getInstance().removeListener(folder);
+		if (model != null)
+			model.removeListener(folder);
 	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 	    contextService.deactivateContext(contextActivation);
 	}

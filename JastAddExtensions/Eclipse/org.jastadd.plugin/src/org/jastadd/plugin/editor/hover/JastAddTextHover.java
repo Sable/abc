@@ -1,7 +1,6 @@
 package org.jastadd.plugin.editor.hover;
 
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -10,11 +9,16 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Point;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 
 public class JastAddTextHover implements ITextHover {
+	
+	private JastAddModel model;
+	
+	public JastAddTextHover(JastAddModel model) {
+		this.model = model;
+	}
 	
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
 		Point selection= textViewer.getSelectedRange();
@@ -38,16 +42,15 @@ public class JastAddTextHover implements ITextHover {
 		return "Empty"; 
 	}
 	
-	
-	
-	
 	private String elementAt(ITextViewer textViewer, int line, int column) {
 		IDocument document = textViewer.getDocument();
-		ASTNode node = JastAddModel.getInstance().findNodeInDocument(document, line, column);
-		if(node != null) {
-			String comment = node.hoverComment();
-			return comment != null ? comment : "";
-	    }
+		if (model != null) {
+			ASTNode node = model.findNodeInDocument(document, line, column);
+			if(node != null) {
+				String comment = node.hoverComment();
+				return comment != null ? comment : "";
+			}
+		}
 		return "NoNode";
 
 	}

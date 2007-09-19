@@ -10,9 +10,6 @@ import org.eclipse.ui.progress.IProgressConstants;
 import org.jastadd.plugin.search.JastAddSearchResultPage;
 
 public class PerspectiveFactory implements IPerspectiveFactory {
-	public PerspectiveFactory() {
-		super();
-	}
 
 	public void createInitialLayout(IPageLayout layout) {
  		String editorArea = layout.getEditorArea();

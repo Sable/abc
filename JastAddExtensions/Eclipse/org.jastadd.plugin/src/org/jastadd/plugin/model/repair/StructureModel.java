@@ -1,5 +1,5 @@
 
-package org.jastadd.plugin.model;
+package org.jastadd.plugin.model.repair;
 
 import java.util.Iterator;
 import java.util.LinkedList;

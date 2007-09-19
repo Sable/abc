@@ -1,6 +1,7 @@
 package org.jastadd.plugin.builder;
 
 import java.util.Map;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -9,7 +10,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.resources.JastAddProject;
+import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddBuilder extends IncrementalProjectBuilder {
 
@@ -86,9 +87,11 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	*/
 	
 	private void buildJastAddProject(IProject project) {
-		JastAddModel model = JastAddModel.getInstance();
-		JastAddProject jaProject = model.getJastAddProject(getProject());
-		model.fullBuild(jaProject);	
+		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
+			if(m instanceof JastAddModel) {
+				m.fullBuild(m.getJastAddProject(project));
+			}
+		}	
 	}
 	
 	private class DeltaVisitor implements IResourceDeltaVisitor {

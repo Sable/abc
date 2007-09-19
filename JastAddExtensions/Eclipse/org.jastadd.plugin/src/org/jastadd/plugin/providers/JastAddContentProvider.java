@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IFileEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
@@ -35,8 +36,9 @@ public class JastAddContentProvider implements ITreeContentProvider {
 		}
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
-			if(file.getFileExtension().equals("java")) {
-				ASTNode node = JastAddModel.getInstance().getCompilationUnit(file);
+			JastAddModel model = JastAddModelProvider.getModel(file);
+			if (model != null) {
+				ASTNode node = model.getCompilationUnit(file);
 				return node.outlineChildren().toArray();
 			}
 		}
@@ -61,9 +63,15 @@ public class JastAddContentProvider implements ITreeContentProvider {
 		}
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
+			JastAddModel model = JastAddModelProvider.getModel(file);
+			if (model != null) {
+				return true;
+			}
+			/*
 			String extension = file.getFileExtension();
 			if(extension != null & extension.equals("java"))
 				return true;
+			*/
 		}
 		return parent.hasChildren(element);
 	}
@@ -73,9 +81,12 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			IFileEditorInput input = (IFileEditorInput)element;
 			IFile file = input.getFile();
 			IDocument document = JastAddDocumentProvider.fileToDocument(file);
-			ASTNode content = JastAddModel.getInstance().getCompilationUnit(document);
-			if(content != null)
-				return content.outlineChildren().toArray();
+			JastAddModel model = JastAddModelProvider.getModel(file);
+			if (model != null) {
+				ASTNode content = model.getCompilationUnit(document);
+				if(content != null)
+					return content.outlineChildren().toArray();
+			}
 		}
 		return parent.getElements(element);
 	}
@@ -87,5 +98,4 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		parent.inputChanged(viewer, oldInput, newInput);
 	}
-
 }

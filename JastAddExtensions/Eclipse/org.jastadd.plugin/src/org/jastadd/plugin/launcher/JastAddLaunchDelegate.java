@@ -16,10 +16,8 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.jastadd.plugin.model.JastAddModel;
 
 public class JastAddLaunchDelegate extends JavaLaunchDelegate {
-	
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
 		if (!saveBeforeLaunch(configuration, mode, monitor)) {

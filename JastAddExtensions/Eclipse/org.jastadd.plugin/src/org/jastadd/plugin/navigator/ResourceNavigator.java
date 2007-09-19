@@ -10,21 +10,29 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourcePatternFilter;
 import org.jastadd.plugin.EditorTools;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 import AST.ASTNode;
 
 public class ResourceNavigator extends org.eclipse.ui.views.navigator.ResourceNavigator {
+	
     protected void initFilters(TreeViewer viewer) {
     	super.initFilters(viewer);
-    	ResourcePatternFilter filter = new ResourcePatternFilter();
-    	filter.setPatterns(new String[] { ".project", "*.java.dummy", "*.class" });
-        viewer.addFilter(filter);
+    	for(JastAddModel model : JastAddModelProvider.getModels()) {
+    		String[] strs = model.getFilterExtensions();
+    		if(strs.length > 0) {
+    	    	ResourcePatternFilter filter = new ResourcePatternFilter();
+    	    	filter.setPatterns(strs);
+    	    	viewer.addFilter(filter);
+    		}
+    	}
     }
     
     protected void initContentProvider(TreeViewer viewer) {
-        viewer.setContentProvider(new JastAddContentProvider(new WorkbenchContentProvider()));
+    	viewer.setContentProvider(new JastAddContentProvider(new WorkbenchContentProvider()));
     }
     
     protected void initLabelProvider(TreeViewer viewer) {

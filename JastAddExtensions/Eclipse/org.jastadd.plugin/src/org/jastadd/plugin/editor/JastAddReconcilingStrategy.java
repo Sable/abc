@@ -11,6 +11,11 @@ import org.jastadd.plugin.model.JastAddModel;
 public class JastAddReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 
     private IDocument document;
+    private JastAddModel model;
+    
+    public JastAddReconcilingStrategy(JastAddModel model) {
+    	this.model = model;
+    }
     
 	public void reconcile(IRegion partition) {
 		initialReconcile();
@@ -25,7 +30,7 @@ public class JastAddReconcilingStrategy implements IReconcilingStrategy, IReconc
 	}
 	
 	public void initialReconcile() {
-		JastAddModel.getInstance().updateProjectModel(document);
+		model.updateProjectModel(document);
 	}
 
 	public void setProgressMonitor(IProgressMonitor monitor) {

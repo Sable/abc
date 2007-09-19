@@ -20,7 +20,8 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.StructureModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.model.repair.StructureModel;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
@@ -94,6 +95,8 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			e.printStackTrace();
 		} catch (CoreException e) {
 			e.printStackTrace();
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 		return new ICompletionProposal[] { };
 
@@ -115,52 +118,55 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 			IProject project = file.getProject();
 			if(project != null) {
 				String fileName = file.getRawLocation().toOSString();
-			
-				ASTNode node = JastAddModel.getInstance().findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-		
-				if(node == null) {
-					// Try a structural recovery
-					documentOffset += (new StructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
-					
-					node = JastAddModel.getInstance().findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-					if (node == null) {
-						System.out.println("Structural recovery failed");
-						return new ArrayList();
-					}
-				}
-				if(node instanceof Access) {
-					System.out.println("Automatic recovery");
-					System.out.println(node.getParent().getParent().dumpTree());
-					return node.completion(linePart[1]);
-				} 
-				else if(node instanceof ASTNode) {
-					System.out.println("Manual recovery");
-					Expr newNode;
-					if(linePart[0].length() != 0) {
-						String nameWithParan = "(" + linePart[0] + ")";
-						ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
-						scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-						newNode = (Expr)((ParExpr)new parser.JavaParser().parse(
-								scanner,parser.JavaParser.AltGoals.expression)
-						).getExprNoTransform();
-						newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
-					}
-					else {
-						newNode = new MethodAccess("X", new List());
-					}
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					ASTNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 
-					int childIndex = node.getNumChild();
-					node.addChild(newNode);
-					node = node.getChild(childIndex);
-					if (node instanceof Access)
-						node = ((Access) node).lastAccess();
-					// System.out.println(node.dumpTreeNoRewrite());
+					if(node == null) {
+						// Try a structural recovery
+						documentOffset += (new StructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
 
-					// Use the connection to the dummy AST to do name
-					// completion
-					return node.completion(linePart[1]);
+						node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+						if (node == null) {
+							System.out.println("Structural recovery failed");
+							return new ArrayList();
+						}
+					}
+					if(node instanceof Access) {
+						System.out.println("Automatic recovery");
+						System.out.println(node.getParent().getParent().dumpTree());
+						return node.completion(linePart[1]);
+					} 
+					else if(node instanceof ASTNode) {
+						System.out.println("Manual recovery");
+						Expr newNode;
+						if(linePart[0].length() != 0) {
+							String nameWithParan = "(" + linePart[0] + ")";
+							ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
+							scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+							newNode = (Expr)((ParExpr)new parser.JavaParser().parse(
+									scanner,parser.JavaParser.AltGoals.expression)
+							).getExprNoTransform();
+							newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
+						}
+						else {
+							newNode = new MethodAccess("X", new List());
+						}
+
+						int childIndex = node.getNumChild();
+						node.addChild(newNode);
+						node = node.getChild(childIndex);
+						if (node instanceof Access)
+							node = ((Access) node).lastAccess();
+						// System.out.println(node.dumpTreeNoRewrite());
+
+						// Use the connection to the dummy AST to do name
+						// completion
+						return node.completion(linePart[1]);
+					}
 				}
 			}
+				
 		}
 	
 		return new ArrayList();

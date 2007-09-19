@@ -1,14 +1,8 @@
 package org.jastadd.plugin.model;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,24 +12,33 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.Position;
-import org.eclipse.jface.viewers.ISelection;
-import org.jastadd.plugin.outline.JastAddContentOutlinePage;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
+import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
+import org.jastadd.plugin.editor.completion.JastAddCompletionProcessor;
+import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
+import org.jastadd.plugin.editor.highlight.JastAddColors;
+import org.jastadd.plugin.editor.highlight.JastAddScanner;
+import org.jastadd.plugin.editor.hover.JastAddTextHover;
+import org.jastadd.plugin.model.repair.StructureModel;
+import org.jastadd.plugin.providers.JastAddContentProvider;
+import org.jastadd.plugin.providers.JastAddLabelProvider;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
+import org.jastadd.plugin.resources.JastAddNature;
 import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ASTNode;
@@ -46,19 +49,8 @@ import AST.Program;
 public class JastAddModel {
 
 	public JastAddModel() {
-		if (instance == null) {
-		  JastAddModel.instance = this;
-		  jastAddProjects = new ArrayList<JastAddProject>();
-		}
+		jastAddProjects = new ArrayList<JastAddProject>();
 	}	
-	
-	/**
-	 * Returns a references to the JastAddModel
-	 * @return
-	 */
-	public static JastAddModel getInstance() {
-		return JastAddModel.instance;
-	}
 	
 	/**
 	 * Finds or creates a related JastAdd project
@@ -244,7 +236,8 @@ public class JastAddModel {
 	
    // ---- JastAddProject / Workspace stuff ----
 	
-   private ArrayList<JastAddProject> jastAddProjects;   
+   private ArrayList<JastAddProject> jastAddProjects;
+
 	
 	// ---- Build stuff ----
     
@@ -568,6 +561,62 @@ public class JastAddModel {
 				buildSourceMap(folder.members(), sourceMap);
 			}
 		}
+	}
+
+	public boolean isModelFor(IProject project) {
+		try {
+			if (project != null && project.isNatureEnabled(JastAddNature.NATURE_ID)) {
+				return true;
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean isModelFor(IFile file) {
+		LinkedList<String> list = getFileExtensions();
+		for (Iterator itr = list.iterator(); itr.hasNext();) {
+			String extension = (String)itr.next();
+			if(file.getFileExtension().equals(extension)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public LinkedList<String> getFileExtensions() {
+		LinkedList<String> list = new LinkedList<String>();
+		list.add("java");
+		return list;
+	}
+	
+	public String[] getFilterExtensions() {
+		return new String[] { ".project", "*.java.dummy", "*.class"};
+	}
+
+	public ITextHover getTextHover() {
+		return new JastAddTextHover(this);
+	}
+
+	public ITokenScanner getScanner() {
+		return new JastAddScanner(new JastAddColors());
+	}
+
+	public IAutoEditStrategy getAutoIndentStrategy() {
+		return new JastAddAutoIndentStrategy(this);
+	}
+
+	public IContentAssistProcessor getCompletionProcessor() {
+		return new JastAddCompletionProcessor();
+	}
+
+	public IContentProvider getContentProvider() {
+		return new JastAddContentProvider();
+	}
+
+	public IBaseLabelProvider getLabelProvider() {
+		return new JastAddLabelProvider();
 	}
 
 }

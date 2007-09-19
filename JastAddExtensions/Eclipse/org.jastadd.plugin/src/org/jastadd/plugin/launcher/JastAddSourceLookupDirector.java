@@ -2,12 +2,12 @@ package org.jastadd.plugin.launcher;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupParticipant;
 import org.eclipse.debug.core.sourcelookup.containers.ProjectSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.WorkspaceSourceContainer;
-import org.eclipse.jdt.launching.sourcelookup.containers.*;
 
 public class JastAddSourceLookupDirector extends AbstractSourceLookupDirector {
 	

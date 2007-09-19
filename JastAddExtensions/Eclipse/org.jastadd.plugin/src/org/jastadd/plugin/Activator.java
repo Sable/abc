@@ -3,6 +3,7 @@ package org.jastadd.plugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -16,12 +17,15 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
+	private JastAddModel model;
+	
 	/**
 	 * The constructor
 	 */
 	public Activator() {
 		plugin = this;
-		new JastAddModel();
+		model = new JastAddModel();
+		JastAddModelProvider.addModel(model);
 	}
 
 	/*
@@ -38,6 +42,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		JastAddModelProvider.removeModel(model);
 		super.stop(context);
 	}
 
@@ -49,7 +54,7 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-
+	
 	/**
 	 * Returns an image descriptor for the image file at the given
 	 * plug-in relative path

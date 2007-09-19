@@ -127,15 +127,9 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 	@Override
 	protected TreeViewer createTreeViewer(Composite parent) {
 		fViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		m();
-		m();
 		return fViewer;
 	}
 
-	private void m() {
-		
-	}
-	
 	@Override
 	protected void configureTreeViewer(TreeViewer viewer) {
 		viewer.setContentProvider(new JastAddSearchContentProvider());

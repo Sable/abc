@@ -1,6 +1,5 @@
 package org.jastadd.plugin.providers;
 
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 

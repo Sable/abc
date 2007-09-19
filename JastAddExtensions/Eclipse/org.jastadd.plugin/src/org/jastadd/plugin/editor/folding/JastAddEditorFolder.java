@@ -20,10 +20,13 @@ public class JastAddEditorFolder implements JastAddModelListener {
 	private ProjectionAnnotationModel annotationModel;
 	private Annotation[] oldAnnotations;
 	private IEditorPart editorPart;
+	private JastAddModel model;
 	
-	public JastAddEditorFolder(ProjectionAnnotationModel annotationModel, IEditorPart editorPart) {
+	public JastAddEditorFolder(ProjectionAnnotationModel annotationModel, 
+			IEditorPart editorPart, JastAddModel model) {
 		this.annotationModel = annotationModel;
 		this.editorPart = editorPart;
+		this.model = model;
 	}
 	
 	public void updateFoldingStructure(ArrayList positions) {
@@ -54,8 +57,10 @@ public class JastAddEditorFolder implements JastAddModelListener {
 			// run update in the SWT UI thread
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					ArrayList positions = JastAddModel.getInstance().getFoldingPositions(document);
-					updateFoldingStructure(positions);
+					if (model != null) {
+						ArrayList positions = model.getFoldingPositions(document);
+						updateFoldingStructure(positions);
+					}
 				}
 			});
 		}

@@ -26,11 +26,18 @@ import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.editor.highlight.JastAddScanner;
 import org.jastadd.plugin.editor.hover.JastAddTextHover;
+import org.jastadd.plugin.model.JastAddModel;
 
 /**
  * Connects various JastAdd features to the text editor.
  */
 public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration {
+	
+	private JastAddModel model;
+	
+	public JastAddSourceViewerConfiguration(JastAddModel model) {
+		this.model = model;
+	}
 	
 	/**
 	 * Annotation hover showing marker messages in the vertical bar on the left
@@ -46,7 +53,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new JastAddTextHover();
+		return model.getTextHover();
 	}
 	
 	/**
@@ -54,8 +61,8 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler= new PresentationReconciler();
-		DefaultDamagerRepairer dr= new DefaultDamagerRepairer(new JastAddScanner(new JastAddColors()));
+		PresentationReconciler reconciler = new PresentationReconciler();
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(model.getScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		return reconciler;
@@ -66,7 +73,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override 
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-		return new IAutoEditStrategy[] { new JastAddAutoIndentStrategy() };
+		return new IAutoEditStrategy[] { model.getAutoIndentStrategy() };
 	}
 		
 	/**
@@ -78,7 +85,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
 		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-		assistant.setContentAssistProcessor(new JastAddCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+		assistant.setContentAssistProcessor(model.getCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
 		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 		assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
 		assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
@@ -103,7 +110,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override 
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-        JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy();
+        JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy(model);
         MonoReconciler reconciler = new MonoReconciler(strategy, false);
         return reconciler;
     }

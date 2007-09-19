@@ -2,7 +2,6 @@ package org.jastadd.plugin.launcher;
 
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -44,6 +43,13 @@ public class JastAddMainTab extends AbstractLaunchConfigurationTab {
 	private Text mainClassText;
 	private Button projButton;
 	private Button mainClassButton;
+	
+	private JastAddModel model;
+	
+	public JastAddMainTab(JastAddModel model) {
+		super();
+		this.model = model;
+	}
 
 	public void createControl(Composite parent) {
   		Font font = parent.getFont();
@@ -232,16 +238,17 @@ public class JastAddMainTab extends AbstractLaunchConfigurationTab {
 			dialog.setMessage(LauncherMessages.JavaMainTab_Choose_a_main__type_to_launch__12);
 			
 			// Fill with values
-			JastAddModel model = JastAddModel.getInstance();
-			JastAddProject jaProject = model.getJastAddProject(project);
-			ClassDecl[] mainTypes = jaProject.getMainTypes();
-			if (mainTypes.length == 0) {
-				// Show message: No main types in this project
-				System.out.println("No main types in this project");
-				return;
-			} 
-			dialog.setElements(mainTypes);
-			
+			if (model != null) {
+				JastAddProject jaProject = model.getJastAddProject(project);
+				ClassDecl[] mainTypes = jaProject.getMainTypes();
+				if (mainTypes.length == 0) {
+					// Show message: No main types in this project
+					System.out.println("No main types in this project");
+					return;
+				} 
+				dialog.setElements(mainTypes);
+			}
+
 			if (dialog.open() == Window.CANCEL) {
 				return;
 			}

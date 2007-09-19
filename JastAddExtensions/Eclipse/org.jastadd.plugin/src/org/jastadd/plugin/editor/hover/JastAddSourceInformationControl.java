@@ -1,6 +1,5 @@
 package org.jastadd.plugin.editor.hover;
 
-import org.eclipse.jdt.internal.ui.text.java.hover.SourceViewerInformationControl;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -8,12 +7,10 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlExtension;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -50,7 +47,6 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 		GridLayout layout;
 		GridData gd;
 
-		
 		int shellStyle = SWT.TOOL | SWT.NO_TRIM | SWT.LEFT_TO_RIGHT;
 		
 		fShell = new Shell(parent, SWT.NO_FOCUS | SWT.ON_TOP | shellStyle);

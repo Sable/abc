@@ -23,6 +23,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
@@ -73,7 +74,10 @@ public class EditorTools {
 			IFileEditorInput fileEditorInput = (IFileEditorInput)editorPart.getEditorInput();
 			IFile file = fileEditorInput.getFile();
 			if(selection instanceof ITextSelection && file != null) {
-				return JastAddModel.getInstance().findNodeInDocument(file, ((ITextSelection)selection).getOffset());
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					return model.findNodeInDocument(file, ((ITextSelection)selection).getOffset());
+				}
 			}
 		}
 		return null;
