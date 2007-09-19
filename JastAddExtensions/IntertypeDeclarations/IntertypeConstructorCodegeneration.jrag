@@ -1,6 +1,8 @@
 aspect IntertypeMethodCodegeneration {
   //eq IntertypeConstructorDecl.isBytecodeMethod() = false;
   
+  eq IntertypeConstructorDecl.generate() = false;
+
   syn TypeDecl IntroducedConstructorDecl.introducedType() = hostType();
      
   eq IntroducedConstructorDecl.getBlock().lookupMethod(String name) {

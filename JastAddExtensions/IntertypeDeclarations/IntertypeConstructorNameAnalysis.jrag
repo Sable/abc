@@ -41,9 +41,6 @@ aspect IntertypeMethodNameAnalysis {
     decl.applicable(getArgList()) && decl.accessibleFrom(visibilityContext()) && 
     (!decl.isProtected() || hasTypeDecl() || decl.hostPackage().equals(hostPackage()));
 
-
-  eq IntertypeConstructorDecl.generate() = false;
-
   // Hack to avoid multiple declared intertype constructors
 
   syn boolean BodyDecl.isExactConstructorDecl() = false;

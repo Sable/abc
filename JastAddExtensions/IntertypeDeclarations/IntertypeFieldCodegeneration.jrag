@@ -64,7 +64,9 @@ aspect IntertypeFieldCodegeneration {
     if(v instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)v;
       if(!f.hostType().isInterfaceDecl() && !name().equals(f.introducedName())) {
+        ASTNode flushNode = hasNextAccess() ? nextAccess().unqualifiedScope() : null;
         replace(this).with(new VarAccess(f.introducedName()));
+        if(flushNode != null) flushNode.flushCaches();
         return;
       }
     }
@@ -114,7 +116,16 @@ aspect IntertypeFieldCodegeneration {
 
     Modifiers modifiers = createAccessorModifiers(true);
     List parameters = !isStatic() ? new List().add(new ParameterDeclaration(introducedType(), "that")) : new List();
-    Stmt returnStmt = new ReturnStmt(new Opt(getInit().fullCopy()));
+    Expr returnValue;
+    if(getInit() instanceof ArrayInit) {
+      List dims = new List();
+      for(int i = 0; i < type().dimension(); i++)
+        dims.add(new Dims(new Opt()));
+      returnValue = new ArrayCreationExpr(type().elementType().createBoundAccess(), dims, new Opt(getInit().fullCopy()));
+    }
+    else 
+      returnValue =  (Expr)getInit().fullCopy();
+    Stmt returnStmt = new ReturnStmt(new Opt(returnValue));
     m = new IntroducedMethodDecl(
       modifiers,
       type().createQualifiedAccess(),
