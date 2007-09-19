@@ -172,8 +172,11 @@ aspect EmitJimple {
   public void MethodDecl.jimplify1phase2() {
     String name = name();
     ArrayList parameters = new ArrayList();
-    for(int i = 0; i < getNumParameter(); i++)
+    ArrayList paramnames = new ArrayList();
+    for(int i = 0; i < getNumParameter(); i++) {
       parameters.add(getParameter(i).type().getSootType());
+      paramnames.add(getParameter(i).name());
+    }
     soot.Type returnType = type().getSootType();
     int modifiers = sootTypeModifiers();
     ArrayList throwtypes = new ArrayList();
@@ -183,12 +186,14 @@ aspect EmitJimple {
     if(!hostType().getSootClassDecl().declaresMethod(signature)) {
       SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
       hostType().getSootClassDecl().addMethod(m);
+      m.addTag(new soot.tagkit.ParamNamesTag(paramnames));
       sootMethod = m;
     }
   }
   public void ConstructorDecl.jimplify1phase2() {
     String name = "<init>";
     ArrayList parameters = new ArrayList();
+    ArrayList paramnames = new ArrayList();
     // this$0
     TypeDecl typeDecl = hostType();
     if(typeDecl.needsEnclosing())
@@ -198,9 +203,10 @@ aspect EmitJimple {
       parameters.add(superClass.enclosingType().getSootType());
     }
     // args
-    for(int i = 0; i < getNumParameter(); i++)
+    for(int i = 0; i < getNumParameter(); i++) {
       parameters.add(getParameter(i).type().getSootType());
-
+      paramnames.add(getParameter(i).name());
+    }
     soot.Type returnType = soot.VoidType.v();
     int modifiers = sootTypeModifiers();
     ArrayList throwtypes = new ArrayList();
@@ -210,6 +216,7 @@ aspect EmitJimple {
     if(!hostType().getSootClassDecl().declaresMethod(signature)) {
       SootMethod m = new SootMethod(name, parameters, returnType, modifiers, throwtypes);
       hostType().getSootClassDecl().addMethod(m);
+      m.addTag(new soot.tagkit.ParamNamesTag(paramnames));
       sootMethod = m;
     }
   }
