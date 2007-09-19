@@ -9404,6 +9404,8 @@
 		title="NPE when binary weaving a ctor ITD">
         <compile files="CtorITD.aj">
         	<message kind="error" line="2"/>
+        	<jamessage kind="error" line="2"/>
+        	<jamessage kind="error" line="2"/>
         </compile>
     </ajc-test>
 
