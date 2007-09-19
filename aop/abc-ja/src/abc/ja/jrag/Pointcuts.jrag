@@ -556,4 +556,14 @@ aspect Pointcuts
     // with a variable name rather than a type name.
     syn boolean BindingPattern.binds(String var) = false;
     eq NameBindingPattern.binds(String var) = getPattern().isVariable() && getPattern().variableName().equals(var); 
+
+
+
+    public void ConstructorPattern.typeCheck() {
+      super.typeCheck();
+      if(getMemberNamePattern() instanceof DotNamePattern &&
+         ((DotNamePattern)getMemberNamePattern()).getLhs() instanceof ExplicitTypeNamePattern &&
+         ((DotNamePattern)getMemberNamePattern()).getLhs().type().isInterfaceDecl())
+        warning("Interface constructor execution is not a join point (consider (..)+ to capture constructors of implementors)");
+    }
 }

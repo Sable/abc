@@ -43,6 +43,15 @@ public class CompileSequence extends abc.main.CompileSequence {
     error_queue().enqueue(ErrorInfo.SEMANTIC_ERROR, problem.message(), p);
   }
 
+  private void addWarning(Problem problem) {
+	    Position p;
+	    if(problem.column() != -1)
+	      p = new Position(problem.fileName(), problem.line(), problem.column());
+	    else
+	      p = new Position(problem.fileName(), problem.line());
+	    error_queue().enqueue(ErrorInfo.WARNING, problem.message(), p);
+  }
+
   public ErrorQueue error_queue() {
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
@@ -108,7 +117,7 @@ public class CompileSequence extends abc.main.CompileSequence {
       if(Program.verbose())
         System.out.println("Error checking");
       ArrayList errors = new ArrayList();
-      Collection warnings = new ArrayList();
+      ArrayList warnings = new ArrayList();
       program.errorCheck(errors, warnings);
       if(!errors.isEmpty()) {
         Collections.sort(errors);
@@ -117,6 +126,13 @@ public class CompileSequence extends abc.main.CompileSequence {
           addError(p);
         }
         throw new CompilerFailedException("There were errors.");
+      }
+      if(!warnings.isEmpty()) {
+          Collections.sort(warnings);
+          for(Iterator iter2 = warnings.iterator(); iter2.hasNext(); ) {
+            Problem p = (Problem)iter2.next();
+            addWarning(p);
+          }
       }
 
       program.generateIntertypeDecls();
