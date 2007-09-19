@@ -7,7 +7,16 @@ aspect Patterns
             getPattern().indexOf('*') != -1;
     eq DotNamePattern.containsWildcard() =
             getLhs().containsWildcard() || getRhs().containsWildcard();
+
+    syn Pattern Pattern.patternRoot() {
+      Pattern root = this;
+      while(root.getParent() instanceof Pattern && !root.denotesMember())
+        root = (Pattern)root.getParent();
+      return root;
+    }
     
+    inh boolean Pattern.denotesMember();
+
     // Does this DotNamePattern correspond to a classtype_dot_id, i.e. is the Rhs
     // a member pattern, or is the whole thing a type pattern?
     inh boolean DotNamePattern.denotesMember();
@@ -37,7 +46,7 @@ aspect Patterns
     		setLhs(new ExplicitTypeNamePattern(getLhs().buildAccess()));
     		return this;
     	}
-    	when(!denotesMember() && !containsWildcard())
+    	when(!denotesMember() && !patternRoot().containsWildcard())
     	to ExplicitTypeNamePattern {
     		return new ExplicitTypeNamePattern(buildAccess());
     	}
@@ -81,6 +90,7 @@ aspect Patterns
     }
     eq DotNamePattern.base() = getLhs();
     eq TypeDotNamePattern.base() = getLhs();
+    eq DotDotNamePattern.base() = getLhs();
 
     syn NameType Pattern.predNameType() = NameType.AMBIGUOUS_NAME;
     eq DotNamePattern.getLhs().nameType() = getRhs().predNameType();
