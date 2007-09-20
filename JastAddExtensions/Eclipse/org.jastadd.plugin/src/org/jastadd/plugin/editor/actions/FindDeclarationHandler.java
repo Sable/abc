@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.NewSearchUI;
-import org.jastadd.plugin.EditorTools;
+import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
 import AST.ASTNode;
@@ -25,7 +25,10 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 		
 		Collection<ASTNode> declarations = new LinkedList<ASTNode>();
 		declarations.add(target);
-		EditorTools.openFile(target);
+		
+		JastAddModel model = activeModel();
+		if (model == null) return;
+		model.openFile(target);
 		
 		StringBuffer s = new StringBuffer();
 		s.append("Find declaration of ");

@@ -14,6 +14,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 public class JastAddEditorFolder implements JastAddModelListener {
@@ -52,17 +53,18 @@ public class JastAddEditorFolder implements JastAddModelListener {
 		if(input instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput)input;
 			IFile file = fileInput.getFile();
-			final IDocument document = JastAddDocumentProvider.fileToDocument(file);
+			final JastAddModel model = JastAddModelProvider.getModel(file);
+			if (model != null) {
+				final IDocument document = model.fileToDocument(file);
 
-			// run update in the SWT UI thread
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					if (model != null) {
+				// run update in the SWT UI thread
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
 						ArrayList positions = model.getFoldingPositions(document);
 						updateFoldingStructure(positions);
 					}
-				}
-			});
+				});
+			}
 		}
 	}
 }

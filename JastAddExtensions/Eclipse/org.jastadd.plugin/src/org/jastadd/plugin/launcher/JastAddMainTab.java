@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ClassDecl;
 
@@ -239,8 +238,7 @@ public class JastAddMainTab extends AbstractLaunchConfigurationTab {
 			
 			// Fill with values
 			if (model != null) {
-				JastAddProject jaProject = model.getJastAddProject(project);
-				ClassDecl[] mainTypes = jaProject.getMainTypes();
+				ClassDecl[] mainTypes = model.getMainTypes(project);
 				if (mainTypes.length == 0) {
 					// Show message: No main types in this project
 					System.out.println("No main types in this project");

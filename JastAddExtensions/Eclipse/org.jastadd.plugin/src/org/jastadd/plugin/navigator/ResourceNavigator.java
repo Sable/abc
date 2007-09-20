@@ -9,7 +9,6 @@ import org.eclipse.ui.actions.OpenResourceAction;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourcePatternFilter;
-import org.jastadd.plugin.EditorTools;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.providers.JastAddContentProvider;
@@ -51,7 +50,9 @@ public class ResourceNavigator extends org.eclipse.ui.views.navigator.ResourceNa
         
         if(element instanceof ASTNode) {
 			ASTNode node = (ASTNode)element;
-        	EditorTools.openFile(node);
+			JastAddModel model = JastAddModelProvider.getModel(node);
+			if (model != null)
+				model.openFile(node);
         }
         else if(element instanceof IFile) {
             TreeViewer viewer = getTreeViewer();

@@ -9,6 +9,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.text.IDocument;
+
+import AST.ASTNode;
 
 public class JastAddModelProvider {
 	
@@ -43,6 +46,26 @@ public class JastAddModelProvider {
 			}	
 		}
 		return null;
+	}
+	
+	public static JastAddModel getModel(IDocument document) {
+		for (Iterator itr = modelList.iterator(); itr.hasNext();) {
+			JastAddModel model = (JastAddModel)itr.next();
+			if (model.isModelFor(document)) {
+				return model;
+			}
+		}		
+		return null;
+	}
+	
+	public static JastAddModel getModel(ASTNode node) {
+		for (Iterator itr = modelList.iterator(); itr.hasNext();) {
+			JastAddModel model = (JastAddModel)itr.next();
+			if (model.isModelFor(node)) {
+				return model;
+			}
+		}		
+		return null;	
 	}
 	
 	public static void addModel(JastAddModel model) {

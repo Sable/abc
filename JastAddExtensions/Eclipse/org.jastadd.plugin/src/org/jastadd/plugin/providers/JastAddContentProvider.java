@@ -80,9 +80,10 @@ public class JastAddContentProvider implements ITreeContentProvider {
 		if(element instanceof IFileEditorInput) {
 			IFileEditorInput input = (IFileEditorInput)element;
 			IFile file = input.getFile();
-			IDocument document = JastAddDocumentProvider.fileToDocument(file);
+			
 			JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
+				IDocument document = model.fileToDocument(file);
 				ASTNode content = model.getCompilationUnit(document);
 				if(content != null)
 					return content.outlineChildren().toArray();

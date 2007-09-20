@@ -89,7 +89,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	private void buildJastAddProject(IProject project) {
 		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
 			if(m instanceof JastAddModel) {
-				m.fullBuild(m.getJastAddProject(project));
+				m.fullBuild(project);
 			}
 		}	
 	}

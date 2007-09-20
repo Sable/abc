@@ -13,11 +13,9 @@ import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.jastadd.plugin.EditorTools;
-import org.jastadd.plugin.providers.JastAddLabelProvider;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.providers.model.Node;
-
-import AST.ASTNode;
 
 public class JastAddSearchResultPage extends AbstractTextSearchViewPage implements ISearchResultPage {
 
@@ -119,7 +117,9 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 
 			if(element instanceof Node) {
 				Node node = (Node)element;
-				EditorTools.openFile(node.getASTNode());
+				JastAddModel model = JastAddModelProvider.getModel(node.getASTNode());
+				if (model != null)
+					model.openFile(node.getASTNode());
 			}
 		}
 	}

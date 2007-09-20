@@ -22,7 +22,6 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.model.repair.StructureModel;
-import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 import AST.Access;
@@ -113,15 +112,15 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 		else                             
 			buf.replace(documentOffset - 1, documentOffset, "X()"); // replace "abc.def" with "abc.dX()"
 		
-		IFile file = JastAddDocumentProvider.documentToFile(document);
-		if(file != null) {
-			IProject project = file.getProject();
-			if(project != null) {
-				String fileName = file.getRawLocation().toOSString();
-				JastAddModel model = JastAddModelProvider.getModel(file);
-				if (model != null) {
+		
+		JastAddModel model = JastAddModelProvider.getModel(document);
+		if (model != null) {
+			IFile file = model.documentToFile(document);
+			if(file != null) {
+				IProject project = file.getProject();
+				if(project != null) {
+					String fileName = file.getRawLocation().toOSString();
 					ASTNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-
 					if(node == null) {
 						// Try a structural recovery
 						documentOffset += (new StructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change

@@ -16,10 +16,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.resources.JastAddProject;
 
 import AST.ASTNode;
-import AST.ClassDecl;
 import AST.TypeDecl;
 
 
