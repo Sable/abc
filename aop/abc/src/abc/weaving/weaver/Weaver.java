@@ -241,37 +241,41 @@ public class Weaver {
                         }
                     }
                 }
-                
-                //restore the weaving state again (analysis could have tampered with it?)
-                storeBindings(unweaver);
-                
-                //reset for the final weaving step
-                resetForReweaving();
 
-                //reenable the error queue
-                Main.v().getAbcExtension().resumeErrorReporting();
-                
-                inlineConstructors();
+                if(!abc.main.Debug.v().dontWeaveAfterAnalysis) {
+                    //restore the weaving state again (analysis could have tampered with it?)
+                    storeBindings(unweaver);
+                    
+                    //reset for the final weaving step
+                    resetForReweaving();
 
-                Debug.v().cleanupAfterAdviceWeave = true;
+                    //reenable the error queue
+                    Main.v().getAbcExtension().resumeErrorReporting();
+                    
+                    inlineConstructors();
+
+                    Debug.v().cleanupAfterAdviceWeave = true;
+                }
             }
             
             if( abc.main.Debug.v().optimizeResidues ) {
                 optimizeResidues();
             }
 
-            //don't forget to process declare warning/errors;
-            //we don't do this earlier, cause the analyses can possibly
-            //support declare warning/error through static analysis
-            reportMessages();
-            
-            //remove declare warnings/errors;
-            //this must be done before the last weaving to get
-            //the right bytecode
-            removeDeclareWarnings();
-            
-            //do the final weaving
-            weaveAdvice();        
+            if(!abc.main.Debug.v().dontWeaveAfterAnalysis) {
+                //don't forget to process declare warning/errors;
+                //we don't do this earlier, cause the analyses can possibly
+                //support declare warning/error through static analysis
+                reportMessages();
+                
+                //remove declare warnings/errors;
+                //this must be done before the last weaving to get
+                //the right bytecode
+                removeDeclareWarnings();
+                
+                //do the final weaving
+                weaveAdvice();        
+            }
             
             //let the last pass tear down
             if(lastPass!=null) {
