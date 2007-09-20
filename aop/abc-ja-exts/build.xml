@@ -55,6 +55,7 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
+        <mkdir dir="classes"/>
         <!-- compile sources compiler="jikes" nowarn="true" -->
         <javac debug="true"
                fork="true" memoryMaximumSize="128M" destdir="classes">

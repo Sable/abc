@@ -1,0 +1,5 @@
+aspect Variables {
+  eq LocalVarsPointcutExpr.getParameterDeclaration().isMethodParameter() = false;
+  eq LocalVarsPointcutExpr.getParameterDeclaration().isConstructorParameter() = false;
+  eq LocalVarsPointcutExpr.getParameterDeclaration().isExceptionHandlerParameter() = false;
+}

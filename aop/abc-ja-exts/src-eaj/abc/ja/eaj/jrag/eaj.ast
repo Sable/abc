@@ -1,0 +1,21 @@
+LocalVarsPointcutExpr : PointcutExpr ::= ParameterDeclaration* PointcutExpr;
+
+CastPointcutExpr : PointcutExpr ::= Pattern;
+
+ThrowPointcutExpr : PointcutExpr ::= Pattern;
+
+CflowDepthPointcutExpr : PointcutExpr ::= VarAccess PointcutExpr;
+CflowBelowDepthPointcutExpr : PointcutExpr ::= VarAccess PointcutExpr;
+
+LetPointcutExpr : PointcutExpr ::= VarAccess Expr;
+
+ContainsPointcutExpr : PointcutExpr ::= PointcutExpr;
+
+LockPointcutExpr : PointcutExpr;
+UnlockPointcutExpr : PointcutExpr;
+
+ArrayGetPointcutExpr : PointcutExpr;
+ArraySetPointcutExpr : PointcutExpr;
+
+GlobalPointcutDecl : BodyDecl ::= Pattern PointcutExpr;
+

@@ -1,0 +1,118 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Julian Tibble
+ * Copyright (C) 2005 Ondrej Lhotak
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+PointcutExpr basic_pointcut_expr =
+        PRIVATE LPAREN formal_parameter_list_opt.a RPAREN LPAREN pointcut_expr.b RPAREN
+        {:
+            ParserTrace.parserTrace("PRIVATE formal_parameter_list, pointcut_expr");
+            return new LocalVarsPointcutExpr(a, b);
+        :}
+    |
+        PC_CAST LPAREN type_pattern_expr.a RPAREN
+        {:
+            ParserTrace.parserTrace("CAST pointcut");
+            return new CastPointcutExpr(a);
+        :}
+    |
+        PC_THROW LPAREN RPAREN
+        {:
+            ParserTrace.parserTrace("THROW pointcut");
+            return new ThrowPointcutExpr(new SimpleNamePattern("*"));
+        :}
+    |
+        PC_THROW LPAREN type_pattern_expr.a RPAREN
+        {:
+            ParserTrace.parserTrace("THROW pointcut with type_pattern_expr");
+            return new ThrowPointcutExpr(a);
+        :}
+    |
+        PC_CFLOWDEPTH LPAREN IDENTIFIER.i COMMA pointcut_expr.a RPAREN
+        {:
+            ParserTrace.parserTrace("CFLOWDEPTH pointcut");
+            return new CflowDepthPointcutExpr(new VarAccess(i), a);
+        :}
+    |
+        PC_CFLOWBELOWDEPTH LPAREN IDENTIFIER.i COMMA pointcut_expr.a RPAREN
+        {:
+            ParserTrace.parserTrace("CFLOWBELOWDEPTH pointcut");
+            return new CflowBelowDepthPointcutExpr(new VarAccess(i), a);
+        :}
+    |
+        PC_LET LPAREN IDENTIFIER.i COMMA expression.e RPAREN
+        {:
+            ParserTrace.parserTrace("LET pointcut");
+            return new LetPointcutExpr(new VarAccess(i), e);
+        :}
+    |
+    	PC_CONTAINS LPAREN pointcut_expr.pc RPAREN
+    	{:
+    		ParserTrace.parserTrace("CONTAINS pointcut");
+    		return new ContainsPointcutExpr(pc);
+    	:}
+    |
+    	PC_ARRAYGET LPAREN RPAREN
+    	{:
+    		ParserTrace.parserTrace("ARRAYGET pointcut");
+    		return new ArrayGetPointcutExpr();
+    	:}
+    |
+    	PC_ARRAYSET LPAREN RPAREN
+    	{:
+    		ParserTrace.parserTrace("ARRAYSET pointcut");
+    		return new ArraySetPointcutExpr();
+    	:}
+    |
+        PC_LOCK LPAREN RPAREN
+        {:
+            ParserTrace.parserTrace("LOCK pointcut");
+            return new LockPointcutExpr();
+        :}
+    |
+        PC_UNLOCK LPAREN RPAREN
+        {:
+            ParserTrace.parserTrace("UNLOCK pointcut");
+            return new UnlockPointcutExpr();
+        :}
+    ;
+
+BodyDecl class_member_declaration =
+        global_pointcut_decl.a
+        {:
+            ParserTrace.parserTrace("class_member_declaration is a global_pointcut_decl");
+            return a;
+        :}
+    ;
+
+BodyDecl interface_member_declaration =
+        global_pointcut_decl.a
+        {:
+            ParserTrace.parserTrace("interface_member_declaration is a global_pointcut_decl");
+            return a;
+        :}
+    ;
+
+
+BodyDecl global_pointcut_decl =
+        GLOBAL COLON classname_pattern_expr.a COLON pointcut_expr.b SEMICOLON
+        {:
+            ParserTrace.parserTrace("GLOBAL type_pattern_expr, pointcut_expr");
+            return new GlobalPointcutDecl(a, b);
+        :}
+    ;

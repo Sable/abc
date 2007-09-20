@@ -1,0 +1,60 @@
+aspect Pointcuts {
+  eq GlobalPointcutDecl.getPointcutExpr().bindsInCurrentCflow(String name) =
+    getPointcutExpr().binds(name) > 0;
+
+  public Pointcut LocalVarsPointcutExpr.pointcut() {
+    ArrayList list = new ArrayList();
+    for(int i = 0; i < getNumParameterDeclaration(); i++)
+      list.add(getParameterDeclaration(i).formal());
+    return new abc.weaving.aspectinfo.LocalPointcutVars(getPointcutExpr().pointcut(), list, pos());
+  }
+
+  public Pointcut CastPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.Cast(getPattern().typePattern(), pos());
+  }
+
+  public Pointcut ThrowPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.Throw(getPattern().typePattern(), pos());
+  }
+
+  public Pointcut CflowDepthPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.CflowDepth(
+      getPointcutExpr().pointcut(),
+      pos(),
+      new Var(getVarAccess().name(), getVarAccess().pos())
+    );
+  }
+
+  public Pointcut CflowBelowDepthPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.CflowBelowDepth(
+      getPointcutExpr().pointcut(),
+      pos(),
+      new Var(getVarAccess().name(), getVarAccess().pos())
+    );
+  }
+
+  public Pointcut LetPointcutExpr.pointcut() {
+    throw new UnsupportedOperationException("LetPointcutExpr not implemented yet");
+  }
+
+  public Pointcut ContainsPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.Contains(pos(), getPointcutExpr().pointcut());
+  }
+
+  public Pointcut LockPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.LockPointcut(pos());
+  }
+
+  public Pointcut UnlockPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.UnlockPointcut(pos());
+  }
+
+  public Pointcut ArrayGetPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.ArrayGet(pos());
+  }
+
+  public Pointcut ArraySetPointcutExpr.pointcut() {
+    return new abc.eaj.weaving.aspectinfo.ArraySet(pos());
+  }
+
+}
