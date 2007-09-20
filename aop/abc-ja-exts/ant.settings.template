@@ -1,0 +1,8 @@
+## Location of the root abc checkout
+abc.loc=../abc
+
+frontend=../Java1.4Frontend
+flattening=../JavaFlattening
+itds=../IntertypeDeclarations
+backend=../jastaddJimpleBackend
+aspectj=../abc-ja

@@ -1,0 +1,299 @@
+<!--
+ Targets for working from terminal window:
+       build (default) - generates java files and compiles them
+       clean           - removes all generated files and class files
+-->
+<project name="AspectJ JastAdd Frontend" default="build">
+
+<property file="ant.settings"/>
+<fail message="Please fix ant.settings" unless="abc.loc"/>
+
+<property file="${abc.loc}/ant.settings"/>
+<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+            unless="polyglot.loc"/>
+
+<!-- "package" is the directory where generated files will be stored -->
+<property name="package" value="abc.ja.tm.jrag"/>
+
+<!-- Arguments passed to runtests -->
+<property name="test.args" value=""/>
+
+<!-- "tools" is the directory where generators and libraries are located. -->
+<property name="tools" value="${frontend}/tools"/>
+
+<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+<taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
+                      classpath="${tools}/JFlex.jar"/>
+<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+<taskdef name="beaver" classname="beaver.comp.run.AntTask"
+                       classpath="${tools}/beaver.jar"/>
+<!-- "jastadd" is an ant task class in jastadd2.jar -->
+<taskdef name="jastadd" classname="jastadd.JastAddTask"
+                        classpath="${tools}/jastadd2.jar"/>
+
+<!-- update dependencies from CVS -->
+<target name="update">
+	<exec executable="cvs" dir="${frontend}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${backend}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${flattening}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${itds}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs" dir="${abc.loc}">
+		<arg line="-q up -dP"/>
+	</exec>
+	<exec executable="cvs">
+		<arg line="-q up -dP"/>
+	</exec>
+</target>
+
+<!-- compile sources -->
+<target name="build" depends="gen">
+        <!-- compile sources compiler="jikes" nowarn="true" -->
+        <javac debug="true"
+               fork="true" memoryMaximumSize="128M" destdir="classes">
+	<classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="${abc.loc}/classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+              <pathelement location="${abc.loc}/testing-classes"/>
+              <pathelement location="${aspectj}/classes"/>
+	      <pathelement location="."/>
+            </classpath>
+                <src path="src-tm"/>
+                <src path="src-eaj"/>
+                <src path="generated"/>
+        </javac>
+</target>
+	
+<!-- generate compiler source files -->
+<target name="gen" depends="tm-parser,eaj-parser,tm-jrag,eaj-jrag">
+  <!-- copy library files-->
+  <copy todir="generated/beaver" preservelastmodified="true">
+    <fileset dir="${frontend}/beaver"/>
+  </copy>
+</target>
+
+<target name="tm-jrag">
+  <!-- create AST node types and weave aspect modules -->
+	<jastadd package="abc.ja.tm.jrag" rewrite="true"
+                beaver="true" noVisitCheck="true"
+                noCacheCycle="true" noComponentCheck="true"
+                outdir="${basedir}/generated" lazyMaps="true"
+                suppressWarnings="false" parentInterface="false">
+		<fileset dir="${frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${flattening}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${itds}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+      <exclude name="JastAdd.*"/>
+      <exclude name="DeclarePrecedence.ast"/>
+      <exclude name="DeclareParents.ast"/>
+      <exclude name="Glue.jrag"/>
+		</fileset>
+		<fileset dir="${backend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${aspectj}/src/abc/ja/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="src-eaj/abc/ja/eaj/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="src-tm/abc/ja/tm/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+  </jastadd>
+</target>
+
+<target name="eaj-jrag">
+  <!-- create AST node types and weave aspect modules -->
+	<jastadd package="abc.ja.eaj.jrag" rewrite="true"
+                beaver="true" noVisitCheck="true"
+                noCacheCycle="true" noComponentCheck="true"
+                outdir="${basedir}/generated" lazyMaps="true"
+                suppressWarnings="false" parentInterface="false">
+		<fileset dir="${frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${flattening}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${itds}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+      <exclude name="JastAdd.*"/>
+      <exclude name="DeclarePrecedence.ast"/>
+      <exclude name="DeclareParents.ast"/>
+      <exclude name="Glue.jrag"/>
+		</fileset>
+		<fileset dir="${backend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${aspectj}/src/abc/ja/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="src-eaj/abc/ja/eaj/jrag">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+  </jastadd>
+</target>
+
+<target name="tm-parser">
+  <property name="tm-parserdir" location="generated/abc/ja/tm/parse"/>
+  <mkdir dir="${tm-parserdir}"/>
+  <!-- generate the parser phase 1, create a full .lalr
+     - specification from fragments -->
+  <concat destfile="${tm-parserdir}/JavaParser.all" binary="true" force="no">
+    <fileset dir=".">
+      <include name="src-tm/abc/ja/tm/parse/header.parser"/>
+    </fileset>
+    <fileset dir="${frontend}">
+      <include name="parser/java14.parser"/>
+    </fileset>
+    <fileset dir="${aspectj}">
+      <include name="src/abc/ja/parse/aspectj.parser"/>
+    </fileset>
+    <fileset dir=".">
+      <include name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
+    </fileset>
+    <fileset dir=".">
+      <include name="src-tm/abc/ja/tm/parse/tm.parser"/>
+    </fileset>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
+              classname="Main" fork="true" dir="${tm-parserdir}">
+		<arg line="JavaParser.all JavaParser.beaver"/>
+	</java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${tm-parserdir}/JavaParser.beaver" terminalNames="yes"
+          compress="no" useSwitch="yes"/>
+</target>
+
+<target name="eaj-parser">
+  <property name="eaj-parserdir" location="generated/abc/ja/eaj/parse"/>
+  <mkdir dir="${eaj-parserdir}"/>
+  <!-- generate the parser phase 1, create a full .lalr
+     - specification from fragments -->
+  <concat destfile="${eaj-parserdir}/JavaParser.all" binary="true" force="no">
+    <fileset dir=".">
+      <include name="src-eaj/abc/ja/eaj/parse/header.parser"/>
+    </fileset>
+    <fileset dir="${frontend}">
+      <include name="parser/java14.parser"/>
+    </fileset>
+    <fileset dir="${aspectj}">
+      <include name="src/abc/ja/parse/aspectj.parser"/>
+    </fileset>
+    <fileset dir=".">
+      <include name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
+    </fileset>
+  </concat>
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
+              classname="Main" fork="true" dir="${eaj-parserdir}">
+		<arg line="JavaParser.all JavaParser.beaver"/>
+	</java>
+  <!-- generate the parser phase 3, translating .beaver to .java -->
+  <beaver file="${eaj-parserdir}/JavaParser.beaver" terminalNames="yes"
+          compress="no" useSwitch="yes"/>
+</target>
+
+<target name="clean">
+    <delete>
+      <fileset dir="generated" includes="**/*"/>
+      <fileset dir="classes"   includes="**/*"/>
+    </delete>
+    <delete file="lib/abc-ja.jar"/>
+</target>
+	
+<target name="jar" depends="build">
+  <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
+</target>
+
+<target name="test" depends="build">
+  <java classname="abc.testing.Main" fork="true"
+        dir="${abc.loc}/ajc-harness/tests">
+    <jvmarg line="-Xmx512M" />
+    <arg line="+abc -ext abc.ja -abc -messageOverride ja"/>
+    <!--<arg value="abcTests.xml"/>-->
+    <arg line="${test.args} abcTests.xml"/>
+    <!--arg line="abcTests.xml pureJava"/-->
+    <classpath>
+      <pathelement location="classes"/>
+      <pathelement location="${abc.loc}/classes"/>
+      <pathelement location="${abc.loc}/runtime-classes"/>
+      <pathelement location="${abc.loc}/testing-classes"/>
+      <pathelement location="${polyglot.loc}"/>
+      <pathelement location="${polyglot.cupclasses.loc}"/>
+      <pathelement location="${soot.loc}"/>
+      <pathelement location="${jasmin.loc}"/>
+      <pathelement location="${xact.loc}"/>
+      <pathelement
+          location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+    </classpath>
+  </java>
+</target>
+
+<target name="run" depends="build">
+<fail message="Compiler arguments are given in variable 'args'" unless="args"/>
+  <java classname="abc.main.Main" fork="true">
+    <arg line="-ext abc.ja.tm"/>
+    <arg line="${args}"/>
+    <classpath>
+      <pathelement location="classes"/>
+      <pathelement location="${abc.loc}/classes"/>
+      <pathelement location="${abc.loc}/runtime-classes"/>
+      <pathelement location="${abc.loc}/testing-classes"/>
+      <pathelement location="${polyglot.loc}"/>
+      <pathelement location="${polyglot.cupclasses.loc}"/>
+      <pathelement location="${soot.loc}"/>
+      <pathelement location="${jasmin.loc}"/>
+      <pathelement location="${xact.loc}"/>
+      <pathelement location="${aspectj}/classes"/>
+      <pathelement
+          location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+    </classpath>
+  </java>
+</target>
+</project>
+
