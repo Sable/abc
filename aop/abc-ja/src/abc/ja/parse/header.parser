@@ -1,6 +1,6 @@
 %header {:
- package abc.ja.eaj.parse;
- import abc.ja.eaj.jrag.*;
+ package abc.ja.parse;
+ import abc.ja.jrag.*;
 :};
 %embed {:
   class Events extends Parser.Events {
@@ -78,5 +78,17 @@
     }
     return cu;
   }
+
+  /*
+  public CompilationUnit parse(java.io.InputStream is, String fileName, polyglot.util.ErrorQueue error_queue) throws java.io.IOException, beaver.Parser.Exception {
+    try {
+      this.fileName = fileName;
+      abc.ja.parse.JavaScanner scanner = new abc.ja.parse.JavaScanner(new Unicode(is), fileName, error_queue);
+      return (CompilationUnit)parse(scanner);
+    } catch(SourceError e) {
+      throw new ParseError(fileName + ": " + e.getMessage());
+    }
+  }
+  */
 :};
 

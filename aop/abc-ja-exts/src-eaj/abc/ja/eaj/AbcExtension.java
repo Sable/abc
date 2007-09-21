@@ -27,6 +27,7 @@ import soot.SootClass;
 import soot.tagkit.Host;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
+import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.eaj.weaving.matching.ArrayGetShadowMatch;
 import abc.eaj.weaving.matching.ArraySetShadowMatch;
 import abc.eaj.weaving.matching.CastShadowMatch;
@@ -36,6 +37,7 @@ import abc.eaj.weaving.matching.ThrowShadowMatch;
 import abc.eaj.weaving.matching.UnlockShadowMatch;
 import abc.eaj.weaving.weaver.SyncWarningWeaver;
 import abc.eaj.weaving.weaver.SynchronizedMethodRestructurer;
+import abc.ja.eaj.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.weaving.matching.SJPInfo;
 import abc.weaving.weaver.Weaver;
@@ -116,42 +118,41 @@ public class AbcExtension extends abc.ja.AbcExtension
     public void initLexerKeywords(AbcLexer lexer) {
                 // Add the base keywords
                 super.initLexerKeywords(lexer);
-
         // keyword for the "cast" pointcut extension
-        lexer.addPointcutKeyword("cast", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CAST)));
+        lexer.addPointcutKeyword("cast", new LexerAction_c(new Integer(Terminals.PC_CAST)));
 
         // keyword for the "throw" pointcut extension
-        lexer.addPointcutKeyword("throw", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_THROW)));
+        lexer.addPointcutKeyword("throw", new LexerAction_c(new Integer(Terminals.PC_THROW)));
 
         // keyword for the "global pointcut" extension
         if(!Debug.v().noGlobalPointcut)
-        	lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(abc.eaj.parse.sym.GLOBAL),
+        	lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(Terminals.GLOBAL),
                             new Integer(lexer.pointcut_state())));
 
         // keyword for the "cflowdepth" pointcut extension
-        lexer.addPointcutKeyword("cflowdepth", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CFLOWDEPTH)));
+        lexer.addPointcutKeyword("cflowdepth", new LexerAction_c(new Integer(Terminals.PC_CFLOWDEPTH)));
         
         // keyword for the "cflowbelowdepth" pointcut extension
-        lexer.addPointcutKeyword("cflowbelowdepth", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CFLOWBELOWDEPTH)));
+        lexer.addPointcutKeyword("cflowbelowdepth", new LexerAction_c(new Integer(Terminals.PC_CFLOWBELOWDEPTH)));
 
         // keyword for the "let" pointcut extension
-        lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET),
+        lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(Terminals.PC_LET),
                 new Integer(lexer.pointcutifexpr_state())));
         
         // keywords for the "monitorenter/monitorexit" pointcut extension
         if(Debug.v().enableLockPointcuts) {
-	        lexer.addPointcutKeyword("lock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LOCK)));
-	        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_UNLOCK)));
+	        lexer.addPointcutKeyword("lock", new LexerAction_c(new Integer(Terminals.PC_LOCK)));
+	        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(Terminals.PC_UNLOCK)));
         }
 
         if(!Debug.v().noContainsPointcut) {
         	//keyword for the "contains" pointcut extension
-        	lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CONTAINS)));
+        	lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(Terminals.PC_CONTAINS)));
         }
         
         // Array set/get pointcut keywords
-        lexer.addPointcutKeyword("arrayget", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYGET)));
-        lexer.addPointcutKeyword("arrayset", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_ARRAYSET)));
+        lexer.addPointcutKeyword("arrayget", new LexerAction_c(new Integer(Terminals.PC_ARRAYGET)));
+        lexer.addPointcutKeyword("arrayset", new LexerAction_c(new Integer(Terminals.PC_ARRAYSET)));
     }
     
     public void doMethodRestructuring() {
@@ -163,7 +164,7 @@ public class AbcExtension extends abc.ja.AbcExtension
     	super.doMethodRestructuring();
     }
 
-   public abc.ja.CompileSequence createCompileSequence() {
+   public abc.ja.eaj.CompileSequence createCompileSequence() {
     	return new CompileSequence(this);
 	 }
 

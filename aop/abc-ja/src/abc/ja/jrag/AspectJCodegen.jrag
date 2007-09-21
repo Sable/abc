@@ -72,7 +72,6 @@ aspect AspectJCodegen {
     return m;
   }
   
-  /*
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createGetter() {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createGetter();
     m.category = MethodCategory.ACCESSOR_GET;
@@ -83,6 +82,7 @@ aspect AspectJCodegen {
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
+  /*
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceGetter() {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceGetter();
     m.category = MethodCategory.ACCESSOR_GET;

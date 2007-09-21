@@ -18,6 +18,20 @@ aspect PatternsCodegen
     eq FieldPattern.fieldPattern() = this;
     eq MethodPattern.methodPattern() = this;
     eq ConstructorPattern.constructorPattern() = this;
+    public abc.weaving.aspectinfo.TypePattern Pattern.typePattern() {
+      return new abc.weaving.aspectinfo.TypePattern() {
+        public boolean matchesType(Type cl) {
+          return Pattern.this.matchesType(cl);
+        }
+        public abc.aspectj.ast.TypePatternExpr getPattern() {
+          throw new InternalCompilerError(
+                    "Can not get polyglot frontend pattern from JastAdd");
+        }
+        public boolean equivalent(abc.weaving.aspectinfo.TypePattern p) {
+          return false;
+        }
+      };
+    }
 
     // ...which throw an exception when called on the wrong node
 

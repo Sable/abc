@@ -26,7 +26,7 @@
                       classpath="${tools}/JFlex.jar"/>
 <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
 <taskdef name="beaver" classname="beaver.comp.run.AntTask"
-                       classpath="${tools}/beaver.jar"/>
+                       classpath="${aspectj}/tools/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
 <taskdef name="jastadd" classname="jastadd.JastAddTask"
                         classpath="${tools}/jastadd2.jar"/>
@@ -278,7 +278,7 @@
 <target name="run" depends="build">
 <fail message="Compiler arguments are given in variable 'args'" unless="args"/>
   <java classname="abc.main.Main" fork="true">
-    <arg line="-ext abc.ja.tm"/>
+    <arg line="-ext abc.ja.eaj"/>
     <arg line="${args}"/>
     <classpath>
       <pathelement location="classes"/>

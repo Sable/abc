@@ -26,7 +26,7 @@
                       classpath="${tools}/JFlex.jar"/>
 <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
 <taskdef name="beaver" classname="beaver.comp.run.AntTask"
-                       classpath="${tools}/beaver.jar"/>
+                       classpath="tools/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
 <taskdef name="jastadd" classname="jastadd.JastAddTask"
                         classpath="${tools}/jastadd2.jar"/>
@@ -121,7 +121,10 @@
      - specification from fragments -->
   <concat destfile="${parserdir}/JavaParser.all" binary="true" force="no">
     <fileset dir=".">
-      <include name="src/abc/ja/parse/java14.parser"/>
+      <include name="src/abc/ja/parse/header.parser"/>
+    </fileset>
+    <fileset dir="${frontend}">
+      <include name="parser/java14.parser"/>
     </fileset>
     <fileset dir=".">
       <include name="src/abc/ja/parse/aspectj.parser"/>

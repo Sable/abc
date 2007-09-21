@@ -31,7 +31,7 @@ import soot.Scene;
 import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
-import abc.ja.CompileSequence;
+import abc.ja.tm.CompileSequence;
 import abc.main.CompilerAbortedException;
 import abc.main.CompilerFailedException;
 import abc.main.Debug;
