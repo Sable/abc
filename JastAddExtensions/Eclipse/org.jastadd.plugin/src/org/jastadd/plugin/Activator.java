@@ -2,6 +2,7 @@ package org.jastadd.plugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jastadd.plugin.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 import org.osgi.framework.BundleContext;
@@ -18,15 +19,6 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 	
 	private JastAddModel model;
-	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-		plugin = this;
-		model = new JastAddModel();
-		JastAddModelProvider.addModel(model);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -34,6 +26,9 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		plugin = this;
+		model = new JastAddJModel();
+		JastAddModelProvider.addModel(model);
 	}
 
 	/*
@@ -41,14 +36,14 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		JastAddModelProvider.removeModel(model);
 		super.stop(context);
+		JastAddModelProvider.removeModel(model);
+		model = null;
+		plugin = null;
 	}
 
 	/**
 	 * Returns the shared instance
-	 *
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {

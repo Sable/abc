@@ -6,10 +6,13 @@ import org.eclipse.swt.graphics.Image;
 import AST.ASTNode;
 
 public class JastAddLabelProvider extends LabelProvider {
-	LabelProvider parent;
+	
+	private LabelProvider parent;
+	
 	public JastAddLabelProvider(LabelProvider parent) {
 		this.parent = parent;
 	}
+	
 	public JastAddLabelProvider() {
 		parent = new LabelProvider();
 	}
@@ -20,6 +23,7 @@ public class JastAddLabelProvider extends LabelProvider {
 		}
 		return parent.getText(element);
 	}
+	
 	public Image getImage(Object element) {
 		if(element instanceof ASTNode) {
 			ASTNode node = (ASTNode)element;

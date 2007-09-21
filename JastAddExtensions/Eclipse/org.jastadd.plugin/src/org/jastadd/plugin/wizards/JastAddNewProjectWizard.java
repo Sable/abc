@@ -30,7 +30,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.jastadd.plugin.builder.JastAddBuilder;
 import org.jastadd.plugin.resources.JastAddNature;
 
-public class NewProjectWizard extends Wizard implements INewWizard, IExecutableExtension {
+public abstract class JastAddNewProjectWizard extends Wizard implements INewWizard, IExecutableExtension {
 
 	private WizardNewProjectCreationPage projectPage;
 	private IProject newProject;
@@ -52,14 +52,21 @@ public class NewProjectWizard extends Wizard implements INewWizard, IExecutableE
 
 	}
 
+	@Override
 	public void addPages() {
 		super.addPages();
 		projectPage = new WizardNewProjectCreationPage("jastAddNewProjectPage");
-		projectPage.setTitle("Create new JastAdd Project");
-		projectPage.setDescription("JastAdd project");
+		projectPage.setTitle(createProjectPageTitle());
+		projectPage.setDescription(createProjectPageDescription());
 		this.addPage(projectPage);
 	}
 
+	protected abstract String createProjectPageTitle();
+	protected abstract String createProjectPageDescription();
+	protected abstract String getNatureID();
+	protected abstract String getBuilderID();
+	
+	
 	private IProject createNewProject() {
 		if (newProject != null) {
 			return newProject;
@@ -74,7 +81,7 @@ public class NewProjectWizard extends Wizard implements INewWizard, IExecutableE
 		final IProjectDescription description =
 			workspace.newProjectDescription(newProjectHandle.getName());
 		description.setLocation(newPath);
-		description.setNatureIds(new String[] { JastAddNature.NATURE_ID });
+		description.setNatureIds(new String[] { getNatureID() });
 
 		// create the new project operation
 		WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
@@ -122,14 +129,14 @@ public class NewProjectWizard extends Wizard implements INewWizard, IExecutableE
 			ICommand[] commands = desc.getBuildSpec();
 			boolean found  = false;
 			for(int i = 0; i < commands.length; i++) {
-				if(commands[i].getBuilderName().equals(JastAddBuilder.BUILDER_ID)) {
+				if(commands[i].getBuilderName().equals(getBuilderID())) {
 					found = true;
 					break;
 				}
 			}
 			if(!found) {
 				ICommand command = desc.newCommand();
-				command.setBuilderName(JastAddBuilder.BUILDER_ID);
+				command.setBuilderName(getBuilderID());
 				ICommand[] newCommands = new ICommand[commands.length + 1];
 				System.arraycopy(commands, 0, newCommands, 1, commands.length);
 				newCommands[0] = command;

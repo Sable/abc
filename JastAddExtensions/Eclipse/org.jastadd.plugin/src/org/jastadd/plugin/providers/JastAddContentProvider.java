@@ -7,12 +7,12 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IFileEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 import AST.ASTNode;
 
 public class JastAddContentProvider implements ITreeContentProvider {
-	ITreeContentProvider parent;
+	
+	private ITreeContentProvider parent;
 	
 	public JastAddContentProvider(ITreeContentProvider parent) {
 		this.parent = parent;
@@ -38,7 +38,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			IFile file = (IFile)element;
 			JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
-				ASTNode node = model.getCompilationUnit(file);
+				ASTNode node = model.getTreeRoot(file);
 				return node.outlineChildren().toArray();
 			}
 		}
@@ -67,11 +67,6 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			if (model != null) {
 				return true;
 			}
-			/*
-			String extension = file.getFileExtension();
-			if(extension != null & extension.equals("java"))
-				return true;
-			*/
 		}
 		return parent.hasChildren(element);
 	}
@@ -84,7 +79,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
 				IDocument document = model.fileToDocument(file);
-				ASTNode content = model.getCompilationUnit(document);
+				ASTNode content = model.getTreeRoot(document);
 				if(content != null)
 					return content.outlineChildren().toArray();
 			}

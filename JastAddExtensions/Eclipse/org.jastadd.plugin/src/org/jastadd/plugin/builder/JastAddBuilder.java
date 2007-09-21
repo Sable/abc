@@ -3,25 +3,14 @@ package org.jastadd.plugin.builder;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
 
-public class JastAddBuilder extends IncrementalProjectBuilder {
+public abstract class JastAddBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "org.jastadd.plugin.jastaddBuilder";
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
-	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
-	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
@@ -35,13 +24,14 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		}
 		return null;
 	}
-	
+
+	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		buildJastAddProject(getProject());
+		buildProject(getProject());
 	}
 		
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
-		buildJastAddProject(getProject());
+		buildProject(getProject());
 		//getProject().accept(new ResourceVisitor());
 	}
 
@@ -86,13 +76,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	}
 	*/
 	
-	private void buildJastAddProject(IProject project) {
-		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
-			if(m instanceof JastAddModel) {
-				m.fullBuild(project);
-			}
-		}	
-	}
+	protected abstract void buildProject(IProject project);
 	
 	private class DeltaVisitor implements IResourceDeltaVisitor {
 		/*
@@ -101,12 +85,11 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.core.resources.IResourceDelta)
 		 */
 		public boolean visit(IResourceDelta delta) throws CoreException {
-			IResource resource = delta.getResource();
 			
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 				// handle added resource
-				buildJastAddProject(getProject());
+				buildProject(getProject());
 				//checkFile(resource);
 				break;
 			case IResourceDelta.REMOVED:
@@ -114,7 +97,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
-				buildJastAddProject(getProject());
+				buildProject(getProject());
 				//checkFile(resource);
 				break;
 			}

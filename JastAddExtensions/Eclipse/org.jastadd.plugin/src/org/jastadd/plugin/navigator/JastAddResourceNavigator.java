@@ -16,7 +16,7 @@ import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 import AST.ASTNode;
 
-public class ResourceNavigator extends org.eclipse.ui.views.navigator.ResourceNavigator {
+public class JastAddResourceNavigator extends org.eclipse.ui.views.navigator.ResourceNavigator {
 	
     protected void initFilters(TreeViewer viewer) {
     	super.initFilters(viewer);

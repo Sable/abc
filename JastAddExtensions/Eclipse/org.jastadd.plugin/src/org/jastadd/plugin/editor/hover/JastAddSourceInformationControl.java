@@ -27,8 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
-import org.jastadd.plugin.editor.highlight.JastAddScanner;
+import org.jastadd.plugin.model.JastAddModel;
 
 public class JastAddSourceInformationControl implements IInformationControl, IInformationControlExtension, DisposeListener {
 
@@ -37,13 +36,17 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 	private int fMaxHeight;
 	private StyledText fText;
 	private SourceViewer fViewer;
-	private String content;
 	private Label fStatusField;
 	private Label fSeparator;
 	private Font fStatusTextFont;
 	private static final int BORDER = 1;
 
-	public JastAddSourceInformationControl(Shell parent) {
+	private JastAddModel model;
+	
+	public JastAddSourceInformationControl(Shell parent, JastAddModel model) {
+		
+		this.model = model;
+		
 		GridLayout layout;
 		GridData gd;
 
@@ -93,15 +96,12 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 	private class SourceInformationControlConfiguration extends SourceViewerConfiguration {
 	    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 			PresentationReconciler reconciler= new PresentationReconciler();
-			
-			DefaultDamagerRepairer dr= new DefaultDamagerRepairer(new JastAddScanner(new JastAddColors()));
+			DefaultDamagerRepairer dr= new DefaultDamagerRepairer(model.getEditorConfiguration().getScanner());
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
-			 
 			return reconciler;
 		}
 	}
-	
 	
 	public void addDisposeListener(DisposeListener listener) {
 		fShell.addDisposeListener(listener);

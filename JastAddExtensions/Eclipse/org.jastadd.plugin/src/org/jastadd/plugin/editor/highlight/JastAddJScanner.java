@@ -16,11 +16,9 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 
-
-public class JastAddScanner extends RuleBasedScanner {
+public class JastAddJScanner extends RuleBasedScanner {
 	public class JastAddWhitespaceDetector implements IWhitespaceDetector {
 		public boolean isWhitespace(char c) {
 			return Character.isWhitespace(c);
@@ -77,7 +75,7 @@ public class JastAddScanner extends RuleBasedScanner {
 	};
 	
 
-	public JastAddScanner(JastAddColors colors) {
+	public JastAddJScanner(JastAddColors colors) {
 		IToken keyword= new Token(new TextAttribute(colors.get(new RGB(0x7f, 0x00, 0x55)), 
 				colors.get(new RGB(0xff, 0xff, 0xff)), SWT.BOLD));
 		IToken string = new Token(new TextAttribute(colors.get(new RGB(0x2a, 0x00, 0xff))));

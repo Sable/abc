@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-public class JastAddBuildPathsPropertyPage extends PropertyPage {
+public class JastAddJBuildPathsPropertyPage extends PropertyPage {
 
 	private ClasspathContentProvider content;
 

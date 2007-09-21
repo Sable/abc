@@ -37,7 +37,6 @@ public class JastAddSearchQuery implements ISearchQuery {
 		return new JastAddSearchStatus();
 	}
 
-	
 	private class JastAddSearchStatus implements IStatus {
 
 		public IStatus[] getChildren() {

@@ -5,25 +5,26 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
-import org.jastadd.plugin.launcher.classpaths.JastAddClasspathTab;
+import org.jastadd.plugin.launcher.classpaths.JastAddJClasspathTab;
+import org.jastadd.plugin.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 
-public class JastAddTabGroup extends AbstractLaunchConfigurationTabGroup {
+public class JastAddJTabGroup extends AbstractLaunchConfigurationTabGroup {
 
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		JastAddModel model = null;
+		JastAddJModel model = null;
 		for (JastAddModel m : JastAddModelProvider.getModels()) {
-			if (m instanceof JastAddModel) {
-				model = m;
+			if (m instanceof JastAddJModel) {
+				model = (JastAddJModel)m;
 			}
 		}
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-			new JastAddMainTab(model),
+			new JastAddJMainTab(model),
 			new JavaArgumentsTab(),
 		//	new JavaJRETab(),
-		    new JastAddClasspathTab(), //	new JavaClasspathTab(),
+		    new JastAddJClasspathTab(), //	new JavaClasspathTab(),
 		//	new SourceLookupTab(),	
 			new CommonTab()
 		};

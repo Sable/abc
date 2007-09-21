@@ -1,10 +1,11 @@
 package org.jastadd.plugin.editor.folding;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
@@ -15,7 +16,6 @@ import org.eclipse.ui.IFileEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
 public class JastAddEditorFolder implements JastAddModelListener {
 	private ProjectionAnnotationModel annotationModel;
@@ -30,18 +30,16 @@ public class JastAddEditorFolder implements JastAddModelListener {
 		this.model = model;
 	}
 	
-	public void updateFoldingStructure(ArrayList positions) {
+	public void updateFoldingStructure(List<Position> positions) {
 		
 		Annotation[] annotations = new Annotation[positions.size()];
-		//this will hold the new annotations along
-		//with their corresponding positions
 		HashMap<Annotation,Object> newAnnotations = new HashMap<Annotation,Object>();
 		
-		for(int i = 0; i < positions.size(); i++)
-		{
+		int i = 0;
+		for (Position pos : positions) {
 			ProjectionAnnotation annotation = new ProjectionAnnotation();
-			newAnnotations.put(annotation, positions.get(i));
-			annotations[i] = annotation;
+			newAnnotations.put(annotation, pos);
+			annotations[i++] = annotation;
 		}
 		
 		annotationModel.modifyAnnotations(oldAnnotations, newAnnotations, null);
@@ -60,7 +58,7 @@ public class JastAddEditorFolder implements JastAddModelListener {
 				// run update in the SWT UI thread
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						ArrayList positions = model.getFoldingPositions(document);
+						List<Position> positions = model.getEditorConfiguration().getFoldingPositions(document);
 						updateFoldingStructure(positions);
 					}
 				});

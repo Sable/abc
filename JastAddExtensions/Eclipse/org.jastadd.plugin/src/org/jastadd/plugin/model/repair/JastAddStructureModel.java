@@ -10,7 +10,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 
-public class StructureModel {
+public class JastAddStructureModel {
 	
 	
 	// ============= Public =======================
@@ -22,7 +22,7 @@ public class StructureModel {
 	public static final char DELIM_COMMA = ',';
 	public static final char DELIM_SEMICOLON = ';';
 	
-	public StructureModel(StringBuffer buf) {
+	public JastAddStructureModel(StringBuffer buf) {
 		
 		this.buf = buf;
 		treeBuilt = true;

@@ -21,9 +21,9 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
  * </p>
  * @since 3.0
  */
-public class JastAddSourceLookupParticipant extends AbstractSourceLookupParticipant {
+public class JastAddJSourceLookupParticipant extends AbstractSourceLookupParticipant {
 	
-	public JastAddSourceLookupParticipant() {
+	public JastAddJSourceLookupParticipant() {
 		super();
 	}
 	

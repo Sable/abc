@@ -8,6 +8,7 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -21,10 +22,10 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
-import org.jastadd.plugin.editor.completion.JastAddCompletionProcessor;
+import org.jastadd.plugin.editor.completion.JastAddJCompletionProcessor;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
-import org.jastadd.plugin.editor.highlight.JastAddScanner;
+import org.jastadd.plugin.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.model.JastAddModel;
 
@@ -53,7 +54,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return model.getTextHover();
+		return model.getEditorConfiguration().getTextHover();
 	}
 	
 	/**
@@ -62,7 +63,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(model.getScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(model.getEditorConfiguration().getScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		return reconciler;
@@ -73,7 +74,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override 
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-		return new IAutoEditStrategy[] { model.getAutoIndentStrategy() };
+		return new IAutoEditStrategy[] { model.getEditorConfiguration().getAutoIndentStrategy() };
 	}
 		
 	/**
@@ -81,16 +82,20 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-		ContentAssistant assistant= new ContentAssistant();
-		assistant.enableAutoActivation(true);
-		assistant.setAutoActivationDelay(500);
-		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-		assistant.setContentAssistProcessor(model.getCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
-		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
-		assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
-		assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
-		assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));	
-		return assistant;
+		IContentAssistProcessor completionProcessor = model.getEditorConfiguration().getCompletionProcessor();
+		if (completionProcessor != null) {
+			ContentAssistant assistant= new ContentAssistant();
+			assistant.enableAutoActivation(true);
+			assistant.setAutoActivationDelay(500);
+			assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
+			assistant.setContentAssistProcessor(completionProcessor, IDocument.DEFAULT_CONTENT_TYPE);
+			assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
+			assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
+			assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
+			assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));	
+			return assistant;
+		} 
+		return null;
 	}
 	
 	/**

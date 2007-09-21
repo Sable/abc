@@ -9,7 +9,7 @@ import org.eclipse.debug.core.sourcelookup.ISourceLookupParticipant;
 import org.eclipse.debug.core.sourcelookup.containers.ProjectSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.WorkspaceSourceContainer;
 
-public class JastAddSourceLookupDirector extends AbstractSourceLookupDirector {
+public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector {
 	
 	private static Set<String> fFilteredTypes;
 	
@@ -25,7 +25,7 @@ public class JastAddSourceLookupDirector extends AbstractSourceLookupDirector {
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector#initializeParticipants()
 	 */
 	public void initializeParticipants() {
-		addParticipants(new ISourceLookupParticipant[] {new JastAddSourceLookupParticipant()});
+		addParticipants(new ISourceLookupParticipant[] {new JastAddJSourceLookupParticipant()});
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector#supportsSourceContainerType(org.eclipse.debug.internal.core.sourcelookup.ISourceContainerType)

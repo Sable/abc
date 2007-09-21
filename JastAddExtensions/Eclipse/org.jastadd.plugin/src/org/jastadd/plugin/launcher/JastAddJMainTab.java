@@ -1,6 +1,5 @@
 package org.jastadd.plugin.launcher;
 
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -30,22 +29,22 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddJModel;
 
 import AST.ClassDecl;
 
-public class JastAddMainTab extends AbstractLaunchConfigurationTab {
+public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 
-	// -- Widget creation stuff --
-	
 	private Text projText;
 	private Text mainClassText;
 	private Button projButton;
 	private Button mainClassButton;
 	
-	private JastAddModel model;
+	private JastAddJModel model;
+
 	
-	public JastAddMainTab(JastAddModel model) {
+	
+	public JastAddJMainTab(JastAddJModel model) {
 		super();
 		this.model = model;
 	}

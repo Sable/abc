@@ -29,7 +29,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	    	model.addListener(this);
 	}
 	
-	@Override public void dispose() {
+	@Override 
+	public void dispose() {
 		super.dispose();
 		if (model != null)
 			model.removeListener(this);
@@ -40,16 +41,18 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 		update();
 	}
 	
+	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		TreeViewer viewer = getTreeViewer();
-		viewer.setContentProvider(model.getContentProvider());
-		viewer.setLabelProvider(model.getLabelProvider());
+		viewer.setContentProvider(model.getEditorConfiguration().getContentProvider());
+		viewer.setLabelProvider(model.getEditorConfiguration().getLabelProvider());
 		viewer.addSelectionChangedListener(this);
 		if (fInput != null)
 			viewer.setInput(fInput);
 	}
 	
+	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		super.selectionChanged(event);
 		ISelection selection= event.getSelection();

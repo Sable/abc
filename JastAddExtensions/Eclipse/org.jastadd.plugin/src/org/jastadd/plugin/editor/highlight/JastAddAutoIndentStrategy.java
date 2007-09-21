@@ -31,12 +31,12 @@ public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 	
 	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) {
 		if (model != null)
-			model.getDocInsertionOnKeypress(doc, cmd);
+			model.getEditorConfiguration().getDocInsertionOnKeypress(doc, cmd);
 	}
 
 	private void smartIndentAfterNewLine(IDocument doc, DocumentCommand cmd) {
 		if (model != null)
-			model.getDocInsertionAfterNewline(doc, cmd);
+			model.getEditorConfiguration().getDocInsertionAfterNewline(doc, cmd);
 	}
 
 	private boolean isLineDelimiter(IDocument document, String text) {

@@ -21,7 +21,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.model.repair.StructureModel;
+import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
 import AST.ASTNode;
 import AST.Access;
@@ -31,7 +31,7 @@ import AST.MethodAccess;
 import AST.ParExpr;
 import beaver.Parser.Exception;
 
-public class JastAddCompletionProcessor implements IContentAssistProcessor {
+public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
 			int documentOffset) {
@@ -123,7 +123,7 @@ public class JastAddCompletionProcessor implements IContentAssistProcessor {
 					ASTNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 					if(node == null) {
 						// Try a structural recovery
-						documentOffset += (new StructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
+						documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
 
 						node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 						if (node == null) {

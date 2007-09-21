@@ -17,7 +17,7 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
 
-public class JastAddLaunchDelegate extends JavaLaunchDelegate {
+public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
 		if (!saveBeforeLaunch(configuration, mode, monitor)) {
@@ -94,7 +94,7 @@ public class JastAddLaunchDelegate extends JavaLaunchDelegate {
 			ILaunchConfiguration configuration) throws CoreException {
 		//  set default source locator if none specified
 		if (launch.getSourceLocator() == null) {
-			ISourceLookupDirector sourceLocator = new JastAddSourceLookupDirector();
+			ISourceLookupDirector sourceLocator = new JastAddJSourceLookupDirector();
 			sourceLocator
 					.setSourcePathComputer(getLaunchManager()
 							.getSourcePathComputer(

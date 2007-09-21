@@ -2,7 +2,7 @@ package org.jastadd.plugin;
 
 import java.io.File;
 
-import org.jastadd.plugin.model.repair.StructureModel;
+import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
 import junit.framework.TestCase;
 
@@ -14,7 +14,7 @@ public class StructureModelTest extends TestCase {
 	private String recover(String str) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(str);
-		StructureModel m = new StructureModel(buf);
+		JastAddStructureModel m = new JastAddStructureModel(buf);
 		m.doRecovery(0);
 		return buf.toString();
 	}

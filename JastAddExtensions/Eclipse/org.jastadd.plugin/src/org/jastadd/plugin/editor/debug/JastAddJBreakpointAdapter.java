@@ -21,11 +21,11 @@ import AST.ASTNode;
 import AST.TypeDecl;
 
 
-public class JastAddBreakpointAdapter implements IToggleBreakpointsTargetExtension {
+public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtension {
 	
 	private ITextEditor editor;
 	
-	public JastAddBreakpointAdapter(ITextEditor editor) {
+	public JastAddJBreakpointAdapter(ITextEditor editor) {
 		this.editor = editor;
 	}
 	

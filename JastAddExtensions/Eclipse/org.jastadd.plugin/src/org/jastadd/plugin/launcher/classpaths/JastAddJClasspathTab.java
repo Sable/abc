@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
-public class JastAddClasspathTab extends AbstractLaunchConfigurationTab {
+public class JastAddJClasspathTab extends AbstractLaunchConfigurationTab {
 
 	// -- Widget stuff --
 	private ClasspathContentProvider content;

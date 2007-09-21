@@ -5,57 +5,36 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
-import org.jastadd.plugin.builder.JastAddBuilder;
 
-public class JastAddNature implements IProjectNature {
-
-	/**
-	 * ID of this project nature
-	 */
-	public static final String NATURE_ID = "org.jastadd.plugin.jastaddNature";
+public abstract class JastAddNature implements IProjectNature {
 
 	private IProject project;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#configure()
-	 */
 	public void configure() throws CoreException {
-		
-		System.out.println("Adding Java Nature");
 		/* Builder is added via the plugin.xml file */
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
-
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(JastAddBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(getBuilderID())) {
 				return;
 			}
 		}
-
 		ICommand[] newCommands = new ICommand[commands.length + 1];
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
-		command.setBuilderName(JastAddBuilder.BUILDER_ID);
+		command.setBuilderName(getBuilderID());
 		
 		newCommands[newCommands.length - 1] = command;
 		desc.setBuildSpec(newCommands);
 		project.setDescription(desc, null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
-	 */
 	public void deconfigure() throws CoreException {
-		System.out.println("Removing Java Nature");
 		/* Builder is added via the plugin.xml file */
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(JastAddBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(getBuilderID())) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
 				System.arraycopy(commands, i + 1, newCommands, i,
@@ -66,22 +45,13 @@ public class JastAddNature implements IProjectNature {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#getProject()
-	 */
 	public IProject getProject() {
 		return project;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core.resources.IProject)
-	 */
 	public void setProject(IProject project) {
 		this.project = project;
 	}
 
+	protected abstract String getBuilderID();
 }
