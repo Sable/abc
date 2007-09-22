@@ -120,15 +120,16 @@
   <!-- generate the parser phase 1, create a full .lalr
      - specification from fragments -->
   <concat destfile="${parserdir}/JavaParser.all" binary="true" force="no">
-    <fileset dir=".">
-      <include name="src/abc/ja/parse/header.parser"/>
-    </fileset>
-    <fileset dir="${frontend}">
-      <include name="parser/java14.parser"/>
-    </fileset>
-    <fileset dir=".">
-      <include name="src/abc/ja/parse/aspectj.parser"/>
-    </fileset>
+    <filelist dir=".">
+      <file name="src/abc/ja/parse/header.parser"/>
+    </filelist>
+    <filelist dir="${frontend}">
+      <file name="parser/java14.parser"/>
+    </filelist>
+    <filelist dir=".">
+      <file name="src/abc/ja/parse/errorproductions.parser"/>
+      <file name="src/abc/ja/parse/aspectj.parser"/>
+    </filelist>
   </concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->
 	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
