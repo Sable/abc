@@ -1677,22 +1677,22 @@ public class CodeGenHelper
     public void extractBodyMethod()
     {
         SootClass container = tm.getContainerClass();
-        SootMethod real_body_method = tm.getBodyMethod();
+        SootMethod old_body_method = tm.getBodyMethod();
 
-        String old_name = real_body_method.getName();
-        List types = new ArrayList(real_body_method.getParameterTypes());
-        Type ret_type = real_body_method.getReturnType();
-        int modifiers = real_body_method.getModifiers();
-        List exceptions = real_body_method.getExceptions();
+        String new_name = old_body_method.getName() + "_real";
+        List types = new ArrayList(old_body_method.getParameterTypes());
+        Type ret_type = old_body_method.getReturnType();
+        int modifiers = old_body_method.getModifiers();
+        List exceptions = old_body_method.getExceptions();
 
-        real_body_method.setName(old_name + "_real");
+        SootMethod real_body_method =
+            new SootMethod(new_name, types, ret_type, modifiers, exceptions);
 
-        SootMethod body_method =
-            new SootMethod(old_name, types, ret_type, modifiers, exceptions);
+        real_body_method.setActiveBody(old_body_method.getActiveBody());
+        Body new_body = Jimple.v().newBody(old_body_method);
+        old_body_method.setActiveBody(new_body);
 
-        Body new_body = Jimple.v().newBody(body_method);
-        body_method.setActiveBody(new_body);
-        container.addMethod(body_method);
+        container.addMethod(real_body_method);
     }
 
     public void transformRealBodyMethod()

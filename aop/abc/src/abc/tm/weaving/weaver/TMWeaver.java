@@ -71,14 +71,19 @@ public class TMWeaver extends Weaver
         }
     }
 
-    public void weave()
+    public void weaveAdvice()
     {
-        super.weave();
+    	if(Debug.v().shadowCount && nowLastWeavingPass) {
+    		//conjoin all residues with a residue for counting shadows
+    		ShadowCountManager.setCountResidues();
+    	}
+
+        super.weaveAdvice();
 
         Iterator i = ((TMGlobalAspectInfo)
                         abc.main.Main.v().getAbcExtension()
                                          .getGlobalAspectInfo())
-                                            .getTraceMatches().iterator();
+                                         .getTraceMatches().iterator();
 
         while (i.hasNext()) {
             TraceMatch tm = (TraceMatch) i.next();
@@ -88,14 +93,5 @@ public class TMWeaver extends Weaver
             helper.transformRealBodyMethod();
             helper.genRunSolutions();
         }
-    }
-    
-    public void weaveAdvice() {
-    	if(Debug.v().shadowCount && nowLastWeavingPass) {
-    		//conjoin all residues with a residue for counting shadows
-    		ShadowCountManager.setCountResidues();
-    	}
-    	
-    	super.weaveAdvice();
     }
 }
