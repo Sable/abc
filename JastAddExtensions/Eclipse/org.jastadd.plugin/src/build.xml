@@ -23,20 +23,23 @@
 	  <!-- compile sources compiler="jikes" nowarn="true"-->
 	  <javac debug="true" nowarn="true" srcdir="." sourcepath="" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"
 	         fork="true">
-    <include name ="*.java"/>
+	c    <include name ="*.java"/>
 	    <include name ="AST/*.java"/>
+	  	<!--
 	    <include name ="bytecode/**/*.java"/>
 	    <include name ="parser/**/*.java"/>
 	    <include name ="server/**/*.java"/>
 	    <include name ="beaver/**/*.java"/>
+	    -->
 	  </javac>
 </target>
 	
 <!-- generate compiler source files -->
-<target name="gen" depends="scanner,parser">
+<target name="gen"> <!-- depends="scanner,parser"> -->
   <!-- create AST node types and weave aspect modules -->
 	<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true"
            outdir="${basedir}" lazyMaps="true" suppressWarnings="false" parentInterface="false">
+		<!--
 		<fileset dir="../../Java1.4Frontend">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -47,6 +50,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		-->
 		<fileset dir=".">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
@@ -59,13 +63,16 @@
       <include name="**/*.java"/>
     </fileset>
   </copy>
+	<!--
   <copy todir="bytecode" preservelastmodified="true">
     <fileset dir="../../Java1.4Frontend/bytecode">
       <include name="**/*.java"/>
     </fileset>
   </copy>
+  -->
 </target>
 
+	
 <target name="scanner">
     <mkdir dir="scanner"/>
 		<!-- compose the scanner -->
@@ -131,10 +138,12 @@
 <!-- remove generated source files -->
 <target name="cleanGen">
     <delete dir="${package}"/>
+	<!--
     <delete dir="beaver"/>
     <delete dir="bytecode"/>
     <delete dir="parser"/>
     <delete dir="scanner"/>
+    -->
 </target>
 
 <target name="jar" depends="build">

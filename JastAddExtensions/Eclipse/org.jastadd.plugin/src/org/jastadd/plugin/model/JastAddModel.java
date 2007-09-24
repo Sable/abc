@@ -281,13 +281,5 @@ public abstract class JastAddModel {
 	protected abstract void completeBuild(IProject project);
 	protected abstract ASTNode getTreeRootNode(IProject project, String filePath);
 
-	
-	
-
-
-	
-	
-	
-	
 
 }

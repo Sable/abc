@@ -22,11 +22,6 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Shell;
-import org.jastadd.plugin.editor.completion.JastAddJCompletionProcessor;
-import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
-import org.jastadd.plugin.editor.highlight.JastAddJScanner;
-import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.model.JastAddModel;
 
 /**

@@ -48,14 +48,13 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// TODO Auto-generated method stub
-
+		System.out.println("Initializing new project wizard JastAddJ");
 	}
 
 	@Override
 	public void addPages() {
 		super.addPages();
-		projectPage = new WizardNewProjectCreationPage("jastAddNewProjectPage");
+		projectPage = new WizardNewProjectCreationPage("JastAddNewProjectPage");
 		projectPage.setTitle(createProjectPageTitle());
 		projectPage.setDescription(createProjectPageDescription());
 		this.addPage(projectPage);
