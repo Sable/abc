@@ -1,0 +1,23 @@
+aspect JastAddJFindDeclaration {
+	
+	eq VarAccess.declaration() = (ASTNode)decl();
+	eq TypeAccess.declaration() = type();
+	eq MethodAccess.declaration() = decl();
+	
+	eq TypeDecl.declaration() = this;
+	eq MethodDecl.declaration() = this;
+	eq ParameterDeclaration.declaration() = this;
+	eq FieldDeclaration.declaration() = this;
+	eq VariableDeclaration.declaration() = this;
+	
+	syn CompilationUnit ASTNode.declarationCompilationUnit() {
+	  ASTNode target = this;
+	  while (target != null && !(target instanceof CompilationUnit))
+        target = target.getParent();
+
+      if (target instanceof CompilationUnit)
+        return (CompilationUnit)target;
+      return null;
+    }
+    
+}

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <!-- Core Markers -->
+ <!--
+	<extension point = "org.eclipse.core.resources.markers"
+		id = "org.jastadd.plugin.marker.ErrorMarker"
+		name = "JastAdd Error">
+	<super
+		type = "org.eclipse.core.resources.problemmarker">
+	</super>
+	<persistent
+		value = "true">
+	</persistent>
+	</extension>
+
+	<extension point = "org.eclipse.core.resources.markers"
+		id = "org.jastadd.plugin.marker.ParseErrorMarker"
+		name = "JastAdd Parse Error">
+	<super
+		type = "org.eclipse.core.resources.problemmarker">
+	</super>
+	<persistent
+		value = "true">
+	</persistent>
+	</extension>   
+-->
+	<!-- Core Resource View -->   
+  <!--
+	<extension point = "org.eclipse.ui.views">
+	<view
+		class="org.jastadd.plugin.navigator.JastAddResourceNavigator"
+		id="org.jastadd.plugin.navigator"
+		name="JastAdd Navigator">
+	</view>
+	</extension>
+-->
+	<!-- Core Search Management -->
+<!--
+	<extension point = "org.eclipse.search.searchResultViewPages"
+		id = "org.jastadd.plugin.SearchResultPage">
+	<viewPage
+		id = "org.jastadd.plugin.search.JastAddSearchResultPage"
+		searchResultClass = "org.jastadd.plugin.search.JastAddSearchResult"
+		class = "org.jastadd.plugin.search.JastAddSearchResultPage">
+	</viewPage>
+	</extension>
+-->
+	<!-- Core Editing Context -->
+<!--
+	<extension point="org.eclipse.ui.contexts">
+	<context
+		name="Editing JastAdd Source"
+		description="Editing JastAdd Source"
+		parentId="org.eclipse.ui.textEditorScope"
+		id="org.jastadd.plugin.JastAddEditorScope">
+	</context>
+	</extension>
+-->
+
+
+   <!-- Core/JastAddJ Perspective -->
+  <!-- 
+	<extension point = "org.eclipse.ui.perspectives">
+	<perspective
+		class = "org.jastadd.plugin.perspective.JastAddPerspectiveFactory"
+		id = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
+		name = "JastAddJ">
+	</perspective>
+	</extension>
+   -->
+
+   
+   <!-- JastAddJ Nature -->
+
+	<extension point = "org.eclipse.core.resources.natures"
+		id = "org.jastadd.plugin.jastaddj.JastAddJNature"
+		name = "JastAddJ Nature">
+	<runtime>
+		<run class = "org.jastadd.plugin.jastaddj.nature.JastAddJNature"/>
+	</runtime>
+	<builder id = "org.jastadd.plugin.jastaddj.JastAddJBuilder"/>
+	</extension>
+
+	<extension point = "org.eclipse.ui.ide.projectNatureImages">
+		<image id = "org.eclipse.ui.JastAddJNatureImage" 
+			natureId = "org.jastadd.plugin.jastaddj.nature.JastAddJNature"
+			icon = "icons/eview16/projects.gif">
+		</image>
+	</extension>
+
+	<!-- JastAddJ Builder -->
+
+	<extension point = "org.eclipse.core.resources.builders"
+		id = "org.jastadd.plugin.jastaddj.JastAddJBuilder"
+		name = "JastAdd Builder">
+<!--         
+    <extension
+         id="org.jastadd.plugin.jastaddBuilder"
+         name="JastAdd Builder"
+         point="org.eclipse.core.resources.builders">
+-->         
+	<builder hasNature = "true">
+		<run class = "org.jastadd.plugin.jastaddj.builder.JastAddJBuilder"/>
+	</builder>
+	</extension>
+
+	<!-- JastAddJ Build Path Management -->
+   
+	<extension point = "org.eclipse.ui.propertyPages">
+	<page
+		objectClass = "org.eclipse.core.resources.IProject"
+		name = "JastAddJ Build Path"        
+		class = "org.jastadd.plugin.jastaddj.builder.JastAddJBuildPathsPropertyPage"
+		id = "org.jastadd.plugin.jastaddj.JastAddJBuildPathsPropertyPage">
+		<filter
+			name = "nature"
+			value = "org.jastadd.plugin.jastaddj.nature.JastAddJNature">
+		</filter>
+	</page>
+	</extension>
+
+
+	<!-- JastAddJ Launch -->
+   
+	<extension point = "org.eclipse.debug.core.launchConfigurationTypes">
+	<launchConfigurationType
+		delegate = "org.jastadd.plugin.jastaddj.launcher.JastAddJLaunchDelegate"
+		id = "org.jastadd.plugin.jastaddj.JastAddJLaunchConfigurationType"
+		modes = "run,debug"
+		name = "JastAddJ Launcher">
+	</launchConfigurationType>
+	</extension>
+	<extension point = "org.eclipse.debug.ui.launchConfigurationTabGroups">
+    	<launchConfigurationTabGroup
+        	type = "org.jastadd.plugin.jastaddj.JastAddJLaunchConfigurationType"
+        	class = "org.jastadd.plugin.jastaddj.launcher.JastAddJTabGroup"
+        	id = "org.jastadd.plugin.jastaddj.JastAddJTabGroup">
+    	</launchConfigurationTabGroup>
+	</extension>
+   
+	<!-- JastAddJ Breakpoint Management -->
+   
+	<extension point = "org.eclipse.ui.editorActions">
+	<editorContribution
+		targetID = "org.jastadd.plugin.jastaddj.JastAddJEditor"
+		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpointRulerActions">
+		<action
+			label = "Add Breakpoint"
+			class = "org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+			actionID = "RulerDoubleClick"
+			id = "org.jastadd.plugin.jastaddj.ManageBreakpointRulerAction">
+		</action>
+	</editorContribution>
+	</extension>
+
+	<extension point = "org.eclipse.debug.core.breakpoints">
+	<breakpoint
+		class = "org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint"
+		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpoint"
+		markerType = "org.jastadd.plugin.jastaddj.JastAddJBreakpointMarker"
+		name = "JastAddJ Breakpoint"/>
+	</extension>
+	
+	<extension point = "org.eclipse.core.resources.markers"
+		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpointMarker" 
+		name = "JastAddJ Breakpoint Marker">
+	<super type = "org.eclipse.debug.core.breakpointMarker"/>
+	</extension>
+	
+	<!-- JastAddJ Resource Filter -->
+   
+	<extension point = "org.eclipse.ui.ide.resourceFilters" 
+		name = "org.jastadd.plugin.jastaddj.classfilter">
+	<filter pattern = "*.class" selected = "true"/>
+	</extension>
+   
+	<!-- JastAddJ New Project Wizard -->
+	
+	<extension point = "org.eclipse.ui.newWizards">
+	<wizard id = "org.jastadd.plugin.jastaddj.JastAddJNewProjectWizard"
+		name = "New JastAddJ Project"
+		icon = "icons/obj16/ja_fldr_obj.gif"
+		preferredPerspectives = "org.jastadd.plugin.JastAddPerspective"
+		project = "true"
+		finalPerspective = "org.jastadd.plugin.JastAddPerspective"
+		class = "org.jastadd.plugin.jastaddj.wizards.JastAddJNewProjectWizard">
+ 		<description>Create a New JastAddJ Project</description>
+		<selection class = "org.eclipse.core.resources.IResource"/>
+	</wizard>
+	</extension>
+	
+	<!-- JastAddJ Editor -->
+   
+	<extension point = "org.eclipse.ui.editors">
+	<editor
+		class = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor"
+		extensions = "java"
+		icon = "icons/obj16/java.gif"
+		id = "org.jastadd.plugin.jastaddj.JastAddJEditor"  
+		name = "JastAddJ Editor">
+	</editor>
+	</extension>
+	
+	<!-- JastAddJ Commands -->
+
+   <extension point = "org.eclipse.ui.commands">
+		<category
+			name = "Source"
+			description = "JastAddJ Source"
+			id = "org.jastadd.plugin.category.source">
+		</category>
+		<command
+			name = "Find Declaration"
+			id = "org.jastadd.plugin.jastaddj.search.declaration"
+			description = "JastAddJ Find Declaration"
+			categoryId = "org.eclipse.ui.category.source">
+		</command>
+		<command
+			name = "Find References"
+			id = "org.jastadd.plugin.jastaddj.search.references"
+			description = "JastAddJ Find References"
+			categoryId = "org.jastadd.plugin.category.source">
+		</command>
+		<command
+			name = "Find Implements"
+			id = "org.jastadd.plugin.jastaddj.search.implements"
+			description = "JastAddJ Find Implements"
+			categoryId = "org.jastadd.plugin.category.source">
+		</command>
+	</extension>
+
+	<!-- JastAddJ Command Handlers -->
+   
+	<extension point = "org.eclipse.ui.handlers">
+	<handler
+		class = "org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler"
+		commandId = "org.jastadd.plugin.jastaddj.search.declaration">
+		<activeWhen>
+			<with variable = "activeContexts">
+				<iterate operator = "or">
+					<equals value = "org.jastadd.plugin.JastAddEditorScope"/>
+				</iterate>
+			</with>
+		</activeWhen>
+	</handler>
+   	<handler
+		class = "org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler"
+		commandId = "org.jastadd.plugin.jastaddj.search.references">
+		<activeWhen>
+			<with variable = "activeContexts">
+				<iterate operator = "or">
+					<equals value = "org.jastadd.plugin.JastAddEditorScope"/>
+				</iterate>
+			</with>
+		</activeWhen>
+	</handler>
+   	<handler
+		class = "org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler"
+		commandId = "org.jastadd.plugin.jastaddj.search.implements">
+		<activeWhen>
+			<with variable = "activeContexts">
+				<iterate operator = "or">
+					<equals value = "org.jastadd.plugin.JastAddEditorScope"/>
+				</iterate>
+			</with>
+		</activeWhen>
+	</handler>	
+	</extension>
+
+	<!-- JastAddJ Keybindings -->
+	
+	<extension point = "org.eclipse.ui.bindings">
+	<key sequence = "F3"
+		commandId = "org.jastadd.plugin.jastaddj.search.declaration"
+		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
+		contextId = "org.jastadd.plugin.JastAddEditorScope"/>
+	<key sequence = "F4"
+		commandId = "org.jastadd.plugin.jastaddj.search.references"
+		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
+		contextId = "org.jastadd.plugin.JastAddEditorScope"/>
+	<key sequence = "F5"
+		commandId = "org.jastadd.plugin.jastaddj.search.implements"
+		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
+		contextId = "org.jastadd.plugin.JastAddEditorScope"/>
+	</extension>	
+
+	<!-- JastAddJ Editor Popup Actions -->
+
+	<extension point = "org.eclipse.ui.popupMenus">
+	<viewerContribution 
+		id = "org.jastadd.plugin.jastaddj.editor.JastAddJPopupAction"
+		targetID = "#TextEditorContext">
+		<menu
+			id = "org.jastadd.plugin.jastaddj.editor.JastAddJFindMenu"
+			label = "Find"
+			path = "additions">
+			<separator name = "findGroup"/>
+		</menu>
+		<action
+			id = "org.jastadd.plugin.jastaddj.editor.JastAddJFindImplAction" 
+			label = "Implements"
+			menubarPath = "org.jastadd.plugin.jastaddj.editor.JastAddJFindMenu/findGroup"
+			definitionId = "org.jastadd.plugin.jastaddj.search.implements"
+			class = "org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler">
+		</action> 
+		<action 
+			id = "org.jastadd.plugin.jastaddj.editor.JastAddJFindRefAction" 
+			label = "References"
+			menubarPath = "org.jastadd.plugin.jastaddj.editor.JastAddJFindMenu/findGroup"
+			class = "org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler"
+			definitionId = "org.jastadd.plugin.jastaddj.search.references"> 
+		</action> 
+        <action id = "org.jastadd.plugin.jastaddj.editor.JastAddJFindDeclAction" 
+			label = "Declaration"
+			menubarPath = "org.jastadd.plugin.jastaddj.editor.JastAddJFindMenu/findGroup"
+			class = "org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler"
+			definitionId = "org.jastadd.plugin.jastaddj.search.declaration"> 
+		</action>        
+	</viewerContribution>
+	</extension>
+	
+	<!-- JastAddJ Workspace Actions -->
+	
+	<extension point = "org.eclipse.ui.actionSets">
+	<actionSet id = "org.jastadd.plugin.jastaddj.search.actionSet"
+		label = "JastAddJ Search Actions"
+		visible = "false">
+		<menu
+			label = "Search"
+			path = "navigate"
+			id = "org.eclipse.search.menu">
+			<groupMarker name = "internalDialogGroup"/>   
+			<groupMarker name = "dialogGroup"/>
+			<separator name = "fileSearchContextMenuActionsGroup"/>
+			<separator name = "contextMenuActionsGroup"/>
+			<separator name = "occurencesActionsGroup"/>
+			<separator name = "extraSearchGroup"/> 
+		</menu>
+		<action
+			label = "Find implements"
+			class = "org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler"
+			menubarPath = "org.eclipse.search.menu/dialogGroup"
+			definitionId = "org.jastadd.plugin.jastaddj.search.implements"
+			id = "org.jastadd.plugin.jastaddj.search.FindImplementsAction">
+		</action>
+		<action
+			label = "Find references"
+			class = "org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler"
+			menubarPath = "org.eclipse.search.menu/dialogGroup"
+			definitionId = "org.jastadd.plugin.jastaddj.search.references"
+			id = "org.jastadd.plugin.jastaddj.search.FindReferencesAction">
+		</action>
+		<action
+			label = "Find declarations"
+			class = "org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler"
+			menubarPath = "org.eclipse.search.menu/dialogGroup"
+			definitionId = "org.jastadd.plugin.jastaddj.search.declaration"
+			id = "org.jastadd.plugin.jastaddj.search.FindDeclarationAction">
+		</action>
+	</actionSet>
+	</extension>
+	
+	<!-- JastAddJ Editor ActionSet Association -->
+	
+	<extension point = "org.eclipse.ui.actionSetPartAssociations">
+	<actionSetPartAssociation
+		targetID = "org.jastadd.plugin.jastaddj.search.actionSet">
+		<part id = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor">
+		</part>
+	</actionSetPartAssociation>
+	</extension>
+
+</plugin>

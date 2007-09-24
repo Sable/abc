@@ -3,6 +3,7 @@
 	<name>org.jastadd.plugin.jastaddj</name>
 	<comment></comment>
 	<projects>
+		<project>org.jastadd.plugin</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

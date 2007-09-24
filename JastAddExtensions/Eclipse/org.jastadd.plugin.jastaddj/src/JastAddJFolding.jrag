@@ -1,0 +1,40 @@
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.BadLocationException;
+
+aspect JastAddJFolding {
+	
+	eq TypeDecl.hasFolding() = true;
+	eq MethodDecl.hasFolding() = true;
+		
+	eq CompilationUnit.foldingPositions(IDocument document) {
+		ArrayList list = new ArrayList();
+	    int importLineStart = -1;
+	    ImportDecl decl = null;
+		
+		for (int i = 0; i < getNumImportDecl(); i++) {
+			decl = getImportDecl(i);
+			if (importLineStart < 0) {
+				importLineStart = ASTNode.getLine(decl.getStart());
+			}
+		}
+		
+		try {
+			if (decl != null) {
+				int importLineEnd = ASTNode.getLine(decl.getEnd());
+				int importStartOffset = document.getLineOffset(importLineStart-1);
+				int importEndOffset = document.getLineOffset(importLineEnd);
+				int foldLength = importEndOffset - importStartOffset;
+				if ((importLineEnd - importLineStart) > 0) {
+					list.add(new Position(importStartOffset, foldLength));
+				}
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	
+	    list.addAll(super.foldingPositions(document));
+	    return list;
+	}
+	
+}
