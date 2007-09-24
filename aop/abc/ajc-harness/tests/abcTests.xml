@@ -1160,9 +1160,6 @@
       keywords="from-java,purejava">
         <compile files="ExtendInnerCE.java">
             <message kind="error" line="3"/>
-            <jamessage kind="error" line="3"/>
-            <jamessage kind="error" line="3"/>
-            <jamessage kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -6705,8 +6702,6 @@
 		  <message kind="error" line="18"/>
                   <jamessage kind="error" line="18"/>
                   <jamessage kind="error" line="18"/>
-                  <jamessage kind="error" line="18"/>
-                  <jamessage kind="error" line="29"/>
         </compile>
     </ajc-test>
     
