@@ -184,21 +184,20 @@
   <!-- generate the parser phase 1, create a full .lalr
      - specification from fragments -->
   <concat destfile="${tm-parserdir}/JavaParser.all" binary="true" force="no">
-    <fileset dir=".">
-      <include name="src-tm/abc/ja/tm/parse/header.parser"/>
-    </fileset>
-    <fileset dir="${frontend}">
-      <include name="parser/java14.parser"/>
-    </fileset>
-    <fileset dir="${aspectj}">
-      <include name="src/abc/ja/parse/aspectj.parser"/>
-    </fileset>
-    <fileset dir=".">
-      <include name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
-    </fileset>
-    <fileset dir=".">
-      <include name="src-tm/abc/ja/tm/parse/tm.parser"/>
-    </fileset>
+    <filelist dir=".">
+      <file name="src-tm/abc/ja/tm/parse/header.parser"/>
+    </filelist>
+    <filelist dir="${frontend}">
+      <file name="parser/java14.parser"/>
+    </filelist>
+    <filelist dir="${aspectj}">
+      <file name="src/abc/ja/parse/errorproductions.parser"/>
+      <file name="src/abc/ja/parse/aspectj.parser"/>
+    </filelist>
+    <filelist dir=".">
+      <file name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
+      <file name="src-tm/abc/ja/tm/parse/tm.parser"/>
+    </filelist>
   </concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->
 	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
@@ -216,18 +215,19 @@
   <!-- generate the parser phase 1, create a full .lalr
      - specification from fragments -->
   <concat destfile="${eaj-parserdir}/JavaParser.all" binary="true" force="no">
-    <fileset dir=".">
-      <include name="src-eaj/abc/ja/eaj/parse/header.parser"/>
-    </fileset>
-    <fileset dir="${frontend}">
-      <include name="parser/java14.parser"/>
-    </fileset>
-    <fileset dir="${aspectj}">
-      <include name="src/abc/ja/parse/aspectj.parser"/>
-    </fileset>
-    <fileset dir=".">
-      <include name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
-    </fileset>
+    <filelist dir=".">
+      <file name="src-eaj/abc/ja/eaj/parse/header.parser"/>
+    </filelist>
+    <filelist dir="${frontend}">
+      <file name="parser/java14.parser"/>
+    </filelist>
+    <filelist dir="${aspectj}">
+      <file name="src/abc/ja/parse/errorproductions.parser"/>
+      <file name="src/abc/ja/parse/aspectj.parser"/>
+    </filelist>
+    <filelist dir=".">
+      <file name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
+    </filelist>
   </concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->
 	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
