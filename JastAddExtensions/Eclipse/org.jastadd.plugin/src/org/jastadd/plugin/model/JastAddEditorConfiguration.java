@@ -18,6 +18,7 @@ import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.FoldingNode;
 
 public class JastAddEditorConfiguration {
 	
@@ -70,8 +71,8 @@ public class JastAddEditorConfiguration {
 	public List<Position> getFoldingPositions(IDocument document) {
 		try {
 			ASTNode node = model.getTreeRoot(document);
-			if (node != null) {
-				return node.foldingPositions(document);
+			if (node != null && node instanceof FoldingNode) {
+				return ((FoldingNode)node).foldingPositions(document);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

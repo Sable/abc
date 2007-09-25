@@ -2,8 +2,7 @@ package org.jastadd.plugin.providers;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-
-import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.OutlineNode;
 
 public class JastAddLabelProvider extends LabelProvider {
 	
@@ -18,16 +17,15 @@ public class JastAddLabelProvider extends LabelProvider {
 	}
 	
 	public String getText(Object element) {
-		if (element instanceof ASTNode) {
-			return ((ASTNode)element).contentOutlineLabel();
+		if (element instanceof OutlineNode) {
+			return ((OutlineNode)element).contentOutlineLabel();
 		}
 		return parent.getText(element);
 	}
 	
 	public Image getImage(Object element) {
-		if(element instanceof ASTNode) {
-			ASTNode node = (ASTNode)element;
-			return node.contentOutlineImage();
+		if(element instanceof OutlineNode) {
+			return ((OutlineNode)element).contentOutlineImage();
 		}
 		return parent.getImage(element);
 	}

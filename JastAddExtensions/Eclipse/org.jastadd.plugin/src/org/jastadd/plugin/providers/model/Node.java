@@ -5,6 +5,7 @@ import java.util.*;
 import org.eclipse.swt.graphics.Image;
 
 import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.OutlineNode;
 
 public class Node {
 	
@@ -36,11 +37,15 @@ public class Node {
 	}
 	
 	public String getLabel() {
-		return node.contentOutlineLabel();
+		if (node instanceof OutlineNode)
+			return ((OutlineNode)node).contentOutlineLabel();
+		return node.getClass().toString();
 	}
 	
 	public Image getImage() {
-		return node.contentOutlineImage();
+		if (node instanceof OutlineNode)
+			return ((OutlineNode)node).contentOutlineImage();
+		return null;
 	}
 	
 	public ASTNode getASTNode() {

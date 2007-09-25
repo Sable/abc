@@ -4,6 +4,8 @@ import org.eclipse.jface.text.BadLocationException;
 
 aspect Folding {
 
+	ASTNode implements org.jastadd.plugin.AST.FoldingNode;
+
 	syn ArrayList ASTNode.foldingPositions(IDocument document) {
 		ArrayList list = new ArrayList();
 		if (hasFolding()) {

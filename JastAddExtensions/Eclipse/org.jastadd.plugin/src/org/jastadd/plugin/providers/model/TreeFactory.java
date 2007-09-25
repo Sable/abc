@@ -7,6 +7,7 @@ import java.util.Map;
 
 
 import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.OutlineNode;
 
 public class TreeFactory {
 	
@@ -33,7 +34,8 @@ public class TreeFactory {
 		for(ASTNode n : results) {
 			ASTNode child = n;
 			while(n.getParent() != null) {
-				if(n.getParent().showInContentOutline()) {
+				if(n.getParent() instanceof OutlineNode && 
+						((OutlineNode)n.getParent()).showInContentOutline()) {
 					boolean stop = hasNode(n.getParent());
 					Node node = build(child);
 					Node parent = build(n.getParent());

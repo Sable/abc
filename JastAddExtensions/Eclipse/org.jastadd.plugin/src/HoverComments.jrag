@@ -1,5 +1,7 @@
 aspect HoverComments {
   
+  ASTNode implements org.jastadd.plugin.AST.HoverNode;
+  
   syn String ASTNode.hoverComment() = "[" + ASTNode.getLine(getStart()) + "," + ASTNode.getColumn(getStart()) + "->" + 
        ASTNode.getLine(getEnd()) + "," + ASTNode.getColumn(getEnd()) + "]";
  

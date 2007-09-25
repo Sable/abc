@@ -9,6 +9,7 @@ import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.OutlineNode;
 
 public class JastAddContentProvider implements ITreeContentProvider {
 	
@@ -30,8 +31,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object element) {
-		if(element instanceof ASTNode) {
-			ASTNode node = (ASTNode)element;
+		if(element instanceof OutlineNode) {
+			OutlineNode node = (OutlineNode)element;
 			return node.outlineChildren().toArray();
 		}
 		else if(element instanceof IFile) {
@@ -39,7 +40,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
 				ASTNode node = model.getTreeRoot(file);
-				return node.outlineChildren().toArray();
+				if (node instanceof OutlineNode)
+					return ((OutlineNode)node).outlineChildren().toArray();
 			}
 		}
 		return parent.getChildren(element);
@@ -49,7 +51,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 		if(element instanceof ASTNode) {
 			ASTNode node = (ASTNode)element;
 			ASTNode parent = node.getParent();
-			if (parent != null && parent.showInContentOutline())
+			if (parent != null && parent instanceof OutlineNode && 
+					((OutlineNode)parent).showInContentOutline())
 				return parent;
 			else getParent(parent);
 		}
@@ -59,7 +62,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		if(element instanceof ASTNode) {
 			ASTNode node = (ASTNode)element;
-			return !node.outlineChildren().isEmpty();
+			if (node instanceof OutlineNode)
+				return !((OutlineNode)node).outlineChildren().isEmpty();
 		}
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
@@ -80,8 +84,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			if (model != null) {
 				IDocument document = model.fileToDocument(file);
 				ASTNode content = model.getTreeRoot(document);
-				if(content != null)
-					return content.outlineChildren().toArray();
+				if(content != null && content instanceof OutlineNode)
+					return ((OutlineNode)content).outlineChildren().toArray();
 			}
 		}
 		return parent.getElements(element);

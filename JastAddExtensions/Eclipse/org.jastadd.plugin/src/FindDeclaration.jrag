@@ -1,5 +1,7 @@
 aspect FindDeclaration {
 
+	ASTNode implements org.jastadd.plugin.AST.FindDeclarationNode;
+
 	syn ASTNode ASTNode.declaration() = null;
 	
 	syn int ASTNode.declarationLocationLine() = getLine(getStart());

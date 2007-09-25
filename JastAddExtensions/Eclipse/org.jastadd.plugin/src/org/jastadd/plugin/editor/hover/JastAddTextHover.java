@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Point;
 import org.jastadd.plugin.model.JastAddModel;
 
 import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.HoverNode;
 
 public class JastAddTextHover implements ITextHover {
 	
@@ -46,8 +47,8 @@ public class JastAddTextHover implements ITextHover {
 		IDocument document = textViewer.getDocument();
 		if (model != null) {
 			ASTNode node = model.findNodeInDocument(document, line, column);
-			if(node != null) {
-				String comment = node.hoverComment();
+			if(node != null && node instanceof HoverNode) {
+				String comment = ((HoverNode)node).hoverComment();
 				return comment != null ? comment : "";
 			}
 		}
