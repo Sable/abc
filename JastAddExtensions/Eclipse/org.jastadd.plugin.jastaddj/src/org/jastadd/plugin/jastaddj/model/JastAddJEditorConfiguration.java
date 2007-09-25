@@ -6,6 +6,7 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.completion.JastAddJCompletionProcessor;
+import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
@@ -32,7 +33,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
 		char c = cmd.text.charAt(0);	
 		String content = doc.get();
-		char previousKeypress = content.charAt(cmd.offset-1);
+		int previousKeypressOffset = cmd.offset - 1;
+		char previousKeypress = 0;
+		if (content.length() > 0 && previousKeypressOffset > 0) {
+			previousKeypress = content.charAt(previousKeypressOffset);
+		}
 		if (JastAddStructureModel.OPEN_PARAN == c) {
 		    cmd.caretOffset = cmd.offset + 1;
 		    cmd.shiftsCaret = false;
@@ -78,5 +83,10 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	@Override
 	public IContentAssistProcessor getCompletionProcessor() {
 		return new JastAddJCompletionProcessor();
+	}
+	
+	@Override
+	public String getEditorContextID() {
+		return JastAddJEditor.EDITOR_CONTEXT_ID;
 	}
 }

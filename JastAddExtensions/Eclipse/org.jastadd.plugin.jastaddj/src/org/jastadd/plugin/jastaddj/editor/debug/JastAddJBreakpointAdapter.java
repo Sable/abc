@@ -52,7 +52,7 @@ public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtens
 				IFile file = (IFile)resource;
 				JastAddModel model = JastAddModelProvider.getModel(file);
 				if (model != null) {
-					ASTNode node = model.findNodeInDocument(file, lineNumber + 1, 1);
+					ASTNode node = (ASTNode)model.findNodeInDocument(file, lineNumber + 1, 1);
 					while(node != null && !(node instanceof TypeDecl))
 						node = node.getParent();
 					if(node instanceof TypeDecl) {

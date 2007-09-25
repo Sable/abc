@@ -3,10 +3,10 @@
 <plugin>
 
    <!-- Core Markers -->
- <!--
+ 
 	<extension point = "org.eclipse.core.resources.markers"
 		id = "org.jastadd.plugin.marker.ErrorMarker"
-		name = "JastAdd Error">
+		name = "JastAddJ Error">
 	<super
 		type = "org.eclipse.core.resources.problemmarker">
 	</super>
@@ -17,7 +17,7 @@
 
 	<extension point = "org.eclipse.core.resources.markers"
 		id = "org.jastadd.plugin.marker.ParseErrorMarker"
-		name = "JastAdd Parse Error">
+		name = "JastAddJ Parse Error">
 	<super
 		type = "org.eclipse.core.resources.problemmarker">
 	</super>
@@ -25,19 +25,19 @@
 		value = "true">
 	</persistent>
 	</extension>   
--->
+
 	<!-- Core Resource View -->   
-  <!--
+  
 	<extension point = "org.eclipse.ui.views">
 	<view
-		class="org.jastadd.plugin.navigator.JastAddResourceNavigator"
-		id="org.jastadd.plugin.navigator"
-		name="JastAdd Navigator">
+		class = "org.jastadd.plugin.jastaddj.navigator.JastAddJNavigator"
+		id = "org.jastadd.plugin.jastaddj.JastAddJNavigator"
+		name = "JastAddJ Navigator">
 	</view>
 	</extension>
--->
+
 	<!-- Core Search Management -->
-<!--
+
 	<extension point = "org.eclipse.search.searchResultViewPages"
 		id = "org.jastadd.plugin.SearchResultPage">
 	<viewPage
@@ -46,34 +46,32 @@
 		class = "org.jastadd.plugin.search.JastAddSearchResultPage">
 	</viewPage>
 	</extension>
--->
+
 	<!-- Core Editing Context -->
-<!--
-	<extension point="org.eclipse.ui.contexts">
+
+	<extension point = "org.eclipse.ui.contexts">
 	<context
-		name="Editing JastAdd Source"
-		description="Editing JastAdd Source"
-		parentId="org.eclipse.ui.textEditorScope"
-		id="org.jastadd.plugin.JastAddEditorScope">
+		name = "Editing JastAddJ Source"
+		description = "Editing JastAddJ Source"
+		parentId = "org.eclipse.ui.textEditorScope"
+		id = "org.jastadd.plugin.jastaddj.JastAddJEditorContext">
 	</context>
 	</extension>
--->
 
 
    <!-- Core/JastAddJ Perspective -->
-  <!-- 
+   
 	<extension point = "org.eclipse.ui.perspectives">
 	<perspective
-		class = "org.jastadd.plugin.perspective.JastAddPerspectiveFactory"
+		class = "org.jastadd.plugin.jastaddj.perspective.JastAddJPerspective"
 		id = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		name = "JastAddJ">
 	</perspective>
 	</extension>
-   -->
-
    
-   <!-- JastAddJ Nature -->
 
+	<!-- JastAddJ Nature -->
+	
 	<extension point = "org.eclipse.core.resources.natures"
 		id = "org.jastadd.plugin.jastaddj.JastAddJNature"
 		name = "JastAddJ Nature">
@@ -84,30 +82,25 @@
 	</extension>
 
 	<extension point = "org.eclipse.ui.ide.projectNatureImages">
-		<image id = "org.eclipse.ui.JastAddJNatureImage" 
-			natureId = "org.jastadd.plugin.jastaddj.nature.JastAddJNature"
+		<image id = "org.jastadd.plugin.jastaddj.JastAddJNatureImage" 
+			natureId = "org.jastadd.plugin.jastaddj.JastAddJNature"
 			icon = "icons/eview16/projects.gif">
 		</image>
 	</extension>
 
-	<!-- JastAddJ Builder -->
 
+	<!-- JastAddJ Builder -->
+	
 	<extension point = "org.eclipse.core.resources.builders"
 		id = "org.jastadd.plugin.jastaddj.JastAddJBuilder"
-		name = "JastAdd Builder">
-<!--         
-    <extension
-         id="org.jastadd.plugin.jastaddBuilder"
-         name="JastAdd Builder"
-         point="org.eclipse.core.resources.builders">
--->         
+		name = "JastAddJ Builder">
 	<builder hasNature = "true">
 		<run class = "org.jastadd.plugin.jastaddj.builder.JastAddJBuilder"/>
 	</builder>
 	</extension>
 
 	<!-- JastAddJ Build Path Management -->
-   
+ 
 	<extension point = "org.eclipse.ui.propertyPages">
 	<page
 		objectClass = "org.eclipse.core.resources.IProject"
@@ -190,9 +183,9 @@
 		<selection class = "org.eclipse.core.resources.IResource"/>
 	</wizard>
 	</extension>
-	
+
 	<!-- JastAddJ Editor -->
-   
+ 
 	<extension point = "org.eclipse.ui.editors">
 	<editor
 		class = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor"
@@ -202,7 +195,7 @@
 		name = "JastAddJ Editor">
 	</editor>
 	</extension>
-	
+
 	<!-- JastAddJ Commands -->
 
    <extension point = "org.eclipse.ui.commands">
@@ -215,7 +208,7 @@
 			name = "Find Declaration"
 			id = "org.jastadd.plugin.jastaddj.search.declaration"
 			description = "JastAddJ Find Declaration"
-			categoryId = "org.eclipse.ui.category.source">
+			categoryId = "org.jastadd.plugin.category.source">
 		</command>
 		<command
 			name = "Find References"
@@ -232,7 +225,7 @@
 	</extension>
 
 	<!-- JastAddJ Command Handlers -->
-   
+ 
 	<extension point = "org.eclipse.ui.handlers">
 	<handler
 		class = "org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler"
@@ -270,20 +263,20 @@
 	</extension>
 
 	<!-- JastAddJ Keybindings -->
-	
+
 	<extension point = "org.eclipse.ui.bindings">
 	<key sequence = "F3"
 		commandId = "org.jastadd.plugin.jastaddj.search.declaration"
 		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-		contextId = "org.jastadd.plugin.JastAddEditorScope"/>
+		contextId = "org.jastadd.plugin.jastaddj.JastAddJEditorContext"/>
 	<key sequence = "F4"
 		commandId = "org.jastadd.plugin.jastaddj.search.references"
 		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-		contextId = "org.jastadd.plugin.JastAddEditorScope"/>
+		contextId = "org.jastadd.plugin.jastaddj.JastAddJEditorContext"/>
 	<key sequence = "F5"
 		commandId = "org.jastadd.plugin.jastaddj.search.implements"
 		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-		contextId = "org.jastadd.plugin.JastAddEditorScope"/>
+		contextId = "org.jastadd.plugin.jastaddj.JastAddJEditorContext"/>
 	</extension>	
 
 	<!-- JastAddJ Editor Popup Actions -->
@@ -322,7 +315,7 @@
 	</extension>
 	
 	<!-- JastAddJ Workspace Actions -->
-	
+
 	<extension point = "org.eclipse.ui.actionSets">
 	<actionSet id = "org.jastadd.plugin.jastaddj.search.actionSet"
 		label = "JastAddJ Search Actions"
@@ -367,9 +360,9 @@
 	<extension point = "org.eclipse.ui.actionSetPartAssociations">
 	<actionSetPartAssociation
 		targetID = "org.jastadd.plugin.jastaddj.search.actionSet">
-		<part id = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor">
+		<part id = "org.jastadd.plugin.jastaddj.JastAddJEditor">
 		</part>
 	</actionSetPartAssociation>
 	</extension>
-
+	
 </plugin>

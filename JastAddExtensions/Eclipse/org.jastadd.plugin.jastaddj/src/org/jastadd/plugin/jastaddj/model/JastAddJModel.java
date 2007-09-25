@@ -83,8 +83,8 @@ public class JastAddJModel extends JastAddModel {
 		return documentToFile(document) != null;
 	}
 
-	public boolean isModelFor(ASTNode node) {
-		return getProject(node) != null;
+	public boolean isModelFor(org.jastadd.plugin.AST.ASTNode node) {
+		return getProject((ASTNode)node) != null;
 	}
 	
 	
@@ -99,11 +99,11 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	
-	public void openFile(ASTNode node) {
+	public void openFile(org.jastadd.plugin.AST.ASTNode node) {
 		int targetLine = node.declarationLocationLine();
 		int targetColumn = node.declarationLocationColumn();
 		int targetLength = node.declarationLocationLength();
-		CompilationUnit cu = node.declarationCompilationUnit();
+		CompilationUnit cu = ((ASTNode)node).declarationCompilationUnit();
 		openFile(cu, targetLine, targetColumn, targetLength);
 	}
 
@@ -197,7 +197,7 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	
-	protected ASTNode getTreeRootNode(IProject project, String filePath) {
+	protected org.jastadd.plugin.AST.ASTNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
 		Program program = getProgram(project);

@@ -120,12 +120,12 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 				IProject project = file.getProject();
 				if(project != null) {
 					String fileName = file.getRawLocation().toOSString();
-					ASTNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+					ASTNode node = (ASTNode)model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 					if(node == null) {
 						// Try a structural recovery
 						documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
 
-						node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+						node = (ASTNode)model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 						if (node == null) {
 							System.out.println("Structural recovery failed");
 							return new ArrayList();

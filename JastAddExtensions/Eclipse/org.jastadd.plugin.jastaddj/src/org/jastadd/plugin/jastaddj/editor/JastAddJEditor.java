@@ -6,7 +6,8 @@ import org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpointAdapter;
 
 public class JastAddJEditor extends JastAddEditor {
 	
-	public static final String EDITOR_ID = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor";
+	public static final String EDITOR_ID = "org.jastadd.plugin.jastaddj.JastAddJEditor";
+	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastaddj.JastAddJEditorContext";
 	
 	private JastAddJBreakpointAdapter breakpointAdapter;
 	

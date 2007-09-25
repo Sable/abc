@@ -16,7 +16,7 @@ public class FindImplementsHandler extends JastAddActionDelegate {
 	@Override
 	public void run(IAction action) {
 
-		ASTNode selectedNode = selectedNode();
+		ASTNode selectedNode = (ASTNode)selectedNode();
 		if (selectedNode == null) return;
 		
 		ASTNode target = selectedNode.declaration();
