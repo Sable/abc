@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JastAdd Core Plug-in
 Bundle-SymbolicName: org.jastadd.plugin; singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.jastadd.plugin.Activator
+Bundle-Activator: org.jastadd.plugin.JastAddActivator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -23,7 +23,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  org.eclipse.ui.console
 Eclipse-LazyStart: true
-Export-Package: org.jastadd.plugin.AST,
+Export-Package: org.jastadd.plugin,
+ org.jastadd.plugin.AST,
  org.jastadd.plugin.builder,
  org.jastadd.plugin.editor,
  org.jastadd.plugin.editor.actions,
