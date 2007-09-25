@@ -31,6 +31,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jastadd.plugin.AST.FindDeclarationNode;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
@@ -100,11 +101,13 @@ public class JastAddJModel extends JastAddModel {
 
 	
 	public void openFile(org.jastadd.plugin.AST.ASTNode node) {
-		int targetLine = node.declarationLocationLine();
-		int targetColumn = node.declarationLocationColumn();
-		int targetLength = node.declarationLocationLength();
-		CompilationUnit cu = ((ASTNode)node).declarationCompilationUnit();
-		openFile(cu, targetLine, targetColumn, targetLength);
+		if (node instanceof FindDeclarationNode) {
+			int targetLine = ((FindDeclarationNode)node).declarationLocationLine();
+			int targetColumn = ((FindDeclarationNode)node).declarationLocationColumn();
+			int targetLength = ((FindDeclarationNode)node).declarationLocationLength();
+			CompilationUnit cu = ((ASTNode)node).declarationCompilationUnit();
+			openFile(cu, targetLine, targetColumn, targetLength);
+		}
 	}
 
 	protected void completeBuild(IProject project) {
