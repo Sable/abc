@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.eclipse.swt.graphics.Image;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class Node {
 	

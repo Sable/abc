@@ -27,12 +27,7 @@ import org.jastadd.plugin.resources.JastAddDocumentProvider;
  * JastAdd editor providing various JastAdd related editor features
  */
 public abstract class JastAddEditor extends TextEditor {
-	
-	
-	public static final String CONTEXT_ID = "org.jastadd.plugin.JastAddEditorScope";
-	public static final String ERROR_MARKER_ID = "org.eclipse.ui.workbench.texteditor.error";
-	public static final String WARNING_MARKER_ID = "org.eclipse.ui.workbench.texteditor.warning";
-	
+		
 	private JastAddContentOutlinePage fOutlinePage;
 	private ProjectionSupport projectionSupport;
 	private JastAddEditorFolder folder;
@@ -90,8 +85,10 @@ public abstract class JastAddEditor extends TextEditor {
 	    
 	    ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
 	    projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
-	    projectionSupport.addSummarizableAnnotationType(ERROR_MARKER_ID); //$NON-NLS-1$
-		projectionSupport.addSummarizableAnnotationType(WARNING_MARKER_ID); //$NON-NLS-1$
+	    if (model != null) {
+	    	projectionSupport.addSummarizableAnnotationType(model.getEditorConfiguration().getErrorMarkerID()); //$NON-NLS-1$
+	    	projectionSupport.addSummarizableAnnotationType(model.getEditorConfiguration().getWarningMarkerID()); //$NON-NLS-1$
+	    }
 	    projectionSupport.setHoverControlCreator(new JastAddControlCreator());
 	    projectionSupport.install();
 	    getSourceViewerConfiguration();
@@ -101,8 +98,10 @@ public abstract class JastAddEditor extends TextEditor {
 	    if (model != null)
 	    	model.addListener(folder);
 	    
-	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
-	    contextActivation = contextService.activateContext(CONTEXT_ID);
+	    if (model != null) {
+	    	IContextService contextService = (IContextService) getSite().getService(IContextService.class);
+	    	contextActivation = contextService.activateContext(model.getEditorConfiguration().getEditorContextID());
+	    }
 	    
 	    //IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
 	    //IHandler handler = new FindDeclarationHandler();

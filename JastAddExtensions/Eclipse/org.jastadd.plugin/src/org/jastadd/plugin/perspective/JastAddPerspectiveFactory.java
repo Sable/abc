@@ -9,14 +9,16 @@ import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
 import org.jastadd.plugin.search.JastAddSearchResultPage;
 
-public class JastAddPerspectiveFactory implements IPerspectiveFactory {
+public abstract class JastAddPerspectiveFactory implements IPerspectiveFactory {
 
+	protected abstract String getNavigatorID();
+	
 	public void createInitialLayout(IPageLayout layout) {
 		
  		String editorArea = layout.getEditorArea();
 		
 		IFolderLayout folder= layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
-		folder.addView("org.jastadd.plugin.navigator");
+		folder.addView(getNavigatorID());
 		//folder.addView("org.eclipse.ui.views.navigator.ResourceNavigator");
 		//folder.addView(JavaUI.ID_TYPE_HIERARCHY);
 		folder.addPlaceholder(IPageLayout.ID_RES_NAV);

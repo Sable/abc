@@ -119,17 +119,19 @@ public class JastAddStructureModel {
 	    		
 		if (activePair.open instanceof OpenBrace && activePair.close instanceof UnknownClose) {
 		    
+			rootPair.print("");
 			boolean insertBraceClose = true;
 			for (Iterator itr = activePair.children.iterator(); insertBraceClose && itr.hasNext();) {
 				StructNode child = (StructNode)itr.next();
-				if (child instanceof Semicolon || child instanceof EnclosePair || child instanceof Indent) {
+				if (child instanceof Semicolon || child instanceof EnclosePair) {
 					insertBraceClose = false;
 				}
 			}
 			if (insertBraceClose) {
 				String braceIndent = "\n";
-				int braceIndentTabCount = activePair.indentTabCount();
-				for (int i = 0; i < braceIndentTabCount;i++,braceIndent+="\t");		    
+				int braceIndentWSCount = activePair.indentTabCount();
+				int braceTabIndent = braceIndentWSCount / TABSIZE;
+				for (int i = 0; i < braceTabIndent;i++,braceIndent+="\t");		    
 				cmd.text += braceIndent + String.valueOf(CLOSE_BRACE) + "\n";
 			}
 			
@@ -1140,7 +1142,7 @@ public class JastAddStructureModel {
 					} else if (curLevel.indentTabCount() < newIndent.tabCount) {
 						
 						// No parent only ancestors -- make a new level? 
-						increaseLevel(curLevel.parent, curLevel.indentTabCount + 1);
+						increaseLevel(curLevel.parent, curLevel.indentTabCount + TABSIZE);
 						curLevel.pushIndent(newIndent);
 						break;
 			
@@ -1240,15 +1242,18 @@ public class JastAddStructureModel {
 			}
 			
 			public void pushIndent(Indent indent) {
+				//if (!stack.isEmpty() && stack.peek() instanceof BracePair) {
+				//	popPair();
+				//} 
 				indent.setParent(curParent());
-				curParent().addChild(indent);				
+				curParent().addChild(indent);
 			}
 			
 			
 			public void pushDelimiter(Delimiter current) {
 				/* 
 				if (current instanceof Semicolon) {
-				   	// semicolon isn't allowed in paran pairs -- They are allowed inside for (..;..;..)
+				   	// semicolon isn't allowed in paran pairs ...  Wrong, they are allowed inside: for (..;..;..)
 				    popPair();
 				}
 				*/
@@ -1304,7 +1309,7 @@ public class JastAddStructureModel {
 			private void pushPair(EnclosePair pair) {
 				stack.push(pair);
 				if (pair instanceof BracePair) {
-					increaseLevel(pair, indentTabCount + 1);
+					increaseLevel(pair, indentTabCount + TABSIZE);
 				}
 			}
 			

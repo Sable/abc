@@ -3,7 +3,7 @@ package org.jastadd.plugin.providers;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class JastAddLabelProvider extends LabelProvider {
 	

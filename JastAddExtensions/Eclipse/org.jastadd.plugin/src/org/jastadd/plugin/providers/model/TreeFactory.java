@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class TreeFactory {
 	

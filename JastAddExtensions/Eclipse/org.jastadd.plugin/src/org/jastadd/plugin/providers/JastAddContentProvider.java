@@ -8,7 +8,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class JastAddContentProvider implements ITreeContentProvider {
 	

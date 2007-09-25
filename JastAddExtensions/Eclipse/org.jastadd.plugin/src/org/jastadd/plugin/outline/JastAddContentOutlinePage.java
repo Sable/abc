@@ -13,7 +13,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class JastAddContentOutlinePage extends ContentOutlinePage implements JastAddModelListener {
 	
@@ -84,7 +84,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	
 	public void modelChangedEvent() {
 		// run update in the SWT UI thread
-		Display display = this.getControl().getDisplay();
+		Control control = this.getControl();
+		Display display = control.getDisplay();
 		if (!display.isDisposed()) {
 			display.asyncExec(new Runnable() {
 				public void run() {

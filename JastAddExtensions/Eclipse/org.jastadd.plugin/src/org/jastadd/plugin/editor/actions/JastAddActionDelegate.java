@@ -21,7 +21,7 @@ import org.eclipse.ui.PlatformUI;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public abstract class JastAddActionDelegate extends AbstractHandler implements IEditorActionDelegate, IWorkbenchWindowActionDelegate {
 	

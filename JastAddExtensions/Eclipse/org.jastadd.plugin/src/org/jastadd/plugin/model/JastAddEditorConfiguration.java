@@ -17,7 +17,7 @@ import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class JastAddEditorConfiguration {
 	
@@ -80,11 +80,22 @@ public class JastAddEditorConfiguration {
 	}
 	
 	
-	
 	// Override getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd)
 	// or getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) before
 	// considering to override this method
 	public IAutoEditStrategy getAutoIndentStrategy() {
 		return new JastAddAutoIndentStrategy(model);
+	}
+	
+	public String getEditorContextID() {
+		return "org.jastadd.plugin.JastAddEditorContext";
+	}
+	
+	public String getErrorMarkerID() {
+		return "org.eclipse.ui.workbench.texteditor.error";
+	}
+	
+	public String getWarningMarkerID() {
+		return "org.eclipse.ui.workbench.texteditor.warning";
 	}
 }

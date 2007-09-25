@@ -19,7 +19,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public abstract class JastAddModel {
 	
@@ -229,10 +229,10 @@ public abstract class JastAddModel {
 
 	protected ASTNode findLocation(ASTNode node, int line, int column) {
 		if(node == null) return node;
-		int beginLine = ASTNode.getLine(node.getStart());
-		int beginColumn = ASTNode.getColumn(node.getStart());
-		int endLine = ASTNode.getLine(node.getEnd());
-		int endColumn = ASTNode.getColumn(node.getEnd());
+		int beginLine = node.getBeginLine();
+		int beginColumn = node.getBeginColumn();
+		int endLine = node.getEndLine();
+		int endColumn = node.getEndColumn();
 		
 		if(beginLine == 0 && beginColumn == 0 && endLine == 0 && endColumn == 0) {
 			for(int i = 0; i < node.getNumChild(); i++) {

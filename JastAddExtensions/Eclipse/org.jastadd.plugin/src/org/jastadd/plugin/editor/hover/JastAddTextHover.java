@@ -10,7 +10,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Point;
 import org.jastadd.plugin.model.JastAddModel;
 
-import AST.ASTNode;
+import org.jastadd.plugin.AST.ASTNode;
 
 public class JastAddTextHover implements ITextHover {
 	

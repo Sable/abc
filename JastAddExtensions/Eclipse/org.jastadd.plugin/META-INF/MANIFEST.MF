@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Plugin Plug-in
+Bundle-Name: JastAdd Core Plug-in
 Bundle-SymbolicName: org.jastadd.plugin; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.jastadd.plugin.Activator
@@ -14,29 +14,24 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.ui,
  org.eclipse.jdt.debug,
  org.eclipse.jdt.debug.ui,
- org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.ide,
- org.eclipse.core.filesystem,
  org.eclipse.jdt.ui,
- org.eclipse.ui.views,
- org.eclipse.jdt.core,
  org.eclipse.search,
+ org.jastadd.plugin,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.views,
  org.eclipse.ui.console
 Eclipse-LazyStart: true
-Export-Package: org.jastadd.plugin.builder,
+Export-Package: org.jastadd.plugin.AST,
+ org.jastadd.plugin.builder,
  org.jastadd.plugin.editor,
  org.jastadd.plugin.editor.actions,
- org.jastadd.plugin.editor.folding,
  org.jastadd.plugin.editor.highlight,
- org.jastadd.plugin.editor.hover,
  org.jastadd.plugin.model,
  org.jastadd.plugin.model.repair,
  org.jastadd.plugin.navigator,
- org.jastadd.plugin.outline,
  org.jastadd.plugin.perspective,
- org.jastadd.plugin.providers,
- org.jastadd.plugin.providers.model,
  org.jastadd.plugin.resources,
  org.jastadd.plugin.search,
  org.jastadd.plugin.wizards
