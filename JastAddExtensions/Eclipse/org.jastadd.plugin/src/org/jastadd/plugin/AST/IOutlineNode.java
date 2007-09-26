@@ -2,7 +2,7 @@ package org.jastadd.plugin.AST;
 
 import java.util.ArrayList;
 
-public interface OutlineNode {
+public interface IOutlineNode {
 	
     public boolean showInContentOutline();
     

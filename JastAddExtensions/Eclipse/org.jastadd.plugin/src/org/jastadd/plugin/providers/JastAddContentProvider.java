@@ -5,11 +5,10 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IFileEditorInput;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-
-import org.jastadd.plugin.AST.ASTNode;
-import org.jastadd.plugin.AST.OutlineNode;
 
 public class JastAddContentProvider implements ITreeContentProvider {
 	
@@ -31,28 +30,28 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object element) {
-		if(element instanceof OutlineNode) {
-			OutlineNode node = (OutlineNode)element;
+		if(element instanceof IOutlineNode) {
+			IOutlineNode node = (IOutlineNode)element;
 			return node.outlineChildren().toArray();
 		}
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
 			JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
-				ASTNode node = model.getTreeRoot(file);
-				if (node instanceof OutlineNode)
-					return ((OutlineNode)node).outlineChildren().toArray();
+				IJastAddNode node = model.getTreeRoot(file);
+				if (node != null && node instanceof IOutlineNode) {
+					return ((IOutlineNode)node).outlineChildren().toArray();
+				}
 			}
 		}
 		return parent.getChildren(element);
 	}
 
 	public Object getParent(Object element) {
-		if(element instanceof ASTNode) {
-			ASTNode node = (ASTNode)element;
-			ASTNode parent = node.getParent();
-			if (parent != null && parent instanceof OutlineNode && 
-					((OutlineNode)parent).showInContentOutline())
+		if(element instanceof IJastAddNode) {
+			IJastAddNode parent = ((IJastAddNode)element).getParent();
+			if (parent != null && parent instanceof IOutlineNode && 
+					((IOutlineNode)parent).showInContentOutline())
 				return parent;
 			else getParent(parent);
 		}
@@ -60,10 +59,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
-		if(element instanceof ASTNode) {
-			ASTNode node = (ASTNode)element;
-			if (node instanceof OutlineNode)
-				return !((OutlineNode)node).outlineChildren().isEmpty();
+		if(element instanceof IOutlineNode) {
+			return !((IOutlineNode)element).outlineChildren().isEmpty();
 		}
 		else if(element instanceof IFile) {
 			IFile file = (IFile)element;
@@ -83,9 +80,9 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
 				IDocument document = model.fileToDocument(file);
-				ASTNode content = model.getTreeRoot(document);
-				if(content != null && content instanceof OutlineNode)
-					return ((OutlineNode)content).outlineChildren().toArray();
+				IJastAddNode content = model.getTreeRoot(document);
+				if(content != null && content instanceof IOutlineNode)
+					return ((IOutlineNode)content).outlineChildren().toArray();
 			}
 		}
 		return parent.getElements(element);

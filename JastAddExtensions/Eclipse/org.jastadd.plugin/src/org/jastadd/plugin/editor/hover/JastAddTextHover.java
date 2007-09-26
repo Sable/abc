@@ -8,10 +8,10 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Point;
+import org.jastadd.plugin.AST.IHoverNode;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.model.JastAddModel;
-
-import org.jastadd.plugin.AST.ASTNode;
-import org.jastadd.plugin.AST.HoverNode;
 
 public class JastAddTextHover implements ITextHover {
 	
@@ -46,9 +46,9 @@ public class JastAddTextHover implements ITextHover {
 	private String elementAt(ITextViewer textViewer, int line, int column) {
 		IDocument document = textViewer.getDocument();
 		if (model != null) {
-			ASTNode node = model.findNodeInDocument(document, line, column);
-			if(node != null && node instanceof HoverNode) {
-				String comment = ((HoverNode)node).hoverComment();
+			IJastAddNode node = model.findNodeInDocument(document, line, column);
+			if(node != null && node instanceof IHoverNode) {
+				String comment = ((IHoverNode)node).hoverComment();
 				return comment != null ? comment : "";
 			}
 		}

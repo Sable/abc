@@ -1,19 +1,20 @@
 package org.jastadd.plugin.providers.model;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.swt.graphics.Image;
-
-import org.jastadd.plugin.AST.ASTNode;
-import org.jastadd.plugin.AST.OutlineNode;
+import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.AST.IJastAddNode;
 
 public class Node {
 	
 	private Set<Node> children;
 	private Node parent;
-	private ASTNode node;
+	private IJastAddNode node;
 	
-	public Node(ASTNode node) {
+	public Node(IJastAddNode node) {
 		children = new HashSet<Node>();
 		this.node = node;
 	}
@@ -37,18 +38,18 @@ public class Node {
 	}
 	
 	public String getLabel() {
-		if (node instanceof OutlineNode)
-			return ((OutlineNode)node).contentOutlineLabel();
+		if (node instanceof IOutlineNode)
+			return ((IOutlineNode)node).contentOutlineLabel();
 		return node.getClass().toString();
 	}
 	
 	public Image getImage() {
-		if (node instanceof OutlineNode)
-			return ((OutlineNode)node).contentOutlineImage();
+		if (node instanceof IOutlineNode)
+			return ((IOutlineNode)node).contentOutlineImage();
 		return null;
 	}
 	
-	public ASTNode getASTNode() {
+	public IJastAddNode getJastAddNode() {
 		return node;
 	}
 	

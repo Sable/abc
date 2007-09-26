@@ -1,6 +1,6 @@
 aspect FindDeclaration {
 
-	ASTNode implements org.jastadd.plugin.AST.FindDeclarationNode;
+	ASTNode implements org.jastadd.plugin.AST.IFindDeclarationNode;
 
 	syn ASTNode ASTNode.declaration() = null;
 	

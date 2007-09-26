@@ -5,19 +5,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-
-import org.jastadd.plugin.AST.ASTNode;
-import org.jastadd.plugin.AST.OutlineNode;
+import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.AST.IJastAddNode;
 
 public class TreeFactory {
 	
-	private Map<ASTNode,Node> map;
+	private Map<IJastAddNode,Node> map;
 	
 	public TreeFactory() {
-		map = new HashMap<ASTNode,Node>();
+		map = new HashMap<IJastAddNode,Node>();
 	}
 	
-	public Node build(ASTNode astNode) {
+	public Node build(IJastAddNode astNode) {
 		if(map.containsKey(astNode))
 			return map.get(astNode);
 		Node node = new Node(astNode);
@@ -25,17 +24,17 @@ public class TreeFactory {
 		return node;
 	}
 	
-	boolean hasNode(ASTNode astNode) {
+	boolean hasNode(IJastAddNode astNode) {
 		return map.containsKey(astNode);
 	}
 	
-	public Collection<Node> buildTree(Collection<ASTNode> results) {
+	public Collection<Node> buildTree(Collection<IJastAddNode> results) {
 		Collection<Node> roots = new HashSet<Node>();
-		for(ASTNode n : results) {
-			ASTNode child = n;
+		for(IJastAddNode n : results) {
+			IJastAddNode child = n;
 			while(n.getParent() != null) {
-				if(n.getParent() instanceof OutlineNode && 
-						((OutlineNode)n.getParent()).showInContentOutline()) {
+				if(n.getParent() instanceof IOutlineNode && 
+						((IOutlineNode)n.getParent()).showInContentOutline()) {
 					boolean stop = hasNode(n.getParent());
 					Node node = build(child);
 					Node parent = build(n.getParent());

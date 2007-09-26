@@ -1,6 +1,6 @@
 package org.jastadd.plugin.AST;
 
-public interface HoverNode {
+public interface IHoverNode {
 	
 	public String hoverComment();
 	

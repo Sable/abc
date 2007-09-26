@@ -6,7 +6,7 @@ import java.util.Collections;
 
 aspect Completion {
 
-	ASTNode implements org.jastadd.plugin.AST.CompletionNode;
+	ASTNode implements org.jastadd.plugin.AST.ICompletionNode;
 
 	syn CompletionProposal ASTNode.getCompletionProposal(String filter, int documentOffset, boolean keepDot) {
 		String label = completionLabel();

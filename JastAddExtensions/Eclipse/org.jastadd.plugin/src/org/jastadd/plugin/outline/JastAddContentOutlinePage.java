@@ -10,10 +10,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
-
-import org.jastadd.plugin.AST.ASTNode;
 
 public class JastAddContentOutlinePage extends ContentOutlinePage implements JastAddModelListener {
 	
@@ -61,10 +60,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 		else {
 			IStructuredSelection structSelect = (IStructuredSelection)selection; 
 			Object obj = structSelect.getFirstElement();
-			if (obj instanceof ASTNode) {
-				ASTNode node = (ASTNode)obj;
-				if (model != null)
-					model.openFile(node);
+			if (obj instanceof IJastAddNode && model != null) {
+				model.openFile((IJastAddNode)obj);
 			}
 		}
 	}

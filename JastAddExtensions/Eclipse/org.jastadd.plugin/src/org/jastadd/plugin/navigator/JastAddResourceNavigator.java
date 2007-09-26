@@ -9,12 +9,11 @@ import org.eclipse.ui.actions.OpenResourceAction;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourcePatternFilter;
+import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
-
-import org.jastadd.plugin.AST.ASTNode;
 
 public abstract class JastAddResourceNavigator extends org.eclipse.ui.views.navigator.ResourceNavigator {
 	
@@ -48,8 +47,8 @@ public abstract class JastAddResourceNavigator extends org.eclipse.ui.views.navi
         IStructuredSelection selection = (IStructuredSelection) event.getSelection();
         Object element = selection.getFirstElement();
         
-        if(element instanceof ASTNode) {
-			ASTNode node = (ASTNode)element;
+        if(element instanceof IJastAddNode) {
+			IJastAddNode node = (IJastAddNode)element;
 			JastAddModel model = JastAddModelProvider.getModel(node);
 			if (model != null)
 				model.openFile(node);

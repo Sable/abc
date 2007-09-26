@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 aspect ContentOutline {
 
-	ASTNode implements org.jastadd.plugin.AST.OutlineNode;
+	ASTNode implements org.jastadd.plugin.AST.IOutlineNode;
 
    syn boolean ASTNode.showInContentOutline() = false;
    syn String ASTNode.contentOutlineLabel() = this.getClass().getName();

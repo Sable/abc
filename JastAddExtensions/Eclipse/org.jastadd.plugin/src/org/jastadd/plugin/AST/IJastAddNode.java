@@ -1,10 +1,10 @@
 package org.jastadd.plugin.AST;
 
-public interface ASTNode {
+public interface IJastAddNode {
 
-	public abstract ASTNode getChild(int i);
-	public abstract int getNumChild();
-	public abstract ASTNode getParent();
+	public IJastAddNode getChild(int i);
+	public int getNumChild();
+	public IJastAddNode getParent();
 
 	public int getBeginLine();
 	public int getBeginColumn();

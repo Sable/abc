@@ -18,10 +18,10 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-
-import org.jastadd.plugin.AST.ASTNode;
 
 public abstract class JastAddActionDelegate extends AbstractHandler implements IEditorActionDelegate, IWorkbenchWindowActionDelegate {
 	
@@ -61,7 +61,7 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 	}
 	
 		
-	protected ASTNode selectedNode() {
+	protected IJastAddNode selectedNode() {
 		JastAddModel model = activeModel();
 		IEditorPart editorPart = activeEditorPart();
 		if (model != null && editorPart != null) {

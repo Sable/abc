@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 
-public interface CompletionNode {
+public interface ICompletionNode {
 	
     public CompletionProposal getCompletionProposal(String filter, int documentOffset, boolean keepDot);
 

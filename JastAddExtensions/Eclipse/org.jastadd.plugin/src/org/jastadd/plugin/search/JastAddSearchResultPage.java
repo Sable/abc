@@ -117,9 +117,9 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 
 			if(element instanceof Node) {
 				Node node = (Node)element;
-				JastAddModel model = JastAddModelProvider.getModel(node.getASTNode());
+				JastAddModel model = JastAddModelProvider.getModel(node.getJastAddNode());
 				if (model != null)
-					model.openFile(node.getASTNode());
+					model.openFile(node.getJastAddNode());
 			}
 		}
 	}

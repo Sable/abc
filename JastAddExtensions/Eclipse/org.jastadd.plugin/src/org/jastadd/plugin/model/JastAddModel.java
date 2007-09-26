@@ -18,8 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
-
-import org.jastadd.plugin.AST.ASTNode;
+import org.jastadd.plugin.AST.IJastAddNode;
 
 public abstract class JastAddModel {
 	
@@ -74,7 +73,7 @@ public abstract class JastAddModel {
 		notifyModelListeners();
 	}
 
-	public ASTNode buildDocument(IDocument document, String fileName, IProject project) {
+	public IJastAddNode buildDocument(IDocument document, String fileName, IProject project) {
 		try {
 			updateProjectModel(document, fileName, project);
 			return getTreeRoot(project, fileName);
@@ -84,7 +83,7 @@ public abstract class JastAddModel {
 		return null;
 	}
 	
-	public ASTNode getTreeRoot(IDocument document) {
+	public IJastAddNode getTreeRoot(IDocument document) {
 		IFile file = documentToFile(document);
 		if(file != null) {
 			return getTreeRoot(file);
@@ -93,7 +92,7 @@ public abstract class JastAddModel {
 			"compilation unit for a document that belongs to a JastAdd project");
 	}
 	
-	public ASTNode getTreeRoot(IFile file) {
+	public IJastAddNode getTreeRoot(IFile file) {
 		try {
 			return getTreeRoot(file.getProject(), file.getRawLocation().toOSString());
 		} catch (Throwable e) {
@@ -102,34 +101,34 @@ public abstract class JastAddModel {
 		return null;
 	}
 
-	public synchronized ASTNode getTreeRoot(IProject project, String filePath) {
+	public synchronized IJastAddNode getTreeRoot(IProject project, String filePath) {
 		return getTreeRootNode(project, filePath);
 	}
 	
 	
-	public ASTNode findNodeInDocument(IDocument document, int offset) {
+	public IJastAddNode findNodeInDocument(IDocument document, int offset) {
 		return findNodeInDocument(documentToFile(document), offset);
 	}
 	
-	public ASTNode findNodeInDocument(IDocument document, int line, int column) {
+	public IJastAddNode findNodeInDocument(IDocument document, int line, int column) {
 		return findNodeInDocument(documentToFile(document), line, column);
 	}
 	
-	public ASTNode findNodeInDocument(IFile file, int offset) {
+	public IJastAddNode findNodeInDocument(IFile file, int offset) {
 		IProject project = file.getProject();
 		String fileName = file.getRawLocation().toOSString();
 		IDocument document = fileToDocument(file);
 		return findNodeInDocument(project, fileName, document, offset);
 	}
 	
-	public ASTNode findNodeInDocument(IFile file, int line, int column) {
+	public IJastAddNode findNodeInDocument(IFile file, int line, int column) {
 		IProject project = file.getProject();
 		String fileName = file.getRawLocation().toOSString();
 		IDocument document = fileToDocument(file);
 		return findNodeInDocument(project, fileName, document, line, column);
 	}
 	
-	public ASTNode findNodeInDocument(IProject project, String fileName, IDocument document, int offset) {
+	public IJastAddNode findNodeInDocument(IProject project, String fileName, IDocument document, int offset) {
 		try {
 			int line = document.getLineOfOffset(offset);
 			int column = offset - document.getLineOffset(line);
@@ -139,8 +138,8 @@ public abstract class JastAddModel {
 		}
 	}
 	
-	public ASTNode findNodeInDocument(IProject project, String fileName, IDocument document, int line, int column) {
-		ASTNode node = buildDocument(document, fileName, project);
+	public IJastAddNode findNodeInDocument(IProject project, String fileName, IDocument document, int line, int column) {
+		IJastAddNode node = buildDocument(document, fileName, project);
 		if(node != null)
 			return findLocation(node, line + 1, column + 1);
 		return null;
@@ -227,36 +226,39 @@ public abstract class JastAddModel {
 		}
 	}
 
-	protected ASTNode findLocation(ASTNode node, int line, int column) {
-		if(node == null) return node;
+	protected IJastAddNode findLocation(IJastAddNode node, int line, int column) {
+		if(node == null) return null;
 		int beginLine = node.getBeginLine();
 		int beginColumn = node.getBeginColumn();
 		int endLine = node.getEndLine();
 		int endColumn = node.getEndColumn();
-		
+
 		if(beginLine == 0 && beginColumn == 0 && endLine == 0 && endColumn == 0) {
 			for(int i = 0; i < node.getNumChild(); i++) {
-				if(node.getChild(i) != null) {
-					ASTNode result = findLocation(node.getChild(i), line, column);
+				IJastAddNode child = node.getChild(i);
+				if(child != null) {
+					IJastAddNode result = findLocation(child, line, column);
 					if(result != null)
 						return result;
 				}
 			}
 			return null;
 		}
-		
+
 		if((line >= beginLine && line <= endLine) &&
-		   (line == beginLine && column >= beginColumn || line != beginLine) &&
-		   (line == endLine && column <= endColumn || line != endLine)) {
+				(line == beginLine && column >= beginColumn || line != beginLine) &&
+				(line == endLine && column <= endColumn || line != endLine)) {
 			for(int i = 0; i < node.getNumChild(); i++) {
-				if(node.getChild(i) != null) {
-					ASTNode result = findLocation(node.getChild(i), line, column);
+				IJastAddNode child = node.getChild(i);
+				if(child != null) {
+					IJastAddNode result = findLocation(child, line, column);
 					if(result != null)
 						return result;
 				}
 			}
 			return node;
 		}
+
 		return null;
 	}
 	
@@ -267,19 +269,19 @@ public abstract class JastAddModel {
 	}
 	
 	
-	public abstract void openFile(ASTNode node);
+	public abstract void openFile(IJastAddNode node);
 
 	public abstract boolean isModelFor(IProject project);
 	public abstract boolean isModelFor(IFile file);
 	public abstract boolean isModelFor(IDocument document);
-	public abstract boolean isModelFor(ASTNode node);	
+	public abstract boolean isModelFor(IJastAddNode node);	
 	
 	public abstract List<String> getFileExtensions();
 	public abstract String[] getFilterExtensions();
 
 	protected abstract void updateModel(IDocument document, String fileName, IProject project);
 	protected abstract void completeBuild(IProject project);
-	protected abstract ASTNode getTreeRootNode(IProject project, String filePath);
+	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
 
 
 }

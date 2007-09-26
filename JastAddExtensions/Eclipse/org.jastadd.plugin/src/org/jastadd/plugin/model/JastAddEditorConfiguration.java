@@ -12,13 +12,13 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.jastadd.plugin.AST.IFoldingNode;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
-
-import org.jastadd.plugin.AST.ASTNode;
-import org.jastadd.plugin.AST.FoldingNode;
 
 public class JastAddEditorConfiguration {
 	
@@ -70,9 +70,9 @@ public class JastAddEditorConfiguration {
 	// Uses attribute values from Folding.jrag
 	public List<Position> getFoldingPositions(IDocument document) {
 		try {
-			ASTNode node = model.getTreeRoot(document);
-			if (node != null && node instanceof FoldingNode) {
-				return ((FoldingNode)node).foldingPositions(document);
+			IJastAddNode node = model.getTreeRoot(document);
+			if (node != null && node instanceof IFoldingNode) {
+				return ((IFoldingNode)node).foldingPositions(document);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

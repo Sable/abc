@@ -1,8 +1,8 @@
 package org.jastadd.plugin.AST;
 
-public interface FindDeclarationNode {
+public interface IFindDeclarationNode {
 	
-	public ASTNode declaration();
+	public IJastAddNode declaration();
 
 	public int declarationLocationLine();
 
