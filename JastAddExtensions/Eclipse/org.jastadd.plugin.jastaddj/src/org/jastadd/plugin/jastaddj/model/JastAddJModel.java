@@ -31,7 +31,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jastadd.plugin.AST.FindDeclarationNode;
+import org.jastadd.plugin.AST.IFindDeclarationNode;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.jastaddj.AST.JastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
@@ -84,8 +87,8 @@ public class JastAddJModel extends JastAddModel {
 		return documentToFile(document) != null;
 	}
 
-	public boolean isModelFor(org.jastadd.plugin.AST.ASTNode node) {
-		return getProject((ASTNode)node) != null;
+	public boolean isModelFor(IJastAddNode node) {
+		return getProject(node) != null;
 	}
 	
 	
@@ -100,12 +103,13 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	
-	public void openFile(org.jastadd.plugin.AST.ASTNode node) {
-		if (node instanceof FindDeclarationNode) {
-			int targetLine = ((FindDeclarationNode)node).declarationLocationLine();
-			int targetColumn = ((FindDeclarationNode)node).declarationLocationColumn();
-			int targetLength = ((FindDeclarationNode)node).declarationLocationLength();
-			CompilationUnit cu = ((ASTNode)node).declarationCompilationUnit();
+	public void openFile(IJastAddNode node) {
+		if (node instanceof JastAddJFindDeclarationNode) {
+			JastAddJFindDeclarationNode n = (JastAddJFindDeclarationNode)node;
+			int targetLine = n.declarationLocationLine();
+			int targetColumn = n.declarationLocationColumn();
+			int targetLength = n.declarationLocationLength();
+			CompilationUnit cu = n.declarationCompilationUnit();
 			openFile(cu, targetLine, targetColumn, targetLength);
 		}
 	}
@@ -200,7 +204,7 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	
-	protected org.jastadd.plugin.AST.ASTNode getTreeRootNode(IProject project, String filePath) {
+	protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
 		Program program = getProgram(project);
@@ -248,7 +252,7 @@ public class JastAddJModel extends JastAddModel {
 		return null;
 	}
 
-	private IProject getProject(ASTNode node) {
+	private IProject getProject(IJastAddNode node) {
 		if (node == null)
 			return null;
 		while (node.getParent() != null) {

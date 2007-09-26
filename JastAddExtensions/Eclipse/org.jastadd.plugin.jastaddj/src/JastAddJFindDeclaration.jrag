@@ -1,4 +1,6 @@
 aspect JastAddJFindDeclaration {
+
+	ASTNode implements org.jastadd.plugin.jastaddj.AST.JastAddJFindDeclarationNode;
 	
 	eq VarAccess.declaration() = (ASTNode)decl();
 	eq TypeAccess.declaration() = type();
