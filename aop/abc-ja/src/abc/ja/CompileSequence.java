@@ -79,7 +79,7 @@ public class CompileSequence extends abc.main.CompileSequence {
       Program program = new Program();
       ASTNode.reset();
 
-      program.initBytecodeReader(new abc.ja.bytecode.Parser());
+      program.initBytecodeReader(new BytecodeParser());
       program.initJavaParser(
         new JavaParser() {
           public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
