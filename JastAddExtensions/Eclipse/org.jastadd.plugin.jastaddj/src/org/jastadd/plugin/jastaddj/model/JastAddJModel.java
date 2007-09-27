@@ -34,6 +34,8 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.AST.IFindDeclarationNode;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
+import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.AST.JastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
@@ -49,8 +51,8 @@ import AST.Program;
 
 public class JastAddJModel extends JastAddModel {
 
-	private HashMap<IProject,Program> projectToNodeMap = new HashMap<IProject,Program>();
-	private HashMap<Program,IProject> nodeToProjectMap = new HashMap<Program,IProject>();
+	protected HashMap<IProject,IProgram> projectToNodeMap = new HashMap<IProject,IProgram>();
+	protected HashMap<IProgram,IProject> nodeToProjectMap = new HashMap<IProgram,IProject>();
 
 	
 	// ************* Overridden methods
@@ -77,7 +79,7 @@ public class JastAddJModel extends JastAddModel {
 	public boolean isModelFor(IFile file) {
 		for (String str : getFileExtensions()) {
 			if(file.getFileExtension().equals(str)) {
-				return true;
+				return isModelFor(file.getProject());
 			}
 		}
 		return false;
@@ -109,7 +111,7 @@ public class JastAddJModel extends JastAddModel {
 			int targetLine = n.declarationLocationLine();
 			int targetColumn = n.declarationLocationColumn();
 			int targetLength = n.declarationLocationLength();
-			CompilationUnit cu = n.declarationCompilationUnit();
+			ICompilationUnit cu = n.declarationCompilationUnit();
 			openFile(cu, targetLine, targetColumn, targetLength);
 		}
 	}
@@ -117,7 +119,7 @@ public class JastAddJModel extends JastAddModel {
 	protected void completeBuild(IProject project) {
 		// Build a new project from saved files only.
 		try {
-			Program program = initProgram(project);
+			IProgram program = initProgram(project);
 			if (program == null) 
 				return;
 			
@@ -127,7 +129,7 @@ public class JastAddJModel extends JastAddModel {
 			Map<String,IFile> map = sourceMap(project);
 			boolean build = true;
 			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-			    CompilationUnit unit = (CompilationUnit)iter.next();
+			    ICompilationUnit unit = (ICompilationUnit)iter.next();
 			    
 			    if(unit.fromSource()) {
 			      Collection errors = unit.parseErrors();
@@ -183,7 +185,7 @@ public class JastAddJModel extends JastAddModel {
 	
 
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		Program program = getProgram(project);
+		IProgram program = getProgram(project);
 		if (program == null)
 			return;
 		program.files().clear();
@@ -207,11 +209,11 @@ public class JastAddJModel extends JastAddModel {
 	protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
-		Program program = getProgram(project);
+		IProgram program = getProgram(project);
 		if (program == null) 
 			return null;
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-			CompilationUnit cu = (CompilationUnit)iter.next();
+			ICompilationUnit cu = (ICompilationUnit)iter.next();
 			if(cu.fromSource()) {
 				String name = cu.pathName();
 				if(name == null)
@@ -226,24 +228,24 @@ public class JastAddJModel extends JastAddModel {
 	
 	// ***************** Additional public methods
 
-	public ClassDecl[] getMainTypes(IProject project) {
-		Program program  = getProgram(project);
+	public IOutlineNode[] getMainTypes(IProject project) {
+		IProgram program  = getProgram(project);
 		if (program != null) {
 			return 	program.mainTypes();
 		}
-		return new ClassDecl[0];
+		return new IOutlineNode[0];
 	}
 
 	
-	//*************** Private methods
+	//*************** Protected methods
 	
 
-	private Program getProgram(IProject project) {
+	protected IProgram getProgram(IProject project) {
 		if (projectToNodeMap.containsKey(project)) {
 			return projectToNodeMap.get(project);
 		} else {
 			if (isModelFor(project)) {
-				Program program = initProgram(project);
+				IProgram program = initProgram(project);
 				projectToNodeMap.put(project, program);
 				nodeToProjectMap.put(program, project);
 				return program;
@@ -252,7 +254,7 @@ public class JastAddJModel extends JastAddModel {
 		return null;
 	}
 
-	private IProject getProject(IJastAddNode node) {
+	protected IProject getProject(IJastAddNode node) {
 		if (node == null)
 			return null;
 		while (node.getParent() != null) {
@@ -261,7 +263,7 @@ public class JastAddJModel extends JastAddModel {
 		return nodeToProjectMap.get(node);
 	}
 
-	private Program initProgram(IProject project) {
+	protected IProgram initProgram(IProject project) {
 		Program program = new Program();
 		// Init
 		program.initBytecodeReader(new bytecode.Parser());
@@ -295,7 +297,7 @@ public class JastAddJModel extends JastAddModel {
 	/**
 	 * A map from source files ending with ".java" to IFiles.
 	 */
-	private Map<String,IFile> sourceMap(IProject project) {
+	protected Map<String,IFile> sourceMap(IProject project) {
 		HashMap<String,IFile> map = new HashMap<String,IFile>();
 		try {
 			buildSourceMap(project.members(), map);
@@ -308,7 +310,7 @@ public class JastAddJModel extends JastAddModel {
 	/**
 	 * Populate map with entries mapping java source file names to IFiles. 
 	 */
-	private void buildSourceMap(IResource[] resources, Map<String,IFile> sourceMap) throws CoreException {
+	protected void buildSourceMap(IResource[] resources, Map<String,IFile> sourceMap) throws CoreException {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
 			if (res instanceof IFile && res.getName().endsWith(".java")) {
@@ -326,7 +328,7 @@ public class JastAddJModel extends JastAddModel {
 	 * Opens the file corresponding to the given compilation unit with a selection
 	 * corresponding to the given line, column and length.
 	 */
-	private void openFile(CompilationUnit unit, int line, int column, int length) {
+	protected void openFile(ICompilationUnit unit, int line, int column, int length) {
 		final String JAVA_FILE_EXT = ".java";
 		final String JAR_FILE_EXT = ".jar";
 		final String CLASS_FILE_EXT = ".class";	
@@ -365,7 +367,7 @@ public class JastAddJModel extends JastAddModel {
 	 * Opens the file corresponding to the given pathName with a selection corresponding
 	 * to line, column and length. 
 	 */
-	private void openJavaFile(String pathName, int line, int column, int length)
+	protected void openJavaFile(String pathName, int line, int column, int length)
 			throws PartInitException, URISyntaxException {
 		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
 		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
@@ -374,7 +376,7 @@ public class JastAddJModel extends JastAddModel {
 			IEditorInput targetEditorInput = new FileEditorInput(files[0]);
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
-			page.openEditor(targetEditorInput, JastAddJEditor.EDITOR_ID, true);
+			page.openEditor(targetEditorInput, getEditorID(), true);
 			IDocument targetDoc = fileToDocument(files[0]);
 			int lineOffset = 0;
 			try {
@@ -388,12 +390,16 @@ public class JastAddJModel extends JastAddModel {
 			}
 		}
 	}
+	
+	protected String getEditorID() {
+		return JastAddJEditor.EDITOR_ID;
+	}
 
 	/**
 	 * Opens a class corresponding to the given path name and makes a selection
 	 * corresponding to line, column and length.
 	 */
-	private void openClassFile(String pathName, String relativeName,
+	protected void openClassFile(String pathName, String relativeName,
 			boolean inJarFile, int line, int column, int length)
 			throws PartInitException, URISyntaxException {
 		

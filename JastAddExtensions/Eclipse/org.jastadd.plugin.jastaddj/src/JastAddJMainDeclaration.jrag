@@ -1,6 +1,8 @@
+import org.jastadd.plugin.AST.IOutlineNode;
+
 aspect MainDeclaration {
   
-  syn ClassDecl[] Program.mainTypes() {
+  syn IOutlineNode[] Program.mainTypes() {
     LinkedList list = new LinkedList();
     for (int i = 0; i < getNumCompilationUnit(); i++) {
       CompilationUnit unit = getCompilationUnit(i);
@@ -11,10 +13,10 @@ aspect MainDeclaration {
          }
       }
     }
-    ClassDecl[] result = new ClassDecl[list.size()];
+    IOutlineNode[] result = new IOutlineNode[list.size()];
     int i = 0;
     for (Iterator itr = list.iterator(); itr.hasNext(); i++) {
-      result[i] = (ClassDecl)itr.next();
+      result[i] = (IOutlineNode)itr.next();
     }
     return result;
   }

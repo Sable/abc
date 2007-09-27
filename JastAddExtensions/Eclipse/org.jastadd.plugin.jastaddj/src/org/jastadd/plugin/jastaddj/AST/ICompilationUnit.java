@@ -1,0 +1,15 @@
+package org.jastadd.plugin.jastaddj.AST;
+
+import java.util.Collection;
+
+import org.jastadd.plugin.AST.IJastAddNode;
+
+public interface ICompilationUnit extends IJastAddNode {
+	String pathName();
+	String relativeName();
+	boolean fromSource();
+	Collection parseErrors();
+	void errorCheck(Collection errors, Collection warnings);
+	void java2Transformation();
+	void generateClassfile();
+}

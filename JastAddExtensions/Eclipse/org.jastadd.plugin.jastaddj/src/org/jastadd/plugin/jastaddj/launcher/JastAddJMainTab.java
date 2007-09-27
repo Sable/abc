@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 
 import AST.ClassDecl;
@@ -236,7 +237,7 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 			
 			// Fill with values
 			if (model != null) {
-				ClassDecl[] mainTypes = model.getMainTypes(project);
+				IOutlineNode[] mainTypes = model.getMainTypes(project);
 				if (mainTypes.length == 0) {
 					// Show message: No main types in this project
 					System.out.println("No main types in this project");
@@ -263,16 +264,17 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 	private class JastAddLabelProvider implements ILabelProvider {
 
 		public Image getImage(Object element) {
-			if (element instanceof ClassDecl) {
-				return JavaUI.getSharedImages().getImage(ISharedImages.IMG_OBJS_CLASS);
+			if (element instanceof IOutlineNode) {
+				IOutlineNode decl = (IOutlineNode)element;
+				return decl.contentOutlineImage();
 			}
 			return null;
 		}
 
 		public String getText(Object element) {
-			if (element instanceof ClassDecl) {
-				ClassDecl decl = (ClassDecl)element;
-				return decl.getID();
+			if (element instanceof IOutlineNode) {
+				IOutlineNode decl = (IOutlineNode)element;
+				return decl.contentOutlineLabel();
 			}
 			return null;
 		}

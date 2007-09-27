@@ -5,5 +5,5 @@ import org.jastadd.plugin.AST.IFindDeclarationNode;
 import AST.CompilationUnit;
 
 public interface JastAddJFindDeclarationNode extends IFindDeclarationNode {
-	CompilationUnit declarationCompilationUnit();
+	ICompilationUnit declarationCompilationUnit();
 }

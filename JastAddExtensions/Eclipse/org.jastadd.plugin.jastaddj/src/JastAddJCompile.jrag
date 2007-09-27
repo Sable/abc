@@ -1,4 +1,7 @@
 aspect Compile {
+  Program implements org.jastadd.plugin.jastaddj.AST.IProgram;
+  TypeDecl implements org.jastadd.plugin.jastaddj.AST.ITypeDecl;
+
   // flush 
   public void Program.flushSourceFiles(String name) {
   	if(name != null)

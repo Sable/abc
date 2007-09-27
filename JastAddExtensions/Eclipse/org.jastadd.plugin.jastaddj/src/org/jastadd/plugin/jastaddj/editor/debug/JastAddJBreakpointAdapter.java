@@ -14,6 +14,8 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.jastaddj.AST.ITypeDecl;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
@@ -52,11 +54,11 @@ public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtens
 				IFile file = (IFile)resource;
 				JastAddModel model = JastAddModelProvider.getModel(file);
 				if (model != null) {
-					ASTNode node = (ASTNode)model.findNodeInDocument(file, lineNumber + 1, 1);
-					while(node != null && !(node instanceof TypeDecl))
+					IJastAddNode node = model.findNodeInDocument(file, lineNumber + 1, 1);
+					while(node != null && !(node instanceof ITypeDecl))
 						node = node.getParent();
-					if(node instanceof TypeDecl) {
-						TypeDecl typeDecl = (TypeDecl)node;
+					if(node instanceof ITypeDecl) {
+						ITypeDecl typeDecl = (ITypeDecl)node;
 						String name = typeDecl.constantPoolName();
 						IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource, name, lineNumber + 1, -1, -1, 0, true, new HashMap());
 						DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
