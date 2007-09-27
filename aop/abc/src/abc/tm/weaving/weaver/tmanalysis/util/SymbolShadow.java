@@ -52,7 +52,6 @@ public class SymbolShadow implements ISymbolShadow {
 			Map<String, Local> tmVarToAdviceLocal, int shadowId, SootMethod container, TraceMatch owner) {
 		this.symbolName = symbolName;
 		this.tmFormalToAdviceLocal = tmVarToAdviceLocal;
-        this.container = container;
 		this.owner = owner;
 		this.uniqueShadowId = Naming.uniqueShadowID(owner.getName(),symbolName,shadowId).intern();
 		this.hashCode = computeHashCode();
@@ -60,7 +59,15 @@ public class SymbolShadow implements ISymbolShadow {
 		    uniqueIdToShadow = new HashMap<String, SymbolShadow>();
 		}
 		
-		pos = computePosition(shadowId);
+        if(container.getName().indexOf("$body_real")>-1) {
+            //have to compensate for renaming of method "body" to "body_real"
+            String name = container.getName().substring(0, container.getName().lastIndexOf("$body_real")) +"$body";
+            this.container = container.getDeclaringClass().getMethodByName(name);
+        } else {
+            this.container = container;
+        }
+
+        pos = computePosition(shadowId);
 		
 		//if a shadow is already associated with the same shadow ID it should better equal the new one
 		SymbolShadow existingShadow = uniqueIdToShadow.get(this.uniqueShadowId);
