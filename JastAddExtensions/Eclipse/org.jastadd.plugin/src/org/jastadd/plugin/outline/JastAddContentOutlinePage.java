@@ -1,5 +1,7 @@
 package org.jastadd.plugin.outline;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -8,11 +10,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
+import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.providers.JastAddContentProvider;
+import org.jastadd.plugin.providers.JastAddLabelProvider;
 
 public class JastAddContentOutlinePage extends ContentOutlinePage implements JastAddModelListener {
 	
@@ -37,6 +43,25 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 
 	public void setInput(IEditorInput input) {
 		fInput = input;
+		
+		model = null;
+		if(input instanceof IFileEditorInput) {
+			IFileEditorInput fileInput = (IFileEditorInput)input;
+			IFile file = fileInput.getFile();
+			model = JastAddModelProvider.getModel(file);
+		}
+		TreeViewer viewer = getTreeViewer();
+		if(viewer != null) {
+			if(model != null) {
+				viewer.setContentProvider(model.getEditorConfiguration().getContentProvider());
+				viewer.setLabelProvider(model.getEditorConfiguration().getLabelProvider());
+			}
+			else {
+				viewer.setContentProvider(new JastAddContentProvider());
+				viewer.setLabelProvider(new JastAddLabelProvider());
+			}
+		}
+		
 		update();
 	}
 	
@@ -44,8 +69,14 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		TreeViewer viewer = getTreeViewer();
-		viewer.setContentProvider(model.getEditorConfiguration().getContentProvider());
-		viewer.setLabelProvider(model.getEditorConfiguration().getLabelProvider());
+		if(model != null) {
+			viewer.setContentProvider(model.getEditorConfiguration().getContentProvider());
+			viewer.setLabelProvider(model.getEditorConfiguration().getLabelProvider());
+		}
+		else {
+			viewer.setContentProvider(new JastAddContentProvider());
+			viewer.setLabelProvider(new JastAddLabelProvider());
+		}
 		viewer.addSelectionChangedListener(this);
 		if (fInput != null)
 			viewer.setInput(fInput);

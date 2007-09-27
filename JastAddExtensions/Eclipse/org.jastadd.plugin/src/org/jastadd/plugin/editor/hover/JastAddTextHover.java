@@ -46,10 +46,13 @@ public class JastAddTextHover implements ITextHover {
 	private String elementAt(ITextViewer textViewer, int line, int column) {
 		IDocument document = textViewer.getDocument();
 		if (model != null) {
-			IJastAddNode node = model.findNodeInDocument(document, line, column);
-			if(node != null && node instanceof IHoverNode) {
-				String comment = ((IHoverNode)node).hoverComment();
-				return comment != null ? comment : "";
+			try {
+				IJastAddNode node = model.findNodeInDocument(document, line, column);
+				if(node != null && node instanceof IHoverNode) {
+					String comment = ((IHoverNode)node).hoverComment();
+					return comment != null ? comment : "";
+				}
+			} catch (Exception e) {
 			}
 		}
 		return "NoNode";

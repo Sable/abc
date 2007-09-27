@@ -18,14 +18,20 @@ public class JastAddLabelProvider extends LabelProvider {
 	
 	public String getText(Object element) {
 		if (element instanceof IOutlineNode) {
-			return ((IOutlineNode)element).contentOutlineLabel();
+			try {
+				return ((IOutlineNode)element).contentOutlineLabel();
+			} catch (Exception e) {
+			}
 		}
 		return parent.getText(element);
 	}
 	
 	public Image getImage(Object element) {
 		if(element instanceof IOutlineNode) {
-			return ((IOutlineNode)element).contentOutlineImage();
+			try {
+				return ((IOutlineNode)element).contentOutlineImage();
+			} catch (Exception e) {
+			}
 		}
 		return parent.getImage(element);
 	}

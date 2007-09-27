@@ -94,7 +94,7 @@ public abstract class JastAddEditor extends TextEditor {
 	    getSourceViewerConfiguration();
 	    viewer.doOperation(ProjectionViewer.TOGGLE);
 	    
-	    folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this, model);
+	    folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this);
 	    if (model != null)
 	    	model.addListener(folder);
 	    

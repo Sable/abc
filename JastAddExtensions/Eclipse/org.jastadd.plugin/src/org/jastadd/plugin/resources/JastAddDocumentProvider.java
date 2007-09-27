@@ -14,7 +14,8 @@ public class JastAddDocumentProvider extends FileDocumentProvider {
 		if(element instanceof IFileEditorInput) {
 			IFile file = ((IFileEditorInput)element).getFile();			
 			JastAddModel model = JastAddModelProvider.getModel(file);
-			model.linkFileToDoc(file, document);
+			if(model != null)
+				model.linkFileToDoc(file, document);
 		}
 		return document;
 	}

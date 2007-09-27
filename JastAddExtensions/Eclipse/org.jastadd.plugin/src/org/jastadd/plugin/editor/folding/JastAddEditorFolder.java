@@ -21,13 +21,11 @@ public class JastAddEditorFolder implements JastAddModelListener {
 	private ProjectionAnnotationModel annotationModel;
 	private Annotation[] oldAnnotations;
 	private IEditorPart editorPart;
-	private JastAddModel model;
 	
 	public JastAddEditorFolder(ProjectionAnnotationModel annotationModel, 
-			IEditorPart editorPart, JastAddModel model) {
+			IEditorPart editorPart) {
 		this.annotationModel = annotationModel;
 		this.editorPart = editorPart;
-		this.model = model;
 	}
 	
 	public void updateFoldingStructure(List<Position> positions) {

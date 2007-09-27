@@ -50,7 +50,9 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return model.getEditorConfiguration().getTextHover();
+		if(model != null)
+			return model.getEditorConfiguration().getTextHover();
+		return super.getTextHover(sourceViewer, contentType);
 	}
 	
 	/**
@@ -58,14 +60,17 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler = new PresentationReconciler();
-		ITokenScanner scanner = model.getEditorConfiguration().getScanner();
-		if (scanner != null) {
-			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
-			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
-			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+		if(model != null) {
+			PresentationReconciler reconciler = new PresentationReconciler();
+			ITokenScanner scanner = model.getEditorConfiguration().getScanner();
+			if (scanner != null) {
+				DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
+				reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+				reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+			}
+			return reconciler;
 		}
-		return reconciler;
+		return super.getPresentationReconciler(sourceViewer);
 	}
 	
 	/**
@@ -73,7 +78,9 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override 
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-		return new IAutoEditStrategy[] { model.getEditorConfiguration().getAutoIndentStrategy() };
+		if(model != null)
+			return new IAutoEditStrategy[] { model.getEditorConfiguration().getAutoIndentStrategy() };
+		return super.getAutoEditStrategies(sourceViewer, contentType);
 	}
 		
 	/**
@@ -81,20 +88,22 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-		IContentAssistProcessor completionProcessor = model.getEditorConfiguration().getCompletionProcessor();
-		if (completionProcessor != null) {
-			ContentAssistant assistant= new ContentAssistant();
-			assistant.enableAutoActivation(true);
-			assistant.setAutoActivationDelay(500);
-			assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-			assistant.setContentAssistProcessor(completionProcessor, IDocument.DEFAULT_CONTENT_TYPE);
-			assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
-			assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
-			assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
-			assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));	
-			return assistant;
-		} 
-		return null;
+		if(model != null) {
+			IContentAssistProcessor completionProcessor = model.getEditorConfiguration().getCompletionProcessor();
+			if (completionProcessor != null) {
+				ContentAssistant assistant= new ContentAssistant();
+				assistant.enableAutoActivation(true);
+				assistant.setAutoActivationDelay(500);
+				assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
+				assistant.setContentAssistProcessor(completionProcessor, IDocument.DEFAULT_CONTENT_TYPE);
+				assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
+				assistant.setContextInformationPopupBackground(new Color(null, 255, 255, 255));
+				assistant.setProposalSelectorBackground(new Color(null, 255, 255, 255));
+				assistant.setContextSelectorBackground(new Color(null, 255, 255, 255));	
+				return assistant;
+			}
+		}
+		return super.getContentAssistant(sourceViewer);
 	}
 	
 	/**
@@ -114,9 +123,12 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	 */
 	@Override 
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-        JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy(model);
-        MonoReconciler reconciler = new MonoReconciler(strategy, false);
-        return reconciler;
+		if(model != null) {
+			JastAddReconcilingStrategy strategy = new JastAddReconcilingStrategy(model);
+			MonoReconciler reconciler = new MonoReconciler(strategy, false);
+			return reconciler;
+		}
+		return super.getReconciler(sourceViewer);
     }
 
 }

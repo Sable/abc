@@ -35,13 +35,16 @@ public class JastAddContentProvider implements ITreeContentProvider {
 			return node.outlineChildren().toArray();
 		}
 		else if(element instanceof IFile) {
-			IFile file = (IFile)element;
-			JastAddModel model = JastAddModelProvider.getModel(file);
-			if (model != null) {
-				IJastAddNode node = model.getTreeRoot(file);
-				if (node != null && node instanceof IOutlineNode) {
-					return ((IOutlineNode)node).outlineChildren().toArray();
+			try {
+				IFile file = (IFile)element;
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					IJastAddNode node = model.getTreeRoot(file);
+					if (node != null && node instanceof IOutlineNode) {
+						return ((IOutlineNode)node).outlineChildren().toArray();
+					}
 				}
+			} catch (Exception e) {
 			}
 		}
 		return parent.getChildren(element);
@@ -49,41 +52,50 @@ public class JastAddContentProvider implements ITreeContentProvider {
 
 	public Object getParent(Object element) {
 		if(element instanceof IJastAddNode) {
-			IJastAddNode parent = ((IJastAddNode)element).getParent();
-			if (parent != null && parent instanceof IOutlineNode && 
-					((IOutlineNode)parent).showInContentOutline())
-				return parent;
-			else getParent(parent);
+			try {
+				IJastAddNode parent = ((IJastAddNode)element).getParent();
+				if (parent != null && parent instanceof IOutlineNode && 
+						((IOutlineNode)parent).showInContentOutline())
+					return parent;
+				else getParent(parent);
+			} catch (Exception e) {
+			}
 		}
 		return parent.getParent(element);
 	}
 
 	public boolean hasChildren(Object element) {
-		if(element instanceof IOutlineNode) {
-			return !((IOutlineNode)element).outlineChildren().isEmpty();
-		}
-		else if(element instanceof IFile) {
-			IFile file = (IFile)element;
-			JastAddModel model = JastAddModelProvider.getModel(file);
-			if (model != null) {
-				return true;
+		try {
+			if(element instanceof IOutlineNode) {
+				return !((IOutlineNode)element).outlineChildren().isEmpty();
 			}
+			else if(element instanceof IFile) {
+				IFile file = (IFile)element;
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					return true;
+				}
+			}
+		} catch (Exception e) {
 		}
 		return parent.hasChildren(element);
 	}
 
 	public Object[] getElements(Object element) {
-		if(element instanceof IFileEditorInput) {
-			IFileEditorInput input = (IFileEditorInput)element;
-			IFile file = input.getFile();
-			
-			JastAddModel model = JastAddModelProvider.getModel(file);
-			if (model != null) {
-				IDocument document = model.fileToDocument(file);
-				IJastAddNode content = model.getTreeRoot(document);
-				if(content != null && content instanceof IOutlineNode)
-					return ((IOutlineNode)content).outlineChildren().toArray();
+		try {
+			if(element instanceof IFileEditorInput) {
+				IFileEditorInput input = (IFileEditorInput)element;
+				IFile file = input.getFile();
+
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					IDocument document = model.fileToDocument(file);
+					IJastAddNode content = model.getTreeRoot(document);
+					if(content != null && content instanceof IOutlineNode)
+						return ((IOutlineNode)content).outlineChildren().toArray();
+				}
 			}
+		} catch (Exception e) {
 		}
 		return parent.getElements(element);
 	}
