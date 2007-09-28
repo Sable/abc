@@ -1,0 +1,9 @@
+aspect Selection {
+
+	ASTNode implements org.jastadd.plugin.AST.ISelectionNode;
+	
+	syn int ASTNode.selectionLine() = getBeginLine();
+	syn int ASTNode.selectionColumn() = getBeginColumn();
+	syn int ASTNode.selectionLength() = getEndColumn() - selectionColumn() + 1;
+	
+}
