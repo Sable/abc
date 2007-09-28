@@ -1,5 +1,167 @@
 aspect Variables {
-  eq LocalVarsPointcutExpr.getParameterDeclaration().isMethodParameter() = false;
-  eq LocalVarsPointcutExpr.getParameterDeclaration().isConstructorParameter() = false;
-  eq LocalVarsPointcutExpr.getParameterDeclaration().isExceptionHandlerParameter() = false;
+  eq LocalVarsPointcutExpr.getParameter().isMethodParameter() = false;
+  eq LocalVarsPointcutExpr.getParameter().isConstructorParameter() = false;
+  eq LocalVarsPointcutExpr.getParameter().isExceptionHandlerParameter() = false;
+  eq LocalVarsPointcutExpr.getParameter().nameType() = NameType.TYPE_NAME;
+
+
+  // Private pointcut variables are not in scope for the whole
+  // of the pointcut, just one part of it, and they need to be
+  // taken into account when looking up variables.
+  eq LocalVarsPointcutExpr.getParameter().lookupVariable(String name)
+  {
+    SimpleSet result = localLookupVariable(name);
+    return result.isEmpty() ? lookupVariable(name) : result;
+  }
+  eq LocalVarsPointcutExpr.getPointcutExpr().lookupVariable(String name)
+  {
+    SimpleSet result = localLookupVariable(name);
+    return result.isEmpty() ? lookupVariable(name) : result;
+  }
+
+  syn SimpleSet LocalVarsPointcutExpr.localLookupVariable(String name)
+  {
+    for (int i = 0; i < getNumParameter(); i++) {
+      if (getParameter(i).name().equals(name))
+        return SimpleSet.emptySet.add(getParameter(i));
+    }
+    return SimpleSet.emptySet;
+  }
+
+  // Private pointcut variables are a kind of pointcut variable...
+  eq LocalVarsPointcutExpr.getParameter().isPointcutVariable() = true;
+
+  // ...that may introduce shadowing.
+  syn lazy boolean LocalVarsPointcutExpr.declares(String name)
+  {
+    for (int i = 0; i < getNumParameter(); i++)
+      if (getParameter(i).name().equals(name))
+        return true;
+    return false;
+  }
+  eq LocalVarsPointcutExpr.getPointcutExpr().pointcutFormals()
+  {
+    java.util.List result = pointcutFormals();
+    // handling shadowing by removing formals from the list
+    Iterator outer = result.iterator();
+    while (outer.hasNext()) {
+      ParameterDeclaration decl = (ParameterDeclaration) outer.next();
+      if (this.declares(decl.name()))
+        outer.remove();
+    }
+    // add private pointcut variables
+    for (int i = 0; i < getNumParameter(); i++)
+      result.add(getParameter(i));
+
+    return result;
+  }
+
+  // Modify the binding check to handle private pointcut variables
+  // and the shadowing that they may introduce.
+  eq LocalVarsPointcutExpr.binds(String var) =
+    this.declares(var) ? 0 : getPointcutExpr().binds(var);
+
+  public void LocalVarsPointcutExpr.typeCheck()
+  {
+    for (int i = 0; i < getNumParameter(); i++) {
+      int bindings = getPointcutExpr().binds(getParameter(i).name());
+      if (bindings < 1) 
+        error("The private pointcut variable " + getParameter(i).name() +
+              " may be unbound.");
+      else if (bindings > 1)
+        error("The private pointcut variable " + getParameter(i).name() +
+              " may be bound multiple times.");
+    }
+  }
+
+  // Similarly, adjust the check for whether or not a variable is bound
+  // within the current cflow to take account of private pointcut variables
+  // and shadowing.
+  eq LocalVarsPointcutExpr.getPointcutExpr().bindsInCurrentCflow(String name) =
+    this.declares(name) ? getPointcutExpr().binds(name) > 0
+                        : bindsInCurrentCflow(name);
+
+  // the let-pointcut binds a pointcut variable
+  eq LetPointcutExpr.binds(String var) =
+    getVarAccess().name().equals(var) ? 1 : 0;
+
+  //
+  // type-checking a let-pointcut
+  //
+  public void LetPointcutExpr.typeCheck()
+  {
+    // check type of expression
+    TypeDecl varType = getVarAccess().decl().type();
+    if (!getExpr().type().assignConversionTo(varType, getExpr())
+        && !getExpr().type().isUnknown())
+    {
+      error("Can not assign the pointcut formal " + getVarAccess() +
+            " of type " + varType.typeName() + " a value of type " +
+            getExpr().type().typeName());
+    }
+
+    // check that the variables used in a let-pointcut are
+    // bound in the current cflow
+    Iterator i = pointcutFormals().iterator();
+    while (i.hasNext()) {
+      ParameterDeclaration param = (ParameterDeclaration) i.next();
+      if (!param.isImplicit() && getExpr().refersTo(param) &&
+          !bindsInCurrentCflow(param.name()))
+      {
+        error("Pointcut formal " + param.name() +
+              " is not bound within the enclosing cflow:" +
+              " it cannot be used within this let(..)");
+      }
+    }
+
+    // check for circular let-pointcut definitions
+    if (((ParameterDeclaration) getVarAccess().decl()).isCircular())
+      error("The pointcut variable " + getVarAccess().name() +
+            " is circularly defined through let pointcuts.");
+  }
+
+
+  // pointcut variables could be circularly defined with let-pointcuts,
+  // so we need to check that they're not
+  syn lazy boolean
+  PointcutExpr.isCircular(ParameterDeclaration decl) circular [true];
+
+  eq PointcutExpr.isCircular(ParameterDeclaration decl) = false;
+  eq BinaryPointcutExpr.isCircular(ParameterDeclaration decl) =
+    getLhs().isCircular(decl) || getRhs().isCircular(decl);
+  eq NegPointcutExpr.isCircular(ParameterDeclaration decl) =
+    getPointcutExpr().isCircular(decl);
+  eq CflowPointcutExpr.isCircular(ParameterDeclaration decl) =
+    getPointcut().isCircular(decl);
+  eq CflowBelowPointcutExpr.isCircular(ParameterDeclaration decl) =
+    getPointcut().isCircular(decl);
+  eq CflowDepthPointcutExpr.isCircular(ParameterDeclaration decl) =
+    getPointcutExpr().isCircular(decl);
+  eq CflowBelowDepthPointcutExpr.isCircular(ParameterDeclaration decl) =
+    getPointcutExpr().isCircular(decl);
+  eq LetPointcutExpr.isCircular(ParameterDeclaration decl)
+  {
+    if (getVarAccess().decl() != decl)
+      return false;
+
+    Iterator i = pointcutFormals().iterator();
+    while (i.hasNext()) {
+      ParameterDeclaration param = (ParameterDeclaration) i.next();
+      if (getExpr().refersTo(param) && param.isCircular())
+        return true;
+    }
+    return false;
+  }
+
+  inh boolean ParameterDeclaration.isCircular() circular [true];
+  eq Program.getCompilationUnit().isCircular() = false;
+  eq PointcutDecl.getParameter(int index).isCircular() =
+    getPointcutExpr().isCircular(getParameter(index));
+  eq LocalVarsPointcutExpr.getParameter(int index).isCircular() =
+    getPointcutExpr().isCircular(getParameter(index));
+  eq AdviceSpec.getParameter(int index).isCircular() =
+    isCircular(getParameter(index));
+  inh boolean AdviceSpec.isCircular(ParameterDeclaration decl) circular [true];
+  eq AdviceDecl.getAdviceSpec().isCircular(ParameterDeclaration decl) =
+    getPointcutExpr().isCircular(decl);
 }

@@ -1,4 +1,6 @@
-LocalVarsPointcutExpr : PointcutExpr ::= ParameterDeclaration* PointcutExpr;
+LocalVarsPointcutExpr : PointcutExpr ::=
+    Parameter:ParameterDeclaration*
+    PointcutExpr;
 
 CastPointcutExpr : PointcutExpr ::= Pattern;
 

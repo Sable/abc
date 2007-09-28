@@ -20,10 +20,14 @@
 package abc.ja.eaj;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import polyglot.types.SemanticException;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootMethod;
 import soot.tagkit.Host;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
@@ -39,7 +43,13 @@ import abc.eaj.weaving.weaver.SyncWarningWeaver;
 import abc.eaj.weaving.weaver.SynchronizedMethodRestructurer;
 import abc.ja.eaj.parse.JavaParser.Terminals;
 import abc.main.Debug;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.ClassnamePattern;
+import abc.weaving.aspectinfo.Pointcut;
+import abc.weaving.matching.AdviceApplication.ResidueConjunct;
+import abc.weaving.matching.MatchingContext;
 import abc.weaving.matching.SJPInfo;
+import abc.weaving.residues.Residue;
 import abc.weaving.weaver.Weaver;
 
 /**
@@ -168,4 +178,47 @@ public class AbcExtension extends abc.ja.AbcExtension
     	return new CompileSequence(this);
 	 }
 
+    protected HashMap globalPointcutDecls = new HashMap();
+
+    public void registerGlobalPointcutDecl(ClassnamePattern pat, Pointcut pc)
+    {
+        globalPointcutDecls.put(pat, pc);
+    }
+
+    public List residueConjuncts(final AbstractAdviceDecl ad,
+                                final abc.weaving.aspectinfo.Pointcut pc,
+                                final abc.weaving.matching.ShadowMatch sm,
+                                final SootMethod method,
+                                final SootClass cls,
+                                final abc.weaving.matching.WeavingEnv we)
+    {
+        List conjuncts = super.residueConjuncts(ad, pc, sm, method, cls, we);
+
+        // Add conjuncts, if necessary, for global pointcut declarations
+        SootClass aspect_class =
+            ad.getDefiningAspect().getInstanceClass().getSootClass();
+        Iterator i = globalPointcutDecls.keySet().iterator();
+        while (i.hasNext()) {
+            ClassnamePattern pat = (ClassnamePattern) i.next();
+            if (pat.matchesClass(aspect_class))
+                conjuncts.add(globalPointcutConjunct(pat, we, cls, method, sm));
+        }
+        return conjuncts;
+    }
+
+    protected ResidueConjunct globalPointcutConjunct(
+                                    ClassnamePattern pat,
+                                    final abc.weaving.matching.WeavingEnv we,
+                                    final SootClass cls,
+                                    final SootMethod method,
+                                    final abc.weaving.matching.ShadowMatch sm)
+        
+    {
+        final Pointcut pc = (Pointcut) globalPointcutDecls.get(pat);
+        return new ResidueConjunct() {
+            public Residue run() throws SemanticException {
+                return pc.matchesAt(new MatchingContext(we,cls,method,sm));
+            }
+        };
+    }
 }

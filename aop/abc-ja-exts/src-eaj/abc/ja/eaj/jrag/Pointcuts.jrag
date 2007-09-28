@@ -1,24 +1,55 @@
+import abc.eaj.weaving.aspectinfo.*;
+
 aspect Pointcuts {
+  // The "current cflow", for the pointcut of a global pointcut
+  // declaration, is simply the whole pointcut.
   eq GlobalPointcutDecl.getPointcutExpr().bindsInCurrentCflow(String name) =
     getPointcutExpr().binds(name) > 0;
 
+  // The argument of the contains(..) pointcut is another pointcut:
+  // the pointcut contains(pc) matches all joinpoint shadows that
+  // contain another joinpoint shadow matching pc. Therefore, pc
+  // must be a static pointcut.
+  public void ContainsPointcutExpr.typeCheck()
+  {
+    super.typeCheck();
+    HashSet dynamic = new HashSet();
+    collectNonStaticPointcuts(dynamic);
+    if (!dynamic.isEmpty()) {
+      StringBuffer msg = new StringBuffer();
+      msg.append("The argument of the contains() pointcut " +
+                 "must be a static pointcut - the following pointcuts " +
+                 "are not static: ");
+      Iterator i = dynamic.iterator();
+      while (i.hasNext())
+        msg.append(i.next() + " ");
+      error(msg.toString());
+    }
+  }
+
+
+
+  //
+  // Converting to the backend representation of pointcuts.
+  //
+
   public Pointcut LocalVarsPointcutExpr.pointcut() {
     ArrayList list = new ArrayList();
-    for(int i = 0; i < getNumParameterDeclaration(); i++)
-      list.add(getParameterDeclaration(i).formal());
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).formal());
     return new abc.weaving.aspectinfo.LocalPointcutVars(getPointcutExpr().pointcut(), list, pos());
   }
 
   public Pointcut CastPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.Cast(getPattern().typePattern(), pos());
+    return new Cast(getPattern().typePattern(), pos());
   }
 
   public Pointcut ThrowPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.Throw(getPattern().typePattern(), pos());
+    return new Throw(getPattern().typePattern(), pos());
   }
 
   public Pointcut CflowDepthPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.CflowDepth(
+    return new CflowDepth(
       getPointcutExpr().pointcut(),
       pos(),
       new Var(getVarAccess().name(), getVarAccess().pos())
@@ -26,35 +57,118 @@ aspect Pointcuts {
   }
 
   public Pointcut CflowBelowDepthPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.CflowBelowDepth(
+    return new CflowBelowDepth(
       getPointcutExpr().pointcut(),
       pos(),
       new Var(getVarAccess().name(), getVarAccess().pos())
     );
   }
 
-  public Pointcut LetPointcutExpr.pointcut() {
-    throw new UnsupportedOperationException("LetPointcutExpr not implemented yet");
-  }
-
   public Pointcut ContainsPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.Contains(pos(), getPointcutExpr().pointcut());
+    return new Contains(pos(), getPointcutExpr().pointcut());
   }
 
   public Pointcut LockPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.LockPointcut(pos());
+    return new LockPointcut(pos());
   }
 
   public Pointcut UnlockPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.UnlockPointcut(pos());
+    return new UnlockPointcut(pos());
   }
 
   public Pointcut ArrayGetPointcutExpr.pointcut() {
-    return new abc.eaj.weaving.aspectinfo.ArrayGet(pos());
+    return new ArrayGet(pos());
   }
 
   public Pointcut ArraySetPointcutExpr.pointcut() {
     return new abc.eaj.weaving.aspectinfo.ArraySet(pos());
   }
 
+  public Pointcut LetPointcutExpr.pointcut() {
+    java.util.List vars = methodVars();
+
+    int jp = vars.indexOf(new Var("thisJoinPoint", null));
+    int jpsp = vars.indexOf(new Var("thisJoinPointStaticPart", null));
+    int ejp = vars.indexOf(new Var("thisEnclosingJoinPointStaticPart", null));
+
+    Var bound_var = new Var(getVarAccess().name(), getVarAccess().pos());
+
+    return new Let(bound_var, vars, methodSig(), jp, jpsp, ejp, pos());
+  }
+
+  syn lazy SootMethod LetPointcutExpr.sootMethod()
+  {
+    String name = "let$" + hostType().adviceCounter++;
+    ArrayList paramtypes = new ArrayList();
+    Type returntype = getVarAccess().decl().type().getSootType();
+    int modifiers = soot.Modifier.STATIC | soot.Modifier.PUBLIC;
+
+    Iterator i = pointcutFormals().iterator();
+    while (i.hasNext()) {
+      ParameterDeclaration param = (ParameterDeclaration) i.next();
+      if (getExpr().refersTo(param))
+        paramtypes.add(param.type().getSootType());
+    }
+
+    SootMethod method =
+      new SootMethod(name, paramtypes, returntype, modifiers);
+    hostType().getSootClassDecl().addMethod(method);
+
+    return method;
+  }
+
+  syn lazy MethodSig LetPointcutExpr.methodSig()
+  {
+    return AbcFactory.MethodSig(sootMethod());
+  }
+
+  syn lazy java.util.List LetPointcutExpr.methodVars()
+  {
+    ArrayList vars = new ArrayList();
+    Iterator i = pointcutFormals().iterator();
+    while (i.hasNext()) {
+      ParameterDeclaration param = (ParameterDeclaration) i.next();
+      if (getExpr().refersTo(param))
+        vars.add(new Var(param.name(),
+                         polyglot.util.Position.COMPILER_GENERATED));
+    }
+    return vars;
+  }
+
+  public void LetPointcutExpr.jimplify2()
+  {
+    SootMethod method = sootMethod();
+    JimpleBody body = Jimple.v().newBody(method);
+    method.setActiveBody(body);
+    Body b = new Body(hostType(), body, this);
+
+    Iterator i = pointcutFormals().iterator();
+    int count = 0;
+    while (i.hasNext()) {
+      ParameterDeclaration param = (ParameterDeclaration) i.next();
+      if (getExpr().refersTo(param)) {
+        Type type = param.type().getSootType();
+        param.local = b.newLocal(param.name(), type);
+        b.setLine(param);
+        b.add(Jimple.v().newIdentityStmt(param.local,
+          Jimple.v().newParameterRef(type, count++)));
+      }
+    }
+    b.add(Jimple.v().newReturnStmt(
+      getExpr().asImmediate(b, getExpr().eval(b))));
+  }
+
+
+
+  //
+  // register all global pointcut declarations so that they are
+  // used during matching and weaving
+  //
+  public void GlobalPointcutDecl.jimplify2()
+  {
+    getPointcutExpr().jimplify2();
+    ((abc.ja.eaj.AbcExtension) abc.main.Main.v().getAbcExtension())
+        .registerGlobalPointcutDecl(getPattern().classnamePattern(),
+                                    getPointcutExpr().pointcut());
+  }
 }

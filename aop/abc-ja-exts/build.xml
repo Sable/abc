@@ -17,6 +17,7 @@
 
 <!-- Arguments passed to runtests -->
 <property name="test.args" value=""/>
+<property name="test.pat" value=""/>
 
 <!-- "tools" is the directory where generators and libraries are located. -->
 <property name="tools" value="${frontend}/tools"/>
@@ -256,11 +257,10 @@
         dir="${abc.loc}/ajc-harness/tests">
     <jvmarg line="-Xmx512M" />
     <arg line="+abc -ext abc.ja -abc -messageOverride ja"/>
-    <!--<arg value="abcTests.xml"/>-->
-    <arg line="${test.args} abcTests.xml"/>
-    <!--arg line="abcTests.xml pureJava"/-->
+    <arg line="${test.args} abcTests.xml ${test.pat}"/>
     <classpath>
       <pathelement location="classes"/>
+      <pathelement location="${aspectj}/classes"/>
       <pathelement location="${abc.loc}/classes"/>
       <pathelement location="${abc.loc}/runtime-classes"/>
       <pathelement location="${abc.loc}/testing-classes"/>
