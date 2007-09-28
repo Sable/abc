@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.jastadd.plugin.AST.IFoldingNode;
 import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.providers.JastAddContentProvider;

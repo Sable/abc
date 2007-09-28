@@ -191,7 +191,7 @@ public abstract class JastAddModel {
 	protected void deleteParseErrorMarkers(IResource[] resources) throws CoreException {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
-			if (res instanceof IFile && res.getName().endsWith(".java")) {
+			if (res instanceof IFile && isModelFor((IFile)res)) {
 				IFile file = (IFile) res;
 				file.deleteMarkers(PARSE_ERROR_MARKER_TYPE, false, IResource.DEPTH_ZERO);
 			} else if (res instanceof IFolder) {
@@ -216,7 +216,7 @@ public abstract class JastAddModel {
 	protected void deleteErrorMarkers(IResource[] resources) throws CoreException {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
-			if (res instanceof IFile && res.getName().endsWith(".java")) {
+			if (res instanceof IFile && isModelFor((IFile)res)) {
 				IFile file = (IFile) res;
 				file.deleteMarkers(ERROR_MARKER_TYPE, false, IResource.DEPTH_ZERO);
 			} else if (res instanceof IFolder) {
