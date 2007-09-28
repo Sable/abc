@@ -21,9 +21,6 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 	public void run(IAction action) {
 
 		IJastAddNode selectedNode = selectedNode();
-		if (selectedNode == null) 
-			return;
-		
 		if (selectedNode instanceof IJastAddJFindDeclarationNode) {
 			IJastAddNode target = ((IJastAddJFindDeclarationNode)selectedNode).declaration();
 			if(target == null) 
@@ -35,9 +32,8 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 			JastAddModel model = activeModel();
 			if (model == null) 
 				return;
-
 			model.openFile(target);
-		
+			
 			StringBuffer s = new StringBuffer();
 			s.append("Find declaration of ");
 			if(selectedNode instanceof TypeDecl)

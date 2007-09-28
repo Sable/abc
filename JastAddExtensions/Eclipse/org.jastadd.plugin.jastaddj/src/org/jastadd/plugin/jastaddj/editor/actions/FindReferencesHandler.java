@@ -12,9 +12,6 @@ import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
-import AST.ASTNode;
-import AST.TypeDecl;
-
 public class FindReferencesHandler extends JastAddActionDelegate {
 
 	@Override
