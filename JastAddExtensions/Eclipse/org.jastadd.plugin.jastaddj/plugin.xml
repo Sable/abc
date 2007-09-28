@@ -78,7 +78,7 @@
 	<runtime>
 		<run class = "org.jastadd.plugin.jastaddj.nature.JastAddJNature"/>
 	</runtime>
-	<builder id = "org.jastadd.plugin.jastaddj.JastAddJBuilder"/>
+	<builder id = "org.jastadd.plugin.builder.JastAddBuilder"/>
 	</extension>
 
 	<extension point = "org.eclipse.ui.ide.projectNatureImages">
@@ -91,13 +91,6 @@
 
 	<!-- JastAddJ Builder -->
 	
-	<extension point = "org.eclipse.core.resources.builders"
-		id = "org.jastadd.plugin.jastaddj.JastAddJBuilder"
-		name = "JastAddJ Builder">
-	<builder hasNature = "true">
-		<run class = "org.jastadd.plugin.jastaddj.builder.JastAddJBuilder"/>
-	</builder>
-	</extension>
 
 	<!-- JastAddJ Build Path Management -->
  
@@ -364,5 +357,11 @@
 		</part>
 	</actionSetPartAssociation>
 	</extension>
+ <extension
+       id="org.jastadd.plugin.model.JastAddJModel"
+       name="JastAddJModel"
+       point="org.jastadd.plugin.model.JastAddModelProvider">
+    <provider class="org.jastadd.plugin.jastaddj.model.JastAddJModel"/>
+ </extension>
 	
 </plugin>
