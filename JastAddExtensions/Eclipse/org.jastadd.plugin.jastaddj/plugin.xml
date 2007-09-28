@@ -168,9 +168,9 @@
 	<wizard id = "org.jastadd.plugin.jastaddj.JastAddJNewProjectWizard"
 		name = "New JastAddJ Project"
 		icon = "icons/obj16/ja_fldr_obj.gif"
-		preferredPerspectives = "org.jastadd.plugin.JastAddPerspective"
+		preferredPerspectives = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		project = "true"
-		finalPerspective = "org.jastadd.plugin.JastAddPerspective"
+		finalPerspective = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		class = "org.jastadd.plugin.jastaddj.wizards.JastAddJNewProjectWizard">
  		<description>Create a New JastAddJ Project</description>
 		<selection class = "org.eclipse.core.resources.IResource"/>
@@ -357,6 +357,8 @@
 		</part>
 	</actionSetPartAssociation>
 	</extension>
+	
+	
  <extension
        id="org.jastadd.plugin.model.JastAddJModel"
        name="JastAddJModel"
