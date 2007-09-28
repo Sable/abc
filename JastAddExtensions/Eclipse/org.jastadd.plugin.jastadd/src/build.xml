@@ -1,0 +1,105 @@
+<!--
+ Targets for working from terminal window:
+       gen (default) - generates java files
+       cleanGen      - removes all generated files
+-->
+<project name="JastAdd extension" default="gen">
+
+<!-- "package" is the directory where generated files will be stored -->
+<property name="package" value="org.jastadd.plugin.jastadd.AST"/>
+<property name="parser" value="org/jastadd/plugin/jastadd/parser"/>
+<property name="scanner" value="org/jastadd/plugin/jastadd/scanner"/>
+
+<!-- "tools" is the directory where generators and libraries are located. -->
+<property name="tools" value="../../Java1.4Frontend/tools"/>
+	
+<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
+<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
+<!-- "jastadd" is an ant task class in jastadd2.jar -->
+<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
+
+<!-- generate compiler source files -->
+<target name="gen" depends="scanner,parser">
+  <!-- create AST node types and weave aspect modules -->
+	<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true"
+           outdir="${basedir}" lazyMaps="true" suppressWarnings="false" parentInterface="false" noInhEqCheck="true">
+		<fileset dir="../../Java1.4Frontend">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="../../BytecodeBackend">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="../../JastAdd">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="../../org.jastadd.plugin/src">
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="../../org.jastadd.plugin.jastaddj/src">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir=".">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+  </jastadd>
+  <!-- copy library files-->
+  <copy todir="beaver" preservelastmodified="true">
+    <fileset dir="../../Java1.4Frontend/beaver" includes="**/*.java"/>
+  </copy>
+</target>
+
+<target name="scanner">
+    <mkdir dir="${scanner}"/>
+	<!-- compose the scanner -->
+    <concat destfile="${scanner}/JavaScanner.flex" binary="true" force="false">
+	  <fileset file="JastAdd.flex"/>
+    </concat>
+	<!-- generate the scanner -->
+	<echo message = "Running jflex"/>
+	<jflex file="${scanner}/JavaScanner.flex" outdir="${scanner}" nobak="yes"/>
+    <copy todir="scanner" file="../../Java1.4Frontend/scanner/Unicode.java" preservelastmodified="true"/>
+</target>
+
+<target name="parser">
+    <mkdir dir="${parser}"/>
+	<!-- generate the parser phase 1, create a full .lalr specification from fragments-->
+	<echo message = "Running parser phase 1"/>
+	<concat destfile="${parser}/JavaParser.all" binary="true" force="false">
+        <fileset file="preamble.parser"/>
+        <fileset file="../../Java1.4Frontend/parser/java14.parser"/>
+	    <fileset dir="../../org.jastadd.plugin.jastaddj/src">
+	      <include name="*.parser"/>
+	      <exclude name="preamble.parser"/>
+	    </fileset>
+		<fileset dir="../../JastAdd/" includes= "*.parser"/>
+ 	</concat>
+	<!-- generate the parser phase 2, translating .lalr to .beaver -->
+	<java fork="true" dir="${basedir}" classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main">
+		<arg line="${parser}/JavaParser.all ${parser}/JavaParser.beaver"/>
+	</java>
+	<!-- generate the parser phase 3, translating .beaver to .java -->
+	<beaver file="${parser}/JavaParser.beaver" terminalNames="yes" compress="no" useSwitch="yes"/>
+</target>
+
+<!-- remove generated source files -->
+<target name="cleanGen">
+    <delete dir="${package}"/>
+    <delete dir="beaver"/>
+    <delete dir="parser"/>
+    <delete dir="scanner"/>
+</target>
+
+</project>

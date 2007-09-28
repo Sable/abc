@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+	<!-- New Project Wizard -->
+	
+	<extension point = "org.eclipse.ui.newWizards">
+	<wizard id = "org.jastadd.plugin.jastadd.NewProjectWizard"
+		name = "New JastAdd Project"
+		preferredPerspectives = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
+		project = "true"
+		finalPerspective = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
+		class = "org.jastadd.plugin.jastadd.NewProjectWizard">
+ 		<description>Create a new JastAdd Project</description>
+		<selection class = "org.eclipse.core.resources.IResource"/>
+	</wizard>
+	</extension>
+
+	<!-- Nature -->
+	
+	<extension point = "org.eclipse.core.resources.natures"
+		id = "org.jastadd.plugin.jastadd.Nature"
+		name = "JastAdd Nature">
+	<runtime>
+		<run class = "org.jastadd.plugin.jastadd.Nature"/>
+	</runtime>
+	<builder id = "org.jastadd.plugin.builder.JastAddBuilder"/>
+	</extension>
+
+	<!-- Register the JastAdd model -->
+	
+	<extension point="org.jastadd.plugin.model.JastAddModelProvider"
+        id="org.jastadd.plugin.jastadd.Model"
+        name="JastAddModel">
+		<provider class="org.jastadd.plugin.jastadd.Model"/>
+ 	</extension>
+</plugin>
