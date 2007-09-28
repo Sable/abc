@@ -48,7 +48,7 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		System.out.println("Initializing new project wizard JastAddJ");
+		//System.out.println("Initializing new project wizard JastAddJ");
 	}
 
 	@Override

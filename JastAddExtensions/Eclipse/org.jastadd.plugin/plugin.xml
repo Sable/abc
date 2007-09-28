@@ -7,8 +7,8 @@
          name="JastAddBuilder"
          point="org.eclipse.core.resources.builders">
       <builder
-            hasNature="true"
-            isConfigurable="true">
+            hasNature="false"
+            isConfigurable="false">
          <run class="org.jastadd.plugin.builder.JastAddBuilder"/>
       </builder>
    </extension>
