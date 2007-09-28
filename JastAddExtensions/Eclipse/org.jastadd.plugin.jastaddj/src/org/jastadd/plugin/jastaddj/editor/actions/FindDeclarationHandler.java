@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.NewSearchUI;
-import org.jastadd.plugin.AST.IFindDeclarationNode;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
+import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
@@ -24,8 +24,8 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 		if (selectedNode == null) 
 			return;
 		
-		if (selectedNode instanceof IFindDeclarationNode) {
-			IJastAddNode target = ((IFindDeclarationNode)selectedNode).declaration();
+		if (selectedNode instanceof IJastAddJFindDeclarationNode) {
+			IJastAddNode target = ((IJastAddJFindDeclarationNode)selectedNode).declaration();
 			if(target == null) 
 				return;
 		

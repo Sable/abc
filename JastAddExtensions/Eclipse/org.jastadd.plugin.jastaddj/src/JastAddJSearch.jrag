@@ -24,6 +24,7 @@ aspect Search {
 	  type().isInterfaceDecl() ? type().findImplementors() : super.findImplementors();
 	
 	
+	ASTNode implements org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
 		
 	coll HashSet TypeDecl.references() [new HashSet()] with add;
 	TypeAccess contributes this to TypeDecl.references() for decl();
@@ -31,11 +32,10 @@ aspect Search {
 	coll HashSet MethodDecl.references() [new HashSet()] with add;
 	MethodAccess contributes this to MethodDecl.references() for decl();
 	
-	
-	syn Collection ASTNode.findReferences() = Collections.EMPTY_LIST;
-	eq TypeDecl.findReferences() = references();
-	eq TypeAccess.findReferences() = type().findReferences();
-	eq MethodDecl.findReferences() = references();
-	eq MethodAccess.findReferences() = decl().findReferences();
+	syn Collection ASTNode.references() = Collections.EMPTY_LIST;
+	//eq TypeDecl.findReferences() = references();
+	eq TypeAccess.references() = type().references();
+	//eq MethodDecl.findReferences() = references();
+	eq MethodAccess.references() = decl().references();
 		
 }

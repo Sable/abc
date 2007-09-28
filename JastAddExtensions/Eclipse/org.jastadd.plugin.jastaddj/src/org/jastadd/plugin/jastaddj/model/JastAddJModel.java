@@ -31,19 +31,16 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jastadd.plugin.AST.IFindDeclarationNode;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
-import org.jastadd.plugin.jastaddj.AST.JastAddJFindDeclarationNode;
+import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
-import AST.ASTNode;
-import AST.ClassDecl;
 import AST.CompilationUnit;
 import AST.JavaParser;
 import AST.Problem;
@@ -106,11 +103,11 @@ public class JastAddJModel extends JastAddModel {
 
 	
 	public void openFile(IJastAddNode node) {
-		if (node instanceof JastAddJFindDeclarationNode) {
-			JastAddJFindDeclarationNode n = (JastAddJFindDeclarationNode)node;
-			int targetLine = n.declarationLocationLine();
-			int targetColumn = n.declarationLocationColumn();
-			int targetLength = n.declarationLocationLength();
+		if (node instanceof IJastAddJFindDeclarationNode) {
+			IJastAddJFindDeclarationNode n = (IJastAddJFindDeclarationNode)node;
+			int targetLine = n.selectionLine();
+			int targetColumn = n.selectionColumn();
+			int targetLength = n.selectionLength();
 			ICompilationUnit cu = n.declarationCompilationUnit();
 			openFile(cu, targetLine, targetColumn, targetLength);
 		}

@@ -3,7 +3,7 @@ aspect Comments {
   syn String ASTNode.javaDocComment() {
     CompilationUnit cu = declarationCompilationUnit();
     if(cu != null) {
-      String s = cu.comment(declarationLocationLine());
+      String s = cu.comment(getBeginLine());
       if(s != null && s.startsWith("/**"))
         return s;
     }
