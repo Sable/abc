@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.jastadd.plugin.builder.JastAddBuilder;
 
 public abstract class JastAddNature implements IProjectNature {
 
@@ -15,14 +16,14 @@ public abstract class JastAddNature implements IProjectNature {
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(getBuilderID())) {
+			if (commands[i].getBuilderName().equals(JastAddBuilder.BUILDER_ID)) {
 				return;
 			}
 		}
 		ICommand[] newCommands = new ICommand[commands.length + 1];
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
-		command.setBuilderName(getBuilderID());
+		command.setBuilderName(JastAddBuilder.BUILDER_ID);
 		
 		newCommands[newCommands.length - 1] = command;
 		desc.setBuildSpec(newCommands);
@@ -34,7 +35,7 @@ public abstract class JastAddNature implements IProjectNature {
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(getBuilderID())) {
+			if (commands[i].getBuilderName().equals(JastAddBuilder.BUILDER_ID)) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
 				System.arraycopy(commands, i + 1, newCommands, i,
@@ -53,5 +54,4 @@ public abstract class JastAddNature implements IProjectNature {
 		this.project = project;
 	}
 
-	protected abstract String getBuilderID();
 }

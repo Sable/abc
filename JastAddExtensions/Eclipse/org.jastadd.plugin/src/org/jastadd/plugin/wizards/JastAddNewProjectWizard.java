@@ -63,8 +63,6 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 	protected abstract String createProjectPageTitle();
 	protected abstract String createProjectPageDescription();
 	protected abstract String getNatureID();
-	protected abstract String getBuilderID();
-	
 	
 	private IProject createNewProject() {
 		if (newProject != null) {
@@ -128,14 +126,14 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 			ICommand[] commands = desc.getBuildSpec();
 			boolean found  = false;
 			for(int i = 0; i < commands.length; i++) {
-				if(commands[i].getBuilderName().equals(getBuilderID())) {
+				if(commands[i].getBuilderName().equals(JastAddBuilder.BUILDER_ID)) {
 					found = true;
 					break;
 				}
 			}
 			if(!found) {
 				ICommand command = desc.newCommand();
-				command.setBuilderName(getBuilderID());
+				command.setBuilderName(JastAddBuilder.BUILDER_ID);
 				ICommand[] newCommands = new ICommand[commands.length + 1];
 				System.arraycopy(commands, 0, newCommands, 1, commands.length);
 				newCommands[0] = command;

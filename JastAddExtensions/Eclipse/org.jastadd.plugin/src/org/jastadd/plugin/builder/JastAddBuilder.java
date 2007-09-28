@@ -8,8 +8,13 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jastadd.plugin.model.JastAddModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 
-public abstract class JastAddBuilder extends IncrementalProjectBuilder {
+public class JastAddBuilder extends IncrementalProjectBuilder {
+
+	public static final String BUILDER_ID = "org.jastadd.plugin.builder.JastAddBuilder";
+
 
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		if (kind == FULL_BUILD) {
@@ -76,7 +81,12 @@ public abstract class JastAddBuilder extends IncrementalProjectBuilder {
 	}
 	*/
 	
-	protected abstract void buildProject(IProject project);
+	protected void buildProject(IProject project) {
+		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
+			m.fullBuild(project);
+		}	
+	}
+
 	
 	private class DeltaVisitor implements IResourceDeltaVisitor {
 		/*

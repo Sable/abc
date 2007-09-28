@@ -11,11 +11,7 @@ import org.osgi.framework.BundleContext;
  */
 public class JastAddActivator extends AbstractUIPlugin {
 
-	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jastadd.plugin";
-
-	// The shared instance
-	private static JastAddActivator plugin;
 
 	protected JastAddModel model;
 	
@@ -25,10 +21,6 @@ public class JastAddActivator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this;
-		model = createModel();
-		if (model != null)
-			JastAddModelProvider.addModel(model);
 	}
 
 	/*
@@ -41,29 +33,5 @@ public class JastAddActivator extends AbstractUIPlugin {
 			JastAddModelProvider.removeModel(model);
 			model = null;
 		}
-		plugin = null;
-	}
-
-	/**
-	 * Returns the shared instance
-	 * @return the shared instance
-	 */
-	public static JastAddActivator getDefault() {
-		return plugin;
-	}
-	
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path
-	 *
-	 * @param path the path
-	 * @return the image descriptor
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
-	
-	protected JastAddModel createModel() {
-		return null;
 	}
 }
