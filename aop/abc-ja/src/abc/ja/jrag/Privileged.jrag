@@ -1,0 +1,94 @@
+aspect Privileged {
+  inh boolean Modifiers.mayBePrivileged();
+  eq Program.getChild().mayBePrivileged() = false;
+  eq AspectDecl.getModifiers().mayBePrivileged() = true;
+  syn lazy boolean Modifiers.isPrivileged() = numModifier("privileged") != 0;
+  syn boolean TypeDecl.isPrivileged() = getModifiers().isPrivileged();
+
+  refine Modifiers public void Modifiers.checkModifiers() {
+    Modifiers.Modifiers.checkModifiers();
+    if(numModifier("privileged") > 1)
+      error("only one privileged allowed");
+    else if(isPrivileged() && !mayBePrivileged())
+      error("modifier privileged not allowed in this context");
+  }
+
+  refine DeclareParentsAnalysis eq TypeDecl.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return DeclareParentsAnalysis.TypeDecl.accessibleFrom(type);
+  }
+
+  refine IntertypeFieldNameAnalysis eq IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return IntertypeFieldNameAnalysis.IntertypeFieldDeclaration.accessibleFrom(type);
+  }
+
+  refine AccessControl eq FieldDeclaration.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return AccessControl.FieldDeclaration.accessibleFrom(type);
+  }
+
+
+  refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return IntertypeMethodNameAnalysis.IntertypeMethodDecl.accessibleFrom(type);
+  }
+
+  refine AccessControl eq MethodDecl.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return AccessControl.MethodDecl.accessibleFrom(type);
+  }
+
+
+
+  refine IntertypeConstructorNameAnalysis eq IntertypeConstructorDecl.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return IntertypeConstructorNameAnalysis.IntertypeConstructorDecl.accessibleFrom(type);
+  }
+
+  refine DeclareParentsAnalysis eq ConstructorDecl.accessibleFrom(TypeDecl type) {
+    if(type.isPrivileged())
+      return true;
+    return DeclareParentsAnalysis.ConstructorDecl.accessibleFrom(type);
+  }
+
+
+  refine LookupType eq PackageAccess.qualifiedLookupType(String name) {
+    SimpleSet c = SimpleSet.emptySet;
+    TypeDecl typeDecl = lookupType(packageName(), name);
+    if(nextAccess() instanceof ClassInstanceExpr) {
+      if(typeDecl != null && typeDecl.accessibleFrom(visibilityContext()))
+        c = c.add(typeDecl);
+      return c;
+    }
+    else {
+      if(typeDecl != null) {
+        if(visibilityContext() != null && typeDecl.accessibleFrom(visibilityContext()))
+          c = c.add(typeDecl);
+        else if(visibilityContext() == null && typeDecl.accessibleFromPackage(hostPackage()))
+          c = c.add(typeDecl);
+      }
+      return c;
+    }
+  }
+    
+  refine LookupType public SimpleSet Expr.keepAccessibleTypes(SimpleSet oldSet) {
+    SimpleSet newSet = SimpleSet.emptySet;
+    TypeDecl hostType = visibilityContext();
+    for(Iterator iter = oldSet.iterator(); iter.hasNext(); ) {
+      TypeDecl t = (TypeDecl)iter.next();
+      if((hostType != null && t.accessibleFrom(hostType)) || (hostType == null && t.accessibleFromPackage(hostPackage())))
+        newSet = newSet.add(t);
+    }
+    return newSet;
+  }
+
+
+
+}

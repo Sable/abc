@@ -89,5 +89,4 @@ aspect AspectJNameAnalysis {
     return c;
   }
   eq AspectDecl.getPerClause().inStaticContext() = true;
-
 }
