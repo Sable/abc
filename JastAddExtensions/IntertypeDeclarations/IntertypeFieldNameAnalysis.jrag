@@ -73,23 +73,6 @@ aspect IntertypeFieldNameAnalysis {
     return set;
   }
 
-  syn lazy boolean IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {
-    if(isPublic())
-      return true;
-    else if(isProtected()) {
-      if(hostPackage().equals(type.hostPackage()))
-        return true;
-      if(type.withinBodyThatSubclasses(hostAspect()) != null)
-        return true;
-      return false;
-    }
-    else if(isPrivate())
-      return hostAspect().topLevelType() == type.topLevelType();
-    else
-      return hostPackage().equals(type.hostPackage());
-  }
-
-
   protected void IntertypeFieldDeclaration.collectIntertypeDecls(HashMap map) {
     super.collectIntertypeDecls(map);
     TypeDecl typeDecl = introducedType();
@@ -144,5 +127,37 @@ aspect IntertypeFieldNameAnalysis {
     return SimpleSet.emptySet;
   }
 
+  eq IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {
+    if(isPublic())
+      return true;
+    else if(isProtected()) {
+      if(hostPackage().equals(type.hostPackage()))
+        return true;
+      if(type.withinBodyThatSubclasses(hostAspect()) != null)
+        return true;
+      return false;
+    }
+    else if(isPrivate())
+      return hostAspect().topLevelType() == type.topLevelType();
+    else
+      return hostPackage().equals(type.hostPackage());
+  }
+
+  refine LookupVariable private boolean Expr.mayAccess(FieldDeclaration f) {
+    if(enclosingBodyDecl().hostType().isAspectDecl() && enclosingBodyDecl().hostType().isPrivileged())
+      return true;
+    if(f instanceof IntertypeFieldDeclaration) {
+      IntertypeFieldDeclaration d = (IntertypeFieldDeclaration)f;
+      // intertype field declarations can not be protected
+      if(d.isPublic())
+        return true;
+      else if(d.isPrivate())
+        return d.hostAspect().topLevelType() == enclosingBodyDecl().hostType().topLevelType();
+      else
+        return hostPackage().equals(d.hostAspect().hostPackage());
+    }
+    return LookupVariable.Expr.mayAccess(f);
+  }
+  inh BodyDecl Expr.enclosingBodyDecl();
 
 }

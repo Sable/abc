@@ -111,6 +111,4 @@ aspect IntertypeMethodNameAnalysis {
     else
       return hostAspect().hostPackage().equals(type.hostPackage());
   }
-
-
 }

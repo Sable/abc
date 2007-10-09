@@ -196,7 +196,7 @@ aspect IntertypeMethodNameAnalysis {
   inh TypeDecl SuperAccess.typeObject();
 
 
-  syn lazy boolean IntertypeMethodDecl.accessibleFrom(TypeDecl type) {
+  eq IntertypeMethodDecl.accessibleFrom(TypeDecl type) {
     if(isPublic()) {
       return true;
     }
@@ -212,8 +212,7 @@ aspect IntertypeMethodNameAnalysis {
     else
       return hostPackage().equals(type.hostPackage());
   }
-
-
+ 
   // compute the set of introduced methods in this type
   syn lazy Collection TypeDecl.introducedMethods() {
     Collection c = new ArrayList();

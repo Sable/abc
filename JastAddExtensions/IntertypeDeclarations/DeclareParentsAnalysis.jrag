@@ -342,6 +342,16 @@ aspect DeclareParentsAnalysis {
   }
   eq InterfaceDecl.introducedInterfaces() {
     Collection c = super.introducedInterfaces();
+    for(Iterator iter = declareParentsExtends().iterator(); iter.hasNext(); ) {
+      DeclareParentsExtends e = (DeclareParentsExtends)iter.next();
+      if(e.getPattern().matchesType(this)) {
+        for(int i = 0; i < e.getNumTypeAccess(); i++) {
+          TypeDecl typeDecl = e.getTypeAccess(i).type();
+          if(typeDecl instanceof InterfaceDecl)
+            c.add(typeDecl);
+        }
+      }
+    }
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
       boolean found = false;

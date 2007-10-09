@@ -67,9 +67,10 @@
   <mkdir dir="parser"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
   <concat destfile="parser/JavaParser.all" force="no">
-    <fileset dir="../Java1.4Frontend">
-      <include name="parser/java14.parser"/>
-    </fileset>
+    <filelist dir="../Java1.4Frontend">
+      <file name="parser/preamble.parser"/>
+      <file name="parser/java14.parser"/>
+    </filelist>
     <fileset dir=".">
       <include name="*.parser"/>
     </fileset>
