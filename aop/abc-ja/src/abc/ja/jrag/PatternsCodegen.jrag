@@ -153,7 +153,7 @@ aspect PatternsCodegen
     	try {
     		sf = sfr.resolve();
     	} catch(Exception e) {
-    		System.err.println("Failed to resolve SootFieldRef while matching... assuming no match, but this shouldn't happen.");
+    		warning("Failed to resolve SootFieldRef " + sfr + " while matching... assuming no match, but this shouldn't happen. Please report a bug.");
     		return false;
     	}
     	for(int i = 0; i < getNumModifierPattern(); i++)
@@ -250,6 +250,10 @@ aspect PatternsCodegen
         new ClassnamePattern() {
             public boolean matchesClass(SootClass cl)
             {
+            	if(abc.main.Debug.v().patternMatches) {
+            		System.err.println("Matching classname pattern " + Pattern.this + " against "
+            				+ cl + ": " + matchesType(cl.getType()));
+            	}
                 return matchesType(cl);
             }
 
