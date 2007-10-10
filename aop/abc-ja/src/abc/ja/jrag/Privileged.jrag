@@ -3,7 +3,7 @@ aspect Privileged {
   eq Program.getChild().mayBePrivileged() = false;
   eq AspectDecl.getModifiers().mayBePrivileged() = true;
   syn lazy boolean Modifiers.isPrivileged() = numModifier("privileged") != 0;
-  syn boolean TypeDecl.isPrivileged() = getModifiers().isPrivileged();
+  syn boolean TypeDecl.isPrivileged() = getModifiers().isPrivileged() || isNestedType() && enclosingType().isPrivileged();
 
   refine Modifiers public void Modifiers.checkModifiers() {
     Modifiers.Modifiers.checkModifiers();
@@ -87,6 +87,30 @@ aspect Privileged {
         newSet = newSet.add(t);
     }
     return newSet;
+  }
+
+  refine LookupMethod eq MethodAccess.accessible(MethodDecl m) {
+    if(visibilityContext().isPrivileged())
+      return true;
+    if(!isQualified())
+      return true;
+    if(!m.accessibleFrom(visibilityContext())) {
+      return false;
+    }
+    // the method is not accessible if the type is not accessible
+    if(!qualifier().type().accessibleFrom(visibilityContext())) {
+      return false;
+    }
+    // 6.6.2.1 -  include qualifier type for protected access
+    if(m.isProtected() && !m.hostPackage().equals(hostPackage()) && !m.isStatic() && !qualifier().isSuperAccess()) {
+      TypeDecl C = m.hostType();
+      TypeDecl S = visibilityContext().subclassWithinBody(C);
+      TypeDecl Q = qualifier().type();
+      if(!visibilityContext().isPrivileged() && (S == null || !Q.instanceOf(S))) {
+        return false;
+      }
+    }
+    return true;
   }
 
 

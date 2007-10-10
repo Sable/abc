@@ -94,6 +94,8 @@ public class CompileSequence extends abc.main.CompileSequence {
       program.addOptions(args);
       Collection files = program.files();
 
+      //program.addOptions(new String[] { "-verbose" });
+
       for(Iterator iter = files.iterator(); iter.hasNext(); ) {
         String name = (String)iter.next();
         program.addSourceFile(name);
@@ -135,10 +137,18 @@ public class CompileSequence extends abc.main.CompileSequence {
           }
       }
 
+      if(Program.verbose())
+        System.out.println("Weaving inter-type declarations");
       program.generateIntertypeDecls();
+      if(Program.verbose())
+        System.out.println("Flattening Nested Classes");
       program.transformation();
 
+      if(Program.verbose())
+        System.out.println("Jimplify1");
       program.jimplify1();
+      if(Program.verbose())
+        System.out.println("Jimplify2");
       program.jimplify2();
 
       abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();

@@ -497,15 +497,16 @@ aspect PatternsCodegen
     }
         
 
-    syn boolean Pattern.matchesType(TypeDecl t) = false;
-    eq SimpleNamePattern.matchesType(TypeDecl t) {
-      Set set = matchSubtype() ? t.superTypes() : new HashSet();
-      set.add(t);
-      for(Iterator iter = set.iterator(); iter.hasNext(); ) {
-        t = (TypeDecl)iter.next();
-        String name = t.name();
-        if(matchesName(name))
-          return true;
+    syn lazy boolean Pattern.matchesType(TypeDecl t) = false;
+    syn lazy final boolean SimpleNamePattern.matchesType(TypeDecl t) {
+      if(matchesName(t.name()))
+        return true;
+      if(matchSubtype()) {
+        for(Iterator iter = t.superTypes().iterator(); iter.hasNext(); ) {
+          String name = t.name();
+          if(matchesName(name))
+            return true;
+        }
       }
       return false;
     }
