@@ -306,7 +306,7 @@ aspect DeclareParentsAnalysis {
           if(typeDecl instanceof ClassDecl)
             return (ClassDecl)typeDecl;
         }
-      }
+      }    
     }
     return null;
   }

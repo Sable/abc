@@ -117,7 +117,8 @@ aspect IntertypeMethodCodegeneration {
   public void MethodAccess.generateIntertypeDecls() {
     super.generateIntertypeDecls();
     if(needsSuperDispatchDelegate()) {
-      System.out.println("May need super dispatch delegate");
+      if(Program.verbose())
+        System.out.println("May need super dispatch delegate for " + this);
       SimpleSet maxSpecific = SimpleSet.emptySet;
       for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
         MethodDecl decl = (MethodDecl)iter.next();
@@ -308,7 +309,8 @@ aspect IntertypeMethodCodegeneration {
 
   refine Transformations public void MethodAccess.transformation() {
     if(needsSuperDispatchDelegate()) {
-      System.out.println("May need super dispatch delegate");
+      if(Program.verbose())
+        System.out.println("May need super dispatch delegate for " + this);
       SimpleSet maxSpecific = SimpleSet.emptySet;
       for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
         MethodDecl decl = (MethodDecl)iter.next();

@@ -37,6 +37,11 @@ aspect IntertypeMethodNameAnalysis {
     // Delegate to other declarations in aspect
     return lookupVariable(name);
   }
+  eq IntertypeMethodDecl.getBlock().lookupType(String name) {
+    SimpleSet set = introducedType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    return lookupType(name);
+  }
 
   // override behavior to allow multiple methods with the same signature (but in different types)
   syn SimpleSet AspectDecl.localLookupMethod(MethodDecl signature) {
