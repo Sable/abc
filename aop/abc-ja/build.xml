@@ -155,7 +155,7 @@
 </target>
 	
 <target name="jar" depends="build">
-  <jar destfile="../abc/lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
+  <jar destfile="${abc.loc}/lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
   <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
 </target>
 
