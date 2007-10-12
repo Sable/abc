@@ -26,6 +26,7 @@ import org.jastadd.plugin.model.JastAddModelProvider;
 public abstract class JastAddActionDelegate extends AbstractHandler implements IEditorActionDelegate, IWorkbenchWindowActionDelegate {
 	
 	private IEditorPart editorPart;
+	private IFile editorFile;
 	private ISelection selection;
 
 	
@@ -69,12 +70,21 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 			if (input instanceof IFileEditorInput) {
 				IFileEditorInput fileInput = (IFileEditorInput)input;
 				IFile file = fileInput.getFile();
+				ISelection selection = activeSelection();
 				if(selection instanceof ITextSelection && file != null) {
 					return model.findNodeInDocument(file, ((ITextSelection)selection).getOffset());
 				}
 			}
 		}
 		return null;
+	}
+	
+	protected IFile activeEditorFile() {
+		IEditorInput input = editorPart.getEditorInput();
+		if (!(input instanceof IFileEditorInput)) return null;
+		IFileEditorInput fileInput = (IFileEditorInput)input;
+		editorFile = fileInput.getFile();
+		return editorFile;
 	}
 	
 	protected IEditorPart activeEditorPart() {
