@@ -8,7 +8,6 @@ import org.osgi.framework.BundleContext;
 public class JastAddJActivator extends BaseJastAddActivator {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		this.model = JastAddModelProvider.getModel(JastAddJModel.class);
-		registerModelCommands();
+		registerModelCommands(new JastAddJModel());
 	}
 }
