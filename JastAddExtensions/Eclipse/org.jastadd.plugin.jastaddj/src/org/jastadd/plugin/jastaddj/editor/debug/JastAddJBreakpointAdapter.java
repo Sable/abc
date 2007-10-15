@@ -59,7 +59,7 @@ public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtens
 						node = node.getParent();
 					if(node instanceof ITypeDecl) {
 						ITypeDecl typeDecl = (ITypeDecl)node;
-						String name = typeDecl.constantPoolName();
+						String name = typeDecl.constantPoolName().replace('/', '.');
 						IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource, name, lineNumber + 1, -1, -1, 0, true, new HashMap());
 						DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
 					}

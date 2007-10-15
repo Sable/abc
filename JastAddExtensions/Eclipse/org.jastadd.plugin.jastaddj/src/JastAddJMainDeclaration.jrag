@@ -4,21 +4,24 @@ aspect MainDeclaration {
   
   syn IOutlineNode[] Program.mainTypes() {
     LinkedList list = new LinkedList();
-    for (int i = 0; i < getNumCompilationUnit(); i++) {
-      CompilationUnit unit = getCompilationUnit(i);
-      for (int k = 0; k < unit.getNumTypeDecl(); k++) {
-         TypeDecl decl = unit.getTypeDecl(k);
-         if (decl.hasMainType()) { 
-           list.add(decl);
-         }
-      }
-    }
+    collectMainTypes(list);
     IOutlineNode[] result = new IOutlineNode[list.size()];
     int i = 0;
     for (Iterator itr = list.iterator(); itr.hasNext(); i++) {
       result[i] = (IOutlineNode)itr.next();
     }
     return result;
+  }
+  
+  protected void ASTNode.collectMainTypes(Collection c) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectMainTypes(c);
+  }
+  
+  protected void ClassDecl.collectMainTypes(Collection c) {
+    super.collectMainTypes(c);
+    if(hasMainType())
+      c.add(this);
   }
   
   syn boolean TypeDecl.hasMainType() = false;

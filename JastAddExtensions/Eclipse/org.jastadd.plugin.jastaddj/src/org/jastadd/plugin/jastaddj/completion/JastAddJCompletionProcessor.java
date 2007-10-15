@@ -1,6 +1,5 @@
 package org.jastadd.plugin.jastaddj.completion;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,72 +18,34 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.jastadd.plugin.AST.ICompletionNode;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
-import AST.ASTNode;
-import AST.Access;
-import AST.Expr;
-import AST.List;
-import AST.MethodAccess;
-import AST.ParExpr;
 import beaver.Parser.Exception;
 
 public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
-			int documentOffset) {
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		try {
 
-		Collection proposals = new ArrayList();
-		String[] linePart = new String[2];
-
-		IDocument document = viewer.getDocument();
-		linePart = extractLineParts(document.get(), documentOffset); // pos 0 - name, pos 1 - filter
-
-		// Model testing
-		String content = document.get();
-		/*
-		 * StructuralModel model = StructuralModel.createModel(content,
-		 * documentOffset - 1); // Move to the offset of the dot int[]
-		 * activeScope = model.getActiveScope(); int[] activeSegment =
-		 * model.getActiveSegment(); System.out.println("ActiveScope: ##\n" +
-		 * content.substring(activeScope[0], activeScope[1] + 1) + "##");
-		 * System.out.println("ActiveSegment: ##\n" +
-		 * content.substring(activeSegment[0], activeSegment[1] + 1) + "##");
-		 */
-
-		proposals = computeProposal(documentOffset, linePart, document, content);
-		
-
-
-		// Bundle up proposals and return
-		ICompletionProposal[] result = new ICompletionProposal[proposals.size()];
-		int i = 0;
-		for (Iterator iter = proposals.iterator(); iter.hasNext(); i++) {
-			
-			ASTNode node = (ASTNode) iter.next();
-			result[i] = node.getCompletionProposal(linePart[1], documentOffset, linePart[0].length() != 0);
-			/*
-			String label = node.completionLabel();
-			Image image = node.contentOutlineImage();
-			String proposal = node.completionProposal();
-			String comment = node.javaDocComment();
-			if (comment == null) {
-				comment = "No javaDoc comment";
+			Collection proposals = new ArrayList();
+			IDocument document = viewer.getDocument();
+			String content = document.get();
+			String[] linePart = extractLineParts(content, documentOffset); // pos 0 - name, pos 1 - filter
+			if(linePart != null) {
+				proposals = computeProposal(documentOffset, linePart, document, content);
+				// Bundle up proposals and return
+				ICompletionProposal[] result = new ICompletionProposal[proposals.size()];
+				int i = 0;
+				for (Iterator iter = proposals.iterator(); iter.hasNext(); i++) {
+					ICompletionNode node = (ICompletionNode)iter.next();
+					result[i] = node.getCompletionProposal(linePart[1], documentOffset, linePart[0].length() != 0);
+				}
+				return result;
 			}
-			if(linePart[0].length() == 0) {
-				// No name - don't keep the dot
-				result[i] = new CompletionProposal(proposal, documentOffset - linePart[1].length() - 1, 
-                          linePart[1].length() + 1, proposal.length(), image, label, null, comment);
-			} else {
-				result[i] = new CompletionProposal(proposal, documentOffset - linePart[1].length(), 
-					      linePart[1].length(), proposal.length(), image, label, null, comment);
-			}
-			*/
-		}
-		return result;
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -120,49 +81,9 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 				IProject project = file.getProject();
 				if(project != null) {
 					String fileName = file.getRawLocation().toOSString();
-					ASTNode node = (ASTNode)model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-					if(node == null) {
-						// Try a structural recovery
-						documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
-
-						node = (ASTNode)model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-						if (node == null) {
-							System.out.println("Structural recovery failed");
-							return new ArrayList();
-						}
-					}
-					if(node instanceof Access) {
-						System.out.println("Automatic recovery");
-						System.out.println(node.getParent().getParent().dumpTree());
-						return node.completion(linePart[1]);
-					} 
-					else if(node instanceof ASTNode) {
-						System.out.println("Manual recovery");
-						Expr newNode;
-						if(linePart[0].length() != 0) {
-							String nameWithParan = "(" + linePart[0] + ")";
-							ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
-							scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-							newNode = (Expr)((ParExpr)new parser.JavaParser().parse(
-									scanner,parser.JavaParser.AltGoals.expression)
-							).getExprNoTransform();
-							newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
-						}
-						else {
-							newNode = new MethodAccess("X", new List());
-						}
-
-						int childIndex = node.getNumChild();
-						node.addChild(newNode);
-						node = node.getChild(childIndex);
-						if (node instanceof Access)
-							node = ((Access) node).lastAccess();
-						// System.out.println(node.dumpTreeNoRewrite());
-
-						// Use the connection to the dummy AST to do name
-						// completion
-						return node.completion(linePart[1]);
-					}
+					IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+					if(model instanceof JastAddJModel)
+					  return ((JastAddJModel)model).recoverCompletion(documentOffset, linePart, buf, project, fileName, node);
 				}
 			}
 				
@@ -181,12 +102,13 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 	 * @return The last line divided into name and filter, in that order.
 	 */
 	private String[] extractLineParts(String content, int offset) {
-		String[] linePart = new String[2];
 		String searchString = extractName(content, offset);
 		int splitPos = searchString.lastIndexOf('.');
+		if(splitPos == -1)
+			return null;
+		String[] linePart = new String[2];
 		linePart[0] = searchString.substring(0, splitPos);
-		linePart[1] = searchString.substring(splitPos + 1, searchString
-				.length());
+		linePart[1] = searchString.substring(splitPos + 1, searchString.length());
 		return linePart;
 	}
 

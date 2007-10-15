@@ -1,5 +1,7 @@
 package org.jastadd.plugin.jastaddj.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -41,10 +44,12 @@ import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
-import AST.CompilationUnit;
-import AST.JavaParser;
-import AST.Problem;
-import AST.Program;
+import parser.JavaParser.AltGoals;
+import scanner.JavaScanner;
+import scanner.Unicode;
+import beaver.Parser.Exception;
+
+import AST.*;
 
 public class JastAddJModel extends JastAddModel {
 
@@ -417,5 +422,55 @@ public class JastAddJModel extends JastAddModel {
 			// "org.eclipse.jdt.ui.CompilationUnitEditor",
 			// false);
 		}
+	}
+
+
+	public Collection recoverCompletion(int documentOffset, String[] linePart, StringBuffer buf, IProject project, String fileName, IJastAddNode node) throws IOException, Exception {
+		if(node == null) {
+			// Try a structural recovery
+			documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
+	
+			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+			if (node == null) {
+				System.out.println("Structural recovery failed");
+				return new ArrayList();
+			}
+		}
+		if(node instanceof Access) {
+			Access n = (Access)node;
+			System.out.println("Automatic recovery");
+			System.out.println(n.getParent().getParent().dumpTree());
+			return n.completion(linePart[1]);
+		} 
+		else if(node instanceof ASTNode) {
+			ASTNode n = (ASTNode)node;
+			System.out.println("Manual recovery");
+			Expr newNode;
+			if(linePart[0].length() != 0) {
+				String nameWithParan = "(" + linePart[0] + ")";
+				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
+				scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+				newNode = (Expr)((ParExpr)new parser.JavaParser().parse(
+						scanner,parser.JavaParser.AltGoals.expression)
+				).getExprNoTransform();
+				newNode = newNode.qualifiesAccess(new MethodAccess("X", new AST.List()));
+			}
+			else {
+				newNode = new MethodAccess("X", new AST.List());
+			}
+	
+			int childIndex = n.getNumChild();
+			n.addChild(newNode);
+			n = n.getChild(childIndex);
+			if (n instanceof Access)
+				n = ((Access) n).lastAccess();
+			// System.out.println(node.dumpTreeNoRewrite());
+	
+			// Use the connection to the dummy AST to do name
+			// completion
+			return n.completion(linePart[1]);
+		}
+		return new ArrayList();
 	}	
 }
+ 

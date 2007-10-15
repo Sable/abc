@@ -5,6 +5,8 @@ import java.util.Comparator;
 aspect JastAddJCompletion {     
    
    eq ClassDecl.completionComment() = javaDocComment();
+   eq MethodDecl.completionComment() = javaDocComment();
+   eq FieldDeclaration.completionComment() = javaDocComment();
    
    eq ClassDecl.completionLabel() = name();
    eq InterfaceDecl.completionLabel() = name();
@@ -72,7 +74,7 @@ aspect JastAddJCompletion {
     ArrayList list = new ArrayList();
     for(Iterator iter = visibleDecls().iterator(); iter.hasNext(); ) {
       ASTNode node = (ASTNode)iter.next();
-      if (node.contentOutlineLabel().startsWith(filter)) {
+      if (node.completionProposal().startsWith(filter)) {
         list.add(node);
       }
     }
