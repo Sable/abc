@@ -1,22 +1,35 @@
 package org.jastadd.plugin.jastaddj.model;
 
+import java.io.IOException;
+import java.util.Collection;
+
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.completion.JastAddJCompletionProcessor;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.InsertCrapRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
 public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
-	
+
 	public JastAddJEditorConfiguration(JastAddJModel model) {
 		this.model = model;
 	}
-	
+
 	@Override
 	public void getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd) {
 		StringBuffer buf = new StringBuffer(doc.get());
@@ -28,10 +41,10 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
-		char c = cmd.text.charAt(0);	
+		char c = cmd.text.charAt(0);
 		String content = doc.get();
 		int previousKeypressOffset = cmd.offset - 1;
 		char previousKeypress = 0;
@@ -39,21 +52,22 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 			previousKeypress = content.charAt(previousKeypressOffset);
 		}
 		if (JastAddStructureModel.OPEN_PARAN == c) {
-		    cmd.caretOffset = cmd.offset + 1;
-		    cmd.shiftsCaret = false;
+			cmd.caretOffset = cmd.offset + 1;
+			cmd.shiftsCaret = false;
 			cmd.text += String.valueOf(JastAddStructureModel.CLOSE_PARAN);
 		} else if ('[' == c) {
-		    cmd.caretOffset = cmd.offset + 1;
-		    cmd.shiftsCaret = false;
+			cmd.caretOffset = cmd.offset + 1;
+			cmd.shiftsCaret = false;
 			cmd.text += "]";
-		} else if (JastAddStructureModel.CLOSE_PARAN == c && previousKeypress == JastAddStructureModel.OPEN_PARAN) {
+		} else if (JastAddStructureModel.CLOSE_PARAN == c
+				&& previousKeypress == JastAddStructureModel.OPEN_PARAN) {
 			cmd.text = "";
 			cmd.caretOffset = cmd.offset + 1;
-		} else if (']' == c &&  previousKeypress == '[') {
+		} else if (']' == c && previousKeypress == '[') {
 			cmd.text = "";
 			cmd.caretOffset = cmd.offset + 1;
 		} else if ('"' == c) {
-			if (previousKeypress != '"') {	
+			if (previousKeypress != '"') {
 				cmd.caretOffset = cmd.offset + 1;
 				cmd.shiftsCaret = false;
 				cmd.text += '"';
@@ -62,15 +76,16 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				cmd.caretOffset = cmd.offset + 1;
 			}
 		} else if (JastAddStructureModel.CLOSE_BRACE == c) {
-		
+
 			StringBuffer buf = new StringBuffer(doc.get());
 			try {
-				JastAddStructureModel structModel = new JastAddStructureModel(buf);
+				JastAddStructureModel structModel = new JastAddStructureModel(
+						buf);
 				int change = structModel.doRecovery(cmd.offset);
 				structModel.insertionCloseBrace(doc, cmd, change);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}			
+			}
 		}
 		previousKeypress = c;
 	}
@@ -84,9 +99,123 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	public IContentAssistProcessor getCompletionProcessor() {
 		return new JastAddJCompletionProcessor();
 	}
-	
+
 	@Override
 	public String getEditorContextID() {
 		return JastAddJEditor.EDITOR_CONTEXT_ID;
+	}
+
+	@Override
+	public void populateCommands(Collection<Command> commands)
+			throws ParseException, IOException {
+		commands.add(installSourceCommand(
+				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
+				"Find Declaration", "JastAddJ Find Declaration", "F3",
+				new FindDeclarationHandler()));
+
+		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindReferences",
+				"Find References", "JastAddJ Find References", "F4",
+				new FindReferencesHandler()));
+
+		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindImplements",
+				"Find FindImplements", "JastAddJ Find Implements", "F5",
+				new FindImplementsHandler()));
+
+		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
+				"Insert Crap", "JastAddJ Insert Crap Refactoring", "Ctrl+F9",
+				new InsertCrapRefactoringHandler()));
+	}
+
+	@Override
+	public void populateTopMenu(IMenuManager menuManager,
+			ITopMenuActionBuilder actionBuilder) {
+		IMenuManager refactorMenu = findOrAddRefactorTopMenu(menuManager);
+		populateRefactorTopMenuItems(refactorMenu, actionBuilder);
+
+		IMenuManager findMenu = findOrAddSearchTopMenu(menuManager);
+		populateSearchTopMenuItems(findMenu, actionBuilder);
+	}
+
+	protected void populateSearchTopMenuItems(IMenuManager searchMenu,
+			ITopMenuActionBuilder actionBuilder) {
+
+		IAction findDeclarationAction = tryEnhanceTopMenuItem(searchMenu,
+				actionBuilder,
+				"org.jastadd.plugin.jastaddj.find.FindDeclarationTopMenuItem",
+				"Find &Declaration",
+				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
+				new FindDeclarationHandler());
+		if (findDeclarationAction != null)
+			searchMenu.appendToGroup("dialogGroup", findDeclarationAction);
+
+		IAction findReferencesAction = tryEnhanceTopMenuItem(searchMenu,
+				actionBuilder,
+				"org.jastadd.plugin.jastaddj.find.FindReferencesTopMenuItem",
+				"Find &References",
+				"org.jastadd.plugin.jastaddj.find.FindReferences",
+				new FindReferencesHandler());
+		if (findReferencesAction != null)
+			searchMenu.appendToGroup("dialogGroup", findReferencesAction);
+
+		IAction findImplementsAction = tryEnhanceTopMenuItem(searchMenu,
+				actionBuilder,
+				"org.jastadd.plugin.jastaddj.find.FindImplementsTopMenuItem",
+				"Find &Implements",
+				"org.jastadd.plugin.jastaddj.find.FindImplements",
+				new FindImplementsHandler());
+		if (findImplementsAction != null)
+			searchMenu.appendToGroup("dialogGroup", findImplementsAction);
+	}
+
+	protected void populateRefactorTopMenuItems(IMenuManager refactorMenu,
+			ITopMenuActionBuilder actionBuilder) {
+		IAction insertCrapAction = tryEnhanceTopMenuItem(refactorMenu,
+				actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.InsertCrapTopMenuItem",
+				"Insert &Crap",
+				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
+				new InsertCrapRefactoringHandler());
+		if (insertCrapAction != null)
+			refactorMenu.appendToGroup("dialogGroup", insertCrapAction);
+	}
+
+	@Override
+	public void populateContextMenu(IMenuManager menuManager,
+			JastAddEditor editor) {
+		IMenuManager refactorMenu = findOrAddRefactorContextMenu(menuManager);
+		populateRefactorContextMenuItems(refactorMenu, editor);
+
+		IMenuManager findMenu = findOrAddFindContextMenu(menuManager);
+		populateFindContextMenuItems(findMenu, editor);
+	}
+
+	protected void populateFindContextMenuItems(IMenuManager findMenu,
+			JastAddEditor editor) {
+
+		addContextMenuItem(findMenu, "Find &Declaration",
+				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
+				new FindDeclarationHandler());
+
+		addContextMenuItem(findMenu, "Find &References",
+				"org.jastadd.plugin.jastaddj.find.FindReferences",
+				new FindReferencesHandler());
+
+		addContextMenuItem(findMenu, "Find &Implements",
+				"org.jastadd.plugin.jastaddj.find.FindImplements",
+				new FindImplementsHandler());
+	}
+
+	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu,
+			JastAddEditor editor) {
+		addContextMenuItem(refactorMenu, "Insert &Crap",
+				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
+				new InsertCrapRefactoringHandler());
+	}
+
+	protected Command installSourceCommand(String commandId, String name,
+			String description, String keySequence, IHandler handler)
+			throws ParseException, IOException {
+		return installCommand(commandId, name, description,
+				"org.jastadd.plugin.category.Source", keySequence, handler);
 	}
 }

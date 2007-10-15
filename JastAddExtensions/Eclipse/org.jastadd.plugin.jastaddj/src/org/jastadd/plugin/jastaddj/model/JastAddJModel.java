@@ -388,7 +388,8 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 	
-	protected String getEditorID() {
+	@Override
+	public String getEditorID() {
 		return JastAddJEditor.EDITOR_ID;
 	}
 
