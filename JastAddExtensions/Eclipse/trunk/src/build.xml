@@ -6,7 +6,7 @@
 <project name="JastAdd extension" default="gen">
 
 <!-- "package" is the directory where generated files will be stored -->
-<property name="package" value="org.jastadd.plugin.jastadd.AST"/>
+<property name="package" value="org.jastadd.plugin.jastadd.generated.AST"/>
 <property name="parser" value="org/jastadd/plugin/jastadd/parser"/>
 <property name="scanner" value="org/jastadd/plugin/jastadd/scanner"/>
 

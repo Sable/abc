@@ -1,0 +1,4 @@
+aspect JastAddFolding {
+  eq SynEq.hasFolding() = getEndLine() - getBeginLine() > 1;
+  eq InhEq.hasFolding() = getEndLine() - getBeginLine() > 1;
+}

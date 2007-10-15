@@ -1,6 +1,6 @@
 %header {:
  package org.jastadd.plugin.jastadd.parser;
- import org.jastadd.plugin.jastadd.AST.*;
+ import org.jastadd.plugin.jastadd.generated.AST.*;
 :};
 %embed {:
   class Events extends Parser.Events {

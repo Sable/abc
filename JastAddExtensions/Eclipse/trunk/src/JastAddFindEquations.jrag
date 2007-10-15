@@ -1,0 +1,11 @@
+aspect JastAddFindEquations {
+	ASTNode implements org.jastadd.plugin.jastadd.AST.IJastAddFindEquationsNode;
+
+	syn Collection ASTNode.equations() = Collections.EMPTY_LIST;
+	
+	eq InhDecl.equations() = decls();
+
+	eq SynDecl.equations() = equationCollection();	
+	coll HashSet SynDecl.equationCollection() [new HashSet()] with add;
+	SynEq contributes this to SynDecl.equationCollection() for decl();
+}
