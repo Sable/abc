@@ -93,11 +93,11 @@ aspect YieldCodegeneration {
           new ExprStmt(
             new MethodAccess("advance", new List())
           )
-        )
+        ).setLocation(this)
       ).add(
         new ReturnStmt(
           new NEExpr(new VarAccess("yield$state"), new IntegerLiteral(Integer.toString(-1)))
-        )
+        ).setLocation(this)
       )
     );
   }
@@ -120,7 +120,7 @@ aspect YieldCodegeneration {
           new ExprStmt(
             new MethodAccess("advance", new List())
           )
-        )
+        ).setLocation(this)
       ).add(
         new IfStmt(
           new EQExpr(new VarAccess("yield$state"), new IntegerLiteral(Integer.toString(-1))),
@@ -131,16 +131,16 @@ aspect YieldCodegeneration {
               new Opt()
             )
           )
-        )
+        ).setLocation(this)
       ).add(
         AssignExpr.asStmt(
           new VarAccess("yield$next"),
           new BooleanLiteral("true")
-        )
+        ).setLocation(this)
       ).add(
         new ReturnStmt(
           new VarAccess("yield$value")
-        )
+        ).setLocation(this)
       )
     );
   }
@@ -160,7 +160,7 @@ aspect YieldCodegeneration {
             new List(),
             new Opt()
           )
-        )
+        ).setLocation(this)
       )
     );
   }
@@ -176,7 +176,7 @@ aspect YieldCodegeneration {
       new List().add(
         new ReturnStmt(
           new ThisAccess("this")
-        )
+        ).setLocation(this)
       )
     );
   }
@@ -244,16 +244,16 @@ aspect YieldCodegeneration {
               AssignExpr.asStmt(
                 new VarAccess("yield$value"),
                 stmt.getExpr()
-              )
+              ).setLocation(stmt)
             ).add(
               // the next state is the label following this yield statement
               AssignExpr.asStmt(
                 new VarAccess("yield$state"),
                 new IntegerLiteral(Integer.toString(index))
-              )
+              ).setLocation(stmt)
             ).add(
               // return unconditionally
-              new Escape(new Opt())
+              new Escape(new Opt()).setLocation(stmt)
             ).add(
               // add a label where the evaluation will continue
               label
@@ -269,9 +269,9 @@ aspect YieldCodegeneration {
               AssignExpr.asStmt(
                 new VarAccess("yield$state"),
                 new IntegerLiteral(Integer.toString(-1))
-              )
+              ).setLocation(stmt)
             ).add(
-              new Escape(new Opt())
+              new Escape(new Opt()).setLocation(stmt)
             )
           )
         );
@@ -287,7 +287,7 @@ aspect YieldCodegeneration {
       )
     );
 
-    return createPublicMethodNoArgs(
+    return createPublicMethodNoArgsNonSynthetic(
       new PrimitiveTypeAccess("void"),
       "advance",
       list
@@ -295,6 +295,21 @@ aspect YieldCodegeneration {
   }
 
   private MethodDecl MethodDecl.createPublicMethodNoArgs(Access type, String name, List statements) {
+    return new MethodDecl(
+      new Modifiers(new List().add(new Modifier("public"))/*.add(new Modifier("synthetic"))*/),
+      type,
+      name,
+      new List(),
+      new List(),
+      new List(),
+      new Opt(
+        new Block(
+          statements
+        )
+      )
+    );
+  }
+  private MethodDecl MethodDecl.createPublicMethodNoArgsNonSynthetic(Access type, String name, List statements) {
     return new MethodDecl(
       new Modifiers(new List().add(new Modifier("public"))),
       type,
@@ -309,6 +324,7 @@ aspect YieldCodegeneration {
       )
     );
   }
+
 
   // Generate bytecode for the GotoStmt:
   // branch unconditionally to the labeled statement
