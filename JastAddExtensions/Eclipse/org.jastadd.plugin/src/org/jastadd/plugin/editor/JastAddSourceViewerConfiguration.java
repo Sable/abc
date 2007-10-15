@@ -1,6 +1,6 @@
 package org.jastadd.plugin.editor;
 
-import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
+import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -107,7 +107,7 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	}
 	
 	/**
-	 * Provides a ControlCreator, used to create annoration hover controls 
+	 * Provides a ControlCreator, used to create annotation hover controls 
 	 */
 	@Override
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {

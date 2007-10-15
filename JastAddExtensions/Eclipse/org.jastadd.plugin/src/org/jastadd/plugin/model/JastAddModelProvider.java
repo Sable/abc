@@ -36,6 +36,14 @@ public class JastAddModelProvider {
 		return list;
 	}
 	
+	public static JastAddModel getModel(Class modelClass) {
+		for(JastAddModel model : getModelList()) {
+			if (model.getClass() == modelClass)
+				return model;
+		}
+		return null;
+	}
+	
 	public static JastAddModel getModel(IFile file) {
 		if (fileModelMap.containsKey(file)) {
 			return fileModelMap.get(file);

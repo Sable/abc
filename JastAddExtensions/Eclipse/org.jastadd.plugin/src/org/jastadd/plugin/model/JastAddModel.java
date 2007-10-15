@@ -271,6 +271,9 @@ public abstract class JastAddModel {
 	
 	public abstract void openFile(IJastAddNode node);
 
+	
+	public abstract String getEditorID();
+	
 	public abstract boolean isModelFor(IProject project);
 	public abstract boolean isModelFor(IFile file);
 	public abstract boolean isModelFor(IDocument document);

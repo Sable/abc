@@ -33,6 +33,7 @@ Export-Package: org.jastadd.plugin,
  org.jastadd.plugin.model.repair,
  org.jastadd.plugin.navigator,
  org.jastadd.plugin.perspective,
+ org.jastadd.plugin.refactor,
  org.jastadd.plugin.resources,
  org.jastadd.plugin.search,
  org.jastadd.plugin.wizards

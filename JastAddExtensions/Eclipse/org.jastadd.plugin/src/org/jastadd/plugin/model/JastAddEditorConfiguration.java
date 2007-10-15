@@ -1,8 +1,27 @@
 package org.jastadd.plugin.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.commands.Category;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.bindings.Binding;
+import org.eclipse.jface.bindings.keys.KeyBinding;
+import org.eclipse.jface.bindings.keys.KeySequence;
+import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -12,8 +31,15 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.ui.IActionDelegate;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.IHandlerActivation;
+import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.keys.IBindingService;
 import org.jastadd.plugin.AST.IFoldingNode;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.providers.JastAddContentProvider;
@@ -97,5 +123,179 @@ public class JastAddEditorConfiguration {
 	
 	public String getWarningMarkerID() {
 		return "org.eclipse.ui.workbench.texteditor.warning";
+	}
+	
+	public interface ITopMenuActionBuilder {
+		public IAction buildAction(String id, String text, String definitionId, IActionDelegate actionDelegate);
+		public void enhanceAction(IAction action, String text, String definitionId, IActionDelegate actionDelegate);
+	}
+	
+	public void populateCommands(Collection<Command> commands) throws ParseException, IOException {
+	}
+	
+	public void populateTopMenu(IMenuManager menuManager, ITopMenuActionBuilder actionBuilder) {
+	}
+	
+	public void populateContextMenu(IMenuManager menuManager, JastAddEditor editor) {
+	}
+	
+	protected IMenuManager findOrAddSearchTopMenu(IMenuManager menuManager) {
+		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.eclipse.search.menu");
+		if (newMenuManager != null)
+			return newMenuManager;
+		
+		newMenuManager = new MenuManager("&Search", "org.eclipse.search.menu");
+		newMenuManager.add(new GroupMarker("internalDialogGroup"));
+		newMenuManager.add(new GroupMarker("dialogGroup"));
+		newMenuManager.add(new Separator("fileSearchContextMenuActionsGroup"));
+		newMenuManager.add(new Separator("contextMenuActionsGroup"));
+		newMenuManager.add(new Separator("occurencesActionsGroup"));
+		newMenuManager.add(new Separator("extraSearchGroup"));
+		menuManager.insertAfter("additions", newMenuManager);
+		return newMenuManager;
+	}
+	
+	protected IMenuManager findOrAddRefactorTopMenu(IMenuManager menuManager) {
+		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.jastadd.plugin.refactor.menu");
+		if (newMenuManager != null)
+			return newMenuManager;
+		
+		newMenuManager = new MenuManager("Refac&tor", "org.jastadd.plugin.refactor.menu");
+		newMenuManager.add(new GroupMarker("dialogGroup"));
+		menuManager.insertAfter("additions", newMenuManager);
+		return newMenuManager;
+	}
+	
+	protected IMenuManager findOrAddFindContextMenu(IMenuManager menuManager) {
+		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.jastadd.plugin.find.menu");
+		if (newMenuManager != null)
+			throw new IllegalStateException("Context menu \"org.jastadd.plugin.find.menu\" already exists!");
+		newMenuManager = new MenuManager("&Find", "org.jastadd.plugin.find.menu");
+		menuManager.insertAfter("additions", newMenuManager);
+		return newMenuManager;
+	}
+	
+	protected IMenuManager findOrAddRefactorContextMenu(IMenuManager menuManager) {
+		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.jastadd.plugin.refactor.menu");
+		if (newMenuManager != null)
+			throw new IllegalStateException("Context menu \"org.jastadd.plugin.refactor.menu\" already exists!");
+		newMenuManager = new MenuManager("Refac&tor", "org.jastadd.plugin.refactor.menu");
+		menuManager.insertAfter("additions", newMenuManager);
+		return newMenuManager;
+	}
+	
+	protected IAction tryEnhanceTopMenuItem(IMenuManager menuManager, ITopMenuActionBuilder actionBuilder, String id, String text, String definitionId, IActionDelegate actionDelegate) {
+		IContributionItem item = menuManager.find(id);
+		if (item != null && item instanceof ActionContributionItem) {
+			IAction action = ((ActionContributionItem)item).getAction();
+			actionBuilder.enhanceAction((IAction)action, text, definitionId, actionDelegate);
+			return null;
+		}
+		return actionBuilder.buildAction(id, text, definitionId, actionDelegate);
+	}
+	
+	protected void addContextMenuItem(IMenuManager menuManager, String text, String definitionId, IActionDelegate actionDelegate) {
+		menuManager.add(buildContextMenuItem(text, definitionId, actionDelegate));
+	}
+	
+	protected IAction buildContextMenuItem(String text, String definitionId, final IActionDelegate actionDelegate) {
+		IAction action = new Action() {
+			public void run() {
+				actionDelegate.run(this);
+			}
+		};
+		action.setText(text);
+		action.setActionDefinitionId(definitionId);
+		return action;
+	}	
+
+	protected Category getCategory(String categoryId) {
+		ICommandService commandService = (ICommandService) PlatformUI.getWorkbench()
+				.getAdapter(ICommandService.class);
+		Category category = commandService.getCategory(categoryId);
+		if (!category.isDefined())
+			throw new IllegalStateException("Category '" + categoryId
+					+ "' not found!");
+		return category;
+	}
+
+	protected Command registerCommand(String commandId, Category category,
+			String name, String description) {
+		ICommandService commandService = (ICommandService) PlatformUI.getWorkbench()
+				.getAdapter(ICommandService.class);
+		Command command = commandService.getCommand(commandId);
+		if (!command.isDefined())
+			command.define(name, description, category);
+		return command;
+	}
+
+	protected IHandlerActivation registerCommandHandler(String commandId,
+			IHandler handler) {
+		IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
+				.getAdapter(IHandlerService.class);
+		return handlerService.activateHandler(commandId, handler);
+	}
+	
+	protected Command installCommand(String commandId, String name,
+			String description, String categoryId, String keySequence, IHandler handler)
+			throws ParseException, IOException {
+		Command command = registerCommand(commandId,
+				getCategory(categoryId), name,
+				description);
+		if (keySequence != null)
+			setCommandBinding(command, keySequence);
+		registerCommandHandler(commandId, handler);
+		return command;
+	}
+			
+	protected void setCommandBinding(Command command, String keySequence)
+			throws ParseException, IOException {
+		registerBinding(buildKeyBinding(command, keySequence, getEditorContextID()));
+	}
+	
+	protected String getActiveBindingsScheme() {
+		IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench()
+				.getAdapter(IBindingService.class);
+
+		return bindingService.getActiveScheme().getId();
+	}
+
+	protected void registerBinding(Binding newBinding) throws IOException {
+		IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench()
+				.getAdapter(IBindingService.class);
+		Binding[] bindings = bindingService.getBindings();
+
+		Binding[] newBindings = new Binding[bindings.length+1];
+		System.arraycopy(bindings, 0, newBindings, 0, bindings.length);
+		newBindings[bindings.length] = newBinding;
+
+		bindingService.savePreferences(bindingService.getActiveScheme(),
+				newBindings);
+	}
+
+	private boolean deletesBinding(Binding oldBinding, Binding newBinding) {
+		return stringsEqual(oldBinding.getContextId(), newBinding
+				.getContextId())
+				&& stringsEqual(oldBinding.getLocale(), newBinding.getLocale())
+				&& stringsEqual(oldBinding.getPlatform(), newBinding
+						.getPlatform())
+				&& stringsEqual(oldBinding.getSchemeId(), newBinding
+						.getSchemeId())
+				&& oldBinding.getParameterizedCommand() != null
+				&& oldBinding.getParameterizedCommand().equals(
+						newBinding.getParameterizedCommand());
+	}
+
+	private boolean stringsEqual(String s1, String s2) {
+		return s1 == null ? s1 == s2 : s1.equals(s2);
+	}
+	
+	protected Binding buildKeyBinding(Command command, String keySequence, String context)
+			throws ParseException, IOException {
+		return new KeyBinding(KeySequence
+				.getInstance(keySequence), new ParameterizedCommand(command,
+				null), getActiveBindingsScheme(),
+				context, null,
+				null, null, KeyBinding.SYSTEM);
 	}
 }

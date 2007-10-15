@@ -2,6 +2,7 @@ package org.jastadd.plugin.editor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -34,7 +35,10 @@ public abstract class JastAddEditor extends TextEditor {
 	private IContextActivation contextActivation;
 	
 	private JastAddModel model;
-
+	
+	public JastAddModel getModel() {
+		return this.model;
+	}
 	
 	@Override
 	protected void doSetInput(IEditorInput input) throws CoreException {
@@ -53,7 +57,7 @@ public abstract class JastAddEditor extends TextEditor {
 	 */
 	@Override
 	protected void initializeEditor() {
-		super.initializeEditor();
+		super.initializeEditor();		
 		setDocumentProvider(new JastAddDocumentProvider());
 	}
 	
@@ -81,7 +85,9 @@ public abstract class JastAddEditor extends TextEditor {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-	    super.createPartControl(parent);
+		setEditorContextMenuId(getEditorSite().getId());
+
+		super.createPartControl(parent);
 	    
 	    ProjectionViewer viewer = (ProjectionViewer)getSourceViewer();
 	    projectionSupport = new ProjectionSupport(viewer, getAnnotationAccess(), getSharedColors());
@@ -102,14 +108,6 @@ public abstract class JastAddEditor extends TextEditor {
 	    	IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 	    	contextActivation = contextService.activateContext(model.getEditorConfiguration().getEditorContextID());
 	    }
-	    
-	    //IHandlerService handlerService = (IHandlerService) getSite().getService(IHandlerService.class);
-	    //IHandler handler = new FindDeclarationHandler();
-	    //handlerService.activateHandler("org.jastadd.plugin.search.declaration", handler);
-	    //handler = new FindReferencesHandler();
-	    //handlerService.activateHandler("org.jastadd.plugin.search.references", handler);
-	    //handler = new FindImplementsHandler();
-	    //handlerService.activateHandler("org.jastadd.plugin.search.implements", handler);
 	}
 	
 	/**
@@ -146,5 +144,14 @@ public abstract class JastAddEditor extends TextEditor {
 	 	   public IInformationControl createInformationControl(Shell shell) {
 	  	     return new JastAddSourceInformationControl(shell, model);
 	  	   }
-	}	
+	}
+	
+	@Override
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+		super.editorContextMenuAboutToShow(menu);
+		
+		if (model == null) return;
+		
+		model.getEditorConfiguration().populateContextMenu(menu, this);
+	}
 }
