@@ -1,5 +1,8 @@
 package org.jastadd.plugin.jastadd;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,10 +13,16 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
-import org.jastadd.plugin.jastadd.AST.*;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.jastadd.generated.AST.*;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.model.repair.JastAddStructureModel;
+
+import beaver.Parser.Exception;
 
 public class Model extends JastAddJModel {
 
@@ -128,4 +137,62 @@ public class Model extends JastAddJModel {
 			e.printStackTrace();
 		}
 	}
+	
+	public Collection recoverCompletion(int documentOffset, String[] linePart, StringBuffer buf, IProject project, String fileName, IJastAddNode node) throws IOException, Exception {
+		if(node == null) {
+			// Try a structural recovery
+			documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
+	
+			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+			if (node == null) {
+				System.out.println("Structural recovery failed");
+				return new ArrayList();
+			}
+		}
+		if(node instanceof Access) {
+			Access n = (Access)node;
+			System.out.println("Automatic recovery");
+			System.out.println(n.getParent().getParent().dumpTree());
+			return n.completion(linePart[1]);
+		} 
+		else if(node instanceof ASTNode) {
+			ASTNode n = (ASTNode)node;
+			System.out.println("Manual recovery");
+			Expr newNode;
+			if(linePart[0].length() != 0) {
+				String nameWithParan = "(" + linePart[0] + ")";
+				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
+				org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
+				newNode = (Expr)((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
+						scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression)
+				).getExprNoTransform();
+				newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
+			}
+			else {
+				newNode = new MethodAccess("X", new List());
+			}
+	
+			int childIndex = n.getNumChild();
+			n.addChild(newNode);
+			n = n.getChild(childIndex);
+			if (n instanceof Access)
+				n = ((Access) n).lastAccess();
+			// System.out.println(node.dumpTreeNoRewrite());
+	
+			// Use the connection to the dummy AST to do name
+			// completion
+			return n.completion(linePart[1]);
+		}
+		return new ArrayList();
+	}	
+	
+	protected void updateModel(IDocument document, String fileName, IProject project) {
+		IProgram program = getProgram(project);
+		if(program instanceof Program) {
+			((Program)program).flushIntertypeDecls();
+		}
+		super.updateModel(document, fileName, project);
+	}
+
+
 }
