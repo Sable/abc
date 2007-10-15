@@ -191,6 +191,7 @@
 	</extension>
 	
 	<!-- JastAddJ Commands -->
+	
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -225,10 +226,6 @@
 			id = "org.jastadd.plugin.category.Source">
 		</category>
    </extension>
-   
-	<extension point="org.eclipse.ui.startup">
-		<startup class="org.jastadd.plugin.jastaddj.JastAddJStartup"/>
-	</extension>   
    
     <!-- JastAddJ model -->
 	

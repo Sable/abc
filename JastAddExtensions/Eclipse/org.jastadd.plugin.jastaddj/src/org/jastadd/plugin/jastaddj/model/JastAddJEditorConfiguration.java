@@ -118,7 +118,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				new FindReferencesHandler()));
 
 		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindImplements",
-				"Find FindImplements", "JastAddJ Find Implements", "F5",
+				"Find Implements", "JastAddJ Find Implements", "F5",
 				new FindImplementsHandler()));
 
 		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
@@ -132,51 +132,43 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		IMenuManager refactorMenu = findOrAddRefactorTopMenu(menuManager);
 		populateRefactorTopMenuItems(refactorMenu, actionBuilder);
 
-		IMenuManager findMenu = findOrAddSearchTopMenu(menuManager);
-		populateSearchTopMenuItems(findMenu, actionBuilder);
+		IMenuManager findMenu = findOrAddFindTopMenu(menuManager);
+		populateFindTopMenuItems(findMenu, actionBuilder);
 	}
 
-	protected void populateSearchTopMenuItems(IMenuManager searchMenu,
+	protected void populateFindTopMenuItems(IMenuManager searchMenu,
 			ITopMenuActionBuilder actionBuilder) {
 
-		IAction findDeclarationAction = tryEnhanceTopMenuItem(searchMenu,
+		addOrEnhanceTopMenuItem(searchMenu,
 				actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindDeclarationTopMenuItem",
 				"Find &Declaration",
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
 				new FindDeclarationHandler());
-		if (findDeclarationAction != null)
-			searchMenu.appendToGroup("dialogGroup", findDeclarationAction);
 
-		IAction findReferencesAction = tryEnhanceTopMenuItem(searchMenu,
+		addOrEnhanceTopMenuItem(searchMenu,
 				actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindReferencesTopMenuItem",
 				"Find &References",
 				"org.jastadd.plugin.jastaddj.find.FindReferences",
 				new FindReferencesHandler());
-		if (findReferencesAction != null)
-			searchMenu.appendToGroup("dialogGroup", findReferencesAction);
 
-		IAction findImplementsAction = tryEnhanceTopMenuItem(searchMenu,
+		addOrEnhanceTopMenuItem(searchMenu,
 				actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindImplementsTopMenuItem",
 				"Find &Implements",
 				"org.jastadd.plugin.jastaddj.find.FindImplements",
 				new FindImplementsHandler());
-		if (findImplementsAction != null)
-			searchMenu.appendToGroup("dialogGroup", findImplementsAction);
 	}
 
 	protected void populateRefactorTopMenuItems(IMenuManager refactorMenu,
 			ITopMenuActionBuilder actionBuilder) {
-		IAction insertCrapAction = tryEnhanceTopMenuItem(refactorMenu,
+		addOrEnhanceTopMenuItem(refactorMenu,
 				actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrapTopMenuItem",
 				"Insert &Crap",
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				new InsertCrapRefactoringHandler());
-		if (insertCrapAction != null)
-			refactorMenu.appendToGroup("dialogGroup", insertCrapAction);
 	}
 
 	@Override
