@@ -34,7 +34,7 @@ public class BaseJastAddActivator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
-		synchronized(commands) {
+		synchronized(BaseJastAddActivator.this) {
 			for(Command command : commands) 
 				command.undefine();
 		}
@@ -44,11 +44,11 @@ public class BaseJastAddActivator extends AbstractUIPlugin {
 		}
 	}
 	
-	protected void registerModelCommands() {
-		getWorkbench().getDisplay().asyncExec(new Runnable() {
+	protected void registerModelCommands(final JastAddModel model) {
+		getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
 				try {
-					synchronized(commands) {
+					synchronized(BaseJastAddActivator.this) {
 						model.getEditorConfiguration().populateCommands(commands);
 					}
 				} catch (ParseException e) {

@@ -45,7 +45,7 @@ import org.jastadd.plugin.editor.hover.JastAddTextHover;
 import org.jastadd.plugin.providers.JastAddContentProvider;
 import org.jastadd.plugin.providers.JastAddLabelProvider;
 
-public class JastAddEditorConfiguration {
+public abstract class JastAddEditorConfiguration {
 	
 	protected JastAddModel model;
 	
@@ -113,9 +113,7 @@ public class JastAddEditorConfiguration {
 		return new JastAddAutoIndentStrategy(model);
 	}
 	
-	public String getEditorContextID() {
-		return "org.jastadd.plugin.JastAddEditorContext";
-	}
+	public abstract String getEditorContextID();
 	
 	public String getErrorMarkerID() {
 		return "org.eclipse.ui.workbench.texteditor.error";
@@ -139,49 +137,30 @@ public class JastAddEditorConfiguration {
 	public void populateContextMenu(IMenuManager menuManager, JastAddEditor editor) {
 	}
 	
-	protected IMenuManager findOrAddSearchTopMenu(IMenuManager menuManager) {
-		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.eclipse.search.menu");
-		if (newMenuManager != null)
-			return newMenuManager;
-		
-		newMenuManager = new MenuManager("&Search", "org.eclipse.search.menu");
-		newMenuManager.add(new GroupMarker("internalDialogGroup"));
-		newMenuManager.add(new GroupMarker("dialogGroup"));
-		newMenuManager.add(new Separator("fileSearchContextMenuActionsGroup"));
-		newMenuManager.add(new Separator("contextMenuActionsGroup"));
-		newMenuManager.add(new Separator("occurencesActionsGroup"));
-		newMenuManager.add(new Separator("extraSearchGroup"));
+	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {
+		String id = getEditorContextID() + idSuffix;
+		IMenuManager newMenuManager = menuManager.findMenuUsingPath(id);
+		if (newMenuManager == null)
+			newMenuManager = new MenuManager(text, id);
+		newMenuManager.add(new Separator("additions"));
 		menuManager.insertAfter("additions", newMenuManager);
 		return newMenuManager;
+	}
+	
+	protected IMenuManager findOrAddFindTopMenu(IMenuManager menuManager) {
+		return findOrAddMenu(menuManager, ".find.menu", "F&ind");
 	}
 	
 	protected IMenuManager findOrAddRefactorTopMenu(IMenuManager menuManager) {
-		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.jastadd.plugin.refactor.menu");
-		if (newMenuManager != null)
-			return newMenuManager;
-		
-		newMenuManager = new MenuManager("Refac&tor", "org.jastadd.plugin.refactor.menu");
-		newMenuManager.add(new GroupMarker("dialogGroup"));
-		menuManager.insertAfter("additions", newMenuManager);
-		return newMenuManager;
+		return findOrAddMenu(menuManager, ".refactor.menu", "Refac&tor");
 	}
 	
 	protected IMenuManager findOrAddFindContextMenu(IMenuManager menuManager) {
-		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.jastadd.plugin.find.menu");
-		if (newMenuManager != null)
-			throw new IllegalStateException("Context menu \"org.jastadd.plugin.find.menu\" already exists!");
-		newMenuManager = new MenuManager("&Find", "org.jastadd.plugin.find.menu");
-		menuManager.insertAfter("additions", newMenuManager);
-		return newMenuManager;
+		return findOrAddMenu(menuManager, ".find.popup", "F&ind");
 	}
 	
 	protected IMenuManager findOrAddRefactorContextMenu(IMenuManager menuManager) {
-		IMenuManager newMenuManager = menuManager.findMenuUsingPath("org.jastadd.plugin.refactor.menu");
-		if (newMenuManager != null)
-			throw new IllegalStateException("Context menu \"org.jastadd.plugin.refactor.menu\" already exists!");
-		newMenuManager = new MenuManager("Refac&tor", "org.jastadd.plugin.refactor.menu");
-		menuManager.insertAfter("additions", newMenuManager);
-		return newMenuManager;
+		return findOrAddMenu(menuManager, ".refactor.popup", "Refac&tor");
 	}
 	
 	protected IAction tryEnhanceTopMenuItem(IMenuManager menuManager, ITopMenuActionBuilder actionBuilder, String id, String text, String definitionId, IActionDelegate actionDelegate) {
@@ -193,6 +172,13 @@ public class JastAddEditorConfiguration {
 		}
 		return actionBuilder.buildAction(id, text, definitionId, actionDelegate);
 	}
+
+	protected void addOrEnhanceTopMenuItem(IMenuManager menuManager, ITopMenuActionBuilder actionBuilder, String id, String text, String definitionId, IActionDelegate actionDelegate) {
+		IAction action = tryEnhanceTopMenuItem(menuManager, actionBuilder, id, text, definitionId, actionDelegate);
+		if (action != null)
+			menuManager.insertAfter("additions", action);
+	}
+	
 	
 	protected void addContextMenuItem(IMenuManager menuManager, String text, String definitionId, IActionDelegate actionDelegate) {
 		menuManager.add(buildContextMenuItem(text, definitionId, actionDelegate));

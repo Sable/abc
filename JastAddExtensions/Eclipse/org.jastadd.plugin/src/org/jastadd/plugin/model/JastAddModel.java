@@ -149,13 +149,9 @@ public abstract class JastAddModel {
 	public synchronized void fullBuild(IProject project) {
 		completeBuild(project);
 	}
-	
-	
-	
-	protected void initModel() {
-		editorConfig = new JastAddEditorConfiguration(this);
-	}
 
+	protected abstract void initModel();
+	
 	protected String readTextFile(String fullPathFilename) throws IOException {
 		StringBuffer sb = new StringBuffer(1024);
 		BufferedReader reader = new BufferedReader(new FileReader(fullPathFilename));				
