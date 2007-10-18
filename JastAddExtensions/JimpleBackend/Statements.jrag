@@ -29,9 +29,9 @@ aspect Statements {
   }
 
   syn lazy DefaultCase SwitchStmt.defaultCase() {
-    for(int i= 0; i < getNumCase(); i++) {
-      if(getCase(i) instanceof DefaultCase)
-        return (DefaultCase)getCase(i);
+    for(int i= 0; i < getBlock().getNumStmt(); i++) {
+      if(getBlock().getStmt(i) instanceof DefaultCase)
+        return (DefaultCase)getBlock().getStmt(i);
     }
     return null;
   }
@@ -44,9 +44,7 @@ aspect Statements {
 
     b.setLine(this);
     b.add(Jimple.v().newGotoStmt(cond_label));
-    for(int i= 0; i < getNumCase(); i++) {
-      getCase(i).jimplify2(b);
-    }
+    getBlock().jimplify2(b);
     if(canCompleteNormally()) {
       b.setLine(this);
       b.add(Jimple.v().newGotoStmt(end_label()));
@@ -55,10 +53,9 @@ aspect Statements {
     soot.Value expr = asImmediate(b, getExpr().eval(b));
 
     TreeMap map = new TreeMap();
-    for(int i = 0; i < getNumCase(); i++) {
-      Case c = getCase(i);
-      if(c instanceof ConstCase) {
-        ConstCase ca = (ConstCase)c;
+    for(int i= 0; i < getBlock().getNumStmt(); i++) {
+      if(getBlock().getStmt(i) instanceof ConstCase) {
+        ConstCase ca = (ConstCase)getBlock().getStmt(i);
         map.put(new Integer(ca.getValue().constant().intValue()), ca);
       }        
     }
@@ -102,8 +99,6 @@ aspect Statements {
 
   public void Case.jimplify2(Body b) {
     b.addLabel(label());
-    for(int i = 0; i < getNumStmt(); i++)
-      getStmt(i).jimplify2(b);
   }
 
   syn lazy soot.jimple.Stmt IfStmt.else_branch_label() = newLabel();
