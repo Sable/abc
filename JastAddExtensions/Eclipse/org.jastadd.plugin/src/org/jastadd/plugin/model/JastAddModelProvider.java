@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -19,13 +20,14 @@ import org.jastadd.plugin.AST.IJastAddNode;
 public class JastAddModelProvider {
 	
 	private static LinkedList<JastAddModel> modelList = new LinkedList<JastAddModel>();
-	private static HashMap<IFile,JastAddModel> fileModelMap = new HashMap<IFile,JastAddModel>();	
+	private static Map<IFile,JastAddModel> fileModelMap = new HashMap<IFile,JastAddModel>();
+	private static Map<JastAddModel, Map<IProject, JastAddProjectInfo>> projectInfoMap = new HashMap<JastAddModel, Map<IProject, JastAddProjectInfo>>();
 	
-	public static List<JastAddModel> getModels() {
+	public static synchronized List<JastAddModel> getModels() {
 		return Collections.unmodifiableList(getModelList());
 	}
 	
-	public static List<JastAddModel> getModels(IProject project) {
+	public static synchronized List<JastAddModel> getModels(IProject project) {
 		List<JastAddModel> list = new ArrayList<JastAddModel>();
 		for (Iterator itr = getModelList().iterator(); itr.hasNext();) {
 			JastAddModel model = (JastAddModel)itr.next();
@@ -36,15 +38,15 @@ public class JastAddModelProvider {
 		return list;
 	}
 	
-	public static JastAddModel getModel(Class modelClass) {
-		for(JastAddModel model : getModelList()) {
+	public static synchronized <M extends JastAddModel> M getModel(IProject project, Class<M> modelClass) {
+		List<JastAddModel> models = getModels(project);
+		for(JastAddModel model : models)
 			if (model.getClass() == modelClass)
-				return model;
-		}
+				return (M)model;
 		return null;
 	}
 	
-	public static JastAddModel getModel(IFile file) {
+	public static synchronized JastAddModel getModel(IFile file) {
 		if (fileModelMap.containsKey(file)) {
 			return fileModelMap.get(file);
 		} else {
@@ -59,7 +61,7 @@ public class JastAddModelProvider {
 		return null;
 	}
 	
-	public static JastAddModel getModel(IDocument document) {
+	public static synchronized JastAddModel getModel(IDocument document) {
 		for (Iterator itr = getModelList().iterator(); itr.hasNext();) {
 			JastAddModel model = (JastAddModel)itr.next();
 			if (model.isModelFor(document)) {
@@ -69,7 +71,7 @@ public class JastAddModelProvider {
 		return null;
 	}
 	
-	public static JastAddModel getModel(IJastAddNode node) {
+	public static synchronized JastAddModel getModel(IJastAddNode node) {
 		for (Iterator itr = getModelList().iterator(); itr.hasNext();) {
 			JastAddModel model = (JastAddModel)itr.next();
 			if (model.isModelFor(node)) {
@@ -79,13 +81,13 @@ public class JastAddModelProvider {
 		return null;	
 	}
 	
-	public static void addModel(JastAddModel model) {
+	public static synchronized void addModel(JastAddModel model) {
 		if (!modelList.contains(model)) {
 			modelList.add(model);
 		}
 	}
 	
-	public static void removeModel(JastAddModel model) {
+	public static synchronized void removeModel(JastAddModel model) {
 		if (modelList.contains(model)) {
 			modelList.remove(model);
 		}
@@ -114,5 +116,29 @@ public class JastAddModelProvider {
 		}
 		return modelList;
 	}
+	
+	public static synchronized JastAddProjectInfo getProjectInfo(JastAddModel model, IProject project) {
+		Map<IProject, JastAddProjectInfo> map = getProjectInfoSubMap(model);
+		JastAddProjectInfo projectInfo = map.get(project);
+		if (projectInfo == null) {
+			projectInfo = model.buildProjectInfo(project);
+			map.put(project, projectInfo);
+		}
+		return projectInfo;
+	}
+	
+	public static synchronized JastAddProjectInfo removeProjectInfo(JastAddModel model, IProject project) {
+		Map<IProject, JastAddProjectInfo> map = projectInfoMap.get(model);
+		return map.remove(project);
+	}
 
+	private static Map<IProject, JastAddProjectInfo> getProjectInfoSubMap(
+			JastAddModel model) {
+		Map<IProject, JastAddProjectInfo> map = projectInfoMap.get(model);
+		if (map == null) {
+			map = new HashMap<IProject, JastAddProjectInfo>();
+			projectInfoMap.put(model, map);
+		}
+		return map;
+	}
 }

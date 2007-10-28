@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
@@ -184,22 +185,9 @@ public abstract class JastAddModel {
 		}
 	}
 	
-	protected void deleteParseErrorMarkers(IResource[] resources) throws CoreException {
-		for (int i = 0; i < resources.length; i++) {
-			IResource res = resources[i];
-			if (res instanceof IFile && isModelFor((IFile)res)) {
-				IFile file = (IFile) res;
-				file.deleteMarkers(PARSE_ERROR_MARKER_TYPE, false, IResource.DEPTH_ZERO);
-			} else if (res instanceof IFolder) {
-			    IFolder folder = (IFolder) res;
-			    deleteParseErrorMarkers(folder.members());
-		   }
-		}
-	}
-	
-	protected void addErrorMarker(IFile file, String message, int lineNumber, int severity) throws CoreException {
-		if (file != null) {
-			IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
+	protected void addErrorMarker(IResource resource, String message, int lineNumber, int severity) throws CoreException {
+		if (resource != null) {
+			IMarker marker = resource.createMarker(ERROR_MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			if (lineNumber == -1) {
@@ -209,15 +197,24 @@ public abstract class JastAddModel {
 		}
 	}
 	
-	protected void deleteErrorMarkers(IResource[] resources) throws CoreException {
+	protected void deleteErrorMarkers(String markerType, IResource resource) throws CoreException {
+		deleteErrorMarkers(markerType, new IResource[] { resource } );
+	}
+	
+	protected void deleteErrorMarkers(String markerType, IResource[] resources) throws CoreException {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
 			if (res instanceof IFile && isModelFor((IFile)res)) {
 				IFile file = (IFile) res;
-				file.deleteMarkers(ERROR_MARKER_TYPE, false, IResource.DEPTH_ZERO);
+				file.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
 			} else if (res instanceof IFolder) {
 			    IFolder folder = (IFolder) res;
-			    deleteErrorMarkers(folder.members());
+			    deleteErrorMarkers(markerType, folder.members());
+			    folder.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
+		   } else if (res instanceof IProject) {
+			    IProject project = (IProject) res;
+			    deleteErrorMarkers(markerType, project.members());
+			    project.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
 		   }
 		}
 	}
@@ -266,7 +263,6 @@ public abstract class JastAddModel {
 	
 	
 	public abstract void openFile(IJastAddNode node);
-
 	
 	public abstract String getEditorID();
 	
@@ -282,5 +278,25 @@ public abstract class JastAddModel {
 	protected abstract void completeBuild(IProject project);
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
 
+	public JastAddProjectInfo buildProjectInfo(IProject project) {
+		return new JastAddProjectInfo(this, project);
+	}
+	
 
+	public abstract void logStatus(IStatus status);
+	
+	public void logError(Throwable t, String message) {
+		logStatus(makeErrorStatus(t, message));
+	}
+	
+	public void logCoreException(CoreException e) {
+		logStatus(e.getStatus());
+	}
+	
+	public CoreException makeCoreException(Throwable e, String message) {
+		return new CoreException(makeErrorStatus(e, message));
+	}
+
+	public abstract IStatus makeErrorStatus(Throwable e, String message);
+	
 }

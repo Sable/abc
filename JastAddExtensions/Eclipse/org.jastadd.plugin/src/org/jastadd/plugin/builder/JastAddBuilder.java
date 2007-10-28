@@ -42,7 +42,10 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 
 	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
 		// the visitor does the work.
-		delta.accept(new DeltaVisitor());
+		DeltaVisitor deltaVisitor = new DeltaVisitor();
+		delta.accept(deltaVisitor);
+		if (deltaVisitor.buildRequired)		
+			buildProject(getProject());
 	}
 
 	
@@ -89,6 +92,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 
 	
 	private class DeltaVisitor implements IResourceDeltaVisitor {
+		public boolean buildRequired = false;
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -99,7 +103,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 				// handle added resource
-				buildProject(getProject());
+				buildRequired = true;
 				//checkFile(resource);
 				break;
 			case IResourceDelta.REMOVED:
@@ -107,7 +111,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
-				buildProject(getProject());
+				buildRequired = true;
 				//checkFile(resource);
 				break;
 			}

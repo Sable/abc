@@ -1,11 +1,8 @@
 package org.jastadd.plugin;
 
-import java.io.IOException;
-
-import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.model.JastAddProjectInfoRefresher;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -13,4 +10,9 @@ import org.osgi.framework.BundleContext;
  */
 public class JastAddActivator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.jastadd.plugin";
+	
+	public void start(BundleContext context) throws Exception {
+		super.start(context);	
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(new JastAddProjectInfoRefresher());
+	}
 }
