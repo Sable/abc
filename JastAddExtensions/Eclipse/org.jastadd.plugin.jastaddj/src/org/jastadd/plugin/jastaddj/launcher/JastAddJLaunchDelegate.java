@@ -1,5 +1,8 @@
 package org.jastadd.plugin.jastaddj.launcher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -16,6 +19,8 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 
@@ -75,19 +80,18 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 			return null;
 		}
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		
 		String path = project.getLocation().toOSString();
+		String[] defaultClassPath = new String[] { path };
 		
-		return new String[] { path };
-		/*String[] classpathEntries = JastAddModel.getInstance().getClasspathEntries();
-		
-		String[] res = new String[classpathEntries.length + 1];
-		res[0] = path;
-		for (int i=0; i < classpathEntries.length; i++) {
-			res[i+1] = classpathEntries[i];
-		}
-		
-		return res;
-		*/
+		JastAddJModel model = JastAddModelProvider.getModel(project, JastAddJModel.class);
+		if (model == null)
+			return null;
+		List<String> classPath = new ArrayList<String>();
+		model.populateClassPath(project, classPath);
+		if (classPath == null)
+			return defaultClassPath;
+		return classPath.toArray(new String[0]);
 	}
 
 	protected void setDefaultSourceLocator(ILaunch launch,

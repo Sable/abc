@@ -110,15 +110,15 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 			throws ParseException, IOException {
 		commands.add(installSourceCommand(
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
-				"Find Declaration", "JastAddJ Find Declaration", "F3",
+				"Find Declaration", "JastAddJ Find Declaration", "Ctrl+F3",
 				new FindDeclarationHandler()));
 
 		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindReferences",
-				"Find References", "JastAddJ Find References", "F4",
+				"Find References", "JastAddJ Find References", "Ctrl+F4",
 				new FindReferencesHandler()));
 
 		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindImplements",
-				"Find Implements", "JastAddJ Find Implements", "F5",
+				"Find Implements", "JastAddJ Find Implements", "Ctrl+F5",
 				new FindImplementsHandler()));
 
 		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",

@@ -252,7 +252,7 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 			Object[] results = dialog.getResult();	
 		    ClassDecl type = (ClassDecl)results[0];
 	     	if (type != null) {
-			  mainClassText.setText(type.getID());
+			  mainClassText.setText(type.packageName() + "." + type.getID());
 		    }
 		} else {
 			// Show message: No project selected

@@ -1,17 +1,26 @@
 package org.jastadd.plugin.jastaddj.launcher;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupParticipant;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
+import org.eclipse.debug.core.sourcelookup.containers.ExternalArchiveSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.JavaRuntime;
+import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.model.JastAddModelProvider;
 
 /**
  * A source lookup participant that searches for Java source code.
@@ -79,6 +88,7 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 		super.init(director);
 		fDelegateContainers = new HashMap();
 	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupParticipant#sourceContainersChanged(org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector)
 	 */
@@ -120,17 +130,24 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 	}
 	
 	protected ISourceContainer[] getSourceContainers() {
-		ISourceLookupDirector director = getDirector();
+		List<ISourceContainer> result = new ArrayList<ISourceContainer>();		
+		ISourceLookupDirector director = getDirector();		
 		if (director != null) {
 			try {
 				String projectName = director.getLaunchConfiguration().getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
-				return new ISourceContainer[] { 
-					new FolderSourceContainer(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName), true)
-				};
+				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);				
+				result.add(new FolderSourceContainer(project, true));
+				
+				JastAddJModel model = JastAddModelProvider.getModel(project, JastAddJModel.class);
+				if (model != null)	
+					model.popupateSourceContainers(project, result);
+				
+				IPath vmSources = Path.fromOSString(JavaRuntime.getDefaultVMInstall().getInstallLocation().getAbsolutePath()).append("/src.zip");
+				result.add(new ExternalArchiveSourceContainer(vmSources.toOSString(), false));
+				
 			} catch (CoreException e) {
 			}
 		}
-		return new ISourceContainer[] { };
+		return result.toArray(new ISourceContainer[0]);
 	}
-
 }
