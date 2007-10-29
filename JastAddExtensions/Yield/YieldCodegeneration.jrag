@@ -211,7 +211,7 @@ aspect YieldCodegeneration {
     list.add(
       new SwitchStmt(
         new VarAccess("yield$state"),
-        cases
+        new Block(cases)
       )
     );
     int index = 1;
@@ -227,14 +227,9 @@ aspect YieldCodegeneration {
         // if it is the next state. this code is inserted first in the
         // advance method
         cases.add(
-          new ConstCase(
-            new IntegerLiteral(Integer.toString(index)),
-            new List().add(
-              new GotoStmt(
-                label
-              )
-            )
-          )
+          new ConstCase(new IntegerLiteral(Integer.toString(index)))
+        ).add(
+          new GotoStmt(label)
         );
         // replace each yield statement with...
         replace(stmt).with(

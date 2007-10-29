@@ -22,6 +22,6 @@ class JavaCompiler extends Frontend {
     unit.generateClassfile();
   }
 
-  protected String name() { return "Java5Compiler"; }
-  protected String version() { return "R20070504"; }
+  protected String name() { return "Java1.5 + Yield"; }
+  protected String version() { return "R20071019"; }
 }
