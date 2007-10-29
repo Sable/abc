@@ -286,6 +286,7 @@ aspect Statements {
 
   syn boolean TryStmt.needsFinallyTrap() = getNumCatchClause() != 0 || enclosedByExceptionHandler();
   inh boolean TryStmt.enclosedByExceptionHandler();
+  eq Program.getChild().enclosedByExceptionHandler() = false;
   eq TypeDecl.getBodyDecl().enclosedByExceptionHandler() = false;
   eq MethodDecl.getBlock().enclosedByExceptionHandler() = getNumException() != 0;
   eq ConstructorDecl.getBlock().enclosedByExceptionHandler() = getNumException() != 0;

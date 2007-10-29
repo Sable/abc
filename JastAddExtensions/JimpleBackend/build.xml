@@ -3,14 +3,10 @@
        build (default) - generates java files and compiles them
        clean           - removes all generated files and class files
 -->
-<project name="Bytecode backend" default="build">
+<project name="Jimple backend" default="build">
 
 <property file="ant.settings"/>
-<fail message="Please fix ant.settings" unless="abc.loc"/>
-
-<property file="${abc.loc}/ant.settings"/>
-<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
-            unless="polyglot.loc"/>
+<fail message="Please fix ant.settings" unless="soot.loc"/>
 
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
@@ -32,7 +28,6 @@
 	         fork="true" memoryMaximumSize="128M">
 
       <classpath>
-         <pathelement location="${polyglot.loc}"/>
          <pathelement location="${polyglot.cupclasses.loc}"/>
          <pathelement location="${soot.loc}"/>
          <pathelement location="${jasmin.loc}"/>
@@ -41,7 +36,6 @@
 
       <include name ="*.java"/>
 	    <include name ="AST/*.java"/>
-	    <include name ="bytecode/**/*.java"/>
 	    <include name ="beaver/**/*.java"/>
 	    <include name ="parser/**/*.java"/>
 	    <include name ="scanner/**/*.java"/>
@@ -73,9 +67,6 @@
   <copy todir="beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
   </copy>
-  <copy todir="bytecode" preservelastmodified="true">
-    <fileset dir="${frontend}/bytecode"/>
-  </copy>
   <copy todir="scanner" file="${frontend}/scanner/Unicode.java" preservelastmodified="true"/>
 </target>
 
@@ -105,9 +96,10 @@
   <mkdir dir="parser"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
   <concat destfile="parser/JavaParser.all" binary="true" force="no">
-    <fileset dir="${frontend}">
-      <include name="parser/java14.parser"/>
-    </fileset>
+    <filelist dir="${frontend}">
+      <file name="parser/preamble.parser"/>
+      <file name="parser/java14.parser"/>
+    </filelist>
   </concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->
 	<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true" dir="${basedir}">
@@ -130,7 +122,6 @@
 <target name="cleanGen">
     <delete dir="${package}"/>
     <delete dir="beaver"/>
-    <delete dir="bytecode"/>
     <delete dir="parser"/>
 </target>
 
@@ -148,7 +139,6 @@
     <arg line="${args}"/>
     <classpath>
       <pathelement location="."/>
-      <pathelement location="${polyglot.loc}"/>
       <pathelement location="${polyglot.cupclasses.loc}"/>
       <pathelement location="${soot.loc}"/>
       <pathelement location="${jasmin.loc}"/>
