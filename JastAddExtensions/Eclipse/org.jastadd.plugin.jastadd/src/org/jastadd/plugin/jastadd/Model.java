@@ -11,7 +11,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -30,8 +29,10 @@ import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
+import org.jastadd.plugin.jastaddj.model.JastAddJEditorConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
+import org.jastadd.plugin.resources.JastAddNature;
 
 import beaver.Parser.Exception;
 
@@ -39,7 +40,7 @@ public class Model extends JastAddJModel {
 
 	public boolean isModelFor(IProject project) {
 		try {
-			if (project != null && project.isNatureEnabled(Nature.NATURE_ID)) {
+			if (project != null && project.isOpen() && project.isNatureEnabled(Nature.NATURE_ID)) {
 				return true;
 			}
 		} catch (CoreException e) {
@@ -47,9 +48,18 @@ public class Model extends JastAddJModel {
 		}
 		return false;
 	}
+	
+	@Override
+	public String getNatureID() {
+		return JastAddNature.NATURE_ID;
+	}
 
 	//*************** Protected methods
 	
+	@Override
+	protected void initModel() {
+		editorConfig = new EditorConfiguration(this);
+	}	
 
 	protected IProgram initProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {
 		Program program = new Program();
@@ -66,12 +76,8 @@ public class Model extends JastAddJModel {
 		program.initOptions();
 		// Add project classpath
 		program.addKeyValueOption("-classpath");
-		//program.addKeyOption("-verbose");
-		//program.addOptions(new String[] { "-verbose" });
-		IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
-		String workspacePath = workspaceRoot.getRawLocation().toOSString();			
-		String projectFullPath = project.getFullPath().toOSString();
-		program.addOptions(new String[] { "-classpath", workspacePath + projectFullPath });
+		program.addKeyValueOption("-d");
+		addBuildConfigurationOptions(project, program, buildConfiguration);
 		try {
 			Map<String,IFile> map = sourceMap(project, buildConfiguration);
 			for(String fileName : map.keySet())
@@ -85,9 +91,12 @@ public class Model extends JastAddJModel {
 	protected void completeBuild(IProject project) {
 		// Build a new project from saved files only.
 		try {
+			deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+			deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
+
 			JastAddJBuildConfiguration buildConfiguration;
 			try {
-				buildConfiguration = getBuildConfigurationWithException(project);
+				buildConfiguration = getBuildConfiguration(project);
 			}
 			catch(CoreException e) {
 				addErrorMarker(project, "Build failed because build configuration could not be loaded: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
@@ -97,9 +106,6 @@ public class Model extends JastAddJModel {
 			Program program = (Program)initProgram(project, buildConfiguration);
 			if (program == null) 
 				return;
-			
-			deleteErrorMarkers(ERROR_MARKER_TYPE, project);
-			deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
 			
 			Map<String,IFile> map = sourceMap(project, buildConfiguration);
 			boolean build = true;
@@ -149,8 +155,6 @@ public class Model extends JastAddJModel {
 				program.java2Transformation();
 				program.generateClassfile();
 			}
-			
-			
 		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (Throwable e) {
@@ -207,7 +211,7 @@ public class Model extends JastAddJModel {
 	}	
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project);
 		if (buildConfiguration == null)
 			return;
 		

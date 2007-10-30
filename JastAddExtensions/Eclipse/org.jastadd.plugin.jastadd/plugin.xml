@@ -25,6 +25,21 @@
 	</runtime>
 	<builder id = "org.jastadd.plugin.builder.JastAddBuilder"/>
 	</extension>
+	
+	<!-- JastAddJ Build Configuration -->
+ 
+	<extension point = "org.eclipse.ui.propertyPages">
+	<page
+		objectClass = "org.eclipse.core.resources.IProject"
+		name = "JastAdd Build Configuration"
+		class = "org.jastadd.plugin.jastaddj.builder.ui.JastAddJBuildConfigurationPropertyPage"		
+		id = "org.jastadd.plugin.jastadd.JastAddBuildConfigurationPropertyPage">
+		<filter
+			name = "nature"
+			value = "org.jastadd.plugin.jastadd.Nature">
+		</filter>
+	</page>
+	</extension>
 
 	<!-- Register the JastAdd model -->
 	
@@ -34,79 +49,4 @@
 		<provider class="org.jastadd.plugin.jastadd.Model"/>
  	</extension>
  	
- 	
- 	<extension point = "org.eclipse.ui.commands">
-		<command
-			name = "Find Equations"
-			id = "org.jastadd.plugin.jastadd.equations"
-			description = "JastAdd Find Equations"
-			categoryId = "org.jastadd.plugin.category.source">
-		</command>
- 	</extension>
- 	
- 	<extension point = "org.eclipse.ui.handlers">
-	<handler
-		class = "org.jastadd.plugin.jastadd.FindEquationsHandler"
-		commandId = "org.jastadd.plugin.jastadd.equations">
-		<activeWhen>
-			<with variable = "activeContexts">
-				<iterate operator = "or">
-					<equals value = "org.jastadd.plugin.JastAddEditorScope"/>
-				</iterate>
-			</with>
-		</activeWhen>
-	</handler>
-	</extension>
-	
-	<extension point = "org.eclipse.ui.bindings">
-	<key sequence = "F6"
-		commandId = "org.jastadd.plugin.jastadd.equations"
-		schemeId = "org.eclipse.ui.defaultAcceleratorConfiguration"
-		contextId = "org.jastadd.plugin.jastaddj.JastAddJEditorContext"/>
-	</extension>	
-	
-	<extension point = "org.eclipse.ui.popupMenus">
-	<viewerContribution 
-		id = "org.jastadd.plugin.jastaddj.editor.JastAddJPopupAction"
-		targetID = "#TextEditorContext">
-		<!--menu
-			id = "org.jastadd.plugin.jastaddj.editor.JastAddJFindMenu"
-			label = "Find"
-			path = "additions">
-			<separator name = "findGroup"/>
-		</menu-->
-		<action
-			id = "org.jastadd.plugin.jastadd.FindEquationsAction" 
-			label = "Equations"
-			menubarPath = "org.jastadd.plugin.jastaddj.editor.JastAddJFindMenu/findGroup"
-			definitionId = "org.jastadd.plugin.jastadd.equations"
-			class = "org.jastadd.plugin.jastadd.FindEquationsHandler">
-		</action> 
-	</viewerContribution>
-	</extension>
-	
-	<extension point = "org.eclipse.ui.actionSets">
-	<actionSet id = "org.jastadd.plugin.jastaddj.search.actionSet"
-		label = "JastAddJ Search Actions"
-		visible = "false">
-		<menu
-			label = "Search"
-			path = "navigate"
-			id = "org.eclipse.search.menu">
-			<groupMarker name = "internalDialogGroup"/>   
-			<groupMarker name = "dialogGroup"/>
-			<separator name = "fileSearchContextMenuActionsGroup"/>
-			<separator name = "contextMenuActionsGroup"/>
-			<separator name = "occurencesActionsGroup"/>
-			<separator name = "extraSearchGroup"/> 
-		</menu>
-		<action
-			label = "Find Equations"
-			class = "org.jastadd.plugin.jastadd.FindEquationsHandler"
-			menubarPath = "org.eclipse.search.menu/dialogGroup"
-			definitionId = "org.jastadd.plugin.jastadd.equations"
-			id = "org.jastadd.plugin.jastadd.FindEquationsAction">
-		</action>
-	</actionSet>
-	</extension>
 </plugin>
