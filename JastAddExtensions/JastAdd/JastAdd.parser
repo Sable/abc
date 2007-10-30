@@ -3,7 +3,8 @@ TypeDecl type_declaration =
   ;
 
 AspectDecl aspect_declaration =
-  modifiers_opt.m ASPECT IDENTIFIER.id aspect_body          {: return new AspectDecl(m, id, aspect_body); :}
+    modifiers.m ASPECT IDENTIFIER.id aspect_body          {: return new AspectDecl(m, id, aspect_body); :}
+  |             ASPECT IDENTIFIER.id aspect_body          {: return new AspectDecl(new Modifiers(new List()), id, aspect_body); :}
   ;
 
 List aspect_body =

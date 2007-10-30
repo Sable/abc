@@ -423,8 +423,8 @@ aspect ASTGrammar {
   public abstract void ASTChild.addAccessors(List bodyDeclList, int index);
   
   protected MethodDecl ASTChild.createMethodDecl(Access returnType, String name, List parameters, List statements) {
-    return new MethodDecl(
-        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+    MethodDecl m = new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))/*.add(new Modifier("synthetic"))*/),
         returnType,
         name,
         parameters,
@@ -432,6 +432,8 @@ aspect ASTGrammar {
         new List(),
         new Opt(new Block(statements))
     );
+    m.setStart(getStart()).setEnd(getEnd());
+    return m;
   }
   protected MethodDecl ASTChild.createMethodDecl(String returnType, String name, List parameters, List statements) {
     return createMethodDecl(new TypeAccess(returnType), name, parameters, statements);
@@ -456,7 +458,7 @@ aspect ASTGrammar {
         "int",
         name,
         new List(),
-        new List().add(new ReturnStmt(new IntegerLiteral(index)))
+        new List().add(new ReturnStmt(new IntegerLiteral(index)).setLocation(this))
       )
     );
   }
@@ -475,7 +477,7 @@ aspect ASTGrammar {
                 new List().add(new IntegerLiteral(index))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -494,7 +496,7 @@ aspect ASTGrammar {
                 new List().add(new IntegerLiteral(index))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -510,7 +512,7 @@ aspect ASTGrammar {
               "setChild",
               new List().add(new VarAccess("list")).add(new IntegerLiteral(index))
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -531,7 +533,7 @@ aspect ASTGrammar {
                 new List()
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -557,7 +559,7 @@ aspect ASTGrammar {
                 )
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -584,7 +586,7 @@ aspect ASTGrammar {
                 new List().add(new VarAccess("node")).add(new VarAccess("i"))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -611,7 +613,7 @@ aspect ASTGrammar {
                 new List().add(new VarAccess("node")).add(new VarAccess("i"))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -651,7 +653,7 @@ aspect ASTGrammar {
                 )
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -682,7 +684,7 @@ aspect ASTGrammar {
                 new List().add(new IntegerLiteral(index))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -701,7 +703,7 @@ aspect ASTGrammar {
                 new List().add(new IntegerLiteral(index))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -717,7 +719,7 @@ aspect ASTGrammar {
               "setChild",
               new List().add(new VarAccess("opt")).add(new IntegerLiteral(index))
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -741,7 +743,7 @@ aspect ASTGrammar {
               ),
               new IntegerLiteral(0)
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -767,7 +769,7 @@ aspect ASTGrammar {
                 )
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -790,7 +792,7 @@ aspect ASTGrammar {
                 new List().add(new VarAccess("node")).add(new IntegerLiteral(0))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -818,7 +820,7 @@ aspect ASTGrammar {
                 new List().add(new IntegerLiteral(index))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -837,7 +839,7 @@ aspect ASTGrammar {
                 new List().add(new IntegerLiteral(index))
               )
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -853,7 +855,7 @@ aspect ASTGrammar {
               "setChild",
               new List().add(new VarAccess("node")).add(new IntegerLiteral(index))
             )
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -884,7 +886,7 @@ aspect ASTGrammar {
         new List().add(
           new ReturnStmt(
             new VarAccess(name() + "$value")
-          )
+          ).setLocation(this)
         )
       )
     );
@@ -898,7 +900,7 @@ aspect ASTGrammar {
           AssignExpr.asStmt(
             new VarAccess(name() + "$value"),
             new VarAccess("value")
-          )
+          ).setLocation(this)
         )
       )
     );

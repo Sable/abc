@@ -26,6 +26,10 @@ aspect GenerateSynCode {
   syn lazy Collection TypeDecl.intertypeDecls() =
     intertypeDecls(this);
 
+  public void Program.flushIntertypeDecls() {
+    intertypeDecls = null;
+  }
+
   private HashMap Program.intertypeDecls = null;
   private HashMap Program.intertypeDecls() {
     if(intertypeDecls == null) {
