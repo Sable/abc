@@ -16,9 +16,20 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.jastadd.generated.AST.*;
+import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
+import org.jastadd.plugin.jastadd.generated.AST.Access;
+import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
+import org.jastadd.plugin.jastadd.generated.AST.CompilationUnit;
+import org.jastadd.plugin.jastadd.generated.AST.Expr;
+import org.jastadd.plugin.jastadd.generated.AST.JavaParser;
+import org.jastadd.plugin.jastadd.generated.AST.List;
+import org.jastadd.plugin.jastadd.generated.AST.MethodAccess;
+import org.jastadd.plugin.jastadd.generated.AST.ParExpr;
+import org.jastadd.plugin.jastadd.generated.AST.Problem;
+import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
@@ -40,7 +51,7 @@ public class Model extends JastAddJModel {
 	//*************** Protected methods
 	
 
-	protected IProgram initProgram(IProject project) {
+	protected IProgram initProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {
 		Program program = new Program();
 		// Init
 		program.initBytecodeReader(new BytecodeParser());
@@ -62,7 +73,7 @@ public class Model extends JastAddJModel {
 		String projectFullPath = project.getFullPath().toOSString();
 		program.addOptions(new String[] { "-classpath", workspacePath + projectFullPath });
 		try {
-			Map<String,IFile> map = sourceMap(project);
+			Map<String,IFile> map = sourceMap(project, buildConfiguration);
 			for(String fileName : map.keySet())
 				program.addSourceFile(fileName);
 		} catch (Throwable e) {
@@ -74,14 +85,23 @@ public class Model extends JastAddJModel {
 	protected void completeBuild(IProject project) {
 		// Build a new project from saved files only.
 		try {
-			Program program = (Program)initProgram(project);
+			JastAddJBuildConfiguration buildConfiguration;
+			try {
+				buildConfiguration = getBuildConfigurationWithException(project);
+			}
+			catch(CoreException e) {
+				addErrorMarker(project, "Build failed because build configuration could not be loaded: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+				return;
+			}
+			
+			Program program = (Program)initProgram(project, buildConfiguration);
 			if (program == null) 
 				return;
 			
-			deleteParseErrorMarkers(project.members());
-			deleteErrorMarkers(project.members());
+			deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+			deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
 			
-			Map<String,IFile> map = sourceMap(project);
+			Map<String,IFile> map = sourceMap(project, buildConfiguration);
 			boolean build = true;
 			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 			    ICompilationUnit unit = (ICompilationUnit)iter.next();
@@ -187,7 +207,11 @@ public class Model extends JastAddJModel {
 	}	
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		IProgram program = getProgram(project);
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+		if (buildConfiguration == null)
+			return;
+		
+		IProgram program = getProgram(project, buildConfiguration);
 		if(program instanceof Program) {
 			((Program)program).flushIntertypeDecls();
 		}
