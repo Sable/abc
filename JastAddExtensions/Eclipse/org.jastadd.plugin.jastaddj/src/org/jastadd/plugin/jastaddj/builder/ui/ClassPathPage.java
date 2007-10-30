@@ -10,26 +10,43 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathEntry;
 
-class ClassPathPage {
-	private JastAddJBuildConfigurationPropertyPage mainPage;
+class ClassPathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
+	private Shell shell;
+	private JastAddJBuildConfiguration buildConfiguration;
+	private boolean hasChanges;
 	
-	ClassPathPage(JastAddJBuildConfigurationPropertyPage mainPage) {
-		this.mainPage = mainPage;
+	ClassPathPage(Shell shell, JastAddJBuildConfiguration buildConfiguration) {
+		this.shell = shell;
+		this.buildConfiguration = buildConfiguration;
+		this.hasChanges = false;
 	}
 	
-	Control getControl(Composite parent) {
+	public String getTitle() {
+		return "&Class Path";
+	}
+	
+	public Control getControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setFont(parent.getFont());
 		composite.setLayout(new GridLayout(1, false));
 
 		Label classTreeLabel = new Label(composite, SWT.LEFT);
 		classTreeLabel.setText("Class pat&h:");
-		new ClassPathEntryListEditField(mainPage.buildConfiguration.classPathList, new String[] {"&Add", "&Edit", "&Remove"}).getControl(composite);
+		new ClassPathEntryListEditField(buildConfiguration.classPathList, new String[] {"&Add", "&Edit", "&Remove"}).getControl(composite);
 
 		return composite;
+	}
+	
+	public boolean hasChanges() {
+		return hasChanges;
+	}
+	
+	public boolean updateBuildConfiguration() {
+		return true;
 	}
 
 	class ClassPathEntryListEditField extends ListEditField<ClassPathEntry> {
@@ -64,25 +81,25 @@ class ClassPathPage {
 				}
 
 				protected void addCommand() {
-					EditClassPathEntryDialog dialog = new EditClassPathEntryDialog(mainPage.getShell(), null,
+					EditClassPathEntryDialog dialog = new EditClassPathEntryDialog(shell, null,
 							true);
 					if (dialog.open() == IDialogConstants.OK_ID) {
 						ClassPathEntry classPathEntry = new ClassPathEntry();
 						dialog.update(classPathEntry);
 						getData().add(classPathEntry);
 						dataViewer.refresh();
-						mainPage.hasChanges = true;
+						hasChanges = true;
 					}
 				}
 
 				protected void editCommand() {
 					JastAddJBuildConfiguration.ClassPathEntry classPathEntry = getSelection();
-					EditClassPathEntryDialog dialog = new EditClassPathEntryDialog(mainPage.getShell(), 
+					EditClassPathEntryDialog dialog = new EditClassPathEntryDialog(shell, 
 							classPathEntry, false);
 					if (dialog.open() == IDialogConstants.OK_ID) {
 						dialog.update(classPathEntry);
 						dataViewer.refresh(classPathEntry);
-						mainPage.hasChanges = true;
+						hasChanges = true;
 					}
 				}
 
@@ -90,7 +107,7 @@ class ClassPathPage {
 					ClassPathEntry classPathEntry = getSelection();
 					getData().remove(classPathEntry);
 					dataViewer.refresh();
-					mainPage.hasChanges = true;
+					hasChanges = true;
 				}
 			};
 		}

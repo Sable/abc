@@ -48,18 +48,8 @@ public class JastAddJBuildConfigurationUtil {
 	private static final String SRC_KIND = "src";
 	private static final String LIB_KIND = "lib";
 
-	public static JastAddJBuildConfiguration defaultBuildConfiguration(
-			IProject project) {
-		JastAddJBuildConfiguration configuration = new JastAddJBuildConfiguration();
-		configuration.outputPath = "bin/";
-		JastAddJBuildConfiguration.SourcePathEntry sourceEntry = new JastAddJBuildConfiguration.SourcePathEntry();
-		sourceEntry.sourcePath = "./";
-		configuration.sourcePathList.add(sourceEntry);
-		return configuration;
-	}
-
-	public static JastAddJBuildConfiguration readBuildConfiguration(
-			IProject project) throws CoreException, IOException, SAXException, ParserConfigurationException {
+	public static void readBuildConfiguration(
+			IProject project, JastAddJBuildConfiguration buildConfiguration) throws CoreException, IOException, SAXException, ParserConfigurationException {
 		IFile rscFile = project.getFile(RESOURCE);
 		if (rscFile.exists()) {
 			InputStream stream = rscFile.getContents(true);
@@ -73,9 +63,8 @@ public class JastAddJBuildConfigurationUtil {
 				} finally {
 					stream.close();
 				}
-			JastAddJBuildConfiguration buildConfiguration = new JastAddJBuildConfiguration();
 
-			NodeList list = cpElement.getElementsByTagName(CLASSPATH_ENTRY_TAG);
+				NodeList list = cpElement.getElementsByTagName(CLASSPATH_ENTRY_TAG);
 			for (int i = 0; i < list.getLength(); ++i) {
 				Node node = list.item(i);
 				NamedNodeMap attributes = node.getAttributes();
@@ -128,9 +117,18 @@ public class JastAddJBuildConfigurationUtil {
 					buildConfiguration.outputPath = path;
 				}
 			}
-			return buildConfiguration;
 		}
-		return null;
+		else {
+			// Defaults
+			populateDefaults(buildConfiguration);
+		}
+	}
+	
+	public static void populateDefaults(JastAddJBuildConfiguration buildConfiguration) {
+		buildConfiguration.outputPath = "bin/";
+		JastAddJBuildConfiguration.SourcePathEntry sourceEntry = new JastAddJBuildConfiguration.SourcePathEntry();
+		sourceEntry.sourcePath = "./";
+		buildConfiguration.sourcePathList.add(sourceEntry);		
 	}
 
 	private static List<Pattern> readPatternList(NamedNodeMap attributes,

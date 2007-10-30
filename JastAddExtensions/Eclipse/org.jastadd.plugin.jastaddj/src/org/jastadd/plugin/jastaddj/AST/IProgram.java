@@ -12,6 +12,8 @@ public interface IProgram extends IJastAddNode {
 	Collection files();
 
 	void flushSourceFiles(String fileName);
+	
+	void addOptions(String[] options);
 
 	void addSourceFile(String name);
 

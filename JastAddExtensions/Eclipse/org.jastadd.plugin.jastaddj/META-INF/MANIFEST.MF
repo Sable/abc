@@ -29,6 +29,7 @@ Eclipse-LazyStart: true
 Export-Package: org.jastadd.plugin.jastaddj,
  org.jastadd.plugin.jastaddj.AST,
  org.jastadd.plugin.jastaddj.builder,
+ org.jastadd.plugin.jastaddj.builder.ui,
  org.jastadd.plugin.jastaddj.completion,
  org.jastadd.plugin.jastaddj.editor,
  org.jastadd.plugin.jastaddj.editor.actions,

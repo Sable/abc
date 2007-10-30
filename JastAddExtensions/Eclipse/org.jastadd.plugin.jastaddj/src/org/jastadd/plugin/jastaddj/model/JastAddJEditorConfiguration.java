@@ -106,24 +106,24 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	}
 
 	@Override
-	public void populateCommands(Collection<Command> commands)
+	public void populateCommands()
 			throws ParseException, IOException {
-		commands.add(installSourceCommand(
+		installSourceCommand(
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
-				"Find Declaration", "JastAddJ Find Declaration", "Ctrl+F3",
-				new FindDeclarationHandler()));
+				"Find Declaration", "JastAddJ Find Declaration", "Ctrl+D",
+				new FindDeclarationHandler());
 
-		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindReferences",
-				"Find References", "JastAddJ Find References", "Ctrl+F4",
-				new FindReferencesHandler()));
+		installSourceCommand("org.jastadd.plugin.jastaddj.find.FindReferences",
+				"Find References", "JastAddJ Find References", "Ctrl+R",
+				new FindReferencesHandler());
 
-		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.find.FindImplements",
-				"Find Implements", "JastAddJ Find Implements", "Ctrl+F5",
-				new FindImplementsHandler()));
+		installSourceCommand("org.jastadd.plugin.jastaddj.find.FindImplements",
+				"Find Implements", "JastAddJ Find Implements", "Ctrl+I",
+				new FindImplementsHandler());
 
-		commands.add(installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				"Insert Crap", "JastAddJ Insert Crap Refactoring", "Ctrl+F9",
-				new InsertCrapRefactoringHandler()));
+				new InsertCrapRefactoringHandler());
 	}
 
 	@Override
@@ -204,10 +204,10 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				new InsertCrapRefactoringHandler());
 	}
 
-	protected Command installSourceCommand(String commandId, String name,
+	protected void installSourceCommand(String commandId, String name,
 			String description, String keySequence, IHandler handler)
 			throws ParseException, IOException {
-		return installCommand(commandId, name, description,
+		installCommand(commandId, name, description,
 				"org.jastadd.plugin.category.Source", keySequence, handler);
 	}
 }

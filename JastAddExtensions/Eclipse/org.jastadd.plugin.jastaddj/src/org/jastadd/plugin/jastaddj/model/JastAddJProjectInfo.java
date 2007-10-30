@@ -25,47 +25,80 @@ public class JastAddJProjectInfo extends JastAddProjectInfo {
 	}
 
 	public void resourceChanged(IResourceChangeEvent event, IResourceDelta delta) {
+		checkReloadBuildConfiguration(event, delta);
+	}
+
+	public synchronized JastAddJBuildConfiguration loadBuildConfiguration()
+			throws CoreException {
+		if (buildConfiguration == null) {
+			if (buildConfigurationCoreException == null)
+				return reloadBuildConfiguration();
+			else
+				throw buildConfigurationCoreException;
+		} else
+			return buildConfiguration;
+	}
+
+	public synchronized JastAddJBuildConfiguration reloadBuildConfiguration()
+			throws CoreException {
+		try {
+			JastAddJBuildConfiguration newBuildConfiguration = getEmptyBuildConfiguration();
+			doLoadBuildConfiguration(newBuildConfiguration);
+			this.buildConfiguration = newBuildConfiguration;
+			this.buildConfigurationCoreException = null;
+			return buildConfiguration;
+		} catch (Exception e) {
+			this.buildConfiguration = null;
+			this.buildConfigurationCoreException = model.makeCoreException(e,
+					"Parsing build configuration failed: " + e.getMessage());
+			throw this.buildConfigurationCoreException;
+		}
+	}
+
+	public JastAddJBuildConfiguration getDefaultBuildConfiguration() {
+		JastAddJBuildConfiguration buildConfiguration = getEmptyBuildConfiguration();
+		JastAddJBuildConfigurationUtil.populateDefaults(buildConfiguration);
+		return buildConfiguration;
+	}
+
+	public void saveBuildConfiguration(
+			JastAddJBuildConfiguration buildConfiguration) throws CoreException {
+		try {
+			doSaveBuildConfiguration(buildConfiguration);
+		} catch (Exception e) {
+			throw model.makeCoreException(e,
+					"Saving build configuration failed: " + e.getMessage());
+		}
+	}
+
+	protected JastAddJBuildConfiguration getEmptyBuildConfiguration() {
+		return new JastAddJBuildConfiguration();
+	}
+
+	protected void doLoadBuildConfiguration(
+			JastAddJBuildConfiguration buildConfiguration) throws Exception {
+		JastAddJBuildConfigurationUtil.readBuildConfiguration(
+				this.getProject(), buildConfiguration);
+	}
+
+	protected void doSaveBuildConfiguration(
+			JastAddJBuildConfiguration buildConfiguration) throws Exception {
+		JastAddJBuildConfigurationUtil.writeBuildConfiguration(getProject(),
+				buildConfiguration);
+	}
+
+	protected void checkReloadBuildConfiguration(IResourceChangeEvent event,
+			IResourceDelta delta) {
 		switch (event.getType()) {
 		case IResourceChangeEvent.POST_CHANGE:
 			IResourceDelta newDelta = delta.findMember(new Path(
 					JastAddJBuildConfigurationUtil.RESOURCE));
 			if (newDelta != null)
-				reloadBuildConfiguration();
+				try {
+					reloadBuildConfiguration();
+				} catch (CoreException e) {
+				}
 			break;
 		}
-	}
-
-	public CoreException getBuildConfigurationException() {
-		return buildConfigurationCoreException;
-	}
-
-	public JastAddJBuildConfiguration loadBuildConfiguration() {
-		if (buildConfiguration == null) {
-			return reloadBuildConfiguration();
-		}
-		return buildConfiguration;
-	}
-
-	public JastAddJBuildConfiguration reloadBuildConfiguration() {
-		buildConfigurationCoreException = null;
-		JastAddJBuildConfiguration newBuildConfiguration = null;
-		try {
-			newBuildConfiguration = JastAddJBuildConfigurationUtil
-					.readBuildConfiguration(this.getProject());
-		} catch (Exception e) {
-			buildConfigurationCoreException = model.makeCoreException(e, "Parsing build configuration '"
-					+ JastAddJBuildConfigurationUtil.RESOURCE + "' failed: " + e.getMessage());
-			model.logCoreException(buildConfigurationCoreException);
-		}
-		updateBuildConfiguration(newBuildConfiguration);
-		return buildConfiguration;
-	}
-
-	private void updateBuildConfiguration(
-			JastAddJBuildConfiguration buildConfiguration) {
-		// TODO:
-		// * Test that class path has changed indeed
-		// * Notify the listeners, if changed
-		this.buildConfiguration = buildConfiguration;
-	}
+	}	
 }

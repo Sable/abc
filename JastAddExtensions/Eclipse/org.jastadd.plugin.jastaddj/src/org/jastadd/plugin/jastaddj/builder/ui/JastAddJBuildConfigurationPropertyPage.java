@@ -1,5 +1,8 @@
 package org.jastadd.plugin.jastaddj.builder.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -8,8 +11,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -26,25 +27,32 @@ import org.jastadd.plugin.jastaddj.model.JastAddJProjectInfo;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
-
-	public static final String PROP_ID = "org.jastadd.plugin.jastaddj.ui.propertyPages.BuildConfigPropertyPage"; //$NON-NLS-1$
-
 	protected IProject project;
 	protected JastAddJModel model;
 	protected JastAddJProjectInfo projectInfo;
 	protected JastAddJBuildConfiguration buildConfiguration;
 
-	protected boolean hasChanges = false;
-
-	protected ModifyListener modifyListener = new ModifyListener() {
-		public void modifyText(ModifyEvent e) {
-			hasChanges = true;
-		}
-	};
+	protected boolean needsSave = false;
 
 	protected Text classPathControl;
 	protected Text outputFolderControl;
-
+		
+	protected List<IPage> pages;
+	
+	public static interface IPage {
+		public String getTitle();
+		public Control getControl(Composite composite);
+		public boolean hasChanges();
+		public boolean updateBuildConfiguration();		
+	}
+		
+	protected List<IPage> buildPages() {
+		List<IPage> list = new ArrayList<IPage>();
+		list.add(new SourcePathPage(getShell(), buildConfiguration));
+		list.add(new ClassPathPage(getShell(), buildConfiguration));
+		return list;
+	}
+	
 	protected Control createContents(Composite parent) {
 		this.noDefaultAndApplyButton();
 
@@ -53,14 +61,13 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
 		projectInfo = (JastAddJProjectInfo) JastAddModelProvider
 				.getProjectInfo(model, project);
-		buildConfiguration = projectInfo.reloadBuildConfiguration();
-		if (buildConfiguration != null)
-			buildConfiguration = buildConfiguration.copy();
-		else
-			buildConfiguration = JastAddJBuildConfigurationUtil
-					.defaultBuildConfiguration(project);
-		if (projectInfo.getBuildConfigurationException() != null)
-			hasChanges = true;
+		try {
+			buildConfiguration = projectInfo.reloadBuildConfiguration().copy();
+		}
+		catch(CoreException e) {
+			buildConfiguration = projectInfo.getDefaultBuildConfiguration();
+			needsSave = true;
+		}
 
 		// Build UI
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -75,26 +82,32 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 		TabFolder folder = new TabFolder(composite, SWT.NONE);
 		folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 		folder.setFont(composite.getFont());
-
-		TabItem sourceItem = new TabItem(folder, SWT.NONE);
-		sourceItem.setText("&Source Path");
-		sourceItem.setControl(new SourcePathPage(this).getControl(folder));
-
-		TabItem classPathItem = new TabItem(folder, SWT.NONE);
-		classPathItem.setText("&Class Path");
-		classPathItem.setControl(new ClassPathPage(this).getControl(folder));
+		
+		pages = buildPages();
+		for(IPage page : pages) {
+			TabItem item = new TabItem(folder, SWT.NONE);
+			item.setText(page.getTitle());
+			item.setControl(page.getControl(folder));
+		}
 
 		return composite;
 	}
 
 	public boolean performOk() {
-		if (hasChanges) {
+		boolean needsSave = this.needsSave;
+		for(IPage page : pages)
+			needsSave = needsSave || page.hasChanges();
+			
+		if (needsSave) {
+			for(IPage page : pages)
+				if (!page.updateBuildConfiguration())
+					return false;
+			
 			try {
 				ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor)
 							throws CoreException, OperationCanceledException {
-						JastAddJBuildConfigurationUtil.writeBuildConfiguration(
-								project, buildConfiguration);
+						projectInfo.saveBuildConfiguration(buildConfiguration);
 					}
 				}, new NullProgressMonitor());
 			} catch (CoreException e) {

@@ -28,14 +28,22 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 
-class SourcePathPage {
-	private JastAddJBuildConfigurationPropertyPage mainPage;
+class SourcePathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
+	private Shell shell;
+	private JastAddJBuildConfiguration buildConfiguration;
+	private boolean hasChanges;
 	
-	SourcePathPage(JastAddJBuildConfigurationPropertyPage mainPage) {
-		this.mainPage = mainPage;
+	SourcePathPage(Shell shell, JastAddJBuildConfiguration buildConfiguration) {
+		this.shell = shell;
+		this.buildConfiguration = buildConfiguration;
+		this.hasChanges = false;
 	}
 	
-	Control getControl(Composite parent) {
+	public String getTitle() {
+		return "&Source Path";
+	}
+	
+	public Control getControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setFont(parent.getFont());
 		composite.setLayout(new GridLayout(1, false));
@@ -59,7 +67,7 @@ class SourcePathPage {
 		final TreeViewer sourceViewer = new TreeViewer(sourceTree);
 		sourceViewer.setContentProvider(new SourceContentProvider());
 		sourceViewer.setLabelProvider(new SourceLabelProvider());
-		sourceViewer.setInput(mainPage.buildConfiguration);
+		sourceViewer.setInput(buildConfiguration);
 
 		Control buttonControl = new AddEditRemoveField(sourceViewer, new String[] {"&Add", "&Edit", "&Remove"}) {
 			protected boolean hasSelection() {
@@ -87,8 +95,8 @@ class SourcePathPage {
 
 		final Text outputFolderControl = new Text(composite, SWT.BORDER);
 		outputFolderControl.setFont(parent.getFont());
-		if (mainPage.buildConfiguration.outputPath != null)
-			outputFolderControl.setText(mainPage.buildConfiguration.outputPath);
+		if (buildConfiguration.outputPath != null)
+			outputFolderControl.setText(buildConfiguration.outputPath);
 		GridData buildConfigurationGridData = new GridData();
 		buildConfigurationGridData.horizontalAlignment = SWT.FILL;
 		outputFolderControl.setLayoutData(buildConfigurationGridData);
@@ -96,16 +104,24 @@ class SourcePathPage {
 			public void modifyText(ModifyEvent e) {
 				String text = outputFolderControl.getText();
 				if (text.length() > 0)
-					mainPage.buildConfiguration.outputPath = text;
+					buildConfiguration.outputPath = text;
 				else
-					mainPage.buildConfiguration.outputPath = null;
-				mainPage.hasChanges = true;
+					buildConfiguration.outputPath = null;
+				hasChanges = true;
 			}
 		});
 
 		return composite;
 	}
-
+	
+	public boolean hasChanges() {
+		return hasChanges;
+	}
+	
+	public boolean updateBuildConfiguration() {
+		return true;
+	}
+	
 	protected class ListWrapper {
 		JastAddJBuildConfiguration.SourcePathEntry sourceEntry;
 
@@ -222,35 +238,35 @@ class SourcePathPage {
 	}
 
 	protected void sourceEntryAddCommand(TreeViewer viewer) {
-		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(mainPage.getShell(), null,
+		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(shell, null,
 				true);
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			SourcePathEntry sourcePathEntry = new SourcePathEntry();
 			dialog.update(sourcePathEntry);
-			mainPage.buildConfiguration.sourcePathList.add(sourcePathEntry);
+			buildConfiguration.sourcePathList.add(sourcePathEntry);
 			viewer.refresh();
-			mainPage.hasChanges = true;
+			hasChanges = true;
 		}	
 	}
 
 	protected void sourceEntryEditCommand(TreeViewer viewer,
 			JastAddJBuildConfiguration.SourcePathEntry sourceEntry) {
 		JastAddJBuildConfiguration.SourcePathEntry sourcePathEntry = getSelectedSourceEntry(viewer);
-		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(mainPage.getShell(), 
+		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(shell, 
 				sourcePathEntry, false);
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			dialog.update(sourcePathEntry);
 			viewer.refresh(sourcePathEntry);
-			mainPage.hasChanges = true;
+			hasChanges = true;
 		}
 	}
 
 	protected void sourceEntryRemoveCommand(TreeViewer viewer,
 			JastAddJBuildConfiguration.SourcePathEntry sourceEntry) {
-		mainPage.buildConfiguration.sourcePathList.remove(sourceEntry);
+		buildConfiguration.sourcePathList.remove(sourceEntry);
 		this.includeWrapperMap.remove(sourceEntry);
 		this.excludeWrapperMap.remove(sourceEntry);
 		viewer.refresh();
-		mainPage.hasChanges = true;
+		hasChanges = true;
 	}
 }

@@ -7,6 +7,7 @@ public class JastAddJEditorContributor extends JastAddEditorContributor {
 
 	public void init(IActionBars bars) {
 		super.init(bars);
+		populateCommands(JastAddJEditor.EDITOR_ID);
 		populateTopMenu(bars.getMenuManager(), JastAddJEditor.EDITOR_ID);
 	}
 }
