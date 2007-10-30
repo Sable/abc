@@ -35,7 +35,7 @@ public class JastAddJProjectInfo extends JastAddProjectInfo {
 		}
 	}
 
-	public Throwable getBuildConfigurationThrowable() {
+	public CoreException getBuildConfigurationException() {
 		return buildConfigurationCoreException;
 	}
 

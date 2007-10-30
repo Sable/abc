@@ -146,6 +146,14 @@ public class JastAddJModel extends JastAddModel {
 		return buildConfiguration;
 	}
 	
+	public JastAddJBuildConfiguration getBuildConfigurationWithException(IProject project) throws CoreException {
+		JastAddJProjectInfo projectInfo = (JastAddJProjectInfo)JastAddModelProvider.getProjectInfo(this, project);
+		JastAddJBuildConfiguration buildConfiguration = projectInfo.loadBuildConfiguration();
+		if (buildConfiguration == null)
+			throw projectInfo.getBuildConfigurationException();
+		return buildConfiguration;
+	}	
+	
 	public void populateClassPath(IProject project, List<String> fullClassPath) {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project); 
 		if (buildConfiguration == null) return;
@@ -200,10 +208,12 @@ public class JastAddJModel extends JastAddModel {
 			deleteErrorMarkers(ERROR_MARKER_TYPE, project);
 			deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
 
-			JastAddJProjectInfo projectInfo = (JastAddJProjectInfo)JastAddModelProvider.getProjectInfo(this, project);
-			JastAddJBuildConfiguration buildConfiguration = projectInfo.loadBuildConfiguration();
-			if (buildConfiguration == null) {
-				addErrorMarker(project, "Build failed because build configuration could not be loaded: " + projectInfo.getBuildConfigurationThrowable().getMessage(), -1, IMarker.SEVERITY_ERROR);
+			JastAddJBuildConfiguration buildConfiguration;
+			try {
+				buildConfiguration = getBuildConfigurationWithException(project);
+			}
+			catch(CoreException e) {
+				addErrorMarker(project, "Build failed because build configuration could not be loaded: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
 				return;
 			}
 			
@@ -451,7 +461,7 @@ public class JastAddJModel extends JastAddModel {
 		return program;	   
 	}
 
-	private Map<String,IFile> sourceMap(IProject project,
+	protected Map<String,IFile> sourceMap(IProject project,
 			final JastAddJBuildConfiguration buildConfiguration)
 			{
 		try {

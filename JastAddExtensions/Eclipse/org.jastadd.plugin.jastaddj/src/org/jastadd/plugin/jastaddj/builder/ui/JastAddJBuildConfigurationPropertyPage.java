@@ -59,7 +59,7 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 		else
 			buildConfiguration = JastAddJBuildConfigurationUtil
 					.defaultBuildConfiguration(project);
-		if (projectInfo.getBuildConfigurationThrowable() != null)
+		if (projectInfo.getBuildConfigurationException() != null)
 			hasChanges = true;
 
 		// Build UI
