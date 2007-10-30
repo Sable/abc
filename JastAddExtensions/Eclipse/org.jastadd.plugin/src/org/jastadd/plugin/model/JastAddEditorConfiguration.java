@@ -128,7 +128,7 @@ public abstract class JastAddEditorConfiguration {
 		public void enhanceAction(IAction action, String text, String definitionId, IActionDelegate actionDelegate);
 	}
 	
-	public void populateCommands(Collection<Command> commands) throws ParseException, IOException {
+	public void populateCommands() throws ParseException, IOException {
 	}
 	
 	public void populateTopMenu(IMenuManager menuManager, ITopMenuActionBuilder actionBuilder) {
@@ -210,9 +210,12 @@ public abstract class JastAddEditorConfiguration {
 		ICommandService commandService = (ICommandService) PlatformUI.getWorkbench()
 				.getAdapter(ICommandService.class);
 		Command command = commandService.getCommand(commandId);
-		if (!command.isDefined())
+		if (!command.isDefined()) {
 			command.define(name, description, category);
-		return command;
+			return command;
+		}
+		else
+			return null;
 	}
 
 	protected IHandlerActivation registerCommandHandler(String commandId,
@@ -222,30 +225,36 @@ public abstract class JastAddEditorConfiguration {
 		return handlerService.activateHandler(commandId, handler);
 	}
 	
-	protected Command installCommand(String commandId, String name,
+	protected void installCommand(String commandId, String name,
 			String description, String categoryId, String keySequence, IHandler handler)
 			throws ParseException, IOException {
-		Command command = registerCommand(commandId,
+		final Command command = registerCommand(commandId,
 				getCategory(categoryId), name,
 				description);
-		if (keySequence != null)
-			setCommandBinding(command, keySequence);
-		registerCommandHandler(commandId, handler);
-		return command;
+		if (command != null) {
+			if (keySequence != null)
+				setCommandBinding(command, keySequence);
+			registerCommandHandler(commandId, handler);
+			model.registerStopHandler(new Runnable() {
+				public void run() {
+					command.undefine();
+				}
+			});
+		}	
 	}
-			
-	protected void setCommandBinding(Command command, String keySequence)
-			throws ParseException, IOException {
-		registerBinding(buildKeyBinding(command, keySequence, getEditorContextID()));
-	}
-	
+				
 	protected String getActiveBindingsScheme() {
 		IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench()
 				.getAdapter(IBindingService.class);
 
 		return bindingService.getActiveScheme().getId();
 	}
-
+	
+	protected void setCommandBinding(Command command, String keySequence)
+			throws ParseException, IOException {
+		registerBinding(buildKeyBinding(command, keySequence, getEditorContextID()));
+	}
+	
 	protected void registerBinding(Binding newBinding) throws IOException {
 		IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench()
 				.getAdapter(IBindingService.class);
@@ -257,6 +266,15 @@ public abstract class JastAddEditorConfiguration {
 
 		bindingService.savePreferences(bindingService.getActiveScheme(),
 				newBindings);
+	}
+	
+	protected boolean bindingShadowed(Binding newBinding) {
+		IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench().getAdapter(IBindingService.class);
+		Binding[] bindings = bindingService.getBindings();
+		for(Binding binding : bindings)
+			if (deletesBinding(binding, newBinding))
+				return true;
+		return false;
 	}
 
 	private boolean deletesBinding(Binding oldBinding, Binding newBinding) {

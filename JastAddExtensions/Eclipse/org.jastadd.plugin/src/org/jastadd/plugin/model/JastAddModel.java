@@ -3,12 +3,14 @@ package org.jastadd.plugin.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.commands.Command;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -265,6 +267,7 @@ public abstract class JastAddModel {
 	public abstract void openFile(IJastAddNode node);
 	
 	public abstract String getEditorID();
+	public abstract String getNatureID();
 	
 	public abstract boolean isModelFor(IProject project);
 	public abstract boolean isModelFor(IFile file);
@@ -273,6 +276,23 @@ public abstract class JastAddModel {
 	
 	public abstract List<String> getFileExtensions();
 	public abstract String[] getFilterExtensions();
+	
+	
+	private boolean commandsPopulated = false;
+	
+	public synchronized void registerCommands() {
+		if (commandsPopulated) return;
+		try {
+			getEditorConfiguration().populateCommands();
+			commandsPopulated = true;
+		}
+		catch(Exception e) {
+			logError(e, "Failed registering commands");
+			return;
+		}
+	}
+	
+	public abstract void registerStopHandler(Runnable stopHandler);
 
 	protected abstract void updateModel(IDocument document, String fileName, IProject project);
 	protected abstract void completeBuild(IProject project);

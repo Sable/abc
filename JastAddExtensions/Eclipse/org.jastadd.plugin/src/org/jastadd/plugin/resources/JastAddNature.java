@@ -8,7 +8,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.jastadd.plugin.builder.JastAddBuilder;
 
 public abstract class JastAddNature implements IProjectNature {
-
+	public static final String NATURE_ID = "org.jastadd.plugin.jastadd.Nature";
+	
 	private IProject project;
 
 	public void configure() throws CoreException {

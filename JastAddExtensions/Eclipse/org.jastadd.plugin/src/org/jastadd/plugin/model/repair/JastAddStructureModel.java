@@ -1291,7 +1291,9 @@ public class JastAddStructureModel {
 							decreaseLevel();
 							moveToNext = false;							
 						} else {
-							moveToNext = false;
+							// Changed to TRUE
+							// @author oleg.myrk@gmail.com
+							moveToNext = true;
 						}
 					} else {
 						if (current instanceof CloseBrace) {

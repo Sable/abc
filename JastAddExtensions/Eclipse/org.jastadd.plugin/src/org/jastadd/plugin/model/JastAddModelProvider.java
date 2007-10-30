@@ -41,7 +41,7 @@ public class JastAddModelProvider {
 	public static synchronized <M extends JastAddModel> M getModel(IProject project, Class<M> modelClass) {
 		List<JastAddModel> models = getModels(project);
 		for(JastAddModel model : models)
-			if (model.getClass() == modelClass)
+			if (modelClass.isAssignableFrom(modelClass))
 				return (M)model;
 		return null;
 	}

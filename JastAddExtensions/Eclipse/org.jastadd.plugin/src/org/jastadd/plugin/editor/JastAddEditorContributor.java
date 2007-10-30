@@ -75,6 +75,14 @@ public class JastAddEditorContributor extends BasicTextEditorActionContributor {
 
 	private Set<MenuAction> menuActions = new HashSet<MenuAction>();
 	
+	protected void populateCommands(String editorId) {
+		List<JastAddModel> models = JastAddModelProvider.getModels();
+		for (final JastAddModel model : models) {
+			if (!model.getEditorID().equals(editorId)) continue;
+			model.registerCommands();
+		}
+	}
+	
 	protected void populateTopMenu(IMenuManager menu, String editorId) {
 		List<JastAddModel> models = JastAddModelProvider.getModels();
 		for (final JastAddModel model : models) {
