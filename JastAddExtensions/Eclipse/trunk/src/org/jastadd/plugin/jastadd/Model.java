@@ -61,6 +61,7 @@ public class Model extends JastAddJModel {
 		editorConfig = new EditorConfiguration(this);
 	}	
 
+	@Override
 	protected IProgram initProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {
 		Program program = new Program();
 		// Init
@@ -88,77 +89,92 @@ public class Model extends JastAddJModel {
 		return program;	   
 	}
 	
+	@Override
+	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
+		Program realProgram = (Program)program;
+
+		// TODO: Program options is a static attribute of Program ...
+
+		// Init
+		Program.initOptions();
+		program.addKeyValueOption("-classpath");
+		program.addKeyValueOption("-d");
+		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
+	}
+	
 	protected void completeBuild(IProject project) {
 		// Build a new project from saved files only.
 		try {
-			deleteErrorMarkers(ERROR_MARKER_TYPE, project);
-			deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
-
-			JastAddJBuildConfiguration buildConfiguration;
 			try {
-				buildConfiguration = getBuildConfiguration(project);
+				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
+
+				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
+
+				Program program = (Program) initProgram(project,
+						buildConfiguration);
+				if (program == null)
+					return;
+
+				Map<String, IFile> map = sourceMap(project, buildConfiguration);
+				boolean build = true;
+				for (Iterator iter = program.compilationUnitIterator(); iter
+						.hasNext();) {
+					ICompilationUnit unit = (ICompilationUnit) iter.next();
+
+					if (unit.fromSource()) {
+						Collection errors = unit.parseErrors();
+						Collection warnings = new LinkedList();
+						if (errors.isEmpty()) { // only run semantic checks if
+							// there are no parse errors
+							unit.errorCheck(errors, warnings);
+						}
+						if (!errors.isEmpty())
+							build = false;
+						errors.addAll(warnings);
+						if (!errors.isEmpty()) {
+							for (Iterator i2 = errors.iterator(); i2.hasNext();) {
+								Problem error = (Problem) i2.next();
+								int line = error.line();
+								int column = error.column();
+								String message = error.message();
+								IFile unitFile = map.get(error.fileName());
+								int severity = IMarker.SEVERITY_INFO;
+								if (error.severity() == Problem.Severity.ERROR)
+									severity = IMarker.SEVERITY_ERROR;
+								else if (error.severity() == Problem.Severity.WARNING)
+									severity = IMarker.SEVERITY_WARNING;
+								if (error.kind() == Problem.Kind.LEXICAL
+										|| error.kind() == Problem.Kind.SYNTACTIC) {
+									addParseErrorMarker(unitFile, message,
+											line, column, severity);
+								} else if (error.kind() == Problem.Kind.SEMANTIC) {
+									addErrorMarker(unitFile, message, line,
+											severity);
+								}
+							}
+						}
+						if (build) {
+							// unit.java2Transformation();
+							// unit.generateClassfile();
+						}
+					}
+				}
+
+				// Use for the bootstrapped version of JastAdd
+
+				if (build) {
+					program.generateIntertypeDecls();
+					program.java2Transformation();
+					program.generateClassfile();
+				}
+			} catch (CoreException e) {
+				addErrorMarker(project, "Build failed because: "
+						+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+				logCoreException(e);
 			}
-			catch(CoreException e) {
-				addErrorMarker(project, "Build failed because build configuration could not be loaded: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
-				return;
-			}
-			
-			Program program = (Program)initProgram(project, buildConfiguration);
-			if (program == null) 
-				return;
-			
-			Map<String,IFile> map = sourceMap(project, buildConfiguration);
-			boolean build = true;
-			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-			    ICompilationUnit unit = (ICompilationUnit)iter.next();
-			    
-			    if(unit.fromSource()) {
-			      Collection errors = unit.parseErrors();
-			      Collection warnings = new LinkedList();
-			      if(errors.isEmpty()) { // only run semantic checks if there are no parse errors
-			        unit.errorCheck(errors, warnings);
-			      }
-			      if(!errors.isEmpty())
-			    	  build = false;
-			      errors.addAll(warnings);
-			      if(!errors.isEmpty()) {
-			    	  for(Iterator i2 = errors.iterator(); i2.hasNext(); ) {
-			    		  Problem error = (Problem)i2.next();
-			    		  int line = error.line();
-			    		  int column = error.column();
-			    		  String message = error.message();
-			    		  IFile unitFile = map.get(error.fileName());
-			    		  int severity = IMarker.SEVERITY_INFO;
-			    		  if(error.severity() == Problem.Severity.ERROR)
-			    			  severity = IMarker.SEVERITY_ERROR;
-			    		  else if(error.severity() == Problem.Severity.WARNING)
-			    			  severity = IMarker.SEVERITY_WARNING;
-			    		  if(error.kind() == Problem.Kind.LEXICAL || error.kind() == Problem.Kind.SYNTACTIC) {
-			    			  addParseErrorMarker(unitFile, message, line, column, severity);
-			    		  }
-			    		  else if(error.kind() == Problem.Kind.SEMANTIC) {
-			        		  addErrorMarker(unitFile, message, line, severity);
-			    		  }
-			    	  }
-			      }
-			      if(build) {
-			    	  //unit.java2Transformation();
-			    	  //unit.generateClassfile();
-			      }
-			    }
-			}
-			
-			   // Use for the bootstrapped version of JastAdd
-			
-			if(build) {
-				program.generateIntertypeDecls();
-				program.java2Transformation();
-				program.generateClassfile();
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
 		} catch (Throwable e) {
-			e.printStackTrace();
+			logError(e, "Build failed!");
 		}
 	}
 	
@@ -211,11 +227,11 @@ public class Model extends JastAddJModel {
 	}	
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project);
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
 		
-		IProgram program = getProgram(project, buildConfiguration);
+		IProgram program = getProgram(project);
 		if(program instanceof Program) {
 			((Program)program).flushIntertypeDecls();
 		}
