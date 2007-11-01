@@ -9,6 +9,7 @@ import java.util.Set;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
@@ -16,7 +17,16 @@ import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
-public class JastAddEditorContributor extends BasicTextEditorActionContributor {
+public abstract class JastAddEditorContributor extends BasicTextEditorActionContributor {
+	
+	public void init(IActionBars bars) {
+		super.init(bars);
+		String editorID = getEditorID();
+		populateCommands(editorID);
+		populateTopMenu(bars.getMenuManager(), editorID);
+	}	
+	
+	protected abstract String getEditorID();
 	
 	private static class MenuActionConf {
 		public String text;
@@ -75,7 +85,7 @@ public class JastAddEditorContributor extends BasicTextEditorActionContributor {
 
 	private Set<MenuAction> menuActions = new HashSet<MenuAction>();
 	
-	protected void populateCommands(String editorId) {
+	private void populateCommands(String editorId) {
 		List<JastAddModel> models = JastAddModelProvider.getModels();
 		for (final JastAddModel model : models) {
 			if (!model.getEditorID().equals(editorId)) continue;
@@ -83,7 +93,7 @@ public class JastAddEditorContributor extends BasicTextEditorActionContributor {
 		}
 	}
 	
-	protected void populateTopMenu(IMenuManager menu, String editorId) {
+	private void populateTopMenu(IMenuManager menu, String editorId) {
 		List<JastAddModel> models = JastAddModelProvider.getModels();
 		for (final JastAddModel model : models) {
 			if (!model.getEditorID().equals(editorId)) continue;

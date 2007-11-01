@@ -16,6 +16,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.BadLocationException;
@@ -32,8 +34,6 @@ public abstract class JastAddModel {
 	protected JastAddEditorConfiguration editorConfig;
 	protected final String ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ErrorMarker";
 	protected final String PARSE_ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ParseErrorMarker";
-	
-	
 	
 	public JastAddModel() {
 		initModel();
@@ -63,7 +63,7 @@ public abstract class JastAddModel {
 	public void removeListener(JastAddModelListener listener) {
 		modelListeners.remove(listener);
 	}
-
+	
 	public void updateProjectModel(IDocument document) {
 		IFile file = documentToFile(document);
 		if(file == null) return;
@@ -258,11 +258,12 @@ public abstract class JastAddModel {
 	}
 	
 		
-	private void notifyModelListeners() {
+	protected void notifyModelListeners() {
 		for(JastAddModelListener listener : modelListeners)
 			listener.modelChangedEvent();
 	}
 	
+	public void resourceChanged(IProject project, IResourceChangeEvent event, IResourceDelta delta) {}
 	
 	public abstract void openFile(IJastAddNode node);
 	
@@ -297,11 +298,6 @@ public abstract class JastAddModel {
 	protected abstract void updateModel(IDocument document, String fileName, IProject project);
 	protected abstract void completeBuild(IProject project);
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
-
-	public JastAddProjectInfo buildProjectInfo(IProject project) {
-		return new JastAddProjectInfo(this, project);
-	}
-	
 
 	public abstract void logStatus(IStatus status);
 	

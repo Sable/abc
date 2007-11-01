@@ -2,7 +2,7 @@ package org.jastadd.plugin;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jastadd.plugin.model.JastAddProjectInfoRefresher;
+import org.jastadd.plugin.model.JastAddModelRefresher;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -13,6 +13,6 @@ public class JastAddActivator extends AbstractUIPlugin {
 	
 	public void start(BundleContext context) throws Exception {
 		super.start(context);	
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(new JastAddProjectInfoRefresher());
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(new JastAddModelRefresher());
 	}
 }

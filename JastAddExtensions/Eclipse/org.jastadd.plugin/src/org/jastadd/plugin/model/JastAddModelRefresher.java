@@ -10,7 +10,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 
-public class JastAddProjectInfoRefresher implements IResourceChangeListener {
+public class JastAddModelRefresher implements IResourceChangeListener {
 	public void resourceChanged(IResourceChangeEvent event) {
 		if (event.getDelta() == null) {
 			if (event.getSource() instanceof IProject) {
@@ -41,10 +41,8 @@ public class JastAddProjectInfoRefresher implements IResourceChangeListener {
 		List<JastAddModel> models = JastAddModelProvider
 				.getModels(project);
 		for (JastAddModel model : models) {
-			JastAddProjectInfo projectInfo = (JastAddProjectInfo) JastAddModelProvider
-					.getProjectInfo(model, project);
-			if (projectInfo != null)
-				projectInfo.resourceChanged(event, event.getDelta() != null ? event.getDelta().findMember(new Path(project.getName())) : null);
+			if (model.isModelFor(project))
+				model.resourceChanged(project, event, event.getDelta() != null ? event.getDelta().findMember(new Path(project.getName())) : null);
 		}
 	}
 }

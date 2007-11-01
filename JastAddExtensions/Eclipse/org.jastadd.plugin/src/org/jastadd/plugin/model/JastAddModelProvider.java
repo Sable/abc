@@ -21,7 +21,6 @@ public class JastAddModelProvider {
 	
 	private static LinkedList<JastAddModel> modelList = new LinkedList<JastAddModel>();
 	private static Map<IFile,JastAddModel> fileModelMap = new HashMap<IFile,JastAddModel>();
-	private static Map<JastAddModel, Map<IProject, JastAddProjectInfo>> projectInfoMap = new HashMap<JastAddModel, Map<IProject, JastAddProjectInfo>>();
 	
 	public static synchronized List<JastAddModel> getModels() {
 		return Collections.unmodifiableList(getModelList());
@@ -115,30 +114,5 @@ public class JastAddModelProvider {
 			
 		}
 		return modelList;
-	}
-	
-	public static synchronized JastAddProjectInfo getProjectInfo(JastAddModel model, IProject project) {
-		Map<IProject, JastAddProjectInfo> map = getProjectInfoSubMap(model);
-		JastAddProjectInfo projectInfo = map.get(project);
-		if (projectInfo == null) {
-			projectInfo = model.buildProjectInfo(project);
-			map.put(project, projectInfo);
-		}
-		return projectInfo;
-	}
-	
-	public static synchronized JastAddProjectInfo removeProjectInfo(JastAddModel model, IProject project) {
-		Map<IProject, JastAddProjectInfo> map = projectInfoMap.get(model);
-		return map.remove(project);
-	}
-
-	private static Map<IProject, JastAddProjectInfo> getProjectInfoSubMap(
-			JastAddModel model) {
-		Map<IProject, JastAddProjectInfo> map = projectInfoMap.get(model);
-		if (map == null) {
-			map = new HashMap<IProject, JastAddProjectInfo>();
-			projectInfoMap.put(model, map);
-		}
-		return map;
 	}
 }
