@@ -7,6 +7,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -19,11 +21,27 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
+	private IProject project;
+	private JastAddJModel model;
+	private JastAddJBuildConfiguration buildConfiguration;
+	
+	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		String projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
+		if ((projectName == null) || (projectName.trim().length() < 1)) return;
+		
+		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		model = JastAddModelProvider.getModel(project, JastAddJModel.class);	
+		
+		buildConfiguration = model.readBuildConfiguration(project);
 
+		super.launch(configuration, mode, launch, monitor);
+	}
+	
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
 		if (!saveBeforeLaunch(configuration, mode, monitor)) {
 			return false;
@@ -74,23 +92,12 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 		return bootpathInfo;
 	}
 	
-	public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException {
-		String projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
-		if ((projectName == null) || (projectName.trim().length() < 1)) {
-			return null;
-		}
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		
+	public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException {	
 		String path = project.getLocation().toOSString();
 		String[] defaultClassPath = new String[] { path };
 		
-		JastAddJModel model = JastAddModelProvider.getModel(project, JastAddJModel.class);
-		if (model == null)
-			return null;
 		List<String> classPath = new ArrayList<String>();
-		model.populateClassPath(project, classPath);
-		if (classPath == null)
-			return defaultClassPath;
+		model.populateClassPath(project, buildConfiguration, classPath);
 		return classPath.toArray(new String[0]);
 	}
 
@@ -98,7 +105,7 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 			ILaunchConfiguration configuration) throws CoreException {
 		//  set default source locator if none specified
 		if (launch.getSourceLocator() == null) {
-			ISourceLookupDirector sourceLocator = new JastAddJSourceLookupDirector();
+			ISourceLookupDirector sourceLocator = new JastAddJSourceLookupDirector(project, model, buildConfiguration);
 			sourceLocator
 					.setSourcePathComputer(getLaunchManager()
 							.getSourcePathComputer(

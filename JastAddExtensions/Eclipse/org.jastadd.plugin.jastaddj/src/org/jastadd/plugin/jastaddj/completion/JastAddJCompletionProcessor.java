@@ -24,8 +24,6 @@ import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
-import beaver.Parser.Exception;
-
 public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
@@ -50,10 +48,6 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (Throwable t) {
 			t.printStackTrace();

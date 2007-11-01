@@ -13,6 +13,8 @@ public interface IProgram extends IJastAddNode {
 
 	void flushSourceFiles(String fileName);
 	
+	public void addKeyValueOption(String name);	
+	
 	void addOptions(String[] options);
 
 	void addSourceFile(String name);

@@ -17,6 +17,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -50,14 +52,13 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfigurationUtil;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathEntry;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.model.JastAddProjectInfo;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
 import AST.ASTNode;
@@ -69,14 +70,16 @@ import AST.MethodAccess;
 import AST.ParExpr;
 import AST.Problem;
 import AST.Program;
-import beaver.Parser.Exception;
 
 public class JastAddJModel extends JastAddModel {
 
-	protected HashMap<IProject,IProgram> projectToNodeMap = new HashMap<IProject,IProgram>();
-	protected HashMap<IProject,JastAddJBuildConfiguration> projectToBuildConfigurationMap = new HashMap<IProject,JastAddJBuildConfiguration>();
+	static class ProgramInfo {
+		IProgram program;
+		JastAddJBuildConfiguration buildConfiguration;
+	}
+	
+	protected HashMap<IProject,ProgramInfo> projectToNodeMap = new HashMap<IProject,ProgramInfo>();
 	protected HashMap<IProgram,IProject> nodeToProjectMap = new HashMap<IProgram,IProject>();
-
 	
 	// ************* Overridden methods
 	
@@ -139,25 +142,7 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 	
-	public JastAddJBuildConfiguration getBuildConfigurationNoException(IProject project) {
-		JastAddJProjectInfo projectInfo = (JastAddJProjectInfo)JastAddModelProvider.getProjectInfo(this, project);
-		try {
-			return projectInfo.loadBuildConfiguration();
-		}
-		catch(CoreException e) {
-			return null;
-		}
-	}
-	
-	public JastAddJBuildConfiguration getBuildConfiguration(IProject project) throws CoreException {
-		JastAddJProjectInfo projectInfo = (JastAddJProjectInfo)JastAddModelProvider.getProjectInfo(this, project);
-		return projectInfo.loadBuildConfiguration();
-	}	
-	
-	public void populateClassPath(IProject project, List<String> fullClassPath) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project); 
-		if (buildConfiguration == null) return;
-		
+	public void populateClassPath(IProject project, JastAddJBuildConfiguration buildConfiguration, List<String> fullClassPath) {
 		fullClassPath.addAll(buildClassPath(project, buildConfiguration));
 
 		String projectPath = project.getLocation().toOSString();
@@ -167,15 +152,12 @@ public class JastAddJModel extends JastAddModel {
 			fullClassPath.add(projectPath);
 	}
 	
-	public void popupateSourceContainers(IProject project, List<ISourceContainer> result) {
+	public void popupateSourceContainers(IProject project, JastAddJBuildConfiguration buildConfiguration, List<ISourceContainer> result) {
 		result.add(new FolderSourceContainer(project, true));	
-		popupateSourceAttachments(project, result);
+		popupateSourceAttachments(project, buildConfiguration, result);
 	}
 	
-	public void popupateSourceAttachments(IProject project, List<ISourceContainer> result) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project);
-		if (buildConfiguration == null) return;
-		
+	public void popupateSourceAttachments(IProject project, JastAddJBuildConfiguration buildConfiguration, List<ISourceContainer> result) {
 		for(ClassPathEntry entry : buildConfiguration.classPathList) {
 			if (entry.sourceAttachmentPath == null) continue;
 			
@@ -201,83 +183,99 @@ public class JastAddJModel extends JastAddModel {
 			}
 		}
 	}
+	
+	public synchronized void updateBuildConfiguration(IProject project) {
+		if (!hasProgramInfo(project)) return;
+		
+		ProgramInfo programInfo = getProgramInfo(project);
+		try {
+			JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
+			reinitProgram(project, programInfo.program, buildConfiguration);
+			notifyModelListeners();
+		}
+		catch(CoreException e) {
+			logCoreException(e);
+		}
+	}
 
 	protected void completeBuild(IProject project) {
 		// Build a new project from saved files only.
 		try {
-			deleteErrorMarkers(ERROR_MARKER_TYPE, project);
-			deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
-
-			JastAddJBuildConfiguration buildConfiguration;
 			try {
-				buildConfiguration = getBuildConfiguration(project);
+				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
+
+				JastAddJBuildConfiguration buildConfiguration;
+				try {
+					buildConfiguration = readBuildConfiguration(project);
+				} catch (CoreException e) {
+					addErrorMarker(project,
+							"Build failed because build configuration could not be loaded: "
+									+ e.getMessage(), -1,
+							IMarker.SEVERITY_ERROR);
+					return;
+				}
+
+				IProgram program = initProgram(project, buildConfiguration);
+
+				Map<String, IFile> map = sourceMap(project, buildConfiguration);
+				boolean build = true;
+				for (Iterator iter = program.compilationUnitIterator(); iter
+						.hasNext();) {
+					ICompilationUnit unit = (ICompilationUnit) iter.next();
+
+					if (unit.fromSource()) {
+						Collection errors = unit.parseErrors();
+						Collection warnings = new LinkedList();
+						if (errors.isEmpty()) { // only run semantic checks if
+							// there are no parse errors
+							unit.errorCheck(errors, warnings);
+						}
+						if (!errors.isEmpty())
+							build = false;
+						errors.addAll(warnings);
+						if (!errors.isEmpty()) {
+							for (Iterator i2 = errors.iterator(); i2.hasNext();) {
+								Problem error = (Problem) i2.next();
+								int line = error.line();
+								int column = error.column();
+								String message = error.message();
+								IFile unitFile = map.get(error.fileName());
+								int severity = IMarker.SEVERITY_INFO;
+								if (error.severity() == Problem.Severity.ERROR)
+									severity = IMarker.SEVERITY_ERROR;
+								else if (error.severity() == Problem.Severity.WARNING)
+									severity = IMarker.SEVERITY_WARNING;
+								if (error.kind() == Problem.Kind.LEXICAL
+										|| error.kind() == Problem.Kind.SYNTACTIC) {
+									addParseErrorMarker(unitFile, message,
+											line, column, severity);
+								} else if (error.kind() == Problem.Kind.SEMANTIC) {
+									addErrorMarker(unitFile, message, line,
+											severity);
+								}
+							}
+						}
+						if (build) {
+							unit.java2Transformation();
+							unit.generateClassfile();
+						}
+					}
+				}
+
+				// Use for the bootstrapped version of JastAdd
+				/*
+				 * if(build) { program.generateIntertypeDecls();
+				 * program.java2Transformation(); program.generateClassfile(); }
+				 */
+
+			} catch (CoreException e) {
+				addErrorMarker(project, "Build failed because: "
+						+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+				logCoreException(e);
 			}
-			catch(CoreException e) {
-				addErrorMarker(project, "Build failed because build configuration could not be loaded: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
-				return;
-			}
-			
-			IProgram program = initProgram(project, buildConfiguration);
-			
-			Map<String,IFile> map = sourceMap(project, buildConfiguration);
-			boolean build = true;
-			for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-			    ICompilationUnit unit = (ICompilationUnit)iter.next();
-			    
-			    if(unit.fromSource()) {
-			      Collection errors = unit.parseErrors();
-			      Collection warnings = new LinkedList();
-			      if(errors.isEmpty()) { // only run semantic checks if there are no parse errors
-			        unit.errorCheck(errors, warnings);
-			      }
-			      if(!errors.isEmpty())
-			    	  build = false;
-			      errors.addAll(warnings);
-			      if(!errors.isEmpty()) {
-			    	  for(Iterator i2 = errors.iterator(); i2.hasNext(); ) {
-			    		  Problem error = (Problem)i2.next();
-			    		  int line = error.line();
-			    		  int column = error.column();
-			    		  String message = error.message();
-			    		  IFile unitFile = map.get(error.fileName());
-			    		  int severity = IMarker.SEVERITY_INFO;
-			    		  if(error.severity() == Problem.Severity.ERROR)
-			    			  severity = IMarker.SEVERITY_ERROR;
-			    		  else if(error.severity() == Problem.Severity.WARNING)
-			    			  severity = IMarker.SEVERITY_WARNING;
-			    		  if(error.kind() == Problem.Kind.LEXICAL || error.kind() == Problem.Kind.SYNTACTIC) {
-			    			  addParseErrorMarker(unitFile, message, line, column, severity);
-			    		  }
-			    		  else if(error.kind() == Problem.Kind.SEMANTIC) {
-			        		  addErrorMarker(unitFile, message, line, severity);
-			    		  }
-			    	  }
-			      }
-			      if(build) {
-			    	  unit.java2Transformation();
-			    	  unit.generateClassfile();
-			      }
-			    }
-			}
-			
-			   // Use for the bootstrapped version of JastAdd
-			/*
-			if(build) {
-				program.generateIntertypeDecls();
-				program.java2Transformation();
-				program.generateClassfile();
-			}
-			*/
-			
-		} 
-		catch (CoreException e) {
-			reportBuildError(project, e);
-		} 
-		catch (Error e) {
-			reportBuildError(project, e);
-		}
-		catch (Throwable e) {
-			reportBuildError(project, e);
+		} catch (Throwable e) {
+			logError(e, "Build failed!");
 		}
 	}
 
@@ -293,10 +291,10 @@ public class JastAddJModel extends JastAddModel {
 	}
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project);
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
-		IProgram program = getProgram(project, buildConfiguration);
+		IProgram program = getProgram(project);
 		if (program == null)
 			return;
 		program.files().clear();
@@ -320,10 +318,10 @@ public class JastAddJModel extends JastAddModel {
 	protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project);
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return null;		
-		IProgram program = getProgram(project, buildConfiguration);
+		IProgram program = getProgram(project);
 		if (program == null) 
 			return null;
 		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
@@ -348,39 +346,102 @@ public class JastAddJModel extends JastAddModel {
 		return new Status(IStatus.ERROR, JastAddJActivator.JASTADDJ_PLUGIN_ID, IStatus.ERROR, message, e);
 	}
 	
+	public void resourceChanged(IProject project, IResourceChangeEvent event, IResourceDelta delta) {
+		checkReloadBuildConfiguration(project,event, delta);
+	}
+
+	protected void checkReloadBuildConfiguration(IProject project, IResourceChangeEvent event,
+			IResourceDelta delta) {
+		switch (event.getType()) {
+		case IResourceChangeEvent.POST_CHANGE:
+			IResourceDelta newDelta = delta.findMember(new Path(
+					JastAddJBuildConfigurationUtil.RESOURCE));
+			if (newDelta != null)
+				updateBuildConfiguration(project);
+			break;
+		}
+	}		
+	
 	// ***************** Additional public methods
 
 	public IOutlineNode[] getMainTypes(IProject project) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfigurationNoException(project);
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return null;		
-		IProgram program  = getProgram(project, buildConfiguration);
+		IProgram program  = getProgram(project);
 		if (program != null) {
 			return 	program.mainTypes();
 		}
 		return new IOutlineNode[0];
 	}
 
+	public JastAddJBuildConfiguration getBuildConfiguration(IProject project) {
+		ProgramInfo programInfo = getProgramInfo(project);
+		if (programInfo != null)
+			return programInfo.buildConfiguration;
+		return null;
+	}
 	
-	//*************** Protected methods
+	public IProgram getProgram(IProject project) {
+		ProgramInfo programInfo = getProgramInfo(project);
+		if (programInfo != null)
+			return programInfo.program;
+		return null;
+	}
+	
+	public JastAddJBuildConfiguration readBuildConfiguration(IProject project) throws CoreException {
+		try {
+			JastAddJBuildConfiguration buildConfiguration = getEmptyBuildConfiguration();
+			doReadBuildConfiguration(project, buildConfiguration);
+			return buildConfiguration;
+		} catch (Exception e) {
+			throw makeCoreException(e,
+					"Loading build configuration failed: " + e.getMessage());
+		}
+	}
+
+	public void writeBuildConfiguration(IProject project,
+			JastAddJBuildConfiguration buildConfiguration) throws CoreException {
+		try {
+			doWriteBuildConfiguration(project, buildConfiguration);
+		} catch (Exception e) {
+			throw makeCoreException(e, "Saving build configuration failed: " + e.getMessage());
+		}
+	}
+
+	public JastAddJBuildConfiguration getDefaultBuildConfiguration() {
+		JastAddJBuildConfiguration buildConfiguration = getEmptyBuildConfiguration();
+		JastAddJBuildConfigurationUtil.populateDefaults(buildConfiguration);
+		return buildConfiguration;
+	}
 	
 	public void registerStopHandler(Runnable stopHandler) {
 		JastAddJActivator.INSTANCE.addStopHandler(stopHandler);
 	}
 	
-
-	protected IProgram getProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {	
-		if (projectToNodeMap.containsKey(project) && projectToBuildConfigurationMap.get(project) == buildConfiguration) {
+	//*************** Protected methods
+	
+	protected boolean hasProgramInfo(IProject project) {
+		return projectToNodeMap.containsKey(project);
+	}
+	
+	protected ProgramInfo getProgramInfo(IProject project) {
+		if (projectToNodeMap.containsKey(project)) {
 			return projectToNodeMap.get(project);
 		} else {
 			if (isModelFor(project)) {
 				try {
-					IProgram program = initProgram(project, buildConfiguration);
-					projectToNodeMap.put(project, program);
-					projectToBuildConfigurationMap.put(project, buildConfiguration);
-					nodeToProjectMap.put(program, project);
-					return program;
+					ProgramInfo programInfo = new ProgramInfo();
+					programInfo.buildConfiguration = readBuildConfiguration(project); 
+					programInfo.program = initProgram(project, programInfo.buildConfiguration);
+					projectToNodeMap.put(project, programInfo);
+					nodeToProjectMap.put(programInfo.program, project);
+					return programInfo;
 				}
+				catch(CoreException e) {
+					logError(e, "Initializing program failed!");
+					return null;
+				}				
 				catch(Error e) {
 					logError(e, "Initializing program failed!");
 					return null;
@@ -425,6 +486,18 @@ public class JastAddJModel extends JastAddModel {
 		return program;	   
 	}
 
+	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
+		Program realProgram = (Program)program;
+
+		// TODO: Program options is a static attribute of Program ...
+
+		// Init
+		Program.initOptions();
+		program.addKeyValueOption("-classpath");
+		program.addKeyValueOption("-d");
+		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
+	}
+	
 	protected void addBuildConfigurationOptions(IProject project, IProgram program,
 			JastAddJBuildConfiguration buildConfiguration) {
 		String projectPath = project.getLocation().toOSString();
@@ -698,9 +771,21 @@ public class JastAddJModel extends JastAddModel {
 		}
 		return new ArrayList();
 	}	
-	
-	public JastAddProjectInfo buildProjectInfo(IProject project) {
-		return new JastAddJProjectInfo(this, project);
+
+	protected JastAddJBuildConfiguration getEmptyBuildConfiguration() {
+		return new JastAddJBuildConfiguration();
+	}
+
+	protected void doReadBuildConfiguration(IProject project,
+			JastAddJBuildConfiguration buildConfiguration) throws Exception {
+		JastAddJBuildConfigurationUtil.readBuildConfiguration(
+				project, buildConfiguration);
+	}
+
+	protected void doWriteBuildConfiguration(IProject project,
+			JastAddJBuildConfiguration buildConfiguration) throws Exception {
+		JastAddJBuildConfigurationUtil.writeBuildConfiguration(project,
+				buildConfiguration);
 	}
 }
  

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
@@ -23,6 +24,8 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
+import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 
 public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector implements ISourcePresentation {
 	
@@ -35,12 +38,24 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 		// can't reference UI constant
 		fFilteredTypes.add("org.eclipse.debug.ui.containerType.workingSet"); //$NON-NLS-1$
 	}
+
+	
+	private IProject project;
+	private JastAddJModel model;
+	private JastAddJBuildConfiguration buildConfiguration;
+	
+	public JastAddJSourceLookupDirector(IProject project, JastAddJModel model, JastAddJBuildConfiguration buildConfiguration) {
+		super();
+		this.project = project;
+		this.model = model;
+		this.buildConfiguration = buildConfiguration;
+	}	
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector#initializeParticipants()
 	 */
 	public void initializeParticipants() {
-		addParticipants(new ISourceLookupParticipant[] {new JastAddJSourceLookupParticipant()});
+		addParticipants(new ISourceLookupParticipant[] {new JastAddJSourceLookupParticipant(project, model, buildConfiguration)});
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupDirector#supportsSourceContainerType(org.eclipse.debug.internal.core.sourcelookup.ISourceContainerType)

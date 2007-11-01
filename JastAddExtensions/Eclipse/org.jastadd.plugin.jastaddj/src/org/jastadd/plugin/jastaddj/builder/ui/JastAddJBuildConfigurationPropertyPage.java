@@ -21,15 +21,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
-import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfigurationUtil;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.jastaddj.model.JastAddJProjectInfo;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 	protected IProject project;
 	protected JastAddJModel model;
-	protected JastAddJProjectInfo projectInfo;
 	protected JastAddJBuildConfiguration buildConfiguration;
 
 	protected boolean needsSave = false;
@@ -59,13 +56,11 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 		// Collect data
 		project = (IProject) getElement().getAdapter(IProject.class);
 		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
-		projectInfo = (JastAddJProjectInfo) JastAddModelProvider
-				.getProjectInfo(model, project);
 		try {
-			buildConfiguration = projectInfo.reloadBuildConfiguration().copy();
+			buildConfiguration = model.readBuildConfiguration(project).copy();
 		}
 		catch(CoreException e) {
-			buildConfiguration = projectInfo.getDefaultBuildConfiguration();
+			buildConfiguration = model.getDefaultBuildConfiguration();
 			needsSave = true;
 		}
 
@@ -107,7 +102,7 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 				ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor)
 							throws CoreException, OperationCanceledException {
-						projectInfo.saveBuildConfiguration(buildConfiguration);
+						model.writeBuildConfiguration(project, buildConfiguration);
 					}
 				}, new NullProgressMonitor());
 			} catch (CoreException e) {

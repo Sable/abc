@@ -64,7 +64,7 @@
     </fileset>
   </copy>
   <copy todir="bytecode" preservelastmodified="true">
-    <fileset dir="../../Java1.4Frontend/bytecode">
+    <fileset dir="../../BytecodeBackend/bytecode">
       <include name="**/*.java"/>
     </fileset>
   </copy>

@@ -19,6 +19,7 @@ import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
@@ -31,9 +32,15 @@ import org.jastadd.plugin.model.JastAddModelProvider;
  * @since 3.0
  */
 public class JastAddJSourceLookupParticipant extends AbstractSourceLookupParticipant {
+	private IProject project;
+	private JastAddJModel model;
+	private JastAddJBuildConfiguration buildConfiguration;
 	
-	public JastAddJSourceLookupParticipant() {
+	public JastAddJSourceLookupParticipant(IProject project, JastAddJModel model, JastAddJBuildConfiguration buildConfiguration) {
 		super();
+		this.project = project;
+		this.model = model;
+		this.buildConfiguration = buildConfiguration;
 	}
 	
 	/**
@@ -133,20 +140,10 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 		List<ISourceContainer> result = new ArrayList<ISourceContainer>();		
 		ISourceLookupDirector director = getDirector();		
 		if (director != null) {
-			try {
-				String projectName = director.getLaunchConfiguration().getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
-				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);				
-				result.add(new FolderSourceContainer(project, true));
-				
-				JastAddJModel model = JastAddModelProvider.getModel(project, JastAddJModel.class);
-				if (model != null)	
-					model.popupateSourceContainers(project, result);
-				
-				IPath vmSources = Path.fromOSString(JavaRuntime.getDefaultVMInstall().getInstallLocation().getAbsolutePath()).append("/src.zip");
-				result.add(new ExternalArchiveSourceContainer(vmSources.toOSString(), false));
-				
-			} catch (CoreException e) {
-			}
+			model.popupateSourceContainers(project, buildConfiguration, result);
+		
+			IPath vmSources = Path.fromOSString(JavaRuntime.getDefaultVMInstall().getInstallLocation().getAbsolutePath()).append("/src.zip");
+			result.add(new ExternalArchiveSourceContainer(vmSources.toOSString(), false));
 		}
 		return result.toArray(new ISourceContainer[0]);
 	}
