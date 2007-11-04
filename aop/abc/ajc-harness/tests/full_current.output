@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@8ad9f9
+creating: A@ce4013
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -604,7 +604,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@c12be6
+InterfaceAndObject$1@312409
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2283,7 +2283,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1244e2, [Ljava.lang.Object;@1688dfd, TwoAnonymous$3@1244e2
+calling run: TwoAnonymous$3@1688dfd, [Ljava.lang.Object;@141f248, TwoAnonymous$3@1688dfd
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2400,32 +2400,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1ac58f6.foo calls Outer$Inner@495e7.mi
+Outer@8853a3.foo calls Outer$Inner@2b21ca.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@495e7.mi calls java.io.PrintStream@10d77e1.println
+Outer$Inner@2b21ca.mi calls java.io.PrintStream@1b7936f.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1ac58f6.foo calls Outer$InnerRandom@152d2b8.nextHook
+Outer@8853a3.foo calls Outer$InnerRandom@f90435.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@152d2b8.nextHook calls Outer$InnerRandom@152d2b8.next
+Outer$InnerRandom@f90435.nextHook calls Outer$InnerRandom@f90435.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1ac58f6.foo calls X.nextInt
+Outer@8853a3.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@c7c541.foo calls Outer$Inner@1676946.mi
+Outer@b57d4.foo calls Outer$Inner@b34d7b.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1676946.mi calls java.io.PrintStream@307fb1.println
+Outer$Inner@b34d7b.mi calls java.io.PrintStream@1a3d5fc.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@c7c541.foo calls Outer$InnerRandom@19f4771.nextHook
+Outer@b57d4.foo calls Outer$InnerRandom@2ad92d.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@19f4771.nextHook calls Outer$InnerRandom@19f4771.next
+Outer$InnerRandom@2ad92d.nextHook calls Outer$InnerRandom@2ad92d.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@c7c541.foo calls X.nextInt
+Outer@b57d4.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2712,7 +2712,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$22$around$1600(AroundAll.java:199)
+	at A.inline$24$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4030,7 +4030,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@d23cc.x:=-3
+test.Test3@137658c.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4642,7 +4642,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@9d3847
+LibraryAspect-defined run() for C@152aa3
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5531,23 +5531,23 @@ PASS: Test 1021: "abctests/tracematches/Tracematches: Alternation" passed.
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
+f(java.lang.Object@1dc130c)
 f(java.lang.Object@8b1149)
-f(java.lang.Object@12ba94f)
-g(java.lang.Object@12ba94f)
-fg+(java.lang.Object@12ba94f)
 g(java.lang.Object@8b1149)
 fg+(java.lang.Object@8b1149)
-f(java.lang.Object@8b1149)
-g(java.lang.Object@12ba94f)
-fg+(java.lang.Object@12ba94f)
-f(java.lang.Object@8b1149)
-f(java.lang.Object@12ba94f)
+g(java.lang.Object@1dc130c)
+fg+(java.lang.Object@1dc130c)
+f(java.lang.Object@1dc130c)
 g(java.lang.Object@8b1149)
 fg+(java.lang.Object@8b1149)
+f(java.lang.Object@1dc130c)
+f(java.lang.Object@8b1149)
+g(java.lang.Object@1dc130c)
+fg+(java.lang.Object@1dc130c)
+g(java.lang.Object@1dc130c)
+fg+(java.lang.Object@1dc130c)
 g(java.lang.Object@8b1149)
 fg+(java.lang.Object@8b1149)
-g(java.lang.Object@12ba94f)
-fg+(java.lang.Object@12ba94f)
 PASS: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" passed.
 
 
@@ -5770,66 +5770,66 @@ PASS: Test 1109: "om/matchtest/Basic matching test" passed.
 Running test 1110: om/extcalltest/External call only test
 Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
-In FibExtAspect: Before fib(5)
 In FibAspect: Before fib(5)
-In FibExtAspect: Before getPrevX
+In FibExtAspect: Before fib(5)
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(5)
 In FibAspect: Before fib(4)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(4)
 In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(1)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(3)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(3)
 In FibAspect: Before fib(2)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(2)
 In FibAspect: Before fib(1)
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 fib(1)
 5
-In FibExtAspect: Before getPrevX
 In FibAspect: Before getPrevX
-In FibExtAspect: Before setPrevX
+In FibExtAspect: Before getPrevX
 In FibAspect: Before setPrevX
+In FibExtAspect: Before setPrevX
 9
 1
 10
