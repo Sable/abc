@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.providers.model.Node;
+import org.jastadd.plugin.providers.model.JastAddNode;
 
 public class JastAddSearchResultPage extends AbstractTextSearchViewPage implements ISearchResultPage {
 
@@ -47,8 +47,8 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		private Object[] content = null;
 		
 		public Object[] getChildren(Object parentElement) {
-			if(parentElement instanceof Node) {
-				Node node = (Node)parentElement;
+			if(parentElement instanceof JastAddNode) {
+				JastAddNode node = (JastAddNode)parentElement;
 				return node.getChildren().toArray();
 			} 
 			return null;
@@ -59,17 +59,17 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		}
 
 		public Object getParent(Object element) {
-			if(element instanceof Node) {
-				Node node = (Node)element;
-				Node parent = node.getParent();
+			if(element instanceof JastAddNode) {
+				JastAddNode node = (JastAddNode)element;
+				JastAddNode parent = node.getParent();
 				return parent;
 			}
 			return null;
 		}
 
 		public boolean hasChildren(Object element) {
-			if(element instanceof Node) {
-				Node node = (Node)element;
+			if(element instanceof JastAddNode) {
+				JastAddNode node = (JastAddNode)element;
 				return !node.getChildren().isEmpty();
 			}
 			return false;
@@ -97,14 +97,14 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 	
 	private class JastAddSearchLabelProvider extends LabelProvider {
 		public String getText(Object element) {
-			if (element instanceof Node) {
-				return ((Node)element).getLabel();
+			if (element instanceof JastAddNode) {
+				return ((JastAddNode)element).getLabel();
 			} 
 			return "";
 		}
 		public Image getImage(Object element) {
-			if(element instanceof Node) {
-				return ((Node)element).getImage();
+			if(element instanceof JastAddNode) {
+				return ((JastAddNode)element).getImage();
 			}
 			return null;
 		}
@@ -115,8 +115,8 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 			IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 			Object element = selection.getFirstElement();
 
-			if(element instanceof Node) {
-				Node node = (Node)element;
+			if(element instanceof JastAddNode) {
+				JastAddNode node = (JastAddNode)element;
 				JastAddModel model = JastAddModelProvider.getModel(node.getJastAddNode());
 				if (model != null)
 					model.openFile(node.getJastAddNode());

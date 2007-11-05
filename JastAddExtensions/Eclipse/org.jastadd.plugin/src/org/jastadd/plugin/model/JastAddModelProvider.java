@@ -40,10 +40,19 @@ public class JastAddModelProvider {
 	public static synchronized <M extends JastAddModel> M getModel(IProject project, Class<M> modelClass) {
 		List<JastAddModel> models = getModels(project);
 		for(JastAddModel model : models)
-			if (modelClass.isAssignableFrom(modelClass))
+			if (modelClass.isAssignableFrom(model.getClass()))
 				return (M)model;
 		return null;
 	}
+	
+	public static synchronized <M extends JastAddModel> List<M> getModels(Class<M> modelClass) {
+		List<JastAddModel> models = getModels();
+		List<M> result = new ArrayList<M>();
+		for(JastAddModel model : models)
+			if (modelClass.isAssignableFrom(model.getClass()))
+				result.add((M)model);
+		return result;
+	}	
 	
 	public static synchronized JastAddModel getModel(IFile file) {
 		if (fileModelMap.containsKey(file)) {

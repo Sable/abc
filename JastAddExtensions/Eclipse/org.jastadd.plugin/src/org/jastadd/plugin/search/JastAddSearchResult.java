@@ -8,20 +8,20 @@ import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.IEditorMatchAdapter;
 import org.eclipse.search.ui.text.IFileMatchAdapter;
-import org.jastadd.plugin.providers.model.Node;
-import org.jastadd.plugin.providers.model.TreeFactory;
+import org.jastadd.plugin.providers.model.JastAddNode;
+import org.jastadd.plugin.providers.model.JastAddTreeFactory;
 
 
 public class JastAddSearchResult extends AbstractTextSearchResult implements ISearchResult {
 
 	private JastAddSearchQuery fQuery;
-	private Collection<Node> fResults;
+	private Collection<JastAddNode> fResults;
 	private String label;
 
 	public JastAddSearchResult(JastAddSearchQuery query, Collection results, String label) {
 		fQuery = query;
 		this.label = label;
-		TreeFactory factory  = new TreeFactory();
+		JastAddTreeFactory factory  = new JastAddTreeFactory();
 		fResults = factory.buildTree(results);
 	}
 	

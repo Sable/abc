@@ -21,6 +21,7 @@ public abstract class JastAddPerspectiveFactory implements IPerspectiveFactory {
 		folder.addView(getNavigatorID());
 		//folder.addView("org.eclipse.ui.views.navigator.ResourceNavigator");
 		//folder.addView(JavaUI.ID_TYPE_HIERARCHY);
+		folder.addPlaceholder("org.jastadd.plugin.explore.*");
 		folder.addPlaceholder(IPageLayout.ID_RES_NAV);
 		
 		
@@ -35,6 +36,7 @@ public abstract class JastAddPerspectiveFactory implements IPerspectiveFactory {
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
 		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
+		outputfolder.addPlaceholder("org.jastadd.plugin.output.*");
 		//outputfolder.addView(JastAddSearchResultPage.SEARCH_ID);
 		
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);

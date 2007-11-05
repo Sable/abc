@@ -8,14 +8,14 @@ import org.eclipse.swt.graphics.Image;
 import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.AST.IJastAddNode;
 
-public class Node {
+public class JastAddNode {
 	
-	private Set<Node> children;
-	private Node parent;
+	private Set<JastAddNode> children;
+	private JastAddNode parent;
 	private IJastAddNode node;
 	
-	public Node(IJastAddNode node) {
-		children = new HashSet<Node>();
+	public JastAddNode(IJastAddNode node) {
+		children = new HashSet<JastAddNode>();
 		this.node = node;
 	}
 	
@@ -27,13 +27,13 @@ public class Node {
 		return children;
 	}
 	
-	public Node addChild(Node node) {
+	public JastAddNode addChild(JastAddNode node) {
 		children.add(node);
 		node.parent = this;
 		return this;
 	}
 	
-	public Node getParent() {
+	public JastAddNode getParent() {
 		return parent;
 	}
 	

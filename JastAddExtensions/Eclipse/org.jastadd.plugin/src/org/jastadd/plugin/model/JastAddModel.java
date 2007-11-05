@@ -3,6 +3,7 @@ package org.jastadd.plugin.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,9 +21,11 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.AST.IJastAddNode;
 
 public abstract class JastAddModel {
@@ -259,7 +262,7 @@ public abstract class JastAddModel {
 	
 		
 	protected void notifyModelListeners() {
-		for(JastAddModelListener listener : modelListeners)
+		for(JastAddModelListener listener : modelListeners.toArray(new JastAddModelListener[0]))
 			listener.modelChangedEvent();
 	}
 	
@@ -314,5 +317,15 @@ public abstract class JastAddModel {
 	}
 
 	public abstract IStatus makeErrorStatus(Throwable e, String message);
+	
+	public void displayError(Throwable t, Shell shell, String title, String message) {
+		StringWriter msg= new StringWriter();
+		if (message != null) {
+			msg.write(message);
+			msg.write("\n\n"); //$NON-NLS-1$
+			msg.write(t.getMessage());
+		}
+		MessageDialog.openError(shell, title, msg.toString());			
+	}
 	
 }

@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.information.InformationPresenter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
@@ -121,6 +122,11 @@ public abstract class JastAddEditor extends TextEditor {
 	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 	    contextService.deactivateContext(contextActivation);
 	}
+	
+	public void installInformationPresenter(InformationPresenter presenter) {
+		presenter.install(getSourceViewer());
+	}
+	
 
 	/**
 	 * Overriden from AbstractDecoratedTextEditor. Adds a projection viewer which provides
