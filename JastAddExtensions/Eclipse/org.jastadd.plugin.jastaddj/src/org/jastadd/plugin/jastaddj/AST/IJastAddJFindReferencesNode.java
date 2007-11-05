@@ -5,5 +5,6 @@ import java.util.Collection;
 import org.jastadd.plugin.AST.ISelectionNode;
 
 public interface IJastAddJFindReferencesNode extends ISelectionNode {
+	boolean canHaveReferences();
     Collection references();
 }

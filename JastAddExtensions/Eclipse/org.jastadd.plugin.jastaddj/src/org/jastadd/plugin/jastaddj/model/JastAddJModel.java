@@ -189,8 +189,8 @@ public class JastAddJModel extends JastAddModel {
 		
 		ProgramInfo programInfo = getProgramInfo(project);
 		try {
-			JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
-			reinitProgram(project, programInfo.program, buildConfiguration);
+			programInfo.buildConfiguration = readBuildConfiguration(project);
+			reinitProgram(project, programInfo.program, programInfo.buildConfiguration);
 			notifyModelListeners();
 		}
 		catch(CoreException e) {
@@ -657,6 +657,7 @@ public class JastAddJModel extends JastAddModel {
 			IWorkbenchPage page = window.getActivePage();
 			page.openEditor(targetEditorInput, getEditorID(), true);
 			IDocument targetDoc = fileToDocument(files[0]);
+			if (targetDoc == null) return;
 			int lineOffset = 0;
 			try {
 				lineOffset = targetDoc.getLineOffset(line - 1) + column - 1;

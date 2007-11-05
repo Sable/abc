@@ -87,7 +87,7 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 		IEditorRegistry editorReg = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor[] descriptors = editorReg.getEditors(input.getName());
 		for(IEditorDescriptor descriptor : descriptors) 
-			if (descriptor.getId().equals("org.jastadd.plugin.jastaddj.JastAddJEditor"))
+			if (descriptor.getId().equals(model.getEditorID()))
 				return descriptor.getId();
 		return descriptors.length > 0 ? descriptors[0].getId() : null;
      }

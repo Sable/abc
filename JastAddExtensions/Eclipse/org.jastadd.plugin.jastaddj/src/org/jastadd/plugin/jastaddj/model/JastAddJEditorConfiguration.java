@@ -1,11 +1,8 @@
 package org.jastadd.plugin.jastaddj.model;
 
 import java.io.IOException;
-import java.util.Collection;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.text.DocumentCommand;
@@ -20,6 +17,10 @@ import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.InsertCrapRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
@@ -106,8 +107,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	}
 
 	@Override
-	public void populateCommands()
-			throws ParseException, IOException {
+	public void populateCommands() throws ParseException, IOException {
 		installSourceCommand(
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
 				"Find Declaration", "JastAddJ Find Declaration", "Ctrl+D",
@@ -121,6 +121,22 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				"Find Implements", "JastAddJ Find Implements", "Ctrl+I",
 				new FindImplementsHandler());
 
+		installSourceCommand("org.jastadd.plugin.jastaddj.query.ReferenceHierarchy",
+				"Reference Hierarchy", "JastAddJ Reference Hierarchy", "Ctrl+Alt+R",
+				new ReferenceHierarchyHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.query.TypeHierarchy",
+				"Type Hierarchy", "JastAddJ Type Hierarchy", "Ctrl+Alt+T",
+				new TypeHierarchyHandler());
+
+		installSourceCommand("org.jastadd.plugin.jastaddj.query.QuickTypeHierarchy",
+				"Quick Type Hierarchy", "JastAddJ Quick Type Hierarchy", "Ctrl+T",
+				new QuickTypeHierarchyHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.query.QuickContentOutline",
+				"Quick Outline", "JastAddJ Quick Outline", "Ctrl+O",
+				new QuickContentOutlineHandler());
+		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				"Insert Crap", "JastAddJ Insert Crap Refactoring", "Ctrl+F9",
 				new InsertCrapRefactoringHandler());
@@ -139,22 +155,19 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	protected void populateFindTopMenuItems(IMenuManager searchMenu,
 			ITopMenuActionBuilder actionBuilder) {
 
-		addOrEnhanceTopMenuItem(searchMenu,
-				actionBuilder,
+		addOrEnhanceTopMenuItem(searchMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindDeclarationTopMenuItem",
 				"Find &Declaration",
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
 				new FindDeclarationHandler());
 
-		addOrEnhanceTopMenuItem(searchMenu,
-				actionBuilder,
+		addOrEnhanceTopMenuItem(searchMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindReferencesTopMenuItem",
 				"Find &References",
 				"org.jastadd.plugin.jastaddj.find.FindReferences",
 				new FindReferencesHandler());
 
-		addOrEnhanceTopMenuItem(searchMenu,
-				actionBuilder,
+		addOrEnhanceTopMenuItem(searchMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindImplementsTopMenuItem",
 				"Find &Implements",
 				"org.jastadd.plugin.jastaddj.find.FindImplements",
@@ -163,8 +176,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
 	protected void populateRefactorTopMenuItems(IMenuManager refactorMenu,
 			ITopMenuActionBuilder actionBuilder) {
-		addOrEnhanceTopMenuItem(refactorMenu,
-				actionBuilder,
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrapTopMenuItem",
 				"Insert &Crap",
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
@@ -174,6 +186,22 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	@Override
 	public void populateContextMenu(IMenuManager menuManager,
 			JastAddEditor editor) {
+		menuManager.insertAfter("group.open", buildContextMenuItem("Quick Out&line",
+				"org.jastadd.plugin.jastaddj.query.QuickContentOutline",
+				new QuickContentOutlineHandler()));
+		
+		menuManager.insertAfter("group.open", buildContextMenuItem("Quick Type H&ierarchy",
+				"org.jastadd.plugin.jastaddj.query.QuickTypeHierarchy",
+				new QuickTypeHierarchyHandler()));
+		
+		menuManager.insertAfter("group.open", buildContextMenuItem("Open Reference &Hierarchy",
+				"org.jastadd.plugin.jastaddj.query.ReferenceHierarchy",
+				new ReferenceHierarchyHandler()));
+		
+		menuManager.insertAfter("group.open", buildContextMenuItem("Open Type &Hierarchy",
+				"org.jastadd.plugin.jastaddj.query.TypeHierarchy",
+				new TypeHierarchyHandler()));
+
 		IMenuManager refactorMenu = findOrAddRefactorContextMenu(menuManager);
 		populateRefactorContextMenuItems(refactorMenu, editor);
 

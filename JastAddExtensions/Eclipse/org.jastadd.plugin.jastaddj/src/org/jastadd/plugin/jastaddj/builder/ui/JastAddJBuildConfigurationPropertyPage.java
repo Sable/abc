@@ -106,7 +106,7 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 					}
 				}, new NullProgressMonitor());
 			} catch (CoreException e) {
-				JastAddJActivator.displayError(e, getShell(), "Error!",
+				model.displayError(e, getShell(), "Error!",
 						"Failed saving build configuration!");
 				return false;
 			}			

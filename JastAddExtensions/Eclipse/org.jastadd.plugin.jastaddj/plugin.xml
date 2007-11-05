@@ -29,11 +29,36 @@
 	<!-- Core Resource View -->   
   
 	<extension point = "org.eclipse.ui.views">
-	<view
+     <category 
+           id="org.eclipse.ui.jastaddj"
+           name="JastAddJ">
+     </category>
+     <view
 		class = "org.jastadd.plugin.jastaddj.navigator.JastAddJNavigator"
-		id = "org.jastadd.plugin.jastaddj.JastAddJNavigator"
+		id = "org.jastadd.plugin.explore.JastAddJNavigator"
+		category="org.eclipse.ui.jastaddj"		
 		name = "JastAddJ Navigator">
-	</view>
+	 </view>
+     <view
+		class = "org.jastadd.plugin.jastaddj.explorer.JastAddJExplorer"
+		id = "org.jastadd.plugin.explore.JastAddJExplorer"
+		category="org.eclipse.ui.jastaddj"		
+		name = "JastAddJ Explorer">
+	 </view>
+	
+	 <view 
+        id="org.jastadd.plugin.output.JastAddJReferenceHierarchy"
+        name="JastAddJ Reference Hierarchy"
+        category="org.eclipse.ui.jastaddj"		
+        class="org.jastadd.plugin.jastaddj.view.JastAddJReferenceHierarchyView"
+        />
+        
+	 <view 
+        id="org.jastadd.plugin.explore.JastAddJTypeHierarchy"
+        name="JastAddJ Type Hierarchy"
+        category="org.eclipse.ui.jastaddj"		
+        class="org.jastadd.plugin.jastaddj.view.JastAddJTypeHierarchyView"
+        />
 	</extension>
 
 	<!-- Core Search Management -->

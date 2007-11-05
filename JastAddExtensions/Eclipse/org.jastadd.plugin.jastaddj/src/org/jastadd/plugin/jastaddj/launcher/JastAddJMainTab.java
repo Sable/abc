@@ -30,9 +30,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.jastaddj.AST.IClassDecl;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-
-import AST.ClassDecl;
 
 public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 
@@ -250,7 +249,7 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 				return;
 			}
 			Object[] results = dialog.getResult();	
-		    ClassDecl type = (ClassDecl)results[0];
+		    IClassDecl type = (IClassDecl)results[0];
 	     	if (type != null) {
 			  mainClassText.setText(type.packageName() + "." + type.getID());
 		    }

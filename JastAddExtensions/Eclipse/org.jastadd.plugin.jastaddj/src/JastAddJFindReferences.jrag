@@ -9,9 +9,13 @@ aspect JastAddJFindReferencesNode {
 	MethodAccess contributes this to MethodDecl.references() for decl();
 	
 	syn Collection ASTNode.references() = Collections.EMPTY_LIST;
+	syn boolean ASTNode.canHaveReferences() = false;
 	//eq TypeDecl.findReferences() = references();
 	eq TypeAccess.references() = type().references();
 	//eq MethodDecl.findReferences() = references();
 	eq MethodAccess.references() = decl().references();
+	
+	eq TypeDecl.canHaveReferences() = true;
+	eq MethodDecl.canHaveReferences() = true;
 		
 }
