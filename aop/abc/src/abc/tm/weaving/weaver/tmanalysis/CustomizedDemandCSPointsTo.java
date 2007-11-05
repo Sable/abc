@@ -62,14 +62,16 @@ public class CustomizedDemandCSPointsTo implements PointsToAnalysis {
 			for (Iterator<AllocAndContext> iter = pts.iterator(); iter.hasNext();) {
 				AllocAndContext allocNodeAndContext = iter.next();
 				Type allocType = allocNodeAndContext.alloc.getType();
-				if(allocNodeAndContext.context.isEmpty() &&
-						allocType.toString().contains("Empty")) {
-					toRemove.add(allocNodeAndContext);
+				if (allocNodeAndContext.context.isEmpty()) {
+					System.out.println("YYYYYY "+allocType);
+					if(allocType.toString().contains("Empty")) {
+						toRemove.add(allocNodeAndContext);
+					}
 				}
 			}
         	pts.removeAll(toRemove);
         	if(once) {
-        		System.out.println("XXXXXX removed: "+toRemove);
+        		System.out.println("YYYYYY removed: "+toRemove);
         		once = false;
         	}
         }
