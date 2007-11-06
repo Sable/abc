@@ -290,6 +290,31 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 	
+	protected void updateModel(Collection<IFile> changedFiles, IProject project) {
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+		if (buildConfiguration == null)
+			return;
+		IProgram program = getProgram(project);
+		if (program == null)
+			return;
+		program.files().clear();
+		Map<String,IFile> map = sourceMap(project, buildConfiguration);
+		program.files().addAll(map.keySet());
+		
+		Collection changedFileNames = new ArrayList();
+		for(IFile file : changedFiles)
+			changedFileNames.add(file.getRawLocation().toOSString());
+		
+		// remove files already built unless they have changed		
+		program.flushSourceFiles(changedFileNames);
+		// build new files
+		for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+			String name = (String)iter.next();
+			program.addSourceFile(name);
+		}
+	}
+
+	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
@@ -300,8 +325,15 @@ public class JastAddJModel extends JastAddModel {
 		program.files().clear();
 		Map<String,IFile> map = sourceMap(project, buildConfiguration);
 		program.files().addAll(map.keySet());
+
+		Collection changedFileNames = new ArrayList();
+		if(fileName != null)
+			changedFileNames.add(fileName);
 		// remove files already built and the current document from worklist
-		program.flushSourceFiles(fileName);
+		program.flushSourceFiles(changedFileNames);
+		if(fileName != null)
+			program.files().remove(fileName);
+
 		// build new files
 		for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
 			String name = (String)iter.next();
@@ -314,8 +346,7 @@ public class JastAddJModel extends JastAddModel {
 		program.addSourceFile(fileName, buf.toString());		
 	}
 
-	
-	protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
+	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
@@ -336,7 +367,10 @@ public class JastAddJModel extends JastAddModel {
 		}
 		return null;
 	}
-
+	
+	@Override protected void discardTree(IProject project) {
+		projectToNodeMap.remove(project);
+	}
 	
 	public void logStatus(IStatus status) {
 		JastAddJActivator.INSTANCE.getLog().log(status);

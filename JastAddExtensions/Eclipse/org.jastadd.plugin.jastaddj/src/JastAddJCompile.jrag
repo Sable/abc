@@ -4,15 +4,12 @@ aspect Compile {
   ClassDecl implements org.jastadd.plugin.jastaddj.AST.IClassDecl;
 
   // flush 
-  public void Program.flushSourceFiles(String name) {
-  	if(name != null)
-  	  files.remove(name);
-  	  
+  public void Program.flushSourceFiles(java.util.Collection fileNames) {
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
     	CompilationUnit cu = getCompilationUnit(i);
     	String pathName = cu.pathName();
-    	if(!cu.fromSource() || name != null && !name.equals(pathName)) {
+    	if(!cu.fromSource() || !fileNames.contains(pathName)) {
     		list.add(cu);
     		files.remove(pathName);
     	}

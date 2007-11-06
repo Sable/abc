@@ -11,7 +11,7 @@ public interface IProgram extends IJastAddNode {
 
 	Collection files();
 
-	void flushSourceFiles(String fileName);
+	void flushSourceFiles(Collection changedFileNames);
 	
 	public void addKeyValueOption(String name);	
 	
