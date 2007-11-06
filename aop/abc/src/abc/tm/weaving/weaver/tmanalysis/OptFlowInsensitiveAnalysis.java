@@ -19,31 +19,15 @@
 package abc.tm.weaving.weaver.tmanalysis;
 
 import java.util.List;
-import java.util.Set;
 
-import soot.Body;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootMethod;
-import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
-import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
-import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
-import soot.jimple.toolkits.scalar.CopyPropagator;
-import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
-import soot.toolkits.scalar.UnusedLocalEliminator;
 import abc.main.AbcTimer;
-import abc.main.Debug;
 import abc.main.Main;
-import abc.soot.util.InstanceOfEliminator;
-import abc.soot.util.OptimizedNullCheckEliminator;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
 import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.tm.weaving.weaver.tmanalysis.util.Statistics;
-import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
 /**
@@ -173,6 +157,11 @@ public class OptFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
         sootArgs.add("-p");
         sootArgs.add("cg.spark");
         sootArgs.add("cs-demand:true");
+        
+        //model singletons EMPTY_LIST etc. as distinct allocation sites
+        sootArgs.add("-p");
+        sootArgs.add("cg.spark");
+        sootArgs.add("empties-as-allocs:true");        
 
         //in order to generate points-to sets for weaving variables, we have to
         //disable the straightlinecode optimizations which take place right
