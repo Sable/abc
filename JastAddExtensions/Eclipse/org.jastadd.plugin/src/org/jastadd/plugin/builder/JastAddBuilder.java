@@ -1,7 +1,10 @@
 package org.jastadd.plugin.builder;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
@@ -46,6 +49,8 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		delta.accept(deltaVisitor);
 		if (deltaVisitor.buildRequired)		
 			buildProject(getProject());
+		if(!deltaVisitor.changedFiles.isEmpty())
+			updateProjectModel(getProject(), deltaVisitor.changedFiles);
 	}
 
 	
@@ -84,6 +89,12 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	}
 	*/
 	
+	protected void updateProjectModel(IProject project, Collection<IFile> changedFiles) {
+		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
+			m.updateProjectModel(changedFiles, project);
+		}	
+	}
+
 	protected void buildProject(IProject project) {
 		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
 			m.fullBuild(project);
@@ -93,6 +104,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 	
 	private class DeltaVisitor implements IResourceDeltaVisitor {
 		public boolean buildRequired = false;
+		public Collection<IFile> changedFiles = new ArrayList<IFile>();
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -105,13 +117,19 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 				// handle added resource
 				buildRequired = true;
 				//checkFile(resource);
+				if(delta.getResource() instanceof IFile)
+					this.changedFiles.add((IFile)delta.getResource());
 				break;
 			case IResourceDelta.REMOVED:
 				// handle removed resource
+				if(delta.getResource() instanceof IFile)
+					this.changedFiles.add((IFile)delta.getResource());
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
 				buildRequired = true;
+				if(delta.getResource() instanceof IFile)
+					this.changedFiles.add((IFile)delta.getResource());
 				//checkFile(resource);
 				break;
 			}

@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +59,13 @@ public abstract class JastAddModel {
 		mapDocToFile.put(document, file);
 		mapFileToDoc.put(file, document);
 	}
+	
+	public void releaseFile(IFile file) {
+		IDocument document = mapFileToDoc.get(file);
+		mapFileToDoc.remove(file);
+		if(document != null)
+			mapDocToFile.remove(document);
+	}
 
 	public void addListener(JastAddModelListener listener) {
 		modelListeners.add(listener);
@@ -66,7 +74,12 @@ public abstract class JastAddModel {
 	public void removeListener(JastAddModelListener listener) {
 		modelListeners.remove(listener);
 	}
-	
+
+	public synchronized void updateProjectModel(Collection<IFile> changedFiles, IProject project) {
+		updateModel(changedFiles, project);
+		notifyModelListeners();
+	}
+
 	public void updateProjectModel(IDocument document) {
 		IFile file = documentToFile(document);
 		if(file == null) return;
@@ -299,8 +312,10 @@ public abstract class JastAddModel {
 	public abstract void registerStopHandler(Runnable stopHandler);
 
 	protected abstract void updateModel(IDocument document, String fileName, IProject project);
+	protected abstract void updateModel(Collection<IFile> changedFiles, IProject project);
 	protected abstract void completeBuild(IProject project);
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
+	protected abstract void discardTree(IProject project);
 
 	public abstract void logStatus(IStatus status);
 	

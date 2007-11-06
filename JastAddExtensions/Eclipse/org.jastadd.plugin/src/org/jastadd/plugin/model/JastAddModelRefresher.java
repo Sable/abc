@@ -41,8 +41,12 @@ public class JastAddModelRefresher implements IResourceChangeListener {
 		List<JastAddModel> models = JastAddModelProvider
 				.getModels(project);
 		for (JastAddModel model : models) {
-			if (model.isModelFor(project))
+			if (model.isModelFor(project)) {
+				if(event.getType() == IResourceChangeEvent.PRE_CLOSE && event.getResource() == project) {
+					model.discardTree(project);
+				}
 				model.resourceChanged(project, event, event.getDelta() != null ? event.getDelta().findMember(new Path(project.getName())) : null);
+			}
 		}
 	}
 }
