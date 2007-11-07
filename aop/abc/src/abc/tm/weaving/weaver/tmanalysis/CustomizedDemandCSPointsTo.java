@@ -18,18 +18,11 @@
  */
 package abc.tm.weaving.weaver.tmanalysis;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import soot.Context;
 import soot.Local;
 import soot.PointsToAnalysis;
 import soot.PointsToSet;
 import soot.SootField;
-import soot.Type;
-import soot.jimple.spark.ondemand.AllocAndContext;
-import soot.jimple.spark.ondemand.AllocAndContextSet;
 import soot.jimple.spark.ondemand.DemandCSPointsTo;
 import soot.jimple.spark.ondemand.WrappedPointsToSet;
 
@@ -56,31 +49,9 @@ public class CustomizedDemandCSPointsTo implements PointsToAnalysis {
             delegate.setRefineCallGraph(false);
             reachingObjects = delegate.reachingObjects(l);
         }
-        if(reachingObjects instanceof AllocAndContextSet) {
-			AllocAndContextSet pts = (AllocAndContextSet) reachingObjects;
-			Set<AllocAndContext> toRemove = new HashSet<AllocAndContext>();
-			for (Iterator<AllocAndContext> iter = pts.iterator(); iter.hasNext();) {
-				AllocAndContext allocNodeAndContext = iter.next();
-				Type allocType = allocNodeAndContext.alloc.getType();
-				if (allocNodeAndContext.context.isEmpty()) {
-					System.out.println("YYYYYY "+allocType);
-					if(allocType.toString().contains("Empty")) {
-						toRemove.add(allocNodeAndContext);
-					}
-				}
-			}
-        	pts.removeAll(toRemove);
-        	if(once) {
-        		System.out.println("YYYYYY removed: "+toRemove);
-        		once = false;
-        	}
-        }
-        
         return reachingObjects;
     }
     
-    private boolean once = true;
-
     public PointsToSet reachingObjects(Context c, Local l, SootField f) {
         return delegate.reachingObjects(c, l, f);
     }
