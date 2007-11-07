@@ -5,8 +5,6 @@ import beaver.Scanner;
 import parser.JavaParser.Terminals;
 import java.io.*;
 
-
-
 %%
 
 %public 
@@ -36,6 +34,10 @@ import java.io.*;
 
   private String str() { return yytext(); }
   private int len() { return yylength(); }
+
+  private void error(String msg) throws Scanner.Exception {
+    throw new Scanner.Exception(yyline + 1, yycolumn + 1, msg);
+  }
 
   // Added for JastAdd
   public void enterTempState(int state) {
@@ -246,8 +248,8 @@ ZeroToThree = [0-3]
   \'{OctalEscape}\'              { int val = Integer.parseInt(str().substring(2,len()-1),8);
 			                             return sym(Terminals.CHARACTER_LITERAL, new Character((char)val).toString()); }
   // Character Literal errors
-  \'\\.                          { throw new RuntimeException("Illegal escape sequence \""+str()+"\""); }
-  \'{LineTerminator}             { throw new RuntimeException("Unterminated character literal at end of line"); }
+  \'\\.                          { error("illegal escape sequence \""+str()+"\""); }
+  \'{LineTerminator}             { error("unterminated character literal at end of line"); }
 
   // 3.10.5 String Literals
   \"                             { enterTempState(STRING); strbuf.setLength(0); }
@@ -327,8 +329,8 @@ ZeroToThree = [0-3]
   {OctalEscape}                  { strbuf.append((char)Integer.parseInt(str().substring(1),8)); }
 
   // String Literal errors
-  \\.                            { throw new RuntimeException("Illegal escape sequence \""+str()+"\""); }
-  {LineTerminator}               { throw new RuntimeException("Unterminated string at end of line"); }
+  \\.                            { error("illegal escape sequence \""+str()+"\""); }
+  {LineTerminator}               { error("unterminated string at end of line"); }
 }
 
 // hack to detect the SUB character as the last input character
@@ -337,9 +339,14 @@ ZeroToThree = [0-3]
                                    } 
                                  }
 // fall through errors
-.|\n                             { throw new RuntimeException("Illegal character \""+str()+ "\" at line "+yyline+", column "+yycolumn); }
+.|\n                             { error("illegal character \""+str()+ "\""); }
 <<EOF>>                          { // detect position of first SUB character
-                                   if(!(sub_line == 0 && sub_column == 0) && (sub_line != yyline || sub_column != yycolumn-1))
-                                     throw new RuntimeException("Error");
+                                     if(!(sub_line == 0 && sub_column == 0) && (sub_line != yyline || sub_column != yycolumn-1)) {
+                                     // reset to only return error once
+                                     sub_line = 0;
+                                     sub_column = 0;
+                                     // return error
+                                     error("error");
+                                   }
                                    return sym(Terminals.EOF);
                                  }
