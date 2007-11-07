@@ -198,9 +198,9 @@ public class TraceMatch
         return non_primitive;
     }
     
-    public List getFormalNames()
+    public List<String> getFormalNames()
     {
-        List formalNames = new LinkedList();
+        List<String> formalNames = new LinkedList<String>();
         for (Iterator formalIter = formals.iterator(); formalIter.hasNext(); )
         {
             Formal f = (Formal) formalIter.next();
