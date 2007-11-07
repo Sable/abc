@@ -6,39 +6,42 @@
        gen             - generates java files
        cleanGen        - removes all generated files and their class files
 -->
-<project name="Bytecode backend" default="build">
+<project name="JastAdd" default="build">
+
+<!-- location of Java1.4Frontend -->
+<property name="Java1.4Frontend" value="../Java1.4Frontend"/>
+<!-- location of Java1.4Backend -->
+<property name="Java1.4Backend" value="../Java1.4Backend"/>
 
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
 
 <!-- "tools" is the directory where generators and libraries are located. -->
-<property name="tools" value="../Java1.4Frontend/tools"/>
-	
+<property name="tools" value="${Java1.4Frontend}/tools"/>
+
 <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
-<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="../Java1.4Frontend/tools/JFlex.jar"/>
+<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="${tools}/JFlex.jar"/>
 <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
-<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="../Java1.4Frontend/tools/beaver.jar"/>
+<taskdef name="beaver" classname="beaver.comp.run.AntTask" classpath="${tools}/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
-<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../Java1.4Frontend/tools/jastadd2.jar"/>
+<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="${tools}/jastadd2.jar"/>
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-	<javac debug="true" nowarn="true" srcdir="." classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar:${tools}/ant.jar">
-    <include name ="**/*.java"/>
-    <exclude name ="test/**/*.java"/>
-  </javac>
+	<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" excludes="test/**" 
+         classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"/>
 </target>
 
-<!-- generate compiler source files -->
+<!-- generate compiler source files and compile sources -->
 <target name="gen" depends="scanner,parser">
   <!-- create AST node types and weave aspect modules -->
-	<jastadd package="${package}" rewrite="true" beaver="true" novisitcheck="true" lazyMaps="true" outdir="${basedir}">
-		<fileset dir="../Java1.4Frontend">
+  <jastadd package="${package}" rewrite="true" beaver="true" novisitcheck="true" noCacheCycle="true" outdir="${basedir}">
+		<fileset dir="${Java1.4Frontend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>      
+			<include name="**/*.jadd"/> 
 		</fileset>
-		<fileset dir="../BytecodeBackend">
+		<fileset dir="${Java1.4Backend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -51,12 +54,7 @@
   </jastadd>
   <!-- copy library files-->
   <copy todir="beaver" preservelastmodified="true">
-    <fileset dir="../Java1.4Frontend/beaver">
-      <include name="**/*.java"/>
-    </fileset>
-  </copy>
-  <copy todir="bytecode" preservelastmodified="true">
-    <fileset dir="../Java1.4Frontend/bytecode">
+    <fileset dir="${Java1.4Frontend}/beaver">
       <include name="**/*.java"/>
     </fileset>
   </copy>
@@ -65,17 +63,15 @@
 <target name="scanner">
     <mkdir dir="scanner"/>
 	  <!-- generate the scanner -->
-		<echo message = "Running jflex"/>
 		<jflex file="JastAdd.flex" outdir="scanner" nobak="yes"/>
-    <copy todir="scanner" file="../Java1.4Frontend/scanner/Unicode.java" preservelastmodified="true"/>
+    <copy todir="scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true"/>
 </target>
 
 <target name="parser">
-    <mkdir dir="parser"/>
+  <mkdir dir="parser"/>
 	<!-- generate the parser phase 1, create a full .lalr specification from fragments-->
-		<echo message = "Running parser phase 1"/>
 		<concat destfile="parser/JavaParser.all" binary="true" force="false">
-      <filelist dir="../Java1.4Frontend">
+      <filelist dir="${Java1.4Frontend}">
 	      <file name="parser/preamble.parser"/>
 	      <file name="parser/java14.parser"/>
 	      <file name="parser/errorrecovery.parser"/>
@@ -84,8 +80,8 @@
         <include name="*.parser"/>
       </fileset>
 	</concat>
-	<!-- generate the parser phase 2, translating .lalr to .beaver -->
-		<java fork="true" dir="${basedir}" classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main">
+  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
 			<arg line="parser/JavaParser.all parser/JavaParser.beaver"/>
 		</java>
 	<!-- generate the parser phase 3, translating .beaver to .java -->
@@ -96,7 +92,6 @@
 <target name="clean" depends="cleanGen">
     <!-- delete all .class files recursively -->
     <delete>
-      <fileset dir="." includes="bytecode/**/*.class"/>
       <fileset dir="." includes="beaver/**/*.class"/>
       <fileset dir="." includes="parser/**/*.class"/>
       <fileset dir="." includes="scanner/**/*.class"/>
@@ -108,11 +103,11 @@
 <target name="cleanGen">
 	 <delete dir="${package}"/>
     <delete>
-      <fileset dir="bytecode" includes="**/*.java"/>
       <fileset dir="beaver" includes="**/*.java"/>
       <fileset dir="parser" includes="*.java"/>
       <fileset dir="parser" includes="JavaParser.beaver"/>
       <fileset dir="parser" includes="JavaParser.all"/>
+      <fileset dir="." includes="scanner/*.java"/>
       <fileset dir="." includes="test/*.class"/>
     </delete>
 </target>
@@ -124,7 +119,7 @@
 <target name="jar" depends="build">
   <jar destfile="JastAdd.jar" basedir="." includes="**/*.class" excludes="test/**">
     <manifest>
-      <attribute name="Main-Class" value="JastAdd"/>
+      <attribute name="Main-Class" value="jastadd.JastAdd"/>
     </manifest>
   </jar>
 </target>
