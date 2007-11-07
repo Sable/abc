@@ -6,8 +6,7 @@
 <project name="JastAdd extension" default="gen">
 
 <!-- "package" is the directory where generated files will be stored -->
-<property name="package" value="org.jastadd.plugin.jastadd.generated.AST"/>
-<property name="packageDir" value="org/jastadd/plugin/jastadd/generated/AST"/>
+<property name="package" value="org/jastadd/plugin/jastadd/generated/AST"/>
 <property name="parser" value="org/jastadd/plugin/jastadd/parser"/>
 <property name="scanner" value="org/jastadd/plugin/jastadd/scanner"/>
 
@@ -97,7 +96,7 @@
 
 <!-- remove generated source files -->
 <target name="cleanGen">
-    <delete dir="${packageDir}"/>
+    <delete dir="${package}"/>
     <delete dir="beaver"/>
     <delete dir="parser"/>
     <delete dir="scanner"/>
