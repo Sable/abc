@@ -18,6 +18,8 @@
  */
 package abc.weaving.residues;
 
+import java.util.Set;
+
 import soot.BooleanType;
 import soot.Local;
 import soot.PatchingChain;
@@ -42,7 +44,7 @@ import abc.weaving.weaver.WeavingContext;
  */
 public class OnceResidue extends Residue {
 
-	protected final Stmt stmtAfterInit;
+	protected final Set<Stmt> stmtsBeforeInit;
     
     /**
      * Constructs a new residue such that the shadow is executed once per execution of the method.
@@ -54,14 +56,14 @@ public class OnceResidue extends Residue {
     /**
      * Constructs a new residue such that the shadow is executed once only after each execution of
      * stmtAfterInit.
-     * @param stmtAfterInit the statement before which the flag for the shadow is do be (re-)initialized;
+     * @param stmtsBeforeInit the statements before which the flag for the shadow is do be (re-)initialized;
      * must not be <code>null</code>
      */
-    public OnceResidue(Stmt stmtAfterInit) {
-    	if(stmtAfterInit==null) {
+    public OnceResidue(Set<Stmt> stmtsBeforeInit) {
+    	if(stmtsBeforeInit==null) {
     		throw new IllegalArgumentException();
     	}
-    	this.stmtAfterInit = stmtAfterInit;
+    	this.stmtsBeforeInit = stmtsBeforeInit;
 	}
 
 	/** 
@@ -78,19 +80,22 @@ public class OnceResidue extends Residue {
 		Local flag = localgen.generateLocal(BooleanType.v());
 
     	Weaver weaver = abc.main.Main.v().getAbcExtension().getWeaver();
-    	//initialize if to false
-		Stmt afterInit = (stmtAfterInit!=null) ? 
-				(Stmt) weaver.rebind(stmtAfterInit) :
-				Restructure.findFirstRealStmt(method, units);
-		
-		assert units.contains(afterInit);
-		
-		Stmt initStmt = Jimple.v().newAssignStmt(flag, IntConstant.v(0));
-        //units should not be a patching chain because otherwise jumps to afterInit
-        //would be rerouted to initStmt and hence, the flag would be reset on every loop iteration
-		assert !(units instanceof PatchingChain); 
-		units.insertBefore(initStmt, afterInit);
-		
+
+    	for (Stmt stmtBeforeInit : stmtsBeforeInit) {
+        	//initialise if to false
+    		Stmt afterInit = (stmtBeforeInit!=null) ? 
+    				(Stmt) weaver.rebind(stmtBeforeInit) :
+    				Restructure.findFirstRealStmt(method, units);
+    		
+    		assert units.contains(afterInit);
+    		
+    		Stmt initStmt = Jimple.v().newAssignStmt(flag, IntConstant.v(0));
+            //units should not be a patching chain because otherwise jumps to afterInit
+            //would be rerouted to initStmt and hence, the flag would be reset on every loop iteration
+    		assert !(units instanceof PatchingChain); 
+    		units.insertBefore(initStmt, afterInit);
+		}
+    	
 		//now at the begin statement, check the status of the flag:
 		//if it is still false, set it to true and execute the shadow;
 		//else, jump to fail
@@ -128,7 +133,7 @@ public class OnceResidue extends Residue {
 	 */
 	@Override
 	public String toString() {
-		return "onceAfter("+ (stmtAfterInit!=null?stmtAfterInit:"methodEntry")+ ")";
+		return "onceAfter("+ (stmtsBeforeInit!=null?stmtsBeforeInit:"methodEntry")+ ")";
 	}
 
 }
