@@ -26,19 +26,15 @@ import java.util.List;
 
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
-import soot.CompilationDeathException;
 import soot.Scene;
 import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.main.CompileSequence;
-import abc.main.CompilerAbortedException;
-import abc.main.CompilerFailedException;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
-import abc.tm.weaving.weaver.TMLoopExitRestructurer;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
@@ -449,18 +445,5 @@ public class AbcExtension extends abc.eaj.AbcExtension
 			}
 		};
 	}
-    
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public void doMethodRestructuring() {
-        super.doMethodRestructuring();
-        
-        String laststage = OptionsParser.v().laststage();
-        if(OptionsParser.v().wp_tmopt() && !laststage.equals("quick") && !laststage.equals("flowins")) {
-            TMLoopExitRestructurer.apply();
-        }
-    }
    
 }
