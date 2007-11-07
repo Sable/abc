@@ -54,6 +54,16 @@ import java.util.HashMap;
     comments.put(new Integer(line), str());
   }
   
+  private HashMap offsets = new java.util.LinkedHashMap();
+  public HashMap offsets() { return offsets; }
+  private int registerOffset = 0;
+  private void registerOffset() {
+    registerOffset += yycolumn + len();
+    Integer key = new Integer(yyline + 2);
+    Integer value = new Integer(registerOffset);
+    offsets.put(key, value);
+  }
+    
   // Added for JastAdd
   public void enterTempState(int state) {
     yybegin(state);
@@ -105,7 +115,7 @@ LineTerminator = \n|\r|\r\n
 InputCharacter = [^\r\n]
 
 // 3.6 White Space
-WhiteSpace = [ ] | \t | \f | {LineTerminator}
+WhiteSpace = [ ] | \t | \f
 
 // 3.7 Comments
 Comment = {TraditionalComment}
@@ -167,6 +177,7 @@ ZeroToThree = [0-3]
 <YYINITIAL,JASTADD> {
   // 3.6 White Space
   {WhiteSpace}                   { }
+  {LineTerminator}               { registerOffset(); }
   
   // 3.7 Comments
   {Comment}                      { registerComment(); }
