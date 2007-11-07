@@ -80,9 +80,9 @@
       <filelist dir="../../Java1.4Frontend/scanner">
         <file name="macros.flex"/>
         <file name="rules_preamble.flex"/>
-        <file name="WhiteSpace.flex"/>
       </filelist>
       <filelist dir=".">
+        <file name="WhiteSpace.flex"/>
         <file name="Comments.flex"/>
       </filelist>
       <filelist dir="../../Java1.4Frontend/scanner">

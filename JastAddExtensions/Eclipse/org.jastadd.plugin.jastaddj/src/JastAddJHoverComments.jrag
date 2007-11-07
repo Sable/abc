@@ -1,5 +1,18 @@
 aspect JastAddJHoverComments {
  
+  refine HoverComments eq ASTNode.hoverComment() {
+    ASTNode node = this;
+    while(node != null && !(node instanceof CompilationUnit))
+      node = node.getParent();
+    if(node == null)
+      return "[" + ASTNode.getLine(getStart()) + "," + ASTNode.getColumn(getStart()) + "->" + 
+       ASTNode.getLine(getEnd()) + "," + ASTNode.getColumn(getEnd()) + "]";
+    CompilationUnit cu = (CompilationUnit)node;
+    int startOffset = cu.offset(ASTNode.getLine(getStart()), ASTNode.getColumn(getStart()));
+    return startOffset + "[" + ASTNode.getLine(getStart()) + "," + ASTNode.getColumn(getStart()) + "->" + 
+     ASTNode.getLine(getEnd()) + "," + ASTNode.getColumn(getEnd()) + "]";
+  }
+ 
   eq MethodDecl.hoverComment() {
      StringBuffer res = new StringBuffer(type().typeName());
      res.append(" " + name() + "(");

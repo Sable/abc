@@ -36,6 +36,7 @@
        scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
        cu = (CompilationUnit)parse(scanner);
        cu.setComments(scanner.comments());
+       cu.setOffsets(scanner.offsets());
      } catch(Parser.Exception e) {
        // build empty compilation unit for failed error recovery
        cu = new CompilationUnit();

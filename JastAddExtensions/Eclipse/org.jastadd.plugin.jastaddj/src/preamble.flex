@@ -53,6 +53,16 @@ import java.util.HashMap;
     } while(pos != -1);
     comments.put(new Integer(line), str());
   }
+
+  private HashMap offsets = new java.util.LinkedHashMap();
+  public HashMap offsets() { return offsets; }
+  private int registerOffset = 0;
+  private void registerOffset() {
+    registerOffset += yycolumn + len();
+    Integer key = new Integer(yyline + 2);
+    Integer value = new Integer(registerOffset);
+    offsets.put(key, value);
+  }
   
 %}
 
