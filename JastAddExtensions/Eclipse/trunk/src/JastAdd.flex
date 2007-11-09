@@ -45,12 +45,22 @@ import java.util.HashMap;
   private void registerComment() {
     String comment = str();
     int line = yyline;
-    // the extra loop accounts from yyline starting at 0
     int pos = 0;
     do {
-      line++;
-      pos = comment.indexOf('\n', pos + 1);
-    } while(pos != -1);
+      int newPos = comment.indexOf('\n', pos);
+      if (newPos != -1) {
+      	  line++;
+	      if (pos == 0)
+		      	registerOffset += yycolumn;      	  
+	      registerOffset += newPos + 1 - pos;
+    	  Integer key = new Integer(line + 1);
+    	  Integer value = new Integer(registerOffset);
+    	  offsets.put(key, value);
+    	  pos = newPos + 1;
+	  }  
+      else
+    	  break;
+    } while (true);
     comments.put(new Integer(line), str());
   }
   
