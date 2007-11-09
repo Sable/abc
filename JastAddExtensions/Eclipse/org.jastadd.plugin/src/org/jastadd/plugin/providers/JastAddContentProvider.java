@@ -57,7 +57,8 @@ public class JastAddContentProvider implements ITreeContentProvider {
 				if (parent != null && parent instanceof IOutlineNode && 
 						((IOutlineNode)parent).showInContentOutline())
 					return parent;
-				else getParent(parent);
+				else 
+					return getParent(parent);
 			} catch (Exception e) {
 			}
 		}

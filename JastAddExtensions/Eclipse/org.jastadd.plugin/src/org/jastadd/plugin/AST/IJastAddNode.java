@@ -11,4 +11,8 @@ public interface IJastAddNode {
 	public int getEndLine();
 	public int getEndColumn();
 	
+	public String getFileName();
+	public int getBeginOffset();
+	public int getEndOffset();
+	
 }

@@ -87,8 +87,10 @@ public abstract class JastAddModel {
 		updateProjectModel(document, fileName, file.getProject());
 	}
 	
-	public synchronized void updateProjectModel(IDocument document, String fileName, IProject project) {
-		updateModel(document, fileName, project);
+	public void updateProjectModel(IDocument document, String fileName, IProject project) {
+		synchronized(this) {
+			updateModel(document, fileName, project);
+		}
 		notifyModelListeners();
 	}
 
@@ -119,6 +121,8 @@ public abstract class JastAddModel {
 		}
 		return null;
 	}
+	
+	public abstract IFile getFile(IJastAddNode node);
 
 	public synchronized IJastAddNode getTreeRoot(IProject project, String filePath) {
 		return getTreeRootNode(project, filePath);
@@ -275,6 +279,7 @@ public abstract class JastAddModel {
 	
 		
 	protected void notifyModelListeners() {
+		// NB! This thread should not be synchronized on this!
 		for(JastAddModelListener listener : modelListeners.toArray(new JastAddModelListener[0]))
 			listener.modelChangedEvent();
 	}

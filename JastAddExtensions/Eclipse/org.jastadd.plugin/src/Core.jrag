@@ -13,6 +13,5 @@ aspect Core {
 	}
 	public int ASTNode.getEndLine() {
 		return getLine(getEnd());
-	}
- 
+	} 
 }

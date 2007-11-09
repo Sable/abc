@@ -2,8 +2,6 @@ package org.jastadd.plugin.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.commands.Category;
@@ -12,7 +10,6 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -30,7 +27,7 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -78,7 +75,7 @@ public abstract class JastAddEditorConfiguration {
 	}
 	
 	// Uses attribute values from ContentOutline.jrag
-	public IContentProvider getContentProvider() {
+	public ITreeContentProvider getContentProvider() {
 		return new JastAddContentProvider();
 	}
 
