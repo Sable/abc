@@ -76,7 +76,7 @@ BodyDecl interface_member_declaration =
   error RBRACE {: return new StaticInitializer(new Block()); :}
   ;
 
-List array_initializer =
+ArrayInit array_initializer =
   LBRACE error RBRACE {: return new ArrayInit(new List()); :}
   ;
 

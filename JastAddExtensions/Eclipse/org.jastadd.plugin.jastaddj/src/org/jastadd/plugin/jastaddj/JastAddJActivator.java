@@ -8,7 +8,11 @@ public class JastAddJActivator extends BaseJastAddActivator {
 	
 	public JastAddJActivator() {
 		INSTANCE = this;
-	}	
+	}
+	
+	public static JastAddJActivator getInstance() {
+		return INSTANCE;
+	}
 	
 	public String getPluginID() {
 		return JASTADDJ_PLUGIN_ID;

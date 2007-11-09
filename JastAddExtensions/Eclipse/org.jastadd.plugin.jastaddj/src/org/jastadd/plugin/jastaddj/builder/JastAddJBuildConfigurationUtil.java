@@ -127,7 +127,7 @@ public class JastAddJBuildConfigurationUtil {
 	public static void populateDefaults(JastAddJBuildConfiguration buildConfiguration) {
 		buildConfiguration.outputPath = "bin/";
 		JastAddJBuildConfiguration.SourcePathEntry sourceEntry = new JastAddJBuildConfiguration.SourcePathEntry();
-		sourceEntry.sourcePath = "./";
+		sourceEntry.sourcePath = "src/";
 		buildConfiguration.sourcePathList.add(sourceEntry);		
 	}
 

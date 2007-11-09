@@ -5,8 +5,7 @@ import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -57,7 +56,7 @@ class EditClassPathEntryDialog extends TrayDialog {
 		final Text classPathText = new Text(composite, SWT.BORDER);
 		classPathText.setFont(parent.getFont());
 		classPathText.setText(classPathEntry.classPath);
-		UIUtil.stretchControlHorizontal(classPathText);
+		classPathText.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));
 		classPathText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				classPathEntry.classPath = classPathText.getText();
@@ -71,7 +70,7 @@ class EditClassPathEntryDialog extends TrayDialog {
 		sourceAttachmentPathText.setFont(parent.getFont());
 		if (classPathEntry.sourceAttachmentPath != null)
 			sourceAttachmentPathText.setText(classPathEntry.sourceAttachmentPath);
-		UIUtil.stretchControlHorizontal(sourceAttachmentPathText);
+		sourceAttachmentPathText.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));
 		sourceAttachmentPathText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				String text = sourceAttachmentPathText.getText();

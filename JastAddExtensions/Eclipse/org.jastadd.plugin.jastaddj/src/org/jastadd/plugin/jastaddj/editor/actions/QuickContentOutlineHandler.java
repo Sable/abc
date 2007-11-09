@@ -9,6 +9,7 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
@@ -44,15 +45,18 @@ public class QuickContentOutlineHandler extends JastAddActionDelegate {
 					public void setInput(Object input) {
 						super.setInput(activeEditorPart().getEditorInput());
 						IJastAddNode node = (IJastAddNode)input;
-						while (input != null && !(node instanceof IOutlineNode && ((IOutlineNode)node).showInContentOutline()))
+						while (node != null && !(node instanceof IOutlineNode && ((IOutlineNode)node).showInContentOutline()))
 							node = node.getParent();					
-						if (input != null) {
+						if (node != null) {
+							/*
 							List<IJastAddNode> path = new ArrayList<IJastAddNode>();
 							while (node != null) {
 								path.add(node);
 								node = (IJastAddNode)((ITreeContentProvider)treeViewer.getContentProvider()).getParent(node);
 							}
 							treeViewer.setSelection(new TreeSelection(new TreePath(path.toArray())), true);
+							*/
+							treeViewer.setSelection(new StructuredSelection(node), true);
 						}
 					}
 				};

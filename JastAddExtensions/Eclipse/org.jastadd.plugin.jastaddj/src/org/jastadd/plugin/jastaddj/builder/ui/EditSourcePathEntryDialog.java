@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -63,7 +64,7 @@ class EditSourcePathEntryDialog extends TrayDialog {
 		final Text sourcePathText = new Text(composite, SWT.BORDER);
 		sourcePathText.setFont(parent.getFont());
 		sourcePathText.setText(sourcePathEntry.sourcePath);
-		UIUtil.stretchControlHorizontal(sourcePathText);
+		sourcePathText.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));		
 		sourcePathText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				sourcePathEntry.sourcePath = sourcePathText.getText();
@@ -86,7 +87,7 @@ class EditSourcePathEntryDialog extends TrayDialog {
 		String[] labels;
 		
 		PatternListEditField(List<Pattern> data, String[] labels) {
-			super(data);
+			super(data, 50, 5);
 			this.labels = labels;
 		}
 		

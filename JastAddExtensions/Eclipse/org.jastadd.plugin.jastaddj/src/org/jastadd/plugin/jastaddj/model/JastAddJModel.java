@@ -77,23 +77,23 @@ public class JastAddJModel extends JastAddModel {
 		IProgram program;
 		JastAddJBuildConfiguration buildConfiguration;
 	}
-	
-	protected HashMap<IProject,ProgramInfo> projectToNodeMap = new HashMap<IProject,ProgramInfo>();
-	protected HashMap<IProgram,IProject> nodeToProjectMap = new HashMap<IProgram,IProject>();
-	
+
+	protected HashMap<IProject, ProgramInfo> projectToNodeMap = new HashMap<IProject, ProgramInfo>();
+	protected HashMap<IProgram, IProject> nodeToProjectMap = new HashMap<IProgram, IProject>();
+
 	// ************* Overridden methods
-	
+
 	@Override
 	protected void initModel() {
 		editorConfig = new JastAddJEditorConfiguration(this);
 	}
 
-	
 	// ************** Implementations of abstract methods
-	
+
 	public boolean isModelFor(IProject project) {
 		try {
-			if (project != null && project.isOpen() && project.isNatureEnabled(getNatureID())) {
+			if (project != null && project.isOpen()
+					&& project.isNatureEnabled(getNatureID())) {
 				return true;
 			}
 		} catch (CoreException e) {
@@ -104,7 +104,7 @@ public class JastAddJModel extends JastAddModel {
 
 	public boolean isModelFor(IFile file) {
 		for (String str : getFileExtensions()) {
-			if(file.getFileExtension().equals(str)) {
+			if (file.getFileExtension().equals(str)) {
 				return isModelFor(file.getProject());
 			}
 		}
@@ -118,8 +118,7 @@ public class JastAddJModel extends JastAddModel {
 	public boolean isModelFor(IJastAddNode node) {
 		return getProject(node) != null;
 	}
-	
-	
+
 	public List<String> getFileExtensions() {
 		List<String> list = new ArrayList<String>();
 		list.add("java");
@@ -127,13 +126,12 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	public String[] getFilterExtensions() {
-		return new String[] { ".project", "*.java.dummy", "*.class"};
+		return new String[] { ".project", "*.java.dummy", "*.class" };
 	}
 
-	
 	public void openFile(IJastAddNode node) {
 		if (node instanceof IJastAddJFindDeclarationNode) {
-			IJastAddJFindDeclarationNode n = (IJastAddJFindDeclarationNode)node;
+			IJastAddJFindDeclarationNode n = (IJastAddJFindDeclarationNode) node;
 			int targetLine = n.selectionLine();
 			int targetColumn = n.selectionColumn();
 			int targetLength = n.selectionLength();
@@ -141,61 +139,91 @@ public class JastAddJModel extends JastAddModel {
 			openFile(cu, targetLine, targetColumn, targetLength);
 		}
 	}
-	
-	public void populateClassPath(IProject project, JastAddJBuildConfiguration buildConfiguration, List<String> fullClassPath) {
+
+	public void populateClassPath(IProject project,
+			JastAddJBuildConfiguration buildConfiguration,
+			List<String> fullClassPath) {
 		fullClassPath.addAll(buildClassPath(project, buildConfiguration));
 
 		String projectPath = project.getLocation().toOSString();
 		if (buildConfiguration.outputPath != null)
-			fullClassPath.add(projectPath + File.separator + buildConfiguration.outputPath);
+			fullClassPath.add(projectPath + File.separator
+					+ buildConfiguration.outputPath);
 		else
 			fullClassPath.add(projectPath);
 	}
-	
-	public void popupateSourceContainers(IProject project, JastAddJBuildConfiguration buildConfiguration, List<ISourceContainer> result) {
-		result.add(new FolderSourceContainer(project, true));	
+
+	public void popupateSourceContainers(IProject project,
+			JastAddJBuildConfiguration buildConfiguration,
+			List<ISourceContainer> result) {
+		result.add(new FolderSourceContainer(project, true));
 		popupateSourceAttachments(project, buildConfiguration, result);
 	}
-	
-	public void popupateSourceAttachments(IProject project, JastAddJBuildConfiguration buildConfiguration, List<ISourceContainer> result) {
-		for(ClassPathEntry entry : buildConfiguration.classPathList) {
-			if (entry.sourceAttachmentPath == null) continue;
-			
+
+	public void popupateSourceAttachments(IProject project,
+			JastAddJBuildConfiguration buildConfiguration,
+			List<ISourceContainer> result) {
+		for (ClassPathEntry entry : buildConfiguration.classPathList) {
+			if (entry.sourceAttachmentPath == null)
+				continue;
+
 			Path path = new Path(entry.sourceAttachmentPath);
-			
+
 			Object object = resolveResourceOrFile(project, path);
-			if (object == null) continue;
-			
+			if (object == null)
+				continue;
+
 			if (object instanceof IResource) {
-				IResource resource = (IResource)object;
+				IResource resource = (IResource) object;
 
 				if (resource instanceof IContainer)
-					result.add(new FolderSourceContainer((IContainer)resource, true));
+					result.add(new FolderSourceContainer((IContainer) resource,
+							true));
 				else if (resource instanceof IFile)
-					result.add(new ArchiveSourceContainer((IFile)resource, false));
-			}
-			else {
-				java.io.File file = (java.io.File)object;
+					result.add(new ArchiveSourceContainer((IFile) resource,
+							false));
+			} else {
+				java.io.File file = (java.io.File) object;
 				if (file.isDirectory())
 					result.add(new DirectorySourceContainer(file, true));
 				else
-					result.add(new ExternalArchiveSourceContainer(file.getAbsolutePath(), false));
+					result.add(new ExternalArchiveSourceContainer(file
+							.getAbsolutePath(), false));
 			}
 		}
 	}
-	
-	public synchronized void updateBuildConfiguration(IProject project) {
-		if (!hasProgramInfo(project)) return;
-		
-		ProgramInfo programInfo = getProgramInfo(project);
-		try {
-			programInfo.buildConfiguration = readBuildConfiguration(project);
-			reinitProgram(project, programInfo.program, programInfo.buildConfiguration);
-			notifyModelListeners();
+
+	public void addSourceRoots(IProject project,
+			Map<IPath, IContainer> sourceRootMap) {
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+		if (buildConfiguration != null) {
+			for (SourcePathEntry sourcePathEntry : buildConfiguration.sourcePathList) {
+				IResource resource = project
+						.findMember(sourcePathEntry.sourcePath);
+				if (resource == null || !(resource instanceof IContainer))
+					continue;
+				sourceRootMap
+						.put(resource.getFullPath(), (IContainer) resource);
+			}
 		}
-		catch(CoreException e) {
-			logCoreException(e);
+	}
+
+
+	public void updateBuildConfiguration(IProject project) {
+		synchronized (this) {
+			if (!hasProgramInfo(project))
+				return;
+
+			ProgramInfo programInfo = getProgramInfo(project);
+			try {
+				programInfo.buildConfiguration = readBuildConfiguration(project);
+				reinitProgram(project, programInfo.program,
+						programInfo.buildConfiguration);
+			} catch (CoreException e) {
+				logCoreException(e);
+			}
 		}
+		notifyModelListeners();
 	}
 
 	protected void completeBuild(IProject project) {
@@ -279,14 +307,13 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 
-
 	private void reportBuildError(IProject project, Throwable e) {
 		logError(e, "Buld failed!");
 		try {
-			addErrorMarker(project, "Build failed: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
-		}
-		catch(CoreException ce) {
-			logError(ce, "Logging build exception failed!");				
+			addErrorMarker(project, "Build failed: " + e.getMessage(), -1,
+					IMarker.SEVERITY_ERROR);
+		} catch (CoreException ce) {
+			logError(ce, "Logging build exception failed!");
 		}
 	}
 	
@@ -316,34 +343,38 @@ public class JastAddJModel extends JastAddModel {
 
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
-		if (buildConfiguration == null)
-			return;
-		IProgram program = getProgram(project);
-		if (program == null)
-			return;
-		program.files().clear();
-		Map<String,IFile> map = sourceMap(project, buildConfiguration);
-		program.files().addAll(map.keySet());
-
-		Collection changedFileNames = new ArrayList();
-		if(fileName != null)
-			changedFileNames.add(fileName);
-		// remove files already built and the current document from worklist
-		program.flushSourceFiles(changedFileNames);
-		if(fileName != null)
-			program.files().remove(fileName);
-
-		// build new files
-		for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
-			String name = (String)iter.next();
-			program.addSourceFile(name);
+		try {
+			JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+			if (buildConfiguration == null)
+				return;
+			IProgram program = getProgram(project);
+			if (program == null)
+				return;
+			program.files().clear();
+			Map<String,IFile> map = sourceMap(project, buildConfiguration);
+			program.files().addAll(map.keySet());
+	
+			Collection changedFileNames = new ArrayList();
+			if(fileName != null)
+				changedFileNames.add(fileName);
+			// remove files already built and the current document from worklist
+			program.flushSourceFiles(changedFileNames);
+			if(fileName != null)
+				program.files().remove(fileName);
+	
+			// build new files
+			for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+				String name = (String)iter.next();
+				program.addSourceFile(name);
+			}
+			// recover the current document
+			StringBuffer buf = new StringBuffer(document.get());
+			new JastAddStructureModel(buf).doRecovery(0);
+			// build the current document
+			program.addSourceFile(fileName, buf.toString());
+		} catch (Throwable e) {
+			logError(e, "Updatingm model failed!");
 		}
-		// recover the current document
-		StringBuffer buf = new StringBuffer(document.get());
-		new JastAddStructureModel(buf).doRecovery(0);
-		// build the current document
-		program.addSourceFile(fileName, buf.toString());		
 	}
 
 	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
@@ -351,17 +382,17 @@ public class JastAddJModel extends JastAddModel {
 			return null;
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
-			return null;		
-		IProgram program = getProgram(project);
-		if (program == null) 
 			return null;
-		for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-			ICompilationUnit cu = (ICompilationUnit)iter.next();
-			if(cu.fromSource()) {
+		IProgram program = getProgram(project);
+		if (program == null)
+			return null;
+		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+			ICompilationUnit cu = (ICompilationUnit) iter.next();
+			if (cu.fromSource()) {
 				String name = cu.pathName();
-				if(name == null)
+				if (name == null)
 					System.out.println(cu);
-				if(name.equals(filePath))
+				if (name.equals(filePath))
 					return cu;
 			}
 		}
@@ -377,15 +408,17 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	public IStatus makeErrorStatus(Throwable e, String message) {
-		return new Status(IStatus.ERROR, JastAddJActivator.JASTADDJ_PLUGIN_ID, IStatus.ERROR, message, e);
-	}
-	
-	public void resourceChanged(IProject project, IResourceChangeEvent event, IResourceDelta delta) {
-		checkReloadBuildConfiguration(project,event, delta);
+		return new Status(IStatus.ERROR, JastAddJActivator.JASTADDJ_PLUGIN_ID,
+				IStatus.ERROR, message, e);
 	}
 
-	protected void checkReloadBuildConfiguration(IProject project, IResourceChangeEvent event,
+	public void resourceChanged(IProject project, IResourceChangeEvent event,
 			IResourceDelta delta) {
+		checkReloadBuildConfiguration(project, event, delta);
+	}
+
+	protected void checkReloadBuildConfiguration(IProject project,
+			IResourceChangeEvent event, IResourceDelta delta) {
 		switch (event.getType()) {
 		case IResourceChangeEvent.POST_CHANGE:
 			IResourceDelta newDelta = delta.findMember(new Path(
@@ -394,17 +427,17 @@ public class JastAddJModel extends JastAddModel {
 				updateBuildConfiguration(project);
 			break;
 		}
-	}		
-	
+	}
+
 	// ***************** Additional public methods
 
 	public IOutlineNode[] getMainTypes(IProject project) {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
-			return null;		
-		IProgram program  = getProgram(project);
+			return null;
+		IProgram program = getProgram(project);
 		if (program != null) {
-			return 	program.mainTypes();
+			return program.mainTypes();
 		}
 		return new IOutlineNode[0];
 	}
@@ -415,22 +448,40 @@ public class JastAddJModel extends JastAddModel {
 			return programInfo.buildConfiguration;
 		return null;
 	}
-	
+
 	public IProgram getProgram(IProject project) {
 		ProgramInfo programInfo = getProgramInfo(project);
 		if (programInfo != null)
 			return programInfo.program;
 		return null;
 	}
-	
-	public JastAddJBuildConfiguration readBuildConfiguration(IProject project) throws CoreException {
+
+	public IFile getFile(IJastAddNode node) {
+		IJastAddNode root = node;
+		while (root != null && !(root instanceof ICompilationUnit))
+			root = root.getParent();
+		if (root == null)
+			return null;
+		ICompilationUnit compilationUnit = (ICompilationUnit) root;
+
+		IPath path = Path.fromOSString(compilationUnit.pathName());
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+				.findFilesForLocation(path);
+		if (files.length == 1)
+			return files[0];
+		else
+			return null;
+	}
+
+	public JastAddJBuildConfiguration readBuildConfiguration(IProject project)
+			throws CoreException {
 		try {
 			JastAddJBuildConfiguration buildConfiguration = getEmptyBuildConfiguration();
 			doReadBuildConfiguration(project, buildConfiguration);
 			return buildConfiguration;
 		} catch (Exception e) {
-			throw makeCoreException(e,
-					"Loading build configuration failed: " + e.getMessage());
+			throw makeCoreException(e, "Loading build configuration failed: "
+					+ e.getMessage());
 		}
 	}
 
@@ -439,7 +490,8 @@ public class JastAddJModel extends JastAddModel {
 		try {
 			doWriteBuildConfiguration(project, buildConfiguration);
 		} catch (Exception e) {
-			throw makeCoreException(e, "Saving build configuration failed: " + e.getMessage());
+			throw makeCoreException(e, "Saving build configuration failed: "
+					+ e.getMessage());
 		}
 	}
 
@@ -448,44 +500,12 @@ public class JastAddJModel extends JastAddModel {
 		JastAddJBuildConfigurationUtil.populateDefaults(buildConfiguration);
 		return buildConfiguration;
 	}
-	
+
 	public void registerStopHandler(Runnable stopHandler) {
 		JastAddJActivator.INSTANCE.addStopHandler(stopHandler);
 	}
-	
-	//*************** Protected methods
-	
-	protected boolean hasProgramInfo(IProject project) {
-		return projectToNodeMap.containsKey(project);
-	}
-	
-	protected ProgramInfo getProgramInfo(IProject project) {
-		if (projectToNodeMap.containsKey(project)) {
-			return projectToNodeMap.get(project);
-		} else {
-			if (isModelFor(project)) {
-				try {
-					ProgramInfo programInfo = new ProgramInfo();
-					programInfo.buildConfiguration = readBuildConfiguration(project); 
-					programInfo.program = initProgram(project, programInfo.buildConfiguration);
-					projectToNodeMap.put(project, programInfo);
-					nodeToProjectMap.put(programInfo.program, project);
-					return programInfo;
-				}
-				catch(CoreException e) {
-					logError(e, "Initializing program failed!");
-					return null;
-				}				
-				catch(Error e) {
-					logError(e, "Initializing program failed!");
-					return null;
-				}
-			}
-		}
-		return null;
-	}
 
-	protected IProject getProject(IJastAddNode node) {
+	public IProject getProject(IJastAddNode node) {
 		if (node == null)
 			return null;
 		while (node.getParent() != null) {
@@ -494,34 +514,65 @@ public class JastAddJModel extends JastAddModel {
 		return nodeToProjectMap.get(node);
 	}
 
-	protected IProgram initProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {
-		// Init
-		Program program = new Program();	
-		program.initBytecodeReader(new bytecode.Parser());
-		program.initJavaParser(
-				new JavaParser() {
-					public CompilationUnit parse(java.io.InputStream is, String fileName) 
-					throws java.io.IOException, beaver.Parser.Exception {
-						return new parser.JavaParser().parse(is, fileName);
-					}
+	// *************** Protected methods
+
+	protected boolean hasProgramInfo(IProject project) {
+		return projectToNodeMap.containsKey(project);
+	}
+
+	protected ProgramInfo getProgramInfo(IProject project) {
+		if (projectToNodeMap.containsKey(project)) {
+			return projectToNodeMap.get(project);
+		} else {
+			if (isModelFor(project)) {
+				try {
+					ProgramInfo programInfo = new ProgramInfo();
+					programInfo.buildConfiguration = readBuildConfiguration(project);
+					programInfo.program = initProgram(project,
+							programInfo.buildConfiguration);
+					projectToNodeMap.put(project, programInfo);
+					nodeToProjectMap.put(programInfo.program, project);
+					return programInfo;
+				} catch (CoreException e) {
+					logError(e, "Initializing program failed!");
+					return null;
+				} catch (Error e) {
+					logError(e, "Initializing program failed!");
+					return null;
 				}
-		);
+			}
+		}
+		return null;
+	}
+
+	protected IProgram initProgram(IProject project,
+			JastAddJBuildConfiguration buildConfiguration) {
+		// Init
+		Program program = new Program();
+		program.initBytecodeReader(new bytecode.Parser());
+		program.initJavaParser(new JavaParser() {
+			public CompilationUnit parse(java.io.InputStream is, String fileName)
+					throws java.io.IOException, beaver.Parser.Exception {
+				return new parser.JavaParser().parse(is, fileName);
+			}
+		});
 		program.initOptions();
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		try {
-			Map<String,IFile> map = sourceMap(project, buildConfiguration);
-			for(String fileName : map.keySet())
+			Map<String, IFile> map = sourceMap(project, buildConfiguration);
+			for (String fileName : map.keySet())
 				program.addSourceFile(fileName);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return program;	   
+		return program;
 	}
 
-	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
-		Program realProgram = (Program)program;
+	protected void reinitProgram(IProject project, IProgram program,
+			JastAddJBuildConfiguration buildConfiguration) {
+		Program realProgram = (Program) program;
 
 		// TODO: Program options is a static attribute of Program ...
 
@@ -529,39 +580,39 @@ public class JastAddJModel extends JastAddModel {
 		Program.initOptions();
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-d");
-		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
+		addBuildConfigurationOptions(project, realProgram, buildConfiguration);
 	}
-	
-	protected void addBuildConfigurationOptions(IProject project, IProgram program,
-			JastAddJBuildConfiguration buildConfiguration) {
+
+	protected void addBuildConfigurationOptions(IProject project,
+			IProgram program, JastAddJBuildConfiguration buildConfiguration) {
 		String projectPath = project.getLocation().toOSString();
-		
+
 		Collection<String> options = new ArrayList<String>();
 		if (buildConfiguration != null) {
 			List<String> result = buildClassPath(project, buildConfiguration);
 			if (result.size() > 0) {
 				StringBuffer buffer = new StringBuffer();
-				for(String item : result) {
+				for (String item : result) {
 					buffer.append(item);
 					buffer.append(File.pathSeparatorChar);
 				}
 				options.add("-classpath");
-				options.add(buffer.toString());				
+				options.add(buffer.toString());
 			}
 			options.add("-d");
 			if (buildConfiguration.outputPath != null)
-				options.add(projectPath + File.separator + buildConfiguration.outputPath);
+				options.add(projectPath + File.separator
+						+ buildConfiguration.outputPath);
 			else
 				options.add(projectPath);
 		}
 		program.addOptions(options.toArray(new String[0]));
 	}
 
-	protected Map<String,IFile> sourceMap(IProject project,
-			final JastAddJBuildConfiguration buildConfiguration)
-			{
+	protected Map<String, IFile> sourceMap(IProject project,
+			final JastAddJBuildConfiguration buildConfiguration) {
 		try {
-			final Map<String,IFile> result = new HashMap<String,IFile>();
+			final Map<String, IFile> result = new HashMap<String, IFile>();
 			for (final SourcePathEntry entry : buildConfiguration.sourcePathList) {
 				final IPath sourcePath = new Path(entry.sourcePath);
 				final IResource sourceResource = project.findMember(sourcePath);
@@ -570,7 +621,8 @@ public class JastAddJModel extends JastAddModel {
 				final IContainer sourceContainer = (IContainer) sourceResource;
 				final SourcePathMatcher matcher = new SourcePathMatcher(entry);
 				sourceContainer.accept(new IResourceVisitor() {
-					public boolean visit(IResource resource) throws CoreException {
+					public boolean visit(IResource resource)
+							throws CoreException {
 						switch (resource.getType()) {
 						case IResource.FILE:
 							IFile file = (IFile) resource;
@@ -578,7 +630,9 @@ public class JastAddJModel extends JastAddModel {
 								break;
 							if (!matcher.match(resource))
 								break;
-							result.put(file.getRawLocation().toOSString(), file);
+							result
+									.put(file.getRawLocation().toOSString(),
+											file);
 							break;
 						}
 						return true;
@@ -586,70 +640,77 @@ public class JastAddJModel extends JastAddModel {
 				});
 			}
 			return result;
-		} 
-		catch (CoreException e) {
+		} catch (CoreException e) {
 			logCoreException(e);
 			return null;
 		}
 	}
-	
+
 	private static class SourcePathMatcher {
 		final SourcePathEntry sourcePathEntry;
 		char[][] inclusionPatterns;
 		char[][] exclusionPatterns;
-		
+
 		SourcePathMatcher(SourcePathEntry sourcePathEntry) {
 			this.sourcePathEntry = sourcePathEntry;
 			if (sourcePathEntry.includeList.size() > 0) {
-				this.inclusionPatterns = new char[sourcePathEntry.includeList.size()][];
-				for(int i = 0; i < sourcePathEntry.includeList.size(); i++)
-					this.inclusionPatterns[i] = normalizePattern(sourcePathEntry.includeList.get(i)).toCharArray();
+				this.inclusionPatterns = new char[sourcePathEntry.includeList
+						.size()][];
+				for (int i = 0; i < sourcePathEntry.includeList.size(); i++)
+					this.inclusionPatterns[i] = normalizePattern(
+							sourcePathEntry.includeList.get(i)).toCharArray();
 			}
 			if (sourcePathEntry.excludeList.size() > 0) {
-				this.exclusionPatterns = new char[sourcePathEntry.excludeList.size()][];
-				for(int i = 0; i < sourcePathEntry.excludeList.size(); i++)
-					this.exclusionPatterns[i] = normalizePattern(sourcePathEntry.excludeList.get(i)).toCharArray();
-			}		
+				this.exclusionPatterns = new char[sourcePathEntry.excludeList
+						.size()][];
+				for (int i = 0; i < sourcePathEntry.excludeList.size(); i++)
+					this.exclusionPatterns[i] = normalizePattern(
+							sourcePathEntry.excludeList.get(i)).toCharArray();
+			}
 		}
-		
+
 		String normalizePattern(Pattern pattern) {
-			return new Path(sourcePathEntry.sourcePath).append(pattern.value).toString();
+			return new Path(sourcePathEntry.sourcePath).append(pattern.value)
+					.toString();
 		}
-		
+
 		boolean match(IResource resource) {
-			return !Util.isExcluded(resource.getProjectRelativePath(), inclusionPatterns, exclusionPatterns, false);
+			return !Util.isExcluded(resource.getProjectRelativePath(),
+					inclusionPatterns, exclusionPatterns, false);
 		}
 	}
 
 	protected List<String> buildClassPath(IProject project,
 			final JastAddJBuildConfiguration buildConfiguration) {
 		List<String> result = new ArrayList<String>();
-		for(ClassPathEntry classPathEntry : buildConfiguration.classPathList) {
+		for (ClassPathEntry classPathEntry : buildConfiguration.classPathList) {
 			Path path = new Path(classPathEntry.classPath);
 			Object object = resolveResourceOrFile(project, path);
-			if (object == null) continue;
-			
+			if (object == null)
+				continue;
+
 			if (object instanceof IResource)
-				result.add(((IResource)object).getRawLocation().toOSString());
+				result.add(((IResource) object).getRawLocation().toOSString());
 			else
-				result.add(((java.io.File)object).getAbsolutePath());
+				result.add(((java.io.File) object).getAbsolutePath());
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Opens the file corresponding to the given compilation unit with a selection
-	 * corresponding to the given line, column and length.
+	 * Opens the file corresponding to the given compilation unit with a
+	 * selection corresponding to the given line, column and length.
 	 */
-	protected void openFile(ICompilationUnit unit, int line, int column, int length) {
+	protected void openFile(ICompilationUnit unit, int line, int column,
+			int length) {
 		final String JAVA_FILE_EXT = ".java";
 		final String JAR_FILE_EXT = ".jar";
-		final String CLASS_FILE_EXT = ".class";	
+		final String CLASS_FILE_EXT = ".class";
 
 		String pathName = unit.pathName();
 		if (pathName.endsWith(CLASS_FILE_EXT)) {
 			pathName = pathName.replace(CLASS_FILE_EXT, JAVA_FILE_EXT);
-		} 
+		}
 		boolean finishedTrying = false;
 		while (!finishedTrying) {
 			if (pathName.endsWith(JAVA_FILE_EXT)) {
@@ -660,38 +721,45 @@ public class JastAddJModel extends JastAddModel {
 					finishedTrying = true;
 				} catch (URISyntaxException e1) {
 					if (pathName.endsWith(JAVA_FILE_EXT)) {
-						pathName = pathName.replace(JAVA_FILE_EXT, CLASS_FILE_EXT);
+						pathName = pathName.replace(JAVA_FILE_EXT,
+								CLASS_FILE_EXT);
 					}
 				}
-			} else if (pathName.endsWith(CLASS_FILE_EXT) || pathName.endsWith(JAR_FILE_EXT)) {
+			} else if (pathName.endsWith(CLASS_FILE_EXT)
+					|| pathName.endsWith(JAR_FILE_EXT)) {
 				try {
-					openClassFile(pathName, unit.relativeName(), pathName.endsWith(JAR_FILE_EXT), line, column, length);
+					openClassFile(pathName, unit.relativeName(), pathName
+							.endsWith(JAR_FILE_EXT), line, column, length);
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				} catch (PartInitException e) {
 					e.printStackTrace();
-				}	
+				}
 				finishedTrying = true;
 			}
 		}
 	}
-		
+
 	/**
-	 * Opens the file corresponding to the given pathName with a selection corresponding
-	 * to line, column and length. 
+	 * Opens the file corresponding to the given pathName with a selection
+	 * corresponding to line, column and length.
 	 */
-	protected void openJavaFile(String pathName, int line, int column, int length)
-			throws PartInitException, URISyntaxException {
-		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
+	protected void openJavaFile(String pathName, int line, int column,
+			int length) throws PartInitException, URISyntaxException {
+		IPath path = Path.fromOSString(pathName);// URIUtil.toPath(new
+													// URI("file:/" +
+													// pathName));
 		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 				.findFilesForLocation(path);
 		if (files.length >= 1) {
 			IEditorInput targetEditorInput = new FileEditorInput(files[0]);
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			IWorkbenchWindow window = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 			page.openEditor(targetEditorInput, getEditorID(), true);
 			IDocument targetDoc = fileToDocument(files[0]);
-			if (targetDoc == null) return;
+			if (targetDoc == null)
+				return;
 			int lineOffset = 0;
 			try {
 				lineOffset = targetDoc.getLineOffset(line - 1) + column - 1;
@@ -704,12 +772,12 @@ public class JastAddJModel extends JastAddModel {
 			}
 		}
 	}
-	
+
 	@Override
 	public String getEditorID() {
 		return JastAddJEditor.EDITOR_ID;
 	}
-	
+
 	@Override
 	public String getNatureID() {
 		return JastAddJNature.NATURE_ID;
@@ -722,8 +790,10 @@ public class JastAddJModel extends JastAddModel {
 	protected void openClassFile(String pathName, String relativeName,
 			boolean inJarFile, int line, int column, int length)
 			throws PartInitException, URISyntaxException {
-		
-		IPath path = Path.fromOSString(pathName);//URIUtil.toPath(new URI("file:/" + pathName));
+
+		IPath path = Path.fromOSString(pathName);// URIUtil.toPath(new
+													// URI("file:/" +
+													// pathName));
 		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 				.findFilesForLocation(path);
 		if (files.length > 0) {
@@ -747,65 +817,70 @@ public class JastAddJModel extends JastAddModel {
 			resource = project.findMember(path);
 		else
 			resource = project.getWorkspace().getRoot().findMember(path);
-		
+
 		if (resource != null)
 			return resource;
-		
+
 		java.io.File file = path.toFile();
 		if (file.exists())
 			return file;
-		
+
 		return null;
 	}
-	
 
-	public Collection recoverCompletion(int documentOffset, String[] linePart, StringBuffer buf, IProject project, String fileName, IJastAddNode node) throws IOException, Exception {
-		if(node == null) {
+	public Collection recoverCompletion(int documentOffset, String[] linePart,
+			StringBuffer buf, IProject project, String fileName,
+			IJastAddNode node) throws IOException, Exception {
+		if (node == null) {
 			// Try a structural recovery
-			documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
-	
-			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+			documentOffset += (new JastAddStructureModel(buf))
+					.doRecovery(documentOffset); // Return recovery offset
+													// change
+
+			node = findNodeInDocument(project, fileName, new Document(buf
+					.toString()), documentOffset - 1);
 			if (node == null) {
 				System.out.println("Structural recovery failed");
 				return new ArrayList();
 			}
 		}
-		if(node instanceof Access) {
-			Access n = (Access)node;
+		if (node instanceof Access) {
+			Access n = (Access) node;
 			System.out.println("Automatic recovery");
 			System.out.println(n.getParent().getParent().dumpTree());
 			return n.completion(linePart[1]);
-		} 
-		else if(node instanceof ASTNode) {
-			ASTNode n = (ASTNode)node;
+		} else if (node instanceof ASTNode) {
+			ASTNode n = (ASTNode) node;
 			System.out.println("Manual recovery");
 			Expr newNode;
-			if(linePart[0].length() != 0) {
+			if (linePart[0].length() != 0) {
 				String nameWithParan = "(" + linePart[0] + ")";
-				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
-				scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
-				newNode = (Expr)((ParExpr)new parser.JavaParser().parse(
-						scanner,parser.JavaParser.AltGoals.expression)
-				).getExprNoTransform();
-				newNode = newNode.qualifiesAccess(new MethodAccess("X", new AST.List()));
-			}
-			else {
+				ByteArrayInputStream is = new ByteArrayInputStream(
+						nameWithParan.getBytes());
+				scanner.JavaScanner scanner = new scanner.JavaScanner(
+						new scanner.Unicode(is));
+				newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+						scanner, parser.JavaParser.AltGoals.expression))
+						.getExprNoTransform();
+				newNode = newNode.qualifiesAccess(new MethodAccess("X",
+						new AST.List()));
+			} else {
 				newNode = new MethodAccess("X", new AST.List());
 			}
-	
+
 			int childIndex = n.getNumChild();
 			n.addChild(newNode);
 			n = n.getChild(childIndex);
 			if (n instanceof Access)
 				n = ((Access) n).lastAccess();
 			// System.out.println(node.dumpTreeNoRewrite());
-	
+
 			// Use the connection to the dummy AST to do name
 			// completion
 			return n.completion(linePart[1]);
 		}
 		return new ArrayList();
-	}	
+	}
 
 	protected JastAddJBuildConfiguration getEmptyBuildConfiguration() {
 		return new JastAddJBuildConfiguration();
@@ -813,8 +888,8 @@ public class JastAddJModel extends JastAddModel {
 
 	protected void doReadBuildConfiguration(IProject project,
 			JastAddJBuildConfiguration buildConfiguration) throws Exception {
-		JastAddJBuildConfigurationUtil.readBuildConfiguration(
-				project, buildConfiguration);
+		JastAddJBuildConfigurationUtil.readBuildConfiguration(project,
+				buildConfiguration);
 	}
 
 	protected void doWriteBuildConfiguration(IProject project,
@@ -823,4 +898,3 @@ public class JastAddJModel extends JastAddModel {
 				buildConfiguration);
 	}
 }
- 

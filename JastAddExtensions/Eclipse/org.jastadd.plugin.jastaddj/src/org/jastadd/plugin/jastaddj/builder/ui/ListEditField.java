@@ -18,8 +18,13 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 abstract class ListEditField<T> {
 	private final List<T> data;
 	
-	ListEditField(List<T> data) {
+	private int charWidth;
+	private int charHeight;
+	
+	ListEditField(List<T> data, int charWidth, int charHeight) {
 		this.data = data;
+		this.charWidth = charWidth;
+		this.charHeight = charHeight;
 	}
 	
 	Control getControl(Composite parent) {
@@ -30,12 +35,12 @@ abstract class ListEditField<T> {
 		dataCompositeLayout.marginHeight = 0;
 		dataComposite.setLayout(dataCompositeLayout);
 
-		UIUtil.stretchControl(dataComposite);
+		dataComposite.setLayoutData(UIUtil.stretchControl(new GridData()));
 
 		org.eclipse.swt.widgets.List dataList = new org.eclipse.swt.widgets.List(dataComposite, SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		dataList.setFont(parent.getFont());
-		UIUtil.stretchControl(dataList);
+		dataList.setLayoutData(UIUtil.suggestCharSize(UIUtil.stretchControl(new GridData()), parent, charWidth, charHeight));
 		final ListViewer dataViewer = new ListViewer(dataList);
 		dataViewer.setContentProvider(new IStructuredContentProvider() {
 			public Object[] getElements(Object inputElement) {

@@ -42,6 +42,7 @@
      <view
 		class = "org.jastadd.plugin.jastaddj.explorer.JastAddJExplorer"
 		id = "org.jastadd.plugin.explore.JastAddJExplorer"
+		icon = "icons/eview16/package.gif"
 		category="org.eclipse.ui.jastaddj"		
 		name = "JastAddJ Explorer">
 	 </view>
@@ -91,9 +92,15 @@
 		class = "org.jastadd.plugin.jastaddj.perspective.JastAddJPerspective"
 		id = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		name = "JastAddJ">
+		
 	</perspective>
-	</extension>
-   
+	</extension> 	
+	
+	<extension point="org.eclipse.ui.perspectiveExtensions">
+    	<perspectiveExtension targetID = "org.jastadd.plugin.jastaddj.JastAddJPerspective">
+    		<showInPart id = "org.jastadd.plugin.explore.JastAddJExplorer"/>
+    	</perspectiveExtension>
+    </extension>   
 
 	<!-- JastAddJ Nature -->
 	

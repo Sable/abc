@@ -53,7 +53,7 @@ class ClassPathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
 		String[] labels;
 		
 		ClassPathEntryListEditField(List<ClassPathEntry> data, String[] labels) {
-			super(data);
+			super(data, 20, 15);
 			this.labels = labels;
 		}
 		

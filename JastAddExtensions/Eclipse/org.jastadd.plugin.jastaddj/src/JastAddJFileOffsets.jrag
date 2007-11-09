@@ -1,0 +1,32 @@
+aspect JastAddJFileOffsets {
+
+    public CompilationUnit ASTNode.getCompilationUnit() {
+    	ASTNode node = this;
+    	while(node != null && !(node instanceof CompilationUnit))
+			node = node.getParent();
+    	return (CompilationUnit)node;
+    }
+    
+    public String ASTNode.getFileName() {
+    	CompilationUnit cu = getCompilationUnit();
+    	if (cu != null)
+    		return cu.pathName();
+    	return null;
+    }
+    
+    public int ASTNode.getBeginOffset() {
+	    CompilationUnit cu = getCompilationUnit();
+	    if (cu != null)
+	    	return cu.offset(ASTNode.getLine(getStart()), ASTNode.getColumn(getStart()));
+	    else
+	    	return -1;
+	}
+	
+    public int ASTNode.getEndOffset() {
+	    CompilationUnit cu = getCompilationUnit();
+	    if (cu != null)
+	    	return cu.offset(ASTNode.getLine(getEnd()), ASTNode.getColumn(getEnd()));
+		else
+	    	return -1;	    	
+	} 
+}

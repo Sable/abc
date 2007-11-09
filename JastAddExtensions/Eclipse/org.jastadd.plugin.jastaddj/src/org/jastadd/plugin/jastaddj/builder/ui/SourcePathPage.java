@@ -58,12 +58,12 @@ class SourcePathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
 		sourceCompositeLayout.marginHeight = 0;
 		sourceComposite.setLayout(sourceCompositeLayout);
 
-		UIUtil.stretchControl(sourceComposite);
+		sourceComposite.setLayoutData(UIUtil.stretchControl(new GridData()));
 
 		Tree sourceTree = new Tree(sourceComposite, SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		sourceTree.setFont(parent.getFont());
-		UIUtil.stretchControl(sourceTree);
+		sourceTree.setLayoutData(UIUtil.suggestCharSize(UIUtil.stretchControl(new GridData()), parent, 20, 15));
 		final TreeViewer sourceViewer = new TreeViewer(sourceTree);
 		sourceViewer.setContentProvider(new SourceContentProvider());
 		sourceViewer.setLabelProvider(new SourceLabelProvider());
@@ -97,9 +97,9 @@ class SourcePathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
 		outputFolderControl.setFont(parent.getFont());
 		if (buildConfiguration.outputPath != null)
 			outputFolderControl.setText(buildConfiguration.outputPath);
-		GridData buildConfigurationGridData = new GridData();
-		buildConfigurationGridData.horizontalAlignment = SWT.FILL;
-		outputFolderControl.setLayoutData(buildConfigurationGridData);
+		
+		outputFolderControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));		
+		
 		outputFolderControl.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				String text = outputFolderControl.getText();
