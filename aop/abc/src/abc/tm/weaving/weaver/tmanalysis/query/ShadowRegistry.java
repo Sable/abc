@@ -77,7 +77,7 @@ public class ShadowRegistry {
 	/** maps a shadow ID to a unique number for that id */
 	protected Map<String,Integer> shadowIdToNumber = new HashMap<String,Integer>();
 	
-    protected boolean residueBoxesChanged;
+    protected boolean residueBoxesChanged, shadowsDisabled;
 
     protected ShadowRegistry() {
 	
@@ -87,6 +87,7 @@ public class ShadowRegistry {
         allShadowsToBodyAdviceApplications= new HashMap();
 		tmNameToUniqueShadowIds = new HashMap();
 		residueBoxesChanged = false;
+		shadowsDisabled = false;
 
 		//traverse all advice applications
 		AdviceApplicationVisitor.v().traverse(
@@ -178,6 +179,7 @@ public class ShadowRegistry {
 			System.err.println("disabled shadow: "+uniqueShadowId);
 		}
 
+		shadowsDisabled = true;
 	}
 
 	/**
@@ -208,7 +210,19 @@ public class ShadowRegistry {
         return val;
     }
 
-	public void removeTracematchesWithNoRemainingShadows() {
+    /**
+     * Tells whether any shadow was disabled since the last time this method was called
+     * (or since startup of the program).
+     * @return <code>true</code> is shadow was disabled since the last
+     * call to this method or program startup
+     */
+    public boolean wasShadowDisabled() {
+        boolean val = shadowsDisabled;
+        shadowsDisabled = false;
+        return val;
+    }
+
+    public void removeTracematchesWithNoRemainingShadows() {
 		for (Iterator tmIter = gai.getTraceMatches().iterator(); tmIter.hasNext();) {
 			TraceMatch tm = (TraceMatch) tmIter.next();
 			
