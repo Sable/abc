@@ -2529,6 +2529,7 @@
             <jamessage kind="error" line="6"/>
             <jamessage kind="error" line="8"/>
             <jamessage kind="error" line="10"/>
+            <jamessage kind="error" line="10"/>
             <jamessage kind="error" line="12"/>
         </compile>
     </ajc-test>
@@ -3371,8 +3372,6 @@
             <message kind="error" line="46"/>
             <jamessage kind="error" line="7"/>
             <jamessage kind="error" line="10"/>
-            <jamessage kind="error" line="21"/>
-            <jamessage kind="error" line="21"/>
             <jamessage kind="error" line="41"/>
             <jamessage kind="error" line="42"/>
             <jamessage kind="error" line="43"/>

@@ -41,7 +41,7 @@ aspect IntertypeDecls {
   }
   private HashMap Program.intertypeDecls = null;
   protected void ASTNode.collectIntertypeDecls(HashMap map) {
-    for(int i = 0; i < getNumChild(); i++)
+    for(int i = 0; i < getNumChildNoTransform(); i++)
       getChildNoTransform(i).collectIntertypeDecls(map);
   }
   protected void CompilationUnit.collectIntertypeDecls(HashMap map) {
