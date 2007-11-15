@@ -453,9 +453,9 @@ skip_seq ::=
  		RESULT = list;
  	:}
  |
- 	skip_regex_simple:a regex_symbol_disj:b
+ 	IDENTIFIER:a regex_symbol_disj:b
  	{:
- 		b.add(0, a);
+ 		b.add(0, a.getIdentifier());
  		RESULT = b;
  	:}
  ;
