@@ -1,0 +1,418 @@
+aspect ControlFlowGraph {
+
+	// external API
+
+	syn Set Stmt.succ();
+	eq Stmt.succ() = following();
+	eq Block.succ() = getNumStmt() == 0 ? following() : Set.empty().union(getStmt(0).first());
+	eq IfStmt.succ() = hasElse() ?	Set.empty().union(getThen()).union(getElse()) :
+						following().union(getThen());
+	eq WhileStmt.succ() = following().union(getStmt());
+	eq ForStmt.succ() = following().union(getStmt());
+	eq DoStmt.succ() = following().union(getStmt());
+	eq BreakStmt.succ() = targetStmt().following(); 
+	eq ContinueStmt.succ() = Set.empty().union(targetStmt()); 
+	eq TryStmt.succ() = Set.empty().union(getBlock());
+	eq SwitchStmt.succ() = Set.empty().union(getBlock());
+	eq LabeledStmt.succ() = Set.empty().union(getStmt());
+	eq SynchronizedStmt.succ() = Set.empty().union(getBlock());
+
+
+	eq ThrowStmt.succ() {
+		// -- Old impl --
+		// eq ThrowStmt.succ() = enclosingCatch().isEmpty() ? 
+		// 	Set.empty().union(exitBlock()) : enclosingCatch();
+
+		// Search for catch-finally .. catch-finally. 
+		// When no enclosing try-catch-finally take the exit block
+		TryStmt tryStmt = enclosingTryStmt();
+		boolean firstEnclosingChecked = false;
+		while (tryStmt != null) {
+			if (!withInCatchClause() || firstEnclosingChecked) {  
+				TypeDecl throwType = getExpr().type();
+				for (int i = 0; i < tryStmt.getNumCatchClause(); i++) {
+					CatchClause catchClause = tryStmt.getCatchClause(i);
+					if (catchClause.handles(throwType)) {
+						return Set.empty().union(catchClause.getBlock());
+					}  
+				}
+			} else if (!firstEnclosingChecked) {
+				firstEnclosingChecked = true;
+			}
+			if (tryStmt.hasFinally()) {
+				return Set.empty().union(enclosingFinally());
+			}
+			tryStmt = tryStmt.enclosingTryStmt();
+		}		
+
+		return Set.empty().union(exitBlock());
+	}
+	eq ReturnStmt.succ() {
+		// -- Old impl --
+		// eq ReturnStmt.succ() = Set.empty().union(exitBlock());
+		// 
+
+		// Search for finally .. finally. 
+		// When no enclosing try-catch-finally take the exit block
+		TryStmt tryStmt = enclosingTryStmt();
+		while (tryStmt != null) {
+			if (tryStmt.hasFinally()) {
+				return Set.empty().union(enclosingFinally());
+			}
+			tryStmt = tryStmt.enclosingTryStmt();
+		}		
+
+		return Set.empty().union(exitBlock());
+	}
+
+
+
+
+//	Want something like this but the mutatingUnion method implementation is currently incorrect..
+//	coll Set Stmt.pred() [Set.empty()] with mutatingUnion;
+//	Stmt contributes this to Stmt.pred() for each succ();
+	coll Collection Stmt.pred() [new ArrayList()] with add;
+	Stmt contributes this to Stmt.pred() for each succ();
+
+	syn boolean Stmt.hasCondBranch();
+	eq Stmt.hasCondBranch() = false;
+	eq IfStmt.hasCondBranch() = true;
+	eq WhileStmt.hasCondBranch() = true;
+	eq DoStmt.hasCondBranch() = true;
+	eq ForStmt.hasCondBranch() = true;
+	eq ConstCase.hasCondBranch() = true;
+
+
+	// helpers throw-catch
+
+	syn boolean Stmt.containsReturn();
+	eq Stmt.containsReturn() = false;
+	eq Block.containsReturn() {
+		for (int i = 0; i < getNumStmt(); i++) {
+			if (getStmt(i).containsReturn()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	eq ReturnStmt.containsReturn() = true;
+	eq TryStmt.containsReturn() {
+		if (getBlock().containsReturn()) {
+			return true;
+		}
+		for (int i = 0; i < getNumCatchClause(); i++) {
+			if (getCatchClause(i).getBlock().containsReturn()) {
+				return true;
+			}
+		}
+		if (hasFinally() && getFinally().containsReturn()) {
+			return true;
+		} 
+		return false;
+	}
+
+	syn Set ASTNode.uncaughtThrows() {
+		Set uncaughtThrows = Set.empty();
+		for(int i = 0; i < getNumChild(); i++)
+			uncaughtThrows = uncaughtThrows.union(getChild(i).uncaughtThrows());
+		return uncaughtThrows;
+	}
+	eq ThrowStmt.uncaughtThrows() = Set.empty().union(this);
+	eq TryStmt.uncaughtThrows() {
+		// Create a set containing the remaining throws after a throw-catch match
+		Set uncaughtThrows = getBlock().uncaughtThrows();
+		Set remainingThrows = Set.empty();
+		for (Iterator itr = uncaughtThrows.iterator(); itr.hasNext();) {
+			ThrowStmt throwStmt = (ThrowStmt)itr.next();
+			boolean caught = false;
+			for (int i = 0; i < getNumCatchClause() && !caught; i++) {
+				caught = getCatchClause(i).handles(throwStmt.getExpr().type());
+			}
+			if (!caught) {
+				remainingThrows = remainingThrows.union(throwStmt);
+			}
+		}
+		// Add throws from catch blocks and finally
+		for (int i = 0; i < getNumCatchClause(); i++) {
+			remainingThrows = remainingThrows.union(getCatchClause(i).getBlock().uncaughtThrows());
+		}
+		if (hasFinally()) {
+			remainingThrows = remainingThrows.union(getFinally().uncaughtThrows());
+		}
+
+		return remainingThrows;
+	}
+
+	inh TryStmt ReturnStmt.enclosingTryStmt(); 
+	inh TryStmt ThrowStmt.enclosingTryStmt();
+	inh TryStmt TryStmt.enclosingTryStmt();
+	eq TypeDecl.getBodyDecl().enclosingTryStmt() = null;
+	eq TryStmt.getBlock().enclosingTryStmt() = this;
+	eq TryStmt.getCatchClause(int index).enclosingTryStmt() = this;
+
+	inh boolean Stmt.hasEnclosingTryStmt();
+	eq TypeDecl.getBodyDecl().hasEnclosingTryStmt() = false;
+	eq TryStmt.getBlock().hasEnclosingTryStmt() = true;
+
+	inh boolean Stmt.isFinallyBlock();
+	eq TypeDecl.getBodyDecl().isFinallyBlock() = false;
+	eq TryStmt.getFinally().isFinallyBlock() = true;
+	eq Block.getStmt(int index).isFinallyBlock() = isFinallyBlock() ? false : isFinallyBlock();
+
+	syn boolean Stmt.hasPathBranch();
+	eq Stmt.hasPathBranch() = false;
+	eq Block.hasPathBranch() = isFinallyBlock() && !((TryStmt)getParent()).getBlock().canCompleteNormally();
+
+	inh Set Stmt.enclosingFinally();
+	inh Set CatchClause.enclosingFinally();
+	eq TypeDecl.getBodyDecl().enclosingFinally() = Set.empty();
+	eq TryStmt.getBlock().enclosingFinally() = hasFinally() ? Set.empty().union(getFinally()) : Set.empty();
+	eq TryStmt.getCatchClause(int index).enclosingFinally() = hasFinally() ? Set.empty().union(getFinally()) : Set.empty();
+	eq CatchClause.getBlock().enclosingFinally() = enclosingFinally(); 
+
+
+	inh boolean Stmt.withInCatchClause();
+	eq TypeDecl.getBodyDecl().withInCatchClause() = false;
+	eq CatchClause.getBlock().withInCatchClause() = true;
+
+//	-- old impl --
+	//syn Set ThrowStmt.enclosingCatch() {
+	// Search for catch-finally-catch-finally. 
+	// When no enclosing try-catch-finally take the exit block
+	/*
+        TryStmt tryStmt = enclosingTryStmt();
+        while (tryStmt != null) {
+	    TypeDecl throwType = getExpr().type();
+	    for (int i = 0; i < tryStmt.getNumCatchClause(); i++) {
+	      CatchClause catchClause = tryStmt.getCatchClause(i);
+	      if (catchClause.handles(throwType)) {
+		return Set.empty().union(catchClause.getBlock());
+	      }  
+	    }
+            if (hasFinally()) {
+              return Set.empty().union(getFinally());
+            }
+            tryStmt = tryStmt.enclosingTryStmt();
+          }		
+	}
+        return Set.empty().empty(exitBlock());
+    }
+	 */
+
+
+	// helpers case-default
+
+	inh ConstCase Stmt.followingConstCase();
+	eq TypeDecl.getBodyDecl().followingConstCase() = null;
+	eq Block.getStmt(int i).followingConstCase() {
+		if (!(getParent() instanceof SwitchStmt) || i == getNumStmt() - 1) {
+			return followingConstCase();
+		} 
+		for (int index = i + 1; index < getNumStmt(); index++) {
+			Stmt stmt = getStmt(index);
+			if (stmt instanceof ConstCase) {
+				return (ConstCase)stmt;
+			}
+		}
+		return followingConstCase();
+	}
+
+	inh DefaultCase Stmt.followingDefaultCase();
+	eq TypeDecl.getBodyDecl().followingDefaultCase() = null;
+	eq Block.getStmt(int i).followingDefaultCase() {
+		if (!(getParent() instanceof SwitchStmt) || i == getNumStmt() - 1) {
+			return followingDefaultCase();
+		} 
+		for (int index = 0; index < getNumStmt(); index++) {
+			Stmt stmt = getStmt(index);
+			if (stmt instanceof DefaultCase) {
+				return (DefaultCase)stmt;
+			}
+		}
+		return followingDefaultCase();
+	}
+
+	// helpers
+
+	inh Set Stmt.following();
+	eq TypeDecl.getBodyDecl().following() = Set.empty();
+	eq Block.getStmt(int i).following() { 
+		if (i == getNumStmt() - 1) {
+			return following();
+		}
+		Stmt thisStmt = getStmt(i);
+		Stmt nextStmt = getStmt(i + 1);
+
+		if (thisStmt instanceof ConstCase) {
+			ConstCase nextCase = thisStmt.followingConstCase();
+			if (nextCase == null) {
+				DefaultCase defaultCase = thisStmt.followingDefaultCase();
+				if (defaultCase == null) {
+					return following().union(nextStmt);
+				} 
+				return Set.empty().union(nextStmt.first()).union(defaultCase);
+			}
+			return Set.empty().union(nextStmt.first()).union(nextCase);
+		} else if (nextStmt instanceof Case) {
+			if (i + 2 < getNumStmt()) {
+				return Set.empty().union(getStmt(i + 2).first());
+			}  
+			return following();
+		} 
+
+		return Set.empty().union(nextStmt.first());
+	}
+	eq WhileStmt.getStmt().following() = Set.empty().union(this);
+
+	eq ForStmt.getInitStmt(int i).following() = Set.empty().union(this);
+	eq ForStmt.getUpdateStmt(int i).following() = Set.empty().union(this);
+	eq ForStmt.getStmt().following() = getNumUpdateStmt() > 0 ? Set.empty().union(getUpdateStmt(0)) : Set.empty().union(this);
+	eq DoStmt.getStmt().following() = Set.empty().union(this);
+
+	eq TryStmt.getBlock().following() = hasFinally() ? Set.empty().union(getFinally()) : following();
+	eq TryStmt.getCatchClause(int index).following() = hasFinally() ? Set.empty().union(getFinally()) : following();
+	eq TryStmt.getFinally().following() { 
+
+		Set succSet = following();
+		boolean addedExit = false;
+		Set uncaughtThrows = uncaughtThrows();
+		if (!uncaughtThrows.isEmpty()) {
+			if (!hasEnclosingTryStmt()) {
+				succSet.union(exitBlock());
+				addedExit = true;
+			} else {
+				// For each uncaught throw search for the next step ( catch or finally eventually exit)
+				for (Iterator itr = uncaughtThrows.iterator(); itr.hasNext(); ) {
+					ThrowStmt throwStmt = (ThrowStmt)itr.next();
+					TryStmt tryStmt = enclosingTryStmt();
+					boolean foundNextStep = false;
+					while (tryStmt != null && !foundNextStep) {
+						TypeDecl throwType = throwStmt.getExpr().type();
+						for (int i = 0; i < tryStmt.getNumCatchClause() && !foundNextStep; i++) {
+							CatchClause catchClause = tryStmt.getCatchClause(i);
+							if (catchClause.handles(throwType)) {
+								succSet = succSet.union(catchClause.getBlock());
+								foundNextStep = true;
+							}  
+						}
+						if (tryStmt.hasFinally()) {
+							succSet = succSet.union(getFinally());
+							foundNextStep = true;
+						}
+						tryStmt = tryStmt.enclosingTryStmt();
+					}		
+					if (!foundNextStep && !addedExit) {
+						succSet = succSet.union(exitBlock());
+						addedExit = true;
+					}
+				}
+			}
+		} 
+		if (containsReturn() && !hasEnclosingTryStmt() && !addedExit) {
+			succSet = succSet.union(exitBlock());  
+		}
+		return succSet;
+	}
+	eq SwitchStmt.getBlock().following() = following();
+
+
+
+	// first
+
+	syn Set Stmt.first() = Set.empty().union(this);
+	eq Block.first() = getNumStmt() > 0 ? Set.empty().union(getStmt(0).first()) : following();
+	eq ForStmt.first() = getNumInitStmt() > 0 ? Set.empty().union(getInitStmt(0)) : super.first();
+	eq DoStmt.first() = Set.empty().union(getStmt());
+
+
+	// exit/entry blocks
+
+	syn boolean BodyDecl.hasControlFlow() = false;
+	eq MethodDecl.hasControlFlow() = true;
+	eq InstanceInitializer.hasControlFlow() = true;
+	eq StaticInitializer.hasControlFlow() = true;
+	eq ConstructorDecl.hasControlFlow() = true;
+
+	syn Stmt BodyDecl.exitBlock() = null;
+	eq MethodDecl.exitBlock() = getBlock();
+	eq ConstructorDecl.exitBlock() = getBlock();
+	eq StaticInitializer.exitBlock() = getBlock();
+	eq InstanceInitializer.exitBlock() = getBlock();
+
+	syn Stmt BodyDecl.entryBlock() = null;
+	eq MethodDecl.entryBlock() {
+		Block block = getBlock();
+		if (block.getNumStmt() > 0) {
+			Stmt stmt = block.getStmt(0);
+			assert(stmt.isEntryBlock());
+			// Hacky solution to deal with first sets in the entryBlock 
+			// e.g. ForStmt, DoStmt etc has a first node other than this
+			Set first = stmt.first();
+			for (Iterator itr = first.iterator(); itr.hasNext(); ) {
+				return (Stmt)itr.next();
+			}	
+		}
+		assert(block.isEntryBlock());
+		return block;
+	}
+	eq ConstructorDecl.entryBlock() {
+		Block block = getBlock();
+		if (block.getNumStmt() > 0) {
+			Stmt stmt = block.getStmt(0);
+			assert(stmt.isEntryBlock());
+			// Hacky solution to deal with first sets in the entryBlock 
+			// e.g. ForStmt, DoStmt etc has a first node other than this
+			Set first = stmt.first();
+			for (Iterator itr = first.iterator(); itr.hasNext(); ) {
+				return (Stmt)itr.next();
+			}	
+		}
+		assert(block.isEntryBlock());
+		return block;
+	}
+	eq StaticInitializer.entryBlock() {
+		Block block = getBlock();
+		if (block.getNumStmt() > 0) {
+			Stmt stmt = block.getStmt(0);
+			assert(stmt.isEntryBlock());
+			// Hacky solution to deal with first sets in the entryBlock 
+			// e.g. ForStmt, DoStmt etc has a first node other than this
+			Set first = stmt.first();
+			for (Iterator itr = first.iterator(); itr.hasNext(); ) {
+				return (Stmt)itr.next();
+			}	
+		}
+		assert(block.isEntryBlock());
+		return block;
+	}
+	eq InstanceInitializer.entryBlock() {
+		Block block = getBlock();
+		if (block.getNumStmt() > 0) {
+			Stmt stmt = block.getStmt(0);
+			assert(stmt.isEntryBlock());
+			// Hacky solution to deal with first sets in the entryBlock 
+			// e.g. ForStmt, DoStmt etc has a first node other than this
+			Set first = stmt.first();
+			for (Iterator itr = first.iterator(); itr.hasNext(); ) {
+				return (Stmt)itr.next();
+			}	
+		}
+		assert(block.isEntryBlock());
+		return block;
+	}
+
+	eq MethodDecl.getBlock().following() = Set.empty().union(getBlock().exitBlock());
+	eq InstanceInitializer.getBlock().following() = Set.empty().union(getBlock().exitBlock());
+	eq StaticInitializer.getBlock().following() = Set.empty().union(getBlock().exitBlock());
+	eq ConstructorDecl.getBlock().following() = Set.empty().union(getBlock().exitBlock());
+
+	syn boolean Stmt.isEntryBlock() = this == entryBlock();
+	syn boolean Stmt.isExitBlock() = this == exitBlock();
+
+	inh Stmt Stmt.exitBlock();
+	eq TypeDecl.getBodyDecl(int i).exitBlock() = getBodyDecl(i).exitBlock();
+
+	inh Stmt Stmt.entryBlock();
+	eq TypeDecl.getBodyDecl(int i).entryBlock() = getBodyDecl(i).entryBlock();
+
+}

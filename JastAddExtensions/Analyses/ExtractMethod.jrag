@@ -1,0 +1,142 @@
+import changes.*;
+
+aspect ExtractMethod {
+	
+	public void CompilationUnit.extract(Stmt begin, Stmt end) throws RefactoringException {
+		if(!begin.dominates(end))
+			throw new RefactoringException("begin must dominate end");
+		if(!end.post_dominates(end))
+			throw new RefactoringException("end must post-dominate begin");
+		Block begin_host = begin.hostBlock();
+		Block end_host = end.hostBlock();
+		if(begin_host == null || end_host == null)
+			throw new RefactoringException("invalid statement for extraction");
+		if(begin_host != end_host)
+			throw new RefactoringException("selection straddles block borders");
+		int begin_idx = begin.indexInHostBlock();
+		int end_idx = end.indexInHostBlock();
+		for(int i=begin_idx;i<=end_idx;++i)
+			if(begin_host.getStmt(i) instanceof Case)
+				throw new RefactoringException("selection cannot contain case labels");
+		begin_host.encapsulate(begin_idx, end_idx);
+	}
+	
+	public int ASTNode.indexIn(ASTNode n) {
+		if(getParent() == n)
+			return getParent().getIndexOfChild(this);
+		if(getParent() == null)
+			return -1;
+		return getParent().indexIn(n);
+	}
+	
+	public int Stmt.indexInHostBlock() {
+		return indexInBlock(hostBlock());
+	}
+	
+	public int Stmt.indexInBlock(Block blk) {
+		return indexIn(blk.getStmtList());
+	}
+	
+	public void Block.encapsulate(int begin, int end) throws RefactoringException {
+		Stmt begin_stmt = getStmt(begin);
+		Stmt end_stmt = getStmt(end);
+		List parms = new List();        // parameters of extracted method
+		List localVars = new List();    // local variables of extracted method
+		Opt ret = new Opt();            // what extracted method returns
+		List savedVars = new List();    // declarations that need to be inserted before
+										// call to extracted method
+		List visibleDecls = begin_stmt.visibleLocalDecls();
+		for(int i=0;i<visibleDecls.getNumChild();++i) {
+			LocalDeclaration decl = (LocalDeclaration)visibleDecls.getChild(i);
+			if(decl.isValueParmFor(begin_stmt, end_stmt))
+				parms.add(decl.asParameterDeclaration());
+			if(decl.isOutParmFor(begin_stmt, end_stmt)) {
+				if(!ret.isEmpty())
+					throw new RefactoringException("ambiguous return value");
+				ret = new Opt(((ASTNode)decl).fullCopy());
+			}
+			if(decl.shouldMoveInto(begin_stmt, end_stmt))
+				// TODO: we should check whether we can remove decl
+				localVars.add(decl.asVariableDeclaration());
+			if(decl.shouldMoveOutOf(begin_stmt, end_stmt) || 
+					decl.shouldDuplicate(begin_stmt, end_stmt))
+				savedVars.add(decl.asVariableDeclaration());
+		}
+		Set exns = uncaughtThrowsBetween(begin_stmt, end_stmt);
+		List stmts = new List();
+		for(int i=begin;i<=end;++i)
+		stmts.add(getStmt(i));
+		Block body = new Block(stmts);
+		int i;
+		System.out.println("method body: "+body.dumpTree());
+		System.out.print("parameters: ");
+		for(i=0;i<parms.getNumChild();++i)
+			System.out.print(((ParameterDeclaration)parms.getChild(i)).getID()+", ");
+		System.out.println("");
+		System.out.print("local variables: ");
+		for(i=0;i<localVars.getNumChild();++i)
+			System.out.print(((VariableDeclaration)localVars.getChild(i)).getID()+", ");
+		System.out.println("");
+		if(ret.isEmpty())
+			System.out.println("return type: void");
+		else {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			System.out.println("return type: "+decl.getTypeAccess()+", will be assigned to "+decl.getID());
+		}
+		System.out.print("thrown exceptions: ");
+		for(Iterator iter=exns.iterator();iter.hasNext();)
+			System.out.print(((ASTNode)iter.next()).dumpTree()+", ");
+		System.out.println("");
+		System.out.print("declarations to be inserted before method call: ");
+		for(i=0;i<savedVars.getNumChild();++i)
+			System.out.print(((VariableDeclaration)savedVars.getChild(i)).getID()+", ");
+		System.out.println("");
+	}
+	
+	public boolean Opt.isEmpty() {
+		return getNumChild() == 0;
+	}
+	
+	inh lazy List Stmt.visibleLocalDecls();
+	inh lazy List CatchClause.visibleLocalDecls();
+	
+	eq TypeDecl.getChild().visibleLocalDecls() = new List();
+	eq MethodDecl.getBlock().visibleLocalDecls() {
+		return getParameterList();
+	}
+	eq Block.getStmt(int k).visibleLocalDecls() {
+		List decls = visibleLocalDecls();
+		for(int i=0;i<k;++i)
+			if(getStmt(i) instanceof VariableDeclaration)
+				decls.add(getStmt(i));
+		return decls;
+	}
+	eq CatchClause.getBlock().visibleLocalDecls() {
+		List decls = visibleLocalDecls();
+		decls.add(getParameter());
+		return decls;
+	}
+	eq ForStmt.getStmt().visibleLocalDecls() {
+		List decls = visibleLocalDecls();
+		for(int i=0;i<getNumInitStmt();++i)
+			if(getInitStmt(i) instanceof VariableDeclaration)
+				decls.add(getInitStmt(i));
+		return decls;
+	}
+	
+	/*public void Block.encapsulate(int start, int end) {
+		int i;
+		List stmts = new List();
+		for(i=0;i<start;++i)
+			stmts.add(getStmt(i));
+		List enc_stmts = new List();
+		for(;i<=end;++i)
+			enc_stmts.add(getStmt(i));
+		Block blk = new Block(enc_stmts);
+		stmts.add(blk);
+		for(;i<getNumStmt();++i)
+			stmts.add(getStmt(i));
+		setStmtList(stmts);
+	}*/
+	
+}

@@ -1,0 +1,114 @@
+aspect ParameterClassification {
+	
+	// TODO: do we need to make sure that the potential parameters are really
+	//       used within the selection? or is that subsumed by the other checks?
+	
+	interface LocalDeclaration { 
+		Access getTypeAccess();
+		String getID();
+		Block getBlock();
+		ParameterDeclaration asParameterDeclaration();
+		VariableDeclaration asVariableDeclaration();
+	}
+	
+	ParameterDeclaration implements LocalDeclaration;
+	VariableDeclaration implements LocalDeclaration;
+	
+	public ParameterDeclaration ParameterDeclaration.asParameterDeclaration() {
+		return (ParameterDeclaration)fullCopy();
+	}
+	
+	public ParameterDeclaration VariableDeclaration.asParameterDeclaration() {
+		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
+	}
+	
+	public VariableDeclaration ParameterDeclaration.asVariableDeclaration() {
+		return new VariableDeclaration((Access)getTypeAccess().fullCopy(), getID());
+	}
+	
+	public VariableDeclaration VariableDeclaration.asVariableDeclaration() {
+		return (VariableDeclaration)fullCopy();
+	}
+	
+	syn lazy boolean LocalDeclaration.isValueParmFor(Stmt begin, Stmt end) {
+		return isLiveBetween(begin, end); // && !isLiveAfter(end);
+	}
+	
+	syn lazy boolean LocalDeclaration.isOutParmFor(Stmt begin, Stmt end) {
+		return isLiveAfter(end) && mayDefBetween(begin, end);
+	}
+	
+	syn lazy boolean LocalDeclaration.mayDefBetween(Stmt begin, Stmt end) circular [false] {
+		if(begin.mayDef(this)) return true;
+		if(begin == end) return false;
+		for(Iterator i=begin.gsucc(begin, end).iterator();i.hasNext();)
+			if(mayDefBetween((Stmt)i.next(), end))
+				return true;
+		return false;
+	}
+	
+	syn lazy boolean LocalDeclaration.accessedOutside(Stmt begin, Stmt end) = 
+		accessedBefore(begin) || accessedAfter(end);
+	
+	syn lazy boolean LocalDeclaration.accessedBefore(Stmt stmt) circular [false] {
+		for(Iterator i=stmt.pred().iterator();i.hasNext();) {
+			Stmt before = (Stmt)i.next();
+			if(!before.between(getBlock(), -1, Integer.MAX_VALUE))
+				continue;
+			if(before.mayAccess(this))
+				return true;
+			if(accessedBefore(before))
+				return true;
+		}
+		return false;
+	}
+	
+	syn lazy boolean LocalDeclaration.accessedAfter(Stmt stmt) circular [false] {
+		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(!next.between(getBlock(), -1, Integer.MAX_VALUE))
+				continue;
+			if(next.mayAccess(this))
+				return true;
+			if(accessedAfter(next))
+				return true;
+		}
+		return false;
+	}
+	
+	syn lazy boolean LocalDeclaration.shouldMoveOutOf(Stmt begin, Stmt end) =
+		between(begin, end)	&& accessedAfter(end);
+	
+	syn lazy boolean LocalDeclaration.shouldMoveInto(Stmt begin, Stmt end);
+	
+	eq VariableDeclaration.shouldMoveInto(Stmt begin, Stmt end) =
+		!between(begin, end) && !isValueParmFor(begin, end) && !isOutParmFor(begin, end);
+	
+	eq ParameterDeclaration.shouldMoveInto(Stmt begin, Stmt end) = false;
+	
+	syn lazy boolean LocalDeclaration.shouldDuplicate(Stmt begin, Stmt end) {
+		return shouldMoveInto(begin, end) && accessedOutside(begin, end);
+	}
+	
+	syn lazy Set Block.uncaughtThrowsBetween(Stmt begin, Stmt end) {
+		Set uncaughtThrows = Set.empty();
+		int begin_idx = begin.indexInBlock(this);
+		int end_idx = end.indexInBlock(this);
+		for (int i = begin_idx; 0 <= i && i <= end_idx; ++i) {
+			Stmt child = getStmt(i);
+			uncaughtThrows = uncaughtThrows.union(getStmt(i).uncaughtThrows());
+		}
+		return uncaughtThrows;
+	}
+	
+	/*
+	 * the new method will have all isValueParmFor declarations as parameters,
+	 * all shouldMoveInto and shouldDuplicate declarations as local variables,
+	 * and the single isOutParmFor declaration as return value; if there is
+	 * more than one isOutParmFor, then we cannot refactor
+	 * 
+	 * furthermore, all uncaughtThrowsBetween() will appear as thrown exceptions
+	 * of the extracted method
+	 */
+	
+}

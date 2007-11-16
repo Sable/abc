@@ -1,0 +1,35 @@
+aspect Liveness {
+	
+	syn lazy boolean Variable.isLiveBetween(Stmt begin, Stmt end) circular [false] {
+		if(begin.mayUse(this)) return true;
+		if(begin.mayDef(this)) return false;
+		if(begin == end) return false;
+		for(Iterator i=begin.gsucc(begin, end).iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(isLiveBetween(next, end))
+				return true;
+		}
+		return false;
+	}
+	
+	syn lazy boolean Variable.isLiveAfter(Stmt stmt) {
+		for(Iterator i=stmt.following().iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(isLiveAtOrAfter(next))
+				return true;
+		}
+		return false;
+	}
+	
+	syn lazy boolean Variable.isLiveAtOrAfter(Stmt stmt) {
+		if(stmt.mayUse(this)) return true;
+		if(stmt.mayDef(this)) return false;
+		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(isLiveAtOrAfter(stmt))
+				return true;
+		}
+		return false;
+	}
+	
+}

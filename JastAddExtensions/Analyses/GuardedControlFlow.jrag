@@ -1,0 +1,41 @@
+aspect GuardedControlFlow {
+	
+	syn lazy Set Stmt.gsucc(Block blk, int start, int end);
+	
+	eq Stmt.gsucc(Block blk, int start, int end) = succ();
+	eq ThrowStmt.gsucc(Block blk, int start, int end) {
+		Set succ = succ();
+		// this relies on the fact that every throw statement has a unique successor
+		if(!((Stmt)succ.iterator().next()).between(blk, start, end))
+			return Set.empty();
+		return succ;
+	}
+	
+	public Set Stmt.gsucc(Block blk) {
+		return gsucc(blk, -1, Integer.MAX_VALUE);
+	}
+	
+	public Set Stmt.gsucc(Stmt begin, Stmt end) { 
+		return gsucc(hostBlock(), 
+					 begin.indexInBlock(hostBlock()), 
+					 end.indexInBlock(hostBlock()));
+	}
+	
+	inh boolean Stmt.between(Block blk, int start, int end);
+	
+	eq Program.getChild().between(Block blk, int start, int end) = false;
+	eq Block.getStmt(int i).between(Block blk, int start, int end) {
+		return blk == this ? start <= i && i <= end : between(blk, start, end);  
+	}
+	
+	syn boolean Stmt.between(Stmt begin, Stmt end) circular [false] {
+		Block blk = begin.hostBlock();
+		return between(blk, 
+					   begin.indexInBlock(blk), end.indexInBlock(blk));
+	}
+	
+	public boolean ParameterDeclaration.between(Stmt begin, Stmt end) {
+		return false;
+	}
+	
+}

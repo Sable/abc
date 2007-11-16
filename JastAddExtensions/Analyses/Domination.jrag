@@ -1,0 +1,69 @@
+aspect Domination {
+	
+	// returns true if every path from this statement to goal passes through halfway
+	syn lazy boolean Stmt.dominates(Stmt halfway, Stmt goal) circular [false] {
+		if(this == halfway)
+			return true;
+		if(this == goal)
+			return false;
+		for(Iterator i=gsucc(hostBlock()).iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(!next.dominates(halfway, goal))
+				return false;
+		}
+		return true;
+	}
+	
+	syn lazy boolean Stmt.dominates(Stmt goal) {
+		Block host = hostBlock();
+		if(host == null) return false;
+		// the first() set is always a singleton, but we don't rely on this
+		for(Iterator i=host.first().iterator();i.hasNext();)
+			if(!((Stmt)i.next()).dominates(this, goal))
+				return false;
+		return true;
+	}
+	
+	syn lazy boolean Stmt.post_dominates(Stmt origin) {
+		Block host = hostBlock();
+		if(host == null) return false;
+		if(host.getNumStmt() == 0) return false;  // shouldn't happen!
+		for(Iterator i=host.exitsAfter(host.getStmt(0)).iterator();i.hasNext();)
+			if(!origin.dominates(this, (Stmt)i.next()))
+				return false;
+		return true;
+	}
+	
+	// the exits of a block after a statement are all reachable statements with a
+	// gsucc() outside the block
+	syn lazy Set Block.exitsAfter(Stmt stmt) circular [Set.empty()] {
+		Set set = Set.empty();
+		for(Iterator i=stmt.gsucc(this).iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(!next.between(this, -1, Integer.MAX_VALUE))
+				set = set.union(stmt);
+			set = set.union(exitsAfter(next));
+		}
+		return set;
+	}
+	
+	inh lazy Block Stmt.hostBlock();
+	
+	// Note: init and update statements for for-loops are considered to have _no_ host block
+	eq Block.getStmt().hostBlock() = this;
+	eq LabeledStmt.getStmt().hostBlock() = hostBlock();
+	eq WhileStmt.getStmt().hostBlock() = hostBlock();
+	eq ForStmt.getStmt().hostBlock() = hostBlock();
+	eq ForStmt.getInitStmt().hostBlock() = null;
+	eq ForStmt.getUpdateStmt().hostBlock() = null;
+	eq IfStmt.getThen().hostBlock() = hostBlock();
+	eq IfStmt.getElse().hostBlock() = hasElse() ? hostBlock() : null;
+	eq ConstructorDecl.getConstructorInvocation().hostBlock() = getBlock();
+	
+	syn lazy Block VariableDeclaration.getBlock() = hostBlock();
+	
+	inh lazy Block ParameterDeclaration.getBlock();
+	eq MethodDecl.getParameter().getBlock() = getBlock();
+	eq ConstructorDecl.getParameter().getBlock() = getBlock();
+	eq CatchClause.getParameter().getBlock() = getBlock();
+}

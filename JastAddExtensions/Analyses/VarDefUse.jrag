@@ -1,0 +1,160 @@
+aspect VarDefUse {
+	
+	syn lazy boolean ASTNode.mayDef(Variable v) {
+		for(int i=0;i<getNumChild();++i)
+			if(getChild(i).mayDef(v)) return true;
+		return false;
+	}
+	
+	eq VarAccess.mayDef(Variable v) = decl() == v && isDest(); 
+	
+	eq VariableDeclaration.mayDef(Variable v) {
+		return hasInit() && (this == v || getInit().mayDef(v));
+	}
+	
+	syn lazy boolean ASTNode.mayUse(Variable v) {
+		for(int i=0;i<getNumChild();++i)
+			if(getChild(i).mayUse(v)) return true;
+		return false;
+	}
+	
+	eq VarAccess.mayUse(Variable v) = decl() == v && isSource();
+	
+	syn lazy boolean ASTNode.mayAccess(Variable v) = mayDef(v) || mayUse(v);
+	
+/*	syn boolean Stmt.mustDef(Variable v);
+	
+	eq AssertStmt.mustDef(Variable v) {
+		return getfirst().mustDef(v) || (hasExpr() && getExpr().mustDef(v));
+	}
+
+	// TODO: not quite accurate
+	eq Block.mustDef(Variable v) {
+		return v.mustDefBetween(getStmt(0), getStmt(getNumStmt()-1));
+	}
+	
+	eq DoStmt.mustDef(Variable v) {
+		return getStmt().mustDef(v) || getCondition().mustDef(v);
+	}
+	
+	eq ForStmt.mustDef(Variable v) {
+		int i;
+		for(i=0;i<getNumInitStmt();++i)
+			if(getInitStmt(i).mustDef(v)) return true;
+		return hasCondition() && getCondition().mustDef(v);
+	}
+	
+	eq LabeledStmt.mustDef(Variable v) = getStmt().mustDef(v);
+	
+	eq SwitchStmt.mustDef(Variable v) = getBlock().mustDef(v);
+	
+	eq WhileStmt.mustDef(Variable v) {
+		return getCondition().mustDef(v);
+	}
+	
+	eq BreakStmt.mustDef(Variable v) = false;
+	eq Case.mustDef(Variable v) = false;
+	eq ContinueStmt.mustDef(Variable v) = false;
+	eq EmptyStmt.mustDef(Variable v) = false;
+	
+	eq ExprStmt.mustDef(Variable v) = getExpr().mustDef(v);
+	
+	eq IfStmt.mustDef(Variable v) {
+		return getCondition().mustDef(v) || getThen().mustDef(v) &&
+				(hasElse() && getElse().mustDef(v));
+	}
+	
+	eq ReturnStmt.mustDef(Variable v) = getResult().mustDef(v);
+	
+	eq SynchronizedStmt.mustDef(Variable v) = getExpr().mustDef(v);
+	
+	eq ThrowStmt.mustDef(Variable v) = getExpr().mustDef(v);
+	
+	// TODO: not quite accurate
+	eq TryStmt.mustDef(Variable v) {
+		Block blk = getBlock();
+		if(blk.getNumStmt() == 0)
+			return false;
+		return v.mustDefBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+	}
+	
+	// we do not need to worry about these, as they will be rewritten into
+	// VariableDeclarations anyway
+	eq VarDeclStmt.mustDef(Variable v) = false;
+	
+	// TODO: unimplemented
+	eq LocalClassDeclStmt.mustDef(Variable v) {
+		throw new UnsupportedOperationException("not implemented");
+	}
+	
+	eq VariableDeclaration.mustDef(Variable v) {
+		return hasInit() && (this == v || getInit().mustDef(v));
+	}
+	
+	syn lazy boolean Expr.mustDef(Variable v);
+	
+	eq Access.mustDef(Variable v) = false;
+	eq VarAccess.mustDef(Variable v) = decl() == v && isDest();
+	eq AbstractDot.mustDef(Variable v) = getLeft().mustDef(v) || getRight().mustDef(v);
+	// TODO: unimplemented
+	eq ClassInstanceExpr.mustDef(Variable v) = true;
+	
+	eq ConstructorAccess.mustDef(Variable v) {
+		for(int i=0;i<getNumArg();++i)
+			if(getArg(i).mustDef(v))
+				return true;
+		return false;
+	}
+	
+	eq MethodAccess.mustDef(Variable v) {
+		for(int i=0;i<getNumArg();++i)
+			if(getArg(i).mustDef(v))
+				return true;
+		return false;
+	}
+	
+	eq ArrayInit.mustDef(Variable v) {
+		for(int i=0;i<getNumInit();++i)
+			if(getInit(i).mustDef(v))
+				return true;
+		return false;
+	}
+	
+	eq AssignExpr.mustDef(Variable v) = getSource().mustDef(v) || getDest().mustDef(v);
+	
+	eq Binary.mustDef(Variable v) = getLeftOperand().mustDef(v) || getRightOperand().mustDef(v);
+	eq LogicalExpr.mustDef(Variable v) = getLeftOperand().mustDef(v) && getRightOperand().mustDef(v);
+	
+	eq CastExpr.mustDef(Variable v) = getTypeAccess().mustDef(v) || getExpr().mustDef(v);
+	eq InstanceOfExpr.mustDef(Variable v) = getTypeAccess().mustDef(v) || getExpr().mustDef(v);
+	
+	eq ConditionalExpr.mustDef(Variable v) = getCondition().mustDef(v) || (getTrueExpr().mustDef(v) && getFalseExpr().mustDef(v));
+
+	eq PrimaryExpr.mustDef(Variable v) = false;
+	eq ParExpr.mustDef(Variable v) = getExpr().mustDef(v);
+	eq ArrayCreationExpr.mustDef(Variable v) {
+		if(getTypeAccess().mustDef(v)) return true;
+		for(int i=0;i<getNumDims();++i)
+			return getDims(i).hasExpr() && getDims(i).getExpr().mustDef(v);
+		return hasArrayInit() && getArrayInit().mustDef(v);
+	}
+	
+	eq Unary.mustDef(Variable v) = getOperand().mustDef(v);
+
+	syn lazy boolean Variable.mayDefBetween(Stmt begin, Stmt end) {
+		if(begin.mayDef(this)) return true;
+		if(begin == end) return false;
+		for(Iterator i=begin.succ().iterator();i.hasNext();)
+			if(mayDefBetween((Stmt)i.next(), end)) return true;
+		return false;
+	}
+
+	syn lazy boolean Variable.mustDefBetween(Stmt begin, Stmt end) {
+		if(begin.mustDef(this)) return true;
+		if(begin == end) return false;
+		for(Iterator i=begin.succ().iterator();i.hasNext();)
+			if(mayDefBetween((Stmt)i.next(), end)) return true;
+		return false;
+	}*/
+	
+}
