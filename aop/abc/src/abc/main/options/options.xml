@@ -306,6 +306,14 @@ any of their subdirectories.
       Default is quick.
       </long_desc>
     </stringopt>
+    <intopt>
+      <alias>wp-tmopt-iterations</alias>
+      <default>1</default>
+      <short_desc>Iterate the intraprocedural optimizations (abc-2007-6) so many times.</short_desc>
+      <long_desc>The optimizations are executed in this sequence: quick-check (flow-ins unnecessary-shadows run-once)^i.
+      The number i is the value set here. Must be >0. Default is: -wp-tmopt-iterations1
+      </long_desc>
+    </intopt>
   </section>
   <section undoc="">
     <name>Debug options</name>

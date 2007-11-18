@@ -71,7 +71,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
     private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
     private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
-    private static final ID PASS_TM_ANALYSIS_FLOWINS_REITER = new ID("Tracematch analysis - reiteration of flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
     private static final ID PASS_DYNAMIC_INSTRUMENTATION = new ID("Dynamic instrumentation");
     
@@ -173,55 +172,24 @@ public class AbcExtension extends abc.eaj.AbcExtension
             
             if(!laststage.equals("quick")) {
             
-                ReweavingAnalysis intra = null;
-                if(!laststage.equals("flowins") && Debug.v().firstUnnecessary) {
-                    
-                    //hook up intra-procedural analysis, if present (first iteration of unnecessary shadows)
-                    try {
-                        Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");              
-                        intra = (ReweavingAnalysis) optClass.newInstance();
-                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-                        System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations (first run, unnecessary-shadows only).");
-                        
-                        //need unique advice actuals for this analysis
-                        TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
-                    } catch (ClassNotFoundException e) {
-                    } catch (InstantiationException e) {
-                    } catch (IllegalAccessException e) {
-                    };
-                }
-                
                 ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
                 passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
     
                 if(!laststage.equals("flowins")) {
     
-                    //hook up intraprocedural analysis, if present
+                	//hook up intraprocedural analysis, if present
                     try {
-                        if(intra==null) {
-            				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
-            	            intra = (ReweavingAnalysis) optClass.newInstance();
-                        }
+        				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
+        				ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
         	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-        	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations.");
+        	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations (unnecessary-shadows and run-once).");
                         
-                        //need unique advice actuals for this analysis
+                        //need unique advice actuals for this analysis; TODO do we really?
                         TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
                     } catch (ClassNotFoundException e) {
         			} catch (InstantiationException e) {
         			} catch (IllegalAccessException e) {
         			};
-
-                    //hook up reiteration of flow-insensitive analysis, if present
-                    try {
-                        Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptReiterationFlowInsensitiveAnalysis");              
-                        ReweavingAnalysis flowinsReIter = (ReweavingAnalysis) optClass.newInstance();
-                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS_REITER , flowinsReIter ) );
-                        System.out.println("Found and installed plug-in for reiteration of flow-insensitive analysis.");
-                    } catch (ClassNotFoundException e) {
-                    } catch (InstantiationException e) {
-                    } catch (IllegalAccessException e) {
-                    };
                 }
             }
             
