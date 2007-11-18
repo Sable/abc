@@ -10705,6 +10705,20 @@
 		<run class="FlowIns"/>
     </ajc-test>
     		
+    <ajc-test num="1303" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1">
+        <compile files="IntraFlowSens1.java,AB.java,AbstractTest.java" options="-ext,abc.tm,-wp-tmopt,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot">
+	    	<message kind="warning" line="41"/>
+	    	<message kind="warning" line="43"/>
+	    	<message kind="warning" line="48"/>
+	    	<message kind="warning" line="59"/>
+	    	<message kind="warning" line="66"/>
+	    	<message kind="warning" line="68"/>
+	    	<message kind="warning" line="73"/>
+	    	<message kind="warning" line="77"/>
+		</compile>
+    </ajc-test>
+    
     <ajc-test num="1401" dir="abctests/ra/typechecks"
         title="Typechecks for relational aspects (1 of 2)">
         <compile files="T1.java" options="-ext,abc.ra">
