@@ -53,11 +53,11 @@ import abc.weaving.residues.OnceResidue;
 import abc.weaving.weaver.Weaver;
 
 /**
- * ShadowMotion
+ * RunOnceOptimization
  *
  * @author Eric Bodden
  */
-public class ShadowMotion {
+public class RunOnceOptimization {
 
     public static void apply(TraceMatch tm, UnitGraph g, Map<Local, Stmt> tmLocalsToDefStatements, StrongLocalMustAliasAnalysis localMustAliasAnalysis, LocalMustNotAliasAnalysis localNotMayAliasAnalysis) {
         System.err.println("Loop optimization...");
@@ -100,7 +100,7 @@ public class ShadowMotion {
             bodyStmts.add(st);
         }
 
-        Statistics.v().currAnalysis = ShadowMotion.class;
+        Statistics.v().currAnalysis = RunOnceOptimization.class;
         Statistics.v().currMethod = g.getBody().getMethod();
         
         IntraProceduralTMFlowAnalysis flowAnalysis = new IntraProceduralTMFlowAnalysis(

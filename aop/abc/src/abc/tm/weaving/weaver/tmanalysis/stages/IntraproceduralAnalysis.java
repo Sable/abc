@@ -50,7 +50,7 @@ import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
 import abc.tm.weaving.weaver.tmanalysis.subanalyses.UnnecessaryShadowsElimination;
-import abc.tm.weaving.weaver.tmanalysis.subanalyses.ShadowMotion;
+import abc.tm.weaving.weaver.tmanalysis.subanalyses.RunOnceOptimization;
 import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.ShadowsPerTMSplitter;
 
@@ -139,7 +139,7 @@ public class IntraproceduralAnalysis extends AbstractAnalysisStage {
 
                 if(!allRemoved) {
                     if(Debug.v().useShadowMotion) {
-                        ShadowMotion.apply(tm, g, tmLocalsToDefStatements, localMustAliasAnalysis, localNotMayAliasAnalysis);
+                        RunOnceOptimization.apply(tm, g, tmLocalsToDefStatements, localMustAliasAnalysis, localNotMayAliasAnalysis);
                     }
                 }
 
