@@ -37,6 +37,7 @@ import soot.jimple.toolkits.pointer.StrongLocalMustAliasAnalysis;
 import soot.toolkits.graph.LoopNestTree;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.IdentityHashSet;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.State;
@@ -60,15 +61,16 @@ import abc.weaving.weaver.Weaver;
 public class RunOnceOptimization {
 
     public static void apply(TraceMatch tm, UnitGraph g, Map<Local, Stmt> tmLocalsToDefStatements, StrongLocalMustAliasAnalysis localMustAliasAnalysis, LocalMustNotAliasAnalysis localNotMayAliasAnalysis) {
-        System.err.println("Loop optimization...");
+		if(Debug.v().debugTmAnalysis)
+			System.err.println("Loop optimization...");
 
         //build a loop nest tree
         LoopNestTree loopNestTree = new LoopNestTree(g.getBody());
-        if(loopNestTree.hasNestedLoops()) {
+		if(Debug.v().debugTmAnalysis && loopNestTree.hasNestedLoops()) {
             System.err.println("Method has nested loops.");
         }
     
-        if(loopNestTree.isEmpty()) {
+        if(Debug.v().debugTmAnalysis && loopNestTree.isEmpty()) {
             System.err.println("Method has no loops.");
         }
         
@@ -76,7 +78,7 @@ public class RunOnceOptimization {
         for (Loop loop : loopNestTree) {
         	if(loop.getLoopExits().size()==1) {
             	optimizeLoop(tm, g, tmLocalsToDefStatements, localMustAliasAnalysis,localNotMayAliasAnalysis, loop);
-        	} else {
+        	} else if(Debug.v().debugTmAnalysis) {
                 System.err.println("Loop has multiple exists or no exit. Skipping.");
         	}
         }
@@ -84,13 +86,15 @@ public class RunOnceOptimization {
 
     public static void optimizeLoop(TraceMatch tm, UnitGraph g, Map<Local, Stmt> tmLocalsToDefStatements, StrongLocalMustAliasAnalysis localMustAliasAnalysis, LocalMustNotAliasAnalysis localNotMayAliasAnalysis,
             Loop loop) {
-        System.err.println("Optimizing loop...");
+		if(Debug.v().debugTmAnalysis)
+			System.err.println("Optimizing loop...");
         
         //find all active shadows in the method
         Collection<Stmt> loopStatements = loop.getLoopStatements();
         
         if(ShadowUtils.getAllActiveShadows(tm, loopStatements).isEmpty()) {
-            System.err.println("Loop has no shadows.");
+    		if(Debug.v().debugTmAnalysis)
+    			System.err.println("Loop has no shadows.");
             return;
         }
         
@@ -119,7 +123,8 @@ public class RunOnceOptimization {
         Statistics.v().commitdataSet();
         
         Status status = flowAnalysis.getStatus();
-        System.err.println("Analysis done with status: "+status);
+		if(Debug.v().debugTmAnalysis)
+			System.err.println("Analysis done with status: "+status);
 
         //if we abort once, we are going to abort for the other additional initial states too, so
         //just return, to proceed with the next loop
@@ -131,7 +136,8 @@ public class RunOnceOptimization {
         //check how often we had to iterate...
         for (Stmt loopExit : loop.getLoopExits()) {
             if(!flowAnalysis.statementsReachingFixedPointAtOnce().contains(loopExit)) {
-                System.err.println("FP not reached after one iteration. Cannot optimize.");
+        		if(Debug.v().debugTmAnalysis)
+        			System.err.println("FP not reached after one iteration. Cannot optimize.");
                 return;
             }
         }
@@ -140,7 +146,8 @@ public class RunOnceOptimization {
             //if there is an active shadow at this unit
             if(!ShadowUtils.getAllActiveShadows(tm, Collections.singleton(loopStmt)).isEmpty()) {
                 if(Configuration.hasTainted(flowBefore)) {
-                    System.err.println("Aborting because shadow could have been affected by calls to other methods with shadows.");
+            		if(Debug.v().debugTmAnalysis)
+            			System.err.println("Aborting because shadow could have been affected by calls to other methods with shadows.");
                     return;
                 }
             }
@@ -180,8 +187,10 @@ public class RunOnceOptimization {
         }            
         
         //debug output
-        System.err.println("Shadows for this loop exit:");
-        System.err.println(SymbolShadow.uniqueShadowIDsOf(shadowsbeforeLoopExit));
+		if(Debug.v().debugTmAnalysis) {
+	        System.err.println("Shadows for this loop exit:");
+	        System.err.println(SymbolShadow.uniqueShadowIDsOf(shadowsbeforeLoopExit));
+	    }
         
         Set<Stmt> initPositions = new HashSet<Stmt>(); 
         Unit reboundLoopHead = weaver.reverseRebind(loopHead);
@@ -195,20 +204,23 @@ public class RunOnceOptimization {
     			if(reboundPred!=pred) {
     				initPositions.add((Stmt) reboundPred);
     			} else {
-    				System.out.println("WARNING: Could not find a statement suitable to place initialization code. Not optimizing loop. (1)");
+    				if(Debug.v().debugTmAnalysis)
+    					System.err.println("WARNING: Could not find a statement suitable to place initialization code. Not optimizing loop. (1)");
     				return;
     			}
     		}
         }
 
         if(initPositions.isEmpty()) {
-			System.out.println("WARNING: Could not find a statement suitable to place initialization code. Not optimizing loop. (2)");
+			if(Debug.v().debugTmAnalysis)
+				System.err.println("WARNING: Could not find a statement suitable to place initialization code. Not optimizing loop. (2)");
 			return;
         }
         
         for (ISymbolShadow shadow : shadowsbeforeLoopExit) {
             Statistics.v().shadowsOnlyExecuteOnce++;
-            System.err.println("Executing shadow once: "+shadow.getUniqueShadowId());
+			if(Debug.v().debugTmAnalysis)
+				System.err.println("Executing shadow once: "+shadow.getUniqueShadowId());
             ShadowRegistry.v().conjoinShadowWithResidue(shadow.getUniqueShadowId(), new OnceResidue(initPositions));
         }
         
