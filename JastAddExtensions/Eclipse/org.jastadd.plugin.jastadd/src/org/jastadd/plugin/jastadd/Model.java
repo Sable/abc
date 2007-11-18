@@ -74,9 +74,9 @@ public class Model extends JastAddJModel {
 					}
 				}
 		);
-		program.initOptions();
-		// Add project classpath
+		Program.initOptions();
 		program.addKeyValueOption("-classpath");
+		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		try {
@@ -93,11 +93,10 @@ public class Model extends JastAddJModel {
 	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program)program;
 
-		// TODO: Program options is a static attribute of Program ...
-
 		// Init
 		Program.initOptions();
 		program.addKeyValueOption("-classpath");
+		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
 	}
