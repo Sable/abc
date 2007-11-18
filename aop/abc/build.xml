@@ -158,6 +158,7 @@
         <mkdir dir="generated/abc/eaj/parse"/>
         <mkdir dir="generated/abc/tm/parse"/>
     	<mkdir dir="generated/abc/om/parse"/>
+        <mkdir dir="generated/abc/ra/parse"/>
 	
         <java classname="JFlex.Main"
             fork="true"
@@ -202,6 +203,7 @@
         <mkdir dir="generated/abc/tm/parse"/>
     	<!--NEIL: added for om?-->
     	<mkdir dir="generated/abc/om/parse"/>
+        <mkdir dir="generated/abc/ra/parse"/>
         <java classname="java_cup.Main"
             fork="true"
             dir="generated/abc/aspectj/parse"
@@ -248,7 +250,19 @@
             </classpath>
             <arg line="tm_ppg.cup"/>
         </java>
-    </target>
+
+        <java classname="java_cup.Main"
+            fork="true"
+            dir="generated/abc/ra/parse"
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="ra_ppg.cup"/>
+        </java>
+	</target>
 
     <target name="cup-dep" depends="ppg-translator,settings">
         <dependset>
@@ -273,7 +287,14 @@
             <targetfileset dir="generated/abc/tm/parse"
                 includes="Grm.java,sym.java"/>
         </dependset>
-        <condition property="cup-up-to-date">
+
+        <dependset>
+            <srcfileset dir="generated/abc/ra/parse" includes="ra_ppg.cup"/>
+            <targetfileset dir="generated/abc/ra/parse"
+                includes="Grm.java,sym.java"/>
+        </dependset>
+
+    	<condition property="cup-up-to-date">
             <and>
                 <available file="generated/abc/aspectj/parse/Grm.java"/>
                 <available file="generated/abc/aspectj/parse/sym.java"/>
@@ -284,7 +305,8 @@
             	<!--NEIL: Added for om?-->
                 <available file="generated/abc/om/parse/Grm.java"/>
                 <available file="generated/abc/om/parse/sym.java"/>
- 
+                <available file="generated/abc/ra/parse/Grm.java"/>
+                <available file="generated/abc/ra/parse/sym.java"/>
             </and>
         </condition>
     </target>
@@ -295,6 +317,7 @@
         <mkdir dir="generated/abc/tm/parse"/>
     	<!--NEIL: Added for om?-->
     	<mkdir dir="generated/abc/om/parse"/>
+    	<mkdir dir="generated/abc/ra/parse"/>
         <java classname="ppg.PPG"
             fork="true"
             dir="src/abc/aspectj/parse"
@@ -345,7 +368,20 @@
             </classpath>
             <arg line="tm.ppg"/>
         </java>
-    </target>
+
+        <java classname="ppg.PPG"
+            fork="true"
+            dir="src/abc/ra/parse"
+            failonerror="true"
+            output="generated/abc/ra/parse/ra_ppg.cup"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="ra.ppg"/>
+        </java>
+	</target>
     <target name="ppg-dep" depends="settings">
         <dependset>
             <srcfileset dir="src/abc/aspectj/parse" includes="aspectj.ppg"/>
@@ -370,6 +406,13 @@
             <targetfileset dir="generated/abc/tm/parse"
                 includes="tm_ppg.cup"/>
         </dependset>
+        	
+        <dependset>
+            <srcfileset dir="src/abc/ra/parse" includes="ra.ppg"/>
+            <targetfileset dir="generated/abc/ra/parse"
+                includes="ra_ppg.cup"/>
+        </dependset>
+    	
         <condition property="ppg-up-to-date">
             <and> 
                 <available file="generated/abc/aspectj/parse/aspectj_ppg.cup"/>
@@ -377,6 +420,7 @@
                 <available file="generated/abc/tm/parse/tm_ppg.cup"/>
             	<!--NEIL: Added for om-->
                 <available file="generated/abc/om/parse/om_ppg.cup"/>
+                <available file="generated/abc/ra/parse/ra_ppg.cup"/>
             </and>
         </condition>
     </target>

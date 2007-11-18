@@ -1,0 +1,173 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Laurie Hendren
+ * Copyright (C) 2004 Oege de Moor
+ * Copyright (C) 2004 Aske Simon Christensen
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+//include the original tracematches grammar
+include "../../../../../abc/src/abc/tm/parse/tm.ppg"
+
+//make sure this package declaration is correct
+package abc.ra.parse;
+
+//import all the packages you may need
+import abc.aspectj.ast.*;
+import abc.tm.ast.*;
+import abc.eaj.types.*;
+import abc.ra.ast.*;
+
+/**
+* This is the parser. It has to extend the proper supertype!
+* @author Eric Bodden
+*/
+parser Grm extends abc.tm.parse.Grm {:
+    //a reference to the type system
+    //you may have to give it another type if you use a custom type system
+    public final EAJTypeSystem ts;
+    
+    //a reference to our node factory
+    public final RANodeFactory nf;
+
+    //standard constructor
+    public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
+        super(l, t, n, q);
+        //make references of the correct, downcastet type (for convenience)
+        ts = (EAJTypeSystem) t;
+        nf = (RANodeFactory) n;
+    }
+
+    //Flag for personalized parser trace.
+    //Switch this on to see productions reported.
+    public static boolean parserTraceOn = false;
+
+	//do not change this
+    public static void parserTrace (String s)
+    { if (parserTraceOn) 
+          System.err.println(" REDUCED: " + s); 
+    }
+
+    /**
+     * Override the default Polyglot routine
+     */	
+     
+    public void report_fatal_error (String message, Object info)
+    throws Exception
+    {
+       report_error (message, info);
+       die ();
+    }	 
+:};
+
+/* --- terminal tokens, see also AbcExtension.initLexerKeywords(..) ---*/
+terminal Token RELATIONAL;
+
+/* --- non-terminal tokens ---*/
+non terminal RelAspectDecl relational_aspect_decl;
+non terminal List id_list;
+
+start with goal;
+
+extend modifier ::= 
+        RELATIONAL:a
+            {: RESULT = abc.ra.ExtensionInfo.RELATIONAL_MODIFIER; :}
+;            
+
+extend aspect_declaration ::=
+      modifiers_opt:a ASPECT:n IDENTIFIER:b
+                         LPAREN formal_parameter_list_opt:f RPAREN
+                         super_opt:c interfaces_opt:d
+                         aspect_body:g
+       {: Grm.parserTrace( "RELATIONAL aspect declaration: " + 
+                                               b.getIdentifier()); 
+          RESULT = parser.nf.RelAspectDecl(parser.pos(n,g),
+                                        false,
+                                        a,
+                                        b.getIdentifier(),
+                                        c,
+                                        d,
+                                        f,
+                                        g); // ignore per-clause for now
+       :}
+    | modifiers_opt:a PRIVILEGED modifiers_opt:a1 ASPECT:n IDENTIFIER:b
+                         LPAREN formal_parameter_list:f RPAREN
+                         super_opt:c interfaces_opt:d
+                         aspect_body:g
+       {: Grm.parserTrace( "RELATIONAL PRVILEGED aspect declaration: " + 
+                                               b.getIdentifier()); 
+          RESULT = parser.nf.RelAspectDecl(parser.pos(n,g),
+                                        true,
+                                        a.set(a1),
+                                        b.getIdentifier(),
+                                        c,
+                                        d,
+                                        f,
+                                        g); // ignore per-clause for now
+       :}
+;
+
+id_list ::=
+     IDENTIFIER:a
+        {: Grm.parserTrace("First id in the list.");
+           RESULT = new LinkedList();
+	       RESULT.add(a); 
+        :}
+    |  id_list:a COMMA IDENTIFIER:b
+        {: Grm.parserTrace("Another id");
+	       a.add(b);
+           RESULT = a;
+        :}
+;
+
+extend advice_spec ::=
+     type:a AROUND LPAREN formal_parameter_list:b COMMA id_list:c RPAREN:y
+       {: Grm.parserTrace("non-void-type relational around (formals;id_list)");
+          Around around = parser.nf.RelationalAround(parser.pos(a,y),
+                                           a,
+                                           b,
+                                           c);
+          RESULT = around;
+       :}
+  |  type:a AROUND LPAREN id_list:c RPAREN:y
+       {: Grm.parserTrace("non-void-type relational around (id_list)");
+          Around around = parser.nf.RelationalAround(parser.pos(a,y),
+                                           a,
+                                           new LinkedList(),
+                                           c);
+          RESULT = around;
+       :}  
+  |  VOID:a AROUND LPAREN formal_parameter_list:b COMMA id_list:c RPAREN:y
+       {: Grm.parserTrace("VOID around relational (formals;id_list)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          Around around = parser.nf.RelationalAround(parser.pos(a,y),
+                                           voidn,
+                                           b,
+                                           c);
+          RESULT = around;
+       :}
+  |  VOID:a AROUND LPAREN id_list:c RPAREN:y
+       {: Grm.parserTrace("VOID around relational (id_list)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          Around around = parser.nf.RelationalAround(parser.pos(a,y),
+                                           voidn,
+                                           new LinkedList(),
+                                           c);
+          RESULT = around;
+       :}
+;

@@ -10705,4 +10705,28 @@
 		<run class="FlowIns"/>
     </ajc-test>
     		
- </suite>
+    <ajc-test num="1401" dir="abctests/ra/typechecks"
+        title="Typechecks for relational aspects (1 of 2)">
+        <compile files="T1.java" options="-ext,abc.ra">
+	    	<message kind="error" line="7"/>
+	    	<message kind="error" line="14"/>
+	    	<message kind="error" line="37"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1402" dir="abctests/ra/typechecks"
+        title="Typechecks for relational aspects (2 of 2)">
+        <compile files="T8.java" options="-ext,abc.ra">
+	    	<message kind="error" line="8"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1403" dir="abctests/ra/equality"
+        title="Equality-example for relational aspects">
+        <compile files="Bit.java,Equality.java,Example.java" options="-ext,abc.ra,-warn-unused-advice:on">
+	    	<message kind="warning" line="18"/>
+		</compile>
+		<run class="Example"/>
+    </ajc-test>
+    
+</suite>
