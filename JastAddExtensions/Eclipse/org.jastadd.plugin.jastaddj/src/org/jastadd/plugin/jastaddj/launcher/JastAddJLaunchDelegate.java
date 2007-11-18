@@ -83,8 +83,7 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 	}
 
 	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		return JavaRuntime.getDefaultVMInstall();
-		//return JavaRuntime.computeVMInstall(configuration);
+		return model.getVMInstall(project, buildConfiguration);
 	}
 
 	public String[][] getBootpathExt(ILaunchConfiguration configuration) throws CoreException {

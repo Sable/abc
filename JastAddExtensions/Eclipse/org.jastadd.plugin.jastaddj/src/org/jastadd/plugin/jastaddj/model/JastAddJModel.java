@@ -3,7 +3,6 @@ package org.jastadd.plugin.jastaddj.model;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -20,6 +21,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -31,22 +33,25 @@ import org.eclipse.debug.core.sourcelookup.containers.ArchiveSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.DirectorySourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.ExternalArchiveSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
+import org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage;
+import org.eclipse.debug.core.sourcelookup.containers.ZipEntryStorage;
 import org.eclipse.jdt.internal.core.util.Util;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.LibraryLocation;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
@@ -110,9 +115,18 @@ public class JastAddJModel extends JastAddModel {
 		}
 		return false;
 	}
+	
+	public boolean isModelFor(FileInfo fileInfo) {
+		for (String str : getFileExtensions()) {
+			if (fileInfo.getPath().getFileExtension().equals(str)) {
+				return isModelFor(fileInfo.getProject());
+			}
+		}
+		return false;
+	}
 
 	public boolean isModelFor(IDocument document) {
-		return documentToFile(document) != null;
+		return documentToFileInfo(document) != null;
 	}
 
 	public boolean isModelFor(IJastAddNode node) {
@@ -156,13 +170,26 @@ public class JastAddJModel extends JastAddModel {
 	public void popupateSourceContainers(IProject project,
 			JastAddJBuildConfiguration buildConfiguration,
 			List<ISourceContainer> result) {
+		// Populate VM library source containers
+		IVMInstall vm = getVMInstall(project, buildConfiguration);
+		LibraryLocation[] libraryLocations = vm.getLibraryLocations();
+		if (libraryLocations == null)
+			libraryLocations = vm.getVMInstallType().getDefaultLibraryLocations(vm.getInstallLocation());
+		
+		if (libraryLocations != null) {
+			for(LibraryLocation libraryLocation : libraryLocations) {
+				IPath path = libraryLocation.getSystemLibrarySourcePath();
+				if (path == null) continue;
+				java.io.File file =  path.toFile();
+				if (!file.exists()) continue;
+				result.add(new ExternalArchiveSourceContainer(file.getAbsolutePath(), false));
+			}
+		}
+		
+		// Populate project files
 		result.add(new FolderSourceContainer(project, true));
-		popupateSourceAttachments(project, buildConfiguration, result);
-	}
-
-	public void popupateSourceAttachments(IProject project,
-			JastAddJBuildConfiguration buildConfiguration,
-			List<ISourceContainer> result) {
+		
+		// Populate source containers		
 		for (ClassPathEntry entry : buildConfiguration.classPathList) {
 			if (entry.sourceAttachmentPath == null)
 				continue;
@@ -190,7 +217,11 @@ public class JastAddJModel extends JastAddModel {
 					result.add(new ExternalArchiveSourceContainer(file
 							.getAbsolutePath(), false));
 			}
-		}
+		}		
+	}
+
+	public IVMInstall getVMInstall(IProject project, JastAddJBuildConfiguration buildConfiguration) {
+		return JavaRuntime.getDefaultVMInstall();
 	}
 
 	public void addSourceRoots(IProject project,
@@ -558,6 +589,7 @@ public class JastAddJModel extends JastAddModel {
 		});
 		program.initOptions();
 		program.addKeyValueOption("-classpath");
+		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		try {
@@ -574,38 +606,51 @@ public class JastAddJModel extends JastAddModel {
 			JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program) program;
 
-		// TODO: Program options is a static attribute of Program ...
-
 		// Init
 		Program.initOptions();
 		program.addKeyValueOption("-classpath");
+		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
-		addBuildConfigurationOptions(project, realProgram, buildConfiguration);
+		if (buildConfiguration != null)
+			addBuildConfigurationOptions(project, realProgram, buildConfiguration);
 	}
 
 	protected void addBuildConfigurationOptions(IProject project,
 			IProgram program, JastAddJBuildConfiguration buildConfiguration) {
-		String projectPath = project.getLocation().toOSString();
-
 		Collection<String> options = new ArrayList<String>();
-		if (buildConfiguration != null) {
-			List<String> result = buildClassPath(project, buildConfiguration);
-			if (result.size() > 0) {
-				StringBuffer buffer = new StringBuffer();
-				for (String item : result) {
-					buffer.append(item);
-					buffer.append(File.pathSeparatorChar);
-				}
-				options.add("-classpath");
-				options.add(buffer.toString());
+		
+		// Boot classpath
+		List<String> bootClassPath = buildBootClassPath(project, buildConfiguration);
+		if (bootClassPath.size() > 0) {
+			StringBuffer buffer = new StringBuffer();
+			for (String item : bootClassPath) {
+				buffer.append(item);
+				buffer.append(File.pathSeparatorChar);
 			}
-			options.add("-d");
-			if (buildConfiguration.outputPath != null)
-				options.add(projectPath + File.separator
-						+ buildConfiguration.outputPath);
-			else
-				options.add(projectPath);
+			options.add("-bootclasspath");
+			options.add(buffer.toString());
 		}
+		
+		// Claspath
+		List<String> classPath = buildClassPath(project, buildConfiguration);
+		if (classPath.size() > 0) {
+			StringBuffer buffer = new StringBuffer();
+			for (String item : classPath) {
+				buffer.append(item);
+				buffer.append(File.pathSeparatorChar);
+			}
+			options.add("-classpath");
+			options.add(buffer.toString());
+		}
+		
+		// Output path
+		String projectPath = project.getLocation().toOSString();			
+		options.add("-d");
+		if (buildConfiguration.outputPath != null)
+			options.add(projectPath + File.separator
+					+ buildConfiguration.outputPath);
+		else
+			options.add(projectPath);
 		program.addOptions(options.toArray(new String[0]));
 	}
 
@@ -697,82 +742,134 @@ public class JastAddJModel extends JastAddModel {
 		return result;
 	}
 
+	protected List<String> buildBootClassPath(IProject project,
+			final JastAddJBuildConfiguration buildConfiguration) {
+		List<String> result = new ArrayList<String>();
+		
+		IVMInstall vm = getVMInstall(project, buildConfiguration);
+		LibraryLocation[] libraryLocations = vm.getLibraryLocations();
+		if (libraryLocations == null)
+			libraryLocations = vm.getVMInstallType().getDefaultLibraryLocations(vm.getInstallLocation());
+		
+		if (libraryLocations != null) {
+			for(LibraryLocation libraryLocation : libraryLocations) {
+				IPath path = libraryLocation.getSystemLibraryPath();
+				Object object = resolveResourceOrFile(project, path);
+				if (object == null) continue;
+
+				if (object instanceof IResource)
+					result.add(((IResource) object).getRawLocation().toOSString());
+				else
+					result.add(((java.io.File) object).getAbsolutePath());
+			}
+		}
+		return result;
+	}
+	
+	
 	/**
 	 * Opens the file corresponding to the given compilation unit with a
 	 * selection corresponding to the given line, column and length.
 	 */
 	protected void openFile(ICompilationUnit unit, int line, int column,
 			int length) {
-		final String JAVA_FILE_EXT = ".java";
-		final String JAR_FILE_EXT = ".jar";
-		final String CLASS_FILE_EXT = ".class";
-
-		String pathName = unit.pathName();
-		if (pathName.endsWith(CLASS_FILE_EXT)) {
-			pathName = pathName.replace(CLASS_FILE_EXT, JAVA_FILE_EXT);
-		}
-		boolean finishedTrying = false;
-		while (!finishedTrying) {
-			if (pathName.endsWith(JAVA_FILE_EXT)) {
-				try {
-					openJavaFile(pathName, line, column, length);
-					finishedTrying = true;
-				} catch (PartInitException e) {
-					finishedTrying = true;
-				} catch (URISyntaxException e1) {
-					if (pathName.endsWith(JAVA_FILE_EXT)) {
-						pathName = pathName.replace(JAVA_FILE_EXT,
-								CLASS_FILE_EXT);
+		try {
+			IProject project = getProject(unit);
+			
+			String pathName = unit.pathName();
+			String relativeName = unit.relativeName();
+			
+			if (project == null || pathName == null || relativeName == null) return;
+			
+			// Try to work as with resource
+			if (pathName.equals(relativeName)) {
+				IPath path = Path.fromOSString(pathName);
+				IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+				if (files.length > 0 && isModelFor(files[0])) {
+					openEditor(new FileEditorInput(files[0]), line, column, length, buildFileInfo(files[0]));
+					return;
+				}
+			}
+			
+			// Try to work as with class file 
+			if (relativeName.endsWith(".class")) {
+				openJavaSource(project, computeSourceName(unit), line, column, length);
+				return;
+			}
+			
+			// Try to work with source file paths 
+			IStorage storage = null;
+			
+			IPath path = Path.fromOSString(pathName);
+			File file = path.toFile();
+			if (file.exists()) {
+				storage = new LocalFileStorage(file);
+			} else {
+				IPath rootPath = path.removeTrailingSeparator();
+				while (!rootPath.isEmpty() && !rootPath.toFile().exists()) {
+					rootPath = rootPath.removeLastSegments(1).removeTrailingSeparator();
+				}
+				if (!rootPath.isEmpty() && rootPath.toFile().exists()) {
+					IPath entryPath = path.removeFirstSegments(rootPath.segmentCount());
+					try {
+						storage = new ZipEntryStorage(new ZipFile(rootPath.toFile()), new ZipEntry(entryPath.toString()));
+					} 
+					catch(IOException e) {
+						logError(e, "Failed parsing ZIP entry");
 					}
 				}
-			} else if (pathName.endsWith(CLASS_FILE_EXT)
-					|| pathName.endsWith(JAR_FILE_EXT)) {
+			}
+			
+			if (storage != null)
+				openEditor(new JastAddStorageEditorInput(project, storage, this), line, column, length, buildFileInfo(project, storage.getFullPath()));
+		}
+		catch(CoreException e) {
+			logCoreException(e);
+		}
+	}
+
+	protected void openJavaSource(IProject project, String sourceName, int line, int column, int length) throws CoreException {
+		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+		if (buildConfiguration != null) {
+			List<ISourceContainer> result= new ArrayList<ISourceContainer>();
+			popupateSourceContainers(project, buildConfiguration, result);
+			
+			IEditorInput targetEditorInput = null;
+			for(ISourceContainer sourceContainer : result) {
 				try {
-					openClassFile(pathName, unit.relativeName(), pathName
-							.endsWith(JAR_FILE_EXT), line, column, length);
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				} catch (PartInitException e) {
-					e.printStackTrace();
+					Object[] elements = sourceContainer.findSourceElements(sourceName);
+					if (elements.length == 1) {
+						Object item = elements[0];
+						if (item instanceof IFile) {
+							IFile file = (IFile)item;
+							if (isModelFor(file))
+								targetEditorInput = new FileEditorInput((IFile)item);
+							else
+								targetEditorInput = new JastAddStorageEditorInput(project, new LocalFileStorage(file.getRawLocation().toFile()), this);
+						}
+						
+						if (item instanceof LocalFileStorage)
+							targetEditorInput = new JastAddStorageEditorInput(project, (IStorage)item, this);
+						
+						if (item instanceof ZipEntryStorage)
+							targetEditorInput = new JastAddStorageEditorInput(project, (IStorage)item, this);												
+						break;
+					}
 				}
-				finishedTrying = true;
+				catch(CoreException e) {
+					logCoreException(e);
+				}
 			}
-		}
-	}
-
-	/**
-	 * Opens the file corresponding to the given pathName with a selection
-	 * corresponding to line, column and length.
-	 */
-	protected void openJavaFile(String pathName, int line, int column,
-			int length) throws PartInitException, URISyntaxException {
-		IPath path = Path.fromOSString(pathName);// URIUtil.toPath(new
-													// URI("file:/" +
-													// pathName));
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-				.findFilesForLocation(path);
-		if (files.length >= 1) {
-			IEditorInput targetEditorInput = new FileEditorInput(files[0]);
-			IWorkbenchWindow window = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-			page.openEditor(targetEditorInput, getEditorID(), true);
-			IDocument targetDoc = fileToDocument(files[0]);
-			if (targetDoc == null)
+			
+			if (targetEditorInput != null) {
+				openEditor(targetEditorInput, line, column, length, buildFileInfo(targetEditorInput));
 				return;
-			int lineOffset = 0;
-			try {
-				lineOffset = targetDoc.getLineOffset(line - 1) + column - 1;
-			} catch (BadLocationException e) {
-			}
-			IEditorPart targetEditorPart = page.findEditor(targetEditorInput);
-			if (targetEditorPart instanceof ITextEditor) {
-				ITextEditor textEditor = (ITextEditor) targetEditorPart;
-				textEditor.selectAndReveal(lineOffset, length);
 			}
 		}
 	}
-
+	
+	
+	
 	@Override
 	public String getEditorID() {
 		return JastAddJEditor.EDITOR_ID;
@@ -783,32 +880,38 @@ public class JastAddJModel extends JastAddModel {
 		return JastAddJNature.NATURE_ID;
 	}
 
-	/**
-	 * Opens a class corresponding to the given path name and makes a selection
-	 * corresponding to line, column and length.
-	 */
-	protected void openClassFile(String pathName, String relativeName,
-			boolean inJarFile, int line, int column, int length)
-			throws PartInitException, URISyntaxException {
-
-		IPath path = Path.fromOSString(pathName);// URIUtil.toPath(new
-													// URI("file:/" +
-													// pathName));
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-				.findFilesForLocation(path);
-		if (files.length > 0) {
-			IWorkbench workbench = PlatformUI.getWorkbench();
-			IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-			IEditorDescriptor desc = PlatformUI.getWorkbench()
-					.getEditorRegistry().getDefaultEditor(files[0].getName());
-			page.openEditor(new FileEditorInput(files[0]), desc.getId());
-
-			// page.openEditor(targetFileEditorInput,"org.eclipse.jdt.ui.ClassFileEditor",
-			// false);
-			// "org.eclipse.jdt.ui.CompilationUnitEditor",
-			// false);
+	private void openEditor(IEditorInput targetEditorInput,
+			int line, int column, int length, FileInfo fileInfo)
+			throws CoreException {
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		IWorkbenchPage page = window.getActivePage();
+		page.openEditor(targetEditorInput, getEditorID(), true);
+		IDocument targetDoc = fileInfoToDocument(fileInfo);
+		if (targetDoc == null)
+			return;
+		int lineOffset = 0;
+		try {
+			lineOffset = targetDoc.getLineOffset(line - 1) + column - 1;
+		} catch (BadLocationException e) {
 		}
+		IEditorPart targetEditorPart = page.findEditor(targetEditorInput);
+		if (targetEditorPart instanceof ITextEditor) {
+			ITextEditor textEditor = (ITextEditor) targetEditorPart;
+			textEditor.selectAndReveal(lineOffset, length);
+		}
+	}
+	
+	protected String computeSourceName(ICompilationUnit cu) {
+		String sourceName = cu.relativeName();
+		while (sourceName.endsWith(".class"))
+			sourceName = sourceName.substring(0, sourceName.length() - 6);
+		if (sourceName.contains("$")) {
+			sourceName = sourceName.substring(0, sourceName.indexOf("$"));
+		}
+		if (!sourceName.endsWith(".java"))
+			sourceName = sourceName + ".java";
+		return sourceName;
 	}
 
 	protected Object resolveResourceOrFile(IProject project, IPath path) {

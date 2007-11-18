@@ -5,7 +5,7 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
-import org.jastadd.plugin.jastaddj.launcher.classpaths.JastAddJClasspathTab;
+import org.eclipse.jdt.debug.ui.launchConfigurations.JavaJRETab;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;

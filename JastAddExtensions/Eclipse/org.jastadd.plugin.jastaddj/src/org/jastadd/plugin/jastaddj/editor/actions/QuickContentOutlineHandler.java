@@ -48,14 +48,6 @@ public class QuickContentOutlineHandler extends JastAddActionDelegate {
 						while (node != null && !(node instanceof IOutlineNode && ((IOutlineNode)node).showInContentOutline()))
 							node = node.getParent();					
 						if (node != null) {
-							/*
-							List<IJastAddNode> path = new ArrayList<IJastAddNode>();
-							while (node != null) {
-								path.add(node);
-								node = (IJastAddNode)((ITreeContentProvider)treeViewer.getContentProvider()).getParent(node);
-							}
-							treeViewer.setSelection(new TreeSelection(new TreePath(path.toArray())), true);
-							*/
 							treeViewer.setSelection(new StructuredSelection(node), true);
 						}
 					}

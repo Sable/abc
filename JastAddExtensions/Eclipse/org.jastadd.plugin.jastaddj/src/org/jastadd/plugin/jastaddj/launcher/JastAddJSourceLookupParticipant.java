@@ -7,21 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupParticipant;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
 import org.eclipse.debug.core.sourcelookup.containers.ExternalArchiveSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.LibraryLocation;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.JastAddModelProvider;
 
 /**
  * A source lookup participant that searches for Java source code.
@@ -141,9 +139,6 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 		ISourceLookupDirector director = getDirector();		
 		if (director != null) {
 			model.popupateSourceContainers(project, buildConfiguration, result);
-		
-			IPath vmSources = Path.fromOSString(JavaRuntime.getDefaultVMInstall().getInstallLocation().getAbsolutePath()).append("/src.zip");
-			result.add(new ExternalArchiveSourceContainer(vmSources.toOSString(), false));
 		}
 		return result.toArray(new ISourceContainer[0]);
 	}

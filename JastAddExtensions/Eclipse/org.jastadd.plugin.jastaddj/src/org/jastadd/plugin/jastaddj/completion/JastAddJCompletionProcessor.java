@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
@@ -23,6 +22,7 @@ import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.model.JastAddModel.FileInfo;
 
 public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 
@@ -70,17 +70,14 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		
 		JastAddModel model = JastAddModelProvider.getModel(document);
 		if (model != null) {
-			IFile file = model.documentToFile(document);
-			if(file != null) {
-				IProject project = file.getProject();
-				if(project != null) {
-					String fileName = file.getRawLocation().toOSString();
-					IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-					if(model instanceof JastAddJModel)
-					  return ((JastAddJModel)model).recoverCompletion(documentOffset, linePart, buf, project, fileName, node);
-				}
-			}
-				
+			FileInfo fileInfo = model.documentToFileInfo(document);
+			if(fileInfo != null) {
+				IProject project = fileInfo.getProject();
+				String fileName = fileInfo.getPath().toOSString();
+				IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if(model instanceof JastAddJModel)
+				  return ((JastAddJModel)model).recoverCompletion(documentOffset, linePart, buf, project, fileName, node);
+			}			
 		}
 	
 		return new ArrayList();

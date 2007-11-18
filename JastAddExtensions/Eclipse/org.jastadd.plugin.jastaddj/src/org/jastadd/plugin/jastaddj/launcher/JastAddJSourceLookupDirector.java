@@ -6,6 +6,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector;
 import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
@@ -16,14 +17,12 @@ import org.eclipse.debug.core.sourcelookup.containers.WorkspaceSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.ZipEntryStorage;
 import org.eclipse.debug.ui.ISourcePresentation;
 import org.eclipse.jdt.debug.core.IJavaBreakpoint;
-import org.eclipse.jdt.internal.debug.ui.LocalFileStorageEditorInput;
-import org.eclipse.jdt.internal.debug.ui.ZipEntryStorageEditorInput;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 
@@ -39,7 +38,6 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 		fFilteredTypes.add("org.eclipse.debug.ui.containerType.workingSet"); //$NON-NLS-1$
 	}
 
-	
 	private IProject project;
 	private JastAddJModel model;
 	private JastAddJBuildConfiguration buildConfiguration;
@@ -71,14 +69,19 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 		if (item instanceof IJavaBreakpoint)
 			item = ((IJavaBreakpoint)item).getMarker().getResource();
 
-		if (item instanceof IFile)
-			return new FileEditorInput((IFile)item);
+		if (item instanceof IFile) {
+			IFile file = (IFile)item;
+			if (model.isModelFor(file))
+				return new FileEditorInput((IFile)item);
+			else
+				return new JastAddStorageEditorInput(project, new LocalFileStorage(file.getRawLocation().toFile()), model);
+		}
 		
 		if (item instanceof LocalFileStorage)
-			return new LocalFileStorageEditorInput((LocalFileStorage)item);
+			return new JastAddStorageEditorInput(project, (IStorage)item, model);
 		
 		if (item instanceof ZipEntryStorage)
-			return new ZipEntryStorageEditorInput((ZipEntryStorage)item);
+			return new JastAddStorageEditorInput(project, (IStorage)item, model);
 		
 		return null;
 	}
