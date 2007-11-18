@@ -11,11 +11,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.viewsupport.ImageImageDescriptor;
 import org.eclipse.jdt.ui.JavaElementImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -36,7 +36,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.actions.OpenFileAction;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IShowInTarget;
 import org.eclipse.ui.part.ShowInContext;
@@ -44,12 +43,10 @@ import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.JastAddModelListener;
 import org.jastadd.plugin.model.JastAddModelProvider;
-import org.jastadd.plugin.providers.JastAddLabelProvider;
 import org.jastadd.plugin.util.JastAddEditorUtil;
-import org.jastadd.plugin.util.JastAddPair;
 
 public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 		IShowInTarget {
@@ -166,7 +163,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 					IFile file = (IFile) resource;
 					JastAddModel model = JastAddModelProvider.getModel(file);
 					if (model != null) {
-						IJastAddNode node = model.getTreeRoot(file);
+						IJastAddNode node = model.getTreeRoot(model.buildFileInfo(file));
 						return jastAddContentProvider.getChildren(node);
 					}
 				}
@@ -447,18 +444,22 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			if (model != null)
 				model.openFile(node);
 		} else if (element instanceof IFile) {
-			TreeViewer viewer = getTreeViewer();
 			IFile file = (IFile) element;
-			IEditorDescriptor descriptor = JastAddEditorUtil
-					.getEditorDescription(file);
-			OpenFileAction action = new OpenFileAction(getSite().getPage(),
-					descriptor);
-			action.selectionChanged((IStructuredSelection) viewer
-					.getSelection());
-			if (action.isEnabled())
-				action.run();
+			openFile(file);
 		} else
 			super.handleOpen(event);
+	}
+
+	private void openFile(IFile file) {
+		TreeViewer viewer = getTreeViewer();
+		IEditorDescriptor descriptor = JastAddEditorUtil
+				.getEditorDescription(file);
+		OpenFileAction action = new OpenFileAction(getSite().getPage(),
+				descriptor);
+		action.selectionChanged((IStructuredSelection) viewer
+				.getSelection());
+		if (action.isEnabled())
+			action.run();
 	}
 
 	public boolean show(ShowInContext context) {
@@ -491,29 +492,40 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 					}
 				}
 			}
-		} else if (sel instanceof ITextSelection
-				&& context.getInput() instanceof FileEditorInput) {
+		} else if (sel instanceof ITextSelection) {
 			ITextSelection tsel = (ITextSelection) sel;
-			FileEditorInput editorInput = (FileEditorInput) context.getInput();
-
-			IJastAddNode parent = null;
-			JastAddModel model = JastAddModelProvider.getModel(editorInput
-					.getFile());
-			if (model != null) {
-				IJastAddNode node = model.findNodeInDocument(editorInput
-						.getFile(), tsel.getOffset());
-				if (node != null) {
-					parent = node;
-					while (parent != null
-							&& !(parent instanceof IOutlineNode && ((IOutlineNode) parent)
-									.showInContentOutline()))
-						parent = parent.getParent();
-				}
+			
+			IFile file = null;
+			if (context.getInput() instanceof FileEditorInput) {
+				FileEditorInput editorInput = (FileEditorInput) context.getInput();
+				file = editorInput.getFile();
 			}
-			if (parent != null)
-				toSelect.add(parent);
-			else
-				toSelect.add(editorInput.getFile());
+			else if (context.getInput() instanceof JastAddStorageEditorInput) {
+				JastAddStorageEditorInput editorInput = (JastAddStorageEditorInput) context.getInput();
+				IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(editorInput.getStorage().getFullPath());
+				if (files.length == 1)
+					file = files[0];
+			}
+			
+			if (file != null) {
+				IJastAddNode parent = null;
+				JastAddModel model = JastAddModelProvider.getModel(file);
+				if (model != null) {
+					IJastAddNode node = model.findNodeInDocument(model
+							.buildFileInfo(file), tsel.getOffset());
+					if (node != null) {
+						parent = node;
+						while (parent != null
+								&& !(parent instanceof IOutlineNode && ((IOutlineNode) parent)
+										.showInContentOutline()))
+							parent = parent.getParent();
+					}
+				}
+				if (parent != null)
+					toSelect.add(parent);
+				else
+					toSelect.add(file);
+			}
 		}
 
 		if (toSelect.isEmpty()) {

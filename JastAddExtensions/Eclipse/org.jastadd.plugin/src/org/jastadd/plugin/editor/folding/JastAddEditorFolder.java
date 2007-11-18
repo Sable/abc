@@ -51,7 +51,7 @@ public class JastAddEditorFolder implements JastAddModelListener {
 			IFile file = fileInput.getFile();
 			final JastAddModel model = JastAddModelProvider.getModel(file);
 			if (model != null) {
-				final IDocument document = model.fileToDocument(file);
+				final IDocument document = model.fileInfoToDocument(model.buildFileInfo(file));
 
 				// run update in the SWT UI thread
 				Display.getDefault().asyncExec(new Runnable() {

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -21,18 +19,37 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.util.JastAddPair;
 
 public abstract class JastAddModel {
+
+	public static class FileInfo extends JastAddPair<IProject, IPath> {
+		public FileInfo(IProject project, IPath path) {
+			super(project, path);
+		}
+		
+		public IProject getProject() {
+			return first;
+		}
+		
+		public IPath getPath() {
+			return second;
+		}
+	}
 	
-	private Map<IDocument, IFile> mapDocToFile = new HashMap<IDocument, IFile>();
-	private Map<IFile, IDocument> mapFileToDoc = new HashMap<IFile, IDocument>();
+	private Map<IDocument, FileInfo> mapDocToFileInfo = new HashMap<IDocument, FileInfo>();
+	private Map<FileInfo, IDocument> mapFileInfoToDoc = new HashMap<FileInfo, IDocument>();
 	private Set<JastAddModelListener> modelListeners = new HashSet<JastAddModelListener>();
 	
 	protected JastAddEditorConfiguration editorConfig;
@@ -47,24 +64,42 @@ public abstract class JastAddModel {
 		return editorConfig;
 	}
 
-	public IFile documentToFile(IDocument document) {
-		return mapDocToFile.get(document);
+	public FileInfo buildFileInfo(IEditorInput input) {
+		if (input instanceof FileEditorInput)
+			return buildFileInfo(((FileEditorInput)input).getFile());
+		else if (input instanceof JastAddStorageEditorInput) {
+			JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
+			return buildFileInfo(storageInput.getProject(), storageInput.getStorage().getFullPath());
+		}
+		return null;
 	}
 	
-	public IDocument fileToDocument(IFile file) {
-		return mapFileToDoc.get(file);
+	public FileInfo buildFileInfo(IFile file) {
+		return new FileInfo(file.getProject(), file.getRawLocation());
 	}
 	
-	public void linkFileToDoc(IFile file, IDocument document) {
-		mapDocToFile.put(document, file);
-		mapFileToDoc.put(file, document);
+	protected static FileInfo buildFileInfo(IProject project, IPath path) {
+		return new FileInfo(project, path);
 	}
 	
-	public void releaseFile(IFile file) {
-		IDocument document = mapFileToDoc.get(file);
-		mapFileToDoc.remove(file);
+	public FileInfo documentToFileInfo(IDocument document) {
+		return mapDocToFileInfo.get(document);
+	}
+	
+	public IDocument fileInfoToDocument(FileInfo fileInfo) {
+		return mapFileInfoToDoc.get(fileInfo);
+	}
+	
+	public void linkFileInfoToDoc(FileInfo fileInfo, IDocument document) {
+		mapDocToFileInfo.put(document, fileInfo);
+		mapFileInfoToDoc.put(fileInfo, document);
+	}
+	
+	public void releaseFileInfo(FileInfo fileInfo) {
+		IDocument document = mapFileInfoToDoc.get(fileInfo);
+		mapFileInfoToDoc.remove(fileInfo);
 		if(document != null)
-			mapDocToFile.remove(document);
+			mapDocToFileInfo.remove(document);
 	}
 
 	public void addListener(JastAddModelListener listener) {
@@ -75,16 +110,17 @@ public abstract class JastAddModel {
 		modelListeners.remove(listener);
 	}
 
-	public synchronized void updateProjectModel(Collection<IFile> changedFiles, IProject project) {
-		updateModel(changedFiles, project);
+	public void updateProjectModel(Collection<IFile> changedFiles, IProject project) {
+		synchronized(this) {
+			updateModel(changedFiles, project);
+		}
 		notifyModelListeners();
 	}
 
 	public void updateProjectModel(IDocument document) {
-		IFile file = documentToFile(document);
-		if(file == null) return;
-		String fileName = file.getRawLocation().toOSString();
-		updateProjectModel(document, fileName, file.getProject());
+		FileInfo fileInfo = documentToFileInfo(document);
+		if(fileInfo == null) return;
+		updateProjectModel(document, fileInfo.getPath().toOSString(), fileInfo.getProject());
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
@@ -105,17 +141,17 @@ public abstract class JastAddModel {
 	}
 	
 	public IJastAddNode getTreeRoot(IDocument document) {
-		IFile file = documentToFile(document);
-		if(file != null) {
-			return getTreeRoot(file);
+		FileInfo fileInfo = documentToFileInfo(document);
+		if(fileInfo != null) {
+			return getTreeRoot(fileInfo);
 		}
 		throw new UnsupportedOperationException("Can only get the current " +
 			"compilation unit for a document that belongs to a JastAdd project");
 	}
 	
-	public IJastAddNode getTreeRoot(IFile file) {
+	public IJastAddNode getTreeRoot(FileInfo fileInfo) {
 		try {
-			return getTreeRoot(file.getProject(), file.getRawLocation().toOSString());
+			return getTreeRoot(fileInfo.getProject(), fileInfo.getPath().toOSString());
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -130,24 +166,26 @@ public abstract class JastAddModel {
 	
 	
 	public IJastAddNode findNodeInDocument(IDocument document, int offset) {
-		return findNodeInDocument(documentToFile(document), offset);
+		return findNodeInDocument(documentToFileInfo(document), offset);
 	}
 	
 	public IJastAddNode findNodeInDocument(IDocument document, int line, int column) {
-		return findNodeInDocument(documentToFile(document), line, column);
+		return findNodeInDocument(documentToFileInfo(document), line, column);
 	}
 	
-	public IJastAddNode findNodeInDocument(IFile file, int offset) {
-		IProject project = file.getProject();
-		String fileName = file.getRawLocation().toOSString();
-		IDocument document = fileToDocument(file);
+	public IJastAddNode findNodeInDocument(FileInfo fileInfo, int offset) {
+		IProject project = fileInfo.getProject();
+		String fileName = fileInfo.getPath().toOSString();
+		IDocument document = fileInfoToDocument(fileInfo);
+		if (document == null)
+			return null;
 		return findNodeInDocument(project, fileName, document, offset);
 	}
 	
-	public IJastAddNode findNodeInDocument(IFile file, int line, int column) {
-		IProject project = file.getProject();
-		String fileName = file.getRawLocation().toOSString();
-		IDocument document = fileToDocument(file);
+	public IJastAddNode findNodeInDocument(FileInfo fileInfo, int line, int column) {
+		IProject project = fileInfo.getProject();
+		String fileName = fileInfo.getPath().toOSString();
+		IDocument document = fileInfoToDocument(fileInfo);
 		return findNodeInDocument(project, fileName, document, line, column);
 	}
 	
@@ -226,17 +264,15 @@ public abstract class JastAddModel {
 	protected void deleteErrorMarkers(String markerType, IResource[] resources) throws CoreException {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
-			if (res instanceof IFile && isModelFor((IFile)res)) {
+			if (res instanceof FileInfo && isModelFor((FileInfo)res)) {
 				IFile file = (IFile) res;
 				file.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
 			} else if (res instanceof IFolder) {
 			    IFolder folder = (IFolder) res;
-			    deleteErrorMarkers(markerType, folder.members());
-			    folder.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
+			    folder.deleteMarkers(markerType, false, IResource.DEPTH_INFINITE);
 		   } else if (res instanceof IProject) {
 			    IProject project = (IProject) res;
-			    deleteErrorMarkers(markerType, project.members());
-			    project.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
+			    project.deleteMarkers(markerType, false, IResource.DEPTH_INFINITE);
 		   }
 		}
 	}
@@ -293,6 +329,7 @@ public abstract class JastAddModel {
 	
 	public abstract boolean isModelFor(IProject project);
 	public abstract boolean isModelFor(IFile file);
+	public abstract boolean isModelFor(FileInfo fileInfo);
 	public abstract boolean isModelFor(IDocument document);
 	public abstract boolean isModelFor(IJastAddNode node);	
 	

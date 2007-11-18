@@ -20,6 +20,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
@@ -72,9 +73,17 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 				IFile file = fileInput.getFile();
 				ISelection selection = activeSelection();
 				if(selection instanceof ITextSelection && file != null) {
-					return model.findNodeInDocument(file, ((ITextSelection)selection).getOffset());
+					return model.findNodeInDocument(model.buildFileInfo(input), ((ITextSelection)selection).getOffset());
 				}
 			}
+			else if (input instanceof JastAddStorageEditorInput) {
+				JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
+				ISelection selection = activeSelection();
+				if(selection instanceof ITextSelection) {
+					return model.findNodeInDocument(model.buildFileInfo(input), ((ITextSelection)selection).getOffset());
+				}
+			}
+
 		}
 		return null;
 	}
@@ -111,10 +120,16 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 		IEditorPart part = activeEditorPart();
 		if (part != null) {
 			IEditorInput input = part.getEditorInput();
-			if (input != null && input instanceof IFileEditorInput) {
-				IFileEditorInput fileInput = (IFileEditorInput)input;
-				IFile file = fileInput.getFile();
-				return JastAddModelProvider.getModel(file);
+			if (input != null) {
+				if (input instanceof IFileEditorInput) {
+					IFileEditorInput fileInput = (IFileEditorInput)input;
+					IFile file = fileInput.getFile();
+					return JastAddModelProvider.getModel(file);
+				}
+				else if (input instanceof JastAddStorageEditorInput) {
+					JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
+					return storageInput.getModel();
+				}
 			}
 		}
 		return null;

@@ -3,7 +3,6 @@ package org.jastadd.plugin.editor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.information.InformationPresenter;
@@ -50,6 +49,11 @@ public abstract class JastAddEditor extends TextEditor {
 			model = JastAddModelProvider.getModel(file);
 			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model));		
 		}
+		else if (input instanceof JastAddStorageEditorInput) {
+			JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
+			model = storageInput.getModel();
+			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model));
+		}		
 		super.doSetInput(input);
 	}
 
@@ -120,16 +124,20 @@ public abstract class JastAddEditor extends TextEditor {
 		super.dispose();
 		
 		IEditorInput input = getEditorInput();
-		if(input instanceof IFileEditorInput && model != null) {
-			IFileEditorInput fileInput = (IFileEditorInput)input;
-			IFile file = fileInput.getFile();
-			final JastAddModel model = JastAddModelProvider.getModel(file);
-			if (model != null && this.model == model) {
-				model.releaseFile(file);
+		if (model != null) {
+			if(input instanceof IFileEditorInput) {
+				IFileEditorInput fileInput = (IFileEditorInput)input;
+				IFile file = fileInput.getFile();
+				final JastAddModel model = JastAddModelProvider.getModel(file);
+				if (this.model == model) {
+					model.releaseFileInfo(model.buildFileInfo(input));
+				}
+			} else if(input instanceof JastAddStorageEditorInput) {
+				JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
+				model.releaseFileInfo(model.buildFileInfo(input));
 			}
-		}
-		if (model != null)
 			model.removeListener(folder);
+		}
 	    IContextService contextService = (IContextService) getSite().getService(IContextService.class);
 	    contextService.deactivateContext(contextActivation);
 	}

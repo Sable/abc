@@ -32,10 +32,11 @@ public class JastAddStructureModel {
 			createRoot();
 		} catch (Throwable t) {
 			treeBuilt = false;
-			System.err.println("StructureModel: Problem building structure tree");
+			System.err.println("StructureModel: Problem building structure tree ");
+			t.printStackTrace();
 		}
 		if (structureCorrect && rootPair.treeBroken()) {
-			System.err.println("StructureModel: Correct program generated a broken tree");
+			System.err.println("StructureModel: Correct program generated a broken tree ");
 			rootPair.print("");
 		}
 		

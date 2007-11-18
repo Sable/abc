@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IFileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
@@ -39,7 +40,7 @@ public class JastAddContentProvider implements ITreeContentProvider {
 				IFile file = (IFile)element;
 				JastAddModel model = JastAddModelProvider.getModel(file);
 				if (model != null) {
-					IJastAddNode node = model.getTreeRoot(file);
+					IJastAddNode node = model.getTreeRoot(model.buildFileInfo(file));
 					if (node != null && node instanceof IOutlineNode) {
 						return ((IOutlineNode)node).outlineChildren().toArray();
 					}
@@ -84,18 +85,24 @@ public class JastAddContentProvider implements ITreeContentProvider {
 
 	public Object[] getElements(Object element) {
 		try {
+			IJastAddNode content = null;
 			if(element instanceof IFileEditorInput) {
 				IFileEditorInput input = (IFileEditorInput)element;
 				IFile file = input.getFile();
 
 				JastAddModel model = JastAddModelProvider.getModel(file);
 				if (model != null) {
-					IDocument document = model.fileToDocument(file);
-					IJastAddNode content = model.getTreeRoot(document);
-					if(content != null && content instanceof IOutlineNode)
-						return ((IOutlineNode)content).outlineChildren().toArray();
+					IDocument document = model.fileInfoToDocument(model.buildFileInfo(file));
+					content = model.getTreeRoot(document);
 				}
 			}
+			else if (element instanceof JastAddStorageEditorInput) {
+				JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)element;
+				JastAddModel model = storageInput.getModel();
+				content = model.getTreeRoot(model.buildFileInfo(storageInput));
+			}
+			if(content != null && content instanceof IOutlineNode)
+				return ((IOutlineNode)content).outlineChildren().toArray();					
 		} catch (Exception e) {
 		}
 		return parent.getElements(element);

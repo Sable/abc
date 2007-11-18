@@ -14,6 +14,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -49,6 +50,9 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 			IFileEditorInput fileInput = (IFileEditorInput)input;
 			IFile file = fileInput.getFile();
 			model = JastAddModelProvider.getModel(file);
+		}
+		else if (input instanceof JastAddStorageEditorInput) {
+			model = ((JastAddStorageEditorInput)input).getModel();
 		}
 		TreeViewer viewer = getTreeViewer();
 		if(viewer != null) {
@@ -109,17 +113,17 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 			}
 		}
 	}
-	
+
 	public void modelChangedEvent() {
-		// run update in the SWT UI thread
 		Control control = this.getControl();
-		Display display = control.getDisplay();
-		if (!display.isDisposed()) {
+		if (!control.isDisposed()) {
+			// run update in the SWT UI thread
+			Display display = control.getDisplay();
 			display.asyncExec(new Runnable() {
 				public void run() {
 					update();
 				}
 			});
 		}
-	}
+	}	
 }
