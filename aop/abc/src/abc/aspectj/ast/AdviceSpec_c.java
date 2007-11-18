@@ -68,4 +68,10 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
     public void setReturnVal(AdviceFormal rv) {
         returnVal = rv;
     }
+    
+    public Object copy() {
+    	AdviceSpec_c copy = (AdviceSpec_c) super.copy();
+    	copy.formals = new LinkedList(formals);
+		return copy;
+    }
 }
