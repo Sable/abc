@@ -5907,5 +5907,35 @@
 		</compile>
 		<run class="FlowIns"></run>
     </ajc-test>
+<ajc-test title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1" num="1303" dir="abctests/tracematches/wp-opt">
+        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="IntraFlowSens1.java,AB.java,AbstractTest.java">
+	    	<message line="41" kind="warning"></message>
+	    	<message line="43" kind="warning"></message>
+	    	<message line="48" kind="warning"></message>
+	    	<message line="59" kind="warning"></message>
+	    	<message line="66" kind="warning"></message>
+	    	<message line="68" kind="warning"></message>
+	    	<message line="73" kind="warning"></message>
+	    	<message line="77" kind="warning"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for relational aspects (1 of 2)" num="1401" dir="abctests/ra/typechecks">
+        <compile options="-ext,abc.ra" files="T1.java">
+	    	<message line="7" kind="error"></message>
+	    	<message line="14" kind="error"></message>
+	    	<message line="37" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for relational aspects (2 of 2)" num="1402" dir="abctests/ra/typechecks">
+        <compile options="-ext,abc.ra" files="T8.java">
+	    	<message line="8" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Equality-example for relational aspects" num="1403" dir="abctests/ra/equality">
+        <compile options="-ext,abc.ra,-warn-unused-advice:on" files="Bit.java,Equality.java,Example.java">
+	    	<message line="18" kind="warning"></message>
+		</compile>
+		<run class="Example"></run>
+    </ajc-test>
  
 </suite>
