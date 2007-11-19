@@ -20,7 +20,7 @@
  */
 
 //include the original tracematches grammar
-include "../../../../../abc/src/abc/tm/parse/tm.ppg"
+include "../../tm/parse/tm.ppg"
 
 //make sure this package declaration is correct
 package abc.ra.parse;
