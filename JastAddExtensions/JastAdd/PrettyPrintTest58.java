@@ -45,7 +45,7 @@ public class PrettyPrintTest58 {
     }
     else {
       program.generateIntertypeDecls();
-      program.java2Transformation();
+      program.transformation();
       System.out.println(program.getCompilationUnit(3).getTypeDecl(0));
     }
 

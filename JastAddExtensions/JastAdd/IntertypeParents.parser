@@ -4,5 +4,6 @@ BodyDecl intertype_member_declaration =
 
 BodyDecl intertype_parent_declaration =
     name.target IMPLEMENTS name.interfacetype SEMICOLON
-    {: return new IntertypeImplements(target, interfacetype); :}
+    //{: return new IntertypeImplements(target, interfacetype); :}
+    {: return new DeclareParentsImplements(target, new List().add(interfacetype)); :}
   ;

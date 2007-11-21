@@ -30,7 +30,7 @@ public class JastAdd extends Frontend {
 
   public void generate() {
     program.generateIntertypeDecls();
-    program.java2Transformation();
+    program.transformation();
     program.generateClassfile();
   }
   

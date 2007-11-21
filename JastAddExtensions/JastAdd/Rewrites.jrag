@@ -56,7 +56,7 @@ aspect Rewrite {
     FieldDeclaration field = duringCounter();
     MethodDecl m = addMemberMethod(
       new IntertypeMethodDecl(
-        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("static"))),
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
         new PrimitiveTypeAccess("boolean"),
         "during" + name(),
         new List(),

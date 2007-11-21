@@ -1,4 +1,4 @@
-List formal_parameter_list_opt = 
+/*List formal_parameter_list_opt = 
                           {: return new List(); :}
   | formal_parameter_list {: return formal_parameter_list; :}
   ;
@@ -6,7 +6,7 @@ List formal_parameter_list_opt =
 List throws_opt = 
            {: return new List(); :}
   | throws.t {: return t; :}
-  ;
+  ;*/
 
 BodyDecl intertype_member_declaration =
   syn_decl

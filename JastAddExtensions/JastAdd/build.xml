@@ -12,6 +12,8 @@
 <property name="Java1.4Frontend" value="../Java1.4Frontend"/>
 <!-- location of Java1.4Backend -->
 <property name="Java1.4Backend" value="../Java1.4Backend"/>
+<!-- location of IntertypeDeclarations -->
+<property name="IntertypeDeclarations" value="../IntertypeDeclarations"/>
 
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
@@ -46,10 +48,17 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		<fileset dir="${IntertypeDeclarations}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+      <exclude name="Inter*"/>
+      <exclude name="JastAdd.ast"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
@@ -76,8 +85,16 @@
 	      <file name="parser/java14.parser"/>
 	      <file name="parser/errorrecovery.parser"/>
 	    </filelist>
+      <fileset dir="${IntertypeDeclarations}">
+        <include name="*.parser"/>
+      </fileset>
       <fileset dir=".">
         <include name="*.parser"/>
+        <exclude name="IntertypeConstructor.parser"/>
+        <exclude name="IntertypeDecls.parser"/>
+        <exclude name="IntertypeField.parser"/>
+        <exclude name="IntertypeMethod.parser"/>
+        <exclude name="JastAdd.parser"/>
       </fileset>
 	</concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->

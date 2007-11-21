@@ -221,8 +221,8 @@ aspect JastAdd {
   
   syn lazy Opt InhDecl.getBlockOpt() = new Opt(new Block(new List().add(new ThrowStmt(new NullLiteral()))));
 
-  syn lazy Opt AspectDecl.getSuperClassAccessOpt() = new Opt(typeObject().createQualifiedAccess());
-  syn lazy List AspectDecl.getImplementsList() = new List();
+  //syn lazy Opt AspectDecl.getSuperClassAccessOpt() = new Opt(typeObject().createQualifiedAccess());
+  //syn lazy List AspectDecl.getImplementsList() = new List();
 
   syn lazy boolean AttributeDecl.isLazy() = getLazy();
 

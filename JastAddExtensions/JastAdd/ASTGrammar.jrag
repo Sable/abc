@@ -1,6 +1,9 @@
 import java.util.*;
 
 aspect ASTGrammar {
+
+  syn lazy final List ASTDecl.getImplementsList() = new List();
+
   eq CompilationUnit.getChild().astNode() = (TypeDecl)localLookupType("ASTNode").iterator().next();
   eq CompilationUnit.getChild().listNode() = (TypeDecl)localLookupType("List").iterator().next();
   // Change the packageName() to a specific jastadd package??

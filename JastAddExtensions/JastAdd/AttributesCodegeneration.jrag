@@ -803,10 +803,12 @@ aspect GenerateSynCode {
       );
     }
   }
-
+  
+  /*
   public Access ParameterDeclaration.createAccess() {
     return new VarAccess(name());
   }
+  */
 
   public Expr TypeDecl.box(Expr expr) {
     return expr;
