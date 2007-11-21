@@ -21,8 +21,9 @@ aspect IntertypeMethodCodegeneration {
       MethodDecl m = (MethodDecl)iter.next();
       if(m instanceof IntertypeMethodDecl && (!hasSuperclass() || !superclass().methodsSignature(m.signature()).contains(m))) {
         IntertypeMethodDecl methodDecl = (IntertypeMethodDecl)m;
-        if(methodDecl.hostAspect() != this)
+        if(methodDecl.hostAspect() != this) {
           methodDecl.createIntertypeMethod(this);
+        }
       }
     }
   }
@@ -53,6 +54,9 @@ aspect IntertypeMethodCodegeneration {
       MethodDecl aspectMethod = createAspectMethod();
       MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
       introducedType.addMemberMethod(delegateMethod);
+      if(hostType() != introducedType) {
+        aspectMethod.generateSuperDispatchDelegate(introducedType);
+      }
     }
   }
 
@@ -108,38 +112,89 @@ aspect IntertypeMethodCodegeneration {
     if(!hasPrevExpr() || !prevExpr().isSuperAccess())
       return false;
     BodyDecl bodyDecl = enclosingBodyDecl();
-    if(!(bodyDecl instanceof IntroducedMethodDecl))
-      return false;
-    IntroducedMethodDecl m = (IntroducedMethodDecl)bodyDecl;
-    return m.introducedType() != bodyDecl.hostType();
+    if(bodyDecl instanceof IntroducedMethodDecl) {
+      IntroducedMethodDecl m = (IntroducedMethodDecl)bodyDecl;
+      return m.introducedType() != bodyDecl.hostType();
+    }
+    return false;
   }
 
-  public void MethodAccess.generateIntertypeDecls() {
-    super.generateIntertypeDecls();
-    if(needsSuperDispatchDelegate()) {
-      if(Program.verbose())
-        System.out.println("May need super dispatch delegate for " + this);
-      SimpleSet maxSpecific = SimpleSet.emptySet;
-      for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
-        MethodDecl decl = (MethodDecl)iter.next();
-        if(applicable(decl) && accessible(decl)) {
-          if(maxSpecific.isEmpty())
-            maxSpecific = maxSpecific.add(decl);
-          else {
-            if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
-              maxSpecific = SimpleSet.emptySet.add(decl);
-            else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
-              maxSpecific = maxSpecific.add(decl);
-          }
-        }
-      }
-      if(maxSpecific.size() == 1) {
-        MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
-        m.createSuperDispatchDelegate(hostType());
-      }
+  public void ASTNode.generateSuperDispatchDelegate(TypeDecl typeDecl) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).generateSuperDispatchDelegate(typeDecl);
+  }
+
+  public void MethodAccess.generateSuperDispatchDelegate(TypeDecl typeDecl) {
+    super.generateSuperDispatchDelegate(typeDecl);
+    if(decl().name().startsWith("superDispatch$")) {
+      typeDecl.addMemberMethod((MethodDecl)decl().fullCopy());
+    }
+    else if(needsSuperDispatchDelegate()) {
+      typeDecl.addMemberMethod((MethodDecl)superDispatchDelegate().fullCopy());
     }
   }
 
+  public void MethodAccess.generateIntertypeDecls() {
+    if(needsSuperDispatchDelegate()) {
+      if(Program.verbose())
+        System.out.println("May need super dispatch delegate for " + this);
+      MethodDecl m = superDispatchDelegate();
+      List args = getArgList();
+      Access a = superDispatchQualifier().createBoundAccess().qualifiesAccess(new ThisAccess()).qualifiesAccess(m.createBoundAccess(args));
+      replace(getParent()).with(a);
+      a.generateIntertypeDecls();
+    }
+    else
+      super.generateIntertypeDecls();
+  }
+
+  syn TypeDecl MethodAccess.superDispatchQualifier() {
+    if(!needsSuperDispatchDelegate())
+      throw new Error("superDispatchQualifier may only be called on method calls that need delegate");
+    SuperAccess access = (SuperAccess)qualifier();
+    return access.isQualified() ? access.qualifier().type() : hostType();
+  }
+
+
+  public MethodDecl MethodAccess.superDispatchDelegate() {
+    if(!needsSuperDispatchDelegate())
+      throw new Error("superDispatchDelegate may only be called on method calls that need delegate");
+    SimpleSet maxSpecific = SimpleSet.emptySet;
+    for(Iterator iter = superDispatchQualifier().memberMethods(name()).iterator(); iter.hasNext(); ) {
+      MethodDecl decl = (MethodDecl)iter.next();
+      if(applicable(decl) && accessible(decl)) {
+        if(maxSpecific.isEmpty())
+          maxSpecific = maxSpecific.add(decl);
+        else {
+          if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
+            maxSpecific = SimpleSet.emptySet.add(decl);
+          else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
+            maxSpecific = maxSpecific.add(decl);
+        }
+      }
+    }
+    if(maxSpecific.size() == 1) {
+      MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
+      return m.createSuperDispatchDelegate(superDispatchQualifier());
+    }
+    throw new Error("Could not find most specific method");
+  }
+
+/*
+  refine CreateBCode public void MethodAccess.createBCode(CodeGeneration gen) {
+    if(needsSuperDispatchDelegate()) {
+      MethodDecl m = superDispatchDelegate();
+      TypeDecl thisType = hostType();
+      .createBCode(gen);
+      for (int i = 0; i < getNumArg(); ++i) {
+        getArg(i).createBCode(gen);
+        getArg(i).type().emitCastTo(gen, m.getParameter(i).type()); // MethodInvocationConversion
+      }
+      m.emitInvokeMethod(gen, methodQualifierType());
+    }
+    else
+      CreateBCode.MethodAccess.createBCode(gen);
+  }*/
 
   /*
   TODO: fixme

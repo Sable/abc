@@ -144,8 +144,6 @@ aspect IntertypeFieldNameAnalysis {
   }
 
   refine LookupVariable private boolean Expr.mayAccess(FieldDeclaration f) {
-    if(enclosingBodyDecl().hostType().isAspectDecl() && enclosingBodyDecl().hostType().isPrivileged())
-      return true;
     if(f instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration d = (IntertypeFieldDeclaration)f;
       // intertype field declarations can not be protected

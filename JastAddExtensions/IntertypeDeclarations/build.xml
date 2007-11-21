@@ -38,7 +38,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>      
 		</fileset>
-		<fileset dir="../JavaFlattening">
+		<fileset dir="../Java1.4Backend">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -51,9 +51,6 @@
   </jastadd>
   <copy todir="beaver" preservelastmodified="true">
     <fileset dir="../Java1.4Frontend/beaver"/>
-  </copy>
-  <copy todir="bytecode" preservelastmodified="true">
-    <fileset dir="../Java1.4Frontend/bytecode"/>
   </copy>
   <copy todir="scanner" file="../Java1.4Frontend/scanner/Unicode.java" preservelastmodified="true"/>
 </target>
