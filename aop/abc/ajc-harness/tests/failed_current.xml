@@ -1,4 +1,4 @@
-<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
