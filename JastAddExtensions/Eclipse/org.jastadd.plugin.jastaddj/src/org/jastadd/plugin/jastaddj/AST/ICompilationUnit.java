@@ -10,6 +10,6 @@ public interface ICompilationUnit extends IJastAddNode {
 	boolean fromSource();
 	Collection parseErrors();
 	void errorCheck(Collection errors, Collection warnings);
-	void java2Transformation();
+	void transformation();
 	void generateClassfile();
 }

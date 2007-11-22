@@ -75,6 +75,7 @@ import AST.MethodAccess;
 import AST.ParExpr;
 import AST.Problem;
 import AST.Program;
+import AST.BytecodeParser;
 
 public class JastAddJModel extends JastAddModel {
 
@@ -316,7 +317,7 @@ public class JastAddJModel extends JastAddModel {
 							}
 						}
 						if (build) {
-							unit.java2Transformation();
+							unit.transformation();
 							unit.generateClassfile();
 						}
 					}
@@ -580,7 +581,7 @@ public class JastAddJModel extends JastAddModel {
 			JastAddJBuildConfiguration buildConfiguration) {
 		// Init
 		Program program = new Program();
-		program.initBytecodeReader(new bytecode.Parser());
+		program.initBytecodeReader(new BytecodeParser());
 		program.initJavaParser(new JavaParser() {
 			public CompilationUnit parse(java.io.InputStream is, String fileName)
 					throws java.io.IOException, beaver.Parser.Exception {

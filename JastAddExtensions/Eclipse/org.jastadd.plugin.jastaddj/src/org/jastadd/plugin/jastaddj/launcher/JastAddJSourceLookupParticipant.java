@@ -66,7 +66,7 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 	 * @see org.eclipse.debug.internal.core.sourcelookup.ISourceLookupParticipant#dispose()
 	 */
 	public void dispose() {
-		Iterator iterator = fDelegateContainers.values().iterator();
+		Iterator<?> iterator = fDelegateContainers.values().iterator();
 		while (iterator.hasNext()) {
 			ISourceContainer container = (ISourceContainer) iterator.next();
 			container.dispose();

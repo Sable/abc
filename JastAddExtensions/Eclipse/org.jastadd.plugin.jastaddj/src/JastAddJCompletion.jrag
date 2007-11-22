@@ -129,13 +129,14 @@ aspect JastAddJCompletion {
       Collection methods = (Collection)iter.next();
       for(Iterator i2 = methods.iterator(); i2.hasNext(); ) {
         MethodDecl m = (MethodDecl)i2.next();
-        c.add(m);
+        if(!m.isSynthetic())
+          c.add(m);
       }
     }
     for(Iterator iter = visibleMethods().iterator(); iter.hasNext(); ) {
       MethodDecl m = (MethodDecl)iter.next();
-      if(!methodsNameMap().containsKey(m.name()) || 
-         ((Collection)methodsNameMap().get(m.name())).isEmpty())
+      if(!m.isSynthetic() && (!methodsNameMap().containsKey(m.name()) || 
+         ((Collection)methodsNameMap().get(m.name())).isEmpty()))
         c.add(m);
     }
     return c;
@@ -146,7 +147,8 @@ aspect JastAddJCompletion {
       Collection methods = (Collection)iter.next();
       for(Iterator i2 = methods.iterator(); i2.hasNext(); ) {
         MethodDecl m = (MethodDecl)i2.next();
-        c.add(m);
+        if(!m.isSynthetic())
+          c.add(m);
       }
     }
     return c;
@@ -160,7 +162,8 @@ aspect JastAddJCompletion {
       SimpleSet set = (SimpleSet)iter.next();
       for(Iterator i2 = set.iterator(); i2.hasNext(); ) {
         FieldDeclaration f = (FieldDeclaration)i2.next();
-        c.add(f);
+        if(!f.isSynthetic())
+          c.add(f);
       }
     }
     return c;
@@ -170,7 +173,7 @@ aspect JastAddJCompletion {
     if(hasSuperclass()) {
       for(Iterator iter = superclass().fields().iterator(); iter.hasNext(); ) {
         Variable v = (Variable)iter.next();
-        if(!fields(v.name()).contains(v))
+        if(!fields(v.name()).contains(v) && !v.isSynthetic())
           c.add(v);
       }
     }
@@ -178,7 +181,7 @@ aspect JastAddJCompletion {
       TypeDecl type = (TypeDecl)outerIter.next();
       for(Iterator iter = type.fields().iterator(); iter.hasNext(); ) {
         Variable v = (Variable)iter.next();
-        if(!fields(v.name()).contains(v))
+        if(!fields(v.name()).contains(v) && !v.isSynthetic())
           c.add(v);
       }
     }
@@ -190,7 +193,7 @@ aspect JastAddJCompletion {
       TypeDecl type = (TypeDecl)outerIter.next();
       for(Iterator iter = type.fields().iterator(); iter.hasNext(); ) {
         Variable v = (Variable)iter.next();
-        if(!fields(v.name()).contains(v))
+        if(!fields(v.name()).contains(v) && !v.isSynthetic())
           c.add(v);
       }
     }
@@ -201,21 +204,24 @@ aspect JastAddJCompletion {
   eq ClassDecl.types() {
     Collection c = new ArrayList();
     for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof MemberTypeDecl)
-        c.add(((MemberTypeDecl)getBodyDecl(i)).typeDecl());
+      if(getBodyDecl(i) instanceof MemberTypeDecl) {
+        TypeDecl typeDecl = ((MemberTypeDecl)getBodyDecl(i)).typeDecl();
+        if(!typeDecl.isSynthetic())
+          c.add(typeDecl);
+      }
     }
     for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
       TypeDecl type = (TypeDecl)outerIter.next();
       for(Iterator iter = type.types().iterator(); iter.hasNext(); ) {
         TypeDecl decl = (TypeDecl)iter.next();
-        if(memberTypes(decl.name()).contains(decl))
+        if(memberTypes(decl.name()).contains(decl) && !decl.isSynthetic())
           c.add(decl);
       }
     }
     if(hasSuperclass()) {
       for(Iterator iter = superclass().types().iterator(); iter.hasNext(); ) {
         TypeDecl decl = (TypeDecl)iter.next();
-        if(memberTypes(decl.name()).contains(decl))
+        if(memberTypes(decl.name()).contains(decl) && !decl.isSynthetic())
           c.add(decl);
       }
     }
@@ -224,14 +230,17 @@ aspect JastAddJCompletion {
   eq InterfaceDecl.types() {
     Collection c = new ArrayList();
     for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof MemberTypeDecl)
-        c.add(((MemberTypeDecl)getBodyDecl(i)).typeDecl());
+      if(getBodyDecl(i) instanceof MemberTypeDecl) {
+        TypeDecl typeDecl = ((MemberTypeDecl)getBodyDecl(i)).typeDecl();
+        if(!typeDecl.isSynthetic())
+          c.add(typeDecl);
+      }
     }
     for(Iterator outerIter = superinterfacesIterator(); outerIter.hasNext(); ) {
       TypeDecl type = (TypeDecl)outerIter.next();
       for(Iterator iter = type.types().iterator(); iter.hasNext(); ) {
         TypeDecl decl = (TypeDecl)iter.next();
-        if(memberTypes(decl.name()).contains(decl))
+        if(memberTypes(decl.name()).contains(decl) && !decl.isSynthetic())
           c.add(decl);
       }
     }

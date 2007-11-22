@@ -63,11 +63,6 @@
       <include name="**/*.java"/>
     </fileset>
   </copy>
-  <copy todir="bytecode" preservelastmodified="true">
-    <fileset dir="../../BytecodeBackend/bytecode">
-      <include name="**/*.java"/>
-    </fileset>
-  </copy>
 </target>
 
 <target name="scanner">

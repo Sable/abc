@@ -1,10 +1,10 @@
 aspect JastAddJContentOutline {
   
-   eq ClassDecl.showInContentOutline() = true;
-   eq InterfaceDecl.showInContentOutline() = true;
-   eq MethodDecl.showInContentOutline() = true;
-   eq FieldDeclaration.showInContentOutline() = true;
-   eq ConstructorDecl.showInContentOutline() = true;
+   eq ClassDecl.showInContentOutline() = !isSynthetic();
+   eq InterfaceDecl.showInContentOutline() = !isSynthetic();
+   eq MethodDecl.showInContentOutline() = !isSynthetic();
+   eq FieldDeclaration.showInContentOutline() = !isSynthetic();
+   eq ConstructorDecl.showInContentOutline() = !isSynthetic();
    
    
    eq ClassDecl.contentOutlineLabel() = name();
