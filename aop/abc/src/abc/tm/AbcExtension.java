@@ -37,6 +37,7 @@ import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
+import abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
 import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
@@ -177,19 +178,11 @@ public class AbcExtension extends abc.eaj.AbcExtension
     
                 if(!laststage.equals("flowins")) {
     
-                	//hook up intraprocedural analysis, if present
-                    try {
-        				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
-        				ReweavingAnalysis intra = (ReweavingAnalysis) optClass.newInstance();
-        	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-        	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations (unnecessary-shadows and run-once).");
-                        
-                        //need unique advice actuals for this analysis; TODO do we really?
-                        TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
-                    } catch (ClassNotFoundException e) {
-        			} catch (InstantiationException e) {
-        			} catch (IllegalAccessException e) {
-        			};
+    				ReweavingAnalysis intra = new OptIntraProcedural();
+    	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
+                    
+                    //need unique advice actuals for this analysis; TODO do we really?
+                    TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
                 }
             }
             
