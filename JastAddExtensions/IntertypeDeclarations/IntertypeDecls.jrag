@@ -29,6 +29,10 @@ aspect IntertypeDecls {
       return (Collection)intertypeDecls().get(type);
     return Collections.EMPTY_LIST;
   }
+
+  public void Program.flushIntertypeDecls() {
+    intertypeDecls = null;
+  }
  
   // store all inter-type declarations in a map (TypeDecl -> List)
   private HashMap Program.intertypeDecls() {
