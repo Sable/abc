@@ -35,10 +35,18 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		
+		<fileset dir="../../IntertypeDeclarations">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
 		<fileset dir="../../JastAdd">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+	    	<exclude name="Inter*"/>
+	      	<exclude name="JastAdd.ast"/>
 		</fileset>
 		<fileset dir="../../org.jastadd.plugin/src">
 			<include name="**/*.jrag"/>
@@ -84,7 +92,17 @@
 	      <include name="*.parser"/>
 	      <exclude name="preamble.parser"/>
 	    </fileset>
-		<fileset dir="../../JastAdd/" includes= "*.parser"/>
+		<fileset dir="../../IntertypeDeclarations">
+			<include name="*.parser"/>
+		</fileset>
+		<fileset dir="../../JastAdd">
+		        <include name="*.parser"/>
+		        <exclude name="IntertypeConstructor.parser"/>
+		        <exclude name="IntertypeDecls.parser"/>
+		        <exclude name="IntertypeField.parser"/>
+		        <exclude name="IntertypeMethod.parser"/>
+		        <exclude name="JastAdd.parser"/>
+		</fileset>
  	</concat>
 	<!-- generate the parser phase 2, translating .lalr to .beaver -->
 	<java fork="true" dir="${basedir}" classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main">
