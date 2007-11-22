@@ -164,7 +164,7 @@ public class Model extends JastAddJModel {
 
 				if (build) {
 					program.generateIntertypeDecls();
-					program.java2Transformation();
+					program.transformation();
 					program.generateClassfile();
 				}
 			} catch (CoreException e) {
