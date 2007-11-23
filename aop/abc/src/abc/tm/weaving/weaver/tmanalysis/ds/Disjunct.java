@@ -45,6 +45,9 @@ import abc.tm.weaving.matching.SMNode;
  */
 public abstract class Disjunct<A> implements Cloneable {
 	
+	
+    protected HashMap<A,String> history;
+
 	/**
 	 * a most-recently used cache to cache equal disjuncts; the idea is that equality checks
 	 * are faster if performed on "interned" instances
@@ -171,10 +174,15 @@ public abstract class Disjunct<A> implements Cloneable {
 			return false;
 		return true;
 	}
+
+	public Collection<String> getCurrentHistory() {
+		return history.values();
+	}
 	
-	/**
-	 * @return current history associated with that disjunct
-	 */
-	public abstract Collection<String> getCurrentHistory();
+	public Disjunct<A> cloneWithoutHistory() {
+		Disjunct<A> clone = clone();
+		clone.history.clear();
+		return clone;
+	}
 	
 }

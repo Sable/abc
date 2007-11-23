@@ -52,8 +52,6 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
     private final SootMethod container;
     private final TraceMatch tm;
 
-    protected HashMap<InstanceKey,String> history;
-
     /**
 	 * Constructs a new disjunct.
 	 */
@@ -489,10 +487,6 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 		return history.keySet().equals(allLocalKeys);
 	}
 	
-	public Collection<String> getCurrentHistory() {
-		return history.values();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;

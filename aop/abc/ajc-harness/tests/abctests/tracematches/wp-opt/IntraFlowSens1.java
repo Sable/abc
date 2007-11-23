@@ -50,7 +50,7 @@ public class IntraFlowSens1 extends AbstractTest {
 
 	void unnecessary() {
 		a();//one of those
-		a();//is unnecessary, but we currently do not detect this :-(
+		a();//is unnecessary
 		b();
 	}
 	

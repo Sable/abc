@@ -165,6 +165,11 @@ public class Constraint implements Cloneable {
 		this.disjuncts = (HashSet) disjuncts.clone();
 	}
 
+	public Constraint(Disjunct onlyDisjunct) {
+		this.disjuncts = new HashSet<Disjunct>();
+		this.disjuncts.add(onlyDisjunct);
+	}
+
 	/**
 	 * Adds bindings for the case where the given symbol is read by taking an edge in the program graph.
 	 * Also, this adds the shadow-ids of any edges that are on the path to a final state to the
@@ -179,8 +184,8 @@ public class Constraint implements Cloneable {
 	 * the shadowId that is passed in
 	 */
 	public Constraint addBindingsForSymbol(Collection allVariables, SMNode from, SMNode to, Map bindings, String shadowId) {
-		//create a set for the resulting disjuncts
-		HashSet<Disjunct> resultDisjuncts = new HashSet<Disjunct>();
+		Constraint newConstraint = FALSE;
+
 		//for all current disjuncts
 		for (Iterator iter = disjuncts.iterator(); iter.hasNext();) {
 			Disjunct disjunct = (Disjunct) iter.next();
@@ -191,19 +196,12 @@ public class Constraint implements Cloneable {
             
             //FALSE is a marker for "no match"; do not add it as it represents TRUE in the Constraint
             if(newDisjunct!= Disjunct.FALSE) {
-                resultDisjuncts.add(newDisjunct);
+    			newConstraint = newConstraint.or(new Constraint(newDisjunct));
             }
+			
 		}
-		
-		if(resultDisjuncts.isEmpty()) {
-			//if no disjuncts are left, this means nothing else but FALSE
-			return FALSE;	
-		} else {
-			//return an interned version of the the updated copy;
-			//the disjuncts of this copy hold clones of the history of the original disjuncts
-			//(plus the id of the shadow that triggered the current edge)
-			return new Constraint(resultDisjuncts);
-		}		
+
+		return newConstraint;
 	}
 	
     /**
@@ -317,25 +315,19 @@ public class Constraint implements Cloneable {
 	 * @return the updated constraint; this is a fresh instance or {@link #FALSE} 
 	 */
 	public Constraint addNegativeBindingsForSymbol(Collection allVariables, SMNode state, Map bindings, String shadowId, Configuration configuration) {
-		HashSet resultDisjuncts = new HashSet();
+		Constraint newConstraint = FALSE;
 		//for each disjunct
 		for (Iterator iter = disjuncts.iterator(); iter.hasNext();) {
 			Disjunct disjunct = (Disjunct) iter.next();
 			
-			resultDisjuncts.addAll(disjunct.addNegativeBindingsForSymbol(allVariables,bindings,shadowId, configuration));
+			HashSet newDisjuncts = new HashSet(disjunct.addNegativeBindingsForSymbol(allVariables,bindings,shadowId, configuration));
+			//references to FALSE have to be removed, as {FALSE} actually represents TRUE, not FALSE (in DNF)
+			newDisjuncts.remove(Disjunct.FALSE);
+
+			newConstraint = newConstraint.or(new Constraint(newDisjuncts));
 		}
-		
-		//references to FALSE are useless in DNF
-		resultDisjuncts.remove(Disjunct.FALSE);
-		if(resultDisjuncts.isEmpty()) {
-			//if no disjunts are left, this means nothing else but FALSE
-			return FALSE;
-		} else {
-			//return an interned version of the updated copy;
-			//the disjuncts of this copy hold clones of the history of the original disjuncts
-			//(plus the id of the shadow that triggered the current edge)
-			return new Constraint(resultDisjuncts);
-		}		
+
+		return newConstraint;
 	}
 
 
@@ -347,7 +339,17 @@ public class Constraint implements Cloneable {
 	 * @return the disjoint constraint
 	 */
 	public Constraint or(Constraint other) {
-		Constraint copy = (Constraint) clone();
+		//of both are equal, just reuse the current one
+		if(equals(other)) {
+			return this;
+		}
+		//if both are equal not taking their history into account it should be safe to just preserve one of them
+		//Note to self: It seems sound to do that on a single transition but it should be unsound to do that at
+		//merge points (and we don't do it at merge points).
+		if(cloneWithoutHistory().equals(other.cloneWithoutHistory())) {
+			return this;
+		}
+		Constraint copy = clone();
 		copy.disjuncts.addAll(other.disjuncts);
 		return copy;
 	}
@@ -359,6 +361,22 @@ public class Constraint implements Cloneable {
 		try {
 			Constraint clone = (Constraint) super.clone();
 			clone.disjuncts = (HashSet) disjuncts.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	protected Constraint cloneWithoutHistory() {
+		try {
+			Constraint clone = (Constraint) super.clone();
+			clone.disjuncts = new HashSet();
+			for (Disjunct d : disjuncts) {
+				clone.disjuncts.add(d.cloneWithoutHistory());
+			}
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
