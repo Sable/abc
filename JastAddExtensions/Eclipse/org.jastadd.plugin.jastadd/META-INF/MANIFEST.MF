@@ -6,5 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Activator: org.jastadd.plugin.jastadd.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- org.jastadd.plugin.jastaddj
+ org.jastadd.plugin.jastaddj,
+ org.eclipse.jdt.core
 Eclipse-LazyStart: true
