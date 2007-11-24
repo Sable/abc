@@ -32,7 +32,7 @@ public class JastAddDocumentProvider extends FileDocumentProvider {
 	protected IAnnotationModel createAnnotationModel(Object element) throws CoreException {
 		if (element instanceof JastAddStorageEditorInput) {
 			JastAddStorageEditorInput input= (JastAddStorageEditorInput) element;
-			return new AnnotationModel();
+			return new JastAddStorageAnnotationModel(input.getStorage().getFullPath());
 		}		
 		else
 			return super.createAnnotationModel(element);
