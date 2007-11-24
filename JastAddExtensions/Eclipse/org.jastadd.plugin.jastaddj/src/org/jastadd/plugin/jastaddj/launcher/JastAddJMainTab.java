@@ -1,6 +1,7 @@
 package org.jastadd.plugin.jastaddj.launcher;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -165,6 +166,7 @@ public class JastAddJMainTab extends AbstractLaunchConfigurationTab {
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, projText.getText().trim());
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, mainClassText.getText().trim());
+		configuration.setMappedResources(new IResource[]{ getProject() });
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {

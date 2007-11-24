@@ -69,10 +69,10 @@ public class JastAddJSourceLookupDirector extends AbstractSourceLookupDirector i
 		if (item instanceof IJavaBreakpoint)
 			item = ((IJavaBreakpoint)item).getMarker().getResource();
 
-		if (item instanceof IFile) {
-			IFile file = (IFile)item;
+		if (item instanceof JastAddJFileStorage) {
+			IFile file = ((JastAddJFileStorage)item).getFile();
 			if (model.isModelFor(file))
-				return new FileEditorInput((IFile)item);
+				return new FileEditorInput(file);
 			else
 				return new JastAddStorageEditorInput(project, new LocalFileStorage(file.getRawLocation().toFile()), model);
 		}

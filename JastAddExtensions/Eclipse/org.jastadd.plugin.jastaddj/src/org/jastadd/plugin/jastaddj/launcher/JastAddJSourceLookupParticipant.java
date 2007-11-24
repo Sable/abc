@@ -6,18 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupParticipant;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
-import org.eclipse.debug.core.sourcelookup.containers.ExternalArchiveSourceContainer;
-import org.eclipse.debug.core.sourcelookup.containers.FolderSourceContainer;
 import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jdt.launching.LibraryLocation;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 
@@ -92,6 +87,16 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 	public void init(ISourceLookupDirector director) {
 		super.init(director);
 		fDelegateContainers = new HashMap();
+	}
+	
+	public Object[] findSourceElements(Object object) throws CoreException {
+		Object[] results = super.findSourceElements(object);
+		for(int i = 0; i < results.length; i++) {
+			Object result = results[i];
+			if (result instanceof IFile)
+				results[i] = new JastAddJFileStorage((IFile)result);
+		}
+		return results; 
 	}
 	
 	/* (non-Javadoc)

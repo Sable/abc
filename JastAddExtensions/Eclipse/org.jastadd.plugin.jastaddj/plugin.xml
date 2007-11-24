@@ -150,6 +150,7 @@
 		name = "JastAddJ Launcher">
 	</launchConfigurationType>
 	</extension>
+	
 	<extension point = "org.eclipse.debug.ui.launchConfigurationTabGroups">
     	<launchConfigurationTabGroup
         	type = "org.jastadd.plugin.jastaddj.JastAddJLaunchConfigurationType"
@@ -158,6 +159,38 @@
     	</launchConfigurationTabGroup>
 	</extension>
    
+	<extension point="org.eclipse.debug.ui.launchShortcuts">
+	    <shortcut
+	        id="org.jastadd.plugin.jastaddj.JastAddJLaunchShortcut"
+	        class="org.jastadd.plugin.jastaddj.launcher.JastAddJLaunchShortcut"
+	        label="JastAddJ Application"
+	        modes="run, debug">
+		 <configurationType id="org.jastadd.plugin.jastaddj.JastAddJLaunchConfigurationType"/>	        
+	     <perspective id="org.jastadd.plugin.jastaddj.JastAddJPerspective"/>
+         <perspective id="org.eclipse.debug.ui.DebugPerspective"/>
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+				  <iterate>
+					<test property="org.jastadd.plugin.jastaddj.launching.isJastAddJProject" args="org.jastadd.plugin.jastaddj.isJastAddJProject"/>
+				  </iterate>                  
+               </with>
+            </enablement>
+         </contextualLaunch>
+	    </shortcut>
+	</extension> 
+ 
+	<extension point = "org.eclipse.core.expressions.propertyTesters">
+		<propertyTester
+   	 		namespace="org.jastadd.plugin.jastaddj.launching"
+     		id="org.jastadd.plugin.jastaddj.launcher.JastAddJLaunchableTester"
+     		properties="isJastAddJProject"
+     		type="org.eclipse.core.resources.IResource"
+     		class="org.jastadd.plugin.jastaddj.launcher.JastAddJLaunchableTester">
+   		</propertyTester>
+   	</extension> 
+ 
 	<!-- JastAddJ Breakpoint Management -->
    
 	<extension point = "org.eclipse.ui.editorActions">

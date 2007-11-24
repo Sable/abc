@@ -1,15 +1,17 @@
 package org.jastadd.plugin.jastaddj.editor.debug;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
-import org.eclipse.debug.core.model.ILineBreakpoint;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTargetExtension;
+import org.eclipse.jdt.debug.core.IJavaLineBreakpoint;
 import org.eclipse.jdt.internal.debug.core.breakpoints.JavaLineBreakpoint;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -22,19 +24,21 @@ import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.jastaddj.AST.ITypeDecl;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.resources.JastAddStorageAnnotationModel;
 
+public class JastAddJBreakpointAdapter implements
+		IToggleBreakpointsTargetExtension {
 
-public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtension {
-	
+	private static final String BREAKPOINT_TYPE_NAME = "org.jastadd.plugin.jastaddj.breakpoint.typeName";
 	private ITextEditor editor;
-	
+
 	public JastAddJBreakpointAdapter(ITextEditor editor) {
 		this.editor = editor;
 	}
-	
+
 	public void toggleLineBreakpoints(IWorkbenchPart part, ISelection selection)
 			throws CoreException {
-		
+
 		if (editor != null) {
 			IEditorInput editorInput = editor.getEditorInput();
 			IResource resource = (IResource) editorInput
@@ -43,39 +47,56 @@ public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtens
 				resource = ResourcesPlugin.getWorkspace().getRoot();
 			ITextSelection textSelection = (ITextSelection) selection;
 			int lineNumber = textSelection.getStartLine();
-			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-					.getBreakpointManager().getBreakpoints();
-			for (int i = 0; i < breakpoints.length; i++) {
-				IBreakpoint breakpoint = breakpoints[i];
-				if (resource.equals(breakpoint.getMarker().getResource())) {
-					if (((ILineBreakpoint) breakpoint).getLineNumber() == (lineNumber + 1)) {
+			IPath storagePath = null;
+
+			JastAddModel model = null;
+			if (editorInput instanceof FileEditorInput) {
+				IFile file = ((FileEditorInput) editorInput).getFile();
+				model = JastAddModelProvider.getModel(file);
+			} else if (editorInput instanceof JastAddStorageEditorInput) {
+				JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput) editorInput;
+				model = storageInput.getModel();
+				storagePath = storageInput.getStorage().getFullPath();
+			}
+
+			if (model != null) {
+				IJastAddNode node = model.findNodeInDocument(model
+						.buildFileInfo(editorInput), lineNumber + 1, 1);
+
+				while (node != null && !(node instanceof ITypeDecl))
+					node = node.getParent();
+				if (!(node instanceof ITypeDecl))
+					return;
+
+				ITypeDecl typeDecl = (ITypeDecl) node;
+				String typeName = typeDecl.constantPoolName().replace('/', '.');
+
+				IBreakpoint[] breakpoints = DebugPlugin.getDefault()
+						.getBreakpointManager().getBreakpoints();
+				for (int i = 0; i < breakpoints.length; i++) {
+					IBreakpoint breakpoint = breakpoints[i];
+					if (!(breakpoint instanceof IJavaLineBreakpoint))
+						continue;
+					IJavaLineBreakpoint javaLineBreakpoint = (IJavaLineBreakpoint) breakpoint;
+
+					if (javaLineBreakpoint.getTypeName().equals(typeName)
+							&& javaLineBreakpoint.getLineNumber() == (lineNumber + 1)) {
 						breakpoint.delete();
 						return;
 					}
 				}
-			}
-			JastAddModel model = null;
-			if(editorInput instanceof FileEditorInput) {
-				IFile file = ((FileEditorInput)editorInput).getFile();
-				model = JastAddModelProvider.getModel(file);
-			}
-			else if (editorInput instanceof JastAddStorageEditorInput) {
-				model = ((JastAddStorageEditorInput)editorInput).getModel(); 
-			}
 
-			if (model != null) {
-				IJastAddNode node = model.findNodeInDocument(model.buildFileInfo(editorInput), lineNumber + 1, 1);
-				while(node != null && !(node instanceof ITypeDecl))
-					node = node.getParent();
-				if(node instanceof ITypeDecl) {
-					ITypeDecl typeDecl = (ITypeDecl)node;
-					String name = typeDecl.constantPoolName().replace('/', '.');
-					IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource, name, lineNumber + 1, -1, -1, 0, true, new HashMap());
-					DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
-				}
+				Map attributes = new HashMap();
+				if (storagePath != null)
+					attributes.put(JastAddStorageAnnotationModel.STORAGE_PATH, storagePath);
+				IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource,
+						typeName, lineNumber + 1, -1, -1, 0, true,
+						attributes);
+				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(
+						lineBreakpoint);
 			}
 		}
-		
+
 	}
 
 	public Object getAdapter(Class adapter) {
@@ -83,37 +104,44 @@ public class JastAddJBreakpointAdapter implements IToggleBreakpointsTargetExtens
 		return null;
 	}
 
-	public boolean canToggleLineBreakpoints(IWorkbenchPart part, ISelection selection) {
+	public boolean canToggleLineBreakpoints(IWorkbenchPart part,
+			ISelection selection) {
 		return selection instanceof ITextSelection;
 	}
 
-	public boolean canToggleMethodBreakpoints(IWorkbenchPart part, ISelection selection) {
+	public boolean canToggleMethodBreakpoints(IWorkbenchPart part,
+			ISelection selection) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public boolean canToggleWatchpoints(IWorkbenchPart part, ISelection selection) {
+	public boolean canToggleWatchpoints(IWorkbenchPart part,
+			ISelection selection) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public void toggleMethodBreakpoints(IWorkbenchPart part, ISelection selection) throws CoreException {
+	public void toggleMethodBreakpoints(IWorkbenchPart part,
+			ISelection selection) throws CoreException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	public void toggleWatchpoints(IWorkbenchPart part, ISelection selection) throws CoreException {
+	public void toggleWatchpoints(IWorkbenchPart part, ISelection selection)
+			throws CoreException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	public boolean canToggleBreakpoints(IWorkbenchPart part, ISelection selection) {
+	public boolean canToggleBreakpoints(IWorkbenchPart part,
+			ISelection selection) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public void toggleBreakpoints(IWorkbenchPart part, ISelection selection) throws CoreException {
+	public void toggleBreakpoints(IWorkbenchPart part, ISelection selection)
+			throws CoreException {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
