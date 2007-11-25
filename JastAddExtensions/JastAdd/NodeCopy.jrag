@@ -32,7 +32,6 @@ aspect ASTNodeCopy {
         new TypeAccess("Object"),
         "clone",
         new List(), // ParameterList
-        new List(), 
         new List().add(
           new TypeAccess("CloneNotSupportedException")
         ), // Exceptions

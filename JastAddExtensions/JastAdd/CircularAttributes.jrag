@@ -39,7 +39,6 @@ aspect CircularAttributes {
         name(),
         copyParameterList(getParameterList()),
         new List(),
-        new List(),
         new Opt(new Block(statements))
       )
     );
@@ -82,7 +81,6 @@ aspect CircularAttributes {
         type().createQualifiedAccess(),
         name(),
         copyParameterList(getParameterList()),
-        new List(),
         new List(),
         new Opt(new Block(statements))
       )
@@ -368,7 +366,6 @@ aspect CircularAttributes {
       getBottomValue().type().createQualifiedAccess(),
       name() + "$bottom",
       parameters,
-      new List(),
       new List(),
       new Opt(new Block(statements))
     );

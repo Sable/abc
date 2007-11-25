@@ -119,7 +119,6 @@ aspect IntertypeMethodCodegeneration {
       constructorBodyName(),
       list,
       new List(),
-      new List(),
       new Opt(getBlock().fullCopy()),
       introducedType(),
       this

@@ -3,18 +3,12 @@ TypeDecl type_declaration =
   ;
 
 AspectDecl aspect_declaration =
-    modifiers.m ASPECT IDENTIFIER.id aspect_body          {: return new AspectDecl(m, id, aspect_body, new Opt(), new List()); :}
-  |             ASPECT IDENTIFIER.id aspect_body          {: return new AspectDecl(new Modifiers(new List()), id, aspect_body, new Opt(), new List()); :}
+    modifiers.m? ASPECT IDENTIFIER.id aspect_body          {: return new AspectDecl(new Modifiers(m), id, aspect_body, new Opt(), new List()); :}
   ;
 
 List aspect_body =
-  LBRACE aspect_body_declarations_opt RBRACE             {: return aspect_body_declarations_opt; :};
+  LBRACE aspect_body_declarations? RBRACE             {: return aspect_body_declarations; :};
 
-List aspect_body_declarations_opt =
-                                                         {: return new List(); :}
-  | aspect_body_declarations                             {: return aspect_body_declarations; :}
-  ;
-  
 List aspect_body_declarations =
     aspect_body_declaration.d                            {: return d != null ? new List().add(d) : new List(); :}
   | aspect_body_declarations.l aspect_body_declaration.d {: return d != null ? l.add(d) : l; :}

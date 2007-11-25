@@ -1,13 +1,3 @@
-/*List formal_parameter_list_opt = 
-                          {: return new List(); :}
-  | formal_parameter_list {: return formal_parameter_list; :}
-  ;
-  
-List throws_opt = 
-           {: return new List(); :}
-  | throws.t {: return t; :}
-  ;*/
-
 BodyDecl intertype_member_declaration =
   syn_decl
   | inh_decl
@@ -16,46 +6,34 @@ BodyDecl intertype_member_declaration =
   ;
 
 BodyDecl syn_decl =
-    modifiers.mod SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
-    {: return new SynDecl(mod, false, type, hostType, id, p, b); :}
-  | modifiers.mod SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
-    {: return new SynDecl(mod, true, type, hostType, id, p, b); :}
-  | modifiers.mod SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(mod, false, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
-  | modifiers.mod SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(mod, true, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+    modifiers.mod? SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN method_body.b 
+    {: return new SynDecl(new Modifiers(mod), false, type, hostType, id, p, b); :}
+  | modifiers.mod? SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN method_body.b 
+    {: return new SynDecl(new Modifiers(mod), true, type, hostType, id, p, b); :}
+  | modifiers.mod? SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
+    {: return new SynDecl(new Modifiers(mod), false, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+  | modifiers.mod? SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
+    {: return new SynDecl(new Modifiers(mod), true, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
 
-  |               SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
-    {: return new SynDecl(new Modifiers(new List()), false, type, hostType, id, p, b); :}
-  |               SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
-    {: return new SynDecl(new Modifiers(new List()), true, type, hostType, id, p, b); :}
-  |               SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(new Modifiers(new List()), false, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
-  |               SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(new Modifiers(new List()), true, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
   ;
 
 BodyDecl inh_decl =
-    modifiers.mod INH type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
-                                                         {: return new InhDecl(mod, false, type, hostType, id, p); :}
-  | modifiers.mod INH LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
-                                                         {: return new InhDecl(mod, true, type, hostType, id, p); :}
-  |               INH type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
-                                                         {: return new InhDecl(new Modifiers(new List()), false, type, hostType, id, p); :}
-  |               INH LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
-                                                         {: return new InhDecl(new Modifiers(new List()), true, type, hostType, id, p); :}
+    modifiers.mod? INH type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN SEMICOLON 
+                                                         {: return new InhDecl(new Modifiers(mod), false, type, hostType, id, p); :}
+  | modifiers.mod? INH LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN SEMICOLON 
+                                                         {: return new InhDecl(new Modifiers(mod), true, type, hostType, id, p); :}
   ;
 
 BodyDecl syn_eq =
-    EQUATION name DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
+    EQUATION name DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
     {: return new SynEq(name, id, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
-  | EQUATION name DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN block
+  | EQUATION name DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN block
     {: return new SynEq(name, id, p, block); :}
   ;
   
 BodyDecl inh_eq =
-    EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list_opt.p1 RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
+    EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
     {: return new InhEq(type, child, p1, attribute, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
-  | EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list_opt.p1 RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list_opt.p RPAREN block
+  | EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list.p? RPAREN block
     {: return new InhEq(type, child, p1, attribute, p, block); :}
   ;

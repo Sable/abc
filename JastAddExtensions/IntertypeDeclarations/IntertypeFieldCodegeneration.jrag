@@ -118,10 +118,10 @@ aspect IntertypeFieldCodegeneration {
     List parameters = !isStatic() ? new List().add(new ParameterDeclaration(introducedType(), "that")) : new List();
     Expr returnValue;
     if(getInit() instanceof ArrayInit) {
-      List dims = new List();
+      TypeAccess access = type().elementType().createBoundAccess();
       for(int i = 0; i < type().dimension(); i++)
-        dims.add(new Dims(new Opt()));
-      returnValue = new ArrayCreationExpr(type().elementType().createBoundAccess(), dims, new Opt(getInit().fullCopy()));
+        access = new ArrayTypeAccess(access);
+      returnValue = new ArrayCreationExpr(access, new Opt(getInit().fullCopy()));
     }
     else 
       returnValue =  (Expr)getInit().fullCopy();
@@ -131,7 +131,6 @@ aspect IntertypeFieldCodegeneration {
       type().createQualifiedAccess(),
       initName(),
       parameters,
-      new List(),
       new List(),
       new Opt(new Block(new List().add(returnStmt))),
       introducedType(),
@@ -230,7 +229,6 @@ aspect IntertypeFieldCodegeneration {
       type.createQualifiedAccess(),
       name,
       parameters,
-      new List(),
       new List(),
       body
     );

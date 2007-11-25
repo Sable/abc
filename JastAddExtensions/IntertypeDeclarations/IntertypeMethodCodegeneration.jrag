@@ -66,7 +66,6 @@ aspect IntertypeMethodCodegeneration {
       type().createQualifiedAccess(),
       delegateName(),
       copyParameterList(getParameterList()),
-      new List(),
       copyTypeList(getExceptionList()),
       new Opt()
     );
@@ -93,7 +92,6 @@ aspect IntertypeMethodCodegeneration {
       type().createQualifiedAccess(),
       "impl$body$" + name(),
       parameterList,
-      new List(),
       copyTypeList(getExceptionList()),
       (Opt)getBlockOpt().fullCopy(),
       introducedType(),
@@ -265,7 +263,6 @@ aspect IntertypeMethodCodegeneration {
       type().createQualifiedAccess(),
       name,
       copyParameterList(getParameterList()),
-      new List(),
       copyTypeList(getExceptionList()),
       new Opt(new Block(statements))
     );
@@ -301,7 +298,6 @@ aspect IntertypeMethodCodegeneration {
       type().createQualifiedAccess(),
       delegateName(),
       copyParameterList(getParameterList()),
-      new List(),
       copyTypeList(getExceptionList()),
       new Opt(new Block(statements))
     );

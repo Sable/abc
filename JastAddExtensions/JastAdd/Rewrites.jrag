@@ -61,7 +61,6 @@ aspect Rewrite {
         "during" + name(),
         new List(),
         new List(),
-        new List(),
         new Opt(
           new Block(
             new List().add(
@@ -137,7 +136,6 @@ aspect Rewrite {
         new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("static"))),
         new PrimitiveTypeAccess("boolean"),
         "during" + name(),
-        new List(),
         new List(),
         new List(),
         new Opt(
@@ -225,7 +223,6 @@ aspect Rewrite {
         "mayHaveRewrite",
         new List(),
         new List(),
-        new List(),
         new Opt(
           new Block(
             new List().add(
@@ -266,7 +263,6 @@ aspect Rewrite {
         new Modifiers(new List().add(new Modifier("public"))),
         new TypeAccess("int"),
         "getNumChild",
-        new List(),
         new List(),
         new List(),
         new Opt(
@@ -337,7 +333,7 @@ aspect Rewrite {
     List parameters = new List().add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "self"));
     Access returnType = (isListRewrite() ? listNode() : astNode()).createQualifiedAccess();
     // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
-    MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new List(), new Opt(getBlock().fullCopy()), introducedType(), enclosingBodyDecl());
+    MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new Opt(getBlock().fullCopy()), introducedType(), enclosingBodyDecl());
     return enclosingBodyDecl().hostType().addMemberMethod(decl);
   }
   public int TypeDecl.rewriteCounter;
@@ -509,7 +505,6 @@ aspect Rewrite {
         new Modifiers(new List().add(new Modifier("public"))),
         astNode().createQualifiedAccess(),
         "rewriteTo",
-        new List(),
         new List(),
         new List(),
         new Opt(

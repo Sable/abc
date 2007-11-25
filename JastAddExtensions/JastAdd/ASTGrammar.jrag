@@ -308,8 +308,10 @@ aspect ASTGrammar {
     new AssignSimpleExpr(
       new VarAccess("children"),
       new ArrayCreationExpr(
-        astNode().createQualifiedAccess(),
-        new List().add(new Dims(new Opt(new IntegerLiteral(n)))),
+        new ArrayTypeWithSizeAccess(
+          astNode().createQualifiedAccess(),
+          new IntegerLiteral(n)
+        ),
         new Opt()
       )
     )
@@ -340,7 +342,6 @@ aspect ASTGrammar {
         new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("synthetic"))),
         new PrimitiveTypeAccess("void"),
         "init$children",
-        new List(),
         new List(),
         new List(),
         new Opt(new Block((List)statements.fullCopy()))
@@ -387,7 +388,6 @@ aspect ASTGrammar {
             )
           ),
           new List(),
-          new List(),
           new Opt(
             new Block(
               statements
@@ -431,7 +431,6 @@ aspect ASTGrammar {
         returnType,
         name,
         parameters,
-        new List(),
         new List(),
         new Opt(new Block(statements))
     );
