@@ -583,7 +583,7 @@ aspect EmitJimple {
   public void MethodDecl.jimplify2() {
     if(!generate() || sootMethod().hasActiveBody() || sootMethod().getSource() != null) return;
     try {
-      if(hasBlock()) {
+      if(hasBlock() && !(hostType().isInterfaceDecl())) {
         JimpleBody body = Jimple.v().newBody(sootMethod());
         sootMethod().setActiveBody(body);
         Body b = new Body(hostType(), body, this);

@@ -29,7 +29,6 @@ aspect AspectJNameAnalysis {
         "aspectOf",
         parameters,
         new List(),
-        new List(),
         new Opt(new Block(new List().add(new ReturnStmt(new Opt(new NullLiteral())))))
       );
     parameters = new List();
@@ -41,7 +40,6 @@ aspect AspectJNameAnalysis {
         typeBoolean().createQualifiedAccess(),
         "hasAspect",
         parameters,
-        new List(),
         new List(),
         new Opt(new Block(new List().add(new ReturnStmt(new Opt(new BooleanLiteral("true"))))))
       );

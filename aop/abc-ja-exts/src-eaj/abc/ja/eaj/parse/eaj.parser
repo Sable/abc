@@ -19,7 +19,7 @@
  */
 
 PointcutExpr basic_pointcut_expr =
-        PRIVATE LPAREN formal_parameter_list_opt.a RPAREN LPAREN pointcut_expr.b RPAREN
+        PRIVATE LPAREN formal_parameter_list.a? RPAREN LPAREN pointcut_expr.b RPAREN
         {:
             ParserTrace.parserTrace("PRIVATE formal_parameter_list, pointcut_expr");
             return new LocalVarsPointcutExpr(a, b);

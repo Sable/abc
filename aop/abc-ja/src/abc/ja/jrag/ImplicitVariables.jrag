@@ -22,8 +22,7 @@ aspect ImplicitVariables
 
         Access type_access = var_type.createQualifiedAccess();
         ParameterDeclaration decl =
-            new ImplicitParameterDeclaration(final_mod, type_access,
-                                             name, new List());
+            new ImplicitParameterDeclaration(final_mod, type_access, name);
         return decl;
     }
 

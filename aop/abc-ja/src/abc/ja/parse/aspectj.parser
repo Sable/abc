@@ -10,7 +10,7 @@ TypeDecl type_declaration =   // class | interface | aspect
 
 /* add the possibility of a call to proceed as a method_invocation */
 Access method_invocation =
-     PROCEED.a LPAREN argument_list_opt.b RPAREN.d
+     PROCEED.a LPAREN argument_list.b? RPAREN.d
        {: return new Proceed(b);
        :}  
   ;
@@ -37,11 +37,6 @@ BodyDecl interface_member_declaration =
     :}
   ;
 
-Modifiers modifiers_opt = 
-	{: return new Modifiers(new List()); :}
-|	modifiers	{: return modifiers; :}
-  ;
-
 
 /* ---------------------------------------------------------------- */
 /*                      ASPECTJ RULES                               */
@@ -52,12 +47,12 @@ Modifiers modifiers_opt =
    conflict with modifiers_opt, which can also go to epsilon. */
 
 AspectDecl aspect_declaration =
-      modifiers_opt.a ASPECT.n IDENTIFIER.b
-                         super_opt.c interfaces_opt.d  perclause_opt.f  
+      modifiers.a? ASPECT.n IDENTIFIER.b
+                         super.c? interfaces.d?  perclause_opt.f  
                          aspect_body.g
        {: ParserTrace.parserTrace( "aspect declaration: " + 
                                                b); 
-	  return new AspectDecl(a, b, g, c, d, f); 
+	  return new AspectDecl(new Modifiers(a), b, g, c, d, f); 
        :}
   ;
 
@@ -184,128 +179,96 @@ BodyDecl declare_declaration =
   ;
 
 BodyDecl pointcut_declaration =
-     POINTCUT IDENTIFIER.b 
-             LPAREN formal_parameter_list_opt.c RPAREN SEMICOLON.e
+     modifiers.a? POINTCUT IDENTIFIER.b 
+             LPAREN formal_parameter_list.c? RPAREN SEMICOLON.e
      {: ParserTrace.parserTrace("empty pointcut declaration");
-        return new PointcutDecl(new Modifiers(new List()), b, c,
+        return new PointcutDecl(new Modifiers(a), b, c,
                                 new EmptyPointcutExpr());
      :}
-  |  modifiers.a POINTCUT IDENTIFIER.b 
-             LPAREN formal_parameter_list_opt.c RPAREN SEMICOLON.e
-     {: ParserTrace.parserTrace("empty pointcut declaration");
-        return new PointcutDecl(a, b, c, new EmptyPointcutExpr());
-     :}
-  |  POINTCUT IDENTIFIER.b 
-             LPAREN formal_parameter_list_opt.c RPAREN 
+  |  modifiers.a? POINTCUT IDENTIFIER.b 
+             LPAREN formal_parameter_list.c? RPAREN 
              COLON pointcut_expr.d SEMICOLON.e 
      /* must check that modifiers DO NOT include ABSTRACT */
      {: ParserTrace.parserTrace("non-abstract pointcut declaration");
-        return new PointcutDecl(new Modifiers(new List()), b, c, d);
-     :}
-  |  modifiers.a POINTCUT IDENTIFIER.b 
-             LPAREN formal_parameter_list_opt.c RPAREN 
-             COLON pointcut_expr.d SEMICOLON.e 
-     /* must check that modifiers DO NOT include ABSTRACT */
-     {: ParserTrace.parserTrace("non-abstract pointcut declaration");
-        return new PointcutDecl(a, b, c, d);
+        return new PointcutDecl(new Modifiers(a), b, c, d);
      :}
   ;
 
 AdviceDecl advice_declaration =
-      advice_spec.a throws_opt.b COLON pointcut_expr.c 
+      modifiers.m? advice_spec.a throws.b? COLON pointcut_expr.c 
      /* only valid modifier is strictfp */
         block.d 
        {: ParserTrace.parserTrace("advice declaration without strictfp");
-          return new AdviceDecl(new Modifiers(new List()), a, c, d);
-       :}
-  |   modifiers.m advice_spec.a throws_opt.b COLON pointcut_expr.c 
-     /* only valid modifier is strictfp */
-        block.d 
-       {: ParserTrace.parserTrace("advice declaration without strictfp");
-          return new AdviceDecl(m, a, c, d);
+          return new AdviceDecl(new Modifiers(m), a, c, d);
        :}
   ;
 
 AdviceSpec advice_spec =
-     BEFORE.x LPAREN formal_parameter_list_opt.a RPAREN.y
+     BEFORE.x LPAREN formal_parameter_list.a? RPAREN.y
        {: ParserTrace.parserTrace("before(formals)");
           return new BeforeSpec(a);
        :}
-  |  AFTER.x LPAREN formal_parameter_list_opt.a RPAREN.y
+  |  AFTER.x LPAREN formal_parameter_list.a? RPAREN.y
        {: ParserTrace.parserTrace("after(formals)");
           return new AfterSpec(a);
        :}
-  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING.y
+  |  AFTER.x  LPAREN formal_parameter_list.a? RPAREN PC_RETURNING.y
        {: ParserTrace.parserTrace("after(formals)returning");
           return new AfterReturningSpec(a, new Opt());
        :}
-  |  AFTER.x LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING LPAREN RPAREN.y // just to pass ajc tests
+  |  AFTER.x LPAREN formal_parameter_list.a? RPAREN PC_RETURNING LPAREN RPAREN.y // just to pass ajc tests
        {: ParserTrace.parserTrace("after(formals)returning()");
           return new AfterReturningSpec(a, new Opt());
        :}
-  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_RETURNING 
+  |  AFTER.x  LPAREN formal_parameter_list.a? RPAREN PC_RETURNING 
                                                LPAREN formal_parameter.b RPAREN.y
        {: ParserTrace.parserTrace("after(formals) returning(p)");
           return new AfterReturningSpec(a, new Opt(b));
        :}
-  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING.y
+  |  AFTER.x  LPAREN formal_parameter_list.a? RPAREN PC_THROWING.y
        {: ParserTrace.parserTrace("after(formals)throwing");
           return new AfterThrowingSpec(a, new Opt());
        :}
-  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING LPAREN RPAREN.y // ajc compatibility again
+  |  AFTER.x  LPAREN formal_parameter_list.a? RPAREN PC_THROWING LPAREN RPAREN.y // ajc compatibility again
        {: ParserTrace.parserTrace("after(formals)throwing");
           return new AfterThrowingSpec(a, new Opt());
        :}
-  |  AFTER.x  LPAREN formal_parameter_list_opt.a RPAREN PC_THROWING
+  |  AFTER.x  LPAREN formal_parameter_list.a? RPAREN PC_THROWING
                                                LPAREN formal_parameter.b RPAREN.y
        {: ParserTrace.parserTrace("after(formals)throwing(p)");
           return new AfterThrowingSpec(a, new Opt(b));
        :}
-  |  type.a AROUND LPAREN formal_parameter_list_opt.b RPAREN.y
+  |  type.a AROUND LPAREN formal_parameter_list.b? RPAREN.y
        {: ParserTrace.parserTrace("non-void-type around (formals)");
           return new AroundSpec(b, a);
        :}
-  |  VOID.a AROUND LPAREN formal_parameter_list_opt.b RPAREN.y
+  |  VOID.a AROUND LPAREN formal_parameter_list.b? RPAREN.y
        {: ParserTrace.parserTrace("VOID around (formals)");
           return new AroundSpec(b, new PrimitiveTypeAccess("void"));
        :}
   ;
 
 BodyDecl intertype_member_declaration =
-     modifiers.a VOID.b name.c DOT IDENTIFIER.d 
-         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
+     modifiers.a? VOID.b name.c DOT IDENTIFIER.d 
+         LPAREN formal_parameter_list.e? RPAREN.r throws.f? method_body.g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: ParserTrace.parserTrace("Intertype VOID METHOD declaration");
-           return new IntertypeMethodDecl(a, new TypeAccess("void"), d, e, new List(), f, g, c);
+           return new IntertypeMethodDecl(new Modifiers(a), new TypeAccess("void"), d, e, f, g, c);
        :}
-  |  VOID.b name.c DOT IDENTIFIER.d 
-         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
-     /* must check if modifiers includes abstract, no body,  if doesn't
-          include abstract, has body */
-       {: ParserTrace.parserTrace("Intertype VOID METHOD declaration");
-           return new IntertypeMethodDecl(new Modifiers(new List()), new TypeAccess("void"), d, e, new List(), f, g, c);
-       :}
-  |  modifiers.a type.b name.c DOT IDENTIFIER.d 
-         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
+  |  modifiers.a? type.b name.c DOT IDENTIFIER.d 
+         LPAREN formal_parameter_list.e? RPAREN.r throws.f? method_body.g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: ParserTrace.parserTrace("Intertype METHOD declaration");
-           return new IntertypeMethodDecl(a, b, d, e, new List(), f, g, c);
+           return new IntertypeMethodDecl(new Modifiers(a), b, d, e, f, g, c);
        :}
-  |  type.b name.c DOT IDENTIFIER.d 
-         LPAREN formal_parameter_list_opt.e RPAREN.r throws_opt.f method_body.g
-     /* must check if modifiers includes abstract, no body,  if doesn't
-          include abstract, has body */
-       {: ParserTrace.parserTrace("Intertype METHOD declaration");
-           return new IntertypeMethodDecl(new Modifiers(new List()), b, d, e, new List(), f, g, c);
-       :}
-  | modifiers.a name.b DOT NEW 
-         LPAREN formal_parameter_list_opt.c RPAREN throws_opt.d constructor_body.e
+  | modifiers.a? name.b DOT NEW 
+         LPAREN formal_parameter_list.c? RPAREN throws.d? constructor_body.e
      /* must check that body is not null */
        {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
           IntertypeConstructorDecl icd = new IntertypeConstructorDecl();
-          icd.setModifiers(a);
+          icd.setModifiers(new Modifiers(a));
           icd.setTargetType(b);
           icd.setParameterList(c);
           icd.setExceptionList(d);
@@ -313,36 +276,14 @@ BodyDecl intertype_member_declaration =
           icd.setBlock(e.getBlock());
           return icd;
        :}
-  | name.b DOT NEW 
-         LPAREN formal_parameter_list_opt.c RPAREN throws_opt.d constructor_body.e
-     /* must check that body is not null */
-       {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
-          IntertypeConstructorDecl icd = new IntertypeConstructorDecl();
-          icd.setModifiers(new Modifiers(new List()));
-          icd.setTargetType(b);
-          icd.setParameterList(c);
-          icd.setExceptionList(d);
-          icd.setConstructorInvocationOpt(e.getConstructorInvocationOpt());
-          icd.setBlock(e.getBlock());
-          return icd;
-       :}
-  | modifiers.a type.b name.c DOT IDENTIFIER.d SEMICOLON 
+  | modifiers.a? type.b name.c DOT IDENTIFIER.d SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD without initializer");
-          return new IntertypeFieldDeclaration(a, b, d, new Opt(), c);
+          return new IntertypeFieldDeclaration(new Modifiers(a), b, d, new Opt(), c);
        :}
-  | type.b name.c DOT IDENTIFIER.d SEMICOLON 
-       {: ParserTrace.parserTrace("Intertype FIELD without initializer");
-          return new IntertypeFieldDeclaration(new Modifiers(new List()), b, d, new Opt(), c);
-       :}
-  | modifiers.a type.b name.c DOT IDENTIFIER.d  
+  | modifiers.a? type.b name.c DOT IDENTIFIER.d  
         EQ variable_initializer.e SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD with initializer");
-          return new IntertypeFieldDeclaration(a, b, d, new Opt(e), c);
-       :}
-  | type.b name.c DOT IDENTIFIER.d  
-        EQ variable_initializer.e SEMICOLON 
-       {: ParserTrace.parserTrace("Intertype FIELD with initializer");
-          return new IntertypeFieldDeclaration(new Modifiers(new List()), b, d, new Opt(e), c);
+          return new IntertypeFieldDeclaration(new Modifiers(a), b, d, new Opt(e), c);
        :}
   ;
 
@@ -453,12 +394,12 @@ PointcutExpr basic_pointcut_expr =
           return new TargetPointcutExpr(a);
        :}
    // for args, ajc only allows each arg to be * .. or fully-defined type/id
-   | PC_ARGS.x LPAREN type_id_star_list_opt.a RPAREN.y
+   | PC_ARGS.x LPAREN type_id_star_list.a? RPAREN.y
        {: ParserTrace.parserTrace("ARGS pointcut");
           return new ArgsPointcutExpr(a);
        :}   
    // for named pointcuts, ajc allows only * or fully-defined type/id
-    |  name.a LPAREN type_id_star_list_opt.b RPAREN.y
+    |  name.a LPAREN type_id_star_list.b? RPAREN.y
        {:
           Access pc_access;
           if (a instanceof AbstractDot) {
@@ -874,13 +815,13 @@ MethodPattern method_pattern =
      modifier_pattern_expr.a  
        type_pattern_expr.b 
        classtype_dot_id.c
-       LPAREN.lp formal_pattern_list_opt.d RPAREN.rp 
+       LPAREN.lp formal_pattern_list.d? RPAREN.rp 
        throws_pattern_list_opt.e
         {: ParserTrace.parserTrace("method_pattern with modifiers");
            return new MethodPattern(a, b, c, d, e);
         :}
   |  type_pattern_expr.b classtype_dot_id.c
-       LPAREN.lp formal_pattern_list_opt.d RPAREN.rp 
+       LPAREN.lp formal_pattern_list.d? RPAREN.rp 
        throws_pattern_list_opt.e
         {: ParserTrace.parserTrace("method_pattern no modifiers");
            return new MethodPattern(new List(), b, c, d, e);
@@ -890,13 +831,13 @@ MethodPattern method_pattern =
 ConstructorPattern constructor_pattern =
      modifier_pattern_expr.a  
        classtype_dot_new.b
-       LPAREN.lp formal_pattern_list_opt.c RPAREN.rp 
+       LPAREN.lp formal_pattern_list.c? RPAREN.rp 
        throws_pattern_list_opt.d
         {: ParserTrace.parserTrace("constructor_pattern with modifiers");
            return new ConstructorPattern(a, b, c, d);
         :}
   |    classtype_dot_new.b
-       LPAREN.lp formal_pattern_list_opt.c RPAREN.rp 
+       LPAREN.lp formal_pattern_list.c? RPAREN.rp 
        throws_pattern_list_opt.d
         {: ParserTrace.parserTrace("constructor_pattern no modifiers");
            return new ConstructorPattern(new List(), b, c, d);
@@ -917,16 +858,6 @@ FieldPattern field_pattern =
 
 /* -------------------- FORMAL PARAMETER LIST PATTERNS --------------*/
 
-List formal_pattern_list_opt =
-      // epsilon                   
-       {: ParserTrace.parserTrace("Empty formal parameter list"); 
-          return new List(); 
-       :}
-  | formal_pattern_list.a
-       {: ParserTrace.parserTrace("Non-empty formal parameter list");
-	  return a; 
-       :}
-    ;
 List formal_pattern_list =
      formal_pattern.a
         {: ParserTrace.parserTrace("First formal pattern in the list.");
@@ -955,16 +886,6 @@ FormalPattern formal_pattern =
     
 /* -------------------- POINTCUT PARAMETER LIST PATTERNS --------------*/
 
-List type_id_star_list_opt =
-      // epsilon                   
-       {: ParserTrace.parserTrace("Empty pointcut parameter list"); 
-          return new List();
-       :}
-      | type_id_star_list.a
-       {: ParserTrace.parserTrace("Non-empty pointcut parameter list");
-	  return a; 
-       :}
-    ;
 List type_id_star_list =
      type_id_star.a
         {: ParserTrace.parserTrace("First pointcut parameter in the list.");
@@ -998,25 +919,4 @@ BindingPattern type_id_star =
     ;
 
 
-List formal_parameter_list_opt =
-	{: return new List(); :}
-|	formal_parameter_list.l		{: return l; :}
-    ;
-
-List throws_opt = 
-	{: return new List(); :}
-| 	throws.l			{: return l; :}
-    ;
-
-
 Modifier modifier = PRIVILEGED {: return new Modifier("privileged"); :};
-
-Opt super_opt =
-	{: return new Opt(); :}
-|	super.s		{: return s; :}
-    ;
-
-List interfaces_opt =
-	{: return new List(); :}
-|	interfaces.i	{: return i; :}
-    ;

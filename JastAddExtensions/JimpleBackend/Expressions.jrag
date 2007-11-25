@@ -609,23 +609,32 @@ aspect Expressions {
       return getArrayInit().eval(b);
     }
     else {
+      ArrayList list = new ArrayList();
+      getTypeAccess().addArraySize(b, list);
       if(numArrays() == 1) {
-        soot.Value size = getDims(0).eval(b);
+        soot.Value size = (soot.Value)list.get(0);
         return Jimple.v().newNewArrayExpr(
           type().componentType().getSootType(),
           asImmediate(b, size)
         );
       }
       else {
-        ArrayList list = new ArrayList();
-        for(int i = 0; i < numArrays(); i++)
-          list.add(asImmediate(b, getDims(i).eval(b)));
         return Jimple.v().newNewMultiArrayExpr(
           (soot.ArrayType)type().getSootType(),
           list
         );
       }
     }
+  }
+
+  public void Access.addArraySize(Body b, ArrayList list) {
+  }
+  public void ArrayTypeAccess.addArraySize(Body b, ArrayList list) {
+    getAccess().addArraySize(b, list);
+  }
+  public void ArrayTypeWithSizeAccess.addArraySize(Body b, ArrayList list) {
+    getAccess().addArraySize(b, list);
+    list.add(asImmediate(b, getExpr().eval(b)));
   }
 
   public soot.Value ArrayInit.eval(Body b) {
@@ -646,12 +655,6 @@ aspect Expressions {
       b.add(Jimple.v().newAssignStmt(lvalue, asImmediate(b, rvalue)));
     }
     return array;
-  }
-
-  public soot.Value Dims.eval(Body b) {
-    if(hasExpr())
-      return getExpr().eval(b);
-    throw new Error("eval not supported for Dims without expression");
   }
 
   public soot.Value Unary.eval(Body b) {
