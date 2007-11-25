@@ -52,9 +52,10 @@ public interface RANodeFactory extends TMNodeFactory {
 	 * @param pos position in code
 	 * @param name name of the symbol, should most often be <i>associate</i>
 	 * @param tracematch_name name of surrounding tracematch 
+	 * @param bindAspectInstanceInReturn is true, the newly created advice instance is boudn via after-returning
 	 * @param container declaration of containing relational aspect
 	 */
-	public SymbolDecl AssociateSymbolDecl(Position pos, String name, String tracematch_name, RelAspectDecl container);
+	public SymbolDecl AssociateSymbolDecl(Position pos, String name, String tracematch_name, boolean bindAspectInstanceInReturn, RelAspectDecl container);
 
 	/**
 	 * Returns a release-symbol declaration.
@@ -64,6 +65,13 @@ public interface RANodeFactory extends TMNodeFactory {
 	 * @param container declaration of containing relational aspect
 	 */
 	public SymbolDecl ReleaseSymbolDecl(Position pos, String name, String tracematch_name, RelAspectDecl container);
+
+	/**
+	 * Returns a symbol representing program start. It is established via <code>before execution(* *.main(String[]))</code>.
+	 * @param pos position in the code
+	 * @param name name of the symbol
+	 */
+	public SymbolDecl StartSymbolDecl(Position pos, String name);
 
 	/**
 	 * Returns an advice declaration which issues custom warnings in case it never matches. 
@@ -87,5 +95,5 @@ public interface RANodeFactory extends TMNodeFactory {
 	 * of proceed-variables in the header.
 	 */
 	public RelationalAround RelationalAround(Position pos, TypeNode returnType, List formals, List proceedIdentifiers);
-	
+
 }

@@ -94,7 +94,9 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 	private static List<SymbolDecl> newSymbols(List symbols, String tracematch_name, RelAspectDecl container, RANodeFactory nf) {
 		List<SymbolDecl> newSymbols = new ArrayList<SymbolDecl>(symbols);
 		
-		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associate", tracematch_name, container));
+		newSymbols.add(nf.StartSymbolDecl(container.position(), "start"));
+		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associate", tracematch_name, true, container));
+		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associateAgain", tracematch_name, false, container));
 		newSymbols.add(nf.ReleaseSymbolDecl(container.position(), "release", tracematch_name, container));
 		
 		return newSymbols;
@@ -103,8 +105,19 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 	private static Regex newRegex(Regex originalRegex, TMNodeFactory nf) {
 		return nf.RegexConjunction(
 				POS,
-				nf.RegexSymbol(POS, "associate"),                
-                originalRegex
+				nf.RegexSymbol(POS, "start"),                
+				nf.RegexConjunction(
+						POS,
+						nf.RegexSymbol(POS, "associate"),                
+						nf.RegexConjunction(
+								POS,
+								nf.RegexStar(
+										POS,
+										nf.RegexSymbol(POS, "associateAgain")
+								),                
+				                originalRegex
+						)
+				)
 		);
 	}
 

@@ -207,6 +207,7 @@ public class Debug {
     public boolean noCollectableWeakRefs = false;	//makes all collectable weak refs "normal" weak refs
     public boolean useCommonsCollections = false;   // Determine whether to use the builtin runtime maps or
     												// the maps from the commons collections for TM indexing
+    public boolean generateLeakWarnings = true;
 
     // make every weakref used for tracematches have the same hashcode
     public boolean clashHashCodes = false;

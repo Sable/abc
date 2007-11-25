@@ -87,8 +87,8 @@ public class RANodeFactory_c extends TMNodeFactory_c implements RANodeFactory {
 	 * {@inheritDoc}
 	 */
 	public SymbolDecl AssociateSymbolDecl(Position pos, String name,
-			String tracematch_name, RelAspectDecl container) {
-		return new AssociateSymbolDecl_c(pos,name,tracematch_name,container,this);
+			String tracematch_name, boolean bindAspectInstanceInReturn, RelAspectDecl container) {
+		return new AssociateSymbolDecl_c(pos,name,tracematch_name,bindAspectInstanceInReturn,container, this);
 	}
 
 	/**
@@ -97,6 +97,13 @@ public class RANodeFactory_c extends TMNodeFactory_c implements RANodeFactory {
 	public SymbolDecl ReleaseSymbolDecl(Position pos, String name,
 			String tracematch_name, RelAspectDecl container) {
 		return new ReleaseSymbolDecl_c(pos,name,tracematch_name,container,this);
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public SymbolDecl StartSymbolDecl(Position pos, String name) {
+		return new StartSymbolDecl_c(pos,name,this);
 	}
 
 	/**
@@ -125,5 +132,5 @@ public class RANodeFactory_c extends TMNodeFactory_c implements RANodeFactory {
 			TypeNode returnType, List formals, List proceedIdentifiers) {
 		return new RelationalAround_c(pos,returnType,formals,proceedIdentifiers);
 	}
-	
+
 }

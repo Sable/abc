@@ -361,7 +361,7 @@ public class TMStateMachine implements StateMachine {
         collectableWeakRefsToOtherRefs(formals,notused,tm);
         initBoundVars(formals);
         fixBoundVars(tm);
-        if (!formals.isEmpty())
+        if (!formals.isEmpty() && Debug.v().generateLeakWarnings)
         	generateLeakWarnings(pos);
     }
     

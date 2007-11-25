@@ -35,9 +35,8 @@ import polyglot.lex.Lexer;
 import polyglot.types.Flags;
 import polyglot.types.TypeSystem;
 import polyglot.util.ErrorQueue;
-//import polyglot.visit.RAInitChecker;
-import soot.util.SingletonList;
 import abc.aspectj.parse.Lexer_c;
+import abc.main.Debug;
 import abc.ra.ast.RANodeFactory;
 import abc.ra.ast.RANodeFactory_c;
 import abc.ra.parse.Grm;
@@ -67,6 +66,7 @@ public class ExtensionInfo extends abc.tm.ExtensionInfo
     public ExtensionInfo(Collection jar_classes, Collection source_files)
     {
         super(jar_classes, source_files);
+        Debug.v().generateLeakWarnings = false;
     }
 
     /**

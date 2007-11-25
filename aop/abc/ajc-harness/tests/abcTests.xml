@@ -10744,4 +10744,10 @@
 		<run class="Example"/>
     </ajc-test>
     
+    <ajc-test num="1404" dir="abctests/ra/doubleassociate"
+        title="Double association">
+        <compile files="DoubleAssociate.java" options="-ext,abc.ra,-warn-unused-advice:on"/>
+		<run class="DoubleAssociate"/>
+    </ajc-test>
+    
 </suite>
