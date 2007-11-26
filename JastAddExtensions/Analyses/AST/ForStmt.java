@@ -556,7 +556,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return lookupVariable_String_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 121
+    // Declared in ExtractMethod.jrag at line 184
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
 		Collection decls = visibleLocalDecls();
@@ -611,15 +611,15 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_Set_following(this, caller);
     }
 
-    // Declared in Domination.jrag at line 58
+    // Declared in Domination.jrag at line 57
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getUpdateStmtListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);
-            return  null;
+            return  hostBlock();
         }
         if(caller == getInitStmtListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);
-            return  null;
+            return  hostBlock();
         }
         if(caller == getStmtNoTransform()) {
             return  hostBlock();
@@ -633,6 +633,19 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  reachable();
         }
         return getParent().Define_boolean_reportUnreachable(this, caller);
+    }
+
+    // Declared in Domination.jrag at line 73
+    public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
+        if(caller == getUpdateStmtListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  true;
+        }
+        if(caller == getInitStmtListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  true;
+        }
+        return getParent().Define_boolean_isInitOrUpdateStmt(this, caller);
     }
 
     // Declared in UnreachableStatements.jrag at line 94

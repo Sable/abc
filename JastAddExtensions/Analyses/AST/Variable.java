@@ -73,6 +73,6 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
     public boolean isLiveBetween(Stmt begin, Stmt end);
     // Declared in Liveness.jrag at line 15
     public boolean isLiveAfter(Stmt stmt);
-    // Declared in Liveness.jrag at line 24
+    // Declared in Liveness.jrag at line 27
     public boolean isLiveAtOrAfter(Stmt stmt);
 }

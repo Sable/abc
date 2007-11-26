@@ -781,8 +781,11 @@ if(isLiveAfter_Stmt_values == null) isLiveAfter_Stmt_values = new java.util.Hash
     }
 
     private boolean isLiveAfter_compute(Stmt stmt)  {
+		Block host = stmt.hostBlock();
 		for(Iterator i=stmt.following().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
+			if(!next.between(host, -1, Integer.MAX_VALUE))
+				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}
@@ -851,8 +854,11 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
     private boolean isLiveAtOrAfter_compute(Stmt stmt)  {
 		if(stmt.mayUse(this)) return true;
 		if(stmt.mayDef(this)) return false;
+		Block host = stmt.hostBlock();
 		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
+			if(!next.between(host, -1, Integer.MAX_VALUE))
+				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}

@@ -253,7 +253,7 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
 
     private boolean hasCondBranch_compute() {  return  true;  }
 
-    // Declared in Domination.jrag at line 60
+    // Declared in Domination.jrag at line 59
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getElseOptNoTransform()) {
             return  hasElse() ? hostBlock() : null;

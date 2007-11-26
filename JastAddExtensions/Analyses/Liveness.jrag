@@ -13,8 +13,11 @@ aspect Liveness {
 	}
 	
 	syn lazy boolean Variable.isLiveAfter(Stmt stmt) circular [false] {
+		Block host = stmt.hostBlock();
 		for(Iterator i=stmt.following().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
+			if(!next.between(host, -1, Integer.MAX_VALUE))
+				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}
@@ -24,8 +27,11 @@ aspect Liveness {
 	syn lazy boolean Variable.isLiveAtOrAfter(Stmt stmt) circular [false] {
 		if(stmt.mayUse(this)) return true;
 		if(stmt.mayDef(this)) return false;
+		Block host = stmt.hostBlock();
 		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
+			if(!next.between(host, -1, Integer.MAX_VALUE))
+				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}

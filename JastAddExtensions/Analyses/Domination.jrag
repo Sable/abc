@@ -1,7 +1,7 @@
 aspect Domination {
 	
 	// returns true if every path from this statement to goal passes through halfway
-	syn lazy boolean Stmt.dominates(Stmt halfway, Stmt goal) circular [false] {
+	syn lazy boolean Stmt.dominates(Stmt halfway, Stmt goal) circular [true] {
 		if(this == halfway)
 			return true;
 		if(this == goal)
@@ -49,13 +49,12 @@ aspect Domination {
 	
 	inh lazy Block Stmt.hostBlock();
 	
-	// Note: init and update statements for for-loops are considered to have _no_ host block
 	eq Block.getStmt().hostBlock() = this;
 	eq LabeledStmt.getStmt().hostBlock() = hostBlock();
 	eq WhileStmt.getStmt().hostBlock() = hostBlock();
 	eq ForStmt.getStmt().hostBlock() = hostBlock();
-	eq ForStmt.getInitStmt().hostBlock() = null;
-	eq ForStmt.getUpdateStmt().hostBlock() = null;
+	eq ForStmt.getInitStmt().hostBlock() = hostBlock();
+	eq ForStmt.getUpdateStmt().hostBlock() = hostBlock();
 	eq IfStmt.getThen().hostBlock() = hostBlock();
 	eq IfStmt.getElse().hostBlock() = hasElse() ? hostBlock() : null;
 	eq ConstructorDecl.getConstructorInvocation().hostBlock() = getBlock();
@@ -66,4 +65,10 @@ aspect Domination {
 	eq MethodDecl.getParameter().getBlock() = getBlock();
 	eq ConstructorDecl.getParameter().getBlock() = getBlock();
 	eq CatchClause.getParameter().getBlock() = getBlock();
+	
+	inh boolean Stmt.isInitOrUpdateStmt();
+	
+	eq Program.getChild().isInitOrUpdateStmt() = false;
+	eq ForStmt.getInitStmt().isInitOrUpdateStmt() = true;
+	eq ForStmt.getUpdateStmt().isInitOrUpdateStmt() = true;
 }

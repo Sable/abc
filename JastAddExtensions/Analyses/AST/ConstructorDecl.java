@@ -729,7 +729,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_mayBePrivate(this, caller);
     }
 
-    // Declared in Domination.jrag at line 67
+    // Declared in Domination.jrag at line 66
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);
@@ -868,7 +868,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_ASTNode_enclosingBlock(this, caller);
     }
 
-    // Declared in Domination.jrag at line 61
+    // Declared in Domination.jrag at line 60
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getConstructorInvocationOptNoTransform()) {
             return  getBlock();

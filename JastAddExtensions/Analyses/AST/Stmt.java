@@ -54,14 +54,14 @@ public abstract class Stmt extends ASTNode implements Cloneable {
       error("statement is unreachable");
   }
 
-    // Declared in ExtractMethod.jrag at line 32
+    // Declared in ExtractMethod.jrag at line 34
 
 	
 	public int indexInHostBlock() {
 		return indexInBlock(hostBlock());
 	}
 
-    // Declared in ExtractMethod.jrag at line 36
+    // Declared in ExtractMethod.jrag at line 38
 
 	
 	public int indexInBlock(Block blk) {
@@ -242,7 +242,7 @@ if(dominates_Stmt_Stmt_values == null) dominates_Stmt_Stmt_values = new java.uti
             return ((Boolean)dominates_Stmt_Stmt_values.get(_parameters)).booleanValue();
         if (!dominates_Stmt_Stmt_initialized.contains(_parameters)) {
             dominates_Stmt_Stmt_initialized.add(_parameters);
-            dominates_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(false));
+            dominates_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(true));
         }
         if (!IN_CIRCLE) {
             IN_CIRCLE = true;
@@ -549,7 +549,13 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return hostBlock_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 101
+    // Declared in Domination.jrag at line 69
+    public boolean isInitOrUpdateStmt() {
+        boolean isInitOrUpdateStmt_value = getParent().Define_boolean_isInitOrUpdateStmt(this, null);
+        return isInitOrUpdateStmt_value;
+    }
+
+    // Declared in ExtractMethod.jrag at line 164
     public Collection visibleLocalDecls() {
         Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;

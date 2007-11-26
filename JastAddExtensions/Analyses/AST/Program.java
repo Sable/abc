@@ -1700,6 +1700,15 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
         return getParent().Define_boolean_hasPackage(this, caller, packageName);
     }
 
+    // Declared in Domination.jrag at line 71
+    public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  false;
+        }
+        return getParent().Define_boolean_isInitOrUpdateStmt(this, caller);
+    }
+
     // Declared in LookupType.jrag at line 33
     public TypeDecl Define_TypeDecl_typeVoid(ASTNode caller, ASTNode child) {
         if(true) {

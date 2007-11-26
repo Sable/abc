@@ -2635,7 +2635,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isDUbefore(this, caller, v);
     }
 
-    // Declared in ExtractMethod.jrag at line 104
+    // Declared in ExtractMethod.jrag at line 167
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

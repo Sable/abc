@@ -83,47 +83,36 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
-    // Declared in ExtractMethod.jrag at line 40
+    // Declared in ExtractMethod.jrag at line 42
 
 	
 	public void encapsulate(int begin, int end) throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
-		List parms = new List();        // parameters of extracted method
-		List localVars = new List();    // local variables of extracted method
-		Opt ret = new Opt();            // what extracted method returns
-		List savedVars = new List();    // declarations that need to be inserted before
-										// call to extracted method
+		Collection parms = new ArrayList();        // parameters of extracted method
+		Collection localVars = new ArrayList();    // local variables of extracted method
+		Opt ret = new Opt();                       // what extracted method returns
+		Collection savedVars = new ArrayList();    // declarations that need to be inserted before
+										           // call to extracted method
+		Collection toBeRemoved = new ArrayList();  // declarations that should be removed after
+										           // extracting the method
+		Set exns = Set.empty();                    // the set of exceptions thrown by
+												   // the selection
 		Collection visibleDecls = begin_stmt.visibleLocalDecls();
 		visibleDecls.addAll(localDeclsBetween(begin, end));
-		for(Iterator i=visibleDecls.iterator();i.hasNext();) {
-			LocalDeclaration decl = (LocalDeclaration)i.next();
-			if(decl.isValueParmFor(begin_stmt, end_stmt))
-				parms.add(decl.asParameterDeclaration());
-			if(decl.isOutParmFor(begin_stmt, end_stmt)) {
-				if(!ret.isEmpty())
-					throw new RefactoringException("ambiguous return value");
-				ret = new Opt(((ASTNode)decl).fullCopy());
-			}
-			if(decl.shouldMoveInto(begin_stmt, end_stmt))
-				// TODO: we should check whether we can remove decl
-				localVars.add(decl.asVariableDeclaration());
-			if(decl.shouldMoveOutOf(begin_stmt, end_stmt) || 
-					decl.shouldDuplicate(begin_stmt, end_stmt))
-				savedVars.add(decl.asVariableDeclaration());
-		}
-		Set exns = uncaughtThrowsBetween(begin_stmt, end_stmt);
-		List stmts = new List();
+		analyseDeclarations(visibleDecls, begin_stmt, end_stmt, parms, localVars, ret, savedVars, toBeRemoved);
+		exns = uncaughtThrowsBetween(begin_stmt, end_stmt);
+		Collection stmts = new ArrayList();
 		for(int i=begin;i<=end;++i)
-		stmts.add(getStmt(i));
-		Block body = new Block(stmts);
-		int i;
+			stmts.add(getStmt(i));
+		MethodDecl md = createMethod("foo", parms, ret, exns, localVars, stmts);
+		/*int i;
 		System.out.println("method body: "+body.dumpTree());
 		System.out.print("parameters: ");
 		for(i=0;i<parms.getNumChild();++i)
 			System.out.print(((ParameterDeclaration)parms.getChild(i)).getID()+", ");
 		System.out.println("");
-		System.out.print("local variables: ");
+		System.out.print("additional local variables: ");
 		for(i=0;i<localVars.getNumChild();++i)
 			System.out.print(((VariableDeclaration)localVars.getChild(i)).getID()+", ");
 		System.out.println("");
@@ -141,6 +130,84 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		for(i=0;i<savedVars.getNumChild();++i)
 			System.out.print(((VariableDeclaration)savedVars.getChild(i)).getID()+", ");
 		System.out.println("");
+		System.out.print("declarations to be removed after method extraction: ");
+		for(i=0;i<toBeRemoved.getNumChild();++i)
+			System.out.print(((VariableDeclaration)toBeRemoved.getChild(i)).getID()+", ");
+		System.out.println("");*/
+		hostBodyDecl().hostType().addChild(md);
+		System.out.println(md);
+	}
+
+    // Declared in ExtractMethod.jrag at line 94
+
+	
+	private void analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
+			Collection parms, Collection localVars, Opt ret, Collection savedVars, 
+			Collection toBeRemoved) throws RefactoringException {
+		for(Iterator i=decls.iterator();i.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)i.next();
+			if(decl.isValueParmFor(begin_stmt, end_stmt))
+				parms.add(decl.asParameterDeclaration());
+			if(decl.isOutParmFor(begin_stmt, end_stmt)) {
+				if(!ret.isEmpty())
+					throw new RefactoringException("ambiguous return value");
+				ret.setChild(((ASTNode)decl).fullCopy(), 0);
+			}
+			if(decl.shouldMoveInto(begin_stmt, end_stmt)) {
+				localVars.add(decl.asVariableDeclaration());
+				if(!decl.accessedOutside(begin_stmt, end_stmt) 
+						&& decl instanceof VariableDeclaration)
+					toBeRemoved.add((ASTNode)decl);
+			}
+			if(decl.shouldMoveOutOf(begin_stmt, end_stmt) || 
+					(decl.shouldDuplicate(begin_stmt, end_stmt) && 
+							((Stmt)decl).between(begin_stmt, end_stmt)))
+				savedVars.add(decl.asVariableDeclaration());
+		}
+	}
+
+    // Declared in ExtractMethod.jrag at line 119
+
+	
+	private MethodDecl createMethod(String name, Collection parms, Opt ret, 
+			Set exns, Collection localVariables, Collection stmts) {
+		// modifiers: just "private"
+		Modifiers mod = new Modifiers();
+		mod.addModifier(new Modifier("private"));
+		// type access: either "void" or the type of the variable to be assigned to
+		Access acc;
+		if(ret.isEmpty()) {
+			acc = new TypeAccess("void");
+		} else {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			acc = (Access)decl.getTypeAccess().fullCopy(); 
+		}
+		// parameter declarations
+		List parmdecls = new List();
+		for(Iterator i=parms.iterator();i.hasNext();)
+			parmdecls.add((ASTNode)i.next());
+		// brackets
+		// TODO: not implemented
+		List brackets = new List();
+		// thrown exceptions
+		List throwdecls = new List();
+		for(Iterator i=exns.iterator();i.hasNext();)
+			// TODO: it's not that simple; we need to use accessType here
+			throwdecls.add(new TypeAccess(((ThrowStmt)i.next()).getExpr().type().name()));
+		// body
+		List bodystmts = new List();
+		for(Iterator i=localVariables.iterator();i.hasNext();)
+			bodystmts.add((ASTNode)i.next());
+		for(Iterator i=stmts.iterator();i.hasNext();)
+			bodystmts.add((ASTNode)i.next());
+		if(!ret.isEmpty()) {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			String varname = decl.getID();
+			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
+			bodystmts.add(stmt);
+		}
+		Block body = new Block(bodystmts);
+		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, new Opt(body));
 	}
 
     // Declared in java.ast at line 3
@@ -468,7 +535,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 		return set;
 	}
 
-    // Declared in ExtractMethod.jrag at line 129
+    // Declared in ExtractMethod.jrag at line 192
     public Collection localDeclsBetween(int start, int end) {
         Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -546,7 +613,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachable_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 111
+    // Declared in ExtractMethod.jrag at line 174
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);
@@ -686,7 +753,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_Set_following(this, caller);
     }
 
-    // Declared in Domination.jrag at line 53
+    // Declared in Domination.jrag at line 52
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);

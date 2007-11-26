@@ -154,6 +154,8 @@ public class CompilationUnit extends ASTNode implements Cloneable {
 
 	
 	public void extract(Stmt begin, Stmt end) throws RefactoringException {
+		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
+			throw new RefactoringException("selection cannot start or end at init or update statements");
 		if(!begin.dominates(end))
 			throw new RefactoringException("begin must dominate end");
 		if(!end.post_dominates(end))

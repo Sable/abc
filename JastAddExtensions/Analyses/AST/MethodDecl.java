@@ -1043,7 +1043,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
 
-    // Declared in ExtractMethod.jrag at line 105
+    // Declared in ExtractMethod.jrag at line 168
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		ArrayList decls = new ArrayList();
@@ -1054,7 +1054,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
-    // Declared in Domination.jrag at line 66
+    // Declared in Domination.jrag at line 65
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);

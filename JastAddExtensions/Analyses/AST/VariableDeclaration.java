@@ -514,7 +514,7 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
 
     protected boolean getBlock_computed = false;
     protected Block getBlock_value;
-    // Declared in Domination.jrag at line 63
+    // Declared in Domination.jrag at line 62
     public Block getBlock() {
         if(getBlock_computed)
             return getBlock_value;
@@ -546,7 +546,7 @@ if(shouldMoveInto_Stmt_Stmt_values == null) shouldMoveInto_Stmt_Stmt_values = ne
     }
 
     private boolean shouldMoveInto_compute(Stmt begin, Stmt end) {  return 
-		!between(begin, end) && !isValueParmFor(begin, end) && !isOutParmFor(begin, end);  }
+		!between(begin, end) && !isValueParmFor(begin, end);  }
 
     // Declared in VarDefUse.jrag at line 11
     public boolean mayDef(Variable v) {
@@ -699,8 +699,11 @@ if(isLiveAfter_Stmt_values == null) isLiveAfter_Stmt_values = new java.util.Hash
     }
 
     private boolean isLiveAfter_compute(Stmt stmt)  {
+		Block host = stmt.hostBlock();
 		for(Iterator i=stmt.following().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
+			if(!next.between(host, -1, Integer.MAX_VALUE))
+				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}
@@ -769,8 +772,11 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
     private boolean isLiveAtOrAfter_compute(Stmt stmt)  {
 		if(stmt.mayUse(this)) return true;
 		if(stmt.mayDef(this)) return false;
+		Block host = stmt.hostBlock();
 		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
+			if(!next.between(host, -1, Integer.MAX_VALUE))
+				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}

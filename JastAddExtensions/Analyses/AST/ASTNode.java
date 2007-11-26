@@ -438,7 +438,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
 	private static int replacePos = 0;
 
-    // Declared in ExtractMethod.jrag at line 24
+    // Declared in ExtractMethod.jrag at line 26
 
 	
 	public int indexIn(ASTNode n) {
@@ -1223,11 +1223,14 @@ public ASTNode rewriteTo() {
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         return getParent().Define_Block_hostBlock(this, caller);
     }
+    public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
+        return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
+    }
     public boolean Define_boolean_hasPackage(ASTNode caller, ASTNode child, String packageName) {
         return getParent().Define_boolean_hasPackage(this, caller, packageName);
     }
-    public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
-        return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
+    public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
+        return getParent().Define_boolean_isInitOrUpdateStmt(this, caller);
     }
     public TypeDecl Define_TypeDecl_typeVoid(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_typeVoid(this, caller);

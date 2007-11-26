@@ -299,7 +299,7 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
         return getParent().Define_Set_following(this, caller);
     }
 
-    // Declared in Domination.jrag at line 55
+    // Declared in Domination.jrag at line 54
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
             return  hostBlock();

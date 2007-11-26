@@ -279,7 +279,7 @@ if(lookupLabel_String_values == null) lookupLabel_String_values = new java.util.
         return getParent().Define_LabeledStmt_lookupLabel(this, caller, name);
     }
 
-    // Declared in Domination.jrag at line 54
+    // Declared in Domination.jrag at line 53
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
             return  hostBlock();

@@ -85,7 +85,7 @@ aspect ParameterClassification {
 	syn lazy boolean LocalDeclaration.shouldMoveInto(Stmt begin, Stmt end);
 	
 	eq VariableDeclaration.shouldMoveInto(Stmt begin, Stmt end) =
-		!between(begin, end) && !isValueParmFor(begin, end) && !isOutParmFor(begin, end);
+		!between(begin, end) && !isValueParmFor(begin, end);
 	
 	eq ParameterDeclaration.shouldMoveInto(Stmt begin, Stmt end) = false;
 	
