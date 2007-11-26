@@ -5938,5 +5938,9 @@
 		</compile>
 		<run class="Example"></run>
     </ajc-test>
+<ajc-test title="Double association" num="1404" dir="abctests/ra/doubleassociate">
+        <compile options="-ext,abc.ra,-warn-unused-advice:on" files="DoubleAssociate.java"></compile>
+		<run class="DoubleAssociate"></run>
+    </ajc-test>
  
 </suite>
