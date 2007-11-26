@@ -17,8 +17,6 @@ public abstract class Stmt extends ASTNode implements Cloneable {
         gsucc_Block_int_int_values = null;
         hostBlock_computed = false;
         hostBlock_value = null;
-        visibleLocalDecls_computed = false;
-        visibleLocalDecls_value = null;
         Stmt_pred_visited = false;
         Stmt_pred_computed = false;
         Stmt_pred_value = null;
@@ -35,8 +33,6 @@ public abstract class Stmt extends ASTNode implements Cloneable {
         node.gsucc_Block_int_int_values = null;
         node.hostBlock_computed = false;
         node.hostBlock_value = null;
-        node.visibleLocalDecls_computed = false;
-        node.visibleLocalDecls_value = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -553,17 +549,9 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return hostBlock_value;
     }
 
-    protected boolean visibleLocalDecls_computed = false;
-    protected List visibleLocalDecls_value;
-    // Declared in ExtractMethod.jrag at line 100
-    public List visibleLocalDecls() {
-        if(visibleLocalDecls_computed)
-            return visibleLocalDecls_value;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        visibleLocalDecls_value = getParent().Define_List_visibleLocalDecls(this, null);
-        if(isFinal && num == boundariesCrossed)
-            visibleLocalDecls_computed = true;
+    // Declared in ExtractMethod.jrag at line 101
+    public Collection visibleLocalDecls() {
+        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;
     }
 

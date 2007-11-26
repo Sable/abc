@@ -2635,6 +2635,15 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isDUbefore(this, caller, v);
     }
 
+    // Declared in ExtractMethod.jrag at line 104
+    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  new ArrayList();
+        }
+        return getParent().Define_Collection_visibleLocalDecls(this, caller);
+    }
+
     // Declared in TypeAnalysis.jrag at line 494
     public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2791,15 +2800,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  false;
         }
         return getParent().Define_boolean_insideSwitch(this, caller);
-    }
-
-    // Declared in ExtractMethod.jrag at line 103
-    public List Define_List_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(true) {
-      int childIndex = this.getIndexOfChild(caller);
-            return  new List();
-        }
-        return getParent().Define_List_visibleLocalDecls(this, caller);
     }
 
     // Declared in TypeCheck.jrag at line 393

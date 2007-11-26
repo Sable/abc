@@ -556,16 +556,16 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return lookupVariable_String_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 119
-    public List Define_List_visibleLocalDecls(ASTNode caller, ASTNode child) {
+    // Declared in ExtractMethod.jrag at line 121
+    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
-		List decls = visibleLocalDecls();
+		Collection decls = visibleLocalDecls();
 		for(int i=0;i<getNumInitStmt();++i)
 			if(getInitStmt(i) instanceof VariableDeclaration)
 				decls.add(getInitStmt(i));
 		return decls;
 	}
-        return getParent().Define_List_visibleLocalDecls(this, caller);
+        return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
     // Declared in NameCheck.jrag at line 360

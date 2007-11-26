@@ -721,19 +721,63 @@ if(isLiveBetween_Stmt_Stmt_values == null) isLiveBetween_Stmt_Stmt_values = new 
 		return false;
 	}
 
-    protected java.util.Map isLiveAfter_Stmt_values;
-    // Declared in Liveness.jrag at line 15
+    protected java.util.Set isLiveAfter_Stmt_visited;
+    protected java.util.Set isLiveAfter_Stmt_computed = new java.util.HashSet(4);
+    protected java.util.Set isLiveAfter_Stmt_initialized = new java.util.HashSet(4);
+    protected java.util.Map isLiveAfter_Stmt_values = new java.util.HashMap(4);
     public boolean isLiveAfter(Stmt stmt) {
         Object _parameters = stmt;
+if(isLiveAfter_Stmt_visited == null) isLiveAfter_Stmt_visited = new java.util.HashSet(4);
 if(isLiveAfter_Stmt_values == null) isLiveAfter_Stmt_values = new java.util.HashMap(4);
-        if(isLiveAfter_Stmt_values.containsKey(_parameters))
+        if(isLiveAfter_Stmt_computed.contains(_parameters))
             return ((Boolean)isLiveAfter_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
+        if (!isLiveAfter_Stmt_initialized.contains(_parameters)) {
+            isLiveAfter_Stmt_initialized.add(_parameters);
+            isLiveAfter_Stmt_values.put(_parameters, Boolean.valueOf(false));
+        }
+        if (!IN_CIRCLE) {
+            IN_CIRCLE = true;
+            isLiveAfter_Stmt_visited.add(_parameters);
+            int num = boundariesCrossed;
         boolean isFinal = this.is$Final();
-        boolean isLiveAfter_Stmt_value = isLiveAfter_compute(stmt);
-        if(isFinal && num == boundariesCrossed)
-            isLiveAfter_Stmt_values.put(_parameters, Boolean.valueOf(isLiveAfter_Stmt_value));
-        return isLiveAfter_Stmt_value;
+            boolean new_isLiveAfter_Stmt_value;
+            do {
+                CHANGE = false;
+                new_isLiveAfter_Stmt_value = isLiveAfter_compute(stmt);
+                if (new_isLiveAfter_Stmt_value!=((Boolean)isLiveAfter_Stmt_values.get(_parameters)).booleanValue())
+                    CHANGE = true;
+                isLiveAfter_Stmt_values.put(_parameters, Boolean.valueOf(new_isLiveAfter_Stmt_value));
+            } while (CHANGE);
+            isLiveAfter_Stmt_visited.remove(_parameters);
+            if(isFinal && num == boundariesCrossed)
+{
+            isLiveAfter_Stmt_computed.add(_parameters);
+            }
+            else {
+            RESET_CYCLE = true;
+            isLiveAfter_compute(stmt);
+            RESET_CYCLE = false;
+            isLiveAfter_Stmt_computed.remove(_parameters);
+            isLiveAfter_Stmt_initialized.remove(_parameters);
+            }
+            IN_CIRCLE = false; 
+            return new_isLiveAfter_Stmt_value;
+        }
+        if(!isLiveAfter_Stmt_visited.contains(_parameters)) {
+            if (RESET_CYCLE) {
+                isLiveAfter_Stmt_computed.remove(_parameters);
+                isLiveAfter_Stmt_initialized.remove(_parameters);
+                return ((Boolean)isLiveAfter_Stmt_values.get(_parameters)).booleanValue();
+            }
+            isLiveAfter_Stmt_visited.add(_parameters);
+            boolean new_isLiveAfter_Stmt_value = isLiveAfter_compute(stmt);
+            if (new_isLiveAfter_Stmt_value!=((Boolean)isLiveAfter_Stmt_values.get(_parameters)).booleanValue())
+                CHANGE = true;
+            isLiveAfter_Stmt_values.put(_parameters, Boolean.valueOf(new_isLiveAfter_Stmt_value));
+            isLiveAfter_Stmt_visited.remove(_parameters);
+            return new_isLiveAfter_Stmt_value;
+        }
+        return ((Boolean)isLiveAfter_Stmt_values.get(_parameters)).booleanValue();
     }
 
     private boolean isLiveAfter_compute(Stmt stmt)  {
@@ -745,19 +789,63 @@ if(isLiveAfter_Stmt_values == null) isLiveAfter_Stmt_values = new java.util.Hash
 		return false;
 	}
 
-    protected java.util.Map isLiveAtOrAfter_Stmt_values;
-    // Declared in Liveness.jrag at line 24
+    protected java.util.Set isLiveAtOrAfter_Stmt_visited;
+    protected java.util.Set isLiveAtOrAfter_Stmt_computed = new java.util.HashSet(4);
+    protected java.util.Set isLiveAtOrAfter_Stmt_initialized = new java.util.HashSet(4);
+    protected java.util.Map isLiveAtOrAfter_Stmt_values = new java.util.HashMap(4);
     public boolean isLiveAtOrAfter(Stmt stmt) {
         Object _parameters = stmt;
+if(isLiveAtOrAfter_Stmt_visited == null) isLiveAtOrAfter_Stmt_visited = new java.util.HashSet(4);
 if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.util.HashMap(4);
-        if(isLiveAtOrAfter_Stmt_values.containsKey(_parameters))
+        if(isLiveAtOrAfter_Stmt_computed.contains(_parameters))
             return ((Boolean)isLiveAtOrAfter_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
+        if (!isLiveAtOrAfter_Stmt_initialized.contains(_parameters)) {
+            isLiveAtOrAfter_Stmt_initialized.add(_parameters);
+            isLiveAtOrAfter_Stmt_values.put(_parameters, Boolean.valueOf(false));
+        }
+        if (!IN_CIRCLE) {
+            IN_CIRCLE = true;
+            isLiveAtOrAfter_Stmt_visited.add(_parameters);
+            int num = boundariesCrossed;
         boolean isFinal = this.is$Final();
-        boolean isLiveAtOrAfter_Stmt_value = isLiveAtOrAfter_compute(stmt);
-        if(isFinal && num == boundariesCrossed)
-            isLiveAtOrAfter_Stmt_values.put(_parameters, Boolean.valueOf(isLiveAtOrAfter_Stmt_value));
-        return isLiveAtOrAfter_Stmt_value;
+            boolean new_isLiveAtOrAfter_Stmt_value;
+            do {
+                CHANGE = false;
+                new_isLiveAtOrAfter_Stmt_value = isLiveAtOrAfter_compute(stmt);
+                if (new_isLiveAtOrAfter_Stmt_value!=((Boolean)isLiveAtOrAfter_Stmt_values.get(_parameters)).booleanValue())
+                    CHANGE = true;
+                isLiveAtOrAfter_Stmt_values.put(_parameters, Boolean.valueOf(new_isLiveAtOrAfter_Stmt_value));
+            } while (CHANGE);
+            isLiveAtOrAfter_Stmt_visited.remove(_parameters);
+            if(isFinal && num == boundariesCrossed)
+{
+            isLiveAtOrAfter_Stmt_computed.add(_parameters);
+            }
+            else {
+            RESET_CYCLE = true;
+            isLiveAtOrAfter_compute(stmt);
+            RESET_CYCLE = false;
+            isLiveAtOrAfter_Stmt_computed.remove(_parameters);
+            isLiveAtOrAfter_Stmt_initialized.remove(_parameters);
+            }
+            IN_CIRCLE = false; 
+            return new_isLiveAtOrAfter_Stmt_value;
+        }
+        if(!isLiveAtOrAfter_Stmt_visited.contains(_parameters)) {
+            if (RESET_CYCLE) {
+                isLiveAtOrAfter_Stmt_computed.remove(_parameters);
+                isLiveAtOrAfter_Stmt_initialized.remove(_parameters);
+                return ((Boolean)isLiveAtOrAfter_Stmt_values.get(_parameters)).booleanValue();
+            }
+            isLiveAtOrAfter_Stmt_visited.add(_parameters);
+            boolean new_isLiveAtOrAfter_Stmt_value = isLiveAtOrAfter_compute(stmt);
+            if (new_isLiveAtOrAfter_Stmt_value!=((Boolean)isLiveAtOrAfter_Stmt_values.get(_parameters)).booleanValue())
+                CHANGE = true;
+            isLiveAtOrAfter_Stmt_values.put(_parameters, Boolean.valueOf(new_isLiveAtOrAfter_Stmt_value));
+            isLiveAtOrAfter_Stmt_visited.remove(_parameters);
+            return new_isLiveAtOrAfter_Stmt_value;
+        }
+        return ((Boolean)isLiveAtOrAfter_Stmt_values.get(_parameters)).booleanValue();
     }
 
     private boolean isLiveAtOrAfter_compute(Stmt stmt)  {
@@ -765,7 +853,7 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
 		if(stmt.mayDef(this)) return false;
 		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
-			if(isLiveAtOrAfter(stmt))
+			if(isLiveAtOrAfter(next))
 				return true;
 		}
 		return false;

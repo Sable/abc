@@ -45,9 +45,10 @@ aspect ExtractMethod {
 		Opt ret = new Opt();            // what extracted method returns
 		List savedVars = new List();    // declarations that need to be inserted before
 										// call to extracted method
-		List visibleDecls = begin_stmt.visibleLocalDecls();
-		for(int i=0;i<visibleDecls.getNumChild();++i) {
-			LocalDeclaration decl = (LocalDeclaration)visibleDecls.getChild(i);
+		Collection visibleDecls = begin_stmt.visibleLocalDecls();
+		visibleDecls.addAll(localDeclsBetween(begin, end));
+		for(Iterator i=visibleDecls.iterator();i.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)i.next();
 			if(decl.isValueParmFor(begin_stmt, end_stmt))
 				parms.add(decl.asParameterDeclaration());
 			if(decl.isOutParmFor(begin_stmt, end_stmt)) {
@@ -81,7 +82,7 @@ aspect ExtractMethod {
 			System.out.println("return type: void");
 		else {
 			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
-			System.out.println("return type: "+decl.getTypeAccess()+", will be assigned to "+decl.getID());
+			System.out.println("return type: "+decl.getTypeAccess().dumpString()+", will be assigned to "+decl.getID());
 		}
 		System.out.print("thrown exceptions: ");
 		for(Iterator iter=exns.iterator();iter.hasNext();)
@@ -97,46 +98,40 @@ aspect ExtractMethod {
 		return getNumChild() == 0;
 	}
 	
-	inh lazy List Stmt.visibleLocalDecls();
-	inh lazy List CatchClause.visibleLocalDecls();
+	inh Collection Stmt.visibleLocalDecls();
+	inh Collection CatchClause.visibleLocalDecls();
 	
-	eq TypeDecl.getChild().visibleLocalDecls() = new List();
+	eq TypeDecl.getChild().visibleLocalDecls() = new ArrayList();
 	eq MethodDecl.getBlock().visibleLocalDecls() {
-		return getParameterList();
+		ArrayList decls = new ArrayList();
+		for(int i=0;i<getNumParameter();++i)
+			decls.add(getParameter(i));
+		return decls;
 	}
 	eq Block.getStmt(int k).visibleLocalDecls() {
-		List decls = visibleLocalDecls();
-		for(int i=0;i<k;++i)
-			if(getStmt(i) instanceof VariableDeclaration)
-				decls.add(getStmt(i));
+		Collection decls = visibleLocalDecls();
+		decls.addAll(localDeclsBetween(0,k-1));
 		return decls;
 	}
 	eq CatchClause.getBlock().visibleLocalDecls() {
-		List decls = visibleLocalDecls();
+		Collection decls = visibleLocalDecls();
 		decls.add(getParameter());
 		return decls;
 	}
 	eq ForStmt.getStmt().visibleLocalDecls() {
-		List decls = visibleLocalDecls();
+		Collection decls = visibleLocalDecls();
 		for(int i=0;i<getNumInitStmt();++i)
 			if(getInitStmt(i) instanceof VariableDeclaration)
 				decls.add(getInitStmt(i));
 		return decls;
 	}
 	
-	/*public void Block.encapsulate(int start, int end) {
-		int i;
-		List stmts = new List();
-		for(i=0;i<start;++i)
-			stmts.add(getStmt(i));
-		List enc_stmts = new List();
-		for(;i<=end;++i)
-			enc_stmts.add(getStmt(i));
-		Block blk = new Block(enc_stmts);
-		stmts.add(blk);
-		for(;i<getNumStmt();++i)
-			stmts.add(getStmt(i));
-		setStmtList(stmts);
-	}*/
+	syn Collection Block.localDeclsBetween(int start, int end) {
+		ArrayList decls = new ArrayList();
+		for(int i=start;i<=end;++i)
+			if(getStmt(i) instanceof VariableDeclaration)
+				decls.add(getStmt(i));
+		return decls;
+	}
 	
 }

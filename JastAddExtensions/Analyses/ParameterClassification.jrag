@@ -35,7 +35,10 @@ aspect ParameterClassification {
 	}
 	
 	syn lazy boolean LocalDeclaration.isOutParmFor(Stmt begin, Stmt end) {
-		return isLiveAfter(end) && mayDefBetween(begin, end);
+		boolean live = isLiveAfter(end);
+		boolean defd = mayDefBetween(begin, end);
+		return live && defd;
+		//return isLiveAfter(end) && mayDefBetween(begin, end);
 	}
 	
 	syn lazy boolean LocalDeclaration.mayDefBetween(Stmt begin, Stmt end) circular [false] {
@@ -87,7 +90,8 @@ aspect ParameterClassification {
 	eq ParameterDeclaration.shouldMoveInto(Stmt begin, Stmt end) = false;
 	
 	syn lazy boolean LocalDeclaration.shouldDuplicate(Stmt begin, Stmt end) {
-		return shouldMoveInto(begin, end) && accessedOutside(begin, end);
+		return (shouldMoveInto(begin, end) || between(begin, end))
+					&& accessedOutside(begin, end);
 	}
 	
 	syn lazy Set Block.uncaughtThrowsBetween(Stmt begin, Stmt end) {

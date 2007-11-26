@@ -10,8 +10,6 @@ public class CatchClause extends ASTNode implements Cloneable,  VariableScope {
         typeThrowable_value = null;
         lookupVariable_String_values = null;
         reachableCatchClause_computed = false;
-        visibleLocalDecls_computed = false;
-        visibleLocalDecls_value = null;
     }
     public Object clone() throws CloneNotSupportedException {
         CatchClause node = (CatchClause)super.clone();
@@ -20,8 +18,6 @@ public class CatchClause extends ASTNode implements Cloneable,  VariableScope {
         node.typeThrowable_value = null;
         node.lookupVariable_String_values = null;
         node.reachableCatchClause_computed = false;
-        node.visibleLocalDecls_computed = false;
-        node.visibleLocalDecls_value = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -208,28 +204,20 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return enclosingFinally_value;
     }
 
-    protected boolean visibleLocalDecls_computed = false;
-    protected List visibleLocalDecls_value;
-    // Declared in ExtractMethod.jrag at line 101
-    public List visibleLocalDecls() {
-        if(visibleLocalDecls_computed)
-            return visibleLocalDecls_value;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        visibleLocalDecls_value = getParent().Define_List_visibleLocalDecls(this, null);
-        if(isFinal && num == boundariesCrossed)
-            visibleLocalDecls_computed = true;
+    // Declared in ExtractMethod.jrag at line 102
+    public Collection visibleLocalDecls() {
+        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 114
-    public List Define_List_visibleLocalDecls(ASTNode caller, ASTNode child) {
+    // Declared in ExtractMethod.jrag at line 116
+    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
-		List decls = visibleLocalDecls();
+		Collection decls = visibleLocalDecls();
 		decls.add(getParameter());
 		return decls;
 	}
-        return getParent().Define_List_visibleLocalDecls(this, caller);
+        return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
     // Declared in VariableDeclaration.jrag at line 74

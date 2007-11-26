@@ -31,18 +31,18 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
     public boolean isValueParmFor(Stmt begin, Stmt end);
     // Declared in ParameterClassification.jrag at line 37
     public boolean isOutParmFor(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 41
+    // Declared in ParameterClassification.jrag at line 44
     public boolean mayDefBetween(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 50
-    public boolean accessedOutside(Stmt begin, Stmt end);
     // Declared in ParameterClassification.jrag at line 53
+    public boolean accessedOutside(Stmt begin, Stmt end);
+    // Declared in ParameterClassification.jrag at line 56
     public boolean accessedBefore(Stmt stmt);
-    // Declared in ParameterClassification.jrag at line 66
+    // Declared in ParameterClassification.jrag at line 69
     public boolean accessedAfter(Stmt stmt);
-    // Declared in ParameterClassification.jrag at line 79
-    public boolean shouldMoveOutOf(Stmt begin, Stmt end);
     // Declared in ParameterClassification.jrag at line 82
+    public boolean shouldMoveOutOf(Stmt begin, Stmt end);
+    // Declared in ParameterClassification.jrag at line 85
     public boolean shouldMoveInto(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 89
+    // Declared in ParameterClassification.jrag at line 92
     public boolean shouldDuplicate(Stmt begin, Stmt end);
 }

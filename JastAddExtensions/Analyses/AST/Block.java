@@ -94,9 +94,10 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		Opt ret = new Opt();            // what extracted method returns
 		List savedVars = new List();    // declarations that need to be inserted before
 										// call to extracted method
-		List visibleDecls = begin_stmt.visibleLocalDecls();
-		for(int i=0;i<visibleDecls.getNumChild();++i) {
-			LocalDeclaration decl = (LocalDeclaration)visibleDecls.getChild(i);
+		Collection visibleDecls = begin_stmt.visibleLocalDecls();
+		visibleDecls.addAll(localDeclsBetween(begin, end));
+		for(Iterator i=visibleDecls.iterator();i.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)i.next();
 			if(decl.isValueParmFor(begin_stmt, end_stmt))
 				parms.add(decl.asParameterDeclaration());
 			if(decl.isOutParmFor(begin_stmt, end_stmt)) {
@@ -130,7 +131,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			System.out.println("return type: void");
 		else {
 			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
-			System.out.println("return type: "+decl.getTypeAccess()+", will be assigned to "+decl.getID());
+			System.out.println("return type: "+decl.getTypeAccess().dumpString()+", will be assigned to "+decl.getID());
 		}
 		System.out.print("thrown exceptions: ");
 		for(Iterator iter=exns.iterator();iter.hasNext();)
@@ -467,8 +468,22 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 		return set;
 	}
 
+    // Declared in ExtractMethod.jrag at line 129
+    public Collection localDeclsBetween(int start, int end) {
+        Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
+        return localDeclsBetween_int_int_value;
+    }
+
+    private Collection localDeclsBetween_compute(int start, int end)  {
+		ArrayList decls = new ArrayList();
+		for(int i=start;i<=end;++i)
+			if(getStmt(i) instanceof VariableDeclaration)
+				decls.add(getStmt(i));
+		return decls;
+	}
+
     protected java.util.Map uncaughtThrowsBetween_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 93
+    // Declared in ParameterClassification.jrag at line 97
     public Set uncaughtThrowsBetween(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
@@ -529,6 +544,19 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
     public boolean reachable() {
         boolean reachable_value = getParent().Define_boolean_reachable(this, null);
         return reachable_value;
+    }
+
+    // Declared in ExtractMethod.jrag at line 111
+    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(caller == getStmtListNoTransform()) { 
+   int k = caller.getIndexOfChild(child);
+ {
+		Collection decls = visibleLocalDecls();
+		decls.addAll(localDeclsBetween(0,k-1));
+		return decls;
+	}
+}
+        return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
     // Declared in GuardedControlFlow.jrag at line 27
@@ -602,21 +630,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  index == 0 ? isDAbefore(v) : getStmt(index - 1).isDAafter(v);
         }
         return getParent().Define_boolean_isDAbefore(this, caller, v);
-    }
-
-    // Declared in ExtractMethod.jrag at line 107
-    public List Define_List_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(caller == getStmtListNoTransform()) { 
-   int k = caller.getIndexOfChild(child);
- {
-		List decls = visibleLocalDecls();
-		for(int i=0;i<k;++i)
-			if(getStmt(i) instanceof VariableDeclaration)
-				decls.add(getStmt(i));
-		return decls;
-	}
-}
-        return getParent().Define_List_visibleLocalDecls(this, caller);
     }
 
     // Declared in ControlFlowGraph.jrag at line 207

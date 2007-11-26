@@ -1073,6 +1073,9 @@ public ASTNode rewriteTo() {
     public TypeDecl Define_TypeDecl_declType(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_declType(this, caller);
     }
+    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        return getParent().Define_Collection_visibleLocalDecls(this, caller);
+    }
     public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
@@ -1240,9 +1243,6 @@ public ASTNode rewriteTo() {
     }
     public Stmt Define_Stmt_exitBlock(ASTNode caller, ASTNode child) {
         return getParent().Define_Stmt_exitBlock(this, caller);
-    }
-    public List Define_List_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        return getParent().Define_List_visibleLocalDecls(this, caller);
     }
     public TypeDecl Define_TypeDecl_typeException(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_typeException(this, caller);
