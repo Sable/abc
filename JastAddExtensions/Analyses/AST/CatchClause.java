@@ -204,13 +204,13 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return enclosingFinally_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 177
+    // Declared in ExtractMethod.jrag at line 181
     public Collection visibleLocalDecls() {
         Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 191
+    // Declared in ExtractMethod.jrag at line 195
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
 		Collection decls = visibleLocalDecls();

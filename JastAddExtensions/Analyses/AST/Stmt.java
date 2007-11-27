@@ -569,7 +569,7 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return isInitOrUpdateStmt_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 176
+    // Declared in ExtractMethod.jrag at line 180
     public Collection visibleLocalDecls() {
         Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;

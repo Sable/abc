@@ -3048,7 +3048,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Set_following(this, caller);
     }
 
-    // Declared in ExtractMethod.jrag at line 179
+    // Declared in ExtractMethod.jrag at line 183
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

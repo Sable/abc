@@ -574,7 +574,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return lookupVariable_String_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 196
+    // Declared in ExtractMethod.jrag at line 200
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
 		Collection decls = visibleLocalDecls();

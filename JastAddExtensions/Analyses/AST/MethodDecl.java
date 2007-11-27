@@ -1212,7 +1212,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_isDUbefore(this, caller, v);
     }
 
-    // Declared in ExtractMethod.jrag at line 180
+    // Declared in ExtractMethod.jrag at line 184
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		ArrayList decls = new ArrayList();

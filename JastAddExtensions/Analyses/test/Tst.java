@@ -11,6 +11,6 @@ class A {
 				throw new FileNotFoundException("");
 			++i;
 		}
-		i = 4;
+		int j = ++i;
 	}
 }

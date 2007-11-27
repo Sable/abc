@@ -96,7 +96,11 @@ aspect ExtractMethod {
 			stmts.add(getStmt(i));
 		// now record changes to be made
 		TypeDecl td = hostBodyDecl().hostType();
-		td.addMethod(changes, md, md.signature(), false);
+		// kludge: method decl needs a parent so we can compute its signature
+		md.setParent(td);
+		String sig = md.signature();
+		md.setParent(null);
+		td.addMethod(changes, md, sig, false);
 		changes.add(new BlockBodyChange(this, stmts));
 	}
 	

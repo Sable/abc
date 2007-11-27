@@ -141,11 +141,15 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			stmts.add(getStmt(i));
 		// now record changes to be made
 		TypeDecl td = hostBodyDecl().hostType();
-		td.addMethod(changes, md, md.signature(), false);
+		// kludge: method decl needs a parent so we can compute its signature
+		md.setParent(td);
+		String sig = md.signature();
+		md.setParent(null);
+		td.addMethod(changes, md, sig, false);
 		changes.add(new BlockBodyChange(this, stmts));
 	}
 
-    // Declared in ExtractMethod.jrag at line 103
+    // Declared in ExtractMethod.jrag at line 107
 
 	
 	private void analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
@@ -173,7 +177,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		}
 	}
 
-    // Declared in ExtractMethod.jrag at line 128
+    // Declared in ExtractMethod.jrag at line 132
 
 	
 	private MethodDecl createMethod(boolean static_ctxt, String name, 
@@ -560,7 +564,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 		return set;
 	}
 
-    // Declared in ExtractMethod.jrag at line 204
+    // Declared in ExtractMethod.jrag at line 208
     public Collection localDeclsBetween(int start, int end) {
         Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -705,7 +709,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return accessType_TypeDecl_boolean_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 186
+    // Declared in ExtractMethod.jrag at line 190
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);
