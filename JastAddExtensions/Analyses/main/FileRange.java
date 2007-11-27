@@ -1,4 +1,4 @@
-package changes;
+package main;
 
 import AST.ASTNode;
 

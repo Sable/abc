@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 // 7.3 Compilation Units
@@ -13,6 +13,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
         getID_computed = false;
         getID_value = null;
         lookupType_String_values = null;
+        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         CompilationUnit node = (CompilationUnit)super.clone();
@@ -22,6 +23,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
         node.getID_computed = false;
         node.getID_value = null;
         node.lookupType_String_values = null;
+        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -153,7 +155,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
     // Declared in ExtractMethod.jrag at line 5
 
 	
-	public void extract(String name, Stmt begin, Stmt end) throws RefactoringException {
+	public java.util.List extract(String name, Stmt begin, Stmt end) throws RefactoringException {
 		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
 			throw new RefactoringException("selection cannot start or end at init or update statements");
 		if(!begin.dominates(end))
@@ -177,7 +179,9 @@ public class CompilationUnit extends ASTNode implements Cloneable {
 		for(int i=begin_idx;i<=end_idx;++i)
 			if(begin_host.getStmt(i) instanceof Case)
 				throw new RefactoringException("selection cannot contain case labels");
-		begin_host.encapsulate(name, begin_idx, end_idx, static_ctxt);
+		java.util.List changes = new java.util.Vector();
+		begin_host.encapsulate(changes, name, begin_idx, end_idx, static_ctxt);
+		return changes;
 	}
 
     // Declared in java.ast at line 3
@@ -442,7 +446,7 @@ if(localLookupType_String_values == null) localLookupType_String_values = new ja
 
     protected boolean getID_computed = false;
     protected String getID_value;
-    // Declared in ASTUtil.jrag at line 59
+    // Declared in RenameType.jrag at line 109
     public String getID() {
         if(getID_computed)
             return getID_value;
@@ -455,13 +459,13 @@ if(localLookupType_String_values == null) localLookupType_String_values = new ja
     }
 
     private String getID_compute()  {
-    	char pathsep = File.separatorChar;
-    	String path = pathName();
-    	int i = path.lastIndexOf(pathsep);
-    	String relname_tail = i == -1 ? path : path.substring(i+1);
-    	int j = relname_tail.lastIndexOf(".");
-    	return relname_tail.substring(0, j);	 		
-    }
+       char pathsep = File.separatorChar;
+       String path = pathName();
+       int i = path.lastIndexOf(pathsep);
+	   String relname_tail = i == -1 ? path : path.substring(i+1);
+       int j = relname_tail.lastIndexOf(".");
+       return relname_tail.substring(0, j);	 		
+	}
 
     // Declared in LookupType.jrag at line 89
     public TypeDecl lookupType(String packageName, String typeName) {
@@ -482,6 +486,53 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         if(isFinal && num == boundariesCrossed)
             lookupType_String_values.put(_parameters, lookupType_String_value);
         return lookupType_String_value;
+    }
+
+    // Declared in AccessPackage.jrag at line 9
+    public boolean hasPackage(String packageName) {
+        boolean hasPackage_String_value = getParent().Define_boolean_hasPackage(this, null, packageName);
+        return hasPackage_String_value;
+    }
+
+    protected java.util.Map accessType_TypeDecl_boolean_values;
+    // Declared in AccessType.jrag at line 4
+    public Access accessType(TypeDecl td, boolean ambiguous) {
+        java.util.List _parameters = new java.util.ArrayList(2);
+        _parameters.add(td);
+        _parameters.add(Boolean.valueOf(ambiguous));
+if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
+        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
+            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
+        if(isFinal && num == boundariesCrossed)
+            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
+        return accessType_TypeDecl_boolean_value;
+    }
+
+    // Declared in AccessType.jrag at line 23
+    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
+        if(true) { 
+   int i = this.getIndexOfChild(caller);
+ {
+		if(td.isNestedType()) {
+			TypeDecl enc = td.enclosingType();
+			Access encacc = getChild(i).accessType(enc, ambiguous);
+			if(encacc == null) return null;
+			Access acc = enc.getBodyDecl(0).accessType(td, ambiguous);
+			if(acc == null) return null;
+			return encacc.qualifiesAccess(acc);
+		} else {
+			SimpleSet set = localLookupType(td.getID());
+			if(set.size() == 1 && (TypeDecl)set.iterator().next() == td) {
+				return new TypeAccess(td.getID());
+			}
+			return accessType(td, ambiguous);
+		}
+	}
+}
+        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
 
     // Declared in TypeAnalysis.jrag at line 492
@@ -572,6 +623,20 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return getParent().Define_boolean_isLocalClass(this, caller);
     }
 
+    // Declared in AccessPackage.jrag at line 15
+    public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
+        if(true) { 
+   int i = this.getIndexOfChild(caller);
+ {
+		String[] path = pkg.split("\\.");
+		if(lookupType(path[0]).isEmpty() && hasPackage(pkg))
+			return new PackageAccess(pkg);
+		return null;
+	}
+}
+        return getParent().Define_Access_accessPackage(this, caller, pkg);
+    }
+
     // Declared in TypeAnalysis.jrag at line 513
     public boolean Define_boolean_isNestedType(ASTNode caller, ASTNode child) {
         if(true) {
@@ -619,7 +684,7 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return getParent().Define_SimpleSet_lookupType(this, caller, name);
     }
 
-    // Declared in ASTUtil.jrag at line 12
+    // Declared in ASTUtil.jrag at line 13
     public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

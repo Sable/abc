@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class PackageAccess extends Access implements Cloneable {
     public void flushCache() {
@@ -198,6 +198,35 @@ public class PackageAccess extends Access implements Cloneable {
 
     private boolean isUnknown_compute() {  return  !hasPackage(packageName());  }
 
+    // Declared in AccessField.jrag at line 213
+    public Access qualifiedAccessField(FieldDeclaration fd) {
+        Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
+        return qualifiedAccessField_FieldDeclaration_value;
+    }
+
+    private Access qualifiedAccessField_compute(FieldDeclaration fd) {  return  null;  }
+
+    // Declared in AccessMethod.jrag at line 51
+    public Access qualifiedAccessMethod(MethodDecl md, List args) {
+        Access qualifiedAccessMethod_MethodDecl_List_value = qualifiedAccessMethod_compute(md, args);
+        return qualifiedAccessMethod_MethodDecl_List_value;
+    }
+
+    private Access qualifiedAccessMethod_compute(MethodDecl md, List args) {  return  null;  }
+
+    // Declared in AccessType.jrag at line 157
+    public Access qualifiedAccessType(TypeDecl td, boolean ambiguous) {
+        Access qualifiedAccessType_TypeDecl_boolean_value = qualifiedAccessType_compute(td, ambiguous);
+        return qualifiedAccessType_TypeDecl_boolean_value;
+    }
+
+    private Access qualifiedAccessType_compute(TypeDecl td, boolean ambiguous)  {
+		if(lookupType(packageName(), td.getID()) == td)
+			return new TypeAccess(td.getID());
+		else
+			return null;
+	}
+
     // Declared in NameCheck.jrag at line 226
     public boolean hasPackage(String packageName) {
         boolean hasPackage_String_value = getParent().Define_boolean_hasPackage(this, null, packageName);
@@ -207,5 +236,18 @@ public class PackageAccess extends Access implements Cloneable {
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
+
+    protected void collect_contributors_PackageDecl_prefixUses() {
+        // Declared in Uses.jrag at line 75
+        {
+            PackageDecl ref = (PackageDecl)(findPackageDecl(name().split("\\.")[0]));
+            if(ref != null)
+                ref.PackageDecl_prefixUses_contributors.add(this);
+        }
+        super.collect_contributors_PackageDecl_prefixUses();
+    }
+    protected void contributeTo_PackageDecl_PackageDecl_prefixUses(HashSet collection) {
+        collection.add(this);
+    }
 
 }

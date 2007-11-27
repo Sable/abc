@@ -2,7 +2,7 @@ import changes.*;
 
 aspect ExtractMethod {
 	
-	public void CompilationUnit.extract(String name, Stmt begin, Stmt end) throws RefactoringException {
+	public java.util.List CompilationUnit.extract(String name, Stmt begin, Stmt end) throws RefactoringException {
 		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
 			throw new RefactoringException("selection cannot start or end at init or update statements");
 		if(!begin.dominates(end))
@@ -26,7 +26,9 @@ aspect ExtractMethod {
 		for(int i=begin_idx;i<=end_idx;++i)
 			if(begin_host.getStmt(i) instanceof Case)
 				throw new RefactoringException("selection cannot contain case labels");
-		begin_host.encapsulate(name, begin_idx, end_idx, static_ctxt);
+		java.util.List changes = new java.util.Vector();
+		begin_host.encapsulate(changes, name, begin_idx, end_idx, static_ctxt);
+		return changes;
 	}
 	
 	public int ASTNode.indexIn(ASTNode n) {
@@ -45,7 +47,8 @@ aspect ExtractMethod {
 		return indexIn(blk.getStmtList());
 	}
 	
-	public void Block.encapsulate(String name, int begin, int end, boolean static_ctxt) 
+	public void Block.encapsulate(java.util.List changes, String name, 
+				int begin, int end, boolean static_ctxt) 
 			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
@@ -67,8 +70,8 @@ aspect ExtractMethod {
 			bodystmts.add(getStmt(i));
 		// create declaration of method
 		MethodDecl md = createMethod(static_ctxt, name, parms, ret, exns, localVars, bodystmts);
-		// adapt body of block
-		List stmts = new List();
+		// prepare new block body
+		Collection stmts = new ArrayList();
 		int i;
 		for(i=0;i<begin;++i) {
 			Stmt s = getStmt(i);
@@ -91,8 +94,10 @@ aspect ExtractMethod {
 		// NB: no statements need to be removed after the selection
 		for(i=end+1;i<getNumStmt();++i)
 			stmts.add(getStmt(i));
-		this.setStmtList(stmts);
-		hostBodyDecl().hostType().addMemberMethod(md);
+		// now record changes to be made
+		TypeDecl td = hostBodyDecl().hostType();
+		td.addMethod(changes, md, md.signature(), false);
+		changes.add(new BlockBodyChange(this, stmts));
 	}
 	
 	private void Block.analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,

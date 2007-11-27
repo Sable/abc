@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class ForStmt extends BranchTargetStmt implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -517,6 +517,24 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  reachable() && hasCondition() && (!getCondition().isConstant() || !getCondition().isTrue()) || reachableBreak();  }
 
+    // Declared in LocalVarNesting.jrag at line 19
+    public RefactoringException acceptLocal(String name) {
+        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
+        return acceptLocal_String_value;
+    }
+
+    private RefactoringException acceptLocal_compute(String name)  {
+		RefactoringException e;
+		int i;
+		for(i=0;i<getNumInitStmt();++i) {
+			e = getInitStmt(i).acceptLocal(name);
+			if(e != null) return e;
+		}
+		// the update statement cannot declare variables, so we can ignore it
+        e = this.getStmt().acceptLocal(name);
+        return e;
+	}
+
     // Declared in ControlFlowGraph.jrag at line 11
     public Set succ() {
         Set succ_value = succ_compute();
@@ -556,7 +574,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return lookupVariable_String_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 191
+    // Declared in ExtractMethod.jrag at line 196
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
 		Collection decls = visibleLocalDecls();

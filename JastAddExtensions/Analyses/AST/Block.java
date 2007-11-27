@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
   // a statement that can be reached by break or continue
 public class Block extends Stmt implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -15,6 +15,9 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         uncaughtThrowsBetween_Stmt_Stmt_values = null;
         lookupType_String_values = null;
         lookupVariable_String_values = null;
+        accessField_FieldDeclaration_values = null;
+        accessMethod_MethodDecl_List_values = null;
+        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         Block node = (Block)super.clone();
@@ -28,6 +31,9 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         node.uncaughtThrowsBetween_Stmt_Stmt_values = null;
         node.lookupType_String_values = null;
         node.lookupVariable_String_values = null;
+        node.accessField_FieldDeclaration_values = null;
+        node.accessMethod_MethodDecl_List_values = null;
+        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -83,10 +89,11 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
-    // Declared in ExtractMethod.jrag at line 48
+    // Declared in ExtractMethod.jrag at line 50
 
 	
-	public void encapsulate(String name, int begin, int end, boolean static_ctxt) 
+	public void encapsulate(java.util.List changes, String name, 
+				int begin, int end, boolean static_ctxt) 
 			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
@@ -108,8 +115,8 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			bodystmts.add(getStmt(i));
 		// create declaration of method
 		MethodDecl md = createMethod(static_ctxt, name, parms, ret, exns, localVars, bodystmts);
-		// adapt body of block
-		List stmts = new List();
+		// prepare new block body
+		Collection stmts = new ArrayList();
 		int i;
 		for(i=0;i<begin;++i) {
 			Stmt s = getStmt(i);
@@ -132,11 +139,13 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		// NB: no statements need to be removed after the selection
 		for(i=end+1;i<getNumStmt();++i)
 			stmts.add(getStmt(i));
-		this.setStmtList(stmts);
-		hostBodyDecl().hostType().addMemberMethod(md);
+		// now record changes to be made
+		TypeDecl td = hostBodyDecl().hostType();
+		td.addMethod(changes, md, md.signature(), false);
+		changes.add(new BlockBodyChange(this, stmts));
 	}
 
-    // Declared in ExtractMethod.jrag at line 98
+    // Declared in ExtractMethod.jrag at line 103
 
 	
 	private void analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
@@ -164,7 +173,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		}
 	}
 
-    // Declared in ExtractMethod.jrag at line 123
+    // Declared in ExtractMethod.jrag at line 128
 
 	
 	private MethodDecl createMethod(boolean static_ctxt, String name, 
@@ -427,6 +436,21 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  getNumStmt() == 0 ? reachable() : getStmt(getNumStmt() - 1).canCompleteNormally();  }
 
+    // Declared in LocalVarNesting.jrag at line 5
+    public RefactoringException acceptLocal(String name) {
+        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
+        return acceptLocal_String_value;
+    }
+
+    private RefactoringException acceptLocal_compute(String name)  {
+		RefactoringException e;
+		for(int i=0;i<getNumStmt();++i) {
+			e = getStmt(i).acceptLocal(name);
+			if(e != null) return e;
+		}
+		return null;
+	}
+
     // Declared in ControlFlowGraph.jrag at line 7
     public Set succ() {
         Set succ_value = succ_compute();
@@ -536,7 +560,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 		return set;
 	}
 
-    // Declared in ExtractMethod.jrag at line 199
+    // Declared in ExtractMethod.jrag at line 204
     public Collection localDeclsBetween(int start, int end) {
         Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -614,7 +638,74 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachable_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 181
+    // Declared in ASTUtil.jrag at line 5
+    public Program programRoot() {
+        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
+        return programRoot_value;
+    }
+
+    protected java.util.Map accessField_FieldDeclaration_values;
+    // Declared in AccessField.jrag at line 10
+    public Access accessField(FieldDeclaration fd) {
+        Object _parameters = fd;
+if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
+        if(accessField_FieldDeclaration_values.containsKey(_parameters))
+            return (Access)accessField_FieldDeclaration_values.get(_parameters);
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
+        if(isFinal && num == boundariesCrossed)
+            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
+        return accessField_FieldDeclaration_value;
+    }
+
+    protected java.util.Map accessMethod_MethodDecl_List_values;
+    // Declared in AccessMethod.jrag at line 7
+    public Access accessMethod(MethodDecl md, List args) {
+        java.util.List _parameters = new java.util.ArrayList(2);
+        _parameters.add(md);
+        _parameters.add(args);
+if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_values = new java.util.HashMap(4);
+        if(accessMethod_MethodDecl_List_values.containsKey(_parameters))
+            return (Access)accessMethod_MethodDecl_List_values.get(_parameters);
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        Access accessMethod_MethodDecl_List_value = getParent().Define_Access_accessMethod(this, null, md, args);
+        if(isFinal && num == boundariesCrossed)
+            accessMethod_MethodDecl_List_values.put(_parameters, accessMethod_MethodDecl_List_value);
+        return accessMethod_MethodDecl_List_value;
+    }
+
+    // Declared in AccessPackage.jrag at line 5
+    public Access accessPackage(String pkg) {
+        Access accessPackage_String_value = getParent().Define_Access_accessPackage(this, null, pkg);
+        return accessPackage_String_value;
+    }
+
+    // Declared in AccessPackage.jrag at line 8
+    public boolean hasPackage(String packageName) {
+        boolean hasPackage_String_value = getParent().Define_boolean_hasPackage(this, null, packageName);
+        return hasPackage_String_value;
+    }
+
+    protected java.util.Map accessType_TypeDecl_boolean_values;
+    // Declared in AccessType.jrag at line 7
+    public Access accessType(TypeDecl td, boolean ambiguous) {
+        java.util.List _parameters = new java.util.ArrayList(2);
+        _parameters.add(td);
+        _parameters.add(Boolean.valueOf(ambiguous));
+if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
+        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
+            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
+        if(isFinal && num == boundariesCrossed)
+            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
+        return accessType_TypeDecl_boolean_value;
+    }
+
+    // Declared in ExtractMethod.jrag at line 186
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);
@@ -636,6 +727,48 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
 	}
 }
         return getParent().Define_boolean_between(this, caller, blk, start, end);
+    }
+
+    // Declared in AccessType.jrag at line 114
+    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
+        if(caller == getStmtListNoTransform()) { 
+   int i = caller.getIndexOfChild(child);
+ {
+		Access acc = accessType(td, ambiguous);
+		if(acc != null && localVariableDeclaration(td.getID()) != null) {
+			if(acc instanceof AbstractDot) {
+				Expr left = ((AbstractDot)acc).getLeft();
+				if(left.isPackageAccess()) {
+					Access pkgacc = accessPackage(((PackageAccess)left).getPackage());
+					if(pkgacc == null) return null;
+					return pkgacc.qualifiesAccess(((AbstractDot)acc).getRight());
+				} else if(left.isTypeAccess()) {
+					Access tacc = accessType(((TypeAccess)left).decl(), ambiguous);
+					if(tacc == null) return null;
+					return tacc.qualifiesAccess(((AbstractDot)acc).getRight());
+				} else {
+					assert(false);
+				}
+			} else {
+				if(td.isNestedType()) {
+					TypeDecl enc = td.enclosingType();
+					Access encacc = getStmt(i).accessType(enc, ambiguous);
+					if(encacc == null) return null;
+					Access innacc = enc.getBodyDecl(0).accessType(td, ambiguous);
+					if(acc == null) return null;
+					return encacc.qualifiesAccess(acc);
+				} else if(!td.packageName().equals("") && accessPackage(td.packageName()) != null) {
+					return accessPackage(td.packageName()).qualifiesAccess(acc);
+				} else {
+					return null;
+				}
+			}
+		} else {
+			return acc;
+		}
+	}
+}
+        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
 
     // Declared in ControlFlowGraph.jrag at line 160
@@ -691,6 +824,27 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_reachable(this, caller);
     }
 
+    // Declared in AccessField.jrag at line 191
+    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
+        if(caller == getStmtListNoTransform()) { 
+   int index = caller.getIndexOfChild(child);
+ {
+		Access acc = accessField(fd);
+		if(acc != null) {
+			if(acc instanceof AbstractDot)
+				return acc;
+			VariableDeclaration v = localVariableDeclaration(fd.getID());
+			if(v != null && declaredBeforeUse(v, index)) {
+				return new ThisAccess("this").qualifiesAccess(acc);
+			}
+			return acc;
+		}
+		return null;
+	}
+}
+        return getParent().Define_Access_accessField(this, caller, fd);
+    }
+
     // Declared in DefiniteAssignment.jrag at line 441
     public boolean Define_boolean_isDAbefore(ASTNode caller, ASTNode child, Variable v) {
         if(caller == getStmtListNoTransform()) {
@@ -698,26 +852,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  index == 0 ? isDAbefore(v) : getStmt(index - 1).isDAafter(v);
         }
         return getParent().Define_boolean_isDAbefore(this, caller, v);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 207
-    public ConstCase Define_ConstCase_followingConstCase(ASTNode caller, ASTNode child) {
-        if(caller == getStmtListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		if (!(getParent() instanceof SwitchStmt) || i == getNumStmt() - 1) {
-			return followingConstCase();
-		} 
-		for (int index = i + 1; index < getNumStmt(); index++) {
-			Stmt stmt = getStmt(index);
-			if (stmt instanceof ConstCase) {
-				return (ConstCase)stmt;
-			}
-		}
-		return followingConstCase();
-	}
-}
-        return getParent().Define_ConstCase_followingConstCase(this, caller);
     }
 
     // Declared in ControlFlowGraph.jrag at line 239
@@ -754,6 +888,26 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_Set_following(this, caller);
     }
 
+    // Declared in ControlFlowGraph.jrag at line 207
+    public ConstCase Define_ConstCase_followingConstCase(ASTNode caller, ASTNode child) {
+        if(caller == getStmtListNoTransform()) { 
+   int i = caller.getIndexOfChild(child);
+ {
+		if (!(getParent() instanceof SwitchStmt) || i == getNumStmt() - 1) {
+			return followingConstCase();
+		} 
+		for (int index = i + 1; index < getNumStmt(); index++) {
+			Stmt stmt = getStmt(index);
+			if (stmt instanceof ConstCase) {
+				return (ConstCase)stmt;
+			}
+		}
+		return followingConstCase();
+	}
+}
+        return getParent().Define_ConstCase_followingConstCase(this, caller);
+    }
+
     // Declared in Domination.jrag at line 52
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) {
@@ -779,6 +933,21 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  i == 0 ? reachable() : getStmt(i-1).reachable();
         }
         return getParent().Define_boolean_reportUnreachable(this, caller);
+    }
+
+    // Declared in AccessPackage.jrag at line 31
+    public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
+        if(caller == getStmtListNoTransform()) { 
+   int i = caller.getIndexOfChild(child);
+ {
+		String[] path = pkg.split("\\.");
+		if(getStmt(i).lookupType(path[0]).isEmpty() && 
+				getStmt(i).lookupVariable(path[0]).isEmpty() && hasPackage(pkg))
+			return new PackageAccess(pkg);
+		return null;
+	}
+}
+        return getParent().Define_Access_accessPackage(this, caller, pkg);
     }
 
     // Declared in NameCheck.jrag at line 279

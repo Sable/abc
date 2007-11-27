@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 public class ParExpr extends PrimaryExpr implements Cloneable {
@@ -52,6 +52,20 @@ public class ParExpr extends PrimaryExpr implements Cloneable {
     if(getExpr().isTypeAccess())
       error("" + getExpr() + " is a type and may not be used in parenthesized expression");
   }
+
+    // Declared in AccessType.jrag at line 170
+
+	
+	boolean isCastedThisAccess() {
+		return getExpr().isCastedThisAccess();
+	}
+
+    // Declared in AdjustAccess.jrag at line 52
+
+	
+	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
+		getExpr().adjust(changes, table);
+	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 135

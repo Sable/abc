@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 public class Program extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
@@ -38,7 +38,16 @@ public class Program extends ASTNode implements Cloneable {
         lookupType_String_String_values = null;
         unknownConstructor_computed = false;
         unknownConstructor_value = null;
+        getPackageDecl_String_values = null;
+    collect_contributors_TypeDecl_uses = false;
+    collect_contributors_FieldDeclaration_uses = false;
+    collect_contributors_VariableDeclaration_uses = false;
+    collect_contributors_ParameterDeclaration_uses = false;
+    collect_contributors_MethodDecl_definiteUses = false;
+    collect_contributors_MethodDecl_uses = false;
+    collect_contributors_MethodDecl_overriders = false;
     collect_contributors_Stmt_pred = false;
+    collect_contributors_PackageDecl_prefixUses = false;
     }
     public Object clone() throws CloneNotSupportedException {
         Program node = (Program)super.clone();
@@ -76,6 +85,7 @@ public class Program extends ASTNode implements Cloneable {
         node.lookupType_String_String_values = null;
         node.unknownConstructor_computed = false;
         node.unknownConstructor_value = null;
+        node.getPackageDecl_String_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -856,12 +866,92 @@ public class Program extends ASTNode implements Cloneable {
         return (List)getChildNoTransform(0);
     }
 
+    // Declared in Uses.jrag at line 57
+    private boolean collect_contributors_TypeDecl_uses = false;
+    protected void collect_contributors_TypeDecl_uses() {
+        if(collect_contributors_TypeDecl_uses) return;
+        super.collect_contributors_TypeDecl_uses();
+        collect_contributors_TypeDecl_uses = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 10
+    private boolean collect_contributors_FieldDeclaration_uses = false;
+    protected void collect_contributors_FieldDeclaration_uses() {
+        if(collect_contributors_FieldDeclaration_uses) return;
+        super.collect_contributors_FieldDeclaration_uses();
+        collect_contributors_FieldDeclaration_uses = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 15
+    private boolean collect_contributors_VariableDeclaration_uses = false;
+    protected void collect_contributors_VariableDeclaration_uses() {
+        if(collect_contributors_VariableDeclaration_uses) return;
+        super.collect_contributors_VariableDeclaration_uses();
+        collect_contributors_VariableDeclaration_uses = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 20
+    private boolean collect_contributors_ParameterDeclaration_uses = false;
+    protected void collect_contributors_ParameterDeclaration_uses() {
+        if(collect_contributors_ParameterDeclaration_uses) return;
+        super.collect_contributors_ParameterDeclaration_uses();
+        collect_contributors_ParameterDeclaration_uses = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 29
+    private boolean collect_contributors_MethodDecl_definiteUses = false;
+    protected void collect_contributors_MethodDecl_definiteUses() {
+        if(collect_contributors_MethodDecl_definiteUses) return;
+        super.collect_contributors_MethodDecl_definiteUses();
+        collect_contributors_MethodDecl_definiteUses = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 33
+    private boolean collect_contributors_MethodDecl_uses = false;
+    protected void collect_contributors_MethodDecl_uses() {
+        if(collect_contributors_MethodDecl_uses) return;
+        super.collect_contributors_MethodDecl_uses();
+        collect_contributors_MethodDecl_uses = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 45
+    private boolean collect_contributors_MethodDecl_overriders = false;
+    protected void collect_contributors_MethodDecl_overriders() {
+        if(collect_contributors_MethodDecl_overriders) return;
+        super.collect_contributors_MethodDecl_overriders();
+        collect_contributors_MethodDecl_overriders = true;
+    }
+
+
+
     // Declared in ControlFlowGraph.jrag at line 74
     private boolean collect_contributors_Stmt_pred = false;
     protected void collect_contributors_Stmt_pred() {
         if(collect_contributors_Stmt_pred) return;
         super.collect_contributors_Stmt_pred();
         collect_contributors_Stmt_pred = true;
+    }
+
+
+
+    // Declared in Uses.jrag at line 74
+    private boolean collect_contributors_PackageDecl_prefixUses = false;
+    protected void collect_contributors_PackageDecl_prefixUses() {
+        if(collect_contributors_PackageDecl_prefixUses) return;
+        super.collect_contributors_PackageDecl_prefixUses();
+        collect_contributors_PackageDecl_prefixUses = true;
     }
 
 
@@ -1185,6 +1275,35 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
     private ConstructorDecl unknownConstructor_compute()  {
     return (ConstructorDecl)unknownType().constructors().iterator().next();
   }
+
+    protected java.util.Map getPackageDecl_String_values;
+    protected List getPackageDecl_String_list;
+    // Declared in Uses.jrag at line 83
+    public PackageDecl getPackageDecl(String name) {
+        Object _parameters = name;
+if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java.util.HashMap(4);
+        if(getPackageDecl_String_values.containsKey(_parameters))
+            return (PackageDecl)getPackageDecl_String_values.get(_parameters);
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        PackageDecl getPackageDecl_String_value = getPackageDecl_compute(name);
+        if(getPackageDecl_String_list == null) {
+            getPackageDecl_String_list = new List();
+            getPackageDecl_String_list.is$Final = true;
+            getPackageDecl_String_list.setParent(this);
+        }
+        getPackageDecl_String_list.add(getPackageDecl_String_value);
+        getPackageDecl_String_value.is$Final = true;
+        if(true)
+            getPackageDecl_String_values.put(_parameters, getPackageDecl_String_value);
+        return getPackageDecl_String_value;
+    }
+
+    private PackageDecl getPackageDecl_compute(String name)  {
+		// the following gives null-pointer exceptions in generated code
+		//return hasPackage(name) ? new PackageDecl(name) : null;
+		return new PackageDecl(name);
+	}
 
     // Declared in Modifiers.jrag at line 277
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
@@ -1673,6 +1792,24 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
         return getParent().Define_ConstructorDecl_constructorDecl(this, caller);
     }
 
+    // Declared in Uses.jrag at line 80
+    public PackageDecl Define_PackageDecl_findPackageDecl(ASTNode caller, ASTNode child, String name) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  getPackageDecl(name);
+        }
+        return getParent().Define_PackageDecl_findPackageDecl(this, caller, name);
+    }
+
+    // Declared in AccessMethod.jrag at line 10
+    public Access Define_Access_accessMethod(ASTNode caller, ASTNode child, MethodDecl md, List args) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  null;
+        }
+        return getParent().Define_Access_accessMethod(this, caller, md, args);
+    }
+
     // Declared in TypeAnalysis.jrag at line 253
     public TypeDecl Define_TypeDecl_declType(ASTNode caller, ASTNode child) {
         if(true) {
@@ -1718,6 +1855,24 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
         return getParent().Define_TypeDecl_typeVoid(this, caller);
     }
 
+    // Declared in AccessType.jrag at line 12
+    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
+        if(true) { 
+   int childIndex = this.getIndexOfChild(caller);
+ {
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
+				TypeDecl type = getCompilationUnit(i).getTypeDecl(j);
+				if(type == td)
+					return new TypeAccess(getCompilationUnit(i).packageName(), td.getID());
+			}
+		}
+		return null;
+	}
+}
+        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
+    }
+
     // Declared in LookupVariable.jrag at line 15
     public SimpleSet Define_SimpleSet_lookupVariable(ASTNode caller, ASTNode child, String name) {
         if(true) {
@@ -1761,6 +1916,15 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
             return  false;
         }
         return getParent().Define_boolean_mayBeAbstract(this, caller);
+    }
+
+    // Declared in AccessField.jrag at line 14
+    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  null;
+        }
+        return getParent().Define_Access_accessField(this, caller, fd);
     }
 
     // Declared in TypeAnalysis.jrag at line 211

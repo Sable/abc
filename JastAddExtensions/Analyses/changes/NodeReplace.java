@@ -1,5 +1,6 @@
 package changes;
 
+import main.FileRange;
 import AST.ASTNode;
 
 public class NodeReplace extends ASTChange {

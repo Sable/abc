@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class InterfaceDecl extends ReferenceType implements Cloneable {
     public void flushCache() {
@@ -660,6 +660,22 @@ if(instanceOf_TypeDecl_values == null) instanceOf_TypeDecl_values = new java.uti
     }
     return false;
   }
+
+    // Declared in AccessField.jrag at line 34
+    public Access accessFieldInSupertypes(FieldDeclaration fd) {
+        Access accessFieldInSupertypes_FieldDeclaration_value = accessFieldInSupertypes_compute(fd);
+        return accessFieldInSupertypes_FieldDeclaration_value;
+    }
+
+    private Access accessFieldInSupertypes_compute(FieldDeclaration fd)  {
+		for(Iterator i = superinterfacesIterator(); i.hasNext(); ) {
+			InterfaceDecl idecl = (InterfaceDecl)i.next();
+			Access a = idecl.getBodyDecl(0).accessField(fd);
+			if(a != null)
+				return a;
+		}
+		return null;
+	}
 
     // Declared in TypeAnalysis.jrag at line 89
     public MethodDecl unknownMethod() {

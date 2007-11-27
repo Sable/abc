@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 public class List extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
@@ -30,7 +30,7 @@ public class List extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ASTUtil.jrag at line 51
+    // Declared in ASTUtil.jrag at line 52
 
 	
     /*public void ASTNode.removeChild(int i) {
@@ -53,6 +53,26 @@ public class List extends ASTNode implements Cloneable {
     			break;
     		}
     }
+
+    // Declared in ASTUtil.jrag at line 3
+
+	
+	public Collection toCollection() {
+		Collection children = new ArrayList();
+		for(int i=0;i<getNumChild();++i)
+			children.add(getChild(i));
+		return children;
+	}
+
+    // Declared in ASTUtil.jrag at line 10
+
+	
+	public static List ofCollection(Collection c) {
+		List l = new List();
+		for(Iterator i=c.iterator();i.hasNext();)
+			l.add((ASTNode)i.next());
+		return l;
+	}
 
     // Declared in List.ast at line 3
     // Declared in List.ast line 0

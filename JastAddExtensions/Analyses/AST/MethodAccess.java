@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class MethodAccess extends Access implements Cloneable {
     public void flushCache() {
@@ -625,5 +625,31 @@ if(computeDAbefore_int_Variable_values == null) computeDAbefore_int_Variable_val
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
+
+    protected void collect_contributors_MethodDecl_uses() {
+        // Declared in Uses.jrag at line 34
+        {
+            MethodDecl ref = (MethodDecl)(decl());
+            if(ref != null)
+                ref.MethodDecl_uses_contributors.add(this);
+        }
+        super.collect_contributors_MethodDecl_uses();
+    }
+    protected void collect_contributors_MethodDecl_definiteUses() {
+        // Declared in Uses.jrag at line 30
+        {
+            MethodDecl ref = (MethodDecl)(decl());
+            if(ref != null)
+                ref.MethodDecl_definiteUses_contributors.add(this);
+        }
+        super.collect_contributors_MethodDecl_definiteUses();
+    }
+    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
+        collection.addAll(this.asSet());
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
+        collection.add(this);
+    }
 
 }

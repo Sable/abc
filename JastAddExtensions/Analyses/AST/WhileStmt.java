@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class WhileStmt extends BranchTargetStmt implements Cloneable {
     public void flushCache() {
@@ -266,6 +266,14 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
     }
 
     private boolean canCompleteNormally_compute() {  return  reachable() && (!getCondition().isConstant() || !getCondition().isTrue()) || reachableBreak();  }
+
+    // Declared in LocalVarNesting.jrag at line 15
+    public RefactoringException acceptLocal(String name) {
+        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
+        return acceptLocal_String_value;
+    }
+
+    private RefactoringException acceptLocal_compute(String name) {  return  getStmt().acceptLocal(name);  }
 
     // Declared in ControlFlowGraph.jrag at line 10
     public Set succ() {

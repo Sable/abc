@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  Variable,  LocalDeclaration {
@@ -22,6 +22,10 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
         shouldDuplicate_Stmt_Stmt_values = null;
         getBlock_computed = false;
         getBlock_value = null;
+        ParameterDeclaration_uses_visited = false;
+        ParameterDeclaration_uses_computed = false;
+        ParameterDeclaration_uses_value = null;
+    ParameterDeclaration_uses_contributors = new java.util.HashSet();
     }
     public Object clone() throws CloneNotSupportedException {
         ParameterDeclaration node = (ParameterDeclaration)super.clone();
@@ -145,6 +149,30 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
       s.append("[]");
     }
   }
+
+    // Declared in RenameParameter.jrag at line 22
+
+	
+	public java.util.List rename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		if(getID().equals(new_name))
+			return changes;
+		RefactoringException e = canRenameTo(new_name);
+		if(e != null)
+			throw e;
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new ParameterRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+		return changes;
+	}
 
     // Declared in GuardedControlFlow.jrag at line 37
 
@@ -308,6 +336,56 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
         return (List)getChildNoTransform(2);
     }
 
+    // Declared in Uses.jrag at line 5
+
+	
+	public HashSet collectedUses() {
+		return uses();
+	}
+
+    // Declared in Uses.jrag at line 93
+
+
+	/* in preparation for renaming a variable to new_name, this method finds all
+	 * uses of the variable before renaming and all uses of fields, types and
+	 * packages that might become shadowed by the renaming and collects them into
+	 * an adjustment table */ 
+	public AdjustmentTable find_uses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		/* first, collect all uses of the variable we are renaming */
+		for(Iterator i = uses().iterator(); i.hasNext();) {
+			VarAccess va = (VarAccess)i.next();
+			table.add(va, this);
+		}
+		/* now, collect all uses of fields, types, and packages that the variable
+		 * might be shadowing after renaming */
+		for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
+			Variable v = (Variable)i.next();
+			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc, (ASTNode)v);
+			}
+		}
+		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				// only a type in an ambiguous position can be shadowed by a variable
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
+					table.add(acc, d);
+			}
+		}
+		PackageDecl pd = programRoot().getPackageDecl(new_name);
+		if(pd != null)
+			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
+						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
+					table.add(acc, pd);
+			}
+		return table;
+	}
+
     // Declared in DataStructures.jrag at line 90
     public int size() {
         int size_value = size_compute();
@@ -440,6 +518,18 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     }
 
     private Constant constant_compute()  { throw new UnsupportedOperationException(); }
+
+    // Declared in LocalVarNesting.jrag at line 62
+    public RefactoringException acceptLocal(String name) {
+        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
+        return acceptLocal_String_value;
+    }
+
+    private RefactoringException acceptLocal_compute(String name)  {
+		if(name.equals(getID()))
+			return new RefactoringException("parameter of same name exists");
+		return null;
+	}
 
     protected java.util.Map shouldMoveInto_Stmt_Stmt_values;
     // Declared in ParameterClassification.jrag at line 90
@@ -1040,16 +1130,22 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
         return isExceptionHandlerParameter_value;
     }
 
-    // Declared in ASTUtil.jrag at line 7
+    // Declared in ASTUtil.jrag at line 8
     public Program programRoot() {
         Program programRoot_value = getParent().Define_Program_programRoot(this, null);
         return programRoot_value;
     }
 
-    // Declared in ASTUtil.jrag at line 15
+    // Declared in ASTUtil.jrag at line 16
     public SimpleSet lookupType(String name) {
         SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
         return lookupType_String_value;
+    }
+
+    // Declared in RenameParameter.jrag at line 8
+    public RefactoringException canRenameTo(String new_name) {
+        RefactoringException canRenameTo_String_value = getParent().Define_RefactoringException_canRenameTo(this, null, new_name);
+        return canRenameTo_String_value;
     }
 
     protected boolean getBlock_computed = false;
@@ -1077,5 +1173,39 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
+
+    protected boolean ParameterDeclaration_uses_visited = false;
+    protected boolean ParameterDeclaration_uses_computed = false;
+    protected HashSet ParameterDeclaration_uses_value;
+    // Declared in Uses.jrag at line 20
+    public HashSet uses() {
+        if(ParameterDeclaration_uses_computed)
+            return ParameterDeclaration_uses_value;
+        if(ParameterDeclaration_uses_visited)
+            throw new RuntimeException("Circular definition of attr: uses in class: ");
+        ParameterDeclaration_uses_visited = true;
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        ParameterDeclaration_uses_value = uses_compute();
+        if(isFinal && num == boundariesCrossed)
+            ParameterDeclaration_uses_computed = true;
+        ParameterDeclaration_uses_visited = false;
+        return ParameterDeclaration_uses_value;
+    }
+
+    java.util.HashSet ParameterDeclaration_uses_contributors = new java.util.HashSet();
+    private HashSet uses_compute() {
+        ASTNode node = this;
+        while(node.getParent() != null)
+            node = node.getParent();
+        Program root = (Program)node;
+        root.collect_contributors_ParameterDeclaration_uses();
+        ParameterDeclaration_uses_value = new HashSet();
+        for(java.util.Iterator iter = ParameterDeclaration_uses_contributors.iterator(); iter.hasNext(); ) {
+            ASTNode contributor = (ASTNode)iter.next();
+            contributor.contributeTo_ParameterDeclaration_ParameterDeclaration_uses(ParameterDeclaration_uses_value);
+        }
+        return ParameterDeclaration_uses_value;
+    }
 
 }

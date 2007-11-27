@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class AssignPlusExpr extends AssignAdditiveExpr implements Cloneable {
     public void flushCache() {
@@ -139,6 +139,14 @@ public class AssignPlusExpr extends AssignAdditiveExpr implements Cloneable {
       return unknownType();
     return left.isString() ? left : right;
   }
+
+    // Declared in Encapsulate.jrag at line 127
+    public Binary getImplicitOperator() {
+        Binary getImplicitOperator_value = getImplicitOperator_compute();
+        return getImplicitOperator_value;
+    }
+
+    private Binary getImplicitOperator_compute()  { return new AddExpr(); }
 
 public ASTNode rewriteTo() {
     return super.rewriteTo();

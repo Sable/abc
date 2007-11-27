@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 public class CatchClause extends ASTNode implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -204,13 +204,13 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return enclosingFinally_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 172
+    // Declared in ExtractMethod.jrag at line 177
     public Collection visibleLocalDecls() {
         Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 186
+    // Declared in ExtractMethod.jrag at line 191
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
 		Collection decls = visibleLocalDecls();
@@ -303,6 +303,14 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  enclosingFinally();
         }
         return getParent().Define_Set_enclosingFinally(this, caller);
+    }
+
+    // Declared in RenameParameter.jrag at line 18
+    public RefactoringException Define_RefactoringException_canRenameTo(ASTNode caller, ASTNode child, String new_name) {
+        if(caller == getParameterNoTransform()) {
+		return getBlock().acceptLocal(new_name);
+	}
+        return getParent().Define_RefactoringException_canRenameTo(this, caller, new_name);
     }
 
 public ASTNode rewriteTo() {

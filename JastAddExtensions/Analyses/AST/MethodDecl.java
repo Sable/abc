@@ -1,9 +1,9 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
-public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator {
+public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Methodoid {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -16,7 +16,22 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
         parameterDeclaration_String_values = null;
         type_computed = false;
         type_value = null;
+        canOverrideOrHide_MethodDecl_values = null;
+        overrides_computed = false;
+        overrides_value = null;
         handlesException_TypeDecl_values = null;
+        MethodDecl_definiteUses_visited = false;
+        MethodDecl_definiteUses_computed = false;
+        MethodDecl_definiteUses_value = null;
+    MethodDecl_definiteUses_contributors = new java.util.HashSet();
+        MethodDecl_uses_visited = false;
+        MethodDecl_uses_computed = false;
+        MethodDecl_uses_value = null;
+    MethodDecl_uses_contributors = new java.util.HashSet();
+        MethodDecl_overriders_visited = false;
+        MethodDecl_overriders_computed = false;
+        MethodDecl_overriders_value = null;
+    MethodDecl_overriders_contributors = new java.util.HashSet();
     }
     public Object clone() throws CloneNotSupportedException {
         MethodDecl node = (MethodDecl)super.clone();
@@ -30,6 +45,9 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
         node.parameterDeclaration_String_values = null;
         node.type_computed = false;
         node.type_value = null;
+        node.canOverrideOrHide_MethodDecl_values = null;
+        node.overrides_computed = false;
+        node.overrides_value = null;
         node.handlesException_TypeDecl_values = null;
         node.in$Circle(false);
         node.is$Final(false);
@@ -218,6 +236,79 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
       error("the body of a non void method may not complete normally");
 
   }
+
+    // Declared in Methodoid.jrag at line 16
+
+	public boolean hasBody() { return !(isAbstract() || isNative()); }
+
+    // Declared in RenameMethod.jrag at line 7
+
+	
+	public java.util.List cascadingRename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		// rename the method itself
+		this.rename(changes, new_name);
+		// rename every method it overrides
+		for(Iterator i = overrides().iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(changes, new_name);
+		// rename every method it is overridden by
+		for(Iterator i = overriders().iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(changes, new_name);
+		return changes;
+	}
+
+    // Declared in RenameMethod.jrag at line 21
+
+
+	// rename a method, don't care about overriding/overridden methods
+	public void rename(java.util.List changes, String new_name) throws RefactoringException {
+		if(getID().equals(new_name))
+			return;
+		String sig = signature();
+		int idx = sig.indexOf('(');
+		String new_sig = new_name + sig.substring(idx);
+		// make sure there isn't already a method with the same signature in this type
+		if(!hostType().localMethodsSignature(new_sig).isEmpty())
+			throw new RefactoringException("couldn't rename: method signature clash");
+		// if there are any like-named methods in superclasses, we must be able to override them
+		for(Iterator i = hostType().ancestorMethods(new_sig).iterator();i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			if(!canOverrideOrHide(md))
+				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
+		}
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new MethodRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+	}
+
+    // Declared in RenameMethod.jrag at line 49
+
+
+	private AdjustmentTable find_uses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		/* first, collect all uses of the method we are renaming */
+		for(Iterator i = definiteUses().iterator(); i.hasNext();) {
+			Access a = (Access)i.next();
+			table.add(a, this);
+		}
+		/* now, collect all uses of methods that we might be shadowing after renaming */
+		for(Iterator i = lookupMethod(new_name).iterator(); i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc, md);
+			}
+		}
+		return table;
+	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 89
@@ -854,6 +945,93 @@ if(parameterDeclaration_String_values == null) parameterDeclaration_String_value
 
     private boolean mayOverrideReturn_compute(MethodDecl m) {  return  type() == m.type();  }
 
+    protected java.util.Map canOverrideOrHide_MethodDecl_values;
+    // Declared in Overriding.jrag at line 3
+    public boolean canOverrideOrHide(MethodDecl md) {
+        Object _parameters = md;
+if(canOverrideOrHide_MethodDecl_values == null) canOverrideOrHide_MethodDecl_values = new java.util.HashMap(4);
+        if(canOverrideOrHide_MethodDecl_values.containsKey(_parameters))
+            return ((Boolean)canOverrideOrHide_MethodDecl_values.get(_parameters)).booleanValue();
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        boolean canOverrideOrHide_MethodDecl_value = canOverrideOrHide_compute(md);
+        if(isFinal && num == boundariesCrossed)
+            canOverrideOrHide_MethodDecl_values.put(_parameters, Boolean.valueOf(canOverrideOrHide_MethodDecl_value));
+        return canOverrideOrHide_MethodDecl_value;
+    }
+
+    private boolean canOverrideOrHide_compute(MethodDecl md)  {
+		// this code is copy-n-pasted from TypeHierarchyCheck.jrag sans error messages
+		if(!isStatic() && !md.isPrivate() && 
+				md.accessibleFrom(hostType()) && hostType().instanceOf(md.hostType())) {
+			if(md.isStatic())
+				return false;
+			if(!mayOverrideReturn(md))
+				return false;
+			for(int i = 0; i < getNumException(); i++) {
+				Access e = getException(i);
+				boolean found = false;
+				for(int j = 0; !found && j < md.getNumException(); j++) {
+					if(e.type().instanceOf(md.getException(j).type()))
+						found = true;
+				}
+				if(!found && e.type().isUncheckedException())
+					return false;
+			}
+			if(md.isPublic() && !isPublic() ||
+		       md.isProtected() && !(isPublic() || isProtected()) ||
+		       !md.isPrivate() && !md.isProtected() && !md.isPublic() && isPrivate())
+				return false;
+			if(md.isFinal())
+				return false;
+		} else if(isStatic() && !md.isPrivate() && 
+				md.accessibleFrom(hostType()) && hostType().instanceOf(md.hostType())) {
+			if(!md.isStatic())
+				return false;
+			if(type() != md.type())
+				return false;
+			for(int i = 0; i < getNumException(); i++) {
+				Access e = getException(i);
+				boolean found = false;
+				for(int j = 0; !found && j < md.getNumException(); j++) {
+					if(e.type().instanceOf(md.getException(j).type()))
+						found = true;
+				}
+				if(!found)
+					return false;
+			}
+			if(md.isPublic() && !isPublic() ||
+			   md.isProtected() && !(isPublic() || isProtected()) ||
+			   !md.isPrivate() && !md.isProtected() && !md.isPublic() && isPrivate())
+				return false;
+			if(md.isFinal())
+				return false;
+		}
+		return true;
+	}
+
+    protected boolean overrides_computed = false;
+    protected SimpleSet overrides_value;
+    // Declared in Uses.jrag at line 48
+    public SimpleSet overrides() {
+        if(overrides_computed)
+            return overrides_value;
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        overrides_value = overrides_compute();
+        if(isFinal && num == boundariesCrossed)
+            overrides_computed = true;
+        return overrides_value;
+    }
+
+    private SimpleSet overrides_compute()  {
+		SimpleSet anc = hostType().ancestorMethods(signature());
+		for(Iterator i=anc.iterator();i.hasNext();)
+			if(!overrides((MethodDecl)i.next()))
+				i.remove();
+		return anc;
+	}
+
     // Declared in ControlFlowGraph.jrag at line 331
     public boolean hasControlFlow() {
         boolean hasControlFlow_value = hasControlFlow_compute();
@@ -913,7 +1091,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return unknownMethod_value;
     }
 
-    // Declared in ASTUtil.jrag at line 8
+    // Declared in ASTUtil.jrag at line 9
     public Program programRoot() {
         Program programRoot_value = getParent().Define_Program_programRoot(this, null);
         return programRoot_value;
@@ -1034,16 +1212,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_isDUbefore(this, caller, v);
     }
 
-    // Declared in VariableDeclaration.jrag at line 71
-    public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
-        if(caller == getParameterListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_isConstructorParameter(this, caller);
-    }
-
-    // Declared in ExtractMethod.jrag at line 175
+    // Declared in ExtractMethod.jrag at line 180
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		ArrayList decls = new ArrayList();
@@ -1054,6 +1223,15 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
+    // Declared in VariableDeclaration.jrag at line 71
+    public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
+        if(caller == getParameterListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_isConstructorParameter(this, caller);
+    }
+
     // Declared in Domination.jrag at line 65
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterListNoTransform()) {
@@ -1061,6 +1239,45 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
             return  getBlock();
         }
         return getParent().Define_Block_getBlock(this, caller);
+    }
+
+    // Declared in AccessType.jrag at line 79
+    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
+        if(caller == getBlockOptNoTransform()) {
+		Access acc = accessType(td, ambiguous);
+		if(acc != null && !parameterDeclaration(td.getID()).isEmpty()) {
+			if(acc instanceof AbstractDot) {
+				Expr left = ((AbstractDot)acc).getLeft();
+				if(left.isPackageAccess()) {
+					Access pkgacc = accessPackage(((PackageAccess)left).getPackage());
+					if(pkgacc == null) return null;
+					return pkgacc.qualifiesAccess(((AbstractDot)acc).getRight());
+				} else if(left.isTypeAccess()) {
+					Access tacc = accessType(((TypeAccess)left).decl(), ambiguous);
+					if(tacc == null) return null;
+					return tacc.qualifiesAccess(((AbstractDot)acc).getRight());
+				} else {
+					assert(false);
+				}
+			} else {
+				if(td.isNestedType()) {
+					TypeDecl enc = td.enclosingType();
+					Access encacc = getBlock().accessType(enc, ambiguous);
+					if(encacc == null) return null;
+					Access innacc = enc.getBodyDecl(0).accessType(td, ambiguous);
+					if(acc == null) return null;
+					return encacc.qualifiesAccess(acc);
+				} else if(!td.packageName().equals("") && accessPackage(td.packageName()) != null) {
+					return accessPackage(td.packageName()).qualifiesAccess(acc);
+				} else {
+					return null;
+				}
+			}
+		} else {
+			return acc;
+		}
+	}
+        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
 
     // Declared in LookupVariable.jrag at line 47
@@ -1103,12 +1320,47 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_reachable(this, caller);
     }
 
+    // Declared in AccessField.jrag at line 156
+    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
+        if(caller == getBlockOptNoTransform()) {
+		Access acc = accessField(fd);
+		if(acc != null) {
+			if(!parameterDeclaration(fd.getID()).isEmpty()) {
+				// if acc is already qualified, nothing needs to change
+				if(acc instanceof AbstractDot)
+					return acc;
+				else
+					return new ThisAccess("this").qualifiesAccess(acc);
+			} else {
+				return acc;
+			}
+		}
+		return null;
+	}
+        return getParent().Define_Access_accessField(this, caller, fd);
+    }
+
     // Declared in DefiniteAssignment.jrag at line 434
     public boolean Define_boolean_isDAbefore(ASTNode caller, ASTNode child, Variable v) {
         if(caller == getBlockOptNoTransform()) {
             return  v.isFinal() && (v.isClassVariable() || v.isInstanceVariable()) ? true : isDAbefore(v);
         }
         return getParent().Define_boolean_isDAbefore(this, caller, v);
+    }
+
+    // Declared in RenameParameter.jrag at line 10
+    public RefactoringException Define_RefactoringException_canRenameTo(ASTNode caller, ASTNode child, String new_name) {
+        if(caller == getParameterListNoTransform()) { 
+   int childIndex = caller.getIndexOfChild(child);
+ {
+		if(!parameterDeclaration(new_name).isEmpty())
+			return new RefactoringException("parameter of the same name exists");
+		if(this.hasBody())
+			return getBlock().acceptLocal(new_name);
+		return null;
+	}
+}
+        return getParent().Define_RefactoringException_canRenameTo(this, caller, new_name);
     }
 
     // Declared in TypeCheck.jrag at line 394
@@ -1146,5 +1398,133 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
+
+    protected boolean MethodDecl_definiteUses_visited = false;
+    protected boolean MethodDecl_definiteUses_computed = false;
+    protected HashSet MethodDecl_definiteUses_value;
+    // Declared in Uses.jrag at line 29
+    public HashSet definiteUses() {
+        if(MethodDecl_definiteUses_computed)
+            return MethodDecl_definiteUses_value;
+        if(MethodDecl_definiteUses_visited)
+            throw new RuntimeException("Circular definition of attr: definiteUses in class: ");
+        MethodDecl_definiteUses_visited = true;
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        MethodDecl_definiteUses_value = definiteUses_compute();
+        if(isFinal && num == boundariesCrossed)
+            MethodDecl_definiteUses_computed = true;
+        MethodDecl_definiteUses_visited = false;
+        return MethodDecl_definiteUses_value;
+    }
+
+    java.util.HashSet MethodDecl_definiteUses_contributors = new java.util.HashSet();
+    private HashSet definiteUses_compute() {
+        ASTNode node = this;
+        while(node.getParent() != null)
+            node = node.getParent();
+        Program root = (Program)node;
+        root.collect_contributors_MethodDecl_definiteUses();
+        MethodDecl_definiteUses_value = new HashSet();
+        for(java.util.Iterator iter = MethodDecl_definiteUses_contributors.iterator(); iter.hasNext(); ) {
+            ASTNode contributor = (ASTNode)iter.next();
+            contributor.contributeTo_MethodDecl_MethodDecl_definiteUses(MethodDecl_definiteUses_value);
+        }
+        return MethodDecl_definiteUses_value;
+    }
+
+    protected boolean MethodDecl_uses_visited = false;
+    protected boolean MethodDecl_uses_computed = false;
+    protected HashSet MethodDecl_uses_value;
+    // Declared in Uses.jrag at line 33
+    public HashSet uses() {
+        if(MethodDecl_uses_computed)
+            return MethodDecl_uses_value;
+        if(MethodDecl_uses_visited)
+            throw new RuntimeException("Circular definition of attr: uses in class: ");
+        MethodDecl_uses_visited = true;
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        MethodDecl_uses_value = uses_compute();
+        if(isFinal && num == boundariesCrossed)
+            MethodDecl_uses_computed = true;
+        MethodDecl_uses_visited = false;
+        return MethodDecl_uses_value;
+    }
+
+    java.util.HashSet MethodDecl_uses_contributors = new java.util.HashSet();
+    private HashSet uses_compute() {
+        ASTNode node = this;
+        while(node.getParent() != null)
+            node = node.getParent();
+        Program root = (Program)node;
+        root.collect_contributors_MethodDecl_uses();
+        MethodDecl_uses_value = new HashSet();
+        for(java.util.Iterator iter = MethodDecl_uses_contributors.iterator(); iter.hasNext(); ) {
+            ASTNode contributor = (ASTNode)iter.next();
+            contributor.contributeTo_MethodDecl_MethodDecl_uses(MethodDecl_uses_value);
+        }
+        return MethodDecl_uses_value;
+    }
+
+    protected boolean MethodDecl_overriders_visited = false;
+    protected boolean MethodDecl_overriders_computed = false;
+    protected HashSet MethodDecl_overriders_value;
+    // Declared in Uses.jrag at line 45
+    public HashSet overriders() {
+        if(MethodDecl_overriders_computed)
+            return MethodDecl_overriders_value;
+        if(MethodDecl_overriders_visited)
+            throw new RuntimeException("Circular definition of attr: overriders in class: ");
+        MethodDecl_overriders_visited = true;
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        MethodDecl_overriders_value = overriders_compute();
+        if(isFinal && num == boundariesCrossed)
+            MethodDecl_overriders_computed = true;
+        MethodDecl_overriders_visited = false;
+        return MethodDecl_overriders_value;
+    }
+
+    java.util.HashSet MethodDecl_overriders_contributors = new java.util.HashSet();
+    private HashSet overriders_compute() {
+        ASTNode node = this;
+        while(node.getParent() != null)
+            node = node.getParent();
+        Program root = (Program)node;
+        root.collect_contributors_MethodDecl_overriders();
+        MethodDecl_overriders_value = new HashSet();
+        for(java.util.Iterator iter = MethodDecl_overriders_contributors.iterator(); iter.hasNext(); ) {
+            ASTNode contributor = (ASTNode)iter.next();
+            contributor.contributeTo_MethodDecl_MethodDecl_overriders(MethodDecl_overriders_value);
+        }
+        return MethodDecl_overriders_value;
+    }
+
+    protected void collect_contributors_MethodDecl_uses() {
+        // Declared in Uses.jrag at line 43
+        for(Iterator iter = (overriders()).iterator(); iter.hasNext(); ) {
+            MethodDecl ref = (MethodDecl)iter.next();
+            if(ref != null)
+            ref.MethodDecl_uses_contributors.add(this);
+        }
+        super.collect_contributors_MethodDecl_uses();
+    }
+    protected void collect_contributors_MethodDecl_overriders() {
+        // Declared in Uses.jrag at line 46
+        for(Iterator iter = (overrides()).iterator(); iter.hasNext(); ) {
+            MethodDecl ref = (MethodDecl)iter.next();
+            if(ref != null)
+            ref.MethodDecl_overriders_contributors.add(this);
+        }
+        super.collect_contributors_MethodDecl_overriders();
+    }
+    protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
+        collection.add(this);
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
+        collection.addAll(uses());
+    }
 
 }

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 public class VarAccess extends Access implements Cloneable {
@@ -213,6 +213,88 @@ public class VarAccess extends Access implements Cloneable {
   public void toString(StringBuffer s) {
     s.append(name());
   }
+
+    // Declared in Encapsulate.jrag at line 52
+
+
+	public void encapsulate(java.util.List changes, String getter, String setter) {
+		Context ctxt = new Context();
+		ASTNode ch = this;
+		for(ASTNode p=getParent();p!=null&&p instanceof Expr;ch=p,p=p.getParent()) {
+			if(p instanceof AssignExpr) {
+				Expr rhs = ((AssignExpr)p).getSource();
+				Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
+				if(implicit_op == null) {
+					List args = new List();	args.add(rhs);
+					changes.add(new NodeReplace(p, 
+							ctxt.plugIn(new MethodAccess(setter, args))));
+				} else {
+					/* TODO: this is dangerous; we copy a subtree in which there
+					 *       might be pending adjustments */
+					Context ctxt2 = ctxt.fullCopy();
+					List args = new List();
+					implicit_op.setLeftOperand((Expr)ctxt2.plugIn(new MethodAccess(getter, new List())));
+					implicit_op.setRightOperand(rhs);
+					args.add(implicit_op);
+					changes.add(new NodeReplace(p,
+							ctxt.plugIn(new MethodAccess(setter, args))));
+				}
+			} else if(p instanceof PostDecExpr) {
+				// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
+				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+						new SubExpr(), new AddExpr());
+			} else if(p instanceof PostIncExpr) {
+				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+						new AddExpr(), new SubExpr());
+			} else if(p instanceof PreDecExpr) {
+				// --i becomes setI(getI()-1)
+				encapsulate_prefix(changes, p, ctxt, getter, setter, new SubExpr());
+			} else if(p instanceof PreIncExpr) {
+				encapsulate_prefix(changes, p, ctxt, getter, setter, new AddExpr());
+			} else if(p instanceof ParExpr) {
+				ctxt.wrapIn(p, 0);
+				continue;
+			} else if(p instanceof AbstractDot && ch == ((AbstractDot)p).getRight()) {
+				ctxt.wrapIn(p, 1);
+				continue;
+			} else {
+				changes.add(new NodeReplace(this, new MethodAccess(getter, new List())));
+				return;
+			}
+		}
+	}
+
+    // Declared in Encapsulate.jrag at line 99
+
+	
+	static void encapsulate_postfix(java.util.List changes, ASTNode p, 
+			Context ctxt, String getter, String setter, Binary rator, Binary undo) {
+		List args = new List();
+		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		rator.setLeftOperand((Expr)getacc.fullCopy());
+		rator.setRightOperand(new IntegerLiteral(1));
+		args.add(rator);
+		undo.setLeftOperand((Expr)getacc.fullCopy());
+		undo.setRightOperand(new IntegerLiteral(1));
+		Expr setacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(setter, args));
+		changes.add(new NodeReplace(p,
+				new ParExpr(
+						new ConditionalExpr(new EQExpr(setacc, new IntegerLiteral(0)),
+								(Expr)undo.fullCopy(), (Expr)undo.fullCopy()))));
+	}
+
+    // Declared in Encapsulate.jrag at line 115
+
+	
+	static void encapsulate_prefix(java.util.List changes, ASTNode p,
+			Context ctxt, String getter, String setter, Binary rator) {
+		List args = new List();
+		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		rator.setLeftOperand(getacc);
+		rator.setRightOperand(new IntegerLiteral(1));
+		args.add(rator);
+		changes.add(new NodeReplace(p, ctxt.plugIn(new MethodAccess(setter, args))));
+	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 16
@@ -562,5 +644,53 @@ if(mayUse_Variable_values == null) mayUse_Variable_values = new java.util.HashMa
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
+
+    protected void collect_contributors_FieldDeclaration_uses() {
+        // Declared in Uses.jrag at line 11
+        if(decl() instanceof FieldDeclaration) {
+        {
+            FieldDeclaration ref = (FieldDeclaration)((FieldDeclaration)decl());
+            if(ref != null)
+                ref.FieldDeclaration_uses_contributors.add(this);
+        }
+        }
+        super.collect_contributors_FieldDeclaration_uses();
+    }
+    protected void collect_contributors_ParameterDeclaration_uses() {
+        // Declared in Uses.jrag at line 21
+        if(decl() instanceof ParameterDeclaration) {
+        {
+            ParameterDeclaration ref = (ParameterDeclaration)((ParameterDeclaration)decl());
+            if(ref != null)
+                ref.ParameterDeclaration_uses_contributors.add(this);
+        }
+        }
+        super.collect_contributors_ParameterDeclaration_uses();
+    }
+    protected void collect_contributors_VariableDeclaration_uses() {
+        // Declared in Uses.jrag at line 16
+        if(decl() instanceof VariableDeclaration) {
+        {
+            VariableDeclaration ref = (VariableDeclaration)((VariableDeclaration)decl());
+            if(ref != null)
+                ref.VariableDeclaration_uses_contributors.add(this);
+        }
+        }
+        super.collect_contributors_VariableDeclaration_uses();
+    }
+    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
+        if(decl() instanceof FieldDeclaration)
+            collection.add(this);
+    }
+
+    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
+        if(decl() instanceof ParameterDeclaration)
+            collection.add(this);
+    }
+
+    protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
+        if(decl() instanceof VariableDeclaration)
+            collection.add(this);
+    }
 
 }

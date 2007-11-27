@@ -1,8 +1,8 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
-public class StaticInitializer extends BodyDecl implements Cloneable {
+public class StaticInitializer extends BodyDecl implements Cloneable,  Initializer {
     public void flushCache() {
         super.flushCache();
         isDAafter_Variable_values = null;

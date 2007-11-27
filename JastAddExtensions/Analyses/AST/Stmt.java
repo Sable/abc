@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 // Statements
@@ -54,14 +54,14 @@ public abstract class Stmt extends ASTNode implements Cloneable {
       error("statement is unreachable");
   }
 
-    // Declared in ExtractMethod.jrag at line 40
+    // Declared in ExtractMethod.jrag at line 42
 
 	
 	public int indexInHostBlock() {
 		return indexInBlock(hostBlock());
 	}
 
-    // Declared in ExtractMethod.jrag at line 44
+    // Declared in ExtractMethod.jrag at line 46
 
 	
 	public int indexInBlock(Block blk) {
@@ -171,6 +171,14 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
     }
 
     private boolean canCompleteNormally_compute() {  return  true;  }
+
+    // Declared in LocalVarNesting.jrag at line 3
+    public RefactoringException acceptLocal(String name) {
+        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
+        return acceptLocal_String_value;
+    }
+
+    private RefactoringException acceptLocal_compute(String name) {  return  null;  }
 
     // Declared in ControlFlowGraph.jrag at line 6
     public Set succ() {
@@ -481,6 +489,12 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return reportUnreachable_value;
     }
 
+    // Declared in AccessPackage.jrag at line 11
+    public SimpleSet lookupType(String name) {
+        SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
+        return lookupType_String_value;
+    }
+
     // Declared in ControlFlowGraph.jrag at line 153
     public boolean hasEnclosingTryStmt() {
         boolean hasEnclosingTryStmt_value = getParent().Define_boolean_hasEnclosingTryStmt(this, null);
@@ -555,7 +569,7 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return isInitOrUpdateStmt_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 171
+    // Declared in ExtractMethod.jrag at line 176
     public Collection visibleLocalDecls() {
         Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;

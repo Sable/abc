@@ -1,5 +1,8 @@
 package main;
 
+import java.util.Iterator;
+import java.util.List;
+
 import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.Frontend;
@@ -7,6 +10,7 @@ import AST.JavaParser;
 import AST.MethodDecl;
 import AST.Stmt;
 import AST.TypeDecl;
+import changes.ASTChange;
 
 public class TestExtraction extends Frontend {
 	
@@ -33,7 +37,9 @@ public class TestExtraction extends Frontend {
 		MethodDecl md = (MethodDecl)d.memberMethods(meth).iterator().next();
 		Stmt start_stmt = md.getBlock().getStmt(start);
 		Stmt end_stmt = md.getBlock().getStmt(end);
-		d.compilationUnit().extract(name, start_stmt, end_stmt);
+		List changes = d.compilationUnit().extract(name, start_stmt, end_stmt);
+		for(Iterator i=changes.iterator();i.hasNext();)
+			((ASTChange)i.next()).apply();
 		//md.toString();
 		System.out.println(program);
     }

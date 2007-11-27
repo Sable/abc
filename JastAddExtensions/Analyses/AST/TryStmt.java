@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 public class TryStmt extends Stmt implements Cloneable,  FinallyHost {
@@ -480,6 +480,28 @@ if(reachableThrow_CatchClause_values == null) reachableThrow_CatchClause_values 
      return (getBlock().canCompleteNormally() || anyCatchClauseCompleteNormally) &&
        (!hasFinally() || getFinally().canCompleteNormally());
   }
+
+    // Declared in LocalVarNesting.jrag at line 40
+    public RefactoringException acceptLocal(String name) {
+        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
+        return acceptLocal_String_value;
+    }
+
+    private RefactoringException acceptLocal_compute(String name)  {
+		RefactoringException e;
+		e = getBlock().acceptLocal(name);
+		if(e != null) return e;
+		for(int i=0;i<getNumCatchClause();++i) {
+			CatchClause cc = getCatchClause(i);
+			e = cc.getParameter().acceptLocal(name);
+			if(e != null) return e;
+			e = cc.getBlock().acceptLocal(name);
+			if(e != null) return e;
+		}
+		if(hasFinally())
+			e = getFinally().acceptLocal(name);
+		return e;
+	}
 
     // Declared in ControlFlowGraph.jrag at line 15
     public Set succ() {

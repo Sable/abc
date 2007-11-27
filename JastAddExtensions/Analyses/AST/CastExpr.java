@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 
 public class CastExpr extends Expr implements Cloneable {
@@ -60,6 +60,13 @@ public class CastExpr extends Expr implements Cloneable {
         error("" + getTypeAccess() + " is not a type access in cast expression");
     }
   }
+
+    // Declared in AccessType.jrag at line 174
+
+	
+	boolean isCastedThisAccess() {
+		return getExpr() instanceof ThisAccess;
+	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 148
