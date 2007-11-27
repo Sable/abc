@@ -60,8 +60,8 @@ public class TMWeaver extends Weaver
         //   methods not filled in by front-end (i.e. aspectOf())
         super.weaveGenerateAspectMethods();
         // also generate the code needed for tracematches, i.e. fill in the
-        // advice bodies corresponding to each symbol being matched, and the bodies
-        // for the different kinds of 'some' advice.
+        // advice bodies corresponding to each symbol being matched, and the
+        // bodies for the different kinds of 'some' advice.
         debug("Generating code for tracematches");
         TraceMatchCodeGen tmcg = new TraceMatchCodeGen();
         Iterator it = ((TMGlobalAspectInfo)abc.main.Main.v().getAbcExtension().getGlobalAspectInfo()).getTraceMatches().iterator();
@@ -73,10 +73,10 @@ public class TMWeaver extends Weaver
 
     public void weaveAdvice()
     {
-    	if(Debug.v().shadowCount && nowLastWeavingPass) {
-    		//conjoin all residues with a residue for counting shadows
-    		ShadowCountManager.setCountResidues();
-    	}
+        if(Debug.v().shadowCount && nowLastWeavingPass) {
+            //conjoin all residues with a residue for counting shadows
+            ShadowCountManager.setCountResidues();
+        }
 
         super.weaveAdvice();
 
@@ -88,6 +88,13 @@ public class TMWeaver extends Weaver
         while (i.hasNext()) {
             TraceMatch tm = (TraceMatch) i.next();
             CodeGenHelper helper = tm.getCodeGenHelper();
+
+            if (tm.hasITDAnalysisResults()) {
+                System.out.println(tm.getITDAnalysisResults());
+
+                if (tm.getITDAnalysisResults().canOptimise())
+                    tm.doITDOptimisation();
+            }
 
             helper.extractBodyMethod();
             helper.transformRealBodyMethod();

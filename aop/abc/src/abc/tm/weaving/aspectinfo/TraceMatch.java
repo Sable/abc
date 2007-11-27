@@ -49,10 +49,13 @@ import soot.Type;
 import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.matching.SMEdge;
+import abc.tm.weaving.matching.SMNode;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.CodeGenHelper;
 import abc.tm.weaving.weaver.IndexedCodeGenHelper;
+import abc.tm.weaving.weaver.itds.ITDAnalysisResults;
+import abc.tm.weaving.weaver.itds.ITDOptimisation;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.Formal;
@@ -107,6 +110,8 @@ public class TraceMatch
 
     protected static Map idToTracematch = new HashMap();
     
+    protected ITDAnalysisResults itdresults = null;
+
     public TraceMatch(String name, List formals, List new_advice_body_formals,
                         StateMachine state_machine, boolean per_thread,
                         Map sym_to_vars, List frequent_symbols,
@@ -138,25 +143,26 @@ public class TraceMatch
 
 	this.helper = new IndexedCodeGenHelper(this);
         
-        if(idToTracematch.put(name, this)!=null) {
-        	throw new RuntimeException("Internal error: ambiguous tracematch id!");
-        }
+        idToTracematch.put(name, this);
         
-    	//store reverse mapping because for the static TM analysis we need to be able to
-        //identify for each woven advice the symbol it was woven for
-    	advice_name_to_sym_name = new HashMap();
-		for (Iterator iterator = sym_to_advice_name.entrySet().iterator(); iterator.hasNext();) {
-			Entry entry = (Entry) iterator.next();
-			advice_name_to_sym_name.put(entry.getValue(), entry.getKey());
-		}
+    	// store reverse mapping because for the static TM analysis we
+        // need to be able to identify for each woven advice the symbol
+        // it was woven for
+        advice_name_to_sym_name = new HashMap();
+        Iterator iterator = sym_to_advice_name.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entry entry = (Entry) iterator.next();
+            advice_name_to_sym_name.put(entry.getValue(), entry.getKey());
+        }
     }
 
-    public static TraceMatch forId(String id) {
-    	TraceMatch res = (TraceMatch) idToTracematch.get(id);
-    	if(res==null) {
-    		throw new RuntimeException("No such tracenmatch: "+id);
-    	}
-    	return res;
+    public static TraceMatch forId(String id)
+    {
+        TraceMatch res = (TraceMatch) idToTracematch.get(id);
+        if (res == null) {
+            throw new RuntimeException("No such tracematch: "+id);
+        }
+        return res;
     }
 
     public boolean isPerThread()
@@ -493,13 +499,17 @@ public class TraceMatch
                              Scene.v().getSootClass("java.lang.Short"));
 
 
-		if(abc.main.Debug.v().clashHashCodes) {
-			tm_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.ClashWeakRef");
-			tm_persistent_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.ClashPersistentWeakRef");
-		} else {
-			tm_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.MyWeakRef");
-			tm_persistent_weak_ref = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.PersistentWeakRef");
-		}
+        if(abc.main.Debug.v().clashHashCodes) {
+            tm_weak_ref = Scene.v().getSootClass(
+                "org.aspectbench.tm.runtime.internal.ClashWeakRef");
+            tm_persistent_weak_ref = Scene.v().getSootClass(
+                "org.aspectbench.tm.runtime.internal.ClashPersistentWeakRef");
+        } else {
+            tm_weak_ref = Scene.v().getSootClass(
+                "org.aspectbench.tm.runtime.internal.MyWeakRef");
+            tm_persistent_weak_ref = Scene.v().getSootClass(
+                "org.aspectbench.tm.runtime.internal.PersistentWeakRef");
+        }
     }
 
     protected SootMethod getConstructor(SootClass constructed, Type param)
@@ -511,138 +521,214 @@ public class TraceMatch
         return constructed.getMethod(init_name, type_list);
     }
     
-	/**
-	 * For a given symbol advice method, returns the name of the symbol it was
-	 * generated for.
-	 * @param symbolAdviceMethod a symbol advice method
-	 * @return the name of the symbol this symbol advice method was generated for or
-	 * <code>null</code> if the name is not the name of a symbol advice for this tracematch
-	 */
-	public String symbolNameForSymbolAdvice(SootMethod symbolAdviceMethod) {
-		return (String) advice_name_to_sym_name.get(symbolAdviceMethod.getName());
-	}
+    /**
+     * For a given symbol advice method, returns the name of the symbol it was
+     * generated for.
+     * @param symbolAdviceMethod a symbol advice method
+     * @return the name of the symbol this symbol advice method was generated
+     * for or * <code>null</code> if the name is not the name of a symbol
+     * advice for this tracematch
+     */
+    public String symbolNameForSymbolAdvice(SootMethod symbolAdviceMethod)
+    {
+        return (String)
+            advice_name_to_sym_name.get(symbolAdviceMethod.getName());
+    }
 		
-	/**
-	 * Implements the <i>quick check</i> as described in the ECOOP '07 paper.
-	 * Removes all the symbols from the tracematch alphabet for which
-	 * the related per-symbol advice never matched during the last weaving phase.
-	 * @return <code>true</code> if it is safe to remove this tracematch entirely because no final state can be reached any more
-	 */
-	public boolean quickCheck() {
-		GlobalAspectInfo gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
-		TMStateMachine sm = (TMStateMachine) getStateMachine();
+    /**
+     * Implements the <i>quick check</i> as described in the ECOOP '07 paper.
+     * Removes all the symbols from the tracematch alphabet for which
+     * the related per-symbol advice never matched during the last weaving
+     * phase.
+     * @return <code>true</code> if it is safe to remove this tracematch
+     * entirely because no final state can be reached any more
+     */
+    public boolean quickCheck()
+    {
+        GlobalAspectInfo gai =
+            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+        TMStateMachine sm = (TMStateMachine) getStateMachine();
 		
-		//determine all symbols for which there exists a per-symbol advice declaration
-		//with an application counter of more than 0 ; such symbols need to be retained 
-		Set symbolsToRetain = new HashSet();
+        // determine all symbols for which there exists a per-symbol advice
+        // declaration with an application counter of more than 0 ; such
+        // symbols need to be retained
+        Set symbolsToRetain = new HashSet();
 		
-		//for all advice declarations
-		for (Iterator iter = gai.getAdviceDecls().iterator(); iter.hasNext();) {
-			AbstractAdviceDecl ad = (AbstractAdviceDecl) iter.next();
-	
-			//of kind "per-symbol advice declaration"
-			if(ad instanceof PerSymbolTMAdviceDecl) {
-				PerSymbolTMAdviceDecl psad = (PerSymbolTMAdviceDecl) ad;
-				
-				//for this tracematch
-				if(psad.getTraceMatchID().equals(name)) {
-					
-					//if this advice was never applied
-					if(psad.getApplCount()>0) {
-	
-						//mark symbol as a symbol that must be retained
-						symbolsToRetain.add(psad.getSymbolId());
-					}
-				}
-			}
-		}
-		
-		//all symbols which do not have to be retained can naturally be removed
-		Set symbolsToRemove = new HashSet(sym_to_vars.keySet());
-		symbolsToRemove.removeAll(symbolsToRetain);
-		
-		if(symbolsToRemove.size()>0 && Debug.v().debugTmAnalysis) {
-			System.out.println("The following symbols do not match and will be removed " +
-					"in "+name+": "+symbolsToRemove);
-		}
-		
-		Set edgesToRemove = new HashSet();
-		//remove all edges for those symbols, including skip-loops labeled that way
-		for (Iterator symIter = symbolsToRemove.iterator(); symIter.hasNext();) {
-			String symbolName = (String) symIter.next();
-	
-			//for all edges in the state machine
-			for (Iterator iterator = sm.getEdgeIterator(); iterator.hasNext();) {
-				SMEdge edge = (SMEdge) iterator.next();
-				
-				//with the same symbol name as the advice that never applied 
-				if(edge.getLabel().equals(symbolName)) {
-					//mark edge as to be removed
-					edgesToRemove.add(edge);
-				}
-			}
-		}
-		//remove them
-		sm.removeEdges(edgesToRemove);
-		//compress the states (eliminate unreachable states)
-		sm.compressStates();
-	
-		//is the SM now empty?
-		boolean isEmpty = !sm.getStateIterator().hasNext();
-		
-		if(Debug.v().debugTmAnalysis && symbolsToRemove.size()>0 && !isEmpty) {
-			System.out.println("Remaining state machine:");
-			System.out.println(sm);
-		}
-	
-		if(isEmpty) {
-			//if the state machine is now empty, remove this tracematch entirely
-			
-			if(Debug.v().debugTmAnalysis) {
-				System.out.println("State machine now empty. Removing "+name+".");
-			}
-			
-			return true;
-		} else {
-			//else remove all the symbols which don't match from the tracematch;
-			//this will also remove the handling for skip loops for those symbols,
-			//which is safe cause we know the symbol can never occur anyway
-	
-			for (Iterator symIter = symbolsToRemove.iterator(); symIter.hasNext();) {
-				String symbolName = (String) symIter.next();
-				sym_to_advice_name.remove(symbolName);
-				sym_to_vars.remove(symbolName);
-			}
-	
-			if(Debug.v().debugTmAnalysis && symbolsToRemove.size()>0) {
-				System.out.println("Remaining alphabet of "+name+": "+getSymbols());				
-				System.out.println(sm);
-			}
-			return false;
-		}
-	}
+        // for all advice declarations
+        for (Iterator iter = gai.getAdviceDecls().iterator(); iter.hasNext();) {
+            AbstractAdviceDecl ad = (AbstractAdviceDecl) iter.next();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
-		sb.append("Tracematch '" + getName() +"' in aspect '" + container.getName() + "':\n\n");
-		sb.append("  position:      " + getPosition() + "\n");
-		sb.append("  formals:       " + getFormals() + "\n");
-		sb.append("  symbols:       " + sym_to_vars + "\n");
-		sb.append("  frequent sym:  " + getFrequentSymbols() + "\n");
-		sb.append("  is around:     " + isAround() + "\n");
-		sb.append("  is perthread:  " + isPerThread() + "\n");
-		sb.append(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n");
-		sb.append(getStateMachine());
-		sb.append("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");		
-		return sb.toString();
-	}
-	
-	public static void reset() {
-		idToTracematch.clear();
-	}
+            // of kind "per-symbol advice declaration"
+            if(ad instanceof PerSymbolTMAdviceDecl) {
+                PerSymbolTMAdviceDecl psad = (PerSymbolTMAdviceDecl) ad;
+				
+                // for this tracematch
+                if(psad.getTraceMatchID().equals(name))
+                {
+                    // if this advice was never applied
+                    if(psad.getApplCount()>0)
+                    {
+                        // mark symbol as a symbol that must be retained
+                        symbolsToRetain.add(psad.getSymbolId());
+                    }
+                }
+            }
+        }
 		
+        // all symbols which do not have to be retained can be removed
+        Set symbolsToRemove = new HashSet(sym_to_vars.keySet());
+        symbolsToRemove.removeAll(symbolsToRetain);
+		
+        if(symbolsToRemove.size()>0 && Debug.v().debugTmAnalysis) {
+            System.out.println("The following symbols do not match and " +
+                                "will be removed in " + name + ": " +
+                                symbolsToRemove);
+        }
+		
+        Set edgesToRemove = new HashSet();
+        // remove all edges for those symbols, including skip-loops
+        // labelled that way
+        Iterator symIter = symbolsToRemove.iterator();
+        while (symIter.hasNext()) {
+            String symbolName = (String) symIter.next();
+	
+            // for all edges in the state machine
+            Iterator iterator = sm.getEdgeIterator();
+            while (iterator.hasNext()) {
+                SMEdge edge = (SMEdge) iterator.next();
+
+                // with the same symbol name as the advice that never applied 
+                if(edge.getLabel().equals(symbolName)) {
+                    // mark edge as to be removed
+                    edgesToRemove.add(edge);
+                }
+            }
+        }
+        // remove them
+        sm.removeEdges(edgesToRemove);
+        //compress the states (eliminate unreachable states)
+        sm.compressStates();
+	
+        //is the SM now empty?
+        boolean isEmpty = !sm.getStateIterator().hasNext();
+		
+        if(Debug.v().debugTmAnalysis && symbolsToRemove.size() > 0 && !isEmpty)
+        {
+            System.out.println("Remaining state machine:");
+            System.out.println(sm);
+        }
+	
+        if(isEmpty) {
+            // if the state machine is now empty, remove this
+            // tracematch entirely
+            if(Debug.v().debugTmAnalysis) {
+                System.out.println("State machine now empty. Removing " +
+                                    name + ".");
+            }
+            return true;
+        } else {
+            // else remove all the symbols which don't match from the
+            // tracematch; this will also remove the handling for skip
+            // loops for those symbols,
+            // which is safe cause we know the symbol can never occur anyway
+	
+            Iterator symbolIter = symbolsToRemove.iterator();
+            while (symbolIter.hasNext()) {
+                String symbolName = (String) symbolIter.next();
+                sym_to_advice_name.remove(symbolName);
+                sym_to_vars.remove(symbolName);
+            }
+	
+            if(Debug.v().debugTmAnalysis && symbolsToRemove.size() > 0)
+            {
+                System.out.println("Remaining alphabet of " + name +
+                                   ": " + getSymbols());
+                System.out.println(sm);
+            }
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" +
+                  "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
+        sb.append("Tracematch '" + getName() +"' in aspect '" +
+                  container.getName() + "':\n\n");
+        sb.append("  position:      " + getPosition() + "\n");
+        sb.append("  formals:       " + getFormals() + "\n");
+        sb.append("  symbols:       " + sym_to_vars + "\n");
+        sb.append("  frequent sym:  " + getFrequentSymbols() + "\n");
+        sb.append("  is around:     " + isAround() + "\n");
+        sb.append("  is perthread:  " + isPerThread() + "\n");
+        sb.append(" - - - - - - - - - - - - - - - - - - " +
+                  "- - - - - - - - - - - - - - - - - - \n");
+        sb.append(getStateMachine());
+        sb.append("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" +
+                  "-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n");
+        return sb.toString();
+    }
+	
+    public static void reset()
+    {
+        idToTracematch.clear();
+    }
+
+    public boolean hasITDAnalysisResults()
+    {
+        return itdresults != null;
+    }
+
+    public ITDAnalysisResults getITDAnalysisResults()
+    {
+        if (itdresults == null)
+            itdresults = new ITDAnalysisResults(this);
+        return itdresults;
+    }
+
+    public void doITDOptimisation()
+    {
+        new ITDOptimisation(this).doITDOptimisation();
+    }
+
+    public Set<String> getInitialSymbols()
+    {
+        Set<String> initial_symbols = new HashSet<String>();
+        TMStateMachine sm = ((TMStateMachine) getStateMachine()); 
+        for (SMNode initial_state : sm.getInitialStates()) {
+            Iterator i = initial_state.getOutEdgeIterator();
+            while (i.hasNext()) {
+                SMEdge edge = (SMEdge) i.next();
+                initial_symbols.add(edge.getLabel());
+            }
+        }
+        return initial_symbols;
+    }
+
+    public int getInitialStateNumber()
+    {
+        TMStateMachine sm = (TMStateMachine) getStateMachine();
+        Iterator<SMNode> states = sm.getStateIterator();
+        while (states.hasNext()) {
+            SMNode state = states.next();
+            if (state.isInitialNode())
+                return state.getNumber();
+        }
+        throw new RuntimeException("can't find initial state");
+    }
+
+    public int getFinalStateNumber()
+    {
+        TMStateMachine sm = (TMStateMachine) getStateMachine();
+        Iterator<SMNode> states = sm.getStateIterator();
+        while (states.hasNext()) {
+            SMNode state = states.next();
+            if (state.isFinalNode())
+                return state.getNumber();
+        }
+        throw new RuntimeException("can't find final state");
+    }
 }

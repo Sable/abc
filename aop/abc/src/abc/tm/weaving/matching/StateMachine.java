@@ -50,5 +50,5 @@ public interface StateMachine {
     public Iterator<SMEdge> getEdgeIterator();
     public SMNode getStateByNumber(int n);
 
-	public Set<SMNode> getInitialStates();
+    public Set<SMNode> getInitialStates();
 }

@@ -36,6 +36,7 @@ import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
+import abc.tm.weaving.weaver.itds.ITDAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
@@ -137,6 +138,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashWeakRef", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashPersistentWeakRef", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);
+           Scene.v().addBasicClass("java.util.BitSet", SootClass.SIGNATURES);
            if(abc.main.Debug.v().useCommonsCollections)
         	   Scene.v().addBasicClass("org.apache.commons.collections.map.ReferenceIdentityMap", SootClass.SIGNATURES);
            else {
@@ -157,6 +159,13 @@ public class AbcExtension extends abc.eaj.AbcExtension
      */
     protected void createReweavingPasses(List passes) {
         super.createReweavingPasses(passes);
+        
+        if (abc.main.Debug.v().useITDs) {
+            OptionsParser.v().set_tag_instructions(true);
+            passes.add(new ReweavingPass(new ID("itd-analysis"),
+                                         new ITDAnalysis()));
+        }
+
         if(OptionsParser.v().wp_tmopt()) {
             //we need instruction tags so that we can identify shadow IDs after weaving
             OptionsParser.v().set_tag_instructions(true);

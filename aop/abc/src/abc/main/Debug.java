@@ -212,6 +212,9 @@ public class Debug {
     // make every weakref used for tracematches have the same hashcode
     public boolean clashHashCodes = false;
 
+    // whether or not to turn on the ITD optimisation for tracematches
+    public boolean useITDs = false;
+
     //temporary openmod stuff
     public boolean omPrecedenceDebug = false;
     public boolean omCollectModuleAspectsDebug = false;
