@@ -30,7 +30,7 @@ public class Opt extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ExtractMethod.jrag at line 160
+    // Declared in ExtractMethod.jrag at line 167
 
 	
 	public boolean isEmpty() {

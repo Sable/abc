@@ -153,7 +153,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
     // Declared in ExtractMethod.jrag at line 5
 
 	
-	public void extract(Stmt begin, Stmt end) throws RefactoringException {
+	public void extract(String name, Stmt begin, Stmt end) throws RefactoringException {
 		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
 			throw new RefactoringException("selection cannot start or end at init or update statements");
 		if(!begin.dominates(end))
@@ -166,12 +166,18 @@ public class CompilationUnit extends ASTNode implements Cloneable {
 			throw new RefactoringException("invalid statement for extraction");
 		if(begin_host != end_host)
 			throw new RefactoringException("selection straddles block borders");
+		BodyDecl bd = begin_host.hostBodyDecl();
+		boolean static_ctxt = false;
+		if(bd instanceof StaticInitializer)
+			static_ctxt = true;
+		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
+			static_ctxt = true;
 		int begin_idx = begin.indexInHostBlock();
 		int end_idx = end.indexInHostBlock();
 		for(int i=begin_idx;i<=end_idx;++i)
 			if(begin_host.getStmt(i) instanceof Case)
 				throw new RefactoringException("selection cannot contain case labels");
-		begin_host.encapsulate(begin_idx, end_idx);
+		begin_host.encapsulate(name, begin_idx, end_idx, static_ctxt);
 	}
 
     // Declared in java.ast at line 3

@@ -438,7 +438,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
 	private static int replacePos = 0;
 
-    // Declared in ExtractMethod.jrag at line 26
+    // Declared in ExtractMethod.jrag at line 32
 
 	
 	public int indexIn(ASTNode n) {

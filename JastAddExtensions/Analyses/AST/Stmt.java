@@ -54,14 +54,14 @@ public abstract class Stmt extends ASTNode implements Cloneable {
       error("statement is unreachable");
   }
 
-    // Declared in ExtractMethod.jrag at line 34
+    // Declared in ExtractMethod.jrag at line 40
 
 	
 	public int indexInHostBlock() {
 		return indexInBlock(hostBlock());
 	}
 
-    // Declared in ExtractMethod.jrag at line 38
+    // Declared in ExtractMethod.jrag at line 44
 
 	
 	public int indexInBlock(Block blk) {
@@ -555,7 +555,7 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return isInitOrUpdateStmt_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 164
+    // Declared in ExtractMethod.jrag at line 171
     public Collection visibleLocalDecls() {
         Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;

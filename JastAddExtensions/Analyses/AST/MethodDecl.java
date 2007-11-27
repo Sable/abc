@@ -1043,7 +1043,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
 
-    // Declared in ExtractMethod.jrag at line 168
+    // Declared in ExtractMethod.jrag at line 175
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		ArrayList decls = new ArrayList();

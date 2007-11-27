@@ -12,10 +12,10 @@ public class TestExtraction extends Frontend {
 	
 	public static void main(String args[]) throws Throwable {
         TestExtraction te = new TestExtraction();
-        te.run(args[0], args[1], args[2], args[3], Integer.parseInt(args[4]), Integer.parseInt(args[5]));
+        te.run(args[0], args[1], args[2], args[3], Integer.parseInt(args[4]), Integer.parseInt(args[5]), args[6]);
 	}
     
-    private void run(String file, String pkg, String tp, String meth, int start, int end) throws Throwable {
+    private void run(String file, String pkg, String tp, String meth, int start, int end, String name) throws Throwable {
         String[] filenames = { file };
         if(!process(filenames, new BytecodeParser(), 
                 new JavaParser() {
@@ -33,9 +33,9 @@ public class TestExtraction extends Frontend {
 		MethodDecl md = (MethodDecl)d.memberMethods(meth).iterator().next();
 		Stmt start_stmt = md.getBlock().getStmt(start);
 		Stmt end_stmt = md.getBlock().getStmt(end);
-		d.compilationUnit().extract(start_stmt, end_stmt);
+		d.compilationUnit().extract(name, start_stmt, end_stmt);
 		//md.toString();
-		//System.out.println(program);
+		System.out.println(program);
     }
     
 }

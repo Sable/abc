@@ -2,7 +2,7 @@ import changes.*;
 
 aspect ExtractMethod {
 	
-	public void CompilationUnit.extract(Stmt begin, Stmt end) throws RefactoringException {
+	public void CompilationUnit.extract(String name, Stmt begin, Stmt end) throws RefactoringException {
 		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
 			throw new RefactoringException("selection cannot start or end at init or update statements");
 		if(!begin.dominates(end))
@@ -15,12 +15,18 @@ aspect ExtractMethod {
 			throw new RefactoringException("invalid statement for extraction");
 		if(begin_host != end_host)
 			throw new RefactoringException("selection straddles block borders");
+		BodyDecl bd = begin_host.hostBodyDecl();
+		boolean static_ctxt = false;
+		if(bd instanceof StaticInitializer)
+			static_ctxt = true;
+		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
+			static_ctxt = true;
 		int begin_idx = begin.indexInHostBlock();
 		int end_idx = end.indexInHostBlock();
 		for(int i=begin_idx;i<=end_idx;++i)
 			if(begin_host.getStmt(i) instanceof Case)
 				throw new RefactoringException("selection cannot contain case labels");
-		begin_host.encapsulate(begin_idx, end_idx);
+		begin_host.encapsulate(name, begin_idx, end_idx, static_ctxt);
 	}
 	
 	public int ASTNode.indexIn(ASTNode n) {
@@ -39,7 +45,8 @@ aspect ExtractMethod {
 		return indexIn(blk.getStmtList());
 	}
 	
-	public void Block.encapsulate(int begin, int end) throws RefactoringException {
+	public void Block.encapsulate(String name, int begin, int end, boolean static_ctxt) 
+			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
 		Collection parms = new ArrayList();        // parameters of extracted method
@@ -55,40 +62,37 @@ aspect ExtractMethod {
 		visibleDecls.addAll(localDeclsBetween(begin, end));
 		analyseDeclarations(visibleDecls, begin_stmt, end_stmt, parms, localVars, ret, savedVars, toBeRemoved);
 		exns = uncaughtThrowsBetween(begin_stmt, end_stmt);
-		Collection stmts = new ArrayList();
+		Collection bodystmts = new ArrayList();
 		for(int i=begin;i<=end;++i)
-			stmts.add(getStmt(i));
-		MethodDecl md = createMethod("foo", parms, ret, exns, localVars, stmts);
-		/*int i;
-		System.out.println("method body: "+body.dumpTree());
-		System.out.print("parameters: ");
-		for(i=0;i<parms.getNumChild();++i)
-			System.out.print(((ParameterDeclaration)parms.getChild(i)).getID()+", ");
-		System.out.println("");
-		System.out.print("additional local variables: ");
-		for(i=0;i<localVars.getNumChild();++i)
-			System.out.print(((VariableDeclaration)localVars.getChild(i)).getID()+", ");
-		System.out.println("");
-		if(ret.isEmpty())
-			System.out.println("return type: void");
-		else {
-			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
-			System.out.println("return type: "+decl.getTypeAccess().dumpString()+", will be assigned to "+decl.getID());
+			bodystmts.add(getStmt(i));
+		// create declaration of method
+		MethodDecl md = createMethod(static_ctxt, name, parms, ret, exns, localVars, bodystmts);
+		// adapt body of block
+		List stmts = new List();
+		int i;
+		for(i=0;i<begin;++i) {
+			Stmt s = getStmt(i);
+			if(!toBeRemoved.contains(s))
+				stmts.add(s);
 		}
-		System.out.print("thrown exceptions: ");
-		for(Iterator iter=exns.iterator();iter.hasNext();)
-			System.out.print(((ASTNode)iter.next()).dumpTree()+", ");
-		System.out.println("");
-		System.out.print("declarations to be inserted before method call: ");
-		for(i=0;i<savedVars.getNumChild();++i)
-			System.out.print(((VariableDeclaration)savedVars.getChild(i)).getID()+", ");
-		System.out.println("");
-		System.out.print("declarations to be removed after method extraction: ");
-		for(i=0;i<toBeRemoved.getNumChild();++i)
-			System.out.print(((VariableDeclaration)toBeRemoved.getChild(i)).getID()+", ");
-		System.out.println("");*/
-		hostBodyDecl().hostType().addChild(md);
-		System.out.println(md);
+		for(Iterator iter=savedVars.iterator();iter.hasNext();)
+			stmts.add((Stmt)iter.next());
+		List args = new List();
+		for(Iterator iter=parms.iterator();iter.hasNext();)
+			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
+		MethodAccess ma = new MethodAccess(name, args);
+		// add it as an expression statement, or with an assignment
+		if(ret.isEmpty())
+			stmts.add(new ExprStmt(ma));
+		else {
+			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
+			stmts.add(new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma)));
+		}
+		// NB: no statements need to be removed after the selection
+		for(i=end+1;i<getNumStmt();++i)
+			stmts.add(getStmt(i));
+		this.setStmtList(stmts);
+		hostBodyDecl().hostType().addMemberMethod(md);
 	}
 	
 	private void Block.analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
@@ -116,11 +120,14 @@ aspect ExtractMethod {
 		}
 	}
 	
-	private MethodDecl Block.createMethod(String name, Collection parms, Opt ret, 
+	private MethodDecl Block.createMethod(boolean static_ctxt, String name, 
+			Collection parms, Opt ret, 
 			Set exns, Collection localVariables, Collection stmts) {
-		// modifiers: just "private"
+		// modifiers: "private", perhaps with a "static"
 		Modifiers mod = new Modifiers();
 		mod.addModifier(new Modifier("private"));
+		if(static_ctxt)
+			mod.addModifier(new Modifier("static"));
 		// type access: either "void" or the type of the variable to be assigned to
 		Access acc;
 		if(ret.isEmpty()) {

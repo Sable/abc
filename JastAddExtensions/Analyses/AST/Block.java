@@ -83,10 +83,11 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
-    // Declared in ExtractMethod.jrag at line 42
+    // Declared in ExtractMethod.jrag at line 48
 
 	
-	public void encapsulate(int begin, int end) throws RefactoringException {
+	public void encapsulate(String name, int begin, int end, boolean static_ctxt) 
+			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
 		Collection parms = new ArrayList();        // parameters of extracted method
@@ -102,43 +103,40 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		visibleDecls.addAll(localDeclsBetween(begin, end));
 		analyseDeclarations(visibleDecls, begin_stmt, end_stmt, parms, localVars, ret, savedVars, toBeRemoved);
 		exns = uncaughtThrowsBetween(begin_stmt, end_stmt);
-		Collection stmts = new ArrayList();
+		Collection bodystmts = new ArrayList();
 		for(int i=begin;i<=end;++i)
-			stmts.add(getStmt(i));
-		MethodDecl md = createMethod("foo", parms, ret, exns, localVars, stmts);
-		/*int i;
-		System.out.println("method body: "+body.dumpTree());
-		System.out.print("parameters: ");
-		for(i=0;i<parms.getNumChild();++i)
-			System.out.print(((ParameterDeclaration)parms.getChild(i)).getID()+", ");
-		System.out.println("");
-		System.out.print("additional local variables: ");
-		for(i=0;i<localVars.getNumChild();++i)
-			System.out.print(((VariableDeclaration)localVars.getChild(i)).getID()+", ");
-		System.out.println("");
-		if(ret.isEmpty())
-			System.out.println("return type: void");
-		else {
-			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
-			System.out.println("return type: "+decl.getTypeAccess().dumpString()+", will be assigned to "+decl.getID());
+			bodystmts.add(getStmt(i));
+		// create declaration of method
+		MethodDecl md = createMethod(static_ctxt, name, parms, ret, exns, localVars, bodystmts);
+		// adapt body of block
+		List stmts = new List();
+		int i;
+		for(i=0;i<begin;++i) {
+			Stmt s = getStmt(i);
+			if(!toBeRemoved.contains(s))
+				stmts.add(s);
 		}
-		System.out.print("thrown exceptions: ");
-		for(Iterator iter=exns.iterator();iter.hasNext();)
-			System.out.print(((ASTNode)iter.next()).dumpTree()+", ");
-		System.out.println("");
-		System.out.print("declarations to be inserted before method call: ");
-		for(i=0;i<savedVars.getNumChild();++i)
-			System.out.print(((VariableDeclaration)savedVars.getChild(i)).getID()+", ");
-		System.out.println("");
-		System.out.print("declarations to be removed after method extraction: ");
-		for(i=0;i<toBeRemoved.getNumChild();++i)
-			System.out.print(((VariableDeclaration)toBeRemoved.getChild(i)).getID()+", ");
-		System.out.println("");*/
-		hostBodyDecl().hostType().addChild(md);
-		System.out.println(md);
+		for(Iterator iter=savedVars.iterator();iter.hasNext();)
+			stmts.add((Stmt)iter.next());
+		List args = new List();
+		for(Iterator iter=parms.iterator();iter.hasNext();)
+			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
+		MethodAccess ma = new MethodAccess(name, args);
+		// add it as an expression statement, or with an assignment
+		if(ret.isEmpty())
+			stmts.add(new ExprStmt(ma));
+		else {
+			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
+			stmts.add(new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma)));
+		}
+		// NB: no statements need to be removed after the selection
+		for(i=end+1;i<getNumStmt();++i)
+			stmts.add(getStmt(i));
+		this.setStmtList(stmts);
+		hostBodyDecl().hostType().addMemberMethod(md);
 	}
 
-    // Declared in ExtractMethod.jrag at line 94
+    // Declared in ExtractMethod.jrag at line 98
 
 	
 	private void analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
@@ -166,14 +164,17 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		}
 	}
 
-    // Declared in ExtractMethod.jrag at line 119
+    // Declared in ExtractMethod.jrag at line 123
 
 	
-	private MethodDecl createMethod(String name, Collection parms, Opt ret, 
+	private MethodDecl createMethod(boolean static_ctxt, String name, 
+			Collection parms, Opt ret, 
 			Set exns, Collection localVariables, Collection stmts) {
-		// modifiers: just "private"
+		// modifiers: "private", perhaps with a "static"
 		Modifiers mod = new Modifiers();
 		mod.addModifier(new Modifier("private"));
+		if(static_ctxt)
+			mod.addModifier(new Modifier("static"));
 		// type access: either "void" or the type of the variable to be assigned to
 		Access acc;
 		if(ret.isEmpty()) {
@@ -535,7 +536,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 		return set;
 	}
 
-    // Declared in ExtractMethod.jrag at line 192
+    // Declared in ExtractMethod.jrag at line 199
     public Collection localDeclsBetween(int start, int end) {
         Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -613,7 +614,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachable_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 174
+    // Declared in ExtractMethod.jrag at line 181
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);
