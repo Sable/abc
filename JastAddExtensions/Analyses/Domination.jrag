@@ -50,13 +50,6 @@ aspect Domination {
 	inh lazy Block Stmt.hostBlock();
 	
 	eq Block.getStmt().hostBlock() = this;
-	eq LabeledStmt.getStmt().hostBlock() = hostBlock();
-	eq WhileStmt.getStmt().hostBlock() = hostBlock();
-	eq ForStmt.getStmt().hostBlock() = hostBlock();
-	eq ForStmt.getInitStmt().hostBlock() = hostBlock();
-	eq ForStmt.getUpdateStmt().hostBlock() = hostBlock();
-	eq IfStmt.getThen().hostBlock() = hostBlock();
-	eq IfStmt.getElse().hostBlock() = hasElse() ? hostBlock() : null;
 	eq ConstructorDecl.getConstructorInvocation().hostBlock() = getBlock();
 	
 	syn lazy Block VariableDeclaration.getBlock() = hostBlock();
