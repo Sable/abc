@@ -19,8 +19,10 @@ package org.aspectbench.tm.runtime.internal;
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+import java.util.List;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class MyWeakRef extends WeakReference {
 	private int hashCode;
@@ -32,6 +34,12 @@ public class MyWeakRef extends WeakReference {
 	public MyWeakRef(Object arg0, ReferenceQueue arg1) {
 		super(arg0, arg1);
 		hashCode = System.identityHashCode(arg0);
+	}
+	
+	public MyWeakRef(Object arg0, ReferenceQueue arg1, boolean trackContainers) {
+		super(arg0, arg1);
+		if(trackContainers)
+			containers = new ArrayList<WeakRefContainer>();
 	}
 
 	/**
@@ -56,5 +64,36 @@ public class MyWeakRef extends WeakReference {
 	
 	public boolean isExpired() {
 		return super.get() == null;
+	}
+	
+	/**
+	 * MyWeakRefs can optionally be registered with WeakRefContainers; on expiry,
+	 * one can notify all containers.
+	 */
+	private List<WeakRefContainer> containers = null;
+	
+	/**
+	 * Add a new container to the list 
+	 */
+	public void addContainer(WeakRefContainer c) {
+		containers.add(c);
+	}
+	
+	/**
+	 * MyWeakRefs can't be disassociated from containers at this stage (doesn't
+	 * seem necessary).
+	 */
+	public void removeContainer(WeakRefContainer c) {
+		throw new UnsupportedOperationException("Can't disassociate container from weakref");
+	}
+	
+	/**
+	 * Notify all containers of expiry, then drop all references to them.
+	 */
+	public void notifyContainers() {
+		for(WeakRefContainer c : containers) {
+			c.weakrefExpired(this);
+		}
+		containers = null;
 	}
 }
