@@ -153,6 +153,10 @@ public class AbcExtension extends abc.eaj.AbcExtension
                Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
                Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);               
            }
+           if(Debug.v().useITDs) {
+        	   Scene.v().addBasicClass("java.lang.Thread", SootClass.SIGNATURES);
+        	   Scene.v().addBasicClass("java.util.BitSet", SootClass.SIGNATURES);
+           }
 	   }
     
     /** 
