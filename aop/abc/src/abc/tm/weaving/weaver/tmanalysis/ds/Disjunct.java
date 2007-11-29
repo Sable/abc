@@ -22,11 +22,14 @@ package abc.tm.weaving.weaver.tmanalysis.ds;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import soot.PointsToSet;
 import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.weaver.tmanalysis.mustalias.TMFlowAnalysis;
 
 /**
  * A disjunct represents a mapping of variables (type {@link String}) to
@@ -46,7 +49,8 @@ import abc.tm.weaving.matching.SMNode;
 public abstract class Disjunct<A> implements Cloneable {
 	
 	
-    protected HashMap<A,String> history;
+    protected HashMap<A,String> posHistory;
+    protected HashMap<A,String> negHistory;
 
 	/**
 	 * a most-recently used cache to cache equal disjuncts; the idea is that equality checks
@@ -65,6 +69,8 @@ public abstract class Disjunct<A> implements Cloneable {
 
 	protected HashMap<String,Set<A>> posVarBinding;
 	protected HashMap<String,Set<A>> negVarBinding;
+
+	protected TMFlowAnalysis flowAnalysis;
 	
 	/**
 	 * Creates a new disjunct with empty bindings and history.
@@ -76,6 +82,8 @@ public abstract class Disjunct<A> implements Cloneable {
 	protected Disjunct() {
 		this.posVarBinding = new HashMap<String, Set<A>>();
 		this.negVarBinding = new HashMap<String, Set<A>>();
+		this.posHistory = new HashMap<A, String>();
+		this.negHistory = new HashMap<A, String>();
 	}
 	
 	/**
@@ -134,6 +142,9 @@ public abstract class Disjunct<A> implements Cloneable {
 				HashSet<A> clonedSet = (HashSet<A>) ((HashSet)entry.getValue()).clone();
 				entry.setValue(clonedSet);
 			}
+			//clone history
+			clone.posHistory = (HashMap<A, String>) posHistory.clone();
+			clone.negHistory = (HashMap<A, String>) negHistory.clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
@@ -151,6 +162,9 @@ public abstract class Disjunct<A> implements Cloneable {
 				+ ((negVarBinding == null) ? 0 : negVarBinding.hashCode());
 		result = prime * result
 				+ ((posVarBinding == null) ? 0 : posVarBinding.hashCode());
+		//symmetric over both histories
+		int historyCode = ((posHistory == null) ? 0 : posHistory.hashCode()) + ((negHistory == null) ? 0 : negHistory.hashCode());
+		result = prime * result + historyCode;
 		return result;
 	}
 
@@ -172,17 +186,59 @@ public abstract class Disjunct<A> implements Cloneable {
 				return false;
 		} else if (!posVarBinding.equals(other.posVarBinding))
 			return false;
+		if (!getCurrentHistory().equals(other.getCurrentHistory()))
+			return false;
 		return true;
 	}
 
 	public Collection<String> getCurrentHistory() {
-		return history.values();
+		Set<String> history = new HashSet<String>(posHistory.values());
+		history.addAll(negHistory.values());
+		return history;
 	}
 	
 	public Disjunct<A> cloneWithoutHistory() {
 		Disjunct<A> clone = clone();
-		clone.history.clear();
+		clone.posHistory.clear();
+		clone.negHistory.clear();
 		return clone;
 	}
+
+	public void setFlowAnalysis(TMFlowAnalysis flowAnalysis) {
+		assert this.flowAnalysis == null;
+		this.flowAnalysis = flowAnalysis;
+	}
 	
+	public void removeFromPosShadowHistory(A binding) {
+		String removed = posHistory.remove(binding);
+		assert removed!=null;
+	}
+	
+	public void removeFromNegShadowHistory(A binding) {
+		String removed = negHistory.remove(binding);
+		assert removed!=null;
+	}
+	
+	public void reconcileHistory() {
+		Set<A> allAs = new HashSet<A>();
+		for (Set<A> as : posVarBinding.values()) {
+			allAs.addAll(as);
+		}
+		for (Iterator<Map.Entry<A,String>> entryIter = posHistory.entrySet().iterator(); entryIter.hasNext();) {
+			Entry<A, String> entry = entryIter.next();
+			if(!allAs.contains(entry.getKey())) {
+				entryIter.remove();
+			}
+		}
+		allAs.clear();
+		for (Set<A> as : negVarBinding.values()) {
+			allAs.addAll(as);
+		}
+		for (Iterator<Map.Entry<A,String>> entryIter = negHistory.entrySet().iterator(); entryIter.hasNext();) {
+			Entry<A, String> entry = entryIter.next();
+			if(!allAs.contains(entry.getKey())) {
+				entryIter.remove();
+			}
+		}
+	}
 }

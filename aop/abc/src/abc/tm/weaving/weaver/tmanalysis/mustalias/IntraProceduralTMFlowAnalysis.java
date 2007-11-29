@@ -43,6 +43,9 @@ import soot.MethodOrMethodContext;
 import soot.RefLikeType;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.NewExpr;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -67,8 +70,57 @@ import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
 import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 
-public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<Configuration>> implements TMFlowAnalysis {
+public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,IntraProceduralTMFlowAnalysis.Abstraction> implements TMFlowAnalysis {
 
+	public static class Abstraction {
+
+		public Set<Configuration> configurations;
+		
+		public Set<InstanceKey> valuesInInitialState;
+
+		protected Abstraction(Set<Configuration> configs,Set<InstanceKey> valuesInInitialState) {
+			this.configurations = configs;
+			this.valuesInInitialState = valuesInInitialState;
+		}		
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime
+			* result
+			+ ((configurations == null) ? 0 : configurations.hashCode());
+			result = prime
+			* result
+			+ ((valuesInInitialState == null) ? 0
+					: valuesInInitialState.hashCode());
+			return result;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Abstraction other = (Abstraction) obj;
+			if (configurations == null) {
+				if (other.configurations != null)
+					return false;
+			} else if (!configurations.equals(other.configurations))
+				return false;
+			if (valuesInInitialState == null) {
+				if (other.valuesInInitialState != null)
+					return false;
+			} else if (!valuesInInitialState.equals(other.valuesInInitialState))
+				return false;
+			return true;
+		}
+	}
+	
+	
 	/**
      * AbortedException
      *
@@ -180,7 +232,7 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 
 	protected final Set<Stmt> visited;
 	
-	protected final Map<Stmt,Set<Configuration>> stmtToFirstAfterFlow;
+	protected final Map<Stmt,Set<Configuration>> stmtToFirstAfterFlowConfig;
 
 	protected final CallGraph abstractedCallGraph;
 	
@@ -216,6 +268,10 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
     
     protected transient int maxSizeConfigInThisRun = 0;
 
+	protected final Set<String> initialSymbols;
+
+	protected final Set<InstanceKey> allReferencedInstanceKeys;
+
 	/**
 	 * Performs the tracematch-state flow analysis on the given tracematch and unitgraph.
 	 * @param initialDisjunct Initial disjunct (functionally copied everywhere)
@@ -232,6 +288,7 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 		this.stmtsToAnalyze = new HashSet(stmtsToAnalyze);
 		MAX_SIZE_CONFIG = tm.getStateMachine().getNumberOfStates() * 50; //50 disjuncts per state should be enough
 		
+		initialDisjunct.setFlowAnalysis(this);
 		Constraint.initialize(initialDisjunct);
 		
 		this.ug = ug;
@@ -246,9 +303,10 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 		
 		this.stateMachine = (TMStateMachine) tm.getStateMachine();
 		this.tracematch = tm;
+		this.initialSymbols = tm.getInitialSymbols();
 
 		this.visited = new HashSet<Stmt>();
-		this.stmtToFirstAfterFlow = new HashMap<Stmt,Set<Configuration>>();
+		this.stmtToFirstAfterFlowConfig = new HashMap<Stmt,Set<Configuration>>();
 		
 		this.abstractedCallGraph = CallGraphAbstraction.v().abstractedCallGraph();
 
@@ -262,6 +320,14 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
         } else {
             this.overlappingShadowIDs = null;
         }
+        
+		Set<ISymbolShadow> allActiveShadows = ShadowUtils.getAllActiveShadows(tracematch, stmtsToAnalyze);
+		Set<InstanceKey> allReferencedInstanceKeysTemp = new HashSet<InstanceKey>();
+		for (ISymbolShadow shadow : allActiveShadows) {
+			Collection<InstanceKey> instanceKeysReferencedByShadow = reMap(shadow.getTmFormalToAdviceLocal()).values();
+			allReferencedInstanceKeysTemp.addAll(instanceKeysReferencedByShadow);
+		}
+		allReferencedInstanceKeys = Collections.unmodifiableSet(allReferencedInstanceKeysTemp);
         
         this.numberVisited = new HashMap<Stmt,Integer>();
         
@@ -292,7 +358,9 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 		Configuration.reset();
 	}
 
-    protected void flowThrough(Set<Configuration> in, Unit u, Set<Configuration> out) {
+    protected void flowThrough(Abstraction in, Unit u, Abstraction out) {
+    	Set<Configuration> inConfigs = in.configurations;
+    	Set<Configuration> outConfigs = out.configurations;
         Stmt stmt = (Stmt) u;
         //if not yet visited, initialize
         if(!numberVisited.containsKey(stmt)) {
@@ -332,20 +400,20 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
                 	SymbolShadowTag tag = (SymbolShadowTag) stmt.getTag(SymbolShadowTag.NAME);		
                 	Set<ISymbolShadow> matchesForThisTracematch = tag.getMatchesForTracematch(tracematch);
     
-                    out.clear();
+                    outConfigs.clear();
                     
                     //for each match, if it is still active, compute the successor and join 
                     for (ISymbolShadow shadow : matchesForThisTracematch) {
                         if(shadow.isEnabled()) {                
                             foundEnabledShadow = true;
-                            for (Configuration oldConfig : in) {
-                                Configuration newConfig = oldConfig.doTransition(shadow,isSyntheticFinalUnit);
+                            for (Configuration oldConfig : inConfigs) {
+                                Configuration newConfig = oldConfig.doTransition(shadow,isSyntheticFinalUnit,in.valuesInInitialState);
                                 if(mightHaveSideEffects) {
                                     newConfig = newConfig.taint();
                                 }
-                                out.add(newConfig);
+                                outConfigs.add(newConfig);
     
-                                int numNewConfigs = out.size();
+                                int numNewConfigs = outConfigs.size();
                                 maxNumConfigsInThisRun = Math.max(maxNumConfigsInThisRun , numNewConfigs);
                                 if(numNewConfigs>MAX_NUM_CONFIGS) {
                                     status = ABORTED_MAX_NUM_CONFIGS;
@@ -358,6 +426,8 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
                                     return;
                                 }
                             }
+                            
+                            processValuesInInitialState(shadow,out.valuesInInitialState);
                         }
                     }
                     
@@ -367,25 +437,64 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 		
         if(!foundEnabledShadow) {
             //if we not actually computed a join, copy instead 
-            copy(in, out);
+            copy(in,out);
         }
         
+        processNewExpression(stmt,out.valuesInInitialState);
+        
         if(mightHaveSideEffects) {
-        	Set<Configuration> outCopy = new HashSet<Configuration>(out);
-        	out.clear();
+        	Set<Configuration> outCopy = new HashSet<Configuration>(outConfigs);
+        	outConfigs.clear();
         	for (Configuration outConf : outCopy) {
-				out.add(outConf.taint());
+				outConfigs.add(outConf.taint());
 			}
         }
         
         //if visited for the first time
         if(numVisited==1) {
             //...record this after-flow for comparison
-            stmtToFirstAfterFlow.put(stmt, new HashSet<Configuration>(out));
+            stmtToFirstAfterFlowConfig.put(stmt, new HashSet<Configuration>(outConfigs));
         }
     }
 	
-    protected boolean mightHaveSideEffects(Stmt s) {
+    /**
+     * This method removes an instance key k from valuesInInitialState in the case where shadow might have moved
+     * k out of the initial state. This is assumed to be the case if (1) the shadow's symbol is an initial
+     * symbol of the tracematch and (2) any instance keys referred to by the shadow may alias k.
+     */
+    protected void processValuesInInitialState(ISymbolShadow shadow,Set<InstanceKey> valuesInInitialState) {
+    	if(initialSymbols.contains(shadow.getSymbolName())) {
+        	Map<String, InstanceKey> varToInstanceKey = reMap(shadow.getTmFormalToAdviceLocal());
+    		for (InstanceKey possiblyTransitionedInstanceKey : varToInstanceKey.values()) {
+				for (Iterator initialValuesIter = valuesInInitialState.iterator(); initialValuesIter.hasNext();) {
+					InstanceKey instanceKeyInInitialState = (InstanceKey) initialValuesIter.next();
+					if(!instanceKeyInInitialState.mayNotAlias(possiblyTransitionedInstanceKey)) {
+						initialValuesIter.remove();
+					}
+				}
+			}
+    	}
+	}
+
+	/**
+     * At any assignment of a new-expression we know that the instance key representing that
+     * new-expression has to be in its initial state. We can exploit that for tracematches.
+     * This method analyses stmt. If it is an assign statement and the RHS is a new-expression
+     * then we add the instance key for that expression to valuesInInitialState. 
+     */
+    protected void processNewExpression(Stmt stmt,Set<InstanceKey> valuesInInitialState) {
+    	if(stmt instanceof AssignStmt) {
+			AssignStmt assignStmt = (AssignStmt) stmt;
+    		Value rightOp = assignStmt.getRightOp();
+    		if(rightOp instanceof NewExpr) {
+    			Local assignedLocal = (Local) assignStmt.getLeftOp();
+    			Stmt succ = (Stmt) ug.getSuccsOf(stmt).get(0);//there is only one successor of any new-statement
+    			valuesInInitialState.add(new InstanceKey(assignedLocal,succ,container,lmaa,lmna));
+    		}
+    	}		
+	}
+
+	protected boolean mightHaveSideEffects(Stmt s) {
         Collection<ISymbolShadow> shadows = transitivelyCalledShadows(s);
         filterNewDacapoRun(shadows);
         if(!ShadowGroupRegistry.v().hasShadowGroupInfo()) {
@@ -478,15 +587,19 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 	/** 
 	 * {@inheritDoc}
 	 */
-	protected void copy(Set<Configuration> source, Set<Configuration> dest) {
-        dest.clear();
-        dest.addAll(source);
+	protected void copy(Abstraction source, Abstraction dest) {
+		Set<Configuration> destConfigs = dest.configurations;
+		destConfigs.clear();
+		destConfigs.addAll(source.configurations);
+		Set<InstanceKey> destValuesInInitialState = dest.valuesInInitialState;
+		destValuesInInitialState.clear();
+		destValuesInInitialState.addAll(source.valuesInInitialState);
 	}
 
 	/** 
 	 * {@inheritDoc}
 	 */
-	protected Set<Configuration> entryInitialFlow() {
+	protected Abstraction entryInitialFlow() {
         Set<Configuration> configs = new HashSet<Configuration>();
         for (Iterator stateIter = stateMachine.getStateIterator(); stateIter.hasNext();) {
             State state = (State) stateIter.next();
@@ -496,48 +609,40 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
                 		this,
                 		Collections.singleton(state),
                 		!abortWhenHittingFinal //count final-hits, if not aborting when hitting final
-                	) {
-                    /**
-                     * Rewrites the mapping from tracematch variables to locals to a mapping from
-                     * tracematch variables to instance keys.
-                     */
-                    protected Map reMap(Map bindings) {
-                        Map<String,Local> origBinding = bindings;
-                        Map<String,InstanceKey> newBinding = new HashMap<String, InstanceKey>();
-                        for (Map.Entry<String,Local> entry : origBinding.entrySet()) {
-                            String tmVar = entry.getKey();
-                            Local adviceLocal = entry.getValue();
-                            Stmt stmt = tmLocalDefs.get(adviceLocal); //may be null, if adviceLocal is not part of this method
-                            InstanceKey instanceKey = (adviceLocal.getType() instanceof RefLikeType) ?
-                              new InstanceKey(adviceLocal,stmt,container,lmaa,lmna) :
-                              new InstanceKeyNonRefLikeType(adviceLocal,stmt,container,lmaa,lmna);
-                            newBinding.put(tmVar, instanceKey);
-                        }
-                        return newBinding;
-                    }
-                };
+                );
                 configs.add(entryInitialConfiguration);
             
             }
         }
-        
-		return configs;
+        //be conservative at the beginning: know nothing about any values being in the initial state        
+		HashSet<InstanceKey> valuesInInitialState = new HashSet<InstanceKey>();
+		return new Abstraction(configs,valuesInInitialState);
 	}
 
-	/** points-to 
+	/** 
 	 * {@inheritDoc}
 	 */
-	protected Set<Configuration> newInitialFlow() {
-		return new HashSet<Configuration>();
+	protected Abstraction newInitialFlow() {
+		return new Abstraction(new HashSet<Configuration>(),new HashSet<InstanceKey>(allReferencedInstanceKeys));
 	}
 	
 	/** 
 	 * {@inheritDoc}
 	 */
-	protected void merge(Set<Configuration> in1, Set<Configuration> in2, Set<Configuration> out) {
-        out.clear();
-        out.addAll(in1);
-        out.addAll(in2);
+	protected void merge(Abstraction in1, Abstraction in2, Abstraction out) {
+		//merge sets of configurations by union		
+		Set<Configuration> inConfigs1 = in1.configurations;
+		Set<Configuration> inConfigs2 = in2.configurations;
+		Set<Configuration> outConfigs = out.configurations;
+        outConfigs.clear();
+        outConfigs.addAll(inConfigs1);
+        outConfigs.addAll(inConfigs2);
+        
+        //merge sets of values in first state by intersection
+        Set<InstanceKey> outValuesInInitialState = out.valuesInInitialState;
+		outValuesInInitialState.clear();
+        outValuesInInitialState.addAll(in1.valuesInInitialState);
+        outValuesInInitialState.retainAll(in2.valuesInInitialState);
 	}
 	
 	/**
@@ -551,12 +656,12 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
 	 * Returns all statements for which at least one active shadow exists.
 	 */
 	public Set<Stmt> statemementsWithActiveShadows() {
-		return stmtToFirstAfterFlow.keySet();
+		return stmtToFirstAfterFlowConfig.keySet();
 	}
 	
-	public Set<Configuration> getFirstAfterFlow(Stmt stmt) {
-		assert stmtToFirstAfterFlow.containsKey(stmt);
-		return stmtToFirstAfterFlow.get(stmt);
+	public Set<Configuration> getFirstAfterFlowConfigs(Stmt stmt) {
+		assert stmtToFirstAfterFlowConfig.containsKey(stmt);
+		return stmtToFirstAfterFlowConfig.get(stmt);
 	}
 	
 	public UnitGraph getUnitGraph() {
@@ -590,8 +695,8 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
         //for each statement 
         for (Stmt stmt : stmtsToAnalyze) {
             //if the first after-flow is equal to the final one
-            Set<Configuration> firstAfterFlow = getFirstAfterFlow(stmt);
-            Set<Configuration> finalAfterFlow = getFlowAfter(stmt);
+            Set<Configuration> firstAfterFlow = getFirstAfterFlowConfigs(stmt);
+            Set<Configuration> finalAfterFlow = getFlowAfter(stmt).configurations;
             assert firstAfterFlow!=null && finalAfterFlow!=null;
             //is the first after-flow equal to the last?
             if(firstAfterFlow.equals(finalAfterFlow)) {
@@ -606,6 +711,25 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Set<
      */
     public void setStatus(Status status) {
         this.status = status;
+    }
+    
+    /**
+     * Rewrites the mapping from tracematch variables to locals to a mapping from
+     * tracematch variables to instance keys.
+     */
+    public Map<String,InstanceKey> reMap(Map<String,Local> bindings) {
+        Map<String,Local> origBinding = bindings;
+        Map<String,InstanceKey> newBinding = new HashMap<String, InstanceKey>();
+        for (Map.Entry<String,Local> entry : origBinding.entrySet()) {
+            String tmVar = entry.getKey();
+            Local adviceLocal = entry.getValue();
+            Stmt stmt = tmLocalDefs.get(adviceLocal); //may be null, if adviceLocal is not part of this method
+            InstanceKey instanceKey = (adviceLocal.getType() instanceof RefLikeType) ?
+              new InstanceKey(adviceLocal,stmt,container,lmaa,lmna) :
+              new InstanceKeyNonRefLikeType(adviceLocal,stmt,container,lmaa,lmna);
+            newBinding.put(tmVar, instanceKey);
+        }
+        return newBinding;
     }
 
 }

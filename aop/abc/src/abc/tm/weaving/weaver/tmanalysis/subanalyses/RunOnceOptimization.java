@@ -41,11 +41,12 @@ import abc.main.Debug;
 import abc.main.Main;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.State;
-import abc.tm.weaving.weaver.tmanalysis.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.ShadowUtils;
+import abc.tm.weaving.weaver.tmanalysis.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.ds.Configuration;
 import abc.tm.weaving.weaver.tmanalysis.ds.PreciseSymmetricDisjunct;
 import abc.tm.weaving.weaver.tmanalysis.mustalias.IntraProceduralTMFlowAnalysis;
+import abc.tm.weaving.weaver.tmanalysis.mustalias.IntraProceduralTMFlowAnalysis.Abstraction;
 import abc.tm.weaving.weaver.tmanalysis.mustalias.IntraProceduralTMFlowAnalysis.Status;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
@@ -142,10 +143,11 @@ public class RunOnceOptimization {
             }
         }
         for (Stmt loopStmt : loop.getLoopStatements()) {
-            Set<Configuration> flowBefore = flowAnalysis.getFlowBefore(loopStmt);
+            Abstraction flowBefore = flowAnalysis.getFlowBefore(loopStmt);
+            Set<Configuration> flowBeforeConfigs = flowBefore.configurations;
             //if there is an active shadow at this unit
             if(!ShadowUtils.getAllActiveShadows(tm, Collections.singleton(loopStmt)).isEmpty()) {
-                if(Configuration.hasTainted(flowBefore)) {
+                if(Configuration.hasTainted(flowBeforeConfigs)) {
             		if(Debug.v().debugTmAnalysis)
             			System.err.println("Aborting because shadow could have been affected by calls to other methods with shadows.");
                     return;

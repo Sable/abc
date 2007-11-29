@@ -33,8 +33,8 @@ import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.UnitGraph;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.State;
-import abc.tm.weaving.weaver.tmanalysis.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.ShadowUtils;
+import abc.tm.weaving.weaver.tmanalysis.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.ds.Configuration;
 import abc.tm.weaving.weaver.tmanalysis.ds.FinalConfigsUnitGraph;
 import abc.tm.weaving.weaver.tmanalysis.ds.PreciseSymmetricDisjunct;
@@ -106,8 +106,8 @@ public class UnnecessaryShadowsElimination {
 
         	Set<Configuration> allConfigs = new HashSet<Configuration>();
             for (Unit unit : augmentedGraph) {    
-                Set<Configuration> flowBefore = flowAnalysis.getFlowBefore(unit);
-                Set<Configuration> flowAfter = flowAnalysis.getFlowAfter(unit);
+                Set<Configuration> flowBefore = flowAnalysis.getFlowBefore(unit).configurations;
+                Set<Configuration> flowAfter = flowAnalysis.getFlowAfter(unit).configurations;
                 allConfigs.addAll(flowBefore);
                 allConfigs.addAll(flowAfter);
             }

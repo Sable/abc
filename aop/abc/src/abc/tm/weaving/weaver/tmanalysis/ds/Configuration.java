@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import soot.jimple.toolkits.pointer.InstanceKey;
+
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.SMNode;
@@ -103,10 +105,9 @@ public class Configuration implements Cloneable {
 	
 	/**
 	 * Returns the successor configuration of this configuration under edge.
-	 * Processes all currently active threads which are registered.
 	 * @return the successor configuration under edge
 	 */
-	public Configuration doTransition(ISymbolShadow shadow, boolean isSyntheticFinalUnit) {
+	public Configuration doTransition(ISymbolShadow shadow, boolean isSyntheticFinalUnit, Set<InstanceKey> valuesInInitialState) {
 		//the skip-copy has to be initialized as a copy of this configuration
 		Configuration skip = (Configuration) clone();
 		//the tmp-copy needs to be initialized to false on all states,
@@ -117,7 +118,7 @@ public class Configuration implements Cloneable {
 		//get the current symbol name
 		final String symbolName = shadow.getSymbolName();
 		//and the variable binding
-		final Map bindings = reMap(shadow.getTmFormalToAdviceLocal());
+		final Map<String,InstanceKey> bindings = flowAnalysis.reMap(shadow.getTmFormalToAdviceLocal());
 		//the shadow id
 		final String shadowId = shadow.getUniqueShadowId();
 		//all variables of the state machine
@@ -169,41 +170,48 @@ public class Configuration implements Cloneable {
 					//store the result at the original (=target) state
 					skip.stateToConstraint.put(skipState, newConstraint);
 				} else {
-					//a "normal" transition					 
+					//a "normal" transition					
 					
-					//get constraint at source state
-					Constraint oldConstraint = getConstraintFor(transition.getSource());
-					
-					//add bindings
-					Constraint newConstraint = oldConstraint.addBindingsForSymbol(
-							allVariables, 
-							transition.getSource(),
-							transition.getTarget(), 
-							bindings, 
-							shadowId
-					); 
-					
-					if(transition.getTarget().isFinalNode() && !newConstraint.equals(Constraint.FALSE)) {
-						flowAnalysis.hitFinal();
-						if(countFinalHits)
-							tmp.numHitFinal++;
-					}
-
 					/*
-					 * If a symbol has no variable binding, its shadow ID will not be stored
-					 * within the changed disjunct. This is because in disjuncts shadow IDs are stored
-					 * with the bindings. Hence, in order to be sound, we store the shadow ID here, if the
-					 * transition changed the constraint. It would actually make more sense to store 
-					 * them on the constraint itself but that would mean that we would need to allow for multiple
-					 * different FALSE constraints.
+					 * We do *not* have to do a positive update if we transition out of a non-initial state but we can
+					 * prove that the given bindings have to be in an initial state. 
 					 */
-					if(bindings.isEmpty() && !oldConstraint.equals(newConstraint)) {
-						tmp.historyNoVar.add(shadowId);						
+					if(transition.getSource().isInitialNode() || !mustBeInInitial(bindings,valuesInInitialState)){
+						
+						//get constraint at source state
+						Constraint oldConstraint = getConstraintFor(transition.getSource());
+						
+						//add bindings
+						Constraint newConstraint = oldConstraint.addBindingsForSymbol(
+								allVariables, 
+								transition.getSource(),
+								transition.getTarget(), 
+								bindings, 
+								shadowId
+						); 
+						
+						if(transition.getTarget().isFinalNode() && !newConstraint.equals(Constraint.FALSE)) {
+							flowAnalysis.hitFinal();
+							if(countFinalHits)
+								tmp.numHitFinal++;
+						}
+		
+						/*
+						 * If a symbol has no variable binding, its shadow ID will not be stored
+						 * within the changed disjunct. This is because in disjuncts shadow IDs are stored
+						 * with the bindings. Hence, in order to be sound, we store the shadow ID here, if the
+						 * transition changed the constraint. It would actually make more sense to store 
+						 * them on the constraint itself but that would mean that we would need to allow for multiple
+						 * different FALSE constraints.
+						 */
+						if(bindings.isEmpty() && !oldConstraint.equals(newConstraint)) {
+							tmp.historyNoVar.add(shadowId);						
+						}
+		
+						//put the new constraint on the target state
+						//via a disjoint update
+						tmp.disjointUpdateFor(transition.getTarget(), newConstraint);
 					}
-
-					//put the new constraint on the target state
-					//via a disjoint update
-					tmp.disjointUpdateFor(transition.getTarget(), newConstraint);
 				}
 			}
 		}
@@ -220,15 +228,20 @@ public class Configuration implements Cloneable {
 		return tmp;
 	}	
 	
-	/**
-     * Subclasses can overwrite this method to modify a variable binding before
-     * it is processed.
-     */
-    protected Map reMap(Map bindings) {
-        return bindings;
-    }
-
     /**
+     * Returns <code>true</code> if the disjunct bearing the given bindings must be in an initial state, i.e.
+     * if one of its instance keys must-alias an instance key in valuesInInitialState. 
+     */
+    protected boolean mustBeInInitial(Map<String, InstanceKey> bindings, Set<InstanceKey> valuesInInitialState) {
+    	for (InstanceKey instanceKey : bindings.values()) {
+    		if(valuesInInitialState.contains(instanceKey)) {
+    			return true;
+    		}			
+		}
+		return false;
+	}
+
+	/**
 	 * Merges the constraint disjointly with the one currently associated with the state,
 	 * updating this constraint of state.
 	 * @param state any state in {@link #getStates()}

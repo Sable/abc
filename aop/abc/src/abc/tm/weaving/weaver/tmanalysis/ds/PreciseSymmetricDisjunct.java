@@ -51,14 +51,12 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 
     private final SootMethod container;
     private final TraceMatch tm;
-
     /**
 	 * Constructs a new disjunct.
 	 */
 	public PreciseSymmetricDisjunct(SootMethod container, TraceMatch tm) {
         this.container = container;
         this.tm = tm;
-		this.history = new HashMap<InstanceKey, String>();
 	}
 	
 	/**
@@ -254,7 +252,7 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 
 		Map<String,Set<InstanceKey>> tmVarToPossibleInstanceKeys = new HashMap<String, Set<InstanceKey>>();
 		for (ISymbolShadow shadow : shadowsBindingCurrentSymbolInCurrentMethod) {
-			final Map<String,InstanceKey> varToInstanceKey = config.reMap(shadow.getTmFormalToAdviceLocal());
+			final Map<String,InstanceKey> varToInstanceKey = flowAnalysis.reMap(shadow.getTmFormalToAdviceLocal());
 			for (String tmVar : bindings.keySet()) {
 				InstanceKey keyAtShadow = varToInstanceKey.get(tmVar);
 				Set<InstanceKey> keysForVar = tmVarToPossibleInstanceKeys.get(tmVar);
@@ -349,7 +347,7 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 			clone.negVarBinding.put(tmVar, negBindingsForVariable);
 		}
 		negBindingsForVariable.add(negBinding);
-		clone.registerShadowIdInHistory(negBinding, shadowId);
+		clone.registerShadowIdInNegHistory(negBinding, shadowId);
 		return clone;
 	}
 	
@@ -361,13 +359,18 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 		}
 		posBindingForVar.add(toBind);
 		if(toBind.haveLocalInformation())
-			registerShadowIdInHistory(toBind,shadowId);
+			registerShadowIdInPosHistory(toBind,shadowId);
 	}
 	
 	
-	protected void registerShadowIdInHistory(InstanceKey toBind, String shadowId) {
+	protected void registerShadowIdInPosHistory(InstanceKey toBind, String shadowId) {
 		assert toBind.haveLocalInformation();
-		history.put(toBind,shadowId);
+		posHistory.put(toBind,shadowId);
+	}
+
+	protected void registerShadowIdInNegHistory(InstanceKey toBind, String shadowId) {
+		assert toBind.haveLocalInformation();
+		negHistory.put(toBind,shadowId);
 	}
 
 	/**
@@ -430,16 +433,20 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 				InstanceKey negBinding = iterator.next();
 				if(negBinding.mayNotAlias(toBind)) {
 					iterator.remove();
-					removeFromShadowHistory(negBinding);
+					removeFromNegShadowHistory(negBinding);
 				}
 			}
 		}
 	}
 
-	protected void removeFromShadowHistory(InstanceKey binding) {
+	public void removeFromPosShadowHistory(InstanceKey binding) {
 		assert binding.haveLocalInformation();
-		String removed = history.remove(binding);
-		assert removed!=null;
+		super.removeFromPosShadowHistory(binding);
+	}
+	
+	public void removeFromNegShadowHistory(InstanceKey binding) {
+		assert binding.haveLocalInformation();
+		super.removeFromNegShadowHistory(binding);
 	}
 
 	/**
@@ -452,18 +459,13 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 		sb.append(")-neg(");			
         sb.append(negVarBinding.toString());
 		sb.append(")-hist(");			
-        sb.append(history.values());
+        sb.append(getCurrentHistory());
 		sb.append(")]");			
 		return sb.toString();
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
 	protected PreciseSymmetricDisjunct clone() {
-		PreciseSymmetricDisjunct clone = (PreciseSymmetricDisjunct) super.clone();
-		clone.history = (HashMap<InstanceKey, String>) history.clone();
-		return clone;
+		return (PreciseSymmetricDisjunct) super.clone();
 	}	
 	
 	private boolean isHistoryConsistent() {
@@ -484,32 +486,11 @@ public class PreciseSymmetricDisjunct extends Disjunct<InstanceKey> {
 				}
 			}
 		}
-		return history.keySet().equals(allLocalKeys);
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((history == null) ? 0 : history.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PreciseSymmetricDisjunct other = (PreciseSymmetricDisjunct) obj;
-		if (history == null) {
-			if (other.history != null)
-				return false;
-		} else if (!history.equals(other.history))
-			return false;
-		return true;
+		
+		Set<InstanceKey> allHistoryKeys = new HashSet<InstanceKey>(posHistory.keySet());
+		allHistoryKeys.addAll(negHistory.keySet());
+		
+		return allHistoryKeys.equals(allLocalKeys);
 	}
 
 }

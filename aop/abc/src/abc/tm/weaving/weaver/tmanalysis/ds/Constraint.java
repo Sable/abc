@@ -67,9 +67,6 @@ public class Constraint implements Cloneable {
 	/** The set of disjuncts for this constraint (DNF). */
 	protected HashSet<Disjunct> disjuncts;
 	
-	/** The unique constraint for the final states. */
-	public static Constraint FINAL;
-
 	/** The unique false constraint. */
 	public static Constraint FALSE;
 	
@@ -108,38 +105,6 @@ public class Constraint implements Cloneable {
 			}
 		};
 
-		//initialize FINAL
-		FINAL = new Constraint(new HashSet()) {			
-			
-			/**
-			 * Returns this (FALSE).
-			 */
-			@Override
-			public Constraint addBindingsForSymbol(Collection allVariables, SMNode from, SMNode to, Map bindings, String shadowId) {
-				//FINAL stays FINAL
-				return this;
-			}
-			
-			/**
-			 * Returns this (FALSE).
-			 */
-			@Override
-			public Constraint addNegativeBindingsForSymbol(Collection allVariables, SMNode state, Map bindings, String shadowId, Configuration config) {
-				//FINAL stays FINAL
-				return this;
-			}
-			
-			@Override
-			protected Constraint clone() {
-				return this;
-			}
-			
-			@Override
-			public String toString() {
-				return "FINAL";
-			}
-		};
-
 		//initialize TRUE; this holds a single empty disjunct
 		HashSet set = new HashSet();
 		set.add(falseProtoType);		
@@ -148,6 +113,12 @@ public class Constraint implements Cloneable {
 			@Override
 			protected Constraint clone() {
 				return new Constraint(disjuncts);
+			}
+			
+			@Override
+			public Constraint or(Constraint other) {
+				//TRUE || other == TRUE
+				return this;
 			}
 		};
 		
@@ -263,7 +234,7 @@ public class Constraint implements Cloneable {
 	            			if(negBindD2.isEmpty()) {
 	            				d2Copy.negVarBinding.remove(var);
 	            			}
-	            			if(d1Copy.equals(d2Copy)) {
+	            			if(d1Copy.cloneWithoutHistory().equals(d2Copy.cloneWithoutHistory())) {
 		            			superFlousKey = intersection.iterator().next();
 		            			superFlousVar = var;
 		            			first = d1;
@@ -295,6 +266,10 @@ public class Constraint implements Cloneable {
 	    	}
         }
 
+        for (Disjunct disjunct : newDisjuncts) {
+			disjunct.reconcileHistory();
+		}
+        
         //store set with new hash codes
         clone.disjuncts = new HashSet<Disjunct>(newDisjuncts);
         return clone;

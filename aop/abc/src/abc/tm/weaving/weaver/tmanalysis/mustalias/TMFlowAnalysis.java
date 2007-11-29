@@ -18,6 +18,10 @@
  */
 package abc.tm.weaving.weaver.tmanalysis.mustalias;
 
+import java.util.Map;
+
+import soot.Local;
+import soot.jimple.toolkits.pointer.InstanceKey;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.weaver.tmanalysis.mustalias.IntraProceduralTMFlowAnalysis.Status;
 
@@ -42,5 +46,11 @@ public interface TMFlowAnalysis {
      * @param status the status to set
      */
     public void setStatus(Status status);
+
+	/**
+	 * Converts a mapping from tracematch formals to advice locals to
+	 * a mapping from tracematch formals to instance keys.
+	 */
+	public Map<String,InstanceKey> reMap(Map<String, Local> tmFormalToAdviceLocal);
 
 }
