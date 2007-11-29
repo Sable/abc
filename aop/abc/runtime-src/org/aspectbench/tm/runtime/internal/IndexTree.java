@@ -35,5 +35,5 @@ public interface IndexTree {
 	 * Get an iterator over all ITDBinding objects for the given
 	 * set of keys, or null if none.
 	 */
-	public Iterator<ITDBinding> get(Object[] keys);
+	public Iterator get(Object[] keys);
 }

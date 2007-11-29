@@ -19,10 +19,11 @@ package org.aspectbench.tm.runtime.internal;
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-import java.util.List;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class MyWeakRef extends WeakReference {
 	private int hashCode;
@@ -39,7 +40,7 @@ public class MyWeakRef extends WeakReference {
 	public MyWeakRef(Object arg0, ReferenceQueue arg1, boolean trackContainers) {
 		super(arg0, arg1);
 		if(trackContainers)
-			containers = new ArrayList<WeakRefContainer>();
+			containers = new ArrayList();
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class MyWeakRef extends WeakReference {
 	 * MyWeakRefs can optionally be registered with WeakRefContainers; on expiry,
 	 * one can notify all containers.
 	 */
-	private List<WeakRefContainer> containers = null;
+	private List containers = null;
 	
 	/**
 	 * Add a new container to the list 
@@ -91,7 +92,8 @@ public class MyWeakRef extends WeakReference {
 	 * Notify all containers of expiry, then drop all references to them.
 	 */
 	public void notifyContainers() {
-		for(WeakRefContainer c : containers) {
+		for (Iterator contIter = containers.iterator(); contIter.hasNext();) {
+			WeakRefContainer c = (WeakRefContainer) contIter.next();
 			c.weakrefExpired(this);
 		}
 		containers = null;
