@@ -39,6 +39,7 @@ public class MyWeakRef extends WeakReference {
 	
 	public MyWeakRef(Object arg0, ReferenceQueue arg1, boolean trackContainers) {
 		super(arg0, arg1);
+		hashCode = System.identityHashCode(arg0);
 		if(trackContainers)
 			containers = new ArrayList();
 	}
