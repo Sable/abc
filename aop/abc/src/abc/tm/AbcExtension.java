@@ -75,6 +75,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
     private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
     private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
     private static final ID PASS_DYNAMIC_INSTRUMENTATION = new ID("Dynamic instrumentation");
+    private static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
     
 
     protected void collectVersions(StringBuffer versions)
@@ -162,7 +163,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
         
         if (abc.main.Debug.v().useITDs) {
             OptionsParser.v().set_tag_instructions(true);
-            passes.add(new ReweavingPass(new ID("itd-analysis"),
+            passes.add(new ReweavingPass(PASS_ITD_ANALYSIS,
                                          new ITDAnalysis()));
         }
 
