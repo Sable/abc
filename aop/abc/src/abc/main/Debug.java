@@ -249,8 +249,8 @@ public class Debug {
 	public boolean dynaInstr = false;
 	//enable shadow counting
 	public boolean shadowCount = false;
-    
-    public boolean useShadowMotion = true;
+    //enable run-once optimization
+    public boolean useRunOnce = true;
  
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
