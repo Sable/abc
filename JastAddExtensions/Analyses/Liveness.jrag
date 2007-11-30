@@ -38,4 +38,42 @@ aspect Liveness {
 		return false;
 	}
 	
+	syn lazy boolean LocalDeclaration.mayDefBetween(Stmt begin, Stmt end) circular [false] {
+		if(begin.mayDef(this)) return true;
+		if(begin == end) return false;
+		for(Iterator i=begin.gsucc(begin, end).iterator();i.hasNext();)
+			if(mayDefBetween((Stmt)i.next(), end))
+				return true;
+		return false;
+	}
+	
+	syn lazy boolean LocalDeclaration.accessedOutside(Stmt begin, Stmt end) = 
+		accessedBefore(begin) || accessedAfter(end);
+	
+	syn lazy boolean LocalDeclaration.accessedBefore(Stmt stmt) circular [false] {
+		for(Iterator i=stmt.pred().iterator();i.hasNext();) {
+			Stmt before = (Stmt)i.next();
+			if(!before.between(getBlock(), -1, Integer.MAX_VALUE))
+				continue;
+			if(before.mayAccess(this))
+				return true;
+			if(accessedBefore(before))
+				return true;
+		}
+		return false;
+	}
+	
+	syn lazy boolean LocalDeclaration.accessedAfter(Stmt stmt) circular [false] {
+		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(!next.between(getBlock(), -1, Integer.MAX_VALUE))
+				continue;
+			if(next.mayAccess(this))
+				return true;
+			if(accessedAfter(next))
+				return true;
+		}
+		return false;
+	}
+	
 }

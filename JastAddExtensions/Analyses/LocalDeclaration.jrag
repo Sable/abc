@@ -1,0 +1,32 @@
+aspect LocalDeclaration {
+	
+	// a local declaration is either a variable declaration or a parameter declaration
+	
+	interface LocalDeclaration { 
+		Access getTypeAccess();
+		String getID();
+		Block getBlock();
+		ParameterDeclaration asParameterDeclaration();
+		VariableDeclaration asVariableDeclaration();
+	}
+	
+	ParameterDeclaration implements LocalDeclaration;
+	VariableDeclaration implements LocalDeclaration;
+	
+	public ParameterDeclaration ParameterDeclaration.asParameterDeclaration() {
+		return (ParameterDeclaration)fullCopy();
+	}
+	
+	public ParameterDeclaration VariableDeclaration.asParameterDeclaration() {
+		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
+	}
+	
+	public VariableDeclaration ParameterDeclaration.asVariableDeclaration() {
+		return new VariableDeclaration((Access)getTypeAccess().fullCopy(), getID());
+	}
+	
+	public VariableDeclaration VariableDeclaration.asVariableDeclaration() {
+		return (VariableDeclaration)fullCopy();
+	}
+	
+}
