@@ -104,6 +104,7 @@ public class WeakKeyIdentityHashMap extends IdentityHashMap {
 	 */
 	public Object get(Object key) {
 		//key = getMarker(key);
+	    key = PersistentWeakRef.getWeakRef(key);
 		return super.get(key);
 	}
 
