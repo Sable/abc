@@ -579,7 +579,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 	}
 
     protected java.util.Map uncaughtThrowsBetween_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 97
+    // Declared in ParameterClassification.jrag at line 26
     public Set uncaughtThrowsBetween(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);

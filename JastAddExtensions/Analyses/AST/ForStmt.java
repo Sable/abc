@@ -629,22 +629,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_Set_following(this, caller);
     }
 
-    // Declared in Domination.jrag at line 57
-    public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
-        if(caller == getUpdateStmtListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  hostBlock();
-        }
-        if(caller == getInitStmtListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  hostBlock();
-        }
-        if(caller == getStmtNoTransform()) {
-            return  hostBlock();
-        }
-        return getParent().Define_Block_hostBlock(this, caller);
-    }
-
     // Declared in UnreachableStatements.jrag at line 140
     public boolean Define_boolean_reportUnreachable(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
@@ -653,7 +637,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_reportUnreachable(this, caller);
     }
 
-    // Declared in Domination.jrag at line 73
+    // Declared in Domination.jrag at line 66
     public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
         if(caller == getUpdateStmtListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);

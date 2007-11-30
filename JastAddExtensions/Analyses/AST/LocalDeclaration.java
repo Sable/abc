@@ -3,46 +3,45 @@ package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
 
 	
-	// TODO: do we need to make sure that the potential parameters are really
-	//       used within the selection? or is that subsumed by the other checks?
+	// a local declaration is either a variable declaration or a parameter declaration
 	
 	public interface LocalDeclaration {
-    // Declared in ParameterClassification.jrag at line 7
+    // Declared in LocalDeclaration.jrag at line 6
  
 		Access getTypeAccess();
 
-    // Declared in ParameterClassification.jrag at line 8
+    // Declared in LocalDeclaration.jrag at line 7
 
 		String getID();
 
-    // Declared in ParameterClassification.jrag at line 9
+    // Declared in LocalDeclaration.jrag at line 8
 
 		Block getBlock();
 
-    // Declared in ParameterClassification.jrag at line 10
+    // Declared in LocalDeclaration.jrag at line 9
 
 		ParameterDeclaration asParameterDeclaration();
 
-    // Declared in ParameterClassification.jrag at line 11
+    // Declared in LocalDeclaration.jrag at line 10
 
 		VariableDeclaration asVariableDeclaration();
 
-    // Declared in ParameterClassification.jrag at line 33
-    public boolean isValueParmFor(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 37
-    public boolean isOutParmFor(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 44
+    // Declared in Liveness.jrag at line 41
     public boolean mayDefBetween(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 53
+    // Declared in Liveness.jrag at line 50
     public boolean accessedOutside(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 56
+    // Declared in Liveness.jrag at line 53
     public boolean accessedBefore(Stmt stmt);
-    // Declared in ParameterClassification.jrag at line 69
+    // Declared in Liveness.jrag at line 66
     public boolean accessedAfter(Stmt stmt);
-    // Declared in ParameterClassification.jrag at line 82
+    // Declared in ParameterClassification.jrag at line 3
+    public boolean isValueParmFor(Stmt begin, Stmt end);
+    // Declared in ParameterClassification.jrag at line 7
+    public boolean isOutParmFor(Stmt begin, Stmt end);
+    // Declared in ParameterClassification.jrag at line 11
     public boolean shouldMoveOutOf(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 85
+    // Declared in ParameterClassification.jrag at line 14
     public boolean shouldMoveInto(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 92
+    // Declared in ParameterClassification.jrag at line 21
     public boolean shouldDuplicate(Stmt begin, Stmt end);
 }

@@ -236,7 +236,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isMethodParameter(this, caller);
     }
 
-    // Declared in Domination.jrag at line 67
+    // Declared in Domination.jrag at line 60
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterNoTransform()) {
             return  getBlock();

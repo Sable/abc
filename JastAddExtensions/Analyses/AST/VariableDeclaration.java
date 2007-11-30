@@ -16,12 +16,12 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         isLiveBetween_Stmt_Stmt_values = null;
         isLiveAfter_Stmt_values = null;
         isLiveAtOrAfter_Stmt_values = null;
-        isValueParmFor_Stmt_Stmt_values = null;
-        isOutParmFor_Stmt_Stmt_values = null;
         mayDefBetween_Stmt_Stmt_values = null;
         accessedOutside_Stmt_Stmt_values = null;
         accessedBefore_Stmt_values = null;
         accessedAfter_Stmt_values = null;
+        isValueParmFor_Stmt_Stmt_values = null;
+        isOutParmFor_Stmt_Stmt_values = null;
         shouldMoveOutOf_Stmt_Stmt_values = null;
         shouldDuplicate_Stmt_Stmt_values = null;
         VariableDeclaration_uses_visited = false;
@@ -42,12 +42,12 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         node.isLiveBetween_Stmt_Stmt_values = null;
         node.isLiveAfter_Stmt_values = null;
         node.isLiveAtOrAfter_Stmt_values = null;
-        node.isValueParmFor_Stmt_Stmt_values = null;
-        node.isOutParmFor_Stmt_Stmt_values = null;
         node.mayDefBetween_Stmt_Stmt_values = null;
         node.accessedOutside_Stmt_Stmt_values = null;
         node.accessedBefore_Stmt_values = null;
         node.accessedAfter_Stmt_values = null;
+        node.isValueParmFor_Stmt_Stmt_values = null;
+        node.isOutParmFor_Stmt_Stmt_values = null;
         node.shouldMoveOutOf_Stmt_Stmt_values = null;
         node.shouldDuplicate_Stmt_Stmt_values = null;
         node.in$Circle(false);
@@ -217,14 +217,14 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
 		return changes;
 	}
 
-    // Declared in ParameterClassification.jrag at line 21
+    // Declared in LocalDeclaration.jrag at line 20
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
 	}
 
-    // Declared in ParameterClassification.jrag at line 29
+    // Declared in LocalDeclaration.jrag at line 28
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -623,7 +623,7 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
 
     protected boolean getBlock_computed = false;
     protected Block getBlock_value;
-    // Declared in Domination.jrag at line 62
+    // Declared in Domination.jrag at line 55
     public Block getBlock() {
         if(getBlock_computed)
             return getBlock_value;
@@ -638,7 +638,7 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
     private Block getBlock_compute() {  return  hostBlock();  }
 
     protected java.util.Map shouldMoveInto_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 87
+    // Declared in ParameterClassification.jrag at line 16
     public boolean shouldMoveInto(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
@@ -892,51 +892,6 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
 		return false;
 	}
 
-    protected java.util.Map isValueParmFor_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 33
-    public boolean isValueParmFor(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(isValueParmFor_Stmt_Stmt_values == null) isValueParmFor_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(isValueParmFor_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)isValueParmFor_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean isValueParmFor_Stmt_Stmt_value = isValueParmFor_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            isValueParmFor_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(isValueParmFor_Stmt_Stmt_value));
-        return isValueParmFor_Stmt_Stmt_value;
-    }
-
-    private boolean isValueParmFor_compute(Stmt begin, Stmt end)  {
-		return isLiveBetween(begin, end); // && !isLiveAfter(end);
-	}
-
-    protected java.util.Map isOutParmFor_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 37
-    public boolean isOutParmFor(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(isOutParmFor_Stmt_Stmt_values == null) isOutParmFor_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(isOutParmFor_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)isOutParmFor_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean isOutParmFor_Stmt_Stmt_value = isOutParmFor_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            isOutParmFor_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(isOutParmFor_Stmt_Stmt_value));
-        return isOutParmFor_Stmt_Stmt_value;
-    }
-
-    private boolean isOutParmFor_compute(Stmt begin, Stmt end)  {
-		boolean live = isLiveAfter(end);
-		boolean defd = mayDefBetween(begin, end);
-		return live && defd;
-		//return isLiveAfter(end) && mayDefBetween(begin, end);
-	}
-
     protected java.util.Set mayDefBetween_Stmt_Stmt_visited;
     protected java.util.Set mayDefBetween_Stmt_Stmt_computed = new java.util.HashSet(4);
     protected java.util.Set mayDefBetween_Stmt_Stmt_initialized = new java.util.HashSet(4);
@@ -1008,7 +963,7 @@ if(mayDefBetween_Stmt_Stmt_values == null) mayDefBetween_Stmt_Stmt_values = new 
 	}
 
     protected java.util.Map accessedOutside_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 53
+    // Declared in Liveness.jrag at line 50
     public boolean accessedOutside(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
@@ -1171,8 +1126,50 @@ if(accessedAfter_Stmt_values == null) accessedAfter_Stmt_values = new java.util.
 		return false;
 	}
 
+    protected java.util.Map isValueParmFor_Stmt_Stmt_values;
+    // Declared in ParameterClassification.jrag at line 3
+    public boolean isValueParmFor(Stmt begin, Stmt end) {
+        java.util.List _parameters = new java.util.ArrayList(2);
+        _parameters.add(begin);
+        _parameters.add(end);
+if(isValueParmFor_Stmt_Stmt_values == null) isValueParmFor_Stmt_Stmt_values = new java.util.HashMap(4);
+        if(isValueParmFor_Stmt_Stmt_values.containsKey(_parameters))
+            return ((Boolean)isValueParmFor_Stmt_Stmt_values.get(_parameters)).booleanValue();
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        boolean isValueParmFor_Stmt_Stmt_value = isValueParmFor_compute(begin, end);
+        if(isFinal && num == boundariesCrossed)
+            isValueParmFor_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(isValueParmFor_Stmt_Stmt_value));
+        return isValueParmFor_Stmt_Stmt_value;
+    }
+
+    private boolean isValueParmFor_compute(Stmt begin, Stmt end)  {
+		return isLiveBetween(begin, end);
+	}
+
+    protected java.util.Map isOutParmFor_Stmt_Stmt_values;
+    // Declared in ParameterClassification.jrag at line 7
+    public boolean isOutParmFor(Stmt begin, Stmt end) {
+        java.util.List _parameters = new java.util.ArrayList(2);
+        _parameters.add(begin);
+        _parameters.add(end);
+if(isOutParmFor_Stmt_Stmt_values == null) isOutParmFor_Stmt_Stmt_values = new java.util.HashMap(4);
+        if(isOutParmFor_Stmt_Stmt_values.containsKey(_parameters))
+            return ((Boolean)isOutParmFor_Stmt_Stmt_values.get(_parameters)).booleanValue();
+        int num = boundariesCrossed;
+        boolean isFinal = this.is$Final();
+        boolean isOutParmFor_Stmt_Stmt_value = isOutParmFor_compute(begin, end);
+        if(isFinal && num == boundariesCrossed)
+            isOutParmFor_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(isOutParmFor_Stmt_Stmt_value));
+        return isOutParmFor_Stmt_Stmt_value;
+    }
+
+    private boolean isOutParmFor_compute(Stmt begin, Stmt end)  {
+		return isLiveAfter(end) && mayDefBetween(begin, end);
+	}
+
     protected java.util.Map shouldMoveOutOf_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 82
+    // Declared in ParameterClassification.jrag at line 11
     public boolean shouldMoveOutOf(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
@@ -1192,7 +1189,7 @@ if(shouldMoveOutOf_Stmt_Stmt_values == null) shouldMoveOutOf_Stmt_Stmt_values = 
 		between(begin, end)	&& accessedAfter(end);  }
 
     protected java.util.Map shouldDuplicate_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 92
+    // Declared in ParameterClassification.jrag at line 21
     public boolean shouldDuplicate(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);

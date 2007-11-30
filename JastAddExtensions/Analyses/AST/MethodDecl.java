@@ -1232,7 +1232,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
 
-    // Declared in Domination.jrag at line 65
+    // Declared in Domination.jrag at line 58
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterListNoTransform()) {
       int childIndex = caller.getIndexOfChild(child);
@@ -1519,12 +1519,12 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_MethodDecl_overriders();
     }
-    protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
-        collection.add(this);
-    }
-
     protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
         collection.addAll(uses());
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
+        collection.add(this);
     }
 
 }

@@ -563,7 +563,7 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return hostBlock_value;
     }
 
-    // Declared in Domination.jrag at line 69
+    // Declared in Domination.jrag at line 62
     public boolean isInitOrUpdateStmt() {
         boolean isInitOrUpdateStmt_value = getParent().Define_boolean_isInitOrUpdateStmt(this, null);
         return isInitOrUpdateStmt_value;

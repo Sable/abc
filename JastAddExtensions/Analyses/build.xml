@@ -43,10 +43,12 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		<fileset file="LocalDeclaration.jrag"/>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+			<include name="**/*.jrag"/>
+			<exclude name="LocalDeclaration.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
