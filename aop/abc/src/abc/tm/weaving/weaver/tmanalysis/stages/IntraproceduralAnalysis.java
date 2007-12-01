@@ -138,7 +138,7 @@ public class IntraproceduralAnalysis extends AbstractAnalysisStage {
                 boolean allRemoved = UnnecessaryShadowsElimination.apply(tm, g, tmLocalsToDefStatements, localMustAliasAnalysis, localNotMayAliasAnalysis);
 
                 if(!allRemoved) {
-                    if(Debug.v().useShadowMotion) {
+                    if(Debug.v().useRunOnce) {
                         RunOnceOptimization.apply(tm, g, tmLocalsToDefStatements, localMustAliasAnalysis, localNotMayAliasAnalysis);
                     }
                 }
