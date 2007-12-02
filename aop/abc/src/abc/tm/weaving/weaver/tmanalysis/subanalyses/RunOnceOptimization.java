@@ -195,14 +195,14 @@ public class RunOnceOptimization {
 	    }
         
         Set<Stmt> initPositions = new HashSet<Stmt>(); 
-        Unit reboundLoopHead = weaver.reverseRebind(loopHead);
+        Unit reboundLoopHead = (Unit) weaver.reverseRebind(loopHead);
         if(reboundLoopHead!=loopHead) {
         	initPositions.add((Stmt) reboundLoopHead);
         } else {
         	Set<Unit> preds = new HashSet<Unit>(g.getPredsOf(loopHead)); 
         	preds.removeAll(loopStatements);
             for (Unit pred : preds) {
-    			Unit reboundPred = weaver.reverseRebind(pred);
+    			Unit reboundPred = (Unit) weaver.reverseRebind(pred);
     			if(reboundPred!=pred) {
     				initPositions.add((Stmt) reboundPred);
     			} else {

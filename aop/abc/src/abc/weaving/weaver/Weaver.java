@@ -63,8 +63,8 @@ public class Weaver {
 
     protected final AspectCodeGen ag;
     
-    protected Map unitBindings = new HashMap();
-    protected Map reverseUnitBindings;
+    protected Map<Object,Object> unitBindings = new HashMap();
+    protected Map<Object,Object> reverseUnitBindings;
 
 	protected Unweaver unweaver; 
 
@@ -95,16 +95,16 @@ public class Weaver {
      * Due to reweaving, there can be multiple versions (copies) of one and the
      * same unit. This method returns for the original version of a unit the current unit,
      * i.e. the unit after the original bodies were restored last.
-     * @param ut a possibly original unit, i.e. from before weaving
-     * @return the current version of ut or ut itself, if no current version exists
+     * @param unitTrapOrLocal a possibly original unit, trap or local, i.e. from before weaving
+     * @return the current version of unitTrapOrLocal or unitTrapOrLocal itself, if no current version exists
      * @see #reverseRebind(Unit)
      */
-    public Unit rebind(Unit ut) {
-        Unit result=(Unit)unitBindings.get(ut);
+    public Object rebind(Object unitTrapOrLocal) {
+        Object result= unitBindings.get(unitTrapOrLocal);
         if (result!=null)
                 return result;
         else
-                return ut;
+                return unitTrapOrLocal;
     }
     
     /**
@@ -112,16 +112,16 @@ public class Weaver {
      * same unit. This method returns for the current version of a unit the original version
      * that existed right before the first weaving. That way, by using this method
      * one can get the same view on a unit across multiple reweaving steps. 
-     * @param ut a current unit
-     * @return the copy of this unit that existed right before the first weaving
-     * or ut itself, if there exists no such copy
+     * @param unitTrapOrLocal a current unit, trap or local
+     * @return the copy of this unit, trap or local that existed right before the first weaving
+     * or unitTrapOrLocal itself, if there exists no such copy
      */
-    public Unit reverseRebind(Unit ut) {
-        Unit result=(Unit)reverseUnitBindings.get(ut);
+    public Object reverseRebind(Object unitTrapOrLocal) {
+    	Object result= reverseUnitBindings.get(unitTrapOrLocal);
         if (result!=null)
                 return result;
         else
-                return ut;
+                return unitTrapOrLocal;
     }
     
     /**

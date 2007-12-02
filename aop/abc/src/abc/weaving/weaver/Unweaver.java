@@ -92,13 +92,13 @@ public class Unweaver {
     }
 
     /** Restore saved bodies to their original methods. */
-    public Map restore() {
+    public Map<Object,Object> restore() {
         Map ret = new HashMap();
         for( Iterator mIt = savedBodies.keySet().iterator(); mIt.hasNext(); ) {
             final SootMethod m = (SootMethod) mIt.next();
             debug( "restoring body of "+m );
             Body newBody = Jimple.v().newBody(m);
-            Map newBindings = 
+            Map<Object,Object> newBindings = 
                 newBody.importBodyContentsFrom((Body)savedBodies.get(m));
             m.setActiveBody(newBody);
             m.setParameterTypes((List)savedParameters.get(m));
