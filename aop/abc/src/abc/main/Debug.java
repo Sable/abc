@@ -185,7 +185,7 @@ public class Debug {
     // dump each advice application just before weaving it
     public boolean dumpAAWeave = false;
 
-    public boolean optimizeResidues = false;
+    public boolean optimizeResidues = true;
     public boolean constructorInliner = false;
 
     public boolean countCflowStacks = false;
