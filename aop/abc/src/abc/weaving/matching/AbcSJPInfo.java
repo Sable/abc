@@ -189,12 +189,12 @@ public class AbcSJPInfo implements SJPInfo {
 	return sb.toString();
     }
 
-    protected static String makeAdviceSigData(SootMethod method) {
+    public static String makeAdviceSigData(SootMethod method) {
 	return makeMethodSigData(method);
     }
 
 
-    protected static String makeInitializationSigData(SootClass intrface) {
+    public static String makeInitializationSigData(SootClass intrface) {
 	StringBuffer sb=new StringBuffer();
 	sb.append('0'); // FIXME: check if we should assume public always?
 	sb.append('-');
@@ -207,7 +207,7 @@ public class AbcSJPInfo implements SJPInfo {
 	return sb.toString();
     }
 
-    protected static String makeConstructorSigData(SootMethod method) {
+    public static String makeConstructorSigData(SootMethod method) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());
 	sb.append('-');
@@ -251,7 +251,7 @@ public class AbcSJPInfo implements SJPInfo {
 	return sb.toString();
     }
 
-    protected static String makeStaticInitializerSigData(SootMethod method) {
+    public static String makeStaticInitializerSigData(SootMethod method) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());
 	sb.append('-');
@@ -261,7 +261,7 @@ public class AbcSJPInfo implements SJPInfo {
 	return sb.toString();
     }
 
-    protected static String makeHandlerSigData
+    public static String makeHandlerSigData
 	(SootMethod container,SootClass sootexc,Stmt stmt) {
 
 	StringBuffer sb=new StringBuffer();
@@ -287,7 +287,7 @@ public class AbcSJPInfo implements SJPInfo {
 	return sb.toString();
     }
 
-    protected static String makeFieldSigData(SootField field) {
+    public static String makeFieldSigData(SootField field) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(MethodCategory.getModifiers(field)).toString());
 	sb.append('-');
@@ -300,7 +300,7 @@ public class AbcSJPInfo implements SJPInfo {
 	return sb.toString();
     }
 
-    protected static String makeFieldSigData(SootFieldRef fieldref) {
+    public static String makeFieldSigData(SootFieldRef fieldref) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(MethodCategory.getModifiers(fieldref.resolve())).toString());
 	sb.append('-');
