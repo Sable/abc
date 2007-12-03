@@ -185,7 +185,13 @@ public class Debug {
     // dump each advice application just before weaving it
     public boolean dumpAAWeave = false;
 
-    public boolean optimizeResidues = true;
+    
+    /* This flag doe snot really have any effect any more, since residues are now already
+     * optimized during construction. The only time where they might need to be re-optimized
+     * is if a static analysis modifies a ResidueBox, which is then done automatically
+     * and regardless of this flag.
+     */
+    public boolean optimizeResidues = false;
     public boolean constructorInliner = false;
 
     public boolean countCflowStacks = false;
@@ -228,7 +234,13 @@ public class Debug {
     //currently generates synchronized blocks which dava cannot deal with
     public boolean enableLockPointcuts = false;
     
-    // Avoid clobbering the variable namespace with 'global'
+    //enable pointcut maybeShared() (backed by ThreadLocalObjectsAnalysis)
+    public boolean enableMaybeSharedPointcut = true;
+   
+    //enable optimization of pointcut maybeShared()
+	public boolean optimizeMaybeSharedPointcut = false;
+
+	// Avoid clobbering the variable namespace with 'global'
     public boolean noGlobalPointcut = false;
     
     // To compile java1.4 code in a java5 environment, you sometimes need to allow
@@ -251,7 +263,7 @@ public class Debug {
 	public boolean shadowCount = false;
     //enable run-once optimization
     public boolean useRunOnce = true;
- 
+    
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
         	String m="Done phase: "+s;        	
