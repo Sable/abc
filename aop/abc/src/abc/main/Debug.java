@@ -186,7 +186,7 @@ public class Debug {
     public boolean dumpAAWeave = false;
 
     
-    /* This flag doe snot really have any effect any more, since residues are now already
+    /* This flag does not really have any effect any more, since residues are now already
      * optimized during construction. The only time where they might need to be re-optimized
      * is if a static analysis modifies a ResidueBox, which is then done automatically
      * and regardless of this flag.
