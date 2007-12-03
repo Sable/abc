@@ -14,4 +14,16 @@ aspect ASTUtil {
 		return l;
 	}
 	
+	public int ASTNode.indexIn(ASTNode n) {
+		if(getParent() == n)
+			return getParent().getIndexOfChild(this);
+		if(getParent() == null)
+			return -1;
+		return getParent().indexIn(n);
+	}
+	
+	public boolean Opt.isEmpty() {
+		return getNumChild() == 0;
+	}
+	
 }

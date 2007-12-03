@@ -1837,7 +1837,7 @@ if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java
         return getParent().Define_boolean_hasPackage(this, caller, packageName);
     }
 
-    // Declared in Domination.jrag at line 64
+    // Declared in Domination.jrag at line 67
     public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

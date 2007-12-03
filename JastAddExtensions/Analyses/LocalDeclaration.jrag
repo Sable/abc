@@ -29,4 +29,40 @@ aspect LocalDeclaration {
 		return (VariableDeclaration)fullCopy();
 	}
 	
+	inh Collection Stmt.visibleLocalDecls();
+	inh Collection CatchClause.visibleLocalDecls();
+	
+	eq TypeDecl.getChild().visibleLocalDecls() = new ArrayList();
+	eq MethodDecl.getBlock().visibleLocalDecls() {
+		ArrayList decls = new ArrayList();
+		for(int i=0;i<getNumParameter();++i)
+			decls.add(getParameter(i));
+		return decls;
+	}
+	eq Block.getStmt(int k).visibleLocalDecls() {
+		Collection decls = visibleLocalDecls();
+		decls.addAll(localDeclsBetween(0,k-1));
+		return decls;
+	}
+	eq CatchClause.getBlock().visibleLocalDecls() {
+		Collection decls = visibleLocalDecls();
+		decls.add(getParameter());
+		return decls;
+	}
+	eq ForStmt.getStmt().visibleLocalDecls() {
+		Collection decls = visibleLocalDecls();
+		for(int i=0;i<getNumInitStmt();++i)
+			if(getInitStmt(i) instanceof VariableDeclaration)
+				decls.add(getInitStmt(i));
+		return decls;
+	}
+	
+	syn Collection Block.localDeclsBetween(int start, int end) {
+		ArrayList decls = new ArrayList();
+		for(int i=start;i<=end;++i)
+			if(getStmt(i) instanceof VariableDeclaration)
+				decls.add(getStmt(i));
+		return decls;
+	}
+	
 }

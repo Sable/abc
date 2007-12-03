@@ -198,19 +198,19 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachableCatchClause_value;
     }
 
+    // Declared in LocalDeclaration.jrag at line 33
+    public Collection visibleLocalDecls() {
+        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
+        return visibleLocalDecls_value;
+    }
+
     // Declared in ControlFlowGraph.jrag at line 167
     public Set enclosingFinally() {
         Set enclosingFinally_value = getParent().Define_Set_enclosingFinally(this, null);
         return enclosingFinally_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 181
-    public Collection visibleLocalDecls() {
-        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
-        return visibleLocalDecls_value;
-    }
-
-    // Declared in ExtractMethod.jrag at line 195
+    // Declared in LocalDeclaration.jrag at line 47
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
 		Collection decls = visibleLocalDecls();
@@ -236,7 +236,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isMethodParameter(this, caller);
     }
 
-    // Declared in Domination.jrag at line 60
+    // Declared in Domination.jrag at line 63
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterNoTransform()) {
             return  getBlock();

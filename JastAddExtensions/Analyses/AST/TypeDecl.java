@@ -3048,7 +3048,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Set_following(this, caller);
     }
 
-    // Declared in ExtractMethod.jrag at line 183
+    // Declared in LocalDeclaration.jrag at line 35
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);
@@ -3285,15 +3285,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_isAnonymous(this, caller);
     }
 
-    // Declared in ControlFlowGraph.jrag at line 168
-    public Set Define_Set_enclosingFinally(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  Set.empty();
-        }
-        return getParent().Define_Set_enclosingFinally(this, caller);
-    }
-
     // Declared in ControlFlowGraph.jrag at line 413
     public Stmt Define_Stmt_exitBlock(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -3301,6 +3292,15 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
             return  getBodyDecl(i).exitBlock();
         }
         return getParent().Define_Stmt_exitBlock(this, caller);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 168
+    public Set Define_Set_enclosingFinally(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  Set.empty();
+        }
+        return getParent().Define_Set_enclosingFinally(this, caller);
     }
 
     // Declared in Modifiers.jrag at line 292

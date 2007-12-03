@@ -52,6 +52,9 @@ aspect Domination {
 	eq Block.getStmt().hostBlock() = this;
 	eq ConstructorDecl.getConstructorInvocation().hostBlock() = getBlock();
 	
+	syn int Stmt.indexInHostBlock() = indexInBlock(hostBlock());
+	syn int Stmt.indexInBlock(Block blk) = indexIn(blk.getStmtList());
+	
 	syn lazy Block VariableDeclaration.getBlock() = hostBlock();
 	
 	inh lazy Block ParameterDeclaration.getBlock();

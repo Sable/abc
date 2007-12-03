@@ -89,7 +89,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
-    // Declared in ExtractMethod.jrag at line 50
+    // Declared in ExtractMethod.jrag at line 42
 
 	
 	public void encapsulate(java.util.List changes, String name, 
@@ -149,7 +149,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		changes.add(new BlockBodyChange(this, stmts));
 	}
 
-    // Declared in ExtractMethod.jrag at line 107
+    // Declared in ExtractMethod.jrag at line 99
 
 	
 	private void analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
@@ -177,7 +177,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		}
 	}
 
-    // Declared in ExtractMethod.jrag at line 132
+    // Declared in ExtractMethod.jrag at line 124
 
 	
 	private MethodDecl createMethod(boolean static_ctxt, String name, 
@@ -455,6 +455,20 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 		return null;
 	}
 
+    // Declared in LocalDeclaration.jrag at line 60
+    public Collection localDeclsBetween(int start, int end) {
+        Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
+        return localDeclsBetween_int_int_value;
+    }
+
+    private Collection localDeclsBetween_compute(int start, int end)  {
+		ArrayList decls = new ArrayList();
+		for(int i=start;i<=end;++i)
+			if(getStmt(i) instanceof VariableDeclaration)
+				decls.add(getStmt(i));
+		return decls;
+	}
+
     // Declared in ControlFlowGraph.jrag at line 7
     public Set succ() {
         Set succ_value = succ_compute();
@@ -562,20 +576,6 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 			set = set.union(exitsAfter(next));
 		}
 		return set;
-	}
-
-    // Declared in ExtractMethod.jrag at line 208
-    public Collection localDeclsBetween(int start, int end) {
-        Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
-        return localDeclsBetween_int_int_value;
-    }
-
-    private Collection localDeclsBetween_compute(int start, int end)  {
-		ArrayList decls = new ArrayList();
-		for(int i=start;i<=end;++i)
-			if(getStmt(i) instanceof VariableDeclaration)
-				decls.add(getStmt(i));
-		return decls;
 	}
 
     protected java.util.Map uncaughtThrowsBetween_Stmt_Stmt_values;
@@ -709,7 +709,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return accessType_TypeDecl_boolean_value;
     }
 
-    // Declared in ExtractMethod.jrag at line 190
+    // Declared in LocalDeclaration.jrag at line 42
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);
@@ -731,6 +731,15 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 	}
 }
         return getParent().Define_boolean_between(this, caller, blk, start, end);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 160
+    public boolean Define_boolean_isFinallyBlock(ASTNode caller, ASTNode child) {
+        if(caller == getStmtListNoTransform()) {
+      int index = caller.getIndexOfChild(child);
+            return  isFinallyBlock() ? false : isFinallyBlock();
+        }
+        return getParent().Define_boolean_isFinallyBlock(this, caller);
     }
 
     // Declared in AccessType.jrag at line 114
@@ -773,15 +782,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 	}
 }
         return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 160
-    public boolean Define_boolean_isFinallyBlock(ASTNode caller, ASTNode child) {
-        if(caller == getStmtListNoTransform()) {
-      int index = caller.getIndexOfChild(child);
-            return  isFinallyBlock() ? false : isFinallyBlock();
-        }
-        return getParent().Define_boolean_isFinallyBlock(this, caller);
     }
 
     // Declared in LookupVariable.jrag at line 71

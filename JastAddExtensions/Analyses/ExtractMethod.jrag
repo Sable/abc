@@ -3,18 +3,8 @@ import changes.*;
 aspect ExtractMethod {
 	
 	public java.util.List CompilationUnit.extract(String name, Stmt begin, Stmt end) throws RefactoringException {
-		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
-			throw new RefactoringException("selection cannot start or end at init or update statements");
-		if(!begin.dominates(end))
-			throw new RefactoringException("begin must dominate end");
-		if(!end.post_dominates(end))
-			throw new RefactoringException("end must post-dominate begin");
+		check_extraction_preconds(name, begin, end);
 		Block begin_host = begin.hostBlock();
-		Block end_host = end.hostBlock();
-		if(begin_host == null || end_host == null)
-			throw new RefactoringException("invalid statement for extraction");
-		if(begin_host != end_host)
-			throw new RefactoringException("selection straddles block borders");
 		BodyDecl bd = begin_host.hostBodyDecl();
 		boolean static_ctxt = false;
 		if(bd instanceof StaticInitializer)
@@ -23,28 +13,30 @@ aspect ExtractMethod {
 			static_ctxt = true;
 		int begin_idx = begin.indexInHostBlock();
 		int end_idx = end.indexInHostBlock();
-		for(int i=begin_idx;i<=end_idx;++i)
-			if(begin_host.getStmt(i) instanceof Case)
-				throw new RefactoringException("selection cannot contain case labels");
 		java.util.List changes = new java.util.Vector();
 		begin_host.encapsulate(changes, name, begin_idx, end_idx, static_ctxt);
 		return changes;
 	}
 	
-	public int ASTNode.indexIn(ASTNode n) {
-		if(getParent() == n)
-			return getParent().getIndexOfChild(this);
-		if(getParent() == null)
-			return -1;
-		return getParent().indexIn(n);
-	}
-	
-	public int Stmt.indexInHostBlock() {
-		return indexInBlock(hostBlock());
-	}
-	
-	public int Stmt.indexInBlock(Block blk) {
-		return indexIn(blk.getStmtList());
+	private void CompilationUnit.check_extraction_preconds(String name, Stmt begin, Stmt end)
+		throws RefactoringException {
+		int begin_idx = begin.indexInHostBlock();
+		int end_idx = end.indexInHostBlock();
+		Block begin_host = begin.hostBlock();
+		Block end_host = end.hostBlock();
+		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
+			throw new RefactoringException("selection cannot start or end at init or update statements");
+		if(!begin.dominates(end))
+			throw new RefactoringException("begin must dominate end");
+		if(!end.post_dominates(end))
+			throw new RefactoringException("end must post-dominate begin");
+		if(begin_host == null || end_host == null)
+			throw new RefactoringException("invalid statement for extraction");
+		if(begin_host != end_host)
+			throw new RefactoringException("selection straddles block borders");
+		for(int i=begin_idx;i<=end_idx;++i)
+			if(begin_host.getStmt(i) instanceof Case)
+				throw new RefactoringException("selection cannot contain case labels");
 	}
 	
 	public void Block.encapsulate(java.util.List changes, String name, 
@@ -171,46 +163,6 @@ aspect ExtractMethod {
 		}
 		Block body = new Block(bodystmts);
 		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, new Opt(body));
-	}
-	
-	public boolean Opt.isEmpty() {
-		return getNumChild() == 0;
-	}
-	
-	inh Collection Stmt.visibleLocalDecls();
-	inh Collection CatchClause.visibleLocalDecls();
-	
-	eq TypeDecl.getChild().visibleLocalDecls() = new ArrayList();
-	eq MethodDecl.getBlock().visibleLocalDecls() {
-		ArrayList decls = new ArrayList();
-		for(int i=0;i<getNumParameter();++i)
-			decls.add(getParameter(i));
-		return decls;
-	}
-	eq Block.getStmt(int k).visibleLocalDecls() {
-		Collection decls = visibleLocalDecls();
-		decls.addAll(localDeclsBetween(0,k-1));
-		return decls;
-	}
-	eq CatchClause.getBlock().visibleLocalDecls() {
-		Collection decls = visibleLocalDecls();
-		decls.add(getParameter());
-		return decls;
-	}
-	eq ForStmt.getStmt().visibleLocalDecls() {
-		Collection decls = visibleLocalDecls();
-		for(int i=0;i<getNumInitStmt();++i)
-			if(getInitStmt(i) instanceof VariableDeclaration)
-				decls.add(getInitStmt(i));
-		return decls;
-	}
-	
-	syn Collection Block.localDeclsBetween(int start, int end) {
-		ArrayList decls = new ArrayList();
-		for(int i=start;i<=end;++i)
-			if(getStmt(i) instanceof VariableDeclaration)
-				decls.add(getStmt(i));
-		return decls;
 	}
 	
 }

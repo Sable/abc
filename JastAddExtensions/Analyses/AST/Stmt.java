@@ -54,20 +54,6 @@ public abstract class Stmt extends ASTNode implements Cloneable {
       error("statement is unreachable");
   }
 
-    // Declared in ExtractMethod.jrag at line 42
-
-	
-	public int indexInHostBlock() {
-		return indexInBlock(hostBlock());
-	}
-
-    // Declared in ExtractMethod.jrag at line 46
-
-	
-	public int indexInBlock(Block blk) {
-		return indexIn(blk.getStmtList());
-	}
-
     // Declared in GuardedControlFlow.jrag at line 14
 
 	
@@ -360,6 +346,22 @@ if(post_dominates_Stmt_values == null) post_dominates_Stmt_values = new java.uti
 		return true;
 	}
 
+    // Declared in Domination.jrag at line 55
+    public int indexInHostBlock() {
+        int indexInHostBlock_value = indexInHostBlock_compute();
+        return indexInHostBlock_value;
+    }
+
+    private int indexInHostBlock_compute() {  return  indexInBlock(hostBlock());  }
+
+    // Declared in Domination.jrag at line 56
+    public int indexInBlock(Block blk) {
+        int indexInBlock_Block_value = indexInBlock_compute(blk);
+        return indexInBlock_Block_value;
+    }
+
+    private int indexInBlock_compute(Block blk) {  return  indexIn(blk.getStmtList());  }
+
     protected java.util.Map gsucc_Block_int_int_values;
     // Declared in GuardedControlFlow.jrag at line 5
     public Set gsucc(Block blk, int start, int end) {
@@ -495,6 +497,12 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return lookupType_String_value;
     }
 
+    // Declared in LocalDeclaration.jrag at line 32
+    public Collection visibleLocalDecls() {
+        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
+        return visibleLocalDecls_value;
+    }
+
     // Declared in ControlFlowGraph.jrag at line 153
     public boolean hasEnclosingTryStmt() {
         boolean hasEnclosingTryStmt_value = getParent().Define_boolean_hasEnclosingTryStmt(this, null);
@@ -563,16 +571,10 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return hostBlock_value;
     }
 
-    // Declared in Domination.jrag at line 62
+    // Declared in Domination.jrag at line 65
     public boolean isInitOrUpdateStmt() {
         boolean isInitOrUpdateStmt_value = getParent().Define_boolean_isInitOrUpdateStmt(this, null);
         return isInitOrUpdateStmt_value;
-    }
-
-    // Declared in ExtractMethod.jrag at line 180
-    public Collection visibleLocalDecls() {
-        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
-        return visibleLocalDecls_value;
     }
 
     // Declared in GuardedControlFlow.jrag at line 24

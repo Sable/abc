@@ -1147,7 +1147,7 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
 
     protected boolean getBlock_computed = false;
     protected Block getBlock_value;
-    // Declared in Domination.jrag at line 57
+    // Declared in Domination.jrag at line 60
     public Block getBlock() {
         if(getBlock_computed)
             return getBlock_value;

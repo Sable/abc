@@ -623,7 +623,7 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
 
     protected boolean getBlock_computed = false;
     protected Block getBlock_value;
-    // Declared in Domination.jrag at line 55
+    // Declared in Domination.jrag at line 58
     public Block getBlock() {
         if(getBlock_computed)
             return getBlock_value;
