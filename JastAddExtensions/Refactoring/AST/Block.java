@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
   // a statement that can be reached by break or continue
 public class Block extends Stmt implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -92,7 +92,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     // Declared in ExtractMethod.jrag at line 42
 
 	
-	public void encapsulate(java.util.List changes, String name, 
+	public void encapsulate(java.util.List changes, String name, String vis, 
 				int begin, int end, boolean static_ctxt) 
 			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
@@ -114,7 +114,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		for(int i=begin;i<=end;++i)
 			bodystmts.add(getStmt(i));
 		// create declaration of method
-		MethodDecl md = createMethod(static_ctxt, name, parms, ret, exns, localVars, bodystmts);
+		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, exns, localVars, bodystmts);
 		// prepare new block body
 		Collection stmts = new ArrayList();
 		int i;
@@ -165,7 +165,12 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 				ret.setChild(((ASTNode)decl).fullCopy(), 0);
 			}
 			if(decl.shouldMoveInto(begin_stmt, end_stmt)) {
-				localVars.add(decl.asVariableDeclaration());
+				// record it as a local variable for the method being constructed
+				// note: we have to remove the initializer, which will not be needed
+				//       and might not be valid in the new context
+				VariableDeclaration vardecl = decl.asVariableDeclaration();
+				vardecl.setInitOpt(new Opt());
+				localVars.add(vardecl);
 				if(!decl.accessedOutside(begin_stmt, end_stmt) 
 						&& decl instanceof VariableDeclaration)
 					toBeRemoved.add((ASTNode)decl);
@@ -177,15 +182,16 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		}
 	}
 
-    // Declared in ExtractMethod.jrag at line 124
+    // Declared in ExtractMethod.jrag at line 129
 
 	
-	private MethodDecl createMethod(boolean static_ctxt, String name, 
+	private MethodDecl createMethod(boolean static_ctxt, String name, String visibility,
 			Collection parms, Opt ret, 
-			Set exns, Collection localVariables, Collection stmts) {
+			Set exns, Collection localVariables, Collection stmts) throws RefactoringException {
 		// modifiers: "private", perhaps with a "static"
 		Modifiers mod = new Modifiers();
-		mod.addModifier(new Modifier("private"));
+		if(!visibility.equals("default"))
+			mod.addModifier(new Modifier(visibility));
 		if(static_ctxt)
 			mod.addModifier(new Modifier("static"));
 		// type access: either "void" or the type of the variable to be assigned to
@@ -205,9 +211,13 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		List brackets = new List();
 		// thrown exceptions
 		List throwdecls = new List();
-		for(Iterator i=exns.iterator();i.hasNext();)
-			// TODO: it's not that simple; we need to use accessType here
-			throwdecls.add(new TypeAccess(((ThrowStmt)i.next()).getExpr().type().name()));
+		for(Iterator i=exns.iterator();i.hasNext();) {
+			TypeDecl exn = ((ThrowStmt)i.next()).getExpr().type();
+			Access exnacc = hostBodyDecl().accessType(exn, false);
+			if(exnacc == null)
+				throw new RefactoringException("cannot access type "+exn);
+			throwdecls.add(exnacc);
+		}
 		// body
 		List bodystmts = new List();
 		for(Iterator i=localVariables.iterator();i.hasNext();)
@@ -440,14 +450,14 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  getNumStmt() == 0 ? reachable() : getStmt(getNumStmt() - 1).canCompleteNormally();  }
 
-    // Declared in LocalDeclaration.jrag at line 60
-    public Collection localDeclsBetween(int start, int end) {
-        Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
+    // Declared in LocalDeclaration.jrag at line 62
+    public java.util.Set localDeclsBetween(int start, int end) {
+        java.util.Set localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
     }
 
-    private Collection localDeclsBetween_compute(int start, int end)  {
-		ArrayList decls = new ArrayList();
+    private java.util.Set localDeclsBetween_compute(int start, int end)  {
+		HashSet decls = new HashSet();
 		for(int i=start;i<=end;++i)
 			if(getStmt(i) instanceof VariableDeclaration)
 				decls.add(getStmt(i));
@@ -579,7 +589,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 	}
 
     protected java.util.Map uncaughtThrowsBetween_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 26
+    // Declared in ParameterClassification.jrag at line 27
     public Set uncaughtThrowsBetween(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
@@ -709,19 +719,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return accessType_TypeDecl_boolean_value;
     }
 
-    // Declared in LocalDeclaration.jrag at line 42
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(caller == getStmtListNoTransform()) { 
-   int k = caller.getIndexOfChild(child);
- {
-		Collection decls = visibleLocalDecls();
-		decls.addAll(localDeclsBetween(0,k-1));
-		return decls;
-	}
-}
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
-    }
-
     // Declared in GuardedControlFlow.jrag at line 27
     public boolean Define_boolean_between(ASTNode caller, ASTNode child, Block blk, int start, int end) {
         if(caller == getStmtListNoTransform()) { 
@@ -754,7 +751,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 					assert(false);
 				}
 			} else {
-				if(td.isNestedType()) {
+				if(td.isNestedType() && !td.isLocalClass()) {
 					TypeDecl enc = td.enclosingType();
 					Access encacc = getStmt(i).accessType(enc, ambiguous);
 					if(encacc == null) return null;
@@ -797,6 +794,19 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
   }
 }
         return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
+    }
+
+    // Declared in LocalDeclaration.jrag at line 44
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(caller == getStmtListNoTransform()) { 
+   int k = caller.getIndexOfChild(child);
+ {
+		java.util.Set decls = visibleLocalDecls();
+		decls.addAll(localDeclsBetween(0,k-1));
+		return decls;
+	}
+}
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
     }
 
     // Declared in ControlFlowGraph.jrag at line 222

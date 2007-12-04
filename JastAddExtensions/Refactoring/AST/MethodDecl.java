@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 
 public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Methodoid {
@@ -1105,6 +1105,17 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_mayBePrivate(this, caller);
     }
 
+    // Declared in LocalDeclaration.jrag at line 38
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(caller == getBlockOptNoTransform()) {
+		HashSet decls = new HashSet();
+		for(int i=0;i<getNumParameter();++i)
+			decls.add(getParameter(i));
+		return decls;
+	}
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
+    }
+
     // Declared in ExceptionHandling.jrag at line 111
     public boolean Define_boolean_handlesException(ASTNode caller, ASTNode child, TypeDecl exceptionType) {
         if(caller == getBlockOptNoTransform()) {
@@ -1221,17 +1232,6 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 36
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(caller == getBlockOptNoTransform()) {
-		ArrayList decls = new ArrayList();
-		for(int i=0;i<getNumParameter();++i)
-			decls.add(getParameter(i));
-		return decls;
-	}
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
-    }
-
     // Declared in Domination.jrag at line 61
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterListNoTransform()) {
@@ -1260,7 +1260,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
 					assert(false);
 				}
 			} else {
-				if(td.isNestedType()) {
+				if(td.isNestedType() && !td.isLocalClass()) {
 					TypeDecl enc = td.enclosingType();
 					Access encacc = getBlock().accessType(enc, ambiguous);
 					if(encacc == null) return null;

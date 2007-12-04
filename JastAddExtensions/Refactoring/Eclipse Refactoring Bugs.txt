@@ -1,6 +1,6 @@
 1. Rename Package Doesn't Check for Name Clashes with Classes
 
-   Input:
+   Test case:
      package p;
      class r { ... }
 
@@ -14,7 +14,7 @@
 
 2. Encapsulate Field Doesn't Check for Hiding of Method
 
-   Input:
+   Test case:
      class A {
        void getI(String s) { }
        class C { class B { void m() { getI(""); } } private int i; }
@@ -29,7 +29,7 @@
 
 3. Encapsulate Field Doesn't Correctly Diagnose Overloading Problems
 
-   Input:
+   Test case:
      class A {
        public int i;
      }
@@ -67,7 +67,7 @@
 4. Encapsulate Field Doesn't Check for Invalid Overloading 
    (closely related to 3)
 
-   Input:
+   Test case:
      class A {
        public int i;
      }
@@ -81,3 +81,101 @@
    return type "float".
 
    Reported as bug 209317 (which turned out to be a duplicate of bug 194996).
+   
+5. Push down method does not handle "super" accesses correctly.
+
+   Test case:
+   	 class A {
+   	   void k() { System.out.println(23); }
+   	 }
+   	 class B extends A {
+   	   void m() { super.k(); }
+   	   void k() { System.out.println(42); } 
+   	 }
+   	 class C extends B {
+   	   public static void main(String[] args) {
+   	     new C().m();
+   	   }
+   	 }
+   	 
+   This prints "23". Pushing down B.m into C just moves the method without any
+   adjustments, so the resulting program prints "42".
+   
+   Found by Torbjörn, reported as bug 211755.
+   
+6. Push down method does not handle field accesses correctly.
+
+   Test case:
+     class A {
+       protected int x = 23;
+       void m() { System.out.println(x); }
+     }
+     class B extends A {
+       protected int x = 42;
+       public static void main(String[] args) {
+         new B().m();
+       }
+     }
+     
+   This prints "23". Pushing down A.m into B just moves the method without any
+   adjustments, so the resulting program prints "42".
+   
+   Found by Torbjörn, reported as a comment to bug 211755.
+   
+7. Push down method does not handle type accesses correctly.
+
+   Test case:
+     class A {
+       class B { public B() { System.out.println(23); } }
+       B m() { return new B(); }
+     }
+     class C extends A {
+       class B { public B() { System.out.println(42); } }
+       public static void main(String[] args) {
+         new C().m();
+       }
+     }
+     
+   This prints "23". Pushing down A.m into B just moves the method without any
+   adjustments, so the resulting program prints "42". A similar issue exists with
+   "throws" declarations.
+   
+   Reported as bug 211859.
+   
+8. Push down method does not handle private method accesses correctly.
+
+   Test case:
+     class A {
+       private void k() { System.out.println(23); }
+       void m() { k(); }
+     }
+     class B extends A {
+       protected void k() { System.out.println(42); }
+       public static void main(String[] args) {
+         new B().m();
+       }
+     }
+     
+   This prints "23". Pushing down A.m into B just moves the method without any
+   adjustments, so the resulting program prints "42".
+   
+   Reported as bug 211860.
+   
+9. Push down method does not check for all possible references to the method being
+   pushed.
+   
+   Test case:
+     class A {
+       void m() { }
+     }
+     class B extends A {
+       public static void main(String[] args) {
+         new A().m();
+       }
+     }
+   
+   Pushing down A.m into B does not detect the reference to A.m in B.main, so
+   the resulting program fails to compile.
+   
+   Reported as bug 211861, which turned out to be a duplicate of bug 31862.
+   

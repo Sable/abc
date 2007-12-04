@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet,  Iterator,  Variable,  LocalDeclaration {
     public void flushCache() {
@@ -174,14 +174,14 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     }
   }
 
-    // Declared in LocalDeclaration.jrag at line 20
+    // Declared in LocalDeclaration.jrag at line 22
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
 	}
 
-    // Declared in LocalDeclaration.jrag at line 28
+    // Declared in LocalDeclaration.jrag at line 30
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -1189,7 +1189,7 @@ if(shouldMoveOutOf_Stmt_Stmt_values == null) shouldMoveOutOf_Stmt_Stmt_values = 
 		between(begin, end)	&& accessedAfter(end);  }
 
     protected java.util.Map shouldDuplicate_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 21
+    // Declared in ParameterClassification.jrag at line 22
     public boolean shouldDuplicate(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);

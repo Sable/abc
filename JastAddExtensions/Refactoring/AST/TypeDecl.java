@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
  
 public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  VariableScope {
@@ -2953,6 +2953,15 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Collection_lookupMethod(this, caller, name);
     }
 
+    // Declared in LocalDeclaration.jrag at line 37
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  new HashSet();
+        }
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
+    }
+
     // Declared in ControlFlowGraph.jrag at line 175
     public boolean Define_boolean_withInCatchClause(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -3048,15 +3057,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Access_accessMethod(this, caller, md, args);
     }
 
-    // Declared in LocalDeclaration.jrag at line 35
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(true) {
-      int childIndex = this.getIndexOfChild(caller);
-            return  new ArrayList();
-        }
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
-    }
-
     // Declared in AccessType.jrag at line 40
     public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
         if(caller == getBodyDeclListNoTransform()) { 
@@ -3071,7 +3071,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 				return new TypeAccess(td.getID());
 			}
 		}
-		if(td.isNestedType()) {
+		if(td.isNestedType() && !td.isLocalClass()) {
 			TypeDecl enc = td.enclosingType();
 			Access encacc = getBodyDecl(i).accessType(enc, ambiguous);
 			if(encacc == null) return null;

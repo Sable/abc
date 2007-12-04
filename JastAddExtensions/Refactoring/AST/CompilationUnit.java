@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 
 // 7.3 Compilation Units
@@ -155,7 +155,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
     // Declared in ExtractMethod.jrag at line 5
 
 	
-	public java.util.List extract(String name, Stmt begin, Stmt end) throws RefactoringException {
+	public java.util.List extract(String name, String vis, Stmt begin, Stmt end) throws RefactoringException {
 		check_extraction_preconds(name, begin, end);
 		Block begin_host = begin.hostBlock();
 		BodyDecl bd = begin_host.hostBodyDecl();
@@ -167,7 +167,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
 		int begin_idx = begin.indexInHostBlock();
 		int end_idx = end.indexInHostBlock();
 		java.util.List changes = new java.util.Vector();
-		begin_host.encapsulate(changes, name, begin_idx, end_idx, static_ctxt);
+		begin_host.encapsulate(changes, name, vis, begin_idx, end_idx, static_ctxt);
 		return changes;
 	}
 
@@ -527,7 +527,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         if(true) { 
    int i = this.getIndexOfChild(caller);
  {
-		if(td.isNestedType()) {
+		if(td.isNestedType() && !td.isLocalClass()) {
 			TypeDecl enc = td.enclosingType();
 			Access encacc = getChild(i).accessType(enc, ambiguous);
 			if(encacc == null) return null;

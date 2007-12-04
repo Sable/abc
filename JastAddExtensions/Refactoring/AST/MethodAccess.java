@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 public class MethodAccess extends Access implements Cloneable {
     public void flushCache() {
@@ -644,12 +644,12 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_MethodDecl_definiteUses();
     }
-    protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
-        collection.add(this);
-    }
-
     protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
         collection.addAll(this.asSet());
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
+        collection.add(this);
     }
 
 }

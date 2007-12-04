@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 
 public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  Variable,  LocalDeclaration {
@@ -150,14 +150,14 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     }
   }
 
-    // Declared in LocalDeclaration.jrag at line 16
+    // Declared in LocalDeclaration.jrag at line 18
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return (ParameterDeclaration)fullCopy();
 	}
 
-    // Declared in LocalDeclaration.jrag at line 24
+    // Declared in LocalDeclaration.jrag at line 26
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -1064,7 +1064,7 @@ if(shouldMoveOutOf_Stmt_Stmt_values == null) shouldMoveOutOf_Stmt_Stmt_values = 
 		between(begin, end)	&& accessedAfter(end);  }
 
     protected java.util.Map shouldDuplicate_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 21
+    // Declared in ParameterClassification.jrag at line 22
     public boolean shouldDuplicate(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
