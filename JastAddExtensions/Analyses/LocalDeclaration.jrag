@@ -1,3 +1,5 @@
+import sun.text.normalizer.UTF16;
+
 aspect LocalDeclaration {
 	
 	// a local declaration is either a variable declaration or a parameter declaration
@@ -29,36 +31,36 @@ aspect LocalDeclaration {
 		return (VariableDeclaration)fullCopy();
 	}
 	
-	inh Collection Stmt.visibleLocalDecls();
-	inh Collection CatchClause.visibleLocalDecls();
+	inh java.util.Set Stmt.visibleLocalDecls();
+	inh java.util.Set CatchClause.visibleLocalDecls();
 	
-	eq TypeDecl.getChild().visibleLocalDecls() = new ArrayList();
+	eq TypeDecl.getChild().visibleLocalDecls() = new HashSet();
 	eq MethodDecl.getBlock().visibleLocalDecls() {
-		ArrayList decls = new ArrayList();
+		HashSet decls = new HashSet();
 		for(int i=0;i<getNumParameter();++i)
 			decls.add(getParameter(i));
 		return decls;
 	}
 	eq Block.getStmt(int k).visibleLocalDecls() {
-		Collection decls = visibleLocalDecls();
+		java.util.Set decls = visibleLocalDecls();
 		decls.addAll(localDeclsBetween(0,k-1));
 		return decls;
 	}
 	eq CatchClause.getBlock().visibleLocalDecls() {
-		Collection decls = visibleLocalDecls();
+		java.util.Set decls = visibleLocalDecls();
 		decls.add(getParameter());
 		return decls;
 	}
 	eq ForStmt.getStmt().visibleLocalDecls() {
-		Collection decls = visibleLocalDecls();
+		java.util.Set decls = visibleLocalDecls();
 		for(int i=0;i<getNumInitStmt();++i)
 			if(getInitStmt(i) instanceof VariableDeclaration)
 				decls.add(getInitStmt(i));
 		return decls;
 	}
 	
-	syn Collection Block.localDeclsBetween(int start, int end) {
-		ArrayList decls = new ArrayList();
+	syn java.util.Set Block.localDeclsBetween(int start, int end) {
+		HashSet decls = new HashSet();
 		for(int i=start;i<=end;++i)
 			if(getStmt(i) instanceof VariableDeclaration)
 				decls.add(getStmt(i));

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
 
  
 public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  VariableScope {
@@ -2400,6 +2400,15 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isFinallyBlock(this, caller);
     }
 
+    // Declared in LocalDeclaration.jrag at line 37
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  new HashSet();
+        }
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
+    }
+
     // Declared in LookupMethod.jrag at line 22
     public Collection Define_Collection_lookupMethod(ASTNode caller, ASTNode child, String name) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2621,15 +2630,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
   }
 }
         return getParent().Define_boolean_isDUbefore(this, caller, v);
-    }
-
-    // Declared in LocalDeclaration.jrag at line 35
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(true) {
-      int childIndex = this.getIndexOfChild(caller);
-            return  new ArrayList();
-        }
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
     // Declared in TypeAnalysis.jrag at line 494

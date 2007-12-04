@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
   // a statement that can be reached by break or continue
 public class Block extends Stmt implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -297,14 +297,14 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  getNumStmt() == 0 ? reachable() : getStmt(getNumStmt() - 1).canCompleteNormally();  }
 
-    // Declared in LocalDeclaration.jrag at line 60
-    public Collection localDeclsBetween(int start, int end) {
-        Collection localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
+    // Declared in LocalDeclaration.jrag at line 62
+    public java.util.Set localDeclsBetween(int start, int end) {
+        java.util.Set localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
     }
 
-    private Collection localDeclsBetween_compute(int start, int end)  {
-		ArrayList decls = new ArrayList();
+    private java.util.Set localDeclsBetween_compute(int start, int end)  {
+		HashSet decls = new HashSet();
 		for(int i=start;i<=end;++i)
 			if(getStmt(i) instanceof VariableDeclaration)
 				decls.add(getStmt(i));
@@ -456,19 +456,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachable_value;
     }
 
-    // Declared in LocalDeclaration.jrag at line 42
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(caller == getStmtListNoTransform()) { 
-   int k = caller.getIndexOfChild(child);
- {
-		Collection decls = visibleLocalDecls();
-		decls.addAll(localDeclsBetween(0,k-1));
-		return decls;
-	}
-}
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
-    }
-
     // Declared in GuardedControlFlow.jrag at line 27
     public boolean Define_boolean_between(ASTNode caller, ASTNode child, Block blk, int start, int end) {
         if(caller == getStmtListNoTransform()) { 
@@ -502,6 +489,19 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
   }
 }
         return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
+    }
+
+    // Declared in LocalDeclaration.jrag at line 44
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(caller == getStmtListNoTransform()) { 
+   int k = caller.getIndexOfChild(child);
+ {
+		java.util.Set decls = visibleLocalDecls();
+		decls.addAll(localDeclsBetween(0,k-1));
+		return decls;
+	}
+}
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
     }
 
     // Declared in ControlFlowGraph.jrag at line 222

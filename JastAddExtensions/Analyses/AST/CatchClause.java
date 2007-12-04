@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
 
 public class CatchClause extends ASTNode implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -198,9 +198,9 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachableCatchClause_value;
     }
 
-    // Declared in LocalDeclaration.jrag at line 33
-    public Collection visibleLocalDecls() {
-        Collection visibleLocalDecls_value = getParent().Define_Collection_visibleLocalDecls(this, null);
+    // Declared in LocalDeclaration.jrag at line 35
+    public java.util.Set visibleLocalDecls() {
+        java.util.Set visibleLocalDecls_value = getParent().Define_java_util_Set_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;
     }
 
@@ -208,16 +208,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
     public Set enclosingFinally() {
         Set enclosingFinally_value = getParent().Define_Set_enclosingFinally(this, null);
         return enclosingFinally_value;
-    }
-
-    // Declared in LocalDeclaration.jrag at line 47
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(caller == getBlockNoTransform()) {
-		Collection decls = visibleLocalDecls();
-		decls.add(getParameter());
-		return decls;
-	}
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
     }
 
     // Declared in VariableDeclaration.jrag at line 74
@@ -242,6 +232,16 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  getBlock();
         }
         return getParent().Define_Block_getBlock(this, caller);
+    }
+
+    // Declared in LocalDeclaration.jrag at line 49
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(caller == getBlockNoTransform()) {
+		java.util.Set decls = visibleLocalDecls();
+		decls.add(getParameter());
+		return decls;
+	}
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
     }
 
     // Declared in LookupVariable.jrag at line 86

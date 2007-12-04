@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
 
 // Generated with JastAdd II (http://jastadd.cs.lth.se) version R20071114
 
@@ -1037,9 +1037,6 @@ public ASTNode rewriteTo() {
     public TypeDecl Define_TypeDecl_declType(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_declType(this, caller);
     }
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
-    }
     public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
@@ -1168,6 +1165,9 @@ public ASTNode rewriteTo() {
     }
     public Collection Define_Collection_lookupMethod(ASTNode caller, ASTNode child, String name) {
         return getParent().Define_Collection_lookupMethod(this, caller, name);
+    }
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
     }
     public TypeDecl Define_TypeDecl_hostType(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_hostType(this, caller);
