@@ -1,0 +1,64 @@
+Test cases for accessPackage:
+=============================
+ 1. access packages test, test.pkg1, and test.pkg1.pkg2 from the toplevel 
+    of a compilation unit Test inside test.pkg1 (this should succeed)
+ 2. access packages test, test.pkg1, and test.pkg1.pkg2 from within a class
+    named Test in in compilation unit Test (this should succeed)
+ 3. access package test.pkg1.pkg2 from within a class in compilation unit 
+    Test itself named test (this should fail)
+ 4. do the same, but with class test renamed to class pkg1 (this should succeed)
+    NOTE: we cannot rename pkg1 further to pkg2, this would violate the language
+          specification
+ 5. access packages test, test.pkg1, and test.pkg1.pkg2 from within an inner
+    class in class Test (this should succeed)
+ 6. access package test.pkg1 from within class Test, but now with a field
+    named test present (this should fail)
+ 7. same, but replace field test by inner class test (this should fail)
+ 8. access packages test, test.pkg1, and test.pkg1.pkg2 from within a method
+    in class Test (this should succeed)
+ 9. access package test.pkg1.pkg2 from within the same method, but now with
+  a parameter named test present (this should fail)
+10. same, but now test is a local variable (this should fail)
+11. access packages test, test.pkg1, and test.pkg1.pkg2 from within an
+    anonymous class in the above-mentioned method (this should succeed)
+12. now with a surrounding local variable test (this should fail)
+13. with a surrounding field test (this should fail)
+14. with a toplevel class test (this should fail)
+
+
+Test cases for accessField:
+==========================
+24. access a field of a class from inside the initialization expression of
+    another field of the same class
+25. access a field of a class from inside a static initialization block of
+    the same class
+26. access a field in the superclass shadowed by a field of the same name
+27. access a field in the grandparent-class shadowed by a field of the same
+    name in the grandchild class
+28. same as 27, but now field is shadowed by a field of the same name in parent
+    class
+29. same as 26, but with superinterface instead of superclass
+30. same as 27, but with superinterface instead of superclass
+31. same as 28, but with superinterface instead of superclass
+32. access a field shadowed by a parameter
+33. access a field shadowed by a local variable
+34. access a superclass field shadowed by both a local variable and a field
+35. from a nested class, access a field in a surrounding class
+36. like 35, but now field is hidden by like-named field in nested class
+37. like 35, but accessed field is in superclass of surrounding class
+38. like 37, but field is additionally hidden by identically named field in 
+    surrounding class
+39. from a doubly nested class, access a field in outermost class hidden
+    by field in intervening class
+40. from an anonymous class, access a field in the surrounding class
+41. like 40, but now field is hidden by local field
+42. like 41, but hidden by local variable
+
+Test cases for accessLocalVariable:
+===================================
+43. access method parameter from within method
+44. access local variable from within nested block
+45. access local variable from within anonymous class
+46. access local variable from within anonymous class where it is shadowed
+    by field (should fail)
+

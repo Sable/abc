@@ -1,0 +1,68 @@
+aspect LocalVarNesting {
+	
+	syn RefactoringException Stmt.acceptLocal(String name) = null;
+	
+	eq Block.acceptLocal(String name) {
+		RefactoringException e;
+		for(int i=0;i<getNumStmt();++i) {
+			e = getStmt(i).acceptLocal(name);
+			if(e != null) return e;
+		}
+		return null;
+	}
+	
+	eq DoStmt.acceptLocal(String name) = getStmt().acceptLocal(name);
+	eq WhileStmt.acceptLocal(String name) = getStmt().acceptLocal(name);
+	
+	eq SwitchStmt.acceptLocal(String name) = getBlock().acceptLocal(name);
+	
+	eq ForStmt.acceptLocal(String name) {
+		RefactoringException e;
+		int i;
+		for(i=0;i<getNumInitStmt();++i) {
+			e = getInitStmt(i).acceptLocal(name);
+			if(e != null) return e;
+		}
+		// the update statement cannot declare variables, so we can ignore it
+        e = this.getStmt().acceptLocal(name);
+        return e;
+	}
+	
+	eq IfStmt.acceptLocal(String name) {
+		RefactoringException e;
+		e = getThen().acceptLocal(name);
+		if(e != null) return e;
+		if(hasElse())
+			e = getElse().acceptLocal(name);
+		return e;
+	}
+	
+	eq TryStmt.acceptLocal(String name) {
+		RefactoringException e;
+		e = getBlock().acceptLocal(name);
+		if(e != null) return e;
+		for(int i=0;i<getNumCatchClause();++i) {
+			CatchClause cc = getCatchClause(i);
+			e = cc.getParameter().acceptLocal(name);
+			if(e != null) return e;
+			e = cc.getBlock().acceptLocal(name);
+			if(e != null) return e;
+		}
+		if(hasFinally())
+			e = getFinally().acceptLocal(name);
+		return e;
+	}
+	
+	eq VariableDeclaration.acceptLocal(String name) {
+		if(name.equals(getID()))
+			return new RefactoringException("local variable of same name exists");
+		return null;
+	}
+	
+	syn RefactoringException ParameterDeclaration.acceptLocal(String name) {
+		if(name.equals(getID()))
+			return new RefactoringException("parameter of same name exists");
+		return null;
+	}
+	
+}

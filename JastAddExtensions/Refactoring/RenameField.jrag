@@ -1,0 +1,28 @@
+import changes.*;
+import main.FileRange;
+import java.util.*;
+
+aspect RenameField {
+
+	public java.util.List FieldDeclaration.rename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		if(getID().equals(new_name))
+			// haha, very funny
+			return changes;
+		if(!hostType().localFields(new_name).isEmpty())
+			throw new RefactoringException("couldn't rename: field name clash");
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new FieldRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+		return changes;
+	}
+
+}

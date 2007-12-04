@@ -1,0 +1,219 @@
+import java.util.*;
+
+aspect AccessField {
+
+	// inh Access accessField(FieldDeclaration fd)
+
+	inh lazy Access ASTNode.accessField(FieldDeclaration fd);
+	inh lazy Access TypeDecl.accessField(FieldDeclaration fd);
+	inh lazy Access BodyDecl.accessField(FieldDeclaration fd);
+	inh lazy Access Block.accessField(FieldDeclaration fd);
+	inh lazy Access Expr.accessField(FieldDeclaration fd);
+	inh lazy Access Access.accessField(FieldDeclaration fd);
+
+	eq Program.getChild().accessField(FieldDeclaration fd) = null;
+
+	syn Access TypeDecl.accessFieldInSupertypes(FieldDeclaration fd) = null;
+	
+	eq ClassDecl.accessFieldInSupertypes(FieldDeclaration fd) {
+		Access a;
+		if(hasSuperclass()) {
+			a = superclass().getBodyDecl(0).accessField(fd);
+			if(a != null)
+				return a;
+		}
+		for(Iterator i = interfacesIterator(); i.hasNext(); ) {
+			InterfaceDecl idecl = (InterfaceDecl)i.next();
+			a = idecl.getBodyDecl(0).accessField(fd);
+			if(a != null)
+				return a;
+		}
+		return null;
+	}
+	
+	eq InterfaceDecl.accessFieldInSupertypes(FieldDeclaration fd) {
+		for(Iterator i = superinterfacesIterator(); i.hasNext(); ) {
+			InterfaceDecl idecl = (InterfaceDecl)i.next();
+			Access a = idecl.getBodyDecl(0).accessField(fd);
+			if(a != null)
+				return a;
+		}
+		return null;
+	}
+
+	// 6.5.6.1
+	eq TypeDecl.getBodyDecl(int i).accessField(FieldDeclaration fd) {
+		if(localFieldsMap().containsValue(fd))
+			return new VarAccess(fd.getID());
+		if(localFieldsMap().containsKey(fd.getID())) {
+			// we need to qualify
+			if(fd.hostType().encloses(hostType())) {
+				// we need an expression of the form A.this.x
+				Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
+				if(typacc == null)
+					return null;
+				return typacc.qualifiesAccess(new ThisAccess("this")).qualifiesAccess(new VarAccess(fd.getID()));
+			} else if(hostType().instanceOf(fd.hostType())) {
+				// first try looking it up in super class, if any
+				if(hostType() instanceof ClassDecl && ((ClassDecl)hostType()).superclass().getBodyDecl(0).accessField(fd) != null) {
+					ClassDecl host = (ClassDecl)hostType();
+					ClassDecl supclass = host.superclass();
+					Access acc = supclass.getBodyDecl(0).accessField(fd);
+					if(acc instanceof AbstractDot) {
+						Expr left = ((AbstractDot)acc).getLeft();
+						Access right = ((AbstractDot)acc).getRight();
+						if(left.isThisAccess()) {
+							// if it is this.x in superclass, it's super.x in here
+							return new SuperAccess("super").qualifiesAccess(right);
+						} else if(left.isSuperAccess()) {
+							// if it is super.x in superclass, we need a cast
+							ClassDecl supsupclass = supclass.superclass();
+							Access supsupacc = getBodyDecl(i).accessType(supsupclass, true);
+							if(supsupacc == null) return null;
+							return new ParExpr(new CastExpr(supsupacc, new ThisAccess("this"))).
+								qualifiesAccess(right);
+						} else {
+							// it must be of the form ((A)this).x, which we can reuse
+							return acc;
+						}
+					} else if(acc instanceof VarAccess) {
+						return new SuperAccess("super").qualifiesAccess(acc);
+					} else {
+						assert(false);
+					}
+				} else {
+					Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
+					if(typacc == null) return null;
+					return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).qualifiesAccess(new VarAccess(fd.getID()));
+				}
+			} else {
+				assert(false);
+			}
+		} else {
+			if(lookupVariable(fd.getID()) == fd) {
+				return new VarAccess(fd.getID());
+			}
+            // first, try finding it in supertypes
+			Access acc = accessFieldInSupertypes(fd);
+            if(acc != null) {
+                if(acc instanceof AbstractDot) {
+                    Expr left = ((AbstractDot)acc).getLeft();
+                    Access right = ((AbstractDot)acc).getRight();
+                    if(left.isSuperAccess()) {
+                        Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
+                        if(typacc == null) return null;
+                        return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
+                                    qualifiesAccess(right);
+                    }
+                }
+				return acc;
+            }
+            // otherwise, it must be in an enclosing type
+            if(!isNestedType()) return null;
+            acc = accessField(fd);
+            if(acc == null) return null;
+
+            // if the field can be reached by unqualified access in enclosing type,
+            // we are good; otherwise, we may have to fiddle with the qualifier
+			if(acc instanceof AbstractDot) {
+	            Expr left = ((AbstractDot)acc).getLeft();
+				Access right = ((AbstractDot)acc).getRight();
+                if(left instanceof ThisAccess) {
+                    // this happens if we are an anonymous class and the enclosing method
+                    // shadows the field we want to access
+                    Access tacc = getBodyDecl(i).accessType(enclosingType(), true);
+                    if(tacc == null) return null;
+                    return tacc.qualifiesAccess(acc);
+                } else if(left.isCastedThisAccess()) {
+					Access tacc1 = ((CastExpr)((ParExpr)left).getExpr()).getTypeAccess();
+					Access tacc2 = getBodyDecl(i).accessType(enclosingType(), true);
+					if(tacc2 == null) return null;
+					Access res = new ParExpr(new CastExpr(tacc1, tacc2.qualifiesAccess(new ThisAccess("this")))).
+						qualifiesAccess(right);
+					//System.out.println("now changed access "+acc.dumpTree()+" in enclosing type into "+res.dumpTree());
+					return res;
+				} else if(left.isSuperAccess()) {
+					ClassDecl supclass = ((ClassDecl)enclosingType()).superclass();
+					Access tacc1 = getBodyDecl(i).accessType(supclass, true);
+					if(tacc1 == null) return null;
+					Access tacc2 = getBodyDecl(i).accessType(enclosingType(), true);
+					if(tacc2 == null) return null;
+					Access res = new ParExpr(new CastExpr(tacc1, tacc2.qualifiesAccess(new ThisAccess("this")))).
+						qualifiesAccess(right);
+					//System.out.println("changed access "+acc.dumpTree()+" in enclosing class into "+res.dumpTree());
+					return res;
+				} else {
+					return acc;
+				}
+			} else {
+				return acc;
+			}
+		}
+		return null;
+	}
+
+	// The scope of a parameter of a method is the entire body of the method
+	eq MethodDecl.getBlock().accessField(FieldDeclaration fd) {
+		Access acc = accessField(fd);
+		if(acc != null) {
+			if(!parameterDeclaration(fd.getID()).isEmpty()) {
+				// if acc is already qualified, nothing needs to change
+				if(acc instanceof AbstractDot)
+					return acc;
+				else
+					return new ThisAccess("this").qualifiesAccess(acc);
+			} else {
+				return acc;
+			}
+		}
+		return null;
+	}
+
+	// this is a copy of the above
+	eq ConstructorDecl.getBlock().accessField(FieldDeclaration fd) {
+		Access acc = accessField(fd);
+		if(acc != null) {
+			if(!parameterDeclaration(fd.getID()).isEmpty()) {
+				// if acc is already qualified, nothing needs to change
+				if(acc instanceof AbstractDot)
+					return acc;
+				else
+					return new ThisAccess("this").qualifiesAccess(acc);
+			} else {
+				return acc;
+			}
+		}
+		return null;
+	}
+
+	// The scope of a local variable declaration in a block is the rest of
+	// the block in which the declaration appears
+	eq Block.getStmt(int index).accessField(FieldDeclaration fd) {
+		Access acc = accessField(fd);
+		if(acc != null) {
+			if(acc instanceof AbstractDot)
+				return acc;
+			VariableDeclaration v = localVariableDeclaration(fd.getID());
+			if(v != null && declaredBeforeUse(v, index)) {
+				return new ThisAccess("this").qualifiesAccess(acc);
+			}
+			return acc;
+		}
+		return null;
+	}
+	
+	eq AbstractDot.getRight().accessField(FieldDeclaration fd) {
+		return getLeft().qualifiedAccessField(fd);
+	}
+	
+	syn Access Expr.qualifiedAccessField(FieldDeclaration fd) {
+		return type().getBodyDecl(0).accessField(fd);
+	}
+
+	eq PackageAccess.qualifiedAccessField(FieldDeclaration fd) = null;
+
+	eq TypeAccess.qualifiedAccessField(FieldDeclaration fd) {
+		return type().getBodyDecl(0).accessField(fd);
+	}
+
+}

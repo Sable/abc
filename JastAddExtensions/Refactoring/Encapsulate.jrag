@@ -1,0 +1,138 @@
+aspect Encapsulate {
+
+	public java.util.List FieldDeclaration.encapsulate() throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		if(!isPrivate()) {
+			changes.add(new PrivatiseField(this));
+		}
+		Modifiers mod = getModifiers();
+		String ucase_id = capitalize(getID());
+		String getter_name = "get"+ucase_id;
+		String setter_name = "set"+ucase_id;
+		String tpname = type().typeName();
+		hostType().addMethod(changes, makeGetter(getter_name, mod), 
+						     getter_name+"()",false);
+		hostType().addMethod(changes, makeSetter(setter_name, mod), 
+					         setter_name+"("+tpname+")", false);
+		for(Iterator i = uses().iterator(); i.hasNext();) {
+			VarAccess va = (VarAccess)i.next();
+			va.encapsulate(changes, getter_name, setter_name);
+		}
+		return changes;
+	}
+
+	public static String FieldDeclaration.capitalize(String str) {
+		StringBuffer buf = new StringBuffer(str);
+		if(buf.length() > 0)
+			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
+		return buf.toString();
+	}
+
+	private MethodDecl FieldDeclaration.makeGetter(String getter_name, Modifiers mod) {
+		Block getter_body = new Block();
+		getter_body.addStmt(new ReturnStmt(new VarAccess(getID())));
+		return new MethodDecl((Modifiers)mod.fullCopy(), (Access)getTypeAccess().fullCopy(),
+				getter_name, new List(), new List(), 
+				new List(), new Opt(getter_body));
+	}
+
+	private MethodDecl FieldDeclaration.makeSetter(String setter_name, Modifiers mod) {
+		Access fieldacc = new ThisAccess("this").qualifiesAccess(new VarAccess(getID()));
+		Access parmacc = new VarAccess(getID());
+		Block setter_body = new Block();
+		setter_body.addStmt(new ReturnStmt(new AssignSimpleExpr(fieldacc, parmacc)));
+		ParameterDeclaration pd = new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
+		List parms = new List();
+		parms.add(pd);
+		return new MethodDecl((Modifiers)mod.fullCopy(), (Access)getTypeAccess().fullCopy(),
+				setter_name, parms, new List(), new List(), 
+				new Opt(setter_body));
+	}
+
+	public void VarAccess.encapsulate(java.util.List changes, String getter, String setter) {
+		Context ctxt = new Context();
+		ASTNode ch = this;
+		for(ASTNode p=getParent();p!=null&&p instanceof Expr;ch=p,p=p.getParent()) {
+			if(p instanceof AssignExpr) {
+				Expr rhs = ((AssignExpr)p).getSource();
+				Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
+				if(implicit_op == null) {
+					List args = new List();	args.add(rhs);
+					changes.add(new NodeReplace(p, 
+							ctxt.plugIn(new MethodAccess(setter, args))));
+				} else {
+					/* TODO: this is dangerous; we copy a subtree in which there
+					 *       might be pending adjustments */
+					Context ctxt2 = ctxt.fullCopy();
+					List args = new List();
+					implicit_op.setLeftOperand((Expr)ctxt2.plugIn(new MethodAccess(getter, new List())));
+					implicit_op.setRightOperand(rhs);
+					args.add(implicit_op);
+					changes.add(new NodeReplace(p,
+							ctxt.plugIn(new MethodAccess(setter, args))));
+				}
+			} else if(p instanceof PostDecExpr) {
+				// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
+				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+						new SubExpr(), new AddExpr());
+			} else if(p instanceof PostIncExpr) {
+				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+						new AddExpr(), new SubExpr());
+			} else if(p instanceof PreDecExpr) {
+				// --i becomes setI(getI()-1)
+				encapsulate_prefix(changes, p, ctxt, getter, setter, new SubExpr());
+			} else if(p instanceof PreIncExpr) {
+				encapsulate_prefix(changes, p, ctxt, getter, setter, new AddExpr());
+			} else if(p instanceof ParExpr) {
+				ctxt.wrapIn(p, 0);
+				continue;
+			} else if(p instanceof AbstractDot && ch == ((AbstractDot)p).getRight()) {
+				ctxt.wrapIn(p, 1);
+				continue;
+			} else {
+				changes.add(new NodeReplace(this, new MethodAccess(getter, new List())));
+				return;
+			}
+		}
+	}
+	
+	static void VarAccess.encapsulate_postfix(java.util.List changes, ASTNode p, 
+			Context ctxt, String getter, String setter, Binary rator, Binary undo) {
+		List args = new List();
+		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		rator.setLeftOperand((Expr)getacc.fullCopy());
+		rator.setRightOperand(new IntegerLiteral(1));
+		args.add(rator);
+		undo.setLeftOperand((Expr)getacc.fullCopy());
+		undo.setRightOperand(new IntegerLiteral(1));
+		Expr setacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(setter, args));
+		changes.add(new NodeReplace(p,
+				new ParExpr(
+						new ConditionalExpr(new EQExpr(setacc, new IntegerLiteral(0)),
+								(Expr)undo.fullCopy(), (Expr)undo.fullCopy()))));
+	}
+	
+	static void VarAccess.encapsulate_prefix(java.util.List changes, ASTNode p,
+			Context ctxt, String getter, String setter, Binary rator) {
+		List args = new List();
+		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		rator.setLeftOperand(getacc);
+		rator.setRightOperand(new IntegerLiteral(1));
+		args.add(rator);
+		changes.add(new NodeReplace(p, ctxt.plugIn(new MethodAccess(setter, args))));
+	}
+	
+	syn Binary AssignExpr.getImplicitOperator() = null;
+	eq AssignMinusExpr.getImplicitOperator() { return new SubExpr(); }
+	eq AssignPlusExpr.getImplicitOperator() { return new AddExpr(); }
+	eq AssignAndExpr.getImplicitOperator() { return new AndBitwiseExpr(); }
+	eq AssignOrExpr.getImplicitOperator() { return new OrBitwiseExpr(); }
+	eq AssignXorExpr.getImplicitOperator() { return new XorBitwiseExpr(); }
+	eq AssignDivExpr.getImplicitOperator() { return new DivExpr(); }
+	eq AssignModExpr.getImplicitOperator() { return new ModExpr(); }
+	eq AssignMulExpr.getImplicitOperator() { return new MulExpr(); }
+	eq AssignLShiftExpr.getImplicitOperator() { return new LShiftExpr(); }
+	eq AssignRShiftExpr.getImplicitOperator() { return new RShiftExpr(); }
+	eq AssignURShiftExpr.getImplicitOperator() { return new URShiftExpr(); }
+
+}

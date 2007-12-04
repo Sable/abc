@@ -1,0 +1,57 @@
+import java.util.*;
+
+aspect AccessMethod {
+
+	inh lazy Access TypeDecl.accessMethod(MethodDecl md, List args);
+	inh lazy Access BodyDecl.accessMethod(MethodDecl md, List args);
+	inh lazy Access Block.accessMethod(MethodDecl md, List args);
+	inh lazy Access Access.accessMethod(MethodDecl md, List args);
+
+	eq Program.getChild().accessMethod(MethodDecl md, List args) = null;
+
+	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md, List args) {
+		if(lookupMethod(md.getID()).contains(md)) {
+			return new MethodAccess(md.getID(), args);
+		} else if(md.hostType().encloses(hostType())) {
+			// we need an expression of the form A.this.x
+			Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
+			if(typacc == null)
+				return null;
+			return typacc.qualifiesAccess(new ThisAccess("this").qualifiesAccess(
+					new MethodAccess(md.getID(), args)));
+		} else if(hostType().instanceOf(md.hostType())) {
+			// we need to qualify either with `super' or with `(A)this'
+			if(hostType() instanceof ClassDecl && 
+					((ClassDecl)hostType()).superclass() == md.hostType()) {
+				return new SuperAccess("super").qualifiesAccess(
+						new MethodAccess(md.getID(), args));
+			} else if(!md.isStatic()) {
+				// non-static overridden methods of the superclass can be accessed,
+				// anything further up is off-limits
+				return null;
+			} else {
+				Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
+				if(typacc == null) return null;
+				return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
+					qualifiesAccess(new MethodAccess(md.getID(), args));
+			}
+		} else {
+			assert(false);
+		}
+	}
+	
+	eq AbstractDot.getRight().accessMethod(MethodDecl md, List args) {
+		return getLeft().qualifiedAccessMethod(md, args);
+	}
+	
+	syn Access Expr.qualifiedAccessMethod(MethodDecl md, List args) {
+		return type().getBodyDecl(0).accessMethod(md, args);
+	}
+
+	eq PackageAccess.qualifiedAccessMethod(MethodDecl md, List args) = null;
+
+	eq TypeAccess.qualifiedAccessMethod(MethodDecl md, List args) {
+		return type().getBodyDecl(0).accessMethod(md, args);
+	}
+	
+}

@@ -1,0 +1,67 @@
+import changes.*;
+import main.FileRange;
+import java.util.*;
+
+aspect RenameMethod {
+	
+	public java.util.List MethodDecl.cascadingRename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		// rename the method itself
+		this.rename(changes, new_name);
+		// rename every method it overrides
+		for(Iterator i = overrides().iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(changes, new_name);
+		// rename every method it is overridden by
+		for(Iterator i = overriders().iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(changes, new_name);
+		return changes;
+	}
+
+	// rename a method, don't care about overriding/overridden methods
+	public void MethodDecl.rename(java.util.List changes, String new_name) throws RefactoringException {
+		if(getID().equals(new_name))
+			return;
+		String sig = signature();
+		int idx = sig.indexOf('(');
+		String new_sig = new_name + sig.substring(idx);
+		// make sure there isn't already a method with the same signature in this type
+		if(!hostType().localMethodsSignature(new_sig).isEmpty())
+			throw new RefactoringException("couldn't rename: method signature clash");
+		// if there are any like-named methods in superclasses, we must be able to override them
+		for(Iterator i = hostType().ancestorMethods(new_sig).iterator();i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			if(!canOverrideOrHide(md))
+				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
+		}
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new MethodRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+	}
+
+	private AdjustmentTable MethodDecl.find_uses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		/* first, collect all uses of the method we are renaming */
+		for(Iterator i = definiteUses().iterator(); i.hasNext();) {
+			Access a = (Access)i.next();
+			table.add(a, this);
+		}
+		/* now, collect all uses of methods that we might be shadowing after renaming */
+		for(Iterator i = lookupMethod(new_name).iterator(); i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc, md);
+			}
+		}
+		return table;
+	}
+
+}

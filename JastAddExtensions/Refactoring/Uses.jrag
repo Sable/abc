@@ -1,0 +1,129 @@
+/* bind all name uses to their declarations */
+
+aspect Uses {
+	
+	public HashSet Variable.collectedUses() {
+		return uses();
+	}
+
+	// bind all uses of a field to its declaration
+	coll HashSet FieldDeclaration.uses() [new HashSet()] with add;
+	VarAccess contributes
+	this when decl() instanceof FieldDeclaration
+	to FieldDeclaration.uses() for (FieldDeclaration)decl();
+
+	coll HashSet VariableDeclaration.uses() [new HashSet()] with add;
+	VarAccess contributes
+	this when decl() instanceof VariableDeclaration
+	to VariableDeclaration.uses() for (VariableDeclaration)decl();
+
+	coll HashSet ParameterDeclaration.uses() [new HashSet()] with add;
+	VarAccess contributes
+	this when decl() instanceof ParameterDeclaration
+	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
+	
+	// bind all uses of a method to its declaration
+	// since this is in general undecidable, we can either only bind those
+	// uses that definitely refer to the method (attribute definiteUses), or
+	// all uses that possibly might refer to it (attribute uses)
+	coll HashSet MethodDecl.definiteUses() [new HashSet()] with add;
+	MethodAccess contributes
+	this to MethodDecl.definiteUses() for decl();
+	
+	coll HashSet MethodDecl.uses() [new HashSet()] with addAll;
+	MethodAccess contributes
+	this.asSet() to MethodDecl.uses() for decl();
+	
+	protected HashSet ASTNode.asSet() {
+		HashSet set = new HashSet();
+		set.add(this);
+		return set;
+	}
+	
+	MethodDecl contributes uses() to MethodDecl.uses() for each overriders();
+	
+	coll HashSet MethodDecl.overriders() [new HashSet()] with add;
+	MethodDecl contributes this to MethodDecl.overriders() for each overrides();
+	
+	syn lazy SimpleSet MethodDecl.overrides() {
+		SimpleSet anc = hostType().ancestorMethods(signature());
+		for(Iterator i=anc.iterator();i.hasNext();)
+			if(!overrides((MethodDecl)i.next()))
+				i.remove();
+		return anc;
+	}
+
+	// bind all uses of a type to its declaration
+	coll HashSet TypeDecl.uses() [new HashSet()] with add;
+	TypeAccess contributes
+	this to TypeDecl.uses() for (TypeDecl)decl();
+	
+	// bind all uses of a package to its declaration
+	/*
+	 * a package declaration has two kinds of uses:
+	 *  1) a toplevel package can have "prefix uses", where its name appears
+	 *     as the first element of a package access or of the package qualification
+	 *     of a type access
+	 *  2) all packages can have general uses, where their name appears as
+	 *     prefix of a package access or of the package qualification of a type access,
+	 *     or in a package or import declaration
+	 *     
+	 * the point of making this distinction is that prefix uses can be shadowed by
+	 * variables or types of the same name, while other uses cannot
+	 */
+	coll HashSet PackageDecl.prefixUses() [new HashSet()] with add;
+	PackageAccess contributes this
+	to PackageDecl.prefixUses() for findPackageDecl(name().split("\\.")[0]);
+	TypeAccess contributes this when !packageName().equals("")
+	to PackageDecl.prefixUses() for findPackageDecl(packageName().split("\\.")[0]);
+	
+	eq Program.getChild().findPackageDecl(String name) = getPackageDecl(name);
+	inh PackageDecl Access.findPackageDecl(String name);
+	
+	syn nta PackageDecl Program.getPackageDecl(String name) {
+		// the following gives null-pointer exceptions in generated code
+		//return hasPackage(name) ? new PackageDecl(name) : null;
+		return new PackageDecl(name);
+	}
+
+	/* in preparation for renaming a variable to new_name, this method finds all
+	 * uses of the variable before renaming and all uses of fields, types and
+	 * packages that might become shadowed by the renaming and collects them into
+	 * an adjustment table */ 
+	public AdjustmentTable Variable.find_uses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		/* first, collect all uses of the variable we are renaming */
+		for(Iterator i = uses().iterator(); i.hasNext();) {
+			VarAccess va = (VarAccess)i.next();
+			table.add(va, this);
+		}
+		/* now, collect all uses of fields, types, and packages that the variable
+		 * might be shadowing after renaming */
+		for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
+			Variable v = (Variable)i.next();
+			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc, (ASTNode)v);
+			}
+		}
+		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				// only a type in an ambiguous position can be shadowed by a variable
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
+					table.add(acc, d);
+			}
+		}
+		PackageDecl pd = programRoot().getPackageDecl(new_name);
+		if(pd != null)
+			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
+						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
+					table.add(acc, pd);
+			}
+		return table;
+	}
+
+}

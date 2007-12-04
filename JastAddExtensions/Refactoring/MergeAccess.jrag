@@ -1,0 +1,47 @@
+aspect MergeAccess {
+
+	// the field access f is either a simple name or qualified with this, super, ((A)this),
+	// A.this, or ((A)B.this) for some classes A and B
+	public Access Expr.mergeWithAccess(Access f) {
+		if(f.isVariable() || f instanceof TypeAccess || f instanceof MethodAccess) {
+			return this.qualifiesAccess(f);
+		} else if(f instanceof AbstractDot) {
+			Expr left = ((AbstractDot)f).getLeft();
+			Access right = ((AbstractDot)f).getRight();
+			if(left.isThisAccess())
+				return mergeWithAccess(right);
+			else if(left.isSuperAccess()) {
+				if(type() instanceof ClassDecl) {
+					ClassDecl cdcl = (ClassDecl)type();
+					if(cdcl.hasSuperclass())
+						return new ParExpr(new CastExpr((TypeAccess)cdcl.getSuperClassAccess().fullCopy(), this)).
+									mergeWithAccess(right);
+				}
+				return null;
+			} else if(left instanceof ParExpr) {
+				Expr e = ((ParExpr)left).getExpr();
+				return mergeWithAccess(new Dot(e, right));
+			} else if(left instanceof CastExpr) {
+				Access tp = ((CastExpr)left).getTypeAccess();
+				Expr e = ((CastExpr)left).getExpr();
+				if(e instanceof ThisAccess) {
+					return new ParExpr(new CastExpr((TypeAccess)tp, this)).
+								mergeWithAccess(right);
+				}
+			} else if(left instanceof AbstractDot) {
+				Expr lleft = ((AbstractDot)left).getLeft();
+				Access lright = ((AbstractDot)left).getRight();
+				if(lright.isThisAccess()) {
+					// apparently, there is no way to make this work...
+					return null;
+				} else
+					return null;
+			} else
+				return null;
+		} else {
+			assert(false);
+		}
+		return null;
+	}
+	
+}

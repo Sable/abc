@@ -1,0 +1,36 @@
+aspect AddMethod {
+	
+	inh Collection ASTNode.lookupMethod(String name);
+
+	public void TypeDecl.addMethod(java.util.List changes, MethodDecl md, String sig, boolean canCapture) throws RefactoringException {
+		throw new RefactoringException("cannot add method");
+	}
+
+	public void ClassDecl.addMethod(java.util.List changes, MethodDecl md, String sig, boolean canCapture) throws RefactoringException {
+		AddMethod ch = new AddMethod(this, md);
+        if(!this.localMethodsSignature(sig).isEmpty())
+            throw new RefactoringException("a method of signature "+sig+" already exists");
+        AdjustmentTable table = new AdjustmentTable();
+        for(Iterator i=unqualifiedLookupMethod(md.getID()).iterator();i.hasNext();) {
+            MethodDecl m = (MethodDecl)i.next();
+            for(Iterator j=m.uses().iterator();j.hasNext();) {
+                MethodAccess acc = (MethodAccess)j.next();
+                table.add(acc, m);
+            }
+        }
+        programRoot().clear();
+        ch.apply();
+		if(!canCapture) {
+			if(!md.uses().isEmpty())
+				throw new RefactoringException("new method "+md.getID()+" could be captured");
+			if(!md.overriders().isEmpty())
+				throw new RefactoringException("new method "+md.getID()+" is overridden");
+		}
+        // make sure that uses of methods of the same name can be adjusted
+        table.adjust(changes);
+        ch.undo();
+        programRoot().clear();
+		changes.add(ch);
+	}
+
+}

@@ -1,0 +1,43 @@
+import changes.*;
+import main.FileRange;
+import java.util.*;
+
+aspect RenameParameter {
+	
+	// checks that the renaming doesn't lead to a name clash
+	inh RefactoringException ParameterDeclaration.canRenameTo(String new_name);
+	
+	eq Methodoid.getParameter().canRenameTo(String new_name) {
+		if(!parameterDeclaration(new_name).isEmpty())
+			return new RefactoringException("parameter of the same name exists");
+		if(this.hasBody())
+			return getBlock().acceptLocal(new_name);
+		return null;
+	}
+	
+	eq CatchClause.getParameter().canRenameTo(String new_name) {
+		return getBlock().acceptLocal(new_name);
+	}
+	
+	public java.util.List ParameterDeclaration.rename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		if(getID().equals(new_name))
+			return changes;
+		RefactoringException e = canRenameTo(new_name);
+		if(e != null)
+			throw e;
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new ParameterRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+		return changes;
+	}
+	
+}

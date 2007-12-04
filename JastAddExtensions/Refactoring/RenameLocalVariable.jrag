@@ -1,0 +1,51 @@
+import changes.*;
+import main.FileRange;
+import java.util.*;
+
+aspect RenameLocalVariable {
+	
+	interface Initializer {
+		Block getBlock();
+	}
+	
+	InstanceInitializer implements Initializer;
+	StaticInitializer implements Initializer;
+	
+	// checks that the renaming doesn't lead to a name clash
+	private RefactoringException VariableDeclaration.canRenameTo(String new_name) {
+		BodyDecl bd = hostBodyDecl();
+		if(bd instanceof Methodoid) {
+			Methodoid m = (Methodoid)bd;
+			if(!m.parameterDeclaration(new_name).isEmpty())
+				return new RefactoringException("parameter of the same name exists");
+			if(m.hasBody())
+				return m.getBlock().acceptLocal(new_name);
+		} else if(bd instanceof Initializer) {
+			return ((Initializer)bd).getBlock().acceptLocal(new_name);
+		} else {
+			assert(false);
+		}
+		return null;
+	}
+	
+	public java.util.List VariableDeclaration.rename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		if(getID().equals(new_name))
+			return changes;
+		RefactoringException e = canRenameTo(new_name);
+		if(e != null) throw e;
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new LocalVariableRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+		return changes;
+	}
+	
+}

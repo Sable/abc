@@ -1,0 +1,118 @@
+aspect RenameType {
+	
+	public java.util.List TypeDecl.rename(String new_name) throws RefactoringException {
+		java.util.List changes = new java.util.Vector();
+		if(getID().equals(new_name))
+			return changes;
+		CompilationUnit cu = compilationUnit();
+		checkRenamingPreconds(new_name);
+		if(isTopLevelType() && /*isPublic()*/ getID().equals(cu.getID()))
+			changes.add(new CompilationUnitRename(cu, new_name));
+		adjustImportDecls(changes);
+		String old_name = getID();
+		AdjustmentTable table = find_uses(new_name);
+		setID(new_name);
+		changes.add(new TypeRename(this, new_name));
+		programRoot().clear();
+		try {
+			table.adjust(changes);
+		} finally {
+			setID(old_name);
+			programRoot().clear();
+		}
+		return changes;
+	}
+	
+	private AdjustmentTable TypeDecl.find_uses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		/* first, collect all uses of the type we are renaming */
+		for(Iterator i = uses().iterator(); i.hasNext();) {
+			Access a = (Access)i.next();
+			table.add(a, this);
+		}
+		/* now, collect all uses of types and packages that the type
+		 * might be shadowing after renaming */
+		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc, d);
+			}
+		}
+		PackageDecl pd = programRoot().getPackageDecl(new_name);
+		if(pd != null)
+			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
+						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
+					table.add(acc, pd);
+			}
+		return table;
+	}
+	
+	private void TypeDecl.checkRenamingPreconds(String new_name) throws RefactoringException {
+        if(hasNestedType(new_name))
+            throw new RefactoringException("nested type of the same name exists");
+		if(isNestedType()) {
+			TypeDecl enc = enclosingType();
+			if(!enc.memberTypes(new_name).isEmpty())
+				throw new RefactoringException("type of the same name exists in enclosing type");
+			if(hasEnclosingType(new_name))
+				throw new RefactoringException("enclosing type of the same name exists");
+		} else if(isTopLevelType()) {
+			String pkg = hostPackage();
+            if(lookupType(pkg, new_name) != null)
+				throw new RefactoringException("type of the same name exists in enclosing package");
+			if(programRoot().hasPackage(pkg+"."+new_name))
+				throw new RefactoringException("sub-package of the same name exists in enclosing package");
+		}
+	}
+	
+    private boolean TypeDecl.hasNestedType(String name) {
+        for(int i=0;i<getNumBodyDecl();++i) {
+            BodyDecl d = getBodyDecl(i);
+            if(d instanceof MemberTypeDecl) {
+                TypeDecl a = ((MemberTypeDecl)d).typeDecl();
+                if(a.getID().equals(name) || a.hasNestedType(name))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean TypeDecl.hasEnclosingType(String name) {
+    	if(!isNestedType()) return false;
+    	TypeDecl enc = enclosingType();
+    	if(enc.getID().equals(name))
+    		return true;
+    	return enc.hasEnclosingType(name);
+    }
+
+	private void TypeDecl.adjustImportDecls(java.util.List changes) throws RefactoringException {
+		Program p = programRoot();
+		for(int i = 0; i < p.getNumCompilationUnit(); i++) {
+			for(int j=0;i<p.getCompilationUnit(i).getNumImportDecl();++j) {
+				ImportDecl id = p.getCompilationUnit(i).getImportDecl(j);
+				if(id instanceof SingleTypeImportDecl) {
+					Access acc = ((SingleTypeImportDecl)id).getAccess();
+					if(acc.type() == this) {
+						Access tacc = id.accessType(this, false);
+						if(tacc == null)
+							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
+						changes.add(new NodeReplace(id, new SingleTypeImportDecl(tacc)));
+					}
+				}
+			}
+		}
+	}
+	
+	syn lazy String CompilationUnit.getID() {
+       char pathsep = File.separatorChar;
+       String path = pathName();
+       int i = path.lastIndexOf(pathsep);
+	   String relname_tail = i == -1 ? path : path.substring(i+1);
+       int j = relname_tail.lastIndexOf(".");
+       return relname_tail.substring(0, j);	 		
+	}
+	
+}

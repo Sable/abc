@@ -1,0 +1,23 @@
+aspect AccessLocalVariable {
+	
+	syn Access ASTNode.accessLocalVariable(VariableDeclaration vd);
+	syn Access ASTNode.accessParameter(ParameterDeclaration pd);
+	
+	eq ASTNode.accessLocalVariable(VariableDeclaration vd) = null;
+	eq ASTNode.accessParameter(ParameterDeclaration pd) = null;
+
+	public Access Access.accessLocalVariable(VariableDeclaration vd) {
+		SimpleSet res = lookupVariable(vd.getID());
+		if(!res.contains(vd))
+			return null;
+		return new VarAccess(vd.getID());
+	}
+	
+	public Access Access.accessParameter(ParameterDeclaration pd) {
+		SimpleSet res = lookupVariable(pd.getID());
+		if(!res.contains(pd))
+			return null;
+		return new VarAccess(pd.getID());
+	}
+	
+}
