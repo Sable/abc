@@ -38,11 +38,6 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="../Rename">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
-		</fileset>
 		<fileset file="LocalDeclaration.jrag"/>
 		<fileset dir=".">
 			<include name="**/*.ast"/>

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
  
 public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  VariableScope {
@@ -70,13 +70,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         unknownType_value = null;
         inExplicitConstructorInvocation_computed = false;
         inStaticContext_computed = false;
-        accessField_FieldDeclaration_values = null;
-        accessMethod_MethodDecl_List_values = null;
-        accessType_TypeDecl_boolean_values = null;
-        TypeDecl_uses_visited = false;
-        TypeDecl_uses_computed = false;
-        TypeDecl_uses_value = null;
-    TypeDecl_uses_contributors = new java.util.HashSet();
     }
     public Object clone() throws CloneNotSupportedException {
         TypeDecl node = (TypeDecl)super.clone();
@@ -144,9 +137,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         node.unknownType_value = null;
         node.inExplicitConstructorInvocation_computed = false;
         node.inStaticContext_computed = false;
-        node.accessField_FieldDeclaration_values = null;
-        node.accessMethod_MethodDecl_List_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -502,137 +492,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
       }
     }
   }
-
-    // Declared in AddMethod.jrag at line 5
-
-
-	public void addMethod(java.util.List changes, MethodDecl md, String sig, boolean canCapture) throws RefactoringException {
-		throw new RefactoringException("cannot add method");
-	}
-
-    // Declared in RenameType.jrag at line 3
-
-	
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
-		if(getID().equals(new_name))
-			return changes;
-		CompilationUnit cu = compilationUnit();
-		checkRenamingPreconds(new_name);
-		if(isTopLevelType() && /*isPublic()*/ getID().equals(cu.getID()))
-			changes.add(new CompilationUnitRename(cu, new_name));
-		adjustImportDecls(changes);
-		String old_name = getID();
-		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new TypeRename(this, new_name));
-		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
-	}
-
-    // Declared in RenameType.jrag at line 26
-
-	
-	private AdjustmentTable find_uses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the type we are renaming */
-		for(Iterator i = uses().iterator(); i.hasNext();) {
-			Access a = (Access)i.next();
-			table.add(a, this);
-		}
-		/* now, collect all uses of types and packages that the type
-		 * might be shadowing after renaming */
-		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-			TypeDecl d = (TypeDecl)i.next();
-			for(Iterator j = d.uses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc, d);
-			}
-		}
-		PackageDecl pd = programRoot().getPackageDecl(new_name);
-		if(pd != null)
-			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
-						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
-			}
-		return table;
-	}
-
-    // Declared in RenameType.jrag at line 53
-
-	
-	private void checkRenamingPreconds(String new_name) throws RefactoringException {
-        if(hasNestedType(new_name))
-            throw new RefactoringException("nested type of the same name exists");
-		if(isNestedType()) {
-			TypeDecl enc = enclosingType();
-			if(!enc.memberTypes(new_name).isEmpty())
-				throw new RefactoringException("type of the same name exists in enclosing type");
-			if(hasEnclosingType(new_name))
-				throw new RefactoringException("enclosing type of the same name exists");
-		} else if(isTopLevelType()) {
-			String pkg = hostPackage();
-            if(lookupType(pkg, new_name) != null)
-				throw new RefactoringException("type of the same name exists in enclosing package");
-			if(programRoot().hasPackage(pkg+"."+new_name))
-				throw new RefactoringException("sub-package of the same name exists in enclosing package");
-		}
-	}
-
-    // Declared in RenameType.jrag at line 71
-
-	
-    private boolean hasNestedType(String name) {
-        for(int i=0;i<getNumBodyDecl();++i) {
-            BodyDecl d = getBodyDecl(i);
-            if(d instanceof MemberTypeDecl) {
-                TypeDecl a = ((MemberTypeDecl)d).typeDecl();
-                if(a.getID().equals(name) || a.hasNestedType(name))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    // Declared in RenameType.jrag at line 83
-
-    
-    private boolean hasEnclosingType(String name) {
-    	if(!isNestedType()) return false;
-    	TypeDecl enc = enclosingType();
-    	if(enc.getID().equals(name))
-    		return true;
-    	return enc.hasEnclosingType(name);
-    }
-
-    // Declared in RenameType.jrag at line 91
-
-
-	private void adjustImportDecls(java.util.List changes) throws RefactoringException {
-		Program p = programRoot();
-		for(int i = 0; i < p.getNumCompilationUnit(); i++) {
-			for(int j=0;i<p.getCompilationUnit(i).getNumImportDecl();++j) {
-				ImportDecl id = p.getCompilationUnit(i).getImportDecl(j);
-				if(id instanceof SingleTypeImportDecl) {
-					Access acc = ((SingleTypeImportDecl)id).getAccess();
-					if(acc.type() == this) {
-						Access tacc = id.accessType(this, false);
-						if(tacc == null)
-							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
-						changes.add(new NodeReplace(id, new SingleTypeImportDecl(tacc)));
-					}
-				}
-			}
-		}
-	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 37
@@ -2218,14 +2077,6 @@ if(instanceOf_TypeDecl_values == null) instanceOf_TypeDecl_values = new java.uti
 
     private boolean isCircular_compute() {  return  false;  }
 
-    // Declared in AccessField.jrag at line 16
-    public Access accessFieldInSupertypes(FieldDeclaration fd) {
-        Access accessFieldInSupertypes_FieldDeclaration_value = accessFieldInSupertypes_compute(fd);
-        return accessFieldInSupertypes_FieldDeclaration_value;
-    }
-
-    private Access accessFieldInSupertypes_compute(FieldDeclaration fd) {  return  null;  }
-
     protected boolean componentType_computed = false;
     protected TypeDecl componentType_value;
     // Declared in Arrays.jrag at line 13
@@ -2519,67 +2370,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return inStaticContext_value;
     }
 
-    // Declared in ASTUtil.jrag at line 7
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
-    }
-
-    // Declared in ASTUtil.jrag at line 14
-    public CompilationUnit compilationUnit() {
-        CompilationUnit compilationUnit_value = getParent().Define_CompilationUnit_compilationUnit(this, null);
-        return compilationUnit_value;
-    }
-
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 8
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
-    }
-
-    protected java.util.Map accessMethod_MethodDecl_List_values;
-    // Declared in AccessMethod.jrag at line 5
-    public Access accessMethod(MethodDecl md, List args) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(md);
-        _parameters.add(args);
-if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_values = new java.util.HashMap(4);
-        if(accessMethod_MethodDecl_List_values.containsKey(_parameters))
-            return (Access)accessMethod_MethodDecl_List_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessMethod_MethodDecl_List_value = getParent().Define_Access_accessMethod(this, null, md, args);
-        if(isFinal && num == boundariesCrossed)
-            accessMethod_MethodDecl_List_values.put(_parameters, accessMethod_MethodDecl_List_value);
-        return accessMethod_MethodDecl_List_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 5
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
-    }
-
     // Declared in Modifiers.jrag at line 288
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2610,6 +2400,45 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_isFinallyBlock(this, caller);
     }
 
+    // Declared in LookupMethod.jrag at line 22
+    public Collection Define_Collection_lookupMethod(ASTNode caller, ASTNode child, String name) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int i = caller.getIndexOfChild(child);
+            return  unqualifiedLookupMethod(name);
+        }
+        return getParent().Define_Collection_lookupMethod(this, caller, name);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 175
+    public boolean Define_boolean_withInCatchClause(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_withInCatchClause(this, caller);
+    }
+
+    // Declared in TypeAnalysis.jrag at line 565
+    public TypeDecl Define_TypeDecl_hostType(ASTNode caller, ASTNode child) {
+        if(caller == getModifiersNoTransform()) {
+            return  hostType();
+        }
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  hostType();
+        }
+        return getParent().Define_TypeDecl_hostType(this, caller);
+    }
+
+    // Declared in DefiniteAssignment.jrag at line 11
+    public boolean Define_boolean_isDest(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_isDest(this, caller);
+    }
+
     // Declared in ControlFlowGraph.jrag at line 149
     public TryStmt Define_TryStmt_enclosingTryStmt(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2619,15 +2448,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_TryStmt_enclosingTryStmt(this, caller);
     }
 
-    // Declared in Modifiers.jrag at line 290
-    public boolean Define_boolean_mayBeFinal(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_mayBeFinal(this, caller);
-    }
-
     // Declared in LookupConstructor.jrag at line 7
     public Collection Define_Collection_lookupConstructor(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2635,6 +2455,15 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
             return  constructors();
         }
         return getParent().Define_Collection_lookupConstructor(this, caller);
+    }
+
+    // Declared in Modifiers.jrag at line 290
+    public boolean Define_boolean_mayBeFinal(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_mayBeFinal(this, caller);
     }
 
     // Declared in NameCheck.jrag at line 359
@@ -2667,6 +2496,15 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Collection_lookupSuperConstructor(this, caller);
     }
 
+    // Declared in DefiniteAssignment.jrag at line 21
+    public boolean Define_boolean_isSource(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  true;
+        }
+        return getParent().Define_boolean_isSource(this, caller);
+    }
+
     // Declared in Modifiers.jrag at line 287
     public boolean Define_boolean_mayBeProtected(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2677,6 +2515,24 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
             return  true;
         }
         return getParent().Define_boolean_mayBeProtected(this, caller);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 238
+    public Set Define_Set_following(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  Set.empty();
+        }
+        return getParent().Define_Set_following(this, caller);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 206
+    public ConstCase Define_ConstCase_followingConstCase(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  null;
+        }
+        return getParent().Define_ConstCase_followingConstCase(this, caller);
     }
 
     // Declared in Modifiers.jrag at line 293
@@ -2703,22 +2559,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
             return  this;
         }
         return getParent().Define_TypeDecl_componentType(this, caller);
-    }
-
-    // Declared in AccessPackage.jrag at line 22
-    public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		String[] path = pkg.split("\\.");
-		if(getBodyDecl(i).lookupType(path[0]).isEmpty() && 
-				getBodyDecl(i).lookupVariable(path[0]).isEmpty() && hasPackage(pkg)) {
-			return new PackageAccess(pkg);
-		}
-		return null;
-	}
-}
-        return getParent().Define_Access_accessPackage(this, caller, pkg);
     }
 
     // Declared in SyntacticClassification.jrag at line 108
@@ -2783,6 +2623,71 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_isDUbefore(this, caller, v);
     }
 
+    // Declared in LocalDeclaration.jrag at line 35
+    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  new ArrayList();
+        }
+        return getParent().Define_Collection_visibleLocalDecls(this, caller);
+    }
+
+    // Declared in TypeAnalysis.jrag at line 494
+    public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  this;
+        }
+        return getParent().Define_TypeDecl_enclosingType(this, caller);
+    }
+
+    // Declared in LookupVariable.jrag at line 18
+    public SimpleSet Define_SimpleSet_lookupVariable(ASTNode caller, ASTNode child, String name) {
+        if(caller == getBodyDeclListNoTransform()) { 
+   int i = caller.getIndexOfChild(child);
+ {
+    SimpleSet list = memberFields(name);
+    if(!list.isEmpty()) return list;
+    list = lookupVariable(name);
+    if(inStaticContext() || isStatic())
+      list = removeInstanceVariables(list);
+    else if(isAnonymous() && inExplicitConstructorInvocation()) {
+      TypeDecl typeDecl = enclosingType();
+      SimpleSet newSet = SimpleSet.emptySet;
+      for(Iterator iter = list.iterator(); iter.hasNext(); ) {
+        Variable v = (Variable)iter.next();
+        if(!v.isInstanceVariable() || !typeDecl.memberFields(name).contains(v))
+          newSet = newSet.add(v);
+      }
+      return newSet;
+    }
+    return list;
+  }
+}
+        return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 221
+    public DefaultCase Define_DefaultCase_followingDefaultCase(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  null;
+        }
+        return getParent().Define_DefaultCase_followingDefaultCase(this, caller);
+    }
+
+    // Declared in Modifiers.jrag at line 291
+    public boolean Define_boolean_mayBeAbstract(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        if(caller == getModifiersNoTransform()) {
+            return  true;
+        }
+        return getParent().Define_boolean_mayBeAbstract(this, caller);
+    }
+
     // Declared in Modifiers.jrag at line 294
     public boolean Define_boolean_mayBeStrictfp(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2793,6 +2698,15 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
             return  true;
         }
         return getParent().Define_boolean_mayBeStrictfp(this, caller);
+    }
+
+    // Declared in TypeAnalysis.jrag at line 210
+    public boolean Define_boolean_isAnonymous(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_isAnonymous(this, caller);
     }
 
     // Declared in DefiniteAssignment.jrag at line 236
@@ -2849,6 +2763,24 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_isDAbefore(this, caller, v);
     }
 
+    // Declared in ControlFlowGraph.jrag at line 413
+    public Stmt Define_Stmt_exitBlock(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int i = caller.getIndexOfChild(child);
+            return  getBodyDecl(i).exitBlock();
+        }
+        return getParent().Define_Stmt_exitBlock(this, caller);
+    }
+
+    // Declared in ControlFlowGraph.jrag at line 168
+    public Set Define_Set_enclosingFinally(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  Set.empty();
+        }
+        return getParent().Define_Set_enclosingFinally(this, caller);
+    }
+
     // Declared in NameCheck.jrag at line 366
     public boolean Define_boolean_insideSwitch(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2876,6 +2808,42 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Stmt_entryBlock(this, caller);
     }
 
+    // Declared in Modifiers.jrag at line 292
+    public boolean Define_boolean_mayBeVolatile(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_mayBeVolatile(this, caller);
+    }
+
+    // Declared in NameCheck.jrag at line 293
+    public BodyDecl Define_BodyDecl_enclosingBodyDecl(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int i = caller.getIndexOfChild(child);
+            return  getBodyDecl(i);
+        }
+        return getParent().Define_BodyDecl_enclosingBodyDecl(this, caller);
+    }
+
+    // Declared in Modifiers.jrag at line 295
+    public boolean Define_boolean_mayBeSynchronized(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  false;
+        }
+        return getParent().Define_boolean_mayBeSynchronized(this, caller);
+    }
+
+    // Declared in UnreachableStatements.jrag at line 148
+    public boolean Define_boolean_reportUnreachable(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  true;
+        }
+        return getParent().Define_boolean_reportUnreachable(this, caller);
+    }
+
     // Declared in TypeAnalysis.jrag at line 536
     public boolean Define_boolean_isLocalClass(ASTNode caller, ASTNode child) {
         if(caller == getBodyDeclListNoTransform()) {
@@ -2901,6 +2869,30 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
             return  typeName();
         }
         return getParent().Define_String_methodHost(this, caller);
+    }
+
+    // Declared in TypeCheck.jrag at line 429
+    public TypeDecl Define_TypeDecl_enclosingInstance(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) { 
+   int childIndex = caller.getIndexOfChild(child);
+ {
+    if(getBodyDecl(childIndex) instanceof MemberTypeDecl && !((MemberTypeDecl)getBodyDecl(childIndex)).typeDecl().isInnerType())
+      return null;
+    if(getBodyDecl(childIndex) instanceof ConstructorDecl)
+      return enclosingInstance();
+    return this;
+  }
+}
+        return getParent().Define_TypeDecl_enclosingInstance(this, caller);
+    }
+
+    // Declared in NameCheck.jrag at line 280
+    public VariableScope Define_VariableScope_outerScope(ASTNode caller, ASTNode child) {
+        if(caller == getBodyDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
+            return  this;
+        }
+        return getParent().Define_VariableScope_outerScope(this, caller);
     }
 
     // Declared in LookupType.jrag at line 212
@@ -2944,461 +2936,8 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_mayBeStatic(this, caller);
     }
 
-    // Declared in LookupMethod.jrag at line 22
-    public Collection Define_Collection_lookupMethod(ASTNode caller, ASTNode child, String name) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int i = caller.getIndexOfChild(child);
-            return  unqualifiedLookupMethod(name);
-        }
-        return getParent().Define_Collection_lookupMethod(this, caller, name);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 175
-    public boolean Define_boolean_withInCatchClause(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_withInCatchClause(this, caller);
-    }
-
-    // Declared in TypeAnalysis.jrag at line 565
-    public TypeDecl Define_TypeDecl_hostType(ASTNode caller, ASTNode child) {
-        if(caller == getModifiersNoTransform()) {
-            return  hostType();
-        }
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  hostType();
-        }
-        return getParent().Define_TypeDecl_hostType(this, caller);
-    }
-
-    // Declared in DefiniteAssignment.jrag at line 11
-    public boolean Define_boolean_isDest(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_isDest(this, caller);
-    }
-
-    // Declared in DefiniteAssignment.jrag at line 21
-    public boolean Define_boolean_isSource(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  true;
-        }
-        return getParent().Define_boolean_isSource(this, caller);
-    }
-
-    // Declared in AccessMethod.jrag at line 12
-    public Access Define_Access_accessMethod(ASTNode caller, ASTNode child, MethodDecl md, List args) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		if(lookupMethod(md.getID()).contains(md)) {
-			return new MethodAccess(md.getID(), args);
-		} else if(md.hostType().encloses(hostType())) {
-			// we need an expression of the form A.this.x
-			Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
-			if(typacc == null)
-				return null;
-			return typacc.qualifiesAccess(new ThisAccess("this").qualifiesAccess(
-					new MethodAccess(md.getID(), args)));
-		} else if(hostType().instanceOf(md.hostType())) {
-			// we need to qualify either with `super' or with `(A)this'
-			if(hostType() instanceof ClassDecl && 
-					((ClassDecl)hostType()).superclass() == md.hostType()) {
-				return new SuperAccess("super").qualifiesAccess(
-						new MethodAccess(md.getID(), args));
-			} else if(!md.isStatic()) {
-				// non-static overridden methods of the superclass can be accessed,
-				// anything further up is off-limits
-				return null;
-			} else {
-				Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
-				if(typacc == null) return null;
-				return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
-					qualifiesAccess(new MethodAccess(md.getID(), args));
-			}
-		} else {
-			assert(false);
-		}
-	}
-}
-        return getParent().Define_Access_accessMethod(this, caller, md, args);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 206
-    public ConstCase Define_ConstCase_followingConstCase(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  null;
-        }
-        return getParent().Define_ConstCase_followingConstCase(this, caller);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 238
-    public Set Define_Set_following(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  Set.empty();
-        }
-        return getParent().Define_Set_following(this, caller);
-    }
-
-    // Declared in LocalDeclaration.jrag at line 35
-    public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(true) {
-      int childIndex = this.getIndexOfChild(caller);
-            return  new ArrayList();
-        }
-        return getParent().Define_Collection_visibleLocalDecls(this, caller);
-    }
-
-    // Declared in AccessType.jrag at line 40
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		if(memberTypes(td.getID()).contains(td)) {
-			if(ambiguous && !getBodyDecl(i).lookupVariable(td.getID()).isEmpty()) {
-				// if we are in an ambiguous context, we cannot access a member
-				// type shadowed by a field of the same name
-				return null;
-			} else {
-				return new TypeAccess(td.getID());
-			}
-		}
-		if(td.isNestedType()) {
-			TypeDecl enc = td.enclosingType();
-			Access encacc = getBodyDecl(i).accessType(enc, ambiguous);
-			if(encacc == null) return null;
-			Access acc = enc.getBodyDecl(0).accessType(td, ambiguous);
-			if(acc == null) return null;
-			return encacc.qualifiesAccess(acc);
-		} else {
-			Access ta = accessType(td, ambiguous);
-			if(ta == null) return null;
-			String pkgname = "";
-			if(ta instanceof TypeAccess) {
-				pkgname = ((TypeAccess)ta).getPackage();
-			} else if(ta instanceof AbstractDot) {
-				pkgname = ((TypeAccess)((AbstractDot)ta).getRight()).getPackage();
-			} else {
-				assert(false);
-			}
-			if(pkgname.equals("") && memberTypes(td.getID()).isEmpty() 
-					&& memberFields(td.getID()).isEmpty()) {
-				return ta;
-			} else {
-				Access pkgacc = getBodyDecl(i).accessPackage(td.packageName());
-				if(pkgacc == null) return null;
-				return pkgacc.qualifiesAccess(ta);
-			}
-		}
-	}
-}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
-
-    // Declared in LookupVariable.jrag at line 18
-    public SimpleSet Define_SimpleSet_lookupVariable(ASTNode caller, ASTNode child, String name) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-    SimpleSet list = memberFields(name);
-    if(!list.isEmpty()) return list;
-    list = lookupVariable(name);
-    if(inStaticContext() || isStatic())
-      list = removeInstanceVariables(list);
-    else if(isAnonymous() && inExplicitConstructorInvocation()) {
-      TypeDecl typeDecl = enclosingType();
-      SimpleSet newSet = SimpleSet.emptySet;
-      for(Iterator iter = list.iterator(); iter.hasNext(); ) {
-        Variable v = (Variable)iter.next();
-        if(!v.isInstanceVariable() || !typeDecl.memberFields(name).contains(v))
-          newSet = newSet.add(v);
-      }
-      return newSet;
-    }
-    return list;
-  }
-}
-        return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
-    }
-
-    // Declared in TypeAnalysis.jrag at line 494
-    public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  this;
-        }
-        return getParent().Define_TypeDecl_enclosingType(this, caller);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 221
-    public DefaultCase Define_DefaultCase_followingDefaultCase(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  null;
-        }
-        return getParent().Define_DefaultCase_followingDefaultCase(this, caller);
-    }
-
-    // Declared in Modifiers.jrag at line 291
-    public boolean Define_boolean_mayBeAbstract(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        if(caller == getModifiersNoTransform()) {
-            return  true;
-        }
-        return getParent().Define_boolean_mayBeAbstract(this, caller);
-    }
-
-    // Declared in AccessField.jrag at line 45
-    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		if(localFieldsMap().containsValue(fd))
-			return new VarAccess(fd.getID());
-		if(localFieldsMap().containsKey(fd.getID())) {
-			// we need to qualify
-			if(fd.hostType().encloses(hostType())) {
-				// we need an expression of the form A.this.x
-				Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
-				if(typacc == null)
-					return null;
-				return typacc.qualifiesAccess(new ThisAccess("this")).qualifiesAccess(new VarAccess(fd.getID()));
-			} else if(hostType().instanceOf(fd.hostType())) {
-				// first try looking it up in super class, if any
-				if(hostType() instanceof ClassDecl && ((ClassDecl)hostType()).superclass().getBodyDecl(0).accessField(fd) != null) {
-					ClassDecl host = (ClassDecl)hostType();
-					ClassDecl supclass = host.superclass();
-					Access acc = supclass.getBodyDecl(0).accessField(fd);
-					if(acc instanceof AbstractDot) {
-						Expr left = ((AbstractDot)acc).getLeft();
-						Access right = ((AbstractDot)acc).getRight();
-						if(left.isThisAccess()) {
-							// if it is this.x in superclass, it's super.x in here
-							return new SuperAccess("super").qualifiesAccess(right);
-						} else if(left.isSuperAccess()) {
-							// if it is super.x in superclass, we need a cast
-							ClassDecl supsupclass = supclass.superclass();
-							Access supsupacc = getBodyDecl(i).accessType(supsupclass, true);
-							if(supsupacc == null) return null;
-							return new ParExpr(new CastExpr(supsupacc, new ThisAccess("this"))).
-								qualifiesAccess(right);
-						} else {
-							// it must be of the form ((A)this).x, which we can reuse
-							return acc;
-						}
-					} else if(acc instanceof VarAccess) {
-						return new SuperAccess("super").qualifiesAccess(acc);
-					} else {
-						assert(false);
-					}
-				} else {
-					Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
-					if(typacc == null) return null;
-					return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).qualifiesAccess(new VarAccess(fd.getID()));
-				}
-			} else {
-				assert(false);
-			}
-		} else {
-			if(lookupVariable(fd.getID()) == fd) {
-				return new VarAccess(fd.getID());
-			}
-            // first, try finding it in supertypes
-			Access acc = accessFieldInSupertypes(fd);
-            if(acc != null) {
-                if(acc instanceof AbstractDot) {
-                    Expr left = ((AbstractDot)acc).getLeft();
-                    Access right = ((AbstractDot)acc).getRight();
-                    if(left.isSuperAccess()) {
-                        Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
-                        if(typacc == null) return null;
-                        return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
-                                    qualifiesAccess(right);
-                    }
-                }
-				return acc;
-            }
-            // otherwise, it must be in an enclosing type
-            if(!isNestedType()) return null;
-            acc = accessField(fd);
-            if(acc == null) return null;
-
-            // if the field can be reached by unqualified access in enclosing type,
-            // we are good; otherwise, we may have to fiddle with the qualifier
-			if(acc instanceof AbstractDot) {
-	            Expr left = ((AbstractDot)acc).getLeft();
-				Access right = ((AbstractDot)acc).getRight();
-                if(left instanceof ThisAccess) {
-                    // this happens if we are an anonymous class and the enclosing method
-                    // shadows the field we want to access
-                    Access tacc = getBodyDecl(i).accessType(enclosingType(), true);
-                    if(tacc == null) return null;
-                    return tacc.qualifiesAccess(acc);
-                } else if(left.isCastedThisAccess()) {
-					Access tacc1 = ((CastExpr)((ParExpr)left).getExpr()).getTypeAccess();
-					Access tacc2 = getBodyDecl(i).accessType(enclosingType(), true);
-					if(tacc2 == null) return null;
-					Access res = new ParExpr(new CastExpr(tacc1, tacc2.qualifiesAccess(new ThisAccess("this")))).
-						qualifiesAccess(right);
-					//System.out.println("now changed access "+acc.dumpTree()+" in enclosing type into "+res.dumpTree());
-					return res;
-				} else if(left.isSuperAccess()) {
-					ClassDecl supclass = ((ClassDecl)enclosingType()).superclass();
-					Access tacc1 = getBodyDecl(i).accessType(supclass, true);
-					if(tacc1 == null) return null;
-					Access tacc2 = getBodyDecl(i).accessType(enclosingType(), true);
-					if(tacc2 == null) return null;
-					Access res = new ParExpr(new CastExpr(tacc1, tacc2.qualifiesAccess(new ThisAccess("this")))).
-						qualifiesAccess(right);
-					//System.out.println("changed access "+acc.dumpTree()+" in enclosing class into "+res.dumpTree());
-					return res;
-				} else {
-					return acc;
-				}
-			} else {
-				return acc;
-			}
-		}
-		return null;
-	}
-}
-        return getParent().Define_Access_accessField(this, caller, fd);
-    }
-
-    // Declared in TypeAnalysis.jrag at line 210
-    public boolean Define_boolean_isAnonymous(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_isAnonymous(this, caller);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 413
-    public Stmt Define_Stmt_exitBlock(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int i = caller.getIndexOfChild(child);
-            return  getBodyDecl(i).exitBlock();
-        }
-        return getParent().Define_Stmt_exitBlock(this, caller);
-    }
-
-    // Declared in ControlFlowGraph.jrag at line 168
-    public Set Define_Set_enclosingFinally(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  Set.empty();
-        }
-        return getParent().Define_Set_enclosingFinally(this, caller);
-    }
-
-    // Declared in Modifiers.jrag at line 292
-    public boolean Define_boolean_mayBeVolatile(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_mayBeVolatile(this, caller);
-    }
-
-    // Declared in NameCheck.jrag at line 293
-    public BodyDecl Define_BodyDecl_enclosingBodyDecl(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int i = caller.getIndexOfChild(child);
-            return  getBodyDecl(i);
-        }
-        return getParent().Define_BodyDecl_enclosingBodyDecl(this, caller);
-    }
-
-    // Declared in Modifiers.jrag at line 295
-    public boolean Define_boolean_mayBeSynchronized(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_mayBeSynchronized(this, caller);
-    }
-
-    // Declared in UnreachableStatements.jrag at line 148
-    public boolean Define_boolean_reportUnreachable(ASTNode caller, ASTNode child) {
-        if(true) {
-      int childIndex = this.getIndexOfChild(caller);
-            return  true;
-        }
-        return getParent().Define_boolean_reportUnreachable(this, caller);
-    }
-
-    // Declared in NameCheck.jrag at line 280
-    public VariableScope Define_VariableScope_outerScope(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  this;
-        }
-        return getParent().Define_VariableScope_outerScope(this, caller);
-    }
-
-    // Declared in TypeCheck.jrag at line 429
-    public TypeDecl Define_TypeDecl_enclosingInstance(ASTNode caller, ASTNode child) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int childIndex = caller.getIndexOfChild(child);
- {
-    if(getBodyDecl(childIndex) instanceof MemberTypeDecl && !((MemberTypeDecl)getBodyDecl(childIndex)).typeDecl().isInnerType())
-      return null;
-    if(getBodyDecl(childIndex) instanceof ConstructorDecl)
-      return enclosingInstance();
-    return this;
-  }
-}
-        return getParent().Define_TypeDecl_enclosingInstance(this, caller);
-    }
-
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
-
-    protected boolean TypeDecl_uses_visited = false;
-    protected boolean TypeDecl_uses_computed = false;
-    protected HashSet TypeDecl_uses_value;
-    // Declared in Uses.jrag at line 57
-    public HashSet uses() {
-        if(TypeDecl_uses_computed)
-            return TypeDecl_uses_value;
-        if(TypeDecl_uses_visited)
-            throw new RuntimeException("Circular definition of attr: uses in class: ");
-        TypeDecl_uses_visited = true;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        TypeDecl_uses_value = uses_compute();
-        if(isFinal && num == boundariesCrossed)
-            TypeDecl_uses_computed = true;
-        TypeDecl_uses_visited = false;
-        return TypeDecl_uses_value;
-    }
-
-    java.util.HashSet TypeDecl_uses_contributors = new java.util.HashSet();
-    private HashSet uses_compute() {
-        ASTNode node = this;
-        while(node.getParent() != null)
-            node = node.getParent();
-        Program root = (Program)node;
-        root.collect_contributors_TypeDecl_uses();
-        TypeDecl_uses_value = new HashSet();
-        for(java.util.Iterator iter = TypeDecl_uses_contributors.iterator(); iter.hasNext(); ) {
-            ASTNode contributor = (ASTNode)iter.next();
-            contributor.contributeTo_TypeDecl_TypeDecl_uses(TypeDecl_uses_value);
-        }
-        return TypeDecl_uses_value;
-    }
 
 }

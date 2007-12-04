@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public class AbstractDot extends Access implements Cloneable {
@@ -67,13 +67,6 @@ public class AbstractDot extends Access implements Cloneable {
   public void replaceLast(Access access) {
     setRight(access);
   }
-
-    // Declared in AdjustAccess.jrag at line 48
-
-	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-		getRight().adjust(changes, table);
-	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 13
@@ -423,14 +416,6 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return isDUbefore_Variable_value;
     }
 
-    // Declared in AccessType.jrag at line 149
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(caller == getRightNoTransform()) {
-		return getLeft().qualifiedAccessType(td, ambiguous);
-	}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
-
     // Declared in LookupMethod.jrag at line 50
     public Collection Define_Collection_lookupMethod(ASTNode caller, ASTNode child, String name) {
         if(caller == getRightNoTransform()) {
@@ -453,14 +438,6 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
             return  false;
         }
         return getParent().Define_boolean_isDest(this, caller);
-    }
-
-    // Declared in AccessField.jrag at line 205
-    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
-        if(caller == getRightNoTransform()) {
-		return getLeft().qualifiedAccessField(fd);
-	}
-        return getParent().Define_Access_accessField(this, caller, fd);
     }
 
     // Declared in DefiniteAssignment.jrag at line 345
@@ -495,14 +472,6 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return getParent().Define_boolean_isSource(this, caller);
     }
 
-    // Declared in AccessMethod.jrag at line 43
-    public Access Define_Access_accessMethod(ASTNode caller, ASTNode child, MethodDecl md, List args) {
-        if(caller == getRightNoTransform()) {
-		return getLeft().qualifiedAccessMethod(md, args);
-	}
-        return getParent().Define_Access_accessMethod(this, caller, md, args);
-    }
-
     // Declared in LookupMethod.jrag at line 11
     public Expr Define_Expr_nestedScope(ASTNode caller, ASTNode child) {
         if(caller == getLeftNoTransform()) {
@@ -520,20 +489,6 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
             return  getLeft().hasQualifiedPackage(packageName);
         }
         return getParent().Define_boolean_hasPackage(this, caller, packageName);
-    }
-
-    // Declared in AccessPackage.jrag at line 39
-    public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
-        if(caller == getRightNoTransform()) {
-		Expr left = getLeft();
-		if(left.isPackageAccess()) {
-			String fullname = ((PackageAccess)left).packageName() + "." + pkg;
-			if(hasPackage(fullname))
-				return new PackageAccess(fullname);
-		}
-		return null;
-	}
-        return getParent().Define_Access_accessPackage(this, caller, pkg);
     }
 
     // Declared in TypeHierarchyCheck.jrag at line 4

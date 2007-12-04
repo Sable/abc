@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public abstract class BodyDecl extends ASTNode implements Cloneable {
@@ -13,9 +13,6 @@ public abstract class BodyDecl extends ASTNode implements Cloneable {
         typeThrowable_computed = false;
         typeThrowable_value = null;
         lookupVariable_String_values = null;
-        accessField_FieldDeclaration_values = null;
-        accessMethod_MethodDecl_List_values = null;
-        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         BodyDecl node = (BodyDecl)super.clone();
@@ -26,9 +23,6 @@ public abstract class BodyDecl extends ASTNode implements Cloneable {
         node.typeThrowable_computed = false;
         node.typeThrowable_value = null;
         node.lookupVariable_String_values = null;
-        node.accessField_FieldDeclaration_values = null;
-        node.accessMethod_MethodDecl_List_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -216,67 +210,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
     public TypeDecl hostType() {
         TypeDecl hostType_value = getParent().Define_TypeDecl_hostType(this, null);
         return hostType_value;
-    }
-
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 9
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
-    }
-
-    protected java.util.Map accessMethod_MethodDecl_List_values;
-    // Declared in AccessMethod.jrag at line 6
-    public Access accessMethod(MethodDecl md, List args) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(md);
-        _parameters.add(args);
-if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_values = new java.util.HashMap(4);
-        if(accessMethod_MethodDecl_List_values.containsKey(_parameters))
-            return (Access)accessMethod_MethodDecl_List_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessMethod_MethodDecl_List_value = getParent().Define_Access_accessMethod(this, null, md, args);
-        if(isFinal && num == boundariesCrossed)
-            accessMethod_MethodDecl_List_values.put(_parameters, accessMethod_MethodDecl_List_value);
-        return accessMethod_MethodDecl_List_value;
-    }
-
-    // Declared in AccessPackage.jrag at line 4
-    public Access accessPackage(String pkg) {
-        Access accessPackage_String_value = getParent().Define_Access_accessPackage(this, null, pkg);
-        return accessPackage_String_value;
-    }
-
-    // Declared in AccessPackage.jrag at line 12
-    public SimpleSet lookupType(String name) {
-        SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
-        return lookupType_String_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 6
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
     }
 
 public ASTNode rewriteTo() {

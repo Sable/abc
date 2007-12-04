@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class CatchClause extends ASTNode implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -303,14 +303,6 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  enclosingFinally();
         }
         return getParent().Define_Set_enclosingFinally(this, caller);
-    }
-
-    // Declared in RenameParameter.jrag at line 18
-    public RefactoringException Define_RefactoringException_canRenameTo(ASTNode caller, ASTNode child, String new_name) {
-        if(caller == getParameterNoTransform()) {
-		return getBlock().acceptLocal(new_name);
-	}
-        return getParent().Define_RefactoringException_canRenameTo(this, caller, new_name);
     }
 
 public ASTNode rewriteTo() {

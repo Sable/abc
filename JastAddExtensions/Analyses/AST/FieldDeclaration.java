@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Variable {
     public void flushCache() {
@@ -15,10 +15,6 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
         isLiveBetween_Stmt_Stmt_values = null;
         isLiveAfter_Stmt_values = null;
         isLiveAtOrAfter_Stmt_values = null;
-        FieldDeclaration_uses_visited = false;
-        FieldDeclaration_uses_computed = false;
-        FieldDeclaration_uses_value = null;
-    FieldDeclaration_uses_contributors = new java.util.HashSet();
     }
     public Object clone() throws CloneNotSupportedException {
         FieldDeclaration node = (FieldDeclaration)super.clone();
@@ -226,91 +222,6 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     }
   }
 
-    // Declared in Encapsulate.jrag at line 3
-
-
-	public java.util.List encapsulate() throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
-		if(!isPrivate()) {
-			changes.add(new PrivatiseField(this));
-		}
-		Modifiers mod = getModifiers();
-		String ucase_id = capitalize(getID());
-		String getter_name = "get"+ucase_id;
-		String setter_name = "set"+ucase_id;
-		String tpname = type().typeName();
-		hostType().addMethod(changes, makeGetter(getter_name, mod), 
-						     getter_name+"()",false);
-		hostType().addMethod(changes, makeSetter(setter_name, mod), 
-					         setter_name+"("+tpname+")", false);
-		for(Iterator i = uses().iterator(); i.hasNext();) {
-			VarAccess va = (VarAccess)i.next();
-			va.encapsulate(changes, getter_name, setter_name);
-		}
-		return changes;
-	}
-
-    // Declared in Encapsulate.jrag at line 24
-
-
-	public static String capitalize(String str) {
-		StringBuffer buf = new StringBuffer(str);
-		if(buf.length() > 0)
-			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
-		return buf.toString();
-	}
-
-    // Declared in Encapsulate.jrag at line 31
-
-
-	private MethodDecl makeGetter(String getter_name, Modifiers mod) {
-		Block getter_body = new Block();
-		getter_body.addStmt(new ReturnStmt(new VarAccess(getID())));
-		return new MethodDecl((Modifiers)mod.fullCopy(), (Access)getTypeAccess().fullCopy(),
-				getter_name, new List(), new List(), 
-				new List(), new Opt(getter_body));
-	}
-
-    // Declared in Encapsulate.jrag at line 39
-
-
-	private MethodDecl makeSetter(String setter_name, Modifiers mod) {
-		Access fieldacc = new ThisAccess("this").qualifiesAccess(new VarAccess(getID()));
-		Access parmacc = new VarAccess(getID());
-		Block setter_body = new Block();
-		setter_body.addStmt(new ReturnStmt(new AssignSimpleExpr(fieldacc, parmacc)));
-		ParameterDeclaration pd = new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
-		List parms = new List();
-		parms.add(pd);
-		return new MethodDecl((Modifiers)mod.fullCopy(), (Access)getTypeAccess().fullCopy(),
-				setter_name, parms, new List(), new List(), 
-				new Opt(setter_body));
-	}
-
-    // Declared in RenameField.jrag at line 7
-
-
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
-		if(getID().equals(new_name))
-			// haha, very funny
-			return changes;
-		if(!hostType().localFields(new_name).isEmpty())
-			throw new RefactoringException("couldn't rename: field name clash");
-		String old_name = getID();
-		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new FieldRename(this, new_name));
-		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
-	}
-
     // Declared in java.ast at line 3
     // Declared in java.ast line 76
 
@@ -438,56 +349,6 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     public Opt getInitOptNoTransform() {
         return (Opt)getChildNoTransform(2);
     }
-
-    // Declared in Uses.jrag at line 5
-
-	
-	public HashSet collectedUses() {
-		return uses();
-	}
-
-    // Declared in Uses.jrag at line 93
-
-
-	/* in preparation for renaming a variable to new_name, this method finds all
-	 * uses of the variable before renaming and all uses of fields, types and
-	 * packages that might become shadowed by the renaming and collects them into
-	 * an adjustment table */ 
-	public AdjustmentTable find_uses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the variable we are renaming */
-		for(Iterator i = uses().iterator(); i.hasNext();) {
-			VarAccess va = (VarAccess)i.next();
-			table.add(va, this);
-		}
-		/* now, collect all uses of fields, types, and packages that the variable
-		 * might be shadowing after renaming */
-		for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
-			Variable v = (Variable)i.next();
-			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc, (ASTNode)v);
-			}
-		}
-		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-			TypeDecl d = (TypeDecl)i.next();
-			for(Iterator j = d.uses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				// only a type in an ambiguous position can be shadowed by a variable
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
-					table.add(acc, d);
-			}
-		}
-		PackageDecl pd = programRoot().getPackageDecl(new_name);
-		if(pd != null)
-			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
-						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
-			}
-		return table;
-	}
 
     protected java.util.Map accessibleFrom_TypeDecl_values;
     // Declared in AccessControl.jrag at line 100
@@ -1010,12 +871,6 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
         return handlesException_TypeDecl_value;
     }
 
-    // Declared in ASTUtil.jrag at line 6
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
-    }
-
     // Declared in Modifiers.jrag at line 249
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         if(caller == getModifiersNoTransform()) {
@@ -1140,39 +995,5 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
-
-    protected boolean FieldDeclaration_uses_visited = false;
-    protected boolean FieldDeclaration_uses_computed = false;
-    protected HashSet FieldDeclaration_uses_value;
-    // Declared in Uses.jrag at line 10
-    public HashSet uses() {
-        if(FieldDeclaration_uses_computed)
-            return FieldDeclaration_uses_value;
-        if(FieldDeclaration_uses_visited)
-            throw new RuntimeException("Circular definition of attr: uses in class: ");
-        FieldDeclaration_uses_visited = true;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        FieldDeclaration_uses_value = uses_compute();
-        if(isFinal && num == boundariesCrossed)
-            FieldDeclaration_uses_computed = true;
-        FieldDeclaration_uses_visited = false;
-        return FieldDeclaration_uses_value;
-    }
-
-    java.util.HashSet FieldDeclaration_uses_contributors = new java.util.HashSet();
-    private HashSet uses_compute() {
-        ASTNode node = this;
-        while(node.getParent() != null)
-            node = node.getParent();
-        Program root = (Program)node;
-        root.collect_contributors_FieldDeclaration_uses();
-        FieldDeclaration_uses_value = new HashSet();
-        for(java.util.Iterator iter = FieldDeclaration_uses_contributors.iterator(); iter.hasNext(); ) {
-            ASTNode contributor = (ASTNode)iter.next();
-            contributor.contributeTo_FieldDeclaration_FieldDeclaration_uses(FieldDeclaration_uses_value);
-        }
-        return FieldDeclaration_uses_value;
-    }
 
 }

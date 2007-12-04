@@ -1,18 +1,14 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public abstract class Expr extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
-        accessField_FieldDeclaration_values = null;
-        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         Expr node = (Expr)super.clone();
-        node.accessField_FieldDeclaration_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -80,64 +76,6 @@ public abstract class Expr extends ASTNode implements Cloneable {
     dot.lastDot = dot;
     return dot;
   }
-
-    // Declared in AccessType.jrag at line 168
-
-	
-	boolean isCastedThisAccess() { return false; }
-
-    // Declared in AdjustAccess.jrag at line 45
-
-	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-	}
-
-    // Declared in MergeAccess.jrag at line 5
-
-
-	// the field access f is either a simple name or qualified with this, super, ((A)this),
-	// A.this, or ((A)B.this) for some classes A and B
-	public Access mergeWithAccess(Access f) {
-		if(f.isVariable() || f instanceof TypeAccess || f instanceof MethodAccess) {
-			return this.qualifiesAccess(f);
-		} else if(f instanceof AbstractDot) {
-			Expr left = ((AbstractDot)f).getLeft();
-			Access right = ((AbstractDot)f).getRight();
-			if(left.isThisAccess())
-				return mergeWithAccess(right);
-			else if(left.isSuperAccess()) {
-				if(type() instanceof ClassDecl) {
-					ClassDecl cdcl = (ClassDecl)type();
-					if(cdcl.hasSuperclass())
-						return new ParExpr(new CastExpr((TypeAccess)cdcl.getSuperClassAccess().fullCopy(), this)).
-									mergeWithAccess(right);
-				}
-				return null;
-			} else if(left instanceof ParExpr) {
-				Expr e = ((ParExpr)left).getExpr();
-				return mergeWithAccess(new Dot(e, right));
-			} else if(left instanceof CastExpr) {
-				Access tp = ((CastExpr)left).getTypeAccess();
-				Expr e = ((CastExpr)left).getExpr();
-				if(e instanceof ThisAccess) {
-					return new ParExpr(new CastExpr((TypeAccess)tp, this)).
-								mergeWithAccess(right);
-				}
-			} else if(left instanceof AbstractDot) {
-				Expr lleft = ((AbstractDot)left).getLeft();
-				Access lright = ((AbstractDot)left).getRight();
-				if(lright.isThisAccess()) {
-					// apparently, there is no way to make this work...
-					return null;
-				} else
-					return null;
-			} else
-				return null;
-		} else {
-			assert(false);
-		}
-		return null;
-	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 98
@@ -523,36 +461,6 @@ public abstract class Expr extends ASTNode implements Cloneable {
 
     private boolean staticContextQualifier_compute() {  return  false;  }
 
-    // Declared in AccessField.jrag at line 209
-    public Access qualifiedAccessField(FieldDeclaration fd) {
-        Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
-        return qualifiedAccessField_FieldDeclaration_value;
-    }
-
-    private Access qualifiedAccessField_compute(FieldDeclaration fd)  {
-		return type().getBodyDecl(0).accessField(fd);
-	}
-
-    // Declared in AccessMethod.jrag at line 47
-    public Access qualifiedAccessMethod(MethodDecl md, List args) {
-        Access qualifiedAccessMethod_MethodDecl_List_value = qualifiedAccessMethod_compute(md, args);
-        return qualifiedAccessMethod_MethodDecl_List_value;
-    }
-
-    private Access qualifiedAccessMethod_compute(MethodDecl md, List args)  {
-		return type().getBodyDecl(0).accessMethod(md, args);
-	}
-
-    // Declared in AccessType.jrag at line 153
-    public Access qualifiedAccessType(TypeDecl td, boolean ambiguous) {
-        Access qualifiedAccessType_TypeDecl_boolean_value = qualifiedAccessType_compute(td, ambiguous);
-        return qualifiedAccessType_TypeDecl_boolean_value;
-    }
-
-    private Access qualifiedAccessType_compute(TypeDecl td, boolean ambiguous)  {
-		return type().getBodyDecl(0).accessType(td, ambiguous);
-	}
-
     // Declared in DefiniteAssignment.jrag at line 6
     public boolean isDest() {
         boolean isDest_value = getParent().Define_boolean_isDest(this, null);
@@ -707,44 +615,6 @@ public abstract class Expr extends ASTNode implements Cloneable {
     public boolean inStaticContext() {
         boolean inStaticContext_value = getParent().Define_boolean_inStaticContext(this, null);
         return inStaticContext_value;
-    }
-
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 11
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
-    }
-
-    // Declared in AccessPackage.jrag at line 6
-    public Access accessPackage(String pkg) {
-        Access accessPackage_String_value = getParent().Define_Access_accessPackage(this, null, pkg);
-        return accessPackage_String_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 8
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
     }
 
 public ASTNode rewriteTo() {

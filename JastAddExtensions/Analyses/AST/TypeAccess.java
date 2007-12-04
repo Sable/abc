@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class TypeAccess extends Access implements Cloneable {
     public void flushCache() {
@@ -304,67 +304,8 @@ public class TypeAccess extends Access implements Cloneable {
 
     private boolean staticContextQualifier_compute() {  return  true;  }
 
-    // Declared in AccessField.jrag at line 215
-    public Access qualifiedAccessField(FieldDeclaration fd) {
-        Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
-        return qualifiedAccessField_FieldDeclaration_value;
-    }
-
-    private Access qualifiedAccessField_compute(FieldDeclaration fd)  {
-		return type().getBodyDecl(0).accessField(fd);
-	}
-
-    // Declared in AccessMethod.jrag at line 53
-    public Access qualifiedAccessMethod(MethodDecl md, List args) {
-        Access qualifiedAccessMethod_MethodDecl_List_value = qualifiedAccessMethod_compute(md, args);
-        return qualifiedAccessMethod_MethodDecl_List_value;
-    }
-
-    private Access qualifiedAccessMethod_compute(MethodDecl md, List args)  {
-		return type().getBodyDecl(0).accessMethod(md, args);
-	}
-
-    // Declared in AccessType.jrag at line 164
-    public Access qualifiedAccessType(TypeDecl td, boolean ambiguous) {
-        Access qualifiedAccessType_TypeDecl_boolean_value = qualifiedAccessType_compute(td, ambiguous);
-        return qualifiedAccessType_TypeDecl_boolean_value;
-    }
-
-    private Access qualifiedAccessType_compute(TypeDecl td, boolean ambiguous)  {
-		return type().getBodyDecl(0).accessType(td, ambiguous);
-	}
-
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
-
-    protected void collect_contributors_PackageDecl_prefixUses() {
-        // Declared in Uses.jrag at line 77
-        if(!packageName().equals("")) {
-        {
-            PackageDecl ref = (PackageDecl)(findPackageDecl(packageName().split("\\.")[0]));
-            if(ref != null)
-                ref.PackageDecl_prefixUses_contributors.add(this);
-        }
-        }
-        super.collect_contributors_PackageDecl_prefixUses();
-    }
-    protected void collect_contributors_TypeDecl_uses() {
-        // Declared in Uses.jrag at line 58
-        {
-            TypeDecl ref = (TypeDecl)((TypeDecl)decl());
-            if(ref != null)
-                ref.TypeDecl_uses_contributors.add(this);
-        }
-        super.collect_contributors_TypeDecl_uses();
-    }
-    protected void contributeTo_TypeDecl_TypeDecl_uses(HashSet collection) {
-        collection.add(this);
-    }
-
-    protected void contributeTo_PackageDecl_PackageDecl_prefixUses(HashSet collection) {
-        if(!packageName().equals(""))
-            collection.add(this);
-    }
 
 }

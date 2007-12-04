@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 public class List extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
@@ -30,30 +30,6 @@ public class List extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ASTUtil.jrag at line 52
-
-	
-    /*public void ASTNode.removeChild(int i) {
-    	if(i >= numChildren || children == null)
-    		return;
-    	ASTNode child = children[i];
-    	if(i < numChildren-1)
-    		System.arraycopy(children, i+1, children, i, numChildren-(i+1));
-    	numChildren--;
-    	if(child != null) {
-    		child.setParent(null);
-    		child.childIndex = -1;
-    	}
-	}*/
-    
-    public void remove(ASTNode n) {
-    	for(int i=0;i<getNumChild();++i)
-    		if(getChild(i) == n) {
-    			removeChild(i);
-    			break;
-    		}
-    }
-
     // Declared in ASTUtil.jrag at line 3
 
 	

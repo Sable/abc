@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 // Generated with JastAdd II (http://jastadd.cs.lth.se) version R20071114
 
@@ -9,20 +9,12 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         mayDef_Variable_values = null;
         mayUse_Variable_values = null;
         mayAccess_Variable_values = null;
-        accessField_FieldDeclaration_values = null;
-        accessType_TypeDecl_boolean_values = null;
-        nameType_computed = false;
-        nameType_value = null;
     }
     public Object clone() throws CloneNotSupportedException {
         ASTNode node = (ASTNode)super.clone();
         node.mayDef_Variable_values = null;
         node.mayUse_Variable_values = null;
         node.mayAccess_Variable_values = null;
-        node.accessField_FieldDeclaration_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
-        node.nameType_computed = false;
-        node.nameType_value = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -412,48 +404,6 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
   void checkUnreachableStmt() {
   }
-
-    // Declared in ASTUtil.jrag at line 19
-
-	
-	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
-	public void clear() {
-		flushCache();
-		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).clear();
-	}
-
-    // Declared in ASTUtil.jrag at line 28
-
-
-	// imperative transformation of the AST
-    //	syntax ASTNode.replace(sourcenode).with(destnode)
-
-	protected static ASTNode replace(ASTNode node) {
-		replacePos = node.getParent().getIndexOfChild(node);
-		return node.getParent();
-	}
-
-    // Declared in ASTUtil.jrag at line 32
-
-	protected ASTNode with(ASTNode node) {
-		setChild(node, replacePos);
-		return node;
-	}
-
-    // Declared in ASTUtil.jrag at line 37
-
-
-	private static int replacePos = 0;
-
-    // Declared in Uses.jrag at line 37
-
-	
-	protected HashSet asSet() {
-		HashSet set = new HashSet();
-		set.add(this);
-		return set;
-	}
 
     // Declared in ASTUtil.jrag at line 17
 
@@ -856,76 +806,6 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
   public boolean mayHaveRewrite() { return false; }
 
-    // Declared in Uses.jrag at line 57
-    protected void collect_contributors_TypeDecl_uses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_TypeDecl_uses();
-    }
-
-    protected void contributeTo_TypeDecl_TypeDecl_uses(HashSet collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 10
-    protected void collect_contributors_FieldDeclaration_uses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_FieldDeclaration_uses();
-    }
-
-    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 15
-    protected void collect_contributors_VariableDeclaration_uses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_VariableDeclaration_uses();
-    }
-
-    protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 20
-    protected void collect_contributors_ParameterDeclaration_uses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_ParameterDeclaration_uses();
-    }
-
-    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 29
-    protected void collect_contributors_MethodDecl_definiteUses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_MethodDecl_definiteUses();
-    }
-
-    protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 33
-    protected void collect_contributors_MethodDecl_uses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_MethodDecl_uses();
-    }
-
-    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 45
-    protected void collect_contributors_MethodDecl_overriders() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_MethodDecl_overriders();
-    }
-
-    protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
-    }
-
-
     // Declared in ControlFlowGraph.jrag at line 74
     protected void collect_contributors_Stmt_pred() {
         for(int i = 0; i < getNumChild(); i++)
@@ -933,16 +813,6 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
     protected void contributeTo_Stmt_Stmt_pred(Collection collection) {
-    }
-
-
-    // Declared in Uses.jrag at line 74
-    protected void collect_contributors_PackageDecl_prefixUses() {
-        for(int i = 0; i < getNumChild(); i++)
-            getChild(i).collect_contributors_PackageDecl_prefixUses();
-    }
-
-    protected void contributeTo_PackageDecl_PackageDecl_prefixUses(HashSet collection) {
     }
 
 
@@ -981,22 +851,6 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
     private String dumpString_compute() {  return  getClass().getName();  }
-
-    // Declared in AccessLocalVariable.jrag at line 6
-    public Access accessLocalVariable(VariableDeclaration vd) {
-        Access accessLocalVariable_VariableDeclaration_value = accessLocalVariable_compute(vd);
-        return accessLocalVariable_VariableDeclaration_value;
-    }
-
-    private Access accessLocalVariable_compute(VariableDeclaration vd) {  return  null;  }
-
-    // Declared in AccessLocalVariable.jrag at line 7
-    public Access accessParameter(ParameterDeclaration pd) {
-        Access accessParameter_ParameterDeclaration_value = accessParameter_compute(pd);
-        return accessParameter_ParameterDeclaration_value;
-    }
-
-    private Access accessParameter_compute(ParameterDeclaration pd) {  return  null;  }
 
     // Declared in ControlFlowGraph.jrag at line 114
     public Set uncaughtThrows() {
@@ -1070,64 +924,6 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
 
     private boolean mayAccess_compute(Variable v) {  return  mayDef(v) || mayUse(v);  }
 
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 7
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
-    }
-
-    // Declared in AccessPackage.jrag at line 3
-    public Access accessPackage(String pkg) {
-        Access accessPackage_String_value = getParent().Define_Access_accessPackage(this, null, pkg);
-        return accessPackage_String_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 3
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
-    }
-
-    protected boolean nameType_computed = false;
-    protected NameType nameType_value;
-    // Declared in AccessType.jrag at line 10
-    public NameType nameType() {
-        if(nameType_computed)
-            return nameType_value;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        nameType_value = getParent().Define_NameType_nameType(this, null);
-        if(isFinal && num == boundariesCrossed)
-            nameType_computed = true;
-        return nameType_value;
-    }
-
-    // Declared in AddMethod.jrag at line 3
-    public Collection lookupMethod(String name) {
-        Collection lookupMethod_String_value = getParent().Define_Collection_lookupMethod(this, null, name);
-        return lookupMethod_String_value;
-    }
-
 public ASTNode rewriteTo() {
     if(state.peek() == ASTNode.REWRITE_CHANGE) {
         state.pop();
@@ -1160,14 +956,14 @@ public ASTNode rewriteTo() {
     public boolean Define_boolean_insideLoop(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_insideLoop(this, caller);
     }
-    public boolean Define_boolean_isMethodParameter(ASTNode caller, ASTNode child) {
-        return getParent().Define_boolean_isMethodParameter(this, caller);
-    }
     public LabeledStmt Define_LabeledStmt_lookupLabel(ASTNode caller, ASTNode child, String name) {
         return getParent().Define_LabeledStmt_lookupLabel(this, caller, name);
     }
     public boolean Define_boolean_mayBePublic(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_mayBePublic(this, caller);
+    }
+    public boolean Define_boolean_isMethodParameter(ASTNode caller, ASTNode child) {
+        return getParent().Define_boolean_isMethodParameter(this, caller);
     }
     public Collection Define_Collection_lookupSuperConstructor(ASTNode caller, ASTNode child) {
         return getParent().Define_Collection_lookupSuperConstructor(this, caller);
@@ -1208,9 +1004,6 @@ public ASTNode rewriteTo() {
     public TypeDecl Define_TypeDecl_typeCloneable(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_typeCloneable(this, caller);
     }
-    public Program Define_Program_programRoot(ASTNode caller, ASTNode child) {
-        return getParent().Define_Program_programRoot(this, caller);
-    }
     public boolean Define_boolean_isLocalClass(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isLocalClass(this, caller);
     }
@@ -1238,23 +1031,17 @@ public ASTNode rewriteTo() {
     public ConstructorDecl Define_ConstructorDecl_constructorDecl(ASTNode caller, ASTNode child) {
         return getParent().Define_ConstructorDecl_constructorDecl(this, caller);
     }
-    public PackageDecl Define_PackageDecl_findPackageDecl(ASTNode caller, ASTNode child, String name) {
-        return getParent().Define_PackageDecl_findPackageDecl(this, caller, name);
-    }
-    public Access Define_Access_accessMethod(ASTNode caller, ASTNode child, MethodDecl md, List args) {
-        return getParent().Define_Access_accessMethod(this, caller, md, args);
-    }
     public ConstCase Define_ConstCase_followingConstCase(ASTNode caller, ASTNode child) {
         return getParent().Define_ConstCase_followingConstCase(this, caller);
     }
     public TypeDecl Define_TypeDecl_declType(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_declType(this, caller);
     }
-    public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
-        return getParent().Define_boolean_isConstructorParameter(this, caller);
-    }
     public Collection Define_Collection_visibleLocalDecls(ASTNode caller, ASTNode child) {
         return getParent().Define_Collection_visibleLocalDecls(this, caller);
+    }
+    public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
+        return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
     public SimpleSet Define_SimpleSet_lookupVariable(ASTNode caller, ASTNode child, String name) {
         return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
@@ -1270,9 +1057,6 @@ public ASTNode rewriteTo() {
     }
     public boolean Define_boolean_mayBeAbstract(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_mayBeAbstract(this, caller);
-    }
-    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
-        return getParent().Define_Access_accessField(this, caller, fd);
     }
     public boolean Define_boolean_isAnonymous(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isAnonymous(this, caller);
@@ -1294,9 +1078,6 @@ public ASTNode rewriteTo() {
     }
     public VariableScope Define_VariableScope_outerScope(ASTNode caller, ASTNode child) {
         return getParent().Define_VariableScope_outerScope(this, caller);
-    }
-    public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
-        return getParent().Define_CompilationUnit_compilationUnit(this, caller);
     }
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_mayBePrivate(this, caller);
@@ -1333,9 +1114,6 @@ public ASTNode rewriteTo() {
     }
     public MethodDecl Define_MethodDecl_unknownMethod(ASTNode caller, ASTNode child) {
         return getParent().Define_MethodDecl_unknownMethod(this, caller);
-    }
-    public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
-        return getParent().Define_Access_accessPackage(this, caller, pkg);
     }
     public NameType Define_NameType_nameType(ASTNode caller, ASTNode child) {
         return getParent().Define_NameType_nameType(this, caller);
@@ -1400,17 +1178,17 @@ public ASTNode rewriteTo() {
     public Set Define_Set_following(ASTNode caller, ASTNode child) {
         return getParent().Define_Set_following(this, caller);
     }
-    public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
-        return getParent().Define_Block_hostBlock(this, caller);
-    }
     public Expr Define_Expr_nestedScope(ASTNode caller, ASTNode child) {
         return getParent().Define_Expr_nestedScope(this, caller);
     }
-    public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
-        return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
+    public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
+        return getParent().Define_Block_hostBlock(this, caller);
     }
     public boolean Define_boolean_hasPackage(ASTNode caller, ASTNode child, String packageName) {
         return getParent().Define_boolean_hasPackage(this, caller, packageName);
+    }
+    public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
+        return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
     }
     public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isInitOrUpdateStmt(this, caller);
@@ -1421,17 +1199,11 @@ public ASTNode rewriteTo() {
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         return getParent().Define_Block_getBlock(this, caller);
     }
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
     public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_enclosingType(this, caller);
     }
     public Case Define_Case_bind(ASTNode caller, ASTNode child, Case c) {
         return getParent().Define_Case_bind(this, caller, c);
-    }
-    public RefactoringException Define_RefactoringException_canRenameTo(ASTNode caller, ASTNode child, String new_name) {
-        return getParent().Define_RefactoringException_canRenameTo(this, caller, new_name);
     }
     public Stmt Define_Stmt_exitBlock(ASTNode caller, ASTNode child) {
         return getParent().Define_Stmt_exitBlock(this, caller);

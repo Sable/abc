@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 // 4.3 Reference Types and Values
@@ -286,36 +286,6 @@ public class ClassDecl extends ReferenceType implements Cloneable {
       }
     }
   }
-
-    // Declared in AddMethod.jrag at line 9
-
-
-	public void addMethod(java.util.List changes, MethodDecl md, String sig, boolean canCapture) throws RefactoringException {
-		AddMethod ch = new AddMethod(this, md);
-        if(!this.localMethodsSignature(sig).isEmpty())
-            throw new RefactoringException("a method of signature "+sig+" already exists");
-        AdjustmentTable table = new AdjustmentTable();
-        for(Iterator i=unqualifiedLookupMethod(md.getID()).iterator();i.hasNext();) {
-            MethodDecl m = (MethodDecl)i.next();
-            for(Iterator j=m.uses().iterator();j.hasNext();) {
-                MethodAccess acc = (MethodAccess)j.next();
-                table.add(acc, m);
-            }
-        }
-        programRoot().clear();
-        ch.apply();
-		if(!canCapture) {
-			if(!md.uses().isEmpty())
-				throw new RefactoringException("new method "+md.getID()+" could be captured");
-			if(!md.overriders().isEmpty())
-				throw new RefactoringException("new method "+md.getID()+" is overridden");
-		}
-        // make sure that uses of methods of the same name can be adjusted
-        table.adjust(changes);
-        ch.undo();
-        programRoot().clear();
-		changes.add(ch);
-	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 62
@@ -1058,28 +1028,6 @@ if(instanceOf_TypeDecl_values == null) instanceOf_TypeDecl_values = new java.uti
     }
     return false;
   }
-
-    // Declared in AccessField.jrag at line 18
-    public Access accessFieldInSupertypes(FieldDeclaration fd) {
-        Access accessFieldInSupertypes_FieldDeclaration_value = accessFieldInSupertypes_compute(fd);
-        return accessFieldInSupertypes_FieldDeclaration_value;
-    }
-
-    private Access accessFieldInSupertypes_compute(FieldDeclaration fd)  {
-		Access a;
-		if(hasSuperclass()) {
-			a = superclass().getBodyDecl(0).accessField(fd);
-			if(a != null)
-				return a;
-		}
-		for(Iterator i = interfacesIterator(); i.hasNext(); ) {
-			InterfaceDecl idecl = (InterfaceDecl)i.next();
-			a = idecl.getBodyDecl(0).accessField(fd);
-			if(a != null)
-				return a;
-		}
-		return null;
-	}
 
     // Declared in TypeAnalysis.jrag at line 569
     public TypeDecl Define_TypeDecl_hostType(ASTNode caller, ASTNode child) {

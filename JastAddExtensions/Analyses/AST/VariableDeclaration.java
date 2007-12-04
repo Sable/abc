@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet,  Iterator,  Variable,  LocalDeclaration {
     public void flushCache() {
@@ -11,7 +11,6 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         constant_value = null;
         getBlock_computed = false;
         getBlock_value = null;
-        shouldMoveInto_Stmt_Stmt_values = null;
         mayDef_Variable_values = null;
         isLiveBetween_Stmt_Stmt_values = null;
         isLiveAfter_Stmt_values = null;
@@ -20,14 +19,6 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         accessedOutside_Stmt_Stmt_values = null;
         accessedBefore_Stmt_values = null;
         accessedAfter_Stmt_values = null;
-        isValueParmFor_Stmt_Stmt_values = null;
-        isOutParmFor_Stmt_Stmt_values = null;
-        shouldMoveOutOf_Stmt_Stmt_values = null;
-        shouldDuplicate_Stmt_Stmt_values = null;
-        VariableDeclaration_uses_visited = false;
-        VariableDeclaration_uses_computed = false;
-        VariableDeclaration_uses_value = null;
-    VariableDeclaration_uses_contributors = new java.util.HashSet();
     }
     public Object clone() throws CloneNotSupportedException {
         VariableDeclaration node = (VariableDeclaration)super.clone();
@@ -37,7 +28,6 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         node.constant_value = null;
         node.getBlock_computed = false;
         node.getBlock_value = null;
-        node.shouldMoveInto_Stmt_Stmt_values = null;
         node.mayDef_Variable_values = null;
         node.isLiveBetween_Stmt_Stmt_values = null;
         node.isLiveAfter_Stmt_values = null;
@@ -46,10 +36,6 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         node.accessedOutside_Stmt_Stmt_values = null;
         node.accessedBefore_Stmt_values = null;
         node.accessedAfter_Stmt_values = null;
-        node.isValueParmFor_Stmt_Stmt_values = null;
-        node.isOutParmFor_Stmt_Stmt_values = null;
-        node.shouldMoveOutOf_Stmt_Stmt_values = null;
-        node.shouldDuplicate_Stmt_Stmt_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -173,49 +159,6 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
               " a value of type " + source.typeName());
     }
   }
-
-    // Declared in RenameLocalVariable.jrag at line 15
-
-	
-	// checks that the renaming doesn't lead to a name clash
-	private RefactoringException canRenameTo(String new_name) {
-		BodyDecl bd = hostBodyDecl();
-		if(bd instanceof Methodoid) {
-			Methodoid m = (Methodoid)bd;
-			if(!m.parameterDeclaration(new_name).isEmpty())
-				return new RefactoringException("parameter of the same name exists");
-			if(m.hasBody())
-				return m.getBlock().acceptLocal(new_name);
-		} else if(bd instanceof Initializer) {
-			return ((Initializer)bd).getBlock().acceptLocal(new_name);
-		} else {
-			assert(false);
-		}
-		return null;
-	}
-
-    // Declared in RenameLocalVariable.jrag at line 31
-
-	
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
-		if(getID().equals(new_name))
-			return changes;
-		RefactoringException e = canRenameTo(new_name);
-		if(e != null) throw e;
-		String old_name = getID();
-		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new LocalVariableRename(this, new_name));
-		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
-	}
 
     // Declared in LocalDeclaration.jrag at line 20
 
@@ -358,56 +301,6 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     public Opt getInitOptNoTransform() {
         return (Opt)getChildNoTransform(2);
     }
-
-    // Declared in Uses.jrag at line 5
-
-	
-	public HashSet collectedUses() {
-		return uses();
-	}
-
-    // Declared in Uses.jrag at line 93
-
-
-	/* in preparation for renaming a variable to new_name, this method finds all
-	 * uses of the variable before renaming and all uses of fields, types and
-	 * packages that might become shadowed by the renaming and collects them into
-	 * an adjustment table */ 
-	public AdjustmentTable find_uses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the variable we are renaming */
-		for(Iterator i = uses().iterator(); i.hasNext();) {
-			VarAccess va = (VarAccess)i.next();
-			table.add(va, this);
-		}
-		/* now, collect all uses of fields, types, and packages that the variable
-		 * might be shadowing after renaming */
-		for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
-			Variable v = (Variable)i.next();
-			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc, (ASTNode)v);
-			}
-		}
-		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-			TypeDecl d = (TypeDecl)i.next();
-			for(Iterator j = d.uses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				// only a type in an ambiguous position can be shadowed by a variable
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
-					table.add(acc, d);
-			}
-		}
-		PackageDecl pd = programRoot().getPackageDecl(new_name);
-		if(pd != null)
-			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
-						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
-			}
-		return table;
-	}
 
     // Declared in DataStructures.jrag at line 74
     public int size() {
@@ -609,18 +502,6 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
 
     private Constant constant_compute() {  return  type().cast(getInit().constant());  }
 
-    // Declared in LocalVarNesting.jrag at line 56
-    public RefactoringException acceptLocal(String name) {
-        RefactoringException acceptLocal_String_value = acceptLocal_compute(name);
-        return acceptLocal_String_value;
-    }
-
-    private RefactoringException acceptLocal_compute(String name)  {
-		if(name.equals(getID()))
-			return new RefactoringException("local variable of same name exists");
-		return null;
-	}
-
     protected boolean getBlock_computed = false;
     protected Block getBlock_value;
     // Declared in Domination.jrag at line 58
@@ -636,26 +517,6 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
     }
 
     private Block getBlock_compute() {  return  hostBlock();  }
-
-    protected java.util.Map shouldMoveInto_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 16
-    public boolean shouldMoveInto(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(shouldMoveInto_Stmt_Stmt_values == null) shouldMoveInto_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(shouldMoveInto_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)shouldMoveInto_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean shouldMoveInto_Stmt_Stmt_value = shouldMoveInto_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            shouldMoveInto_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(shouldMoveInto_Stmt_Stmt_value));
-        return shouldMoveInto_Stmt_Stmt_value;
-    }
-
-    private boolean shouldMoveInto_compute(Stmt begin, Stmt end) {  return 
-		!between(begin, end) && !isValueParmFor(begin, end);  }
 
     // Declared in VarDefUse.jrag at line 11
     public boolean mayDef(Variable v) {
@@ -1126,90 +987,6 @@ if(accessedAfter_Stmt_values == null) accessedAfter_Stmt_values = new java.util.
 		return false;
 	}
 
-    protected java.util.Map isValueParmFor_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 3
-    public boolean isValueParmFor(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(isValueParmFor_Stmt_Stmt_values == null) isValueParmFor_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(isValueParmFor_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)isValueParmFor_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean isValueParmFor_Stmt_Stmt_value = isValueParmFor_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            isValueParmFor_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(isValueParmFor_Stmt_Stmt_value));
-        return isValueParmFor_Stmt_Stmt_value;
-    }
-
-    private boolean isValueParmFor_compute(Stmt begin, Stmt end)  {
-		return isLiveBetween(begin, end);
-	}
-
-    protected java.util.Map isOutParmFor_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 7
-    public boolean isOutParmFor(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(isOutParmFor_Stmt_Stmt_values == null) isOutParmFor_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(isOutParmFor_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)isOutParmFor_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean isOutParmFor_Stmt_Stmt_value = isOutParmFor_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            isOutParmFor_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(isOutParmFor_Stmt_Stmt_value));
-        return isOutParmFor_Stmt_Stmt_value;
-    }
-
-    private boolean isOutParmFor_compute(Stmt begin, Stmt end)  {
-		return isLiveAfter(end) && mayDefBetween(begin, end);
-	}
-
-    protected java.util.Map shouldMoveOutOf_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 11
-    public boolean shouldMoveOutOf(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(shouldMoveOutOf_Stmt_Stmt_values == null) shouldMoveOutOf_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(shouldMoveOutOf_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)shouldMoveOutOf_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean shouldMoveOutOf_Stmt_Stmt_value = shouldMoveOutOf_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            shouldMoveOutOf_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(shouldMoveOutOf_Stmt_Stmt_value));
-        return shouldMoveOutOf_Stmt_Stmt_value;
-    }
-
-    private boolean shouldMoveOutOf_compute(Stmt begin, Stmt end) {  return 
-		between(begin, end)	&& accessedAfter(end);  }
-
-    protected java.util.Map shouldDuplicate_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 21
-    public boolean shouldDuplicate(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(shouldDuplicate_Stmt_Stmt_values.containsKey(_parameters))
-            return ((Boolean)shouldDuplicate_Stmt_Stmt_values.get(_parameters)).booleanValue();
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        boolean shouldDuplicate_Stmt_Stmt_value = shouldDuplicate_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            shouldDuplicate_Stmt_Stmt_values.put(_parameters, Boolean.valueOf(shouldDuplicate_Stmt_Stmt_value));
-        return shouldDuplicate_Stmt_Stmt_value;
-    }
-
-    private boolean shouldDuplicate_compute(Stmt begin, Stmt end)  {
-		return (shouldMoveInto(begin, end) || between(begin, end))
-					&& accessedOutside(begin, end);
-	}
-
     // Declared in LookupVariable.jrag at line 12
     public SimpleSet lookupVariable(String name) {
         SimpleSet lookupVariable_String_value = getParent().Define_SimpleSet_lookupVariable(this, null, name);
@@ -1232,12 +1009,6 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
     public TypeDecl hostType() {
         TypeDecl hostType_value = getParent().Define_TypeDecl_hostType(this, null);
         return hostType_value;
-    }
-
-    // Declared in ASTUtil.jrag at line 10
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
     }
 
     // Declared in DefiniteAssignment.jrag at line 29
@@ -1291,39 +1062,5 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
-
-    protected boolean VariableDeclaration_uses_visited = false;
-    protected boolean VariableDeclaration_uses_computed = false;
-    protected HashSet VariableDeclaration_uses_value;
-    // Declared in Uses.jrag at line 15
-    public HashSet uses() {
-        if(VariableDeclaration_uses_computed)
-            return VariableDeclaration_uses_value;
-        if(VariableDeclaration_uses_visited)
-            throw new RuntimeException("Circular definition of attr: uses in class: ");
-        VariableDeclaration_uses_visited = true;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        VariableDeclaration_uses_value = uses_compute();
-        if(isFinal && num == boundariesCrossed)
-            VariableDeclaration_uses_computed = true;
-        VariableDeclaration_uses_visited = false;
-        return VariableDeclaration_uses_value;
-    }
-
-    java.util.HashSet VariableDeclaration_uses_contributors = new java.util.HashSet();
-    private HashSet uses_compute() {
-        ASTNode node = this;
-        while(node.getParent() != null)
-            node = node.getParent();
-        Program root = (Program)node;
-        root.collect_contributors_VariableDeclaration_uses();
-        VariableDeclaration_uses_value = new HashSet();
-        for(java.util.Iterator iter = VariableDeclaration_uses_contributors.iterator(); iter.hasNext(); ) {
-            ASTNode contributor = (ASTNode)iter.next();
-            contributor.contributeTo_VariableDeclaration_VariableDeclaration_uses(VariableDeclaration_uses_value);
-        }
-        return VariableDeclaration_uses_value;
-    }
 
 }

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public abstract class Access extends Expr implements Cloneable {
@@ -11,8 +11,6 @@ public abstract class Access extends Expr implements Cloneable {
         hasPrevExpr_computed = false;
         type_computed = false;
         type_value = null;
-        accessField_FieldDeclaration_values = null;
-        accessMethod_MethodDecl_List_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         Access node = (Access)super.clone();
@@ -21,157 +19,10 @@ public abstract class Access extends Expr implements Cloneable {
         node.hasPrevExpr_computed = false;
         node.type_computed = false;
         node.type_value = null;
-        node.accessField_FieldDeclaration_values = null;
-        node.accessMethod_MethodDecl_List_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
     }
-    // Declared in AccessLocalVariable.jrag at line 9
-
-
-	public Access accessLocalVariable(VariableDeclaration vd) {
-		SimpleSet res = lookupVariable(vd.getID());
-		if(!res.contains(vd))
-			return null;
-		return new VarAccess(vd.getID());
-	}
-
-    // Declared in AccessLocalVariable.jrag at line 16
-
-	
-	public Access accessParameter(ParameterDeclaration pd) {
-		SimpleSet res = lookupVariable(pd.getID());
-		if(!res.contains(pd))
-			return null;
-		return new VarAccess(pd.getID());
-	}
-
-    // Declared in AdjustAccess.jrag at line 58
-
-	
-	// more needed here...
-	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-		if(isQualified())
-			table.adjust(changes, qualifier());
-		ASTNode target = table.getTarget(this);
-		if(target == null) return;
-		ASTNode oldacc = null;
-		Access newacc = null;
-        FileRange pos = new FileRange(getStart(), getEnd());
-		if(target instanceof VariableDeclaration) {
-			if(((VarAccess)this).decl() != target) {
-				newacc = this.accessLocalVariable((VariableDeclaration)target);
-				if(newacc == null)
-					throw new RefactoringException("local variable would become shadowed at "+pos);
-				oldacc = this;
-			}
-		} else if(target instanceof ParameterDeclaration) {
-			if(((VarAccess)this).decl() != target) {
-				newacc = this.accessParameter((ParameterDeclaration)target);
-				if(newacc == null)
-					throw new RefactoringException("parameter would become shadowed at "+pos);
-				oldacc = this;
-			}
-		} else if(target instanceof FieldDeclaration) {
-			FieldDeclaration fd = (FieldDeclaration)target;
-			if(((VarAccess)this).decl() != fd) {
-				newacc = this.accessField(fd);
-				if(newacc == null)
-					throw new RefactoringException("couldn't consistently rename field access at "+pos);
-				if(this.isQualified()) {
-					newacc = this.qualifier().mergeWithAccess(newacc);
-					if(newacc == null)
-						throw new RefactoringException("couldn't consistently rename field access at "+pos);
-					oldacc = this.getParent();
-				} else {
-					oldacc = this;
-				}
-			}
-		} else if(target instanceof MethodDecl) {
-			MethodDecl md = (MethodDecl)target;
-			RefactoringException exc = new RefactoringException("couldn't consistently rename method access at "+pos);
-			if(((MethodAccess)this).decl() != md) {
-				newacc = this.accessMethod(md, (List)((MethodAccess)this).getArgList().fullCopy());
-				if(newacc == null)
-					throw exc;
-				if(this.isQualified()) {
-					if(newacc instanceof AbstractDot && !md.isStatic())
-						throw exc;
-					newacc = this.qualifier().mergeWithAccess(newacc);
-					if(newacc == null)
-						throw exc;
-					oldacc = this.getParent();
-				} else {
-					oldacc = this;
-				}
-			}
-		} else if(target instanceof TypeDecl) {
-			TypeAccess tacc = (TypeAccess)this;
-            if(tacc.decl() != target) {
-                boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-                newacc = this.accessType((TypeDecl)target, ambiguous);
-                if(newacc == null)
-                    throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                if(this.isQualified()) {
-                    newacc = this.qualifier().mergeWithAccess(newacc);
-                    if(newacc == null)
-                        throw new RefactoringException("couldn't consistently rename field access at "+pos);
-                    oldacc = parent;
-                } else {
-                    oldacc = this;
-                }
-            } else {
-                ASTNode parent = tacc.getParent();
-                int idx = parent.getIndexOfChild(tacc);
-                ParseName pn = new ParseName(tacc.getID());
-                parent.setChild(pn, idx);
-                try {
-                	Access tmp = (Access)parent.getChild(idx);
-                	if(tmp instanceof VarAccess) {
-                		parent.setChild(tacc, idx);
-                		boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-                		newacc = this.accessType((TypeDecl)target, ambiguous);
-                		if(newacc == null)
-                			throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                		if(this.isQualified()) {
-                			newacc = this.qualifier().mergeWithAccess(newacc);
-                			if(newacc == null)
-                				throw new RefactoringException("couldn't consistently rename field access at "+pos);
-                			oldacc = parent;
-                		} else {
-                			oldacc = this;
-                		}
-                	}
-                } finally {
-                	parent.setChild(tacc, idx);
-                }
-            }
-		} else if(target instanceof PackageDecl) {
-			Access acc = this;
-			ASTNode parent = acc; int idx;
-			do {
-				acc = (Access)parent;
-				parent = acc.getParent();
-				idx = parent.getIndexOfChild(acc);
-			} while(parent instanceof AbstractDot);
-			ParseName pn = new ParseName(acc.packageName());
-			parent.setChild(pn, idx);
-			try {
-				if(parent.getChild(idx) instanceof VarAccess)
-					throw new RefactoringException("package access at "+pos+" is shadowed");
-				// package accesses never have to be merged through mergeWithAccess()
-			} finally {
-				parent.setChild(acc, idx);
-			}
-		} else {
-			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
-		}
-		if(oldacc != newacc)
-			changes.add(new NodeReplace(oldacc, newacc));
-	}
-
     // Declared in java.ast at line 3
     // Declared in java.ast line 11
 
@@ -318,44 +169,6 @@ public abstract class Access extends Expr implements Cloneable {
     public BodyDecl enclosingBodyDecl() {
         BodyDecl enclosingBodyDecl_value = getParent().Define_BodyDecl_enclosingBodyDecl(this, null);
         return enclosingBodyDecl_value;
-    }
-
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 12
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
-    }
-
-    protected java.util.Map accessMethod_MethodDecl_List_values;
-    // Declared in AccessMethod.jrag at line 8
-    public Access accessMethod(MethodDecl md, List args) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(md);
-        _parameters.add(args);
-if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_values = new java.util.HashMap(4);
-        if(accessMethod_MethodDecl_List_values.containsKey(_parameters))
-            return (Access)accessMethod_MethodDecl_List_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessMethod_MethodDecl_List_value = getParent().Define_Access_accessMethod(this, null, md, args);
-        if(isFinal && num == boundariesCrossed)
-            accessMethod_MethodDecl_List_values.put(_parameters, accessMethod_MethodDecl_List_value);
-        return accessMethod_MethodDecl_List_value;
-    }
-
-    // Declared in Uses.jrag at line 81
-    public PackageDecl findPackageDecl(String name) {
-        PackageDecl findPackageDecl_String_value = getParent().Define_PackageDecl_findPackageDecl(this, null, name);
-        return findPackageDecl_String_value;
     }
 
 public ASTNode rewriteTo() {

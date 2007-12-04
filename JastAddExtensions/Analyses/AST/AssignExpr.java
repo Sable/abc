@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public abstract class AssignExpr extends Expr implements Cloneable {
@@ -208,14 +208,6 @@ public abstract class AssignExpr extends Expr implements Cloneable {
     }
 
     private TypeDecl sourceType_compute() {  return  getSource().type().isPrimitive() ? getSource().type() : unknownType();  }
-
-    // Declared in Encapsulate.jrag at line 125
-    public Binary getImplicitOperator() {
-        Binary getImplicitOperator_value = getImplicitOperator_compute();
-        return getImplicitOperator_value;
-    }
-
-    private Binary getImplicitOperator_compute() {  return  null;  }
 
     // Declared in DefiniteAssignment.jrag at line 20
     public boolean Define_boolean_isSource(ASTNode caller, ASTNode child) {

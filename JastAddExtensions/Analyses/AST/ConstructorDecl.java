@@ -1,8 +1,8 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import changes.*;import main.FileRange;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
-public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid {
+public class ConstructorDecl extends BodyDecl implements Cloneable {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -149,11 +149,6 @@ public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid {
         error(signature() + " throws non throwable type " + typeDecl.fullName());
     }
   }
-
-    // Declared in Methodoid.jrag at line 15
-
-	
-	public boolean hasBody() { return true; }
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 71
@@ -794,26 +789,6 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_handlesException(this, caller, exceptionType);
     }
 
-    // Declared in AccessField.jrag at line 173
-    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
-        if(caller == getBlockNoTransform()) {
-		Access acc = accessField(fd);
-		if(acc != null) {
-			if(!parameterDeclaration(fd.getID()).isEmpty()) {
-				// if acc is already qualified, nothing needs to change
-				if(acc instanceof AbstractDot)
-					return acc;
-				else
-					return new ThisAccess("this").qualifiesAccess(acc);
-			} else {
-				return acc;
-			}
-		}
-		return null;
-	}
-        return getParent().Define_Access_accessField(this, caller, fd);
-    }
-
     // Declared in UnreachableStatements.jrag at line 23
     public boolean Define_boolean_reachable(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
@@ -831,21 +806,6 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
             return  hasConstructorInvocation() ? getConstructorInvocation().isDAafter(v) : isDAbefore(v);
         }
         return getParent().Define_boolean_isDAbefore(this, caller, v);
-    }
-
-    // Declared in RenameParameter.jrag at line 10
-    public RefactoringException Define_RefactoringException_canRenameTo(ASTNode caller, ASTNode child, String new_name) {
-        if(caller == getParameterListNoTransform()) { 
-   int childIndex = caller.getIndexOfChild(child);
- {
-		if(!parameterDeclaration(new_name).isEmpty())
-			return new RefactoringException("parameter of the same name exists");
-		if(this.hasBody())
-			return getBlock().acceptLocal(new_name);
-		return null;
-	}
-}
-        return getParent().Define_RefactoringException_canRenameTo(this, caller, new_name);
     }
 
     // Declared in TypeHierarchyCheck.jrag at line 123
