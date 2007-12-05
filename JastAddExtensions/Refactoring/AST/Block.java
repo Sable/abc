@@ -89,56 +89,107 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
-    // Declared in ExtractMethod.jrag at line 42
+    // Declared in LocalDeclaration.jrag at line 62
 
 	
-	public void encapsulate(java.util.List changes, String name, String vis, 
-				int begin, int end, boolean static_ctxt) 
+	public java.util.Set localDecls() {
+		if(getNumStmt() == 0) return new HashSet();
+		return localDeclsBetween(0, getNumStmt()-1);
+	}
+
+    // Declared in ExtractBlock.jrag at line 32
+
+	
+	public void encapsulate(java.util.List changes, int begin, int end) 
 			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
+		int i; Iterator iter;
+		Collection moveOut = localDeclsBetween(begin, end);
+		// leave only those decls that are accessed after end
+		for(iter=moveOut.iterator();iter.hasNext();) {
+			VariableDeclaration vdecl = (VariableDeclaration)iter.next();
+			if(!vdecl.accessedAfter(end_stmt))
+				iter.remove();
+		}
+		// build new block
+		Collection blockstmts = new ArrayList();
+		for(i=begin;i<=end;++i)
+			if(moveOut.contains(getStmt(i))) {
+				VariableDeclaration vd = (VariableDeclaration)((ASTNode)getStmt(i)).fullCopy();
+				if(vd.hasInit()) {
+					Expr init = vd.getInit();
+					blockstmts.add(new ExprStmt(new AssignSimpleExpr(
+							new VarAccess(vd.getID()), init)));
+				}
+			} else {
+				blockstmts.add(getStmt(i));
+			}
+		// prepare new surrounding block body
+		Collection before = new ArrayList();
+		for(i=0;i<begin;++i)
+			before.add(getStmt(i));
+		for(iter=moveOut.iterator();iter.hasNext();) {
+			// copy the declaration and remove initialiser
+			VariableDeclaration vd = (VariableDeclaration)((ASTNode)iter.next()).fullCopy();
+			vd.setInitOpt(new Opt());
+			before.add(vd);
+		}
+		Collection after = new ArrayList();
+		for(i=end+1;i<getNumStmt();++i)
+			after.add(getStmt(i));
+		changes.add(new InsertBlock(this, before, blockstmts, after));
+	}
+
+    // Declared in MakeMethod.jrag at line 26
+
+	
+	public void createMethod(java.util.List changes, String name, String vis, 
+				int pos, Block blk, boolean static_ctxt) 
+			throws RefactoringException {
 		Collection parms = new ArrayList();        // parameters of extracted method
 		Collection localVars = new ArrayList();    // local variables of extracted method
 		Opt ret = new Opt();                       // what extracted method returns
-		Collection savedVars = new ArrayList();    // declarations that need to be inserted before
-										           // call to extracted method
-		Collection toBeRemoved = new ArrayList();  // declarations that should be removed after
-										           // extracting the method
-		Set exns = Set.empty();                    // the set of exceptions thrown by
-												   // the selection
-		Collection visibleDecls = begin_stmt.visibleLocalDecls();
-		visibleDecls.addAll(localDeclsBetween(begin, end));
-		analyseDeclarations(visibleDecls, begin_stmt, end_stmt, parms, localVars, ret, savedVars, toBeRemoved);
-		exns = uncaughtThrowsBetween(begin_stmt, end_stmt);
-		Collection bodystmts = new ArrayList();
-		for(int i=begin;i<=end;++i)
-			bodystmts.add(getStmt(i));
-		// create declaration of method
-		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, exns, localVars, bodystmts);
-		// prepare new block body
-		Collection stmts = new ArrayList();
-		int i;
-		for(i=0;i<begin;++i) {
-			Stmt s = getStmt(i);
-			if(!toBeRemoved.contains(s))
-				stmts.add(s);
+		Collection visibleDecls = blk.visibleLocalDecls();
+		visibleDecls.addAll(blk.localDecls());
+		// collect parameters, local variables, and the return value
+		for(Iterator iter=visibleDecls.iterator();iter.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)iter.next();
+			if(((Variable)decl).isLiveIn(blk)) {
+				parms.add(decl);
+			} else if(blk.mayAccess((Variable)decl) && !((ASTNode)decl).inside(blk)) {
+				VariableDeclaration vd = decl.asVariableDeclaration();
+				vd.setInitOpt(new Opt());
+				localVars.add(vd);
+			}
+			if(blk.mayDef((Variable)decl) && ((Variable)decl).isLiveAfter(blk)) {
+				if(!ret.isEmpty())
+					throw new RefactoringException("ambiguous return value");
+				ret = new Opt(((ASTNode)decl).fullCopy());
+			}
 		}
-		for(Iterator iter=savedVars.iterator();iter.hasNext();)
-			stmts.add((Stmt)iter.next());
+		//
+		// create declaration of method
+		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		// prepare new block body
+		Collection before = new ArrayList();
+		for(int i=0;i<pos;++i)
+			before.add(getStmt(i));
+		Stmt invocation;
 		List args = new List();
 		for(Iterator iter=parms.iterator();iter.hasNext();)
 			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
 		MethodAccess ma = new MethodAccess(name, args);
 		// add it as an expression statement, or with an assignment
 		if(ret.isEmpty())
-			stmts.add(new ExprStmt(ma));
+			invocation = new ExprStmt(ma);
 		else {
 			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
-			stmts.add(new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma)));
+			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma));
 		}
-		// NB: no statements need to be removed after the selection
-		for(i=end+1;i<getNumStmt();++i)
-			stmts.add(getStmt(i));
+		Collection after = new ArrayList();
+		for(int i=pos+1;i<getNumStmt();++i)
+			after.add(getStmt(i));
 		// now record changes to be made
 		TypeDecl td = hostBodyDecl().hostType();
 		// kludge: method decl needs a parent so we can compute its signature
@@ -146,49 +197,16 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		String sig = md.signature();
 		md.setParent(null);
 		td.addMethod(changes, md, sig, false);
-		changes.add(new BlockBodyChange(this, stmts));
+		changes.add(new InsertStmt(this, before, invocation, after));
 	}
 
-    // Declared in ExtractMethod.jrag at line 99
-
-	
-	private void analyseDeclarations(Collection decls, Stmt begin_stmt, Stmt end_stmt,
-			Collection parms, Collection localVars, Opt ret, Collection savedVars, 
-			Collection toBeRemoved) throws RefactoringException {
-		for(Iterator i=decls.iterator();i.hasNext();) {
-			LocalDeclaration decl = (LocalDeclaration)i.next();
-			if(decl.isValueParmFor(begin_stmt, end_stmt))
-				parms.add(decl.asParameterDeclaration());
-			if(decl.isOutParmFor(begin_stmt, end_stmt)) {
-				if(!ret.isEmpty())
-					throw new RefactoringException("ambiguous return value");
-				ret.setChild(((ASTNode)decl).fullCopy(), 0);
-			}
-			if(decl.shouldMoveInto(begin_stmt, end_stmt)) {
-				// record it as a local variable for the method being constructed
-				// note: we have to remove the initializer, which will not be needed
-				//       and might not be valid in the new context
-				VariableDeclaration vardecl = decl.asVariableDeclaration();
-				vardecl.setInitOpt(new Opt());
-				localVars.add(vardecl);
-				if(!decl.accessedOutside(begin_stmt, end_stmt) 
-						&& decl instanceof VariableDeclaration)
-					toBeRemoved.add((ASTNode)decl);
-			}
-			if(decl.shouldMoveOutOf(begin_stmt, end_stmt) || 
-					(decl.shouldDuplicate(begin_stmt, end_stmt) && 
-							((Stmt)decl).between(begin_stmt, end_stmt)))
-				savedVars.add(decl.asVariableDeclaration());
-		}
-	}
-
-    // Declared in ExtractMethod.jrag at line 129
+    // Declared in MakeMethod.jrag at line 82
 
 	
 	private MethodDecl createMethod(boolean static_ctxt, String name, String visibility,
 			Collection parms, Opt ret, 
-			Set exns, Collection localVariables, Collection stmts) throws RefactoringException {
-		// modifiers: "private", perhaps with a "static"
+			Set exns, Collection localVariables, Block blk) throws RefactoringException {
+		// modifiers: visibility, perhaps with a "static"
 		Modifiers mod = new Modifiers();
 		if(!visibility.equals("default"))
 			mod.addModifier(new Modifier(visibility));
@@ -205,7 +223,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		// parameter declarations
 		List parmdecls = new List();
 		for(Iterator i=parms.iterator();i.hasNext();)
-			parmdecls.add((ASTNode)i.next());
+			parmdecls.add(((LocalDeclaration)i.next()).asParameterDeclaration());
 		// brackets
 		// TODO: not implemented
 		List brackets = new List();
@@ -218,12 +236,13 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 				throw new RefactoringException("cannot access type "+exn);
 			throwdecls.add(exnacc);
 		}
+		
 		// body
 		List bodystmts = new List();
 		for(Iterator i=localVariables.iterator();i.hasNext();)
 			bodystmts.add((ASTNode)i.next());
-		for(Iterator i=stmts.iterator();i.hasNext();)
-			bodystmts.add((ASTNode)i.next());
+		for(int i=0;i<blk.getNumStmt();++i)
+			bodystmts.add((blk.getStmt(i)).fullCopy());
 		if(!ret.isEmpty()) {
 			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
 			String varname = decl.getID();
@@ -231,7 +250,9 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			bodystmts.add(stmt);
 		}
 		Block body = new Block(bodystmts);
-		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, new Opt(body));
+		
+		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, 
+				new Opt(body));
 	}
 
     // Declared in java.ast at line 3
@@ -450,7 +471,7 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  getNumStmt() == 0 ? reachable() : getStmt(getNumStmt() - 1).canCompleteNormally();  }
 
-    // Declared in LocalDeclaration.jrag at line 62
+    // Declared in LocalDeclaration.jrag at line 67
     public java.util.Set localDeclsBetween(int start, int end) {
         java.util.Set localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -589,7 +610,7 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 	}
 
     protected java.util.Map uncaughtThrowsBetween_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 27
+    // Declared in ParameterClassification.jrag at line 24
     public Set uncaughtThrowsBetween(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);

@@ -8,9 +8,6 @@ aspect ParameterClassification {
 		return isLiveAfter(end) && mayDefBetween(begin, end);
 	}
 	
-	syn lazy boolean LocalDeclaration.shouldMoveOutOf(Stmt begin, Stmt end) =
-		between(begin, end)	&& accessedAfter(end);
-	
 	syn lazy boolean LocalDeclaration.shouldMoveInto(Stmt begin, Stmt end);
 	
 	eq VariableDeclaration.shouldMoveInto(Stmt begin, Stmt end) =

@@ -69,6 +69,12 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
     public Constant constant();
 
+    // Declared in Liveness.jrag at line 3
+
+	
+	public boolean isLiveIn(Block blk);
+
+
     // Declared in Uses.jrag at line 5
 
 	
@@ -85,10 +91,10 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 	public AdjustmentTable find_uses(String new_name);
 
 
-    // Declared in Liveness.jrag at line 3
+    // Declared in Liveness.jrag at line 9
     public boolean isLiveBetween(Stmt begin, Stmt end);
-    // Declared in Liveness.jrag at line 15
+    // Declared in Liveness.jrag at line 21
     public boolean isLiveAfter(Stmt stmt);
-    // Declared in Liveness.jrag at line 27
+    // Declared in Liveness.jrag at line 33
     public boolean isLiveAtOrAfter(Stmt stmt);
 }

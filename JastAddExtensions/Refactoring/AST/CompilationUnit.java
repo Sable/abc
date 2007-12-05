@@ -152,47 +152,64 @@ public class CompilationUnit extends ASTNode implements Cloneable {
     }
   }
 
-    // Declared in ExtractMethod.jrag at line 5
+    // Declared in ExtractBlock.jrag at line 3
 
 	
-	public java.util.List extract(String name, String vis, Stmt begin, Stmt end) throws RefactoringException {
-		check_extraction_preconds(name, begin, end);
+	public java.util.List extractBlock(java.util.List changes,
+			Stmt begin, Stmt end) throws RefactoringException {
+		check_block_extraction_preconds(begin, end);
 		Block begin_host = begin.hostBlock();
-		BodyDecl bd = begin_host.hostBodyDecl();
+		int begin_idx = begin.indexInHostBlock();
+		int end_idx = end.indexInHostBlock();
+		begin_host.encapsulate(changes, begin_idx, end_idx);
+		return changes;
+	}
+
+    // Declared in ExtractBlock.jrag at line 13
+
+	
+	private void check_block_extraction_preconds(Stmt begin, Stmt end)
+			throws RefactoringException {
+		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
+			throw new RefactoringException("selection cannot start or end at init or update statements");
+		if(!begin.dominates(end))
+			throw new RefactoringException("begin must dominate end");
+		Block begin_host = begin.hostBlock();
+		Block end_host = end.hostBlock();
+		if(begin_host == null || end_host == null)
+			throw new RefactoringException("invalid statement for extraction");
+		if(begin_host != end_host)
+			throw new RefactoringException("selection straddles block borders");
+		int begin_idx = begin.indexInHostBlock();
+		int end_idx = end.indexInHostBlock();
+		for(int i=begin_idx;i<=end_idx;++i)
+			if(begin_host.getStmt(i) instanceof Case)
+				throw new RefactoringException("selection cannot contain case labels");
+	}
+
+    // Declared in MakeMethod.jrag at line 4
+
+	
+	public java.util.List makeMethod(java.util.List changes, 
+			String name, String vis, Block blk) 
+			throws RefactoringException {
+		if(blk.getNumStmt() > 1) {
+			Stmt fst = blk.getStmt(0);
+			Stmt lst = blk.getStmt(blk.getNumStmt()-1);
+			if(!lst.post_dominates(fst))
+				throw new RefactoringException("end must post-dominate begin");
+		}
+		Block host = blk.hostBlock();
+		if(host == null)
+			throw new RefactoringException("block to extract must be inside some other block");
+		BodyDecl bd = blk.hostBodyDecl();
 		boolean static_ctxt = false;
 		if(bd instanceof StaticInitializer)
 			static_ctxt = true;
 		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
 			static_ctxt = true;
-		int begin_idx = begin.indexInHostBlock();
-		int end_idx = end.indexInHostBlock();
-		java.util.List changes = new java.util.Vector();
-		begin_host.encapsulate(changes, name, vis, begin_idx, end_idx, static_ctxt);
+		host.createMethod(changes, name, vis, blk.indexInHostBlock(), blk, static_ctxt);
 		return changes;
-	}
-
-    // Declared in ExtractMethod.jrag at line 21
-
-	
-	private void check_extraction_preconds(String name, Stmt begin, Stmt end)
-		throws RefactoringException {
-		int begin_idx = begin.indexInHostBlock();
-		int end_idx = end.indexInHostBlock();
-		Block begin_host = begin.hostBlock();
-		Block end_host = end.hostBlock();
-		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
-			throw new RefactoringException("selection cannot start or end at init or update statements");
-		if(!begin.dominates(end))
-			throw new RefactoringException("begin must dominate end");
-		if(!end.post_dominates(end))
-			throw new RefactoringException("end must post-dominate begin");
-		if(begin_host == null || end_host == null)
-			throw new RefactoringException("invalid statement for extraction");
-		if(begin_host != end_host)
-			throw new RefactoringException("selection straddles block borders");
-		for(int i=begin_idx;i<=end_idx;++i)
-			if(begin_host.getStmt(i) instanceof Case)
-				throw new RefactoringException("selection cannot contain case labels");
 	}
 
     // Declared in java.ast at line 3

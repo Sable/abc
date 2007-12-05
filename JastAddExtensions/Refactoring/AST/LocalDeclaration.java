@@ -26,22 +26,20 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
 		VariableDeclaration asVariableDeclaration();
 
-    // Declared in Liveness.jrag at line 41
+    // Declared in Liveness.jrag at line 47
     public boolean mayDefBetween(Stmt begin, Stmt end);
-    // Declared in Liveness.jrag at line 50
+    // Declared in Liveness.jrag at line 56
     public boolean accessedOutside(Stmt begin, Stmt end);
-    // Declared in Liveness.jrag at line 53
+    // Declared in Liveness.jrag at line 59
     public boolean accessedBefore(Stmt stmt);
-    // Declared in Liveness.jrag at line 66
+    // Declared in Liveness.jrag at line 72
     public boolean accessedAfter(Stmt stmt);
     // Declared in ParameterClassification.jrag at line 3
     public boolean isValueParmFor(Stmt begin, Stmt end);
     // Declared in ParameterClassification.jrag at line 7
     public boolean isOutParmFor(Stmt begin, Stmt end);
     // Declared in ParameterClassification.jrag at line 11
-    public boolean shouldMoveOutOf(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 14
     public boolean shouldMoveInto(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 22
+    // Declared in ParameterClassification.jrag at line 19
     public boolean shouldDuplicate(Stmt begin, Stmt end);
 }

@@ -1,0 +1,73 @@
+aspect ExtractBlock {
+	
+	public java.util.List CompilationUnit.extractBlock(java.util.List changes,
+			Stmt begin, Stmt end) throws RefactoringException {
+		check_block_extraction_preconds(begin, end);
+		Block begin_host = begin.hostBlock();
+		int begin_idx = begin.indexInHostBlock();
+		int end_idx = end.indexInHostBlock();
+		begin_host.encapsulate(changes, begin_idx, end_idx);
+		return changes;
+	}
+	
+	private void CompilationUnit.check_block_extraction_preconds(Stmt begin, Stmt end)
+			throws RefactoringException {
+		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())
+			throw new RefactoringException("selection cannot start or end at init or update statements");
+		if(!begin.dominates(end))
+			throw new RefactoringException("begin must dominate end");
+		Block begin_host = begin.hostBlock();
+		Block end_host = end.hostBlock();
+		if(begin_host == null || end_host == null)
+			throw new RefactoringException("invalid statement for extraction");
+		if(begin_host != end_host)
+			throw new RefactoringException("selection straddles block borders");
+		int begin_idx = begin.indexInHostBlock();
+		int end_idx = end.indexInHostBlock();
+		for(int i=begin_idx;i<=end_idx;++i)
+			if(begin_host.getStmt(i) instanceof Case)
+				throw new RefactoringException("selection cannot contain case labels");
+	}
+	
+	public void Block.encapsulate(java.util.List changes, int begin, int end) 
+			throws RefactoringException {
+		Stmt begin_stmt = getStmt(begin);
+		Stmt end_stmt = getStmt(end);
+		int i; Iterator iter;
+		Collection moveOut = localDeclsBetween(begin, end);
+		// leave only those decls that are accessed after end
+		for(iter=moveOut.iterator();iter.hasNext();) {
+			VariableDeclaration vdecl = (VariableDeclaration)iter.next();
+			if(!vdecl.accessedAfter(end_stmt))
+				iter.remove();
+		}
+		// build new block
+		Collection blockstmts = new ArrayList();
+		for(i=begin;i<=end;++i)
+			if(moveOut.contains(getStmt(i))) {
+				VariableDeclaration vd = (VariableDeclaration)((ASTNode)getStmt(i)).fullCopy();
+				if(vd.hasInit()) {
+					Expr init = vd.getInit();
+					blockstmts.add(new ExprStmt(new AssignSimpleExpr(
+							new VarAccess(vd.getID()), init)));
+				}
+			} else {
+				blockstmts.add(getStmt(i));
+			}
+		// prepare new surrounding block body
+		Collection before = new ArrayList();
+		for(i=0;i<begin;++i)
+			before.add(getStmt(i));
+		for(iter=moveOut.iterator();iter.hasNext();) {
+			// copy the declaration and remove initialiser
+			VariableDeclaration vd = (VariableDeclaration)((ASTNode)iter.next()).fullCopy();
+			vd.setInitOpt(new Opt());
+			before.add(vd);
+		}
+		Collection after = new ArrayList();
+		for(i=end+1;i<getNumStmt();++i)
+			after.add(getStmt(i));
+		changes.add(new InsertBlock(this, before, blockstmts, after));
+	}
+	
+}

@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import AST.ASTNode;
+import AST.Block;
 import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.Frontend;
@@ -100,9 +102,20 @@ public class RunExtractionTests extends Frontend {
 		Stmt start_stmt = md.getBlock().getStmt(start);
 		Stmt end_stmt = md.getBlock().getStmt(end);
 		try {
-			List changes = d.compilationUnit().extract(name, vis, start_stmt, end_stmt);
+			List changes = new ArrayList();
+			d.compilationUnit().extractBlock(changes, start_stmt, end_stmt);
 			for(Iterator i=changes.iterator();i.hasNext();)
 				((ASTChange)i.next()).apply();
+			program.clear();
+			changes = new ArrayList();
+			int i;
+			for(i=start;i<md.getBlock().getNumStmt();++i)
+				if(md.getBlock().getStmt(i) instanceof Block)
+					break;
+			Block blk = (Block)md.getBlock().getStmt(i);
+			d.compilationUnit().makeMethod(changes, name, vis, blk);
+			for(Iterator iter=changes.iterator();iter.hasNext();)
+				((ASTChange)iter.next()).apply();
 		} catch(RefactoringException rfe) {
 			if(SHOW)
 				System.out.println("refactoring failed: "+rfe);

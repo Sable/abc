@@ -678,6 +678,11 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_VariableDeclaration_uses();
     }
+    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
+        if(decl() instanceof FieldDeclaration)
+            collection.add(this);
+    }
+
     protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
         if(decl() instanceof ParameterDeclaration)
             collection.add(this);
@@ -685,11 +690,6 @@ public ASTNode rewriteTo() {
 
     protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
         if(decl() instanceof VariableDeclaration)
-            collection.add(this);
-    }
-
-    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
-        if(decl() instanceof FieldDeclaration)
             collection.add(this);
     }
 

@@ -44,10 +44,16 @@ public class List extends ASTNode implements Cloneable {
 
 	
 	public static List ofCollection(Collection c) {
-		List l = new List();
+		return new List().addAll(c);
+	}
+
+    // Declared in ASTUtil.jrag at line 14
+
+	
+	public List addAll(Collection c) {
 		for(Iterator i=c.iterator();i.hasNext();)
-			l.add((ASTNode)i.next());
-		return l;
+			add((ASTNode)i.next());
+		return this;
 	}
 
     // Declared in ASTUtil.jrag at line 52

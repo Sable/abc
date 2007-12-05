@@ -439,6 +439,15 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
         return (Opt)getChildNoTransform(2);
     }
 
+    // Declared in Liveness.jrag at line 3
+
+	
+	public boolean isLiveIn(Block blk) {
+		if(blk.getNumStmt() == 0)
+			return false;
+		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+	}
+
     // Declared in Uses.jrag at line 5
 
 	

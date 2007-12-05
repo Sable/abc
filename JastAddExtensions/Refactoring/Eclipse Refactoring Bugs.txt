@@ -12,6 +12,8 @@
 
    Reported as bug 208200.
 
+   Same bug in Netbeans and IntelliJ.
+
 2. Encapsulate Field Doesn't Check for Hiding of Method
 
    Test case:
@@ -26,6 +28,8 @@
 
    Found by Torbjörn. Reported as bug 209315 (which turned out to be a
    duplicate of bug 194997).
+
+   Same bug in Netbeans and IntelliJ.
 
 3. Encapsulate Field Doesn't Correctly Diagnose Overloading Problems
 
@@ -64,6 +68,8 @@
 
    Reported as bug 209316.
 
+   Same bug in Netbeans and IntelliJ.
+
 4. Encapsulate Field Doesn't Check for Invalid Overloading 
    (closely related to 3)
 
@@ -81,6 +87,8 @@
    return type "float".
 
    Reported as bug 209317 (which turned out to be a duplicate of bug 194996).
+
+   Same bug in Netbeans and IntelliJ.
    
 5. Push down method does not handle "super" accesses correctly.
 
@@ -102,6 +110,8 @@
    adjustments, so the resulting program prints "42".
    
    Found by Torbjörn, reported as bug 211755.
+
+   Same bug in Netbeans and IntelliJ.
    
 6. Push down method does not handle field accesses correctly.
 
@@ -121,6 +131,8 @@
    adjustments, so the resulting program prints "42".
    
    Found by Torbjörn, reported as a comment to bug 211755.
+
+   Same bug in Netbeans and IntelliJ.
    
 7. Push down method does not handle type accesses correctly.
 
@@ -141,6 +153,8 @@
    "throws" declarations.
    
    Reported as bug 211859.
+
+   Same bug in Netbeans, but not in IntelliJ.
    
 8. Push down method does not handle private method accesses correctly.
 
@@ -160,6 +174,8 @@
    adjustments, so the resulting program prints "42".
    
    Reported as bug 211860.
+
+   Same bug in Netbeans and IntelliJ.
    
 9. Push down method does not check for all possible references to the method being
    pushed.
@@ -178,4 +194,28 @@
    the resulting program fails to compile.
    
    Reported as bug 211861, which turned out to be a duplicate of bug 31862.
-   
+
+   Same bug in Netbeans, but not in IntelliJ.
+
+
+Just to be fair, here is a test case where Eclipse refuses to refactor, whereas
+Netbeans walks into the trap:
+
+	public class A {
+	    class C extends Throwable { public C() { System.out.println(42); } }
+	    
+	    void m() throws Throwable {
+	        class C extends Throwable { public C() { System.out.println(23); } }
+	        throw new C();
+	    }
+	
+	    public static void main(String[] args) {
+	        try {
+	            new A().m();
+	        } catch (Throwable e) { }
+	    }
+	}
+
+	Extracting the statement "throw new C();" in A.m is refused by Eclipse,
+	whereas Netbeans obliges, adding a spurious "import C;" statement at the beginning
+	of the compilation unit, which is not even valid Java.

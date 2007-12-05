@@ -1,0 +1,134 @@
+// turn a block into a method
+aspect MakeMethod {
+	
+	public java.util.List CompilationUnit.makeMethod(java.util.List changes, 
+			String name, String vis, Block blk) 
+			throws RefactoringException {
+		if(blk.getNumStmt() > 1) {
+			Stmt fst = blk.getStmt(0);
+			Stmt lst = blk.getStmt(blk.getNumStmt()-1);
+			if(!lst.post_dominates(fst))
+				throw new RefactoringException("end must post-dominate begin");
+		}
+		Block host = blk.hostBlock();
+		if(host == null)
+			throw new RefactoringException("block to extract must be inside some other block");
+		BodyDecl bd = blk.hostBodyDecl();
+		boolean static_ctxt = false;
+		if(bd instanceof StaticInitializer)
+			static_ctxt = true;
+		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
+			static_ctxt = true;
+		host.createMethod(changes, name, vis, blk.indexInHostBlock(), blk, static_ctxt);
+		return changes;
+	}
+	
+	public void Block.createMethod(java.util.List changes, String name, String vis, 
+				int pos, Block blk, boolean static_ctxt) 
+			throws RefactoringException {
+		Collection parms = new ArrayList();        // parameters of extracted method
+		Collection localVars = new ArrayList();    // local variables of extracted method
+		Opt ret = new Opt();                       // what extracted method returns
+		Collection visibleDecls = blk.visibleLocalDecls();
+		visibleDecls.addAll(blk.localDecls());
+		// collect parameters, local variables, and the return value
+		for(Iterator iter=visibleDecls.iterator();iter.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)iter.next();
+			if(((Variable)decl).isLiveIn(blk)) {
+				parms.add(decl);
+			} else if(blk.mayAccess((Variable)decl) && !((ASTNode)decl).inside(blk)) {
+				VariableDeclaration vd = decl.asVariableDeclaration();
+				vd.setInitOpt(new Opt());
+				localVars.add(vd);
+			}
+			if(blk.mayDef((Variable)decl) && ((Variable)decl).isLiveAfter(blk)) {
+				if(!ret.isEmpty())
+					throw new RefactoringException("ambiguous return value");
+				ret = new Opt(((ASTNode)decl).fullCopy());
+			}
+		}
+		//
+		// create declaration of method
+		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		// prepare new block body
+		Collection before = new ArrayList();
+		for(int i=0;i<pos;++i)
+			before.add(getStmt(i));
+		Stmt invocation;
+		List args = new List();
+		for(Iterator iter=parms.iterator();iter.hasNext();)
+			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
+		MethodAccess ma = new MethodAccess(name, args);
+		// add it as an expression statement, or with an assignment
+		if(ret.isEmpty())
+			invocation = new ExprStmt(ma);
+		else {
+			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
+			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma));
+		}
+		Collection after = new ArrayList();
+		for(int i=pos+1;i<getNumStmt();++i)
+			after.add(getStmt(i));
+		// now record changes to be made
+		TypeDecl td = hostBodyDecl().hostType();
+		// kludge: method decl needs a parent so we can compute its signature
+		md.setParent(td);
+		String sig = md.signature();
+		md.setParent(null);
+		td.addMethod(changes, md, sig, false);
+		changes.add(new InsertStmt(this, before, invocation, after));
+	}
+	
+	private MethodDecl Block.createMethod(boolean static_ctxt, String name, String visibility,
+			Collection parms, Opt ret, 
+			Set exns, Collection localVariables, Block blk) throws RefactoringException {
+		// modifiers: visibility, perhaps with a "static"
+		Modifiers mod = new Modifiers();
+		if(!visibility.equals("default"))
+			mod.addModifier(new Modifier(visibility));
+		if(static_ctxt)
+			mod.addModifier(new Modifier("static"));
+		// type access: either "void" or the type of the variable to be assigned to
+		Access acc;
+		if(ret.isEmpty()) {
+			acc = new TypeAccess("void");
+		} else {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			acc = (Access)decl.getTypeAccess().fullCopy(); 
+		}
+		// parameter declarations
+		List parmdecls = new List();
+		for(Iterator i=parms.iterator();i.hasNext();)
+			parmdecls.add(((LocalDeclaration)i.next()).asParameterDeclaration());
+		// brackets
+		// TODO: not implemented
+		List brackets = new List();
+		// thrown exceptions
+		List throwdecls = new List();
+		for(Iterator i=exns.iterator();i.hasNext();) {
+			TypeDecl exn = ((ThrowStmt)i.next()).getExpr().type();
+			Access exnacc = hostBodyDecl().accessType(exn, false);
+			if(exnacc == null)
+				throw new RefactoringException("cannot access type "+exn);
+			throwdecls.add(exnacc);
+		}
+		
+		// body
+		List bodystmts = new List();
+		for(Iterator i=localVariables.iterator();i.hasNext();)
+			bodystmts.add((ASTNode)i.next());
+		for(int i=0;i<blk.getNumStmt();++i)
+			bodystmts.add((blk.getStmt(i)).fullCopy());
+		if(!ret.isEmpty()) {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			String varname = decl.getID();
+			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
+			bodystmts.add(stmt);
+		}
+		Block body = new Block(bodystmts);
+		
+		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, 
+				new Opt(body));
+	}
+		
+}

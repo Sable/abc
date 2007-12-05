@@ -15,6 +15,5 @@ class A {
     super();
   }
   private void n() {
-    int i;
   }
 }

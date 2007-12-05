@@ -55,6 +55,7 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+			<exclude name="ExtractMethod.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->

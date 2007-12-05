@@ -413,7 +413,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   void checkUnreachableStmt() {
   }
 
-    // Declared in ASTUtil.jrag at line 17
+    // Declared in ASTUtil.jrag at line 20
 
 	
 	public int indexIn(ASTNode n) {
@@ -422,6 +422,13 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		if(getParent() == null)
 			return -1;
 		return getParent().indexIn(n);
+	}
+
+    // Declared in ASTUtil.jrag at line 28
+
+	
+	public boolean inside(ASTNode n) {
+		return indexIn(n) != -1;
 	}
 
     // Declared in ASTUtil.jrag at line 19
