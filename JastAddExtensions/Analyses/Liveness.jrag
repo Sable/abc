@@ -1,5 +1,11 @@
 aspect Liveness {
 	
+	public boolean Variable.isLiveIn(Block blk) {
+		if(blk.getNumStmt() == 0)
+			return false;
+		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+	}
+	
 	syn lazy boolean Variable.isLiveBetween(Stmt begin, Stmt end) circular [false] {
 		if(begin.mayUse(this)) return true;
 		if(begin.mayDef(this)) return false;

@@ -59,6 +59,11 @@ aspect LocalDeclaration {
 		return decls;
 	}
 	
+	public java.util.Set Block.localDecls() {
+		if(getNumStmt() == 0) return new HashSet();
+		return localDeclsBetween(0, getNumStmt()-1);
+	}
+	
 	syn java.util.Set Block.localDeclsBetween(int start, int end) {
 		HashSet decls = new HashSet();
 		for(int i=start;i<=end;++i)

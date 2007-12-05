@@ -8,10 +8,13 @@ aspect ASTUtil {
 	}
 	
 	public static List List.ofCollection(Collection c) {
-		List l = new List();
+		return new List().addAll(c);
+	}
+	
+	public List List.addAll(Collection c) {
 		for(Iterator i=c.iterator();i.hasNext();)
-			l.add((ASTNode)i.next());
-		return l;
+			add((ASTNode)i.next());
+		return this;
 	}
 	
 	public int ASTNode.indexIn(ASTNode n) {
@@ -20,6 +23,10 @@ aspect ASTUtil {
 		if(getParent() == null)
 			return -1;
 		return getParent().indexIn(n);
+	}
+	
+	public boolean ASTNode.inside(ASTNode n) {
+		return indexIn(n) != -1;
 	}
 	
 	public boolean Opt.isEmpty() {
