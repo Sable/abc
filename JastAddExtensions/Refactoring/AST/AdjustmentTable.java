@@ -43,21 +43,21 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
     // Declared in AdjustAccess.jrag at line 28
 		
-		public void adjust(java.util.List changes) throws RefactoringException {
+		public void adjust() throws RefactoringException {
 			for(Iterator i = adjustments.entrySet().iterator(); i.hasNext();) {
 				Map.Entry e = (Map.Entry)i.next();
 				Access acc = (Access)e.getKey();
 				ASTNode val = (ASTNode)e.getValue();
-				adjust(changes, acc);
+				adjust(acc);
 			}
 		}
 
     // Declared in AdjustAccess.jrag at line 37
 		
-		public void adjust(java.util.List changes, Expr exp) throws RefactoringException {
+		public void adjust(Expr exp) throws RefactoringException {
 			if(isAdjusted(exp))
 				return;
-			exp.adjust(changes, this);
+			exp.adjust(this);
 			setAdjusted(exp);
 		}
 

@@ -81,11 +81,7 @@ public class RunEncapsulationTests extends Frontend {
                 d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
             FieldDeclaration f = (FieldDeclaration)d.localFields(fld).iterator().next();
             try {
-                List changes = f.encapsulate();
-                for(Iterator i=changes.iterator();i.hasNext();) {
-                    ASTChange ch = (ASTChange)i.next();
-                    ch.apply();
-                }
+                f.encapsulate();
                 return program;
             } catch(RefactoringException rfe) {
                 return null;

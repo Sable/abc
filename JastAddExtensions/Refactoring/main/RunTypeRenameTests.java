@@ -27,12 +27,11 @@ public class RunTypeRenameTests extends Frontend {
     private static void runTests() {
         try {
             for(int i=0;i<86;++i) {
-                if((62 <= i && i <= 65) || (i == 70) ||
+                if((62 <= i && i <= 65) || (i == 70) || (i == 21) ||
                         (79 <= i && i <= 81)) {
                     System.out.println("test "+i+" skipped");
                     continue;
                 }
-                i = 21;
                 try {
                     RunTypeRenameTests t = new RunTypeRenameTests();
                     t.test("test"+i);
@@ -119,12 +118,7 @@ public class RunTypeRenameTests extends Frontend {
             TypeDecl d = (TypeDecl)program.lookupType(pkg, path[0]);
             for(int i=1;i<path.length;++i)
                 d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
-            List changes = d.rename(n);
-            for(Iterator i=changes.iterator();i.hasNext();) {
-                ASTChange ch = (ASTChange)i.next();
-                //System.out.println(ch.prettyprint());
-                ch.apply();
-            }
+            d.rename(n);
             return program;
         } else {
             return null;

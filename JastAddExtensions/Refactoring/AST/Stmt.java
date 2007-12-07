@@ -491,7 +491,7 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
         return reportUnreachable_value;
     }
 
-    // Declared in LocalDeclaration.jrag at line 34
+    // Declared in LocalDeclaration.jrag at line 35
     public java.util.Set visibleLocalDecls() {
         java.util.Set visibleLocalDecls_value = getParent().Define_java_util_Set_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;

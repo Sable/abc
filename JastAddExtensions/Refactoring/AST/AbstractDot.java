@@ -71,8 +71,8 @@ public class AbstractDot extends Access implements Cloneable {
     // Declared in AdjustAccess.jrag at line 48
 
 	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-		getRight().adjust(changes, table);
+	public void adjust(AdjustmentTable table) throws RefactoringException {
+		getRight().adjust(table);
 	}
 
     // Declared in java.ast at line 3
@@ -455,7 +455,7 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return getParent().Define_boolean_isDest(this, caller);
     }
 
-    // Declared in AccessField.jrag at line 205
+    // Declared in AccessField.jrag at line 188
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(caller == getRightNoTransform()) {
 		return getLeft().qualifiedAccessField(fd);

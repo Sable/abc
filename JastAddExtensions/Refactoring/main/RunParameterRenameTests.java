@@ -54,22 +54,16 @@ public class RunParameterRenameTests extends Frontend {
             TypeDecl d = (TypeDecl)program.lookupType(pkg, path[0]);
             for(int i=1;i<path.length;++i)
                 d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
-            java.util.List changes;
             if(meth.equals("")) {
                 ConstructorDecl cd = (ConstructorDecl)d.constructors().iterator().next();
                 ParameterDeclaration pd =
                     (ParameterDeclaration)cd.parameterDeclaration(parm).iterator().next();
-                changes = pd.rename(n);
+                pd.rename(n);
             } else {
                 MethodDecl md = (MethodDecl)d.memberMethods(meth).iterator().next();
                 ParameterDeclaration pd = 
                     (ParameterDeclaration)md.parameterDeclaration(parm).iterator().next();
-                changes = pd.rename(n);
-            }
-            for(Iterator i=changes.iterator();i.hasNext();) {
-                ASTChange ch = (ASTChange)i.next();
-                //System.out.println(ch.prettyprint());
-                ch.apply();
+                pd.rename(n);
             }
             return program;
         } else {

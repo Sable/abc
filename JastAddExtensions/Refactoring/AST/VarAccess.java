@@ -214,10 +214,10 @@ public class VarAccess extends Access implements Cloneable {
     s.append(name());
   }
 
-    // Declared in Encapsulate.jrag at line 52
+    // Declared in Encapsulate.jrag at line 45
 
 
-	public void encapsulate(java.util.List changes, String getter, String setter) {
+	public void encapsulate(String getter, String setter) {
 		Context ctxt = new Context();
 		ASTNode ch = this;
 		for(ASTNode p=getParent();p!=null&&p instanceof Expr;ch=p,p=p.getParent()) {
@@ -226,8 +226,7 @@ public class VarAccess extends Access implements Cloneable {
 				Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
 				if(implicit_op == null) {
 					List args = new List();	args.add(rhs);
-					changes.add(new NodeReplace(p, 
-							ctxt.plugIn(new MethodAccess(setter, args))));
+					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 				} else {
 					/* TODO: this is dangerous; we copy a subtree in which there
 					 *       might be pending adjustments */
@@ -236,21 +235,20 @@ public class VarAccess extends Access implements Cloneable {
 					implicit_op.setLeftOperand((Expr)ctxt2.plugIn(new MethodAccess(getter, new List())));
 					implicit_op.setRightOperand(rhs);
 					args.add(implicit_op);
-					changes.add(new NodeReplace(p,
-							ctxt.plugIn(new MethodAccess(setter, args))));
+					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 				}
 			} else if(p instanceof PostDecExpr) {
 				// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
-				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+				encapsulate_postfix(p, ctxt, getter, setter, 
 						new SubExpr(), new AddExpr());
 			} else if(p instanceof PostIncExpr) {
-				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+				encapsulate_postfix(p, ctxt, getter, setter, 
 						new AddExpr(), new SubExpr());
 			} else if(p instanceof PreDecExpr) {
 				// --i becomes setI(getI()-1)
-				encapsulate_prefix(changes, p, ctxt, getter, setter, new SubExpr());
+				encapsulate_prefix(p, ctxt, getter, setter, new SubExpr());
 			} else if(p instanceof PreIncExpr) {
-				encapsulate_prefix(changes, p, ctxt, getter, setter, new AddExpr());
+				encapsulate_prefix(p, ctxt, getter, setter, new AddExpr());
 			} else if(p instanceof ParExpr) {
 				ctxt.wrapIn(p, 0);
 				continue;
@@ -258,16 +256,16 @@ public class VarAccess extends Access implements Cloneable {
 				ctxt.wrapIn(p, 1);
 				continue;
 			} else {
-				changes.add(new NodeReplace(this, new MethodAccess(getter, new List())));
+				replaceWith(new MethodAccess(getter, new List()));
 				return;
 			}
 		}
 	}
 
-    // Declared in Encapsulate.jrag at line 99
+    // Declared in Encapsulate.jrag at line 90
 
 	
-	static void encapsulate_postfix(java.util.List changes, ASTNode p, 
+	static void encapsulate_postfix(ASTNode p, 
 			Context ctxt, String getter, String setter, Binary rator, Binary undo) {
 		List args = new List();
 		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
@@ -277,23 +275,23 @@ public class VarAccess extends Access implements Cloneable {
 		undo.setLeftOperand((Expr)getacc.fullCopy());
 		undo.setRightOperand(new IntegerLiteral(1));
 		Expr setacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(setter, args));
-		changes.add(new NodeReplace(p,
+		p.replaceWith(
 				new ParExpr(
 						new ConditionalExpr(new EQExpr(setacc, new IntegerLiteral(0)),
-								(Expr)undo.fullCopy(), (Expr)undo.fullCopy()))));
+								(Expr)undo.fullCopy(), (Expr)undo.fullCopy())));
 	}
 
-    // Declared in Encapsulate.jrag at line 115
+    // Declared in Encapsulate.jrag at line 106
 
 	
-	static void encapsulate_prefix(java.util.List changes, ASTNode p,
+	static void encapsulate_prefix(ASTNode p,
 			Context ctxt, String getter, String setter, Binary rator) {
 		List args = new List();
 		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
 		rator.setLeftOperand(getacc);
 		rator.setRightOperand(new IntegerLiteral(1));
 		args.add(rator);
-		changes.add(new NodeReplace(p, ctxt.plugIn(new MethodAccess(setter, args))));
+		p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 	}
 
     // Declared in java.ast at line 3

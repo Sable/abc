@@ -150,7 +150,7 @@ public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid {
     }
   }
 
-    // Declared in Methodoid.jrag at line 15
+    // Declared in Methodoid.jadd at line 15
 
 	
 	public boolean hasBody() { return true; }
@@ -794,7 +794,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_handlesException(this, caller, exceptionType);
     }
 
-    // Declared in AccessField.jrag at line 173
+    // Declared in AccessField.jrag at line 156
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(caller == getBlockNoTransform()) {
 		Access acc = accessField(fd);

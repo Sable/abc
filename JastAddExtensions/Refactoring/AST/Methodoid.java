@@ -4,19 +4,19 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
 	
 	public interface Methodoid {
-    // Declared in Methodoid.jrag at line 6
+    // Declared in Methodoid.jadd at line 6
 
 		ParameterDeclaration getParameter(int i);
 
-    // Declared in Methodoid.jrag at line 7
+    // Declared in Methodoid.jadd at line 7
 
 		SimpleSet parameterDeclaration(String name);
 
-    // Declared in Methodoid.jrag at line 8
+    // Declared in Methodoid.jadd at line 8
 
 		Block getBlock();
 
-    // Declared in Methodoid.jrag at line 9
+    // Declared in Methodoid.jadd at line 9
 
 		boolean hasBody();
 

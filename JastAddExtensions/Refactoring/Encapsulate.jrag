@@ -1,24 +1,17 @@
 aspect Encapsulate {
 
-	public java.util.List FieldDeclaration.encapsulate() throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
-		if(!isPrivate()) {
-			changes.add(new PrivatiseField(this));
-		}
+	public void FieldDeclaration.encapsulate() throws RefactoringException {
+		makePrivate();
 		Modifiers mod = getModifiers();
 		String ucase_id = capitalize(getID());
 		String getter_name = "get"+ucase_id;
 		String setter_name = "set"+ucase_id;
-		String tpname = type().typeName();
-		hostType().addMethod(changes, makeGetter(getter_name, mod), 
-						     getter_name+"()",false);
-		hostType().addMethod(changes, makeSetter(setter_name, mod), 
-					         setter_name+"("+tpname+")", false);
+		hostType().addMethod(makeGetter(getter_name, mod), false, false, false);
+		hostType().addMethod(makeSetter(setter_name, mod), false, false, false);
 		for(Iterator i = uses().iterator(); i.hasNext();) {
 			VarAccess va = (VarAccess)i.next();
-			va.encapsulate(changes, getter_name, setter_name);
+			va.encapsulate(getter_name, setter_name);
 		}
-		return changes;
 	}
 
 	public static String FieldDeclaration.capitalize(String str) {
@@ -49,7 +42,7 @@ aspect Encapsulate {
 				new Opt(setter_body));
 	}
 
-	public void VarAccess.encapsulate(java.util.List changes, String getter, String setter) {
+	public void VarAccess.encapsulate(String getter, String setter) {
 		Context ctxt = new Context();
 		ASTNode ch = this;
 		for(ASTNode p=getParent();p!=null&&p instanceof Expr;ch=p,p=p.getParent()) {
@@ -58,8 +51,7 @@ aspect Encapsulate {
 				Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
 				if(implicit_op == null) {
 					List args = new List();	args.add(rhs);
-					changes.add(new NodeReplace(p, 
-							ctxt.plugIn(new MethodAccess(setter, args))));
+					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 				} else {
 					/* TODO: this is dangerous; we copy a subtree in which there
 					 *       might be pending adjustments */
@@ -68,21 +60,20 @@ aspect Encapsulate {
 					implicit_op.setLeftOperand((Expr)ctxt2.plugIn(new MethodAccess(getter, new List())));
 					implicit_op.setRightOperand(rhs);
 					args.add(implicit_op);
-					changes.add(new NodeReplace(p,
-							ctxt.plugIn(new MethodAccess(setter, args))));
+					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 				}
 			} else if(p instanceof PostDecExpr) {
 				// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
-				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+				encapsulate_postfix(p, ctxt, getter, setter, 
 						new SubExpr(), new AddExpr());
 			} else if(p instanceof PostIncExpr) {
-				encapsulate_postfix(changes, p, ctxt, getter, setter, 
+				encapsulate_postfix(p, ctxt, getter, setter, 
 						new AddExpr(), new SubExpr());
 			} else if(p instanceof PreDecExpr) {
 				// --i becomes setI(getI()-1)
-				encapsulate_prefix(changes, p, ctxt, getter, setter, new SubExpr());
+				encapsulate_prefix(p, ctxt, getter, setter, new SubExpr());
 			} else if(p instanceof PreIncExpr) {
-				encapsulate_prefix(changes, p, ctxt, getter, setter, new AddExpr());
+				encapsulate_prefix(p, ctxt, getter, setter, new AddExpr());
 			} else if(p instanceof ParExpr) {
 				ctxt.wrapIn(p, 0);
 				continue;
@@ -90,13 +81,13 @@ aspect Encapsulate {
 				ctxt.wrapIn(p, 1);
 				continue;
 			} else {
-				changes.add(new NodeReplace(this, new MethodAccess(getter, new List())));
+				replaceWith(new MethodAccess(getter, new List()));
 				return;
 			}
 		}
 	}
 	
-	static void VarAccess.encapsulate_postfix(java.util.List changes, ASTNode p, 
+	static void VarAccess.encapsulate_postfix(ASTNode p, 
 			Context ctxt, String getter, String setter, Binary rator, Binary undo) {
 		List args = new List();
 		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
@@ -106,20 +97,20 @@ aspect Encapsulate {
 		undo.setLeftOperand((Expr)getacc.fullCopy());
 		undo.setRightOperand(new IntegerLiteral(1));
 		Expr setacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(setter, args));
-		changes.add(new NodeReplace(p,
+		p.replaceWith(
 				new ParExpr(
 						new ConditionalExpr(new EQExpr(setacc, new IntegerLiteral(0)),
-								(Expr)undo.fullCopy(), (Expr)undo.fullCopy()))));
+								(Expr)undo.fullCopy(), (Expr)undo.fullCopy())));
 	}
 	
-	static void VarAccess.encapsulate_prefix(java.util.List changes, ASTNode p,
+	static void VarAccess.encapsulate_prefix(ASTNode p,
 			Context ctxt, String getter, String setter, Binary rator) {
 		List args = new List();
 		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
 		rator.setLeftOperand(getacc);
 		rator.setRightOperand(new IntegerLiteral(1));
 		args.add(rator);
-		changes.add(new NodeReplace(p, ctxt.plugIn(new MethodAccess(setter, args))));
+		p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 	}
 	
 	syn Binary AssignExpr.getImplicitOperator() = null;

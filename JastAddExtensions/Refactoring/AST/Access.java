@@ -52,9 +52,9 @@ public abstract class Access extends Expr implements Cloneable {
 	
 	// more needed here...
 	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
+	public void adjust(AdjustmentTable table) throws RefactoringException {
 		if(isQualified())
-			table.adjust(changes, qualifier());
+			table.adjust(qualifier());
 		ASTNode target = table.getTarget(this);
 		if(target == null) return;
 		ASTNode oldacc = null;
@@ -169,7 +169,7 @@ public abstract class Access extends Expr implements Cloneable {
 			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
 		}
 		if(oldacc != newacc)
-			changes.add(new NodeReplace(oldacc, newacc));
+			oldacc.replaceWith(newacc);
 	}
 
     // Declared in java.ast at line 3

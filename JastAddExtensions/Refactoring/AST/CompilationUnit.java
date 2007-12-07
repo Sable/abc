@@ -4,14 +4,12 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
 
 // 7.3 Compilation Units
-public class CompilationUnit extends ASTNode implements Cloneable {
+public class CompilationUnit extends ASTNode implements Cloneable,  Named {
     public void flushCache() {
         super.flushCache();
         localLookupType_String_values = null;
         packageName_computed = false;
         packageName_value = null;
-        getID_computed = false;
-        getID_value = null;
         lookupType_String_values = null;
         accessType_TypeDecl_boolean_values = null;
     }
@@ -20,8 +18,6 @@ public class CompilationUnit extends ASTNode implements Cloneable {
         node.localLookupType_String_values = null;
         node.packageName_computed = false;
         node.packageName_value = null;
-        node.getID_computed = false;
-        node.getID_value = null;
         node.lookupType_String_values = null;
         node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
@@ -152,20 +148,31 @@ public class CompilationUnit extends ASTNode implements Cloneable {
     }
   }
 
+    // Declared in ASTUtil.jrag at line 126
+
+	
+	public String getID() {
+	    char pathsep = File.separatorChar;
+	    String path = pathName();
+	    int i = path.lastIndexOf(pathsep);
+		String relname_tail = i == -1 ? path : path.substring(i+1);
+	    int j = relname_tail.lastIndexOf(".");
+	    return relname_tail.substring(0, j);	 		
+	}
+
     // Declared in ExtractBlock.jrag at line 3
 
 	
-	public java.util.List extractBlock(java.util.List changes,
-			Stmt begin, Stmt end) throws RefactoringException {
+	public void extractBlock(Stmt begin, Stmt end) 
+			throws RefactoringException {
 		check_block_extraction_preconds(begin, end);
 		Block begin_host = begin.hostBlock();
 		int begin_idx = begin.indexInHostBlock();
 		int end_idx = end.indexInHostBlock();
-		begin_host.encapsulate(changes, begin_idx, end_idx);
-		return changes;
+		begin_host.encapsulate(begin_idx, end_idx);
 	}
 
-    // Declared in ExtractBlock.jrag at line 13
+    // Declared in ExtractBlock.jrag at line 12
 
 	
 	private void check_block_extraction_preconds(Stmt begin, Stmt end)
@@ -190,8 +197,7 @@ public class CompilationUnit extends ASTNode implements Cloneable {
     // Declared in MakeMethod.jrag at line 4
 
 	
-	public java.util.List makeMethod(java.util.List changes, 
-			String name, String vis, Block blk) 
+	public void makeMethod(String name, String vis, Block blk) 
 			throws RefactoringException {
 		if(blk.getNumStmt() > 1) {
 			Stmt fst = blk.getStmt(0);
@@ -208,9 +214,32 @@ public class CompilationUnit extends ASTNode implements Cloneable {
 			static_ctxt = true;
 		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
 			static_ctxt = true;
-		host.createMethod(changes, name, vis, blk.indexInHostBlock(), blk, static_ctxt);
-		return changes;
+		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
 	}
+
+    // Declared in Names.jadd at line 19
+
+	public void refined_Names_changeID(String id) { setID(id); }
+
+    // Declared in Names.jadd at line 21
+
+	
+	public void setID(String id) {
+        setRelativeName(patch_name(relativeName(), id));
+        setPathName(patch_name(pathName(), id));
+	}
+
+    // Declared in Names.jadd at line 26
+
+	
+    private static String patch_name(String path, String name) {
+        char pathsep = File.separatorChar;
+        int i = path.lastIndexOf(pathsep);
+        String relname_head = i == -1 ? "" : path.substring(0, i+1);
+        String relname_tail = i == -1 ? path : path.substring(i+1);
+        int j = relname_tail.lastIndexOf(".");
+        return relname_head + name + relname_tail.substring(j);
+    }
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 4
@@ -366,6 +395,13 @@ public class CompilationUnit extends ASTNode implements Cloneable {
         return (List)getChildNoTransform(1);
     }
 
+    // Declared in Undo.jadd at line 32
+
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		refined_Names_changeID(id);
+	}
+
     // Declared in ClassPath.jrag at line 18
     public String relativeName() {
         String relativeName_value = relativeName_compute();
@@ -471,29 +507,6 @@ if(localLookupType_String_values == null) localLookupType_String_values = new ja
     }
 
     private String packageName_compute() {  return  getPackageDecl();  }
-
-    protected boolean getID_computed = false;
-    protected String getID_value;
-    // Declared in RenameType.jrag at line 109
-    public String getID() {
-        if(getID_computed)
-            return getID_value;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        getID_value = getID_compute();
-        if(isFinal && num == boundariesCrossed)
-            getID_computed = true;
-        return getID_value;
-    }
-
-    private String getID_compute()  {
-       char pathsep = File.separatorChar;
-       String path = pathName();
-       int i = path.lastIndexOf(pathsep);
-	   String relname_tail = i == -1 ? path : path.substring(i+1);
-       int j = relname_tail.lastIndexOf(".");
-       return relname_tail.substring(0, j);	 		
-	}
 
     // Declared in LookupType.jrag at line 89
     public TypeDecl lookupType(String packageName, String typeName) {
@@ -712,7 +725,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_SimpleSet_lookupType(this, caller, name);
     }
 
-    // Declared in ASTUtil.jrag at line 13
+    // Declared in ASTUtil.jrag at line 8
     public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

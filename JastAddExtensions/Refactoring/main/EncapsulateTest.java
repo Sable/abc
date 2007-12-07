@@ -36,12 +36,7 @@ public class EncapsulateTest extends Frontend {
 		}
 		FieldDeclaration f = (FieldDeclaration)d.localFields(fld).iterator().next();
         try {
-            List changes = f.encapsulate();
-            for(Iterator i=changes.iterator();i.hasNext();) {
-                ASTChange ch = (ASTChange)i.next();
-                ch.apply();
-                //System.out.println(ch.prettyprint());
-            }
+            f.encapsulate();
             System.out.println(program);
         } catch(RefactoringException e) {
             System.out.println("couldn't refactor: "+e);

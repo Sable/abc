@@ -2,7 +2,7 @@
 package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
-public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Variable {
+public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Variable,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -226,31 +226,41 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     }
   }
 
+    // Declared in ASTUtil.jrag at line 24
+
+
+    public void refined_ASTUtil_makePrivate() {
+        if(isPrivate())
+            return;
+        Modifiers m = getModifiers();
+        for(int i=0;i<m.getNumModifier();++i) {
+            String id = m.getModifier(i).getID();
+            if(id.equals("protected") || id.equals("public")) {
+                m.setModifier(new Modifier("private"), i);
+                return;
+            }
+        }
+        m.addModifier(new Modifier("private"));
+    }
+
     // Declared in Encapsulate.jrag at line 3
 
 
-	public java.util.List encapsulate() throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
-		if(!isPrivate()) {
-			changes.add(new PrivatiseField(this));
-		}
+	public void encapsulate() throws RefactoringException {
+		makePrivate();
 		Modifiers mod = getModifiers();
 		String ucase_id = capitalize(getID());
 		String getter_name = "get"+ucase_id;
 		String setter_name = "set"+ucase_id;
-		String tpname = type().typeName();
-		hostType().addMethod(changes, makeGetter(getter_name, mod), 
-						     getter_name+"()",false);
-		hostType().addMethod(changes, makeSetter(setter_name, mod), 
-					         setter_name+"("+tpname+")", false);
+		hostType().addMethod(makeGetter(getter_name, mod), false, false, false);
+		hostType().addMethod(makeSetter(setter_name, mod), false, false, false);
 		for(Iterator i = uses().iterator(); i.hasNext();) {
 			VarAccess va = (VarAccess)i.next();
-			va.encapsulate(changes, getter_name, setter_name);
+			va.encapsulate(getter_name, setter_name);
 		}
-		return changes;
 	}
 
-    // Declared in Encapsulate.jrag at line 24
+    // Declared in Encapsulate.jrag at line 17
 
 
 	public static String capitalize(String str) {
@@ -260,7 +270,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 		return buf.toString();
 	}
 
-    // Declared in Encapsulate.jrag at line 31
+    // Declared in Encapsulate.jrag at line 24
 
 
 	private MethodDecl makeGetter(String getter_name, Modifiers mod) {
@@ -271,7 +281,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 				new List(), new Opt(getter_body));
 	}
 
-    // Declared in Encapsulate.jrag at line 39
+    // Declared in Encapsulate.jrag at line 32
 
 
 	private MethodDecl makeSetter(String setter_name, Modifiers mod) {
@@ -287,28 +297,23 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 				new Opt(setter_body));
 	}
 
+    // Declared in Names.jadd at line 16
+
+	public void refined_Names_changeID(String id) { setID(id); }
+
     // Declared in RenameField.jrag at line 7
 
 
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
 			// haha, very funny
-			return changes;
+			return;
 		if(!hostType().localFields(new_name).isEmpty())
 			throw new RefactoringException("couldn't rename: field name clash");
-		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new FieldRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
+		table.adjust();
 	}
 
     // Declared in java.ast at line 3
@@ -438,6 +443,21 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     public Opt getInitOptNoTransform() {
         return (Opt)getChildNoTransform(2);
     }
+
+    // Declared in Undo.jadd at line 64
+
+	
+	  void makePrivate() {
+		programRoot().pushUndo(new PrivatiseField(this));
+		refined_ASTUtil_makePrivate();
+	}
+
+    // Declared in Undo.jadd at line 20
+
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		refined_Names_changeID(id);
+	}
 
     // Declared in Liveness.jrag at line 3
 
@@ -1017,12 +1037,6 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
     public boolean handlesException(TypeDecl exceptionType) {
         boolean handlesException_TypeDecl_value = getParent().Define_boolean_handlesException(this, null, exceptionType);
         return handlesException_TypeDecl_value;
-    }
-
-    // Declared in ASTUtil.jrag at line 6
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
     }
 
     // Declared in Modifiers.jrag at line 249

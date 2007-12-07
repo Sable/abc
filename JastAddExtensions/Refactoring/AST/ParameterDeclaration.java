@@ -148,14 +148,14 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     }
   }
 
-    // Declared in LocalDeclaration.jrag at line 18
+    // Declared in LocalDeclaration.jrag at line 19
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return (ParameterDeclaration)fullCopy();
 	}
 
-    // Declared in LocalDeclaration.jrag at line 26
+    // Declared in LocalDeclaration.jrag at line 27
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -172,25 +172,16 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     // Declared in RenameParameter.jrag at line 22
 
 	
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
-			return changes;
+			return;
 		RefactoringException e = canRenameTo(new_name);
 		if(e != null)
 			throw e;
-		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new ParameterRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
+		table.adjust();
 	}
 
     // Declared in java.ast at line 3
@@ -333,6 +324,12 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     public List getEmptyBracketListNoTransform() {
         return (List)getChildNoTransform(2);
     }
+
+    // Declared in Undo.jadd at line 17
+
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+	}
 
     // Declared in Liveness.jrag at line 3
 
@@ -1128,13 +1125,7 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
         return getBlock_value;
     }
 
-    // Declared in ASTUtil.jrag at line 8
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
-    }
-
-    // Declared in ASTUtil.jrag at line 16
+    // Declared in ASTUtil.jrag at line 11
     public SimpleSet lookupType(String name) {
         SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
         return lookupType_String_value;

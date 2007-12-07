@@ -1,26 +1,18 @@
 aspect RenameType {
 	
-	public java.util.List TypeDecl.rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void TypeDecl.rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
-			return changes;
+			return;
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		if(isTopLevelType() && /*isPublic()*/ getID().equals(cu.getID()))
-			changes.add(new CompilationUnitRename(cu, new_name));
-		adjustImportDecls(changes);
+			cu.changeID(new_name);
+		adjustImportDecls();
 		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new TypeRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
+		table.adjust();
 	}
 	
 	private AdjustmentTable TypeDecl.find_uses(String new_name) {
@@ -88,7 +80,7 @@ aspect RenameType {
     	return enc.hasEnclosingType(name);
     }
 
-	private void TypeDecl.adjustImportDecls(java.util.List changes) throws RefactoringException {
+	private void TypeDecl.adjustImportDecls() throws RefactoringException {
 		Program p = programRoot();
 		for(int i = 0; i < p.getNumCompilationUnit(); i++) {
 			for(int j=0;i<p.getCompilationUnit(i).getNumImportDecl();++j) {
@@ -99,20 +91,11 @@ aspect RenameType {
 						Access tacc = id.accessType(this, false);
 						if(tacc == null)
 							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
-						changes.add(new NodeReplace(id, new SingleTypeImportDecl(tacc)));
+						id.replaceWith(new SingleTypeImportDecl(tacc));
 					}
 				}
 			}
 		}
-	}
-	
-	syn lazy String CompilationUnit.getID() {
-       char pathsep = File.separatorChar;
-       String path = pathName();
-       int i = path.lastIndexOf(pathsep);
-	   String relname_tail = i == -1 ? path : path.substring(i+1);
-       int j = relname_tail.lastIndexOf(".");
-       return relname_tail.substring(0, j);	 		
 	}
 	
 }

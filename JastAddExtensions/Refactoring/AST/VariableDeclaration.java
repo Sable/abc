@@ -172,14 +172,14 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     }
   }
 
-    // Declared in LocalDeclaration.jrag at line 22
+    // Declared in LocalDeclaration.jrag at line 23
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
 	}
 
-    // Declared in LocalDeclaration.jrag at line 30
+    // Declared in LocalDeclaration.jrag at line 31
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -209,24 +209,15 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     // Declared in RenameLocalVariable.jrag at line 31
 
 	
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
-			return changes;
+			return;
 		RefactoringException e = canRenameTo(new_name);
 		if(e != null) throw e;
-		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new LocalVariableRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
+		table.adjust();
 	}
 
     // Declared in java.ast at line 3
@@ -356,6 +347,18 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     public Opt getInitOptNoTransform() {
         return (Opt)getChildNoTransform(2);
     }
+
+    // Declared in Undo.jadd at line 14
+
+	
+	/*refine Names public void Named.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.Named.setID(id);
+	}*/
+	
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+	}
 
     // Declared in Liveness.jrag at line 3
 
@@ -1219,12 +1222,6 @@ if(shouldDuplicate_Stmt_Stmt_values == null) shouldDuplicate_Stmt_Stmt_values = 
     public TypeDecl hostType() {
         TypeDecl hostType_value = getParent().Define_TypeDecl_hostType(this, null);
         return hostType_value;
-    }
-
-    // Declared in ASTUtil.jrag at line 10
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
     }
 
     // Declared in DefiniteAssignment.jrag at line 29

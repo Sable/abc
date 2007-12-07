@@ -4,21 +4,24 @@ import java.util.*;
 
 aspect RenameMethod {
 	
-	public java.util.List MethodDecl.cascadingRename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void MethodDecl.cascadingRename(String new_name) throws RefactoringException {
+		// first check which methods override this one/are overriden by this
+		// obviously, we need to do that before we change its name
+		// (obvious after I got tripped up by it, that is)
+		SimpleSet overrides = overrides();
+		java.util.Set overriders = overriders();
 		// rename the method itself
-		this.rename(changes, new_name);
+		this.rename(new_name);
 		// rename every method it overrides
-		for(Iterator i = overrides().iterator();i.hasNext();)
-			((MethodDecl)i.next()).rename(changes, new_name);
+		for(Iterator i = overrides.iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(new_name);
 		// rename every method it is overridden by
-		for(Iterator i = overriders().iterator();i.hasNext();)
-			((MethodDecl)i.next()).rename(changes, new_name);
-		return changes;
+		for(Iterator i = overriders.iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(new_name);
 	}
 
 	// rename a method, don't care about overriding/overridden methods
-	public void MethodDecl.rename(java.util.List changes, String new_name) throws RefactoringException {
+	public void MethodDecl.rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
 			return;
 		String sig = signature();
@@ -33,17 +36,10 @@ aspect RenameMethod {
 			if(!canOverrideOrHide(md))
 				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
 		}
-		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new MethodRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
+		table.adjust();
 	}
 
 	private AdjustmentTable MethodDecl.find_uses(String new_name) {

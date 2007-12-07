@@ -198,7 +198,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachableCatchClause_value;
     }
 
-    // Declared in LocalDeclaration.jrag at line 35
+    // Declared in LocalDeclaration.jrag at line 36
     public java.util.Set visibleLocalDecls() {
         java.util.Set visibleLocalDecls_value = getParent().Define_java_util_Set_visibleLocalDecls(this, null);
         return visibleLocalDecls_value;
@@ -234,7 +234,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_Block_getBlock(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 49
+    // Declared in LocalDeclaration.jrag at line 50
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
 		java.util.Set decls = visibleLocalDecls();

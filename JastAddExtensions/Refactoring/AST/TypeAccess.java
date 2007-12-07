@@ -304,7 +304,7 @@ public class TypeAccess extends Access implements Cloneable {
 
     private boolean staticContextQualifier_compute() {  return  true;  }
 
-    // Declared in AccessField.jrag at line 215
+    // Declared in AccessField.jrag at line 198
     public Access qualifiedAccessField(FieldDeclaration fd) {
         Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
         return qualifiedAccessField_FieldDeclaration_value;
@@ -358,13 +358,13 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_TypeDecl_uses();
     }
+    protected void contributeTo_TypeDecl_TypeDecl_uses(HashSet collection) {
+        collection.add(this);
+    }
+
     protected void contributeTo_PackageDecl_PackageDecl_prefixUses(HashSet collection) {
         if(!packageName().equals(""))
             collection.add(this);
-    }
-
-    protected void contributeTo_TypeDecl_TypeDecl_uses(HashSet collection) {
-        collection.add(this);
     }
 
 }

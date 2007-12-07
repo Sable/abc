@@ -582,7 +582,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_insideLoop(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 54
+    // Declared in LocalDeclaration.jrag at line 55
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
 		java.util.Set decls = visibleLocalDecls();

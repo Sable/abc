@@ -1,28 +1,24 @@
 package changes;
 
-import AST.ClassDecl;
 import AST.MethodDecl;
+import AST.TypeDecl;
 
 public class AddMethod extends ASTChange {
     
-    private ClassDecl clazz;
+    private TypeDecl td;
     private MethodDecl method;
     
-    public AddMethod(ClassDecl clazz, MethodDecl method) {
-        this.clazz = clazz;
+    public AddMethod(TypeDecl td, MethodDecl method) {
+        this.td = td;
         this.method = method;
     }
 
-    public void apply() {
-        clazz.addBodyDecl(method);
-    }
-    
     public void undo() {
-        clazz.getBodyDeclList().remove(method);
+        td.removeBodyDecl(method);
     }
     
     public String prettyprint() {
-        return "add method "+method.dumpTree()+" to class "+clazz;
+        return "add method "+method.dumpTree()+" to type "+td.getID();
     }
 
 }

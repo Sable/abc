@@ -140,7 +140,7 @@ public class AssignPlusExpr extends AssignAdditiveExpr implements Cloneable {
     return left.isString() ? left : right;
   }
 
-    // Declared in Encapsulate.jrag at line 127
+    // Declared in Encapsulate.jrag at line 118
     public Binary getImplicitOperator() {
         Binary getImplicitOperator_value = getImplicitOperator_compute();
         return getImplicitOperator_value;

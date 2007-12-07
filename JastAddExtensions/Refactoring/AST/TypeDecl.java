@@ -3,7 +3,7 @@ package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
  
-public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  VariableScope {
+public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  VariableScope,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFromPackage_String_values = null;
@@ -173,7 +173,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
   // methods. We extend the map with the declaration m by either appending
   // it to an existing list of declarations or adding a new list. That list
   // will be used to name bind a new qualified name access.
-  public MethodDecl addMemberMethod(MethodDecl m) {
+  public MethodDecl refined_BoundNames_addMemberMethod(MethodDecl m) {
     addBodyDecl(m);
     return (MethodDecl)getBodyDecl(getNumBodyDecl()-1);
     /*
@@ -503,40 +503,45 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
     }
   }
 
+    // Declared in ASTUtil.jrag at line 20
+
+	
+	public void removeBodyDecl(BodyDecl bd) {
+		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
+	}
+
     // Declared in AddMethod.jrag at line 5
 
 
-	public void addMethod(java.util.List changes, MethodDecl md, String sig, boolean canCapture) throws RefactoringException {
+	public void addMethod(MethodDecl md, 
+				boolean mayOverride, boolean mayBeOverridden, boolean mayBeCaptured) 
+			throws RefactoringException {
 		throw new RefactoringException("cannot add method");
 	}
+
+    // Declared in Names.jadd at line 18
+
+	public void refined_Names_changeID(String id) { setID(id); }
 
     // Declared in RenameType.jrag at line 3
 
 	
-	public java.util.List rename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
-			return changes;
+			return;
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		if(isTopLevelType() && /*isPublic()*/ getID().equals(cu.getID()))
-			changes.add(new CompilationUnitRename(cu, new_name));
-		adjustImportDecls(changes);
+			cu.changeID(new_name);
+		adjustImportDecls();
 		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new TypeRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
-		return changes;
+		table.adjust();
 	}
 
-    // Declared in RenameType.jrag at line 26
+    // Declared in RenameType.jrag at line 18
 
 	
 	private AdjustmentTable find_uses(String new_name) {
@@ -566,7 +571,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 		return table;
 	}
 
-    // Declared in RenameType.jrag at line 53
+    // Declared in RenameType.jrag at line 45
 
 	
 	private void checkRenamingPreconds(String new_name) throws RefactoringException {
@@ -587,7 +592,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 		}
 	}
 
-    // Declared in RenameType.jrag at line 71
+    // Declared in RenameType.jrag at line 63
 
 	
     private boolean hasNestedType(String name) {
@@ -602,7 +607,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         return false;
     }
 
-    // Declared in RenameType.jrag at line 83
+    // Declared in RenameType.jrag at line 75
 
     
     private boolean hasEnclosingType(String name) {
@@ -613,10 +618,10 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
     	return enc.hasEnclosingType(name);
     }
 
-    // Declared in RenameType.jrag at line 91
+    // Declared in RenameType.jrag at line 83
 
 
-	private void adjustImportDecls(java.util.List changes) throws RefactoringException {
+	private void adjustImportDecls() throws RefactoringException {
 		Program p = programRoot();
 		for(int i = 0; i < p.getNumCompilationUnit(); i++) {
 			for(int j=0;i<p.getCompilationUnit(i).getNumImportDecl();++j) {
@@ -627,7 +632,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 						Access tacc = id.accessType(this, false);
 						if(tacc == null)
 							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
-						changes.add(new NodeReplace(id, new SingleTypeImportDecl(tacc)));
+						id.replaceWith(new SingleTypeImportDecl(tacc));
 					}
 				}
 			}
@@ -753,6 +758,21 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
     public List getBodyDeclListNoTransform() {
         return (List)getChildNoTransform(1);
     }
+
+    // Declared in Undo.jadd at line 37
+
+
+	  void addMemberMethod(MethodDecl m) {
+		programRoot().pushUndo(new AddMethod(this, m));
+		refined_BoundNames_addMemberMethod(m);
+	}
+
+    // Declared in Undo.jadd at line 28
+
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		refined_Names_changeID(id);
+	}
 
     protected java.util.Map accessibleFromPackage_String_values;
     // Declared in AccessControl.jrag at line 6
@@ -2519,13 +2539,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return inStaticContext_value;
     }
 
-    // Declared in ASTUtil.jrag at line 7
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
-    }
-
-    // Declared in ASTUtil.jrag at line 14
+    // Declared in ASTUtil.jrag at line 9
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit_value = getParent().Define_CompilationUnit_compilationUnit(this, null);
         return compilationUnit_value;
@@ -2953,7 +2967,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_Collection_lookupMethod(this, caller, name);
     }
 
-    // Declared in LocalDeclaration.jrag at line 37
+    // Declared in LocalDeclaration.jrag at line 38
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

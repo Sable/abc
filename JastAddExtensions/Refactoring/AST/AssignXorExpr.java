@@ -107,7 +107,7 @@ public class AssignXorExpr extends AssignBitwiseExpr implements Cloneable {
         return (Expr)getChildNoTransform(1);
     }
 
-    // Declared in Encapsulate.jrag at line 130
+    // Declared in Encapsulate.jrag at line 121
     public Binary getImplicitOperator() {
         Binary getImplicitOperator_value = getImplicitOperator_compute();
         return getImplicitOperator_value;

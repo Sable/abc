@@ -782,6 +782,19 @@ public class Program extends ASTNode implements Cloneable {
     return classDecl;
   }
 
+    // Declared in Undo.jadd at line 5
+
+
+	private Stack undoStack = new Stack();
+
+    // Declared in Undo.jadd at line 6
+
+	public Iterator getUndoIterator() { return undoStack.iterator(); }
+
+    // Declared in Undo.jadd at line 7
+
+	public void pushUndo(ASTChange ch) { undoStack.push(ch); }
+
     // Declared in java.ast at line 3
     // Declared in java.ast line 1
 

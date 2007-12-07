@@ -1,13 +1,12 @@
 aspect ExtractBlock {
 	
-	public java.util.List CompilationUnit.extractBlock(java.util.List changes,
-			Stmt begin, Stmt end) throws RefactoringException {
+	public void CompilationUnit.extractBlock(Stmt begin, Stmt end) 
+			throws RefactoringException {
 		check_block_extraction_preconds(begin, end);
 		Block begin_host = begin.hostBlock();
 		int begin_idx = begin.indexInHostBlock();
 		int end_idx = end.indexInHostBlock();
-		begin_host.encapsulate(changes, begin_idx, end_idx);
-		return changes;
+		begin_host.encapsulate(begin_idx, end_idx);
 	}
 	
 	private void CompilationUnit.check_block_extraction_preconds(Stmt begin, Stmt end)
@@ -29,7 +28,7 @@ aspect ExtractBlock {
 				throw new RefactoringException("selection cannot contain case labels");
 	}
 	
-	public void Block.encapsulate(java.util.List changes, int begin, int end) 
+	public void Block.encapsulate(int begin, int end) 
 			throws RefactoringException {
 		Stmt begin_stmt = getStmt(begin);
 		Stmt end_stmt = getStmt(end);
@@ -41,33 +40,31 @@ aspect ExtractBlock {
 			if(!vdecl.accessedAfter(end_stmt))
 				iter.remove();
 		}
-		// build new block
-		Collection blockstmts = new ArrayList();
-		for(i=begin;i<=end;++i)
-			if(moveOut.contains(getStmt(i))) {
-				VariableDeclaration vd = (VariableDeclaration)((ASTNode)getStmt(i)).fullCopy();
-				if(vd.hasInit()) {
-					Expr init = vd.getInit();
-					blockstmts.add(new ExprStmt(new AssignSimpleExpr(
-							new VarAccess(vd.getID()), init)));
-				}
-			} else {
-				blockstmts.add(getStmt(i));
-			}
-		// prepare new surrounding block body
-		Collection before = new ArrayList();
-		for(i=0;i<begin;++i)
-			before.add(getStmt(i));
+		/*
+		 * what we do now:
+		 * 1. for every declaration to be moved out, see if it has an initializer
+		 *    a) if yes, then insert the declaration (without initializer) at
+		 *       position start++ and replace the original definition by an assignment
+		 *    b) if no, then insert the declaration at start++ and remove original,
+		 *       not forgetting to decrement end
+		 * 2. pull statements between start and end together into a block
+		 */
 		for(iter=moveOut.iterator();iter.hasNext();) {
-			// copy the declaration and remove initialiser
-			VariableDeclaration vd = (VariableDeclaration)((ASTNode)iter.next()).fullCopy();
-			vd.setInitOpt(new Opt());
-			before.add(vd);
+			VariableDeclaration vd = (VariableDeclaration)iter.next();
+			if(vd.hasInit()) {
+				Expr init = vd.getInit();
+				Stmt assign = new ExprStmt(new AssignSimpleExpr(
+					new VarAccess(vd.getID()), init));
+				vd.replaceWith(assign);
+				vd = (VariableDeclaration)vd.fullCopy();
+				vd.setInitOpt(new Opt());
+				insertStmt(start++, vd);
+			} else {
+				moveStmt(vd, start++);
+				--end;
+			}
 		}
-		Collection after = new ArrayList();
-		for(i=end+1;i<getNumStmt();++i)
-			after.add(getStmt(i));
-		changes.add(new InsertBlock(this, before, blockstmts, after));
+		pullTogether(start, end);
 	}
 	
 }

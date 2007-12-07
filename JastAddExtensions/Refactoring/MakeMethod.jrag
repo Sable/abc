@@ -1,8 +1,7 @@
 // turn a block into a method
 aspect MakeMethod {
 	
-	public java.util.List CompilationUnit.makeMethod(java.util.List changes, 
-			String name, String vis, Block blk) 
+	public void CompilationUnit.makeMethod(String name, String vis, Block blk) 
 			throws RefactoringException {
 		if(blk.getNumStmt() > 1) {
 			Stmt fst = blk.getStmt(0);
@@ -19,12 +18,10 @@ aspect MakeMethod {
 			static_ctxt = true;
 		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
 			static_ctxt = true;
-		host.createMethod(changes, name, vis, blk.indexInHostBlock(), blk, static_ctxt);
-		return changes;
+		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
 	}
 	
-	public void Block.createMethod(java.util.List changes, String name, String vis, 
-				int pos, Block blk, boolean static_ctxt) 
+	public void Block.createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
 		Collection parms = new ArrayList();        // parameters of extracted method
 		Collection localVars = new ArrayList();    // local variables of extracted method
@@ -50,10 +47,7 @@ aspect MakeMethod {
 		//
 		// create declaration of method
 		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
-		// prepare new block body
-		Collection before = new ArrayList();
-		for(int i=0;i<pos;++i)
-			before.add(getStmt(i));
+		// prepare the invocation statement
 		Stmt invocation;
 		List args = new List();
 		for(Iterator iter=parms.iterator();iter.hasNext();)
@@ -66,17 +60,13 @@ aspect MakeMethod {
 			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
 			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma));
 		}
-		Collection after = new ArrayList();
-		for(int i=pos+1;i<getNumStmt();++i)
-			after.add(getStmt(i));
-		// now record changes to be made
+		// insert the method
+		/* it is crucial that this happens first, since the invocation references
+		 * the newly created method, which would make addMethod reject the refactoring */
 		TypeDecl td = hostBodyDecl().hostType();
-		// kludge: method decl needs a parent so we can compute its signature
-		md.setParent(td);
-		String sig = md.signature();
-		md.setParent(null);
-		td.addMethod(changes, md, sig, false);
-		changes.add(new InsertStmt(this, before, invocation, after));
+		td.addMethod(md, false, false, false);
+		// insert the invocation
+		blk.replaceWith(invocation);
 	}
 	
 	private MethodDecl Block.createMethod(boolean static_ctxt, String name, String visibility,
@@ -112,23 +102,18 @@ aspect MakeMethod {
 				throw new RefactoringException("cannot access type "+exn);
 			throwdecls.add(exnacc);
 		}
-		
 		// body
-		List bodystmts = new List();
-		for(Iterator i=localVariables.iterator();i.hasNext();)
-			bodystmts.add((ASTNode)i.next());
-		for(int i=0;i<blk.getNumStmt();++i)
-			bodystmts.add((blk.getStmt(i)).fullCopy());
+		int i; Iterator iter;
+		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
+			blk.insertStmt(i, (Stmt)iter.next());
 		if(!ret.isEmpty()) {
 			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
 			String varname = decl.getID();
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
-			bodystmts.add(stmt);
+			blk.insertStmt(getNumStmt()-1, stmt);
 		}
-		Block body = new Block(bodystmts);
-		
 		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, 
-				new Opt(body));
+				new Opt(blk));
 	}
 		
 }

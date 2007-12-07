@@ -287,13 +287,12 @@ public class ClassDecl extends ReferenceType implements Cloneable {
     }
   }
 
-    // Declared in AddMethod.jrag at line 9
+    // Declared in AddMethod.jrag at line 11
 
 
-	public void addMethod(java.util.List changes, MethodDecl md, String sig, boolean canCapture) throws RefactoringException {
-		AddMethod ch = new AddMethod(this, md);
-        if(!this.localMethodsSignature(sig).isEmpty())
-            throw new RefactoringException("a method of signature "+sig+" already exists");
+	public void addMethod(MethodDecl md, 
+				boolean mayOverride, boolean mayBeOverridden, boolean mayBeCaptured) 
+			throws RefactoringException {
         AdjustmentTable table = new AdjustmentTable();
         for(Iterator i=unqualifiedLookupMethod(md.getID()).iterator();i.hasNext();) {
             MethodDecl m = (MethodDecl)i.next();
@@ -302,19 +301,36 @@ public class ClassDecl extends ReferenceType implements Cloneable {
                 table.add(acc, m);
             }
         }
+        addMemberMethod(md);
         programRoot().clear();
-        ch.apply();
-		if(!canCapture) {
-			if(!md.uses().isEmpty())
-				throw new RefactoringException("new method "+md.getID()+" could be captured");
-			if(!md.overriders().isEmpty())
-				throw new RefactoringException("new method "+md.getID()+" is overridden");
+        if(localMethodsSignature(md.signature()).size() > 1)
+            throw new RefactoringException("a method of signature "+md.signature()+" already exists");
+		if(!mayBeCaptured && !md.uses().isEmpty())
+			throw new RefactoringException("new method "+md.getID()+" could be captured");
+		SimpleSet overrides = md.overrides();
+		if(mayOverride) {
+			for(Iterator i=overrides.iterator();i.hasNext();) {
+				MethodDecl md2 = (MethodDecl)i.next();
+				if(!md.canOverrideOrHide(md2))
+					throw new RefactoringException("new method "+md.getID()+
+							" cannot override method in "+md2.hostType().typeName());
+			}
+		} else if(!overrides.isEmpty()) {
+			throw new RefactoringException("new method "+md.getID()+" overrides other method");
+		}
+		HashSet overriders = md.overriders();
+		if(mayBeOverridden) {
+			for(Iterator i=overriders.iterator();i.hasNext();) {
+				MethodDecl md2 = (MethodDecl)i.next();
+				if(!md2.canOverrideOrHide(md))
+					throw new RefactoringException("new method "+md.getID()+
+							" cannot be overriden by method in "+md2.hostType().typeName());
+			}
+		} else if(!overriders.isEmpty()) {
+			throw new RefactoringException("new method "+md.getID()+" is overridden");
 		}
         // make sure that uses of methods of the same name can be adjusted
-        table.adjust(changes);
-        ch.undo();
-        programRoot().clear();
-		changes.add(ch);
+        table.adjust();
 	}
 
     // Declared in java.ast at line 3

@@ -51,11 +51,12 @@
 			<include name="**/*.jadd"/>
 			<exclude name="LocalDeclaration.jrag"/>
 		</fileset>
+		<fileset file="Methodoid.jadd"/>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-			<exclude name="ExtractMethod.jrag"/>
+			<include name="**/*.jrag"/>
+			<exclude name="Methodoid.jadd"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->

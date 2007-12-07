@@ -63,8 +63,8 @@ public class ParExpr extends PrimaryExpr implements Cloneable {
     // Declared in AdjustAccess.jrag at line 52
 
 	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-		getExpr().adjust(changes, table);
+	public void adjust(AdjustmentTable table) throws RefactoringException {
+		getExpr().adjust(table);
 	}
 
     // Declared in java.ast at line 3

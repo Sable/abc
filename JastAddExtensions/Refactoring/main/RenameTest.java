@@ -41,12 +41,7 @@ public class RenameTest extends Frontend {
 		try {
 			//System.out.println("rename("+classname+", "+fieldname+", "+newname+", {"+filenames[0]+"})");
 
-			List changes = rename(classname, fieldname, newname, filenames);
-			System.out.println("proposed changes: ");
-			for(Iterator i=changes.iterator();i.hasNext();) {
-				ASTChange c = (ASTChange)i.next();
-				System.out.println(c.prettyprint());
-			}
+			rename(classname, fieldname, newname, filenames);
 		} catch(RefactoringException e) {
 			System.err.println("Cannot refactor: "+e.getMessage());
 		}
@@ -73,18 +68,13 @@ public class RenameTest extends Frontend {
         if(!(n instanceof FieldDeclaration))
             throw new RefactoringException("nothing there except "+n);
 		try {
-			List changes = ((FieldDeclaration)n).rename("u");
-			System.out.println("proposed changes: ");
-			for(Iterator i=changes.iterator();i.hasNext();) {
-				ASTChange ch = (ASTChange)i.next();
-				System.out.println(ch.prettyprint());
-			}
+			((FieldDeclaration)n).rename("u");
 		} catch(RefactoringException e) {
 			System.err.println("Cannot refactor: "+e.getMessage());
 		}
 	}
 
-	public static List rename(String classname, String fieldname, String newname, String[] filenames) 
+	public static void rename(String classname, String fieldname, String newname, String[] filenames) 
 			throws RefactoringException {
 		RenameTest c = new RenameTest();
 		if(!c.process(
@@ -106,7 +96,7 @@ public class RenameTest extends Frontend {
 			d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
 		}
 		FieldDeclaration f = (FieldDeclaration)d.localFields(fieldname).iterator().next();
-		return f.rename(newname);
+		f.rename(newname);
 	}
 
 	public void output() {

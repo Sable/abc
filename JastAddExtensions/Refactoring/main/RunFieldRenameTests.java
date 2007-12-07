@@ -101,11 +101,7 @@ public class RunFieldRenameTests extends Frontend {
             for(int i=1;i<path.length;++i)
                 d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
             FieldDeclaration f = (FieldDeclaration)d.localFields(fld).iterator().next();
-            List changes = f.rename(n);
-            for(Iterator i=changes.iterator();i.hasNext();) {
-                ASTChange ch = (ASTChange)i.next();
-                ch.apply();
-            }
+            f.rename(n);
             return program;
         } else {
             return null;

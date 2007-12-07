@@ -102,20 +102,13 @@ public class RunExtractionTests extends Frontend {
 		Stmt start_stmt = md.getBlock().getStmt(start);
 		Stmt end_stmt = md.getBlock().getStmt(end);
 		try {
-			List changes = new ArrayList();
-			d.compilationUnit().extractBlock(changes, start_stmt, end_stmt);
-			for(Iterator i=changes.iterator();i.hasNext();)
-				((ASTChange)i.next()).apply();
-			program.clear();
-			changes = new ArrayList();
+			d.compilationUnit().extractBlock(start_stmt, end_stmt);
 			int i;
 			for(i=start;i<md.getBlock().getNumStmt();++i)
 				if(md.getBlock().getStmt(i) instanceof Block)
 					break;
 			Block blk = (Block)md.getBlock().getStmt(i);
-			d.compilationUnit().makeMethod(changes, name, vis, blk);
-			for(Iterator iter=changes.iterator();iter.hasNext();)
-				((ASTChange)iter.next()).apply();
+			d.compilationUnit().makeMethod(name, vis, blk);
 		} catch(RefactoringException rfe) {
 			if(SHOW)
 				System.out.println("refactoring failed: "+rfe);

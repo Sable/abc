@@ -1,0 +1,69 @@
+import java.util.*;
+
+aspect Undo {
+
+	private Stack Program.undoStack = new Stack();
+	public Iterator Program.getUndoIterator() { return undoStack.iterator(); }
+	public void Program.pushUndo(ASTChange ch) { undoStack.push(ch); }
+	
+	/*refine Names public void Named.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.Named.setID(id);
+	}*/
+	
+	refine Names public void VariableDeclaration.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+	}
+	refine Names public void ParameterDeclaration.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+	}
+	refine Names public void FieldDeclaration.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.FieldDeclaration.changeID(id);
+	}
+	refine Names public void MethodDecl.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.MethodDecl.changeID(id);
+	}
+	refine Names public void TypeDecl.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.TypeDecl.changeID(id);
+	}
+	refine Names public void CompilationUnit.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.CompilationUnit.changeID(id);
+	}
+
+	refine BoundNames void TypeDecl.addMemberMethod(MethodDecl m) {
+		programRoot().pushUndo(new AddMethod(this, m));
+		BoundNames.TypeDecl.addMemberMethod(m);
+	}
+	
+	refine ASTUtil void Block.insertStmt(int idx, Stmt stmt) {
+		programRoot().pushUndo(new InsertStmt(this, idx, stmt));
+		ASTUtil.Block.insertStmt(idx, stmt);
+	}
+	
+	refine ASTUtil void Block.moveStmt(Stmt stmt, int new_idx) {
+		programRoot().pushUndo(new MoveStmt(this, stmt, new_idx));
+		ASTUtil.Block.moveStmt(stmt, new_idx);
+	}
+	
+	refine ASTUtil void Block.pullTogether(int start, int end) {
+		programRoot().pushUndo(new PullTogether(this, start, end));
+		ASTUtil.Block.pullTogether(start, end);
+	}
+	
+	// NOTE: we better not refine ASTNode.setChild(), since this is used in a couple
+	//       of the other modification operations above
+	refine ASTUtil void ASTNode.replaceWith(ASTNode newnode) {
+		programRoot().pushUndo(new ReplaceNode(this, newnode));
+		ASTUtil.ASTNode.replaceWith(newnode);
+	}
+	
+	refine ASTUtil void FieldDeclaration.makePrivate() {
+		programRoot().pushUndo(new PrivatiseField(this));
+		ASTUtil.FieldDeclaration.makePrivate();
+	}
+
+}

@@ -413,7 +413,56 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   void checkUnreachableStmt() {
   }
 
-    // Declared in ASTUtil.jrag at line 20
+    // Declared in ASTUtil.jrag at line 14
+
+	
+	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
+	public void clear() {
+		flushCache();
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).clear();
+	}
+
+    // Declared in ASTUtil.jrag at line 38
+
+    
+    protected void refined_ASTUtil_replaceWith(ASTNode newnode) {
+    	ASTNode parent = getParent();
+    	parent.setChild(newnode, parent.getIndexOfChild(this));
+    }
+
+    // Declared in ASTUtil.jrag at line 44
+
+    
+    // this method is not very well-behaved if start and end are not valid indices
+    protected void replaceRange(ASTNode node, int start, int end) {
+        if(children == null) {
+        	children = new ASTNode[1];
+            children[0] = node;
+        } else {
+            ASTNode c[] = new ASTNode[children.length - (end-start)];
+            System.arraycopy(children, 0, c, 0, start);
+            c[start] = node;
+            if(end+1 < children.length)
+              System.arraycopy(children, end+1, c, start+1, children.length-end-1);
+            children = c;
+        }
+        numChildren -= end-start;
+        if(node != null) { node.setParent(this); node.childIndex = start; }
+    }
+
+    // Declared in ASTUtil.jrag at line 60
+
+    
+    public void moveChild(int src, int trg) {
+    	ASTNode tmp = children[src];
+    	children[src] = children[trg];
+    	children[src].childIndex = src;
+    	children[trg] = tmp;
+    	children[trg].childIndex = trg;
+    }
+
+    // Declared in ASTUtil.jrag at line 110
 
 	
 	public int indexIn(ASTNode n) {
@@ -424,45 +473,12 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		return getParent().indexIn(n);
 	}
 
-    // Declared in ASTUtil.jrag at line 28
+    // Declared in ASTUtil.jrag at line 118
 
 	
 	public boolean inside(ASTNode n) {
 		return indexIn(n) != -1;
 	}
-
-    // Declared in ASTUtil.jrag at line 19
-
-	
-	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
-	public void clear() {
-		flushCache();
-		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).clear();
-	}
-
-    // Declared in ASTUtil.jrag at line 28
-
-
-	// imperative transformation of the AST
-    //	syntax ASTNode.replace(sourcenode).with(destnode)
-
-	protected static ASTNode replace(ASTNode node) {
-		replacePos = node.getParent().getIndexOfChild(node);
-		return node.getParent();
-	}
-
-    // Declared in ASTUtil.jrag at line 32
-
-	protected ASTNode with(ASTNode node) {
-		setChild(node, replacePos);
-		return node;
-	}
-
-    // Declared in ASTUtil.jrag at line 37
-
-
-	private static int replacePos = 0;
 
     // Declared in Uses.jrag at line 37
 
@@ -863,6 +879,16 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
   public boolean mayHaveRewrite() { return false; }
 
+    // Declared in Undo.jadd at line 59
+
+	
+	// NOTE: we better not refine ASTNode.setChild(), since this is used in a couple
+	//       of the other modification operations above
+	  void replaceWith(ASTNode newnode) {
+		programRoot().pushUndo(new ReplaceNode(this, newnode));
+		refined_ASTUtil_replaceWith(newnode);
+	}
+
     // Declared in Uses.jrag at line 57
     protected void collect_contributors_TypeDecl_uses() {
         for(int i = 0; i < getNumChild(); i++)
@@ -1076,6 +1102,12 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
     }
 
     private Access accessParameter_compute(ParameterDeclaration pd) {  return  null;  }
+
+    // Declared in ASTUtil.jrag at line 5
+    public Program programRoot() {
+        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
+        return programRoot_value;
+    }
 
     protected java.util.Map accessField_FieldDeclaration_values;
     // Declared in AccessField.jrag at line 7

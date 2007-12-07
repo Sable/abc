@@ -1,0 +1,36 @@
+aspect Names {
+	
+	interface Named {
+		String getID();
+		void setID(String id);
+		void changeID(String id);
+	}
+	
+	FieldDeclaration implements Named;
+	MethodDecl implements Named;
+	TypeDecl implements Named;
+	CompilationUnit implements Named;
+	
+	public void VariableDeclaration.changeID(String id) { setID(id); }
+	public void ParameterDeclaration.changeID(String id) { setID(id); }
+	public void FieldDeclaration.changeID(String id) { setID(id); }
+	public void MethodDecl.changeID(String id) { setID(id); }
+	public void TypeDecl.changeID(String id) { setID(id); }
+	public void CompilationUnit.changeID(String id) { setID(id); }
+	
+	public void CompilationUnit.setID(String id) {
+        setRelativeName(patch_name(relativeName(), id));
+        setPathName(patch_name(pathName(), id));
+	}
+	
+    private static String CompilationUnit.patch_name(String path, String name) {
+        char pathsep = File.separatorChar;
+        int i = path.lastIndexOf(pathsep);
+        String relname_head = i == -1 ? "" : path.substring(0, i+1);
+        String relname_tail = i == -1 ? path : path.substring(i+1);
+        int j = relname_tail.lastIndexOf(".");
+        return relname_head + name + relname_tail.substring(j);
+    }
+	
+	
+}

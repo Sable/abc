@@ -82,11 +82,7 @@ public class RunMethodRenameTests extends Frontend {
                 d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
             MethodDecl f = (MethodDecl)d.localMethodsSignature(meth).iterator().next();
             try {
-                List changes = f.cascadingRename(new_name);
-                for(Iterator i=changes.iterator();i.hasNext();) {
-                    ASTChange ch = (ASTChange)i.next();
-                    ch.apply();
-                }
+                f.cascadingRename(new_name);
                 return program;
             } catch(RefactoringException rfe) {
                 System.out.println("refactoring failed: "+rfe);

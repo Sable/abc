@@ -3,13 +3,13 @@ package changes;
 import main.FileRange;
 import AST.ASTNode;
 
-public class NodeReplace extends ASTChange {
+public class ReplaceNode extends ASTChange {
     
     private int index;
     private ASTNode before;
     private ASTNode after;
     
-    public NodeReplace(ASTNode before, ASTNode after) {
+    public ReplaceNode(ASTNode before, ASTNode after) {
         this.index = before.getParent().getIndexOfChild(before);
         this.before = before;
         this.after = after;
@@ -18,10 +18,6 @@ public class NodeReplace extends ASTChange {
     public String prettyprint() {
         FileRange pos = new FileRange(before.getStart(), before.getEnd());
         return "at "+pos+", replace node "+before.dumpTree()+" with "+after.dumpTree();
-    }
-    
-    public void apply() {
-        before.getParent().setChild(after.fullCopy(), index);
     }
     
     public void undo() {

@@ -153,24 +153,7 @@ aspect AccessField {
 	}
 
 	// The scope of a parameter of a method is the entire body of the method
-	eq MethodDecl.getBlock().accessField(FieldDeclaration fd) {
-		Access acc = accessField(fd);
-		if(acc != null) {
-			if(!parameterDeclaration(fd.getID()).isEmpty()) {
-				// if acc is already qualified, nothing needs to change
-				if(acc instanceof AbstractDot)
-					return acc;
-				else
-					return new ThisAccess("this").qualifiesAccess(acc);
-			} else {
-				return acc;
-			}
-		}
-		return null;
-	}
-
-	// this is a copy of the above
-	eq ConstructorDecl.getBlock().accessField(FieldDeclaration fd) {
+	eq Methodoid.getBlock().accessField(FieldDeclaration fd) {
 		Access acc = accessField(fd);
 		if(acc != null) {
 			if(!parameterDeclaration(fd.getID()).isEmpty()) {

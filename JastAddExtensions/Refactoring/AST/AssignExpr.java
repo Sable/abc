@@ -209,7 +209,7 @@ public abstract class AssignExpr extends Expr implements Cloneable {
 
     private TypeDecl sourceType_compute() {  return  getSource().type().isPrimitive() ? getSource().type() : unknownType();  }
 
-    // Declared in Encapsulate.jrag at line 125
+    // Declared in Encapsulate.jrag at line 116
     public Binary getImplicitOperator() {
         Binary getImplicitOperator_value = getImplicitOperator_compute();
         return getImplicitOperator_value;

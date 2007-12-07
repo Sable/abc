@@ -5,7 +5,7 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 	
 	// a local declaration is either a variable declaration or a parameter declaration
 	
-	public interface LocalDeclaration {
+	public interface LocalDeclaration extends  Named {
     // Declared in LocalDeclaration.jrag at line 8
  
 		Access getTypeAccess();
@@ -16,13 +16,17 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
     // Declared in LocalDeclaration.jrag at line 10
 
-		Block getBlock();
+		void setID(String id);
 
     // Declared in LocalDeclaration.jrag at line 11
 
-		ParameterDeclaration asParameterDeclaration();
+		Block getBlock();
 
     // Declared in LocalDeclaration.jrag at line 12
+
+		ParameterDeclaration asParameterDeclaration();
+
+    // Declared in LocalDeclaration.jrag at line 13
 
 		VariableDeclaration asVariableDeclaration();
 

@@ -25,39 +25,39 @@ aspect AdjustAccess {
 			adjusted.add(exp);
 		}
 		
-		public void adjust(java.util.List changes) throws RefactoringException {
+		public void adjust() throws RefactoringException {
 			for(Iterator i = adjustments.entrySet().iterator(); i.hasNext();) {
 				Map.Entry e = (Map.Entry)i.next();
 				Access acc = (Access)e.getKey();
 				ASTNode val = (ASTNode)e.getValue();
-				adjust(changes, acc);
+				adjust(acc);
 			}
 		}
 		
-		public void adjust(java.util.List changes, Expr exp) throws RefactoringException {
+		public void adjust(Expr exp) throws RefactoringException {
 			if(isAdjusted(exp))
 				return;
-			exp.adjust(changes, this);
+			exp.adjust(this);
 			setAdjusted(exp);
 		}
 	}
 	
-	public void Expr.adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
+	public void Expr.adjust(AdjustmentTable table) throws RefactoringException {
 	}
 	
-	public void AbstractDot.adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-		getRight().adjust(changes, table);
+	public void AbstractDot.adjust(AdjustmentTable table) throws RefactoringException {
+		getRight().adjust(table);
 	}
 	
-	public void ParExpr.adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
-		getExpr().adjust(changes, table);
+	public void ParExpr.adjust(AdjustmentTable table) throws RefactoringException {
+		getExpr().adjust(table);
 	}
 	
 	// more needed here...
 	
-	public void Access.adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
+	public void Access.adjust(AdjustmentTable table) throws RefactoringException {
 		if(isQualified())
-			table.adjust(changes, qualifier());
+			table.adjust(qualifier());
 		ASTNode target = table.getTarget(this);
 		if(target == null) return;
 		ASTNode oldacc = null;
@@ -172,7 +172,7 @@ aspect AdjustAccess {
 			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
 		}
 		if(oldacc != newacc)
-			changes.add(new NodeReplace(oldacc, newacc));
+			oldacc.replaceWith(newacc);
 	}
 	
 }

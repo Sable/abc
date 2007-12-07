@@ -3,7 +3,7 @@ package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 
-public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Methodoid {
+public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Methodoid,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -237,31 +237,38 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
 
   }
 
-    // Declared in Methodoid.jrag at line 16
+    // Declared in Methodoid.jadd at line 16
 
 	public boolean hasBody() { return !(isAbstract() || isNative()); }
+
+    // Declared in Names.jadd at line 17
+
+	public void refined_Names_changeID(String id) { setID(id); }
 
     // Declared in RenameMethod.jrag at line 7
 
 	
-	public java.util.List cascadingRename(String new_name) throws RefactoringException {
-		java.util.List changes = new java.util.Vector();
+	public void cascadingRename(String new_name) throws RefactoringException {
+		// first check which methods override this one/are overriden by this
+		// obviously, we need to do that before we change its name
+		// (obvious after I got tripped up by it, that is)
+		SimpleSet overrides = overrides();
+		java.util.Set overriders = overriders();
 		// rename the method itself
-		this.rename(changes, new_name);
+		this.rename(new_name);
 		// rename every method it overrides
-		for(Iterator i = overrides().iterator();i.hasNext();)
-			((MethodDecl)i.next()).rename(changes, new_name);
+		for(Iterator i = overrides.iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(new_name);
 		// rename every method it is overridden by
-		for(Iterator i = overriders().iterator();i.hasNext();)
-			((MethodDecl)i.next()).rename(changes, new_name);
-		return changes;
+		for(Iterator i = overriders.iterator();i.hasNext();)
+			((MethodDecl)i.next()).rename(new_name);
 	}
 
-    // Declared in RenameMethod.jrag at line 21
+    // Declared in RenameMethod.jrag at line 24
 
 
 	// rename a method, don't care about overriding/overridden methods
-	public void rename(java.util.List changes, String new_name) throws RefactoringException {
+	public void rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
 			return;
 		String sig = signature();
@@ -276,20 +283,13 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
 			if(!canOverrideOrHide(md))
 				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
 		}
-		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
-		setID(new_name);
-		changes.add(new MethodRename(this, new_name));
+		changeID(new_name);
 		programRoot().clear();
-		try {
-			table.adjust(changes);
-		} finally {
-			setID(old_name);
-			programRoot().clear();
-		}
+		table.adjust();
 	}
 
-    // Declared in RenameMethod.jrag at line 49
+    // Declared in RenameMethod.jrag at line 45
 
 
 	private AdjustmentTable find_uses(String new_name) {
@@ -602,6 +602,13 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
     public Opt getBlockOptNoTransform() {
         return (Opt)getChildNoTransform(5);
     }
+
+    // Declared in Undo.jadd at line 24
+
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		refined_Names_changeID(id);
+	}
 
     protected java.util.Map accessibleFrom_TypeDecl_values;
     // Declared in AccessControl.jrag at line 68
@@ -1091,12 +1098,6 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return unknownMethod_value;
     }
 
-    // Declared in ASTUtil.jrag at line 9
-    public Program programRoot() {
-        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
-        return programRoot_value;
-    }
-
     // Declared in Modifiers.jrag at line 258
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         if(caller == getModifiersNoTransform()) {
@@ -1105,7 +1106,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_mayBePrivate(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 38
+    // Declared in LocalDeclaration.jrag at line 39
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		HashSet decls = new HashSet();

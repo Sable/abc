@@ -89,7 +89,7 @@ public abstract class Expr extends ASTNode implements Cloneable {
     // Declared in AdjustAccess.jrag at line 45
 
 	
-	public void adjust(java.util.List changes, AdjustmentTable table) throws RefactoringException {
+	public void adjust(AdjustmentTable table) throws RefactoringException {
 	}
 
     // Declared in MergeAccess.jrag at line 5
@@ -523,7 +523,7 @@ public abstract class Expr extends ASTNode implements Cloneable {
 
     private boolean staticContextQualifier_compute() {  return  false;  }
 
-    // Declared in AccessField.jrag at line 209
+    // Declared in AccessField.jrag at line 192
     public Access qualifiedAccessField(FieldDeclaration fd) {
         Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
         return qualifiedAccessField_FieldDeclaration_value;
