@@ -4,9 +4,10 @@ aspect LocalDeclaration {
 	
 	// a local declaration is either a variable declaration or a parameter declaration
 	
-	interface LocalDeclaration { 
+	interface LocalDeclaration extends Named { 
 		Access getTypeAccess();
 		String getID();
+		void setID(String id);
 		Block getBlock();
 		ParameterDeclaration asParameterDeclaration();
 		VariableDeclaration asVariableDeclaration();

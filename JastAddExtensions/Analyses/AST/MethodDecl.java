@@ -3,7 +3,7 @@ package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
 
 
-public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator {
+public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -218,6 +218,10 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
       error("the body of a non void method may not complete normally");
 
   }
+
+    // Declared in Names.jadd at line 17
+
+	public void changeID(String id) { setID(id); }
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 89
@@ -921,7 +925,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_mayBePrivate(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 38
+    // Declared in LocalDeclaration.jrag at line 39
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		HashSet decls = new HashSet();

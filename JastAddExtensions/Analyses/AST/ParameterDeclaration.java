@@ -136,14 +136,18 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     }
   }
 
-    // Declared in LocalDeclaration.jrag at line 18
+    // Declared in Names.jadd at line 15
+
+	public void changeID(String id) { setID(id); }
+
+    // Declared in LocalDeclaration.jrag at line 19
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return (ParameterDeclaration)fullCopy();
 	}
 
-    // Declared in LocalDeclaration.jrag at line 26
+    // Declared in LocalDeclaration.jrag at line 27
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -297,6 +301,15 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     public List getEmptyBracketListNoTransform() {
         return (List)getChildNoTransform(2);
     }
+
+    // Declared in Liveness.jrag at line 3
+
+	
+	public boolean isLiveIn(Block blk) {
+		if(blk.getNumStmt() == 0)
+			return false;
+		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+	}
 
     // Declared in DataStructures.jrag at line 90
     public int size() {
@@ -719,7 +732,7 @@ if(mayDefBetween_Stmt_Stmt_values == null) mayDefBetween_Stmt_Stmt_values = new 
 	}
 
     protected java.util.Map accessedOutside_Stmt_Stmt_values;
-    // Declared in Liveness.jrag at line 50
+    // Declared in Liveness.jrag at line 56
     public boolean accessedOutside(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);
@@ -922,6 +935,12 @@ if(accessedAfter_Stmt_values == null) accessedAfter_Stmt_values = new java.util.
     public boolean isExceptionHandlerParameter() {
         boolean isExceptionHandlerParameter_value = getParent().Define_boolean_isExceptionHandlerParameter(this, null);
         return isExceptionHandlerParameter_value;
+    }
+
+    // Declared in ASTUtil.jrag at line 11
+    public SimpleSet lookupType(String name) {
+        SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
+        return lookupType_String_value;
     }
 
     protected boolean getBlock_computed = false;

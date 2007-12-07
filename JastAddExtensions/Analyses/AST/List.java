@@ -30,9 +30,9 @@ public class List extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ASTUtil.jrag at line 3
+    // Declared in ASTUtil.jrag at line 92
 
-	
+
 	public Collection toCollection() {
 		Collection children = new ArrayList();
 		for(int i=0;i<getNumChild();++i)
@@ -40,14 +40,21 @@ public class List extends ASTNode implements Cloneable {
 		return children;
 	}
 
-    // Declared in ASTUtil.jrag at line 10
+    // Declared in ASTUtil.jrag at line 99
 
 	
-	public static List ofCollection(Collection c) {
-		List l = new List();
+	public List(Collection c) {
+		super();
+		addAll(c);
+	}
+
+    // Declared in ASTUtil.jrag at line 104
+
+	
+	public List addAll(Collection c) {
 		for(Iterator i=c.iterator();i.hasNext();)
-			l.add((ASTNode)i.next());
-		return l;
+			add((ASTNode)i.next());
+		return this;
 	}
 
     // Declared in List.ast at line 3

@@ -405,7 +405,56 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   void checkUnreachableStmt() {
   }
 
-    // Declared in ASTUtil.jrag at line 17
+    // Declared in ASTUtil.jrag at line 14
+
+	
+	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
+	public void clear() {
+		flushCache();
+		for(int i = 0; i < getNumChild(); i++)
+			getChild(i).clear();
+	}
+
+    // Declared in ASTUtil.jrag at line 38
+
+    
+    protected void replaceWith(ASTNode newnode) {
+    	ASTNode parent = getParent();
+    	parent.setChild(newnode, parent.getIndexOfChild(this));
+    }
+
+    // Declared in ASTUtil.jrag at line 44
+
+    
+    // this method is not very well-behaved if start and end are not valid indices
+    protected void replaceRange(ASTNode node, int start, int end) {
+        if(children == null) {
+        	children = new ASTNode[1];
+            children[0] = node;
+        } else {
+            ASTNode c[] = new ASTNode[children.length - (end-start)];
+            System.arraycopy(children, 0, c, 0, start);
+            c[start] = node;
+            if(end+1 < children.length)
+              System.arraycopy(children, end+1, c, start+1, children.length-end-1);
+            children = c;
+        }
+        numChildren -= end-start;
+        if(node != null) { node.setParent(this); node.childIndex = start; }
+    }
+
+    // Declared in ASTUtil.jrag at line 60
+
+    
+    public void moveChild(int src, int trg) {
+    	ASTNode tmp = children[src];
+    	children[src] = children[trg];
+    	children[src].childIndex = src;
+    	children[trg] = tmp;
+    	children[trg].childIndex = trg;
+    }
+
+    // Declared in ASTUtil.jrag at line 110
 
 	
 	public int indexIn(ASTNode n) {
@@ -414,6 +463,13 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		if(getParent() == null)
 			return -1;
 		return getParent().indexIn(n);
+	}
+
+    // Declared in ASTUtil.jrag at line 118
+
+	
+	public boolean inside(ASTNode n) {
+		return indexIn(n) != -1;
 	}
 
     // Declared in ASTNode.ast at line 3
@@ -924,6 +980,12 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
 
     private boolean mayAccess_compute(Variable v) {  return  mayDef(v) || mayUse(v);  }
 
+    // Declared in ASTUtil.jrag at line 5
+    public Program programRoot() {
+        Program programRoot_value = getParent().Define_Program_programRoot(this, null);
+        return programRoot_value;
+    }
+
 public ASTNode rewriteTo() {
     if(state.peek() == ASTNode.REWRITE_CHANGE) {
         state.pop();
@@ -1004,6 +1066,9 @@ public ASTNode rewriteTo() {
     public TypeDecl Define_TypeDecl_typeCloneable(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_typeCloneable(this, caller);
     }
+    public Program Define_Program_programRoot(ASTNode caller, ASTNode child) {
+        return getParent().Define_Program_programRoot(this, caller);
+    }
     public boolean Define_boolean_isLocalClass(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isLocalClass(this, caller);
     }
@@ -1075,6 +1140,9 @@ public ASTNode rewriteTo() {
     }
     public VariableScope Define_VariableScope_outerScope(ASTNode caller, ASTNode child) {
         return getParent().Define_VariableScope_outerScope(this, caller);
+    }
+    public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
+        return getParent().Define_CompilationUnit_compilationUnit(this, caller);
     }
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_mayBePrivate(this, caller);
@@ -1184,11 +1252,11 @@ public ASTNode rewriteTo() {
     public Block Define_Block_hostBlock(ASTNode caller, ASTNode child) {
         return getParent().Define_Block_hostBlock(this, caller);
     }
-    public boolean Define_boolean_hasPackage(ASTNode caller, ASTNode child, String packageName) {
-        return getParent().Define_boolean_hasPackage(this, caller, packageName);
-    }
     public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
+    }
+    public boolean Define_boolean_hasPackage(ASTNode caller, ASTNode child, String packageName) {
+        return getParent().Define_boolean_hasPackage(this, caller, packageName);
     }
     public boolean Define_boolean_isInitOrUpdateStmt(ASTNode caller, ASTNode child) {
         return getParent().Define_boolean_isInitOrUpdateStmt(this, caller);

@@ -2,7 +2,7 @@
 package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
 
-public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Variable {
+public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Variable,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -222,6 +222,27 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     }
   }
 
+    // Declared in ASTUtil.jrag at line 24
+
+
+    public void makePrivate() {
+        if(isPrivate())
+            return;
+        Modifiers m = getModifiers();
+        for(int i=0;i<m.getNumModifier();++i) {
+            String id = m.getModifier(i).getID();
+            if(id.equals("protected") || id.equals("public")) {
+                m.setModifier(new Modifier("private"), i);
+                return;
+            }
+        }
+        m.addModifier(new Modifier("private"));
+    }
+
+    // Declared in Names.jadd at line 16
+
+	public void changeID(String id) { setID(id); }
+
     // Declared in java.ast at line 3
     // Declared in java.ast line 76
 
@@ -349,6 +370,15 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     public Opt getInitOptNoTransform() {
         return (Opt)getChildNoTransform(2);
     }
+
+    // Declared in Liveness.jrag at line 3
+
+	
+	public boolean isLiveIn(Block blk) {
+		if(blk.getNumStmt() == 0)
+			return false;
+		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+	}
 
     protected java.util.Map accessibleFrom_TypeDecl_values;
     // Declared in AccessControl.jrag at line 100

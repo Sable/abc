@@ -160,14 +160,19 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     }
   }
 
-    // Declared in LocalDeclaration.jrag at line 22
+    // Declared in Names.jadd at line 14
+
+	
+	public void changeID(String id) { setID(id); }
+
+    // Declared in LocalDeclaration.jrag at line 23
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
 	}
 
-    // Declared in LocalDeclaration.jrag at line 30
+    // Declared in LocalDeclaration.jrag at line 31
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -301,6 +306,15 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     public Opt getInitOptNoTransform() {
         return (Opt)getChildNoTransform(2);
     }
+
+    // Declared in Liveness.jrag at line 3
+
+	
+	public boolean isLiveIn(Block blk) {
+		if(blk.getNumStmt() == 0)
+			return false;
+		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+	}
 
     // Declared in DataStructures.jrag at line 74
     public int size() {
@@ -824,7 +838,7 @@ if(mayDefBetween_Stmt_Stmt_values == null) mayDefBetween_Stmt_Stmt_values = new 
 	}
 
     protected java.util.Map accessedOutside_Stmt_Stmt_values;
-    // Declared in Liveness.jrag at line 50
+    // Declared in Liveness.jrag at line 56
     public boolean accessedOutside(Stmt begin, Stmt end) {
         java.util.List _parameters = new java.util.ArrayList(2);
         _parameters.add(begin);

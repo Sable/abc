@@ -1554,6 +1554,15 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
         return getParent().Define_TypeDecl_typeCloneable(this, caller);
     }
 
+    // Declared in ASTUtil.jrag at line 4
+    public Program Define_Program_programRoot(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  this;
+        }
+        return getParent().Define_Program_programRoot(this, caller);
+    }
+
     // Declared in TypeCheck.jrag at line 395
     public TypeDecl Define_TypeDecl_returnType(ASTNode caller, ASTNode child) {
         if(true) {

@@ -81,6 +81,47 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
+    // Declared in ASTUtil.jrag at line 76
+
+    
+    /*public void List.remove(ASTNode n) {
+    	for(int i=0;i<getNumChild();++i)
+    		if(getChild(i) == n) {
+    			removeChild(i);
+    			break;
+    		}
+    }*/
+    
+    public void insertStmt(int idx, Stmt stmt) {
+    	getStmtList().insertChild(stmt, idx);
+    }
+
+    // Declared in ASTUtil.jrag at line 80
+
+    
+    public void moveStmt(Stmt stmt, int new_idx) {
+    	int old_idx = getStmtList().getIndexOfChild(stmt);
+    	getStmtList().moveChild(old_idx, new_idx);
+    }
+
+    // Declared in ASTUtil.jrag at line 85
+
+    
+    public void pullTogether(int start, int end) {
+    	List stmts = new List();
+    	for(int i=start;i<end;++i)
+    		stmts.add(getStmt(i));
+    	getStmtList().replaceRange(new Block(stmts), start, end);
+    }
+
+    // Declared in LocalDeclaration.jrag at line 63
+
+	
+	public java.util.Set localDecls() {
+		if(getNumStmt() == 0) return new HashSet();
+		return localDeclsBetween(0, getNumStmt()-1);
+	}
+
     // Declared in java.ast at line 3
     // Declared in java.ast line 201
 
@@ -297,7 +338,7 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  getNumStmt() == 0 ? reachable() : getStmt(getNumStmt() - 1).canCompleteNormally();  }
 
-    // Declared in LocalDeclaration.jrag at line 62
+    // Declared in LocalDeclaration.jrag at line 68
     public java.util.Set localDeclsBetween(int start, int end) {
         java.util.Set localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -491,7 +532,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
     }
 
-    // Declared in LocalDeclaration.jrag at line 44
+    // Declared in LocalDeclaration.jrag at line 45
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);

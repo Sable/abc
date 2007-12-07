@@ -4,7 +4,7 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
 
 // 7.3 Compilation Units
-public class CompilationUnit extends ASTNode implements Cloneable {
+public class CompilationUnit extends ASTNode implements Cloneable,  Named {
     public void flushCache() {
         super.flushCache();
         localLookupType_String_values = null;
@@ -145,6 +145,42 @@ public class CompilationUnit extends ASTNode implements Cloneable {
       throw e;
     }
   }
+
+    // Declared in ASTUtil.jrag at line 126
+
+	
+	public String getID() {
+	    char pathsep = File.separatorChar;
+	    String path = pathName();
+	    int i = path.lastIndexOf(pathsep);
+		String relname_tail = i == -1 ? path : path.substring(i+1);
+	    int j = relname_tail.lastIndexOf(".");
+	    return relname_tail.substring(0, j);	 		
+	}
+
+    // Declared in Names.jadd at line 19
+
+	public void changeID(String id) { setID(id); }
+
+    // Declared in Names.jadd at line 21
+
+	
+	public void setID(String id) {
+        setRelativeName(patch_name(relativeName(), id));
+        setPathName(patch_name(pathName(), id));
+	}
+
+    // Declared in Names.jadd at line 26
+
+	
+    private static String patch_name(String path, String name) {
+        char pathsep = File.separatorChar;
+        int i = path.lastIndexOf(pathsep);
+        String relname_head = i == -1 ? "" : path.substring(0, i+1);
+        String relname_tail = i == -1 ? path : path.substring(i+1);
+        int j = relname_tail.lastIndexOf(".");
+        return relname_head + name + relname_tail.substring(j);
+    }
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 4
@@ -427,21 +463,6 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return lookupType_String_value;
     }
 
-    // Declared in LookupType.jrag at line 204
-    public SimpleSet Define_SimpleSet_lookupImport(ASTNode caller, ASTNode child, String name) {
-        if(caller == getImportDeclListNoTransform()) { 
-   int childIndex = caller.getIndexOfChild(child);
- {
-    for(int i = 0; i < getNumImportDecl(); i++)
-      if(!getImportDecl(i).isOnDemand())
-        for(Iterator iter = getImportDecl(i).importedTypes(name).iterator(); iter.hasNext(); )
-          return SimpleSet.emptySet.add(iter.next());
-    return SimpleSet.emptySet;
-  }
-}
-        return getParent().Define_SimpleSet_lookupImport(this, caller, name);
-    }
-
     // Declared in TypeAnalysis.jrag at line 492
     public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
         if(true) {
@@ -479,13 +500,19 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return getParent().Define_TypeDecl_hostType(this, caller);
     }
 
-    // Declared in TypeAnalysis.jrag at line 523
-    public boolean Define_boolean_isMemberType(ASTNode caller, ASTNode child) {
-        if(caller == getTypeDeclListNoTransform()) {
-      int childIndex = caller.getIndexOfChild(child);
-            return  false;
-        }
-        return getParent().Define_boolean_isMemberType(this, caller);
+    // Declared in LookupType.jrag at line 204
+    public SimpleSet Define_SimpleSet_lookupImport(ASTNode caller, ASTNode child, String name) {
+        if(caller == getImportDeclListNoTransform()) { 
+   int childIndex = caller.getIndexOfChild(child);
+ {
+    for(int i = 0; i < getNumImportDecl(); i++)
+      if(!getImportDecl(i).isOnDemand())
+        for(Iterator iter = getImportDecl(i).importedTypes(name).iterator(); iter.hasNext(); )
+          return SimpleSet.emptySet.add(iter.next());
+    return SimpleSet.emptySet;
+  }
+}
+        return getParent().Define_SimpleSet_lookupImport(this, caller, name);
     }
 
     // Declared in QualifiedNames.jrag at line 81
@@ -497,13 +524,13 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return getParent().Define_String_packageName(this, caller);
     }
 
-    // Declared in TypeAnalysis.jrag at line 535
-    public boolean Define_boolean_isLocalClass(ASTNode caller, ASTNode child) {
-        if(true) {
-      int childIndex = this.getIndexOfChild(caller);
+    // Declared in TypeAnalysis.jrag at line 523
+    public boolean Define_boolean_isMemberType(ASTNode caller, ASTNode child) {
+        if(caller == getTypeDeclListNoTransform()) {
+      int childIndex = caller.getIndexOfChild(child);
             return  false;
         }
-        return getParent().Define_boolean_isLocalClass(this, caller);
+        return getParent().Define_boolean_isMemberType(this, caller);
     }
 
     // Declared in DefiniteAssignment.jrag at line 40
@@ -513,6 +540,15 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
             return  false;
         }
         return getParent().Define_boolean_isIncOrDec(this, caller);
+    }
+
+    // Declared in TypeAnalysis.jrag at line 535
+    public boolean Define_boolean_isLocalClass(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  false;
+        }
+        return getParent().Define_boolean_isLocalClass(this, caller);
     }
 
     // Declared in TypeAnalysis.jrag at line 513
@@ -560,6 +596,15 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
   }
 }
         return getParent().Define_SimpleSet_lookupType(this, caller, name);
+    }
+
+    // Declared in ASTUtil.jrag at line 8
+    public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
+        if(true) {
+      int childIndex = this.getIndexOfChild(caller);
+            return  this;
+        }
+        return getParent().Define_CompilationUnit_compilationUnit(this, caller);
     }
 
 public ASTNode rewriteTo() {
