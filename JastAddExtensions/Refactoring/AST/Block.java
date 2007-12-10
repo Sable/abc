@@ -12,7 +12,6 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         localVariableDeclaration_String_values = null;
         canCompleteNormally_computed = false;
         exitsAfter_Stmt_values = null;
-        uncaughtThrowsBetween_Stmt_Stmt_values = null;
         lookupType_String_values = null;
         lookupVariable_String_values = null;
         accessField_FieldDeclaration_values = null;
@@ -28,7 +27,6 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         node.localVariableDeclaration_String_values = null;
         node.canCompleteNormally_computed = false;
         node.exitsAfter_Stmt_values = null;
-        node.uncaughtThrowsBetween_Stmt_Stmt_values = null;
         node.lookupType_String_values = null;
         node.lookupVariable_String_values = null;
         node.accessField_FieldDeclaration_values = null;
@@ -169,34 +167,22 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			}
 		}
 		pullTogether(begin, end);
+		programRoot().clear();
 	}
 
-    // Declared in MakeMethod.jrag at line 24
+    // Declared in MakeMethod.jrag at line 69
 
 	
 	public void createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
-		Collection parms = new ArrayList();        // parameters of extracted method
-		Collection localVars = new ArrayList();    // local variables of extracted method
-		Opt ret = new Opt();                       // what extracted method returns
-		Collection visibleDecls = blk.visibleLocalDecls();
-		visibleDecls.addAll(blk.localDecls());
-		// collect parameters, local variables, and the return value
-		for(Iterator iter=visibleDecls.iterator();iter.hasNext();) {
-			LocalDeclaration decl = (LocalDeclaration)iter.next();
-			if(((Variable)decl).isLiveIn(blk)) {
-				parms.add(decl);
-			} else if(blk.mayAccess((Variable)decl) && !((ASTNode)decl).inside(blk)) {
-				VariableDeclaration vd = decl.asVariableDeclaration();
-				vd.setInitOpt(new Opt());
-				localVars.add(vd);
-			}
-			if(blk.mayDef((Variable)decl) && ((Variable)decl).isLiveAfter(blk)) {
-				if(!ret.isEmpty())
-					throw new RefactoringException("ambiguous return value");
-				ret = new Opt(((ASTNode)decl).fullCopy());
-			}
-		}
+		Collection parms = blk.inputParameters();      // parameters of extracted method
+		Collection localVars = blk.extraLocalVars();   // local variables of extracted method
+		Collection outparms = blk.outputParameters();
+		Opt ret = new Opt();                       // return value of extracted method
+		if(outparms.size() == 1)
+			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
+		if(outparms.size() > 1)
+			throw new RefactoringException("ambiguous return value");
 		// remember position of blk before it is inserted into the method
 		ASTNode blkparent = blk.getParent();
 		int blkindex = blkparent.getIndexOfChild(blk);
@@ -224,7 +210,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		blkparent.setChild(invocation, blkindex);
 	}
 
-    // Declared in MakeMethod.jrag at line 74
+    // Declared in MakeMethod.jrag at line 106
 
 	
 	private MethodDecl createMethod(boolean static_ctxt, String name, String visibility,
@@ -652,32 +638,55 @@ if(exitsAfter_Stmt_values == null) exitsAfter_Stmt_values = new java.util.HashMa
 		return null;
 	}
 
-    protected java.util.Map uncaughtThrowsBetween_Stmt_Stmt_values;
-    // Declared in ParameterClassification.jrag at line 24
-    public Set uncaughtThrowsBetween(Stmt begin, Stmt end) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(begin);
-        _parameters.add(end);
-if(uncaughtThrowsBetween_Stmt_Stmt_values == null) uncaughtThrowsBetween_Stmt_Stmt_values = new java.util.HashMap(4);
-        if(uncaughtThrowsBetween_Stmt_Stmt_values.containsKey(_parameters))
-            return (Set)uncaughtThrowsBetween_Stmt_Stmt_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Set uncaughtThrowsBetween_Stmt_Stmt_value = uncaughtThrowsBetween_compute(begin, end);
-        if(isFinal && num == boundariesCrossed)
-            uncaughtThrowsBetween_Stmt_Stmt_values.put(_parameters, uncaughtThrowsBetween_Stmt_Stmt_value);
-        return uncaughtThrowsBetween_Stmt_Stmt_value;
+    // Declared in MakeMethod.jrag at line 32
+    public HashSet inputParameters() {
+        HashSet inputParameters_value = inputParameters_compute();
+        return inputParameters_value;
     }
 
-    private Set uncaughtThrowsBetween_compute(Stmt begin, Stmt end)  {
-		Set uncaughtThrows = Set.empty();
-		int begin_idx = begin.indexInBlock(this);
-		int end_idx = end.indexInBlock(this);
-		for (int i = begin_idx; 0 <= i && i <= end_idx; ++i) {
-			Stmt child = getStmt(i);
-			uncaughtThrows = uncaughtThrows.union(getStmt(i).uncaughtThrows());
+    private HashSet inputParameters_compute()  {
+		HashSet parms = new HashSet();
+		for(Iterator iter=visibleLocalDecls().iterator();iter.hasNext();) {
+			Variable decl = (Variable)iter.next();
+			if(decl.isLiveIn(this))
+				parms.add(decl);
 		}
-		return uncaughtThrows;
+		return parms;
+	}
+
+    // Declared in MakeMethod.jrag at line 44
+    public HashSet extraLocalVars() {
+        HashSet extraLocalVars_value = extraLocalVars_compute();
+        return extraLocalVars_value;
+    }
+
+    private HashSet extraLocalVars_compute()  {
+		HashSet locals = new HashSet();
+		for(Iterator iter=visibleLocalDecls().iterator();iter.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)iter.next();
+			if(!((Variable)decl).isLiveIn(this) && mayDef((Variable)decl)) {
+				VariableDeclaration vd = decl.asVariableDeclaration();
+				vd.setInitOpt(new Opt());
+				locals.add(vd);
+			}
+		}
+		return locals;
+	}
+
+    // Declared in MakeMethod.jrag at line 59
+    public HashSet outputParameters() {
+        HashSet outputParameters_value = outputParameters_compute();
+        return outputParameters_value;
+    }
+
+    private HashSet outputParameters_compute()  {
+		HashSet parms = new HashSet();
+		for(Iterator iter=visibleLocalDecls().iterator();iter.hasNext();) {
+			Variable decl = (Variable)iter.next();
+			if(decl.isLiveAfter(this) && mayDef(decl))
+				parms.add(decl);
+		}
+		return parms;
 	}
 
     protected java.util.Map lookupType_String_values;

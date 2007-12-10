@@ -3,6 +3,19 @@ aspect MakeMethod {
 	
 	public void CompilationUnit.makeMethod(String name, String vis, Block blk) 
 			throws RefactoringException {
+		check_make_method_preconds(blk);
+		Block host = blk.hostBlock();
+		BodyDecl bd = host.hostBodyDecl();
+		boolean static_ctxt = false;
+		if(bd instanceof StaticInitializer)
+			static_ctxt = true;
+		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
+			static_ctxt = true;
+		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
+	}
+
+	private void CompilationUnit.check_make_method_preconds(Block blk) 
+			throws RefactoringException {
 		if(blk.getNumStmt() > 1) {
 			Stmt fst = blk.getStmt(0);
 			Stmt lst = blk.getStmt(blk.getNumStmt()-1);
@@ -11,44 +24,63 @@ aspect MakeMethod {
 		}
 		Block host = blk.hostBlock();
 		if(host == null)
-			throw new RefactoringException("block to extract must be inside some other block");
-		BodyDecl bd = blk.hostBodyDecl();
-		boolean static_ctxt = false;
-		if(bd instanceof StaticInitializer)
-			static_ctxt = true;
-		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
-			static_ctxt = true;
-		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
+			throw new RefactoringException("block to be extracted must be inside some other block");
+	}
+	
+	/* local variables declared before a block and live inside it are input
+	 * parameters */
+	syn HashSet Block.inputParameters() {
+		HashSet parms = new HashSet();
+		for(Iterator iter=visibleLocalDecls().iterator();iter.hasNext();) {
+			Variable decl = (Variable)iter.next();
+			if(decl.isLiveIn(this))
+				parms.add(decl);
+		}
+		return parms;
+	}
+	
+	/* an "extra" local variable is a local variable declared outside a block
+	 * which is not live inside, but may be defined inside */
+	syn HashSet Block.extraLocalVars() {
+		HashSet locals = new HashSet();
+		for(Iterator iter=visibleLocalDecls().iterator();iter.hasNext();) {
+			LocalDeclaration decl = (LocalDeclaration)iter.next();
+			if(!((Variable)decl).isLiveIn(this) && mayDef((Variable)decl)) {
+				VariableDeclaration vd = decl.asVariableDeclaration();
+				vd.setInitOpt(new Opt());
+				locals.add(vd);
+			}
+		}
+		return locals;
+	}
+	
+	/* an output parameter of a block is a local variable declared outside the
+	 * block which is live after and may be defined inside the block */
+	syn HashSet Block.outputParameters() {
+		HashSet parms = new HashSet();
+		for(Iterator iter=visibleLocalDecls().iterator();iter.hasNext();) {
+			Variable decl = (Variable)iter.next();
+			if(decl.isLiveAfter(this) && mayDef(decl))
+				parms.add(decl);
+		}
+		return parms;
 	}
 	
 	public void Block.createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
-		Collection parms = new ArrayList();        // parameters of extracted method
-		Collection localVars = new ArrayList();    // local variables of extracted method
-		Opt ret = new Opt();                       // what extracted method returns
-		Collection visibleDecls = blk.visibleLocalDecls();
-		visibleDecls.addAll(blk.localDecls());
-		// collect parameters, local variables, and the return value
-		for(Iterator iter=visibleDecls.iterator();iter.hasNext();) {
-			LocalDeclaration decl = (LocalDeclaration)iter.next();
-			if(((Variable)decl).isLiveIn(blk)) {
-				parms.add(decl);
-			} else if(blk.mayAccess((Variable)decl) && !((ASTNode)decl).inside(blk)) {
-				VariableDeclaration vd = decl.asVariableDeclaration();
-				vd.setInitOpt(new Opt());
-				localVars.add(vd);
-			}
-			if(blk.mayDef((Variable)decl) && ((Variable)decl).isLiveAfter(blk)) {
-				if(!ret.isEmpty())
-					throw new RefactoringException("ambiguous return value");
-				ret = new Opt(((ASTNode)decl).fullCopy());
-			}
-		}
+		Collection parms = blk.inputParameters();      // parameters of extracted method
+		Collection localVars = blk.extraLocalVars();   // local variables of extracted method
+		Collection outparms = blk.outputParameters();
+		Opt ret = new Opt();                       // return value of extracted method
+		if(outparms.size() == 1)
+			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
+		if(outparms.size() > 1)
+			throw new RefactoringException("ambiguous return value");
 		// remember position of blk before it is inserted into the method
 		ASTNode blkparent = blk.getParent();
 		int blkindex = blkparent.getIndexOfChild(blk);
 		// create declaration of method
-		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// prepare the invocation statement
 		Stmt invocation;
 		List args = new List();
@@ -71,7 +103,7 @@ aspect MakeMethod {
 		blkparent.setChild(invocation, blkindex);
 	}
 	
-	private MethodDecl Block.createMethod(boolean static_ctxt, String name, String visibility,
+	private MethodDecl Block.createMethodDecl(boolean static_ctxt, String name, String visibility,
 			Collection parms, Opt ret, 
 			Set exns, Collection localVariables, Block blk) throws RefactoringException {
 		// modifiers: visibility, perhaps with a "static"

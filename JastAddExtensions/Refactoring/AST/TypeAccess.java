@@ -358,13 +358,13 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_TypeDecl_uses();
     }
-    protected void contributeTo_TypeDecl_TypeDecl_uses(HashSet collection) {
-        collection.add(this);
-    }
-
     protected void contributeTo_PackageDecl_PackageDecl_prefixUses(HashSet collection) {
         if(!packageName().equals(""))
             collection.add(this);
+    }
+
+    protected void contributeTo_TypeDecl_TypeDecl_uses(HashSet collection) {
+        collection.add(this);
     }
 
 }

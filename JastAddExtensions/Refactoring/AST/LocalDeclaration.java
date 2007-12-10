@@ -38,12 +38,4 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
     public boolean accessedBefore(Stmt stmt);
     // Declared in Liveness.jrag at line 72
     public boolean accessedAfter(Stmt stmt);
-    // Declared in ParameterClassification.jrag at line 3
-    public boolean isValueParmFor(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 7
-    public boolean isOutParmFor(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 11
-    public boolean shouldMoveInto(Stmt begin, Stmt end);
-    // Declared in ParameterClassification.jrag at line 19
-    public boolean shouldDuplicate(Stmt begin, Stmt end);
 }

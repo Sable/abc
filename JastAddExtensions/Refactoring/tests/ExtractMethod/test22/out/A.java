@@ -4,16 +4,18 @@ class A {
   int m() throws java.io.FileNotFoundException {
     int i;
     int j;
-    n();
+    j = n();
     return j;
   }
   A(){
     super();
   }
-  private void n() throws java.io.FileNotFoundException {
+  private int n() throws java.io.FileNotFoundException {
     int i;
+    int j;
     i = 2;
     if(i == 2) throw new java.io.FileNotFoundException("");
     j = ++i;
+    return j;
   }
 }

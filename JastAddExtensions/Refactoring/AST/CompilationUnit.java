@@ -199,6 +199,22 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
 	
 	public void makeMethod(String name, String vis, Block blk) 
 			throws RefactoringException {
+		check_make_method_preconds(blk);
+		Block host = blk.hostBlock();
+		BodyDecl bd = host.hostBodyDecl();
+		boolean static_ctxt = false;
+		if(bd instanceof StaticInitializer)
+			static_ctxt = true;
+		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
+			static_ctxt = true;
+		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
+	}
+
+    // Declared in MakeMethod.jrag at line 17
+
+
+	private void check_make_method_preconds(Block blk) 
+			throws RefactoringException {
 		if(blk.getNumStmt() > 1) {
 			Stmt fst = blk.getStmt(0);
 			Stmt lst = blk.getStmt(blk.getNumStmt()-1);
@@ -207,14 +223,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
 		}
 		Block host = blk.hostBlock();
 		if(host == null)
-			throw new RefactoringException("block to extract must be inside some other block");
-		BodyDecl bd = blk.hostBodyDecl();
-		boolean static_ctxt = false;
-		if(bd instanceof StaticInitializer)
-			static_ctxt = true;
-		if(bd instanceof MethodDecl && ((MethodDecl)bd).isStatic())
-			static_ctxt = true;
-		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
+			throw new RefactoringException("block to be extracted must be inside some other block");
 	}
 
     // Declared in Names.jadd at line 33
