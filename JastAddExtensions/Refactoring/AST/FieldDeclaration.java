@@ -247,20 +247,21 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 
 
 	public void encapsulate() throws RefactoringException {
-		makePrivate();
 		Modifiers mod = getModifiers();
 		String ucase_id = capitalize(getID());
 		String getter_name = "get"+ucase_id;
 		String setter_name = "set"+ucase_id;
+		java.util.Set uses = uses();
 		hostType().addMethod(makeGetter(getter_name, mod), false, false, false);
 		hostType().addMethod(makeSetter(setter_name, mod), false, false, false);
-		for(Iterator i = uses().iterator(); i.hasNext();) {
+		makePrivate();
+		for(Iterator i = uses.iterator(); i.hasNext();) {
 			VarAccess va = (VarAccess)i.next();
 			va.encapsulate(getter_name, setter_name);
 		}
 	}
 
-    // Declared in Encapsulate.jrag at line 17
+    // Declared in Encapsulate.jrag at line 18
 
 
 	public static String capitalize(String str) {
@@ -270,7 +271,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 		return buf.toString();
 	}
 
-    // Declared in Encapsulate.jrag at line 24
+    // Declared in Encapsulate.jrag at line 25
 
 
 	private MethodDecl makeGetter(String getter_name, Modifiers mod) {
@@ -281,7 +282,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 				new List(), new Opt(getter_body));
 	}
 
-    // Declared in Encapsulate.jrag at line 32
+    // Declared in Encapsulate.jrag at line 33
 
 
 	private MethodDecl makeSetter(String setter_name, Modifiers mod) {
@@ -297,7 +298,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 				new Opt(setter_body));
 	}
 
-    // Declared in Names.jadd at line 16
+    // Declared in Names.jadd at line 18
 
 	public void refined_Names_changeID(String id) { setID(id); }
 
@@ -444,7 +445,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
         return (Opt)getChildNoTransform(2);
     }
 
-    // Declared in Undo.jadd at line 64
+    // Declared in Undo.jadd at line 68
 
 	
 	  void makePrivate() {

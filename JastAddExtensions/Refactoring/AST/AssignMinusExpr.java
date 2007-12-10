@@ -115,7 +115,7 @@ public class AssignMinusExpr extends AssignAdditiveExpr implements Cloneable {
         return (Expr)getChildNoTransform(1);
     }
 
-    // Declared in Encapsulate.jrag at line 117
+    // Declared in Encapsulate.jrag at line 118
     public Binary getImplicitOperator() {
         Binary getImplicitOperator_value = getImplicitOperator_compute();
         return getImplicitOperator_value;

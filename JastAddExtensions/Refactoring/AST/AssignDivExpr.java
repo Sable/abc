@@ -107,7 +107,7 @@ public class AssignDivExpr extends AssignMultiplicativeExpr implements Cloneable
         return (Expr)getChildNoTransform(1);
     }
 
-    // Declared in Encapsulate.jrag at line 122
+    // Declared in Encapsulate.jrag at line 123
     public Binary getImplicitOperator() {
         Binary getImplicitOperator_value = getImplicitOperator_compute();
         return getImplicitOperator_value;

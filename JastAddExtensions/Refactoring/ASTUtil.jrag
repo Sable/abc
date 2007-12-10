@@ -84,7 +84,7 @@ aspect ASTUtil {
     
     public void Block.pullTogether(int start, int end) {
     	List stmts = new List();
-    	for(int i=start;i<end;++i)
+    	for(int i=start;i<=end;++i)
     		stmts.add(getStmt(i));
     	getStmtList().replaceRange(new Block(stmts), start, end);
     }

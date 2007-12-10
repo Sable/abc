@@ -107,7 +107,7 @@ public class AssignModExpr extends AssignMultiplicativeExpr implements Cloneable
         return (Expr)getChildNoTransform(1);
     }
 
-    // Declared in Encapsulate.jrag at line 123
+    // Declared in Encapsulate.jrag at line 124
     public Binary getImplicitOperator() {
         Binary getImplicitOperator_value = getImplicitOperator_compute();
         return getImplicitOperator_value;

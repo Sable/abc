@@ -39,7 +39,6 @@ public class RunTypeRenameTests extends Frontend {
                 } catch(TestingException e) {
                     System.out.println("test "+i+" failed!");
                 }
-                break;
             }
         } catch(Throwable t) {
             System.err.println("Unexpected exception: "+t);

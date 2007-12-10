@@ -125,7 +125,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     
     public void refined_ASTUtil_pullTogether(int start, int end) {
     	List stmts = new List();
-    	for(int i=start;i<end;++i)
+    	for(int i=start;i<=end;++i)
     		stmts.add(getStmt(i));
     	getStmtList().replaceRange(new Block(stmts), start, end);
     }
@@ -149,10 +149,9 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		 * what we do now:
 		 * 1. for every declaration to be moved out, see if it has an initializer
 		 *    a) if yes, then insert the declaration (without initializer) at
-		 *       position start++ and replace the original definition by an assignment
-		 *    b) if no, then insert the declaration at start++ and remove original,
-		 *       not forgetting to decrement end
-		 * 2. pull statements between start and end together into a block
+		 *       position begin++ and replace the original definition by an assignment
+		 *    b) if no, then insert the declaration at begin++ and remove original
+		 * 2. pull statements between begin and end together into a block
 		 */
 		for(iter=moveOut.iterator();iter.hasNext();) {
 			VariableDeclaration vd = (VariableDeclaration)iter.next();
@@ -163,13 +162,13 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 				vd.replaceWith(assign);
 				vd = (VariableDeclaration)vd.fullCopy();
 				vd.setInitOpt(new Opt());
-				insertStmt(start++, vd);
+				insertStmt(begin++, vd);
+				++end;
 			} else {
-				moveStmt(vd, start++);
-				--end;
+				moveStmt(vd, begin++);
 			}
 		}
-		pullTogether(start, end);
+		pullTogether(begin, end);
 	}
 
     // Declared in MakeMethod.jrag at line 24
@@ -198,7 +197,9 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 				ret = new Opt(((ASTNode)decl).fullCopy());
 			}
 		}
-		//
+		// remember position of blk before it is inserted into the method
+		ASTNode blkparent = blk.getParent();
+		int blkindex = blkparent.getIndexOfChild(blk);
 		// create declaration of method
 		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// prepare the invocation statement
@@ -219,11 +220,11 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		 * the newly created method, which would make addMethod reject the refactoring */
 		TypeDecl td = hostBodyDecl().hostType();
 		td.addMethod(md, false, false, false);
-		// insert the invocation
-		blk.replaceWith(invocation);
+		// insert the invocation at the position where blk used to be
+		blkparent.setChild(invocation, blkindex);
 	}
 
-    // Declared in MakeMethod.jrag at line 72
+    // Declared in MakeMethod.jrag at line 74
 
 	
 	private MethodDecl createMethod(boolean static_ctxt, String name, String visibility,
@@ -267,7 +268,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
 			String varname = decl.getID();
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
-			blk.insertStmt(getNumStmt()-1, stmt);
+			blk.insertStmt(blk.getNumStmt(), stmt);
 		}
 		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, 
 				new Opt(blk));
@@ -355,7 +356,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         return (List)getChildNoTransform(0);
     }
 
-    // Declared in Undo.jadd at line 42
+    // Declared in Undo.jadd at line 46
 
 	
 	  void insertStmt(int idx, Stmt stmt) {
@@ -363,7 +364,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		refined_ASTUtil_insertStmt(idx, stmt);
 	}
 
-    // Declared in Undo.jadd at line 47
+    // Declared in Undo.jadd at line 51
 
 	
 	  void moveStmt(Stmt stmt, int new_idx) {
@@ -371,7 +372,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		refined_ASTUtil_moveStmt(stmt, new_idx);
 	}
 
-    // Declared in Undo.jadd at line 52
+    // Declared in Undo.jadd at line 56
 
 	
 	  void pullTogether(int start, int end) {

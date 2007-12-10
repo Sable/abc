@@ -241,7 +241,7 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
 
 	public boolean hasBody() { return !(isAbstract() || isNative()); }
 
-    // Declared in Names.jadd at line 17
+    // Declared in Names.jadd at line 20
 
 	public void refined_Names_changeID(String id) { setID(id); }
 
@@ -603,7 +603,7 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
         return (Opt)getChildNoTransform(5);
     }
 
-    // Declared in Undo.jadd at line 24
+    // Declared in Undo.jadd at line 28
 
 	  public void changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));

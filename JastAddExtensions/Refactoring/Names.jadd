@@ -6,7 +6,9 @@ aspect Names {
 		void changeID(String id);
 	}
 	
+	// in file LocalDeclaration.jadd: LocalDeclaration extends Named	
 	FieldDeclaration implements Named;
+	ConstructorDecl implements Named;
 	MethodDecl implements Named;
 	TypeDecl implements Named;
 	CompilationUnit implements Named;
@@ -14,9 +16,24 @@ aspect Names {
 	public void VariableDeclaration.changeID(String id) { setID(id); }
 	public void ParameterDeclaration.changeID(String id) { setID(id); }
 	public void FieldDeclaration.changeID(String id) { setID(id); }
+	public void ConstructorDecl.changeID(String id) { setID(id); }
 	public void MethodDecl.changeID(String id) { setID(id); }
-	public void TypeDecl.changeID(String id) { setID(id); }
-	public void CompilationUnit.changeID(String id) { setID(id); }
+	
+	public void TypeDecl.changeID(String id) { 
+		setID(id);
+		for(int i=0;i<getNumBodyDecl();++i) {
+            BodyDecl bd = getBodyDecl(i);
+            if(bd instanceof ConstructorDecl) {
+                ConstructorDecl ctordecl = (ConstructorDecl)bd;
+                ctordecl.changeID(id);
+            }
+        }		
+	}
+	
+	public void CompilationUnit.changeID(String id) { 
+		// we also need to rename the file the compilation unit is in
+		setID(id); 
+	}
 	
 	public void CompilationUnit.setID(String id) {
         setRelativeName(patch_name(relativeName(), id));

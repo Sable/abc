@@ -44,10 +44,9 @@ aspect ExtractBlock {
 		 * what we do now:
 		 * 1. for every declaration to be moved out, see if it has an initializer
 		 *    a) if yes, then insert the declaration (without initializer) at
-		 *       position start++ and replace the original definition by an assignment
-		 *    b) if no, then insert the declaration at start++ and remove original,
-		 *       not forgetting to decrement end
-		 * 2. pull statements between start and end together into a block
+		 *       position begin++ and replace the original definition by an assignment
+		 *    b) if no, then insert the declaration at begin++ and remove original
+		 * 2. pull statements between begin and end together into a block
 		 */
 		for(iter=moveOut.iterator();iter.hasNext();) {
 			VariableDeclaration vd = (VariableDeclaration)iter.next();
@@ -58,13 +57,14 @@ aspect ExtractBlock {
 				vd.replaceWith(assign);
 				vd = (VariableDeclaration)vd.fullCopy();
 				vd.setInitOpt(new Opt());
-				insertStmt(start++, vd);
+				insertStmt(begin++, vd);
+				++end;
 			} else {
-				moveStmt(vd, start++);
-				--end;
+				moveStmt(vd, begin++);
 			}
 		}
-		pullTogether(start, end);
+		pullTogether(begin, end);
+		programRoot().clear();
 	}
 	
 }

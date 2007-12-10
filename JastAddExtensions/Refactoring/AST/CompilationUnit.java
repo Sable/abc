@@ -217,11 +217,15 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
 		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
 	}
 
-    // Declared in Names.jadd at line 19
+    // Declared in Names.jadd at line 33
 
-	public void refined_Names_changeID(String id) { setID(id); }
+	
+	public void refined_Names_changeID(String id) { 
+		// we also need to rename the file the compilation unit is in
+		setID(id); 
+	}
 
-    // Declared in Names.jadd at line 21
+    // Declared in Names.jadd at line 38
 
 	
 	public void setID(String id) {
@@ -229,7 +233,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
         setPathName(patch_name(pathName(), id));
 	}
 
-    // Declared in Names.jadd at line 26
+    // Declared in Names.jadd at line 43
 
 	
     private static String patch_name(String path, String name) {
@@ -395,7 +399,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
         return (List)getChildNoTransform(1);
     }
 
-    // Declared in Undo.jadd at line 32
+    // Declared in Undo.jadd at line 36
 
 	  public void changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));

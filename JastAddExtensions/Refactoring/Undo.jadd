@@ -21,6 +21,10 @@ aspect Undo {
 		programRoot().pushUndo(new Rename(this, id));
 		Names.FieldDeclaration.changeID(id);
 	}
+	refine Names public void ConstructorDecl.changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		Names.ConstructorDecl.changeID(id);
+	}
 	refine Names public void MethodDecl.changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));
 		Names.MethodDecl.changeID(id);

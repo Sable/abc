@@ -2,7 +2,7 @@
 package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
-public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid {
+public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -154,6 +154,10 @@ public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid {
 
 	
 	public boolean hasBody() { return true; }
+
+    // Declared in Names.jadd at line 19
+
+	public void refined_Names_changeID(String id) { setID(id); }
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 71
@@ -392,6 +396,13 @@ public class ConstructorDecl extends BodyDecl implements Cloneable,  Methodoid {
     public Block getBlockNoTransform() {
         return (Block)getChildNoTransform(4);
     }
+
+    // Declared in Undo.jadd at line 24
+
+	  public void changeID(String id) {
+		programRoot().pushUndo(new Rename(this, id));
+		refined_Names_changeID(id);
+	}
 
     protected java.util.Map accessibleFrom_TypeDecl_values;
     // Declared in AccessControl.jrag at line 85

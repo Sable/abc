@@ -214,7 +214,7 @@ public class VarAccess extends Access implements Cloneable {
     s.append(name());
   }
 
-    // Declared in Encapsulate.jrag at line 45
+    // Declared in Encapsulate.jrag at line 46
 
 
 	public void encapsulate(String getter, String setter) {
@@ -262,7 +262,7 @@ public class VarAccess extends Access implements Cloneable {
 		}
 	}
 
-    // Declared in Encapsulate.jrag at line 90
+    // Declared in Encapsulate.jrag at line 91
 
 	
 	static void encapsulate_postfix(ASTNode p, 
@@ -281,7 +281,7 @@ public class VarAccess extends Access implements Cloneable {
 								(Expr)undo.fullCopy(), (Expr)undo.fullCopy())));
 	}
 
-    // Declared in Encapsulate.jrag at line 106
+    // Declared in Encapsulate.jrag at line 107
 
 	
 	static void encapsulate_prefix(ASTNode p,
@@ -676,11 +676,6 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_VariableDeclaration_uses();
     }
-    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
-        if(decl() instanceof FieldDeclaration)
-            collection.add(this);
-    }
-
     protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
         if(decl() instanceof ParameterDeclaration)
             collection.add(this);
@@ -688,6 +683,11 @@ public ASTNode rewriteTo() {
 
     protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
         if(decl() instanceof VariableDeclaration)
+            collection.add(this);
+    }
+
+    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
+        if(decl() instanceof FieldDeclaration)
             collection.add(this);
     }
 

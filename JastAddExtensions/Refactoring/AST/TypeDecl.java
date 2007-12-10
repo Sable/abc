@@ -519,9 +519,19 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 		throw new RefactoringException("cannot add method");
 	}
 
-    // Declared in Names.jadd at line 18
+    // Declared in Names.jadd at line 22
 
-	public void refined_Names_changeID(String id) { setID(id); }
+	
+	public void refined_Names_changeID(String id) { 
+		setID(id);
+		for(int i=0;i<getNumBodyDecl();++i) {
+            BodyDecl bd = getBodyDecl(i);
+            if(bd instanceof ConstructorDecl) {
+                ConstructorDecl ctordecl = (ConstructorDecl)bd;
+                ctordecl.changeID(id);
+            }
+        }		
+	}
 
     // Declared in RenameType.jrag at line 3
 
@@ -759,7 +769,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         return (List)getChildNoTransform(1);
     }
 
-    // Declared in Undo.jadd at line 37
+    // Declared in Undo.jadd at line 41
 
 
 	  void addMemberMethod(MethodDecl m) {
@@ -767,7 +777,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 		refined_BoundNames_addMemberMethod(m);
 	}
 
-    // Declared in Undo.jadd at line 28
+    // Declared in Undo.jadd at line 32
 
 	  public void changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));

@@ -44,7 +44,9 @@ aspect MakeMethod {
 				ret = new Opt(((ASTNode)decl).fullCopy());
 			}
 		}
-		//
+		// remember position of blk before it is inserted into the method
+		ASTNode blkparent = blk.getParent();
+		int blkindex = blkparent.getIndexOfChild(blk);
 		// create declaration of method
 		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// prepare the invocation statement
@@ -65,8 +67,8 @@ aspect MakeMethod {
 		 * the newly created method, which would make addMethod reject the refactoring */
 		TypeDecl td = hostBodyDecl().hostType();
 		td.addMethod(md, false, false, false);
-		// insert the invocation
-		blk.replaceWith(invocation);
+		// insert the invocation at the position where blk used to be
+		blkparent.setChild(invocation, blkindex);
 	}
 	
 	private MethodDecl Block.createMethod(boolean static_ctxt, String name, String visibility,
@@ -110,7 +112,7 @@ aspect MakeMethod {
 			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
 			String varname = decl.getID();
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
-			blk.insertStmt(getNumStmt()-1, stmt);
+			blk.insertStmt(blk.getNumStmt(), stmt);
 		}
 		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, 
 				new Opt(blk));
