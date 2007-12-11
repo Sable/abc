@@ -26,18 +26,19 @@ public class RunTypeRenameTests extends Frontend {
     
     private static void runTests() {
         try {
-            for(int i=0;i<86;++i) {
+            for(int i=0;i<88;++i) {
                 if((62 <= i && i <= 65) || (i == 70) || (i == 21) ||
-                        (79 <= i && i <= 81)) {
+                        (79 <= i && i <= 81) || (i == 86)) {
                     System.out.println("test "+i+" skipped");
                     continue;
                 }
+                i=87;
                 try {
                     RunTypeRenameTests t = new RunTypeRenameTests();
                     t.test("test"+i);
                     System.out.println("test "+i+" passed");
                 } catch(TestingException e) {
-                    System.out.println("test "+i+" failed!");
+                    System.out.println("test "+i+" failed: "+e);
                 }
             }
         } catch(Throwable t) {
@@ -65,7 +66,7 @@ public class RunTypeRenameTests extends Frontend {
                         check_cu(name, cu);
                 }
             } catch(FileNotFoundException fnfe) {
-                throw new TestingException("test "+name+" was supposed to fail");
+                throw new TestingException("test "+name+" was supposed to fail, but gave "+prog);
             }
         } catch(RefactoringException e) {
             try {

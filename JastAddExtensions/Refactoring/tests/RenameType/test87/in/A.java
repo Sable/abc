@@ -1,4 +1,4 @@
-// RenameMethod/test14/in/A.java p A m() n
+// RenameType/test87/in/A.java p A B
 package p;
 
 class A {
