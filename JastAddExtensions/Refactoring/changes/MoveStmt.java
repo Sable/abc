@@ -12,7 +12,7 @@ public class MoveStmt extends ASTChange {
 	
 	public MoveStmt(Block block, Stmt stmt, int index) {
 		this.block = block;
-		this.old_index = block.getIndexOfChild(stmt);
+		this.old_index = block.getStmtList().getIndexOfChild(stmt);
 		this.index = index;
 		this.stmt = stmt;
 	}

@@ -879,7 +879,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
   public boolean mayHaveRewrite() { return false; }
 
-    // Declared in Undo.jadd at line 63
+    // Declared in Undo.jadd at line 69
 
 	
 	// NOTE: we better not refine ASTNode.setChild(), since this is used in a couple

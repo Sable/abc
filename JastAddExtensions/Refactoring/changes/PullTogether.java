@@ -15,6 +15,8 @@ public class PullTogether extends ASTChange {
 		this.index = start;
 		this.len = end-start+1;
 		this.stmts = new Stmt[len];
+		for(int i=start;i<=end;++i)
+			this.stmts[i-start] = block.getStmt(i);
 	}
 
 	public String prettyprint() {
@@ -25,7 +27,7 @@ public class PullTogether extends ASTChange {
 		if(len == 0) {
 			block.getStmtList().removeChild(index);
 		} else {
-			block.getStmtList().setChild(stmts[0], index);
+			block.setStmt(stmts[0], index);
 			for(int i=1;i<len;++i)
 				block.getStmtList().insertChild(stmts[i], index+i);
 		}

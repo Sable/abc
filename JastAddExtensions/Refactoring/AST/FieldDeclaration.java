@@ -445,7 +445,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
         return (Opt)getChildNoTransform(2);
     }
 
-    // Declared in Undo.jadd at line 68
+    // Declared in Undo.jadd at line 74
 
 	
 	  void makePrivate() {
@@ -453,7 +453,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 		refined_ASTUtil_makePrivate();
 	}
 
-    // Declared in Undo.jadd at line 20
+    // Declared in Undo.jadd at line 25
 
 	  public void changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));

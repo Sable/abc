@@ -340,7 +340,7 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
         return (Opt)getChildNoTransform(2);
     }
 
-    // Declared in Undo.jadd at line 14
+    // Declared in Undo.jadd at line 19
 
 	
 	/*refine Names public void Named.changeID(String id) {

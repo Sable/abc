@@ -4,20 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import AST.ASTNode;
 import AST.Block;
 import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.MethodDecl;
+import AST.Program;
 import AST.Stmt;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
 public class RunExtractionTests extends Frontend {
@@ -52,6 +48,8 @@ public class RunExtractionTests extends Frontend {
     
     private static boolean SHOW = false;
     
+    //private String oldprog;
+    
     private void test(String name) throws Throwable {
         String file = TEST_BASE+"/"+name+"/in/A.java";
         FileReader fr = new FileReader(file);
@@ -60,10 +58,13 @@ public class RunExtractionTests extends Frontend {
         if(!cmd.matches("^// .*$"))
             throw new Exception("input file doesn't have the right format");
         String[] fields = cmd.substring(3).split("\\s+");
-        ASTNode prog = run(fields[0], fields[1], fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]), fields[5],
-        					fields.length > 6 ? fields[6] : "private");
+        Program prog = run(fields[0], fields[1], fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]), fields[5],
+        				   fields.length > 6 ? fields[6] : "private");
         if(SHOW && prog != null) {
         	System.out.println(prog);
+        	/*prog.undo();
+        	if(!prog.toString().equals(oldprog))
+        		System.out.println("before:\n"+oldprog+"\n\nnow:\n"+prog);*/
         } else {
         	String res = TEST_BASE+"/"+name+"/out/A.java";
         	try {
@@ -83,7 +84,7 @@ public class RunExtractionTests extends Frontend {
         }
     }
 
-    private ASTNode run(String file, String tp, String meth, int start, int end, String name, String vis) throws Throwable {
+    private Program run(String file, String tp, String meth, int start, int end, String name, String vis) throws Throwable {
         String[] filenames = { file };
         if(!process(filenames, new BytecodeParser(), 
                 new JavaParser() {
@@ -93,6 +94,7 @@ public class RunExtractionTests extends Frontend {
         }
         ))
             throw new Exception("couldn't process input file");
+     //oldprog = program.toString();
 		String path[] = tp.split("\\.");
 		TypeDecl d = (TypeDecl)program.lookupType("", path[0]);
 		for(int i=1;i<path.length;++i) {

@@ -173,7 +173,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
   // methods. We extend the map with the declaration m by either appending
   // it to an existing list of declarations or adding a new list. That list
   // will be used to name bind a new qualified name access.
-  public MethodDecl refined_BoundNames_addMemberMethod(MethodDecl m) {
+  public MethodDecl addMemberMethod(MethodDecl m) {
     addBodyDecl(m);
     return (MethodDecl)getBodyDecl(getNumBodyDecl()-1);
     /*
@@ -519,6 +519,32 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 		throw new RefactoringException("cannot add method");
 	}
 
+    // Declared in MakeMethod.jrag at line 86
+
+	
+	private void refined_MakeMethod_insertMethod(MethodDecl md, Block host, int index, Collection parms, Opt ret) 
+			throws RefactoringException { 
+		// prepare the invocation statement
+		Stmt invocation;
+		List args = new List();
+		for(Iterator iter=parms.iterator();iter.hasNext();)
+			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
+		MethodAccess ma = new MethodAccess(md.getID(), args);
+		// add it as an expression statement, or with an assignment
+		if(ret.isEmpty())
+			invocation = new ExprStmt(ma);
+		else {
+			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
+			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma));
+		}
+		// insert the method
+		/* it is crucial that this happens first, since the invocation references
+		 * the newly created method, which would make addMethod reject the refactoring */
+		addMethod(md, false, false, false);
+		// insert the invocation at the position where blk used to be
+		host.setStmt(invocation, index);
+	}
+
     // Declared in Names.jadd at line 22
 
 	
@@ -769,15 +795,16 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         return (List)getChildNoTransform(1);
     }
 
-    // Declared in Undo.jadd at line 41
+    // Declared in Undo.jadd at line 46
 
 
-	  void addMemberMethod(MethodDecl m) {
-		programRoot().pushUndo(new AddMethod(this, m));
-		refined_BoundNames_addMemberMethod(m);
+	  void insertMethod(MethodDecl md, Block host, int index, Collection parms, Opt ret) 
+			throws RefactoringException {
+		refined_MakeMethod_insertMethod(md, host, index, parms, ret);
+		programRoot().pushUndo(new MakeMethod(this, md, host, index));
 	}
 
-    // Declared in Undo.jadd at line 32
+    // Declared in Undo.jadd at line 37
 
 	  public void changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));

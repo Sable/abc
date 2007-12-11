@@ -408,7 +408,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
         return (List)getChildNoTransform(1);
     }
 
-    // Declared in Undo.jadd at line 36
+    // Declared in Undo.jadd at line 41
 
 	  public void changeID(String id) {
 		programRoot().pushUndo(new Rename(this, id));

@@ -175,6 +175,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 	
 	public void createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
+		Block hostblock = blk.hostBlock();
 		Collection parms = blk.inputParameters();      // parameters of extracted method
 		Collection localVars = blk.extraLocalVars();   // local variables of extracted method
 		Collection outparms = blk.outputParameters();
@@ -183,37 +184,16 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
 		if(outparms.size() > 1)
 			throw new RefactoringException("ambiguous return value");
-		// remember position of blk before it is inserted into the method
-		ASTNode blkparent = blk.getParent();
-		int blkindex = blkparent.getIndexOfChild(blk);
 		// create declaration of method
-		MethodDecl md = createMethod(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
-		// prepare the invocation statement
-		Stmt invocation;
-		List args = new List();
-		for(Iterator iter=parms.iterator();iter.hasNext();)
-			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
-		MethodAccess ma = new MethodAccess(name, args);
-		// add it as an expression statement, or with an assignment
-		if(ret.isEmpty())
-			invocation = new ExprStmt(ma);
-		else {
-			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
-			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma));
-		}
-		// insert the method
-		/* it is crucial that this happens first, since the invocation references
-		 * the newly created method, which would make addMethod reject the refactoring */
-		TypeDecl td = hostBodyDecl().hostType();
-		td.addMethod(md, false, false, false);
-		// insert the invocation at the position where blk used to be
-		blkparent.setChild(invocation, blkindex);
+		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		// insert method invocation and body into type declaration
+		hostBodyDecl().hostType().insertMethod(md, hostblock, pos, parms, ret);
 	}
 
-    // Declared in MakeMethod.jrag at line 106
+    // Declared in MakeMethod.jrag at line 109
 
 	
-	private MethodDecl createMethod(boolean static_ctxt, String name, String visibility,
+	private MethodDecl createMethodDecl(boolean static_ctxt, String name, String visibility,
 			Collection parms, Opt ret, 
 			Set exns, Collection localVariables, Block blk) throws RefactoringException {
 		// modifiers: visibility, perhaps with a "static"
@@ -342,7 +322,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         return (List)getChildNoTransform(0);
     }
 
-    // Declared in Undo.jadd at line 46
+    // Declared in Undo.jadd at line 52
 
 	
 	  void insertStmt(int idx, Stmt stmt) {
@@ -350,7 +330,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		refined_ASTUtil_insertStmt(idx, stmt);
 	}
 
-    // Declared in Undo.jadd at line 51
+    // Declared in Undo.jadd at line 57
 
 	
 	  void moveStmt(Stmt stmt, int new_idx) {
@@ -358,7 +338,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		refined_ASTUtil_moveStmt(stmt, new_idx);
 	}
 
-    // Declared in Undo.jadd at line 56
+    // Declared in Undo.jadd at line 62
 
 	
 	  void pullTogether(int start, int end) {

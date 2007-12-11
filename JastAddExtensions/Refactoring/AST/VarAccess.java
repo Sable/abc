@@ -681,13 +681,13 @@ public ASTNode rewriteTo() {
             collection.add(this);
     }
 
-    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
-        if(decl() instanceof FieldDeclaration)
+    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
+        if(decl() instanceof ParameterDeclaration)
             collection.add(this);
     }
 
-    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
-        if(decl() instanceof ParameterDeclaration)
+    protected void contributeTo_FieldDeclaration_FieldDeclaration_uses(HashSet collection) {
+        if(decl() instanceof FieldDeclaration)
             collection.add(this);
     }
 

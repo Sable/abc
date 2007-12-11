@@ -644,12 +644,12 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_MethodDecl_definiteUses();
     }
-    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
-        collection.addAll(this.asSet());
-    }
-
     protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
         collection.add(this);
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
+        collection.addAll(this.asSet());
     }
 
 }

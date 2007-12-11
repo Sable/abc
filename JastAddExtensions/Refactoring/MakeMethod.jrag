@@ -68,6 +68,7 @@ aspect MakeMethod {
 	
 	public void Block.createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
+		Block hostblock = blk.hostBlock();
 		Collection parms = blk.inputParameters();      // parameters of extracted method
 		Collection localVars = blk.extraLocalVars();   // local variables of extracted method
 		Collection outparms = blk.outputParameters();
@@ -76,17 +77,20 @@ aspect MakeMethod {
 			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
 		if(outparms.size() > 1)
 			throw new RefactoringException("ambiguous return value");
-		// remember position of blk before it is inserted into the method
-		ASTNode blkparent = blk.getParent();
-		int blkindex = blkparent.getIndexOfChild(blk);
 		// create declaration of method
 		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		// insert method invocation and body into type declaration
+		hostBodyDecl().hostType().insertMethod(md, hostblock, pos, parms, ret);
+	}
+	
+	private void TypeDecl.insertMethod(MethodDecl md, Block host, int index, Collection parms, Opt ret) 
+			throws RefactoringException { 
 		// prepare the invocation statement
 		Stmt invocation;
 		List args = new List();
 		for(Iterator iter=parms.iterator();iter.hasNext();)
 			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
-		MethodAccess ma = new MethodAccess(name, args);
+		MethodAccess ma = new MethodAccess(md.getID(), args);
 		// add it as an expression statement, or with an assignment
 		if(ret.isEmpty())
 			invocation = new ExprStmt(ma);
@@ -97,10 +101,9 @@ aspect MakeMethod {
 		// insert the method
 		/* it is crucial that this happens first, since the invocation references
 		 * the newly created method, which would make addMethod reject the refactoring */
-		TypeDecl td = hostBodyDecl().hostType();
-		td.addMethod(md, false, false, false);
+		addMethod(md, false, false, false);
 		// insert the invocation at the position where blk used to be
-		blkparent.setChild(invocation, blkindex);
+		host.setStmt(invocation, index);
 	}
 	
 	private MethodDecl Block.createMethodDecl(boolean static_ctxt, String name, String visibility,
