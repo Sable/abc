@@ -20,7 +20,7 @@ aspect RenameType {
 		/* first, collect all uses of the type we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
 			Access a = (Access)i.next();
-			table.add(a, this);
+			table.add(a);
 		}
 		/* now, collect all uses of types and packages that the type
 		 * might be shadowing after renaming */
@@ -28,7 +28,7 @@ aspect RenameType {
 			TypeDecl d = (TypeDecl)i.next();
 			for(Iterator j = d.uses().iterator(); j.hasNext();) {
 				Access acc = (Access)j.next();
-				table.add(acc, d);
+				table.add(acc);
 			}
 		}
 		PackageDecl pd = programRoot().getPackageDecl(new_name);
@@ -37,7 +37,7 @@ aspect RenameType {
 				Access acc = (Access)j.next();
 				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
 						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
+					table.add(acc);
 			}
 		return table;
 	}

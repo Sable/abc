@@ -29,12 +29,14 @@ public class RunMethodRenameTests extends Frontend {
     private static void runTests() throws Throwable {
         //try {
             for(int i=1;i<=20;++i) {
+            	i=14;
                 try {
                     new RunMethodRenameTests().test("test"+i);
                     System.out.println("test "+i+" passed");
                 } catch(TestingException e) {
                     System.out.println("test "+i+" failed: "+e);
                 }
+                break;
             }
         /*} catch(Throwable t) {
             System.err.println("Unexpected exception: "+t);

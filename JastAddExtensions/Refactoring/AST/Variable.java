@@ -75,13 +75,13 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 	public boolean isLiveIn(Block blk);
 
 
-    // Declared in Uses.jrag at line 5
+    // Declared in Uses.jrag at line 20
 
-	
+		
 	public HashSet collectedUses();
 
 
-    // Declared in Uses.jrag at line 93
+    // Declared in Uses.jrag at line 108
 
 
 	/* in preparation for renaming a variable to new_name, this method finds all

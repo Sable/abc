@@ -47,14 +47,14 @@ aspect RenameMethod {
 		/* first, collect all uses of the method we are renaming */
 		for(Iterator i = definiteUses().iterator(); i.hasNext();) {
 			Access a = (Access)i.next();
-			table.add(a, this);
+			table.add(a);
 		}
 		/* now, collect all uses of methods that we might be shadowing after renaming */
 		for(Iterator i = lookupMethod(new_name).iterator(); i.hasNext();) {
 			MethodDecl md = (MethodDecl)i.next();
 			for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
 				Access acc = (Access)j.next();
-				table.add(acc, md);
+				table.add(acc);
 			}
 		}
 		return table;

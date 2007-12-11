@@ -298,7 +298,7 @@ public class ClassDecl extends ReferenceType implements Cloneable {
             MethodDecl m = (MethodDecl)i.next();
             for(Iterator j=m.uses().iterator();j.hasNext();) {
                 MethodAccess acc = (MethodAccess)j.next();
-                table.add(acc, m);
+                table.add(acc);
             }
         }
         addMemberMethod(md);

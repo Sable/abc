@@ -47,32 +47,29 @@ public abstract class Access extends Expr implements Cloneable {
 		return new VarAccess(pd.getID());
 	}
 
-    // Declared in AdjustAccess.jrag at line 58
+    // Declared in AdjustAccess.jrag at line 78
 
 	
 	// more needed here...
 	
 	public void adjust(AdjustmentTable table) throws RefactoringException {
-		if(isQualified())
-			table.adjust(qualifier());
 		ASTNode target = table.getTarget(this);
 		if(target == null) return;
-		ASTNode oldacc = null;
-		Access newacc = null;
+		Access newacc;
         FileRange pos = new FileRange(getStart(), getEnd());
 		if(target instanceof VariableDeclaration) {
 			if(((VarAccess)this).decl() != target) {
 				newacc = this.accessLocalVariable((VariableDeclaration)target);
 				if(newacc == null)
 					throw new RefactoringException("local variable would become shadowed at "+pos);
-				oldacc = this;
+				replaceWith(newacc);
 			}
 		} else if(target instanceof ParameterDeclaration) {
 			if(((VarAccess)this).decl() != target) {
 				newacc = this.accessParameter((ParameterDeclaration)target);
 				if(newacc == null)
 					throw new RefactoringException("parameter would become shadowed at "+pos);
-				oldacc = this;
+				replaceWith(newacc);
 			}
 		} else if(target instanceof FieldDeclaration) {
 			FieldDeclaration fd = (FieldDeclaration)target;
@@ -80,32 +77,15 @@ public abstract class Access extends Expr implements Cloneable {
 				newacc = this.accessField(fd);
 				if(newacc == null)
 					throw new RefactoringException("couldn't consistently rename field access at "+pos);
-				if(this.isQualified()) {
-					newacc = this.qualifier().mergeWithAccess(newacc);
-					if(newacc == null)
-						throw new RefactoringException("couldn't consistently rename field access at "+pos);
-					oldacc = this.getParent();
-				} else {
-					oldacc = this;
-				}
+				replaceWith(newacc);
 			}
 		} else if(target instanceof MethodDecl) {
 			MethodDecl md = (MethodDecl)target;
-			RefactoringException exc = new RefactoringException("couldn't consistently rename method access at "+pos);
 			if(((MethodAccess)this).decl() != md) {
 				newacc = this.accessMethod(md, (List)((MethodAccess)this).getArgList().fullCopy());
 				if(newacc == null)
-					throw exc;
-				if(this.isQualified()) {
-					if(newacc instanceof AbstractDot && !md.isStatic())
-						throw exc;
-					newacc = this.qualifier().mergeWithAccess(newacc);
-					if(newacc == null)
-						throw exc;
-					oldacc = this.getParent();
-				} else {
-					oldacc = this;
-				}
+					throw new RefactoringException("couldn't consistently rename method access at "+pos);
+				replaceWith(newacc);
 			}
 		} else if(target instanceof TypeDecl) {
 			TypeAccess tacc = (TypeAccess)this;
@@ -114,14 +94,7 @@ public abstract class Access extends Expr implements Cloneable {
                 newacc = this.accessType((TypeDecl)target, ambiguous);
                 if(newacc == null)
                     throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                if(this.isQualified()) {
-                    newacc = this.qualifier().mergeWithAccess(newacc);
-                    if(newacc == null)
-                        throw new RefactoringException("couldn't consistently rename field access at "+pos);
-                    oldacc = parent;
-                } else {
-                    oldacc = this;
-                }
+                replaceWith(newacc);
             } else {
                 ASTNode parent = tacc.getParent();
                 int idx = parent.getIndexOfChild(tacc);
@@ -135,14 +108,7 @@ public abstract class Access extends Expr implements Cloneable {
                 		newacc = this.accessType((TypeDecl)target, ambiguous);
                 		if(newacc == null)
                 			throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                		if(this.isQualified()) {
-                			newacc = this.qualifier().mergeWithAccess(newacc);
-                			if(newacc == null)
-                				throw new RefactoringException("couldn't consistently rename field access at "+pos);
-                			oldacc = parent;
-                		} else {
-                			oldacc = this;
-                		}
+               			replaceWith(newacc);
                 	}
                 } finally {
                 	parent.setChild(tacc, idx);
@@ -168,8 +134,6 @@ public abstract class Access extends Expr implements Cloneable {
 		} else {
 			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
 		}
-		if(oldacc != newacc)
-			oldacc.replaceWith(newacc);
 	}
 
     // Declared in java.ast at line 3
@@ -296,6 +260,14 @@ public abstract class Access extends Expr implements Cloneable {
 
     private TypeDecl type_compute() {  return  unknownType();  }
 
+    // Declared in Uses.jrag at line 5
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute()  { throw new UnsupportedOperationException(); }
+
     // Declared in LookupMethod.jrag at line 9
     public Expr nestedScope() {
         Expr nestedScope_value = getParent().Define_Expr_nestedScope(this, null);
@@ -352,7 +324,7 @@ if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_val
         return accessMethod_MethodDecl_List_value;
     }
 
-    // Declared in Uses.jrag at line 81
+    // Declared in Uses.jrag at line 96
     public PackageDecl findPackageDecl(String name) {
         PackageDecl findPackageDecl_String_value = getParent().Define_PackageDecl_findPackageDecl(this, null, name);
         return findPackageDecl_String_value;

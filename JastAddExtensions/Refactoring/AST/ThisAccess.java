@@ -163,6 +163,14 @@ public class ThisAccess extends Access implements Cloneable {
 
     private TypeDecl type_compute() {  return  decl();  }
 
+    // Declared in Uses.jrag at line 13
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  decl();  }
+
     // Declared in TypeHierarchyCheck.jrag at line 116
     public boolean inExplicitConstructorInvocation() {
         boolean inExplicitConstructorInvocation_value = getParent().Define_boolean_inExplicitConstructorInvocation(this, null);

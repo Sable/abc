@@ -227,6 +227,14 @@ public class PackageAccess extends Access implements Cloneable {
 			return null;
 	}
 
+    // Declared in Uses.jrag at line 8
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  findPackageDecl(getPackage());  }
+
     // Declared in NameCheck.jrag at line 226
     public boolean hasPackage(String packageName) {
         boolean hasPackage_String_value = getParent().Define_boolean_hasPackage(this, null, packageName);
@@ -238,7 +246,7 @@ public ASTNode rewriteTo() {
 }
 
     protected void collect_contributors_PackageDecl_prefixUses() {
-        // Declared in Uses.jrag at line 75
+        // Declared in Uses.jrag at line 90
         {
             PackageDecl ref = (PackageDecl)(findPackageDecl(name().split("\\.")[0]));
             if(ref != null)

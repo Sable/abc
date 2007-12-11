@@ -2,16 +2,31 @@
 
 aspect Uses {
 	
+	syn ASTNode Access.getDecl() { throw new UnsupportedOperationException(); }
+	
+	eq AbstractDot.getDecl() = getRight().getDecl();
+	eq PackageAccess.getDecl() = findPackageDecl(getPackage());
+	eq VarAccess.getDecl() = (ASTNode)decl();
+	eq MethodAccess.getDecl() = decl(); 
+	eq ConstructorAccess.getDecl() = decl(); 
+	eq TypeAccess.getDecl() = decl(); 
+	eq ThisAccess.getDecl() = decl(); 
+	eq SuperAccess.getDecl() = decl();
+	eq ClassInstanceExpr.getDecl() = decl();
+	eq ClassAccess.getDecl() {
+		return ((TypeAccess)qualifier()).decl();
+	}
+		
 	public HashSet Variable.collectedUses() {
 		return uses();
 	}
-
-	// bind all uses of a field to its declaration
+	
+	// bind all uses of a variable to its declaration
 	coll HashSet FieldDeclaration.uses() [new HashSet()] with add;
 	VarAccess contributes
 	this when decl() instanceof FieldDeclaration
 	to FieldDeclaration.uses() for (FieldDeclaration)decl();
-
+	
 	coll HashSet VariableDeclaration.uses() [new HashSet()] with add;
 	VarAccess contributes
 	this when decl() instanceof VariableDeclaration
@@ -94,8 +109,8 @@ aspect Uses {
 		AdjustmentTable table = new AdjustmentTable();
 		/* first, collect all uses of the variable we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
-			VarAccess va = (VarAccess)i.next();
-			table.add(va, this);
+			Access acc = (Access)i.next();
+			table.add(acc);
 		}
 		/* now, collect all uses of fields, types, and packages that the variable
 		 * might be shadowing after renaming */
@@ -103,7 +118,7 @@ aspect Uses {
 			Variable v = (Variable)i.next();
 			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
 				Access acc = (Access)j.next();
-				table.add(acc, (ASTNode)v);
+				table.add(acc);
 			}
 		}
 		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
@@ -112,7 +127,7 @@ aspect Uses {
 				Access acc = (Access)j.next();
 				// only a type in an ambiguous position can be shadowed by a variable
 				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
-					table.add(acc, d);
+					table.add(acc);
 			}
 		}
 		PackageDecl pd = programRoot().getPackageDecl(new_name);
@@ -121,7 +136,7 @@ aspect Uses {
 				Access acc = (Access)j.next();
 				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
 						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
+					table.add(acc);
 			}
 		return table;
 	}

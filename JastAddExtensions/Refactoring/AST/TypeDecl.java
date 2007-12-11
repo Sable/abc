@@ -585,7 +585,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 		/* first, collect all uses of the type we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
 			Access a = (Access)i.next();
-			table.add(a, this);
+			table.add(a);
 		}
 		/* now, collect all uses of types and packages that the type
 		 * might be shadowing after renaming */
@@ -593,7 +593,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 			TypeDecl d = (TypeDecl)i.next();
 			for(Iterator j = d.uses().iterator(); j.hasNext();) {
 				Access acc = (Access)j.next();
-				table.add(acc, d);
+				table.add(acc);
 			}
 		}
 		PackageDecl pd = programRoot().getPackageDecl(new_name);
@@ -602,7 +602,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 				Access acc = (Access)j.next();
 				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
 						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
+					table.add(acc);
 			}
 		return table;
 	}
@@ -3421,7 +3421,7 @@ public ASTNode rewriteTo() {
     protected boolean TypeDecl_uses_visited = false;
     protected boolean TypeDecl_uses_computed = false;
     protected HashSet TypeDecl_uses_value;
-    // Declared in Uses.jrag at line 57
+    // Declared in Uses.jrag at line 72
     public HashSet uses() {
         if(TypeDecl_uses_computed)
             return TypeDecl_uses_value;

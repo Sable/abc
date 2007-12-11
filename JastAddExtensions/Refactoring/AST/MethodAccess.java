@@ -541,6 +541,14 @@ if(computeDAbefore_int_Variable_values == null) computeDAbefore_int_Variable_val
 
     private TypeDecl type_compute() {  return  decl().type();  }
 
+    // Declared in Uses.jrag at line 10
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  decl();  }
+
     // Declared in ExceptionHandling.jrag at line 20
     public boolean handlesException(TypeDecl exceptionType) {
         boolean handlesException_TypeDecl_value = getParent().Define_boolean_handlesException(this, null, exceptionType);
@@ -627,7 +635,7 @@ public ASTNode rewriteTo() {
 }
 
     protected void collect_contributors_MethodDecl_uses() {
-        // Declared in Uses.jrag at line 34
+        // Declared in Uses.jrag at line 49
         {
             MethodDecl ref = (MethodDecl)(decl());
             if(ref != null)
@@ -636,7 +644,7 @@ public ASTNode rewriteTo() {
         super.collect_contributors_MethodDecl_uses();
     }
     protected void collect_contributors_MethodDecl_definiteUses() {
-        // Declared in Uses.jrag at line 30
+        // Declared in Uses.jrag at line 45
         {
             MethodDecl ref = (MethodDecl)(decl());
             if(ref != null)
@@ -644,12 +652,12 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_MethodDecl_definiteUses();
     }
-    protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
-        collection.add(this);
-    }
-
     protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
         collection.addAll(this.asSet());
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_definiteUses(HashSet collection) {
+        collection.add(this);
     }
 
 }

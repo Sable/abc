@@ -480,7 +480,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		return indexIn(n) != -1;
 	}
 
-    // Declared in Uses.jrag at line 37
+    // Declared in Uses.jrag at line 52
 
 	
 	protected HashSet asSet() {
@@ -889,7 +889,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		refined_ASTUtil_replaceWith(newnode);
 	}
 
-    // Declared in Uses.jrag at line 57
+    // Declared in Uses.jrag at line 72
     protected void collect_contributors_TypeDecl_uses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_TypeDecl_uses();
@@ -899,7 +899,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 10
+    // Declared in Uses.jrag at line 25
     protected void collect_contributors_FieldDeclaration_uses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_FieldDeclaration_uses();
@@ -909,7 +909,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 15
+    // Declared in Uses.jrag at line 30
     protected void collect_contributors_VariableDeclaration_uses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_VariableDeclaration_uses();
@@ -919,7 +919,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 20
+    // Declared in Uses.jrag at line 35
     protected void collect_contributors_ParameterDeclaration_uses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_ParameterDeclaration_uses();
@@ -929,7 +929,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 29
+    // Declared in Uses.jrag at line 44
     protected void collect_contributors_MethodDecl_definiteUses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_MethodDecl_definiteUses();
@@ -939,7 +939,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 33
+    // Declared in Uses.jrag at line 48
     protected void collect_contributors_MethodDecl_uses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_MethodDecl_uses();
@@ -949,7 +949,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 45
+    // Declared in Uses.jrag at line 60
     protected void collect_contributors_MethodDecl_overriders() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_MethodDecl_overriders();
@@ -969,7 +969,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
 
 
-    // Declared in Uses.jrag at line 74
+    // Declared in Uses.jrag at line 89
     protected void collect_contributors_PackageDecl_prefixUses() {
         for(int i = 0; i < getNumChild(); i++)
             getChild(i).collect_contributors_PackageDecl_prefixUses();

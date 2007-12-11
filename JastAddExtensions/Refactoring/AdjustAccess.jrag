@@ -1,20 +1,37 @@
 aspect AdjustAccess {
 	
 	class AdjustmentTable {
+		private java.util.Set accesses;
 		private Map adjustments;
+		
+		private java.util.List pending;
 		private java.util.Set adjusted;
 		
 		public AdjustmentTable() {
+			accesses = new HashSet();
 			adjustments = new HashMap();
+			pending = new ArrayList();
 			adjusted = new HashSet();
 		}
 		
-		public void add(Access acc, ASTNode target) {
-			adjustments.put(acc, target);
+		/*public void add(Access acc, ASTNode target) {
+			if(!accesses.contains(acc))
+				adjustments.put(acc, target);
+		}*/
+		
+		public void add(Access acc) {
+			if(!accesses.contains(acc)) {
+				accesses.add(acc);
+				adjustments.put(acc, acc.getDecl());
+			}
+			if(acc.getParent() instanceof AbstractDot)
+				add((AbstractDot)acc.getParent());
+			else
+				pending.add(acc);
 		}
 		
-		public ASTNode getTarget(Access acc) {
-			return (ASTNode)adjustments.get(acc);
+		public ASTNode getTarget(Expr exp) {
+			return (ASTNode)adjustments.get(exp);
 		}
 		
 		private boolean isAdjusted(Expr exp) {
@@ -26,10 +43,8 @@ aspect AdjustAccess {
 		}
 		
 		public void adjust() throws RefactoringException {
-			for(Iterator i = adjustments.entrySet().iterator(); i.hasNext();) {
-				Map.Entry e = (Map.Entry)i.next();
-				Access acc = (Access)e.getKey();
-				ASTNode val = (ASTNode)e.getValue();
+			for(Iterator i = pending.iterator(); i.hasNext();) {
+				Access acc = (Access)i.next();
 				adjust(acc);
 			}
 		}
@@ -37,8 +52,8 @@ aspect AdjustAccess {
 		public void adjust(Expr exp) throws RefactoringException {
 			if(isAdjusted(exp))
 				return;
-			exp.adjust(this);
 			setAdjusted(exp);
+			exp.adjust(this);
 		}
 	}
 	
@@ -46,36 +61,38 @@ aspect AdjustAccess {
 	}
 	
 	public void AbstractDot.adjust(AdjustmentTable table) throws RefactoringException {
-		getRight().adjust(table);
+		table.adjust(getLeft());
+		table.adjust(getRight());
+		replaceWith(getLeft().mergeWithAccess(getRight()));
 	}
 	
 	public void ParExpr.adjust(AdjustmentTable table) throws RefactoringException {
 		getExpr().adjust(table);
 	}
 	
+	public void ClassAccess.adjust(AdjustmentTable table) throws RefactoringException {
+	}
+	
 	// more needed here...
 	
 	public void Access.adjust(AdjustmentTable table) throws RefactoringException {
-		if(isQualified())
-			table.adjust(qualifier());
 		ASTNode target = table.getTarget(this);
 		if(target == null) return;
-		ASTNode oldacc = null;
-		Access newacc = null;
+		Access newacc;
         FileRange pos = new FileRange(getStart(), getEnd());
 		if(target instanceof VariableDeclaration) {
 			if(((VarAccess)this).decl() != target) {
 				newacc = this.accessLocalVariable((VariableDeclaration)target);
 				if(newacc == null)
 					throw new RefactoringException("local variable would become shadowed at "+pos);
-				oldacc = this;
+				replaceWith(newacc);
 			}
 		} else if(target instanceof ParameterDeclaration) {
 			if(((VarAccess)this).decl() != target) {
 				newacc = this.accessParameter((ParameterDeclaration)target);
 				if(newacc == null)
 					throw new RefactoringException("parameter would become shadowed at "+pos);
-				oldacc = this;
+				replaceWith(newacc);
 			}
 		} else if(target instanceof FieldDeclaration) {
 			FieldDeclaration fd = (FieldDeclaration)target;
@@ -83,32 +100,15 @@ aspect AdjustAccess {
 				newacc = this.accessField(fd);
 				if(newacc == null)
 					throw new RefactoringException("couldn't consistently rename field access at "+pos);
-				if(this.isQualified()) {
-					newacc = this.qualifier().mergeWithAccess(newacc);
-					if(newacc == null)
-						throw new RefactoringException("couldn't consistently rename field access at "+pos);
-					oldacc = this.getParent();
-				} else {
-					oldacc = this;
-				}
+				replaceWith(newacc);
 			}
 		} else if(target instanceof MethodDecl) {
 			MethodDecl md = (MethodDecl)target;
-			RefactoringException exc = new RefactoringException("couldn't consistently rename method access at "+pos);
 			if(((MethodAccess)this).decl() != md) {
 				newacc = this.accessMethod(md, (List)((MethodAccess)this).getArgList().fullCopy());
 				if(newacc == null)
-					throw exc;
-				if(this.isQualified()) {
-					if(newacc instanceof AbstractDot && !md.isStatic())
-						throw exc;
-					newacc = this.qualifier().mergeWithAccess(newacc);
-					if(newacc == null)
-						throw exc;
-					oldacc = this.getParent();
-				} else {
-					oldacc = this;
-				}
+					throw new RefactoringException("couldn't consistently rename method access at "+pos);
+				replaceWith(newacc);
 			}
 		} else if(target instanceof TypeDecl) {
 			TypeAccess tacc = (TypeAccess)this;
@@ -117,14 +117,7 @@ aspect AdjustAccess {
                 newacc = this.accessType((TypeDecl)target, ambiguous);
                 if(newacc == null)
                     throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                if(this.isQualified()) {
-                    newacc = this.qualifier().mergeWithAccess(newacc);
-                    if(newacc == null)
-                        throw new RefactoringException("couldn't consistently rename field access at "+pos);
-                    oldacc = parent;
-                } else {
-                    oldacc = this;
-                }
+                replaceWith(newacc);
             } else {
                 ASTNode parent = tacc.getParent();
                 int idx = parent.getIndexOfChild(tacc);
@@ -138,14 +131,7 @@ aspect AdjustAccess {
                 		newacc = this.accessType((TypeDecl)target, ambiguous);
                 		if(newacc == null)
                 			throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                		if(this.isQualified()) {
-                			newacc = this.qualifier().mergeWithAccess(newacc);
-                			if(newacc == null)
-                				throw new RefactoringException("couldn't consistently rename field access at "+pos);
-                			oldacc = parent;
-                		} else {
-                			oldacc = this;
-                		}
+               			replaceWith(newacc);
                 	}
                 } finally {
                 	parent.setChild(tacc, idx);
@@ -171,8 +157,6 @@ aspect AdjustAccess {
 		} else {
 			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
 		}
-		if(oldacc != newacc)
-			oldacc.replaceWith(newacc);
 	}
 	
 }

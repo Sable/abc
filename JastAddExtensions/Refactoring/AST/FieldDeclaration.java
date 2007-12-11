@@ -469,14 +469,14 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
 	}
 
-    // Declared in Uses.jrag at line 5
+    // Declared in Uses.jrag at line 20
 
-	
+		
 	public HashSet collectedUses() {
 		return uses();
 	}
 
-    // Declared in Uses.jrag at line 93
+    // Declared in Uses.jrag at line 108
 
 
 	/* in preparation for renaming a variable to new_name, this method finds all
@@ -487,8 +487,8 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 		AdjustmentTable table = new AdjustmentTable();
 		/* first, collect all uses of the variable we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
-			VarAccess va = (VarAccess)i.next();
-			table.add(va, this);
+			Access acc = (Access)i.next();
+			table.add(acc);
 		}
 		/* now, collect all uses of fields, types, and packages that the variable
 		 * might be shadowing after renaming */
@@ -496,7 +496,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 			Variable v = (Variable)i.next();
 			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
 				Access acc = (Access)j.next();
-				table.add(acc, (ASTNode)v);
+				table.add(acc);
 			}
 		}
 		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
@@ -505,7 +505,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 				Access acc = (Access)j.next();
 				// only a type in an ambiguous position can be shadowed by a variable
 				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
-					table.add(acc, d);
+					table.add(acc);
 			}
 		}
 		PackageDecl pd = programRoot().getPackageDecl(new_name);
@@ -514,7 +514,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
 				Access acc = (Access)j.next();
 				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
 						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc, pd);
+					table.add(acc);
 			}
 		return table;
 	}
@@ -1168,7 +1168,7 @@ public ASTNode rewriteTo() {
     protected boolean FieldDeclaration_uses_visited = false;
     protected boolean FieldDeclaration_uses_computed = false;
     protected HashSet FieldDeclaration_uses_value;
-    // Declared in Uses.jrag at line 10
+    // Declared in Uses.jrag at line 25
     public HashSet uses() {
         if(FieldDeclaration_uses_computed)
             return FieldDeclaration_uses_value;

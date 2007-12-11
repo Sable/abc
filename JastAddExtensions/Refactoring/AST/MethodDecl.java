@@ -297,14 +297,14 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
 		/* first, collect all uses of the method we are renaming */
 		for(Iterator i = definiteUses().iterator(); i.hasNext();) {
 			Access a = (Access)i.next();
-			table.add(a, this);
+			table.add(a);
 		}
 		/* now, collect all uses of methods that we might be shadowing after renaming */
 		for(Iterator i = lookupMethod(new_name).iterator(); i.hasNext();) {
 			MethodDecl md = (MethodDecl)i.next();
 			for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
 				Access acc = (Access)j.next();
-				table.add(acc, md);
+				table.add(acc);
 			}
 		}
 		return table;
@@ -1057,7 +1057,7 @@ if(canOverrideOrHide_MethodDecl_values == null) canOverrideOrHide_MethodDecl_val
 
     protected boolean overrides_computed = false;
     protected SimpleSet overrides_value;
-    // Declared in Uses.jrag at line 48
+    // Declared in Uses.jrag at line 63
     public SimpleSet overrides() {
         if(overrides_computed)
             return overrides_value;
@@ -1403,7 +1403,7 @@ public ASTNode rewriteTo() {
     protected boolean MethodDecl_definiteUses_visited = false;
     protected boolean MethodDecl_definiteUses_computed = false;
     protected HashSet MethodDecl_definiteUses_value;
-    // Declared in Uses.jrag at line 29
+    // Declared in Uses.jrag at line 44
     public HashSet definiteUses() {
         if(MethodDecl_definiteUses_computed)
             return MethodDecl_definiteUses_value;
@@ -1437,7 +1437,7 @@ public ASTNode rewriteTo() {
     protected boolean MethodDecl_uses_visited = false;
     protected boolean MethodDecl_uses_computed = false;
     protected HashSet MethodDecl_uses_value;
-    // Declared in Uses.jrag at line 33
+    // Declared in Uses.jrag at line 48
     public HashSet uses() {
         if(MethodDecl_uses_computed)
             return MethodDecl_uses_value;
@@ -1471,7 +1471,7 @@ public ASTNode rewriteTo() {
     protected boolean MethodDecl_overriders_visited = false;
     protected boolean MethodDecl_overriders_computed = false;
     protected HashSet MethodDecl_overriders_value;
-    // Declared in Uses.jrag at line 45
+    // Declared in Uses.jrag at line 60
     public HashSet overriders() {
         if(MethodDecl_overriders_computed)
             return MethodDecl_overriders_value;
@@ -1503,7 +1503,7 @@ public ASTNode rewriteTo() {
     }
 
     protected void collect_contributors_MethodDecl_uses() {
-        // Declared in Uses.jrag at line 43
+        // Declared in Uses.jrag at line 58
         for(Iterator iter = (overriders()).iterator(); iter.hasNext(); ) {
             MethodDecl ref = (MethodDecl)iter.next();
             if(ref != null)
@@ -1512,7 +1512,7 @@ public ASTNode rewriteTo() {
         super.collect_contributors_MethodDecl_uses();
     }
     protected void collect_contributors_MethodDecl_overriders() {
-        // Declared in Uses.jrag at line 46
+        // Declared in Uses.jrag at line 61
         for(Iterator iter = (overrides()).iterator(); iter.hasNext(); ) {
             MethodDecl ref = (MethodDecl)iter.next();
             if(ref != null)
@@ -1520,12 +1520,12 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_MethodDecl_overriders();
     }
-    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
-        collection.addAll(uses());
-    }
-
     protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
         collection.add(this);
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
+        collection.addAll(uses());
     }
 
 }

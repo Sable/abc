@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.List;
 
 import AST.ASTNode;
 import AST.BytecodeParser;
@@ -13,8 +11,8 @@ import AST.CompilationUnit;
 import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
+import AST.Program;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
 public class RunFieldRenameTests extends Frontend {
@@ -87,7 +85,7 @@ public class RunFieldRenameTests extends Frontend {
         }
     }
 
-    private ASTNode test(String file, String pkg, String tp, String fld, String n) throws RefactoringException {
+    private Program test(String file, String pkg, String tp, String fld, String n) throws RefactoringException {
         //System.out.println("processing file "+file);
         String[] files = {file};
         if(process(files, new BytecodeParser(), 

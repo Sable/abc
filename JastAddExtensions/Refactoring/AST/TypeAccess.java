@@ -101,6 +101,13 @@ public class TypeAccess extends Access implements Cloneable {
       s.append(name());
   }
 
+    // Declared in MergeAccess.jrag at line 3
+
+	
+	public Access mergeWithAccess(Access f) {
+		return this.qualifiesAccess(f);
+	}
+
     // Declared in java.ast at line 3
     // Declared in java.ast line 20
 
@@ -334,12 +341,20 @@ public class TypeAccess extends Access implements Cloneable {
 		return type().getBodyDecl(0).accessType(td, ambiguous);
 	}
 
+    // Declared in Uses.jrag at line 12
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  decl();  }
+
 public ASTNode rewriteTo() {
     return super.rewriteTo();
 }
 
     protected void collect_contributors_PackageDecl_prefixUses() {
-        // Declared in Uses.jrag at line 77
+        // Declared in Uses.jrag at line 92
         if(!packageName().equals("")) {
         {
             PackageDecl ref = (PackageDecl)(findPackageDecl(packageName().split("\\.")[0]));
@@ -350,7 +365,7 @@ public ASTNode rewriteTo() {
         super.collect_contributors_PackageDecl_prefixUses();
     }
     protected void collect_contributors_TypeDecl_uses() {
-        // Declared in Uses.jrag at line 58
+        // Declared in Uses.jrag at line 73
         {
             TypeDecl ref = (TypeDecl)((TypeDecl)decl());
             if(ref != null)

@@ -607,6 +607,14 @@ if(localLookupType_String_values == null) localLookupType_String_values = new ja
 
     private boolean noEnclosingInstance_compute() {  return  isQualified() ? qualifier().staticContextQualifier() : inStaticContext();  }
 
+    // Declared in Uses.jrag at line 15
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  decl();  }
+
     // Declared in ExceptionHandling.jrag at line 29
     public boolean handlesException(TypeDecl exceptionType) {
         boolean handlesException_TypeDecl_value = getParent().Define_boolean_handlesException(this, null, exceptionType);

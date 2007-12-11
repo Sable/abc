@@ -302,6 +302,14 @@ public class ConstructorAccess extends Access implements Cloneable {
 
     private TypeDecl type_compute() {  return  decl().type();  }
 
+    // Declared in Uses.jrag at line 11
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  decl();  }
+
     // Declared in ExceptionHandling.jrag at line 21
     public boolean handlesException(TypeDecl exceptionType) {
         boolean handlesException_TypeDecl_value = getParent().Define_boolean_handlesException(this, null, exceptionType);

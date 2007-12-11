@@ -633,6 +633,14 @@ if(mayUse_Variable_values == null) mayUse_Variable_values = new java.util.HashMa
 
     private boolean mayUse_compute(Variable v) {  return  decl() == v && isSource();  }
 
+    // Declared in Uses.jrag at line 9
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  (ASTNode)decl();  }
+
     // Declared in TypeHierarchyCheck.jrag at line 113
     public boolean inExplicitConstructorInvocation() {
         boolean inExplicitConstructorInvocation_value = getParent().Define_boolean_inExplicitConstructorInvocation(this, null);
@@ -644,7 +652,7 @@ public ASTNode rewriteTo() {
 }
 
     protected void collect_contributors_FieldDeclaration_uses() {
-        // Declared in Uses.jrag at line 11
+        // Declared in Uses.jrag at line 26
         if(decl() instanceof FieldDeclaration) {
         {
             FieldDeclaration ref = (FieldDeclaration)((FieldDeclaration)decl());
@@ -655,7 +663,7 @@ public ASTNode rewriteTo() {
         super.collect_contributors_FieldDeclaration_uses();
     }
     protected void collect_contributors_ParameterDeclaration_uses() {
-        // Declared in Uses.jrag at line 21
+        // Declared in Uses.jrag at line 36
         if(decl() instanceof ParameterDeclaration) {
         {
             ParameterDeclaration ref = (ParameterDeclaration)((ParameterDeclaration)decl());
@@ -666,7 +674,7 @@ public ASTNode rewriteTo() {
         super.collect_contributors_ParameterDeclaration_uses();
     }
     protected void collect_contributors_VariableDeclaration_uses() {
-        // Declared in Uses.jrag at line 16
+        // Declared in Uses.jrag at line 31
         if(decl() instanceof VariableDeclaration) {
         {
             VariableDeclaration ref = (VariableDeclaration)((VariableDeclaration)decl());
@@ -676,13 +684,13 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_VariableDeclaration_uses();
     }
-    protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
-        if(decl() instanceof VariableDeclaration)
+    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
+        if(decl() instanceof ParameterDeclaration)
             collection.add(this);
     }
 
-    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
-        if(decl() instanceof ParameterDeclaration)
+    protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
+        if(decl() instanceof VariableDeclaration)
             collection.add(this);
     }
 

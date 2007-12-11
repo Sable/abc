@@ -60,7 +60,7 @@ public class ParExpr extends PrimaryExpr implements Cloneable {
 		return getExpr().isCastedThisAccess();
 	}
 
-    // Declared in AdjustAccess.jrag at line 52
+    // Declared in AdjustAccess.jrag at line 69
 
 	
 	public void adjust(AdjustmentTable table) throws RefactoringException {

@@ -52,6 +52,12 @@ public class ClassAccess extends Access implements Cloneable {
     s.append("class");
   }
 
+    // Declared in AdjustAccess.jrag at line 73
+
+	
+	public void adjust(AdjustmentTable table) throws RefactoringException {
+	}
+
     // Declared in java.ast at line 3
     // Declared in java.ast line 35
 
@@ -101,6 +107,16 @@ public class ClassAccess extends Access implements Cloneable {
     }
 
     private TypeDecl type_compute() {  return  lookupType("java.lang", "Class");  }
+
+    // Declared in Uses.jrag at line 16
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute()  {
+		return ((TypeAccess)qualifier()).decl();
+	}
 
 public ASTNode rewriteTo() {
     return super.rewriteTo();

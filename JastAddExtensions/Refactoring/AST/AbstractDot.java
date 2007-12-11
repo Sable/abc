@@ -68,11 +68,13 @@ public class AbstractDot extends Access implements Cloneable {
     setRight(access);
   }
 
-    // Declared in AdjustAccess.jrag at line 48
+    // Declared in AdjustAccess.jrag at line 63
 
 	
 	public void adjust(AdjustmentTable table) throws RefactoringException {
-		getRight().adjust(table);
+		table.adjust(getLeft());
+		table.adjust(getRight());
+		replaceWith(getLeft().mergeWithAccess(getRight()));
 	}
 
     // Declared in java.ast at line 3
@@ -407,6 +409,14 @@ if(isDUafter_Variable_values == null) isDUafter_Variable_values = new java.util.
     }
 
     private boolean staticContextQualifier_compute() {  return  lastAccess().staticContextQualifier();  }
+
+    // Declared in Uses.jrag at line 7
+    public ASTNode getDecl() {
+        ASTNode getDecl_value = getDecl_compute();
+        return getDecl_value;
+    }
+
+    private ASTNode getDecl_compute() {  return  getRight().getDecl();  }
 
     protected java.util.Map isDUbefore_Variable_values;
     // Declared in DefiniteAssignment.jrag at line 694

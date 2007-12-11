@@ -86,23 +86,26 @@ public abstract class Expr extends ASTNode implements Cloneable {
 	
 	boolean isCastedThisAccess() { return false; }
 
-    // Declared in AdjustAccess.jrag at line 45
+    // Declared in AdjustAccess.jrag at line 60
 
 	
 	public void adjust(AdjustmentTable table) throws RefactoringException {
 	}
 
-    // Declared in MergeAccess.jrag at line 5
+    // Declared in MergeAccess.jrag at line 9
 
 
 	// the field access f is either a simple name or qualified with this, super, ((A)this),
 	// A.this, or ((A)B.this) for some classes A and B
-	public Access mergeWithAccess(Access f) {
-		if(f.isVariable() || f instanceof TypeAccess || f instanceof MethodAccess) {
+	public Access mergeWithAccess(Access f) throws RefactoringException {
+		if(f.isVariable() || f instanceof TypeAccess || f instanceof MethodAccess ||
+				f instanceof ClassAccess || f instanceof ArrayAccess) {
 			return this.qualifiesAccess(f);
 		} else if(f instanceof AbstractDot) {
 			Expr left = ((AbstractDot)f).getLeft();
 			Access right = ((AbstractDot)f).getRight();
+			if(right.isMethodAccess() && !((MethodAccess)right).decl().isStatic())
+				throw new RefactoringException("cannot access method");
 			if(left.isThisAccess())
 				return mergeWithAccess(right);
 			else if(left.isSuperAccess()) {
@@ -112,7 +115,7 @@ public abstract class Expr extends ASTNode implements Cloneable {
 						return new ParExpr(new CastExpr((TypeAccess)cdcl.getSuperClassAccess().fullCopy(), this)).
 									mergeWithAccess(right);
 				}
-				return null;
+				throw new RefactoringException("only classes have `super'");
 			} else if(left instanceof ParExpr) {
 				Expr e = ((ParExpr)left).getExpr();
 				return mergeWithAccess(new Dot(e, right));
@@ -123,20 +126,11 @@ public abstract class Expr extends ASTNode implements Cloneable {
 					return new ParExpr(new CastExpr((TypeAccess)tp, this)).
 								mergeWithAccess(right);
 				}
-			} else if(left instanceof AbstractDot) {
-				Expr lleft = ((AbstractDot)left).getLeft();
-				Access lright = ((AbstractDot)left).getRight();
-				if(lright.isThisAccess()) {
-					// apparently, there is no way to make this work...
-					return null;
-				} else
-					return null;
-			} else
-				return null;
+			}
 		} else {
 			assert(false);
 		}
-		return null;
+		throw new RefactoringException("cannot merge accesses");
 	}
 
     // Declared in java.ast at line 3

@@ -87,7 +87,7 @@ public ASTNode rewriteTo() {
     protected boolean PackageDecl_prefixUses_visited = false;
     protected boolean PackageDecl_prefixUses_computed = false;
     protected HashSet PackageDecl_prefixUses_value;
-    // Declared in Uses.jrag at line 74
+    // Declared in Uses.jrag at line 89
     public HashSet prefixUses() {
         if(PackageDecl_prefixUses_computed)
             return PackageDecl_prefixUses_value;

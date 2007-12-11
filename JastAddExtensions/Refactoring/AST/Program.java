@@ -887,7 +887,7 @@ public class Program extends ASTNode implements Cloneable {
         return (List)getChildNoTransform(0);
     }
 
-    // Declared in Uses.jrag at line 57
+    // Declared in Uses.jrag at line 72
     private boolean collect_contributors_TypeDecl_uses = false;
     protected void collect_contributors_TypeDecl_uses() {
         if(collect_contributors_TypeDecl_uses) return;
@@ -897,7 +897,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 10
+    // Declared in Uses.jrag at line 25
     private boolean collect_contributors_FieldDeclaration_uses = false;
     protected void collect_contributors_FieldDeclaration_uses() {
         if(collect_contributors_FieldDeclaration_uses) return;
@@ -907,7 +907,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 15
+    // Declared in Uses.jrag at line 30
     private boolean collect_contributors_VariableDeclaration_uses = false;
     protected void collect_contributors_VariableDeclaration_uses() {
         if(collect_contributors_VariableDeclaration_uses) return;
@@ -917,7 +917,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 20
+    // Declared in Uses.jrag at line 35
     private boolean collect_contributors_ParameterDeclaration_uses = false;
     protected void collect_contributors_ParameterDeclaration_uses() {
         if(collect_contributors_ParameterDeclaration_uses) return;
@@ -927,7 +927,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 29
+    // Declared in Uses.jrag at line 44
     private boolean collect_contributors_MethodDecl_definiteUses = false;
     protected void collect_contributors_MethodDecl_definiteUses() {
         if(collect_contributors_MethodDecl_definiteUses) return;
@@ -937,7 +937,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 33
+    // Declared in Uses.jrag at line 48
     private boolean collect_contributors_MethodDecl_uses = false;
     protected void collect_contributors_MethodDecl_uses() {
         if(collect_contributors_MethodDecl_uses) return;
@@ -947,7 +947,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 45
+    // Declared in Uses.jrag at line 60
     private boolean collect_contributors_MethodDecl_overriders = false;
     protected void collect_contributors_MethodDecl_overriders() {
         if(collect_contributors_MethodDecl_overriders) return;
@@ -967,7 +967,7 @@ public class Program extends ASTNode implements Cloneable {
 
 
 
-    // Declared in Uses.jrag at line 74
+    // Declared in Uses.jrag at line 89
     private boolean collect_contributors_PackageDecl_prefixUses = false;
     protected void collect_contributors_PackageDecl_prefixUses() {
         if(collect_contributors_PackageDecl_prefixUses) return;
@@ -1299,7 +1299,7 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
 
     protected java.util.Map getPackageDecl_String_values;
     protected List getPackageDecl_String_list;
-    // Declared in Uses.jrag at line 83
+    // Declared in Uses.jrag at line 98
     public PackageDecl getPackageDecl(String name) {
         Object _parameters = name;
 if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java.util.HashMap(4);
@@ -1813,7 +1813,7 @@ if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java
         return getParent().Define_ConstructorDecl_constructorDecl(this, caller);
     }
 
-    // Declared in Uses.jrag at line 80
+    // Declared in Uses.jrag at line 95
     public PackageDecl Define_PackageDecl_findPackageDecl(ASTNode caller, ASTNode child, String name) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);
