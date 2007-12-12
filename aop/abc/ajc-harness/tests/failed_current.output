@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$25$around$1600(AroundAll.java:199)
+	at A.inline$26$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -201,7 +201,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:98)
 	at soot.SootResolver.resolveClass(SootResolver.java:83)
-	at soot.Scene.loadClass(Scene.java:366)
+	at soot.Scene.loadClass(Scene.java:367)
 	at abc.main.CompileSequence.compile(CompileSequence.java:317)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
@@ -213,5 +213,42 @@ Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off
 File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
+
+
+Running test 1303: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1
+Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage intra -debug warnWhenAlteringShadow -cp ../../lib/abc-runtime.jar:../../lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/IntraFlowSens1.java abctests/tracematches/wp-opt/AB.java abctests/tracematches/wp-opt/AbstractTest.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
+	at abc.main.Main.run(Main.java:487)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: Exception while executing reweaving pass 'Tracematch analysis - flow-insensitive stage'
+	at abc.weaving.weaver.ReweavingPass.analyze(ReweavingPass.java:121)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:212)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at soot.util.BitVector.<init>(BitVector.java:45)
+	at soot.jimple.spark.sets.HybridPointsToSet.convertToBits(HybridPointsToSet.java:242)
+	at soot.jimple.spark.sets.HybridPointsToSet.nativeAddAll(HybridPointsToSet.java:59)
+	at soot.jimple.spark.sets.HybridPointsToSet.addAll(HybridPointsToSet.java:143)
+	at soot.jimple.spark.sets.DoublePointsToSet.addAll(DoublePointsToSet.java:61)
+	at soot.jimple.spark.solver.PropWorklist.propagate(PropWorklist.java:81)
+	at soot.jimple.spark.SparkTransformer.internalTransform(SparkTransformer.java:120)
+	at soot.SceneTransformer.transform(SceneTransformer.java:39)
+	at soot.Transform.apply(Transform.java:89)
+	at soot.RadioScenePack.internalApply(RadioScenePack.java:57)
+	at soot.jimple.toolkits.callgraph.CallGraphPack.internalApply(CallGraphPack.java:41)
+	at soot.Pack.apply(Pack.java:110)
+	at abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction.doAnalysis(CallGraphAbstraction.java:88)
+	at abc.tm.weaving.weaver.tmanalysis.stages.AbstractAnalysisStage.apply(AbstractAnalysisStage.java:109)
+	at abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis.doAnalyze(OptFlowInsensitiveAnalysis.java:110)
+	at abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis.analyze(OptFlowInsensitiveAnalysis.java:56)
+	at abc.weaving.weaver.ReweavingPass$Worker.run(ReweavingPass.java:172)
+	at java.lang.Thread.run(Thread.java:595)
+FAIL: Test 1303: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1" failed.
 
 
