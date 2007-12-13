@@ -41,21 +41,23 @@ aspect AccessField {
 		return null;
 	}
 
-	// 6.5.6.1
 	eq TypeDecl.getBodyDecl(int i).accessField(FieldDeclaration fd) {
 		if(localFieldsMap().containsValue(fd))
 			return new VarAccess(fd.getID());
 		if(localFieldsMap().containsKey(fd.getID())) {
 			// we need to qualify
 			if(fd.hostType().encloses(hostType())) {
-				// we need an expression of the form A.this.x
+				// we need an expression of the form A.this.x; note that since
+				// nested types cannot hide enclosing types there cannot be any
+				// intervening class 'A' to throw us off the track
 				Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
 				if(typacc == null)
 					return null;
 				return typacc.qualifiesAccess(new ThisAccess("this")).qualifiesAccess(new VarAccess(fd.getID()));
 			} else if(hostType().instanceOf(fd.hostType())) {
 				// first try looking it up in super class, if any
-				if(hostType() instanceof ClassDecl && ((ClassDecl)hostType()).superclass().getBodyDecl(0).accessField(fd) != null) {
+				if(hostType() instanceof ClassDecl && 
+						((ClassDecl)hostType()).superclass().getBodyDecl(0).accessField(fd) != null) {
 					ClassDecl host = (ClassDecl)hostType();
 					ClassDecl supclass = host.superclass();
 					Access acc = supclass.getBodyDecl(0).accessField(fd);

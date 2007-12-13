@@ -10,7 +10,6 @@ aspect AccessPackage {
 	
 	inh SimpleSet Stmt.lookupType(String name);
 	inh SimpleSet BodyDecl.lookupType(String name);
-	//inh SimpleSet Stmt.lookupVariable(String name);
 
 	eq CompilationUnit.getChild(int i).accessPackage(String pkg) {
 		String[] path = pkg.split("\\.");

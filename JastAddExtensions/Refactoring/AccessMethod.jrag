@@ -25,19 +25,16 @@ aspect AccessMethod {
 					((ClassDecl)hostType()).superclass() == md.hostType()) {
 				return new SuperAccess("super").qualifiesAccess(
 						new MethodAccess(md.getID(), args));
-			} else if(!md.isStatic()) {
+			} else if(md.isStatic()) {
 				// non-static overridden methods of the superclass can be accessed,
 				// anything further up is off-limits
-				return null;
-			} else {
 				Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
 				if(typacc == null) return null;
 				return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
 					qualifiesAccess(new MethodAccess(md.getID(), args));
 			}
-		} else {
-			assert(false);
 		}
+		return null;
 	}
 	
 	eq AbstractDot.getRight().accessMethod(MethodDecl md, List args) {
