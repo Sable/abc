@@ -70,7 +70,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         unknownType_value = null;
         inExplicitConstructorInvocation_computed = false;
         inStaticContext_computed = false;
-        accessField_FieldDeclaration_values = null;
         accessMethod_MethodDecl_List_values = null;
         accessType_TypeDecl_boolean_values = null;
         TypeDecl_uses_visited = false;
@@ -144,7 +143,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         node.unknownType_value = null;
         node.inExplicitConstructorInvocation_computed = false;
         node.inStaticContext_computed = false;
-        node.accessField_FieldDeclaration_values = null;
         node.accessMethod_MethodDecl_List_values = null;
         node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
@@ -2275,13 +2273,33 @@ if(instanceOf_TypeDecl_values == null) instanceOf_TypeDecl_values = new java.uti
 
     private boolean isCircular_compute() {  return  false;  }
 
-    // Declared in AccessField.jrag at line 16
-    public Access accessFieldInSupertypes(FieldDeclaration fd) {
-        Access accessFieldInSupertypes_FieldDeclaration_value = accessFieldInSupertypes_compute(fd);
-        return accessFieldInSupertypes_FieldDeclaration_value;
+    // Declared in AccessField.jrag at line 22
+    public TypeDecl findFieldUpwards(FieldDeclaration fd) {
+        TypeDecl findFieldUpwards_FieldDeclaration_value = findFieldUpwards_compute(fd);
+        return findFieldUpwards_FieldDeclaration_value;
     }
 
-    private Access accessFieldInSupertypes_compute(FieldDeclaration fd) {  return  null;  }
+    private TypeDecl findFieldUpwards_compute(FieldDeclaration fd) {  return  null;  }
+
+    // Declared in AccessField.jrag at line 65
+    public Pair findField(FieldDeclaration fd) {
+        Pair findField_FieldDeclaration_value = findField_compute(fd);
+        return findField_FieldDeclaration_value;
+    }
+
+    private Pair findField_compute(FieldDeclaration fd)  {
+		TypeDecl up = findFieldUpwards(fd);
+		if(up == null) {
+			if(!isNestedType()) return null;
+			boolean shadowed = localFieldsMap().containsKey(fd.getID());
+			Pair p = enclosingType().findField(fd);
+			if((TypeDecl)p.getFst() == enclosingType() && 
+					(TypeDecl)p.getSnd() == enclosingType()	&& ! shadowed)
+				return new Pair(this, this);
+			return p;
+		}
+		return new Pair(this, up);
+	}
 
     protected boolean componentType_computed = false;
     protected TypeDecl componentType_value;
@@ -2582,18 +2600,9 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return compilationUnit_value;
     }
 
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 8
+    // Declared in AccessField.jrag at line 83
     public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
         Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
         return accessField_FieldDeclaration_value;
     }
 
@@ -2748,7 +2757,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_mayBeNative(this, caller);
     }
 
-    // Declared in AccessPackage.jrag at line 22
+    // Declared in AccessPackage.jrag at line 21
     public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
         if(caller == getBodyDeclListNoTransform()) { 
    int i = caller.getIndexOfChild(child);
@@ -3090,19 +3099,16 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 					((ClassDecl)hostType()).superclass() == md.hostType()) {
 				return new SuperAccess("super").qualifiesAccess(
 						new MethodAccess(md.getID(), args));
-			} else if(!md.isStatic()) {
+			} else if(md.isStatic()) {
 				// non-static overridden methods of the superclass can be accessed,
 				// anything further up is off-limits
-				return null;
-			} else {
 				Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
 				if(typacc == null) return null;
 				return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
 					qualifiesAccess(new MethodAccess(md.getID(), args));
 			}
-		} else {
-			assert(false);
 		}
+		return null;
 	}
 }
         return getParent().Define_Access_accessMethod(this, caller, md, args);
@@ -3210,118 +3216,41 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_mayBeAbstract(this, caller);
     }
 
-    // Declared in AccessField.jrag at line 45
+    // Declared in AccessField.jrag at line 90
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(caller == getBodyDeclListNoTransform()) { 
    int i = caller.getIndexOfChild(child);
  {
-		if(localFieldsMap().containsValue(fd))
-			return new VarAccess(fd.getID());
-		if(localFieldsMap().containsKey(fd.getID())) {
-			// we need to qualify
-			if(fd.hostType().encloses(hostType())) {
-				// we need an expression of the form A.this.x
-				Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
-				if(typacc == null)
-					return null;
-				return typacc.qualifiesAccess(new ThisAccess("this")).qualifiesAccess(new VarAccess(fd.getID()));
-			} else if(hostType().instanceOf(fd.hostType())) {
-				// first try looking it up in super class, if any
-				if(hostType() instanceof ClassDecl && ((ClassDecl)hostType()).superclass().getBodyDecl(0).accessField(fd) != null) {
-					ClassDecl host = (ClassDecl)hostType();
-					ClassDecl supclass = host.superclass();
-					Access acc = supclass.getBodyDecl(0).accessField(fd);
-					if(acc instanceof AbstractDot) {
-						Expr left = ((AbstractDot)acc).getLeft();
-						Access right = ((AbstractDot)acc).getRight();
-						if(left.isThisAccess()) {
-							// if it is this.x in superclass, it's super.x in here
-							return new SuperAccess("super").qualifiesAccess(right);
-						} else if(left.isSuperAccess()) {
-							// if it is super.x in superclass, we need a cast
-							ClassDecl supsupclass = supclass.superclass();
-							Access supsupacc = getBodyDecl(i).accessType(supsupclass, true);
-							if(supsupacc == null) return null;
-							return new ParExpr(new CastExpr(supsupacc, new ThisAccess("this"))).
-								qualifiesAccess(right);
-						} else {
-							// it must be of the form ((A)this).x, which we can reuse
-							return acc;
-						}
-					} else if(acc instanceof VarAccess) {
-						return new SuperAccess("super").qualifiesAccess(acc);
-					} else {
-						assert(false);
-					}
-				} else {
-					Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
-					if(typacc == null) return null;
-					return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).qualifiesAccess(new VarAccess(fd.getID()));
-				}
-			} else {
-				assert(false);
+		Pair loc = findField(fd);
+		TypeDecl out = (TypeDecl)loc.getFst();
+		TypeDecl up = (TypeDecl)loc.getSnd();
+		// first case: the field is in this class or one of its ancestors
+		if(out == this) {
+			Access acc = new VarAccess(fd.getID());
+			if(up == this)
+				return acc;
+			else if(isClassDecl() && ((ClassDecl)this).superclass() == up)
+				return new SuperAccess("super").qualifiesAccess(acc);
+			else {
+				Access tacc = getBodyDecl(i).accessType(up, false);
+				if(tacc == null) return null;
+				return new ParExpr(new CastExpr(tacc, new ThisAccess("this"))).
+							qualifiesAccess(acc);
 			}
+		// second case: the field is in a surrounding class
+		} else if(out == up) {
+			Access outacc = getBodyDecl(i).accessType(out, false);
+			return outacc.qualifiesAccess(new ThisAccess("this")).
+							qualifiesAccess(new VarAccess(fd.getID()));
+		// third case: the field is in an ancestor of a surrounding class
 		} else {
-			if(lookupVariable(fd.getID()) == fd) {
-				return new VarAccess(fd.getID());
-			}
-            // first, try finding it in supertypes
-			Access acc = accessFieldInSupertypes(fd);
-            if(acc != null) {
-                if(acc instanceof AbstractDot) {
-                    Expr left = ((AbstractDot)acc).getLeft();
-                    Access right = ((AbstractDot)acc).getRight();
-                    if(left.isSuperAccess()) {
-                        Access typacc = getBodyDecl(i).accessType(fd.hostType(), true);
-                        if(typacc == null) return null;
-                        return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
-                                    qualifiesAccess(right);
-                    }
-                }
-				return acc;
-            }
-            // otherwise, it must be in an enclosing type
-            if(!isNestedType()) return null;
-            acc = accessField(fd);
-            if(acc == null) return null;
-
-            // if the field can be reached by unqualified access in enclosing type,
-            // we are good; otherwise, we may have to fiddle with the qualifier
-			if(acc instanceof AbstractDot) {
-	            Expr left = ((AbstractDot)acc).getLeft();
-				Access right = ((AbstractDot)acc).getRight();
-                if(left instanceof ThisAccess) {
-                    // this happens if we are an anonymous class and the enclosing method
-                    // shadows the field we want to access
-                    Access tacc = getBodyDecl(i).accessType(enclosingType(), true);
-                    if(tacc == null) return null;
-                    return tacc.qualifiesAccess(acc);
-                } else if(left.isCastedThisAccess()) {
-					Access tacc1 = ((CastExpr)((ParExpr)left).getExpr()).getTypeAccess();
-					Access tacc2 = getBodyDecl(i).accessType(enclosingType(), true);
-					if(tacc2 == null) return null;
-					Access res = new ParExpr(new CastExpr(tacc1, tacc2.qualifiesAccess(new ThisAccess("this")))).
-						qualifiesAccess(right);
-					//System.out.println("now changed access "+acc.dumpTree()+" in enclosing type into "+res.dumpTree());
-					return res;
-				} else if(left.isSuperAccess()) {
-					ClassDecl supclass = ((ClassDecl)enclosingType()).superclass();
-					Access tacc1 = getBodyDecl(i).accessType(supclass, true);
-					if(tacc1 == null) return null;
-					Access tacc2 = getBodyDecl(i).accessType(enclosingType(), true);
-					if(tacc2 == null) return null;
-					Access res = new ParExpr(new CastExpr(tacc1, tacc2.qualifiesAccess(new ThisAccess("this")))).
-						qualifiesAccess(right);
-					//System.out.println("changed access "+acc.dumpTree()+" in enclosing class into "+res.dumpTree());
-					return res;
-				} else {
-					return acc;
-				}
-			} else {
-				return acc;
-			}
+			Access outacc = getBodyDecl(i).accessType(out, false);
+			Access upacc = getBodyDecl(i).accessType(up, false);
+			if(outacc == null || upacc == null) return null;
+			return new ParExpr(new CastExpr(upacc, 
+											outacc.qualifiesAccess(new ThisAccess("this")))).
+							qualifiesAccess(new VarAccess(fd.getID()));
 		}
-		return null;
 	}
 }
         return getParent().Define_Access_accessField(this, caller, fd);

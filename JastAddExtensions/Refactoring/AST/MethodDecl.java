@@ -1098,6 +1098,12 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return unknownMethod_value;
     }
 
+    // Declared in AccessField.jrag at line 85
+    public Access accessField(FieldDeclaration fd) {
+        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
+        return accessField_FieldDeclaration_value;
+    }
+
     // Declared in Modifiers.jrag at line 258
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         if(caller == getModifiersNoTransform()) {
@@ -1313,22 +1319,14 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_mayBeAbstract(this, caller);
     }
 
-    // Declared in AccessField.jrag at line 156
+    // Declared in AccessField.jrag at line 124
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(caller == getBlockOptNoTransform()) {
 		Access acc = accessField(fd);
-		if(acc != null) {
-			if(!parameterDeclaration(fd.getID()).isEmpty()) {
-				// if acc is already qualified, nothing needs to change
-				if(acc instanceof AbstractDot)
-					return acc;
-				else
-					return new ThisAccess("this").qualifiesAccess(acc);
-			} else {
-				return acc;
-			}
-		}
-		return null;
+		if(acc == null) return null;
+		if(!parameterDeclaration(fd.getID()).isEmpty() && !(acc instanceof AbstractDot))
+			return new ThisAccess("this").qualifiesAccess(acc);
+		return acc;
 	}
         return getParent().Define_Access_accessField(this, caller, fd);
     }

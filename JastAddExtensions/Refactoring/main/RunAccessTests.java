@@ -1,14 +1,18 @@
 package main;
 
 import AST.ASTNode;
+import AST.AbstractDot;
 import AST.Access;
+import AST.Block;
 import AST.BytecodeParser;
 import AST.CastExpr;
 import AST.CompilationUnit;
 import AST.Dot;
+import AST.Expr;
 import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
+import AST.List;
 import AST.NameType;
 import AST.PackageAccess;
 import AST.ParExpr;
@@ -150,6 +154,9 @@ public class RunAccessTests extends Frontend {
             // Test 39
             testTypeAccess(new FileRange(5, 5, 7, 5), new FileRange(16, 7, 16, 9),
                     new TypeAccess("XYZ"), "Access/test39/A.java");
+            // Test 40
+            testTypeAccess(new FileRange(12, 5, 17, 5), new FileRange(15, 27, 15, 39),
+                    new TypeAccess("Inner1"), "Access/test40/Test.java");
             // done
             System.out.println("All type access tests passed.");
         } catch(TestingException e) {
@@ -183,7 +190,7 @@ public class RunAccessTests extends Frontend {
                     "Access/test29/Test.java");
             // Test 30
             testFieldAccess(new FileRange(12, 6, 12, 13), new FileRange(19, 25, 19, 36),
-                    new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new ThisAccess("this"))), new VarAccess("foo")), 
+                    new Dot(new ParExpr(new CastExpr(new TypeAccess("B"), new ThisAccess("this"))), new VarAccess("foo")), 
                     "Access/test30/Test.java");
             // Test 31
             testFieldAccess(new FileRange(12, 5, 12, 14), new FileRange(20, 24, 20, 32),
@@ -377,7 +384,15 @@ public class RunAccessTests extends Frontend {
             if(n == null) {
                 throw new TestingException("no node an file "+files[0]+" "+obsrng);
             }
-            Access res = n.accessField((FieldDeclaration)m);
+            Access res;
+            if(n instanceof FieldDeclaration)
+            	res = ((FieldDeclaration)n).accessField((FieldDeclaration)m);
+            else if(n instanceof Block)
+            	res = ((Block)n).accessField((FieldDeclaration)m);
+            else if(n instanceof List)
+            	res = ((TypeDecl)n.getParent()).accessField((FieldDeclaration)m);
+            else
+            	res = ((Expr)n).accessField((FieldDeclaration)m);
             if(expected == null) {
                 if(res != null) {
                     throw new TestingException("when accessing field "+((FieldDeclaration)m).getID()+" from "+

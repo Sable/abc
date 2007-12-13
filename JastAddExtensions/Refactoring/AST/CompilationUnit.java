@@ -677,7 +677,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_isLocalClass(this, caller);
     }
 
-    // Declared in AccessPackage.jrag at line 15
+    // Declared in AccessPackage.jrag at line 14
     public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
         if(true) { 
    int i = this.getIndexOfChild(caller);

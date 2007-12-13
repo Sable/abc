@@ -465,7 +465,7 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return getParent().Define_boolean_isDest(this, caller);
     }
 
-    // Declared in AccessField.jrag at line 188
+    // Declared in AccessField.jrag at line 5
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(caller == getRightNoTransform()) {
 		return getLeft().qualifiedAccessField(fd);
@@ -505,7 +505,7 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return getParent().Define_boolean_isSource(this, caller);
     }
 
-    // Declared in AccessMethod.jrag at line 43
+    // Declared in AccessMethod.jrag at line 40
     public Access Define_Access_accessMethod(ASTNode caller, ASTNode child, MethodDecl md, List args) {
         if(caller == getRightNoTransform()) {
 		return getLeft().qualifiedAccessMethod(md, args);
@@ -532,7 +532,7 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return getParent().Define_boolean_hasPackage(this, caller, packageName);
     }
 
-    // Declared in AccessPackage.jrag at line 39
+    // Declared in AccessPackage.jrag at line 38
     public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
         if(caller == getRightNoTransform()) {
 		Expr left = getLeft();

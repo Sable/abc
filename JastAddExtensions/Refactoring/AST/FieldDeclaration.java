@@ -1040,6 +1040,12 @@ if(isLiveAtOrAfter_Stmt_values == null) isLiveAtOrAfter_Stmt_values = new java.u
         return handlesException_TypeDecl_value;
     }
 
+    // Declared in AccessField.jrag at line 79
+    public Access accessField(FieldDeclaration fd) {
+        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
+        return accessField_FieldDeclaration_value;
+    }
+
     // Declared in Modifiers.jrag at line 249
     public boolean Define_boolean_mayBePrivate(ASTNode caller, ASTNode child) {
         if(caller == getModifiersNoTransform()) {

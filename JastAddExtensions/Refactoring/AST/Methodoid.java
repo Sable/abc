@@ -20,4 +20,6 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 
 		boolean hasBody();
 
+    // Declared in AccessField.jrag at line 85
+    public Access accessField(FieldDeclaration fd);
 }

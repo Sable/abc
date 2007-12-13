@@ -210,6 +210,12 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return enclosingFinally_value;
     }
 
+    // Declared in AccessField.jrag at line 82
+    public Access accessField(FieldDeclaration fd) {
+        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
+        return accessField_FieldDeclaration_value;
+    }
+
     // Declared in VariableDeclaration.jrag at line 74
     public boolean Define_boolean_isConstructorParameter(ASTNode caller, ASTNode child) {
         if(caller == getParameterNoTransform()) {
@@ -218,30 +224,12 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isConstructorParameter(this, caller);
     }
 
-    // Declared in VariableDeclaration.jrag at line 73
-    public boolean Define_boolean_isMethodParameter(ASTNode caller, ASTNode child) {
-        if(caller == getParameterNoTransform()) {
-            return  false;
-        }
-        return getParent().Define_boolean_isMethodParameter(this, caller);
-    }
-
     // Declared in Domination.jrag at line 63
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         if(caller == getParameterNoTransform()) {
             return  getBlock();
         }
         return getParent().Define_Block_getBlock(this, caller);
-    }
-
-    // Declared in LocalDeclaration.jrag at line 50
-    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
-        if(caller == getBlockNoTransform()) {
-		java.util.Set decls = visibleLocalDecls();
-		decls.add(getParameter());
-		return decls;
-	}
-        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
     }
 
     // Declared in LookupVariable.jrag at line 86
@@ -257,20 +245,22 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
     }
 
+    // Declared in LocalDeclaration.jrag at line 50
+    public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
+        if(caller == getBlockNoTransform()) {
+		java.util.Set decls = visibleLocalDecls();
+		decls.add(getParameter());
+		return decls;
+	}
+        return getParent().Define_java_util_Set_visibleLocalDecls(this, caller);
+    }
+
     // Declared in ControlFlowGraph.jrag at line 176
     public boolean Define_boolean_withInCatchClause(ASTNode caller, ASTNode child) {
         if(caller == getBlockNoTransform()) {
             return  true;
         }
         return getParent().Define_boolean_withInCatchClause(this, caller);
-    }
-
-    // Declared in VariableDeclaration.jrag at line 75
-    public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
-        if(caller == getParameterNoTransform()) {
-            return  true;
-        }
-        return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
     }
 
     // Declared in UnreachableStatements.jrag at line 113
@@ -281,20 +271,27 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_reachable(this, caller);
     }
 
-    // Declared in SyntacticClassification.jrag at line 76
-    public NameType Define_NameType_nameType(ASTNode caller, ASTNode child) {
-        if(caller == getParameterNoTransform()) {
-            return  NameType.TYPE_NAME;
-        }
-        return getParent().Define_NameType_nameType(this, caller);
+    // Declared in AccessField.jrag at line 152
+    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
+        if(true) { 
+   int i = this.getIndexOfChild(caller);
+ {
+		Access acc = accessField(fd);
+		if(acc == null || acc instanceof AbstractDot) return acc;
+		if(getParameter().declares(fd.getID()))
+			return new ThisAccess("this").qualifiesAccess(acc);
+		return acc;
+	}
+}
+        return getParent().Define_Access_accessField(this, caller, fd);
     }
 
-    // Declared in NameCheck.jrag at line 278
-    public VariableScope Define_VariableScope_outerScope(ASTNode caller, ASTNode child) {
-        if(caller == getParameterNoTransform()) {
-            return  this;
+    // Declared in ControlFlowGraph.jrag at line 171
+    public Set Define_Set_enclosingFinally(ASTNode caller, ASTNode child) {
+        if(caller == getBlockNoTransform()) {
+            return  enclosingFinally();
         }
-        return getParent().Define_VariableScope_outerScope(this, caller);
+        return getParent().Define_Set_enclosingFinally(this, caller);
     }
 
     // Declared in RenameParameter.jrag at line 18
@@ -305,12 +302,36 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_RefactoringException_canRenameTo(this, caller, new_name);
     }
 
-    // Declared in ControlFlowGraph.jrag at line 171
-    public Set Define_Set_enclosingFinally(ASTNode caller, ASTNode child) {
-        if(caller == getBlockNoTransform()) {
-            return  enclosingFinally();
+    // Declared in VariableDeclaration.jrag at line 73
+    public boolean Define_boolean_isMethodParameter(ASTNode caller, ASTNode child) {
+        if(caller == getParameterNoTransform()) {
+            return  false;
         }
-        return getParent().Define_Set_enclosingFinally(this, caller);
+        return getParent().Define_boolean_isMethodParameter(this, caller);
+    }
+
+    // Declared in VariableDeclaration.jrag at line 75
+    public boolean Define_boolean_isExceptionHandlerParameter(ASTNode caller, ASTNode child) {
+        if(caller == getParameterNoTransform()) {
+            return  true;
+        }
+        return getParent().Define_boolean_isExceptionHandlerParameter(this, caller);
+    }
+
+    // Declared in NameCheck.jrag at line 278
+    public VariableScope Define_VariableScope_outerScope(ASTNode caller, ASTNode child) {
+        if(caller == getParameterNoTransform()) {
+            return  this;
+        }
+        return getParent().Define_VariableScope_outerScope(this, caller);
+    }
+
+    // Declared in SyntacticClassification.jrag at line 76
+    public NameType Define_NameType_nameType(ASTNode caller, ASTNode child) {
+        if(caller == getParameterNoTransform()) {
+            return  NameType.TYPE_NAME;
+        }
+        return getParent().Define_NameType_nameType(this, caller);
     }
 
 public ASTNode rewriteTo() {

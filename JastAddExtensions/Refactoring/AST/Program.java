@@ -1939,7 +1939,7 @@ if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java
         return getParent().Define_boolean_mayBeAbstract(this, caller);
     }
 
-    // Declared in AccessField.jrag at line 14
+    // Declared in AccessField.jrag at line 88
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

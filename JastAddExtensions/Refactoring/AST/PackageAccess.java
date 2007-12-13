@@ -198,7 +198,7 @@ public class PackageAccess extends Access implements Cloneable {
 
     private boolean isUnknown_compute() {  return  !hasPackage(packageName());  }
 
-    // Declared in AccessField.jrag at line 196
+    // Declared in AccessField.jrag at line 13
     public Access qualifiedAccessField(FieldDeclaration fd) {
         Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
         return qualifiedAccessField_FieldDeclaration_value;
@@ -206,7 +206,7 @@ public class PackageAccess extends Access implements Cloneable {
 
     private Access qualifiedAccessField_compute(FieldDeclaration fd) {  return  null;  }
 
-    // Declared in AccessMethod.jrag at line 51
+    // Declared in AccessMethod.jrag at line 48
     public Access qualifiedAccessMethod(MethodDecl md, List args) {
         Access qualifiedAccessMethod_MethodDecl_List_value = qualifiedAccessMethod_compute(md, args);
         return qualifiedAccessMethod_MethodDecl_List_value;

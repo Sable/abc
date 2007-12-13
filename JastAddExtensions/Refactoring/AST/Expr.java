@@ -6,12 +6,10 @@ import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFo
 public abstract class Expr extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
-        accessField_FieldDeclaration_values = null;
         accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         Expr node = (Expr)super.clone();
-        node.accessField_FieldDeclaration_values = null;
         node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
@@ -517,7 +515,7 @@ public abstract class Expr extends ASTNode implements Cloneable {
 
     private boolean staticContextQualifier_compute() {  return  false;  }
 
-    // Declared in AccessField.jrag at line 192
+    // Declared in AccessField.jrag at line 9
     public Access qualifiedAccessField(FieldDeclaration fd) {
         Access qualifiedAccessField_FieldDeclaration_value = qualifiedAccessField_compute(fd);
         return qualifiedAccessField_FieldDeclaration_value;
@@ -527,7 +525,7 @@ public abstract class Expr extends ASTNode implements Cloneable {
 		return type().getBodyDecl(0).accessField(fd);
 	}
 
-    // Declared in AccessMethod.jrag at line 47
+    // Declared in AccessMethod.jrag at line 44
     public Access qualifiedAccessMethod(MethodDecl md, List args) {
         Access qualifiedAccessMethod_MethodDecl_List_value = qualifiedAccessMethod_compute(md, args);
         return qualifiedAccessMethod_MethodDecl_List_value;
@@ -703,18 +701,9 @@ public abstract class Expr extends ASTNode implements Cloneable {
         return inStaticContext_value;
     }
 
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 11
+    // Declared in AccessField.jrag at line 80
     public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
         Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
         return accessField_FieldDeclaration_value;
     }
 

@@ -9,7 +9,6 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         mayDef_Variable_values = null;
         mayUse_Variable_values = null;
         mayAccess_Variable_values = null;
-        accessField_FieldDeclaration_values = null;
         accessType_TypeDecl_boolean_values = null;
         nameType_computed = false;
         nameType_value = null;
@@ -19,7 +18,6 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         node.mayDef_Variable_values = null;
         node.mayUse_Variable_values = null;
         node.mayAccess_Variable_values = null;
-        node.accessField_FieldDeclaration_values = null;
         node.accessType_TypeDecl_boolean_values = null;
         node.nameType_computed = false;
         node.nameType_value = null;
@@ -1107,21 +1105,6 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
     public Program programRoot() {
         Program programRoot_value = getParent().Define_Program_programRoot(this, null);
         return programRoot_value;
-    }
-
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 7
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
     }
 
     // Declared in AccessPackage.jrag at line 3

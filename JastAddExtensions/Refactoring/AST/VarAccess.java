@@ -684,13 +684,13 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_VariableDeclaration_uses();
     }
-    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
-        if(decl() instanceof ParameterDeclaration)
+    protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
+        if(decl() instanceof VariableDeclaration)
             collection.add(this);
     }
 
-    protected void contributeTo_VariableDeclaration_VariableDeclaration_uses(HashSet collection) {
-        if(decl() instanceof VariableDeclaration)
+    protected void contributeTo_ParameterDeclaration_ParameterDeclaration_uses(HashSet collection) {
+        if(decl() instanceof ParameterDeclaration)
             collection.add(this);
     }
 

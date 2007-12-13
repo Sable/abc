@@ -645,6 +645,14 @@ if(mayDef_Variable_values == null) mayDef_Variable_values = new java.util.HashMa
 		return hasInit() && (this == v || getInit().mayDef(v));
 	}
 
+    // Declared in AccessField.jrag at line 161
+    public boolean declares(String id) {
+        boolean declares_String_value = declares_compute(id);
+        return declares_String_value;
+    }
+
+    private boolean declares_compute(String id) {  return  id.equals(getID());  }
+
     // Declared in LocalVarNesting.jrag at line 56
     public RefactoringException acceptLocal(String name) {
         RefactoringException acceptLocal_String_value = acceptLocal_compute(name);

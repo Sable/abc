@@ -574,6 +574,12 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return lookupVariable_String_value;
     }
 
+    // Declared in AccessField.jrag at line 86
+    public Access accessField(FieldDeclaration fd) {
+        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
+        return accessField_FieldDeclaration_value;
+    }
+
     // Declared in NameCheck.jrag at line 360
     public boolean Define_boolean_insideLoop(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
@@ -635,6 +641,22 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
             return  reachable();
         }
         return getParent().Define_boolean_reportUnreachable(this, caller);
+    }
+
+    // Declared in AccessField.jrag at line 143
+    public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
+        if(true) { 
+   int i = this.getIndexOfChild(caller);
+ {
+		Access acc = accessField(fd);
+		if(acc == null || acc instanceof AbstractDot) return acc;
+		for(int j=0;j<getNumInitStmt();++j)
+			if(getInitStmt(j).declares(fd.getID()))
+				return new ThisAccess("this").qualifiesAccess(acc);
+		return acc;
+	}
+}
+        return getParent().Define_Access_accessField(this, caller, fd);
     }
 
     // Declared in Domination.jrag at line 69

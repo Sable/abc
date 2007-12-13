@@ -441,6 +441,14 @@ if(between_Stmt_Stmt_values == null) between_Stmt_Stmt_values = new java.util.Ha
 					   begin.indexInBlock(blk), end.indexInBlock(blk));
 	}
 
+    // Declared in AccessField.jrag at line 160
+    public boolean declares(String id) {
+        boolean declares_String_value = declares_compute(id);
+        return declares_String_value;
+    }
+
+    private boolean declares_compute(String id) {  return  false;  }
+
     // Declared in LocalVarNesting.jrag at line 3
     public RefactoringException acceptLocal(String name) {
         RefactoringException acceptLocal_String_value = acceptLocal_compute(name);

@@ -16,6 +16,6 @@ interface B extends A { }
 
 public class Test implements B {
     float foo;
-    float m() { return ((A)this).foo; }
+    float m() { return ((B)this).foo; }
 }
 

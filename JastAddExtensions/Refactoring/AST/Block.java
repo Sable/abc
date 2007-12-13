@@ -14,7 +14,6 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         exitsAfter_Stmt_values = null;
         lookupType_String_values = null;
         lookupVariable_String_values = null;
-        accessField_FieldDeclaration_values = null;
         accessMethod_MethodDecl_List_values = null;
         accessType_TypeDecl_boolean_values = null;
     }
@@ -29,7 +28,6 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         node.exitsAfter_Stmt_values = null;
         node.lookupType_String_values = null;
         node.lookupVariable_String_values = null;
-        node.accessField_FieldDeclaration_values = null;
         node.accessMethod_MethodDecl_List_values = null;
         node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
@@ -705,18 +703,9 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return reachable_value;
     }
 
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 10
+    // Declared in AccessField.jrag at line 81
     public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
         Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
         return accessField_FieldDeclaration_value;
     }
 
@@ -876,22 +865,17 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_DefaultCase_followingDefaultCase(this, caller);
     }
 
-    // Declared in AccessField.jrag at line 174
+    // Declared in AccessField.jrag at line 134
     public Access Define_Access_accessField(ASTNode caller, ASTNode child, FieldDeclaration fd) {
         if(caller == getStmtListNoTransform()) { 
-   int index = caller.getIndexOfChild(child);
+   int i = caller.getIndexOfChild(child);
  {
 		Access acc = accessField(fd);
-		if(acc != null) {
-			if(acc instanceof AbstractDot)
-				return acc;
-			VariableDeclaration v = localVariableDeclaration(fd.getID());
-			if(v != null && declaredBeforeUse(v, index)) {
-				return new ThisAccess("this").qualifiesAccess(acc);
-			}
-			return acc;
-		}
-		return null;
+		if(acc == null || acc instanceof AbstractDot) return acc;
+		VariableDeclaration v = localVariableDeclaration(fd.getID());
+		if(v != null && declaredBeforeUse(v, i))
+			return new ThisAccess("this").qualifiesAccess(acc);
+		return acc;
 	}
 }
         return getParent().Define_Access_accessField(this, caller, fd);
@@ -996,7 +980,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_boolean_reportUnreachable(this, caller);
     }
 
-    // Declared in AccessPackage.jrag at line 31
+    // Declared in AccessPackage.jrag at line 30
     public Access Define_Access_accessPackage(ASTNode caller, ASTNode child, String pkg) {
         if(caller == getStmtListNoTransform()) { 
    int i = caller.getIndexOfChild(child);

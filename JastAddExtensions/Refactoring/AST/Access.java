@@ -11,7 +11,6 @@ public abstract class Access extends Expr implements Cloneable {
         hasPrevExpr_computed = false;
         type_computed = false;
         type_value = null;
-        accessField_FieldDeclaration_values = null;
         accessMethod_MethodDecl_List_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
@@ -21,7 +20,6 @@ public abstract class Access extends Expr implements Cloneable {
         node.hasPrevExpr_computed = false;
         node.type_computed = false;
         node.type_value = null;
-        node.accessField_FieldDeclaration_values = null;
         node.accessMethod_MethodDecl_List_values = null;
         node.in$Circle(false);
         node.is$Final(false);
@@ -290,21 +288,6 @@ public abstract class Access extends Expr implements Cloneable {
     public BodyDecl enclosingBodyDecl() {
         BodyDecl enclosingBodyDecl_value = getParent().Define_BodyDecl_enclosingBodyDecl(this, null);
         return enclosingBodyDecl_value;
-    }
-
-    protected java.util.Map accessField_FieldDeclaration_values;
-    // Declared in AccessField.jrag at line 12
-    public Access accessField(FieldDeclaration fd) {
-        Object _parameters = fd;
-if(accessField_FieldDeclaration_values == null) accessField_FieldDeclaration_values = new java.util.HashMap(4);
-        if(accessField_FieldDeclaration_values.containsKey(_parameters))
-            return (Access)accessField_FieldDeclaration_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessField_FieldDeclaration_value = getParent().Define_Access_accessField(this, null, fd);
-        if(isFinal && num == boundariesCrossed)
-            accessField_FieldDeclaration_values.put(_parameters, accessField_FieldDeclaration_value);
-        return accessField_FieldDeclaration_value;
     }
 
     protected java.util.Map accessMethod_MethodDecl_List_values;

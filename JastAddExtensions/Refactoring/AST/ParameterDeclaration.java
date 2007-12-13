@@ -515,6 +515,14 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
 
     private Constant constant_compute()  { throw new UnsupportedOperationException(); }
 
+    // Declared in AccessField.jrag at line 163
+    public boolean declares(String id) {
+        boolean declares_String_value = declares_compute(id);
+        return declares_String_value;
+    }
+
+    private boolean declares_compute(String id) {  return  id.equals(getID());  }
+
     // Declared in LocalVarNesting.jrag at line 62
     public RefactoringException acceptLocal(String name) {
         RefactoringException acceptLocal_String_value = acceptLocal_compute(name);

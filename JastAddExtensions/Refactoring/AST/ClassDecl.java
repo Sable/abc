@@ -1075,24 +1075,30 @@ if(instanceOf_TypeDecl_values == null) instanceOf_TypeDecl_values = new java.uti
     return false;
   }
 
-    // Declared in AccessField.jrag at line 18
-    public Access accessFieldInSupertypes(FieldDeclaration fd) {
-        Access accessFieldInSupertypes_FieldDeclaration_value = accessFieldInSupertypes_compute(fd);
-        return accessFieldInSupertypes_FieldDeclaration_value;
+    // Declared in AccessField.jrag at line 24
+    public TypeDecl findFieldUpwards(FieldDeclaration fd) {
+        TypeDecl findFieldUpwards_FieldDeclaration_value = findFieldUpwards_compute(fd);
+        return findFieldUpwards_FieldDeclaration_value;
     }
 
-    private Access accessFieldInSupertypes_compute(FieldDeclaration fd)  {
-		Access a;
+    private TypeDecl findFieldUpwards_compute(FieldDeclaration fd)  {
+		if(localFieldsMap().containsValue(fd))
+			return this;
+		boolean shadowed = localFieldsMap().containsKey(fd.getID());
 		if(hasSuperclass()) {
-			a = superclass().getBodyDecl(0).accessField(fd);
-			if(a != null)
-				return a;
+			TypeDecl td = superclass().findFieldUpwards(fd);
+			if(td == superclass() && !shadowed)
+				return this;
+			else if(td != null)
+				return td;
 		}
 		for(Iterator i = interfacesIterator(); i.hasNext(); ) {
 			InterfaceDecl idecl = (InterfaceDecl)i.next();
-			a = idecl.getBodyDecl(0).accessField(fd);
-			if(a != null)
-				return a;
+			TypeDecl td = idecl.findFieldUpwards(fd);
+			if(td == idecl && !shadowed)
+				return this;
+			else if(td != null)
+				return td;
 		}
 		return null;
 	}
