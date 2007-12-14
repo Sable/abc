@@ -29,6 +29,7 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.IdentityStmt;
+import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.util.Chain;
 
@@ -52,7 +53,7 @@ public class JimpleEditor
             this.marker = units.getSuccOf(this.marker);
     }
 
-    public void initField(String name, SootMethod constructor)
+    public void initField(String name, SootMethod constructor, Value... args)
     {
         Local this_local = method.getActiveBody().getThisLocal();
         SootField field = method.getDeclaringClass().getFieldByName(name);
@@ -68,7 +69,7 @@ public class JimpleEditor
         units.insertBefore(Jimple.v().newAssignStmt(local, alloc_expr), marker);
 
         // call constructor
-        ArrayList<Value> arglist = new ArrayList<Value>();
+        List<Value> arglist = Arrays.asList(args);
         Value constructor_call =
             Jimple.v().newSpecialInvokeExpr(
                 local, constructor.makeRef(), arglist);
@@ -78,5 +79,10 @@ public class JimpleEditor
         Value field_ref =
             Jimple.v().newInstanceFieldRef(this_local, field.makeRef());
         units.insertBefore(Jimple.v().newAssignStmt(field_ref, local), marker);
+    }
+
+    public Value getInt(int i)
+    {
+        return IntConstant.v(i);
     }
 }

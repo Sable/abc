@@ -123,42 +123,55 @@ public class AbcExtension extends abc.eaj.AbcExtension
 				new Integer(abc.tm.parse.sym.SKIPMATCH)));
     }
     
-	public void addBasicClassesToSoot()
-	   {
-		   super.addBasicClassesToSoot();
-           // Need to add all standard library classes used in the codegen (minus some default ones)
-		   Scene.v().addBasicClass("java.util.Iterator", SootClass.SIGNATURES);
-		   Scene.v().addBasicClass("java.util.LinkedHashSet",
-                                    SootClass.SIGNATURES);
-		   Scene.v().addBasicClass("java.util.LinkedList", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.lang.ref.WeakReference", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.lang.ThreadLocal", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.PersistentWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashPersistentWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.util.BitSet", SootClass.SIGNATURES);
-           if(abc.main.Debug.v().useCommonsCollections)
-        	   Scene.v().addBasicClass("org.apache.commons.collections.map.ReferenceIdentityMap", SootClass.SIGNATURES);
-           else {
-        	   Scene.v().addBasicClass("java.util.NoSuchElementException", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IdentityHashMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityHashMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("java.util.Map$Entry", SootClass.SIGNATURES);
-           }
-           if(Debug.v().dynaInstr || Debug.v().shadowCount) {
-               Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
-               Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);               
-           }
-           if(Debug.v().useITDs) {
-        	   Scene.v().addBasicClass("java.lang.Thread", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("java.util.BitSet", SootClass.SIGNATURES);
-           }
-	   }
-    
+    public void addBasicClassesToSoot()
+    {
+        super.addBasicClassesToSoot();
+        // Need to add all standard library classes used in the
+        // codegen (minus some default ones)
+        final String tmRuntime = "org.aspectbench.tm.runtime.internal.";
+
+        addClassSignature("java.util.Iterator");
+        addClassSignature("java.util.LinkedHashSet");
+        addClassSignature("java.util.LinkedList");
+        addClassSignature("java.lang.ref.WeakReference");
+        addClassSignature("java.lang.ThreadLocal");
+        addClassSignature("java.util.Set");
+        addClassSignature(tmRuntime + "MyWeakRef");
+        addClassSignature(tmRuntime + "PersistentWeakRef");
+        addClassSignature(tmRuntime + "ClashWeakRef");
+        addClassSignature(tmRuntime + "ClashPersistentWeakRef");
+        addClassSignature(tmRuntime + "Lock");
+
+        if(abc.main.Debug.v().useCommonsCollections)
+            addClassSignature(
+                "org.apache.commons.collections.map.ReferenceIdentityMap");
+        else {
+            addClassSignature("java.util.NoSuchElementException");
+            addClassSignature("java.util.Map$Entry");
+            addClassSignature(tmRuntime + "IdentityHashMap");
+            addClassSignature(tmRuntime + "WeakKeyIdentityHashMap");
+            addClassSignature(tmRuntime + "WeakKeyCollectingIdentityHashMap");
+        }
+
+        if(Debug.v().dynaInstr || Debug.v().shadowCount) {
+            addClassSignature(tmRuntime + "IShadowSwitchInitializer");
+            addClassSignature(tmRuntime + "ShadowSwitch");
+        }
+
+        if(Debug.v().useITDs) {
+            addClassSignature("java.lang.Thread");
+            addClassSignature("java.util.BitSet");
+            addClassSignature("java.lang.ref.ReferenceQueue");
+            addClassSignature(tmRuntime + "IndexTree");
+            addClassSignature(tmRuntime + "IndexTreeMap");
+        }
+    }
+ 
+    private void addClassSignature(String name)
+    {
+        Scene.v().addBasicClass(name, SootClass.SIGNATURES);
+    }
+
     /** 
      * {@inheritDoc}
      */

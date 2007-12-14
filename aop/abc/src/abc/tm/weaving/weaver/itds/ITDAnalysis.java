@@ -104,8 +104,10 @@ public class ITDAnalysis extends AbstractReweavingAnalysis
 
             for (int arg = 0; arg < invoke.getArgs().size(); arg++) {
                 String varname = tm.getVariableOrder(symbol).get(arg);
+                Set<SootClass> pointsto = null;
                 boolean isfresh = analysis.isFresh(stmt, arg);
-                Set<SootClass> pointsto = analysis.getPointsToSet(stmt, arg);
+                if (isfresh)
+                    pointsto = analysis.getPointsToSet(stmt, arg);
 
                 tm.getITDAnalysisResults().addShadow(symbol, varname,
                                                      isfresh, pointsto);

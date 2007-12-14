@@ -87,21 +87,53 @@ public class JimpleGenerator
     {
         SootField field = method.getDeclaringClass().getFieldByName(name);
         Local local = local_generator.generateLocal(field.getType(), name);
-        units.addLast(Jimple.v().newAssignStmt(
-            local,
-            Jimple.v().newInstanceFieldRef(this_local, field.makeRef())
-        ));
+        assign(local,
+               Jimple.v().newInstanceFieldRef(this_local, field.makeRef())
+        );
+        return local;
+    }
+
+    protected Local read(Local base, String name)
+    {
+        SootClass base_class = ((RefType) base.getType()).getSootClass();
+        SootField field = base_class.getFieldByName(name);
+        Local local = local_generator.generateLocal(field.getType(), name);
+        assign(local,
+            Jimple.v().newInstanceFieldRef(base, field.makeRef())
+        );
         return local;
     }
 
     protected void write(String name, Value val)
     {
-        units.addLast(Jimple.v().newAssignStmt(
+        assign(
             Jimple.v().newInstanceFieldRef(
                 this_local,
                 method.getDeclaringClass().getFieldByName(name).makeRef()
             ),
-            val));
+            val);
+    }
+
+    protected void write(Local base, String name, Value val)
+    {
+        SootClass base_class = ((RefType) base.getType()).getSootClass();
+        assign(
+            Jimple.v().newInstanceFieldRef(base,
+                base_class.getFieldByName(name).makeRef()),
+            val);
+    }
+
+    protected Local array(Type basetype, Value size)
+    {
+        Type type = basetype.makeArrayType();
+        Local local = local_generator.generateLocal(type, "array");
+        assign(local, Jimple.v().newNewArrayExpr(basetype, size));
+        return local;
+    }
+
+    protected void arrayset(Local array, Value index, Local val)
+    {
+        assign(Jimple.v().newArrayRef(array, index), val);
     }
 
     /**
@@ -113,7 +145,7 @@ public class JimpleGenerator
         for (int i = 0; i < args.length; i++)
             arglist.add(args[i]);
         InvokeExpr expr;
-        if (((RefType)base.getType()).getSootClass().isInterface())
+        if (method.getDeclaringClass().isInterface())
             expr = Jimple.v().newInterfaceInvokeExpr(
                                     base, method.makeRef(), arglist);
         else
@@ -127,7 +159,7 @@ public class JimpleGenerator
         } else {
             String name = method.getName() + "_result";
             Local local = local_generator.generateLocal(returntype, name);
-            units.addLast(Jimple.v().newAssignStmt(local, expr));
+            assign(local, expr);
             return local;
         }
     }
@@ -150,7 +182,7 @@ public class JimpleGenerator
         } else {
             String name = method.getName() + "_result";
             Local local = local_generator.generateLocal(returntype, name);
-            units.addLast(Jimple.v().newAssignStmt(local, expr));
+            assign(local, expr);
             return local;
         }
     }
@@ -166,7 +198,7 @@ public class JimpleGenerator
 
         // allocate object
         Value alloc_expr = Jimple.v().newNewExpr(type);
-        units.add(Jimple.v().newAssignStmt(allocated, alloc_expr));
+        assign(allocated, alloc_expr);
 
         // call constructor
         ArrayList<Value> arglist = new ArrayList<Value>(args.length);
@@ -178,6 +210,23 @@ public class JimpleGenerator
         units.add(Jimple.v().newInvokeStmt(constructor_call));
 
         return allocated;
+    }
+
+    protected Local cast(Type to_type, Local local)
+    {
+        Local casted = local_generator.generateLocal(to_type, "cast_result");
+        assign(casted, Jimple.v().newCastExpr(local, to_type));
+        return casted;
+    }
+
+    protected void assign(Value assigned, Value val)
+    {
+        units.addLast(Jimple.v().newAssignStmt(assigned, val));
+    }
+
+    protected void increment(Local local)
+    {
+        assign(local, Jimple.v().newAddExpr(local, getInt(1)));
     }
 
     protected Stack<Stmt> if_end_labels = new Stack<Stmt>();
@@ -205,6 +254,93 @@ public class JimpleGenerator
     public void endIf()
     {
         units.addLast(if_end_labels.pop());
+    }
+
+    protected Stack<Stmt> while_start_labels = new Stack<Stmt>();
+    protected Stack<Stmt> while_end_labels = new Stack<Stmt>();
+
+    public void beginWhile(ConditionExpr condition)
+    {
+        Stmt start_label = Jimple.v().newNopStmt();
+        Stmt end_label = Jimple.v().newNopStmt();
+
+        while_start_labels.push(start_label);
+        while_end_labels.push(end_label);
+    
+        units.addLast(start_label);
+        units.addLast(Jimple.v().newIfStmt(condition, end_label));
+    }
+
+    public void endWhile()
+    {
+        Stmt start_label = while_start_labels.pop();
+        Stmt end_label = while_end_labels.pop();
+
+        units.addLast(Jimple.v().newGotoStmt(start_label));
+        units.addLast(end_label);
+    }
+    
+
+    /**
+     * For each switch, an array, a, is pushed onto this stack.
+     * For a switch with N cases, a[0]..a[N-1] are the labels
+     * for each case, a[N] is the label for the default case,
+     * and a[N+1] is the label for the end of the switch.
+     */
+    protected Stack<Stmt[]> switch_case_labels = new Stack<Stmt[]>();
+
+    public void beginSwitch(Local switchvar, int cases)
+    {
+        Stmt[] labels = new Stmt[cases+2];
+        List<Value> switchvals = new ArrayList<Value>();
+        List<Stmt> switchlabels = new ArrayList<Stmt>();
+        for (int i = 0; i < cases; i++) {
+            Stmt label = Jimple.v().newNopStmt();
+            labels[i] = label;
+            switchvals.add(getInt(i));
+            switchlabels.add(label);
+        }
+        Stmt defaultlabel = Jimple.v().newNopStmt();
+        labels[cases] = defaultlabel;
+        labels[cases+1] = Jimple.v().newNopStmt(); // end of switch block
+
+        units.addLast(Jimple.v().newLookupSwitchStmt(
+            switchvar, switchvals, switchlabels, defaultlabel));
+        switch_case_labels.push(labels);
+    }
+
+    public void beginCase(int casenumber)
+    {
+        Stmt[] labels = switch_case_labels.peek();
+        Stmt caselabel = labels[casenumber];
+        units.addLast(labels[casenumber]);
+        // record that this case has been generated
+        labels[casenumber] = null;
+    }
+
+    public void beginDefaultCase()
+    {
+        Stmt[] labels = switch_case_labels.peek();
+        units.addLast(labels[labels.length - 2]);
+        // record that this case has been generated
+        labels[labels.length - 2] = null;
+    }
+
+    public void exitSwitch()
+    {
+        Stmt[] labels = switch_case_labels.peek();
+        units.addLast(Jimple.v().newGotoStmt(labels[labels.length - 1]));
+    }
+
+    public void endSwitch()
+    {
+        Stmt[] labels = switch_case_labels.pop();
+        // generate any missing cases
+        for (int i = 0; i < labels.length; i++) {
+            Stmt label = labels[i];
+            if (label != null)
+                units.addLast(label);
+        }
     }
 
     public void returnVoid()
@@ -237,8 +373,39 @@ public class JimpleGenerator
         return IntConstant.v(i);
     }
 
+    public Local getThis()
+    {
+        return this_local;
+    }
+
     public ConditionExpr equalsTest(Value a, Value b)
     {
         return Jimple.v().newNeExpr(a, b);
+    }
+
+    public ConditionExpr notEqualsTest(Value a, Value b)
+    {
+        return Jimple.v().newEqExpr(a, b);
+    }
+
+    public Local land(Value a, Value b)
+    {
+        Local and = local_generator.generateLocal(IntType.v(), "and");
+        assign(and, Jimple.v().newAndExpr(a, b));
+        return and;
+    }
+
+    public Local lor(Value a, Value b)
+    {
+        Local or = local_generator.generateLocal(IntType.v(), "or");
+        assign(or, Jimple.v().newOrExpr(a, b));
+        return or;
+    }
+
+    public Local rightShift(Value a, Value b)
+    {
+        Local shift = local_generator.generateLocal(IntType.v(), "shift");
+        assign(shift, Jimple.v().newShrExpr(a, b));
+        return shift;
     }
 }

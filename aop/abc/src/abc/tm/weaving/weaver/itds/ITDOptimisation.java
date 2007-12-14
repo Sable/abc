@@ -20,7 +20,10 @@
 package abc.tm.weaving.weaver.itds;
 
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import soot.Body;
+import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.matching.SMEdge;
+import abc.tm.weaving.matching.TMStateMachine;
+
 import soot.BooleanType;
 import soot.IntType;
 import soot.Modifier;
@@ -32,8 +35,6 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.Jimple;
-import soot.util.Chain;
 
 import java.util.*;
 
@@ -41,352 +42,265 @@ public class ITDOptimisation
 {
     protected TraceMatch tm;
     protected ITDAnalysisResults results;
-
-    protected final static String BINDING_INTERFACE = "ITDBinding";
-    protected String BINDING_DISJUNCT;
-    protected String STATES;
-    protected String STATES_POS;
-    protected String STATES_NEG;
-    protected String OWNER_THREAD;
-    protected String NEXT_BINDING;
-
-    protected String MODIFIED;
-    protected String ALL_BINDINGS;
-
-    protected SootClass BITSET = lookup("java.util.BitSet");
-    protected SootMethod BITSET_INIT =
-        lookup(BITSET, VoidType.v(), SootMethod.constructorName);
-    protected SootMethod BITSET_GET =
-        lookup(BITSET, BooleanType.v(), "get", IntType.v());
-    protected SootMethod BITSET_SET =
-        lookup(BITSET, VoidType.v(), "set", IntType.v());
-    protected SootMethod BITSET_ANDNOT =
-        lookup(BITSET, VoidType.v(), "andNot", BITSET.getType());
-    protected SootMethod BITSET_OR =
-        lookup(BITSET, VoidType.v(), "or", BITSET.getType());
-    protected SootMethod BITSET_CLEAR =
-        lookup(BITSET, VoidType.v(), "clear");
-
-    protected SootClass THREAD = lookup("java.lang.Thread");
-    protected SootMethod CURRENT_THREAD =
-        lookup(THREAD, THREAD.getType(), "currentThread");
-
-    protected SootClass MAP = lookup(
-        "org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap"
-    );
-    protected SootMethod MAP_INIT =
-        lookup(MAP, VoidType.v(), SootMethod.constructorName);
-
-    protected SootClass DISJUNCT;
-    protected SootMethod DISJUNCT_INIT;
-
+    protected NameLookup names;
+    protected Introductions itds;
 
     public ITDOptimisation(TraceMatch tm)
     {
         this.tm = tm;
         this.results = tm.getITDAnalysisResults();
-        this.BINDING_DISJUNCT = tm.getName() + "disjunct";
-        this.STATES = tm.getName() + "states";
-        this.STATES_POS = tm.getName() + "states_pos";
-        this.STATES_NEG = tm.getName() + "states_neg";
-        this.OWNER_THREAD = tm.getName() + "owner_thread";
-        this.NEXT_BINDING = tm.getName() + "next_binding";
-        this.MODIFIED = tm.getName() + "modified";
-        this.ALL_BINDINGS = tm.getName() + "all_bindings";
-        this.DISJUNCT = tm.getDisjunctClass();
-        this.DISJUNCT_INIT =
-            lookup(DISJUNCT, VoidType.v(), SootMethod.constructorName);
+        this.names = new NameLookup(tm);
     }
 
     public void doITDOptimisation()
     {
-        SootClass binding = createBindingInterface();
-        createBindingMethods(binding, binding.getType());
+        SootClass itd_interface = createBindingInterface();
+        Type itd_type = itd_interface.getType();
+        this.itds = new Introductions(tm, itd_type);
+        itds.create(itd_interface);
+
+        new DisjunctUpdates(tm, itds).update();
 
         for (SootClass sc : results.itdTargets())
         {
-            sc.addInterface(binding);
-            addField(sc, DISJUNCT.getType(), BINDING_DISJUNCT);
-            addField(sc, BITSET.getType(), STATES);
-            addField(sc, BITSET.getType(), STATES_POS);
-            addField(sc, BITSET.getType(), STATES_NEG);
-            addField(sc, THREAD.getType(), OWNER_THREAD);
-            addField(sc, binding.getType(), NEXT_BINDING);
-            createBindingMethods(sc, binding.getType());
+            sc.addInterface(itd_interface);
+            new Introductions(tm, itd_type).create(sc);
         }
-        
-        updateLabelsClass(binding.getType());
-        updateAdvice(binding.getType());
-    }
-
-    protected void createBindingMethods(SootClass sc, Type binding_type)
-    {
-        createInitMethod(sc);
-        createIsBoundMethod(sc);
-        createTransitionMethod(sc);
-        createMergeMethod(sc);
-        createSetOwnerThreadMethod(sc);
-        createIsOwnedByCurrentThreadMethod(sc);
-        createIsInListMethod(sc);
-        createAddToListMethod(sc, binding_type);
-        createRemoveFromListMethod(sc, binding_type);
-        createGetDisjunctMethod(sc);
-        createHasMatchedMethod(sc);
-        createTerminateMethod(sc);
-    }
-
-    protected void createInitMethod(SootClass sc)
-    {
-        SootMethod init =
-            createTMMethod(sc, VoidType.v(), "Init", DISJUNCT.getType());
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(init);
-            gen.write(BINDING_DISJUNCT, gen.nextParameter());
-
-            Local states = gen.alloc(BITSET_INIT);
-            Value initial_state = gen.getInt(tm.getInitialStateNumber());
-            gen.call(states, BITSET_SET, initial_state);
-            
-            gen.write(STATES, states);
-            gen.write(STATES_POS, gen.alloc(BITSET_INIT));
-            gen.write(STATES_NEG, gen.alloc(BITSET_INIT));
-            gen.returnVoid();
-        }
-    }
-
-    protected void createIsBoundMethod(SootClass sc)
-    {
-        SootMethod is_bound_method =
-            createTMMethod(sc, BooleanType.v(), "IsBound");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(is_bound_method);
-            gen.beginIf(gen.equalsTest(gen.read(STATES), gen.getNull()));
-                gen.returnValue(gen.getFalse());
-            gen.elseBranch();
-                gen.returnValue(gen.getTrue());
-            gen.endIf();
-        }
-    }
-
-    protected void createTransitionMethod(SootClass sc)
-    {
-        Type inttype = IntType.v();
-        SootMethod transition_method =
-            createTMMethod(sc, VoidType.v(), "Transition", inttype, inttype);
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(transition_method);
-            Local from = gen.nextParameter();
-            Local to = gen.nextParameter();
-            Local states = gen.read(STATES);
-            gen.beginIf(gen.call(states, BITSET_GET, from));
-                Local states_pos = gen.read(STATES_POS);
-                gen.call(states_pos, BITSET_SET, to);
-                Local states_neg = gen.read(STATES_NEG);
-                gen.call(states_neg, BITSET_SET, from);
-            gen.endIf();
-            gen.returnVoid();
-        }
-    }
-
-    protected void createMergeMethod(SootClass sc)
-    {
-        SootMethod merge_method =
-            createTMMethod(sc, VoidType.v(), "Merge");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(merge_method);
-            Value final_state = gen.getInt(tm.getFinalStateNumber());
-            Local states = gen.read(STATES);
-            Local states_pos = gen.read(STATES_POS);
-            Local states_neg = gen.read(STATES_NEG);
-            gen.call(states, BITSET_ANDNOT, states_neg);
-            gen.call(states, BITSET_OR, states_pos);
-            gen.call(states_neg, BITSET_CLEAR);
-            gen.call(states_neg, BITSET_SET, final_state);
-            gen.returnVoid();
-        }
-    }
-
-    protected void createSetOwnerThreadMethod(SootClass sc)
-    {
-        SootMethod set_method =
-            createTMMethod(sc, VoidType.v(), "SetOwnerThread");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(set_method);
-            gen.write(OWNER_THREAD, gen.call(CURRENT_THREAD));
-            gen.returnVoid();
-        }
-    }
-
-    protected void createIsOwnedByCurrentThreadMethod(SootClass sc)
-    {
-        SootMethod owned_method =
-            createTMMethod(sc, BooleanType.v(), "IsOwnedByCurrentThread");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(owned_method);
-            Local current = gen.call(CURRENT_THREAD);
-            Local owner = gen.read(OWNER_THREAD);
-            gen.beginIf(gen.equalsTest(current, owner));
-                gen.returnValue(gen.getTrue());
-            gen.elseBranch();
-                gen.returnValue(gen.getFalse());
-            gen.endIf();
-            gen.returnVoid();
-        }
-    }
-
-    protected void createIsInListMethod(SootClass sc)
-    {
-        SootMethod in_list_method =
-            createTMMethod(sc, BooleanType.v(), "IsInList");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(in_list_method);
-            Local next_binding = gen.read(NEXT_BINDING);
-            gen.beginIf(gen.equalsTest(next_binding, gen.getNull()));
-                gen.returnValue(gen.getFalse());
-            gen.elseBranch();
-                gen.returnValue(gen.getTrue());
-            gen.endIf();
-            gen.returnVoid();
-        }
-    }
-
-    protected void createAddToListMethod(SootClass sc, Type binding_type)
-    {
-        SootMethod add_to_list_method =
-            createTMMethod(sc, VoidType.v(), "AddToList", binding_type);
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(add_to_list_method);
-            Local next_binding_param = gen.nextParameter();
-            gen.write(NEXT_BINDING, next_binding_param);
-            gen.returnVoid();
-        }
-    }
-
-    protected void createRemoveFromListMethod(SootClass sc, Type binding_type)
-    {
-        SootMethod remove_method =
-            createTMMethod(sc, binding_type, "RemoveFromList");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(remove_method);
-            Local next_binding = gen.read(NEXT_BINDING);
-            gen.write(NEXT_BINDING, gen.getNull());
-            gen.returnValue(next_binding);
-        }
-    }
-
-    protected void createGetDisjunctMethod(SootClass sc)
-    {
-        SootMethod get_disjunct =
-            createTMMethod(sc, DISJUNCT.getType(), "GetDisjunct");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(get_disjunct);
-            gen.returnValue(gen.read(BINDING_DISJUNCT));
-        }
-    }
-
-    protected void createHasMatchedMethod(SootClass sc)
-    {
-        SootMethod has_matched =
-            createTMMethod(sc, BooleanType.v(), "HasMatched");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(has_matched);
-            Value final_state = gen.getInt(tm.getFinalStateNumber());
-            Local states = gen.read(STATES);
-            Local matched = gen.call(states, BITSET_GET, final_state);
-            gen.beginIf(matched);
-                gen.returnValue(gen.getTrue());
-            gen.elseBranch();
-                gen.returnValue(gen.getFalse());
-            gen.endIf();
-        }
-    }
-
-    protected void createTerminateMethod(SootClass sc)
-    {
-        SootMethod terminate = createTMMethod(sc, VoidType.v(), "Terminate");
-
-        if (!sc.isInterface()) {
-            JimpleGenerator gen = new JimpleGenerator(terminate);
-            gen.write(BINDING_DISJUNCT, gen.getNull());
-            gen.write(STATES, gen.getNull());
-            gen.write(STATES_POS, gen.getNull());
-            gen.write(STATES_NEG, gen.getNull());
-            gen.write(OWNER_THREAD, gen.getNull());
-            gen.write(NEXT_BINDING, gen.getNull());
-            gen.returnVoid();
-        }
+ 
+        updateLabelsClass(itd_type);
+        updateAdvice();
     }
 
     protected void updateLabelsClass(Type binding_type)
     {
-        SootClass labels_class = tm.getLabelsClass();
-        addField(labels_class, binding_type, MODIFIED);
-        addField(labels_class, MAP.getType(), ALL_BINDINGS);
-
+        SootClass labels = tm.getLabelsClass();
         SootMethod constructor =
-            lookup(labels_class, VoidType.v(), SootMethod.constructorName);
+            names.lookup(labels, VoidType.v(), SootMethod.constructorName);
         JimpleEditor editor = new JimpleEditor(constructor);
-        editor.initField(ALL_BINDINGS, MAP_INIT);
+
+        addField(labels, binding_type, names.MODIFIED);
+        addField(labels, names.REFQUEUE.getType(), names.TMREFQUEUE);
+        editor.initField(names.TMREFQUEUE, names.REFQUEUE_INIT);
+
+        for (String symbol : tm.getSymbols()) {
+            if (needTreeForSymbol(symbol)) {
+                String name = mapNameForSymbol(symbol);
+                Value depth = editor.getInt(treeDepthForSymbol(symbol));
+
+                addField(labels, names.INDEXTREE.getType(), name);
+                editor.initField(name, names.INDEXTREE_INIT, depth);
+            }
+        }
     }
 
-    protected void updateAdvice(Type binding_type)
+    protected boolean needTreeForSymbol(String symbol)
     {
-        // per-advice
- 
+        return !tm.getVariableOrder(symbol).contains(results.itdVariable());
+    }
+
+    protected String mapNameForSymbol(String symbol)
+    {
+        return tm.getName() + "bindings_" + symbol;
+    }
+
+    protected int treeDepthForSymbol(String symbol)
+    {
+        return tm.getVariableOrder(symbol).size();
+    }
+
+    protected void updateAdvice()
+    {
+        // per-symbol advice
+        for (String symbol : tm.getSymbols()) {
+            SootMethod method = tm.getSymbolAdviceMethod(symbol);
+            if (needTreeForSymbol(symbol))
+                generateTreeLookupAdvice(symbol, method);
+            else if (tm.getInitialSymbols().contains(symbol))
+                generateInitialSymbolAdvice(symbol, method);
+            else
+                generateNoLookupAdvice(symbol, method);
+        }
+
         // some-advice
+        generateSomeAdvice();
     }
 
-
-
-    protected SootClass lookup(String name)
+    protected void generateTreeLookupAdvice(String symbol, SootMethod method)
     {
-        return soot.Scene.v().getSootClass(name);
+        JimpleGenerator gen = new JimpleGenerator(method);
+        int params = method.getParameterCount();
+        for (int i = 0; i < params; i++)
+            gen.nextParameter();
+        gen.returnVoid();
     }
-    protected SootMethod lookup(SootClass sc, Type t, String name, Type... args)
+
+    protected void generateInitialSymbolAdvice(String symbol, SootMethod method)
     {
-        ArrayList<Type> list = new ArrayList<Type>(args.length);
-        for (int i = 0; i < args.length; i++)
-            list.add(args[i]);
-        return sc.getMethod(name, list, t);
+        JimpleGenerator gen = new JimpleGenerator(method);
+        List varnames = tm.getVariableOrder(symbol);
+        Local[] bindings = new Local[varnames.size()];
+        int itdparam = varnames.indexOf(results.itdVariable());
+        
+        // read parameters
+        for (int i = 0; i < bindings.length; i++)
+            bindings[i] = gen.nextParameter();
+        Local itdobject = gen.cast(itds.getInterfaceType(), bindings[itdparam]);
+
+        // make disjunct
+        Local disjunct = gen.alloc(names.DISJUNCT_INIT);
+        Local refqueue = gen.read(names.TMREFQUEUE);
+        gen.write(disjunct, "itdobject", itdobject);
+
+        // make weak references (with disjunct as container) and
+        // put weak references into disjunct
+        for (int i = 0; i < bindings.length; i++)
+        {
+            Local weakref = gen.alloc(names.WEAKREF_INIT,
+                                    bindings[0], refqueue, gen.getTrue());
+            gen.call(weakref, names.WEAKREF_ADDCONTAINER, disjunct);
+            gen.write(disjunct, "weak$" + varnames.get(i), weakref);
+        }
+
+        // Call Init on ITD
+        gen.call(itdobject, itds.getInitMethod(), disjunct);
+        
+        // Call Transitions on ITD
+        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
+        for (SMNode state : sm.getInitialStates()) {
+            Iterator i = state.getOutEdgeIterator();
+            while (i.hasNext()) {
+                SMEdge edge = (SMEdge) i.next();
+                if (!edge.isSkipEdge() && edge.getLabel().equals(symbol))
+                {
+                    Value from = gen.getInt(state.getNumber());
+                    Value to = gen.getInt(edge.getTarget().getNumber());
+                    gen.call(itdobject, itds.getTransitionMethod(), from, to);
+                }
+            }
+        }
+
+        // Call AddToList on ITD and update 'modified' field on labels class
+        Local labels = getLabelsObject(gen);
+        Local old_modified = gen.read(labels, names.MODIFIED);
+        gen.call(itdobject, itds.getAddToListMethod(), old_modified);
+        gen.write(labels, names.MODIFIED, itdobject);
+
+        // populate maps
+        for (String othersymbol : tm.getSymbols()) {
+            if (needTreeForSymbol(othersymbol)) {
+                String mapname = mapNameForSymbol(othersymbol);
+                List<String> othervars = tm.getVariableOrder(othersymbol);
+                Local array = gen.array(names.OBJECT.getType(),
+                                        gen.getInt(othervars.size()));
+                int i = 0;
+                for (String var : othervars) {
+                    int pos = varnames.indexOf(var);
+                    gen.arrayset(array, gen.getInt(i++), bindings[pos]);
+                }
+                Local map = gen.read(labels, mapname);
+                gen.call(map, names.INDEXTREE_INSERT, array, itdobject);
+            }
+        }
+
+        // Call SetOwnerThread on ITD -- just if PerThread -- TODO
+
+        gen.returnVoid();
     }
+
+    protected void generateNoLookupAdvice(String symbol, SootMethod method)
+    {
+        JimpleGenerator gen = new JimpleGenerator(method);
+        int params = method.getParameterCount();
+        for (int i = 0; i < params; i++)
+            gen.nextParameter();
+        gen.returnVoid();
+    }
+
+    protected void generateSomeAdvice()
+    {
+        SootMethod method = tm.getSomeAdviceMethod();
+        JimpleGenerator gen = new JimpleGenerator(method);
+        Local labels = getLabelsObject(gen);
+
+        Local modified = gen.read(labels, names.MODIFIED);
+        gen.beginWhile(gen.notEqualsTest(modified, gen.getNull()));
+            gen.call(modified, itds.getMergeMethod());
+            generateMatchedCheck(gen, modified, labels);
+            Local next = gen.call(modified, itds.getRemoveFromListMethod());
+            gen.assign(modified, next);
+        gen.endWhile();
+        gen.write(labels, names.MODIFIED, gen.getNull());
+        
+        Local matched = gen.read(labels, tm.getName() + "updated");
+        gen.beginIf(gen.equalsTest(matched, gen.getFalse()));
+            releaseLock(gen);
+        gen.endIf();
+        gen.returnVoid();
+    }
+
+    protected void generateMatchedCheck(JimpleGenerator gen,
+                                        Local itdobject, Local labels)
+    {
+        int final_state = tm.getFinalStateNumber();
+        String final_constraint = tm.getName() + "_label" + final_state;
+
+        Local matched = gen.call(itdobject, itds.getHasMatchedMethod());
+        gen.beginIf(gen.equalsTest(matched, gen.getTrue()));
+            gen.write(labels, tm.getName() + "updated", gen.getTrue());
+            Local solutions =
+                gen.read(gen.read(labels, final_constraint), "disjuncts");
+            Local disjunct =
+                gen.call(itdobject, itds.getGetFinalDisjunctMethod());
+            gen.call(solutions, names.SET_ADD, solutions);
+        gen.endIf();
+    }
+
+    protected Local getLabelsObject(JimpleGenerator gen)
+    {
+        if (tm.isPerThread()) {
+            throw new RuntimeException("Have not yet added support for " +
+                "perthread tracematches with the ITD optimisation turned on.");
+        }
+
+        return gen.getThis();
+    }
+
+    protected void releaseLock(JimpleGenerator gen)
+    {
+        SootClass lock =
+            names.lookup("org.aspectbench.tm.runtime.internal.Lock");
+        SootMethod release = names.lookup(lock, VoidType.v(), "release");
+
+        Local lockobj = gen.read(getLabelsObject(gen), tm.getName() + "lock");
+        gen.call(lockobj, release);
+    }
+
     protected SootClass createBindingInterface()
     {
-        String name = tm.getPackage() + BINDING_INTERFACE + "$" + tm.getName();
+        String name = names.BINDING_INTERFACE;
         int modifiers = Modifier.PUBLIC | Modifier.INTERFACE;
         SootClass binding = new SootClass(name, modifiers);
-        // TODO - add methods
         Scene.v().addClass(binding);
         binding.setApplicationClass();
-        binding.setSuperclass(lookup("java.lang.Object"));
+        binding.setSuperclass(names.OBJECT);
+        binding.addInterface(names.ITDBINDING);
         return binding;
     }
+
     protected void addField(SootClass sc, Type type, String name)
     {
         SootField field =
             new SootField(name, type, Modifier.PUBLIC);
         sc.addField(field);
     }
-    protected SootMethod createTMMethod(SootClass sc, Type rettype,
-                                        String name, Type... params)
+
+    protected SootMethod createMethod(SootClass sc, Type rettype,
+                                      String name, Type... params)
     {
         int modifiers = Modifier.PUBLIC;
         if (sc.isInterface())
             modifiers |= Modifier.ABSTRACT;
-        name = tm.getName() + name;
-        List<Type> paramlist = new ArrayList<Type>(params.length);
-        for (Type paramtype : params)
-            paramlist.add(paramtype);
+        List<Type> paramlist = Arrays.asList(params);
         SootMethod sm = new SootMethod(name, paramlist, rettype, modifiers);
         sc.addMethod(sm);
         return sm;

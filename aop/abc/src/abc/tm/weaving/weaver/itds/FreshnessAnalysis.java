@@ -405,7 +405,12 @@ public class FreshnessAnalysis extends ForwardBranchedFlowAnalysis
     public boolean isFresh(Stmt call, int arg)
     {
         AnalysisInfo ai = (AnalysisInfo) getFlowBefore(call);
-        Local local = (Local) call.getInvokeExpr().getArgs().get(arg);
+        Object argval = call.getInvokeExpr().getArgs().get(arg);
+
+        // if it's a numeric constant or null then it can't be fresh
+        if (!(argval instanceof Local))
+            return false; 
+        Local local = (Local) argval;
 
         // check individual shadow analysis results
         if (!ai.isInternal(local))

@@ -189,9 +189,9 @@ public class TraceMatch
         return formals;
     }
 
-    public List getNonPrimitiveFormalNames()
+    public List<String> getNonPrimitiveFormalNames()
     {
-        List non_primitive = new ArrayList();
+        List<String> non_primitive = new ArrayList<String>();
         Iterator i = formals.iterator();
 
         while (i.hasNext())
