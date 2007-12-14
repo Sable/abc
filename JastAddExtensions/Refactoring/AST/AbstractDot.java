@@ -433,14 +433,6 @@ if(isDUbefore_Variable_values == null) isDUbefore_Variable_values = new java.uti
         return isDUbefore_Variable_value;
     }
 
-    // Declared in AccessType.jrag at line 149
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(caller == getRightNoTransform()) {
-		return getLeft().qualifiedAccessType(td, ambiguous);
-	}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
-
     // Declared in LookupMethod.jrag at line 50
     public Collection Define_Collection_lookupMethod(ASTNode caller, ASTNode child, String name) {
         if(caller == getRightNoTransform()) {

@@ -8,7 +8,8 @@ package Access.test21;
  */
 
 public class Test {
-    double m() { 
-        return 1.0;
+    double m() {
+    	double d = 1.0;
+        return d;
     }
 }

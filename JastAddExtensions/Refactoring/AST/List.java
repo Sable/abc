@@ -30,7 +30,7 @@ public class List extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ASTUtil.jrag at line 92
+    // Declared in ASTUtil.jrag at line 96
 
 
 	public Collection toCollection() {
@@ -40,7 +40,7 @@ public class List extends ASTNode implements Cloneable {
 		return children;
 	}
 
-    // Declared in ASTUtil.jrag at line 99
+    // Declared in ASTUtil.jrag at line 103
 
 	
 	public List(Collection c) {
@@ -48,7 +48,7 @@ public class List extends ASTNode implements Cloneable {
 		addAll(c);
 	}
 
-    // Declared in ASTUtil.jrag at line 104
+    // Declared in ASTUtil.jrag at line 108
 
 	
 	public List addAll(Collection c) {

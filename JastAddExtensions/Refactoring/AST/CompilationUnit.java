@@ -11,7 +11,6 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
         packageName_computed = false;
         packageName_value = null;
         lookupType_String_values = null;
-        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         CompilationUnit node = (CompilationUnit)super.clone();
@@ -19,7 +18,6 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
         node.packageName_computed = false;
         node.packageName_value = null;
         node.lookupType_String_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -148,7 +146,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
     }
   }
 
-    // Declared in ASTUtil.jrag at line 126
+    // Declared in ASTUtil.jrag at line 130
 
 	
 	public String getID() {
@@ -548,47 +546,6 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return hasPackage_String_value;
     }
 
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 4
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
-    }
-
-    // Declared in AccessType.jrag at line 23
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(true) { 
-   int i = this.getIndexOfChild(caller);
- {
-		if(td.isNestedType() && !td.isLocalClass()) {
-			TypeDecl enc = td.enclosingType();
-			Access encacc = getChild(i).accessType(enc, ambiguous);
-			if(encacc == null) return null;
-			Access acc = enc.getBodyDecl(0).accessType(td, ambiguous);
-			if(acc == null) return null;
-			return encacc.qualifiesAccess(acc);
-		} else {
-			SimpleSet set = localLookupType(td.getID());
-			if(set.size() == 1 && (TypeDecl)set.iterator().next() == td) {
-				return new TypeAccess(td.getID());
-			}
-			return accessType(td, ambiguous);
-		}
-	}
-}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
-
     // Declared in TypeAnalysis.jrag at line 492
     public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
         if(true) {
@@ -738,7 +695,7 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
         return getParent().Define_SimpleSet_lookupType(this, caller, name);
     }
 
-    // Declared in ASTUtil.jrag at line 8
+    // Declared in ASTUtil.jrag at line 12
     public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

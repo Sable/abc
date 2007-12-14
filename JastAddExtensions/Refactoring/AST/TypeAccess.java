@@ -331,7 +331,7 @@ public class TypeAccess extends Access implements Cloneable {
 		return type().getBodyDecl(0).accessMethod(md, args);
 	}
 
-    // Declared in AccessType.jrag at line 164
+    // Declared in AccessType.jrag at line 66
     public Access qualifiedAccessType(TypeDecl td, boolean ambiguous) {
         Access qualifiedAccessType_TypeDecl_boolean_value = qualifiedAccessType_compute(td, ambiguous);
         return qualifiedAccessType_TypeDecl_boolean_value;

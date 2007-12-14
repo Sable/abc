@@ -107,6 +107,25 @@ if(importedTypes_String_values == null) importedTypes_String_values = new java.u
     return name;
   }
 
+    // Declared in AccessType.jrag at line 5
+    public Access accessType(TypeDecl td) {
+        Access accessType_TypeDecl_value = accessType_compute(td);
+        return accessType_TypeDecl_value;
+    }
+
+    private Access accessType_compute(TypeDecl td)  {
+		Program prog = programRoot();
+		for(int i = 0; i < prog.getNumCompilationUnit(); i++) {
+			for(int j = 0; j < prog.getCompilationUnit(i).getNumTypeDecl(); j++) {
+				TypeDecl type = prog.getCompilationUnit(i).getTypeDecl(j);
+				if(type == td)
+					return new TypeAccess(prog.getCompilationUnit(i).packageName(), 
+										  td.getID());
+			}
+		}
+		return null;
+	}
+
     // Declared in LookupType.jrag at line 203
     public SimpleSet lookupImport(String name) {
         SimpleSet lookupImport_String_value = getParent().Define_SimpleSet_lookupImport(this, null, name);

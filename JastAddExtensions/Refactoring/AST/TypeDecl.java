@@ -71,7 +71,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         inExplicitConstructorInvocation_computed = false;
         inStaticContext_computed = false;
         accessMethod_MethodDecl_List_values = null;
-        accessType_TypeDecl_boolean_values = null;
         TypeDecl_uses_visited = false;
         TypeDecl_uses_computed = false;
         TypeDecl_uses_value = null;
@@ -144,7 +143,6 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
         node.inExplicitConstructorInvocation_computed = false;
         node.inStaticContext_computed = false;
         node.accessMethod_MethodDecl_List_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -501,7 +499,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
     }
   }
 
-    // Declared in ASTUtil.jrag at line 20
+    // Declared in ASTUtil.jrag at line 24
 
 	
 	public void removeBodyDecl(BodyDecl bd) {
@@ -663,7 +661,7 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
 				if(id instanceof SingleTypeImportDecl) {
 					Access acc = ((SingleTypeImportDecl)id).getAccess();
 					if(acc.type() == this) {
-						Access tacc = id.accessType(this, false);
+						Access tacc = id.accessType(this);
 						if(tacc == null)
 							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
 						id.replaceWith(new SingleTypeImportDecl(tacc));
@@ -2301,6 +2299,20 @@ if(instanceOf_TypeDecl_values == null) instanceOf_TypeDecl_values = new java.uti
 		return new Pair(this, up);
 	}
 
+    // Declared in AccessType.jrag at line 18
+    public TypeDecl findTypeOutwards(TypeDecl td, boolean ambiguous) {
+        TypeDecl findTypeOutwards_TypeDecl_boolean_value = findTypeOutwards_compute(td, ambiguous);
+        return findTypeOutwards_TypeDecl_boolean_value;
+    }
+
+    private TypeDecl findTypeOutwards_compute(TypeDecl td, boolean ambiguous)  {
+		String name = td.getID();
+		if(isSingletonOf(getBodyDecl(0).lookupType(name),td) && 
+				!(ambiguous && !getBodyDecl(0).lookupVariable(name).isEmpty()))
+			return this;
+		return isNestedType() ? enclosingType().findTypeOutwards(td, ambiguous) : null;
+	}
+
     protected boolean componentType_computed = false;
     protected TypeDecl componentType_value;
     // Declared in Arrays.jrag at line 13
@@ -2594,7 +2606,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return inStaticContext_value;
     }
 
-    // Declared in ASTUtil.jrag at line 9
+    // Declared in ASTUtil.jrag at line 13
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit_value = getParent().Define_CompilationUnit_compilationUnit(this, null);
         return compilationUnit_value;
@@ -2621,23 +2633,6 @@ if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_val
         if(isFinal && num == boundariesCrossed)
             accessMethod_MethodDecl_List_values.put(_parameters, accessMethod_MethodDecl_List_value);
         return accessMethod_MethodDecl_List_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 5
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
     }
 
     // Declared in Modifiers.jrag at line 288
@@ -3112,52 +3107,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 	}
 }
         return getParent().Define_Access_accessMethod(this, caller, md, args);
-    }
-
-    // Declared in AccessType.jrag at line 40
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(caller == getBodyDeclListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		if(memberTypes(td.getID()).contains(td)) {
-			if(ambiguous && !getBodyDecl(i).lookupVariable(td.getID()).isEmpty()) {
-				// if we are in an ambiguous context, we cannot access a member
-				// type shadowed by a field of the same name
-				return null;
-			} else {
-				return new TypeAccess(td.getID());
-			}
-		}
-		if(td.isNestedType() && !td.isLocalClass()) {
-			TypeDecl enc = td.enclosingType();
-			Access encacc = getBodyDecl(i).accessType(enc, ambiguous);
-			if(encacc == null) return null;
-			Access acc = enc.getBodyDecl(0).accessType(td, ambiguous);
-			if(acc == null) return null;
-			return encacc.qualifiesAccess(acc);
-		} else {
-			Access ta = accessType(td, ambiguous);
-			if(ta == null) return null;
-			String pkgname = "";
-			if(ta instanceof TypeAccess) {
-				pkgname = ((TypeAccess)ta).getPackage();
-			} else if(ta instanceof AbstractDot) {
-				pkgname = ((TypeAccess)((AbstractDot)ta).getRight()).getPackage();
-			} else {
-				assert(false);
-			}
-			if(pkgname.equals("") && memberTypes(td.getID()).isEmpty() 
-					&& memberFields(td.getID()).isEmpty()) {
-				return ta;
-			} else {
-				Access pkgacc = getBodyDecl(i).accessPackage(td.packageName());
-				if(pkgacc == null) return null;
-				return pkgacc.qualifiesAccess(ta);
-			}
-		}
-	}
-}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
 
     // Declared in LookupVariable.jrag at line 18

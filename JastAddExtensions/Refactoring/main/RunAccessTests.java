@@ -121,35 +121,34 @@ public class RunAccessTests extends Frontend {
     public static void runTypeAccessTests() {
         try {
             // Test 15
-            testTypeAccess(new FileRange(16, 1, 18, 1), new FileRange(12, 9, 12, 20),
+            testTypeAccess(new FileRange(17, 1, 19, 1), new FileRange(13, 16, 13, 16),
                     new TypeAccess("A"), "Access/test15/Test.java");
             // Test 16
-            testTypeAccess(new FileRange(17, 5, 17, 19), new FileRange(12, 9, 12, 20),
-                    new Dot(new TypeAccess("A"), new TypeAccess("B")), "Access/test15/Test.java");
+            testTypeAccess(new FileRange(18, 5, 18, 19), new FileRange(12, 19, 12, 19),
+                    new TypeAccess("B"), "Access/test16/Test.java");
             // Test 17
-            testTypeAccess(new FileRange(14, 5, 16, 5), new FileRange(12, 9, 12, 20),
+            testTypeAccess(new FileRange(14, 5, 16, 5), new FileRange(12, 16, 12, 20),
                     new TypeAccess("A"), "Access/test17/Test.java");
             // Test 18
-            testTypeAccess(new FileRange(15, 9, 15, 19), new FileRange(12, 9, 12, 20),
-                    new Dot(new TypeAccess("A"), new TypeAccess("B")), "Access/test17/Test.java");
+            testTypeAccess(new FileRange(15, 9, 15, 19), new FileRange(12, 19, 12, 19),
+                    new TypeAccess("B"), "Access/test17/Test.java");
             // Test 19
             testTypeAccess(new FileRange(11, 1, 16, 1), new FileRange(14, 17, 14, 19),
-                    new Dot(new PackageAccess("Access.test19"), new TypeAccess("Test")), 
+                    new TypeAccess("Access.test19", "Test"), 
                     "Access/test19/Test.java");
             // Test 20
-            testTypeAccess(new FileRange(12, 6, 12, 40), new FileRange(15, 16, 15, 19),
+            testTypeAccess(new FileRange(12, 6, 12, 40), new FileRange(15, 16, 15, 16),
                     new Dot(new TypeAccess("Test"), new TypeAccess("Foo")), 
                     "Access/test20/Test.java");
             // Test 21
-            testTypeAccess(new FileRange(10, 1, 14, 1), new FileRange(12, 16, 12, 19),
+            testTypeAccess(new FileRange(10, 1, 15, 1), new FileRange(13, 16, 13, 16),
                     new TypeAccess("Test"), "Access/test21/Test.java");
             // Test 22
-            testTypeAccess(new FileRange(3, 1, 5, 1), new FileRange(12, 16, 12, 19),
-                    new Dot(new PackageAccess("Access.test21.pkg1"),
-                            new TypeAccess("Access.test21.pkg1", "Test")), 
+            testTypeAccess(new FileRange(3, 1, 5, 1), new FileRange(13, 16, 13, 16),
+                    new TypeAccess("Access.test21.pkg1", "Test"), 
                             "Access/test21/pkg1/Test.java", "Access/test21/Test.java");
             // Test 23
-            testTypeAccess(new FileRange(10, 1, 11, 1), new FileRange(14, 5, 14, 9),
+            testTypeAccess(new FileRange(10, 1, 11, 1), new FileRange(14, 5, 14, 7),
                     new TypeAccess("Test"), "Access/test23/Test.java");
             // Test 39
             testTypeAccess(new FileRange(5, 5, 7, 5), new FileRange(16, 7, 16, 9),
@@ -214,7 +213,7 @@ public class RunAccessTests extends Frontend {
                     "Access/test35/Test.java");
             // Test 36
             testFieldAccess(new FileRange(11, 5, 11, 19), new FileRange(15, 27, 15, 39),
-                    new Dot(new TypeAccess("Test"), new Dot(new ThisAccess("this"), new VarAccess("bar"))), 
+                    new Dot(new TypeAccess("Inner1"), new Dot(new ThisAccess("this"), new VarAccess("bar"))), 
                     "Access/test36/Test.java");
             // Test 37
             testFieldAccess(new FileRange(11, 5, 11, 12), new FileRange(17, 24, 17, 26),
@@ -344,8 +343,7 @@ public class RunAccessTests extends Frontend {
             if(n == null) {
                 throw new TestingException("no node an file "+files[0]+" "+obsrng);
             }
-            boolean ambiguous = n.nameType() == NameType.AMBIGUOUS_NAME;
-            Access res = n.accessType((TypeDecl)m, ambiguous);
+            Access res = ((Access)n).accessType((TypeDecl)m);
             if(expected == null) {
                 if(res != null) {
                     throw new TestingException("when accessing type "+((TypeDecl)m).getID()+" from "+
@@ -461,7 +459,8 @@ public class RunAccessTests extends Frontend {
             return null;
         }
         for(int i=0;i<r.getNumChild();++i) {
-            ASTNode tmp = findSmallestCoveringNode(r.getChild(i), filename, rng);
+        	ASTNode child = r.getChild(i);
+            ASTNode tmp = findSmallestCoveringNode(child, filename, rng);
             if(tmp != null)
                 return tmp;
         }

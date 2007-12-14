@@ -1248,45 +1248,6 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_Block_getBlock(this, caller);
     }
 
-    // Declared in AccessType.jrag at line 79
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(caller == getBlockOptNoTransform()) {
-		Access acc = accessType(td, ambiguous);
-		if(acc != null && !parameterDeclaration(td.getID()).isEmpty()) {
-			if(acc instanceof AbstractDot) {
-				Expr left = ((AbstractDot)acc).getLeft();
-				if(left.isPackageAccess()) {
-					Access pkgacc = accessPackage(((PackageAccess)left).getPackage());
-					if(pkgacc == null) return null;
-					return pkgacc.qualifiesAccess(((AbstractDot)acc).getRight());
-				} else if(left.isTypeAccess()) {
-					Access tacc = accessType(((TypeAccess)left).decl(), ambiguous);
-					if(tacc == null) return null;
-					return tacc.qualifiesAccess(((AbstractDot)acc).getRight());
-				} else {
-					assert(false);
-				}
-			} else {
-				if(td.isNestedType() && !td.isLocalClass()) {
-					TypeDecl enc = td.enclosingType();
-					Access encacc = getBlock().accessType(enc, ambiguous);
-					if(encacc == null) return null;
-					Access innacc = enc.getBodyDecl(0).accessType(td, ambiguous);
-					if(acc == null) return null;
-					return encacc.qualifiesAccess(acc);
-				} else if(!td.packageName().equals("") && accessPackage(td.packageName()) != null) {
-					return accessPackage(td.packageName()).qualifiesAccess(acc);
-				} else {
-					return null;
-				}
-			}
-		} else {
-			return acc;
-		}
-	}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
-    }
-
     // Declared in LookupVariable.jrag at line 47
     public SimpleSet Define_SimpleSet_lookupVariable(ASTNode caller, ASTNode child, String name) {
         if(caller == getParameterListNoTransform()) {
@@ -1518,12 +1479,12 @@ public ASTNode rewriteTo() {
         }
         super.collect_contributors_MethodDecl_overriders();
     }
-    protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
-        collection.add(this);
-    }
-
     protected void contributeTo_MethodDecl_MethodDecl_uses(HashSet collection) {
         collection.addAll(uses());
+    }
+
+    protected void contributeTo_MethodDecl_MethodDecl_overriders(HashSet collection) {
+        collection.add(this);
     }
 
 }

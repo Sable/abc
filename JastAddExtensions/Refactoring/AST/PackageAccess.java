@@ -214,7 +214,7 @@ public class PackageAccess extends Access implements Cloneable {
 
     private Access qualifiedAccessMethod_compute(MethodDecl md, List args) {  return  null;  }
 
-    // Declared in AccessType.jrag at line 157
+    // Declared in AccessType.jrag at line 59
     public Access qualifiedAccessType(TypeDecl td, boolean ambiguous) {
         Access qualifiedAccessType_TypeDecl_boolean_value = qualifiedAccessType_compute(td, ambiguous);
         return qualifiedAccessType_TypeDecl_boolean_value;

@@ -1,19 +1,19 @@
-package Access.test15;
+package Access.test16;
 
 /*
- *  Test 15:
- *  Access class A from inside method m (test should succeed)
+ *  Test 16:
+ *  Access interface A.B from inside method m (test should succeed)
  *  
  *  If you change this file, also change tests; positions are hard-coded!
  */
 
 public class Test {
-    int foo = 42;
     int m() { 
-        return foo;
+        return A.foo;
     }
 }
 
 class A {
+    static int foo = 42;
     interface B { }
 }

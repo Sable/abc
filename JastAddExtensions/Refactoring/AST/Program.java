@@ -1694,7 +1694,7 @@ if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java
         return getParent().Define_TypeDecl_typeCloneable(this, caller);
     }
 
-    // Declared in ASTUtil.jrag at line 4
+    // Declared in ASTUtil.jrag at line 8
     public Program Define_Program_programRoot(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);
@@ -1874,24 +1874,6 @@ if(getPackageDecl_String_values == null) getPackageDecl_String_values = new java
             return  typeVoid();
         }
         return getParent().Define_TypeDecl_typeVoid(this, caller);
-    }
-
-    // Declared in AccessType.jrag at line 12
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(true) { 
-   int childIndex = this.getIndexOfChild(caller);
- {
-		for(int i = 0; i < getNumCompilationUnit(); i++) {
-			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
-				TypeDecl type = getCompilationUnit(i).getTypeDecl(j);
-				if(type == td)
-					return new TypeAccess(getCompilationUnit(i).packageName(), td.getID());
-			}
-		}
-		return null;
-	}
-}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
 
     // Declared in LookupVariable.jrag at line 15

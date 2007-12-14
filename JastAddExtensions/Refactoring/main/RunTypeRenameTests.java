@@ -32,7 +32,6 @@ public class RunTypeRenameTests extends Frontend {
                     System.out.println("test "+i+" skipped");
                     continue;
                 }
-                i=87;
                 try {
                     RunTypeRenameTests t = new RunTypeRenameTests();
                     t.test("test"+i);

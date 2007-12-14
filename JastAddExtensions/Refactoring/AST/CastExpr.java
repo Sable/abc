@@ -61,13 +61,6 @@ public class CastExpr extends Expr implements Cloneable {
     }
   }
 
-    // Declared in AccessType.jrag at line 174
-
-	
-	boolean isCastedThisAccess() {
-		return getExpr() instanceof ThisAccess;
-	}
-
     // Declared in java.ast at line 3
     // Declared in java.ast line 148
 

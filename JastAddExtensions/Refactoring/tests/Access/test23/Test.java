@@ -11,5 +11,5 @@ public class Test {
 }
 
 class A {
-    int i;
+    Test i;
 }

@@ -1042,7 +1042,7 @@ if(accessedAfter_Stmt_values == null) accessedAfter_Stmt_values = new java.util.
         return getBlock_value;
     }
 
-    // Declared in ASTUtil.jrag at line 11
+    // Declared in ASTUtil.jrag at line 15
     public SimpleSet lookupType(String name) {
         SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
         return lookupType_String_value;

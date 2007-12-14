@@ -10,7 +10,7 @@ package Access.test19;
 
 public class Test {
     static int Test;
-    void m() { 
-        int b = 23;
+    int m() { 
+        return Test;
     }
 }

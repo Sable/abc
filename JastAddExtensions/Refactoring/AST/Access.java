@@ -258,6 +258,21 @@ public abstract class Access extends Expr implements Cloneable {
 
     private TypeDecl type_compute() {  return  unknownType();  }
 
+    // Declared in AccessType.jrag at line 46
+    public Access accessType(TypeDecl td) {
+        Access accessType_TypeDecl_value = accessType_compute(td);
+        return accessType_TypeDecl_value;
+    }
+
+    private Access accessType_compute(TypeDecl td)  {
+		NameType nt = nameType();
+		boolean ambiguous = nt == NameType.AMBIGUOUS_NAME ||
+							nt == NameType.EXPRESSION_NAME;
+		if(isQualified())
+			qualifier().qualifiedAccessType(td, ambiguous);
+		return accessType(td, ambiguous);
+	}
+
     // Declared in Uses.jrag at line 5
     public ASTNode getDecl() {
         ASTNode getDecl_value = getDecl_compute();
@@ -305,6 +320,12 @@ if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_val
         if(isFinal && num == boundariesCrossed)
             accessMethod_MethodDecl_List_values.put(_parameters, accessMethod_MethodDecl_List_value);
         return accessMethod_MethodDecl_List_value;
+    }
+
+    // Declared in AccessType.jrag at line 3
+    public NameType nameType() {
+        NameType nameType_value = getParent().Define_NameType_nameType(this, null);
+        return nameType_value;
     }
 
     // Declared in Uses.jrag at line 96

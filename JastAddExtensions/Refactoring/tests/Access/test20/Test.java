@@ -11,7 +11,7 @@ package Access.test20;
 public class Test {
     static class Foo { static double bar; }
     double m() { 
-        int Foo;
-        return 1.0;
+        int Foo = 23;
+        return Foo;
     }
 }

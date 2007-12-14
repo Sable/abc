@@ -1,5 +1,9 @@
 aspect ASTUtil {
-
+	
+	public static boolean ASTNode.isSingletonOf(SimpleSet s, Object o) {
+		return s.size() == 1 && s.iterator().next() == o;
+	}
+	
 	// provide access to the program root
 	eq Program.getChild().programRoot() = this;
 	inh Program ASTNode.programRoot();

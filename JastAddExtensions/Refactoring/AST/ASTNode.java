@@ -9,18 +9,12 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         mayDef_Variable_values = null;
         mayUse_Variable_values = null;
         mayAccess_Variable_values = null;
-        accessType_TypeDecl_boolean_values = null;
-        nameType_computed = false;
-        nameType_value = null;
     }
     public Object clone() throws CloneNotSupportedException {
         ASTNode node = (ASTNode)super.clone();
         node.mayDef_Variable_values = null;
         node.mayUse_Variable_values = null;
         node.mayAccess_Variable_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
-        node.nameType_computed = false;
-        node.nameType_value = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -411,7 +405,14 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   void checkUnreachableStmt() {
   }
 
-    // Declared in ASTUtil.jrag at line 14
+    // Declared in ASTUtil.jrag at line 3
+
+	
+	public static boolean isSingletonOf(SimpleSet s, Object o) {
+		return s.size() == 1 && s.iterator().next() == o;
+	}
+
+    // Declared in ASTUtil.jrag at line 18
 
 	
 	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
@@ -421,7 +422,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 			getChild(i).clear();
 	}
 
-    // Declared in ASTUtil.jrag at line 38
+    // Declared in ASTUtil.jrag at line 42
 
     
     protected void refined_ASTUtil_replaceWith(ASTNode newnode) {
@@ -429,7 +430,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     	parent.setChild(newnode, parent.getIndexOfChild(this));
     }
 
-    // Declared in ASTUtil.jrag at line 44
+    // Declared in ASTUtil.jrag at line 48
 
     
     // this method is not very well-behaved if start and end are not valid indices
@@ -449,7 +450,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         if(node != null) { node.setParent(this); node.childIndex = start; }
     }
 
-    // Declared in ASTUtil.jrag at line 60
+    // Declared in ASTUtil.jrag at line 64
 
     
     public void moveChild(int src, int trg) {
@@ -460,7 +461,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     	children[trg].childIndex = trg;
     }
 
-    // Declared in ASTUtil.jrag at line 110
+    // Declared in ASTUtil.jrag at line 114
 
 	
 	public int indexIn(ASTNode n) {
@@ -471,7 +472,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		return getParent().indexIn(n);
 	}
 
-    // Declared in ASTUtil.jrag at line 118
+    // Declared in ASTUtil.jrag at line 122
 
 	
 	public boolean inside(ASTNode n) {
@@ -1101,7 +1102,7 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
 
     private Access accessParameter_compute(ParameterDeclaration pd) {  return  null;  }
 
-    // Declared in ASTUtil.jrag at line 5
+    // Declared in ASTUtil.jrag at line 9
     public Program programRoot() {
         Program programRoot_value = getParent().Define_Program_programRoot(this, null);
         return programRoot_value;
@@ -1111,37 +1112,6 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
     public Access accessPackage(String pkg) {
         Access accessPackage_String_value = getParent().Define_Access_accessPackage(this, null, pkg);
         return accessPackage_String_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 3
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
-    }
-
-    protected boolean nameType_computed = false;
-    protected NameType nameType_value;
-    // Declared in AccessType.jrag at line 10
-    public NameType nameType() {
-        if(nameType_computed)
-            return nameType_value;
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        nameType_value = getParent().Define_NameType_nameType(this, null);
-        if(isFinal && num == boundariesCrossed)
-            nameType_computed = true;
-        return nameType_value;
     }
 
     // Declared in AddMethod.jrag at line 3
@@ -1442,9 +1412,6 @@ public ASTNode rewriteTo() {
     }
     public Block Define_Block_getBlock(ASTNode caller, ASTNode child) {
         return getParent().Define_Block_getBlock(this, caller);
-    }
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
     public TypeDecl Define_TypeDecl_enclosingType(ASTNode caller, ASTNode child) {
         return getParent().Define_TypeDecl_enclosingType(this, caller);

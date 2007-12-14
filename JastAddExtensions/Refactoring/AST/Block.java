@@ -15,7 +15,6 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         lookupType_String_values = null;
         lookupVariable_String_values = null;
         accessMethod_MethodDecl_List_values = null;
-        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         Block node = (Block)super.clone();
@@ -29,7 +28,6 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
         node.lookupType_String_values = null;
         node.lookupVariable_String_values = null;
         node.accessMethod_MethodDecl_List_values = null;
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -93,7 +91,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
 		return localDeclsBetween(0, getNumStmt()-1);
 	}
 
-    // Declared in ASTUtil.jrag at line 76
+    // Declared in ASTUtil.jrag at line 80
 
     
     /*public void List.remove(ASTNode n) {
@@ -108,7 +106,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     	getStmtList().insertChild(stmt, idx);
     }
 
-    // Declared in ASTUtil.jrag at line 80
+    // Declared in ASTUtil.jrag at line 84
 
     
     public void refined_ASTUtil_moveStmt(Stmt stmt, int new_idx) {
@@ -116,7 +114,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     	getStmtList().moveChild(old_idx, new_idx);
     }
 
-    // Declared in ASTUtil.jrag at line 85
+    // Declared in ASTUtil.jrag at line 89
 
     
     public void refined_ASTUtil_pullTogether(int start, int end) {
@@ -738,23 +736,6 @@ if(accessMethod_MethodDecl_List_values == null) accessMethod_MethodDecl_List_val
         return hasPackage_String_value;
     }
 
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 7
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
-    }
-
     // Declared in GuardedControlFlow.jrag at line 27
     public boolean Define_boolean_between(ASTNode caller, ASTNode child, Block blk, int start, int end) {
         if(caller == getStmtListNoTransform()) { 
@@ -764,48 +745,6 @@ if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_value
 	}
 }
         return getParent().Define_boolean_between(this, caller, blk, start, end);
-    }
-
-    // Declared in AccessType.jrag at line 114
-    public Access Define_Access_accessType(ASTNode caller, ASTNode child, TypeDecl td, boolean ambiguous) {
-        if(caller == getStmtListNoTransform()) { 
-   int i = caller.getIndexOfChild(child);
- {
-		Access acc = accessType(td, ambiguous);
-		if(acc != null && localVariableDeclaration(td.getID()) != null) {
-			if(acc instanceof AbstractDot) {
-				Expr left = ((AbstractDot)acc).getLeft();
-				if(left.isPackageAccess()) {
-					Access pkgacc = accessPackage(((PackageAccess)left).getPackage());
-					if(pkgacc == null) return null;
-					return pkgacc.qualifiesAccess(((AbstractDot)acc).getRight());
-				} else if(left.isTypeAccess()) {
-					Access tacc = accessType(((TypeAccess)left).decl(), ambiguous);
-					if(tacc == null) return null;
-					return tacc.qualifiesAccess(((AbstractDot)acc).getRight());
-				} else {
-					assert(false);
-				}
-			} else {
-				if(td.isNestedType() && !td.isLocalClass()) {
-					TypeDecl enc = td.enclosingType();
-					Access encacc = getStmt(i).accessType(enc, ambiguous);
-					if(encacc == null) return null;
-					Access innacc = enc.getBodyDecl(0).accessType(td, ambiguous);
-					if(acc == null) return null;
-					return encacc.qualifiesAccess(acc);
-				} else if(!td.packageName().equals("") && accessPackage(td.packageName()) != null) {
-					return accessPackage(td.packageName()).qualifiesAccess(acc);
-				} else {
-					return null;
-				}
-			}
-		} else {
-			return acc;
-		}
-	}
-}
-        return getParent().Define_Access_accessType(this, caller, td, ambiguous);
     }
 
     // Declared in ControlFlowGraph.jrag at line 160

@@ -3,14 +3,12 @@ package AST;
 import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
 
 
-public abstract class Expr extends ASTNode implements Cloneable {
+public abstract class Expr extends ASTNode implements Cloneable,  Scope {
     public void flushCache() {
         super.flushCache();
-        accessType_TypeDecl_boolean_values = null;
     }
     public Object clone() throws CloneNotSupportedException {
         Expr node = (Expr)super.clone();
-        node.accessType_TypeDecl_boolean_values = null;
         node.in$Circle(false);
         node.is$Final(false);
     return node;
@@ -79,10 +77,10 @@ public abstract class Expr extends ASTNode implements Cloneable {
     return dot;
   }
 
-    // Declared in AccessType.jrag at line 168
+    // Declared in Scope.jadd at line 12
 
 	
-	boolean isCastedThisAccess() { return false; }
+	public TypeDecl surroundingType() { return hostType(); }
 
     // Declared in AdjustAccess.jrag at line 60
 
@@ -535,7 +533,7 @@ public abstract class Expr extends ASTNode implements Cloneable {
 		return type().getBodyDecl(0).accessMethod(md, args);
 	}
 
-    // Declared in AccessType.jrag at line 153
+    // Declared in AccessType.jrag at line 55
     public Access qualifiedAccessType(TypeDecl td, boolean ambiguous) {
         Access qualifiedAccessType_TypeDecl_boolean_value = qualifiedAccessType_compute(td, ambiguous);
         return qualifiedAccessType_TypeDecl_boolean_value;
@@ -543,6 +541,32 @@ public abstract class Expr extends ASTNode implements Cloneable {
 
     private Access qualifiedAccessType_compute(TypeDecl td, boolean ambiguous)  {
 		return type().getBodyDecl(0).accessType(td, ambiguous);
+	}
+
+    // Declared in AccessType.jrag at line 26
+    public Access accessType(TypeDecl td, boolean ambiguous) {
+        Access accessType_TypeDecl_boolean_value = accessType_compute(td, ambiguous);
+        return accessType_TypeDecl_boolean_value;
+    }
+
+    private Access accessType_compute(TypeDecl td, boolean ambiguous)  {
+		String name = td.getID();
+		SimpleSet set = lookupType(name);
+		if(isSingletonOf(set, td) && !(ambiguous && !lookupVariable(name).isEmpty()))
+			return new TypeAccess(name);
+		TypeDecl out = surroundingType().findTypeOutwards(td, ambiguous);
+		if(out != null) {
+			Access outacc = accessType(out, ambiguous);
+			if(outacc != null) return outacc.qualifiesAccess(new TypeAccess(name));
+		}
+		if(td.isTopLevelType()) {
+			String pkg = td.packageName();
+			String first_component = pkg.split("\\.")[0];
+			if(!(ambiguous && (!lookupVariable(first_component).isEmpty() ||
+							 !lookupType(first_component).isEmpty())))
+				return new TypeAccess(pkg, td.getID());
+		}
+		return null;
 	}
 
     // Declared in DefiniteAssignment.jrag at line 6
@@ -711,23 +735,6 @@ public abstract class Expr extends ASTNode implements Cloneable {
     public Access accessPackage(String pkg) {
         Access accessPackage_String_value = getParent().Define_Access_accessPackage(this, null, pkg);
         return accessPackage_String_value;
-    }
-
-    protected java.util.Map accessType_TypeDecl_boolean_values;
-    // Declared in AccessType.jrag at line 8
-    public Access accessType(TypeDecl td, boolean ambiguous) {
-        java.util.List _parameters = new java.util.ArrayList(2);
-        _parameters.add(td);
-        _parameters.add(Boolean.valueOf(ambiguous));
-if(accessType_TypeDecl_boolean_values == null) accessType_TypeDecl_boolean_values = new java.util.HashMap(4);
-        if(accessType_TypeDecl_boolean_values.containsKey(_parameters))
-            return (Access)accessType_TypeDecl_boolean_values.get(_parameters);
-        int num = boundariesCrossed;
-        boolean isFinal = this.is$Final();
-        Access accessType_TypeDecl_boolean_value = getParent().Define_Access_accessType(this, null, td, ambiguous);
-        if(isFinal && num == boundariesCrossed)
-            accessType_TypeDecl_boolean_values.put(_parameters, accessType_TypeDecl_boolean_value);
-        return accessType_TypeDecl_boolean_value;
     }
 
 public ASTNode rewriteTo() {

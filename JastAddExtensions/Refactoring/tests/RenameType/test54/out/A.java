@@ -19,7 +19,7 @@ public class A {
 }
 
 class B {
-  p.A.XYZ ax = new p.A().new XYZ(null);
+  p.A.XYZ ax = new p.A().new p.A.XYZ(null);
   B(){
     super();
   }

@@ -53,13 +53,6 @@ public class ParExpr extends PrimaryExpr implements Cloneable {
       error("" + getExpr() + " is a type and may not be used in parenthesized expression");
   }
 
-    // Declared in AccessType.jrag at line 170
-
-	
-	boolean isCastedThisAccess() {
-		return getExpr().isCastedThisAccess();
-	}
-
     // Declared in AdjustAccess.jrag at line 69
 
 	

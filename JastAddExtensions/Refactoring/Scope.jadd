@@ -1,0 +1,15 @@
+aspect Scope {
+	
+	interface Scope {
+		SimpleSet lookupVariable(String name);
+		SimpleSet lookupType(String name);
+		TypeDecl surroundingType();
+	}
+	
+	Expr implements Scope;
+	BodyDecl implements Scope;
+	
+	public TypeDecl Expr.surroundingType() { return hostType(); }
+	public TypeDecl BodyDecl.surroundingType() { return hostType(); }
+	
+}

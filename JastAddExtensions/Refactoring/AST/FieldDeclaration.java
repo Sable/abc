@@ -226,7 +226,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     }
   }
 
-    // Declared in ASTUtil.jrag at line 24
+    // Declared in ASTUtil.jrag at line 28
 
 
     public void refined_ASTUtil_makePrivate() {
