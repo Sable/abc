@@ -102,16 +102,20 @@ public class FreshnessAnalysis extends ForwardBranchedFlowAnalysis
         protected BitSet pointsto; 
         protected BitSet predecessors;
 
-        public AnalysisInfo()
+        public AnalysisInfo(boolean allinternal)
         {
-            fresh = new BitSet(localToIndex.size());
-            internal = new BitSet(localToIndex.size());
-            pointsto = new BitSet(localToIndex.size() * allocToIndex.size());
+            int locals = localToIndex.size();
+            fresh = new BitSet(locals);
+            internal = new BitSet(locals);
+            pointsto = new BitSet(locals * allocToIndex.size());
             predecessors = new BitSet(stmtToIndex.size());
+
+            if (allinternal)
+                internal.set(0, locals);
         }
 
         public AnalysisInfo(AnalysisInfo other) {
-            this();
+            this(false);
             fresh.or(other.fresh);
             internal.or(other.internal);
             pointsto.or(other.pointsto);
@@ -155,6 +159,7 @@ public class FreshnessAnalysis extends ForwardBranchedFlowAnalysis
         public void setExternal(Local local)
         {
             internal.set(localToIndex.get(local), false);
+            fresh.set(localToIndex.get(local), false);
         }
 
         public boolean isInternal(Local local)
@@ -382,7 +387,7 @@ public class FreshnessAnalysis extends ForwardBranchedFlowAnalysis
      */
     protected Object entryInitialFlow()
     {
-        return new AnalysisInfo();
+        return new AnalysisInfo(false);
     }
 
     /**
@@ -399,7 +404,7 @@ public class FreshnessAnalysis extends ForwardBranchedFlowAnalysis
      */
     protected Object newInitialFlow()
     {
-        return new AnalysisInfo();
+        return new AnalysisInfo(true);
     }
 
     public boolean isFresh(Stmt call, int arg)

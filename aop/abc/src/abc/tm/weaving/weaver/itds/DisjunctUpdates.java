@@ -63,6 +63,7 @@ public class DisjunctUpdates
         names.DISJUNCT.addInterface(names.lookup(
             "org.aspectbench.tm.runtime.internal.WeakRefContainer"));
         createWeakrefExpiredMethod();
+        updateEqualsMethod();
     }
 
     protected void createUpdateRefKindsMethod()
@@ -152,6 +153,16 @@ public class DisjunctUpdates
 
         gen.call(gen.read("itdobject"), itds.getTerminateIfPossibleMethod());
         gen.returnVoid();
+    }
+
+    protected void updateEqualsMethod()
+    {
+        SootMethod equals = names.lookup(names.DISJUNCT, BooleanType.v(),
+                                         "equals", names.OBJECT.getType());
+        JimpleGenerator gen = new JimpleGenerator(equals);
+
+        gen.nextParameter();
+        gen.returnValue(gen.getFalse());
     }
 
     protected void addField(SootClass sc, Type type, String name)

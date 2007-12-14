@@ -144,7 +144,15 @@ public class NameLookup
     public final SootMethod CURRENT_THREAD =
         lookup(THREAD, THREAD.getType(), "currentThread");
 
+    // iterators
+    public final SootClass ITERATOR = lookup("java.util.Iterator");
+    public final SootMethod ITERATOR_HASNEXT =
+        lookup(ITERATOR, BooleanType.v(), "hasNext");
+    public final SootMethod ITERATOR_NEXT =
+        lookup(ITERATOR, OBJECT.getType(), "next");
+
     // index tree stuff
+    public final Type OBJECTARRAY = OBJECT.getType().makeArrayType();
     public final SootClass INDEXTREE =
         lookup("org.aspectbench.tm.runtime.internal.IndexTree");
     public final SootMethod INDEXTREE_INIT =
@@ -156,5 +164,7 @@ public class NameLookup
         lookup("org.aspectbench.tm.runtime.internal.ITDBinding");
     public final SootMethod INDEXTREE_INSERT =
         lookup(INDEXTREE, VoidType.v(), "insert",
-                OBJECT.getType().makeArrayType(), ITDBINDING.getType());
+                OBJECTARRAY, ITDBINDING.getType());
+    public final SootMethod INDEXTREE_GET =
+        lookup(INDEXTREE, ITERATOR.getType(), "get", OBJECTARRAY);
 }

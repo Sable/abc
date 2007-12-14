@@ -128,23 +128,55 @@ public class ITDOptimisation
     protected void generateTreeLookupAdvice(String symbol, SootMethod method)
     {
         JimpleGenerator gen = new JimpleGenerator(method);
-        int params = method.getParameterCount();
-        for (int i = 0; i < params; i++)
-            gen.nextParameter();
+        Local[] bindings = new Local[method.getParameterCount()];
+        for (int i = 0; i < bindings.length; i++)
+            bindings[i] = gen.nextParameter();
+
+        // allocate array
+        Local array =
+            gen.array(names.OBJECT.getType(), gen.getInt(bindings.length));
+
+        // fill array
+        int i = 0;
+        for (String var : tm.getVariableOrder(symbol)) {
+            gen.arrayset(array, gen.getInt(i), bindings[i]);
+            i++;
+        }
+
+        // get iterator from index tree
+        Local labels = getLabelsObject(gen);
+        Local map = gen.read(labels, mapNameForSymbol(symbol));
+        Local iter = gen.call(map, names.INDEXTREE_GET, array);
+
+        // exit if there is no match with these bindings
+        gen.beginIf(gen.equalsTest(iter, gen.getNull()));
+            gen.returnVoid();
+        gen.endIf();
+
+        // cycle through
+        Local hasnext = gen.call(iter, names.ITERATOR_HASNEXT);
+        gen.beginWhile(gen.equalsTest(hasnext, gen.getTrue()));
+            Local itdobject = gen.cast(itds.getInterfaceType(),
+                                       gen.call(iter, names.ITERATOR_NEXT));
+            // transitions
+            Local bound = gen.call(itdobject, itds.getIsBoundMethod());
+            gen.beginIf(gen.equalsTest(bound, gen.getTrue()));
+                generateITDUpdateCalls(gen, itdobject, symbol, false);
+            gen.endIf();
+            gen.assign(hasnext, gen.call(iter, names.ITERATOR_HASNEXT));
+        gen.endWhile();
         gen.returnVoid();
     }
 
     protected void generateInitialSymbolAdvice(String symbol, SootMethod method)
     {
         JimpleGenerator gen = new JimpleGenerator(method);
-        List varnames = tm.getVariableOrder(symbol);
-        Local[] bindings = new Local[varnames.size()];
-        int itdparam = varnames.indexOf(results.itdVariable());
+        Local[] bindings = new Local[method.getParameterCount()];
         
         // read parameters
         for (int i = 0; i < bindings.length; i++)
             bindings[i] = gen.nextParameter();
-        Local itdobject = gen.cast(itds.getInterfaceType(), bindings[itdparam]);
+        Local itdobject = getITDObject(gen, symbol, bindings);
 
         // make disjunct
         Local disjunct = gen.alloc(names.DISJUNCT_INIT);
@@ -153,10 +185,11 @@ public class ITDOptimisation
 
         // make weak references (with disjunct as container) and
         // put weak references into disjunct
+        List varnames = tm.getVariableOrder(symbol);
         for (int i = 0; i < bindings.length; i++)
         {
             Local weakref = gen.alloc(names.WEAKREF_INIT,
-                                    bindings[0], refqueue, gen.getTrue());
+                                    bindings[i], refqueue, gen.getTrue());
             gen.call(weakref, names.WEAKREF_ADDCONTAINER, disjunct);
             gen.write(disjunct, "weak$" + varnames.get(i), weakref);
         }
@@ -164,28 +197,11 @@ public class ITDOptimisation
         // Call Init on ITD
         gen.call(itdobject, itds.getInitMethod(), disjunct);
         
-        // Call Transitions on ITD
-        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
-        for (SMNode state : sm.getInitialStates()) {
-            Iterator i = state.getOutEdgeIterator();
-            while (i.hasNext()) {
-                SMEdge edge = (SMEdge) i.next();
-                if (!edge.isSkipEdge() && edge.getLabel().equals(symbol))
-                {
-                    Value from = gen.getInt(state.getNumber());
-                    Value to = gen.getInt(edge.getTarget().getNumber());
-                    gen.call(itdobject, itds.getTransitionMethod(), from, to);
-                }
-            }
-        }
-
-        // Call AddToList on ITD and update 'modified' field on labels class
-        Local labels = getLabelsObject(gen);
-        Local old_modified = gen.read(labels, names.MODIFIED);
-        gen.call(itdobject, itds.getAddToListMethod(), old_modified);
-        gen.write(labels, names.MODIFIED, itdobject);
+        // do transitions on ITD --- (true means only for initial state)
+        generateITDUpdateCalls(gen, itdobject, symbol, true);
 
         // populate maps
+        Local labels = getLabelsObject(gen);
         for (String othersymbol : tm.getSymbols()) {
             if (needTreeForSymbol(othersymbol)) {
                 String mapname = mapNameForSymbol(othersymbol);
@@ -210,9 +226,28 @@ public class ITDOptimisation
     protected void generateNoLookupAdvice(String symbol, SootMethod method)
     {
         JimpleGenerator gen = new JimpleGenerator(method);
-        int params = method.getParameterCount();
-        for (int i = 0; i < params; i++)
-            gen.nextParameter();
+        Local[] bindings = new Local[method.getParameterCount()];
+
+        // read parameters
+        for (int i = 0; i < bindings.length; i++)
+            bindings[i] = gen.nextParameter();
+
+        // get itd-object
+        Local itdobject = getITDObject(gen, symbol, bindings);
+
+        // check itd-object has bindings attached, return if not
+        Local bound = gen.call(itdobject, itds.getIsBoundMethod());
+        gen.beginIf(gen.equalsTest(bound, gen.getFalse()));
+            gen.returnVoid();
+        gen.endIf();
+
+        // TODO: check IsOwnedByCurrentThread() if perthread tracematch
+
+        // TODO: check other parameters equal bindings on itd-object
+
+        // do transitions -- (false means don't just consider initial state)
+        generateITDUpdateCalls(gen, itdobject, symbol, false);
+        
         gen.returnVoid();
     }
 
@@ -227,6 +262,7 @@ public class ITDOptimisation
             gen.call(modified, itds.getMergeMethod());
             generateMatchedCheck(gen, modified, labels);
             Local next = gen.call(modified, itds.getRemoveFromListMethod());
+            gen.call(modified, itds.getTerminateIfPossibleMethod());
             gen.assign(modified, next);
         gen.endWhile();
         gen.write(labels, names.MODIFIED, gen.getNull());
@@ -236,6 +272,41 @@ public class ITDOptimisation
             releaseLock(gen);
         gen.endIf();
         gen.returnVoid();
+    }
+
+    protected void generateITDUpdateCalls(JimpleGenerator gen, Local itdobject,
+                                          String symbol, boolean onlyinitial)
+    {
+        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
+        Iterator<SMNode> states;
+
+        if (onlyinitial)
+            states = sm.getInitialStates().iterator();
+        else
+            states = sm.getStateIterator();
+
+        while (states.hasNext()) {
+            SMNode state = states.next();
+            Iterator edges = state.getOutEdgeIterator();
+            while (edges.hasNext()) {
+                SMEdge edge = (SMEdge) edges.next();
+                if (!edge.isSkipEdge() && edge.getLabel().equals(symbol))
+                {
+                    Value from = gen.getInt(state.getNumber());
+                    Value to = gen.getInt(edge.getTarget().getNumber());
+                    gen.call(itdobject, itds.getTransitionMethod(), from, to);
+                }
+            }
+        }
+
+        // Call AddToList on ITD and update 'modified' field on labels class
+        Local labels = getLabelsObject(gen);
+        Local inlist = gen.call(itdobject, itds.getIsInListMethod());
+        gen.beginIf(gen.equalsTest(inlist, gen.getFalse()));
+            Local old_modified = gen.read(labels, names.MODIFIED);
+            gen.call(itdobject, itds.getAddToListMethod(), old_modified);
+            gen.write(labels, names.MODIFIED, itdobject);
+        gen.endIf();
     }
 
     protected void generateMatchedCheck(JimpleGenerator gen,
@@ -251,8 +322,24 @@ public class ITDOptimisation
                 gen.read(gen.read(labels, final_constraint), "disjuncts");
             Local disjunct =
                 gen.call(itdobject, itds.getGetFinalDisjunctMethod());
-            gen.call(solutions, names.SET_ADD, solutions);
+            gen.call(solutions, names.SET_ADD, disjunct);
         gen.endIf();
+    }
+
+    protected Local getITDObject(JimpleGenerator gen, String symbol,
+                                    Local[] parameters)
+    {
+        int pos = tm.getVariableOrder(symbol).indexOf(results.itdVariable());
+        Type itdtype = itds.getInterfaceType();
+
+        if (!tm.getInitialSymbols().contains(symbol)) {
+            // argument may not have ITD on it, in which case the
+            // symbol does not match
+            gen.beginIf(gen.instanceOfTest(itdtype, parameters[pos]));
+                gen.returnVoid();
+            gen.endIf();
+        }
+        return gen.cast(itds.getInterfaceType(), parameters[pos]);
     }
 
     protected Local getLabelsObject(JimpleGenerator gen)

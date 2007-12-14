@@ -66,6 +66,11 @@ public class Introductions
         return terminate_if_possible;
     }
 
+    public SootMethod getIsBoundMethod()
+    {
+        return is_bound;
+    }
+
     public SootMethod getTransitionMethod()
     {
         return transition;
@@ -74,6 +79,11 @@ public class Introductions
     public SootMethod getMergeMethod()
     {
         return merge;
+    }
+
+    public SootMethod getIsInListMethod()
+    {
+        return is_in_list;
     }
 
     public SootMethod getAddToListMethod()
@@ -232,7 +242,7 @@ public class Introductions
                 for (String varname : state.needStrongRefs) {
                     SootMethod strengthen_var =
                         names.lookup(names.DISJUNCT, VoidType.v(),
-                                        "strengthen$" + varname);
+                                        "strengthen" + varname);
                     gen.call(disjunct, strengthen_var);
                 }
                 gen.exitSwitch();
@@ -279,7 +289,6 @@ public class Introductions
 
             Local disjunct = gen.read(names.BINDING_DISJUNCT);
             gen.call(disjunct, update_ref_kinds);
-            gen.call(gen.getThis(), terminate_if_possible);
 
             gen.returnVoid();
         }
@@ -408,7 +417,6 @@ public class Introductions
                 gen.call(states, names.BITSET_NEXTSETBIT, statenum));
             gen.endWhile();
             gen.call(disjunct, update_ref_kinds);
-            gen.call(gen.getThis(), terminate_if_possible);
             gen.returnValue(disjunct_copy);
         }
     }

@@ -193,7 +193,7 @@ public class JimpleGenerator
 
         // create local for object
         RefType type = sc.getType();
-        String name = "obj" + sc.getName();
+        String name = "obj" + sc.getShortName();
         Local allocated = local_generator.generateLocal(type, name);
 
         // allocate object
@@ -386,6 +386,14 @@ public class JimpleGenerator
     public ConditionExpr notEqualsTest(Value a, Value b)
     {
         return Jimple.v().newEqExpr(a, b);
+    }
+
+    public ConditionExpr instanceOfTest(Type type, Value tested)
+    {
+        Local answer =
+            local_generator.generateLocal(BooleanType.v(), "isinstanceof");
+        assign(answer, Jimple.v().newInstanceOfExpr(tested, type));
+        return equalsTest(answer, getFalse());
     }
 
     public Local land(Value a, Value b)
