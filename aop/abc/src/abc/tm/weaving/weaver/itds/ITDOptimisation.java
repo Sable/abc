@@ -243,7 +243,9 @@ public class ITDOptimisation
 
         // TODO: check IsOwnedByCurrentThread() if perthread tracematch
 
-        // TODO: check other parameters equal bindings on itd-object
+        // check that the (non-itd) parameters are consistent with the
+        // bindings found on the itd-object
+        generateEqualityChecks(gen, symbol, itdobject, bindings);
 
         // do transitions -- (false means don't just consider initial state)
         generateITDUpdateCalls(gen, itdobject, symbol, false);
@@ -272,6 +274,31 @@ public class ITDOptimisation
             releaseLock(gen);
         gen.endIf();
         gen.returnVoid();
+    }
+
+    /**
+     * check that the (non-itd) parameters are consistent with the
+     * bindings found on the itd-object
+     */
+    protected void generateEqualityChecks(JimpleGenerator gen, String symbol,
+                                          Local itdobject, Local[] bindings)
+    {
+        Local disjunct = gen.call(itdobject, itds.getGetDisjunctMethod());
+        List<String> varnames = tm.getVariableOrder(symbol);
+        int itdindex = getITDObjectParameterNumber(symbol);
+        for (int i = 0; i < bindings.length; i++) {
+            if (i != itdindex) {
+                String var = varnames.get(i);
+                Type vartype = tm.bindingType(var);
+
+                SootMethod get_method =
+                    names.lookup(names.DISJUNCT, vartype, "get$" + var);
+                Local disjunct_val = gen.call(disjunct, get_method);
+                gen.beginIf(gen.equalsTest(bindings[i], disjunct_val));
+                    gen.returnVoid();
+                gen.endIf();
+            }
+        }
     }
 
     protected void generateITDUpdateCalls(JimpleGenerator gen, Local itdobject,
@@ -329,7 +356,7 @@ public class ITDOptimisation
     protected Local getITDObject(JimpleGenerator gen, String symbol,
                                     Local[] parameters)
     {
-        int pos = tm.getVariableOrder(symbol).indexOf(results.itdVariable());
+        int pos = getITDObjectParameterNumber(symbol);
         Type itdtype = itds.getInterfaceType();
 
         if (!tm.getInitialSymbols().contains(symbol)) {
@@ -340,6 +367,11 @@ public class ITDOptimisation
             gen.endIf();
         }
         return gen.cast(itds.getInterfaceType(), parameters[pos]);
+    }
+
+    protected int getITDObjectParameterNumber(String symbol)
+    {
+        return tm.getVariableOrder(symbol).indexOf(results.itdVariable());
     }
 
     protected Local getLabelsObject(JimpleGenerator gen)

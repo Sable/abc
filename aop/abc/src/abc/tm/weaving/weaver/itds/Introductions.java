@@ -96,6 +96,11 @@ public class Introductions
         return remove_from_list;
     }
 
+    public SootMethod getGetDisjunctMethod()
+    {
+        return get_disjunct;
+    }
+
     public SootMethod getHasMatchedMethod()
     {
         return has_matched;
