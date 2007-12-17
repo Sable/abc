@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	private static final Object dummy = new Object();
-	private Map delegate = new WeakKeyCollectingIdentityHashMap();
+	private Map delegate = new java.util.IdentityHashMap(); //new WeakKeyCollectingIdentityHashMap();
 	private IndexTreeMap.IndexTreeLevelMap parent;
 	private Object parentKey;
 	
