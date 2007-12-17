@@ -62,7 +62,7 @@ aspect IntertypeMethodNameAnalysis {
       boolean zapped = false;
       for(Iterator i2 = set.iterator(); !zapped && i2.hasNext(); ) {
         MethodDecl m = (MethodDecl)i2.next();
-        zapped = m.zaps(decl) || m.overrides(decl);
+        zapped = m.zaps(decl) || (m.overrides(decl) && !decl.overrides(m));
       }
       if(!zapped) {
         SimpleSet newSet = SimpleSet.emptySet.add(decl);
@@ -114,7 +114,7 @@ aspect IntertypeMethodNameAnalysis {
         // include methods inherited through interfaces
         if(m instanceof IntertypeMethodDecl) {
           if(m.isPrivate()) {
-            boolean found = true;
+            boolean found = false;
             for(Iterator i2 = localMethodsSignature(m.signature()).iterator(); i2.hasNext(); ) {
               MethodDecl n = (MethodDecl)i2.next();
               if(n.isPrivate() && n.hostType().topLevelType() == m.hostType().topLevelType())
@@ -129,7 +129,7 @@ aspect IntertypeMethodNameAnalysis {
             boolean zapped = false;
             for(Iterator i2 = set.iterator(); !zapped && i2.hasNext(); ) {
               MethodDecl decl = (MethodDecl)i2.next();
-              zapped = decl.zaps(m) || decl.overrides(m) || (m.isAbstract() && !decl.isAbstract());
+              zapped = decl.zaps(m) || (decl.overrides(m) && !m.overrides(decl)) || (m.isAbstract() && !decl.isAbstract());
             }
             if(!zapped) {
               SimpleSet newSet = SimpleSet.emptySet.add(m);

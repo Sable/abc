@@ -23,18 +23,18 @@ aspect IntertypeMethodErrorCheck {
     }
     else if(hostType().isInterfaceDecl()) {
 
-      if(isStatic())
+      if(getModifiers().isAbstract() && isStatic())
         error("interface method " + signature() + " in " +
-            hostType().typeName() +  " may not be static");
+            hostType().typeName() +  " may not be abstract and static");
       if(isStrictfp())
         error("interface method " + signature() + " in " +
             hostType().typeName() +  " may not be strictfp");
       if(isNative())
         error("interface method " + signature() + " in " +
             hostType().typeName() +  " may not be native");
-      if(isSynchronized())
+      if(getModifiers().isAbstract() && isSynchronized())
         error("interface method " + signature() + " in " +
-            hostType().typeName() +  " may not be synchronized");
+            hostType().typeName() +  " may not be abstract and synchronized");
     }
     if(isProtected())
       error("Inter-type method declarations may not be protected");
@@ -121,7 +121,8 @@ aspect IntertypeMethodErrorCheck {
             MethodDecl n = (MethodDecl)iter.next();
             if(m != n && !m.couldOverride(n) && !n.isAbstract())
               m.error("there is already an implementation in " + n.hostType().typeName());
-            checkMethods(m, n);
+            if(m != n)
+              checkMethods(m, n);
           }
         }
       }
@@ -167,7 +168,8 @@ aspect IntertypeMethodErrorCheck {
         if(!found) {
           for(Iterator i2 = ancestorMethods(m.signature()).iterator(); i2.hasNext(); ) {
             MethodDecl decl = (MethodDecl)i2.next();
-            checkMethods(m, decl);
+            if(m != decl)
+              checkMethods(m, decl);
             //if(m != decl && m.couldOverride(decl) && !decl.isAbstract())
             //  m.error("there is already an implementation in " + decl.hostType().typeName());
           }
