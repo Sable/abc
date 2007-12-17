@@ -186,7 +186,7 @@ public class ITDOptimisation
         // make weak references (with disjunct as container) and
         // put weak references into disjunct
         List varnames = tm.getVariableOrder(symbol);
-        for (int i = 0; i < bindings.length; i++)
+        for (int i = 0; i < varnames.size(); i++)
         {
             Local weakref = gen.alloc(names.WEAKREF_INIT,
                                     bindings[i], refqueue, gen.getTrue());

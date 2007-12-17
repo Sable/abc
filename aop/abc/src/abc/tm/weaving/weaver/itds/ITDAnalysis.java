@@ -101,8 +101,9 @@ public class ITDAnalysis extends AbstractReweavingAnalysis
             // Update the ITD-analysis results for this tracematch and symbol
             TraceMatch tm = methodToTM.get(advice);
             String symbol = methodToSymbol.get(advice);
+            List<String> symbol_vars = tm.getVariableOrder(symbol);
 
-            for (int arg = 0; arg < invoke.getArgs().size(); arg++) {
+            for (int arg = 0; arg < symbol_vars.size(); arg++) {
                 String varname = tm.getVariableOrder(symbol).get(arg);
                 Set<SootClass> pointsto = null;
                 boolean isfresh = analysis.isFresh(stmt, arg);
