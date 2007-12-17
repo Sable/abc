@@ -156,8 +156,25 @@ public class ITDOptimisation
         // cycle through
         Local hasnext = gen.call(iter, names.ITERATOR_HASNEXT);
         gen.beginWhile(gen.equalsTest(hasnext, gen.getTrue()));
-            Local itdobject = gen.cast(itds.getInterfaceType(),
-                                       gen.call(iter, names.ITERATOR_NEXT));
+            Local next = gen.call(iter, names.ITERATOR_NEXT);
+            // check "next" for nullness
+            // (because it may have just been garbage-collected)
+            gen.beginIf(gen.equalsTest(next, gen.getNull()));
+                gen.continueWhile();
+            gen.endIf();
+
+            Local itdobject = gen.cast(itds.getInterfaceType(), next);
+
+            // check that this thread owns the itd-object if this is
+            // a perthread tracematch
+            if (tm.isPerThread()) {
+                Local owner = 
+                    gen.call(itdobject, itds.getIsOwnedByCurrentThreadMethod());
+                gen.beginIf(gen.equalsTest(owner, gen.getFalse()));
+                    gen.continueWhile();
+                gen.endIf();
+            }
+
             // transitions
             Local bound = gen.call(itdobject, itds.getIsBoundMethod());
             gen.beginIf(gen.equalsTest(bound, gen.getTrue()));
@@ -179,8 +196,9 @@ public class ITDOptimisation
         Local itdobject = getITDObject(gen, symbol, bindings);
 
         // make disjunct
+        Local labels = getLabelsObject(gen);
         Local disjunct = gen.alloc(names.DISJUNCT_INIT);
-        Local refqueue = gen.read(names.TMREFQUEUE);
+        Local refqueue = gen.read(labels, names.TMREFQUEUE);
         gen.write(disjunct, "itdobject", itdobject);
 
         // make weak references (with disjunct as container) and
@@ -201,7 +219,6 @@ public class ITDOptimisation
         generateITDUpdateCalls(gen, itdobject, symbol, true);
 
         // populate maps
-        Local labels = getLabelsObject(gen);
         for (String othersymbol : tm.getSymbols()) {
             if (needTreeForSymbol(othersymbol)) {
                 String mapname = mapNameForSymbol(othersymbol);
@@ -218,7 +235,11 @@ public class ITDOptimisation
             }
         }
 
-        // Call SetOwnerThread on ITD -- just if PerThread -- TODO
+        // if the tracematch is "perthread", then the owning thread has
+        // to be recorded with each instrumented object (each such object
+        // can only be owned by one thread, by freshness)
+        if (tm.isPerThread())
+            gen.call(itdobject, itds.getSetOwnerThreadMethod());
 
         gen.returnVoid();
     }
@@ -241,7 +262,14 @@ public class ITDOptimisation
             gen.returnVoid();
         gen.endIf();
 
-        // TODO: check IsOwnedByCurrentThread() if perthread tracematch
+        // check IsOwnedByCurrentThread() if perthread tracematch
+        if (tm.isPerThread()) {
+            Local owner =
+                gen.call(itdobject, itds.getIsOwnedByCurrentThreadMethod());
+            gen.beginIf(gen.equalsTest(owner, gen.getFalse()));
+                gen.returnVoid();
+            gen.endIf();
+        }
 
         // check that the (non-itd) parameters are consistent with the
         // bindings found on the itd-object
@@ -268,11 +296,14 @@ public class ITDOptimisation
             gen.assign(modified, next);
         gen.endWhile();
         gen.write(labels, names.MODIFIED, gen.getNull());
-        
-        Local matched = gen.read(labels, tm.getName() + "updated");
-        gen.beginIf(gen.equalsTest(matched, gen.getFalse()));
-            releaseLock(gen);
-        gen.endIf();
+
+        if (!tm.isPerThread()) {
+            // release the TM lock if the TM has not matched
+            Local matched = gen.read(labels, tm.getName() + "updated");
+            gen.beginIf(gen.equalsTest(matched, gen.getFalse()));
+                releaseLock(gen);
+            gen.endIf();
+        }
         gen.returnVoid();
     }
 
@@ -376,12 +407,12 @@ public class ITDOptimisation
 
     protected Local getLabelsObject(JimpleGenerator gen)
     {
-        if (tm.isPerThread()) {
-            throw new RuntimeException("Have not yet added support for " +
-                "perthread tracematches with the ITD optimisation turned on.");
-        }
-
-        return gen.getThis();
+        if (!tm.isPerThread())
+            return gen.getThis();
+        
+        Local labelsfield = gen.read(tm.getName() + "labels");
+        Local labelsobject = gen.call(labelsfield, names.THREADLOCAL_GET);
+        return gen.cast(tm.getLabelsClass().getType(), labelsobject);
     }
 
     protected void releaseLock(JimpleGenerator gen)

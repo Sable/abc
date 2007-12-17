@@ -81,6 +81,16 @@ public class Introductions
         return merge;
     }
 
+    public SootMethod getSetOwnerThreadMethod()
+    {
+        return set_owner_thread;
+    }
+
+    public SootMethod getIsOwnedByCurrentThreadMethod()
+    {
+        return is_owned_by_current_thread;
+    }
+
     public SootMethod getIsInListMethod()
     {
         return is_in_list;

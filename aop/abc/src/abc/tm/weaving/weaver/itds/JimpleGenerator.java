@@ -271,6 +271,12 @@ public class JimpleGenerator
         units.addLast(Jimple.v().newIfStmt(condition, end_label));
     }
 
+    public void continueWhile()
+    {
+        Stmt start_label = while_start_labels.peek();
+        units.addLast(Jimple.v().newGotoStmt(start_label));
+    }
+
     public void endWhile()
     {
         Stmt start_label = while_start_labels.pop();

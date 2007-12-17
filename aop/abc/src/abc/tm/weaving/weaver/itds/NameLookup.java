@@ -144,6 +144,10 @@ public class NameLookup
     public final SootMethod CURRENT_THREAD =
         lookup(THREAD, THREAD.getType(), "currentThread");
 
+    public final SootClass THREADLOCAL = lookup("java.lang.ThreadLocal");
+    public final SootMethod THREADLOCAL_GET =
+        lookup(THREADLOCAL, OBJECT.getType(), "get");
+
     // iterators
     public final SootClass ITERATOR = lookup("java.util.Iterator");
     public final SootMethod ITERATOR_HASNEXT =
