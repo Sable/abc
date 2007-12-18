@@ -32,6 +32,7 @@ package org.aspectbench.tm.runtime.internal;
  * @author Pavel Avgustinov
  */
 
+import java.lang.ref.Reference;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -39,6 +40,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap.WeakKeyHashEntry;
 
 public class IdentityHashMap implements Map {
     /** The default capacity to use */
@@ -532,13 +535,28 @@ public class IdentityHashMap implements Map {
 	 * {@inheritDoc}
 	 */
 	public Object remove(Object key) {
+		Object result = safeRemove(key);
+		if(result != null) modCount++;
+		return result;
+	}
+	
+	/**
+	 * Removes the key/value pair corresponding to the hidden key in a "safe" way.
+	 * 
+	 * What this means is that it doesn't update the modCount. It's intended for
+	 * this method to be called when automatically purging values from the map.
+	 * In this way, we allow removal of values while iterating over the keyset,
+	 * but still catch "non-safe", i.e. user-initiated, removals.
+	 * 
+	 * 
+	 */
+	protected Object safeRemove(Object key) {
 		//System.out.print("-");
 		int index = hashIndex(key);
 		HashEntry cur = data[index];
 		HashEntry prev = null;
 		while(cur != null) {
 			if(cur.getKey() == key) {
-				modCount++;
 				Object old = cur.value;
 				cur.live = false;
 				size--;
@@ -554,7 +572,7 @@ public class IdentityHashMap implements Map {
 		}
 		return null;
 	}
-	
+
 	public void putAll(Map arg0) {
 		notImplemented("putAll");
 	}

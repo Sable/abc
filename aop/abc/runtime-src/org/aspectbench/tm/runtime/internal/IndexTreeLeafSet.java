@@ -29,14 +29,51 @@ import java.util.Map;
  * of an IndexTree. Comparison is by object identity, and only weak
  * references are kept to objects.
  * 
+ * As this is part of an IndexTree data structure, the values will all
+ * be boxed in MaybeWeakRefs (the tm update code needs to control
+ * strength of references). Since these are canonical, a simple
+ * IdentityHashMap suffices as a delegate object.
+ * 
  * @author Pavel Avgustinov
  */
 
 public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	private static final Object dummy = new Object();
-	private Map delegate = new java.util.IdentityHashMap(); //new WeakKeyCollectingIdentityHashMap();
+	private IdentityHashMap delegate = new IdentityHashMap();
 	private IndexTreeMap.IndexTreeLevelMap parent;
 	private Object parentKey;
+	
+	/**
+	 * Special iterator ranging over a collection of MaybeWeakRefs that
+	 * unboxes them before removing.
+	 * @author pavel
+	 *
+	 */
+	static class UnboxingIterator implements Iterator {
+		Iterator delegate;
+		UnboxingIterator(Iterator d) {
+			delegate = d;
+		}
+		
+		public boolean hasNext() {
+			return delegate.hasNext();
+		}
+		
+		public Object next() {
+			Object result;
+			do {
+				MaybeWeakRef ref = ((MaybeWeakRef)delegate.next());
+				if(ref == null) return null;
+				result = ref.get();
+			} while(result == null);
+			return result;
+		}
+		
+		public void remove() {
+			throw new UnsupportedOperationException("Shouldn't remove values from IndexTree while iterating");
+		}
+		
+	}
 	
 	/**
 	 * Construct a new IndexTreeLeafSet contained in the Map parent under the given
@@ -48,6 +85,7 @@ public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	}
 	
 	public boolean add(Object key) {
+		((MaybeWeakRef)key).addContainer(this);
 		return delegate.put(key, dummy) == null;
 	}
 
@@ -60,11 +98,12 @@ public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	}
 
 	public boolean remove(Object key) {
+		((MaybeWeakRef)key).removeContainer(this);
 		return delegate.remove(key) != null;
 	}
 
 	public Iterator iterator() {
-		return delegate.keySet().iterator();
+		return new UnboxingIterator(delegate.keySet().iterator());
 	}
 
 	public int size() {
@@ -80,7 +119,8 @@ public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	}
 
 	public void weakrefExpired(MyWeakRef ref) {
-		remove(ref);
+		ref.removeContainer(this);
+		delegate.safeRemove(ref);
 		cleanup();
 	}
 

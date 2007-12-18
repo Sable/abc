@@ -100,7 +100,7 @@ public class IndexTreeMap implements IndexTree {
 	 * Insert a particular ITDBinding into the IndexTree, at a leaf given by
 	 * the set of keys. Maps that currently don't exist are created.
 	 */
-	public void insert(Object[] keys, ITDBinding value) {
+	public void insert(Object[] keys, MaybeWeakRef value) {
 		Map cur = map;
 		Map next;
 		Set set;
