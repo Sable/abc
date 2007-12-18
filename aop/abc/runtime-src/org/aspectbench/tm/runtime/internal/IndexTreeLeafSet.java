@@ -46,6 +46,11 @@ public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	/**
 	 * Special iterator ranging over a collection of MaybeWeakRefs that
 	 * unboxes them before removing.
+	 * 
+	 * Note that a special contract applies: As objects may disappear from
+	 * the map, hasNext() can only tell when there definitely isn't a next
+	 * element; if it returns true, then next() will still return null if
+	 * all remaining elements have been dropped in the meantime.
 	 * @author pavel
 	 *
 	 */

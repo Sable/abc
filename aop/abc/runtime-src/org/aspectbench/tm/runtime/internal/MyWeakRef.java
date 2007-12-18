@@ -23,6 +23,7 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MyWeakRef extends WeakReference {
@@ -72,7 +73,7 @@ public class MyWeakRef extends WeakReference {
 	 * MyWeakRefs can optionally be registered with WeakRefContainers; on expiry,
 	 * one can notify all containers.
 	 */
-	private List containers = null;
+	private List containers = new LinkedList();
 	
 	/**
 	 * Add a new container to the list 
