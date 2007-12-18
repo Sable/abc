@@ -29,7 +29,7 @@ public interface IndexTree {
 	 * Insert a particular ITDBinding object into the tree for the
 	 * given keys. TODO: How do we handle primitive bindings?
 	 */
-	public void insert(Object[] keys, ITDBinding value);
+	public void insert(Object[] keys, MaybeWeakRef value);
 	
 	/**
 	 * Get an iterator over all ITDBinding objects for the given
