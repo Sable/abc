@@ -87,7 +87,7 @@ public class MyWeakRef extends WeakReference {
 	 * seem necessary).
 	 */
 	public void removeContainer(WeakRefContainer c) {
-		throw new UnsupportedOperationException("Can't disassociate container from weakref");
+		throw new UnsupportedOperationException("Can't disassociate container from weakref (yet?)");
 	}
 	
 	/**

@@ -124,7 +124,9 @@ public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	}
 
 	public void weakrefExpired(MyWeakRef ref) {
-		ref.removeContainer(this);
+		// No need to disassociate from container, as the whole containers list
+		// is about to be dropped...
+		// ref.removeContainer(this);
 		delegate.safeRemove(ref);
 		cleanup();
 	}
