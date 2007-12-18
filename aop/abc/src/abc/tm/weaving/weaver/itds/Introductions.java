@@ -297,8 +297,8 @@ public class Introductions
             gen.beginIf(gen.call(states, names.BITSET_GET, from));
                 Local states_pos = gen.read(names.STATES_POS);
                 gen.call(states_pos, names.BITSET_SET, to);
+                gen.call(gen.getThis(), strengthen, to);
             gen.endIf();
-            gen.call(gen.getThis(), strengthen, to);
             gen.returnVoid();
         }
     }
