@@ -159,26 +159,24 @@ public class ITDOptimisation
             Local next = gen.call(iter, names.ITERATOR_NEXT);
             // check "next" for nullness
             // (because it may have just been garbage-collected)
-            gen.beginIf(gen.equalsTest(next, gen.getNull()));
-                gen.continueWhile();
-            gen.endIf();
-
-            Local itdobject = gen.cast(itds.getInterfaceType(), next);
-
-            // check that this thread owns the itd-object if this is
-            // a perthread tracematch
-            if (tm.isPerThread()) {
-                Local owner = 
-                    gen.call(itdobject, itds.getIsOwnedByCurrentThreadMethod());
-                gen.beginIf(gen.equalsTest(owner, gen.getFalse()));
-                    gen.continueWhile();
-                gen.endIf();
-            }
-
-            // transitions
-            Local bound = gen.call(itdobject, itds.getIsBoundMethod());
-            gen.beginIf(gen.equalsTest(bound, gen.getTrue()));
-                generateITDUpdateCalls(gen, itdobject, symbol, false);
+            gen.beginIf(gen.notEqualsTest(next, gen.getNull()));
+	            Local itdobject = gen.cast(itds.getInterfaceType(), next);
+	
+	            // check that this thread owns the itd-object if this is
+	            // a perthread tracematch
+	            if (tm.isPerThread()) {
+	                Local owner = 
+	                    gen.call(itdobject, itds.getIsOwnedByCurrentThreadMethod());
+	                gen.beginIf(gen.equalsTest(owner, gen.getFalse()));
+	                    gen.continueWhile();
+	                gen.endIf();
+	            }
+	
+	            // transitions
+	            Local bound = gen.call(itdobject, itds.getIsBoundMethod());
+	            gen.beginIf(gen.equalsTest(bound, gen.getTrue()));
+	                generateITDUpdateCalls(gen, itdobject, symbol, false);
+	            gen.endIf();
             gen.endIf();
             gen.assign(hasnext, gen.call(iter, names.ITERATOR_HASNEXT));
         gen.endWhile();
