@@ -212,8 +212,9 @@ public class ITDOptimisation
             gen.write(disjunct, "weak$" + varnames.get(i), weakref);
         }
 
-        // Call Init on ITD
-        gen.call(itdobject, itds.getInitMethod(), disjunct);
+        // Call Init on ITD, which returns the weak reference to use
+        // in index trees
+        Local treeref = gen.call(itdobject, itds.getInitMethod(), disjunct);
         
         // do transitions on ITD --- (true means only for initial state)
         generateITDUpdateCalls(gen, itdobject, symbol, true);
@@ -231,7 +232,7 @@ public class ITDOptimisation
                     gen.arrayset(array, gen.getInt(i++), bindings[pos]);
                 }
                 Local map = gen.read(labels, mapname);
-                gen.call(map, names.INDEXTREE_INSERT, array, itdobject);
+                gen.call(map, names.INDEXTREE_INSERT, array, treeref);
             }
         }
 
@@ -433,7 +434,6 @@ public class ITDOptimisation
         Scene.v().addClass(binding);
         binding.setApplicationClass();
         binding.setSuperclass(names.OBJECT);
-        binding.addInterface(names.ITDBINDING);
         return binding;
     }
 

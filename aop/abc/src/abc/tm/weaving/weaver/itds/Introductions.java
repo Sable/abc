@@ -148,6 +148,8 @@ public class Introductions
         addField(sc, names.BITSET.getType(), names.STATES_POS);
         addField(sc, names.THREAD.getType(), names.OWNER_THREAD);
         addField(sc, itd_interface, names.NEXT_BINDING);
+        addField(sc, names.MAYBEWEAKREF.getType(), names.MAP_STRENGTH);
+        addField(sc, BooleanType.v(), names.WEAKEN_MAP_STRENGTH);
     }
 
     protected void createBindingMethods(SootClass sc)
@@ -170,7 +172,8 @@ public class Introductions
 
     protected void createInitMethod(SootClass sc)
     {
-        init = createTMMethod(sc, VoidType.v(), "Init", names.DISJUNCT_TYPE);
+        Type weakreftype = names.MAYBEWEAKREF.getType();
+        init = createTMMethod(sc, weakreftype, "Init", names.DISJUNCT_TYPE);
 
         if (!sc.isInterface()) {
             JimpleGenerator gen = new JimpleGenerator(init);
@@ -187,7 +190,11 @@ public class Introductions
             
             gen.write(names.STATES, states);
             gen.write(names.STATES_POS, gen.alloc(names.BITSET_INIT));
-            gen.returnVoid();
+
+            // return a maybe-weak-ref, which is used in index trees
+            // which refer to this itd-object
+            Local weakref_to_this = generateInitMapStrengthCode(gen);
+            gen.returnValue(weakref_to_this);
         }
     }
 
@@ -259,7 +266,16 @@ public class Introductions
                         names.lookup(names.DISJUNCT, VoidType.v(),
                                         "strengthen" + varname);
                     gen.call(disjunct, strengthen_var);
+
+                    generateStrengthenMapStrengthCode(gen, varname);
                 }
+                for (String varname : state.weakRefs) {
+                    // also need to keep a strong reference from the leaves
+                    // of index trees to an itd-object, if the variable for
+                    // the itd-object is weak (but not collectable)
+                    generateStrengthenMapStrengthCode(gen, varname);
+                }
+
                 gen.exitSwitch();
             }
             gen.endSwitch();
@@ -304,6 +320,8 @@ public class Introductions
 
             Local disjunct = gen.read(names.BINDING_DISJUNCT);
             gen.call(disjunct, update_ref_kinds);
+
+            generateWeakenMapStrengthCode(gen);
 
             gen.returnVoid();
         }
@@ -434,6 +452,41 @@ public class Introductions
             gen.call(disjunct, update_ref_kinds);
             gen.returnValue(disjunct_copy);
         }
+    }
+
+    public Local generateInitMapStrengthCode(JimpleGenerator gen)
+    {
+        Local map_strength =
+            gen.cast(names.MAYBEWEAKREF.getType(),
+                gen.call(names.MAYBEWEAKREF_GETWEAKREF, gen.getThis()));
+        gen.write(names.MAP_STRENGTH, map_strength);
+        gen.write(names.WEAKEN_MAP_STRENGTH, gen.getTrue());
+
+        return map_strength;
+    }
+
+    public void generateStrengthenMapStrengthCode(JimpleGenerator gen,
+                                                    String var)
+    {
+        if (!var.equals(tm.getITDAnalysisResults().itdVariable()))
+            return;
+
+        Local map_strength = gen.read(names.MAP_STRENGTH);
+        gen.call(map_strength, names.MAYBEWEAKREF_STRENGTHEN, gen.getThis());
+        gen.write(names.WEAKEN_MAP_STRENGTH, gen.getFalse());
+    }
+
+    public void generateWeakenMapStrengthCode(JimpleGenerator gen)
+    {
+            Local weaken = gen.read(names.WEAKEN_MAP_STRENGTH);
+            gen.beginIf(gen.equalsTest(weaken, gen.getTrue()));
+                // need to weaken map-strength
+                Local map_strength = gen.read(names.MAP_STRENGTH);
+                gen.call(map_strength, names.MAYBEWEAKREF_WEAKEN);
+            gen.elseBranch();
+                // reset flag for next round of transitions
+                gen.write(names.WEAKEN_MAP_STRENGTH, gen.getTrue());
+            gen.endIf();
     }
 
     public void addField(SootClass sc, Type type, String name)

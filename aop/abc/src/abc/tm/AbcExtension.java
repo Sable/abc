@@ -164,6 +164,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
             addClassSignature("java.lang.ref.ReferenceQueue");
             addClassSignature(tmRuntime + "IndexTree");
             addClassSignature(tmRuntime + "IndexTreeMap");
+            addClassSignature(tmRuntime + "MaybeWeakRef");
         }
     }
  

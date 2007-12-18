@@ -47,6 +47,8 @@ public class NameLookup
         STATES_POS = tm.getName() + "states_pos";
         OWNER_THREAD = tm.getName() + "owner_thread";
         NEXT_BINDING = tm.getName() + "next_binding";
+        MAP_STRENGTH = tm.getName() + "map_strength";
+        WEAKEN_MAP_STRENGTH = tm.getName() + "weaken_map_strength";
 
         // label-class field names
         MODIFIED = tm.getName() + "modified";
@@ -82,6 +84,8 @@ public class NameLookup
     public final String STATES_POS;
     public final String OWNER_THREAD;
     public final String NEXT_BINDING;
+    public final String MAP_STRENGTH;
+    public final String WEAKEN_MAP_STRENGTH;
 
     // label-class field names
     public final String MODIFIED;
@@ -99,6 +103,8 @@ public class NameLookup
         lookup("java.util.HashSet");
     public final SootClass WEAKREF =
         lookup("org.aspectbench.tm.runtime.internal.MyWeakRef");
+    public final SootClass MAYBEWEAKREF =
+        lookup("org.aspectbench.tm.runtime.internal.MaybeWeakRef");
     public final SootClass REFQUEUE =
         lookup("java.lang.ref.ReferenceQueue");
     public final SootClass CONTAINER =
@@ -114,6 +120,12 @@ public class NameLookup
         lookup(WEAKREF, VoidType.v(), "addContainer", CONTAINER.getType());
     public final SootMethod WEAKREF_GET =
         lookup(lookup("java.lang.ref.Reference"), OBJECT.getType(), "get");
+    public final SootMethod MAYBEWEAKREF_GETWEAKREF =
+        lookup(MAYBEWEAKREF, WEAKREF.getType(), "getWeakRef", OBJECT.getType());
+    public final SootMethod MAYBEWEAKREF_STRENGTHEN =
+        lookup(MAYBEWEAKREF, VoidType.v(), "strengthen", OBJECT.getType());
+    public final SootMethod MAYBEWEAKREF_WEAKEN =
+        lookup(MAYBEWEAKREF, VoidType.v(), "weaken");
     public final SootMethod WEAKREF_ISEXPIRED =
         lookup(WEAKREF, BooleanType.v(), "isExpired");
 
@@ -164,11 +176,9 @@ public class NameLookup
             lookup("org.aspectbench.tm.runtime.internal.IndexTreeMap"),
             VoidType.v(), SootMethod.constructorName, IntType.v());
 
-    public final SootClass ITDBINDING =
-        lookup("org.aspectbench.tm.runtime.internal.ITDBinding");
     public final SootMethod INDEXTREE_INSERT =
         lookup(INDEXTREE, VoidType.v(), "insert",
-                OBJECTARRAY, ITDBINDING.getType());
+                OBJECTARRAY, MAYBEWEAKREF.getType());
     public final SootMethod INDEXTREE_GET =
         lookup(INDEXTREE, ITERATOR.getType(), "get", OBJECTARRAY);
 }
