@@ -28,12 +28,20 @@ public interface IndexTree {
 	/**
 	 * Insert a particular ITDBinding object into the tree for the
 	 * given keys. TODO: How do we handle primitive bindings?
+	 * 
+	 * As the update code needs control over strength of stored
+	 * references, values in the IndexTree are MaybeWeakRefs, and
+	 * we trust the update code to keep anything alive that needs
+	 * to be alive.
 	 */
 	public void insert(Object[] keys, MaybeWeakRef value);
 	
 	/**
 	 * Get an iterator over all ITDBinding objects for the given
 	 * set of keys, or null if none.
+	 * 
+	 * Note that the iterator unboxes the MaybeWeakRefs, so calling
+	 * next() either returns an actual value or null.
 	 */
 	public Iterator get(Object[] keys);
 }
