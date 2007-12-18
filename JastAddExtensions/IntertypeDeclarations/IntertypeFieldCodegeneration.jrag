@@ -212,7 +212,7 @@ aspect IntertypeFieldCodegeneration {
   public MethodDecl IntertypeFieldDeclaration.createInterfaceSetterImplementation(TypeDecl typeDecl) {
     Modifiers m = createAccessorModifiers(false);
     List parameters = new List().add(new ParameterDeclaration(type(), "v"));
-    Expr result = new VarAccess(introducedName());
+    Expr result = new AssignSimpleExpr(new VarAccess(introducedName()), new VarAccess("v"));
     return buildAccessor(m, type(), interfaceSetterName(), parameters, new ReturnStmt(new Opt(result)), typeDecl);
   }
 
