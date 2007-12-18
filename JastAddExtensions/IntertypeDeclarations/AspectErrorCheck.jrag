@@ -13,7 +13,7 @@ aspect AspectErrorCheck
   public void AspectDecl.typeCheck() {
     if(hasSuperclass() && superclass().isAspectDecl() && !superclass().isAbstract())
       error("aspects may only extend abstract aspects");
-    else {
+    else if(!hasSuperclass() || !superclass().isUnknown()) {
       if(instanceOf(lookupType("java.lang", "Cloneable")))
         error("aspect may not implement Cloneable");
       if(instanceOf(lookupType("java.io", "Serializable")))

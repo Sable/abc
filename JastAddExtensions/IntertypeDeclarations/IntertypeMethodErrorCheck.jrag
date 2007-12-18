@@ -23,9 +23,9 @@ aspect IntertypeMethodErrorCheck {
     }
     else if(hostType().isInterfaceDecl()) {
 
-      if(getModifiers().isAbstract() && isStatic())
+      if(isStatic())
         error("interface method " + signature() + " in " +
-            hostType().typeName() +  " may not be abstract and static");
+            hostType().typeName() +  " may not be static");
       if(isStrictfp())
         error("interface method " + signature() + " in " +
             hostType().typeName() +  " may not be strictfp");

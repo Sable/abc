@@ -114,6 +114,13 @@ aspect IntertypeMethodCodegeneration {
       IntroducedMethodDecl m = (IntroducedMethodDecl)bodyDecl;
       return m.introducedType() != bodyDecl.hostType();
     }
+    else if(bodyDecl instanceof IntertypeMethodDecl) {
+      return true;
+      /*
+      IntertypeMethodDecl m = (IntertypeMethodDecl)bodyDecl;
+      return m.introducedType() != bodyDecl.hostType();
+      */
+    }
     return false;
   }
 

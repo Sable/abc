@@ -66,10 +66,58 @@ aspect DeclareParentsAnalysis {
 
   refine AspectErrorCheck public void ClassDecl.typeCheck() {
     AspectErrorCheck.ClassDecl.typeCheck();
-    if(introducedSuperclass() != null && superclassWithoutDeclareParents() != null
-       && !introducedSuperclass().instanceOf(superclassWithoutDeclareParents()))
-      error("declared parent " + introducedSuperclass().typeName() + " is not a subclass of " + 
+    if(introducedSuperclass() != null && superclassWithoutDeclareParents() != null) {
+       if(!introducedSuperclass().instanceOf(superclassWithoutDeclareParents())
+       && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass()))
+        error("declared parent " + introducedSuperclass().typeName() + " is not a subclass of " + 
             superclassWithoutDeclareParents().typeName());
+       else if(superclassWithoutDeclareParents().instanceOf(introducedSuperclass())) {
+         for(Iterator iter = declareParentsExtends().iterator(); iter.hasNext(); ) {
+           DeclareParentsExtends e = (DeclareParentsExtends)iter.next();
+           if(e.getPattern().matchesType(this)) {
+             for(int i = 0; i < e.getNumTypeAccess(); i++) {
+               TypeDecl typeDecl = e.getTypeAccess(i).type();
+               if(typeDecl instanceof ClassDecl)
+                 e.warning("does not alter the parent of " + typeName());
+             }
+           }
+         }
+       }
+    }
+    for(Iterator iter = declareParentsImplements().iterator(); iter.hasNext(); ) {
+      DeclareParentsImplements e = (DeclareParentsImplements)iter.next();
+      if(e.getPattern().matchesType(this)) {
+        for(int i = 0; i < e.getNumTypeAccess(); i++) {
+          TypeDecl typeDecl = e.getTypeAccess(i).type();
+          if(typeDecl.isClassDecl() && !typeDecl.isUnknown())
+            e.error("class " + typeDecl.typeName() + " may not be a parent of " + typeName());
+        }
+      }
+    }
+  }
+
+  public void InterfaceDecl.typeCheck() {
+    super.typeCheck();
+    for(Iterator iter = declareParentsImplements().iterator(); iter.hasNext(); ) {
+      DeclareParentsImplements e = (DeclareParentsImplements)iter.next();
+      if(e.getPattern().matchesType(this)) {
+        for(int i = 0; i < e.getNumTypeAccess(); i++) {
+          TypeDecl typeDecl = e.getTypeAccess(i).type();
+          if(typeDecl.isClassDecl() && !typeDecl.isUnknown())
+            e.error("class " + typeDecl.typeName() + " may not be a parent of " + typeName());
+        }
+      }
+    }
+    for(Iterator iter = declareParentsExtends().iterator(); iter.hasNext(); ) {
+      DeclareParentsExtends e = (DeclareParentsExtends)iter.next();
+      if(e.getPattern().matchesType(this)) {
+        for(int i = 0; i < e.getNumTypeAccess(); i++) {
+          TypeDecl typeDecl = e.getTypeAccess(i).type();
+          if(typeDecl.isClassDecl() && !typeDecl.isUnknown())
+            e.error("class " + typeDecl.typeName() + " may not be a parent of " + typeName());
+        }
+      }
+    }
   }
   
   public ClassDecl ClassDecl.superclassWithoutDeclareParents() {
@@ -101,7 +149,7 @@ aspect DeclareParentsAnalysis {
         TypeDecl decl = (TypeDecl)iter.next();
         if(!decl.isPrivate() && decl.accessibleFrom(this)) {
           boolean found = false;
-          if(introducedSuperclass() != null) {
+          if(introducedSuperclass() != null && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass())) {
             ClassDecl c = introducedSuperclass();
             for(int i = 0; i < c.getNumBodyDecl(); i++) {
               if(c.getBodyDecl(i).declaresType(name)) {
@@ -119,7 +167,7 @@ aspect DeclareParentsAnalysis {
   }
 
   refine TypeAnalysis public ClassDecl ClassDecl.superclass() {
-    if(introducedSuperclass() != null)
+    if(introducedSuperclass() != null && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass()))
       return introducedSuperclass();
     return TypeAnalysis.ClassDecl.superclass();
   }

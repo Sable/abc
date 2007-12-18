@@ -62,14 +62,14 @@ aspect IntertypeMethodNameAnalysis {
       boolean zapped = false;
       for(Iterator i2 = set.iterator(); !zapped && i2.hasNext(); ) {
         MethodDecl m = (MethodDecl)i2.next();
-        zapped = m.zaps(decl) || (m.overrides(decl) && !decl.overrides(m));
+        zapped = m.zaps(decl);
       }
       if(!zapped) {
         SimpleSet newSet = SimpleSet.emptySet.add(decl);
         // remove all methods zapped by this method
         for(Iterator i2 = set.iterator(); i2.hasNext(); ) {
           MethodDecl m = (MethodDecl)i2.next();
-          if(!decl.zaps(m) && !decl.overrides(m))
+          if(!decl.zaps(m))
             newSet = newSet.add(m);
         }
         set = newSet;
@@ -129,14 +129,14 @@ aspect IntertypeMethodNameAnalysis {
             boolean zapped = false;
             for(Iterator i2 = set.iterator(); !zapped && i2.hasNext(); ) {
               MethodDecl decl = (MethodDecl)i2.next();
-              zapped = decl.zaps(m) || (decl.overrides(m) && !m.overrides(decl)) || (m.isAbstract() && !decl.isAbstract());
+              zapped = decl.zaps(m);
             }
             if(!zapped) {
               SimpleSet newSet = SimpleSet.emptySet.add(m);
               // remove all methods zapped by this method
               for(Iterator i2 = set.iterator(); i2.hasNext(); ) {
                 MethodDecl decl = (MethodDecl)i2.next();
-                if(!m.zaps(decl) && !m.overrides(decl) && !(!m.isAbstract() && decl.isAbstract()))
+                if(!m.zaps(decl))
                   newSet = newSet.add(decl);
               }
               set = newSet;
@@ -161,12 +161,24 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeMethodDecl.zaps(MethodDecl m) = m.zappedByIntertypeMethodDecl(this);
 
   syn boolean MethodDecl.zappedByMethodDecl(MethodDecl m) = m.overrides(this);
-  eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) = isAbstract() && accessibleFrom(m.hostType());
-  syn boolean MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m)  = !m.isAbstract() && isAbstract() && m.accessibleFrom(hostType());
+  eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) {
+    if(isAbstract() && !m.isAbstract())
+      return accessibleFrom(m.hostType());
+    return m.hostType() != hostType() && m.overrides(this) && m.accessibleFrom(hostType());
+  }
+  syn boolean MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
+    if(isAbstract() && !m.isAbstract())
+      return m.accessibleFrom(hostType());
+    return m.hostType() != hostType() && m.overrides(this) && m.accessibleFrom(hostType());
+  }
   eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
     if(m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect())
       return true;
-    return m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect());
+    if(m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect()))
+      return true;
+    if(isAbstract() && !m.isAbstract())
+      return m.accessibleFrom(hostType());
+    return m.hostType() != hostType() && m.overrides(this) && m.accessibleFrom(hostType());
   }
 
   syn boolean MethodDecl.couldOverride(MethodDecl m) =
