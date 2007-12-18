@@ -19,6 +19,7 @@ package org.aspectbench.tm.runtime.internal;
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 
 /**
@@ -33,19 +34,29 @@ import java.lang.ref.ReferenceQueue;
  */
 public class MaybeWeakRef extends MyWeakRef {
 	private static WeakKeyCollectingIdentityHashMap refMap = new WeakKeyCollectingIdentityHashMap();
+	private static ReferenceQueue expiredQueue = new ReferenceQueue();
 	private Object referent = null;
 	
-	public static MyWeakRef getWeakRef(Object o) {
+	public synchronized static MyWeakRef getWeakRef(Object o) {
 		if(o instanceof MaybeWeakRef) return (MyWeakRef)o;
 		//if(o == null) throw new RuntimeException("Getting weak reference for null");
 		MyWeakRef ref = (MyWeakRef)refMap.get(o);
 		if(ref == null) {
-			ref = new MaybeWeakRef(o);
+			ref = new MaybeWeakRef(o, expiredQueue);
 			refMap.put(o, ref);
 		}
 		return ref;
 	}
-	
+
+	public synchronized static void checkExpired() {
+		Reference expired = expiredQueue.poll();
+		while (expired != null) {
+			if (expired != null)
+				((MaybeWeakRef) expired).notifyContainers();
+			expired = expiredQueue.poll();
+		}
+	}
+
 	protected MaybeWeakRef(Object ref) {
 		super(ref);
 	}

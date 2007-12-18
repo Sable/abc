@@ -60,9 +60,6 @@ public class DisjunctUpdates
         }
         createUpdateRefKindsMethod();
         createHasExpiredMethod();
-        names.DISJUNCT.addInterface(names.lookup(
-            "org.aspectbench.tm.runtime.internal.WeakRefContainer"));
-        createWeakrefExpiredMethod();
         updateEqualsMethod();
     }
 
@@ -141,17 +138,6 @@ public class DisjunctUpdates
         flags = gen.land(flags, gen.getInt(~2));
         gen.write("collectable$" + varname, flags);
 
-        gen.returnVoid();
-    }
-
-    protected void createWeakrefExpiredMethod()
-    {
-        SootMethod expired = createMethod(names.DISJUNCT, VoidType.v(),
-                                "weakrefExpired", names.WEAKREF.getType());
-        JimpleGenerator gen = new JimpleGenerator(expired);
-        gen.nextParameter();
-
-        gen.call(gen.read("itdobject"), itds.getTerminateIfPossibleMethod());
         gen.returnVoid();
     }
 

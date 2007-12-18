@@ -79,8 +79,6 @@ public class ITDOptimisation
         JimpleEditor editor = new JimpleEditor(constructor);
 
         addField(labels, binding_type, names.MODIFIED);
-        addField(labels, names.REFQUEUE.getType(), names.TMREFQUEUE);
-        editor.initField(names.TMREFQUEUE, names.REFQUEUE_INIT);
 
         for (String symbol : tm.getSymbols()) {
             if (needTreeForSymbol(symbol)) {
@@ -198,7 +196,6 @@ public class ITDOptimisation
         // make disjunct
         Local labels = getLabelsObject(gen);
         Local disjunct = gen.alloc(names.DISJUNCT_INIT);
-        Local refqueue = gen.read(labels, names.TMREFQUEUE);
         gen.write(disjunct, "itdobject", itdobject);
 
         // make weak references (with disjunct as container) and
@@ -206,9 +203,7 @@ public class ITDOptimisation
         List varnames = tm.getVariableOrder(symbol);
         for (int i = 0; i < varnames.size(); i++)
         {
-            Local weakref = gen.alloc(names.WEAKREF_INIT,
-                                    bindings[i], refqueue, gen.getTrue());
-            gen.call(weakref, names.WEAKREF_ADDCONTAINER, disjunct);
+            Local weakref = gen.alloc(names.WEAKREF_INIT, bindings[i]);
             gen.write(disjunct, "weak$" + varnames.get(i), weakref);
         }
 
@@ -287,6 +282,9 @@ public class ITDOptimisation
         SootMethod method = tm.getSomeAdviceMethod();
         JimpleGenerator gen = new JimpleGenerator(method);
         Local labels = getLabelsObject(gen);
+
+        // get rid of expired references
+        gen.call(names.MAYBEWEAKREF_CHECKEXPIRED);
 
         Local modified = gen.read(labels, names.MODIFIED);
         gen.beginWhile(gen.notEqualsTest(modified, gen.getNull()));
