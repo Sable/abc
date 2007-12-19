@@ -417,14 +417,14 @@ aspect DeclareParentsAnalysis {
   inh Collection TypeDecl.declareParentsExtends();
   eq Program.getCompilationUnit().declareParentsExtends() {
     String key = "declare_parents_extends";
-    if(intertypeDecls().containsKey(key))
-      return (Collection)intertypeDecls().get(key);
+    if(intertypeParentDecls().containsKey(key))
+      return (Collection)intertypeParentDecls().get(key);
     return Collections.EMPTY_LIST;
   }
 
   // add declare precedences to generic inter-type collection phase
-  protected void DeclareParentsExtends.collectIntertypeDecls(HashMap map) {
-    super.collectIntertypeDecls(map);
+  protected void DeclareParentsExtends.collectIntertypeParentDecls(HashMap map) {
+    super.collectIntertypeParentDecls(map);
     String key = "declare_parents_extends";
     if(!map.containsKey(key))
       map.put(key, new ArrayList());
@@ -435,14 +435,14 @@ aspect DeclareParentsAnalysis {
   inh Collection TypeDecl.declareParentsImplements();
   eq Program.getCompilationUnit().declareParentsImplements() {
     String key = "declare_parents_implements";
-    if(intertypeDecls().containsKey(key))
-      return (Collection)intertypeDecls().get(key);
+    if(intertypeParentDecls().containsKey(key))
+      return (Collection)intertypeParentDecls().get(key);
     return Collections.EMPTY_LIST;
   }
 
   // add declare precedences to generic inter-type collection phase
-  protected void DeclareParentsImplements.collectIntertypeDecls(HashMap map) {
-    super.collectIntertypeDecls(map);
+  protected void DeclareParentsImplements.collectIntertypeParentDecls(HashMap map) {
+    super.collectIntertypeParentDecls(map);
     String key = "declare_parents_implements";
     if(!map.containsKey(key))
       map.put(key, new ArrayList());

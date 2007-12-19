@@ -36,6 +36,14 @@ aspect IntertypeFieldNameAnalysis {
     if(!c.isEmpty()) return c;
     return lookupMethod(name);
   }
+  eq IntertypeFieldDeclaration.getInit().lookupType(String name) {
+    SimpleSet set = introducedType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = introducedType().lookupType(name);
+    if(!set.isEmpty()) return set;
+    return lookupType(name);
+  }
+
 
   // add all introduced fields
   refine LookupVariable eq TypeDecl.localFields(String name) {

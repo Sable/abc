@@ -52,8 +52,20 @@ aspect IntertypeMethodErrorCheck {
   public void IntertypeMethodDecl.nameCheck() {
       for(Iterator iter = introducedType().methodsSignature(signature()).iterator(); iter.hasNext(); ) {
         MethodDecl v = (MethodDecl)iter.next();
-        if(v != this && v.accessibleFrom(hostAspect()) && (!(v instanceof IntertypeMethodDecl) || (!zaps(v) && !v.zaps(this))))
-          error("method is multiply declared in type " + hostType().typeName() + " by " + v);
+        if(v != this && v.accessibleFrom(hostAspect()) && !isAbstract()) {
+          if(v instanceof IntertypeMethodDecl) {
+            IntertypeMethodDecl m = (IntertypeMethodDecl)v;
+            boolean overriddenInSubAspect = m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect();
+            boolean precedence = m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect());
+            if(!overriddenInSubAspect && !precedence)
+              error("method is multiply declared in type " + hostType().typeName() + " by " + v);
+          }
+          else {
+            error("method is multiply declared in type " + hostType().typeName() + " by " + v);
+          }
+        }
+          //&& (!(v instanceof IntertypeMethodDecl) || (!zaps(v) && !v.zaps(this))))
+          //error("method is multiply declared in type " + hostType().typeName() + " by " + v);
       }
 
     // 8.4
@@ -144,7 +156,7 @@ aspect IntertypeMethodErrorCheck {
           boolean found = false;
           for(Iterator i3 = set.iterator(); !found && i3.hasNext(); ) {
             MethodDecl n = (MethodDecl)i3.next();
-            if(m != n && !m.isAbstract() && !n.isAbstract() && m instanceof IntertypeMethodDecl && m.accessibleFrom(n.visibilityContext())) {
+            if(m != n && !m.isAbstract() && !n.isAbstract() && m instanceof IntertypeMethodDecl && m.accessibleFrom(n.visibilityContext()) && m.hostType() != n.hostType()) {
               found = true;
             }
           }

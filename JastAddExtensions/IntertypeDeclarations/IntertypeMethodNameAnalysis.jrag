@@ -162,7 +162,7 @@ aspect IntertypeMethodNameAnalysis {
 
   syn boolean MethodDecl.zappedByMethodDecl(MethodDecl m) = m.overrides(this);
   eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) {
-    if(isAbstract() && !m.isAbstract())
+    if(!m.isAbstract() && (isAbstract() || m.hostType() == hostType()))
       return accessibleFrom(m.hostType());
     return m.hostType() != hostType() && m.overrides(this) && m.accessibleFrom(hostType());
   }

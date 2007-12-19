@@ -6595,6 +6595,9 @@
             <ajcmessage kind="error" line="20"/>
             <ajcmessage kind="error" line="27"/>
 	    <message kind="error" line="20"/>
+            <jamessage kind="error" line="6"/>
+            <jamessage kind="error" line="20"/>
+            <jamessage kind="error" line="27"/>
         </compile>
     </ajc-test>
     

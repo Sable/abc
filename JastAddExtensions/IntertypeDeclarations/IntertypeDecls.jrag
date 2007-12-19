@@ -32,6 +32,7 @@ aspect IntertypeDecls {
 
   public void Program.flushIntertypeDecls() {
     intertypeDecls = null;
+    intertypeParentDecls = null;
   }
  
   // store all inter-type declarations in a map (TypeDecl -> List)
@@ -52,5 +53,34 @@ aspect IntertypeDecls {
     // intertype declarations are only available in source files
     if(fromSource())
       super.collectIntertypeDecls(map);
+  }
+
+  // compute the set of inter-type declarations applicable to a specific type
+  syn lazy Collection TypeDecl.intertypeParentDecls() = intertypeParentDecls(this);
+  inh Collection TypeDecl.intertypeParentDecls(TypeDecl type);
+  eq Program.getCompilationUnit(int index).intertypeParentDecls(TypeDecl type) {
+    if(intertypeParentDecls().containsKey(type))
+      return (Collection)intertypeParentDecls().get(type);
+    return Collections.EMPTY_LIST;
+  }
+
+  // store all inter-type declarations in a map (TypeDecl -> List)
+  private HashMap Program.intertypeParentDecls() {
+    if(intertypeParentDecls == null) {
+      intertypeParentDecls = new HashMap();
+      collectIntertypeParentDecls(intertypeParentDecls);
+      return intertypeParentDecls;
+    }
+    return intertypeParentDecls;
+  }
+  private HashMap Program.intertypeParentDecls = null;
+  protected void ASTNode.collectIntertypeParentDecls(HashMap map) {
+    for(int i = 0; i < getNumChildNoTransform(); i++)
+      getChildNoTransform(i).collectIntertypeParentDecls(map);
+  }
+  protected void CompilationUnit.collectIntertypeParentDecls(HashMap map) {
+    // intertype declarations are only available in source files
+    if(fromSource())
+      super.collectIntertypeParentDecls(map);
   }
 }
