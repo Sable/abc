@@ -51,8 +51,7 @@ public class MaybeWeakRef extends MyWeakRef {
 	public synchronized static void checkExpired() {
 		Reference expired = expiredQueue.poll();
 		while (expired != null) {
-			if (expired != null)
-				((MaybeWeakRef) expired).notifyContainers();
+			((MaybeWeakRef) expired).notifyContainers();
 			expired = expiredQueue.poll();
 		}
 	}
