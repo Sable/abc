@@ -391,6 +391,17 @@ public class FreshnessAnalysis extends ForwardBranchedFlowAnalysis
     }
 
     /**
+     * Treat trap handlers as entries to the method, since the first
+     * statements of traps never seem to have any predecessors - why
+     * is this? Why am I using an ExceptionalUnitGraph if there are
+     * no exceptional edges!?!
+     */
+    protected boolean treatTrapHandlersAsEntries()
+    {
+        return true;
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected void merge(Object in1, Object in2, Object out)
