@@ -284,7 +284,7 @@ public class ITDOptimisation
         Local labels = getLabelsObject(gen);
 
         // get rid of expired references
-        gen.call(names.MAYBEWEAKREF_CHECKEXPIRED);
+        gen.call(names.WEAKREF_CHECKEXPIRED);
 
         Local modified = gen.read(labels, names.MODIFIED);
         gen.beginWhile(gen.notEqualsTest(modified, gen.getNull()));

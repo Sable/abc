@@ -121,7 +121,7 @@ public class NameLookup
     public final SootMethod WEAKREF_GET =
         lookup(lookup("java.lang.ref.Reference"), OBJECT.getType(), "get");
     public final SootMethod WEAKREF_CHECKEXPIRED =
-        lookup(MAYBEWEAKREF, VoidType.v(), "checkExpired");
+        lookup(WEAKREF, VoidType.v(), "checkExpired");
     public final SootMethod MAYBEWEAKREF_GETWEAKREF =
         lookup(MAYBEWEAKREF, WEAKREF.getType(), "getWeakRef", OBJECT.getType());
     public final SootMethod MAYBEWEAKREF_STRENGTHEN =
