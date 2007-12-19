@@ -283,9 +283,6 @@ public class ITDOptimisation
         JimpleGenerator gen = new JimpleGenerator(method);
         Local labels = getLabelsObject(gen);
 
-        // get rid of expired references
-        gen.call(names.WEAKREF_CHECKEXPIRED);
-
         Local modified = gen.read(labels, names.MODIFIED);
         gen.beginWhile(gen.notEqualsTest(modified, gen.getNull()));
             gen.call(modified, itds.getMergeMethod());
