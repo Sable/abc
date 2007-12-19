@@ -59,10 +59,15 @@ public class IndexTreeMap implements IndexTree {
 	}
 	
 	private int depth;
-	private Map map = getNewComponentMap(null, null);
+	private Map map;
+	private Set set;
 	
 	public IndexTreeMap(int depth) {
 		this.depth = depth;
+		if (depth == 0)
+			this.set = getNewBindingSet(null, null);
+		else
+			this.map = getNewComponentMap(null, null);
 	}
 	
 	/**
@@ -88,6 +93,9 @@ public class IndexTreeMap implements IndexTree {
 	 * abide by the contracts to use it.
 	 */
 	public Iterator get(Object[] keys) {
+		if (depth == 0)
+			return set.iterator();
+
 		Object cur = map;
 		for(int i = 0; i < depth; i++) {
 			cur = ((Map)cur).get(keys[i]);
@@ -101,6 +109,11 @@ public class IndexTreeMap implements IndexTree {
 	 * the set of keys. Maps that currently don't exist are created.
 	 */
 	public void insert(Object[] keys, MaybeWeakRef value) {
+		if (depth == 0) {
+			set.add(value);
+			return;
+		}
+
 		Map cur = map;
 		Map next;
 		Set set;

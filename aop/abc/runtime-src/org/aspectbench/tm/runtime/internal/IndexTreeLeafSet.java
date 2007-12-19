@@ -116,7 +116,7 @@ public class IndexTreeLeafSet extends AbstractSet implements IndexTreeLeaf {
 	}
 
 	public void cleanup() {
-		if(isEmpty()) {
+		if(isEmpty() && parent != null) {
 			parent.remove(parentKey);
 			parent.cleanupForKey(parentKey);
 			parent = null;
