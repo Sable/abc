@@ -36,15 +36,22 @@ public class MaybeWeakRef extends MyWeakRef {
 	private static WeakKeyCollectingIdentityHashMap refMap = new WeakKeyCollectingIdentityHashMap();
 	private Object referent = null;
 	
+	/**
+	 * Really, we want these to be canonical. Of course, it just so happens that
+	 * the current codegen guarantees them to be canonical (they are constructed
+	 * once per ITD object, which is guaranteed fresh), so we can dispense with
+	 * the expensive map.
+	 */
 	public synchronized static MyWeakRef getWeakRef(Object o) {
 		if(o instanceof MaybeWeakRef) return (MyWeakRef)o;
-		//if(o == null) throw new RuntimeException("Getting weak reference for null");
+		/*//if(o == null) throw new RuntimeException("Getting weak reference for null");
 		MyWeakRef ref = (MyWeakRef)refMap.get(o);
 		if(ref == null) {
 			ref = new MaybeWeakRef(o, expiredQueue);
 			refMap.put(o, ref);
 		}
-		return ref;
+		return ref;*/
+		return new MaybeWeakRef(o, expiredQueue);
 	}
 
 	protected MaybeWeakRef(Object ref) {
