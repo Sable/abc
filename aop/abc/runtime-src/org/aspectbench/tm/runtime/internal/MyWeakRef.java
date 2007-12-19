@@ -19,6 +19,7 @@ package org.aspectbench.tm.runtime.internal;
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -27,6 +28,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MyWeakRef extends WeakReference {
+	// Global queue for MyWeakRefs and subclasses
+	public static ReferenceQueue expiredQueue = new ReferenceQueue();
+	
+	// Poll the global queue and call the cleanup() method on any expired reference
+	public static void checkExpired() {
+		Reference expired = expiredQueue.poll();
+		while (expired != null) {
+			((MyWeakRef) expired).cleanup();
+			expired = expiredQueue.poll();
+		}
+	}
+	
+	public void cleanup() {
+		// do nothing; subclasses can override this
+	}
+
 	private int hashCode;
 	public MyWeakRef(Object arg0) {
 		super(arg0);

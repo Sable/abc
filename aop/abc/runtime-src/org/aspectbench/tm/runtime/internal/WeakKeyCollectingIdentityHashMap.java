@@ -42,7 +42,6 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
 
 public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
-	private static ReferenceQueue theQueue = new ReferenceQueue();
 	private static boolean instancesExist = false;
 	
 	/**
@@ -54,7 +53,11 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 		protected WeakKeyCollectingIdentityHashMap theMap = WeakKeyCollectingIdentityHashMap.this; 
 		
 		public KeyWeakRef(Object o) {
-			super(o, theQueue);
+			super(o, expiredQueue);
+		}
+		
+		public void cleanup() {
+			theMap.safeRemove(this);
 		}
 	}
 	
@@ -106,19 +109,6 @@ public class WeakKeyCollectingIdentityHashMap extends IdentityHashMap {
 		super(initialCapacity);
 		instancesExist = true;
 	}
-
-    /**
-     * Perform the cleanup, i.e., drop all expired key/values pairs
-     * for _all_ instances of this map class.
-     */
-    public static void cleanupExpiredRefs() {
-    	if(!instancesExist) return;
-        KeyWeakRef ref = (KeyWeakRef)theQueue.poll();
-        while(ref != null) {
-        	ref.theMap.safeRemove(ref);
-        	ref = (KeyWeakRef)theQueue.poll();
-        }
-    }
 
 	/**
 	 * {@inheritDoc}

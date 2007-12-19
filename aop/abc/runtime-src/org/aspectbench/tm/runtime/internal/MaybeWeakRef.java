@@ -34,7 +34,6 @@ import java.lang.ref.ReferenceQueue;
  */
 public class MaybeWeakRef extends MyWeakRef {
 	private static WeakKeyCollectingIdentityHashMap refMap = new WeakKeyCollectingIdentityHashMap();
-	private static ReferenceQueue expiredQueue = new ReferenceQueue();
 	private Object referent = null;
 	
 	public synchronized static MyWeakRef getWeakRef(Object o) {
@@ -46,14 +45,6 @@ public class MaybeWeakRef extends MyWeakRef {
 			refMap.put(o, ref);
 		}
 		return ref;
-	}
-
-	public synchronized static void checkExpired() {
-		Reference expired = expiredQueue.poll();
-		while (expired != null) {
-			((MaybeWeakRef) expired).notifyContainers();
-			expired = expiredQueue.poll();
-		}
 	}
 
 	protected MaybeWeakRef(Object ref) {
@@ -87,5 +78,9 @@ public class MaybeWeakRef extends MyWeakRef {
 	 */
 	public void weaken() {
 		referent = null;
+	}
+	
+	public void cleanup() {
+		notifyContainers();
 	}
 }
