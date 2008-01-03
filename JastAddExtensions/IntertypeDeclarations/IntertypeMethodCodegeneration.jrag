@@ -71,8 +71,6 @@ aspect IntertypeMethodCodegeneration {
     );
   }
 
-  syn String IntertypeMethodDecl.delegateName() = isPrivate() ? (hostAspect().topLevelType().fullName().replace('.', '$').replace('@', '_') + "$" + name()) : name(); 
-
   syn lazy MethodDecl IntertypeMethodDecl.createAspectMethod() {
     if(!is$Final) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
     // make aspect method static
@@ -144,7 +142,7 @@ aspect IntertypeMethodCodegeneration {
       if(Program.verbose())
         System.out.println("May need super dispatch delegate for " + this);
       MethodDecl m = superDispatchDelegate();
-      List args = getArgList();
+      List args = (List)getArgList().fullCopy();
       Access a = superDispatchQualifier().createBoundAccess().qualifiesAccess(new ThisAccess()).qualifiesAccess(m.createBoundAccess(args));
       replace(getParent()).with(a);
       a.generateIntertypeDecls();
@@ -315,7 +313,7 @@ aspect IntertypeMethodCodegeneration {
     for(int i = 0; i < getNumModifier(); i++) {
       String s = getModifier(i).getID();
       if(!s.equals("public") && !s.equals("protected") && !s.equals("private"))
-        list.add(getModifier(i));
+        list.add((Modifier)getModifier(i).fullCopy());
     }
     list.add(new Modifier("public"));
     return new Modifiers(list);
@@ -408,4 +406,14 @@ aspect IntertypeMethodCodegeneration {
     super.transformation();
 
   }
+
+  syn String IntertypeMethodDecl.delegateName() {
+    if(isPrivate())
+      return "abc$interMethod$" + hostAspect().topLevelType().abcMangledName() + "$" + name();
+    else if(isPublic())
+      return name();
+    else
+      return "abc$interMethod$" + hostAspect().packageName().replace('.', '_') + "$" + name();
+  }
+
 }

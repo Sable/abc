@@ -1,5 +1,14 @@
 aspect GenerateSynCode {
 
+  public boolean AttributeDecl.declaredNTA = false;
+  public AttributeDecl AttributeDecl.declareNTA() {
+    declaredNTA = true;
+    return this;
+  }
+  public boolean AttributeDecl.declaredNTA() {
+    return declaredNTA;
+  }
+
   // override behavior in IntertypeMethodCodegeneration
   refine Rewrites public void ASTDecl.generateIntertypeDecls() {
     Rewrites.ASTDecl.generateIntertypeDecls();
@@ -196,6 +205,8 @@ aspect GenerateSynCode {
   
   syn boolean InhEq.hasChildParameter() {
     if(getNumChildParameter() == 1) return true;
+    if(!getChildName().startsWith("get")) return false;
+    if(getChildName().equals("getChild")) return false;
     ASTChild child = child();
     return child != null && child instanceof ASTListChild;
   }
@@ -272,7 +283,7 @@ aspect GenerateSynCode {
     else
       addComputeCall(statements, aspectMethod);
 
-    if(isNTA()) {
+    if(isNTA() || declaredNTA()) {
       addStoreNTAValue(statements, typeDecl);
     }
     
@@ -442,7 +453,7 @@ aspect GenerateSynCode {
     else
       addComputeCall(statements);
 
-    if(isNTA()) {
+    if(isNTA() || declaredNTA()) {
       addStoreNTAValue(statements, typeDecl);
     }
     
@@ -476,6 +487,18 @@ aspect GenerateSynCode {
 
   protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
     // setNNN(computedValueName());
+    if(declaredNTA())
+    list.add(
+      new ExprStmt(
+        fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
+          new MethodAccess(
+            "setParent",
+            new List().add(new ThisAccess("this"))
+          )
+        )
+      )
+    );
+    else
     list.add(
       new ExprStmt(
         new MethodAccess(
@@ -1030,8 +1053,11 @@ aspect GenerateSynCode {
       InhEq inhEq = (InhEq)iter.next();
       if(!map.containsKey(inhEq.introducedType()))
         map.put(inhEq.introducedType(), new ArrayList(1));
-      Collection c = (Collection)map.get(inhEq.introducedType());
-      c.add(inhEq);
+      ArrayList c = (ArrayList)map.get(inhEq.introducedType());
+      if(inhEq.childName().equals("Child"))
+        c.add(inhEq);
+      else
+        c.add(0, inhEq);
     }
     // Foreach class that has an introduced equation for this inh declaration
     for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
@@ -1056,6 +1082,25 @@ aspect GenerateSynCode {
           modifierList.add(new Modifier("static"));
           methodDecl.setModifiers(new Modifiers(modifierList));
 
+          if(inhEq.getChildName().equals("getChild")) 
+          statements.add(
+            new ReturnStmt(
+              methodDecl.createBoundAccess(inhEq.createArgumentList())
+            )
+          );
+          else if(!inhEq.getChildName().startsWith("get"))
+          statements.add(
+            new IfStmt(
+              new EQExpr(
+                new VarAccess("caller"),
+                new MethodAccess(inhEq.getChildName(), new List())
+              ),
+              new ReturnStmt(
+                methodDecl.createBoundAccess(inhEq.createArgumentList())
+              )
+            )
+          );
+          else
           // Add conditional delegation 
           statements.add(
             new IfStmt(

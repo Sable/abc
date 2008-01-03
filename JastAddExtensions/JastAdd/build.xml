@@ -141,6 +141,30 @@
   </jar>
 </target>
 
+<!-- build a source distribution -->
+<target name="source">
+  <jar destfile="JastAdd-src.jar">
+      <!-- the JastAdd language extension -->
+			<fileset dir="..">
+        <!-- include source file -->
+				<include name="JastAdd/jastadd/*.java"/>
+				<include name="JastAdd/**/*.ast"/>
+				<include name="JastAdd/**/*.jrag"/>
+				<include name="JastAdd/**/*.jadd"/>
+				<include name="JastAdd/*.parser"/>
+				<include name="JastAdd/*.flex"/>
+        <!-- include buildfile -->
+				<include name="JastAdd/build.xml"/>
+        <!-- include tests -->
+				<include name="JastAdd/RunTests.java"/>
+				<include name="JastAdd/test/*.java"/>
+				<include name="JastAdd/test/*.result"/>
+				<include name="JastAdd/test/*.options"/>
+			</fileset>
+      <manifest>
+      </manifest>
+  </jar>
+</target>
 
 
 </project>

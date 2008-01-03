@@ -83,4 +83,24 @@ aspect IntertypeDecls {
     if(fromSource())
       super.collectIntertypeParentDecls(map);
   }
+
+  refine AccessControl public void TypeAccess.accessControl() {
+    super.accessControl();
+    TypeDecl hostType = visibilityContext();
+    if(hostType != null && !hostType.isUnknown() && !type().accessibleFrom(hostType)) {
+      error("" + this + " in " + hostType().fullName() + " can not access type " + type().fullName());
+    }
+    else if((hostType == null || hostType.isUnknown())  && !type().accessibleFromPackage(hostPackage())) {
+      error("" + this + " can not access type " + type().fullName());
+    }
+  }
+
+  refine AccessControl public void ClassInstanceExpr.accessControl() {
+    super.accessControl();
+    if(type().isAbstract())
+      error("Can not instantiate abstract class " + type().fullName());
+    if(!decl().accessibleFrom(visibilityContext()))
+      error("constructor " + decl().signature() + " is not accessible");
+  }
+
 }

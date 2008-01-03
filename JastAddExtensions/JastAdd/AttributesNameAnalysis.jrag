@@ -214,7 +214,7 @@ aspect JastAdd {
   
   syn TypeDecl InhEq.introducedType() = getTargetType().type();   // type in which this equation is valid
   syn String InhEq.name() = getAttributeName();           // attribute name
-  syn String InhEq.childName() = getChildName().substring(3);          // name of the child of hostType that is the root for this equation
+  syn String InhEq.childName() = getChildName().startsWith("get") ? getChildName().substring(3) : getChildName();          // name of the child of hostType that is the root for this equation
 
   syn lazy List AttributeDecl.getEmptyBracketList() = new List();
   syn lazy List AttributeDecl.getExceptionList() = new List();
@@ -224,7 +224,7 @@ aspect JastAdd {
   //syn lazy Opt AspectDecl.getSuperClassAccessOpt() = new Opt(typeObject().createQualifiedAccess());
   //syn lazy List AspectDecl.getImplementsList() = new List();
 
-  syn lazy boolean AttributeDecl.isLazy() = getLazy();
+  syn lazy boolean AttributeDecl.isLazy() = getLazy() || declaredNTA();
 
   eq AttributeDecl.getModifiers().mayBePublic() = true;
   eq AttributeDecl.getModifiers().mayBeProtected() = true;

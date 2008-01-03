@@ -231,6 +231,33 @@ aspect IntertypeMethodNameAnalysis {
     else
       return hostPackage().equals(type.hostPackage());
   }
+
+  refine LookupMethod eq MethodAccess.accessible(MethodDecl m) {
+    if(!isQualified())
+      return true;
+    if(!m.accessibleFrom(visibilityContext())) {
+      System.err.println(m.signature() + " is not accessible from " + visibilityContext().typeName());
+      return false;
+    }
+    // the method is not accessible if the type is not accessible
+    if(!qualifier().type().accessibleFrom(visibilityContext())) {
+      System.err.println(qualifier().type().typeName() + " is not accessible from " + visibilityContext().typeName());
+      return false;
+    }
+    if(m instanceof IntertypeMethodDecl)
+      return true; // inter-type methods can not be protected
+    // 6.6.2.1 -  include qualifier type for protected access
+    if(m.isProtected() && !m.hostPackage().equals(hostPackage()) && !m.isStatic() && !qualifier().isSuperAccess()) {
+      TypeDecl C = m.hostType();
+      TypeDecl S = hostType().subclassWithinBody(C);
+      TypeDecl Q = qualifier().type();
+      if(S == null || !Q.instanceOf(S))
+        return false;
+    }
+    return true;
+
+  }
+
  
   // compute the set of introduced methods in this type
   syn lazy Collection TypeDecl.introducedMethods() {

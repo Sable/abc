@@ -158,7 +158,7 @@ aspect IntertypeFieldNameAnalysis {
       if(d.isPublic())
         return true;
       else if(d.isPrivate())
-        return d.hostAspect().topLevelType() == ((TypeDecl)enclosingBodyDecl().getParent().getParent()).topLevelType();
+        return d.hostAspect().topLevelType() == visibilityContext().topLevelType();
       else
         return hostPackage().equals(d.hostAspect().hostPackage());
     }

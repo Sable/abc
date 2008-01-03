@@ -31,7 +31,15 @@ public class JastAdd extends Frontend {
   public void generate() {
     program.generateIntertypeDecls();
     program.transformation();
-    program.generateClassfile();
+    for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit cu = (CompilationUnit)iter.next();
+      if(cu.fromSource()) {
+        for(int i = 0; i < cu.getNumTypeDecl(); i++) {
+          cu.getTypeDecl(i).generateClassfile();
+        }
+      }
+    }
+    //program.generateClassfile();
   }
   
   protected void initOptions() {

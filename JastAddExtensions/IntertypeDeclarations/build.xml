@@ -119,7 +119,25 @@
   </jar>
 </target>
 
-
+<!-- build a source distribution -->
+<target name="source">
+  <jar destfile="IntertypeDeclarations-src.jar">
+      <!-- the IntertypeDeclarations language extension -->
+			<fileset dir="..">
+        <!-- include source file -->
+				<include name="IntertypeDeclarations/JavaCompiler.java"/>
+				<include name="IntertypeDeclarations/**/*.ast"/>
+				<include name="IntertypeDeclarations/**/*.jrag"/>
+				<include name="IntertypeDeclarations/**/*.jadd"/>
+				<include name="IntertypeDeclarations/*.parser"/>
+				<include name="IntertypeDeclarations/*.flex"/>
+        <!-- include buildfile -->
+				<include name="IntertypeDeclarations/build.xml"/>
+			</fileset>
+      <manifest>
+      </manifest>
+  </jar>
+</target>
 
 </project>
 
