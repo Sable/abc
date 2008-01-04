@@ -1,22 +1,37 @@
+/*
+ * Sometimes we need to merge accesses. Take, for example, the following situation:
+ * 
+ *     class A { int a; }
+ *     class B extends A { int c; }
+ *     
+ *     class C { B b; int m() { return b.a; }}
+ *     
+ * If we rename field "c" in class "B" ot "a", we need to adjust the access "b.a".
+ * The part to the right of the dot is adjusted first, yielding "super.a", while
+ * adjusting the left part yields "b". Now we cannot just return "b.super.a"; instead
+ * we need to merge "b" and "super.a", yielding "((A)b).a".
+ */
+
 aspect MergeAccess {
 	
 	// access t could be either a bare TypeAccess or qualified with either a package
 	// or another type access; in the latter case we do not even try to merge
+	// if it is a variable access (to a static field)
 	public Access TypeAccess.mergeWithAccess(Access t) throws RefactoringException {
 		if(t instanceof TypeAccess)
 			if(((TypeAccess)t).getPackage().equals(""))
 				return this.qualifiesAccess(t);
 			else
 				return t;
-		if(t.isQualified() && qualifier() instanceof PackageAccess)
-			return t;
-		throw new RefactoringException("cannot merge accesses");
+		if(t.isQualified() && t.qualifier() instanceof PackageAccess)
+				return t;
+		return this.qualifiesAccess(t);
 	}
 
 	// the field access f is either a simple access or qualified with this, super, ((A)this),
 	// A.this, or ((A)B.this) for some classes A and B
 	public Access Expr.mergeWithAccess(Access f) throws RefactoringException {
-		if(f.isVariable() || f instanceof TypeAccess || f instanceof MethodAccess ||
+		if(f instanceof VarAccess || f instanceof TypeAccess || f instanceof MethodAccess ||
 				f instanceof ClassAccess || f instanceof ArrayAccess) {
 			return this.qualifiesAccess(f);
 		} else if(f instanceof AbstractDot) {
@@ -44,6 +59,8 @@ aspect MergeAccess {
 					return new ParExpr(new CastExpr((TypeAccess)tp, this)).
 								mergeWithAccess(right);
 				}
+			} else {
+				return this.qualifiesAccess(f);
 			}
 		} else {
 			assert(false);

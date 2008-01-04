@@ -1,3 +1,16 @@
+/*
+ * The inherited attribute accessType tries to compute an access to a type. If,
+ * for some node n, calling n.accessType(t) yields an access a, then looking up
+ * a at node n should yield type t.
+ * 
+ * For a type named "t", the code will return one of the following
+ *   1. a type access "t" if the type is directly visible
+ *   2. a fully qualified type access if "t" is a toplevel type
+ *   3. a type access "A.t" if "t" is enclosed in type "A" and type "A" encloses
+ *      the node where "t" is accessed
+ *   4. null if none of the above works 
+ */
+
 aspect AccessType {
 	
 	inh NameType Access.nameType();
@@ -27,11 +40,6 @@ aspect AccessType {
 	 * ambiguous indicates whether the access occurs in a syntactically ambiguous
 	 * position, i.e. a position where a name might both refer to a type or a
 	 * variable
-	 * 
-	 * it returns an access to the type declaration either by its bare name or
-	 * by qualifying it either with its package (if it is a toplevel type) or its
-	 * surrounding type, if that surrounding type also surrounds the scope we are
-	 * accessing the type from
 	 */
 	syn Access Scope.accessType(TypeDecl td, boolean ambiguous) {
 		String name = td.getID();

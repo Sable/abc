@@ -1,5 +1,20 @@
 import java.util.*;
 
+/*
+ * The inherited attribute accessField tries to compute an access to a field. If,
+ * for some node n, calling n.accessField(f) yields an access a, then looking up
+ * a at node n should yield field f.
+ * 
+ * For a field named "f", the code will return one of the following
+ *   1. a variable access "f" if the field is directly visible
+ *   2. a qualified access "this.f", "super.f", or "((A)this).f", if "f" is
+ *      visible in this class, its direct superclass, or its ancestor class/interface
+ *      "A", respectively
+ *   3. a qualified access "A.this.f" or "((B)A.this).f" if "f" is visible in
+ *      enclosing class "A", or "A"'s ancestor class "B"
+ *   4. null if none of the above works 
+ */
+
 aspect AccessField {
 
 	eq AbstractDot.getRight().accessField(FieldDeclaration fd) {
@@ -27,6 +42,7 @@ aspect AccessField {
 		boolean shadowed = localFieldsMap().containsKey(fd.getID());
 		if(hasSuperclass()) {
 			TypeDecl td = superclass().findFieldUpwards(fd);
+			// avoid unneccessary qualification
 			if(td == superclass() && !shadowed)
 				return this;
 			else if(td != null)
@@ -120,7 +136,7 @@ aspect AccessField {
 		}
 	}
 
-	// The scope of a parameter of a method is the entire body of the method
+	// The scope of a parameter of a method includes the entire body of the method
 	eq Methodoid.getBlock().accessField(FieldDeclaration fd) {
 		Access acc = accessField(fd);
 		if(acc == null) return null;
@@ -129,8 +145,8 @@ aspect AccessField {
 		return acc;
 	}
 
-	// The scope of a local variable declaration in a block is the rest of
-	// the block in which the declaration appears
+	// The scope of a local variable declaration in a block includes the rest of
+	// the block in which the declaration appears.
 	eq Block.getStmt(int i).accessField(FieldDeclaration fd) {
 		Access acc = accessField(fd);
 		if(acc == null || acc instanceof AbstractDot) return acc;
@@ -140,6 +156,8 @@ aspect AccessField {
 		return acc;
 	}
 	
+	// The scope of variables declared in the init statements of a for loop includes
+	// the entire loop.
 	eq ForStmt.getChild(int i).accessField(FieldDeclaration fd) {
 		Access acc = accessField(fd);
 		if(acc == null || acc instanceof AbstractDot) return acc;
@@ -149,6 +167,7 @@ aspect AccessField {
 		return acc;
 	}
 
+	// The scope of the parameter of a catch clause includes the entire clause.
 	eq CatchClause.getChild(int i).accessField(FieldDeclaration fd) {
 		Access acc = accessField(fd);
 		if(acc == null || acc instanceof AbstractDot) return acc;

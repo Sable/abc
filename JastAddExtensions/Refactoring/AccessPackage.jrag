@@ -1,3 +1,13 @@
+/*
+ * The inherited attribute accessPackage tries to compute an access to a package. If,
+ * for some node n, calling n.accessPackage(p) yields an access a, then looking up
+ * a at node n should yield package p.
+ *
+ * The computed access will either be the fully qualified package name, or null
+ * if the first component of the package name is shadowed by a type or variable
+ * declaration.
+ */
+
 aspect AccessPackage {
 	
 	inh Access ASTNode.accessPackage(String pkg);

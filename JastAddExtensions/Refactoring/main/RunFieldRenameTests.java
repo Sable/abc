@@ -29,14 +29,14 @@ public class RunFieldRenameTests extends Frontend {
     private static void runTests() {
         try {
             for(int i=1;i<=17;++i) {
-                if(i == 14 || i == 15) continue;
+                if(i == 15) continue;
                 try {
                     RunFieldRenameTests t = new RunFieldRenameTests();
                     t.test("test"+i);
                     t.check_results("test"+i);
                     System.out.println("test "+i+" passed");
                 } catch(RefactoringException e) {
-                    System.out.println("test "+i+" failed!");
+                    System.out.println("test "+i+" failed: "+e);
                 }
             }
         } catch(Throwable t) {

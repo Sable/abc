@@ -1,3 +1,12 @@
+/*
+ * The first part of the Extract Method refactoring, Extract Block takes a piece of
+ * code (given by its start and end statements) and turns it into a block.
+ * 
+ * We need to ensure that this is possible (see precondition checks), and possibly
+ * move some declarations for variables that are used outside the selection out of
+ * the generated block.
+ */
+
 aspect ExtractBlock {
 	
 	public void CompilationUnit.extractBlock(Stmt begin, Stmt end) 
@@ -9,6 +18,14 @@ aspect ExtractBlock {
 		begin_host.encapsulate(begin_idx, end_idx);
 	}
 	
+	/*
+	 * the preconditions are:
+	 *   1. neither begin nor end can be an init or update statement of a for block
+	 *   2. begin must dominate end, i.e. every control flow path from the surrounding
+	 *      block's entry node to the end node must pass through the begin node
+	 *   3. begin and end must be in the same host block
+	 *   4. the selection cannot contain case labels
+	 */
 	private void CompilationUnit.check_block_extraction_preconds(Stmt begin, Stmt end)
 			throws RefactoringException {
 		if(begin.isInitOrUpdateStmt() || end.isInitOrUpdateStmt())

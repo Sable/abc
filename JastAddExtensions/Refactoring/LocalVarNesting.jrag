@@ -1,3 +1,14 @@
+/*
+ * When we rename a local variable, it is important to check that the new name does
+ * not clash with the name of an already existing local variable. The attribute
+ * acceptLocal(id) checks whether a node and its children could be inside the scope
+ * of a local variable named id; if not, it _returns_ (not throws!) a refactoring
+ * exception; if everything is OK, it returns null
+ * 
+ * this somewhat weird behaviour is due to the fact that attributes cannot throw
+ * exceptions
+ */
+
 aspect LocalVarNesting {
 	
 	syn RefactoringException Stmt.acceptLocal(String name) = null;

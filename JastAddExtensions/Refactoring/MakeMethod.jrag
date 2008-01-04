@@ -1,4 +1,10 @@
-// turn a block into a method
+/*
+ * Make Method is the second part of the Extract Method refactoring; it turns a
+ * block into a method. Similar to Extract Block, it also needs to check some
+ * control flow conditions. Furthermore, it has to determine which local variables
+ * to pass as parameters, and which value to return from the created method.
+ */
+
 aspect MakeMethod {
 	
 	public void CompilationUnit.makeMethod(String name, String vis, Block blk) 
@@ -6,6 +12,7 @@ aspect MakeMethod {
 		check_make_method_preconds(blk);
 		Block host = blk.hostBlock();
 		BodyDecl bd = host.hostBodyDecl();
+		// check whether the extracted method needs to be static
 		boolean static_ctxt = false;
 		if(bd instanceof StaticInitializer)
 			static_ctxt = true;
@@ -14,6 +21,7 @@ aspect MakeMethod {
 		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt);
 	}
 
+	// the last statement of the block must post-dominate the first one
 	private void CompilationUnit.check_make_method_preconds(Block blk) 
 			throws RefactoringException {
 		if(blk.getNumStmt() > 1) {

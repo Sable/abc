@@ -1,3 +1,13 @@
+/*
+ * The inherited attributes accessLocalVariable and accessParameter try to compute 
+ * accesses to local variables and parameters, respectively. 
+ * If, for some node n, calling n.accessParameter(p) yields an access a, then looking 
+ * up a at node n should yield parameter p (same for local variables).
+ * 
+ * The computed access will either be a variable access or null (if the variable is
+ * not visible). 
+ */
+
 aspect AccessLocalVariable {
 	
 	syn Access ASTNode.accessLocalVariable(VariableDeclaration vd);

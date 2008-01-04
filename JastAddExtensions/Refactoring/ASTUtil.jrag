@@ -1,3 +1,7 @@
+/*
+ * some utility methods
+ */
+
 aspect ASTUtil {
 	
 	public static boolean ASTNode.isSingletonOf(SimpleSet s, Object o) {
@@ -136,4 +140,11 @@ aspect ASTUtil {
 	    return relname_tail.substring(0, j);	 		
 	}
 		
+	public static String FieldDeclaration.capitalize(String str) {
+		StringBuffer buf = new StringBuffer(str);
+		if(buf.length() > 0)
+			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
+		return buf.toString();
+	}
+
 }

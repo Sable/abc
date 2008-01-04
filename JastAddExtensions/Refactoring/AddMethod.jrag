@@ -8,10 +8,14 @@ aspect AddMethod {
 		throw new RefactoringException("cannot add method");
 	}
 
+	// add method md to class; the flags specify whether the added method may
+	// override an existing method, be overridden by an existing method, and possibly
+	// be referenced by some method access in the program
 	public void ClassDecl.addMethod(MethodDecl md, 
 				boolean mayOverride, boolean mayBeOverridden, boolean mayBeCaptured) 
 			throws RefactoringException {
         AdjustmentTable table = new AdjustmentTable();
+        // collect all uses of methods of the same name
         for(Iterator i=unqualifiedLookupMethod(md.getID()).iterator();i.hasNext();) {
             MethodDecl m = (MethodDecl)i.next();
             for(Iterator j=m.uses().iterator();j.hasNext();) {

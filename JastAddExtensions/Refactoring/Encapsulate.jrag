@@ -1,3 +1,10 @@
+/*
+ * Encapsulate a field:
+ *   1. generate getter and setter methods for the field
+ *   2. make the field private
+ *   3. adjust all references to the field to use the newly provided methods
+ */
+
 aspect Encapsulate {
 
 	public void FieldDeclaration.encapsulate() throws RefactoringException {
@@ -13,13 +20,6 @@ aspect Encapsulate {
 			VarAccess va = (VarAccess)i.next();
 			va.encapsulate(getter_name, setter_name);
 		}
-	}
-
-	public static String FieldDeclaration.capitalize(String str) {
-		StringBuffer buf = new StringBuffer(str);
-		if(buf.length() > 0)
-			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
-		return buf.toString();
 	}
 
 	private MethodDecl FieldDeclaration.makeGetter(String getter_name, Modifiers mod) {
@@ -43,6 +43,9 @@ aspect Encapsulate {
 				new Opt(setter_body));
 	}
 
+	// adjust a var access to use getter or setter; we need to travel upwards through
+	// the AST to find out whether this access is on the left or right hand side of
+	// an assignment, and what its surrounding context is
 	public void VarAccess.encapsulate(String getter, String setter) {
 		Context ctxt = new Context();
 		ASTNode ch = this;
@@ -50,6 +53,7 @@ aspect Encapsulate {
 			if(p instanceof AssignExpr) {
 				Expr rhs = ((AssignExpr)p).getSource();
 				Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
+				// assignments like a += b are rewritten to a = a + b
 				if(implicit_op == null) {
 					List args = new List();	args.add(rhs);
 					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
@@ -88,6 +92,13 @@ aspect Encapsulate {
 		}
 	}
 	
+	/*
+	 * postfix in- and decrements are tricky, since we need to modify the field's
+	 * value and return the _old_ value
+	 * 
+	 * we use a hack here: i++ is rewritten to (++i == 0 ? i-1 : i-1); the comparison
+	 * with 0 has no special significance, we only need it to build the expression
+	 */
 	static void VarAccess.encapsulate_postfix(ASTNode p, 
 			Context ctxt, String getter, String setter, Binary rator, Binary undo) {
 		List args = new List();
@@ -104,6 +115,9 @@ aspect Encapsulate {
 								(Expr)undo.fullCopy(), (Expr)undo.fullCopy())));
 	}
 	
+	/*
+	 * prefixes are easier: ++i becomes setI(getI()+1)
+	 */
 	static void VarAccess.encapsulate_prefix(ASTNode p,
 			Context ctxt, String getter, String setter, Binary rator) {
 		List args = new List();

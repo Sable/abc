@@ -1,29 +1,30 @@
+/*
+ * This is the central piece of machinery for the name-based refactorings: An 
+ * adjustment table keeps track of a list of accesses and the declarations they point
+ * to. After a refactoring is performed, the table's adjust() method is invoked
+ * which tries to adjust all accesses in the table so that they still point to the
+ * same declarations as before.
+ */
+
 aspect AdjustAccess {
 	
 	class AdjustmentTable {
-		private java.util.Set accesses;
 		private Map adjustments;
 		
+		// the "pending" list prescribes the order in which the adjustments should
+		// be performed
 		private java.util.List pending;
 		private java.util.Set adjusted;
 		
 		public AdjustmentTable() {
-			accesses = new HashSet();
 			adjustments = new HashMap();
 			pending = new ArrayList();
 			adjusted = new HashSet();
 		}
 		
-		/*public void add(Access acc, ASTNode target) {
-			if(!accesses.contains(acc))
-				adjustments.put(acc, target);
-		}*/
-		
 		public void add(Access acc) {
-			if(!accesses.contains(acc)) {
-				accesses.add(acc);
+			if(!adjustments.containsKey(acc))
 				adjustments.put(acc, acc.getDecl());
-			}
 			if(acc.getParent() instanceof AbstractDot)
 				add((AbstractDot)acc.getParent());
 			else
@@ -60,6 +61,8 @@ aspect AdjustAccess {
 	public void Expr.adjust(AdjustmentTable table) throws RefactoringException {
 	}
 	
+	// first adjust access to the right of the dot, then merge it with the adjusted
+	// access to the left
 	public void AbstractDot.adjust(AdjustmentTable table) throws RefactoringException {
 		table.adjust(getLeft());
 		table.adjust(getRight());
@@ -72,8 +75,6 @@ aspect AdjustAccess {
 	
 	public void ClassAccess.adjust(AdjustmentTable table) throws RefactoringException {
 	}
-	
-	// more needed here...
 	
 	public void Access.adjust(AdjustmentTable table) throws RefactoringException {
 		ASTNode target = table.getTarget(this);
