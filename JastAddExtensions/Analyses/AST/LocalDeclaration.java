@@ -1,32 +1,32 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 	
 	// a local declaration is either a variable declaration or a parameter declaration
 	
 	public interface LocalDeclaration extends  Named {
-    // Declared in LocalDeclaration.jrag at line 8
+    // Declared in LocalDeclaration.jrag at line 7
  
 		Access getTypeAccess();
 
-    // Declared in LocalDeclaration.jrag at line 9
+    // Declared in LocalDeclaration.jrag at line 8
 
 		String getID();
 
-    // Declared in LocalDeclaration.jrag at line 10
+    // Declared in LocalDeclaration.jrag at line 9
 
 		void setID(String id);
 
-    // Declared in LocalDeclaration.jrag at line 11
+    // Declared in LocalDeclaration.jrag at line 10
 
 		Block getBlock();
 
-    // Declared in LocalDeclaration.jrag at line 12
+    // Declared in LocalDeclaration.jrag at line 11
 
 		ParameterDeclaration asParameterDeclaration();
 
-    // Declared in LocalDeclaration.jrag at line 13
+    // Declared in LocalDeclaration.jrag at line 12
 
 		VariableDeclaration asVariableDeclaration();
 

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
   // a statement that can be reached by break or continue
 public class Block extends Stmt implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -81,7 +81,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     s.append("}\n");
   }
 
-    // Declared in ASTUtil.jrag at line 76
+    // Declared in ASTUtil.jrag at line 84
 
     
     /*public void List.remove(ASTNode n) {
@@ -96,7 +96,7 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     	getStmtList().insertChild(stmt, idx);
     }
 
-    // Declared in ASTUtil.jrag at line 80
+    // Declared in ASTUtil.jrag at line 88
 
     
     public void moveStmt(Stmt stmt, int new_idx) {
@@ -104,17 +104,17 @@ public class Block extends Stmt implements Cloneable,  VariableScope {
     	getStmtList().moveChild(old_idx, new_idx);
     }
 
-    // Declared in ASTUtil.jrag at line 85
+    // Declared in ASTUtil.jrag at line 93
 
     
     public void pullTogether(int start, int end) {
     	List stmts = new List();
-    	for(int i=start;i<end;++i)
+    	for(int i=start;i<=end;++i)
     		stmts.add(getStmt(i));
     	getStmtList().replaceRange(new Block(stmts), start, end);
     }
 
-    // Declared in LocalDeclaration.jrag at line 63
+    // Declared in LocalDeclaration.jrag at line 62
 
 	
 	public java.util.Set localDecls() {
@@ -338,7 +338,7 @@ if(localVariableDeclaration_String_values == null) localVariableDeclaration_Stri
 
     private boolean canCompleteNormally_compute() {  return  getNumStmt() == 0 ? reachable() : getStmt(getNumStmt() - 1).canCompleteNormally();  }
 
-    // Declared in LocalDeclaration.jrag at line 68
+    // Declared in LocalDeclaration.jrag at line 67
     public java.util.Set localDeclsBetween(int start, int end) {
         java.util.Set localDeclsBetween_int_int_value = localDeclsBetween_compute(start, end);
         return localDeclsBetween_int_int_value;
@@ -532,7 +532,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_SimpleSet_lookupVariable(this, caller, name);
     }
 
-    // Declared in LocalDeclaration.jrag at line 45
+    // Declared in LocalDeclaration.jrag at line 44
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtListNoTransform()) { 
    int k = caller.getIndexOfChild(child);

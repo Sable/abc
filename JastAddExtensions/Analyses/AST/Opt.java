@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 public class Opt extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
@@ -30,7 +30,7 @@ public class Opt extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ASTUtil.jrag at line 122
+    // Declared in ASTUtil.jrag at line 130
 
 	
 	public boolean isEmpty() {

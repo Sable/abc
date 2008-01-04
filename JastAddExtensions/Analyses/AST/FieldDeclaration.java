@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Variable,  Named {
     public void flushCache() {
@@ -222,7 +222,7 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
     }
   }
 
-    // Declared in ASTUtil.jrag at line 24
+    // Declared in ASTUtil.jrag at line 32
 
 
     public void makePrivate() {
@@ -239,7 +239,17 @@ public class FieldDeclaration extends MemberDecl implements Cloneable,  SimpleSe
         m.addModifier(new Modifier("private"));
     }
 
-    // Declared in Names.jadd at line 16
+    // Declared in ASTUtil.jrag at line 143
+
+		
+	public static String capitalize(String str) {
+		StringBuffer buf = new StringBuffer(str);
+		if(buf.length() > 0)
+			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
+		return buf.toString();
+	}
+
+    // Declared in Names.jadd at line 22
 
 	public void changeID(String id) { setID(id); }
 

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 public class List extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
@@ -30,7 +30,7 @@ public class List extends ASTNode implements Cloneable {
         }
         return res;
     }
-    // Declared in ASTUtil.jrag at line 92
+    // Declared in ASTUtil.jrag at line 100
 
 
 	public Collection toCollection() {
@@ -40,7 +40,7 @@ public class List extends ASTNode implements Cloneable {
 		return children;
 	}
 
-    // Declared in ASTUtil.jrag at line 99
+    // Declared in ASTUtil.jrag at line 107
 
 	
 	public List(Collection c) {
@@ -48,7 +48,7 @@ public class List extends ASTNode implements Cloneable {
 		addAll(c);
 	}
 
-    // Declared in ASTUtil.jrag at line 104
+    // Declared in ASTUtil.jrag at line 112
 
 	
 	public List addAll(Collection c) {

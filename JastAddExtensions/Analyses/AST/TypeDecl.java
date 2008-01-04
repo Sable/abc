@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
  
 public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  VariableScope,  Named {
@@ -493,16 +493,27 @@ public abstract class TypeDecl extends ASTNode implements Cloneable,  SimpleSet,
     }
   }
 
-    // Declared in ASTUtil.jrag at line 20
+    // Declared in ASTUtil.jrag at line 28
 
 	
 	public void removeBodyDecl(BodyDecl bd) {
 		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
 	}
 
-    // Declared in Names.jadd at line 18
+    // Declared in Names.jadd at line 27
 
-	public void changeID(String id) { setID(id); }
+	
+	// when we change the ID of a class, we also need to rename its constructors
+	public void changeID(String id) { 
+		setID(id);
+		for(int i=0;i<getNumBodyDecl();++i) {
+            BodyDecl bd = getBodyDecl(i);
+            if(bd instanceof ConstructorDecl) {
+                ConstructorDecl ctordecl = (ConstructorDecl)bd;
+                ctordecl.changeID(id);
+            }
+        }		
+	}
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 37
@@ -2381,7 +2392,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return inStaticContext_value;
     }
 
-    // Declared in ASTUtil.jrag at line 9
+    // Declared in ASTUtil.jrag at line 17
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit_value = getParent().Define_CompilationUnit_compilationUnit(this, null);
         return compilationUnit_value;
@@ -2417,7 +2428,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_isFinallyBlock(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 38
+    // Declared in LocalDeclaration.jrag at line 37
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 // 7.3 Compilation Units
@@ -146,7 +146,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
     }
   }
 
-    // Declared in ASTUtil.jrag at line 126
+    // Declared in ASTUtil.jrag at line 134
 
 	
 	public String getID() {
@@ -158,11 +158,15 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
 	    return relname_tail.substring(0, j);	 		
 	}
 
-    // Declared in Names.jadd at line 19
+    // Declared in Names.jadd at line 38
 
-	public void changeID(String id) { setID(id); }
+	
+	public void changeID(String id) { 
+		// we also need to rename the file the compilation unit is in
+		setID(id); 
+	}
 
-    // Declared in Names.jadd at line 21
+    // Declared in Names.jadd at line 43
 
 	
 	public void setID(String id) {
@@ -170,7 +174,7 @@ public class CompilationUnit extends ASTNode implements Cloneable,  Named {
         setPathName(patch_name(pathName(), id));
 	}
 
-    // Declared in Names.jadd at line 26
+    // Declared in Names.jadd at line 48
 
 	
     private static String patch_name(String path, String name) {
@@ -598,7 +602,7 @@ if(lookupType_String_values == null) lookupType_String_values = new java.util.Ha
         return getParent().Define_SimpleSet_lookupType(this, caller, name);
     }
 
-    // Declared in ASTUtil.jrag at line 8
+    // Declared in ASTUtil.jrag at line 16
     public CompilationUnit Define_CompilationUnit_compilationUnit(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

@@ -1,4 +1,3 @@
-import sun.text.normalizer.UTF16;
 
 aspect LocalDeclaration {
 	

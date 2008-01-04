@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  Iterator,  Named {
@@ -219,7 +219,7 @@ public class MethodDecl extends MemberDecl implements Cloneable,  SimpleSet,  It
 
   }
 
-    // Declared in Names.jadd at line 17
+    // Declared in Names.jadd at line 24
 
 	public void changeID(String id) { setID(id); }
 
@@ -925,7 +925,7 @@ if(handlesException_TypeDecl_values == null) handlesException_TypeDecl_values = 
         return getParent().Define_boolean_mayBePrivate(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 39
+    // Declared in LocalDeclaration.jrag at line 38
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getBlockOptNoTransform()) {
 		HashSet decls = new HashSet();

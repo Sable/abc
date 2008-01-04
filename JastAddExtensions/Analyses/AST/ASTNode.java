@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 // Generated with JastAdd II (http://jastadd.cs.lth.se) version R20071114
 
@@ -405,7 +405,14 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   void checkUnreachableStmt() {
   }
 
-    // Declared in ASTUtil.jrag at line 14
+    // Declared in ASTUtil.jrag at line 7
+
+	
+	public static boolean isSingletonOf(SimpleSet s, Object o) {
+		return s.size() == 1 && s.iterator().next() == o;
+	}
+
+    // Declared in ASTUtil.jrag at line 22
 
 	
 	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
@@ -415,7 +422,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 			getChild(i).clear();
 	}
 
-    // Declared in ASTUtil.jrag at line 38
+    // Declared in ASTUtil.jrag at line 46
 
     
     protected void replaceWith(ASTNode newnode) {
@@ -423,7 +430,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     	parent.setChild(newnode, parent.getIndexOfChild(this));
     }
 
-    // Declared in ASTUtil.jrag at line 44
+    // Declared in ASTUtil.jrag at line 52
 
     
     // this method is not very well-behaved if start and end are not valid indices
@@ -443,7 +450,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         if(node != null) { node.setParent(this); node.childIndex = start; }
     }
 
-    // Declared in ASTUtil.jrag at line 60
+    // Declared in ASTUtil.jrag at line 68
 
     
     public void moveChild(int src, int trg) {
@@ -454,7 +461,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     	children[trg].childIndex = trg;
     }
 
-    // Declared in ASTUtil.jrag at line 110
+    // Declared in ASTUtil.jrag at line 118
 
 	
 	public int indexIn(ASTNode n) {
@@ -465,7 +472,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 		return getParent().indexIn(n);
 	}
 
-    // Declared in ASTUtil.jrag at line 118
+    // Declared in ASTUtil.jrag at line 126
 
 	
 	public boolean inside(ASTNode n) {
@@ -980,7 +987,7 @@ if(mayAccess_Variable_values == null) mayAccess_Variable_values = new java.util.
 
     private boolean mayAccess_compute(Variable v) {  return  mayDef(v) || mayUse(v);  }
 
-    // Declared in ASTUtil.jrag at line 5
+    // Declared in ASTUtil.jrag at line 13
     public Program programRoot() {
         Program programRoot_value = getParent().Define_Program_programRoot(this, null);
         return programRoot_value;

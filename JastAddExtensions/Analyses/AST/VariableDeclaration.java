@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet,  Iterator,  Variable,  LocalDeclaration {
     public void flushCache() {
@@ -160,19 +160,19 @@ public class VariableDeclaration extends Stmt implements Cloneable,  SimpleSet, 
     }
   }
 
-    // Declared in Names.jadd at line 14
+    // Declared in Names.jadd at line 20
 
 	
 	public void changeID(String id) { setID(id); }
 
-    // Declared in LocalDeclaration.jrag at line 23
+    // Declared in LocalDeclaration.jrag at line 22
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
 	}
 
-    // Declared in LocalDeclaration.jrag at line 31
+    // Declared in LocalDeclaration.jrag at line 30
 
 	
 	public VariableDeclaration asVariableDeclaration() {

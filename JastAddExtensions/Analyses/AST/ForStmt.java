@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 public class ForStmt extends BranchTargetStmt implements Cloneable,  VariableScope {
     public void flushCache() {
@@ -564,7 +564,7 @@ if(lookupVariable_String_values == null) lookupVariable_String_values = new java
         return getParent().Define_boolean_insideLoop(this, caller);
     }
 
-    // Declared in LocalDeclaration.jrag at line 55
+    // Declared in LocalDeclaration.jrag at line 54
     public java.util.Set Define_java_util_Set_visibleLocalDecls(ASTNode caller, ASTNode child) {
         if(caller == getStmtNoTransform()) {
 		java.util.Set decls = visibleLocalDecls();

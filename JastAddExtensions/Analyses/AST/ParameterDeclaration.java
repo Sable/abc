@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
 
 public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleSet,  Iterator,  Variable,  LocalDeclaration {
@@ -136,18 +136,18 @@ public class ParameterDeclaration extends ASTNode implements Cloneable,  SimpleS
     }
   }
 
-    // Declared in Names.jadd at line 15
+    // Declared in Names.jadd at line 21
 
 	public void changeID(String id) { setID(id); }
 
-    // Declared in LocalDeclaration.jrag at line 19
+    // Declared in LocalDeclaration.jrag at line 18
 
 	
 	public ParameterDeclaration asParameterDeclaration() {
 		return (ParameterDeclaration)fullCopy();
 	}
 
-    // Declared in LocalDeclaration.jrag at line 27
+    // Declared in LocalDeclaration.jrag at line 26
 
 	
 	public VariableDeclaration asVariableDeclaration() {
@@ -937,7 +937,7 @@ if(accessedAfter_Stmt_values == null) accessedAfter_Stmt_values = new java.util.
         return isExceptionHandlerParameter_value;
     }
 
-    // Declared in ASTUtil.jrag at line 11
+    // Declared in ASTUtil.jrag at line 19
     public SimpleSet lookupType(String name) {
         SimpleSet lookupType_String_value = getParent().Define_SimpleSet_lookupType(this, null, name);
         return lookupType_String_value;

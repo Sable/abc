@@ -1,6 +1,6 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 public class Program extends ASTNode implements Cloneable {
     public void flushCache() {
         super.flushCache();
@@ -1554,7 +1554,7 @@ if(lookupType_String_String_values == null) lookupType_String_String_values = ne
         return getParent().Define_TypeDecl_typeCloneable(this, caller);
     }
 
-    // Declared in ASTUtil.jrag at line 4
+    // Declared in ASTUtil.jrag at line 12
     public Program Define_Program_programRoot(ASTNode caller, ASTNode child) {
         if(true) {
       int childIndex = this.getIndexOfChild(caller);

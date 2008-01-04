@@ -1,8 +1,8 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;
+import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;
 
-public class ConstructorDecl extends BodyDecl implements Cloneable {
+public class ConstructorDecl extends BodyDecl implements Cloneable,  Named {
     public void flushCache() {
         super.flushCache();
         accessibleFrom_TypeDecl_values = null;
@@ -149,6 +149,10 @@ public class ConstructorDecl extends BodyDecl implements Cloneable {
         error(signature() + " throws non throwable type " + typeDecl.fullName());
     }
   }
+
+    // Declared in Names.jadd at line 23
+
+	public void changeID(String id) { setID(id); }
 
     // Declared in java.ast at line 3
     // Declared in java.ast line 71
