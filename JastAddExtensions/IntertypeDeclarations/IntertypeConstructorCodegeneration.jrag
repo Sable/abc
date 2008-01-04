@@ -51,7 +51,7 @@ aspect IntertypeMethodCodegeneration {
       getID(),
       parameters,
       copyTypeList(getExceptionList()),
-      (Opt)getConstructorInvocationOpt().fullCopy(),
+      (Opt)getConstructorInvocationOpt().boundCopy(),
       block,
       this
     );
@@ -81,7 +81,7 @@ aspect IntertypeMethodCodegeneration {
       name(),
       parameters,
       copyTypeList(getExceptionList()),
-      (Opt)getConstructorInvocationOpt().fullCopy(),
+      (Opt)getConstructorInvocationOpt().boundCopy(),
       new Block(
         new List().add(
           new ExprStmt(
@@ -119,7 +119,7 @@ aspect IntertypeMethodCodegeneration {
       constructorBodyName(),
       list,
       new List(),
-      new Opt(getBlock().fullCopy()),
+      new Opt(getBlock().boundCopy()),
       introducedType(),
       this
     );

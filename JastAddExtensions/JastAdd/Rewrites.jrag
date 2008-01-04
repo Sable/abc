@@ -6,6 +6,8 @@ aspect Rewrite {
   eq Rewrite.getAccess().nameType() = NameType.TYPE_NAME;
 
   eq Rewrite.getBlock().returnType() = getAccess().type();
+
+  eq RewriteDecl.getChild().thisType() = getAccess().type();
   
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
@@ -113,7 +115,7 @@ aspect Rewrite {
     if(duringCounter != null) return duringCounter;
     FieldDeclaration field =
       new FieldDeclaration(
-        new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("static")).add(new Modifier("synthetic"))),
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
         new TypeAccess("int"),
         "during" + name(),
         new IntegerLiteral(0)

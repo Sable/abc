@@ -121,10 +121,10 @@ aspect IntertypeFieldCodegeneration {
       TypeAccess access = type().elementType().createBoundAccess();
       for(int i = 0; i < type().dimension(); i++)
         access = new ArrayTypeAccess(access);
-      returnValue = new ArrayCreationExpr(access, new Opt(getInit().fullCopy()));
+      returnValue = new ArrayCreationExpr(access, new Opt(getInit().boundCopy()));
     }
     else 
-      returnValue =  (Expr)getInit().fullCopy();
+      returnValue =  (Expr)getInit().boundCopy();
     Stmt returnStmt = new ReturnStmt(new Opt(returnValue));
     m = new IntroducedMethodDecl(
       modifiers,

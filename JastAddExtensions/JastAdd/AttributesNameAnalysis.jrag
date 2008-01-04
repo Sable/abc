@@ -2,15 +2,21 @@ aspect JastAdd {
   
   eq AttributeDecl.isPublic() = true;
 
+/*
   eq AttributeDecl.getBlock().hostType() = getTargetType().type();
   eq AttributeDecl.getParameter().hostType() = getTargetType().type();
+*/
   
+  eq SynEq.getChild().thisType() = getTargetType().type();
+  eq InhEq.getChild().thisType() = getTargetType().type();
+/*  
   eq SynEq.getBlock().hostType() = getTargetType().type();
   eq SynEq.getParameter().hostType() = getTargetType().type();
 
   eq InhEq.getBlock().hostType() = getTargetType().type();
   eq InhEq.getParameter().hostType() = getTargetType().type();
   eq InhEq.getChildParameter().hostType() = getTargetType().type();
+*/
 
   eq AttributeDecl.getTypeAccess().nameType() = NameType.TYPE_NAME;
   eq AttributeDecl.getTargetType().nameType() = NameType.TYPE_NAME;

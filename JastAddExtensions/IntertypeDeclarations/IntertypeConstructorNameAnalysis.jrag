@@ -12,9 +12,7 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeConstructorDecl.getConstructorInvocation().enclosingInstance() = introducedType();
 
   syn TypeDecl IntertypeConstructorDecl.hostType() = introducedType();
-  eq IntertypeConstructorDecl.getBlock().hostType() = hostType();
-  eq IntertypeConstructorDecl.getConstructorInvocation().hostType() = hostType();
-  eq IntertypeConstructorDecl.getParameter(int index).hostType() = hostType();
+  eq IntertypeConstructorDecl.getChild().hostType() = hostAspect();
 
   eq IntertypeConstructorDecl.getConstructorInvocation().lookupConstructor() = hostType().constructors();
   eq IntertypeConstructorDecl.getBlock().lookupConstructor() = hostType().constructors();
@@ -30,16 +28,38 @@ aspect IntertypeMethodNameAnalysis {
     return !c.isEmpty() ? c : lookupMethod(name);
   }
 
-
   eq TypeDecl.getChild().visibilityContext() = this;
   eq Program.getChild().visibilityContext() = null;
   inh TypeDecl Expr.visibilityContext();
 
- refine LookupConstructor eq ConstructorAccess.applicableAndAccessible(ConstructorDecl decl) =
-    decl.applicable(getArgList()) && decl.accessibleFrom(visibilityContext());
-  refine LookupConstructor eq ClassInstanceExpr.applicableAndAccessible(ConstructorDecl decl) = 
-    decl.applicable(getArgList()) && decl.accessibleFrom(visibilityContext()) && 
-    (!decl.isProtected() || hasTypeDecl() || decl.hostPackage().equals(hostPackage()));
+  inh TypeDecl Expr.thisType();
+  eq TypeDecl.getChild().thisType() = this;
+  eq IntertypeConstructorDecl.getChild().thisType() = introducedType();
+  eq IntertypeFieldDeclaration.getChild().thisType() = introducedType();
+  eq IntertypeMethodDecl.getChild().thisType() = introducedType();
+  eq IntroducedMethodDecl.getChild().thisType() = introducedType();
+  eq Program.getChild().thisType() = null;
+
+  refine LookupConstructor eq SuperConstructorAccess.decls() {
+    Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?
+      thisType().lookupSuperConstructor() : lookupSuperConstructor();
+    return mostSpecificConstructor(c);
+  }
+
+  refine LookupType eq ThisAccess.decl() =
+    isQualified() ? qualifier().type() : thisType();
+  refine LookupType eq SuperAccess.decl() {
+    TypeDecl typeDecl = isQualified() ? qualifier().type() : thisType();
+    if(typeDecl.isInterfaceDecl())
+      return typeObject();
+    if(!typeDecl.isClassDecl())
+      return unknownType();
+    ClassDecl classDecl = (ClassDecl)typeDecl;
+    if(!classDecl.hasSuperclass())
+      return unknownType();
+    return classDecl.superclass();
+  }
+  inh TypeDecl SuperAccess.typeObject();
 
   // Hack to avoid multiple declared intertype constructors
 

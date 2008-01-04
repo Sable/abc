@@ -91,12 +91,99 @@ aspect IntertypeMethodCodegeneration {
       "impl$body$" + name(),
       parameterList,
       copyTypeList(getExceptionList()),
-      (Opt)getBlockOpt().fullCopy(),
+      (Opt)getBlockOpt().boundCopy(),
       introducedType(),
       this
     );
     aspectMethod = hostAspect().addMemberMethod(aspectMethod);
     return aspectMethod;
+  }
+
+  public ASTNode ASTNode.boundCopy() {
+    ASTNode res = (ASTNode)copy();
+    for(int i = 0; i < getNumChildNoTransform(); i++) {
+      ASTNode node = getChildNoTransform(i);
+      if(node != null) node = node.boundCopy();
+        res.setChild(node, i);
+    }
+    return res;
+  }
+  public ASTNode MethodAccess.boundCopy() {
+    List args = new List();
+    for(int i = 0; i < getNumArg(); i++)
+      args.add(getArg(i).boundCopy());
+    return new BoundMethodAccess(name(), args, decl());
+  }
+
+  public ASTNode VarAccess.boundCopy() {
+    if(decl() instanceof FieldDeclaration)
+      return new BoundFieldAccess((FieldDeclaration)decl());
+    else
+      return super.boundCopy();
+  }
+  public ASTNode ConstructorAccess.boundCopy() {
+    List args = new List();
+    for(int i = 0; i < getNumArg(); i++)
+      args.add(getArg(i).boundCopy());
+    final ConstructorDecl decl = decl();
+    return new ConstructorAccess(name(), args) {
+      public ConstructorDecl decl() { return decl; }
+    };
+  }
+  public ASTNode SuperConstructorAccess.boundCopy() {
+    List args = new List();
+    for(int i = 0; i < getNumArg(); i++)
+      args.add(getArg(i).boundCopy());
+    final ConstructorDecl decl = decl();
+    return new SuperConstructorAccess(name(), args) {
+      public ConstructorDecl decl() { return decl; }
+    };
+  }
+  public ASTNode ClassInstanceExpr.boundCopy() {
+    List args = new List();
+    for(int i = 0; i < getNumArg(); i++)
+      args.add(getArg(i).boundCopy());
+    final ConstructorDecl decl = decl();
+    final TypeDecl type = type();
+    return new ClassInstanceExpr(
+      type.createBoundAccess(),
+      args,
+      new Opt()
+    ) {
+      public ConstructorDecl decl() { return decl; } 
+      public TypeDecl type() { return type; } 
+    };
+
+/*
+    if(hasTypeDecl())
+      return new ClassInstanceExpr(
+        (Access)getAccess().boundCopy(),
+        args,
+        (Opt)getTypeDeclOpt().boundCopy()
+      );
+    else
+    return new ClassInstanceExpr(
+      (Access)getAccess().boundCopy(),
+      args,
+      (Opt)getTypeDeclOpt().boundCopy()
+    ) { 
+      public ConstructorDecl decl() { return decl; } 
+    };
+*/
+  }
+  public ASTNode TypeAccess.boundCopy() {
+    // we do not bind anonymous classes since they should
+    // be rebound in their new context
+    if(!decl().isAnonymous())
+      return decl().createBoundAccess();
+    else
+      return super.boundCopy();
+  }
+  public ASTNode ArrayTypeAccess.boundCopy() {
+    return new ArrayTypeAccess((Access)getAccess().boundCopy());
+  }
+  public ASTNode ArrayTypeWithSizeAccess.boundCopy() {
+    return new ArrayTypeWithSizeAccess((Access)getAccess().boundCopy(), (Expr)getExpr().boundCopy());
   }
 
   public ParameterDeclaration ParameterDeclaration.qualifiedCopy() {
@@ -130,10 +217,10 @@ aspect IntertypeMethodCodegeneration {
   public void MethodAccess.generateSuperDispatchDelegate(TypeDecl typeDecl) {
     super.generateSuperDispatchDelegate(typeDecl);
     if(decl().name().startsWith("superDispatch$")) {
-      typeDecl.addMemberMethod((MethodDecl)decl().fullCopy());
+      typeDecl.addMemberMethod((MethodDecl)decl().boundCopy());
     }
     else if(needsSuperDispatchDelegate()) {
-      typeDecl.addMemberMethod((MethodDecl)superDispatchDelegate().fullCopy());
+      typeDecl.addMemberMethod((MethodDecl)superDispatchDelegate().boundCopy());
     }
   }
 
@@ -142,7 +229,7 @@ aspect IntertypeMethodCodegeneration {
       if(Program.verbose())
         System.out.println("May need super dispatch delegate for " + this);
       MethodDecl m = superDispatchDelegate();
-      List args = (List)getArgList().fullCopy();
+      List args = (List)getArgList().boundCopy();
       Access a = superDispatchQualifier().createBoundAccess().qualifiesAccess(new ThisAccess()).qualifiesAccess(m.createBoundAccess(args));
       replace(getParent()).with(a);
       a.generateIntertypeDecls();
@@ -155,7 +242,7 @@ aspect IntertypeMethodCodegeneration {
     if(!needsSuperDispatchDelegate())
       throw new Error("superDispatchQualifier may only be called on method calls that need delegate");
     SuperAccess access = (SuperAccess)qualifier();
-    return access.isQualified() ? access.qualifier().type() : hostType();
+    return access.isQualified() ? access.qualifier().type() : thisType();
   }
 
 
@@ -368,7 +455,7 @@ aspect IntertypeMethodCodegeneration {
       if(Program.verbose())
         System.out.println("May need super dispatch delegate for " + this);
       SimpleSet maxSpecific = SimpleSet.emptySet;
-      for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
+      for(Iterator iter = thisType().memberMethods(name()).iterator(); iter.hasNext(); ) {
         MethodDecl decl = (MethodDecl)iter.next();
         if(applicable(decl) && accessible(decl)) {
           if(maxSpecific.isEmpty())
@@ -383,11 +470,11 @@ aspect IntertypeMethodCodegeneration {
       }
       if(maxSpecific.size() == 1) {
         MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
-        m.createSuperDispatchDelegate(hostType());
+        m.createSuperDispatchDelegate(thisType());
       }
     }
     MethodDecl m = decl();
-    if(!(m instanceof IntertypeMethodDecl) && m.isPrivate() && !hostType().hasMethod(name())) {
+    if(!(m instanceof IntertypeMethodDecl) && m.isPrivate() && !thisType().hasMethod(name())) {
       /* Access to private methods in enclosing types:
       The original MethodAccess is replaced with an access to an accessor method
       built by createAccessor(). This method is built lazily and differs from
@@ -400,7 +487,7 @@ aspect IntertypeMethodCodegeneration {
       replace(this).with(decl().createAccessor(methodQualifierType()).createBoundAccess(getArgList()));
       return;
     }
-    else if(!m.isStatic() && isQualified() && prevExpr().isSuperAccess() && !hostType().instanceOf(prevExpr().type())) {
+    else if(!m.isStatic() && isQualified() && prevExpr().isSuperAccess() && !thisType().instanceOf(prevExpr().type())) {
       decl().createSuperAccessor(superAccessorTarget());
     }
     super.transformation();

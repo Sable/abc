@@ -20,8 +20,8 @@ aspect IntertypeMethodNameAnalysis {
   // override ag-inherited attribute, this will cause calls bound to an
   // IntertypeMethodDecl to invoke a method in the introducedType instead of the hostAspect
   syn TypeDecl IntertypeMethodDecl.hostType() = introducedType();
-  eq IntertypeMethodDecl.getBlock().hostType() = hostType();
-  eq IntertypeMethodDecl.getParameter(int index).hostType() = hostType();
+  eq IntertypeMethodDecl.getBlock().hostType() = hostAspect();
+  eq IntertypeMethodDecl.getParameter(int index).hostType() = hostAspect();
   eq IntertypeMethodDecl.getBlock().lookupMethod(String name) {
     Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty()) return c;
@@ -207,14 +207,6 @@ aspect IntertypeMethodNameAnalysis {
     return super.overrides(m);
   }
 
-  refine LookupType eq SuperAccess.decl() {
-    if(hostType().isInterfaceDecl())
-      return typeObject();
-    return LookupType.SuperAccess.decl();
-  }
-  inh TypeDecl SuperAccess.typeObject();
-
-
   eq IntertypeMethodDecl.accessibleFrom(TypeDecl type) {
     if(isPublic()) {
       return true;
@@ -232,33 +224,6 @@ aspect IntertypeMethodNameAnalysis {
       return hostPackage().equals(type.hostPackage());
   }
 
-  refine LookupMethod eq MethodAccess.accessible(MethodDecl m) {
-    if(!isQualified())
-      return true;
-    if(!m.accessibleFrom(visibilityContext())) {
-      System.err.println(m.signature() + " is not accessible from " + visibilityContext().typeName());
-      return false;
-    }
-    // the method is not accessible if the type is not accessible
-    if(!qualifier().type().accessibleFrom(visibilityContext())) {
-      System.err.println(qualifier().type().typeName() + " is not accessible from " + visibilityContext().typeName());
-      return false;
-    }
-    if(m instanceof IntertypeMethodDecl)
-      return true; // inter-type methods can not be protected
-    // 6.6.2.1 -  include qualifier type for protected access
-    if(m.isProtected() && !m.hostPackage().equals(hostPackage()) && !m.isStatic() && !qualifier().isSuperAccess()) {
-      TypeDecl C = m.hostType();
-      TypeDecl S = hostType().subclassWithinBody(C);
-      TypeDecl Q = qualifier().type();
-      if(S == null || !Q.instanceOf(S))
-        return false;
-    }
-    return true;
-
-  }
-
- 
   // compute the set of introduced methods in this type
   syn lazy Collection TypeDecl.introducedMethods() {
     Collection c = new ArrayList();

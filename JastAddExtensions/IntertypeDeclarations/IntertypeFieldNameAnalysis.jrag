@@ -23,7 +23,7 @@ aspect IntertypeFieldNameAnalysis {
   // override ag-inherited attribute, this will cause an access bound to an
   // IntertypeFieldDeclaration to access a field in the introducedType instead of the hostAspect
   syn TypeDecl IntertypeFieldDeclaration.hostType() = introducedType();
-  eq IntertypeFieldDeclaration.getInit().hostType() = hostType();
+  eq IntertypeFieldDeclaration.getInit().hostType() = hostAspect();
   
   eq IntertypeFieldDeclaration.getInit().lookupVariable(String name) {
     SimpleSet set = introducedType().memberFields(name);
@@ -65,7 +65,7 @@ aspect IntertypeFieldNameAnalysis {
         Variable v = (Variable)iter.next();
         if(v instanceof FieldDeclaration) {
           FieldDeclaration f = (FieldDeclaration)v;
-          if(f.accessibleFrom(visibilityContext()))
+          if(f.accessibleFrom(hostType()))
             s = s.add(v);
         }
         else
@@ -118,23 +118,6 @@ aspect IntertypeFieldNameAnalysis {
     return set;
   }
 
-
-  refine LookupVariable eq Expr.qualifiedLookupVariable(String name) {
-    if(type().accessibleFrom(visibilityContext()))
-      return keepAccessibleFields(type().memberFields(name));
-    return SimpleSet.emptySet;
-  }
-  refine LookupVariable eq TypeAccess.qualifiedLookupVariable(String name) {
-    if(type().accessibleFrom(visibilityContext())) {
-      SimpleSet c = type().memberFields(name);
-      c = keepAccessibleFields(c);
-      if(type().isClassDecl() && c.size() == 1)
-        c = removeInstanceVariables(c);
-      return c;
-    }
-    return SimpleSet.emptySet;
-  }
-
   eq IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {
     if(isPublic())
       return true;
@@ -158,12 +141,31 @@ aspect IntertypeFieldNameAnalysis {
       if(d.isPublic())
         return true;
       else if(d.isPrivate())
-        return d.hostAspect().topLevelType() == visibilityContext().topLevelType();
+        return d.hostAspect().topLevelType() == hostType().topLevelType();
       else
         return hostPackage().equals(d.hostAspect().hostPackage());
     }
-    return LookupVariable.Expr.mayAccess(f);
+    else {
+      if(f.isPublic()) 
+        return true;
+      else if(f.isProtected()) {
+        if(f.hostPackage().equals(hostPackage()))
+          return true;
+        TypeDecl C = f.hostType();
+        TypeDecl S = thisType().subclassWithinBody(C);
+        TypeDecl Q = type();
+        if(S == null)
+          return false;
+        if(f.isInstanceVariable() && !isSuperAccess())
+          return Q.instanceOf(S);
+        return true;
+      }
+      else if(f.isPrivate())
+        return f.hostType().topLevelType() == hostType().topLevelType();
+      else
+        return f.hostPackage().equals(hostType().hostPackage());
+    }
+    //return LookupVariable.Expr.mayAccess(f);
   }
-  inh BodyDecl Expr.enclosingBodyDecl();
 
 }

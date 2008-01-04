@@ -68,7 +68,7 @@ aspect GenerateSynCode {
           createParameterList(),
           new List(),
           new Opt(
-            getBlock().fullCopy()
+            getBlock().boundCopy()
             ),
           introducedType(),
           this
@@ -109,7 +109,7 @@ aspect GenerateSynCode {
   //public void SynDecl.generateIntertypeDecls() {
     if(hasEqBody()) {
       // public type name(p0, ..., PN-1) { ... }
-      List modifierList = (List)getModifiers().getModifierList().fullCopy();
+      List modifierList = (List)getModifiers().getModifierList().boundCopy();
       MethodDecl aspectMethod =
           new IntroducedMethodDecl(
             createModifiers(),
@@ -118,7 +118,7 @@ aspect GenerateSynCode {
             createParameterList(),
             new List(),
             new Opt(
-              getBlock().fullCopy()
+              getBlock().boundCopy()
             ),
             introducedType/*()*/,
             this
@@ -1078,7 +1078,7 @@ aspect GenerateSynCode {
           InhEq inhEq = (InhEq)i2.next();
           // add inh equation to aspect 
           MethodDecl methodDecl = inhEq.addEqToAspect(type());
-          List modifierList = (List)getModifiers().getModifierList().fullCopy();
+          List modifierList = (List)getModifiers().getModifierList().boundCopy();
           modifierList.add(new Modifier("static"));
           methodDecl.setModifiers(new Modifiers(modifierList));
 
@@ -1183,7 +1183,7 @@ aspect GenerateSynCode {
               createParameterList(),
               new List(),
               new Opt(
-                getBlock().fullCopy()
+                getBlock().boundCopy()
               ),
               introducedType(),
               this
@@ -1238,7 +1238,7 @@ aspect GenerateSynCode {
     if(m == null) {
       List statements = new List();
       m = new MethodDecl(
-        (Modifiers)getModifiers().fullCopy(),
+        (Modifiers)getModifiers().boundCopy(),
         type().createQualifiedAccess(),
         definingInterfaceName(),
         createDefiningInterfaceParameterList(),

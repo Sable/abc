@@ -453,4 +453,23 @@ aspect DeclareParentsAnalysis {
   syn boolean TypeDecl.affectedByDeclareParents() =
     !declareParentsImplements().isEmpty() || !declareParentsExtends().isEmpty();
 
+  public void DeclareParentsExtends.generateIntertypeDecls() {
+    for(int i = 0; i < getNumTypeAccess(); i++) {
+      TypeDecl typeDecl = getTypeAccess(i).type();
+      typeDecl.mustBePublic = true;
+    }
+  }
+  public void DeclareParentsImplements.generateIntertypeDecls() {
+    for(int i = 0; i < getNumTypeAccess(); i++) {
+      TypeDecl typeDecl = getTypeAccess(i).type();
+      typeDecl.mustBePublic = true;
+    }
+  }
+  public boolean TypeDecl.mustBePublic = false;
+  public boolean ClassDecl.isPublic() {
+    return super.isPublic() || mustBePublic;
+  }
+  public boolean InterfaceDecl.isPublic() {
+    return super.isPublic() || mustBePublic;
+  }
 }
