@@ -1,5 +1,10 @@
 package changes;
 
+/*
+ * PullTogether(blk, start, end) is a change that, when applied, pulls the
+ * statements "start" through "end" (inclusive) together into a block.
+ */
+
 import AST.Block;
 import AST.Stmt;
 

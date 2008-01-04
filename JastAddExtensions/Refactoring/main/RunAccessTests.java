@@ -1,7 +1,10 @@
 package main;
 
+/*
+ * Runs the test cases for accessPackage(), accessType(), and accessField().
+ */
+
 import AST.ASTNode;
-import AST.AbstractDot;
 import AST.Access;
 import AST.Block;
 import AST.BytecodeParser;
@@ -13,8 +16,6 @@ import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.List;
-import AST.NameType;
-import AST.PackageAccess;
 import AST.ParExpr;
 import AST.ParameterDeclaration;
 import AST.Program;

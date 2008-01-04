@@ -1,5 +1,10 @@
 import java.util.*;
 
+/*
+ * This aspect implements a global Undo stack that remembers changes to the AST,
+ * and rolls them back on demand.
+ */
+
 aspect Undo {
 
 	private Stack Program.undoStack = new Stack();

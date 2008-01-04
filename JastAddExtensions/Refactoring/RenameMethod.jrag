@@ -2,12 +2,16 @@ import changes.*;
 import main.FileRange;
 import java.util.*;
 
+/*
+ * The Rename Method refactoring
+ */
+
 aspect RenameMethod {
 	
 	public void MethodDecl.cascadingRename(String new_name) throws RefactoringException {
 		// first check which methods override this one/are overriden by this
 		// obviously, we need to do that before we change its name
-		// (obvious after I got tripped up by it, that is)
+		// ("obvious" after I got tripped up by it, that is)
 		SimpleSet overrides = overrides();
 		java.util.Set overriders = overriders();
 		// rename the method itself

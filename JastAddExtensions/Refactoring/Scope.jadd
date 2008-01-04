@@ -1,3 +1,7 @@
+/*
+ * a scope is something where we can look up variables
+ */
+
 aspect Scope {
 	
 	interface Scope {

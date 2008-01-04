@@ -1,9 +1,5 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Iterator;
-
 import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.ConstructorDecl;
@@ -13,13 +9,21 @@ import AST.MethodDecl;
 import AST.ParameterDeclaration;
 import AST.Program;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
-public class RunParameterRenameTests extends Frontend {
+public class ParameterRenameTest extends Frontend {
 
+	/*
+	 * Usage: ParameterRenameTest <file> <pkg> <type> <method> <parm> <newname>
+	 * 
+	 *   file : file containing the code to be refactored
+	 *   parm : the parameter to be renamed, with <newname> its new name
+	 *   method : the method whose parameter <parm> is
+	 *   type : the type containing <method>
+	 *   pkg : the package containing <type>
+	 */
     public static void main(String[] args) throws Throwable {
-        RunParameterRenameTests r = new RunParameterRenameTests();
+        ParameterRenameTest r = new ParameterRenameTest();
         //r.test(args[0]);
         String[] files = {args[0]};
         Program prog = r.test(files, args[1], args[2], args[3], args[4], args[5]);
@@ -28,7 +32,7 @@ public class RunParameterRenameTests extends Frontend {
         System.out.println(prog);
     }
     
-    private void test(String name) throws Throwable {
+    /*private void test(String name) throws Throwable {
         String file = name;
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
@@ -41,7 +45,7 @@ public class RunParameterRenameTests extends Frontend {
         if(prog == null)
             throw new Exception("failed to process input file");
         System.out.println(prog);
-    }
+    }*/
 
     private Program test(String[] files, String pkg, String tp, String meth, String parm, String n) throws RefactoringException {
         if(process(files, new BytecodeParser(), 

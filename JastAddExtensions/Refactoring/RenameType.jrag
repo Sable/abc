@@ -1,3 +1,7 @@
+/*
+ * The Rename Type refactoring
+ */
+
 aspect RenameType {
 	
 	public void TypeDecl.rename(String new_name) throws RefactoringException {
@@ -5,8 +9,11 @@ aspect RenameType {
 			return;
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
-		if(isTopLevelType() && /*isPublic()*/ getID().equals(cu.getID()))
+		// for toplevel types, we might need to change the name of the containing
+		// compilation unit
+		if(isTopLevelType() && getID().equals(cu.getID()))
 			cu.changeID(new_name);
+		// adjust import declarations
 		adjustImportDecls();
 		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);

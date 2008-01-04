@@ -1,5 +1,9 @@
 package main;
 
+/*
+ * Runs test cases for the Extract Method refactoring.
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

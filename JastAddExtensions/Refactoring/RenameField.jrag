@@ -1,6 +1,12 @@
-import changes.*;
-import main.FileRange;
-import java.util.*;
+/*
+ * The Rename Field refactoring. Like most name-based refactoring, it proceeds in
+ * four steps:
+ *   1. check preconditions (here: is there a field of the same name already?) 
+ *   2. find uses of the field being renamed, and of everything that might be
+ *      shadowed by the newly renamed field
+ *   3. do the renaming
+ *   4. adjust all uses collected in step 2
+ */
 
 aspect RenameField {
 

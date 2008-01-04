@@ -1,11 +1,13 @@
 package main;
 
+/*
+ * Runs test cases for the Encapsulate Field refactoring.
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.List;
 
 import AST.ASTNode;
 import AST.BytecodeParser;
@@ -14,7 +16,6 @@ import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
 public class RunEncapsulationTests extends Frontend {

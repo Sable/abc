@@ -1,11 +1,13 @@
 package main;
 
+/*
+ * Run tests for the Rename Type refactoring.
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.List;
 
 import AST.BytecodeParser;
 import AST.CompilationUnit;
@@ -13,7 +15,6 @@ import AST.Frontend;
 import AST.JavaParser;
 import AST.Program;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
 public class RunTypeRenameTests extends Frontend {

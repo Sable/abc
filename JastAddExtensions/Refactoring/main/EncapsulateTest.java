@@ -1,19 +1,24 @@
 package main;
 
-import java.util.Iterator;
-import java.util.List;
-
 import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
 public class EncapsulateTest extends Frontend {
 
+	/*
+	 * Usage: EncapsulateTest <file> <package> <type> <field>
+	 * 
+	 *   <file> : the file containing the code to be refactored
+	 *   <field> : the field to be encapsulated
+	 *   <type> : the type containing <field>
+	 *   <package> : the package containing <type>
+	 */
+	
 	public static void main(String args[]) throws Throwable {
         EncapsulateTest e = new EncapsulateTest();
         e.encapsulate(args[0], args[1], args[2], args[3]);

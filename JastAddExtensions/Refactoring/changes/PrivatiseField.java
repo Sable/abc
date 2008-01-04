@@ -1,7 +1,6 @@
 package changes;
 
 import AST.FieldDeclaration;
-import AST.Modifier;
 import AST.Modifiers;
 
 public class PrivatiseField extends ASTChange {

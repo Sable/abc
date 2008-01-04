@@ -2,6 +2,10 @@ import changes.*;
 import main.FileRange;
 import java.util.*;
 
+/*
+ * The Rename Local Variable refactoring; basic steps are as with Rename Field.
+ */
+
 aspect RenameLocalVariable {
 	
 	interface Initializer {

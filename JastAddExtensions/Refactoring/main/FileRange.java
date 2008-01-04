@@ -2,6 +2,11 @@ package main;
 
 import AST.ASTNode;
 
+/*
+ * FileRange represents a range of characters given by start and end position. This
+ * is mostly used in the test programs.
+ */
+
 public class FileRange {
     
     public int sl, sc, el, ec;

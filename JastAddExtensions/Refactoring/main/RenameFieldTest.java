@@ -2,8 +2,6 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.List;
 
 import AST.ASTNode;
 import AST.BytecodeParser;
@@ -13,23 +11,25 @@ import AST.Frontend;
 import AST.JavaParser;
 import AST.Program;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
-public class RenameTest extends Frontend {
+public class RenameFieldTest extends Frontend {
 
+	// test program for Rename Field; interactive
 	public static void main(String args[]) throws Throwable {
-        /*BufferedReader in
-            = new BufferedReader(new InputStreamReader(System.in));        
-        System.out.print("class name: TestSrc.");
-        String classname = "TestSrc."+in.readLine();
+        BufferedReader in
+            = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("file name: ");
+        String filename = in.readLine();
+        System.out.print("class name: ");
+        String classname = in.readLine();
         System.out.print("old field name: ");
         String fieldname = in.readLine();
         System.out.print("new field name: ");
         String newname = in.readLine();
-        String[] a = { classname, fieldname, newname, "test/TestSrc.java" };
-        compile(a);*/
-        tst();
+        String[] a = { classname, fieldname, newname, filename };
+        compile(a);
+        //tst();
 	}
 
 	public static boolean compile(String args[]) {
@@ -49,7 +49,7 @@ public class RenameTest extends Frontend {
 	}
 	
 	public static void tst() throws RefactoringException {
-		RenameTest c = new RenameTest();
+		RenameFieldTest c = new RenameFieldTest();
 		String[] filenames = { "test/Tmp.java" };
 		if(!c.process(filenames, new BytecodeParser(), 
 				new JavaParser() {
@@ -76,7 +76,7 @@ public class RenameTest extends Frontend {
 
 	public static void rename(String classname, String fieldname, String newname, String[] filenames) 
 			throws RefactoringException {
-		RenameTest c = new RenameTest();
+		RenameFieldTest c = new RenameFieldTest();
 		if(!c.process(
 				filenames,
 				new BytecodeParser(),

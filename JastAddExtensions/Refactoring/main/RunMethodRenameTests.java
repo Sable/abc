@@ -1,21 +1,21 @@
 package main;
 
+/*
+ * Runs test cases for the Rename Method refactoring.
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.List;
 
 import AST.ASTNode;
 import AST.BytecodeParser;
 import AST.CompilationUnit;
-import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.MethodDecl;
 import AST.TypeDecl;
-import changes.ASTChange;
 import changes.RefactoringException;
 
 public class RunMethodRenameTests extends Frontend {
