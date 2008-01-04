@@ -2,9 +2,9 @@ aspect MergeAccess {
 	
 	// access t could be either a bare TypeAccess or qualified with either a package
 	// or another type access; in the latter case we do not even try to merge
-	public Access TypeAccess.mergeWithAccess(Access t) {
+	public Access TypeAccess.mergeWithAccess(Access t) throws RefactoringException {
 		if(t instanceof TypeAccess)
-			if(t.getPackage().equals(""))
+			if(((TypeAccess)t).getPackage().equals(""))
 				return this.qualifiesAccess(t);
 			else
 				return t;
