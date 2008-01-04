@@ -1,10 +1,19 @@
 aspect MergeAccess {
 	
-	public Access TypeAccess.mergeWithAccess(Access f) {
-		return this.qualifiesAccess(f);
+	// access t could be either a bare TypeAccess or qualified with either a package
+	// or another type access; in the latter case we do not even try to merge
+	public Access TypeAccess.mergeWithAccess(Access t) {
+		if(t instanceof TypeAccess)
+			if(t.getPackage().equals(""))
+				return this.qualifiesAccess(t);
+			else
+				return t;
+		if(t.isQualified() && qualifier() instanceof PackageAccess)
+			return t;
+		throw new RefactoringException("cannot merge accesses");
 	}
 
-	// the field access f is either a simple name or qualified with this, super, ((A)this),
+	// the field access f is either a simple access or qualified with this, super, ((A)this),
 	// A.this, or ((A)B.this) for some classes A and B
 	public Access Expr.mergeWithAccess(Access f) throws RefactoringException {
 		if(f.isVariable() || f instanceof TypeAccess || f instanceof MethodAccess ||

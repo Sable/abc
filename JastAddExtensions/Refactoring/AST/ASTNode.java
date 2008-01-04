@@ -1,6 +1,14 @@
 
 package AST;
-import java.util.HashSet;import java.util.LinkedHashSet;import java.io.FileNotFoundException;import java.io.File;import java.util.*;import beaver.*;import java.util.ArrayList;import java.util.zip.*;import java.io.*;import sun.text.normalizer.UTF16;import changes.*;import main.FileRange;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import changes.RefactoringException;
+import changes.ReplaceNode;
 
 // Generated with JastAdd II (http://jastadd.cs.lth.se) version R20071114
 

@@ -196,7 +196,30 @@
    Reported as bug 211861, which turned out to be a duplicate of bug 31862.
 
    Same bug in Netbeans, but not in IntelliJ.
+   
+10. Renaming a local variable does not check for hiding by field of anonymous class.
 
+	Test case:
+  	  public class A {
+		Object m() {
+		  final int i = 23;
+		  return new Object() {
+			int j = 42;
+			public String toString() {
+			  return i+"";
+			}
+		  };
+		}
+		public static void main(String[] args) {
+		  System.out.println(new A().m());
+		}
+	  }
+
+	This prints "23". Renaming the local variable i in method A.m to j does not
+	notice that the reference in the anonymous class' toString() method will now
+	refer to the field j, so the resulting program prints "42".
+	
+	Reported as bug 213144.
 
 Just to be fair, here is a test case where Eclipse refuses to refactor, whereas
 Netbeans walks into the trap:

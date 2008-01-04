@@ -23,6 +23,16 @@ aspect AccessType {
 		return isNestedType() ? enclosingType().findTypeOutwards(td, ambiguous) : null;
 	}
 
+	/* tries to access type declaration td from inside a certain scope; the flag
+	 * ambiguous indicates whether the access occurs in a syntactically ambiguous
+	 * position, i.e. a position where a name might both refer to a type or a
+	 * variable
+	 * 
+	 * it returns an access to the type declaration either by its bare name or
+	 * by qualifying it either with its package (if it is a toplevel type) or its
+	 * surrounding type, if that surrounding type also surrounds the scope we are
+	 * accessing the type from
+	 */
 	syn Access Scope.accessType(TypeDecl td, boolean ambiguous) {
 		String name = td.getID();
 		SimpleSet set = lookupType(name);
