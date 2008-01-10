@@ -49,4 +49,28 @@
 		<provider class="org.jastadd.plugin.jastadd.Model"/>
  	</extension>
  	
+ 	<!-- JastAdd Aspect Editor -->
+ 
+	<extension point = "org.eclipse.ui.editors">
+	<editor
+		class = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor"
+		extensions = "jrag,jadd"
+		icon = "icons/obj16/jrag.gif"
+		id = "org.jastadd.plugin.jastadd.JastAddAspectEditor"
+		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		name = "JastAdd Aspect Editor">
+	</editor>
+
+    <!-- JastAdd Grammar Editor -->
+ 	<editor
+		class = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor"
+		extensions = "ast"
+		icon = "icons/obj16/ast.gif"
+		id = "org.jastadd.plugin.jastadd.JastAddGrammarEditor"
+		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		name = "JastAdd Grammar Editor">
+	</editor>
+	</extension>
+	
+ 	
 </plugin>
