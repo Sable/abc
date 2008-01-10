@@ -29,7 +29,6 @@ import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
-import org.jastadd.plugin.jastaddj.model.JastAddJEditorConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 import org.jastadd.plugin.resources.JastAddNature;
@@ -48,6 +47,16 @@ public class Model extends JastAddJModel {
 		}
 		return false;
 	}
+	
+	public java.util.List<String> getFileExtensions() {
+		java.util.List<String> list = new ArrayList<String>();
+		list.add("jrag");
+		list.add("jadd");
+		list.add("ast");
+		return list;
+	}
+	
+	
 	
 	@Override
 	public String getNatureID() {

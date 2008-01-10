@@ -1,27 +1,13 @@
 package org.jastadd.plugin.jastadd;
 
 import java.io.IOException;
-import java.util.Collection;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.bindings.keys.ParseException;
-import org.eclipse.jface.text.DocumentCommand;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.ui.commands.IHandler;
 import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
-import org.jastadd.plugin.jastaddj.completion.JastAddJCompletionProcessor;
-import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
-import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
-import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
-import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
-import org.jastadd.plugin.jastaddj.editor.actions.InsertCrapRefactoringHandler;
-import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.jastaddj.model.JastAddJEditorConfiguration;
-import org.jastadd.plugin.model.repair.JastAddStructureModel;
 
 public class EditorConfiguration extends JastAddJEditorConfiguration {
 
@@ -61,5 +47,10 @@ public class EditorConfiguration extends JastAddJEditorConfiguration {
 		addContextMenuItem(findMenu, "Find &Equations",
 				"org.jastadd.plugin.jastadd.find.FindEquations",
 				new FindEquationsHandler());
+	}
+	
+	@Override
+	public ITokenScanner getScanner() {
+		return new JastAddScanner(new JastAddColors());
 	}
 }
