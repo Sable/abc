@@ -35,9 +35,9 @@ BodyDecl inh_decl =
 
 BodyDecl syn_eq =
     EQUATION name DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
-    {: return new SynEq(name, id, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
+    {: return new SynEq(name, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
   | EQUATION name DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN block
-    {: return new SynEq(name, id, p, block); :}
+    {: return new SynEq(name, id, p, new Opt(block)); :}
   ;
   
 BodyDecl inh_eq =

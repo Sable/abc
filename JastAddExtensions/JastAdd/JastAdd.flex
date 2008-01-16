@@ -147,6 +147,8 @@ ZeroToThree = [0-3]
   "circular" { return sym(Terminals.CIRCULAR); }
   "sons" { return sym(Terminals.PUBLIC); }
   "nta" { return sym(Terminals.NTA); }
+  "refine" { return sym(Terminals.REFINE); }
+  "refined" { return sym(Terminals.REFINED); }
 }
 
 

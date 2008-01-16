@@ -10,187 +10,73 @@ aspect GenerateSynCode {
   }
 
   // override behavior in IntertypeMethodCodegeneration
-  refine Rewrites public void ASTDecl.generateIntertypeDecls() {
-    Rewrites.ASTDecl.generateIntertypeDecls();
-    // iterate over SynEq with a target interface that this classdecl implements
-    for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
-      TypeDecl typeDecl = (TypeDecl)iter.next();
-      if(!isObject() && !superclass().instanceOf(typeDecl)) {
-        for(Iterator i2 = typeDecl.intertypeSynEqs().iterator(); i2.hasNext(); ) {
-          SynEq synEq = (SynEq)i2.next();
-          if(!hasEquation(synEq))
-            synEq.generateSynEq(this);
+
+  // code gen synthesized attributes
+
+  eq SynEq.implBodyName() = "impl$body$" + getID();
+  eq SynEq.delegateName() {
+    if(isPrivate())
+      return "abc$interMethod$" + hostAspect().topLevelType().abcMangledName() + "$" + getID();
+    else if(isPublic())
+      return getID();
+    else
+      return "abc$interMethod$" + hostAspect().packageName().replace('.', '_') + "$" + getID();
+  }
+
+  public void SynEq.createIntertypeMethod(TypeDecl introducedType) {
+    if(introducedType.isInterfaceDecl()) {
+      // equations do never generate code in interfaces
+    }
+    else {
+      generateIntertypeDecls();
+      MethodDecl aspectMethod = createAspectMethod();
+      int lineNum = getParameterList().sourceLineNumber();
+      MethodDecl delegateMethod = decl().generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached());
+      introducedType.addMemberMethod(delegateMethod);
+      if(hostType() != introducedType) {
+        aspectMethod.generateSuperDispatchDelegate(introducedType);
+      }
+    }
+  }
+  
+  public void SynDecl.createIntertypeMethod(TypeDecl introducedType) {
+    if(introducedType.isInterfaceDecl()) {
+      introducedType.addMemberMethod(createAbstractMethod());
+    }
+    else {
+      if(hasEqBody()) {
+        /* TODO:
+           if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+           aspectMethod = introducedType().addMemberMethod(aspectMethod);
+           else
+           aspectMethod = hostAspect().addMemberMethod(aspectMethod);
+         */
+
+        generateIntertypeDecls();
+        MethodDecl aspectMethod = createAspectMethod();
+        int lineNum = getParameterList().sourceLineNumber();
+        MethodDecl delegateMethod = generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached());
+        introducedType.addMemberMethod(delegateMethod);
+        if(hostType() != introducedType) {
+          aspectMethod.generateSuperDispatchDelegate(introducedType);
         }
+      }
+      else if(introducedType instanceof ASTDecl && !((ASTDecl)introducedType).hasEquation(this) && introducedType == introducedType()) {
+        // public abstract type name(p0, ..., PN-1);
+        introducedType.addMemberMethod(createAbstractMethod());
       }
     }
   }
 
-  syn Collection TypeDecl.intertypeSynEqs() = Collections.EMPTY_LIST;
-  syn lazy Collection InterfaceDecl.intertypeSynEqs() {
-    Collection c = new ArrayList();
-    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
-      ASTNode node = (ASTNode)iter.next();
-      if(node instanceof SynEq)
-        c.add(node);
-    }
-    for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
-      TypeDecl typeDecl = (TypeDecl)iter.next();
-      c.addAll(typeDecl.intertypeSynEqs());
-    }
-    return c;
-  }
-  protected void SynEq.collectIntertypeDecls(HashMap map) {
-    super.collectIntertypeDecls(map);
-    TypeDecl typeDecl = introducedType();
-    if(!map.containsKey(typeDecl))
-      map.put(typeDecl, new ArrayList());
-    Collection c = (Collection)map.get(typeDecl);
-    c.add(this);
-  }
-
-  public void SynEq.generateIntertypeDecls() {
-    if(!introducedType().isInterfaceDecl()) {
-      generateSynEq(introducedType());
-    }
-  }
-  public void SynEq.generateSynEq(TypeDecl introducedType) {
-    SynDecl synDecl = decl();
-    MethodDecl aspectMethod = aspectMethod();
-    int lineNum = getParameterList().sourceLineNumber();
-    synDecl.generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached());
-  }
-  syn lazy MethodDecl SynEq.aspectMethod() {
-    MethodDecl aspectMethod =
-      new IntroducedMethodDecl(
-          createModifiers(),
-          type().createQualifiedAccess(),
-          name(),
-          createParameterList(),
-          new List(),
-          new Opt(
-            getBlock().boundCopy()
-            ),
-          introducedType(),
-          this
-          );
-    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
-      aspectMethod = introducedType().addMemberMethod(aspectMethod);
-    else
-      aspectMethod = hostType().addMemberMethod(aspectMethod);
-    return aspectMethod;
-  }
-
-  /*
-  rewrite TypeAccess {
-    when(!duringSyntacticClassification() && !duringResolveAmbiguousNames() && getPackage().equals("") && !decl().isNestedType() && !decl().packageName().equals(""))
-    to TypeAccess {
-      System.out.println("Qualifying " + name() + " with " + decl().packageName());
-      setPackage(decl().packageName());
-      return this;
-    }
-  }
-  */
-
-
-  public void SynDecl.createIntertypeMethod(TypeDecl introducedType) {
-    if(introducedType.isInterfaceDecl()) {
-      introducedType/*()*/.addMemberMethod(
-        new MethodDecl(
-          new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))),
-          type().createQualifiedAccess(),
-          name(),
-          copyParameterList(getParameterList()),
-          new List(),
-          new Opt()
-        )
-      );
-    }
-    else {
-  //public void SynDecl.generateIntertypeDecls() {
-    if(hasEqBody()) {
-      // public type name(p0, ..., PN-1) { ... }
-      List modifierList = (List)getModifiers().getModifierList().boundCopy();
-      MethodDecl aspectMethod =
-          new IntroducedMethodDecl(
-            createModifiers(),
-            type().createQualifiedAccess(),
-            name(),
-            createParameterList(),
-            new List(),
-            new Opt(
-              getBlock().boundCopy()
-            ),
-            introducedType/*()*/,
-            this
-          );
-      if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
-        aspectMethod = introducedType().addMemberMethod(aspectMethod);
-      else
-        aspectMethod = hostAspect().addMemberMethod(aspectMethod);
-      int lineNum = getParameterList().sourceLineNumber();
-      generateAttributeDecl(introducedType/*()*/, aspectMethod, lineNum, shouldBeCached());
-    }
-    else if(introducedType/*()*/ instanceof ASTDecl && !((ASTDecl)introducedType/*()*/).hasEquation(this) && introducedType == introducedType()) {
-      // public abstract type name(p0, ..., PN-1);
-      introducedType/*()*/.addMemberMethod(
-        new MethodDecl(
-          new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))),
-          type().createQualifiedAccess(),
-          name(),
-          copyParameterList(getParameterList()),
-          new List(),
-          new Opt()
-        )
-      );
-    }
-    }
-  }
+  // code gen inherited attributes
 
   public void InhDecl.createIntertypeMethod(TypeDecl introducedType) {
-  //public void InhDecl.generateIntertypeDecls() {
     if(!Program.hasOption("-inh_in_astnode")) {
       addDefiningInterface();
     }
     addInterfaceTagging();
     int lineNum = getParameterList().sourceLineNumber();
-    generateAttributeDecl(introducedType/*()*/, lineNum);
-  }
-
-  syn lazy TypeDecl SynEq.type() = decl().type();
-
-
-  public Modifiers SynDecl.createModifiers() {
-    List list = new List();
-    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
-      list.add(new Modifier("static")).add(new Modifier("private"));
-    else
-      list.add(new Modifier("static")).add(new Modifier("public"));
-    return new Modifiers(list);
-  }
-
-  public Modifiers SynEq.createModifiers() {
-    List list = new List();
-    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
-      list.add(new Modifier("static")).add(new Modifier("private"));
-    else
-      list.add(new Modifier("static")).add(new Modifier("public"));
-    return new Modifiers(list);
-  }
-
-  public List AttributeDecl.createParameterList() {
-    List list = new List();
-    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
-    for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).qualifiedCopy());
-    return list;
-  }
-
-  public List SynEq.createParameterList() {
-    List list = new List();
-    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
-    for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).qualifiedCopy());
-    return list;
+    generateAttributeDecl(introducedType, lineNum);
   }
 
   public List InhEq.createParameterList() {
@@ -254,7 +140,7 @@ aspect GenerateSynCode {
     ((ASTDecl)introducedType()).lookupChild(name().substring(3)) instanceof ASTTokenChild;
   
   // Add a possibly cached delegate in typeDecl that calls aspectMethod
-  public void SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
+  public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
     if(isLazy) {
       // Add re-init of attribute cache in node clone method
       nodeCopyClearCache(typeDecl);
@@ -299,7 +185,8 @@ aspect GenerateSynCode {
     //statements.getChildNoTransform(0).setSourceLineNumber(lineNum);
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
     // public type name(p0, ... , pN-1) { ... }
-    typeDecl.addMemberMethod(
+    //typeDecl.addMemberMethod(
+    return
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
@@ -307,7 +194,7 @@ aspect GenerateSynCode {
         copyParameterList(getParameterList()),
         new List(),
         new Opt(new Block(statements))
-      )
+      //)
     );
   }
   

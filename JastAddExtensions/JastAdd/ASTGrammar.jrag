@@ -4,8 +4,31 @@ aspect ASTGrammar {
 
   syn lazy final List ASTDecl.getImplementsList() = new List();
 
-  eq CompilationUnit.getChild().astNode() = (TypeDecl)localLookupType("ASTNode").iterator().next();
-  eq CompilationUnit.getChild().listNode() = (TypeDecl)localLookupType("List").iterator().next();
+  inh TypeDecl CompilationUnit.unknownType();
+  eq CompilationUnit.getChild().astNode() { 
+    SimpleSet set = localLookupType("ASTNode");
+    if(set.size() == 1)
+      return (TypeDecl)set.iterator().next();
+    else
+      return unknownType();
+  }
+  eq CompilationUnit.getChild().listNode() {
+    SimpleSet set = localLookupType("List");
+    if(set.size() == 1)
+      return (TypeDecl)set.iterator().next();
+    else
+      return unknownType();
+  }
+
+  public void AspectDecl.nameCheck() {
+    super.nameCheck();
+    if(astNode().isUnknown())
+      error("type ASTNode is not visible");
+  }
+  inh TypeDecl AspectDecl.astNode();
+
+  //eq CompilationUnit.getChild().astNode() = (TypeDecl)localLookupType("ASTNode").iterator().next();
+  //eq CompilationUnit.getChild().listNode() = (TypeDecl)localLookupType("List").iterator().next();
   // Change the packageName() to a specific jastadd package??
   //eq CompilationUnit.getTypeDecl(int i).astNode() = lookupType(packageName(), "ASTNode");
   inh lazy TypeDecl ASTDecl.astNode();

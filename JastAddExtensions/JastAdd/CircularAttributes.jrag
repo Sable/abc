@@ -3,7 +3,7 @@ aspect CircularAttributes {
   eq CircularInhDecl.isLazy() = true;
 
   // Add a possibly cached delegate in typeDecl that calls aspectMethod
-  public void CircularSynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
+  public MethodDecl CircularSynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
     if(isLazy) {
       // Add re-init of attribute cache in node clone method
       nodeCopyClearCache(typeDecl);
@@ -32,7 +32,8 @@ aspect CircularAttributes {
     addReturnStmt(statements, typeDecl, isLazy);
 
     // public type name(p0, ... , pN-1) { ... }
-    typeDecl.addMemberMethod(
+    //typeDecl.addMemberMethod(
+    return
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
@@ -40,7 +41,7 @@ aspect CircularAttributes {
         copyParameterList(getParameterList()),
         new List(),
         new Opt(new Block(statements))
-      )
+      //)
     );
   }
 

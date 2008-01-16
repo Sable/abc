@@ -1,0 +1,220 @@
+aspect Refinement {
+
+  syn nta Opt IntertypeMethodDecl.refinedOpt() = refined;
+  syn Access IntertypeMethodDecl.refined() = refinedOpt() != null ? (Access)refinedOpt().getChild(0) : null;
+
+  syn boolean IntertypeMethodDecl.hasRefined() = refined != null && refined.getNumChild() != 0;
+  public IntertypeMethodDecl IntertypeMethodDecl.setRefined(Opt o) {
+    refined = o;
+    isRefinement = true;
+    return this;
+  }
+  private Opt IntertypeMethodDecl.refined;
+  private boolean IntertypeMethodDecl.isRefinement;
+  syn boolean IntertypeMethodDecl.isRefinement() = isRefinement;
+
+  syn boolean IntertypeMethodDecl.refinesAspect(TypeDecl typeDecl) {
+    if(!isRefinement())
+      return false;
+    MethodDecl m = refinedMethod();
+    if(m == null || !(m instanceof IntertypeMethodDecl))
+      return false;
+    IntertypeMethodDecl decl = (IntertypeMethodDecl)m;
+    if(decl.hostAspect() == typeDecl)
+      return true;
+    return decl.refinesAspect(typeDecl);
+  }
+  eq IntertypeMethodDecl.refinedOpt().nameType() = NameType.TYPE_NAME;
+
+  refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) {
+    if(isRefinement())
+      return false;
+    return IntertypeMethodNameAnalysis.IntertypeMethodDecl.zappedByMethodDecl(m);
+  }
+
+  refine IntertypeMethodNameAnalysis eq MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) =
+    m.isRefinement() || IntertypeMethodNameAnalysis.MethodDecl.zappedByIntertypeMethodDecl(m);
+  refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) =
+    m.refinesAspect(hostAspect()) || IntertypeMethodNameAnalysis.IntertypeMethodDecl.zappedByIntertypeMethodDecl(m);
+
+  syn boolean MethodDecl.refines(MethodDecl m) = false;
+  eq IntertypeMethodDecl.refines(MethodDecl m) =
+    (m instanceof IntertypeMethodDecl && refinesAspect(((IntertypeMethodDecl)m).hostAspect())
+     || isRefinement() && !(m instanceof IntertypeMethodDecl) && !hasRefined());
+
+  private boolean MethodDecl.discard;
+  eq MethodDecl.generate() = !discard;
+  eq IntroducedMethodDecl.generate() = true;
+
+  eq RefinedMethodAccess.name() {
+    BodyDecl b = enclosingBodyDecl();
+    if(b instanceof MethodDecl)
+      return ((MethodDecl)b).getID();
+    return "refined";
+  }
+
+  syn MethodDecl IntertypeMethodDecl.refinedMethod() {
+    if(!isRefinement())
+      return null;
+    if(!hasRefined()) {
+      TypeDecl typeDecl = introducedType();
+      for(int i = 0; i < typeDecl.getNumBodyDecl(); i++) {
+        if(typeDecl.getBodyDecl(i) instanceof MethodDecl) {
+          MethodDecl decl = (MethodDecl)typeDecl.getBodyDecl(i);
+          if(decl.sameSignature(this))
+            return decl;
+        }
+      }
+      return null;
+    }
+    else {
+      TypeDecl typeDecl = refined().type();
+      if(!(typeDecl instanceof AspectDecl))
+        return null;
+      AspectDecl refinedAspect = (AspectDecl)typeDecl;
+      String key = introducedType().fullName() + "." + signature();
+      IntertypeMethodDecl m = (IntertypeMethodDecl)refinedAspect.localIntertypeMethodsSignatureMap().get(key);
+      return m;
+    }
+  }
+
+  syn MethodDecl RefinedMethodAccess.refinedMethod() {
+    BodyDecl b = enclosingBodyDecl();
+    if(!(b instanceof IntertypeMethodDecl))
+      return null;
+    IntertypeMethodDecl r = (IntertypeMethodDecl)b;
+    return r.refinedMethod();
+  }
+
+  // Error checking
+
+  // override behavior in MethodDecl to change the condition for multiply declared
+  refine IntertypeMethodErrorCheck public void IntertypeMethodDecl.nameCheck() {
+      for(Iterator iter = introducedType().methodsSignature(signature()).iterator(); iter.hasNext(); ) {
+        MethodDecl v = (MethodDecl)iter.next();
+        if(v != this && v.accessibleFrom(hostAspect()) && !isAbstract()) {
+          if(v instanceof IntertypeMethodDecl) {
+            IntertypeMethodDecl m = (IntertypeMethodDecl)v;
+            boolean overriddenInSubAspect = m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect();
+            boolean precedence = m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect());
+            boolean refinement = m.refines(this);
+            if(!overriddenInSubAspect && !precedence && !refinement)
+              error("method is multiply declared in type " + hostType().typeName() + " by " + v);
+          }
+          else {
+            error("method is multiply declared in type " + hostType().typeName() + " by " + v);
+          }
+        }
+          //&& (!(v instanceof IntertypeMethodDecl) || (!zaps(v) && !v.zaps(this))))
+          //error("method is multiply declared in type " + hostType().typeName() + " by " + v);
+      }
+
+    // 8.4
+    // 8.4.2
+    //if(!visibleOrZapped())
+    //  error("method with signature " + signature() + " is multiply declared in type " + hostType().typeName());
+    // 8.4.3.4
+    if(isNative() && hasBlock())
+      error("native methods must have an empty semicolon body");
+    // 8.4.5
+    if(isAbstract() && hasBlock())
+      error("abstract methods must have an empty semicolon body");
+    // 8.4.5
+    if(!hasBlock() && !(isNative() || isAbstract()))
+      error("only abstract and native methods may have an empty semicolon body");
+    if(hasBlock() && !introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
+      error("Host of an intertype declaration must be a weavable class");
+
+    if(isRefinement() && refinedMethod() == null && !refined().type().isUnknown())
+      error("Could not find method with signature " + signature() + " in " + refined().type().typeName() + " to refine");
+  }
+
+  public void RefinedMethodAccess.nameCheck() {
+    if(!(enclosingBodyDecl() instanceof IntertypeMethodDecl) || !((IntertypeMethodDecl)enclosingBodyDecl()).isRefinement())
+      error("refined() only valid within refine declarations");
+    else
+      super.nameCheck();
+  }
+
+
+  // Codegeneration
+
+  public void RefinedMethodAccess.generateIntertypeDecls() {
+    MethodDecl method = refinedMethod();
+    String name = method instanceof IntertypeMethodDecl ?
+        ("refined$interMethod$" + ((IntertypeMethodDecl)method).hostAspect().abcMangledName() + "$" + name())
+      : ("refined$method$" + name());
+    MethodDecl m = method.createRefinedMethod(name);
+    List args = new List();
+    args.add(new ThisAccess());
+    for(int i = 0; i < getNumArg(); i++)
+      args.add(getArg(i).boundCopy());
+    replace(this).with(m.createBoundAccess(args));
+  }
+
+  public ASTNode RefinedMethodAccess.boundCopy() {
+    MethodDecl method = refinedMethod();
+    String name = method instanceof IntertypeMethodDecl ?
+        ("refined$interMethod$" + ((IntertypeMethodDecl)method).hostAspect().abcMangledName() + "$" + name())
+      : ("refined$method$" + name());
+    MethodDecl m = method.createRefinedMethod(name);
+    List args = new List();
+    args.add(new ThisAccess());
+    for(int i = 0; i < getNumArg(); i++)
+      args.add(getArg(i).boundCopy());
+    return m.createBoundAccess(args);
+  }
+
+  syn lazy MethodDecl MethodDecl.createRefinedMethod(String name) {
+    Modifiers modifiers = getModifiers().makePublic();
+    if(!isStatic())
+      modifiers.addModifier(new Modifier("static"));
+    
+    // add that for instance methods
+    List parameterList = new List();
+    if(!isStatic())
+    	parameterList.add(new ParameterDeclaration(hostType().createQualifiedAccess(), "this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      parameterList.add(getParameter(i).qualifiedCopy());
+      
+    MethodDecl aspectMethod = new IntroducedMethodDecl(
+      modifiers,
+      type().createQualifiedAccess(),
+      name,
+      parameterList,
+      copyTypeList(getExceptionList()),
+      (Opt)getBlockOpt().boundCopy(),
+      hostType(),
+      this
+    );
+    aspectMethod = hostType().addMemberMethod(aspectMethod);
+    discard = true;
+    return aspectMethod;
+  }
+
+  syn lazy MethodDecl IntertypeMethodDecl.createRefinedMethod(String name) {
+    Modifiers modifiers = getModifiers().makePublic();
+    if(!isStatic())
+      modifiers.addModifier(new Modifier("static"));
+    
+    // add that for instance methods
+    List parameterList = new List();
+    if(!isStatic())
+    	parameterList.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      parameterList.add(getParameter(i).qualifiedCopy());
+      
+    MethodDecl aspectMethod = new IntroducedMethodDecl(
+      modifiers,
+      type().createQualifiedAccess(),
+      name,
+      parameterList,
+      copyTypeList(getExceptionList()),
+      (Opt)getBlockOpt().boundCopy(),
+      introducedType(),
+      this
+    );
+    aspectMethod = hostAspect().addMemberMethod(aspectMethod);
+    return aspectMethod;
+  }
+}

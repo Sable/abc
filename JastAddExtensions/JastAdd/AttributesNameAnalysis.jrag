@@ -1,28 +1,16 @@
 aspect JastAdd {
   
+  syn Modifiers SynEq.getModifiers() = new Modifiers(new List());
+  syn Access SynEq.getTypeAccess() = (decl() != null ? decl().type() : unknownType()).createBoundAccess();
+  syn List SynEq.getExceptionList() = new List();
+  eq SynEq.name() = "eq " + getID();
+
   eq AttributeDecl.isPublic() = true;
 
-/*
-  eq AttributeDecl.getBlock().hostType() = getTargetType().type();
-  eq AttributeDecl.getParameter().hostType() = getTargetType().type();
-*/
-  
-  eq SynEq.getChild().thisType() = getTargetType().type();
   eq InhEq.getChild().thisType() = getTargetType().type();
-/*  
-  eq SynEq.getBlock().hostType() = getTargetType().type();
-  eq SynEq.getParameter().hostType() = getTargetType().type();
-
-  eq InhEq.getBlock().hostType() = getTargetType().type();
-  eq InhEq.getParameter().hostType() = getTargetType().type();
-  eq InhEq.getChildParameter().hostType() = getTargetType().type();
-*/
 
   eq AttributeDecl.getTypeAccess().nameType() = NameType.TYPE_NAME;
   eq AttributeDecl.getTargetType().nameType() = NameType.TYPE_NAME;
-
-  eq SynEq.getTargetType().nameType() = NameType.TYPE_NAME;
-  eq SynEq.getParameter().nameType() = NameType.TYPE_NAME;
 
   eq InhEq.getTargetType().nameType() = NameType.TYPE_NAME;
   eq InhEq.getParameter().nameType() = NameType.TYPE_NAME;
@@ -30,7 +18,7 @@ aspect JastAdd {
 
   inh TypeDecl SynEq.unknownType();
   inh TypeDecl InhEq.unknownType();
-  eq SynEq.getBlock().returnType() = decl() != null ? decl().type() : unknownType();
+
   // TODO: fixme
   eq InhEq.getBlock().returnType() = unknownType();
 
@@ -104,119 +92,22 @@ aspect JastAdd {
     return true;
   }
 
-  syn lazy Map Program.synEquationsMap() {
-    Map map = new HashMap();
-    collectSynEquations(map);
-    return map;
-  }
-  protected void ASTNode.collectSynEquations(Map map) {
-    for(int i = 0; i < getNumChild(); i++)
-      getChild(i).collectSynEquations(map);
-  }
-  protected void SynEq.collectSynEquations(Map map) {
-    if(!map.containsKey(introducedType()))
-      map.put(introducedType(), new ArrayList(1));
-    Collection c = (Collection)map.get(introducedType());
-    c.add(this);
-  }
-  inh Collection ASTDecl.synEquations(ASTDecl decl);
-  eq Program.getCompilationUnit(int i).synEquations(ASTDecl decl) = synEquationsMap().containsKey(decl) ? 
-    (Collection)synEquationsMap().get(decl) : new ArrayList(0);
-  syn lazy Collection ASTDecl.synEquations() = synEquations(this);
-
-  syn boolean ASTDecl.hasEquation(SynDecl decl) {
-    for(Iterator iter = synEquations().iterator(); iter.hasNext(); ) {
-      SynEq equation = (SynEq)iter.next();
-      if(equation.matches(decl))
-        return true;
-    }
-    return false;
-  }
-  syn boolean ASTDecl.hasEquation(SynEq synEq) {
-    for(Iterator iter = synEquations().iterator(); iter.hasNext(); ) {
-      SynEq equation = (SynEq)iter.next();
-      if(equation.matches(synEq))
-        return true;
-    }
-    return false;
-  }
+  syn boolean ASTDecl.hasEquation(SynDecl decl) =
+    methodsSignatureMap().get("eq " + decl.signature()) != null;
 
   public void SynEq.nameCheck() {
     super.nameCheck();
     if(decl() == null)
       error("Can not find declaration for attribute");
   }
-
-  syn boolean SynEq.matches(SynDecl decl) {
-    if(!name().equals(decl.name()) || getNumParameter() != decl.getNumParameter())
-      return false;
-    for(int i = 0; i < getNumParameter(); i++)
-      if(getParameter(i).type() != decl.getParameter(i).type())
-        return false;
-    return true;
-  }
-  syn boolean SynEq.matches(SynEq synEq) {
-    if(!name().equals(synEq.name()) || getNumParameter() != synEq.getNumParameter())
-      return false;
-    for(int i = 0; i < getNumParameter(); i++)
-      if(getParameter(i).type() != synEq.getParameter(i).type())
-        return false;
-    return true;
-  }
-
-
+  
   syn SynDecl SynEq.decl() {
     TypeDecl typeDecl = introducedType();
-    Collection c = typeDecl.memberMethods(name());
-    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
-      MethodDecl m = (MethodDecl)iter.next();
-      if(m instanceof SynDecl) {
-        SynDecl decl = (SynDecl)m;
-        if(matches(decl))
-          return decl;
-      }
-    }
+    MethodDecl m = (MethodDecl)typeDecl.methodsSignatureMap().get(signature().substring(3)); // strip "eq "
+    if(m instanceof SynDecl)
+      return (SynDecl)m;
     return null;
-    /*
-    
-    while(typeDecl != null) {
-      for(Iterator iter = lookupSynDecl(typeDecl, name()).iterator(); iter.hasNext(); ) {
-        SynDecl synDecl = (SynDecl)iter.next();
-        if(this.matches(synDecl))
-          return synDecl;
-      }
-      if(typeDecl instanceof ClassDecl) {
-        ClassDecl classDecl = (ClassDecl)typeDecl;
-        if(classDecl.hasSuperclass())
-          typeDecl = classDecl.superclass();
-        else
-          typeDecl = null;
-      }
-      else
-        typeDecl = null;
-    }
-    return null;
-    */
   }
-  /*
-  eq Program.getCompilationUnit(int i).lookupSynDecl(TypeDecl typeDecl, String name) = null;
-  eq AspectDecl.getBodyDecl(int i).lookupSynDecl(TypeDecl typeDecl, String name) {
-    Collection c = new ArrayList(1);
-    for(Iterator iter = localIntroductionMethods().iterator(); iter.hasNext(); ) {
-      BodyDecl decl = (BodyDecl)iter.next();
-      if(decl instanceof SynDecl) {
-        SynDecl synDecl = (SynDecl)decl;
-        if(synDecl.name().equals(name) && synDecl.introducedType() == typeDecl)
-          c.add(synDecl);
-      }
-    }
-    return c;
-  }
-  inh Collection SynEq.lookupSynDecl(TypeDecl typeDecl, String name);
-  */
-
-  syn TypeDecl SynEq.introducedType() = getTargetType().type();   // type in which this equation is valid
-  syn String SynEq.name() = getID();           // attribute name
   
   syn TypeDecl InhEq.introducedType() = getTargetType().type();   // type in which this equation is valid
   syn String InhEq.name() = getAttributeName();           // attribute name
@@ -226,9 +117,6 @@ aspect JastAdd {
   syn lazy List AttributeDecl.getExceptionList() = new List();
   
   syn lazy Opt InhDecl.getBlockOpt() = new Opt(new Block(new List().add(new ThrowStmt(new NullLiteral()))));
-
-  //syn lazy Opt AspectDecl.getSuperClassAccessOpt() = new Opt(typeObject().createQualifiedAccess());
-  //syn lazy List AspectDecl.getImplementsList() = new List();
 
   syn lazy boolean AttributeDecl.isLazy() = getLazy() || declaredNTA();
 
@@ -242,12 +130,6 @@ aspect JastAdd {
   eq AttributeDecl.getModifiers().mayBeNative() = false;
   eq AttributeDecl.getModifiers().mayBeStrictfp() = false;
 
-  eq SynEq.getParameter().isMethodParameter() = true;
-  eq SynEq.getParameter().isConstructorParameter() = false;
-  eq SynEq.getParameter().isExceptionHandlerParameter() = false;
-  eq SynEq.getBlock().reachable() = true;
-  eq SynEq.getBlock().hostBodyDecl() = this;
-  
   eq InhEq.getParameter().isMethodParameter() = true;
   eq InhEq.getParameter().isConstructorParameter() = false;
   eq InhEq.getParameter().isExceptionHandlerParameter() = false;
@@ -257,22 +139,9 @@ aspect JastAdd {
   eq InhEq.getChildParameter().isConstructorParameter() = false;
   eq InhEq.getChildParameter().isExceptionHandlerParameter() = false;
 
-  eq SynEq.getBlock().lookupVariable(String name) = localLookupVariable(name);
-  eq SynEq.getParameter().lookupVariable(String name) = localLookupVariable(name);
-
   eq InhEq.getBlock().lookupVariable(String name) = localLookupVariable(name);
   eq InhEq.getParameter().lookupVariable(String name) = localLookupVariable(name);
   eq InhEq.getChildParameter().lookupVariable(String name) = localLookupVariable(name);
-
-  syn lazy SimpleSet SynEq.localLookupVariable(String name) {
-    for(int i = 0; i < getNumParameter(); i++)
-      if(getParameter(i) instanceof Variable) {
-        Variable v = (Variable)getParameter(i);
-        if(v.name().equals(name))
-          return SimpleSet.emptySet.add(v);
-      }
-    return lookupVariable(name);
-  }
 
   syn lazy SimpleSet InhEq.localLookupVariable(String name) {
     for(int i = 0; i < getNumChildParameter(); i++)
@@ -298,12 +167,7 @@ aspect JastAdd {
       return c;
     return lookupMethod(name);
   }
-  eq SynEq.getBlock().lookupMethod(String name) {
-    Collection c = introducedType().memberMethods(name);
-    if(!c.isEmpty())
-      return c;
-    return lookupMethod(name);
-  }
+
   eq InhEq.getBlock().lookupMethod(String name) {
     Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())

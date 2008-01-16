@@ -37,6 +37,7 @@ aspect IntertypeMethodCodegeneration {
   // the delegation methods are needed to give the desired semantics for instance methods
   // the IntroducedMethodDecl node type is used to specialize name analysis
   public void IntertypeMethodDecl.createIntertypeMethod(TypeDecl introducedType) {
+    generateIntertypeDecls();
     if(introducedType.isInterfaceDecl() || isAbstract()) {
       boolean found = false;
       for(int i = 0; !found && i < introducedType.getNumBodyDecl(); i++) {
@@ -62,7 +63,7 @@ aspect IntertypeMethodCodegeneration {
 
   public MethodDecl IntertypeMethodDecl.createAbstractMethod() {
     return new MethodDecl(
-      getModifiers().makePublic(),
+      getModifiers().makePublicAbstract(),
       type().createQualifiedAccess(),
       delegateName(),
       copyParameterList(getParameterList()),
@@ -88,7 +89,7 @@ aspect IntertypeMethodCodegeneration {
     MethodDecl aspectMethod = new IntroducedMethodDecl(
       modifiers,
       type().createQualifiedAccess(),
-      "impl$body$" + name(),
+      implBodyName(),
       parameterList,
       copyTypeList(getExceptionList()),
       (Opt)getBlockOpt().boundCopy(),
@@ -405,6 +406,11 @@ aspect IntertypeMethodCodegeneration {
     list.add(new Modifier("public"));
     return new Modifiers(list);
   }
+  public Modifiers Modifiers.makePublicAbstract() {
+    Modifiers m = makePublic();
+    m.addModifier(new Modifier("abstract"));
+    return m;
+  }
 
   
   // Do not generate bytecode for this node type even though it is a subtype of MethodDecl
@@ -493,7 +499,8 @@ aspect IntertypeMethodCodegeneration {
     super.transformation();
 
   }
-
+  
+  syn String IntertypeMethodDecl.implBodyName() = "impl$body$" + name();
   syn String IntertypeMethodDecl.delegateName() {
     if(isPrivate())
       return "abc$interMethod$" + hostAspect().topLevelType().abcMangledName() + "$" + name();

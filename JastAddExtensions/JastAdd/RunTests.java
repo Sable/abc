@@ -28,7 +28,7 @@ public class RunTests {
     // check that test case exists
     if(!new File(testName  + ".java").exists())
       return;
-    
+    try {
 		System.out.println(testName + ".java");
     
     // redirect output stream
@@ -39,7 +39,7 @@ public class RunTests {
 		  System.setOut(ps);
     
     // run JastAdd to build .class files for test case
-		jastadd.JastAdd.main(buildArgs(testName));
+		jastadd.JastAdd.compile(buildArgs(testName));
     
     // load test class in a separate class loader and invoke main method
     String className = testName.replace('/', '.');
@@ -61,6 +61,9 @@ public class RunTests {
 			System.err.println(testName + ".java failed");
 			System.err.println("[" + result + "]" + "\nDoes not equal\n" + "[" + correct + "]");
 		}
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 	}
   
   protected static String[] buildArgs(String testName) {
