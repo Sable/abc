@@ -1,0 +1,27 @@
+/*
+ * The method ASTNode.mayHaveSideEffects(SimpleSet safe) conservatively determines whether
+ * the node in question could contain side effects. Method calls to any method whose name is
+ * not in the set safe are considered as possible side effects. 
+ */
+
+aspect SideEffects {
+	
+	boolean ASTNode.mayHaveSideEffects(SimpleSet safe) {
+		for(int i=0;i<getNumChild();++i)
+			if(getChild(i).mayHaveSideEffects(safe))
+				return true;
+		return false;
+	}
+	
+	boolean ClassInstanceExpr.mayHaveSideEffects(SimpleSet safe) { return true; }
+	boolean ConstructorAccess.mayHaveSideEffects(SimpleSet safe) { return true; }
+	
+	boolean MethodAccess.mayHaveSideEffects(SimpleSet safe) {
+		return !(safe.contains(getID()));
+	}
+	
+	boolean AssignExpr.mayHaveSideEffects(SimpleSet safe) { return true; }
+	boolean PostfixExpr.mayHaveSideEffects(SimpleSet safe) { return true; }
+	boolean PreDecExpr.mayHaveSideEffects(SimpleSet safe) { return true; }
+	boolean PreIncExpr.mayHaveSideEffects(SimpleSet safe) { return true; }
+}

@@ -28,8 +28,8 @@ public class RunEncapsulationTests extends Frontend {
 
     private static void runTests() throws Throwable {
         //try {
-            for(int i=1;i<=11;++i) {
-            	i=11;
+            for(int i=1;i<=19;++i) {
+            	//if(i==11) continue;
                 try {
                     new RunEncapsulationTests().test("test"+i);
                     System.out.println("test "+i+" passed");

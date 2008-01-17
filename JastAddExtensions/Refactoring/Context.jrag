@@ -6,7 +6,7 @@ aspect Context {
 	
 	class Context {
 		private ASTNode tree;   
-		private Stack path;        // path represented as a stack of integers
+		private Stack path;        // path to the hole represented as a stack of integers
 		
 		public Context() {
 			tree = null;
@@ -15,7 +15,7 @@ aspect Context {
 		
 		public ASTNode wrapIn(ASTNode parent, int idx) {
 			if(tree == null) {
-				tree = parent;
+				tree = parent.fullCopy();
 				path = new Stack();
 			} else {
 				ASTNode new_tree = parent.fullCopy();
@@ -46,6 +46,10 @@ aspect Context {
 				clone.path = (Stack)path.clone();
 			}
             return clone;
+		}
+		
+		public ASTNode getTree() {
+			return tree;
 		}
 	}
 	

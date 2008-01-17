@@ -12,9 +12,15 @@ aspect Encapsulate {
 		String ucase_id = capitalize(getID());
 		String getter_name = "get"+ucase_id;
 		String setter_name = "set"+ucase_id;
-		java.util.Set uses = uses();
+		/* we sort the list of uses by position in the syntax tree, with lower nodes
+		 * at the front; this ensures that everything is encapsulated in the right
+		 * order */
+		java.util.List uses = new java.util.ArrayList();
+		uses.addAll(uses());
+		java.util.Collections.sort(uses, new HeightComparator());
 		hostType().addMethod(makeGetter(getter_name, mod), false, false, false);
-		hostType().addMethod(makeSetter(setter_name, mod), false, false, false);
+		if(!isFinal())
+			hostType().addMethod(makeSetter(setter_name, mod), false, false, false);
 		makePrivate();
 		for(Iterator i = uses.iterator(); i.hasNext();) {
 			VarAccess va = (VarAccess)i.next();
@@ -46,7 +52,7 @@ aspect Encapsulate {
 	// adjust a var access to use getter or setter; we need to travel upwards through
 	// the AST to find out whether this access is on the left or right hand side of
 	// an assignment, and what its surrounding context is
-	public void VarAccess.encapsulate(String getter, String setter) {
+	public void VarAccess.encapsulate(String getter, String setter) throws RefactoringException {
 		Context ctxt = new Context();
 		ASTNode ch = this;
 		for(ASTNode p=getParent();p!=null&&p instanceof Expr;ch=p,p=p.getParent()) {
@@ -58,22 +64,30 @@ aspect Encapsulate {
 					List args = new List();	args.add(rhs);
 					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 				} else {
-					/* TODO: this is dangerous; we copy a subtree in which there
-					 *       might be pending adjustments */
 					Context ctxt2 = ctxt.fullCopy();
 					List args = new List();
-					implicit_op.setLeftOperand((Expr)ctxt2.plugIn(new MethodAccess(getter, new List())));
+					Expr dup_lhs = (Expr)ctxt2.plugIn(new MethodAccess(getter, new List()));
+					if(dup_lhs.mayHaveSideEffects(SimpleSet.emptySet.add(getter)))
+						throw new RefactoringException("could lead to duplicate side effects");
+					implicit_op.setLeftOperand(dup_lhs);
 					implicit_op.setRightOperand(rhs);
 					args.add(implicit_op);
 					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
 				}
 			} else if(p instanceof PostDecExpr) {
 				// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
-				encapsulate_postfix(p, ctxt, getter, setter, 
-						new SubExpr(), new AddExpr());
+				// unless it is at toplevel, where we can treat it like --i
+				if(p.getParent() instanceof Expr)
+					encapsulate_postfix(p, ctxt, getter, setter, 
+										new SubExpr(), new AddExpr());
+				else
+					encapsulate_prefix(p, ctxt, getter, setter, new SubExpr());
 			} else if(p instanceof PostIncExpr) {
-				encapsulate_postfix(p, ctxt, getter, setter, 
-						new AddExpr(), new SubExpr());
+				if(p.getParent() instanceof Expr)
+					encapsulate_postfix(p, ctxt, getter, setter, 
+										new AddExpr(), new SubExpr());
+				else
+					encapsulate_prefix(p, ctxt, getter, setter, new AddExpr());
 			} else if(p instanceof PreDecExpr) {
 				// --i becomes setI(getI()-1)
 				encapsulate_prefix(p, ctxt, getter, setter, new SubExpr());
@@ -100,9 +114,12 @@ aspect Encapsulate {
 	 * with 0 has no special significance, we only need it to build the expression
 	 */
 	static void VarAccess.encapsulate_postfix(ASTNode p, 
-			Context ctxt, String getter, String setter, Binary rator, Binary undo) {
+			Context ctxt, String getter, String setter, Binary rator, Binary undo) 
+			throws RefactoringException {
 		List args = new List();
 		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter)))
+			throw new RefactoringException("could lead to duplicate side effects");
 		rator.setLeftOperand((Expr)getacc.fullCopy());
 		rator.setRightOperand(new IntegerLiteral(1));
 		args.add(rator);
@@ -119,9 +136,12 @@ aspect Encapsulate {
 	 * prefixes are easier: ++i becomes setI(getI()+1)
 	 */
 	static void VarAccess.encapsulate_prefix(ASTNode p,
-			Context ctxt, String getter, String setter, Binary rator) {
+			Context ctxt, String getter, String setter, Binary rator) 
+			throws RefactoringException {
 		List args = new List();
 		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter)))
+			throw new RefactoringException("could lead to duplicate side effects");
 		rator.setLeftOperand(getacc);
 		rator.setRightOperand(new IntegerLiteral(1));
 		args.add(rator);

@@ -146,5 +146,29 @@ aspect ASTUtil {
 			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
 		return buf.toString();
 	}
+	
+	public int ASTNode.height() {
+		int ht = -1;
+		for(int i=0;i<getNumChild();++i) {
+			int childht = getChild(i).height();
+			if(childht > ht) ht = childht;
+		}
+		return ht+1;
+	}
+	
+	class HeightComparator implements Comparator {
+		public int compare(Object o1, Object o2) {
+			if(!(o1 instanceof ASTNode && o2 instanceof ASTNode))
+				throw new IllegalArgumentException("cannot compare non-AST nodes for height");
+			int ht1 = ((ASTNode)o1).height();
+			int ht2 = ((ASTNode)o2).height();
+			if(ht1 < ht2) return -1;
+			if(ht1 == ht2) return 0;
+			return 1;
+		}
+		public boolean equals(Object o1, Object o2) {
+			return compare(o1,o2)==0;
+		}
+	}
 
 }

@@ -3,7 +3,7 @@ package changes;
 import AST.Block;
 import AST.Stmt;
 
-public class InsertStmt extends ASTChange {
+public class InsertStmt extends changes.ASTChange {
 	
 	private Block block;
 	private int index;
