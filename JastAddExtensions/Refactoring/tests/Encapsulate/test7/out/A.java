@@ -10,6 +10,9 @@ public class A {
   protected int setI(int i) {
     return this.i = i;
   }
+  protected int preIncI() {
+    return ++i;
+  }
 }
 
 class B extends A {
@@ -21,7 +24,7 @@ class B extends A {
 class C {
   void m() {
     p.B b = new p.B();
-    b.setI(b.getI() + 1);
+    b.preIncI();
   }
   C(){
     super();

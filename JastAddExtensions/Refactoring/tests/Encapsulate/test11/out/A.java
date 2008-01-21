@@ -10,12 +10,15 @@ class A {
   public int setI(int i) {
     return this.i = i;
   }
+  public int assignPlusI(int i) {
+    return this.i += i;
+  }
 }
 
 class B {
   void m() {
     p.A a = new p.A();
-    a.setI(a.getI() + a.getI());
+    a.assignPlusI(a.getI());
   }
   B(){
     super();

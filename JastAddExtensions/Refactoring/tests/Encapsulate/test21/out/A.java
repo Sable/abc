@@ -2,7 +2,7 @@ package p;
 public class A {
   private int i;
   public void m() {
-    setI(getI() + setI(getI() - 1));
+    assignPlusI(preDecI());
   }
   public A(){
     super();
@@ -12,5 +12,11 @@ public class A {
   }
   public int setI(int i) {
     return this.i = i;
+  }
+  public int assignPlusI(int i) {
+    return this.i += i;
+  }
+  public int preDecI() {
+    return --i;
   }
 }

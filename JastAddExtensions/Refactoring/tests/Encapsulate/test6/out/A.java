@@ -10,12 +10,15 @@ public class A {
   public java.lang.String setS(java.lang.String s) {
     return this.s = s;
   }
+  public java.lang.String assignPlusS(java.lang.String s) {
+    return this.s += s;
+  }
 }
 
 class B {
   void m() {
     p.A a = new p.A();
-    a.setS(a.getS() + "foo");
+    a.assignPlusS("foo");
   }
   B(){
     super();

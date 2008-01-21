@@ -140,7 +140,7 @@ aspect ASTUtil {
 	    return relname_tail.substring(0, j);	 		
 	}
 		
-	public static String FieldDeclaration.capitalize(String str) {
+	public static String ASTNode.capitalize(String str) {
 		StringBuffer buf = new StringBuffer(str);
 		if(buf.length() > 0)
 			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));

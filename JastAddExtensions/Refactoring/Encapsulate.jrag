@@ -8,180 +8,89 @@
 aspect Encapsulate {
 
 	public void FieldDeclaration.encapsulate() throws RefactoringException {
-		Modifiers mod = getModifiers();
-		String ucase_id = capitalize(getID());
-		String getter_name = "get"+ucase_id;
-		String setter_name = "set"+ucase_id;
-		MethodDecl getter = makeGetter(getter_name, mod);
-		MethodDecl setter = makeSetter(setter_name, mod);
 		Collection uses = uses();
 		AdjustmentTable table = new AdjustmentTable();
-		hostType().addMethod(getter, false, false, false);
-		if(!isFinal())
-			hostType().addMethod(setter, false, false, false);
+		Accessors accessors = new Accessors(this);
 		makePrivate();
+		RefactoringException rfe;
 		for(Iterator i = uses.iterator(); i.hasNext();) {
 			VarAccess va = (VarAccess)i.next();
-			va.encapsulate(getter, setter, table);
+			rfe = va.encapsulate(va, accessors, table);
+			if(rfe != null)
+				throw rfe;
 		}
 		programRoot().clear();
 		table.adjust();
 	}
 
-	private MethodDecl FieldDeclaration.makeGetter(String getter_name, Modifiers mod) {
-		Block getter_body = new Block();
-		getter_body.addStmt(new ReturnStmt(new VarAccess(getID())));
-		return new MethodDecl((Modifiers)mod.fullCopy(), (Access)getTypeAccess().fullCopy(),
-				getter_name, new List(), new List(), 
-				new List(), new Opt(getter_body));
-	}
+	inh RefactoringException VarAccess.encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table);
 
-	private MethodDecl FieldDeclaration.makeSetter(String setter_name, Modifiers mod) {
-		Access fieldacc = new ThisAccess("this").qualifiesAccess(new VarAccess(getID()));
-		Access parmacc = new VarAccess(getID());
-		Block setter_body = new Block();
-		setter_body.addStmt(new ReturnStmt(new AssignSimpleExpr(fieldacc, parmacc)));
-		ParameterDeclaration pd = new ParameterDeclaration((Access)getTypeAccess().fullCopy(), getID());
-		List parms = new List();
-		parms.add(pd);
-		return new MethodDecl((Modifiers)mod.fullCopy(), (Access)getTypeAccess().fullCopy(),
-				setter_name, parms, new List(), new List(), 
-				new Opt(setter_body));
-	}
-
-	// adjust a var access to use getter or setter; we need to travel upwards through
-	// the AST to find out whether this access is on the left or right hand side of
-	// an assignment, and what its surrounding context is
-	public void VarAccess.encapsulate(MethodDecl getter, MethodDecl setter, AdjustmentTable table) 
-			throws RefactoringException {
-		Context ctxt = new Context();
-		ASTNode ch = this;
-		ASTNode p = getParent();
-		while(p != null && p instanceof Expr) {
-			if(p instanceof ParExpr) {
-				ctxt.wrapIn(p, 0);
-			} else if(p instanceof AbstractDot && ch == ((AbstractDot)p).getRight()) {
-				ctxt.wrapIn(p, 1);
-			} else {
-				break;
-			}
-			ch = p;
-			p = p.getParent();
-		}
-		if(p instanceof AssignExpr && ch == ((AssignExpr)p).getDest()) {
-			Expr rhs = ((AssignExpr)p).getSource();
-			Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
-			// assignments like a += b are rewritten to a = a + b
-			if(implicit_op == null) {
-				List args = new List();	args.add(rhs);
-				Access macc = new MethodAccess(setter.getID(), args);
-				p.replaceWithStripped(ctxt.plugIn(macc));
-				table.add(macc, setter);
-			} else {
-				Context ctxt2 = ctxt.fullCopy();
-				List args = new List();
-				Access gacc = new MethodAccess(getter.getID(), new List());
-				Expr dup_lhs = (Expr)ctxt2.plugIn(gacc);
-				if(dup_lhs.mayHaveSideEffects(SimpleSet.emptySet.add(getter.getID())))
-					throw new RefactoringException("could lead to duplicate side effects");
-				implicit_op.setLeftOperand(dup_lhs);
-				implicit_op.setRightOperand(rhs);
-				args.add(implicit_op);
-				Access sacc = new MethodAccess(setter.getID(), args);
-				p.replaceWithStripped(ctxt.plugIn(sacc));
-				table.add(gacc, getter);
-				table.add(sacc, setter);
-			}
-		} else if(p instanceof PostDecExpr) {
-			// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
-			// unless it is an expression statement, where we can treat it like --i
-			if(p.getParent() instanceof Expr)
-				encapsulate_postfix(p, ctxt, getter, setter, 
-						new SubExpr(), new AddExpr(), table);
-			else
-				encapsulate_prefix(p, ctxt, getter, setter, new SubExpr(), table);
-		} else if(p instanceof PostIncExpr) {
-			if(p.getParent() instanceof Expr)
-				encapsulate_postfix(p, ctxt, getter, setter, 
-						new AddExpr(), new SubExpr(), table);
-			else
-				encapsulate_prefix(p, ctxt, getter, setter, new AddExpr(), table);
-		} else if(p instanceof PreDecExpr) {
-			// --i becomes setI(getI()-1)
-			encapsulate_prefix(p, ctxt, getter, setter, new SubExpr(), table);
-		} else if(p instanceof PreIncExpr) {
-			encapsulate_prefix(p, ctxt, getter, setter, new AddExpr(), table);
-		} else {
-			Access gacc = new MethodAccess(getter.getID(), new List());
-			replaceWithStripped(gacc);
-			table.add(gacc, getter);
+	eq Program.getChild().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
+		try {
+			MethodDecl getter = accessors.accessor("ASTNode");
+			Access nacc = new MethodAccess(getter.getID(), new List());
+			acc.replaceWith(nacc);
+			table.add(nacc, getter);
+			return null;
+		} catch(RefactoringException rfe) {
+			return rfe;
 		}
 	}
 	
-	/* postfix in- and decrements are tricky, since we need to modify the field's
-	 * value and return the _old_ value
-	 * 
-	 * we use a hack here: i++ is rewritten to (++i == 0 ? i-1 : i-1); the comparison
-	 * with 0 has no special significance, we only need it to build the expression
-	 */
-	void VarAccess.encapsulate_postfix(ASTNode p, 
-			Context ctxt, MethodDecl getter, MethodDecl setter, 
-			Binary rator, Binary undo, AdjustmentTable table) 
-			throws RefactoringException {
-		List args = new List();
-		Access gacc = new MethodAccess(getter.getID(), new List());
-		Expr getacc = (Expr)ctxt.fullCopy().plugIn(gacc);
-		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter.getID())))
-			throw new RefactoringException("could lead to duplicate side effects");
-		rator.setLeftOperand((Expr)getacc.fullCopy());
-		rator.setRightOperand(new IntegerLiteral(1));
-		args.add(rator);
-		undo.setLeftOperand((Expr)getacc.fullCopy());
-		undo.setRightOperand(new IntegerLiteral(1));
-		Access sacc = new MethodAccess(setter.getID(), args);
-		Expr setacc = (Expr)ctxt.fullCopy().plugIn(sacc);
-		p.replaceWithStripped(
-				new ParExpr(
-						new ConditionalExpr(new EQExpr(setacc, new IntegerLiteral(0)),
-								(Expr)undo.fullCopy(), (Expr)undo.fullCopy())));
-		table.add(gacc, getter);
-		table.add(sacc, setter);
+	eq AssignExpr.getDest().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
+		try {
+			MethodDecl setter = accessors.accessor(this.getClass().getSimpleName());
+			List args = new List();
+			args.add(getSource());
+			Access nacc = new MethodAccess(setter.getID(), args);
+			acc.replaceWith(nacc);
+			replaceWithStripped(getDest());
+			table.add(nacc, setter);
+			return null;
+		} catch(RefactoringException rfe) {
+			return rfe;
+		}
 	}
 	
-	/*
-	 * prefixes are easier: ++i becomes setI(getI()+1)
-	 */
-	void VarAccess.encapsulate_prefix(ASTNode p,
-			Context ctxt, MethodDecl getter, MethodDecl setter, Binary rator,
-			AdjustmentTable table) 
-			throws RefactoringException {
-		List args = new List();
-		Access gacc = new MethodAccess(getter.getID(), new List());
-		Expr getacc = (Expr)ctxt.fullCopy().plugIn(gacc);
-		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter.getID())))
-			throw new RefactoringException("could lead to duplicate side effects");
-		rator.setLeftOperand(getacc);
-		rator.setRightOperand(new IntegerLiteral(1));
-		args.add(rator);
-		Access sacc = new MethodAccess(setter.getID(), args);
-		p.replaceWithStripped(ctxt.plugIn(sacc));
-		table.add(gacc, getter);
-		table.add(sacc, setter);
+	eq PostfixExpr.getOperand().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
+		try {
+			MethodDecl setter = accessors.accessor(this.getClass().getSimpleName());
+			Access nacc = new MethodAccess(setter.getID(), new List());
+			acc.replaceWith(nacc);
+			replaceWithStripped(getOperand());
+			table.add(nacc, setter);
+			return null;
+		} catch(RefactoringException rfe) {
+			return rfe;
+		}
 	}
-	
-	syn Binary AssignExpr.getImplicitOperator() = null;
-	eq AssignMinusExpr.getImplicitOperator() { return new SubExpr(); }
-	eq AssignPlusExpr.getImplicitOperator() { return new AddExpr(); }
-	eq AssignAndExpr.getImplicitOperator() { return new AndBitwiseExpr(); }
-	eq AssignOrExpr.getImplicitOperator() { return new OrBitwiseExpr(); }
-	eq AssignXorExpr.getImplicitOperator() { return new XorBitwiseExpr(); }
-	eq AssignDivExpr.getImplicitOperator() { return new DivExpr(); }
-	eq AssignModExpr.getImplicitOperator() { return new ModExpr(); }
-	eq AssignMulExpr.getImplicitOperator() { return new MulExpr(); }
-	eq AssignLShiftExpr.getImplicitOperator() { return new LShiftExpr(); }
-	eq AssignRShiftExpr.getImplicitOperator() { return new RShiftExpr(); }
-	eq AssignURShiftExpr.getImplicitOperator() { return new URShiftExpr(); }
-	
+
+	eq PreDecExpr.getOperand().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
+		try {
+			MethodDecl setter = accessors.accessor("PreDecExpr");
+			Access nacc = new MethodAccess(setter.getID(), new List());
+			acc.replaceWith(nacc);
+			replaceWithStripped(getOperand());
+			table.add(nacc, setter);
+			return null;
+		} catch(RefactoringException rfe) {
+			return rfe;
+		}
+	}
+
+	eq PreIncExpr.getOperand().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
+		try {
+			MethodDecl setter = accessors.accessor("PreIncExpr");
+			Access nacc = new MethodAccess(setter.getID(), new List());
+			acc.replaceWith(nacc);
+			replaceWithStripped(getOperand());
+			table.add(nacc, setter);
+			return null;
+		} catch(RefactoringException rfe) {
+			return rfe;
+		}
+	}
+
 	/* [m.replaceWithStripped(n)] replaces node [m] with node [n], but if
 	 * [m]'s parent is an expression statement, then any parentheses surrounding
 	 * [n] are stripped off first (otherwise the result would not be valid Java) */
@@ -190,6 +99,119 @@ aspect Encapsulate {
 			replaceWithStripped(((ParExpr)n).getExpr());
 		else
 			replaceWith(n);
+	}
+	
+	class Accessors {
+		public static final int ACC_GET = 0;
+		public static final int ACC_SET = 1;
+		public static final int ACC_ASSIGN_PLUS = 2;
+		public static final int ACC_ASSIGN_MINUS = 3;
+		public static final int ACC_ASSIGN_AND = 4;
+		public static final int ACC_ASSIGN_OR = 5;
+		public static final int ACC_ASSIGN_XOR = 6;
+		public static final int ACC_ASSIGN_DIV = 7;
+		public static final int ACC_ASSIGN_MOD = 8;
+		public static final int ACC_ASSIGN_MUL = 9;
+		public static final int ACC_ASSIGN_LSHIFT = 10;
+		public static final int ACC_ASSIGN_RSHIFT = 11;
+		public static final int ACC_ASSIGN_URSHIFT = 12;
+		public static final int ACC_POSTINC = 13;
+		public static final int ACC_POSTDEC = 14;
+		public static final int ACC_PREINC = 15;
+		public static final int ACC_PREDEC = 16;
+		private String fieldName;
+		private Access fieldType;
+		private Modifiers fieldMods;
+		private TypeDecl hostType;
+		private Map methods;
+		private SimpleSet used;
+		
+		public Accessors(FieldDeclaration field) throws RefactoringException {
+			this.fieldName = field.getID();
+			this.fieldType = field.getTypeAccess();
+			this.fieldMods = field.getModifiers();
+			this.hostType = field.hostType();
+			methods = new HashMap();
+			used = SimpleSet.emptySet;
+			initMethods();
+			accessor("ASTNode");
+			if(!field.isFinal())
+				accessor("AssignSimpleExpr");
+		}
+		
+		private void initMethods() {
+			methods.put("ASTNode", makeGetter());
+			methods.put("AssignSimpleExpr", makeSetter(new AssignSimpleExpr(), "set"));
+			methods.put("AssignPlusExpr", makeSetter(new AssignPlusExpr(), "assignPlus"));
+			methods.put("AssignMinusExpr", makeSetter(new AssignMinusExpr(), "assignSub"));
+			methods.put("AssignAndExpr", makeSetter(new AssignAndExpr(), "assignAnd"));
+			methods.put("AssignOrExpr", makeSetter(new AssignOrExpr(), "assignOr"));
+			methods.put("AssignXorExpr", makeSetter(new AssignXorExpr(), "assignXor"));
+			methods.put("AssignDivExpr", makeSetter(new AssignDivExpr(), "assignDiv"));
+			methods.put("AssignModExpr", makeSetter(new AssignModExpr(), "assignMod"));
+			methods.put("AssignMulExpr", makeSetter(new AssignMulExpr(), "assignMul"));
+			methods.put("AssignLShiftExpr", makeSetter(new AssignLShiftExpr(), "assignLShift"));
+			methods.put("AssignRShiftExpr", makeSetter(new AssignRShiftExpr(), "assignRShift"));
+			methods.put("AssignURShiftExpr", makeSetter(new AssignURShiftExpr(), "assignURShift"));
+			methods.put("PostIncExpr", makeCrement(new PostIncExpr(), "postInc"));
+			methods.put("PostDecExpr", makeCrement(new PostDecExpr(), "postDec"));
+			methods.put("PreIncExpr", makeCrement(new PreIncExpr(), "preInc"));
+			methods.put("PreDecExpr", makeCrement(new PreDecExpr(), "preDec"));
+		}
+		
+		private MethodDecl makeGetter() {
+			String getter_name = "get"+ASTNode.capitalize(fieldName);
+			Block getter_body = new Block();
+			getter_body.addStmt(new ReturnStmt(new VarAccess(fieldName)));
+			return new MethodDecl((Modifiers)fieldMods.fullCopy(), 
+					(Access)fieldType.fullCopy(),
+					getter_name, new List(), new List(), 
+					new List(), new Opt(getter_body));
+		}
+		
+		private MethodDecl makeSetter(AssignExpr assign, String name_prefix) {
+			String setter_name = name_prefix+ASTNode.capitalize(fieldName);
+			Access fieldacc = 
+				new ThisAccess("this").qualifiesAccess(new VarAccess(fieldName));
+			Access parmacc = new VarAccess(fieldName);
+			Block setter_body = new Block();
+			assign.setDest(fieldacc);
+			assign.setSource(parmacc);
+			setter_body.addStmt(new ReturnStmt(assign));
+			ParameterDeclaration pd = 
+				new ParameterDeclaration((Access)fieldType.fullCopy(), fieldName);
+			List parms = new List();
+			parms.add(pd);
+			return new MethodDecl((Modifiers)fieldMods.fullCopy(), 
+					(Access)fieldType.fullCopy(),
+					setter_name, parms, new List(), new List(), 
+					new Opt(setter_body));
+		}
+		
+		private MethodDecl makeCrement(Expr expr, String name_prefix) {
+			String mname = name_prefix+ASTNode.capitalize(fieldName);
+			Block getter_body = new Block();
+			expr.setChild(new VarAccess(fieldName), 0);
+			getter_body.addStmt(new ReturnStmt(expr));
+			return new MethodDecl((Modifiers)fieldMods.fullCopy(), 
+					(Access)fieldType.fullCopy(),
+					mname, new List(), new List(), 
+					new List(), new Opt(getter_body));
+		}
+		
+		public MethodDecl accessor(String classname) throws RefactoringException {
+			if(used.contains(classname)) {
+				return (MethodDecl)methods.get(classname);
+			} else {
+				used = used.add(classname);
+				MethodDecl md = (MethodDecl)methods.get(classname);
+				if(md == null)
+					throw new RefactoringException("no accessor for "+classname);
+				hostType.addMethod(md, false, false, false);
+				return md;
+			}
+		}
+
 	}
 
 }
