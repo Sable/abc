@@ -28,7 +28,7 @@ public class RunMethodRenameTests extends Frontend {
 
     private static void runTests() throws Throwable {
         //try {
-            for(int i=1;i<=20;++i) {
+            for(int i=1;i<=13;++i) {
                 try {
                     new RunMethodRenameTests().test("test"+i);
                     System.out.println("test "+i+" passed");

@@ -23,8 +23,12 @@ aspect AdjustAccess {
 		}
 		
 		public void add(Access acc) {
+			add(acc, acc.getDecl());
+		}
+		
+		public void add(Access acc, ASTNode target) {
 			if(!adjustments.containsKey(acc))
-				adjustments.put(acc, acc.getDecl());
+				adjustments.put(acc, target);
 			if(acc.getParent() instanceof AbstractDot)
 				add((AbstractDot)acc.getParent());
 			else

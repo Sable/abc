@@ -17,6 +17,11 @@ aspect SideEffects {
 	boolean ConstructorAccess.mayHaveSideEffects(SimpleSet safe) { return true; }
 	
 	boolean MethodAccess.mayHaveSideEffects(SimpleSet safe) {
+		/*System.out.println("method: "+getID());
+		System.out.print("safe: ");
+		for(Iterator i=safe.iterator();i.hasNext();)
+			System.out.print(i.next()+" ");
+		System.out.println("");*/
 		return !(safe.contains(getID()));
 	}
 	
