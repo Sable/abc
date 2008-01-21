@@ -17,22 +17,22 @@ aspect Uses {
 		return ((TypeAccess)qualifier()).decl();
 	}
 		
-	public HashSet Variable.collectedUses() {
+	public Collection Variable.collectedUses() {
 		return uses();
 	}
 	
 	// bind all uses of a variable to its declaration
-	coll HashSet FieldDeclaration.uses() [new HashSet()] with add;
+	coll Collection FieldDeclaration.uses() [new ArrayList()] with add;
 	VarAccess contributes
 	this when decl() instanceof FieldDeclaration
 	to FieldDeclaration.uses() for (FieldDeclaration)decl();
 	
-	coll HashSet VariableDeclaration.uses() [new HashSet()] with add;
+	coll Collection VariableDeclaration.uses() [new ArrayList()] with add;
 	VarAccess contributes
 	this when decl() instanceof VariableDeclaration
 	to VariableDeclaration.uses() for (VariableDeclaration)decl();
 
-	coll HashSet ParameterDeclaration.uses() [new HashSet()] with add;
+	coll Collection ParameterDeclaration.uses() [new ArrayList()] with add;
 	VarAccess contributes
 	this when decl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
@@ -41,11 +41,11 @@ aspect Uses {
 	// since this is in general undecidable, we can either only bind those
 	// uses that definitely refer to the method (attribute definiteUses), or
 	// all uses that possibly might refer to it (attribute uses)
-	coll HashSet MethodDecl.definiteUses() [new HashSet()] with add;
+	coll Collection MethodDecl.definiteUses() [new ArrayList()] with add;
 	MethodAccess contributes
 	this to MethodDecl.definiteUses() for decl();
 	
-	coll HashSet MethodDecl.uses() [new HashSet()] with addAll;
+	coll Collection MethodDecl.uses() [new ArrayList()] with addAll;
 	MethodAccess contributes
 	this.asSet() to MethodDecl.uses() for decl();
 	
@@ -69,7 +69,7 @@ aspect Uses {
 	}
 
 	// bind all uses of a type to its declaration
-	coll HashSet TypeDecl.uses() [new HashSet()] with add;
+	coll Collection TypeDecl.uses() [new ArrayList()] with add;
 	TypeAccess contributes
 	this to TypeDecl.uses() for (TypeDecl)decl();
 	
@@ -86,7 +86,7 @@ aspect Uses {
 	 * the point of making this distinction is that prefix uses can be shadowed by
 	 * variables or types of the same name, while other uses cannot
 	 */
-	coll HashSet PackageDecl.prefixUses() [new HashSet()] with add;
+	coll Collection PackageDecl.prefixUses() [new ArrayList()] with add;
 	PackageAccess contributes this
 	to PackageDecl.prefixUses() for findPackageDecl(name().split("\\.")[0]);
 	TypeAccess contributes this when !packageName().equals("")

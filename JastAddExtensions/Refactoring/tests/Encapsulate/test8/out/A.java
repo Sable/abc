@@ -3,7 +3,7 @@ public class A {
   private int i;
   public void m() {
     java.lang.Object o = new java.lang.Object()final class Anonymous0 extends Object {
-      int k = i;
+      int k = getI();
       public Anonymous0(){
         super();
       }

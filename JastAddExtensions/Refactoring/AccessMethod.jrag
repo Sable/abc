@@ -25,7 +25,9 @@ aspect AccessMethod {
 	eq Program.getChild().accessMethod(MethodDecl md, List args) = null;
 
 	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md, List args) {
-		if(lookupMethod(md.getID()).contains(md)) {
+		Collection lookup_res = getBodyDecl(i).lookupMethod(md.getID());
+		Iterator r = lookup_res.iterator();
+		if(r.hasNext() && r.next() == md && !r.hasNext()) {
 			return new MethodAccess(md.getID(), args);
 		} else if(md.hostType().encloses(hostType())) {
 			// we need an expression of the form A.this.x

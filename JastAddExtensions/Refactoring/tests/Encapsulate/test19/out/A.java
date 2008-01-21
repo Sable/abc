@@ -1,7 +1,7 @@
 package p;
 class A {
   private int i = 3;
-  public int j = i;
+  public int j = getI();
   A(){
     super();
   }

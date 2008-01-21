@@ -12,19 +12,16 @@ aspect Encapsulate {
 		String ucase_id = capitalize(getID());
 		String getter_name = "get"+ucase_id;
 		String setter_name = "set"+ucase_id;
-		/* we sort the list of uses by position in the syntax tree, with lower nodes
-		 * at the front; this ensures that everything is encapsulated in the right
-		 * order */
-		java.util.List uses = new java.util.ArrayList();
-		uses.addAll(uses());
-		java.util.Collections.sort(uses, new HeightComparator());
-		hostType().addMethod(makeGetter(getter_name, mod), false, false, false);
+		MethodDecl getter = makeGetter(getter_name, mod);
+		MethodDecl setter = makeSetter(setter_name, mod);
+		Collection uses = uses();
+		hostType().addMethod(getter, false, false, false);
 		if(!isFinal())
-			hostType().addMethod(makeSetter(setter_name, mod), false, false, false);
+			hostType().addMethod(setter, false, false, false);
 		makePrivate();
 		for(Iterator i = uses.iterator(); i.hasNext();) {
 			VarAccess va = (VarAccess)i.next();
-			va.encapsulate(getter_name, setter_name);
+			va.encapsulate(getter, setter);
 		}
 	}
 
@@ -52,28 +49,36 @@ aspect Encapsulate {
 	// adjust a var access to use getter or setter; we need to travel upwards through
 	// the AST to find out whether this access is on the left or right hand side of
 	// an assignment, and what its surrounding context is
-	public void VarAccess.encapsulate(String getter, String setter) throws RefactoringException {
+	public void VarAccess.encapsulate(MethodDecl getter, MethodDecl setter) 
+			throws RefactoringException {
 		Context ctxt = new Context();
 		ASTNode ch = this;
 		for(ASTNode p=getParent();p!=null&&p instanceof Expr;ch=p,p=p.getParent()) {
-			if(p instanceof AssignExpr) {
+			if(p instanceof AssignExpr && ch == p.getChild(0)) {
 				Expr rhs = ((AssignExpr)p).getSource();
 				Binary implicit_op = ((AssignExpr)p).getImplicitOperator();
 				// assignments like a += b are rewritten to a = a + b
 				if(implicit_op == null) {
 					List args = new List();	args.add(rhs);
-					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
+					Access macc = accessMethod(setter, args);
+					if(macc == null) throw new RefactoringException("cannot access setter method");
+					p.replaceWith(ctxt.plugIn(macc));
 				} else {
 					Context ctxt2 = ctxt.fullCopy();
 					List args = new List();
-					Expr dup_lhs = (Expr)ctxt2.plugIn(new MethodAccess(getter, new List()));
-					if(dup_lhs.mayHaveSideEffects(SimpleSet.emptySet.add(getter)))
+					Access gacc = accessMethod(getter, new List());
+					if(gacc == null) throw new RefactoringException("cannot access getter method");
+					Expr dup_lhs = (Expr)ctxt2.plugIn(gacc);
+					if(dup_lhs.mayHaveSideEffects(SimpleSet.emptySet.add(getter.getID())))
 						throw new RefactoringException("could lead to duplicate side effects");
 					implicit_op.setLeftOperand(dup_lhs);
 					implicit_op.setRightOperand(rhs);
 					args.add(implicit_op);
-					p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
+					Access sacc = accessMethod(setter, args);
+					if(sacc == null) throw new RefactoringException("cannot access setter method");
+					p.replaceWith(ctxt.plugIn(sacc));
 				}
+				return;
 			} else if(p instanceof PostDecExpr) {
 				// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
 				// unless it is at toplevel, where we can treat it like --i
@@ -82,28 +87,30 @@ aspect Encapsulate {
 										new SubExpr(), new AddExpr());
 				else
 					encapsulate_prefix(p, ctxt, getter, setter, new SubExpr());
+				return;
 			} else if(p instanceof PostIncExpr) {
 				if(p.getParent() instanceof Expr)
 					encapsulate_postfix(p, ctxt, getter, setter, 
 										new AddExpr(), new SubExpr());
 				else
 					encapsulate_prefix(p, ctxt, getter, setter, new AddExpr());
+				return;
 			} else if(p instanceof PreDecExpr) {
 				// --i becomes setI(getI()-1)
 				encapsulate_prefix(p, ctxt, getter, setter, new SubExpr());
+				return;
 			} else if(p instanceof PreIncExpr) {
 				encapsulate_prefix(p, ctxt, getter, setter, new AddExpr());
+				return;
 			} else if(p instanceof ParExpr) {
 				ctxt.wrapIn(p, 0);
-				continue;
 			} else if(p instanceof AbstractDot && ch == ((AbstractDot)p).getRight()) {
 				ctxt.wrapIn(p, 1);
-				continue;
-			} else {
-				replaceWith(new MethodAccess(getter, new List()));
-				return;
 			}
 		}
+		Access gacc = accessMethod(getter, new List());
+		if(gacc == null) throw new RefactoringException("cannot access getter method");
+		replaceWith(gacc);
 	}
 	
 	/*
@@ -113,19 +120,23 @@ aspect Encapsulate {
 	 * we use a hack here: i++ is rewritten to (++i == 0 ? i-1 : i-1); the comparison
 	 * with 0 has no special significance, we only need it to build the expression
 	 */
-	static void VarAccess.encapsulate_postfix(ASTNode p, 
-			Context ctxt, String getter, String setter, Binary rator, Binary undo) 
+	void VarAccess.encapsulate_postfix(ASTNode p, 
+			Context ctxt, MethodDecl getter, MethodDecl setter, Binary rator, Binary undo) 
 			throws RefactoringException {
 		List args = new List();
-		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
-		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter)))
+		Access gacc = accessMethod(getter, new List());
+		if(gacc == null) throw new RefactoringException("cannot access getter method");
+		Expr getacc = (Expr)ctxt.fullCopy().plugIn(gacc);
+		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter.getID())))
 			throw new RefactoringException("could lead to duplicate side effects");
 		rator.setLeftOperand((Expr)getacc.fullCopy());
 		rator.setRightOperand(new IntegerLiteral(1));
 		args.add(rator);
 		undo.setLeftOperand((Expr)getacc.fullCopy());
 		undo.setRightOperand(new IntegerLiteral(1));
-		Expr setacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(setter, args));
+		Access sacc = accessMethod(setter, args);
+		if(sacc == null) throw new RefactoringException("cannot access setter method");
+		Expr setacc = (Expr)ctxt.fullCopy().plugIn(sacc);
 		p.replaceWith(
 				new ParExpr(
 						new ConditionalExpr(new EQExpr(setacc, new IntegerLiteral(0)),
@@ -135,17 +146,21 @@ aspect Encapsulate {
 	/*
 	 * prefixes are easier: ++i becomes setI(getI()+1)
 	 */
-	static void VarAccess.encapsulate_prefix(ASTNode p,
-			Context ctxt, String getter, String setter, Binary rator) 
+	void VarAccess.encapsulate_prefix(ASTNode p,
+			Context ctxt, MethodDecl getter, MethodDecl setter, Binary rator) 
 			throws RefactoringException {
 		List args = new List();
-		Expr getacc = (Expr)ctxt.fullCopy().plugIn(new MethodAccess(getter, new List()));
+		Access gacc = accessMethod(getter, new List());
+		if(gacc == null) throw new RefactoringException("cannot access getter method");
+		Expr getacc = (Expr)ctxt.fullCopy().plugIn(gacc);
 		if(getacc.mayHaveSideEffects(SimpleSet.emptySet.add(getter)))
 			throw new RefactoringException("could lead to duplicate side effects");
 		rator.setLeftOperand(getacc);
 		rator.setRightOperand(new IntegerLiteral(1));
 		args.add(rator);
-		p.replaceWith(ctxt.plugIn(new MethodAccess(setter, args)));
+		Access sacc = accessMethod(setter, args);
+		if(sacc == null) throw new RefactoringException("cannot access setter method");
+		p.replaceWith(ctxt.plugIn(sacc));
 	}
 	
 	syn Binary AssignExpr.getImplicitOperator() = null;

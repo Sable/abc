@@ -28,8 +28,8 @@ public class RunEncapsulationTests extends Frontend {
 
     private static void runTests() throws Throwable {
         //try {
-            for(int i=1;i<=19;++i) {
-            	//if(i==11) continue;
+            for(int i=1;i<=20;++i) {
+            	i=7;
                 try {
                     new RunEncapsulationTests().test("test"+i);
                     System.out.println("test "+i+" passed");
@@ -86,6 +86,7 @@ public class RunEncapsulationTests extends Frontend {
                 f.encapsulate();
                 return program;
             } catch(RefactoringException rfe) {
+            	System.out.println("refactoring exception: "+rfe);
                 return null;
             }
         } else {
