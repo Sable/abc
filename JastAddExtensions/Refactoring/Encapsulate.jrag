@@ -94,7 +94,7 @@ aspect Encapsulate {
 			}
 		} else if(p instanceof PostDecExpr) {
 			// i-- becomes (setI(getI()-1) == 0 ? getI()+1 : getI()+1)
-			// unless it is at toplevel, where we can treat it like --i
+			// unless it is an expression statement, where we can treat it like --i
 			if(p.getParent() instanceof Expr)
 				encapsulate_postfix(p, ctxt, getter, setter, 
 						new SubExpr(), new AddExpr(), table);
@@ -118,8 +118,7 @@ aspect Encapsulate {
 		}
 	}
 	
-	/*
-	 * postfix in- and decrements are tricky, since we need to modify the field's
+	/* postfix in- and decrements are tricky, since we need to modify the field's
 	 * value and return the _old_ value
 	 * 
 	 * we use a hack here: i++ is rewritten to (++i == 0 ? i-1 : i-1); the comparison
