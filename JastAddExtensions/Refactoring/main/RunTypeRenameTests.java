@@ -69,12 +69,8 @@ public class RunTypeRenameTests extends Frontend {
                 throw new TestingException("test "+name+" was supposed to fail, but gave "+prog);
             }
         } catch(RefactoringException e) {
-            try {
-                new FileReader(TEST_BASE+"/"+name+"/out");
-                throw new TestingException("test "+name+" was supposed to succeed");
-            } catch(FileNotFoundException fnfe) {
-                // OK
-            }
+            if(new File(TEST_BASE+"/"+name+"/out").exists())
+              throw new TestingException("test "+name+" was supposed to succeed");
         }
     }
     
