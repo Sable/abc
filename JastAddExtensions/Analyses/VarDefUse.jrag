@@ -22,24 +22,23 @@ aspect VarDefUse {
 	
 	syn lazy boolean ASTNode.mayAccess(Variable v) = mayDef(v) || mayUse(v);
 	
-/*	syn boolean Stmt.mustDef(Variable v);
+	syn boolean Stmt.mustDef(Variable v);
 	
 	eq AssertStmt.mustDef(Variable v) {
 		return getfirst().mustDef(v) || (hasExpr() && getExpr().mustDef(v));
 	}
 
-	// TODO: not quite accurate
-	eq Block.mustDef(Variable v) {
-		return v.mustDefBetween(getStmt(0), getStmt(getNumStmt()-1));
-	}
+	// this is way too conservative!
+	// but to make this precise, we'd need to duplicate much of the control
+	// flow analysis from the DefiniteAssignment aspect...
+	eq Block.mustDef(Variable v) = false;
 	
 	eq DoStmt.mustDef(Variable v) {
 		return getStmt().mustDef(v) || getCondition().mustDef(v);
 	}
 	
 	eq ForStmt.mustDef(Variable v) {
-		int i;
-		for(i=0;i<getNumInitStmt();++i)
+		for(int i=0;i<getNumInitStmt();++i)
 			if(getInitStmt(i).mustDef(v)) return true;
 		return hasCondition() && getCondition().mustDef(v);
 	}
@@ -70,22 +69,17 @@ aspect VarDefUse {
 	
 	eq ThrowStmt.mustDef(Variable v) = getExpr().mustDef(v);
 	
-	// TODO: not quite accurate
 	eq TryStmt.mustDef(Variable v) {
 		Block blk = getBlock();
-		if(blk.getNumStmt() == 0)
-			return false;
-		return v.mustDefBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+		return blk.mustDef(v);
 	}
 	
 	// we do not need to worry about these, as they will be rewritten into
 	// VariableDeclarations anyway
 	eq VarDeclStmt.mustDef(Variable v) = false;
 	
-	// TODO: unimplemented
-	eq LocalClassDeclStmt.mustDef(Variable v) {
-		throw new UnsupportedOperationException("not implemented");
-	}
+	// again, very conservative
+	eq LocalClassDeclStmt.mustDef(Variable v) = false;
 	
 	eq VariableDeclaration.mustDef(Variable v) {
 		return hasInit() && (this == v || getInit().mustDef(v));
@@ -97,7 +91,7 @@ aspect VarDefUse {
 	eq VarAccess.mustDef(Variable v) = decl() == v && isDest();
 	eq AbstractDot.mustDef(Variable v) = getLeft().mustDef(v) || getRight().mustDef(v);
 	// TODO: unimplemented
-	eq ClassInstanceExpr.mustDef(Variable v) = true;
+	eq ClassInstanceExpr.mustDef(Variable v) = false;
 	
 	eq ConstructorAccess.mustDef(Variable v) {
 		for(int i=0;i<getNumArg();++i)
@@ -141,7 +135,7 @@ aspect VarDefUse {
 	
 	eq Unary.mustDef(Variable v) = getOperand().mustDef(v);
 
-	syn lazy boolean Variable.mayDefBetween(Stmt begin, Stmt end) {
+	/*syn lazy boolean Variable.mayDefBetween(Stmt begin, Stmt end) {
 		if(begin.mayDef(this)) return true;
 		if(begin == end) return false;
 		for(Iterator i=begin.succ().iterator();i.hasNext();)

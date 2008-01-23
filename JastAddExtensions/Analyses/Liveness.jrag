@@ -8,7 +8,7 @@ aspect Liveness {
 	
 	syn lazy boolean Variable.isLiveBetween(Stmt begin, Stmt end) circular [false] {
 		if(begin.mayUse(this)) return true;
-		if(begin.mayDef(this)) return false;
+		if(begin.mustDef(this)) return false;
 		if(begin == end) return false;
 		for(Iterator i=begin.gsucc(begin, end).iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
