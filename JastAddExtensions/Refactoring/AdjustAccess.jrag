@@ -84,7 +84,8 @@ aspect AdjustAccess {
 		ASTNode target = table.getTarget(this);
 		if(target == null) return;
 		Access newacc;
-        FileRange pos = new FileRange(getStart(), getEnd());
+        FileRange pos = new FileRange(compilationUnit().relativeName(),
+        							  getStart(), getEnd());
 		if(target instanceof VariableDeclaration) {
 			if(((VarAccess)this).decl() != target) {
 				newacc = this.accessLocalVariable((VariableDeclaration)target);

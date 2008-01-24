@@ -3,10 +3,12 @@ package main;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import tests.TestHelper;
 import AST.ASTNode;
 import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.FieldDeclaration;
+import AST.FileRange;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.Program;
@@ -39,8 +41,6 @@ public class RenameFieldTest extends Frontend {
 		String[] filenames = new String[args.length-3];
 		System.arraycopy(args, 3, filenames, 0, filenames.length);
 		try {
-			//System.out.println("rename("+classname+", "+fieldname+", "+newname+", {"+filenames[0]+"})");
-
 			rename(classname, fieldname, newname, filenames);
 		} catch(RefactoringException e) {
 			System.err.println("Cannot refactor: "+e.getMessage());
@@ -48,32 +48,6 @@ public class RenameFieldTest extends Frontend {
 		return true;
 	}
 	
-	public static void tst() throws RefactoringException {
-		RenameFieldTest c = new RenameFieldTest();
-		String[] filenames = { "test/Tmp.java" };
-		if(!c.process(filenames, new BytecodeParser(), 
-				new JavaParser() {
-			public CompilationUnit parse(java.io.InputStream is, String fileName) throws java.io.IOException, beaver.Parser.Exception {
-				return new parser.JavaParser().parse(is, fileName);
-			}
-		}
-		))
-			throw new RefactoringException("couldn't process input files");
-		Program program = c.program;
-        if(1 == 1) {
-            System.out.println(program);
-            return;
-        }
-        ASTNode n = RunAccessTests.findSmallestCoveringNode(program, filenames[0], new FileRange(59, 17, 59, 21));
-        if(!(n instanceof FieldDeclaration))
-            throw new RefactoringException("nothing there except "+n);
-		try {
-			((FieldDeclaration)n).rename("u");
-		} catch(RefactoringException e) {
-			System.err.println("Cannot refactor: "+e.getMessage());
-		}
-	}
-
 	public static void rename(String classname, String fieldname, String newname, String[] filenames) 
 			throws RefactoringException {
 		RenameFieldTest c = new RenameFieldTest();

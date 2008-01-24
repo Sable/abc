@@ -36,6 +36,7 @@ public class RunExtractionTests extends Frontend {
 	}
     
     private static void runTests(int start) throws Throwable {
+    	//start=24;
         for(int i=start;;++i) {
             try {
                 new RunExtractionTests().test("test"+i);

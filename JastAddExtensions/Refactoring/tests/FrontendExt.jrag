@@ -1,0 +1,11 @@
+/*
+ * in order for easier testing, we add a getProgram() method to class Frontend
+ */
+
+aspect FrontendExt {
+	
+	public Program Frontend.getProgram() {
+		return program;
+	}
+	
+}

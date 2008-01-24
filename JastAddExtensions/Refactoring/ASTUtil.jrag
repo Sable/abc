@@ -13,8 +13,12 @@ aspect ASTUtil {
 	inh Program ASTNode.programRoot();
 	
 	// provide access to the enclosing compilation unit
-	eq CompilationUnit.getChild().compilationUnit() = this;
-	inh CompilationUnit TypeDecl.compilationUnit();
+	public CompilationUnit ASTNode.compilationUnit() {
+		ASTNode p;
+		for(p=this; p!=null&&!(p instanceof CompilationUnit); p=p.getParent());
+		if(p == null) return null;
+		return (CompilationUnit)p;
+	}
 	
 	inh SimpleSet ParameterDeclaration.lookupType(String name);
 	
@@ -125,6 +129,12 @@ aspect ASTUtil {
 	
 	public boolean ASTNode.inside(ASTNode n) {
 		return indexIn(n) != -1;
+	}
+	
+	public boolean ASTNode.contains(ASTNode n) {
+		while(n!=null && n!=this)
+			n = n.getParent();
+		return n==this;
 	}
 	
 	public boolean Opt.isEmpty() {

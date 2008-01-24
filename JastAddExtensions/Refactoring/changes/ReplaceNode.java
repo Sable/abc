@@ -1,7 +1,7 @@
 package changes;
 
-import main.FileRange;
 import AST.ASTNode;
+import AST.FileRange;
 
 public class ReplaceNode extends ASTChange {
     
@@ -16,7 +16,8 @@ public class ReplaceNode extends ASTChange {
     }
 
     public String prettyprint() {
-        FileRange pos = new FileRange(before.getStart(), before.getEnd());
+        FileRange pos = new FileRange(before.compilationUnit().relativeName(),
+        							  before.getStart(), before.getEnd());
         return "at "+pos+", replace node "+before.dumpTree()+" with "+after.dumpTree();
     }
     

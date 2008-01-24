@@ -4,6 +4,7 @@ package main;
  * Runs the test cases for accessPackage(), accessType(), and accessField().
  */
 
+import tests.FileRange;
 import AST.ASTNode;
 import AST.Access;
 import AST.Block;
@@ -225,41 +226,6 @@ public class RunAccessTests extends Frontend {
                     new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new Dot(new TypeAccess("Test"), new ThisAccess("this")))),
                             new VarAccess("bar")),
                     "Access/test38/Test.java");
-/*            // Test 39
-            testFieldAccess(new FileRange(12, 5, 12, 19), new FileRange(16, 27, 16, 39),
-                    new TypeAccess("Test").qualifiesAccess(new ThisAccess("this").qualifiesAccess(new VarAccess("bar"))),
-                    "Access/test39/Test.java");
-            // Test 40
-            testFieldAccess(new FileRange(11, 5, 11, 19), new FileRange(14, 24, 14, 26),
-                    new VarAccess("bar"),
-                    "Access/test40/Test.java");
-            // Test 41
-            testFieldAccess(new FileRange(12, 5, 12, 19), new FileRange(16, 24, 16, 36),
-                    new TypeAccess("Test").qualifiesAccess(new ThisAccess("this").qualifiesAccess(new VarAccess("bar"))),
-                    "Access/test41/Test.java");
-            // Test 42
-            testFieldAccess(new FileRange(12, 5, 12, 19), new FileRange(16, 24, 16, 36),
-                    new TypeAccess("Test").qualifiesAccess(new ThisAccess("this").qualifiesAccess(new VarAccess("bar"))),
-                    "Access/test42/Test.java");
-            // Test 47
-            // works, but not optimal
-            testFieldAccess(new FileRange(26, 9, 26, 13), new FileRange(70, 53, 70, 53),
-                    /* this is what it should be:
-                    new Dot(new ParExpr(new CastExpr(new TypeAccess("A"),
-                            new Dot(new TypeAccess("C"), new ThisAccess("this")))),
-                            new VarAccess("i"))
-                    /* this is what we get
-                    new Dot(new ParExpr(new CastExpr(new Dot(new TypeAccess("TestSrc"),
-                                                             new TypeAccess("A")),
-                                                     new Dot(new TypeAccess("TestSrc"),
-                                                      new Dot(new TypeAccess("C"),
-                                                        new Dot(new TypeAccess("aa"),
-                                                                new ThisAccess("this")))))),
-                            new VarAccess("i")),
-                    "test/TestSrc.java");
-            // Test 48
-            testFieldAccess(new FileRange(13, 22, 13, 33), new FileRange(16, 17, 16, 18),
-                    null, "Access/test48/Test.java");*/
             // done
             System.out.println("All field access tests passed.");
         } catch(TestingException e) {
