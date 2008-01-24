@@ -1,14 +1,15 @@
 aspect Domination {
 	
-	// returns true if every path from this statement to goal passes through halfway
-	syn lazy boolean Stmt.dominates(Stmt halfway, Stmt goal) circular [true] {
-		if(this == halfway)
+	// returns true if every path from this statement to goal 
+	// that remains within host passes through halfway
+	syn lazy boolean Stmt.dominates(Block host, Stmt halfway, Stmt goal) circular [true] {
+		if(halfway.contains(this))
 			return true;
-		if(this == goal)
+		if(goal.contains(this))
 			return false;
-		for(Iterator i=gsucc(hostBlock()).iterator();i.hasNext();) {
+		for(Iterator i=gsucc(host).iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
-			if(!next.dominates(halfway, goal))
+			if(!next.dominates(host, halfway, goal))
 				return false;
 		}
 		return true;
@@ -18,31 +19,35 @@ aspect Domination {
 		Block host = hostBlock();
 		if(host == null) return false;
 		// the first() set is always a singleton, but we don't rely on this
-		for(Iterator i=host.first().iterator();i.hasNext();)
-			if(!((Stmt)i.next()).dominates(this, goal))
+		for(Iterator i=host.first().iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(!next.dominates(host, this, goal))
 				return false;
+		}
 		return true;
 	}
 	
 	syn lazy boolean Stmt.post_dominates(Stmt origin) {
 		Block host = hostBlock();
 		if(host == null) return false;
-		if(host.getNumStmt() == 0) return false;  // shouldn't happen!
-		for(Iterator i=host.exitsAfter(host.getStmt(0)).iterator();i.hasNext();)
-			if(!origin.dominates(this, (Stmt)i.next()))
+		for(Iterator i=host.exitsAfter(host.getStmt(0)).iterator();i.hasNext();) {
+			Stmt next = (Stmt)i.next();
+			if(!origin.dominates(host, this, next))
 				return false;
+		}
 		return true;
 	}
 	
 	// the exits of a block after a statement are all reachable statements with a
-	// gsucc() outside the block
+	// gsucc() outside the block (i.e., throw statements don't count)
 	syn lazy Set Block.exitsAfter(Stmt stmt) circular [Set.empty()] {
 		Set set = Set.empty();
 		for(Iterator i=stmt.gsucc(this).iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
-			if(!next.between(this, -1, Integer.MAX_VALUE))
+			if(!this.contains(next))
 				set = set.union(stmt);
-			set = set.union(exitsAfter(next));
+			else
+			    set = set.union(exitsAfter(next));
 		}
 		return set;
 	}

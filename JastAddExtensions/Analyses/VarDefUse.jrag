@@ -135,20 +135,4 @@ aspect VarDefUse {
 	
 	eq Unary.mustDef(Variable v) = getOperand().mustDef(v);
 
-	/*syn lazy boolean Variable.mayDefBetween(Stmt begin, Stmt end) {
-		if(begin.mayDef(this)) return true;
-		if(begin == end) return false;
-		for(Iterator i=begin.succ().iterator();i.hasNext();)
-			if(mayDefBetween((Stmt)i.next(), end)) return true;
-		return false;
-	}
-
-	syn lazy boolean Variable.mustDefBetween(Stmt begin, Stmt end) {
-		if(begin.mustDef(this)) return true;
-		if(begin == end) return false;
-		for(Iterator i=begin.succ().iterator();i.hasNext();)
-			if(mayDefBetween((Stmt)i.next(), end)) return true;
-		return false;
-	}*/
-	
 }

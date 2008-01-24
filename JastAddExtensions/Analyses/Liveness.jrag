@@ -3,16 +3,17 @@ aspect Liveness {
 	public boolean Variable.isLiveIn(Block blk) {
 		if(blk.getNumStmt() == 0)
 			return false;
-		return isLiveBetween(blk.getStmt(0), blk.getStmt(blk.getNumStmt()-1));
+		return isLiveAfterIn(blk.getStmt(0), blk);
 	}
 	
-	syn lazy boolean Variable.isLiveBetween(Stmt begin, Stmt end) circular [false] {
-		if(begin.mayUse(this)) return true;
-		if(begin.mustDef(this)) return false;
-		if(begin == end) return false;
-		for(Iterator i=begin.gsucc(begin, end).iterator();i.hasNext();) {
+	syn lazy boolean Variable.isLiveAfterIn(Stmt stmt, Block blk) circular [false] {
+		if(stmt.mayUse(this)) return true;
+		if(stmt.mustDef(this)) return false;
+		for(Iterator i=stmt.gsucc(blk).iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
-			if(isLiveBetween(next, end))
+			if(!next.between(blk, -1, Integer.MAX_VALUE))
+				continue;
+			if(isLiveAfterIn(next, blk))
 				return true;
 		}
 		return false;
@@ -34,22 +35,13 @@ aspect Liveness {
 		if(stmt.mayUse(this)) return true;
 		if(stmt.mayDef(this)) return false;
 		Block host = stmt.hostBlock();
-		for(Iterator i=stmt.succ().iterator();i.hasNext();) {
+		for(Iterator i=stmt.gsucc(host).iterator();i.hasNext();) {
 			Stmt next = (Stmt)i.next();
 			if(!next.between(host, -1, Integer.MAX_VALUE))
 				continue;
 			if(isLiveAtOrAfter(next))
 				return true;
 		}
-		return false;
-	}
-	
-	syn lazy boolean LocalDeclaration.mayDefBetween(Stmt begin, Stmt end) circular [false] {
-		if(begin.mayDef(this)) return true;
-		if(begin == end) return false;
-		for(Iterator i=begin.gsucc(begin, end).iterator();i.hasNext();)
-			if(mayDefBetween((Stmt)i.next(), end))
-				return true;
 		return false;
 	}
 	
