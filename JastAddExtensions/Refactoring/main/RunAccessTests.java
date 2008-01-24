@@ -223,8 +223,7 @@ public class RunAccessTests extends Frontend {
                     "Access/test37/Test.java");
             // Test 38
             testFieldAccess(new FileRange(12, 5, 12, 12), new FileRange(19, 24, 19, 41),
-                    new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new Dot(new TypeAccess("Test"), new ThisAccess("this")))),
-                            new VarAccess("bar")),
+                    new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new Dot(new TypeAccess("Test"), new ThisAccess("this")))), new VarAccess("bar")),
                     "Access/test38/Test.java");
             // done
             System.out.println("All field access tests passed.");

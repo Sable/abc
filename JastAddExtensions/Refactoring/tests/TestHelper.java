@@ -11,7 +11,7 @@ import AST.Program;
 
 public class TestHelper {
 	
-	static Program compile(String filename) {
+	static Program compile(String... files) {
 		Frontend f = new Frontend() { };
 		BytecodeReader br = new BytecodeParser();
 		JavaParser jp = new JavaParser() {
@@ -20,7 +20,6 @@ public class TestHelper {
                 return new parser.JavaParser().parse(is, fileName);
             }
 		};
-		String[] files = { filename };
 		if(f.process(files, br, jp))
 			return f.getProgram();
 		return null;

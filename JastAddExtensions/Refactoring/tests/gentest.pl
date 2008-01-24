@@ -1,33 +1,9 @@
 #!/usr/bin/perl
 
-# Example Usage:
-#
-#   gentest AccessPackageHiddenByClass Access.test3 Access/test3/Test.java 11 5 11 20 null
-#
-# This generates a package access test which tries to access package
-# Access.test3 from the AST node located at positions (11,5)-(11,20) in file
-# Access/test3/Test.java, expecting a null result.
-
-$testname = $ARGV[0];
-open(TESTCLASS, ">$testname.java") or die "couldn't open java file\n";
-print TESTCLASS <<EOT;
-package tests;
-
-import AST.FileRange;
-
-public class $testname extends AccessPackage {
-
-	public $testname(String arg0) {
-		super(arg0);
-	}
-	
-	public void testPackageAccess() {
-		runPackageAccessTest("$ARGV[1]", 
-				new FileRange("$ARGV[2]", $ARGV[3], $ARGV[4], $ARGV[5], $ARGV[6]),
-				$ARGV[7]);
-	}
-
+sub emitTest {
+    print "runFieldAccessTest(new FileRange(\"$_[0]\", $_[1], $_[2], $_[3], $_[4]), new FileRange(\"$_[5]\", $_[6], $_[7], $_[8], $_[9]), new $_[10]);\n";
 }
-EOT
 
-close(TESTCLASS);
+$_ = join('', <STDIN>);
+s/testLocalVariableAccess\(new FileRange\((\d+), (\d+), (\d+), (\d+)\), new FileRange\((\d+), (\d+), (\d+), (\d+)\),\s* new (.*?),\s*"([^"]*)"\);/emitTest($10, $1, $2, $3, $4, $10, $5, $6, $7, $8, $9)/eg;s/testLocalVariableAccess\(new FileRange\((\d+), (\d+), (\d+), (\d+)\), new FileRange\((\d+), (\d+), (\d+), (\d+)\),\s* null(.*?),\s*"([^"]*)"\);/emitTest($10, $1, $2, $3, $4, $10, $5, $6, $7, $8, $9)/eg;
+
