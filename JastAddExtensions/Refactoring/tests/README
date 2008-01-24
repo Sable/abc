@@ -1,0 +1,24 @@
+About the Tests:
+================
+
+The tests are slowly being converted to JUnit tests. If you want to run a test, go to subdirectory 'data' and execute
+
+  java -cp ../..:../../tools/junit.jar junit.textui.TestRunner tests.<TestName>
+
+where TestName is one of the following (alternatively, just say 'runtest.sh <TestName>' in this directory):
+
+- AccessPackageTests: test aspect AccessPackage
+- AccessTypeTests: test aspect AccessType
+- AccessFieldTests: test aspect AccessField
+- AccessTests: all of the above three
+- RenameFieldTests: TBD (currently available through main.RunFieldRenameTests)
+- RenameMethodTests: TBD (currently available through main.RunMethodRenameTests)
+- RenameTypeTests: TBD (currently available through main.RunTypeRenameTests)
+- RenameTests: TBD
+- EncapsulationTests: TBD (currently available through main.RunEncapsulationTests)
+- ExtractionTests: TBD (currently available through main.RunExtractionTests)
+- AllTests: all of the above
+
+NOTE: At the moment, only the AccessPackage tests are implemented in the
+      recommended one-class-per-testcase style. For the other tests, all
+      test cases are lumped together into one big test.
