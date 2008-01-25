@@ -5,7 +5,6 @@ import AST.ASTNode;
 import AST.Access;
 import AST.Block;
 import AST.Expr;
-import AST.FieldDecl;
 import AST.FieldDeclaration;
 import AST.FileRange;
 import AST.List;
