@@ -31,6 +31,7 @@
 	    <include name ="beaver/**/*.java"/>
 	    <include name ="changes/**/*.java"/>
 	    <include name ="main/**/*.java"/>
+	    <include name ="tests/*.java"/>
 	  </javac>
 </target>
 	
