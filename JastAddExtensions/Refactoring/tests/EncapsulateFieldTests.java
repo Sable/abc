@@ -1,13 +1,5 @@
 package tests;
 
-import AST.CastExpr;
-import AST.Dot;
-import AST.FileRange;
-import AST.ParExpr;
-import AST.SuperAccess;
-import AST.ThisAccess;
-import AST.TypeAccess;
-import AST.VarAccess;
 
 public class EncapsulateFieldTests extends EncapsulateField {
 

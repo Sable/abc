@@ -9,6 +9,8 @@ public class AllTests {
 		TestSuite suite = new TestSuite();
 		suite.addTest(AccessTests.suite());
 		suite.addTest(new EncapsulateFieldTests("testEncapsulateField"));
+		suite.addTest(new ExtractMethodTests("testExtractMethod"));
+		suite.addTest(RenameTests.suite());
 		return suite;
 	}
 }

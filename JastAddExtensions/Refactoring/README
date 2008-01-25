@@ -56,8 +56,6 @@ changes/	   abstract representations of AST changes, plus a class
 		   when a refactoring discovers that it cannot succeed
 main/		   some command line tools for testing out refactorings
 		   (EncapsulateTest, ParameterRenameTest, RenameFieldTest)
-		   and some test harnesses (Run*.java), which are now being
-		   phased out and replaced with unit tests
 tests/		   JUnit tests for different parts of the code; see tests/README
 		   for details
 tools/		   we need junit.jar

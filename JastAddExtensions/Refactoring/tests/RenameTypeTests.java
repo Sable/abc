@@ -1,0 +1,90 @@
+package tests;
+
+
+public class RenameTypeTests extends RenameType {
+
+	public RenameTypeTests(String arg0) {
+		super(arg0);
+	}
+
+	public void testRenameType() {
+		runTypeRenameTest("test0");
+		runTypeRenameTest("test1");
+		runTypeRenameTest("test2");
+		runTypeRenameTest("test3");
+		runTypeRenameTest("test4");
+		runTypeRenameTest("test5");
+		runTypeRenameTest("test6");
+		runTypeRenameTest("test7");
+		runTypeRenameTest("test8");
+		runTypeRenameTest("test9");
+		runTypeRenameTest("test10");
+		runTypeRenameTest("test11");
+		runTypeRenameTest("test12");
+		runTypeRenameTest("test13");
+		runTypeRenameTest("test14");
+		runTypeRenameTest("test15");
+		runTypeRenameTest("test16");
+		runTypeRenameTest("test17");
+		runTypeRenameTest("test18");
+		runTypeRenameTest("test19");
+		runTypeRenameTest("test20");
+		runTypeRenameTest("test22");
+		runTypeRenameTest("test23");
+		runTypeRenameTest("test24");
+		runTypeRenameTest("test25");
+		runTypeRenameTest("test26");
+		runTypeRenameTest("test27");
+		runTypeRenameTest("test28");
+		runTypeRenameTest("test29");
+		runTypeRenameTest("test30");
+		runTypeRenameTest("test31");
+		runTypeRenameTest("test32");
+		runTypeRenameTest("test33");
+		runTypeRenameTest("test34");
+		runTypeRenameTest("test35");
+		runTypeRenameTest("test36");
+		runTypeRenameTest("test37");
+		runTypeRenameTest("test38");
+		runTypeRenameTest("test39");
+		runTypeRenameTest("test40");
+		runTypeRenameTest("test41");
+		runTypeRenameTest("test42");
+		runTypeRenameTest("test43");
+		runTypeRenameTest("test44");
+		runTypeRenameTest("test45");
+		runTypeRenameTest("test46");
+		runTypeRenameTest("test47");
+		runTypeRenameTest("test48");
+		runTypeRenameTest("test49");
+		runTypeRenameTest("test50");
+		runTypeRenameTest("test51");
+		runTypeRenameTest("test52");
+		runTypeRenameTest("test53");
+		runTypeRenameTest("test54");
+		runTypeRenameTest("test55");
+		runTypeRenameTest("test56");
+		runTypeRenameTest("test57");
+		runTypeRenameTest("test58");
+		runTypeRenameTest("test59");
+		runTypeRenameTest("test60");
+		runTypeRenameTest("test61");
+		runTypeRenameTest("test66");
+		runTypeRenameTest("test67");
+		runTypeRenameTest("test68");
+		runTypeRenameTest("test69");
+		runTypeRenameTest("test71");
+		runTypeRenameTest("test72");
+		runTypeRenameTest("test73");
+		runTypeRenameTest("test74");
+		runTypeRenameTest("test75");
+		runTypeRenameTest("test76");
+		runTypeRenameTest("test77");
+		runTypeRenameTest("test78");
+		runTypeRenameTest("test82");
+		runTypeRenameTest("test83");
+		runTypeRenameTest("test84");
+		runTypeRenameTest("test85");
+		runTypeRenameTest("test87");
+	}
+}

@@ -11,12 +11,12 @@ where TestName is one of the following (alternatively, just say 'runtest.sh <Tes
 - AccessTypeTests: test aspect AccessType
 - AccessFieldTests: test aspect AccessField
 - AccessTests: all of the above three
-- RenameFieldTests: TBD (currently available through main.RunFieldRenameTests)
-- RenameMethodTests: TBD (currently available through main.RunMethodRenameTests)
-- RenameTypeTests: TBD (currently available through main.RunTypeRenameTests)
-- RenameTests: TBD
-- EncapsulationTests: TBD (currently available through main.RunEncapsulationTests)
-- ExtractionTests: TBD (currently available through main.RunExtractionTests)
+- RenameFieldTests: test aspect RenameField
+- RenameMethodTests: test aspect RenameMethod
+- RenameTypeTests: test aspect RenameType
+- RenameTests: all of the above three
+- EncapsulationTests: test field encapsulation
+- ExtractionTests: test method extraction
 - AllTests: all of the above
 
 NOTE: At the moment, only the AccessPackage tests are implemented in the
