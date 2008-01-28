@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-import AST.FieldDeclaration;
 import AST.MethodDecl;
 import AST.Program;
 import AST.TypeDecl;

@@ -7,11 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-import main.TestingException;
-
 import junit.framework.TestCase;
 import AST.CompilationUnit;
-import AST.FieldDeclaration;
 import AST.Program;
 import AST.TypeDecl;
 import changes.RefactoringException;

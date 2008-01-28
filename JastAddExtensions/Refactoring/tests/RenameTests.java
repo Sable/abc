@@ -7,9 +7,9 @@ public class RenameTests {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
-		suite.addTest(new RenameFieldTests("testRenameField"));
-		suite.addTest(new RenameMethodTests("testRenameMethod"));
-		suite.addTest(new RenameTypeTests("testRenameType"));
+		suite.addTest(RenameFieldTests.suite());
+		suite.addTest(RenameMethodTests.suite());
+		suite.addTest(RenameTypeTests.suite());
 		return suite;
 	}
 }

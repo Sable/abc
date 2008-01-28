@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry excluding="test/cases/|tests/data/Access/|tests/data/|main/RunAccessTests.java|tests/Encapsulate/|tests/ExtractMethod/|tests/RenameField/|tests/RenameMethod/|tests/RenameType/|tests/Access/" kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/maxs/workspace/Refactoring/tools/junit.jar"/>
+	<classpathentry kind="lib" path="./tools/junit.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
