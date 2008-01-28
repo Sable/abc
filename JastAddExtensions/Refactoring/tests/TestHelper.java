@@ -1,5 +1,10 @@
 package tests;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 import AST.ASTNode;
 import AST.BytecodeParser;
 import AST.BytecodeReader;
@@ -55,4 +60,14 @@ public class TestHelper {
         return true;
     }
 	
+    public static char[] wholeFile(String name) throws FileNotFoundException, IOException {
+		File rf = new File(name);
+		FileReader rfr = new FileReader(rf);
+		long l = rf.length();
+		char[] buf = new char[(int)l];
+		rfr.read(buf);
+		return buf;
+	}
+
+
 }

@@ -36,9 +36,9 @@ public abstract class ExtractMethod extends TestCase {
             Program prog = extract(fields[0], fields[1], fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]), fields[5],
  				   			       fields.length > 6 ? fields[6] : "private");
         	try {
-        		char[] buf = wholeFile(resfile);
+        		char[] buf = TestHelper.wholeFile(resfile);
         		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n"))
-        			assertEquals(new String(wholeFile(altfile)), prog+"\n");
+        			assertEquals(new String(TestHelper.wholeFile(altfile)), prog+"\n");
         		else
         			assertEquals(new String(buf), prog+"\n");
         	} catch(FileNotFoundException fnfe) {
@@ -51,15 +51,6 @@ public abstract class ExtractMethod extends TestCase {
         }
 	}
 	
-	private char[] wholeFile(String name) throws FileNotFoundException, IOException {
-		File rf = new File(name);
-		FileReader rfr = new FileReader(rf);
-		long l = rf.length();
-		char[] buf = new char[(int)l];
-		rfr.read(buf);
-		return buf;
-	}
-
 	private Program extract(String file, String tp, String meth, int start, int end, String name, String vis) 
 			throws RefactoringException {
 		Iterator iter;

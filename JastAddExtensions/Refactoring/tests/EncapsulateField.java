@@ -24,6 +24,7 @@ public abstract class EncapsulateField extends TestCase {
 	public void runEncapsulationTest(String name) {
         String infile = TEST_BASE+"/"+name+"/in/A.java";
         String resfile = TEST_BASE+"/"+name+"/out/A.java";
+        String altfile = TEST_BASE+"/"+name+"/out/A_alt.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();
@@ -31,12 +32,11 @@ public abstract class EncapsulateField extends TestCase {
         	String[] fields = cmd.substring(3).split("\\s+");
         	Program prog = encapsulate(fields[0], fields[1], fields[2], fields[3]);
         	try {
-        		File rf = new File(resfile);
-        		FileReader rfr = new FileReader(rf);
-        		long l = rf.length();
-        		char[] buf = new char[(int)l];
-        		rfr.read(buf);
-        		assertEquals(new String(buf), (prog.toString()+"\n"));
+        		char[] buf = TestHelper.wholeFile(resfile);
+        		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n"))
+        			assertEquals(new String(TestHelper.wholeFile(altfile)), prog+"\n");
+        		else
+        			assertEquals(new String(buf), prog+"\n");
         	} catch(FileNotFoundException fnfe) {
         		fail(name+" was supposed to fail but yielded result");
         	}
