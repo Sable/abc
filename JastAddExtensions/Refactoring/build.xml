@@ -134,67 +134,14 @@
     <delete dir="parser"/>
 </target>
 
-<target name="jar" depends="build">
-  <jar destfile="JavaCompiler.jar" basedir="." includes="**/*.class" excludes="test/** sun/** executiontests/**">
-    <manifest>
-      <attribute name="Main-Class" value="JavaCompiler"/>
-    </manifest>
-  </jar>
-</target>
-
-
 <target name="test" depends="build">
-        <java classname="RunTests" classpath="." fork="true" dir="executiontests"/>
-</target>
-
-<!-- build a source distribution -->
-<target name="source" depends="build">
-  <jar destfile="BytecodeBackend-src.jar">
-			<fileset dir="..">
-        <!-- include backend source file -->
-				<include name="BytecodeBackend/JavaCompiler.java"/>
-				<include name="BytecodeBackend/**/*.ast"/>
-				<include name="BytecodeBackend/**/*.jrag"/>
-				<include name="BytecodeBackend/**/*.jadd"/>
-        <!-- include buildfile used to build the backend -->
-				<include name="BytecodeBackend/build.xml"/>
-        <!-- include readme and licence -->
-				<include name="BytecodeBackend/README"/>
-				<include name="BytecideBackend/licences/BSD"/>
-			</fileset>
-      <manifest>
-      </manifest>
-  </jar>
-</target>
-
-<target name="bootstrap" depends="jar" >
-  <fileset dir="." id="source.files">
-    <!-- include generated source file -->
-    <include name="JavaCompiler.java"/>
-    <include name="AST/*.java"/>
-    <include name="beaver/*.java"/>
-    <include name="bytecode/*.java"/>
-    <include name="parser/*.java"/>
-  </fileset>
-  <pathconvert pathsep=" " property="sources" refid="source.files"/>
-  <echo message="Building using javac compiled java compiler"/>
-  <java jar="JavaCompiler.jar" fork="true" maxmemory="256M">
-    <arg line="-classpath . ${sources}"/>
+  <java 
+     classname="junit.awtui.TestRunner"
+     classpath=".:tools/junit.jar" 
+     fork="true" 
+     dir="tests/data">
+    <arg line="tests.AllTests"/>
   </java>
-  <jar destfile="JavaCompiler-bootstrapped.jar" basedir="." includes="**/*.class" excludes="test/** sun/** executiontests/**">
-    <manifest>
-      <attribute name="Main-Class" value="JavaCompiler"/>
-    </manifest>
-  </jar>
-  <echo message="Building using bootstrapped java compiler"/>
-  <java jar="JavaCompiler-bootstrapped.jar" fork="true" maxmemory="256M">
-    <arg line="-classpath . ${sources}"/>
-  </java>
-  <jar destfile="JavaCompiler-bootstrapped.jar" basedir="." includes="**/*.class" excludes="test/** sun/** executiontests/**">
-    <manifest>
-      <attribute name="Main-Class" value="JavaCompiler"/>
-    </manifest>
-  </jar>
 </target>
 
 </project>
