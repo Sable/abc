@@ -22,5 +22,9 @@ public class AccessTypeTests extends AccessType {
 		runTypeAccessTest(new FileRange("Access/test23/Test.java", 10, 1, 11, 1), new FileRange("Access/test23/Test.java", 14, 5, 14, 7), new TypeAccess("Test"));
 		runTypeAccessTest(new FileRange("Access/test39/A.java", 5, 5, 7, 5), new FileRange("Access/test39/A.java", 16, 7, 16, 9), new TypeAccess("XYZ"));
 		runTypeAccessTest(new FileRange("Access/test40/Test.java", 12, 5, 17, 5), new FileRange("Access/test40/Test.java", 15, 27, 15, 39), new TypeAccess("Inner1"));
+		runTypeAccessTest(new FileRange("Access/test41/Test.java", 4, 5, 10, 5), new FileRange("Access/test41/Test.java", 8, 30, 8, 32), new Dot(new TypeAccess("A"), new TypeAccess("B")));
+		runTypeAccessTest("java.lang", "String", new FileRange("Access/test42/Test.java", 5, 17, 5, 20), new TypeAccess("String"));
+		runTypeAccessTest("java.lang", "String", new FileRange("Access/test43/Test.java", 6, 17, 6, 28), new TypeAccess("java.lang", "String"));
+		runTypeAccessTest("java.lang", "String", new FileRange("Access/test44/Test.java", 7, 17, 7, 20), null);
 	}
 }

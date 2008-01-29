@@ -35,5 +35,22 @@ public abstract class AccessType extends TestCase {
         	assertEquals(res.dumpTree(), expected.dumpTree());
         }
 	}
+	
+	public void runTypeAccessTest(String pkg, String tp, FileRange obsloc, Access expected) {
+		Program prog = TestHelper.compile(obsloc.filename);
+		assertNotNull(prog);
+		TypeDecl td = prog.lookupType(pkg, tp);
+		assertNotNull(prog);
+        ASTNode n = TestHelper.findSmallestCoveringNode(prog, obsloc);
+        assertNotNull(n);
+        assertTrue(n instanceof Access);
+        Access res = ((Access)n).accessType(td);
+        if(expected == null) {
+        	assertNull(res);
+        } else {
+        	assertNotNull(res);
+        	assertEquals(res.dumpTree(), expected.dumpTree());
+        }
+	}
 
 }

@@ -28,10 +28,11 @@ aspect AccessType {
 		return null;
 	}
 
+	/* tries to find a type containing type declaration td by walking outwards from
+	 * the node where it was invoked */
 	syn TypeDecl TypeDecl.findTypeOutwards(TypeDecl td, boolean ambiguous) {
 		String name = td.getID();
-		if(isSingletonOf(getBodyDecl(0).lookupType(name),td) && 
-				!(ambiguous && !getBodyDecl(0).lookupVariable(name).isEmpty()))
+		if(isSingletonOf(memberTypes(td.getID()), td))
 			return this;
 		return isNestedType() ? enclosingType().findTypeOutwards(td, ambiguous) : null;
 	}
