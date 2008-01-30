@@ -1,7 +1,6 @@
-// RenameType/test21/in/A.java p A B
-package p;
+// RenameType/test21/in/A.java,RenameType/test21/in/B.java RenameType.test21.in A C
+package RenameType.test21.in;
+
 class A{
-  void m(){
-    for (A A=new A();;) continue;
-  };
+    B b;
 }

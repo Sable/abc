@@ -30,11 +30,12 @@ aspect AccessType {
 
 	/* tries to find a type containing type declaration td by walking outwards from
 	 * the node where it was invoked */
-	syn TypeDecl TypeDecl.findTypeOutwards(TypeDecl td, boolean ambiguous) {
+	syn TypeDecl TypeDecl.findTypeContaining(TypeDecl td, boolean ambiguous) {
 		String name = td.getID();
-		if(isSingletonOf(memberTypes(td.getID()), td))
+		if(isSingletonOf(memberTypes(td.getID()), td) &&
+				!(ambiguous && !getBodyDecl(0).lookupVariable(name).isEmpty()))
 			return this;
-		return isNestedType() ? enclosingType().findTypeOutwards(td, ambiguous) : null;
+		return isNestedType() ? enclosingType().findTypeContaining(td, ambiguous) : null;
 	}
 
 	/* tries to access type declaration td from inside a certain scope; the flag
@@ -47,10 +48,12 @@ aspect AccessType {
 		SimpleSet set = lookupType(name);
 		if(isSingletonOf(set, td) && !(ambiguous && !lookupVariable(name).isEmpty()))
 			return new TypeAccess(name);
-		TypeDecl out = surroundingType().findTypeOutwards(td, ambiguous);
-		if(out != null) {
-			Access outacc = accessType(out, ambiguous);
-			if(outacc != null) return outacc.qualifiesAccess(new TypeAccess(name));
+		if(surroundingType() != null) {
+			TypeDecl out = surroundingType().findTypeContaining(td, ambiguous);
+			if(out != null) {
+				Access outacc = accessType(out, ambiguous);
+				if(outacc != null) return outacc.qualifiesAccess(new TypeAccess(name));
+			}
 		}
 		if(td.isTopLevelType()) {
 			String pkg = td.packageName();

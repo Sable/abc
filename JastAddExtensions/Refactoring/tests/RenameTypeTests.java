@@ -14,7 +14,7 @@ public class RenameTypeTests extends RenameType {
 		return new TestSuite(RenameTypeTests.class);
 	}
 
-	public void test0() {
+	/*public void test0() {
 		runTypeRenameTest("test0");
 	}
 	public void test1() {
@@ -76,6 +76,9 @@ public class RenameTypeTests extends RenameType {
 	}
 	public void test20() {
 		runTypeRenameTest("test20");
+	}*/
+	public void test21() {
+		runTypeRenameTest("test21");
 	}
 	public void test22() {
 		runTypeRenameTest("test22");

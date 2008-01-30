@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.Access;
 import AST.FileRange;
+import AST.ImportDecl;
 import AST.Program;
 import AST.TypeDecl;
 
@@ -26,8 +27,13 @@ public abstract class AccessType extends TestCase {
         assertTrue(m instanceof TypeDecl);
         ASTNode n = TestHelper.findSmallestCoveringNode(prog, obsloc);
         assertNotNull(n);
-        assertTrue(n instanceof Access);
-        Access res = ((Access)n).accessType((TypeDecl)m);
+        Access res;
+        if(n instanceof ImportDecl) {
+        	res = ((ImportDecl)n).accessType((TypeDecl)m);
+        } else {
+        	assertTrue(n instanceof Access);
+        	res = ((Access)n).accessType((TypeDecl)m);
+        }
         if(expected == null) {
         	assertNull(res);
         } else {
@@ -43,8 +49,13 @@ public abstract class AccessType extends TestCase {
 		assertNotNull(prog);
         ASTNode n = TestHelper.findSmallestCoveringNode(prog, obsloc);
         assertNotNull(n);
-        assertTrue(n instanceof Access);
-        Access res = ((Access)n).accessType(td);
+        Access res;
+        if(n instanceof ImportDecl) {
+        	res = ((ImportDecl)n).accessType(td);
+        } else {
+        	assertTrue(n instanceof Access);
+        	res = ((Access)n).accessType(td);
+        }
         if(expected == null) {
         	assertNull(res);
         } else {
