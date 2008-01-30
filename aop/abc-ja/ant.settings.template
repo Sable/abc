@@ -4,9 +4,6 @@ abc.loc=../abc
 jastadd.loc=../JastAddJ
 jastadd.exts.loc=../JastAddExtensions
 
-# ---- only set this if you will run `ant test' ---- #
-abc.testing.loc=../abc-testing
-
 # ---- shouldn't need to edit beneath this line ---- #
 frontend=${jastadd.loc}/Java1.4Frontend
 

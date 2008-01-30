@@ -4,6 +4,11 @@
 
 libs.loc=../libs
 
+# ---- only set this if you will run `ant test' ---- #
+abc.testing.loc=../abc-testing
+
+# ---- shouldn't need to edit beneath this line ---- #
+
 ## Location of Polyglot classes jar
 polyglot.loc=${libs.loc}/polyglot.jar
 
