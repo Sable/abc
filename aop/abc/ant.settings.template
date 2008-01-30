@@ -2,32 +2,32 @@
 # However, to build the abc-complete.jar file (part of the jars target),
 # you must use jar files.
 
+libs.loc=../libs
+
 ## Location of Polyglot classes jar
-polyglot.loc=/usr/local/src/polyglot-dev/lib/polyglot.jar
-#polyglot.loc=${user.home}/polyglot-1.2.0-src/classes
+polyglot.loc=${libs.loc}/polyglot.jar
 
 ## Location of Polyglot cup-classes (if not included in Polyglot jar)
-polyglot.cupclasses.loc=/usr/local/src/polyglot-dev/lib/java_cup.jar
-#polyglot.cupclasses.loc=${user.home}/polyglot-1.2.0-src/cup-classes
+polyglot.cupclasses.loc=${libs.loc}/java_cup.jar
 
 ## Location of JFlex classes jar
-jflex.loc=/usr/local/src/polyglot-dev/lib/JFlex.jar
+jflex.loc=${libs.loc}/JFlex.jar
 
 ## Location of Soot classes (can also be sootclasses jar)
-soot.loc=/usr/local/src/soot-dev/lib/sootclasses-custom.jar
+soot.loc=${libs.loc}/sootclasses-custom.jar
 
 ## Location of Jasmin classes
-jasmin.loc=/usr/local/src/jasmin-dev/lib/jasminclasses-custom.jar
+jasmin.loc=${libs.loc}/jasminclasses-custom.jar
 
 ## Location of xact jar
-xact.loc=/usr/local/src/xact/java/xact-complete.jar
+xact.loc=${libs.loc}/xact-complete.jar
 
 ## Location of paddle jar
-paddle.loc=/usr/local/src/paddle-dev/lib/paddle-custom.jar
+paddle.loc=${libs.loc}/paddle-custom.jar
 
 ## Location of Jedd runtime classes jar file
-jedd.runtime.jar=/usr/local/src/jedd-dev/runtime/lib/jedd-runtime.jar
+jedd.runtime.jar=${libs.loc}/jedd-runtime.jar
 
 ## Location of JavaBDD distribution
-javabdd.jar=/usr/local/src/resources/JavaBDD/javabdd_0.6.jar
+javabdd.jar=${libs.loc}/javabdd_0.6.jar
 

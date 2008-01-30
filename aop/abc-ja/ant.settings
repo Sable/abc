@@ -1,7 +1,0 @@
-## Location of the root abc checkout
-abc.loc=../abc
-
-frontend=../JastAddJ/Java1.4Frontend
-flattening=../JastAddExtensions/JavaFlattening
-itds=../JastAddExtensions/IntertypeDeclarations
-backend=../JastAddExtensions/JimpleBackend

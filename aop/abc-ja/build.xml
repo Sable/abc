@@ -6,10 +6,10 @@
 <project name="AspectJ JastAdd Frontend" default="build">
 
 <property file="ant.settings"/>
-<fail message="Please fix ant.settings" unless="abc.loc"/>
+<fail message="Please copy ant.settings.template to ant.settings and customise if necessary..." unless="abc.loc"/>
 
 <property file="${abc.loc}/ant.settings"/>
-<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+<fail message="Please copy ${abc.loc}/ant.settings.template to ${abc.loc}/ant.settings, and set the variables in it."
             unless="polyglot.loc"/>
 
 <!-- "package" is the directory where generated files will be stored -->
