@@ -51,11 +51,11 @@ aspect Yield {
   eq YieldStmt.hasYieldStmt() = true;
 
   syn TypeDecl YieldStmt.yieldElement() =
-    returnType().iterableParameterization() ? ((ParInterfaceDecl)returnType()).typeArgument(0) : unknownType();
+    returnType().iterableParameterization() ? ((ParInterfaceDecl)returnType()).getArgument(0).type() : unknownType();
   inh TypeDecl YieldStmt.unknownType();
 
   syn TypeDecl MethodDecl.yieldElement() =
-    type().iterableParameterization() ? ((ParInterfaceDecl)type()).typeArgument(0) : unknownType();
+    type().iterableParameterization() ? ((ParInterfaceDecl)type()).getArgument(0).type() : unknownType();
   inh TypeDecl MethodDecl.unknownType();
 
   syn boolean TypeDecl.iterableParameterization() = false;

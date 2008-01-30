@@ -17,6 +17,19 @@
 <!-- location of Java1.5Backend -->
 <property name="Java1.5Backend" value="../Java1.5Backend"/>
 
+<!-- location of Java1.4Frontend -->
+<property name="Java1.4Frontend" value="../Java1.4Frontend"/>
+<!-- location of Java1.4Backend -->
+<property name="Java1.4Backend" value="../Java1.4Backend"/>
+<!-- location of Java1.5Frontend -->
+<property name="Java1.5Frontend" value="../Java1.5Frontend"/>
+<!-- location of Java1.5Backend -->
+<property name="Java1.5Backend" value="../Java1.5Backend"/>
+<!-- location of Yield extension -->
+<property name="Yield" value="."/>
+
+<!-- "package" is the directory where generated files will be stored -->
+<property name="package" value="AST"/>
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
 
@@ -63,7 +76,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir=".">
+		<fileset dir="${Yield}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -84,6 +97,11 @@
       <filelist dir="${Java1.4Frontend}/scanner">
         <file name="preamble.flex"/>
         <file name="macros.flex"/>
+      </filelist>
+      <filelist dir="${Java1.5Frontend}">
+        <file name="java15macros.flex"/>
+      </filelist>
+      <filelist dir="${Java1.4Frontend}/scanner">
         <file name="rules_preamble.flex"/>
         <file name="WhiteSpace.flex"/>
         <file name="Comments.flex"/>
@@ -92,16 +110,22 @@
       <filelist dir="${Java1.5Frontend}">
         <file name="java15keywords.flex"/>
       </filelist>
-       <filelist dir=".">
+      <filelist dir="${Yield}">
         <file name="Yield.flex"/>
       </filelist>
       <filelist dir="${Java1.4Frontend}/scanner">
         <file name="Literals.flex"/>
+      </filelist>
+      <filelist dir="${Java1.5Frontend}">
+        <file name="java15literals.flex"/>
+      </filelist>
+      <filelist dir="${Java1.4Frontend}/scanner">
         <file name="Separators.flex"/>
         <file name="Operators.flex"/>
       </filelist>
       <filelist dir="${Java1.5Frontend}">
         <file name="java15operators.flex"/>
+        <file name="java15identifiers.flex"/>
       </filelist>
       <filelist dir="${Java1.4Frontend}/scanner">
         <file name="Identifiers.flex"/>
@@ -125,7 +149,7 @@
 	    <fileset dir="${Java1.5Frontend}">
 	      <include name="*.parser"/>
 	    </fileset>
-      <fileset dir=".">
+	    <fileset dir="${Yield}">
 	      <include name="*.parser"/>
 	    </fileset>
 	</concat>
@@ -144,7 +168,7 @@
       <fileset dir="." includes="**/*.class"/>
     </delete>
     <delete file="JavaCompiler.jar"/>
-	  <delete file="Java1.5Backend-src.jar"/>
+	  <delete file="Yield-src.jar"/>
 </target>
 
 <!-- remove generated source files and .class files -->
@@ -161,7 +185,6 @@
     </delete>
 </target>
 
-<!-- build binaries -->
 <target name="jar" depends="build">
   <jar destfile="JavaCompiler.jar" basedir="." includes="**/*.class" excludes="test/**">
     <manifest>
@@ -179,12 +202,24 @@
 				<include name="Yield/**/*.ast"/>
 				<include name="Yield/**/*.jrag"/>
 				<include name="Yield/**/*.jadd"/>
+        <!-- include parser and scanner -->
+				<include name="Yield/*.parser"/>
+				<include name="Yield/*.flex"/>
         <!-- include buildfile used to build the backend -->
 				<include name="Yield/build.xml"/>
+        <!-- include tests -->
+				<include name="Yield/RunTests.java"/>
+				<include name="Yield/test/Test*.java"/>
+				<include name="Yield/test/Test*.result"/>
 			</fileset>
       <manifest>
       </manifest>
   </jar>
+</target>
+
+<!-- test a few examples -->
+<target name="test" depends="build">
+	<java classname="RunTests" fork="true"/>
 </target>
 
 </project>

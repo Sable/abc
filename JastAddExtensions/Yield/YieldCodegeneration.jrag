@@ -1,5 +1,5 @@
 aspect YieldCodegeneration {
-  refine GenericsCodegen public void MethodDecl.java2Transformation() {
+  refine GenericsCodegen public void MethodDecl.transformation() {
     if(isIteratorMethod()) {
       // replace the body of the iterable method with a generated iterator
       setBlock(
@@ -30,7 +30,7 @@ aspect YieldCodegeneration {
     }
     // flush caches to force recomputation of all changed bindings
     getBlock().flushCaches();
-    GenericsCodegen.MethodDecl.java2Transformation();
+    GenericsCodegen.MethodDecl.transformation();
   }
 
   // call flush cache on all nodes in this subtree
@@ -60,7 +60,7 @@ aspect YieldCodegeneration {
       // replace declaration...
       if(v.hasInit())
         // ...with assignment if it is initialized
-        replace(v).with(AssignExpr.asStmt(new VarAccess(name), v.getInit()));
+        replace(v).with(AssignExpr.asStmt(new VarAccess(name), (Expr)v.getInit().fullCopy()));
       else
         // ...with the empty statement if it is not initialized
         replace(v).with(new EmptyStmt());
@@ -227,7 +227,9 @@ aspect YieldCodegeneration {
         // if it is the next state. this code is inserted first in the
         // advance method
         cases.add(
-          new ConstCase(new IntegerLiteral(Integer.toString(index)))
+          new ConstCase(
+            new IntegerLiteral(Integer.toString(index))
+          )
         ).add(
           new GotoStmt(label)
         );
@@ -238,7 +240,7 @@ aspect YieldCodegeneration {
               // update value to the returned expression from yield
               AssignExpr.asStmt(
                 new VarAccess("yield$value"),
-                stmt.getExpr()
+                (Expr)stmt.getExpr().fullCopy()
               ).setLocation(stmt)
             ).add(
               // the next state is the label following this yield statement
@@ -272,8 +274,10 @@ aspect YieldCodegeneration {
         );
       }
     }
+    Block b = getBlock();
+    setBlock(new Block(new List()));
     // insert the original block
-    list.add(getBlock());
+    list.add(b);
     // set state to no more elements if the end of the block is reached
     list.add(
       AssignExpr.asStmt(
@@ -296,7 +300,6 @@ aspect YieldCodegeneration {
       name,
       new List(),
       new List(),
-      new List(),
       new Opt(
         new Block(
           statements
@@ -309,7 +312,6 @@ aspect YieldCodegeneration {
       new Modifiers(new List().add(new Modifier("public"))),
       type,
       name,
-      new List(),
       new List(),
       new List(),
       new Opt(
