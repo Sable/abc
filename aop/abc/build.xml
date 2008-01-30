@@ -609,7 +609,7 @@
 
 	    <target name="reweaving-test" depends="abc-jar">
 	      <java classname="abc.testing.Main" fork="true" maxmemory="512m"
-	            dir="ajc-harness/tests">
+	            dir="${abc.testing.loc}/ajc-harness/tests">
 	        <arg line="abcTests.xml +abc -debug debugUnweaver -abc ${args}"/>
 	    <!--    <arg line="abcTests.xml pureJava"/>    -->
 	        <classpath>
