@@ -31,28 +31,6 @@
 <taskdef name="jastadd" classname="jastadd.JastAddTask"
                         classpath="${tools}/jastadd2.jar"/>
 
-<!-- update dependencies from CVS -->
-<target name="update">
-	<exec executable="cvs" dir="${frontend}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${backend}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${flattening}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${itds}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${abc.loc}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs">
-		<arg line="-q up -dP"/>
-	</exec>
-</target>
-
 <!-- compile sources -->
 <target name="build" depends="gen">
         <ant dir="${abc.loc}" />
@@ -162,7 +140,7 @@
 
 <target name="test" depends="build">
   <java classname="abc.testing.Main" fork="true"
-        dir="${abc.loc}/ajc-harness/tests">
+        dir="${abc.testing.loc}/ajc-harness/tests">
     <jvmarg line="-Xmx512M" />
     <arg line="+abc -ext abc.ja -abc -messageOverride ja"/>
     <!--<arg value="abcTests.xml"/>-->
