@@ -8,11 +8,11 @@ ADDRESS=$1
 SUBJECT=$2
 shift 2
 
-cd ../../
+cd ../../../abc
 CLASSPATH= ant clobber
 CLASSPATH= ant jars
-cd ajc-harness/tests
+cd ../abc-testing/ajc-harness/tests
 nice -n 5 ./runtests $* abcTests.xml
-cvs update $FILES
+svn update $FILES
 # perl -pe's/\&/\&amp;/g' -i passed.xml failed.xml skipped.xml
 ./calc_updates.pl "$ADDRESS" "$SUBJECT"
