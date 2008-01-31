@@ -45,8 +45,8 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset file="../CFG/LocalDeclaration.jrag"/>
-		<fileset dir="../CFG">
+		<fileset file="../Analyses/LocalDeclaration.jrag"/>
+		<fileset dir="../Analyses">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>

@@ -135,9 +135,6 @@ aspect MakeMethod {
 		List parmdecls = new List();
 		for(Iterator i=parms.iterator();i.hasNext();)
 			parmdecls.add(((LocalDeclaration)i.next()).asParameterDeclaration());
-		// brackets
-		// TODO: not implemented
-		List brackets = new List();
 		// thrown exceptions
 		List throwdecls = new List();
 		for(Iterator i=exns.iterator();i.hasNext();) {
@@ -157,8 +154,7 @@ aspect MakeMethod {
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
 			blk.insertStmt(blk.getNumStmt(), stmt);
 		}
-		return new MethodDecl(mod, acc, name, parmdecls, brackets, throwdecls, 
-				new Opt(blk));
+		return new MethodDecl(mod, acc, name, parmdecls, throwdecls, new Opt(blk));
 	}
 		
 }

@@ -165,7 +165,7 @@ aspect Encapsulate {
 			getter_body.addStmt(new ReturnStmt(new VarAccess(fieldName)));
 			return new MethodDecl((Modifiers)fieldMods.fullCopy(), 
 					(Access)fieldType.fullCopy(),
-					getter_name, new List(), new List(), 
+					getter_name, new List(), 
 					new List(), new Opt(getter_body));
 		}
 		
@@ -184,7 +184,7 @@ aspect Encapsulate {
 			parms.add(pd);
 			return new MethodDecl((Modifiers)fieldMods.fullCopy(), 
 					(Access)fieldType.fullCopy(),
-					setter_name, parms, new List(), new List(), 
+					setter_name, parms, new List(), 
 					new Opt(setter_body));
 		}
 		
@@ -195,7 +195,7 @@ aspect Encapsulate {
 			getter_body.addStmt(new ReturnStmt(expr));
 			return new MethodDecl((Modifiers)fieldMods.fullCopy(), 
 					(Access)fieldType.fullCopy(),
-					mname, new List(), new List(), 
+					mname, new List(),  
 					new List(), new Opt(getter_body));
 		}
 		
