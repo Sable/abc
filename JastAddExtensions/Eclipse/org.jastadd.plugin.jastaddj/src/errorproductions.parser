@@ -91,7 +91,7 @@ Block switch_block =
 
 // error productions for ( )
 
-
+/*
 MethodDecl method_declaration =
     IDENTIFIER.id LPAREN error RPAREN {: return new MethodDecl(null, null, id, new List(), new List(), null, new Opt()); :}
     ;
@@ -129,6 +129,7 @@ ExprStmt explicit_constructor_invocation =
        c.setEnd(RPAREN.getEnd());
        return new ExprStmt(n.qualifiesAccess(c)); :}
   ;
+*/
 
 IfStmt if_then_statement =
     IF LPAREN error RPAREN statement.s  {: return new IfStmt(new ParseName("unknown"), s, new Opt()); :}
@@ -160,7 +161,7 @@ SynchronizedStmt synchronized_statement =
     SYNCHRONIZED LPAREN error RPAREN block.b {: return new SynchronizedStmt(new ParseName("unknown"), b); :}
   ;
 CatchClause catch_clause =
-    CATCH LPAREN error RPAREN block.b {: return new CatchClause(new ParameterDeclaration(new Modifiers(), new ParseName("unknown"), "unknown", new List()), b); :}
+    CATCH LPAREN error RPAREN block.b {: return new CatchClause(new ParameterDeclaration(new Modifiers(new List()), new ParseName("unknown"), "unknown"), b); :}
   ;
 
 Expr primary_no_new_array =
