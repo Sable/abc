@@ -1,10 +1,14 @@
-// RenameType/test62/in/A.java p A B
+// RenameType/test62/in/A.java p A.B C
 package p;
-/**
- * p.A 
- * AA A
- */
-public class A{
-	A a;//A
-	String aa= "C:\\A.java";
-};
+
+class A {
+    class B { }
+}
+
+class C {
+    static class D extends A {
+	int D;
+	static int m() { return 23; }
+	int i = C.D.m();
+    }
+}
