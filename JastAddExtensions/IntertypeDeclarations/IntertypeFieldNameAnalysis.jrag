@@ -8,7 +8,7 @@ aspect IntertypeFieldNameAnalysis {
 
   eq IntertypeFieldDeclaration.getTargetType().nameType() = NameType.TYPE_NAME;
   
-  // hostAspect is the aspect the declares the intertype field decl
+  // hostAspect is the aspect that declares the intertype field decl
   syn TypeDecl IntertypeFieldDeclaration.hostAspect() = (TypeDecl)getParent().getParent();
   // introducedType is the type into which the intertype field decl is statically introduced
   syn TypeDecl IntertypeFieldDeclaration.introducedType() = getTargetType().type();

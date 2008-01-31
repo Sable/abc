@@ -47,6 +47,7 @@ aspect IntertypeFieldCodegeneration {
         type().createQualifiedAccess(),
         introducedName(),
         init,
+        name(),
         hostAspect()
       )
     );
@@ -264,8 +265,9 @@ aspect IntertypeFieldCodegeneration {
   eq IntertypeFieldDeclaration.generate() = false;
   
   // change name binding to search for methods in introducedType in IntroducedMethodDecl body
-  public IntroducedFieldDeclaration.IntroducedFieldDeclaration(Modifiers m, Access t, String d, Opt init, TypeDecl aspectType) {
-    this(m, t, d, init);
+  public IntroducedFieldDeclaration.IntroducedFieldDeclaration(Modifiers m, Access t, String d, Opt init,
+                                                               String originalName, TypeDecl aspectType) {
+    this(m, t, d, init, originalName);
     this.aspectType = aspectType;
   }
   private TypeDecl IntroducedFieldDeclaration.aspectType;
