@@ -49,10 +49,10 @@ public class Model extends JastAddJModel {
 	}
 	
 	public java.util.List<String> getFileExtensions() {
-		java.util.List<String> list = new ArrayList<String>();
+		java.util.List<String> list = super.getFileExtensions();
 		list.add("jrag");
 		list.add("jadd");
-		list.add("ast");
+		//list.add("ast");
 		return list;
 	}
 	
@@ -243,7 +243,37 @@ public class Model extends JastAddJModel {
 		if(program instanceof Program) {
 			((Program)program).flushIntertypeDecls();
 		}
-		super.updateModel(document, fileName, project);
+		//super.updateModel(document, fileName, project);
+
+		try {
+			program.files().clear();
+			Map<String,IFile> map = sourceMap(project, buildConfiguration);
+			program.files().addAll(map.keySet());
+	
+			Collection changedFileNames = new ArrayList();
+			if(fileName != null)
+				changedFileNames.add(fileName);
+			// remove files already built and the current document from work list
+			program.flushSourceFiles(changedFileNames);
+			if(fileName != null)
+				program.files().remove(fileName);
+	
+			// build new files
+			for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+				String name = (String)iter.next();
+				program.addSourceFile(name);
+			}
+			// recover the current document
+			StringBuffer buf = new StringBuffer(document.get());
+			new JastAddStructureModel(buf).doRecovery(0);
+			// build the current document
+			program.addSourceFile(fileName, buf.toString());
+		} catch (Throwable e) {
+			logError(e, "Updating model failed!");
+		}
+	
+		
+		
 	}
 
 
