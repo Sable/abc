@@ -405,7 +405,7 @@ public class JastAddJModel extends JastAddModel {
 			// build the current document
 			program.addSourceFile(fileName, buf.toString());
 		} catch (Throwable e) {
-			logError(e, "Updatingm model failed!");
+			logError(e, "Updating model failed!");
 		}
 	}
 
