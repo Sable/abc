@@ -128,8 +128,6 @@ aspect VarDefUse {
 	eq ParExpr.mustDef(Variable v) = getExpr().mustDef(v);
 	eq ArrayCreationExpr.mustDef(Variable v) {
 		if(getTypeAccess().mustDef(v)) return true;
-		for(int i=0;i<getNumDims();++i)
-			return getDims(i).hasExpr() && getDims(i).getExpr().mustDef(v);
 		return hasArrayInit() && getArrayInit().mustDef(v);
 	}
 	
