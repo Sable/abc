@@ -10,7 +10,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 
-public class JastAddStructureModel {
+public class JastAddStructureModel {	
 	
 	
 	// ============= Public =======================
@@ -43,7 +43,7 @@ public class JastAddStructureModel {
 	}
 	
 	public int doRecovery(int dotOffset) {
-		
+	
 		if (!structureCorrect && treeBuilt) {
 			rootPair.setDotOffset(dotOffset);
 			//System.out.println("Before structure recovery:\n" + buf);
@@ -55,9 +55,7 @@ public class JastAddStructureModel {
 			//System.out.println("After structure recovery:\n" + buf);
 			return rootPair.getRecoveryOffsetChange();
 		} else return 0;
-		
 	}		
-
 
 	public void insertionCloseBrace(IDocument doc, DocumentCommand cmd, int recoveryChange) {
 
@@ -99,10 +97,9 @@ public class JastAddStructureModel {
 				}
 			}
 		}
-	}	
+	}
 	
 	public void insertionAfterNewline(IDocument doc, DocumentCommand cmd, int recoveryChange) {
-
  		// Find activePair
 		EnclosePair activePair = rootPair.findActivePair(cmd.offset); // Start before EOL
 		if (activePair == null) { // If there are no enclose pairs
@@ -134,9 +131,8 @@ public class JastAddStructureModel {
 				int braceTabIndent = braceIndentWSCount / TABSIZE;
 				for (int i = 0; i < braceTabIndent;i++,braceIndent+="\t");		    
 				cmd.text += braceIndent + String.valueOf(CLOSE_BRACE) + "\n";
-			}
-			
-		} 
+			}	
+		}
 	}
 	
 	

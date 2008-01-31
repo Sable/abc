@@ -1,10 +1,8 @@
 package org.jastadd.plugin;
 
-import java.io.File;
+import junit.framework.TestCase;
 
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
-
-import junit.framework.TestCase;
 
 public class StructureModelTest extends TestCase {
 	public void testCase1() {
