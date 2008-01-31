@@ -30,6 +30,10 @@ aspect PatternsCodegen
         public boolean equivalent(abc.weaving.aspectinfo.TypePattern p) {
           return false;
         }
+        public String toString()
+        {
+          return "<type pattern>";
+        }
       };
     }
 
@@ -58,9 +62,16 @@ aspect PatternsCodegen
     //
     public boolean MethodPattern.matchesCall(SootMethodRef smr)
     {
+        SootMethod sm = smr.resolve();
+        int real_mods = MethodCategory.getModifiers(sm);
+
+        // exclude ITD-generated methods which correspond to constructors
+        if (MethodCategory.getName(sm).equals(SootMethod.constructorName))
+          return false;
+
         // check modifiers
         for(int i  = 0; i < getNumModifierPattern(); i++)
-          if(!getModifierPattern(i).matches(smr.resolve().getModifiers()))
+          if(!getModifierPattern(i).matches(real_mods))
             return false;
 
         // check return type
@@ -267,6 +278,11 @@ aspect PatternsCodegen
                 throw new InternalCompilerError(
                         "Can not get polyglot frontend pattern from JastAdd");
             }
+
+            public String toString()
+            {
+                return "<classname pattern>";
+            }
         };
 
 
@@ -296,7 +312,7 @@ aspect PatternsCodegen
     syn boolean Pattern.matchesTypeAndName(SootFieldRef sfr) = false;
     
     eq SimpleNamePattern.matchesTypeAndName(SootFieldRef sfr) =
-    	matchesName(sfr.name());
+    	matchesName(MethodCategory.getName(sfr.resolve()));
     
     eq TypeDotNamePattern.matchesTypeAndName(SootFieldRef sfr) {
     	throw new InternalCompilerError("matches not implemented for "
@@ -307,17 +323,17 @@ aspect PatternsCodegen
     	// abc-2006-2, section 4.1.2
         // -------------------------
     	// member part
-    	if(!getRhs().matchesName(sfr.name()))
+    	if(!getRhs().matchesName(MethodCategory.getName(sfr.resolve())))
     		return false;
         // type part
-        return getLhs().matchesType(sfr.resolve().getDeclaringClass());
+        return getLhs().matchesType(MethodCategory.getClass(sfr.resolve()));
     }
 
     syn boolean Pattern.matchesTypeAndName(SootMethodRef smr) = false;
     syn boolean Pattern.matchesName(String name) = false;
 
     eq SimpleNamePattern.matchesTypeAndName(SootMethodRef smr) =
-        matchesName(smr.name());
+        matchesName(MethodCategory.getName(smr.resolve()));
 
     eq SimpleNamePattern.matchesName(String name) =
         regex().matcher(name).matches();
@@ -337,6 +353,23 @@ aspect PatternsCodegen
         // Z is a (reflexive transitive) supertype of R and matches the pattern
         // P is the class that contains X
 
+        // deal with the transformations caused by ITDs
+        // (note that ITD-introduced methods are static)
+        if (smr.isStatic())
+        {
+            SootMethod sm = smr.resolve();
+            SootClass real_class = MethodCategory.getClass(sm);
+            String real_name = MethodCategory.getName(sm);
+            int real_mods = MethodCategory.getModifiers(sm);
+            boolean is_static =
+                soot.Modifier.isStatic(MethodCategory.getModifiers(sm));
+
+            smr = Scene.v().makeMethodRef(real_class, real_name,
+                smr.parameterTypes(), smr.returnType(), is_static);
+
+            // special case:
+        }
+
         // match member part
         if (!getRhs().matchesName(smr.name()))
             return false;
@@ -344,9 +377,13 @@ aspect PatternsCodegen
         // match type part
         SootClass classR = smr.declaringClass();
 
-        // constructors matching is simpler
+        // in the simple case, we don't have to consider super-types:
+        if (getLhs().matchesType(classR))
+            return true;
+
+        // constructors can't be inherited from super-types
         if (smr.name().equals(SootMethod.constructorName))
-            return getLhs().matchesType(classR);
+            return false;
 
         // find supertypes of R that matches the type pattern
         Set supertypes = superTypes(classR);
@@ -574,5 +611,19 @@ aspect PatternsCodegen
       if(s.equals("volatile")) return soot.Modifier.VOLATILE;
       if(s.equals("strictfp")) return soot.Modifier.STRICTFP;
       throw new Error("Trying to match unsupported modifier: " + s);
+    }
+
+    // FIXME: more advanced pretty-printing for patterns?
+    public void FieldPattern.toString(StringBuffer sb)
+    {
+        sb.append("<field pattern>");
+    }
+    public void MethodPattern.toString(StringBuffer sb)
+    {
+        sb.append("<method pattern>");
+    }
+    public void ConstructorPattern.toString(StringBuffer sb)
+    {
+        sb.append("<constructor pattern>");
     }
 }

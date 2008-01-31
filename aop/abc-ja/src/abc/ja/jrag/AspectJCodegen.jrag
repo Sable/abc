@@ -222,6 +222,43 @@ aspect AspectJCodegen {
     // weaving is done in the front-end
   }
 
+  public void IntroducedMethodDecl.jimplify2() {
+    super.jimplify2();
+
+    // record the real modifiers, name, and declaring class, for introduced
+    // methods so that the pattern matcher can operate correctly
+    if (getITDBodyDecl() instanceof IntertypeMethodDecl)
+    {
+      IntertypeMethodDecl orig = (IntertypeMethodDecl) getITDBodyDecl();
+
+      AbcClass real_class = orig.hostType().abcClass();
+
+      MethodCategory.registerRealNameAndClass(
+        sootMethod(), orig.sootTypeModifiers(), orig.name(),
+        orig.hostType().abcClass(), orig.isStatic() ? 0 : 1, 0);
+    }
+    else if (getITDBodyDecl() instanceof IntertypeConstructorDecl)
+    {
+      IntertypeConstructorDecl orig =
+        (IntertypeConstructorDecl) getITDBodyDecl();
+
+      MethodCategory.registerRealNameAndClass(sootMethod(),
+        orig.sootTypeModifiers(), "<init>", orig.hostType().abcClass(), 1, 0);
+    }
+  }
+
+  public void IntroducedFieldDeclaration.jimplify2() {
+    super.jimplify2();
+
+    FieldDeclaration orig = (FieldDeclaration)
+      aspectType().memberFields(getOriginalName()).iterator().next();
+    int mods = orig.sootTypeModifiers();
+
+    // record the real modifiers, name, and declaring class, for introduced
+    // fields so that the pattern matcher can operate correctly
+    MethodCategory.registerRealNameAndClass(
+      sootField, mods, getOriginalName(), aspectType().abcClass());
+  }
 
   public Formal ParameterDeclaration.formal() {
     return new Formal(
@@ -240,6 +277,4 @@ aspect AspectJCodegen {
   public polyglot.util.Position ASTNode.pos() {
     return new polyglot.util.Position(sourceFile(), lineNumber());
   }
-
-
 }
