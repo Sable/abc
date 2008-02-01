@@ -1,3 +1,0 @@
-aspect JastAddSearch {
-  eq SynEq.declaration() = decl();
-}

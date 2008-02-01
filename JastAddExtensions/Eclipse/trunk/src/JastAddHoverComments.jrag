@@ -1,3 +1,0 @@
-aspect JastAddHoverComments {
-  eq SynEq.hoverComment() = decl().hoverComment();
-}
