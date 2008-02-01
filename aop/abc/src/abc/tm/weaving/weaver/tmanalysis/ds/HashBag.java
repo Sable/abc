@@ -107,7 +107,9 @@ public class HashBag<E> extends AbstractCollection<E> implements Bag<E>, Cloneab
 		}
 
 		public void remove() {
-			HashBag.this.remove(lastObject);
+			if(HashBag.this.remove(lastObject)) {
+				currentCount--;
+			}
 		}
 
 	}
