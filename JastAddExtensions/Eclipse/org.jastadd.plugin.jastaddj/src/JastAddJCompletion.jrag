@@ -247,7 +247,7 @@ aspect JastAddJCompletion {
     return c;
   }
 
-  inh NameType Access.nameType();
+  //inh NameType Access.nameType();
   syn boolean Access.showMethods() = nameType() != NameType.TYPE_NAME && 
     nameType() != NameType.PACKAGE_NAME && nameType() != NameType.PACKAGE_OR_TYPE_NAME;
   syn boolean Access.showVariables() = nameType() != NameType.TYPE_NAME && 

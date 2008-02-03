@@ -63,11 +63,29 @@ aspect JastAddJHoverComments {
   eq ParameterDeclaration.hoverComment() {
      StringBuffer res = new StringBuffer(type().typeName());
      res.append(" " + name());
+     /*
+     String javaDoc = javaDocComment();
+     if (javaDoc != null) 
+       res.append("\n\n" + javaDoc);
+     */
+     return res.toString();
+  } 
+  eq ClassDecl.hoverComment() {
+     StringBuffer res = new StringBuffer(typeName());
      String javaDoc = javaDocComment();
      if (javaDoc != null) 
        res.append("\n\n" + javaDoc);
      return res.toString();
-  }  
+  }
+  
+  eq InterfaceDecl.hoverComment() {
+     StringBuffer res = new StringBuffer(typeName());
+     String javaDoc = javaDocComment();
+     if (javaDoc != null) 
+       res.append("\n\n" + javaDoc);
+     return res.toString();
+  }
+  
   
   
   eq MethodAccess.hoverComment() = decl().hoverComment();

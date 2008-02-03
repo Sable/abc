@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JastAddIDE Plug-in
-Bundle-SymbolicName: JastAddIDE;singleton:=true
+Bundle-SymbolicName: org.jastadd.plugin.jastadd;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.jastadd.plugin.jastadd.Activator
 Bundle-Localization: plugin

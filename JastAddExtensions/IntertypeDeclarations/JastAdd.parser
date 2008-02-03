@@ -10,8 +10,8 @@ BodyDecl interface_member_declaration =
   ;
 
 AspectDecl aspect_declaration =
-    modifiers.m? ASPECT IDENTIFIER.id super.c? interfaces.d? aspect_body          
-    {: return new AspectDecl(new Modifiers(m), id, aspect_body, c, d); :}
+    modifiers.m? ASPECT IDENTIFIER super.c? interfaces.d? aspect_body          
+    {: return new AspectDecl(new Modifiers(m), IDENTIFIER, aspect_body, c, d); :}
   ;
 
 List aspect_body =

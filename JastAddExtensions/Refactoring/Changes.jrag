@@ -1,0 +1,221 @@
+aspect Changes {
+
+/*
+ * An ASTChange represents an undoable change to the syntax tree.
+ */
+
+class ASTChange {
+	public String prettyprint() { throw new UnsupportedOperationException("abstract method"); }
+  public void undo() { throw new UnsupportedOperationException("abstract method"); }
+}
+
+/*
+abstract class ASTChange {
+	
+	public abstract String prettyprint();
+    public abstract void undo();
+
+}
+*/
+
+class InsertStmt extends ASTChange {
+	
+	private Block block;
+	private int index;
+	private Stmt stmt;
+	
+	public InsertStmt(Block block, int index, Stmt stmt) {
+		this.block = block;
+		this.index = index;
+		this.stmt = stmt;
+	}
+
+	public String prettyprint() {
+		return "insert statement "+stmt.dumpString()+" into block at line"+index;
+	}
+
+	public void undo() {
+		block.getStmtList().removeChild(index);
+	}
+
+}
+
+class MakeMethod extends ASTChange {
+    
+    private TypeDecl td;
+    private MethodDecl method;
+    private Block host;          // former host block of the method body
+    private int index;           // former index of method body in host
+    
+    public MakeMethod(TypeDecl td, MethodDecl method, Block host, int index) {
+        this.td = td;
+        this.method = method;
+        this.host = host;
+        this.index = index;
+    }
+
+    public void undo() {
+        td.removeBodyDecl(method);
+        host.setStmt(method.getBlock(), index);
+    }
+    
+    public String prettyprint() {
+        return "add method "+method.dumpTree()+" to type "+td.getID();
+    }
+
+}
+
+class MoveStmt extends ASTChange {
+	
+	private Block block;
+	private int old_index;
+	private int index;
+	private Stmt stmt;
+	
+	public MoveStmt(Block block, Stmt stmt, int index) {
+		this.block = block;
+		this.old_index = block.getStmtList().getIndexOfChild(stmt);
+		this.index = index;
+		this.stmt = stmt;
+	}
+
+	public String prettyprint() {
+		return "move statement "+stmt.dumpString()+" to line"+index;
+	}
+
+	public void undo() {
+		block.getStmtList().moveChild(index, old_index);
+	}
+
+}
+
+class PrivatiseField extends ASTChange {
+    
+    private FieldDeclaration field;
+    private Modifiers old_modifiers;
+    
+    public PrivatiseField(FieldDeclaration field) {
+        this.field = field;
+        this.old_modifiers = (Modifiers)field.getModifiers().fullCopy();
+    }
+
+    public void undo() {
+        field.setModifiers(old_modifiers);
+    }
+
+    public String prettyprint() {
+        return "make field "+field+" private";
+    }
+
+}
+
+/*
+ * PullTogether(blk, start, end) is a change that, when applied, pulls the
+ * statements "start" through "end" (inclusive) together into a block.
+ */
+
+class PullTogether extends ASTChange {
+	
+	private Block block;
+	private int index;
+	private int len;
+	private Stmt[] stmts;
+	
+	public PullTogether(Block block, int start, int end) {
+		this.block = block;
+		this.index = start;
+		this.len = end-start+1;
+		this.stmts = new Stmt[len];
+		for(int i=start;i<=end;++i)
+			this.stmts[i-start] = block.getStmt(i);
+	}
+
+	public String prettyprint() {
+		return "pull together "+len+" statements starting from "+index;
+	}
+
+	public void undo() {
+		if(len == 0) {
+			block.getStmtList().removeChild(index);
+		} else {
+			block.setStmt(stmts[0], index);
+			for(int i=1;i<len;++i)
+				block.getStmtList().insertChild(stmts[i], index+i);
+		}
+	}
+
+}
+
+class RefactoringException extends Throwable {
+
+	private static final long serialVersionUID = 1L;
+	
+	public RefactoringException(String msg) {
+		super(msg);
+	}
+
+}
+
+class Rename extends ASTChange {
+
+	private Named entity;
+    private String old_name;
+	private String new_name;
+	
+	public Rename(Named entity, String new_name) {
+		this.entity = entity;
+        this.old_name = entity.getID();
+		this.new_name = new_name;
+	}
+	
+	public Named getEntity() {
+		return entity;
+	}
+	
+	public String getNewName() {
+		return new_name;
+	}
+	
+	public String prettyprint() {
+		return "change name of entity "+entity+" to "+new_name+
+			" at line "+((ASTNode)entity).lineNumber();
+	}
+    
+    public void undo() {
+        entity.setID(old_name);
+    }
+	
+}
+
+class ReplaceNode extends ASTChange {
+    
+    private int index;
+    private ASTNode before;
+    private ASTNode after;
+    
+    public ReplaceNode(ASTNode before, ASTNode after) {
+        this.index = before.getParent().getIndexOfChild(before);
+        this.before = before;
+        this.after = after;
+    }
+
+    public String prettyprint() {
+        FileRange pos = new FileRange(before.compilationUnit().relativeName(),
+        							  before.getStart(), before.getEnd());
+        return "at "+pos+", replace node "+before.dumpTree()+" with "+after.dumpTree();
+    }
+    
+    public void undo() {
+        after.getParent().setChild(before, index);
+    }
+
+    public ASTNode getBefore() {
+      return before;
+    }
+    public ASTNode getAfter() {
+      return after;
+    }
+
+}
+
+}

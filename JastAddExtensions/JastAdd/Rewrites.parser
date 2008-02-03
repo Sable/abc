@@ -5,11 +5,11 @@ BodyDecl aspect_body_declaration =
 RewriteDecl node_rewrite_decl =
     REWRITE type LBRACE node_rewrite_list RBRACE
     {: return new RewriteDecl(type, node_rewrite_list); :}
-  | REWRITE type IDENTIFIER.id qualified_name.n LPAREN RPAREN LBRACE node_rewrite_list RBRACE
+  | REWRITE type IDENTIFIER qualified_name.n LPAREN RPAREN LBRACE node_rewrite_list RBRACE
     {:  
       Access left = (Access)((Dot)n).getLeftNoTransform();
       ParseName right = (ParseName)((Dot)n).getRightNoTransform();
-      return new RewriteListDecl(type, node_rewrite_list, left, new MethodAccess(right.getID(), new List().add(new IntegerLiteral(0))), id);
+      return new RewriteListDecl(type, node_rewrite_list, left, new MethodAccess(right.getID(), new List().add(new IntegerLiteral(0))), IDENTIFIER);
     :}
   ;
 

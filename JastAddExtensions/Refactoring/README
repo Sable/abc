@@ -51,7 +51,7 @@ What is where:
                    - Pair.jadd:    a class of pairs
                    - ASTUtil.jrag: some general utility methods (partly used
 		                   in project CFG)
-changes/	   abstract representations of AST changes, plus a class
+       - Changes.jrag	   abstract representations of AST changes, plus a class
 		   for refactoring exceptions; such exceptions are thrown
 		   when a refactoring discovers that it cannot succeed
 main/		   some command line tools for testing out refactorings

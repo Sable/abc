@@ -20,6 +20,7 @@ import org.jastadd.plugin.jastaddj.editor.actions.InsertCrapRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
@@ -140,6 +141,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				"Insert Crap", "JastAddJ Insert Crap Refactoring", "Ctrl+F9",
 				new InsertCrapRefactoringHandler());
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
+				"Rename", "JastAddJ Rename", "Shift+Alt+R",
+				new RenameRefactoringHandler());
+
 	}
 
 	@Override
@@ -181,6 +187,12 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				"Insert &Crap",
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				new InsertCrapRefactoringHandler());
+
+		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
+				"org.jastadd.plugin.jastaddj.refactor.RenameTopMenuItem",
+				"Re&name",
+				"org.jastadd.plugin.jastaddj.refactor.Rename",
+				new RenameRefactoringHandler());
 	}
 
 	@Override
@@ -230,6 +242,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		addContextMenuItem(refactorMenu, "Insert &Crap",
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				new InsertCrapRefactoringHandler());
+		
+		addContextMenuItem(refactorMenu, "Re&name",
+				"org.jastadd.plugin.jastaddj.refactor.Rename",
+				new RenameRefactoringHandler());
+
 	}
 
 	protected void installSourceCommand(String commandId, String name,

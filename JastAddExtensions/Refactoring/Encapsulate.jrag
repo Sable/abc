@@ -19,7 +19,7 @@ aspect Encapsulate {
 			if(rfe != null)
 				throw rfe;
 		}
-		programRoot().clear();
+		programRoot().flushCaches();
 		table.adjust();
 	}
 

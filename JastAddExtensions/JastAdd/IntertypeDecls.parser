@@ -1,4 +1,0 @@
-BodyDecl aspect_body_declaration =
-  intertype_member_declaration                         {: return intertype_member_declaration; :}
-  ;
-

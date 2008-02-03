@@ -29,7 +29,6 @@
 	    <include name ="parser/**/*.java"/>
 	    <include name ="server/**/*.java"/>
 	    <include name ="beaver/**/*.java"/>
-	    <include name ="changes/**/*.java"/>
 	    <include name ="main/**/*.java"/>
 	    <include name ="tests/*.java"/>
 	  </javac>

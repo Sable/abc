@@ -13,7 +13,7 @@ import AST.MethodDecl;
 import AST.Program;
 import AST.Stmt;
 import AST.TypeDecl;
-import changes.RefactoringException;
+import AST.RefactoringException;
 
 public abstract class ExtractMethod extends TestCase {
 	

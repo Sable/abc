@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import AST.CompilationUnit;
 import AST.Program;
 import AST.TypeDecl;
-import changes.RefactoringException;
+import AST.RefactoringException;
 
 public abstract class RenameType extends TestCase {
 	

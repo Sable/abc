@@ -6,7 +6,7 @@ import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
 import AST.TypeDecl;
-import changes.RefactoringException;
+import AST.RefactoringException;
 
 public class EncapsulateTest extends Frontend {
 

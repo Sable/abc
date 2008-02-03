@@ -34,11 +34,13 @@ aspect YieldCodegeneration {
   }
 
   // call flush cache on all nodes in this subtree
+  /*
   public void ASTNode.flushCaches() {
     flushCache();
     for(int i = 0; i < getNumChild(); i++)
       getChildNoTransform(i).flushCaches();
   }
+  */
 
   // generate the iterator body
   private List MethodDecl.iteratorBody() {
@@ -364,6 +366,7 @@ aspect YieldCodegeneration {
     super.collectLocalVariables(c);
   }
 
+  /*
   // find all uses of this variable declaration
   syn Collection VariableDeclaration.uses() {
     ArrayList list = new ArrayList();
@@ -381,4 +384,5 @@ aspect YieldCodegeneration {
     if(decl() == declaration)
       c.add(this);
   }
+  */
 }

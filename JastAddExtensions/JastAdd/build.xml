@@ -57,8 +57,6 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-      <exclude name="Inter*"/>
-      <exclude name="JastAdd.ast"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
@@ -90,11 +88,6 @@
       </fileset>
       <fileset dir=".">
         <include name="*.parser"/>
-        <exclude name="IntertypeConstructor.parser"/>
-        <exclude name="IntertypeDecls.parser"/>
-        <exclude name="IntertypeField.parser"/>
-        <exclude name="IntertypeMethod.parser"/>
-        <exclude name="JastAdd.parser"/>
       </fileset>
 	</concat>
   <!-- generate the parser phase 2, translating .lalr to .beaver -->

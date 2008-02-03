@@ -9,7 +9,7 @@ import AST.MethodDecl;
 import AST.ParameterDeclaration;
 import AST.Program;
 import AST.TypeDecl;
-import changes.RefactoringException;
+import AST.RefactoringException;
 
 public class ParameterRenameTest extends Frontend {
 

@@ -4,24 +4,24 @@ BodyDecl intertype_member_declaration =
   ;
 
 BodyDecl circular_syn_decl =
-    modifiers.mod? SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK method_body.b 
-    {: return new CircularSynDecl(new Modifiers(mod), false, type, hostType, id, p, b, init); :}
+    modifiers.mod? SYN type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK method_body.b 
+    {: return new CircularSynDecl(new Modifiers(mod), false, type, hostType, IDENTIFIER, p, b, init); :}
 
-  | modifiers.mod? SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK method_body.b 
-    {: return new CircularSynDecl(new Modifiers(mod), true, type, hostType, id, p, b, init); :}
+  | modifiers.mod? SYN LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK method_body.b 
+    {: return new CircularSynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, b, init); :}
 
-  | modifiers.mod? SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK EQ expression SEMICOLON
-    {: return new CircularSynDecl(new Modifiers(mod), false, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression))))), init); :}
+  | modifiers.mod? SYN type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK EQ expression SEMICOLON
+    {: return new CircularSynDecl(new Modifiers(mod), false, type, hostType, IDENTIFIER, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression))))), init); :}
  
-  | modifiers.mod? SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK EQ expression SEMICOLON
-    {: return new CircularSynDecl(new Modifiers(mod), true, type, hostType, id, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression))))), init); :}
+  | modifiers.mod? SYN LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK EQ expression SEMICOLON
+    {: return new CircularSynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression))))), init); :}
 
   ;
 
 BodyDecl circular_inh_decl =
-    modifiers.mod? INH type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK SEMICOLON 
-                                                         {: return new CircularInhDecl(new Modifiers(mod), false, type, hostType, id, p, init); :}
-  | modifiers.mod? INH LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK SEMICOLON 
-                                                         {: return new CircularInhDecl(new Modifiers(mod), true, type, hostType, id, p, init); :}
+    modifiers.mod? INH type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK SEMICOLON 
+                                                         {: return new CircularInhDecl(new Modifiers(mod), false, type, hostType, IDENTIFIER, p, init); :}
+  | modifiers.mod? INH LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN CIRCULAR LBRACK expression.init RBRACK SEMICOLON 
+                                                         {: return new CircularInhDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, init); :}
   ;
 

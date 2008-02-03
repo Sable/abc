@@ -23,10 +23,10 @@ aspect ASTUtil {
 	inh SimpleSet ParameterDeclaration.lookupType(String name);
 	
 	// clear all attribute values in this subtree to force reevaluation of attributes after destructive updates
-	public void ASTNode.clear() {
+	public void ASTNode.flushCaches() {
 		flushCache();
 		for(int i = 0; i < getNumChild(); i++)
-			getChild(i).clear();
+			getChild(i).flushCaches();
 	}
 	
 	public void TypeDecl.removeBodyDecl(BodyDecl bd) {

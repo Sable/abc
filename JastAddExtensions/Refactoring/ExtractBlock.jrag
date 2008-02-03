@@ -81,7 +81,7 @@ aspect ExtractBlock {
 			}
 		}
 		pullTogether(begin, end);
-		programRoot().clear();
+		programRoot().flushCaches();
 	}
 	
 }

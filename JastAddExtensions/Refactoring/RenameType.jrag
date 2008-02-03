@@ -18,7 +18,7 @@ aspect RenameType {
 		String old_name = getID();
 		AdjustmentTable table = find_uses(new_name);
 		changeID(new_name);
-		programRoot().clear();
+		programRoot().flushCaches();
 		table.adjust();
 	}
 	

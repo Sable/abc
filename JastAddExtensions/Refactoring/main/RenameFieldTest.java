@@ -13,7 +13,7 @@ import AST.Frontend;
 import AST.JavaParser;
 import AST.Program;
 import AST.TypeDecl;
-import changes.RefactoringException;
+import AST.RefactoringException;
 
 public class RenameFieldTest extends Frontend {
 

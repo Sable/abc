@@ -24,7 +24,7 @@ aspect AddMethod {
             }
         }
         addMemberMethod(md);
-        programRoot().clear();
+        programRoot().flushCaches();
         if(localMethodsSignature(md.signature()).size() > 1)
             throw new RefactoringException("a method of signature "+md.signature()+" already exists");
 		if(!mayBeCaptured && !md.uses().isEmpty())

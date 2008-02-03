@@ -10,6 +10,9 @@
 
 <!-- "tools" is the directory where generators and libraries are located. -->
 <property name="tools" value="../../Java1.4Frontend/tools"/>
+
+<property name="Refactoring" value="../../Refactoring"/>
+<property name="Analyses" value="../../Analyses"/>
 	
 <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
 <taskdef name="jflex" classname="JFlex.anttask.JFlexTask" classpath="../../Java1.4Frontend/tools/JFlex.jar"/>
@@ -50,6 +53,22 @@
 		<fileset dir="../../org.jastadd.plugin/src">
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset file="${Analyses}/LocalDeclaration.jrag"/>
+		<fileset dir="${Analyses}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+			<exclude name="LocalDeclaration.jrag"/>
+		</fileset>
+		<fileset file="${Refactoring}/Methodoid.jadd"/>
+		<fileset file="${Refactoring}/Scope.jadd"/>
+		<fileset dir="${Refactoring}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jadd"/>
+			<include name="**/*.jrag"/>
+			<exclude name="Methodoid.jadd"/>
+			<exclude name="Scope.jadd"/>
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
