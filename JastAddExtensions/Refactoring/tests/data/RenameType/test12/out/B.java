@@ -1,11 +1,9 @@
 package p;
 class B {
   void m() {
-    p.B a = (p.B)new java.lang.Object();
+    B a = (B)new Object();
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }

@@ -2,7 +2,7 @@ package p;
 class A {
   private int i = 3;
   public int j = getI();
-  A(){
+  A() {
     super();
   }
   public int getI() {

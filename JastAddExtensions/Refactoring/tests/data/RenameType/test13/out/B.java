@@ -1,11 +1,9 @@
 package p;
 class B {
   void m() {
-    boolean b = (new p.B()) instanceof p.B;
+    boolean b = (new B()) instanceof B;
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }

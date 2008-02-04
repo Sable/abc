@@ -2,15 +2,11 @@ package p;
 public class A {
   private int i;
   public void m() {
-    java.lang.Object o = new java.lang.Object()final class Anonymous0 extends Object {
+    Object o = new Object() {
       int k = getI();
-      public Anonymous0(){
-        super();
-      }
-    }
-;
+    };
   }
-  public A(){
+  public A() {
     super();
   }
   protected int getI() {

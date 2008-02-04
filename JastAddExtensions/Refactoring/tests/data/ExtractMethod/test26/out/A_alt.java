@@ -4,7 +4,7 @@ class A {
     int z;
     n();
   }
-  A(){
+  A() {
     super();
   }
   private void n() {

@@ -1,6 +1,6 @@
 package p;
 class A {
-  public p.A g;
+  public A g;
   public int k;
   void m() {
     {
@@ -8,7 +8,7 @@ class A {
     }
     g.k = 0;
   }
-  A(){
+  A() {
     super();
   }
 }

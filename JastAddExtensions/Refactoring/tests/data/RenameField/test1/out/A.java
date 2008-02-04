@@ -4,7 +4,7 @@ class A {
   void m() {
     g++;
   }
-  A(){
+  A() {
     super();
   }
 }

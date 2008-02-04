@@ -1,10 +1,8 @@
 package p;
 class B extends Exception {
-  void m() throws p.B {
+  void m() throws B {
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }

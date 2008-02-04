@@ -1,7 +1,7 @@
 package p;
 class A {
   private int i;
-  A(){
+  A() {
     super();
   }
   public int getI() {
@@ -17,10 +17,10 @@ class A {
 
 class B {
   void m() {
-    p.A a = new p.A();
+    A a = new A();
     a.assignPlusI(a.getI());
   }
-  B(){
+  B() {
     super();
   }
 }

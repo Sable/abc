@@ -4,7 +4,7 @@ class A {
   void m() {
     setI(getI());
   }
-  A(){
+  A() {
     super();
   }
   public int getI() {

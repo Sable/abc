@@ -5,7 +5,7 @@ class A {
     y = 2;
     n(y);
   }
-  A(){
+  A() {
     super();
   }
   private void n(int y) {

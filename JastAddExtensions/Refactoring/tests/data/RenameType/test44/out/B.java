@@ -1,12 +1,12 @@
 package p;
- interface B {
+interface B {
 }
 
-class K implements p.B {
-  K(){
+class K implements B {
+  K() {
     super();
   }
 }
 
- interface C extends p.B {
+interface C extends B {
 }

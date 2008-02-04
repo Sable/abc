@@ -1,9 +1,9 @@
 package p;
 public class B {
   {
-    p.B a;
+    B a;
   }
-  public B(){
+  public B() {
     super();
   }
 }

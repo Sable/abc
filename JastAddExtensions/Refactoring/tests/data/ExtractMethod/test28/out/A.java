@@ -5,16 +5,16 @@ class A {
     y = 2;
     n(y);
   }
-  A(){
+  A() {
     super();
   }
   private void n(int y) {
     int z;
     try {
       if(3 == 3) y = 1;
-      else throw new java.lang.Exception("boo");
+      else throw new Exception("boo");
     }
-    catch (java.lang.Throwable t) {
+    catch (Throwable t) {
     }
     z = y;
   }

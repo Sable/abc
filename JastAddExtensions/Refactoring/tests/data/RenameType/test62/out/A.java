@@ -1,11 +1,11 @@
 package p;
 class A {
   class C {
-    C(){
+    C() {
       super();
     }
   }
-  A(){
+  A() {
     super();
   }
 }
@@ -17,11 +17,11 @@ class C {
       return 23;
     }
     int i = p.C.D.m();
-    D(){
+    D() {
       super();
     }
   }
-  C(){
+  C() {
     super();
   }
 }

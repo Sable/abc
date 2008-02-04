@@ -1,12 +1,12 @@
 package p;
 class B {
-  B(){
+  B() {
     super();
   }
 }
 
 class AA extends B {
-  AA(){
+  AA() {
     super();
   }
 }

@@ -2,7 +2,7 @@ package p;
 class Z {
   void n() {
   }
-  Z(){
+  Z() {
     super();
   }
 }
@@ -11,7 +11,7 @@ public class A extends Z {
   void n() {
     super.n();
   }
-  public A(){
+  public A() {
     super();
   }
 }

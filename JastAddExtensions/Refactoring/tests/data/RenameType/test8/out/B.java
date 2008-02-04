@@ -4,9 +4,7 @@ class B {
     A:
     return ;
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }

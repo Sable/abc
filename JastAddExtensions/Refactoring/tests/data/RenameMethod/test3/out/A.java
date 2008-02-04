@@ -5,7 +5,7 @@ public class A {
   float n(char c) {
     return 1.0;
   }
-  public A(){
+  public A() {
     super();
   }
 }

@@ -2,7 +2,7 @@ package p;
 public class A {
   void n() {
   }
-  public A(){
+  public A() {
     super();
   }
 }
@@ -10,7 +10,7 @@ public class A {
 class B {
   void m() {
   }
-  B(){
+  B() {
     super();
   }
 }

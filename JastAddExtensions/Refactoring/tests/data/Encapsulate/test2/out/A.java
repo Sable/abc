@@ -1,18 +1,18 @@
 package p;
 class A {
-  void getI(java.lang.String s) {
+  void getI(String s) {
   }
   class C {
     class B {
       void m() {
-        p.A.this.getI("");
+        A.this.getI("");
       }
-      B(){
+      B() {
         super();
       }
     }
     private int i;
-    C(){
+    C() {
       super();
     }
     private int getI() {
@@ -22,7 +22,7 @@ class A {
       return this.i = i;
     }
   }
-  A(){
+  A() {
     super();
   }
 }

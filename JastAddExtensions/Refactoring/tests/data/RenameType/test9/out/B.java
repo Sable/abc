@@ -1,11 +1,9 @@
 package p;
 class B {
   void m() {
-    p.B A;
+    B A;
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }

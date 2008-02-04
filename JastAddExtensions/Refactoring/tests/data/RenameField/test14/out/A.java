@@ -2,26 +2,26 @@ package p;
 public class A {
   class B {
     int b;
-    B(){
+    B() {
       super();
     }
   }
   class C extends B {
     int b;
-    C(){
+    C() {
       super();
     }
   }
   class D {
-    p.A.C c;
+    C c;
     int m() {
-      return ((p.A.B)c).b;
+      return ((B)c).b;
     }
-    D(){
+    D() {
       super();
     }
   }
-  public A(){
+  public A() {
     super();
   }
 }

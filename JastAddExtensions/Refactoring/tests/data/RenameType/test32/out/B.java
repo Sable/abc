@@ -1,14 +1,12 @@
 package p;
 class B {
-  B(){
+  B() {
     super();
   }
 }
 
 class C {
-  C(p.B a){
+  C(B a) {
     super();
-  }
-  {
   }
 }

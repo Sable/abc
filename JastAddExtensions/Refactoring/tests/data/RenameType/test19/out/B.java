@@ -2,12 +2,12 @@ package p;
 class B extends Exception {
   void m() {
     try {
-      throw new p.B();
+      throw new B();
     }
-    catch (p.B A) {
+    catch (B A) {
     }
   }
-  B(){
+  B() {
     super();
   }
 }

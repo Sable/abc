@@ -1,32 +1,28 @@
 package p;
 class B {
-  boolean A = new p.B() instanceof p.B;
-  p.B A(p.B A) {
+  boolean A = new B() instanceof B;
+  B A(B A) {
     A:
     for(; true; ) {
       if(A.A(A) == A) break A;
     }
     return A;
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }
 
 class AA extends B {
-  p.B A = (p.B)new p.B();
-  p.B A(p.B A) {
+  B A = (B)new B();
+  B A(B A) {
     A:
     for(; true; ) {
       if(A.A(A) == A) break A;
     }
     return A;
   }
-  {
-  }
-  AA(){
+  AA() {
     super();
   }
 }

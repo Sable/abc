@@ -1,17 +1,15 @@
 package p;
 class B {
-  B(){
+  B() {
     super();
-  }
-  {
   }
 }
 
 class C {
   void s() {
-    new p.B();
+    new B();
   }
-  C(){
+  C() {
     super();
   }
 }

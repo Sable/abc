@@ -4,7 +4,7 @@ public class A {
   public void m() {
     assignPlusI(preDecI());
   }
-  public A(){
+  public A() {
     super();
   }
   public int getI() {

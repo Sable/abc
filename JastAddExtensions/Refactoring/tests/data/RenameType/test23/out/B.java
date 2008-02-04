@@ -1,7 +1,7 @@
 package p;
 class B {
-  p.B[] a = new p.B[5];
-  B(){
+  B[] a = new B[5];
+  B() {
     super();
   }
 }

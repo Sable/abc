@@ -4,7 +4,7 @@ class A {
   public int getF() {
     return (this.g);
   }
-  A(){
+  A() {
     super();
   }
 }

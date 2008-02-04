@@ -1,12 +1,12 @@
 package p;
 public class B {
   static {
-    p.B a;
+    B a;
   }
   {
-    p.B a;
+    B a;
   }
-  public B(){
+  public B() {
     super();
   }
 }

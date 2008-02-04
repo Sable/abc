@@ -2,18 +2,14 @@ package p;
 class B {
   static void s() {
   }
-  {
-  }
-  B(){
+  B() {
     super();
   }
 }
 
 class AA {
-  AA(){
+  AA() {
     super();
-    p.B.s();
-  }
-  {
+    B.s();
   }
 }

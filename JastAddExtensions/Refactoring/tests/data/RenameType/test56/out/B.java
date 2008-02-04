@@ -1,6 +1,6 @@
 package a.a;
 class B {
-  B(){
+  B() {
     super();
   }
 }

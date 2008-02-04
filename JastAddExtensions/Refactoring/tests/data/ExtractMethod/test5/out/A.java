@@ -1,16 +1,15 @@
 import java.io.FileNotFoundException;
-
 class A {
-  void m() throws java.io.FileNotFoundException {
+  void m() throws FileNotFoundException {
     int i;
     i = n();
-    for(int j; j < i; ++j) {
-      if(j == 4) throw new java.io.FileNotFoundException("");
+    for(int j = 0; j < i; ++j) {
+      if(j == 4) throw new FileNotFoundException("");
       ++i;
     }
     int j = ++i;
   }
-  A(){
+  A() {
     super();
   }
   private int n() {

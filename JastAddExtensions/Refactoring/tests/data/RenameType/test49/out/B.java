@@ -1,19 +1,17 @@
 package p;
 class B {
-  B(){
+  B() {
     super();
-  }
-  {
   }
   static int fgT;
 }
 
 class C {
   void s() {
-    new p.B();
-    p.B.fgT = 6;
+    new B();
+    B.fgT = 6;
   }
-  C(){
+  C() {
     super();
   }
 }

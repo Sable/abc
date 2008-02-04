@@ -1,26 +1,26 @@
 package p;
 public class A {
   class XYZ {
-    XYZ(p.A.XYZ X){
+    XYZ(XYZ X) {
       super();
-      new p.A.XYZ(null);
+      new XYZ(null);
     }
   }
-  A(){
+  A() {
     super();
   }
-  A(p.A A){
+  A(A A) {
     super();
   }
-  p.A m() {
-    new p.A.XYZ(null);
-    return (p.A)new p.A();
+  A m() {
+    new XYZ(null);
+    return (A)new A();
   }
 }
 
 class B {
-  p.A.XYZ ax = new p.A().new p.A.XYZ(null);
-  B(){
+  A.XYZ ax = new A().new XYZ(null);
+  B() {
     super();
   }
 }

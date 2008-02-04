@@ -1,22 +1,22 @@
 package p;
 class Super {
   int x;
-  Super(){
+  Super() {
     super();
   }
 }
 
 class B extends Super {
-  java.lang.String x;
+  String x;
   class Inner {
     void m() {
-      p.B.super.x++;
+      B.super.x++;
     }
-    Inner(){
+    Inner() {
       super();
     }
   }
-  B(){
+  B() {
     super();
   }
 }

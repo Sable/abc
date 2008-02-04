@@ -1,12 +1,12 @@
 package p;
 public class B {
-  B(){
+  B() {
     super();
   }
-  B(p.B A){
+  B(B A) {
     super();
   }
-  p.B m() {
-    return (p.B)new p.B();
+  B m() {
+    return (B)new B();
   }
 }

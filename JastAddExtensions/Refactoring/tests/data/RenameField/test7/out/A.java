@@ -4,7 +4,7 @@ class A {
   void m(int g) {
     this.g = 0;
   }
-  A(){
+  A() {
     super();
   }
 }

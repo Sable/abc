@@ -4,7 +4,7 @@ class A {
   void m() {
     postIncI();
   }
-  A(){
+  A() {
     super();
   }
   public int getI() {

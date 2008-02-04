@@ -1,11 +1,11 @@
 package p;
 class B {
   class Inner {
-    Inner(){
+    Inner() {
       super();
     }
   }
-  B(){
+  B() {
     super();
   }
 }

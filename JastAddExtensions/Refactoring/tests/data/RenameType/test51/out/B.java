@@ -1,11 +1,11 @@
 package p;
 public class B {
   public class X {
-    public X(){
+    public X() {
       super();
     }
   }
-  public B(){
+  public B() {
     super();
   }
 }

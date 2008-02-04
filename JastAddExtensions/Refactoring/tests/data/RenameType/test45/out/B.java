@@ -1,16 +1,16 @@
 package p;
 class B {
-  static p.B A;
-  B(){
+  static B A;
+  B() {
     super();
   }
 }
 
 class X extends B {
   void x() {
-    p.B.A = A.A;
+    B.A = A.A;
   }
-  X(){
+  X() {
     super();
   }
 }

@@ -4,7 +4,7 @@ public class A {
   void m() {
     setC('A');
   }
-  public A(){
+  public A() {
     super();
   }
   char getC() {

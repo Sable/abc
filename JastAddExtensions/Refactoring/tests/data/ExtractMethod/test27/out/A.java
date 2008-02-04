@@ -4,7 +4,7 @@ class A {
     int z;
     n();
   }
-  A(){
+  A() {
     super();
   }
   private void n() {
@@ -12,9 +12,9 @@ class A {
     int y;
     try {
       if(3 == 3) y = 1;
-      else throw new java.lang.Exception("boo");
+      else throw new Exception("boo");
     }
-    catch (java.lang.Throwable t) {
+    catch (Throwable t) {
       y = 2;
     }
     z = y;

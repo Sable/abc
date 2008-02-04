@@ -1,17 +1,17 @@
 package p;
 class A {
   int g;
-  A(){
+  A() {
     super();
   }
 }
 
 class B extends A {
-  p.A a;
+  A a;
   void m() {
     int g = a.g;
   }
-  B(){
+  B() {
     super();
   }
 }

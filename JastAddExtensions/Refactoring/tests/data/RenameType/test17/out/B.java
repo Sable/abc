@@ -1,11 +1,11 @@
 package p;
- interface I {
+interface I {
   int A = 0;
 }
 
 class B {
-  int A = p.I.A;
-  B(){
+  int A = I.A;
+  B() {
     super();
   }
 }

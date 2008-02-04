@@ -4,18 +4,18 @@ class A {
   void m() {
     g++;
   }
-  A(){
+  A() {
     super();
   }
 }
 
 class B {
-  p.A a;
+  A a;
   protected int f;
   void m() {
     a.g = 0;
   }
-  B(){
+  B() {
     super();
   }
 }

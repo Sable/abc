@@ -1,15 +1,15 @@
 package p;
 public class B {
-  public B(){
+  public B() {
     super();
   }
 }
 
 class C {
   static {
-    p.B a;
+    B a;
   }
-  C(){
+  C() {
     super();
   }
 }

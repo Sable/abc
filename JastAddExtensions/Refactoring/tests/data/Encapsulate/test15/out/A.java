@@ -1,7 +1,7 @@
 package p;
 class A {
   private int[] i;
-  A(){
+  A() {
     super();
   }
   public int[] getI() {

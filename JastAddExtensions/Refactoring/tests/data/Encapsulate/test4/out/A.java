@@ -1,7 +1,7 @@
 package p;
 public class A {
   private char c;
-  public A(){
+  public A() {
     super();
   }
   char getC() {
@@ -16,7 +16,7 @@ class B extends A {
   void m() {
     setC('A');
   }
-  B(){
+  B() {
     super();
   }
 }

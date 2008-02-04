@@ -5,9 +5,9 @@ class A {
     return ++i;
   }
   void n() {
-    java.lang.System.out.println("Hello, world!");
+    System.out.println("Hello, world!");
   }
-  A(){
+  A() {
     super();
   }
   private int n() {

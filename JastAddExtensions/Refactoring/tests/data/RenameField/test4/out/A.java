@@ -4,7 +4,7 @@ class A {
   void m() {
     g++;
   }
-  A(){
+  A() {
     super();
   }
 }
@@ -13,7 +13,7 @@ class B extends A {
   void m() {
     g = 0;
   }
-  B(){
+  B() {
     super();
   }
 }

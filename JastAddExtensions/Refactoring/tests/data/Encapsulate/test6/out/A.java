@@ -1,26 +1,26 @@
 package p;
 public class A {
-  private java.lang.String s;
-  public A(){
+  private String s;
+  public A() {
     super();
   }
-  public java.lang.String getS() {
+  public String getS() {
     return s;
   }
-  public java.lang.String setS(java.lang.String s) {
+  public String setS(String s) {
     return this.s = s;
   }
-  public java.lang.String assignPlusS(java.lang.String s) {
+  public String assignPlusS(String s) {
     return this.s += s;
   }
 }
 
 class B {
   void m() {
-    p.A a = new p.A();
+    A a = new A();
     a.assignPlusS("foo");
   }
-  B(){
+  B() {
     super();
   }
 }

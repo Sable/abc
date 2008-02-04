@@ -4,7 +4,7 @@ public class A {
   void m() {
     p.A.g = 0;
   }
-  public A(){
+  public A() {
     super();
   }
 }

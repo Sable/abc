@@ -1,7 +1,7 @@
 package p;
 class B {
-  p.B a;
-  B(){
+  B a;
+  B() {
     super();
   }
 }

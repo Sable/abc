@@ -1,6 +1,6 @@
 package p;
 public class B {
-  public B(){
+  public B() {
     super();
   }
 }
@@ -8,13 +8,13 @@ public class B {
 class C {
   void m() {
     class A {
-      A(){
+      A() {
         super();
       }
     }
-    new p.C.A();
+    new A();
   }
-  C(){
+  C() {
     super();
   }
 }

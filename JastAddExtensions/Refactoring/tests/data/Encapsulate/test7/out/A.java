@@ -1,7 +1,7 @@
 package p;
 public class A {
   private int i;
-  public A(){
+  public A() {
     super();
   }
   protected int getI() {
@@ -16,17 +16,17 @@ public class A {
 }
 
 class B extends A {
-  B(){
+  B() {
     super();
   }
 }
 
 class C {
   void m() {
-    p.B b = new p.B();
+    B b = new B();
     b.preIncI();
   }
-  C(){
+  C() {
     super();
   }
 }

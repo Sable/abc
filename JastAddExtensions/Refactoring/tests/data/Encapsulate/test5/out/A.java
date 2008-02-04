@@ -1,21 +1,21 @@
 package p;
 public class A {
-  private java.lang.String s;
+  private String s;
   class B {
     void m() {
       setS("foo");
     }
-    B(){
+    B() {
       super();
     }
   }
-  public A(){
+  public A() {
     super();
   }
-  java.lang.String getS() {
+  String getS() {
     return s;
   }
-  java.lang.String setS(java.lang.String s) {
+  String setS(String s) {
     return this.s = s;
   }
 }

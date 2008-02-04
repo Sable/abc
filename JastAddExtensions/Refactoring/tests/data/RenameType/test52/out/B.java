@@ -1,9 +1,9 @@
 package p;
 public class B {
-  p.B[] m() {
-    return (p.B[])new p.B[3];
+  B[] m() {
+    return (B[])new B[3];
   }
-  public B(){
+  public B() {
     super();
   }
 }

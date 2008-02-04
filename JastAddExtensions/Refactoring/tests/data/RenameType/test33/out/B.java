@@ -1,14 +1,12 @@
 package p;
 class B extends Exception {
-  B(){
+  B() {
     super();
   }
 }
 
 class C {
-  C() throws p.B{
+  C() throws B {
     super();
-  }
-  {
   }
 }

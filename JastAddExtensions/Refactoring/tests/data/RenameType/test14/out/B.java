@@ -1,7 +1,7 @@
 package p;
 class B {
-  p.B a = new p.B();
-  B(){
+  B a = new B();
+  B() {
     super();
   }
 }

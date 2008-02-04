@@ -1,22 +1,22 @@
 package p;
 class Sup {
   static int CONSTANT = 0;
-  Sup(){
+  Sup() {
     super();
   }
 }
 
 class B extends Sup {
-  B(){
+  B() {
     super();
   }
 }
 
 class Test {
-  public static void main(java.lang.String[] arguments) {
-    java.lang.System.out.println(p.B.CONSTANT);
+  public static void main(String[] arguments) {
+    System.out.println(B.CONSTANT);
   }
-  Test(){
+  Test() {
     super();
   }
 }

@@ -4,24 +4,24 @@ class A {
   void m() {
     g++;
   }
-  A(){
+  A() {
     super();
   }
 }
 
 class AA extends A {
   protected int f;
-  AA(){
+  AA() {
     super();
   }
 }
 
 class B {
-  p.A a;
+  A a;
   void m() {
     a.g = 0;
   }
-  B(){
+  B() {
     super();
   }
 }

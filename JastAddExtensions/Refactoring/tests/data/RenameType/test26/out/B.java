@@ -3,13 +3,13 @@ class B {
   int x;
   class Inner {
     void m() {
-      p.B.this.x++;
+      B.this.x++;
     }
-    Inner(){
+    Inner() {
       super();
     }
   }
-  B(){
+  B() {
     super();
   }
 }

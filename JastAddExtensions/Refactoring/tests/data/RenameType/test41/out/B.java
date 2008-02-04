@@ -1,10 +1,10 @@
 package p;
 public class B {
-  B(p.B A){
+  B(B A) {
     super();
   }
-  p.B A(p.B A) {
-    A = new p.B(new p.B(A));
+  B A(B A) {
+    A = new B(new B(A));
     return A;
   }
 }

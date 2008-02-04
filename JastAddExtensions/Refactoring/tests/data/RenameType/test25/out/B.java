@@ -1,7 +1,7 @@
 package p;
 class B {
-  java.lang.Class c = p.B.class;
-  B(){
+  Class c = B.class;
+  B() {
     super();
   }
 }

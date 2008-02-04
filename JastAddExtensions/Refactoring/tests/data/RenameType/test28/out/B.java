@@ -2,9 +2,7 @@ package p;
 class Super {
   void m1() {
   }
-  {
-  }
-  Super(){
+  Super() {
     super();
   }
 }
@@ -12,13 +10,13 @@ class Super {
 class B extends Super {
   class Inner {
     void m() {
-      p.B.super.m1();
+      B.super.m1();
     }
-    Inner(){
+    Inner() {
       super();
     }
   }
-  B(){
+  B() {
     super();
   }
 }

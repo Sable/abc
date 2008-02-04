@@ -1,6 +1,6 @@
 package p;
 public class B {
-  public B(){
+  public B() {
     super();
   }
 }

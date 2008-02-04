@@ -2,10 +2,10 @@ package p;
 class Z {
   void n() {
   }
-  java.lang.String n(int i) {
+  String n(int i) {
     return "aluis";
   }
-  Z(){
+  Z() {
     super();
   }
 }
@@ -13,7 +13,7 @@ class Z {
 public class A extends Z {
   void n() {
   }
-  public A(){
+  public A() {
     super();
   }
 }
@@ -21,7 +21,7 @@ public class A extends Z {
 class B extends A {
   void n() {
   }
-  B(){
+  B() {
     super();
   }
 }
