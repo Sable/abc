@@ -11,7 +11,6 @@ relational aspect DoubleAssociate(){
 	public static void main(String[] args) {
 		associate();
 		associate();//should be ignored
-		System.out.println(Foo.class);
 		
 		hook();
 		
