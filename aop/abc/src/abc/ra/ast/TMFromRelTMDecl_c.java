@@ -107,19 +107,19 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 				POS,
 				nf.RegexSymbol(POS, "start"),                
 				nf.RegexConjunction(
-						POS,
-						nf.RegexSymbol(POS, "associate"),                
+					POS,
+					nf.RegexSymbol(POS, "associate"),                
+					nf.RegexPlus(
+							POS,
 						nf.RegexConjunction(
 								POS,
 								nf.RegexStar(
 										POS,
 										nf.RegexSymbol(POS, "associateAgain")
 								),                
-								nf.RegexPlus(
-										POS,
-										originalRegex
-								)
+								originalRegex
 						)
+					)
 				)
 		);
 	}
