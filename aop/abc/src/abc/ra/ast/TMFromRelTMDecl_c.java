@@ -115,7 +115,10 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 										POS,
 										nf.RegexSymbol(POS, "associateAgain")
 								),                
-				                originalRegex
+								nf.RegexPlus(
+										POS,
+										originalRegex
+								)
 						)
 				)
 		);
