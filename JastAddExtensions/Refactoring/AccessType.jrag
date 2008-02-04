@@ -75,7 +75,7 @@ aspect AccessType {
 	}
 	
 	syn Access Expr.qualifiedAccessType(TypeDecl td, boolean ambiguous) {
-		return type().getBodyDecl(0).accessType(td, ambiguous);
+		return null;
 	}
 
 	eq PackageAccess.qualifiedAccessType(TypeDecl td, boolean ambiguous) {
