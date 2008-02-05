@@ -574,16 +574,21 @@ aspect Pointcuts
     eq DotDotBindingPattern.isDotDot() = true;
 
 
-    public void ConstructorPattern.typeCheck()
+    public void ExecutionPointcutExpr.typeCheck()
     {
         super.typeCheck();
-        if (getMemberNamePattern().refersToInterface())
+        if (getPattern().refersToInterfaceConstructor())
             warning("Interface constructor execution is not a join point" +
                 " (consider (..)+ to capture constructors of implementors)");
     }
 
+    syn boolean MemberPattern.refersToInterfaceConstructor() = false;
+    eq ConstructorPattern.refersToInterfaceConstructor() =
+        getMemberNamePattern().refersToInterface();
+
     syn boolean NamePattern.refersToInterface() = false;
     eq DotNamePattern.refersToInterface() = getLhs().explicitInterface();
+
     syn boolean NamePattern.explicitInterface() = false;
     eq ExplicitTypeNamePattern.explicitInterface() = type().isInterfaceDecl();
 }

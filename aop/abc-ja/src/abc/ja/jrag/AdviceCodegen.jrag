@@ -77,6 +77,8 @@ aspect AdviceCodegen {
   protected void AdviceDecl.createAspectInfo() {
     int[] jp_params = implicitParameters();
     Pointcut pc = getPointcutExpr().pointcut();
+    LinkedList methods = new LinkedList();
+    getBlock().addAllEnclosedMethodSigs(methods);
 
     globalAspectInfo().addAdviceDecl(new abc.weaving.aspectinfo.AdviceDecl(
       getAdviceSpec().adviceSpec(),
@@ -86,9 +88,28 @@ aspect AdviceCodegen {
       jp_params[0] /*jp*/,
       jp_params[1] /*jpsp*/,
       jp_params[2] /*ejp*/,
-      new ArrayList(),
+      methods,
       pos()
     ));
+  }
+
+  // For each advice-declaration, the abc-backend requires a list of the
+  // methods that are declared lexically within that piece of advice
+  // (for example, in inner/anonymous classes)
+  public void ASTNode.addAllEnclosedMethodSigs(LinkedList methods)
+  {
+    for (int i = 0; i < getNumChild(); i++)
+      getChild(i).addAllEnclosedMethodSigs(methods);
+  }
+  public void MethodDecl.addAllEnclosedMethodSigs(LinkedList methods)
+  {
+    methods.add(AbcFactory.MethodSig(sootMethod()));
+    super.addAllEnclosedMethodSigs(methods);
+  }
+  public void ConstructorDecl.addAllEnclosedMethodSigs(LinkedList methods)
+  {
+    methods.add(AbcFactory.MethodSig(sootMethod()));
+    super.addAllEnclosedMethodSigs(methods);
   }
 
   protected java.util.List AdviceSpec.methodFormals() {

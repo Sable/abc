@@ -97,7 +97,9 @@ aspect PointcutCodegen
         Pointcut within_constructor =
             new WithinConstructor(getPattern().constructorPattern(), pos());
 
-        Pointcut class_init = new ClassInitialization(pos());
+        Pointcut class_init =
+            AndPointcut.construct(
+                within_constructor, new ClassInitialization(pos()), pos());
 
         if (!getPattern().matchesEmptyArgList())
             return class_init;
@@ -108,7 +110,7 @@ aspect PointcutCodegen
                 pos());
 
         return OrPointcut.construct(
-                AndPointcut.construct(within_constructor, class_init, pos()),
+                class_init,
                 interface_init,
                 pos());
     }
