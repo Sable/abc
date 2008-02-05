@@ -38,6 +38,7 @@ import abc.aspectj.ast.Around;
 import abc.ra.ExtensionInfo;
 import abc.ra.visit.AroundReplacer;
 import abc.ra.visit.RegexShuffle;
+import abc.ra.visit.SymbolCollector;
 import abc.ra.weaving.aspectinfo.RATraceMatch;
 import abc.tm.ast.Regex;
 import abc.tm.ast.SymbolDecl;
@@ -124,43 +125,102 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 	 * ... where ~ is the shuffle operator
 	 */
 	private static Regex newRegex(Regex originalRegex, List symbols, TMNodeFactory nf) {
-		Regex aaStar = nf.RegexStar(
-				POS,
-				nf.RegexSymbol(POS, "associateAgain")
-		);
+		//find all around-symbols
 		
-		Regex shuffeledRegex = (Regex) originalRegex.visit(new RegexShuffle(aaStar,nf));
-
 		Set<String> aroundSymbols = new HashSet<String>();
 		for (SymbolDecl symbolDecl : (List<SymbolDecl>)symbols) {
 			if(symbolDecl.kind().equals(SymbolKind.AROUND)) {
 				aroundSymbols.add(symbolDecl.name());
 			}
 		}
-		
-		Regex noAroundShuffledRegex = (Regex) shuffeledRegex.visit(new AroundReplacer(aroundSymbols,nf));
 
+		//construct a disjunction of all symbols occuring in the original regular expression,
+		//replacing around-symbol names by their before-symbol names
+		Regex noAroundOriginalRegex = (Regex) originalRegex.visit(new AroundReplacer(aroundSymbols,nf));		
+		SymbolCollector symbolCollector = new SymbolCollector();
+		noAroundOriginalRegex.visit(symbolCollector);
+		Set<String> noAroundOriginalRegexSymbolNames = symbolCollector.getSymbolNames();
+		Regex posDisjunction = disjunctionOf(noAroundOriginalRegexSymbolNames,nf);	
+
+		//construct a disjunction of all symbols of the original tracematch not occuring in that tracematch's regex,
+		//(i.e. all its skip-symbols)
+		Set<String> symbolNames = new HashSet<String>();
+		for (SymbolDecl symbol : (List<SymbolDecl>)symbols) {
+			symbolNames.add(symbol.name());
+		}
+		symbolCollector = new SymbolCollector();
+		originalRegex.visit(symbolCollector);
+		Set<String> originalRegexSymbolNames = symbolCollector.getSymbolNames();
+		Set<String> skipSymbols = new HashSet<String>(symbolNames);
+		skipSymbols.removeAll(originalRegexSymbolNames);
+		Regex negDisjunction = null;
+		if(!skipSymbols.isEmpty()) {
+			negDisjunction = disjunctionOf(skipSymbols,nf);	
+		}
+
+		//create copy of original regex with asssociateAgain* shuffled into it
+		Regex aaStar = nf.RegexStar(
+				POS,
+				nf.RegexSymbol(POS, "associateAgain")
+		);		
+		Regex shuffeledRegex = (Regex) originalRegex.visit(new RegexShuffle(aaStar,nf));
+
+		//create a copy of that regex with around-symbols replaced
+		Regex noAroundShuffledRegex = (Regex) shuffeledRegex.visit(new AroundReplacer(aroundSymbols,nf));
+		
+		//if there is a negDisjunct (i.e. we had skip-symbols) then fit it in...
+		Regex disj = null;
+		if(negDisjunction==null) {
+			disj = nf.RegexSymbol(POS, "release");
+		} else {
+			disj = nf.RegexAlternation(
+					POS,
+					nf.RegexSymbol(POS, "release"),
+					negDisjunction
+			);
+		}
+		
 		Regex newRegex = nf.RegexConjunction(
 			POS,
 			nf.RegexAlternation(
-					POS,
-					nf.RegexSymbol(POS, "start"),
-					nf.RegexSymbol(POS, "release")
+				POS,
+				nf.RegexSymbol(POS, "start"),
+				disj
 			),
 			nf.RegexConjunction(
 				POS,
-				nf.RegexSymbol(POS, "associate"),
+				nf.RegexStar(
+					POS,
+					posDisjunction
+				),
 				nf.RegexConjunction(
 					POS,
-					nf.RegexStar(
+					nf.RegexSymbol(POS, "associate"),
+					nf.RegexConjunction(
 						POS,
-						noAroundShuffledRegex
-					),
-					shuffeledRegex
+						nf.RegexStar(
+							POS,
+							noAroundShuffledRegex
+						),
+						shuffeledRegex
+					)
 				)
 			)
 		);
 		return newRegex;
+	}
+
+	private static Regex disjunctionOf(Set<String> symbolNames, TMNodeFactory nf) {
+		Set<String> copy = new HashSet<String>(symbolNames);
+		Iterator<String> iterator = copy.iterator();
+		String first = iterator.next();
+		iterator.remove();
+		Regex regexSymbol = nf.RegexSymbol(Position.COMPILER_GENERATED, first);
+		if(copy.isEmpty()) {
+			return regexSymbol;
+		} else {
+			return nf.RegexAlternation(Position.COMPILER_GENERATED, regexSymbol, disjunctionOf(copy, nf));
+		}
 	}
 
 	private static List newFormals(List formals, String tracematch_name, RelAspectDecl container, TMNodeFactory nf) {
