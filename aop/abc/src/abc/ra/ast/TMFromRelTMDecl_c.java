@@ -20,8 +20,10 @@
 package abc.ra.ast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import polyglot.ast.Block;
 import polyglot.ast.Formal;
@@ -34,9 +36,12 @@ import polyglot.util.Position;
 import polyglot.util.TypedList;
 import abc.aspectj.ast.Around;
 import abc.ra.ExtensionInfo;
+import abc.ra.visit.AroundReplacer;
+import abc.ra.visit.RegexShuffle;
 import abc.ra.weaving.aspectinfo.RATraceMatch;
 import abc.tm.ast.Regex;
 import abc.tm.ast.SymbolDecl;
+import abc.tm.ast.SymbolKind;
 import abc.tm.ast.TMAdviceDecl;
 import abc.tm.ast.TMDecl;
 import abc.tm.ast.TMDecl_c;
@@ -76,7 +81,7 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 			throwTypes,
 			newSymbols(symbols,tracematch_name,container,nf),
 			frequent_symbols,
-			newRegex(regex,nf),
+			newRegex(regex,symbols,nf),
 			body);
 	}
 	
@@ -94,6 +99,18 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 	private static List<SymbolDecl> newSymbols(List symbols, String tracematch_name, RelAspectDecl container, RANodeFactory nf) {
 		List<SymbolDecl> newSymbols = new ArrayList<SymbolDecl>(symbols);
 		
+		for (SymbolDecl symbolDecl : (List<SymbolDecl>)symbols) {
+			if(symbolDecl.kind().equals(SymbolKind.AROUND)) {
+				SymbolDecl beforeSym = nf.SymbolDecl(
+					symbolDecl.position(),
+					symbolDecl.name()+AroundReplacer.BEFORE_SYMBOL_SUFFIX,
+					nf.BeforeSymbol(symbolDecl.position()),
+					symbolDecl.getPointcut()
+				);
+				newSymbols.add(beforeSym);
+			}
+		}
+		
 		newSymbols.add(nf.StartSymbolDecl(container.position(), "start"));
 		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associate", tracematch_name, true, container));
 		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associateAgain", tracematch_name, false, container));
@@ -102,26 +119,48 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 		return newSymbols;
 	}
 
-	private static Regex newRegex(Regex originalRegex, TMNodeFactory nf) {
-		return nf.RegexConjunction(
+	/**
+	 * (start | release) associate (associateAgain* ~ r)+
+	 * ... where ~ is the shuffle operator
+	 */
+	private static Regex newRegex(Regex originalRegex, List symbols, TMNodeFactory nf) {
+		Regex aaStar = nf.RegexStar(
 				POS,
-				nf.RegexSymbol(POS, "start"),                
+				nf.RegexSymbol(POS, "associateAgain")
+		);
+		
+		Regex shuffeledRegex = (Regex) originalRegex.visit(new RegexShuffle(aaStar,nf));
+
+		Set<String> aroundSymbols = new HashSet<String>();
+		for (SymbolDecl symbolDecl : (List<SymbolDecl>)symbols) {
+			if(symbolDecl.kind().equals(SymbolKind.AROUND)) {
+				aroundSymbols.add(symbolDecl.name());
+			}
+		}
+		
+		Regex noAroundShuffledRegex = (Regex) shuffeledRegex.visit(new AroundReplacer(aroundSymbols,nf));
+
+		Regex newRegex = nf.RegexConjunction(
+			POS,
+			nf.RegexAlternation(
+					POS,
+					nf.RegexSymbol(POS, "start"),
+					nf.RegexSymbol(POS, "release")
+			),
+			nf.RegexConjunction(
+				POS,
+				nf.RegexSymbol(POS, "associate"),
 				nf.RegexConjunction(
 					POS,
-					nf.RegexSymbol(POS, "associate"),                
-					nf.RegexPlus(
-							POS,
-						nf.RegexConjunction(
-								POS,
-								nf.RegexStar(
-										POS,
-										nf.RegexSymbol(POS, "associateAgain")
-								),                
-								originalRegex
-						)
-					)
+					nf.RegexStar(
+						POS,
+						noAroundShuffledRegex
+					),
+					shuffeledRegex
 				)
+			)
 		);
+		return newRegex;
 	}
 
 	private static List newFormals(List formals, String tracematch_name, RelAspectDecl container, TMNodeFactory nf) {
