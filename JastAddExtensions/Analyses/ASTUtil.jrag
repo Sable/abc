@@ -9,8 +9,12 @@ aspect ASTUtil {
 	}
 	
 	// provide access to the program root
-	eq Program.getChild().programRoot() = this;
-	inh Program ASTNode.programRoot();
+	public Program ASTNode.programRoot() {
+		ASTNode p;
+		for(p=this; p!=null&&!(p instanceof Program); p=p.getParent());
+		if(p == null) return null;
+		return (Program)p;
+	}
 	
 	// provide access to the enclosing compilation unit
 	public CompilationUnit ASTNode.compilationUnit() {
