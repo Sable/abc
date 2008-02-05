@@ -4,11 +4,28 @@ relational aspect DoubleAssociate(){
 	
 	static String s = "";
 	
-	relational before(): call(* hook(..)) {
+	relational void around(): call(* hook(..)) {
 		s +="x";
 	}
 	
+//  This is equivalent to: 	
+//	
+//	void tracematch(DoubleAssociate a)  {
+//		sym start before: execution(* main(..));
+//		sym associate after returning(a): call(* associate());
+//		sym associate_again after returning: call(* associate());
+//		sym release after returning: call(* release());
+//		sym action before: call(* hook());
+//		sym action2 around: call(* hook());
+//		(start | release) associate (associate_again* action)* associate_again* action2 {
+//			s +="x";
+//		}		
+//	}
+		
 	public static void main(String[] args) {
+		associate();
+		associate();
+		release();
 		associate();
 		associate();//should be ignored
 		
