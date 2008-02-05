@@ -8,7 +8,7 @@ relational aspect DoubleAssociate(){
 		s +="x";
 	}
 	
-//  This is equivalent to: 	
+//  //This is equivalent to: 	
 //	
 //	void tracematch(DoubleAssociate a)  {
 //		sym start before: execution(* main(..));
@@ -17,21 +17,26 @@ relational aspect DoubleAssociate(){
 //		sym release after returning: call(* release());
 //		sym action before: call(* hook());
 //		sym action2 around: call(* hook());
-//		(start | release) associate (associate_again* action)* associate_again* action2 {
+//		(start | release) action* associate (associate_again* action)* associate_again* action2 {
 //			s +="x";
 //		}		
 //	}
 		
 	public static void main(String[] args) {
+		hook();
 		associate();
 		associate();
 		release();
+		hook();
 		associate();
 		associate();//should be ignored
-		
 		hook();
 		
 		Tester.check(s.equals("x"),"output should be 'x' but is '"+s+"'");
+	}
+	
+	after() returning(Object o): call(* associate()) {
+		System.err.println("associated: "+o);
 	}
 	
 	static void hook(){};
