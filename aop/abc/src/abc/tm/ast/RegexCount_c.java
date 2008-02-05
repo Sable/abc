@@ -24,8 +24,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import polyglot.ast.Node;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 
@@ -98,8 +100,24 @@ public class RegexCount_c extends Regex_c
         a.makeSM(sm, middle, finish, false);
     }
     
-    
-    
+    protected Node reconstruct(Node n, Regex a)
+    {
+        if (a != this.a)
+        {
+            RegexCount_c new_n = (RegexCount_c) n.copy();
+            new_n.a = a;
+            return new_n;
+        }
+        return n;
+    }
 
+    public Node visitChildren(NodeVisitor v)
+    {
+        Node n = super.visitChildren(v);
+
+        Regex a = (Regex) visitChild(this.a, v);
+        
+        return reconstruct(n, a);
+    }
     
 }

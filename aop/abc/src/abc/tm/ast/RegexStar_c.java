@@ -20,10 +20,14 @@
 
 package abc.tm.ast;
 
+import polyglot.ast.Node;
 import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
 
+import abc.aspectj.ast.Pointcut;
+import abc.aspectj.visit.AspectMethods;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 
@@ -92,5 +96,25 @@ public class RegexStar_c extends Regex_c
     	//simply generate epsilon-transitions, as anything within a
     	//Kleene-star is not necessary to reach a final state 
         sm.newTransition(start, finish, null);
+    }
+    
+    protected Node reconstruct(Node n, Regex a)
+    {
+        if (a != this.a)
+        {
+            RegexStar_c new_n = (RegexStar_c) n.copy();
+            new_n.a = a;
+            return new_n;
+        }
+        return n;
+    }
+
+    public Node visitChildren(NodeVisitor v)
+    {
+        Node n = super.visitChildren(v);
+
+        Regex a = (Regex) visitChild(this.a, v);
+        
+        return reconstruct(n, a);
     }
 }

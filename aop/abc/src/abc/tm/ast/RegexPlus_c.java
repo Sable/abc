@@ -20,9 +20,11 @@
 
 package abc.tm.ast;
 
+import polyglot.ast.Node;
 import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
 
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
@@ -88,4 +90,24 @@ public class RegexPlus_c extends Regex_c
 		a.makeSM(sm, start, finish, own_start);
 	}
 
+    protected Node reconstruct(Node n, Regex a)
+    {
+        if (a != this.a)
+        {
+            RegexPlus_c new_n = (RegexPlus_c) n.copy();
+            new_n.a = a;
+            return new_n;
+        }
+        return n;
+    }
+
+    public Node visitChildren(NodeVisitor v)
+    {
+        Node n = super.visitChildren(v);
+
+        Regex a = (Regex) visitChild(this.a, v);
+        
+        return reconstruct(n, a);
+    }
+    
 }

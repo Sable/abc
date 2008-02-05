@@ -20,9 +20,11 @@
 
 package abc.tm.ast;
 
+import polyglot.ast.Node;
 import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
 
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
@@ -100,5 +102,27 @@ public class RegexSkipSeq_c extends Regex_c
             String name = (String) i.next();
             sm.newTransition(middle, middle, name);
         }
+    }
+    
+    protected Node reconstruct(Node n, Regex before, Regex after)
+    {
+        if (before != this.before || after != this.after)
+        {
+            RegexSkipSeq_c new_n = (RegexSkipSeq_c) n.copy();
+            new_n.before = before;
+            new_n.after = after;
+            return new_n;
+        }
+        return n;
+    }
+
+    public Node visitChildren(NodeVisitor v)
+    {
+        Node n = super.visitChildren(v);
+
+        Regex before = (Regex) visitChild(this.before, v);
+        Regex after = (Regex) visitChild(this.before, v);
+        
+        return reconstruct(n, before, after);
     }
 }

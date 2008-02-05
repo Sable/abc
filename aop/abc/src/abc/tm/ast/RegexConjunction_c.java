@@ -23,8 +23,10 @@ package abc.tm.ast;
 import java.util.Collection;
 import java.util.Map;
 
+import polyglot.ast.Node;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
 import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 
@@ -81,5 +83,27 @@ public class RegexConjunction_c extends Regex_c
         State middle = sm.newState();
         a.makeSM(sm, start, middle, own_start);
         b.makeSM(sm, middle, finish, true);
+    }
+    
+    protected Node reconstruct(Node n, Regex a, Regex b)
+    {
+        if (a != this.a || b != this.b)
+        {
+            RegexConjunction_c new_n = (RegexConjunction_c) n.copy();
+            new_n.a = a;
+            new_n.b = b;
+            return new_n;
+        }
+        return n;
+    }
+
+    public Node visitChildren(NodeVisitor v)
+    {
+        Node n = super.visitChildren(v);
+
+        Regex a = (Regex) visitChild(this.a, v);
+        Regex b = (Regex) visitChild(this.b, v);
+        
+        return reconstruct(n, a, b);
     }
 }

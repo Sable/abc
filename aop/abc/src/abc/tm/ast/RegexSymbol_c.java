@@ -84,4 +84,8 @@ public class RegexSymbol_c extends Regex_c
     		State finish, boolean own_start) {
         sm.newTransition(start, finish, name);
     }
+
+	public String name() {
+		return name;
+	}
 }
