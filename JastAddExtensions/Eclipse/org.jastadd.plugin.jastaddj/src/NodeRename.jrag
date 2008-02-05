@@ -1,0 +1,9 @@
+aspect NodeRename {
+	
+	// for the IDE code, it is more convenient to have a default implementation
+	// of rename on every ASTNode
+	public void ASTNode.rename(String new_name) throws RefactoringException {
+		throw new RefactoringException("cannot rename");
+	}
+	
+}

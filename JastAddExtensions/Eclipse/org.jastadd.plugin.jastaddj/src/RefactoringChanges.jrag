@@ -1,5 +1,0 @@
-aspect RefactoringChanges {
-	org.eclipse.text.edits.ReplaceEdit ASTChange.getReplaceEdit() {
-	  throw new UnsupportedOperationException("getReplaceEdit is not implemented");
-	}
-}

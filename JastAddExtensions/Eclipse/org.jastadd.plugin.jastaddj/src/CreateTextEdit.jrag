@@ -1,0 +1,145 @@
+import java.util.Iterator;
+
+import org.eclipse.ltk.core.refactoring.*;
+import org.eclipse.core.resources.IFile;
+import org.jastadd.plugin.model.JastAddModel;
+import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.ReplaceEdit;
+
+aspect CreateTextEdit {
+	
+	/* a change accumulator keeps track of changes happening to multiple files;
+	 * it creates one TextFileChange for every file affected and adds incoming
+	 * ReplaceEdits to them
+	 */
+	class ChangeAccumulator {
+		private String name;
+		private CompositeChange changes;
+		private Map/*<IFile, TextFileChange>*/ changemap;
+		
+		public ChangeAccumulator(String name) {
+			this.name = name;
+			changes = new CompositeChange(name);
+			changemap = new HashMap();
+		}
+
+		public void addEdit(IFile file, int offset, int length, String contents) {
+			TextFileChange tfc;
+			// first, determine which TextFileChange the new change should belong to
+			if(!changemap.containsKey(file)) {
+				// create a new one
+				tfc = new TextFileChange(name, file);
+				tfc.setEdit(new MultiTextEdit());
+				changes.add(tfc);
+				changemap.put(file, tfc);
+			}
+			else {
+				tfc = (TextFileChange)changemap.get(file);
+			}
+			TextEdit new_edit = new ReplaceEdit(offset, length, contents);
+			/* when inserting the new edit into tfc, we must be careful to avoid
+			 * overlapping edits; our solution here is very simple: walk through
+			 * all changes already in tfc, if one of them covers the new change
+			 * we don't need to add it, if some of them are covered by the new
+			 * change, remove them */
+			MultiTextEdit mte = (MultiTextEdit)tfc.getEdit();
+			java.util.Set covered = new java.util.HashSet();
+			for(int i=0; i<mte.getChildren().length; ++i) {
+				TextEdit te = mte.getChildren()[i];
+				if(te.covers(new_edit))
+					return;
+				else if(new_edit.covers(te))
+					covered.add(te);
+			}
+			for(Iterator iter=covered.iterator();iter.hasNext();)
+				mte.removeChild((TextEdit)iter.next());
+			tfc.addEdit(new_edit);
+		}
+		
+		// creates the TextChanges corresponding to the ASTChanges in some iterator
+		// and adds them to the accumulator
+		public void addAllEdits(JastAddModel model, Iterator/*<ASTChange>*/ iter) {
+			while(iter.hasNext())
+				((ASTChange)iter.next()).createTextEdit(model, this);
+		}
+		
+		public Change getChange() {
+			return changes;
+		}
+	}
+	
+	// every ASTChange should be able to create a text edit that corresponds to
+	// its action; however, this method is as yet unimplemented for some changes...
+	public void ASTChange.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+		throw new UnsupportedOperationException("ASTNode.createTextEdit()");
+	}
+	
+	public void ReplaceNode.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+		int offset = before.getBeginOffset();
+		int length = before.getEndOffset() - offset + 1;
+		accu.addEdit(model.getFile(after), offset, length, after.toString());
+	}
+
+	public void Rename.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
+		entity.createRenameTextEdit(model, accu, new_name);
+	}
+	
+	// creates a TextEdit corresponding to a rename of this entity
+	public void Named.createRenameTextEdit(JastAddModel model, ChangeAccumulator accu, String new_name);
+
+	public void VariableDeclaration.createRenameTextEdit(JastAddModel model, 
+				ChangeAccumulator accu, String new_name) {
+		int offset = createOffset(IDstart);
+		int offsetEnd = createOffset(IDend);
+		int length = offsetEnd - offset + 1;
+		accu.addEdit(model.getFile(this), offset, length, new_name);
+	}
+
+	public void ParameterDeclaration.createRenameTextEdit(JastAddModel model, 
+			ChangeAccumulator accu, String new_name) {
+		int offset = createOffset(IDstart);
+		int offsetEnd = createOffset(IDend);
+		int length = offsetEnd - offset + 1;
+		accu.addEdit(model.getFile(this), offset, length, new_name);
+	}
+
+	public void FieldDeclaration.createRenameTextEdit(JastAddModel model, 
+			ChangeAccumulator accu, String new_name) {
+		int offset = createOffset(IDstart);
+		int offsetEnd = createOffset(IDend);
+		int length = offsetEnd - offset + 1;
+		accu.addEdit(model.getFile(this), offset, length, new_name);
+	}
+
+	public void MethodDecl.createRenameTextEdit(JastAddModel model, 
+			ChangeAccumulator accu, String new_name) {
+		int offset = createOffset(IDstart);
+		int offsetEnd = createOffset(IDend);
+		int length = offsetEnd - offset + 1;
+		accu.addEdit(model.getFile(this), offset, length, new_name);
+	}
+
+	public void ConstructorDecl.createRenameTextEdit(JastAddModel model, 
+			ChangeAccumulator accu, String new_name) {
+		int offset = createOffset(IDstart);
+		int offsetEnd = createOffset(IDend);
+		int length = offsetEnd - offset + 1;
+		accu.addEdit(model.getFile(this), offset, length, new_name);
+	}
+
+	public void TypeDecl.createRenameTextEdit(JastAddModel model, 
+			ChangeAccumulator accu, String new_name) {
+		int offset = createOffset(IDstart);
+		int offsetEnd = createOffset(IDend);
+		int length = offsetEnd - offset + 1;
+		accu.addEdit(model.getFile(this), offset, length, new_name);
+	}
+
+	public void CompilationUnit.createRenameTextEdit(JastAddModel model, 
+			ChangeAccumulator accu, String new_name) {
+		IFile file = model.getFile(this);
+		// TODO: create change for moving file
+	}
+
+}
