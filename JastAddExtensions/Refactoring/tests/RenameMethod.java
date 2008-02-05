@@ -63,7 +63,7 @@ public abstract class RenameMethod extends TestCase {
         iter = d.localMethodsSignature(meth).iterator();
         assertTrue(iter.hasNext());
         MethodDecl m = (MethodDecl)iter.next();
-        m.cascadingRename(newname);
+        m.rename(newname);
         return prog;
 	}
 

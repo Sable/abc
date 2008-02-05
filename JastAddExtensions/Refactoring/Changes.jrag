@@ -6,7 +6,7 @@ aspect Changes {
 
 class ASTChange {
 	public String prettyprint() { throw new UnsupportedOperationException("abstract method"); }
-  public void undo() { throw new UnsupportedOperationException("abstract method"); }
+	public void undo() { throw new UnsupportedOperationException("abstract method"); }
 }
 
 /*
