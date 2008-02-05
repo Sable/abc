@@ -171,7 +171,7 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     }
 
     public Parser parser(Reader reader, FileSource source, ErrorQueue eq) {
-        Lexer lexer = new Lexer_c(reader, source.name(), eq);
+        Lexer lexer = new Lexer_c(reader, source.path(), eq);
         Grm grm = new Grm(lexer, ts, nf, eq);
 
         return new CupParser(grm, source, eq);

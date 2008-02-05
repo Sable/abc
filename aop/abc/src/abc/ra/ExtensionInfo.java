@@ -81,7 +81,7 @@ public class ExtensionInfo extends abc.tm.ExtensionInfo
      */
     public Parser parser(Reader reader, FileSource source, ErrorQueue eq) {
         //create a lexer for the file; often the standard lexer suffices
-        Lexer lexer = new Lexer_c(reader, source.name(), eq);
+        Lexer lexer = new Lexer_c(reader, source.path(), eq);
         //this should be the grammar you specified
         Grm grm = new Grm(lexer, ts, nf, eq);
         //and finally the parser; you usually are fine with this one
