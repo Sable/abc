@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import polyglot.types.Flags;
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
@@ -73,7 +74,7 @@ public class DeclareMessage extends AbstractAdviceDecl {
     private String message;
 
     public DeclareMessage(int severity, Pointcut pc, String message, Aspect aspct, Position pos) {
-        super(aspct,new MessageAdvice(),pc,new ArrayList(),pos);
+        super(aspct,new MessageAdvice(),pc,new ArrayList(),Flags.NONE,pos);
         this.severity = severity;
         this.message = message;
     }

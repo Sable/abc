@@ -20,6 +20,8 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
+import polyglot.types.Flags;
 import polyglot.util.Position;
 import soot.*;
 import soot.jimple.*;
@@ -40,7 +42,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
     public DeclareSoft(AbcType exc, Pointcut pc, Aspect aspct, Position pos) {
 	super(aspct,new SoftenAdvice(exc,pos),
-	      pc, new ArrayList(), pos);
+	      pc, new ArrayList(),Flags.NONE, pos);
 	this.exc = exc;
     }
 

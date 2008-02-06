@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Oege de Moor
+ * Copyright (C) 2008 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,32 +21,26 @@
 package abc.aspectj.types;
 
 import java.util.List;
-import polyglot.util.Position;
-
-
-import polyglot.types.ClassType;
-import polyglot.types.ConstructorInstance;
-import polyglot.types.MethodInstance;
-import polyglot.types.FieldInstance;
-import polyglot.types.ReferenceType;
-import polyglot.types.Flags;
-import polyglot.types.Type;
-import polyglot.types.MemberInstance;
-import polyglot.types.SemanticException;
-
-import polyglot.frontend.Source;
 
 import polyglot.ast.Typed;
-
-import abc.aspectj.ast.AdviceSpec;
-
-import soot.javaToJimple.jj.types.JjTypeSystem;
-
+import polyglot.frontend.Source;
+import polyglot.types.ClassType;
+import polyglot.types.ConstructorInstance;
 import polyglot.types.Context;
+import polyglot.types.FieldInstance;
+import polyglot.types.Flags;
+import polyglot.types.MemberInstance;
+import polyglot.types.MethodInstance;
+import polyglot.types.ReferenceType;
+import polyglot.types.SemanticException;
+import polyglot.types.Type;
+import polyglot.util.Position;
+import soot.javaToJimple.jj.types.JjTypeSystem;
 
 /**
  * 
  * @author Oege de Moor
+ * @author Eric Bodden
  *
  */
 public interface AJTypeSystem extends JjTypeSystem {
@@ -90,5 +85,12 @@ public interface AJTypeSystem extends JjTypeSystem {
 	
 	public void checkPointcutFlags(Flags f) throws SemanticException;	
 	
-	public PointcutInstance_c findPointCutNamed(ClassType ct, String name) throws SemanticException; 		              
+	public PointcutInstance_c findPointCutNamed(ClassType ct, String name) throws SemanticException;
+	
+	/**
+	 * Checks whether the flags f are allowed on an advice body.
+	 * @param f some flags
+	 * @throws SemanticException thrown in case a flag is not allowed
+	 */
+	public void checkAdviceBodyFlags(Flags f) throws SemanticException; 		              
 }

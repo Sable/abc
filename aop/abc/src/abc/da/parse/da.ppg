@@ -1,0 +1,277 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Eric Bodden
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+include "../../eaj/parse/eaj.ppg"
+
+package abc.da.parse;
+
+import abc.da.ast.*;
+import abc.da.types.DATypeSystem;
+
+import polyglot.ext.jl.parse.Name;
+
+parser Grm extends abc.eaj.parse.Grm {:
+    public final DATypeSystem ts;
+    public final DANodeFactory nf;
+    public int wildcard_count = 0;
+
+    public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
+        super(l, t, n, q);
+        ts = (DATypeSystem) t;
+        nf = (DANodeFactory) n;
+    }
+:};
+
+
+// ------- new tokens ------------------------------
+
+terminal Token DEPENDENCY;
+terminal Token DEPENDENT;
+terminal Token STRONG;
+terminal Token WEAK;
+
+// ------- new non-terminals -----------------------
+
+non terminal AdviceDependency advice_dependency;
+non terminal List advice_name_list;
+non terminal AdviceNameAndParams advice_name;
+non terminal List identifier_star_list;
+
+start with goal;
+
+extend class_member_declaration ::=
+        advice_dependency:a
+        {:
+            Grm.parserTrace("class_member_declaration is a advice_dependency");
+            List l = new TypedList(new LinkedList(), ClassMember.class, false);
+            l.add(a);
+            RESULT = l;
+        :}
+    ;
+
+advice_dependency ::=
+        DEPENDENCY:l LBRACE STRONG advice_name_list:s SEMICOLON RBRACE:r
+        {:
+            Grm.parserTrace("advice_dependency with strong advice only");
+			RESULT =  parser.nf.AdviceDependency(parser.pos(l,r),s,Collections.EMPTY_LIST);
+		:}
+	|   DEPENDENCY:l LBRACE STRONG advice_name_list:s SEMICOLON WEAK advice_name_list:w SEMICOLON RBRACE:r
+        {:
+            Grm.parserTrace("advice_dependency with strong and weak advice");
+			RESULT =  parser.nf.AdviceDependency(parser.pos(l,r),s,w);
+		:}
+	
+	
+	;
+	
+advice_name_list ::=
+        advice_name:a
+            {: List l = new TypedList(new LinkedList(), AdviceNameAndParams.class, false);
+               l.add(a);
+               RESULT = l;
+            :}
+    |   advice_name_list:l COMMA advice_name:a
+            {:
+            	l.add(a);
+            	RESULT = l;            	
+            :}
+    ;
+    
+advice_name ::= 
+		IDENTIFIER:i
+		{:
+			RESULT = parser.nf.AdviceNameAndParams(parser.pos(i), i.getIdentifier(), Collections.EMPTY_LIST);
+		:}
+	|
+		IDENTIFIER:i LPAREN identifier_star_list:ids RPAREN:r
+		{:
+			RESULT = parser.nf.AdviceNameAndParams(parser.pos(i,r), i.getIdentifier(), ids);
+		:}
+	;
+	
+identifier_star_list ::= 
+		IDENTIFIER:i
+		{:
+			List ids = new TypedList(new LinkedList(), String.class, false);
+            ids.add(i.getIdentifier());
+            RESULT = ids;
+        :}
+    |  	PC_MULT:p
+		{:
+			List ids = new TypedList(new LinkedList(), String.class, false);
+            ids.add(AdviceDependency.WILDCARD+(parser.wildcard_count++)); //generate fresh variable name for wildcard
+            RESULT = ids;
+        :}    
+	|  identifier_star_list:ids COMMA IDENTIFIER:i
+		{:
+            ids.add(i.getIdentifier());
+            RESULT = ids;
+        :}
+	|  identifier_star_list:ids COMMA PC_MULT:p
+		{:
+            ids.add(AdviceDependency.WILDCARD);
+            RESULT = ids;
+        :}
+	;
+	
+extend advice_spec ::=
+     BEFORE:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN:y
+       {: Grm.parserTrace("before(formals)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          Before b = parser.nf.Before(parser.pos(x,y),a,voidn);
+          NameExtension nExt = (NameExtension)b.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = b;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN:y
+       {: Grm.parserTrace("after(formals)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	      After after = parser.nf.After(parser.pos(x,y),a,voidn);
+          NameExtension nExt = (NameExtension)after.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = after;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN PC_RETURNING:y
+       {: Grm.parserTrace("after(formals)returning");
+        TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	  AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
+	                                                     a,
+                                                         null,
+                                                         voidn);
+          NameExtension nExt = (NameExtension)afterRet.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = afterRet;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN PC_RETURNING LPAREN RPAREN:y // just to pass ajc tests
+       {: Grm.parserTrace("after(formals)returning()");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	      AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
+	                                                         a,
+                                                             null,
+                                                             voidn);
+          NameExtension nExt = (NameExtension)afterRet.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = afterRet;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN PC_RETURNING 
+                                               LPAREN formal_parameter:b RPAREN:y
+       {: Grm.parserTrace("after(formals) returning(p)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          AdviceFormal af = parser.nf.AdviceFormal(parser.pos(b),b.flags(),b.type(),b.name());
+	      AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
+                                                             a,
+                                                             af,
+                                                             voidn);
+          NameExtension nExt = (NameExtension)afterRet.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = afterRet;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING:y
+       {: Grm.parserTrace("after(formals)throwing");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
+                                                             a,
+							                                 null,
+							                                 voidn);
+          NameExtension nExt = (NameExtension)afterThrow.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = afterThrow;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING LPAREN RPAREN:y // ajc compatibility again
+       {: Grm.parserTrace("after(formals)throwing");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
+                                                             a,
+							                                 null,
+							                                 voidn);
+          NameExtension nExt = (NameExtension)afterThrow.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = afterThrow;
+       :}
+  |  AFTER:x IDENTIFIER:name LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING
+                                               LPAREN formal_parameter:b RPAREN:y
+       {: Grm.parserTrace("after(formals)throwing(p)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          AdviceFormal af = parser.nf.AdviceFormal(parser.pos(b),b.flags(),b.type(),b.name());
+          AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
+                                                             a,
+							                                 af,
+							                                 voidn);
+          NameExtension nExt = (NameExtension)afterThrow.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = afterThrow;
+       :}
+  |  type:a AROUND IDENTIFIER:name LPAREN formal_parameter_list_opt:b RPAREN:y
+       {: Grm.parserTrace("non-void-type around (formals)");
+          Around around = parser.nf.Around(parser.pos(a,y),
+                                           a,
+                                           b);
+          NameExtension nExt = (NameExtension)around.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = around;
+       :}
+  |  VOID:a AROUND IDENTIFIER:name LPAREN formal_parameter_list_opt:b RPAREN:y
+       {: Grm.parserTrace("VOID around (formals)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          Around around = parser.nf.Around(parser.pos(a,y),
+                                           voidn,
+                                           b);
+          NameExtension nExt = (NameExtension)around.ext();
+          nExt.setName(parser.nf.AdviceName(parser.pos(name),name.getIdentifier()));
+          RESULT = around;
+       :}
+  ;
+  
+advice_declaration ::=
+      modifiers:m DEPENDENT modifiers_opt:m2 advice_spec:a throws_opt:b COLON pointcut_expr:c 
+     /* only valid modifier is strictfp */
+        method_body:d 
+       {: Grm.parserTrace("advice declaration without strictfp");
+          AdviceDecl ad = parser.nf.AdviceDecl(parser.pos(a,d),
+					       m.set(m2).set(DAAdviceDecl.DEPENDENT),
+                           a,
+                           b,
+					       c,
+	                       d);
+          RESULT = ad;
+       :}
+   |  DEPENDENT:dep modifiers_opt:m2 advice_spec:a throws_opt:b COLON pointcut_expr:c 
+     /* only valid modifier is strictfp */
+        method_body:d 
+       {: Grm.parserTrace("advice declaration without strictfp");
+          AdviceDecl ad = parser.nf.AdviceDecl(parser.pos(dep,d),
+					       m2.set(DAAdviceDecl.DEPENDENT),
+                           a,
+                           b,
+					       c,
+	                       d);
+          RESULT = ad;
+       :}
+   
+  ;
+  

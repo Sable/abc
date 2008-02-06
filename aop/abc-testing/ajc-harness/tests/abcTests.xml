@@ -10766,4 +10766,43 @@
 		<run class="DoubleAssociate"/>
     </ajc-test>
     
+    <ajc-test num="1420" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice ">
+        <compile files="DATypeChecks.java" options="-ext,abc.da">
+	    	<message kind="warning" line="12"/>
+	    	<message kind="warning" line="49"/>
+	    	<message kind="error" line="59"/>
+	    	<message kind="error" line="70"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1421" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (2)">
+        <compile files="DATypeChecks2.java" options="-ext,abc.da">
+	    	<message kind="error" line="9"/>
+	    	<message kind="error" line="17"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1422" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (3)">
+        <compile files="DATypeChecks3.java" options="-ext,abc.da">
+	    	<message kind="error" line="11"/>
+	    	<message kind="error" line="19"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1423" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (4)">
+        <compile files="DATypeChecks4.java" options="-ext,abc.da">
+	    	<message kind="error" line="4"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1424" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (5)">
+        <compile files="DATypeChecks5.java" options="-ext,abc.da">
+	    	<message kind="error" line="4"/>
+		</compile>
+    </ajc-test>
 </suite>

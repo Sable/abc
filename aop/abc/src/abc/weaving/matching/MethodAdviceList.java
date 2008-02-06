@@ -49,7 +49,7 @@ public class MethodAdviceList {
     
 	// find all members of an AdviceApplication list that have no successors
 	// in the precedence ordering
-	private static AdviceApplication noPreds(List/*<AdviceApplication>*/ aalist) {
+	private static AdviceApplication noPreds(List<AdviceApplication> aalist) {
 		List results = new ArrayList();
 		AdviceApplication res = null;
 		for (Iterator it = aalist.iterator(); it.hasNext(); ) {
@@ -79,7 +79,7 @@ public class MethodAdviceList {
 	}
 	
 	// topological sort in order of reverse precedence
-	private static List sortWithPrecedence(List<AdviceApplication> aalist) {
+	private static List<AdviceApplication> sortWithPrecedence(List<AdviceApplication> aalist) {
         //remove advice applications that never match
 	    for (Iterator iterator = aalist.iterator(); iterator.hasNext();) {
             AdviceApplication aa = (AdviceApplication) iterator.next();
@@ -89,7 +89,7 @@ public class MethodAdviceList {
         }
 
         //sort
-		List result = new ArrayList();
+		List<AdviceApplication> result = new ArrayList();
 		AdviceApplication start = noPreds(aalist);
 		while (start != null) {
 			result.add(start);
@@ -172,21 +172,21 @@ public class MethodAdviceList {
 
     /** Advice that would apply to the whole body, i.e. at 
 	execution joinpoints */
-    public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
+    public List<AdviceApplication> bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
 	    bodyAdviceP.add(aa);
         state=MODIFIED;
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
-    public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
+    public List<AdviceApplication> stmtAdvice=new LinkedList();
     public void addStmtAdvice(AdviceApplication aa) {
 	    stmtAdviceP.add(aa);
         state=MODIFIED;
     }
 
     /** pre-initialization joinpoints */
-    public List/*<AdviceApplication>*/ preinitializationAdvice
+    public List<AdviceApplication> preinitializationAdvice
 	=new LinkedList();
     public void addPreinitializationAdvice(AdviceApplication aa) {
 	    preinitializationAdviceP.add(aa);
@@ -194,7 +194,7 @@ public class MethodAdviceList {
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
-    public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
+    public List<AdviceApplication> initializationAdvice=new LinkedList();
     public void addInitializationAdvice(AdviceApplication aa) {
         initializationAdviceP.add(aa);
         state=MODIFIED;

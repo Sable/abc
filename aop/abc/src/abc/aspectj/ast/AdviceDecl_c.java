@@ -21,71 +21,39 @@
 package abc.aspectj.ast;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import polyglot.util.CodeWriter;
-import polyglot.util.UniqueID;
-import polyglot.util.Position;
-import polyglot.util.TypedList;
-import polyglot.util.InternalCompilerError;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import polyglot.ast.Block;
 import polyglot.ast.Formal;
-import polyglot.ast.TypeNode;
-import polyglot.ast.Node;
 import polyglot.ast.MethodDecl;
-import polyglot.ast.Expr;
-import polyglot.ast.Return;
-import polyglot.ast.IntLit;
-import polyglot.ast.CharLit;
-import polyglot.ast.FloatLit;
-import polyglot.ast.Local;
+import polyglot.ast.Node;
 import polyglot.ast.Term;
-
-
-import polyglot.types.Flags;
-import polyglot.types.Context;
-import polyglot.types.LocalInstance;
-import polyglot.types.MethodInstance;
+import polyglot.ast.TypeNode;
 import polyglot.types.CodeInstance;
 import polyglot.types.ConstructorInstance;
+import polyglot.types.Context;
+import polyglot.types.Flags;
+import polyglot.types.MethodInstance;
 import polyglot.types.SemanticException;
 import polyglot.types.Type;
 import polyglot.types.TypeSystem;
-import polyglot.types.ClassType;
-import polyglot.types.PrimitiveType;
-import polyglot.types.ReferenceType;
-import polyglot.types.ParsedClassType;
-
+import polyglot.util.CodeWriter;
+import polyglot.util.Position;
+import polyglot.util.UniqueID;
 import polyglot.visit.AmbiguityRemover;
+import polyglot.visit.CFGBuilder;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.TypeChecker;
-import polyglot.visit.TypeBuilder;
-import polyglot.visit.CFGBuilder;
-
-import abc.aspectj.extension.AJMethodDecl_c;
-
-import abc.aspectj.ast.AdviceFormal_c;
-
-import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
-
-import abc.aspectj.visit.AspectInfoHarvester;
-import abc.aspectj.visit.AspectMethods;
-import abc.aspectj.visit.ContainsAspectInfo;
-import abc.aspectj.visit.AspectReflectionInspect;
-import abc.aspectj.visit.AspectReflectionRewrite;
-
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.aspectinfo.Aspect;
-import abc.weaving.aspectinfo.MethodCategory;
+import abc.aspectj.types.AJTypeSystem;
 import abc.weaving.aspectinfo.AbcFactory;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.MethodCategory;
 
 /** 
  * 
@@ -146,6 +114,7 @@ public class AdviceDecl_c extends AdviceBody_c
     public Node visitChildren(NodeVisitor v)
     {
         TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+        AdviceSpec spec = (AdviceSpec) visitChild(this.spec, v);
         List formals = visitList(this.formals, v);
         List throwTypes = visitList(this.throwTypes, v);
         AdviceFormal retval = (AdviceFormal) visitChild(this.retval,v);
@@ -314,7 +283,7 @@ public class AdviceDecl_c extends AdviceBody_c
              pc.makeAIPointcut(),
              AbcFactory.MethodSig(this),
              current_aspect,
-             jp, jpsp, ejp, methods,
+             jp, jpsp, ejp, methods, flags,
              position());
         gai.addAdviceDecl(ad);
  
@@ -351,5 +320,13 @@ public class AdviceDecl_c extends AdviceBody_c
         }
 
         return succs;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Formal getReturnThrowsFormal() {
+    	return retval;
     }
 }

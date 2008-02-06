@@ -19,6 +19,7 @@
 
 package abc.tm.weaving.aspectinfo;
 
+import polyglot.types.Flags;
 import polyglot.util.Position;
 
 import abc.weaving.aspectinfo.*;
@@ -42,7 +43,8 @@ public class TMAdviceDecl extends AdviceDecl
                         List methods, Position pos, String tm_id,
                         Position tm_pos, int kind)
     {
-        super(spec, pc, impl, aspct, jp, jpsp, ejp, methods, pos);
+    	//FIXME propagate actual flags here instead
+        super(spec, pc, impl, aspct, jp, jpsp, ejp, methods, Flags.NONE, pos);
         this.tm_id = tm_id;
         this.tm_pos = tm_pos;
         this.kind = kind;

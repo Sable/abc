@@ -21,19 +21,33 @@
 
 package abc.weaving.aspectinfo;
 
-import abc.aspectj.visit.PCStructure;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import polyglot.util.Position;
-import polyglot.util.ErrorInfo;
-import polyglot.types.SemanticException;
 import polyglot.types.ClassType;
+import polyglot.types.SemanticException;
+import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
-
-import soot.*;
-
-import java.util.*;
-
-import abc.weaving.matching.*;
+import soot.SootClass;
+import soot.SootMethod;
+import abc.weaving.matching.ClassInitializationShadowMatch;
+import abc.weaving.matching.ExecutionShadowMatch;
+import abc.weaving.matching.InterfaceInitializationShadowMatch;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.matching.PreinitializationShadowMatch;
+import abc.weaving.matching.SJPInfo;
+import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.StmtShadowMatch;
 
 
 /** All aspect-specific information for an entire program.
@@ -180,7 +194,7 @@ public class GlobalAspectInfo {
     /** Returns the list of all advice declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.AbstractAdviceDecl} objects.
      */
-    public List getAdviceDecls() {
+    public List<AbstractAdviceDecl> getAdviceDecls() {
         return ads;
     }
 
@@ -377,7 +391,6 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(String a, String b) {
-        int prec;
         if (!prec_rel.containsKey(a) || !prec_rel.containsKey(b))
             return PRECEDENCE_NONE;
 

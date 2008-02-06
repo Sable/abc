@@ -21,71 +21,51 @@
 package abc.aspectj.ast;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
-import polyglot.util.CodeWriter;
-import polyglot.util.UniqueID;
-import polyglot.util.Position;
-import polyglot.util.TypedList;
-import polyglot.util.InternalCompilerError;
-
 import polyglot.ast.Block;
-import polyglot.ast.Formal;
-import polyglot.ast.TypeNode;
-import polyglot.ast.Node;
-import polyglot.ast.MethodDecl;
 import polyglot.ast.Expr;
-import polyglot.ast.Return;
-import polyglot.ast.IntLit;
-import polyglot.ast.CharLit;
 import polyglot.ast.FloatLit;
+import polyglot.ast.Formal;
+import polyglot.ast.IntLit;
 import polyglot.ast.Local;
+import polyglot.ast.MethodDecl;
+import polyglot.ast.Node;
+import polyglot.ast.Return;
 import polyglot.ast.Term;
-
-
-import polyglot.types.Flags;
+import polyglot.ast.TypeNode;
+import polyglot.types.ClassType;
+import polyglot.types.CodeInstance;
 import polyglot.types.Context;
+import polyglot.types.Flags;
 import polyglot.types.LocalInstance;
 import polyglot.types.MethodInstance;
-import polyglot.types.CodeInstance;
-import polyglot.types.ConstructorInstance;
+import polyglot.types.ParsedClassType;
+import polyglot.types.PrimitiveType;
+import polyglot.types.ReferenceType;
 import polyglot.types.SemanticException;
 import polyglot.types.Type;
 import polyglot.types.TypeSystem;
-import polyglot.types.ClassType;
-import polyglot.types.PrimitiveType;
-import polyglot.types.ReferenceType;
-import polyglot.types.ParsedClassType;
-
+import polyglot.util.CodeWriter;
+import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
+import polyglot.util.UniqueID;
 import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
-import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
-import polyglot.visit.CFGBuilder;
-
+import polyglot.visit.TypeChecker;
 import abc.aspectj.extension.AJMethodDecl_c;
-
-import abc.aspectj.ast.AdviceFormal_c;
-
-import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
-
-import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectMethods;
-import abc.aspectj.visit.ContainsAspectInfo;
 import abc.aspectj.visit.AspectReflectionInspect;
 import abc.aspectj.visit.AspectReflectionRewrite;
-
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.aspectinfo.Aspect;
-import abc.weaving.aspectinfo.MethodCategory;
-import abc.weaving.aspectinfo.AbcFactory;
+import abc.aspectj.visit.ContainsAspectInfo;
 
 /** 
  * An advice-body is similar to a normal method, but it can contain
@@ -345,11 +325,12 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
     {
         super.typeCheck(tc);
 
-        Flags f = flags().clear(Flags.STRICTFP).clear(Flags.SYNCHRONIZED);
-        if (!f.equals(Flags.NONE))
-            throw new SemanticException("advice cannot have flags " + f,
-                                        position());
-          
+        AJTypeSystem ts = (AJTypeSystem) tc.typeSystem();
+        try {
+            ts.checkAdviceBodyFlags(flags());
+        } catch (SemanticException e) {
+            throw new SemanticException(e.getMessage(), position());
+        }
         return this;
     }
 
@@ -464,4 +445,11 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
     {
         return listEntry(formals(), body()==null ? this : body().entry());
     }
+
+	/**
+	 * @inheritDoc
+	 */
+	public Formal getReturnThrowsFormal() {
+		return null;
+	}
 }

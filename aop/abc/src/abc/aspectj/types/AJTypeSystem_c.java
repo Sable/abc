@@ -19,6 +19,7 @@
 
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Oege de Moor
+ * Copyright (C) 2008 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,37 +39,37 @@
 
 package abc.aspectj.types;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Stack;
 import java.util.Iterator;
-
-
-import polyglot.ext.jl.types.MethodInstance_c;
-import polyglot.frontend.ExtensionInfo;
-import polyglot.frontend.Source;
-
-import polyglot.util.InternalCompilerError;
-import polyglot.util.Position;
-import polyglot.util.ErrorInfo;
-import polyglot.types.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 import polyglot.ast.Typed;
-
-import abc.aspectj.ast.AdviceSpec;
-import abc.aspectj.ast.CovariantRetTypeMethodInstance_c;
-import abc.aspectj.types.AJFlags;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-
+import polyglot.frontend.ExtensionInfo;
+import polyglot.frontend.Source;
+import polyglot.types.ClassType;
+import polyglot.types.ConstructorInstance;
+import polyglot.types.Context;
+import polyglot.types.FieldInstance;
+import polyglot.types.Flags;
+import polyglot.types.LazyClassInitializer;
+import polyglot.types.LoadedClassResolver;
+import polyglot.types.MemberInstance;
+import polyglot.types.MethodInstance;
+import polyglot.types.NoMemberException;
+import polyglot.types.ReferenceType;
+import polyglot.types.SemanticException;
+import polyglot.types.Type;
+import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
 import soot.javaToJimple.jj.types.JjTypeSystem_c;
+import abc.aspectj.ast.CovariantRetTypeMethodInstance_c;
 
 /**
  * 
  * @author Oege de Moor
+ * @author Eric Bodden
  *
  */
 public class AJTypeSystem_c 
@@ -687,6 +688,15 @@ public class AJTypeSystem_c
 		
 		if (f.isAbstract() && f.isPrivate())
 			throw new SemanticException("Cannot declare pointcut that is both abstract and private.");
+	}
+	
+	protected Flags AJ_ADVICE_BODY_FLAGS = Flags.STRICTFP.set(Flags.SYNCHRONIZED);
+
+	public void checkAdviceBodyFlags(Flags f) throws SemanticException {
+		if (! f.clear(AJ_ADVICE_BODY_FLAGS).equals(Flags.NONE)) {
+			throw new SemanticException("Advice cannot have flags  " +
+			                            f.clear(AJ_ADVICE_BODY_FLAGS) +".");
+		}
 	}
 
 	public List findAcceptableMethods(ReferenceType container, String name,

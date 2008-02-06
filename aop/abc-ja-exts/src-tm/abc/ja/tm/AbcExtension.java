@@ -38,9 +38,10 @@ import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
-import abc.tm.weaving.weaver.TMLoopExitRestructurer;
 import abc.tm.weaving.weaver.TMWeaver;
+import abc.tm.weaving.weaver.itds.ITDAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
+import abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
 import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
@@ -78,7 +79,7 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
     private static final ID PASS_TM_ANALYSIS_FLOWINS_REITER = new ID("Tracematch analysis - reiteration of flow-insensitive stage");
     private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
     private static final ID PASS_DYNAMIC_INSTRUMENTATION = new ID("Dynamic instrumentation");
-    
+    private static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");    
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -161,6 +162,13 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
      */
     protected void createReweavingPasses(List passes) {
         super.createReweavingPasses(passes);
+        
+        if (abc.main.Debug.v().useITDs) {
+            OptionsParser.v().set_tag_instructions(true);
+            passes.add(new ReweavingPass(PASS_ITD_ANALYSIS,
+                                         new ITDAnalysis()));
+        }
+
         if(OptionsParser.v().wp_tmopt()) {
             //we need instruction tags so that we can identify shadow IDs after weaving
             OptionsParser.v().set_tag_instructions(true);
@@ -177,55 +185,16 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
             
             if(!laststage.equals("quick")) {
             
-                ReweavingAnalysis intra = null;
-                if(!laststage.equals("flowins") && Debug.v().firstUnnecessary) {
-                    
-                    //hook up intra-procedural analysis, if present (first iteration of unnecessary shadows)
-                    try {
-                        Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");              
-                        intra = (ReweavingAnalysis) optClass.newInstance();
-                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-                        System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations (first run, unnecessary-shadows only).");
-                        
-                        //need unique advice actuals for this analysis
-                        TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
-                    } catch (ClassNotFoundException e) {
-                    } catch (InstantiationException e) {
-                    } catch (IllegalAccessException e) {
-                    };
-                }
-                
                 ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
                 passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
     
                 if(!laststage.equals("flowins")) {
     
-                    //hook up intraprocedural analysis, if present
-                    try {
-                        if(intra==null) {
-            				Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural");				
-            	            intra = (ReweavingAnalysis) optClass.newInstance();
-                        }
-        	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-        	            System.out.println("Found and installed plug-in for intra-procedural static tracematch optimizations.");
-                        
-                        //need unique advice actuals for this analysis
-                        TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
-                    } catch (ClassNotFoundException e) {
-        			} catch (InstantiationException e) {
-        			} catch (IllegalAccessException e) {
-        			};
-
-                    //hook up reiteration of flow-insensitive analysis, if present
-                    try {
-                        Class optClass = Class.forName("abc.tm.weaving.weaver.tmanalysis.OptReiterationFlowInsensitiveAnalysis");              
-                        ReweavingAnalysis flowinsReIter = (ReweavingAnalysis) optClass.newInstance();
-                        passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS_REITER , flowinsReIter ) );
-                        System.out.println("Found and installed plug-in for reiteration of flow-insensitive analysis.");
-                    } catch (ClassNotFoundException e) {
-                    } catch (InstantiationException e) {
-                    } catch (IllegalAccessException e) {
-                    };
+    				ReweavingAnalysis intra = new OptIntraProcedural();
+    	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
+                    
+                    //need unique advice actuals for this analysis; TODO do we really?
+                    TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
                 }
             }
             
@@ -449,18 +418,5 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
 			}
 		};
 	}
-    
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public void doMethodRestructuring() {
-        super.doMethodRestructuring();
-        
-        String laststage = OptionsParser.v().laststage();
-        if(OptionsParser.v().wp_tmopt() && !laststage.equals("quick") && !laststage.equals("flowins")) {
-            TMLoopExitRestructurer.apply();
-        }
-    }
-   
+       
 }

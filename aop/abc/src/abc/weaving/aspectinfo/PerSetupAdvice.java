@@ -19,10 +19,12 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.ArrayList;
+
+import polyglot.types.Flags;
 import polyglot.util.Position;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.matching.EmptyFormals;
+import abc.weaving.matching.WeavingEnv;
 
 /*  Base class for synthetic advice used to instantiate aspects with per clauses
  *  @author Ganesh Sittampalam
@@ -30,7 +32,7 @@ import abc.weaving.weaver.WeavingContext;
 public abstract class PerSetupAdvice extends AbstractAdviceDecl {
 
     protected PerSetupAdvice(AdviceSpec spec,Aspect aspct,Pointcut pc,Position pos) {
-	super(aspct,spec,pc,new ArrayList(),pos);
+	super(aspct,spec,pc,new ArrayList(),Flags.NONE,pos);
     }
 
     public WeavingEnv getWeavingEnv() {

@@ -20,6 +20,7 @@
 
 package abc.aspectj.ast;
 
+import polyglot.ast.Formal;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Local;
 import polyglot.types.CodeInstance;
@@ -57,4 +58,11 @@ public interface AdviceDecl extends MethodDecl,
    	 * @param ci   code instance to register
    	 */
    	void localMethod(CodeInstance ci);
+
+	/**
+	 * For an after-returning or after-throwing advice, returns the formal that was used
+	 * to bind the returned result / thrown exception (if any). In all other cases,
+	 * <code>null</code> is returned. 
+	 */
+	public Formal getReturnThrowsFormal();
 }
