@@ -43,14 +43,14 @@ public abstract class AbstractReweavingAnalysis implements ReweavingAnalysis {
     /** 
      * {@inheritDoc}
      */
-    public void defaultSootArgs(List sootArgs) {
+    public void defaultSootArgs(List<String> sootArgs) {
         //do nothing
     }
 
     /** 
      * {@inheritDoc}
      */
-    public void enforceSootArgs(List sootArgs) {
+    public void enforceSootArgs(List<String> sootArgs) {
         //do nothing
     }
 

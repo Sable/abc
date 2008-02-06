@@ -218,4 +218,7 @@ public class EAJExtFactory_c extends AJAbstractExtFactory_c implements EAJExtFac
     	return extPointcut();
 	}
     
+	public Ext extPCMaybeShared() {
+    	return extPointcut();
+	}
 }

@@ -216,4 +216,8 @@ public class EAJDelFactory_c extends AJAbstractDelFactory_c implements EAJDelFac
 	public JL delPCMonitorExit() {
     	return delPointcutImpl();
 	}
+
+	public JL delPCMaybeShared() {
+    	return delPointcutImpl();
+	}
 }

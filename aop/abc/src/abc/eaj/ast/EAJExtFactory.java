@@ -19,13 +19,14 @@
 
 package abc.eaj.ast;
 
+import abc.aspectj.ast.AJExtFactory;
 import polyglot.ast.Ext;
 
 /**
  * @author Eric Bodden
  * @author Pavel Avgustinov
  */
-public interface EAJExtFactory {
+public interface EAJExtFactory extends AJExtFactory {
 
     /**
      * @return extensions for cast pointcuts
@@ -92,4 +93,8 @@ public interface EAJExtFactory {
 	 */
 	public Ext extPCMonitorExit();
     
+	/**
+	 * @return extension for maybe-shared pointcuts
+	 */
+	public Ext extPCMaybeShared();
 }

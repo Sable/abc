@@ -57,4 +57,5 @@ public interface EAJNodeFactory extends AJNodeFactory {
     
     public PCLock PCLock(Position pos);
     public PCUnlock PCUnlock(Position pos);
+    public PCMaybeShared PCMaybeShared(Position pos);
 }

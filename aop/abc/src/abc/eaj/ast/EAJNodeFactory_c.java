@@ -153,4 +153,11 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     	n = (PCUnlock)n.del(((EAJDelFactory)delFactory()).delPCMonitorExit());
     	return n;
 	}
+
+	public abc.eaj.ast.PCMaybeShared PCMaybeShared(Position pos) {
+    	PCMaybeShared n = new PCMaybeShared_c(pos);
+    	n = (PCMaybeShared)n.ext(((EAJExtFactory)extFactory()).extPCMaybeShared());
+    	n = (PCMaybeShared)n.del(((EAJDelFactory)delFactory()).delPCMaybeShared());
+    	return n;
+	}
 }

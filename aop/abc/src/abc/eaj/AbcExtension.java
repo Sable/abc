@@ -1,5 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Julian Tibble
+ * Copyright (C) 2004 Pavel Avgustinov
+ * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +24,8 @@ package abc.eaj;
 import java.util.Collection;
 import java.util.List;
 
+import polyglot.util.ErrorInfo;
+
 import soot.Scene;
 import soot.SootClass;
 import soot.tagkit.Host;
@@ -36,9 +40,13 @@ import abc.eaj.weaving.matching.ThrowShadowMatch;
 import abc.eaj.weaving.matching.UnlockShadowMatch;
 import abc.eaj.weaving.weaver.SyncWarningWeaver;
 import abc.eaj.weaving.weaver.SynchronizedMethodRestructurer;
+import abc.eaj.weaving.weaver.maybeshared.TLOAnalysisManager;
 import abc.main.Debug;
 import abc.weaving.matching.SJPInfo;
+import abc.weaving.matching.ShadowType;
+import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
+import abc.weaving.weaver.ReweavingPass.ID;
 
 /**
  * @author Julian Tibble
@@ -47,7 +55,11 @@ import abc.weaving.weaver.Weaver;
  */
 public class AbcExtension extends abc.main.AbcExtension
 {
-    protected void collectVersions(StringBuffer versions)
+    protected static final ID THREAD_LOCAL_OBJECTS_ANALYSIS = new ReweavingPass.ID("thread-local obejcts analysis");
+    
+    protected boolean lexerSawMaybeSharedPointcut = false;
+
+	protected void collectVersions(StringBuffer versions)
     {
         super.collectVersions(versions);
         versions.append(" with EAJ " +
@@ -62,17 +74,18 @@ public class AbcExtension extends abc.main.AbcExtension
         return new abc.eaj.ExtensionInfo(jar_classes, aspect_sources);
     }
 
-    protected List/*<ShadowType>*/ listShadowTypes()
+    protected List<ShadowType> listShadowTypes()
     {
-        List/*<ShadowType*/ shadowTypes = super.listShadowTypes();
+        List<ShadowType> shadowTypes = super.listShadowTypes();
 
         shadowTypes.add(CastShadowMatch.shadowType());
         shadowTypes.add(ThrowShadowMatch.shadowType());
         shadowTypes.add(ArrayGetShadowMatch.shadowType());
         shadowTypes.add(ArraySetShadowMatch.shadowType());
-        shadowTypes.add(LockShadowMatch.shadowType());
-        shadowTypes.add(UnlockShadowMatch.shadowType());
-
+        if(Debug.v().enableLockPointcuts) {
+	        shadowTypes.add(LockShadowMatch.shadowType());
+	        shadowTypes.add(UnlockShadowMatch.shadowType());
+        }
         return shadowTypes;
     }
 
@@ -144,6 +157,18 @@ public class AbcExtension extends abc.main.AbcExtension
 	        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_UNLOCK)));
         }
 
+    	lexer.addPointcutKeyword("maybeShared", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_MAYBE_SHARED)) {
+    		public int getToken(AbcLexer lexer) {
+    			if(!Debug.v().optimizeMaybeSharedPointcut && !lexerSawMaybeSharedPointcut) {
+    				reportError(ErrorInfo.WARNING,
+    						"Pointcut maybeShared() was used but optimization of this pointcut is disabled! " +
+    						"Enable via option '-debug optimizeMaybeSharedPointcut'.", null);
+    			}
+    			lexerSawMaybeSharedPointcut = true;
+    			return super.getToken(lexer);
+    		}
+    	});
+
         if(!Debug.v().noContainsPointcut) {
         	//keyword for the "contains" pointcut extension
         	lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CONTAINS)));
@@ -161,5 +186,18 @@ public class AbcExtension extends abc.main.AbcExtension
     		new SynchronizedMethodRestructurer().apply();
     	}
     	super.doMethodRestructuring();
+    }
+    
+    protected void createReweavingPasses(List passes) {
+    	super.createReweavingPasses(passes);
+    	
+    	if(Debug.v().optimizeMaybeSharedPointcut) {	    	
+	   		passes.add(new ReweavingPass(THREAD_LOCAL_OBJECTS_ANALYSIS,TLOAnalysisManager.v()) {
+	   			public boolean isEnabled() {
+	   				//only enable, if the lexer saw a maybeShared pointcut
+	   				return lexerSawMaybeSharedPointcut;
+	   			}
+	   		});
+    	}
     }
 }

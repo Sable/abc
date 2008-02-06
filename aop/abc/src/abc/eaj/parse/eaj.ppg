@@ -52,6 +52,7 @@ terminal Token PC_ARRAYGET;
 terminal Token PC_ARRAYSET;
 terminal Token PC_LOCK;
 terminal Token PC_UNLOCK;
+terminal Token PC_MAYBE_SHARED;
 
 // ------- new non-terminals -----------------------
 
@@ -134,6 +135,12 @@ extend basic_pointcut_expr ::=
         {:
             Grm.parserTrace("UNLOCK pointcut");
             RESULT = parser.nf.PCUnlock(parser.pos(x,y));
+        :}
+    |
+        PC_MAYBE_SHARED:x LPAREN RPAREN:y
+        {:
+            Grm.parserTrace("MAYBE_SHARED pointcut");
+            RESULT = parser.nf.PCMaybeShared(parser.pos(x,y));
         :}
     ;
 

@@ -40,7 +40,7 @@ public interface ReweavingAnalysis {
      * @param sootArgs the current list of default arguments; add argument strings
      * as needed
      */
-    public void defaultSootArgs(List sootArgs);
+    public void defaultSootArgs(List<String> sootArgs);
 
     /**
      * Allows you to override arguments to Soot, which were
@@ -48,7 +48,7 @@ public interface ReweavingAnalysis {
      * @param sootArgs the current list of default arguments; remove, replace or just add
      * arguments as needed
      */
-    public void enforceSootArgs(List sootArgs);
+    public void enforceSootArgs(List<String> sootArgs);
     
     /**
      * Perform the actual analysis.

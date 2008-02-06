@@ -19,13 +19,14 @@
 
 package abc.eaj.ast;
 
+import abc.aspectj.ast.AJDelFactory;
 import polyglot.ast.JL;
 
 /**
  * @author Eric Bodden
  * @author Pavel Avgustinov
  */
-public interface EAJDelFactory {
+public interface EAJDelFactory extends AJDelFactory {
 
     /**
      * @return delegates for cast pointcuts
@@ -92,4 +93,8 @@ public interface EAJDelFactory {
 	 */
 	public JL delPCMonitorExit();
 
+	/**
+     * @return delegates for maybe-shared pointcuts
+	 */
+	public JL delPCMaybeShared();
 }
