@@ -343,10 +343,26 @@ aspect IntertypeMethodCodegeneration {
   syn lazy MethodDecl MethodDecl.createSuperDispatchDelegate(TypeDecl qualifierType) {
     String name = "superDispatch$" + qualifierType.fullName().replace('.', '$').replace('@', '_') + "$" + name();
     List statements = new List();
-    List args = new List();
-    for(int i = 0; i < getNumParameter(); i++)
-      args.add(getParameter(i).createAccess());
-    Expr e = new SuperAccess("super").qualifiesAccess(this.createBoundAccess(args));
+    Expr e = null;
+    if(qualifierType.isInterfaceDecl()) {
+      for(Iterator iter = ((InterfaceDecl)qualifierType).ancestorMethods(signature()).iterator(); iter.hasNext(); ) {
+        MethodDecl m = (MethodDecl)iter.next();
+        if(m instanceof IntertypeMethodDecl && !m.isAbstract()) {
+          IntertypeMethodDecl imd = (IntertypeMethodDecl)m;
+          List args = new List();
+          args.add(new ThisAccess());
+          for(int i = 0; i < getNumParameter(); i++)
+            args.add(getParameter(i).createAccess());
+          e = imd.createAspectMethod().createBoundAccess(args);
+        }
+      }
+    }
+    if(e == null) {
+      List args = new List();
+      for(int i = 0; i < getNumParameter(); i++)
+        args.add(getParameter(i).createAccess());
+      e = new SuperAccess("super").qualifiesAccess(this.createBoundAccess(args));
+    }
     if(type().isVoid())
       statements.add(new ExprStmt(e));
     else

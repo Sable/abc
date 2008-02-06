@@ -50,8 +50,39 @@ aspect IntertypeMethodNameAnalysis {
     isQualified() ? qualifier().type() : thisType();
   refine LookupType eq SuperAccess.decl() {
     TypeDecl typeDecl = isQualified() ? qualifier().type() : thisType();
-    if(typeDecl.isInterfaceDecl())
+    if(typeDecl.isInterfaceDecl()) {
+      if(hasNextAccess() && nextAccess() instanceof MethodAccess) {
+        MethodAccess ma = (MethodAccess)nextAccess();
+        SimpleSet maxSpecific = SimpleSet.emptySet;
+        for(Iterator iter = ((InterfaceDecl)typeDecl).superinterfacesIterator(); iter.hasNext(); ) {
+          InterfaceDecl superInterface = (InterfaceDecl)iter.next();
+          for(Iterator i2 = superInterface.memberMethods(ma.name()).iterator(); i2.hasNext(); ) {
+            MethodDecl decl = (MethodDecl)i2.next();
+            if(ma.applicable(decl)) {
+              if(maxSpecific.isEmpty())
+                maxSpecific = maxSpecific.add(decl);
+              else {
+                if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
+                  maxSpecific = SimpleSet.emptySet.add(decl);
+                else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
+                  maxSpecific = maxSpecific.add(decl);
+              }
+            }
+          }
+        }
+        SimpleSet set = SimpleSet.emptySet;
+        for(Iterator iter = maxSpecific.iterator(); iter.hasNext(); ) {
+          MethodDecl n = (MethodDecl)iter.next();
+          if(!n.isAbstract())
+            set = set.add(n);
+        }
+        if(set.size() == 1) {
+          MethodDecl m = (MethodDecl)set.iterator().next();
+          return m.hostType();
+        }
+      }
       return typeObject();
+    }
     if(!typeDecl.isClassDecl())
       return unknownType();
     ClassDecl classDecl = (ClassDecl)typeDecl;
