@@ -10691,6 +10691,19 @@
         <run class="SyncMethods"/>
     </ajc-test>
 
+    <ajc-test num="1221" dir="abctests/eaj/maybeShared" 
+	    title="maybeShared pointcut - not shared">
+        <compile files="NotShared.java" options="-ext,abc.eaj,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut"/>
+        <run class="NotShared"/>
+    </ajc-test>
+
+    <ajc-test num="1222" dir="abctests/eaj/maybeShared" 
+	    title="maybeShared pointcut - shared">
+        <compile files="Shared.java" options="-ext,abc.eaj,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut">
+        </compile>
+        <run class="Shared"/>
+    </ajc-test>
+    
     <ajc-test num="1301" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): QuickCheck">
         <compile files="QuickCheck.java" options="-ext,abc.tm,-wp-tmopt,-debug,warnWhenAlteringShadow">
