@@ -46,11 +46,37 @@ aspect IntertypeMethodNameAnalysis {
     return mostSpecificConstructor(c);
   }
 
+  public void SuperAccess.typeCheck() {
+    super.typeCheck();
+    TypeDecl typeDecl = isQualified() ? qualifier().type() : thisType();
+    if(typeDecl.isInterfaceDecl()) {
+      InterfaceDecl decl = (InterfaceDecl)typeDecl;
+      int i = 0;
+      for(Iterator iter = decl.superinterfacesIterator(); iter.hasNext(); ) {
+        i++;
+      }
+      if(i > 1)
+        error("can not use super with multiple super interfaces");
+    }
+  }
+
   refine LookupType eq ThisAccess.decl() =
     isQualified() ? qualifier().type() : thisType();
   refine LookupType eq SuperAccess.decl() {
     TypeDecl typeDecl = isQualified() ? qualifier().type() : thisType();
     if(typeDecl.isInterfaceDecl()) {
+      InterfaceDecl decl = (InterfaceDecl)typeDecl;
+      TypeDecl superInterface = null;
+      int i = 0;
+      for(Iterator iter = decl.superinterfacesIterator(); iter.hasNext(); ) {
+        superInterface = (TypeDecl)iter.next();
+        i++;
+      }
+      if(i == 1) 
+        return superInterface;
+      else if(i > 1)
+        return unknownType();
+      /*
       if(hasNextAccess() && nextAccess() instanceof MethodAccess) {
         MethodAccess ma = (MethodAccess)nextAccess();
         SimpleSet maxSpecific = SimpleSet.emptySet;
@@ -81,6 +107,7 @@ aspect IntertypeMethodNameAnalysis {
           return m.hostType();
         }
       }
+      */
       return typeObject();
     }
     if(!typeDecl.isClassDecl())
