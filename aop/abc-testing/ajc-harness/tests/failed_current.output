@@ -2,7 +2,7 @@ Running test 53: new/handle multiple nested inner classes
 Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
-Semantic Error at InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
+Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
 FAIL: Test 53: "new/handle multiple nested inner classes" failed.
 
 
@@ -11,7 +11,7 @@ Commandline: abc -d new -warn-unused-advice:off new/OuterAbstract_PR408.java
 Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:/usr/local/src/abc-with-tests/abc/lib/abc-testing.jar:/usr/local/src/abc-with-tests/abc/lib/abc-runtime.jar -d new -warn-unused-advice:off new/ExtendsOuterAbstract_PR408.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
-Semantic Error at ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
+Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
 FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed.
 
 
@@ -25,7 +25,7 @@ Running test 178: pureJava/nested finally blocks have interesting frame location
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
-Semantic Error at NestedFinally.java:5,18-35: Missing return statement.
+Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
 FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed.
 
 
@@ -34,8 +34,8 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndInnerH
 Commandline: abc -cp pureJava:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:/usr/local/src/abc-with-tests/abc/lib/abc-testing.jar:/usr/local/src/abc-with-tests/abc/lib/abc-runtime.jar -d pureJava -warn-unused-advice:off pureJava/InterfaceAndInner.java 
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
-Semantic Error at InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
-Semantic Error at InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
+Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
+Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
 FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed.
 
 
@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$21$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -157,8 +157,8 @@ Running test 986: abctests/bugs/Matching int[].clone()
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/IntArray.java 
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
-Syntax Error at IntArray.java:14,28-31: Syntax error: unexpected int.
-Syntax Error at IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
+Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
+Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
 FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
 
 
@@ -215,64 +215,39 @@ Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
 
 
-Running test 1302: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-insensitive stage
-Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage flowins -debug warnWhenAlteringShadow -cp ../../lib/abc-runtime.jar:../../lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/FlowIns.java 
-Compilation produced an unexpected number of errors: 1, should be 2
-Actual errors found: 
-Semantic Error at FlowIns.java: Class "org.aspectj.testing.Tester" not found.
-FAIL: Test 1302: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-insensitive stage" failed.
-
-
 Running test 1303: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1
-Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage intra -debug warnWhenAlteringShadow -cp ../../lib/abc-runtime.jar:../../lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/IntraFlowSens1.java abctests/tracematches/wp-opt/AB.java abctests/tracematches/wp-opt/AbstractTest.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Cannot find class "org.aspectj.lang.JoinPoint"; Class "org.aspectj.lang.JoinPoint" not found.
-polyglot.util.InternalCompilerError: Cannot find class "org.aspectj.lang.JoinPoint"; Class "org.aspectj.lang.JoinPoint" not found.
-	at polyglot.ext.jl.types.TypeSystem_c.load(TypeSystem_c.java:1320)
-	at abc.aspectj.types.AJTypeSystem_c.JoinPoint(AJTypeSystem_c.java:95)
-	at abc.aspectj.ast.AdviceBody_c.thisJoinPointInstance(AdviceBody_c.java:288)
-	at abc.aspectj.ast.AdviceBody_c.enterScope(AdviceBody_c.java:328)
-	at abc.tm.ast.TMDecl_c.enterScope(TMDecl_c.java:215)
-	at polyglot.visit.ContextVisitor.enterScope(ContextVisitor.java:84)
-	at polyglot.visit.ContextVisitor.enter(ContextVisitor.java:104)
-	at abc.eaj.visit.GlobalPointcuts.enter(GlobalPointcuts.java:109)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:209)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:140)
-	at abc.tm.ast.TMDecl_c.visitChildren(TMDecl_c.java:173)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:216)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:140)
-	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:197)
-	at polyglot.ext.jl.ast.ClassBody_c.visitChildren(ClassBody_c.java:61)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:216)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:140)
-	at abc.aspectj.ast.AspectDecl_c.visitChildren(AspectDecl_c.java:247)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:216)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:140)
-	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:197)
-	at polyglot.ext.jl.ast.SourceFile_c.visitChildren(SourceFile_c.java:108)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:216)
-	at polyglot.ext.jl.ast.Node_c.visit(Node_c.java:144)
-	at polyglot.frontend.VisitorPass.run(VisitorPass.java:48)
-	at polyglot.frontend.AbstractExtensionInfo.runPass(AbstractExtensionInfo.java:308)
-	at polyglot.frontend.AbstractExtensionInfo.enforceInvariants(AbstractExtensionInfo.java:454)
-	at polyglot.frontend.AbstractExtensionInfo.runPass(AbstractExtensionInfo.java:260)
-	at polyglot.frontend.AbstractExtensionInfo.runToPass(AbstractExtensionInfo.java:228)
-	at polyglot.frontend.AbstractExtensionInfo.runAllPasses(AbstractExtensionInfo.java:195)
-	at polyglot.frontend.AbstractExtensionInfo.runToCompletion(AbstractExtensionInfo.java:110)
-	at polyglot.frontend.Compiler.compile(Compiler.java:95)
-	at abc.main.CompileSequence.compile(CompileSequence.java:283)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
+Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage intra -debug warnWhenAlteringShadow -cp ../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/IntraFlowSens1.java abctests/tracematches/wp-opt/AB.java abctests/tracematches/wp-opt/AbstractTest.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:121)
 	at abc.main.Main.run(Main.java:487)
 	at abc.testing.TestCase.runTest(TestCase.java:286)
 	at abc.testing.Main.doCase(Main.java:283)
 	at abc.testing.Main.main(Main.java:117)
-Caused by: polyglot.types.NoClassException: Class "org.aspectj.lang.JoinPoint" not found.
-	at polyglot.types.LoadedClassResolver.find(LoadedClassResolver.java:106)
-	at polyglot.types.CompoundResolver.find(CompoundResolver.java:44)
-	at polyglot.types.CachingResolver.find(CachingResolver.java:104)
-	at polyglot.ext.jl.types.TypeSystem_c.forName(TypeSystem_c.java:1328)
-	at polyglot.ext.jl.types.TypeSystem_c.typeForName(TypeSystem_c.java:1351)
-	at polyglot.ext.jl.types.TypeSystem_c.load(TypeSystem_c.java:1317)
-	... 37 more
+Caused by: java.lang.RuntimeException: Exception while executing reweaving pass 'Tracematch analysis - flow-insensitive stage'
+	at abc.weaving.weaver.ReweavingPass.analyze(ReweavingPass.java:121)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:212)
+	at abc.main.CompileSequence.weave(CompileSequence.java:475)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
+	... 4 more
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at soot.util.BitVector.orAndAndNot(BitVector.java:263)
+	at soot.jimple.spark.sets.HybridPointsToSet.nativeAddAll(HybridPointsToSet.java:62)
+	at soot.jimple.spark.sets.HybridPointsToSet.addAll(HybridPointsToSet.java:143)
+	at soot.jimple.spark.sets.DoublePointsToSet.addAll(DoublePointsToSet.java:61)
+	at soot.jimple.spark.solver.PropWorklist.propagate(PropWorklist.java:81)
+	at soot.jimple.spark.SparkTransformer.internalTransform(SparkTransformer.java:120)
+	at soot.SceneTransformer.transform(SceneTransformer.java:39)
+	at soot.Transform.apply(Transform.java:89)
+	at soot.RadioScenePack.internalApply(RadioScenePack.java:57)
+	at soot.jimple.toolkits.callgraph.CallGraphPack.internalApply(CallGraphPack.java:47)
+	at soot.Pack.apply(Pack.java:110)
+	at abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction.doAnalysis(CallGraphAbstraction.java:88)
+	at abc.tm.weaving.weaver.tmanalysis.stages.AbstractAnalysisStage.apply(AbstractAnalysisStage.java:109)
+	at abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis.doAnalyze(OptFlowInsensitiveAnalysis.java:110)
+	at abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis.analyze(OptFlowInsensitiveAnalysis.java:56)
+	at abc.weaving.weaver.ReweavingPass$Worker.run(ReweavingPass.java:172)
+	at java.lang.Thread.run(Thread.java:595)
 FAIL: Test 1303: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1" failed.
 
 

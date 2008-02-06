@@ -89,15 +89,8 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="Tracematches (wp-tmopt): flow-insensitive stage" num="1302" dir="abctests/tracematches/wp-opt">
-        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="FlowIns.java">
-	    	<message line="12" kind="warning"></message>
-	    	<message line="13" kind="warning"></message>
-		</compile>
-		<run class="FlowIns"></run>
-    </ajc-test>
 <ajc-test title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1" num="1303" dir="abctests/tracematches/wp-opt">
-        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../lib/abc-runtime.jar:../../lib/abc-testing.jar,+soot,-pp,-soot" files="IntraFlowSens1.java,AB.java,AbstractTest.java">
+        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot" files="IntraFlowSens1.java,AB.java,AbstractTest.java">
 	    	<message line="41" kind="warning"></message>
 	    	<message line="43" kind="warning"></message>
 	    	<message line="48" kind="warning"></message>
