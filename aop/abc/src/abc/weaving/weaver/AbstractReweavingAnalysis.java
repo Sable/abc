@@ -74,5 +74,13 @@ public abstract class AbstractReweavingAnalysis implements ReweavingAnalysis {
     public void cleanup() {
         //do nothing
     }
+    
+    /** 
+     * {@inheritDoc}
+     */
+    public boolean isEnabled() {
+    	//by default, the analysis is enabled
+    	return true;
+    }
 
 }
