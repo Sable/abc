@@ -2,91 +2,310 @@
  * The inherited attribute accessType tries to compute an access to a type. If,
  * for some node n, calling n.accessType(t) yields an access a, then looking up
  * a at node n should yield type t.
+ *
+ * The current (rewritten) version is substantially longer than the previous one
+ * and far dumber; it will only try to construct a simple type access, qualified
+ * with a package access in one case, but never qualified with a surrounding type.
+ * This should, of course, be fixed by implementing the moveInto and moveDownTo
+ * methods, which are stubs at the moment.
  * 
- * For a type named "t", the code will return one of the following
- *   1. a type access "t" if the type is directly visible
- *   2. a fully qualified type access if "t" is a toplevel type
- *   3. a type access "A.t" if "t" is enclosed in type "A" and type "A" encloses
- *      the node where "t" is accessed
- *   4. null if none of the above works 
+ * The advantage of this implementation is that it very much parallels the
+ * implementation of lookupType.
  */
 
 aspect AccessType {
 	
 	inh NameType Access.nameType();
 	
-	syn Access ImportDecl.accessType(TypeDecl td) {
-		Program prog = programRoot();
-		for(int i = 0; i < prog.getNumCompilationUnit(); i++) {
-			for(int j = 0; j < prog.getCompilationUnit(i).getNumTypeDecl(); j++) {
-				TypeDecl type = prog.getCompilationUnit(i).getTypeDecl(j);
-				if(type == td)
-					return new TypeAccess(prog.getCompilationUnit(i).packageName(), 
-										  td.getID());
+	inh Access Expr.accessType(TypeDecl td);
+	inh Access Stmt.accessType(TypeDecl td);
+	inh Access BodyDecl.accessType(TypeDecl td);
+	inh Access TypeDecl.accessType(TypeDecl td);
+	inh Access CompilationUnit.accessType(TypeDecl td);
+	inh Access ImportDecl.accessType(TypeDecl td);
+
+	eq Program.getChild().accessType(TypeDecl td) = accessType(td);
+
+	syn lazy Access Program.accessType(TypeDecl td) {
+		addPrimitiveTypes();
+		for(int i = 0; i < getNumCompilationUnit(); i++) {
+			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
+				if(getCompilationUnit(i).getTypeDecl(j) == td)
+					return new TypeAccess(td.packageName(), td.getID());
+			}
+		}
+
+		/* the following is probably unneccessary */
+		CompilationUnit u = getCompilationUnit(td.fullName());
+		if(u != null) {
+			addCompilationUnit(u);
+			getCompilationUnit(getNumCompilationUnit()-1);
+			for(int j = 0; j < u.getNumTypeDecl(); j++) {
+				if(u.getTypeDecl(j) == td) {
+					return new TypeAccess(td.packageName(), td.getID());
+				}
 			}
 		}
 		return null;
 	}
 
-	/* tries to find a type containing type declaration td by walking outwards from
-	 * the node where it was invoked */
-	syn TypeDecl TypeDecl.findTypeContaining(TypeDecl td, boolean ambiguous) {
-		String name = td.getID();
-		if(isSingletonOf(memberTypes(td.getID()), td) &&
-				!(ambiguous && !getBodyDecl(0).lookupVariable(name).isEmpty()))
-			return this;
-		return isNestedType() ? enclosingType().findTypeContaining(td, ambiguous) : null;
+	eq MethodAccess.getArg().accessType(TypeDecl td) = unqualifiedScope().accessType(td);
+	eq ConstructorAccess.getArg().accessType(TypeDecl td) = unqualifiedScope().accessType(td);
+	eq ArrayAccess.getExpr().accessType(TypeDecl td) = unqualifiedScope().accessType(td);
+	eq ArrayTypeWithSizeAccess.getExpr().accessType(TypeDecl td) = unqualifiedScope().accessType(td);
+	eq ClassInstanceExpr.getArg().accessType(TypeDecl td) = unqualifiedScope().accessType(td);
+
+	eq CompilationUnit.getTypeDecl().accessType(TypeDecl td) {
+		Access acc = localAccessType(td);
+		if(acc != null && td.accessibleFromPackage(packageName()))
+			return acc;
+		return null;
 	}
 
-	/* tries to access type declaration td from inside a certain scope; the flag
-	 * ambiguous indicates whether the access occurs in a syntactically ambiguous
-	 * position, i.e. a position where a name might both refer to a type or a
-	 * variable
-	 */
-	syn Access Scope.accessType(TypeDecl td, boolean ambiguous) {
-		String name = td.getID();
-		SimpleSet set = lookupType(name);
-		if(isSingletonOf(set, td) && !(ambiguous && !lookupVariable(name).isEmpty()))
-			return new TypeAccess(name);
-		if(surroundingType() != null) {
-			TypeDecl out = surroundingType().findTypeContaining(td, ambiguous);
-			if(out != null) {
-				Access outacc = accessType(out, ambiguous);
-				if(outacc != null) return outacc.qualifiesAccess(new TypeAccess(name));
+	eq TypeDecl.getBodyDecl().accessType(TypeDecl td) {
+		Access acc = accessMemberType(td);
+		if(acc != null)
+			return acc;
+		return moveInto(accessType(td));
+	}
+
+	eq Block.getStmt(int index).accessType(TypeDecl td) {
+	    for(int i = index; i >= 0 && !(getStmt(i) instanceof Case); i--) {
+	      if(getStmt(i) instanceof LocalClassDeclStmt) {
+	        TypeDecl t = ((LocalClassDeclStmt)getStmt(i)).getClassDecl();
+	        if(td == t)
+	        	return new TypeAccess(td.name());
+	      }
+	    }
+	    return moveInto(accessType(td), index);
+	}
+	
+	eq ClassInstanceExpr.getAccess().accessType(TypeDecl td) {
+		Access acc = accessType(td);
+		if(acc != null && isQualified())
+			if(!(td.isInnerType() && td.isClassDecl()))
+				return null;
+		return acc;
+	}
+
+	eq ClassInstanceExpr.getTypeDecl().accessType(TypeDecl td) {
+		Access acc = localAccessType(td);
+		if(acc != null) return acc;
+		acc = accessType(td);
+		if(acc != null) return moveInto(acc);
+		return moveInto(unqualifiedScope().accessType(td));
+	}
+
+	eq ParseName.qualifiedAccessType(TypeDecl td) = null;
+	eq PackageOrTypeAccess.qualifiedAccessType(TypeDecl td) = null;
+	eq AmbiguousAccess.qualifiedAccessType(TypeDecl td) = null;
+
+	eq AbstractDot.getRight().accessType(TypeDecl td) = 
+		moveRight(getLeft().qualifiedAccessType(td));
+	
+	syn Access Expr.qualifiedAccessType(TypeDecl td) {
+		if(typeAccessible(td))
+			return type().accessMemberType(td);
+		return null;
+	}
+	
+	public boolean Expr.typeAccessible(TypeDecl td) {
+		return hostType() != null && td.accessibleFrom(hostType()) 
+			|| hostType() == null && td.accessibleFromPackage(hostPackage());
+	}
+
+	eq ClassInstanceExpr.qualifiedAccessType(TypeDecl td) {
+		Access acc = type().accessMemberType(td);
+		if(acc != null && typeAccessible(td))
+			return acc;
+		if(type() == td)
+			return moveInto(new TypeAccess(td.name()));
+		return null;
+	}
+
+	eq PackageAccess.qualifiedAccessType(TypeDecl td) {
+		if(td.isTopLevelType() && td.packageName().equals(packageName())) {
+			if(nextAccess() instanceof ClassInstanceExpr &&
+					td.accessibleFrom(hostType()))
+				return new TypeAccess(td.name());
+			else if(typeAccessible(td))
+				return new TypeAccess(td.name());
+		}
+		return null;
+	}
+	
+	syn lazy Access ClassInstanceExpr.localAccessType(TypeDecl td) {
+		if(hasTypeDecl() && getTypeDecl() == td)
+			return new TypeAccess(td.name());
+		return null;
+	}
+
+	syn lazy Access TypeDecl.accessMemberType(TypeDecl td) = null;
+	eq ClassDecl.accessMemberType(TypeDecl td) {
+		for(int i = 0; i < getNumBodyDecl(); i++) {
+			if(getBodyDecl(i) instanceof MemberTypeDecl) {
+				TypeDecl t = ((MemberTypeDecl)getBodyDecl(i)).typeDecl();
+				if(t == td)
+					return new TypeAccess(td.name());
 			}
 		}
-		if(td.isTopLevelType()) {
-			String pkg = td.packageName();
-			String first_component = pkg.split("\\.")[0];
-			if(!(ambiguous && (!lookupVariable(first_component).isEmpty() ||
-							 !lookupType(first_component).isEmpty())))
-				return new TypeAccess(pkg, td.getID());
+		for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)outerIter.next();
+			Access acc = type.accessMemberType(td);
+			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
+				return moveDownTo(acc);
+		}
+		if(hasSuperclass()) {
+			Access acc = superclass().accessMemberType(td);
+			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
+				return moveDownTo(acc);
+		}
+		return null;
+	}
+
+	eq InterfaceDecl.accessMemberType(TypeDecl td) {
+		for(int i = 0; i < getNumBodyDecl(); i++) {
+			if(getBodyDecl(i) instanceof MemberTypeDecl) {
+				TypeDecl t = ((MemberTypeDecl)getBodyDecl(i)).typeDecl();
+				if(t == td)
+					return new TypeAccess(td.name());
+			}
+		}
+		for(Iterator outerIter = superinterfacesIterator(); outerIter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)outerIter.next();
+			Access acc = type.accessMemberType(td);
+			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
+				return moveDownTo(acc);
+		}
+		return null;
+	}
+
+	syn lazy Access CompilationUnit.localAccessType(TypeDecl td) {
+	    for(int i = 0; i < getNumTypeDecl(); i++)
+	    	if(getTypeDecl(i) == td)
+	    		return new TypeAccess(td.name());
+	    Access acc = null;
+	    // The scope of a type imported by a single-type-import declaration
+	    for(int i = 0; i < getNumImportDecl(); i++) {
+	      if(!getImportDecl(i).isOnDemand()) {
+	    	  acc = getImportDecl(i).accessImportedType(td);
+	    	  if(acc != null) return acc;
+	      }
+	    }
+		 
+	    TypeDecl result = lookupType(packageName(), td.name());
+		if(result == td)
+	    	return new TypeAccess(td.name());
+		    
+	    // The scope of a type imported by a type-import-on-demand declaration
+	    for(int i = 0; i < getNumImportDecl(); i++) {
+	      if(getImportDecl(i).isOnDemand())
+	    	  acc = getImportDecl(i).accessImportedType(td);
+	    	  if(acc != null) return acc;
+	    }
+	    
+	    if(lookupType(PRIMITIVE_PACKAGE_NAME, td.name()) != null)
+	    	return new TypeAccess(td.name());
+	    
+	    if(lookupType("java.lang", td.name()) != null)
+	    	return new TypeAccess(td.name());
+
+	    return null;
+	}
+
+	syn lazy Access ImportDecl.accessImportedType(TypeDecl td) = null;
+	eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
+		if(getAccess().type() == td)
+			return new TypeAccess(td.name());
+		return null;
+	}
+	eq TypeImportOnDemandDecl.accessImportedType(TypeDecl td) {
+		if(getAccess() instanceof PackageAccess) {
+			String packageName = ((PackageAccess)getAccess()).getPackage();
+			if(packageName.equals(td.packageName()) &&
+					td.accessibleFromPackage(packageName()))
+				return new TypeAccess(td.name());
+		}
+		else {
+			Access acc = getAccess().type().accessMemberType(td);
+			if(acc != null && td.accessibleFromPackage(packageName()))
+				return new TypeAccess(td.name());
 		}
 		return null;
 	}
 	
-	syn Access Access.accessType(TypeDecl td) {
-		NameType nt = nameType();
-		boolean ambiguous = nt == NameType.AMBIGUOUS_NAME ||
-							nt == NameType.EXPRESSION_NAME;
-		if(isQualified())
-			qualifier().qualifiedAccessType(td, ambiguous);
-		return accessType(td, ambiguous);
+	// TODO: the following are little more than dummy implementations
+	
+	public Access Block.moveInto(Access acc, int index) {
+		if(acc == null) return null;
+		TypeAccess tacc = (TypeAccess)acc;
+	    for(int i = index; i >= 0 && !(getStmt(i) instanceof Case); i--) {
+	        if(getStmt(i) instanceof LocalClassDeclStmt) {
+	          TypeDecl t = ((LocalClassDeclStmt)getStmt(i)).getClassDecl();
+	          if(t.name().equals(tacc.name()))
+	        	  return null;
+	        }
+	    }
+		return acc;
 	}
 	
-	syn Access Expr.qualifiedAccessType(TypeDecl td, boolean ambiguous) {
+	public Access ClassInstanceExpr.moveInto(Access acc) {
+		return acc;
+	}
+	
+	public Access TypeDecl.moveInto(Access acc) {
+		// this actually _should_ return null!
 		return null;
 	}
-
-	eq PackageAccess.qualifiedAccessType(TypeDecl td, boolean ambiguous) {
-		if(lookupType(packageName(), td.getID()) == td)
-			return new TypeAccess(td.getID());
-		else
+	
+	public Access ClassDecl.moveInto(Access acc) {
+		if(acc == null) return null;
+		TypeAccess tacc = (TypeAccess)acc;
+		if(!memberTypes(tacc.name()).isEmpty())
 			return null;
+		return acc;
 	}
-
-	eq TypeAccess.qualifiedAccessType(TypeDecl td, boolean ambiguous) {
-		return type().getBodyDecl(0).accessType(td, ambiguous);
+	
+	public Access InterfaceDecl.moveInto(Access acc) {
+		if(acc == null) return null;
+		TypeAccess tacc = (TypeAccess)acc;
+		if(!memberTypes(tacc.name()).isEmpty())
+			return null;
+		return acc;
+	}
+	
+	public Access ClassDecl.moveDownTo(Access acc) {
+		if(acc == null) return null;
+		TypeAccess tacc = (TypeAccess)acc;
+		if(!memberTypes(tacc.name()).isEmpty())
+			return null;
+		return acc;
+	}
+	
+	public Access InterfaceDecl.moveDownTo(Access acc) {
+		if(acc == null) return null;
+		TypeAccess tacc = (TypeAccess)acc;
+		if(!memberTypes(tacc.name()).isEmpty())
+			return null;
+		return acc;
+	}
+	
+	public Access AbstractDot.moveRight(Access acc) {
+		return acc;
+	}
+	
+	public Access BodyDecl.accessType(TypeDecl td, boolean ambiguous) {
+		TypeAccess tacc = (TypeAccess)accessType(td);
+		if(tacc != null && ambiguous && !lookupVariable(tacc.name()).isEmpty())
+				return null;
+		return tacc;
+	}
+	
+	public Access Expr.accessType(TypeDecl td, boolean ambiguous) {
+		TypeAccess tacc = (TypeAccess)accessType(td);
+		if(tacc != null && ambiguous && !lookupVariable(tacc.name()).isEmpty())
+				return null;
+		return tacc;
 	}
 	
 }

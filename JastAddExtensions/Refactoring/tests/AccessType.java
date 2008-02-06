@@ -5,6 +5,7 @@ import AST.ASTNode;
 import AST.Access;
 import AST.FileRange;
 import AST.ImportDecl;
+import AST.NameType;
 import AST.Program;
 import AST.TypeDecl;
 
@@ -32,13 +33,16 @@ public abstract class AccessType extends TestCase {
         	res = ((ImportDecl)n).accessType((TypeDecl)m);
         } else {
         	assertTrue(n instanceof Access);
-        	res = ((Access)n).accessType((TypeDecl)m);
+        	Access acc = (Access)n;
+            boolean ambiguous = acc.nameType() == NameType.AMBIGUOUS_NAME || 
+            					acc.nameType() == NameType.EXPRESSION_NAME;
+        	res = acc.accessType((TypeDecl)m, ambiguous);
         }
         if(expected == null) {
         	assertNull(res);
         } else {
         	assertNotNull(res);
-        	assertEquals(res.dumpTree(), expected.dumpTree());
+        	assertEquals(expected.dumpTree(), res.dumpTree());
         }
 	}
 	
@@ -54,13 +58,16 @@ public abstract class AccessType extends TestCase {
         	res = ((ImportDecl)n).accessType(td);
         } else {
         	assertTrue(n instanceof Access);
-        	res = ((Access)n).accessType(td);
+        	Access acc = (Access)n;
+            boolean ambiguous = acc.nameType() == NameType.AMBIGUOUS_NAME || 
+            					acc.nameType() == NameType.EXPRESSION_NAME;
+        	res = acc.accessType(td, ambiguous);
         }
         if(expected == null) {
         	assertNull(res);
         } else {
         	assertNotNull(res);
-        	assertEquals(res.dumpTree(), expected.dumpTree());
+        	assertEquals(expected.dumpTree(), res.dumpTree());
         }
 	}
 
