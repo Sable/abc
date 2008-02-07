@@ -127,7 +127,7 @@ public class AdviceDependency_c extends Term_c implements AdviceDependency, Cont
 		DAAspectType currentAspect = (DAAspectType) context.currentAspect();
 		Map<AdviceName, List<Formal>> adviceNameToFormals = currentAspect.getAdviceNameToFormals();
 		
-		//get all advice references inContainsAspectInfo this dependency declaration
+		//get all advice references in this dependency declaration
 		List<AdviceNameAndParams> allAdviceNames = new LinkedList<AdviceNameAndParams>(strongAdvice);
 		allAdviceNames.addAll(weakAdvice);
 		
