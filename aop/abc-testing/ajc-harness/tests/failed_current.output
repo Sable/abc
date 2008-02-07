@@ -50,7 +50,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$21$around$1600(AroundAll.java:199)
+	at A.inline$30$around$1653(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -215,6 +215,50 @@ Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
 
 
+Running test 1221: abctests/eaj/maybeShared/maybeShared pointcut - not shared
+Commandline: abc -d abctests/eaj/maybeShared -warn-unused-advice:off -ext abc.eaj -debug enableMaybeSharedPointcut -debug optimizeMaybeSharedPointcut abctests/eaj/maybeShared/NotShared.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1221: "abctests/eaj/maybeShared/maybeShared pointcut - not shared" failed.
+
+
+Running test 1222: abctests/eaj/maybeShared/maybeShared pointcut - shared
+Commandline: abc -d abctests/eaj/maybeShared -warn-unused-advice:off -ext abc.eaj -debug enableMaybeSharedPointcut -debug optimizeMaybeSharedPointcut abctests/eaj/maybeShared/Shared.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1222: "abctests/eaj/maybeShared/maybeShared pointcut - shared" failed.
+
+
 Running test 1303: abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1
 Commandline: abc -d abctests/tracematches/wp-opt -warn-unused-advice:off -ext abc.tm -wp-tmopt -laststage intra -debug warnWhenAlteringShadow -cp ../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar +soot -pp -soot abctests/tracematches/wp-opt/IntraFlowSens1.java abctests/tracematches/wp-opt/AB.java abctests/tracematches/wp-opt/AbstractTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
@@ -231,11 +275,14 @@ Caused by: java.lang.RuntimeException: Exception while executing reweaving pass 
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:94)
 	... 4 more
 Caused by: java.lang.OutOfMemoryError: Java heap space
-	at soot.util.BitVector.orAndAndNot(BitVector.java:263)
-	at soot.jimple.spark.sets.HybridPointsToSet.nativeAddAll(HybridPointsToSet.java:62)
-	at soot.jimple.spark.sets.HybridPointsToSet.addAll(HybridPointsToSet.java:143)
-	at soot.jimple.spark.sets.DoublePointsToSet.addAll(DoublePointsToSet.java:61)
-	at soot.jimple.spark.solver.PropWorklist.propagate(PropWorklist.java:81)
+	at java.util.HashMap.addEntry(HashMap.java:797)
+	at java.util.HashMap.put(HashMap.java:431)
+	at java.util.HashSet.add(HashSet.java:194)
+	at soot.jimple.spark.solver.PropWorklist$5.visit(PropWorklist.java:250)
+	at soot.jimple.spark.sets.HybridPointsToSet.forall(HybridPointsToSet.java:151)
+	at soot.jimple.spark.sets.DoublePointsToSet.forall(DoublePointsToSet.java:65)
+	at soot.jimple.spark.solver.PropWorklist.handleFieldRefNode(PropWorklist.java:240)
+	at soot.jimple.spark.solver.PropWorklist.propagate(PropWorklist.java:74)
 	at soot.jimple.spark.SparkTransformer.internalTransform(SparkTransformer.java:120)
 	at soot.SceneTransformer.transform(SceneTransformer.java:39)
 	at soot.Transform.apply(Transform.java:89)
@@ -249,5 +296,115 @@ Caused by: java.lang.OutOfMemoryError: Java heap space
 	at abc.weaving.weaver.ReweavingPass$Worker.run(ReweavingPass.java:172)
 	at java.lang.Thread.run(Thread.java:595)
 FAIL: Test 1303: "abctests/tracematches/wp-opt/Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1" failed.
+
+
+Running test 1420: abctests/da/typechecks/Typechecks for dependent advice 
+Commandline: abc -d abctests/da/typechecks -warn-unused-advice:off -ext abc.da abctests/da/typechecks/DATypeChecks.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1420: "abctests/da/typechecks/Typechecks for dependent advice " failed.
+
+
+Running test 1421: abctests/da/typechecks/Typechecks for dependent advice (2)
+Commandline: abc -d abctests/da/typechecks -warn-unused-advice:off -ext abc.da abctests/da/typechecks/DATypeChecks2.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1421: "abctests/da/typechecks/Typechecks for dependent advice (2)" failed.
+
+
+Running test 1422: abctests/da/typechecks/Typechecks for dependent advice (3)
+Commandline: abc -d abctests/da/typechecks -warn-unused-advice:off -ext abc.da abctests/da/typechecks/DATypeChecks3.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1422: "abctests/da/typechecks/Typechecks for dependent advice (3)" failed.
+
+
+Running test 1423: abctests/da/typechecks/Typechecks for dependent advice (4)
+Commandline: abc -d abctests/da/typechecks -warn-unused-advice:off -ext abc.da abctests/da/typechecks/DATypeChecks4.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1423: "abctests/da/typechecks/Typechecks for dependent advice (4)" failed.
+
+
+Running test 1424: abctests/da/typechecks/Typechecks for dependent advice (5)
+Commandline: abc -d abctests/da/typechecks -warn-unused-advice:off -ext abc.da abctests/da/typechecks/DATypeChecks5.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:535)
+	at abc.testing.TestCase.runTest(TestCase.java:286)
+	at abc.testing.Main.doCase(Main.java:283)
+	at abc.testing.Main.main(Main.java:117)
+Caused by: java.lang.RuntimeException: couldn't find class: javax.crypto.Cipher (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:133)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:166)
+	at soot.SootResolver.bringToBodies(SootResolver.java:207)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:94)
+	at soot.SootResolver.resolveClass(SootResolver.java:83)
+	at soot.Scene.tryLoadClass(Scene.java:336)
+	at soot.Scene.loadBasicClasses(Scene.java:886)
+	at abc.main.Main.initSoot(Main.java:623)
+	at abc.main.Main.run(Main.java:474)
+	... 3 more
+FAIL: Test 1424: "abctests/da/typechecks/Typechecks for dependent advice (5)" failed.
 
 
