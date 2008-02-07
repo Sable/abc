@@ -1,15 +1,106 @@
 aspect DeclarePrecedence {
-  // TODO: this does not work, why? how to provide arguments to aspect info
-  public void DeclarePrecedence.jimplify2() {
-    super.jimplify2();
-    System.out.println("Adding precedence declaration");
-    ArrayList list = new ArrayList();
-    for(int i = 0; i < getNumPattern(); i++)
-      list.add(getPattern(i).classnamePattern());
-    globalAspectInfo().addDeclarePrecedence(
-      new abc.weaving.aspectinfo.DeclarePrecedence(list, aspectClass(), pos())
-    );
+  //
+  // Compute precedence relation
+  //
+
+  // Need to navigate between aspects
+  inh lazy AspectDecl DeclarePrecedence.firstAspect();
+  syn lazy AspectDecl AspectDecl.nextAspect();
+
+  eq Program.getCompilationUnit().firstAspect() = nextAspectBelow(0);
+  eq AspectDecl.nextAspect() = getModifiers().nextAspectRight();
+
+
+  // (internal)
+  syn AspectDecl ASTNode.nextAspectBelow(int start);
+  syn AspectDecl ASTNode.nextAspectRight();
+
+  eq AspectDecl.nextAspectBelow(int start) =
+    start == 0 ? this : super.nextAspectBelow(start);
+
+  eq ASTNode.nextAspectBelow(int start)
+  {
+    for (int i = start; i < getNumChild(); i++) {
+      AspectDecl next = getChild(i).nextAspectBelow(0);
+      if (next != null)
+        return next;
+    }
+    return null;
   }
+
+  eq Program.nextAspectRight() = null;
+  eq ASTNode.nextAspectRight()
+  {
+    int index = getParent().getIndexOfChild(this);
+    AspectDecl next = getParent().nextAspectBelow(index + 1);
+
+    if (next != null)
+      return next;
+    return getParent().nextAspectRight();
+  }
+
+  // In the precedence map, A has precedence over B
+  //   iff B is in map.get(A)
+  public void DeclarePrecedence.updatePrecedenceMap()
+  {
+    // based on original implementation by Aske Simon Christensen
+
+    Map precedence = abc.main.Main.v().getAbcExtension()
+                        .getGlobalAspectInfo().getPrecedenceRelation();
+
+    // The aspects that have matched previous patterns
+    Set passed = new HashSet();
+
+    // Iterate through the list of patterns
+    for (int i = 0; i < getNumPattern(); i++) {
+      // The aspects that match the current pattern
+      Set current = new HashSet();
+
+      // Iterate through aspects
+      AspectDecl a = firstAspect();
+      while (a != null) {
+        String aspectName = a.fullName();
+
+        if (!precedence.containsKey(aspectName))
+          precedence.put(aspectName, new HashSet());
+
+        if (matchWildcard(i, a)) {
+          // It is an error if an aspect is matched by more than one pattern
+          if (passed.contains(a))
+            error("Aspect " + aspectName + " is matched by more than " +
+                  "one pattern on the precedence list");
+
+          // Mark this aspect as being preceded by all passed aspects
+          Iterator pi = passed.iterator();
+          while (pi.hasNext()) {
+            String prev = (String) pi.next();
+            ((Set) precedence.get(prev)).add(aspectName);
+          }
+
+          // Add it to the current set
+          current.add(aspectName);
+        }
+        a = a.nextAspect();
+      }
+      passed.addAll(current);
+    }
+  }
+
+  // a *-pattern in a declare-precedence statement has a
+  // different meaning to normal: it does not mean "everything"
+  // but "everything that does not match one of the other patterns"
+  syn boolean DeclarePrecedence.matchWildcard(int i, AspectDecl a)
+  {
+    if (!getPattern(i).containsWildcard())
+      return getPattern(i).matchesType(a);
+
+    for (int j = 0; j < getNumPattern(); j++)
+      if (i != j && getPattern(i).matchesType(a))
+          return false;
+    return true;
+  }
+
+
 
   syn SimpleSet SimpleNamePattern.decls() = lookupType(getPattern());
   inh SimpleSet SimpleNamePattern.lookupType(String name);
@@ -23,14 +114,22 @@ aspect DeclarePrecedence {
   eq SimpleNamePattern.isTypeAccess() = !type().isUnknown();
   eq ExplicitTypeNamePattern.isTypeAccess() = true;
 
-  refine DeclarePrecedenceNameAnalysis public void DeclarePrecedence.typeCheck() {
+  refine DeclarePrecedenceNameAnalysis public void DeclarePrecedence.typeCheck()
+  {
     DeclarePrecedenceNameAnalysis.DeclarePrecedence.typeCheck();
+    if (numWildcards() > 1)
+      error("multiple * patterns not allowed");
+
+    updatePrecedenceMap();
+  }
+
+  syn int DeclarePrecedence.numWildcards()
+  {
     int num = 0;
     for(int i = 0; i < getNumPattern(); i++)
       if(getPattern(i).containsWildcard())
         num++;
-    if(num > 1)
-      error("multiple * patterns not allowed");
+    return num;
   }
 
 }
