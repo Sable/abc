@@ -57,6 +57,11 @@ public class DAAspectType_c extends AspectType_c implements DAAspectType {
 				if(adviceName==adviceName2)
 					break;
 				if(adviceName.getName().equals(adviceName2.getName())) {
+					//take the advice name that is later in textual order;
+					//for consistent error messages in the harness
+					if(adviceName.position().line()<adviceName2.position().line()) {
+						adviceName = adviceName2;						
+					}					
 					throw new SemanticException("Duplicate advice name: "+adviceName.getName(),adviceName.position());
 				}
 			}

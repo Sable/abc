@@ -21,10 +21,8 @@ package abc.weaving.aspectinfo;
 
 import java.util.*;
 import soot.util.Chain;
-import polyglot.types.Flags;
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
-import polyglot.util.UniqueID;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
@@ -52,35 +50,21 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     // What aspect was this advice originally defined in?
     // This is important for dealing with advice precedence
     private Aspect defined_aspct;
-	private final Flags flags;
-	private final String adviceName;
 
-    protected AbstractAdviceDecl(Aspect aspct,
-            AdviceSpec spec,
-            Pointcut pc,
-            List/*<Formal>*/ formals,
-            Flags flags,
-            Position pos) {
-    	this(aspct,spec,pc,formals,flags,UniqueID.newID("AbstractAdviceDecl"),pos);
-    }
-	
     protected AbstractAdviceDecl(Aspect aspct,
                                  AdviceSpec spec,
                                  Pointcut pc,
                                  List/*<Formal>*/ formals,
-                                 Flags flags,
-                                 String adviceName, Position pos) {
-        this(aspct,spec,pc,formals,flags,adviceName,pos,false);
+                                 Position pos) {
+        this(aspct,spec,pc,formals,pos,false);
         if(abc.main.Debug.v.debugPointcutNormalization)
             System.out.println("made unnormalized decl");
     }
 
     protected AbstractAdviceDecl(Aspect aspct,AdviceSpec spec,Pointcut pc,
-                                 List/*<Formal>*/ formals,Flags flags,String adviceName,Position pos,
+                                 List/*<Formal>*/ formals,Position pos,
                                  boolean normalized) {
         super(pos);
-		this.flags = (flags!=null) ? flags : Flags.NONE;
-		this.adviceName = adviceName;
         sourceId = nextId++;
         this.aspct=aspct;
         this.defined_aspct=aspct;
@@ -241,21 +225,4 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     public void reportMessages(AdviceApplication aa) {
         // Default is to not report anything
     }
-
-	/**
-	 * Returns the (frontend) flags of this advice declaration.
-	 */
-	public Flags getFlags() {
-		return flags;
-	}
-
-	/**
-	 * Returns a qualified name for this piece of advice.
-	 * It consists of the aspect's full name, a dot
-	 * and an advice name that was either given
-	 * by the programmer or automatically generated. 
-	 */
-	public String getQualifiedAdviceName() {
-		return aspct.getName()+"."+adviceName;
-	}
 }

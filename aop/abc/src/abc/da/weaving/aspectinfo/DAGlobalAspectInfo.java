@@ -25,10 +25,9 @@ import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.ErrorInfo;
-import abc.da.ast.DAAdviceDecl;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /**
@@ -57,24 +56,20 @@ public class DAGlobalAspectInfo extends GlobalAspectInfo {
 	
 	/**
 	 * Registers a human-readable name for an internal advice name.
-	 * Both names must not be qualified.
+	 * Both names must be qualified by the aspect type's name.
 	 */
-	public void registerHumanReadableNameForAdviceName(Aspect owningAspect, String internalAdviceName, String humanReadableName) {
-		if(internalAdviceName.contains(".")) {
-			throw new IllegalArgumentException("Internal advice name may not be qualified!");
+	public void registerHumanReadableNameForAdviceName(String internalAdviceName, String humanReadableName) {
+		if(!internalAdviceName.contains(".")) {
+			throw new IllegalArgumentException("Internal advice name has to be qualified!");
 		}
-		//qualify
-		internalAdviceName = owningAspect.getName() + "." + internalAdviceName;
 		if(adviceMethodNameToAdviceShortName.containsKey(internalAdviceName)) {
 			throw new RuntimeException("already registered!");
 		}
 		
 		
-		if(humanReadableName.contains(".")) {
-			throw new IllegalArgumentException("Human readable advice name may not be qualified!");
+		if(!humanReadableName.contains(".")) {
+			throw new IllegalArgumentException("Human readable advice name has to be qualified!");
 		}
-		//qualify
-		humanReadableName = owningAspect.getName() + "." + humanReadableName;
 		adviceMethodNameToAdviceShortName.put(internalAdviceName, humanReadableName);
 	}
 	
@@ -91,6 +86,20 @@ public class DAGlobalAspectInfo extends GlobalAspectInfo {
 		}
 	}
 	
+	public boolean isDependentAdvice(AbstractAdviceDecl ad) {
+		//can only be a dependent advice if it is a proper AdviceDecl 
+		if(ad instanceof AdviceDecl) {
+			AdviceDecl adviceDecl = (AdviceDecl) ad;
+			String fullName = qualifiedNameOfAdvice(adviceDecl);
+			return adviceMethodNameToAdviceShortName.containsKey(fullName);
+		}
+		return false;
+	}
+
+	public String qualifiedNameOfAdvice(AdviceDecl adviceDecl) {
+		return adviceDecl.getAspect().getName()+"."+adviceDecl.getImpl().getSootMethod().getName();
+	}
+	
 	/**
 	 * Performs a consistency check on dependent advice declarations. Each dependent advice must be mentioned in at
 	 * least one dependency declaration. Also each dependency declaration may only refer to existing dependent advice. 
@@ -101,8 +110,8 @@ public class DAGlobalAspectInfo extends GlobalAspectInfo {
 		
 		Set<String> qualifiedDependentAdviceNamesDeclared = new HashSet<String>();
 		for (AbstractAdviceDecl ad : getAdviceDecls()) {
-			if(ad.getFlags().intersects(DAAdviceDecl.DEPENDENT)) {
-				qualifiedDependentAdviceNamesDeclared.add(replaceForHumanReadableName(ad.getQualifiedAdviceName()));
+			if(isDependentAdvice(ad)) {				
+				qualifiedDependentAdviceNamesDeclared.add(replaceForHumanReadableName(qualifiedNameOfAdvice((AdviceDecl) ad)));
 			}
 		}
 		
@@ -127,8 +136,8 @@ public class DAGlobalAspectInfo extends GlobalAspectInfo {
 		}
 		
 		for (AbstractAdviceDecl ad : getAdviceDecls()) {
-			if(ad.getFlags().intersects(DAAdviceDecl.DEPENDENT)) {
-				String qualified = replaceForHumanReadableName(ad.getQualifiedAdviceName());
+			if(isDependentAdvice(ad)) {
+				String qualified = replaceForHumanReadableName(qualifiedNameOfAdvice((AdviceDecl) ad));
 				if(!qualifiedDependentAdviceNamesFound.contains(qualified)) {
 					Main.v().getAbcExtension().forceReportError(ErrorInfo.SEMANTIC_ERROR,
 							"Dependent advice '"+qualified+"' is never " +

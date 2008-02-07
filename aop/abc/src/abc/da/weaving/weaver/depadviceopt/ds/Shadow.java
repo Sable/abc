@@ -45,7 +45,6 @@ import soot.tagkit.Host;
 import soot.tagkit.LineNumberTag;
 import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
-import abc.da.ast.DAAdviceDecl;
 import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
 import abc.main.Main;
 import abc.tm.weaving.weaver.tmanalysis.query.WeavableMethods;
@@ -163,27 +162,6 @@ public class Shadow {
 	}
 	
 	/**
-	 * Returns <code>true</code> if the advice that caused this shadow to be woven is
-	 * a dependent advice.
-	 */
-	public boolean belongsToDependentAdvice() {
-		return adviceDecl.getFlags().intersects(DAAdviceDecl.DEPENDENT);
-	}
-	
-	/**
-	 * Returns the (potentially human-readable) name of the dependent advice that
-	 * caused this shadow to be woven. May only be called if {@link #belongsToDependentAdvice()} 
-	 * returns <code>true</code>.
-	 */
-	public String dependentAdviceName() {
-		if(!belongsToDependentAdvice()) {
-			throw new IllegalStateException("Shadow does not belong to a dependent advice.");
-		} else {
-			return gai.replaceForHumanReadableName(adviceDecl.getQualifiedAdviceName());
-		}
-	}
-	
-	/**
 	 * Computes and returns the {@link PointsToSet} for variable
 	 * var bound by this shadow. If this shadow does not bind var,
 	 * or if it binds var to a primitive value, {@link FullObjectSet} is returned.
@@ -220,9 +198,6 @@ public class Shadow {
 
 		ret += "shadowId:     " + shadowId + "\n";
 		ret += "advice:       " + adviceDecl  + "\n";
-		if(belongsToDependentAdvice()) {
-			ret += "dep. advice:  " + dependentAdviceName() + "\n";
-		}
 		ret += "in method:    " + container  + "\n";
 		if(pos!=null) {
 		    ret += "position:     " + pos + "\n";
@@ -264,33 +239,28 @@ public class Shadow {
 
 	/**
 	 * Creates and returns all active shadows in all weavable methods.
-	 * @param shadowsOfDependentAdviceOnly If <code>true</code>, only shadows of dependent
-	 * advice are returned.
 	 */
-	public static Set<Shadow> allActiveShadows(boolean shadowsOfDependentAdviceOnly) {
-		return findActiveShadowsInMethod(WeavableMethods.v().getAll(), shadowsOfDependentAdviceOnly);
+	public static Set<Shadow> allActiveShadows() {
+		return findActiveShadowsInMethod(WeavableMethods.v().getAll());
 	}
 
 	/**
 	 * Creates and returns all active shadows in all weavable methods reachable from the
 	 * program's entry points.
-	 * @param shadowsOfDependentAdviceOnly If <code>true</code>, only shadows of dependent
-	 * advice are returned.
 	 */
-	public static Set<Shadow> reachableActiveShadows(boolean shadowsOfDependentAdviceOnly) {
+	public static Set<Shadow> reachableActiveShadows() {
 		if(!Scene.v().hasCallGraph()) {
 			throw new IllegalStateException("No callgraph present.");
 		}
-		return findActiveShadowsInMethod(WeavableMethods.v().getReachable(Scene.v().getCallGraph()), shadowsOfDependentAdviceOnly);
+		return findActiveShadowsInMethod(WeavableMethods.v().getReachable(Scene.v().getCallGraph()));
 	}
 
 	/**
 	 * Creates a set of new {@link Shadow} objects representing all shadows in the given set of methods. 
 	 * Shadows, for which the {@link Residue} is {@link NeverMatch} are called inactive. Such inactive shadows are not added.
 	 * @param methods any set of (weavable) methods.
-	 * @param shadowsOfDependentAdviceOnly if <code>true</code> only shadows that belong to a dependent advice are added
 	 */
-	protected static Set<Shadow> findActiveShadowsInMethod(Set<SootMethod> methods, boolean shadowsOfDependentAdviceOnly) {
+	protected static Set<Shadow> findActiveShadowsInMethod(Set<SootMethod> methods) {
 		gai = (DAGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 		
 		Map<SootMethod,AdviceDecl> adviceMethodToAdviceDecl = new HashMap<SootMethod, AdviceDecl>();
@@ -306,19 +276,19 @@ public class Shadow {
 		Set<Shadow> shadows = new HashSet<Shadow>();
 		for (SootMethod m : methods) {
 
-			Map<Integer,Map<String,AdviceApplication>> shadowIdToAdviceNameToAdviceApplication = new HashMap<Integer,Map<String,AdviceApplication>>();
+			Map<Integer,Map<AbstractAdviceDecl,AdviceApplication>> shadowIdToAdviceToAdviceApplication = new HashMap<Integer,Map<AbstractAdviceDecl,AdviceApplication>>();
 	        MethodAdviceList adviceList = gai.getAdviceList(m);
 	        //if there are any advice applications within that method
 	        if(adviceList!=null) {
 	        	//build a mapping from shadow ID and advice name to the corresponding advice application
 		        List<AdviceApplication> applications = adviceList.allAdvice();
 		        for (AdviceApplication aa : applications) {	    
-		        	Map<String, AdviceApplication> adviceNameToAA = shadowIdToAdviceNameToAdviceApplication.get(aa.shadowmatch.shadowId);
-		        	if(adviceNameToAA==null) {
-		        		adviceNameToAA = new HashMap<String, AdviceApplication>();
-		        		shadowIdToAdviceNameToAdviceApplication.put(aa.shadowmatch.shadowId, adviceNameToAA);
+		        	Map<AbstractAdviceDecl, AdviceApplication> adviceToAA = shadowIdToAdviceToAdviceApplication.get(aa.shadowmatch.shadowId);
+		        	if(adviceToAA==null) {
+		        		adviceToAA = new HashMap<AbstractAdviceDecl, AdviceApplication>();
+		        		shadowIdToAdviceToAdviceApplication.put(aa.shadowmatch.shadowId, adviceToAA);
 		        	}		        	
-		        	adviceNameToAA.put(aa.advice.getQualifiedAdviceName(), aa);
+		        	adviceToAA.put(aa.advice, aa);
 		        }
 		
 		        for (Unit u : m.getActiveBody().getUnits()) {
@@ -328,39 +298,32 @@ public class Shadow {
 						AdviceDecl ad = adviceMethodToAdviceDecl.get(ie.getMethod());
 						if (ad!=null) {
 							
-							//the called method is an advice method; we just found a shadow!						
-							if(!shadowsOfDependentAdviceOnly || ad.getFlags().intersects(DAAdviceDecl.DEPENDENT)) {
-
-								InstructionShadowTag shadowTag = (InstructionShadowTag) s.getTag(InstructionShadowTag.NAME);
-								int shadowId = shadowTag.value();
-								String qualifiedAdviceName = s.getInvokeExpr().getMethod().getDeclaringClass().getName()
-									+ "." + s.getInvokeExpr().getMethod().getName();
-								AdviceApplication aa = shadowIdToAdviceNameToAdviceApplication.get(shadowId).get(qualifiedAdviceName);
-								if(!NeverMatch.neverMatches(aa.getResidue())) {
-									//advice is still active
-									
-									Map<String,Local> adviceFormalToSootLocal = new HashMap<String, Local>();
-									int argIndex = 0;
-									for (Formal formal : ad.getFormals()) {
-										adviceFormalToSootLocal.put(formal.getName(), (Local)ie.getArg(argIndex));
-										argIndex++;
-									}
-									
-									Position pos = extractPosition(aa.shadowmatch.getHost());
-									ResidueBox rbox = (ResidueBox) aa.getResidueBoxes().get(0); 
-									Shadow shadow = new Shadow(
-											shadowId,
-											ad,
-											m,
-											pos,
-											adviceFormalToSootLocal,
-											rbox
-									);
-									shadows.add(shadow);
-									
+							InstructionShadowTag shadowTag = (InstructionShadowTag) s.getTag(InstructionShadowTag.NAME);
+							int shadowId = shadowTag.value();
+							AdviceApplication aa = shadowIdToAdviceToAdviceApplication.get(shadowId).get(ad);
+							if(!NeverMatch.neverMatches(aa.getResidue())) {
+								//advice is still active
+								
+								Map<String,Local> adviceFormalToSootLocal = new HashMap<String, Local>();
+								int argIndex = 0;
+								for (Formal formal : ad.getFormals()) {
+									adviceFormalToSootLocal.put(formal.getName(), (Local)ie.getArg(argIndex));
+									argIndex++;
 								}
+								
+								Position pos = extractPosition(aa.shadowmatch.getHost());
+								ResidueBox rbox = (ResidueBox) aa.getResidueBoxes().get(0); 
+								Shadow shadow = new Shadow(
+										shadowId,
+										ad,
+										m,
+										pos,
+										adviceFormalToSootLocal,
+										rbox
+								);
+								shadows.add(shadow);
+								
 							}
-							
 						}
 					}
 		        }

@@ -21,48 +21,22 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import polyglot.types.Flags;
-import polyglot.util.InternalCompilerError;
+import java.util.*;
 import polyglot.util.Position;
-import soot.Local;
-import soot.Modifier;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootFieldRef;
-import soot.SootMethod;
-import soot.Type;
-import soot.Value;
-import soot.jimple.IdentityStmt;
-import soot.jimple.InvokeExpr;
-import soot.jimple.Jimple;
-import soot.jimple.ReturnVoidStmt;
-import soot.jimple.Stmt;
-import soot.util.Chain;
-import soot.util.HashChain;
-import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.matching.AdviceApplication;
-import abc.weaving.matching.WeavingEnv;
-import abc.weaving.residues.WeavingVar;
+import polyglot.util.InternalCompilerError;
+import soot.*;
+import soot.jimple.*;
+import soot.util.*;
+import abc.weaving.matching.*;
+import abc.weaving.residues.*;
 import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.InstructionShadowTag;
 import abc.weaving.tagkit.InstructionSourceTag;
 import abc.weaving.tagkit.Tagger;
-import abc.weaving.weaver.AspectCodeGen;
-import abc.weaving.weaver.CflowCodeGenUtils;
-import abc.weaving.weaver.ChainStmtBox;
-import abc.weaving.weaver.ConstructorInliningMap;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
+import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.Restructure;
+import abc.main.Debug;
 
 /** Manufactured advice that is responsible for setting up cflow stacks/counters
  *  @author Ganesh Sittampalam
@@ -111,7 +85,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     private CflowSetup(Aspect aspct,Pointcut pc,boolean isBelow,
                        List/*<Formal>*/ formals,List/*<Var>*/ actuals,
                        Position pos,int depth) {
-        super(aspct,new BeforeAfterAdvice(pos),pc,formals,Flags.NONE,pos);
+        super(aspct,new BeforeAfterAdvice(pos),pc,formals,pos);
         this.actuals=actuals;
         this.isBelow=isBelow;
         this.depth=depth;

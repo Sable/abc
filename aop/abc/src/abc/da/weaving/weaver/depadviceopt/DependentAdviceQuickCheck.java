@@ -24,11 +24,11 @@ import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import soot.SootMethod;
-import abc.da.ast.DAAdviceDecl;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
 import abc.main.Main;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
@@ -72,9 +72,9 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			//determine all dependent advice that belong to dependencies that are fulfilled
 			final Set<AbstractAdviceDecl> dependentAdviceToKeepAlive = new HashSet<AbstractAdviceDecl>();
 			for (AbstractAdviceDecl ad : (List<AbstractAdviceDecl>)gai.getAdviceDecls()) {
-				boolean isDependent = ad.getFlags().intersects(DAAdviceDecl.DEPENDENT);
+				boolean isDependent = gai.isDependentAdvice(ad);
 				if(isDependent) {
-					String adviceName = gai.replaceForHumanReadableName(ad.getQualifiedAdviceName());
+					String adviceName = gai.replaceForHumanReadableName(gai.qualifiedNameOfAdvice((AdviceDecl) ad));
 					for (AdviceDependency dep : fulfilledAdviceDependencies) {
 						if(ad.getAspect().equals(dep.getContainer()) && dep.containsAdviceNamed(adviceName)) {
 							dependentAdviceToKeepAlive.add(ad);
@@ -87,7 +87,7 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
 
 				public void adviceApplication(AdviceApplication aa, SootMethod m) {
-					boolean isDependent = aa.advice.getFlags().intersects(DAAdviceDecl.DEPENDENT);
+					boolean isDependent = gai.isDependentAdvice(aa.advice);
 					if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
 						aa.setResidue(NeverMatch.v());
 					}
@@ -106,7 +106,7 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
 
 				public void adviceApplication(AdviceApplication aa, SootMethod m) {
-					boolean isDependent = aa.advice.getFlags().intersects(DAAdviceDecl.DEPENDENT);
+					boolean isDependent = gai.isDependentAdvice(aa.advice);
 					if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
 						//enough to warn one time, even if the same advice has many shadows
 						if(!warned.contains(aa.advice)) {

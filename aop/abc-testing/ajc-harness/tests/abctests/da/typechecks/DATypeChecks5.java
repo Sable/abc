@@ -7,4 +7,7 @@ aspect DATypeChecks5 {
 	 * T1:
 	 * Duplicate advice name "a1". An error should be issued.
 	 */	
+	dependency {
+		strong a1;
+	}	
 }

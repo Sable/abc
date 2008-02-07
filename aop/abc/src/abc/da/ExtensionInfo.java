@@ -41,6 +41,8 @@ import abc.da.parse.Grm;
 import abc.da.types.DATypeSystem;
 import abc.da.types.DATypeSystem_c;
 import abc.da.visit.AdviceNames;
+import abc.da.visit.DAAspectInfoHarvester;
+import abc.da.visit.OrphanDependentAdviceFinder;
 import abc.da.visit.PushParamNames;
 import abc.da.visit.TypeCheckAdviceParams;
 
@@ -58,7 +60,10 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo
         new Pass.ID("typecheck-param-names");
     public static final Pass.ID FIND_ORPHAN_DEPENDENT_ADVICE =
         new Pass.ID("orphan-dependent-advice");
-
+    public static final Pass.ID HARVEST_DA_ASPECT_INFO =
+        new Pass.ID("harvest-aspect-info-for-dependent-advice");
+    
+    
     static {
         // force Topics to load
         new Topics();
@@ -131,20 +136,35 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo
   			          				(DATypeSystem) ts, 
   			          				(DANodeFactory)nf)));
 
-//TODO move to aspectInfo because we might have to register dependency groups later        
-//    	/*
-//    	 * Dependent advice
-//    	 * 
-//    	 * Now find dependent advice that are "orphan", i.e. are never referenced
-//    	 * in a dependency declaration. Throw an error if one is found.
-//    	 */    	
-//        newPasses.add(new VisitorPass(FIND_ORPHAN_DEPENDENT_ADVICE,
-//    			  job,
-//    			  new OrphanDependentAdviceFinder(job,
-//    			          				(DATypeSystem) ts, 
-//    			          				(DANodeFactory)nf)));
+    	/*
+    	 * Dependent advice
+    	 * 
+    	 * Now find dependent advice that are "orphan", i.e. are never referenced
+    	 * in a dependency declaration. Throw an error if one is found.
+    	 */    	
+        newPasses.add(new VisitorPass(FIND_ORPHAN_DEPENDENT_ADVICE,
+    			  job,
+    			  new OrphanDependentAdviceFinder(job,
+    			          				(DATypeSystem) ts, 
+    			          				(DANodeFactory)nf)));
 
     	afterPass(passes, Pass.DISAM_ALL, newPasses);
+
+    	newPasses = new LinkedList();
+
+    	/*
+    	 * Dependent advice
+    	 * 
+    	 * Register dependent advice and their names with GlobalAspectInfo.
+    	 */    	
+        newPasses.add(new VisitorPass(HARVEST_DA_ASPECT_INFO,
+    			  job,
+    			  new DAAspectInfoHarvester(job,
+	          				(DATypeSystem) ts, 
+	          				(DANodeFactory)nf)));
+    	
+        afterPass(passes, HARVEST_ASPECT_INFO, newPasses);
+        
 		return passes;
     }
 }

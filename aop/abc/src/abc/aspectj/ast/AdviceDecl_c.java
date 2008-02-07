@@ -283,7 +283,7 @@ public class AdviceDecl_c extends AdviceBody_c
              pc.makeAIPointcut(),
              AbcFactory.MethodSig(this),
              current_aspect,
-             jp, jpsp, ejp, methods, flags,
+             jp, jpsp, ejp, methods,
              position());
         gai.addAdviceDecl(ad);
  

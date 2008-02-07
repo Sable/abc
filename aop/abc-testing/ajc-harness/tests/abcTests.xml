@@ -10805,4 +10805,12 @@
 	    	<message kind="error" line="4"/>
 		</compile>
     </ajc-test>
+
+    <ajc-test num="1425" dir="abctests/da/optimizations"
+        title="Quick check for dependent advice">
+        <compile files="QuickCheck.java" options="-ext,abc.da,-debug,daQuickCheck">
+	    	<message kind="warning" line="6"/>
+	    	<message kind="warning" line="9"/>
+		</compile>
+    </ajc-test>
 </suite>

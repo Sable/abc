@@ -18,6 +18,7 @@
  */
 package abc.da.visit;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import polyglot.visit.NodeVisitor;
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.AdviceSpec;
 import abc.da.ast.AdviceName;
+import abc.da.ast.AdviceNameAndParams;
 import abc.da.ast.DAAspectDecl;
 import abc.da.ast.NameExtension;
 import abc.da.ast.DAAdviceDecl;
@@ -91,6 +93,12 @@ public class AdviceNames extends ContextVisitor {
 			DAAspectType type = (DAAspectType) aspectDecl.type();
 			DAContext context = (DAContext) context();
 			type.setAdviceNameToFormals(context.currentAdviceNameToFormals());
+		}
+		if(n instanceof AdviceNameAndParams) {
+			AdviceNameAndParams adviceNameAndParams = (AdviceNameAndParams) n;
+			DAContext context = (DAContext) context();
+			DAAspectType type = (DAAspectType) context.currentAspect();
+			type.addReferencedAdviceNames(Collections.singleton(adviceNameAndParams.getName()));
 		}
 		return super.leave(parent, old, n, v);
 	}

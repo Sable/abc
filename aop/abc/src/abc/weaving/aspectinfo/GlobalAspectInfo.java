@@ -380,10 +380,6 @@ public class GlobalAspectInfo {
         this.prec_rel = prec_rel;
     }
 
-    public Map getPrecedenceRelation() {
-        return prec_rel;
-    }
-
     /** Get the precedence relationship between two aspect names,
      *  just using declare precedence relations
      *  @param a the name of the first aspect.

@@ -89,7 +89,6 @@ aspect AdviceCodegen {
       jp_params[1] /*jpsp*/,
       jp_params[2] /*ejp*/,
       methods,
-      null/*no flags for now*/,
       pos()
     ));
   }

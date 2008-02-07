@@ -20,46 +20,26 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import polyglot.types.Flags;
-import polyglot.util.ErrorInfo;
-import polyglot.util.InternalCompilerError;
+import java.util.*;
+import soot.*;
+import soot.jimple.*;
+import soot.util.*;
 import polyglot.util.Position;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootMethod;
-import soot.jimple.Jimple;
-import soot.jimple.Stmt;
-import soot.util.Chain;
-import soot.util.HashChain;
-import abc.polyglot.util.ErrorInfoFactory;
-import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.matching.AdviceApplication;
-import abc.weaving.matching.AdviceFormals;
-import abc.weaving.matching.ShadowMatch;
-import abc.weaving.matching.WeavingEnv;
-import abc.weaving.residues.AdviceFormal;
-import abc.weaving.residues.AlwaysMatch;
-import abc.weaving.residues.AndResidue;
-import abc.weaving.residues.JoinPointInfo;
-import abc.weaving.residues.Load;
-import abc.weaving.residues.NeverMatch;
-import abc.weaving.residues.Residue;
-import abc.weaving.residues.StaticJoinPointInfo;
+import polyglot.util.InternalCompilerError;
+import polyglot.util.ErrorQueue;
+import polyglot.util.ErrorInfo;
+import abc.weaving.matching.*;
+import abc.weaving.residues.*;
 import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.InstructionShadowTag;
 import abc.weaving.tagkit.InstructionSourceTag;
 import abc.weaving.tagkit.Tagger;
+import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.PointcutCodeGen;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.CodeGenException;
+import abc.polyglot.util.ErrorInfoFactory;
+import abc.soot.util.LocalGeneratorEx;
 
 /** A concrete advice declaration.
  *  This is used for advice declared directly in an aspect.
@@ -78,14 +58,10 @@ public class AdviceDecl extends AbstractAdviceDecl {
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
     private List/*<MethodSig>*/ methods;
     //private List/*<SootMethod>*/ sootMethods;
-	
-    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, int jp, int jpsp, int ejp, List methods, Flags flags, Position pos) {
-    	this(spec,pc,impl,aspct,jp,jpsp,ejp,methods,flags,impl.getName(),pos);
-    }
-    
-    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, int jp, int jpsp, int ejp, List methods, Flags flags, String adviceName, Position pos) {
 
-                super(aspct, spec, pc, impl.getFormals(), flags, adviceName, pos);
+    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, int jp, int jpsp, int ejp, List methods, Position pos) {
+
+                super(aspct, spec, pc, impl.getFormals(), pos);
                 this.impl = impl;
                 this.jp = jp;
                 this.jpsp = jpsp;
@@ -373,4 +349,6 @@ public class AdviceDecl extends AbstractAdviceDecl {
         }
         return ret;
     }
+
+
 }

@@ -21,15 +21,11 @@ package abc.da.ast;
 
 import java.util.List;
 
-import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.types.Flags;
 import polyglot.util.Position;
-import abc.aspectj.ast.AdviceDecl;
-import abc.aspectj.ast.AdviceSpec;
 import abc.aspectj.ast.AspectDecl;
 import abc.aspectj.ast.PerClause;
-import abc.aspectj.ast.Pointcut;
 import abc.eaj.ast.EAJNodeFactory_c;
 
 /**
@@ -88,12 +84,4 @@ public class DANodeFactory_c extends EAJNodeFactory_c
 		return n;
 	}
 	
-	@Override
-	public AdviceDecl AdviceDecl(Position pos, Flags flags, AdviceSpec spec,
-			List throwTypes, Pointcut pc, Block body) {
-    	AdviceDecl n = new DAAdviceDecl_c(pos, flags, spec, throwTypes, pc, body);
-    	n = (AdviceDecl)n.ext(((DAExtFactory)extFactory()).extAdviceDecl());
-    	n = (AdviceDecl)n.del(((DADelFactory)delFactory()).delAdviceDecl());
-		return n;
-	}
 }
