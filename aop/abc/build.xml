@@ -463,7 +463,9 @@
             	<!--NEIL: Added for om-->
                 <available file="generated/abc/om/parse/om_ppg.cup"/>
                 <available file="generated/abc/ra/parse/ra_ppg.cup"/>
-                <available file="generated/abc/ra/parse/da_ppg.cup"/>
+                <!-- PA: wtf, this file doesn't exist - forces rebuild every time
+		     <available file="generated/abc/ra/parse/da_ppg.cup"/>
+		     -->
             </and>
         </condition>
     </target>
