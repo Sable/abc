@@ -222,6 +222,15 @@ any of their subdirectories.
       </long_desc>
     </intopt>
     <boolopt>
+      <alias>w</alias>
+      <default>false</default>
+      <short_desc>Whole-program mode.
+      </short_desc>
+      <long_desc>Allow abc to analyze your program and the Java runtime library
+      in whole-program mode.
+      </long_desc>
+    </boolopt>
+    <boolopt>
       <alias>around-force-closures</alias>
       <default>false</default>
       <short_desc>Force closures for around advice.

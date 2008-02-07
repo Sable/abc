@@ -27,6 +27,7 @@ import abc.aspectj.parse.LexerAction_c;
 import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
+import abc.main.Debug;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
@@ -86,8 +87,12 @@ public class AbcExtension extends abc.eaj.AbcExtension
     protected void createReweavingPasses(List passes) {
     	super.createReweavingPasses(passes);
     	
-		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,createQuickCheck()));
-		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,createFlowInsensitiveAnalysis()));
+    	if(Debug.v().daQuickCheck) {
+    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,createQuickCheck()));
+        	if(Debug.v().daFlowIns) {
+        		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,createFlowInsensitiveAnalysis()));
+        	}
+    	}
     }
     
 	protected ReweavingAnalysis createQuickCheck() {

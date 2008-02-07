@@ -264,6 +264,11 @@ public class Debug {
     //enable run-once optimization
     public boolean useRunOnce = true;
     
+    //quick check for dependent advice
+    public boolean daQuickCheck = false;
+    //flow-insensitive analysis for dependent advice
+    public boolean daFlowIns = false;
+
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
         	String m="Done phase: "+s;        	

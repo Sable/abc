@@ -10693,13 +10693,13 @@
 
     <ajc-test num="1221" dir="abctests/eaj/maybeShared" 
 	    title="maybeShared pointcut - not shared">
-        <compile files="NotShared.java" options="-ext,abc.eaj,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut"/>
+        <compile files="NotShared.java" options="-ext,abc.eaj,-w,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot"/>
         <run class="NotShared"/>
     </ajc-test>
 
     <ajc-test num="1222" dir="abctests/eaj/maybeShared" 
 	    title="maybeShared pointcut - shared">
-        <compile files="Shared.java" options="-ext,abc.eaj,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut">
+        <compile files="Shared.java" options="-ext,abc.eaj,-w,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
         </compile>
         <run class="Shared"/>
     </ajc-test>
@@ -10714,7 +10714,7 @@
     
     <ajc-test num="1302" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-insensitive stage">
-        <compile files="FlowIns.java" options="-ext,abc.tm,-wp-tmopt,-laststage,flowins,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowIns.java" options="-ext,abc.tm,-wp-tmopt,-w,-laststage,flowins,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="12"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
@@ -10723,7 +10723,7 @@
     		
     <ajc-test num="1303" dir="abctests/tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1">
-        <compile files="IntraFlowSens1.java,AB.java,AbstractTest.java" options="-ext,abc.tm,-wp-tmopt,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="IntraFlowSens1.java,AB.java,AbstractTest.java" options="-ext,abc.tm,-wp-tmopt,-w,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="41"/>
 	    	<message kind="warning" line="43"/>
 	    	<message kind="warning" line="48"/>
