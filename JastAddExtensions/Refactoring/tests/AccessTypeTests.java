@@ -70,5 +70,8 @@ public class AccessTypeTests extends AccessType {
 	public void test17() {
 		runTypeAccessTest("java.lang", "String", new FileRange("Access/test47/Test.java", 3, 2, 3, 20), new TypeAccess("java.lang", "String"));
 	}
+	public void test18() {
+		runTypeAccessTest(new FileRange("Access/test39/A.java", 5, 5, 7, 5), new FileRange("Access/test39/A.java", 16, 28, 16, 28), new TypeAccess("XYZ"));
+	}	
 
 }

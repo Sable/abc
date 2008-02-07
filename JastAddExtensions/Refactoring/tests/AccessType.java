@@ -8,6 +8,7 @@ import AST.ImportDecl;
 import AST.NameType;
 import AST.Program;
 import AST.TypeDecl;
+import AST.UnambiguousContext;
 
 public abstract class AccessType extends TestCase {
 
@@ -30,7 +31,7 @@ public abstract class AccessType extends TestCase {
         assertNotNull(n);
         Access res;
         if(n instanceof ImportDecl) {
-        	res = ((ImportDecl)n).accessType((TypeDecl)m);
+        	res = ((ImportDecl)n).accessType((TypeDecl)m).getAccess(new UnambiguousContext());
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
@@ -55,7 +56,7 @@ public abstract class AccessType extends TestCase {
         assertNotNull(n);
         Access res;
         if(n instanceof ImportDecl) {
-        	res = ((ImportDecl)n).accessType(td);
+        	res = ((ImportDecl)n).accessType(td).getAccess(new UnambiguousContext());
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
