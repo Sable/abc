@@ -172,9 +172,9 @@ aspect IntertypeMethodNameAnalysis {
     return m.hostType() != hostType() && m.overrides(this) && m.accessibleFrom(hostType());
   }
   eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
-    if(m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect())
-      return true;
     if(m.hostAspect().precedes(hostAspect()) && !hostAspect().precedes(m.hostAspect()))
+      return true;
+    if(m.hostAspect().instanceOf(hostAspect()) && m.hostAspect() != hostAspect())
       return true;
     if(isAbstract() && !m.isAbstract())
       return m.accessibleFrom(hostType());

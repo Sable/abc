@@ -145,6 +145,16 @@ aspect InnerClasses {
     accessorMap.put(key, accessor);
   }
 
+  public ASTNode TypeDecl.getAccessorSource(ASTNode accessor) {
+    Iterator i = accessorMap.entrySet().iterator();
+    while (i.hasNext()) {
+      Map.Entry entry = (Map.Entry) i.next();
+      if (entry.getValue() == accessor)
+        return (ASTNode) ((ArrayList) entry.getKey()).get(0);
+    }
+    return null;
+  }
+
   public MethodDecl MethodDecl.createAccessor(TypeDecl methodQualifier) {
     MethodDecl m = (MethodDecl)methodQualifier.getAccessor(this, "method");
     if(m != null) return m;

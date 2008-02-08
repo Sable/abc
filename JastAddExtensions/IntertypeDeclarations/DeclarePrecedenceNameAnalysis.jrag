@@ -5,17 +5,17 @@ aspect DeclarePrecedenceNameAnalysis {
       DeclarePrecedence p = (DeclarePrecedence)iter.next();
       boolean foundThis = false;
       for(int i = 0; i < p.getNumPattern(); i++ ) {
-        if(!foundThis && p.getPattern(i).matchesType(this))
+        if(!foundThis && p.matchPattern(i, this))
           foundThis = true;
-        else if(foundThis && p.getPattern(i).matchesType(typeDecl)) {
+        else if(foundThis && p.matchPattern(i, typeDecl))
           return true;
-        }
       }
     }
     return false;
   }
 
-  syn boolean Access.matchesType(TypeDecl typeDecl) = type() == typeDecl;
+  syn boolean DeclarePrecedence.matchPattern(int i, TypeDecl typeDecl) =
+    getPattern(i).type() == typeDecl;
 
   inh Collection TypeDecl.declarePrecedence();
   eq Program.getCompilationUnit().declarePrecedence() {

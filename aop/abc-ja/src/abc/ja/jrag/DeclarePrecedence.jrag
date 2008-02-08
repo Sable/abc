@@ -64,9 +64,9 @@ aspect DeclarePrecedence {
         if (!precedence.containsKey(aspectName))
           precedence.put(aspectName, new HashSet());
 
-        if (matchWildcard(i, a)) {
+        if (matchPattern(i, a)) {
           // It is an error if an aspect is matched by more than one pattern
-          if (passed.contains(a))
+          if (passed.contains(aspectName))
             error("Aspect " + aspectName + " is matched by more than " +
                   "one pattern on the precedence list");
 
@@ -89,13 +89,14 @@ aspect DeclarePrecedence {
   // a *-pattern in a declare-precedence statement has a
   // different meaning to normal: it does not mean "everything"
   // but "everything that does not match one of the other patterns"
-  syn boolean DeclarePrecedence.matchWildcard(int i, AspectDecl a)
+  refine DeclarePrecedenceNameAnalysis
+  eq DeclarePrecedence.matchPattern(int i, TypeDecl typeDecl)
   {
     if (!getPattern(i).containsWildcard())
-      return getPattern(i).matchesType(a);
+      return getPattern(i).matchesType(typeDecl);
 
     for (int j = 0; j < getNumPattern(); j++)
-      if (i != j && getPattern(i).matchesType(a))
+      if (i != j && getPattern(i).matchesType(typeDecl))
           return false;
     return true;
   }
@@ -107,10 +108,7 @@ aspect DeclarePrecedence {
   inh TypeDecl SimpleNamePattern.unknownType();
   eq SimpleNamePattern.type() = decls().size() == 1 ? (TypeDecl)decls().iterator().next() : unknownType();
   
-  syn boolean Pattern.isTypeAccess() {
-    System.out.println(getClass().getName());
-    return false;
-  }
+  syn boolean Pattern.isTypeAccess() = false;
   eq SimpleNamePattern.isTypeAccess() = !type().isUnknown();
   eq ExplicitTypeNamePattern.isTypeAccess() = true;
 

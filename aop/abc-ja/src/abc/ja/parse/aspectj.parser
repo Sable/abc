@@ -705,7 +705,7 @@ Pattern unary_classname_pattern_expr =
         :}
    ;
 
-NamePattern basic_classname_pattern =
+Pattern basic_classname_pattern =
      name_pattern.a 
         {: ParserTrace.parserTrace("classname_type_pattern is a name_pattern");
 	   return a;

@@ -540,7 +540,7 @@ aspect PatternsCodegen
         
 
     syn lazy boolean Pattern.matchesType(TypeDecl t) = false;
-    syn lazy final boolean SimpleNamePattern.matchesType(TypeDecl t) {
+    eq SimpleNamePattern.matchesType(TypeDecl t) {
       if(matchesName(t.name()))
         return true;
       if(matchSubtype()) {
@@ -552,8 +552,18 @@ aspect PatternsCodegen
       }
       return false;
     }
-    eq ExplicitTypeNamePattern.matchesType(TypeDecl t) {
-      return getAccess().type() == t;
+    eq ExplicitTypeNamePattern.matchesType(TypeDecl t)
+    {
+      if (!matchSubtype())
+        return getAccess().type() == t;
+
+      Iterator i = t.superTypes().iterator();
+      while (i.hasNext()) {
+        TypeDecl supertype = (TypeDecl) i.next();
+        if (getAccess().type() == supertype)
+          return true;
+      }
+      return false;
     }
     // the subtyping part is handled by the matchSubtype() inherited
     // attribute - all we have to do here is recurse
@@ -563,6 +573,36 @@ aspect PatternsCodegen
         getNumDims() == t.dimension()
         && getPattern().matchesType(t.elementType());
 
+    eq AndPattern.matchesType(TypeDecl t) {
+      System.out.print(dumpTree());
+      return getLhs().matchesType(t) && getRhs().matchesType(t);
+    }
+    eq OrPattern.matchesType(TypeDecl t) =
+      getLhs().matchesType(t) || getRhs().matchesType(t);
+    eq NegPattern.matchesType(TypeDecl t) =
+      !getPattern().matchesType(t);
+    eq UniversalNegPattern.matchesType(TypeDecl t) {
+        throw new RuntimeException("?");
+    }
+    eq DotDotNamePattern.matchesType(TypeDecl t) {
+        if (!getRhs().matchesType(t))
+            return false;
+        String fullname = t.fullName();
+
+        int i = fullname.lastIndexOf(".");
+        while (i >= 0) {
+            if (getLhs().matchesName(fullname.substring(0,i)))
+                return true;
+            i = fullname.lastIndexOf(".", i);
+        }
+        return false;
+    }
+    eq DotNamePattern.matchesType(TypeDecl t) {
+        throw new RuntimeException("?");
+    }
+    eq TypeDotNamePattern.matchesType(TypeDecl t) {
+        throw new RuntimeException("?");
+    }
 
 
     // find super types
