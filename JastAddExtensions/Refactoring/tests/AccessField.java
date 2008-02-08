@@ -37,7 +37,7 @@ public abstract class AccessField extends TestCase {
         	assertNull(res);
         } else {
         	assertNotNull(res);
-        	assertEquals(res.dumpTree(), expected.dumpTree());
+        	assertEquals(expected.dumpTree(), res.dumpTree());
         }
 	}
 

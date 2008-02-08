@@ -21,11 +21,11 @@ public class AccessFieldTests extends AccessField {
 		return new TestSuite(AccessFieldTests.class);
 	}
 	public void test0() {
-		runFieldAccessTest(new FileRange("AccessField/test24/Test.java", 12, 5, 12, 11), new FileRange("AccessField/test24/Test.java", 13, 14, 13, 15), new VarAccess("a"));
+		runFieldAccessTest(new FileRange("AccessField/test24/Test.java", 12, 5, 12, 11), new FileRange("AccessField/test24/Test.java", 13, 14, 13, 14), new VarAccess("a"));
 	}
 	
 	public void test1() {
-		runFieldAccessTest(new FileRange("AccessField/test25/Test.java", 12, 5, 12, 11), new FileRange("AccessField/test25/Test.java", 13, 5, 13, 16), new VarAccess("a"));
+		runFieldAccessTest(new FileRange("AccessField/test25/Test.java", 12, 5, 12, 11), new FileRange("AccessField/test25/Test.java", 13, 7, 13, 7), new VarAccess("a"));
 	}
 	
 	public void test2() {
@@ -37,7 +37,7 @@ public class AccessFieldTests extends AccessField {
 	}
 	
 	public void test4() {
-		runFieldAccessTest(new FileRange("AccessField/test28/Test.java", 12, 5, 12, 14), new FileRange("AccessField/test28/Test.java", 20, 24, 20, 32), new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new ThisAccess("this"))), new VarAccess("foo")));
+		runFieldAccessTest(new FileRange("AccessField/test28/Test.java", 12, 5, 12, 14), new FileRange("AccessField/test28/Test.java", 20, 24, 20, 36), new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new ThisAccess("this"))), new VarAccess("foo")));
 	}
 	
 	public void test5() {
@@ -49,7 +49,7 @@ public class AccessFieldTests extends AccessField {
 	}
 
 	public void test7() {
-		runFieldAccessTest(new FileRange("AccessField/test31/Test.java", 12, 5, 12, 14), new FileRange("AccessField/test31/Test.java", 20, 24, 20, 32), new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new ThisAccess("this"))), new VarAccess("foo")));
+		runFieldAccessTest(new FileRange("AccessField/test31/Test.java", 12, 5, 12, 14), new FileRange("AccessField/test31/Test.java", 20, 24, 20, 36), new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new ThisAccess("this"))), new VarAccess("foo")));
 	}
 
 	public void test8() {
@@ -65,11 +65,11 @@ public class AccessFieldTests extends AccessField {
 	}
 	
 	public void test11() {
-		runFieldAccessTest(new FileRange("AccessField/test35/Test.java", 11, 5, 11, 19), new FileRange("AccessField/test35/Test.java", 14, 24, 14, 36), new VarAccess("bar"));
+		runFieldAccessTest(new FileRange("AccessField/test35/Test.java", 11, 5, 11, 19), new FileRange("AccessField/test35/Test.java", 14, 24, 14, 26), new VarAccess("bar"));
 	}
 	
 	public void test12() {
-		runFieldAccessTest(new FileRange("AccessField/test36/Test.java", 11, 5, 11, 19), new FileRange("AccessField/test36/Test.java", 15, 27, 15, 39), new Dot(new TypeAccess("Inner1"), new Dot(new ThisAccess("this"), new VarAccess("bar"))));
+		runFieldAccessTest(new FileRange("AccessField/test36/Test.java", 11, 5, 11, 19), new FileRange("AccessField/test36/Test.java", 15, 27, 15, 39), new Dot(new TypeAccess("Test"), new Dot(new ThisAccess("this"), new VarAccess("bar"))));
 	}
 	
 	public void test13() {
@@ -77,7 +77,7 @@ public class AccessFieldTests extends AccessField {
 	}
 	
 	public void test14() {
-		runFieldAccessTest(new FileRange("AccessField/test38/Test.java", 12, 5, 12, 12), new FileRange("AccessField/test38/Test.java", 19, 24, 19, 41), new Dot(new ParExpr(new CastExpr(new TypeAccess("A"), new Dot(new TypeAccess("Test"), new ThisAccess("this")))), new VarAccess("bar")));
+		runFieldAccessTest(new FileRange("AccessField/test38/Test.java", 12, 5, 12, 12), new FileRange("AccessField/test38/Test.java", 19, 24, 19, 37), new Dot(new TypeAccess("Test"), new Dot(new SuperAccess("super"), new VarAccess("bar"))));
 	}
 
 }

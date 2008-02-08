@@ -11,6 +11,9 @@ aspect NamingContext {
 		abstract boolean isShadowed(Variable v);
 	}
 	
+	/*
+	 * this should be an abstract class, but JastAdd messes that up at the moment...
+	 */
 	class NamingContext implements ShadowingDetector {
 		public NameType nameType() { throw new Error("abstract method"); }
 		
@@ -22,6 +25,7 @@ aspect NamingContext {
 		public boolean isStatic() { throw new Error("abstract method"); } 
 		public TypeDecl enclosingType() { throw new Error("abstract method"); }
 		public NamingContext prevCtxt() { throw new Error("abstract method"); }
+		public NamingContext unqualifiedCtxt() { throw new Error("abstract method"); }
 		
 		public boolean isShadowed(PackageAccess pkg) {
 			String fst = pkg.packageName().split("\\.")[0];
@@ -53,6 +57,7 @@ aspect NamingContext {
 	inh NameType BodyDecl.nameType();
 	inh boolean BodyDecl.inStaticContext();
 	
+	// TODO: make two implementations, one for Expr and one for Access
 	public NamingContext Expr.getNamingContext() {
 		return new NamingContext() {
 			public NameType nameType() { return Expr.this.nameType(); }
@@ -61,6 +66,11 @@ aspect NamingContext {
 			public NamingContext prevCtxt() {
 				if(Expr.this instanceof Access && ((Access)Expr.this).hasPrevExpr())
 					return ((Access)Expr.this).prevExpr().getNamingContext();
+				return this;
+			}
+			public NamingContext unqualifiedCtxt() {
+				if(Expr.this instanceof Access)
+					return ((Access)Expr.this).unqualifiedScope().getNamingContext();
 				return this;
 			}
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
@@ -76,12 +86,15 @@ aspect NamingContext {
 		};
 	}
 	
+	inh SimpleSet BodyDecl.lookupType(String name);
+	
 	public NamingContext BodyDecl.getNamingContext() {
 		return new NamingContext() {
 			public NameType nameType() { return BodyDecl.this.nameType(); }
 			public boolean isStatic() { return inStaticContext(); }
 			public TypeDecl enclosingType() { return hostType(); }
 			public NamingContext prevCtxt() { return this; }
+			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return BodyDecl.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return BodyDecl.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, boolean ambiguous) {
@@ -104,6 +117,7 @@ aspect NamingContext {
 			public boolean isStatic() { return true; }
 			public TypeDecl enclosingType() { return null; }
 			public NamingContext prevCtxt() { return this; }
+			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { 
 				return ImportDecl.this.lookupType(name); 
 			}

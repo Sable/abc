@@ -24,10 +24,14 @@ aspect AccessVariable {
 			this.target = target;
 		}
 		
-		public SymbolicVarAccess protect(ShadowingDetector d) {
+		public SymbolicVarAccess moveDownTo(ShadowingDetector d, TypeDecl td) {
 			if(d.isShadowed(target))
 				return null;
 			return this;
+		}
+		
+		public SymbolicVarAccess moveInto(ShadowingDetector d) {
+			return moveDownTo(d, null);
 		}
 		
 		public Access getAccess(NamingContext ctxt) {
@@ -52,7 +56,16 @@ aspect AccessVariable {
 		public boolean needsQualifier() { return needsQualifier; }
 		public void setNeedsQualifier() { needsQualifier = true; }
 		
-		public SymbolicVarAccess protect(ShadowingDetector d) {
+		public SymbolicVarAccess moveDownTo(ShadowingDetector d, TypeDecl td) {
+			bend = td;
+			if(d.isShadowed(target))
+				needsQualifier = true;
+			else
+				source = td;
+			return this;
+		}
+	
+		public SymbolicVarAccess moveInto(ShadowingDetector d) {
 			if(d.isShadowed(target))
 				needsQualifier = true;
 			return this;
@@ -66,7 +79,7 @@ aspect AccessVariable {
 					if(source == ctxt.enclosingType())
 						return new ThisAccess("this").qualifiesAccess(va);
 					else {
-						Access outer = ctxt.accessType(bend, false);
+						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
 						if(outer == null) return null;
 						return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
 					}
@@ -75,24 +88,24 @@ aspect AccessVariable {
 					if(bend == ctxt.enclosingType())
 						return new SuperAccess("super").qualifiesAccess(va);
 					else {
-						Access outer = ctxt.accessType(bend, false);
+						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
 						if(outer == null) return null;
 						return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
 					}
 				} else {
-					Access upper = ctxt.accessType(source, false);
+					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
 					if(upper == null) return null;
 					if(bend == ctxt.enclosingType()) {
-						return new CastExpr(upper, new ThisAccess("this")).qualifiesAccess(va);
+						return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(va);
 					} else {
-						Access outer = ctxt.accessType(bend, false);
+						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
 						if(outer == null) return null;
 						return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
 										qualifiesAccess(va);
 					}
 				}
 			} else {
-				return new VarAccess(va);
+				return new VarAccess(target.name());
 			}
 		}
 	}
@@ -349,12 +362,12 @@ aspect AccessVariable {
 		
 	public SymbolicVarAccess Block.moveInto(SymbolicVarAccess acc, int index) {
 		if(acc == null)	return null;
-		return acc.protect(getLocalShadowingDetector(index));
+		return acc.moveInto(getLocalShadowingDetector(index));
 	}
 		
 	public SymbolicVarAccess LocalScope.moveInto(SymbolicVarAccess acc) {
 		if(acc == null)	return null;
-		return acc.protect(new ShadowingDetector() {
+		return acc.moveInto(new ShadowingDetector() {
 			public boolean isShadowed(PackageAccess pkg) {
 				return false;
 			}
@@ -370,13 +383,13 @@ aspect AccessVariable {
 	public SymbolicVarAccess TypeDecl.moveInto(SymbolicVarAccess acc) {
 		if(acc == null)
 			return null;
-		return acc.protect(getShadowingDetector());
+		return acc.moveInto(getShadowingDetector());
 	}
 
 	public SymbolicVarAccess TypeDecl.moveDownTo(SymbolicVarAccess acc) {
 		if(acc == null)
 			return null;
-		return acc.protect(getShadowingDetector());
+		return acc.moveDownTo(getShadowingDetector(), this);
 	}
 	
 	public Access Access.getAccessTo(Variable v) {

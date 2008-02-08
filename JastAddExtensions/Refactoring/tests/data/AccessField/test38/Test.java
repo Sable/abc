@@ -16,7 +16,7 @@ public class Test extends A {
     char bar;
     class Inner1 {
         class Inner2 {
-            char foo = ((A)Test.this).bar;
+            char foo = Test.super.bar;
         }
     }
 }

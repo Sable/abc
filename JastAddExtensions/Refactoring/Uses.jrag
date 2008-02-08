@@ -101,6 +101,8 @@ aspect Uses {
 		return new PackageDecl(name);
 	}
 
+	inh SimpleSet VariableDeclaration.lookupType(String name);
+	
 	/* in preparation for renaming a variable to new_name, this method finds all
 	 * uses of the variable before renaming and all uses of fields, types and
 	 * packages that might become shadowed by the renaming and collects them into
