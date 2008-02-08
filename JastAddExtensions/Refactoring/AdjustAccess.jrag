@@ -86,26 +86,11 @@ aspect AdjustAccess {
 		Access newacc;
         FileRange pos = new FileRange(compilationUnit().relativeName(),
         							  getStart(), getEnd());
-		if(target instanceof VariableDeclaration) {
+		if(target instanceof Variable) {
 			if(((VarAccess)this).decl() != target) {
-				newacc = this.accessLocalVariable((VariableDeclaration)target);
+				newacc = this.getAccessTo((Variable)target);
 				if(newacc == null)
-					throw new RefactoringException("local variable would become shadowed at "+pos);
-				replaceWith(newacc);
-			}
-		} else if(target instanceof ParameterDeclaration) {
-			if(((VarAccess)this).decl() != target) {
-				newacc = this.accessParameter((ParameterDeclaration)target);
-				if(newacc == null)
-					throw new RefactoringException("parameter would become shadowed at "+pos);
-				replaceWith(newacc);
-			}
-		} else if(target instanceof FieldDeclaration) {
-			FieldDeclaration fd = (FieldDeclaration)target;
-			if(((VarAccess)this).decl() != fd) {
-				newacc = this.accessField(fd);
-				if(newacc == null)
-					throw new RefactoringException("couldn't consistently rename field access at "+pos);
+					throw new RefactoringException("variable would become shadowed at "+pos);
 				replaceWith(newacc);
 			}
 		} else if(target instanceof MethodDecl) {

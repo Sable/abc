@@ -10,6 +10,7 @@ import AST.FileRange;
 import AST.List;
 import AST.Program;
 import AST.TypeDecl;
+import AST.Variable;
 
 public abstract class AccessField extends TestCase {
 
@@ -27,20 +28,11 @@ public abstract class AccessField extends TestCase {
 		assertNotNull(prog);
         ASTNode m = TestHelper.findSmallestCoveringNode(prog, fieldloc);
         assertNotNull(m);
-        assertTrue(m instanceof FieldDeclaration);
+        assertTrue(m instanceof Variable);
         ASTNode n = TestHelper.findSmallestCoveringNode(prog, obsloc);
         assertNotNull(n);
-        Access res = null;
-        if(n instanceof FieldDeclaration)
-        	res = ((FieldDeclaration)n).accessField((FieldDeclaration)m);
-        else if(n instanceof Block)
-        	res = ((Block)n).accessField((FieldDeclaration)m);
-        else if(n instanceof List)
-        	res = ((TypeDecl)n.getParent()).accessField((FieldDeclaration)m);
-        else if(n instanceof Expr)
-        	res = ((Expr)n).accessField((FieldDeclaration)m);
-        else
-        	fail("not a valid location");
+        assertTrue(n instanceof Access);
+        Access res = ((Expr)n).getNamingContext().accessVariable((Variable)m);
         if(expected == null) {
         	assertNull(res);
         } else {

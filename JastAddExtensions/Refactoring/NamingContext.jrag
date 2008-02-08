@@ -1,0 +1,153 @@
+/*
+ * a naming context provides information about naming at a certain point in
+ * the AST
+ */
+
+aspect NamingContext {
+	
+	interface ShadowingDetector {
+		abstract boolean isShadowed(PackageAccess pkg);
+		abstract boolean isShadowed(TypeDecl td);
+		abstract boolean isShadowed(Variable v);
+	}
+	
+	class NamingContext implements ShadowingDetector {
+		public NameType nameType() { throw new Error("abstract method"); }
+		
+		public boolean isAmbiguous() {
+			return nameType() == NameType.AMBIGUOUS_NAME || 
+			   nameType() == NameType.EXPRESSION_NAME;
+		}
+		
+		public boolean isStatic() { throw new Error("abstract method"); } 
+		public TypeDecl enclosingType() { throw new Error("abstract method"); }
+		public NamingContext prevCtxt() { throw new Error("abstract method"); }
+		
+		public boolean isShadowed(PackageAccess pkg) {
+			String fst = pkg.packageName().split("\\.")[0];
+			return isAmbiguous() && 
+				(!lookupType(fst).isEmpty() || !lookupVariable(fst).isEmpty()); 
+		}
+		
+		public boolean isShadowed(TypeDecl td) {
+			if(isAmbiguous() && !lookupVariable(td.name()).isEmpty())
+				return true;
+			return !lookupType(td.name()).contains(td);
+		}
+		
+		public boolean isShadowed(Variable v) {
+			return !lookupVariable(v.name()).contains(v);
+		}
+		
+		public SimpleSet lookupType(String name) { throw new Error("abstract method"); }
+		public SimpleSet lookupVariable(String name) { throw new Error("abstract method"); }
+		public Access accessType(TypeDecl td, boolean ambiguous) { throw new Error("abstract method"); }
+		public Access accessVariable(Variable v) { throw new Error("abstract method"); }
+		
+		public Access accessType(TypeDecl td) {
+			return accessType(td, isAmbiguous());
+		}
+	}
+	
+	inh NameType Expr.nameType();
+	inh NameType BodyDecl.nameType();
+	inh boolean BodyDecl.inStaticContext();
+	
+	public NamingContext Expr.getNamingContext() {
+		return new NamingContext() {
+			public NameType nameType() { return Expr.this.nameType(); }
+			public boolean isStatic() { return inStaticContext(); }
+			public TypeDecl enclosingType() { return hostType(); }
+			public NamingContext prevCtxt() {
+				if(Expr.this instanceof Access && ((Access)Expr.this).hasPrevExpr())
+					return ((Access)Expr.this).prevExpr().getNamingContext();
+				return this;
+			}
+			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
+			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return Expr.this.accessType(td, ambiguous);
+			}
+			public Access accessVariable(Variable v) {
+				SymbolicVarAccess acc = Expr.this.accessVariable(v);
+				if(acc == null) return null;
+				return acc.getAccess(this);
+			}
+		};
+	}
+	
+	public NamingContext BodyDecl.getNamingContext() {
+		return new NamingContext() {
+			public NameType nameType() { return BodyDecl.this.nameType(); }
+			public boolean isStatic() { return inStaticContext(); }
+			public TypeDecl enclosingType() { return hostType(); }
+			public NamingContext prevCtxt() { return this; }
+			public SimpleSet lookupType(String name) { return BodyDecl.this.lookupType(name); }
+			public SimpleSet lookupVariable(String name) { return BodyDecl.this.lookupVariable(name); }
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return BodyDecl.this.accessType(td, ambiguous);
+			}
+			public Access accessVariable(Variable v) {
+				SymbolicVarAccess acc = BodyDecl.this.accessVariable(v);
+				if(acc == null) return null;
+				return acc.getAccess(this);
+			}
+		};
+	}
+	
+	inh SimpleSet ImportDecl.lookupType(String name);
+	inh SimpleSet ImportDecl.lookupVariable(String name);
+	
+	public NamingContext ImportDecl.getNamingContext() {
+		return new NamingContext() {
+			public NameType nameType() { return NameType.NO_NAME; }
+			public boolean isStatic() { return true; }
+			public TypeDecl enclosingType() { return null; }
+			public NamingContext prevCtxt() { return this; }
+			public SimpleSet lookupType(String name) { 
+				return ImportDecl.this.lookupType(name); 
+			}
+			public SimpleSet lookupVariable(String name) { 
+				return ImportDecl.this.lookupVariable(name); 
+			}
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				SymbolicTypeAccess acc = ImportDecl.this.accessType(td);
+				if(acc == null) return null;
+				return acc.getAccess(this);
+			}
+			public Access accessVariable(Variable v) { return null; }
+		};
+	}
+	
+	public ShadowingDetector TypeDecl.getShadowingDetector() {
+		return new ShadowingDetector() {
+			public boolean isShadowed(PackageAccess pkg) {
+				return false;
+			}
+			public boolean isShadowed(TypeDecl td) {
+				SimpleSet set = memberTypes(td.name());
+				return !set.isEmpty() && !set.contains(td);
+			}
+			public boolean isShadowed(Variable v) {
+				SimpleSet set = memberFields(v.name());
+				return !set.isEmpty() && !set.contains(v);
+			}
+		};
+	}
+
+	// Note: the local shadowing detector always assumes non-ambiguity! 
+	public ShadowingDetector Block.getLocalShadowingDetector(final int index) {
+		return new ShadowingDetector() {
+			public boolean isShadowed(PackageAccess pkg) {
+				return false;
+			}
+			public boolean isShadowed(TypeDecl td) {
+				return localLookupType(td.name(), index) != null;
+			}
+			public boolean isShadowed(Variable v) {
+				return localLookupVariable(v.name(), index) != null;
+			}
+		};
+	}
+
+}

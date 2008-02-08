@@ -22,23 +22,6 @@
 
 aspect AccessType {
 	
-	interface ShadowingDetector {
-		public boolean typeIsShadowed(String name);
-		public boolean packageIsShadowed(String name);
-	}
-	
-	interface AmbiguityDetector extends ShadowingDetector {
-		public boolean ambiguousContext();
-		public Access accessType(TypeDecl td);
-	}
-	
-	class UnambiguousContext implements AmbiguityDetector {
-		public boolean typeIsShadowed(String name) { return false; }
-		public boolean packageIsShadowed(String name) { return false; }
-		public boolean ambiguousContext() { return false; }
-		public Access accessType(TypeDecl td) { return null; }
-	}
-	
 	class SymbolicTypeAccess {
 		protected TypeDecl target;
 		
@@ -48,14 +31,14 @@ aspect AccessType {
 		
 		public TypeDecl getTarget() { return target; }
 		
-		public Access getAccess(AmbiguityDetector d) {
-			if(d.typeIsShadowed(target.name()))
+		public Access getAccess(NamingContext ctxt) {
+			if(ctxt.isShadowed(target))
 				return null;
 			return new TypeAccess(target.name()); 
 		}
 		
 		public SymbolicTypeAccess protect(ShadowingDetector d) {
-			if(d.typeIsShadowed(target.name()))
+			if(d.isShadowed(target))
 				return null;
 			return this;
 		}
@@ -72,7 +55,7 @@ aspect AccessType {
 		public boolean needsQualifier() { return needsQualifier; }
 		public void setNeedsQualifier() { needsQualifier = true; }
 		public SymbolicTypeAccess protect(ShadowingDetector d) {
-			if(d.typeIsShadowed(target.name()))
+			if(d.isShadowed(target))
 				needsQualifier = true;
 			return this;
 		}
@@ -88,9 +71,9 @@ aspect AccessType {
 		
 		public String getPkg() { return pkg; }
 		
-		public Access getAccess(AmbiguityDetector d) {
-			if(needsQualifier || d.typeIsShadowed(target.name())) {
-				if(d.packageIsShadowed(pkg.split("\\.")[0]))
+		public Access getAccess(NamingContext ctxt) {
+			if(needsQualifier || ctxt.isShadowed(target)) {
+				if(ctxt.isShadowed(new PackageAccess(pkg)))
 					return null;
 				return new TypeAccess(pkg, target.name());
 			} else {
@@ -108,11 +91,11 @@ aspect AccessType {
 			this.outer = outer;
 		}
 		
-		public Access getAccess(AmbiguityDetector d) {
-			if(needsQualifier || d.typeIsShadowed(target.name())) {
-				if(d.ambiguousContext() && !outer.memberFields(target.name()).isEmpty())
+		public Access getAccess(NamingContext ctxt) {
+			if(needsQualifier || ctxt.isShadowed(target)) {
+				if(ctxt.isAmbiguous() && !outer.memberFields(target.name()).isEmpty())
 					return null;
-				Access outer_acc = d.accessType(outer);
+				Access outer_acc = ctxt.prevCtxt().accessType(outer);
 				if(outer_acc == null) return null;
 				return outer_acc.qualifiesAccess(new TypeAccess(target.name()));
 			} else {
@@ -349,7 +332,7 @@ aspect AccessType {
 		return null;
 	}
 	
-	public TypeDecl Block.localLookup(String name, int index) {
+	public TypeDecl Block.localLookupType(String name, int index) {
 		for(int i = index; i >= 0 && !(getStmt(i) instanceof Case); i--) {
 			if(getStmt(i) instanceof LocalClassDeclStmt) {
 				TypeDecl t = ((LocalClassDeclStmt)getStmt(i)).getClassDecl();
@@ -360,17 +343,9 @@ aspect AccessType {
 		return null;
 	}
 	
-	public SymbolicTypeAccess Block.moveInto(SymbolicTypeAccess acc, final int index) {
-		if(acc == null)
-			return null;
-		return acc.protect(new ShadowingDetector() {
-			public boolean typeIsShadowed(String name) {
-				return localLookup(name, index) != null;
-			}
-			public boolean packageIsShadowed(String name) {
-				return false;
-			}
-		});
+	public SymbolicTypeAccess Block.moveInto(SymbolicTypeAccess acc, int index) {
+		if(acc == null) return null;
+		return acc.protect(getLocalShadowingDetector(index));
 	}
 	
 	public SymbolicTypeAccess ClassInstanceExpr.moveInto(SymbolicTypeAccess acc) {
@@ -379,70 +354,25 @@ aspect AccessType {
 	}
 	
 	public SymbolicTypeAccess TypeDecl.moveInto(SymbolicTypeAccess acc) {
-		if(acc == null)
-			return null;
-		return acc.protect(new ShadowingDetector() {
-			public boolean typeIsShadowed(String name) {
-				return !memberTypes(name).isEmpty();
-			}
-			public boolean packageIsShadowed(String name) {
-				return false;
-			}
-		});
+		if(acc == null)	return null;
+		return acc.protect(getShadowingDetector());
 	}
 	
 	public SymbolicTypeAccess TypeDecl.moveDownTo(SymbolicTypeAccess acc) {
-		if(acc == null)
-			return null;
-		return acc.protect(new ShadowingDetector() {
-			public boolean typeIsShadowed(String name) {
-				return !memberTypes(name).isEmpty();
-			}
-			public boolean packageIsShadowed(String name) {
-				return false;
-			}
-		});
+		if(acc == null)	return null;
+		return acc.protect(getShadowingDetector());
 	}
 	
 	public Access BodyDecl.accessType(TypeDecl td, final boolean ambiguous) {
 		SymbolicTypeAccess stacc = accessType(td);
 		if(stacc == null) return null;
-		return stacc.getAccess(new AmbiguityDetector() {
-			public boolean ambiguousContext() { return ambiguous; }
-			public boolean typeIsShadowed(String name) {
-				return ambiguous ? !lookupVariable(name).isEmpty() : false;
-			}
-			public boolean packageIsShadowed(String name) {
-				return ambiguous ? 
-						  !lookupType(name).isEmpty() || !lookupVariable(name).isEmpty() 
-					    : false;
-			}
-			public Access accessType(TypeDecl td) {
-				return BodyDecl.this.accessType(td, ambiguous);
-			}
-		});
+		return stacc.getAccess(getNamingContext());
 	}
 	
 	public Access Expr.accessType(TypeDecl td, final boolean ambiguous) {
 		SymbolicTypeAccess stacc = accessType(td);
 		if(stacc == null) return null;
-		return stacc.getAccess(new AmbiguityDetector() {
-			public boolean ambiguousContext() { return ambiguous; }
-			public boolean typeIsShadowed(String name) {
-				return ambiguous ? !lookupVariable(name).isEmpty() : false;
-			}
-			public boolean packageIsShadowed(String name) {
-				return ambiguous ? 
-						  !lookupType(name).isEmpty() || !lookupVariable(name).isEmpty() 
-					    : false;
-			}
-			public Access accessType(TypeDecl td) {
-				if(Expr.this instanceof Access &&
-						((Access)Expr.this).hasPrevExpr())
-					return ((Access)Expr.this).prevExpr().accessType(td, ambiguous);
-				return Expr.this.accessType(td, ambiguous);
-			}
-		});
+		return stacc.getAccess(getNamingContext());
 	}
 	
 }
