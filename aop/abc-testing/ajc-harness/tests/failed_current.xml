@@ -1,4 +1,4 @@
-<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
@@ -89,17 +89,8 @@
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="maybeShared pointcut - not shared" num="1221" dir="abctests/eaj/maybeShared">
-        <compile options="-ext,abc.eaj,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut" files="NotShared.java"></compile>
-        <run class="NotShared"></run>
-    </ajc-test>
-<ajc-test title="maybeShared pointcut - shared" num="1222" dir="abctests/eaj/maybeShared">
-        <compile options="-ext,abc.eaj,-debug,enableMaybeSharedPointcut,-debug,optimizeMaybeSharedPointcut" files="Shared.java">
-        </compile>
-        <run class="Shared"></run>
-    </ajc-test>
 <ajc-test title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1" num="1303" dir="abctests/tracematches/wp-opt">
-        <compile options="-ext,abc.tm,-wp-tmopt,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot" files="IntraFlowSens1.java,AB.java,AbstractTest.java">
+        <compile options="-ext,abc.tm,-wp-tmopt,-w,-laststage,intra,-debug,warnWhenAlteringShadow,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot" files="IntraFlowSens1.java,AB.java,AbstractTest.java">
 	    	<message line="41" kind="warning"></message>
 	    	<message line="43" kind="warning"></message>
 	    	<message line="48" kind="warning"></message>
@@ -109,36 +100,6 @@
 	    	<message line="68" kind="warning"></message>
 	    	<message line="73" kind="warning"></message>
 	    	<message line="77" kind="warning"></message>
-		</compile>
-    </ajc-test>
-<ajc-test title="Typechecks for dependent advice " num="1420" dir="abctests/da/typechecks">
-        <compile options="-ext,abc.da" files="DATypeChecks.java">
-	    	<message line="12" kind="warning"></message>
-	    	<message line="49" kind="warning"></message>
-	    	<message line="59" kind="error"></message>
-	    	<message line="70" kind="error"></message>
-		</compile>
-    </ajc-test>
-<ajc-test title="Typechecks for dependent advice (2)" num="1421" dir="abctests/da/typechecks">
-        <compile options="-ext,abc.da" files="DATypeChecks2.java">
-	    	<message line="9" kind="error"></message>
-	    	<message line="17" kind="error"></message>
-		</compile>
-    </ajc-test>
-<ajc-test title="Typechecks for dependent advice (3)" num="1422" dir="abctests/da/typechecks">
-        <compile options="-ext,abc.da" files="DATypeChecks3.java">
-	    	<message line="11" kind="error"></message>
-	    	<message line="19" kind="error"></message>
-		</compile>
-    </ajc-test>
-<ajc-test title="Typechecks for dependent advice (4)" num="1423" dir="abctests/da/typechecks">
-        <compile options="-ext,abc.da" files="DATypeChecks4.java">
-	    	<message line="4" kind="error"></message>
-		</compile>
-    </ajc-test>
-<ajc-test title="Typechecks for dependent advice (5)" num="1424" dir="abctests/da/typechecks">
-        <compile options="-ext,abc.da" files="DATypeChecks5.java">
-	    	<message line="4" kind="error"></message>
 		</compile>
     </ajc-test>
  
