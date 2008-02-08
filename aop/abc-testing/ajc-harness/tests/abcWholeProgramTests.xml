@@ -131,11 +131,35 @@
 		</compile>
     </ajc-test>
 
-    <ajc-test num="1425" dir="abctests/da/optimizations"
+    <ajc-test num="1425" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (6)">
+        <compile files="DATypeChecks6.java" options="-ext,abc.da">
+	    	<message kind="error" line="7"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1430" dir="abctests/da/optimizations"
         title="Quick check for dependent advice">
         <compile files="QuickCheck.java" options="-ext,abc.da,-debug,daQuickCheck">
 	    	<message kind="warning" line="6"/>
 	    	<message kind="warning" line="9"/>
 		</compile>
+    </ajc-test>
+
+    <ajc-test num="1431" dir="abctests/da/optimizations"
+        title="Flow-insensitive optimization for dependent advice">
+        <compile files="FlowIns.java" options="-ext,abc.da,-debug,daFlowIns">
+	    	<message kind="warning" line="11"/>
+	    	<message kind="warning" line="13"/>
+		</compile>
+        <run class="FlowIns"/>
+    </ajc-test>
+
+    <ajc-test num="1440" dir="abctests/da/optimizations/mop"
+        title="Flow-insensitive optimization for dependent advice">
+        <compile files="HasNext.java,Test.java" options="-ext,abc.da,-debug,daFlowIns">
+	    	<message kind="warning" line="79"/>
+		</compile>
+        <run class="Test"/>
     </ajc-test>
 </suite>

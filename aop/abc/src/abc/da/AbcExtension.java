@@ -25,7 +25,7 @@ import java.util.List;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
-//import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
+import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
 import abc.main.Debug;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -40,7 +40,7 @@ import abc.weaving.weaver.ReweavingPass.ID;
 public class AbcExtension extends abc.eaj.AbcExtension
 {
     protected static final ID DEPENDENT_ADVICE_QUICK_CHECK = new ReweavingPass.ID("quick-check for dependent-advice");
-//	protected static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
+	protected static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
 	
 	protected boolean foundDependencyKeyword = false;
 	protected boolean forceEnableQuickCheck = false;
@@ -87,11 +87,11 @@ public class AbcExtension extends abc.eaj.AbcExtension
     protected void createReweavingPasses(List passes) {
     	super.createReweavingPasses(passes);
     	
-    	if(Debug.v().daQuickCheck) {
+    	if(Debug.v().daQuickCheck || Debug.v().daFlowIns) {
     		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,createQuickCheck()));
-//        	if(Debug.v().daFlowIns) {
-//        		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,createFlowInsensitiveAnalysis()));
-//        	}
+    	}
+    	if(Debug.v().daFlowIns) {
+    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,createFlowInsensitiveAnalysis()));
     	}
     }
     
@@ -99,9 +99,9 @@ public class AbcExtension extends abc.eaj.AbcExtension
 		return new DependentAdviceQuickCheck();
 	}
 
-//	protected ReweavingAnalysis createFlowInsensitiveAnalysis() {
-//		return new DependentAdviceFlowInsensitiveAnalysis();
-//	}
+	protected ReweavingAnalysis createFlowInsensitiveAnalysis() {
+		return new DependentAdviceFlowInsensitiveAnalysis();
+	}
 
 	@Override
     protected GlobalAspectInfo createGlobalAspectInfo() {
