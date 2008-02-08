@@ -16,12 +16,15 @@ import java.lang.String;
 import dk.brics.xact.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 //import abc.main.Main;
 
 public class Main {
         static boolean skiptests = false, listxml = false, timeajc = false;
         static int cutoff = 0;
-        static String inputFileName, dirFilter, titleFilter;
+        static String dirFilter, titleFilter;
+
+    static ArrayList xmlFileNames = new ArrayList();
 
         static String dtd = "abcTestSuite.dtd";
 
@@ -85,12 +88,23 @@ public class Main {
                  * Also, this allows us to close the file streams in a finally {} clause.
                  */
                 try {
-                        (new File("failed.output")).delete();
-                        (new File("full.output")).delete();
-                        try {
-                                // TODO: Add some handling to remove <?xml ?> or <!DOCTYPE /> until fixed in Xact
-                                xInput = XML.get("file:" + inputFileName, "file:" + dtd, DEFAULT_NAMESPACE);
-                        } catch (XmlCastException e) {
+		    (new File("failed.output")).delete();
+		    (new File("full.output")).delete();
+		    try {
+			fullOut = new BufferedWriter(new FileWriter("full.output"));
+			failedOut = new BufferedWriter(new FileWriter("failed.output"));
+		    } catch (IOException e) {
+			System.err.println("Couldn't offer output file for writing: " + e);
+			e.printStackTrace();
+			System.exit(1);
+		    }
+
+		    for(Iterator it = xmlFileNames.iterator(); it.hasNext(); ) {
+			String inputFileName = (String)it.next();
+			try {
+			    // TODO: Add some handling to remove <?xml ?> or <!DOCTYPE /> until fixed in Xact
+			    xInput = XML.get("file:" + inputFileName, "file:" + dtd, DEFAULT_NAMESPACE);
+			} catch (XmlCastException e) {
                             System.err.println("Error importing XML file: " + e);
                             e.printStackTrace();
                             System.exit(1);
@@ -99,19 +113,10 @@ public class Main {
                             e.printStackTrace();
                             System.exit(1);
                         }
-
-
+			
+			
                         XML[] xTests = xInput.select("//abc:ajc-test");
-
-                        try {
-                                fullOut = new BufferedWriter(new FileWriter("full.output"));
-                                failedOut = new BufferedWriter(new FileWriter("failed.output"));
-                        } catch (IOException e) {
-                            System.err.println("Couldn't offer output file for writing: " + e);
-                            e.printStackTrace();
-                            System.exit(1);
-                        }
-
+			
                         for(int i = 0; i < xTests.length; i++) {
                             try {
                                 if(doCase(xTests[i])) {
@@ -125,11 +130,11 @@ public class Main {
                                 e.printStackTrace();
                             }
                         }
-
-                        if(succeeded + failed + skipped != count) { // sanity
-                            System.out.println("I can't count - should have done " + count + " tests, but only remember " + (succeeded + failed + skipped) + ".");
-                        }
-                        System.out.println("Number of tests: " + count + ".");
+		    }
+		    if(succeeded + failed + skipped != count) { // sanity
+			System.out.println("I can't count - should have done " + count + " tests, but only remember " + (succeeded + failed + skipped) + ".");
+		    }
+		    System.out.println("Number of tests: " + count + ".");
                 } catch (Throwable e) {
                     stderr.println("Unexpected exception: " + e);
                     System.setErr(stderr);
@@ -329,6 +334,9 @@ public class Main {
                                         cutoff = Integer.parseInt(args[arg]);
                                 }
                         }
+			else if(args[arg].equals("-morexml")) {
+			    xmlFileNames.add(args[++arg]);
+			}
                         else if(args[arg].equals("-n")) {
                             String numbers = args[++arg];
                             ArrayList nums = new ArrayList();
@@ -352,7 +360,7 @@ public class Main {
                         	messageOverride = args[++arg];
                         }
                         else if(!doneXmlFile) {
-                            inputFileName = args[arg];
+                            xmlFileNames.add(args[arg]);
                             doneXmlFile = true;
                         }
                         else if(!doneDirFilter) {
@@ -376,5 +384,6 @@ public class Main {
                 		"\n\t[-messageOverride OVERRIDE] XMLFILE [DIR-FILTER [TITLE-FILTER]]");
                 System.out.println("Runs the cases listed in XMLFILE individually.");
                 System.out.println("Outputs passed.xml, skipped.xml and failed.xml");
+		System.out.println("More than one XML file can be specified with -morexml.");
         }
 }
