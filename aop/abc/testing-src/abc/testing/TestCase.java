@@ -68,6 +68,8 @@ public class TestCase {
 	String testNumber;
 	
 	boolean failed = true;
+
+    long startTime;
 	
 	PrintStream currentOut;
 	
@@ -104,7 +106,8 @@ public class TestCase {
 	    }
 	    System.setOut(currentOut);
 	    System.setErr(currentOut);
-	    
+
+	    this.startTime = System.currentTimeMillis();
 	    try { // big try-finally block to reset stdout and stderr and close file streams when we're done
 			// Need to call reset so that everyone (in particular, soot.G) notices the change
 			// in System.out and System.err. Calling soot.G.reset() seems sufficient, but there might
@@ -661,8 +664,8 @@ public class TestCase {
 	}
 	
 	protected void failTest() {
-	    Main.stdout.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed.");
-	    System.err.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed.");
+	    Main.stdout.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
+	    System.err.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
 	    Main.xFailed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
 	            	Main.xFailed.plug("NEXT", xTest));
 	    this.failed = true;
@@ -670,8 +673,8 @@ public class TestCase {
 	}
 	
 	protected void passTest() {
-	    Main.stdout.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed.");
-	    System.out.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed.");
+	    Main.stdout.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
+	    System.out.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
 	    Main.xPassed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
             	Main.xPassed.plug("NEXT", xTest));
 	    this.failed = false;
