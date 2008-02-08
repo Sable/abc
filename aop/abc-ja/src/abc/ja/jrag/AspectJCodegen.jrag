@@ -19,6 +19,50 @@ aspect AspectJCodegen {
   refine EmitJimple public void MethodDecl.jimplify2() {
     EmitJimple.MethodDecl.jimplify2();
     MethodCategory.register(sootMethod(), category);
+    if (category == MethodCategory.ACCESSOR_GET
+        || category == MethodCategory.ACCESSOR_SET) {
+      IntertypeFieldDeclaration source =
+        (IntertypeFieldDeclaration) hostType().getAccessorSource(this);
+
+      SootFieldRef sfr;
+      if (source.hostType().isInterfaceDecl()) {
+        // create a fake field (if ITD field introduced on an interface)
+        SootField sf = new SootField(
+          source.introducedName(),
+          source.type().getSootType(),
+          source.sootTypeModifiers()
+        );
+
+        source.hostType().getSootClassDecl().addField(sf);
+        MethodCategory.registerRealNameAndClass(
+          sf,
+          source.sootTypeModifiers(),
+          source.name(),
+          source.hostType().abcClass()
+        );
+
+        abc.ja.CompileSequence cs =
+          (abc.ja.CompileSequence)
+            abc.main.Main.v().getAbcExtension().getCompileSequence();
+        cs.registerFakeField(sf);
+  
+        sfr = sf.makeRef();
+      } else {
+        sfr = soot.Scene.v().makeFieldRef(
+          source.hostType().getSootClassDecl(),
+          source.introducedName(),
+          source.type().getSootType(),
+          source.isStatic()
+        );
+      }
+
+      if (category == MethodCategory.ACCESSOR_GET)
+        MethodCategory.registerFieldGet(AbcFactory.FieldSig(sfr),
+                                        AbcFactory.MethodSig(sootMethod()));
+      if (category == MethodCategory.ACCESSOR_SET)
+        MethodCategory.registerFieldSet(AbcFactory.FieldSig(sfr),
+                                        AbcFactory.MethodSig(sootMethod()));
+    }
   }
   public int ConstructorDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void ConstructorDecl.jimplify2() {
@@ -88,22 +132,24 @@ aspect AspectJCodegen {
     m.category = MethodCategory.ACCESSOR_GET;
     return m;
   }
+  */
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceGetterImplementation(TypeDecl typeDecl) {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceGetterImplementation(typeDecl);
     m.category = MethodCategory.ACCESSOR_GET;
     return m;
   }
+  /*
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceSetter() {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceSetter();
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
+  */
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceSetterImplementation(TypeDecl typeDecl) {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceSetterImplementation(typeDecl);
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
-  */
 
 
   refine EmitJimple public void Program.jimplify1() {
@@ -257,7 +303,7 @@ aspect AspectJCodegen {
     // record the real modifiers, name, and declaring class, for introduced
     // fields so that the pattern matcher can operate correctly
     MethodCategory.registerRealNameAndClass(
-      sootField, mods, getOriginalName(), aspectType().abcClass());
+      sootRef().resolve(), mods, getOriginalName(), aspectType().abcClass());
   }
 
   public Formal ParameterDeclaration.formal() {

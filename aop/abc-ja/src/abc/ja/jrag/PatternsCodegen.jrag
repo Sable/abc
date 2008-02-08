@@ -66,7 +66,12 @@ aspect PatternsCodegen
         int real_mods = MethodCategory.getModifiers(sm);
 
         // exclude ITD-generated methods which correspond to constructors
+        // and ITD-generated accessor methods for fields
         if (MethodCategory.getName(sm).equals(SootMethod.constructorName))
+          return false;
+        int category = MethodCategory.getCategory(sm);
+        if (category == MethodCategory.ACCESSOR_GET
+            || category == MethodCategory.ACCESSOR_SET)
           return false;
 
         // check modifiers

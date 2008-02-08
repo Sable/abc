@@ -23,6 +23,7 @@ import polyglot.util.StdErrorQueue;
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
 import soot.Scene;
+import soot.SootField;
 import soot.SootMethod;
 import abc.aspectj.visit.PatternMatcher;
 import abc.ja.jrag.*;
@@ -32,6 +33,13 @@ import java.io.*;
 public class CompileSequence extends abc.main.CompileSequence {
   public CompileSequence(AbcExtension ext) {
     super(ext);
+  }
+
+  IntertypeAdjuster ita = new IntertypeAdjuster();
+
+  public void registerFakeField(SootField sf)
+  {
+    ita.registerFakeField(sf);
   }
 
   private void addError(Problem problem) {
@@ -173,8 +181,6 @@ public class CompileSequence extends abc.main.CompileSequence {
       Debug.phaseDebug("Declare Parents");
       Scene.v().setDoneResolving();
 
-      // Adjust Soot types for intertype decls
-      IntertypeAdjuster ita = new IntertypeAdjuster();
       //ita.adjust();
       AbcTimer.mark("Intertype Adjuster");
       Debug.phaseDebug("Intertype Adjuster");
@@ -279,7 +285,7 @@ public class CompileSequence extends abc.main.CompileSequence {
       }
       // the intertype adjuster has put dummy fields into interfaces,
       // which now have to be removed
-      //ita.removeFakeFields();
+      ita.removeFakeFields();
     } catch(SemanticException e) {
       abcExt.reportError(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
     }

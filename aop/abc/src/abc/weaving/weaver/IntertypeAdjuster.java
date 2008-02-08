@@ -436,6 +436,11 @@ public class IntertypeAdjuster {
 
 	private List fieldsToRemove = new ArrayList();
 	
+	public void registerFakeField(SootField sf)
+	{
+		fieldsToRemove.add(sf);
+	}
+
 	public void removeFakeFields() {
 		for (Iterator ftrit = fieldsToRemove.iterator(); ftrit.hasNext(); ) {
 			SootField sf = (SootField) ftrit.next();
