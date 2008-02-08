@@ -31,8 +31,4 @@ public interface DAAdviceDecl extends EAJAdviceDecl
     /** dependent modifier */
     public static final Flags DEPENDENT = Flags.createFlag("dependent", "", "", null);
 	
-	/**
-	 * Convenience method. Returns true if the {@link #DEPENDENT} flag is set.
-	 */
-	public boolean isDependent();
 }
