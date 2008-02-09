@@ -12,7 +12,7 @@ cd ../../../abc
 CLASSPATH= ant clobber
 CLASSPATH= ant jars
 cd ../abc-testing/ajc-harness/tests
-nice -n 5 ./runtests $* abcTests.xml
+nice -n 5 ./runtests $* abcTests.xml # -morexml abcWholeProgramTests.xml 
 svn update $FILES
 # perl -pe's/\&/\&amp;/g' -i passed.xml failed.xml skipped.xml
 ./calc_updates.pl "$ADDRESS" "$SUBJECT"
