@@ -664,8 +664,12 @@ public class TestCase {
 	}
 	
 	protected void failTest() {
-	    Main.stdout.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
-	    System.err.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
+		System.gc();
+    	Runtime runtime = Runtime.getRuntime();
+    	Main.stdout.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed in " + (System.currentTimeMillis() - this.startTime) +
+    			"ms, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");
+	    System.err.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed in " + (System.currentTimeMillis() - this.startTime) + 
+    			"ms, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");
 	    Main.xFailed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
 	            	Main.xFailed.plug("NEXT", xTest));
 	    this.failed = true;
@@ -673,8 +677,12 @@ public class TestCase {
 	}
 	
 	protected void passTest() {
-	    Main.stdout.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
-	    System.out.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed in " + (System.currentTimeMillis() - this.startTime) + "ms.");
+		System.gc();
+    	Runtime runtime = Runtime.getRuntime();
+	    Main.stdout.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed in " + (System.currentTimeMillis() - this.startTime) + 
+    			"ms, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");	    		
+	    System.out.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed in " + (System.currentTimeMillis() - this.startTime) +
+    			"ms, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");	    		
 	    Main.xPassed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
             	Main.xPassed.plug("NEXT", xTest));
 	    this.failed = false;
