@@ -41,7 +41,7 @@ public class DAAspectInfoHarvester extends ContextVisitor {
 				String qualifiedLowLevelAdviceName = context.currentAspect().fullName() + "." + adviceDecl.name();
 				String qualifiedUserGivenAdviceName = context.currentAspect().fullName() + "." + adviceName.getName();
 				
-				gai.registerHumanReadableNameForAdviceName(qualifiedLowLevelAdviceName,qualifiedUserGivenAdviceName);				
+				gai.registerDependentAdvice(qualifiedLowLevelAdviceName,qualifiedUserGivenAdviceName);				
 			}
 		}
 		return enter;

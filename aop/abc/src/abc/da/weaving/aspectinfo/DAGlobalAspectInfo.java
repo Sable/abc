@@ -55,15 +55,24 @@ public class DAGlobalAspectInfo extends GlobalAspectInfo {
 	}
 	
 	/**
-	 * Registers a human-readable name for an internal advice name.
+	 * Registers a dependent advice.
+	 */
+	public void registerDependentAdvice(String internalAdviceName) {
+		registerDependentAdvice(internalAdviceName,internalAdviceName);
+	}
+	
+	/**
+	 * Registers a dependent advice and a human-readable name for it (the name given to it in the frontend and in the
+	 * dependency declarations).
 	 * Both names must be qualified by the aspect type's name.
 	 */
-	public void registerHumanReadableNameForAdviceName(String internalAdviceName, String humanReadableName) {
+	public void registerDependentAdvice(String internalAdviceName, String humanReadableName) {
 		if(!internalAdviceName.contains(".")) {
 			throw new IllegalArgumentException("Internal advice name has to be qualified!");
 		}
 		if(adviceMethodNameToAdviceShortName.containsKey(internalAdviceName)) {
-			throw new RuntimeException("already registered!");
+			if(!adviceMethodNameToAdviceShortName.get(internalAdviceName).equals(humanReadableName))
+				throw new RuntimeException("already registered different human readable name!");
 		}
 		
 		
