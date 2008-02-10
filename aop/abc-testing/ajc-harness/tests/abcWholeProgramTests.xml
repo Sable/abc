@@ -148,7 +148,7 @@
 
     <ajc-test num="1431" dir="abctests/da/optimizations"
         title="Flow-insensitive optimization for dependent advice">
-        <compile files="FlowIns.java" options="-ext,abc.da,-debug,daFlowIns">
+        <compile files="FlowIns.java" options="-ext,abc.da,-debug,daFlowIns,-w,-cp,../../../abc/lib/abc-runtime.jar:../../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="11"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
