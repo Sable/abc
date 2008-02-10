@@ -49,8 +49,9 @@ public class DAAdviceDecl_c extends EAJAdviceDecl_c implements DAAdviceDecl
      */
     @Override
     public Node typeCheck(TypeChecker tc) throws SemanticException {
-    	if(spec.ext() instanceof NameExtension) {
-    		if(!flags.intersects(DEPENDENT)) {
+    	if(spec.ext() instanceof NameExtension) {    		
+    		NameExtension nameExtension = (NameExtension) spec.ext();    		
+			if(nameExtension.getName()!=null && !flags.intersects(DEPENDENT)) {
     			throw new SemanticException("Only dependent advice can be given a name."+position());
     		}    		
     	}
