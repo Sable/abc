@@ -167,7 +167,7 @@ public class AdviceDependency {
 	}
 
 	/**
-	 * Returns <code>true</code> if this depencency contains an advice with the given name.
+	 * Returns <code>true</code> if this dependency contains an advice with the given name.
 	 */
 	public boolean containsAdviceNamed(String adviceName) {
 		return strongAdviceNameToVars.keySet().contains(adviceName) ||
@@ -202,13 +202,19 @@ public class AdviceDependency {
 			for (String strongAdviceName : strongAdviceNameToVars.keySet()) {
 				setsOfStrongShadows.add(adviceNameToShadows.get(strongAdviceName));
 			}
-			List<Set<Shadow>> setsOfWeakShadows = new LinkedList<Set<Shadow>>();
+			
+			//compute cross product for strong shadows
+			Set<DependentShadowGroup> shadowGroups = consistentCrossProduct(setsOfStrongShadows);
+
+			//add weak shadows
+			Set<Shadow> weakShadows = new HashSet<Shadow>();
 			for (String weakAdviceName : weakAdviceNameToVars.keySet()) {
-				setsOfWeakShadows.add(adviceNameToShadows.get(weakAdviceName));
+				weakShadows.addAll(adviceNameToShadows.get(weakAdviceName));
 			}
+			addCompatibleWeakShadows(weakShadows,shadowGroups);
 			
 			//cache the groups
-			consistentShadowGroups = consistentCrossProduct(setsOfStrongShadows, setsOfWeakShadows);
+			consistentShadowGroups = shadowGroups;
 		} else {
 			//remove all shadow groups for which a strong shadow has been disabled in the meantime
 			for (Iterator<DependentShadowGroup> iterator = consistentShadowGroups.iterator(); iterator.hasNext();) {
@@ -222,22 +228,29 @@ public class AdviceDependency {
 		}
 		
 		return new HashSet<DependentShadowGroup>(consistentShadowGroups);
-	}
-	
+	}	
 	
 	/**
-	 * Computes a consistent cross product of the given sets of strong and weak shadows.
+	 * Adds each shadow contained in the shadow set to each of the consistent shadow group where this shadow has a compatible binding. 
 	 */
-	protected Set<DependentShadowGroup> consistentCrossProduct(Collection<Set<Shadow>> toCrossStrong, Collection<Set<Shadow>> toCrossWeak) {
+	protected void addCompatibleWeakShadows(Set<Shadow> weakShadows, Set<DependentShadowGroup> shadowGroups) {
+		for (DependentShadowGroup shadowGroup : shadowGroups) {
+			for (Shadow weakShadow : weakShadows) {
+				shadowGroup.tryAddWeakShadow(weakShadow);
+			}
+		}
+	}
+
+	/**
+	 * Computes a consistent cross product of the given sets of strong shadows.
+	 */
+	protected Set<DependentShadowGroup> consistentCrossProduct(Collection<Set<Shadow>> toCrossStrong) {
 		HashSet<DependentShadowGroup> result = new HashSet<DependentShadowGroup>();
 		DependentShadowGroup seed = new DependentShadowGroup();
 		result.add(seed);
 		
 		for (Set<Shadow> currSet : toCrossStrong) {			
-			result = singleProduct(currSet, result, true);			
-		}
-		for (Set<Shadow> currSet : toCrossWeak) {			
-			result = singleProduct(currSet, result, false);			
+			result = singleProduct(currSet, result);			
 		}
 
 		//remove the empty group as it was only used as a seed
@@ -246,7 +259,7 @@ public class AdviceDependency {
 		return result;
 	}
 
-	private HashSet singleProduct(Set<Shadow> currSet, HashSet<DependentShadowGroup> result, boolean strongShadows) {
+	private HashSet singleProduct(Set<Shadow> currSet, HashSet<DependentShadowGroup> result) {
 		HashSet newResult = new HashSet();
 		
 		for (DependentShadowGroup resGroup : result) {
@@ -255,12 +268,9 @@ public class AdviceDependency {
 				
 				DependentShadowGroup currCopy = resGroup.clone(); 
 
-				if(strongShadows && currCopy.tryAddStrongShadow(shadow)) {
+				if(currCopy.tryAddStrongShadow(shadow)) {
 					newResult.add(currCopy);
-				} else if(!strongShadows) {
-					currCopy.tryAddWeakShadow(shadow);
-					newResult.add(currCopy);
-				}
+				} 
 			}
 		}
 		return newResult;
@@ -281,6 +291,56 @@ public class AdviceDependency {
 	public Position getPosition() {
 		return pos;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("strong: ");
+		mapToString(strongAdviceNameToVars, sb);
+		
+		if(!weakAdviceNameToVars.isEmpty()) {
+			sb.append("weak: ");
+			mapToString(weakAdviceNameToVars, sb);
+		}
+		
+		if(consistentShadowGroups!=null && !consistentShadowGroups.isEmpty()) {
+			sb.append("\n\n\n");
+			sb.append("Consistent shadow groups:");
+			sb.append("\n\n");
+			for (DependentShadowGroup group : consistentShadowGroups) {
+				sb.append(group.toString());
+			}
+		}
+
+		return sb.toString();
+	}
+
+	private void mapToString(Map<String, List<String>> map, StringBuffer sb) {
+		for (Iterator<Map.Entry<String, List<String>>> entryIter =
+				map.entrySet().iterator(); entryIter.hasNext();) {
+			Map.Entry<String, List<String>> entry = entryIter.next();
+			//print advice name
+			sb.append(entry.getKey());
+			List<String> args = entry.getValue();
+			if(!args.isEmpty()) {
+				sb.append("(");
+				for (Iterator<String> iterator = args.iterator(); iterator.hasNext();) {
+					String varName = iterator.next();
+					sb.append(varName);
+					if(iterator.hasNext())
+						sb.append(",");
+				}
+				sb.append(")");
+			}
+			if(entryIter.hasNext()) {
+				sb.append(",");
+			}
+			sb.append(" ");
+		}
+		sb.append("\n");
+	}
+	
 	
 	
 	/**
@@ -339,22 +399,22 @@ public class AdviceDependency {
 		@Override
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append("=================================================================");
+			sb.append("=================================================================\n");
 			sb.append("Strong shadows:\n\n");
 			for (Shadow s : strongShadows) {
 				sb.append(s.toString());
 				sb.append("\n");
-				sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+				sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 			}
-			sb.append("=================================================================");
+			sb.append("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =\n");
 			sb.append("Weak shadows:\n\n");
 			for (Shadow s : weakShadows) {
 				sb.append(s.toString());
 				sb.append("\n");
-				sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+				sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 			}
-			sb.append("=================================================================");
-			return super.toString();
+			sb.append("=================================================================\n\n");
+			return sb.toString();
 		}
 		
 		@Override
