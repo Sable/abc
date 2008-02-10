@@ -192,12 +192,7 @@ public class AbcExtension extends abc.main.AbcExtension
     	super.createReweavingPasses(passes);
     	
     	if(Debug.v().optimizeMaybeSharedPointcut) {	    	
-	   		passes.add(new ReweavingPass(THREAD_LOCAL_OBJECTS_ANALYSIS,TLOAnalysisManager.v()) {
-	   			public boolean isEnabled() {
-	   				//only enable, if the lexer saw a maybeShared pointcut
-	   				return lexerSawMaybeSharedPointcut;
-	   			}
-	   		});
+	   		passes.add(new ReweavingPass(THREAD_LOCAL_OBJECTS_ANALYSIS,TLOAnalysisManager.v()));	   		
     	}
     }
 }

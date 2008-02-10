@@ -191,10 +191,10 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
         OptionsParser.v().set_tag_instructions(true);
     }
 	
-	@Override
-	public boolean isEnabled() {
-		abc.da.AbcExtension abcExtension = (abc.da.AbcExtension) Main.v().getAbcExtension();
-		return abcExtension.foundDependencyKeyword() || abcExtension.forceEnableFlowInsensitiveOptimizations();
-	}
+//	@Override
+//	public boolean isEnabled() {
+//		abc.da.AbcExtension abcExtension = (abc.da.AbcExtension) Main.v().getAbcExtension();
+//		return abcExtension.foundDependencyKeyword() || abcExtension.forceEnableFlowInsensitiveOptimizations();
+//	}
 
 }

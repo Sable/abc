@@ -134,10 +134,10 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 				aa.advice.getPosition());
 	}	
 	
-	@Override
-	public boolean isEnabled() {
-		abc.da.AbcExtension abcExtension = (abc.da.AbcExtension) Main.v().getAbcExtension();
-		return abcExtension.foundDependencyKeyword() || abcExtension.forceEnableQuickCheck();
-	}
+//	@Override
+//	public boolean isEnabled() {
+//		abc.da.AbcExtension abcExtension = (abc.da.AbcExtension) Main.v().getAbcExtension();
+//		return abcExtension.foundDependencyKeyword() || abcExtension.forceEnableQuickCheck();
+//	}
 
 }
