@@ -155,5 +155,12 @@ public class FinalConfigsUnitGraph implements DirectedGraph<Unit> {
     public static boolean isASyntheticFinalUnit(Unit u) {
         return finalUnits.contains(u);
     }
+    
+    /**
+     * Resets all data structures.
+     */
+    public static void reset() {
+    	finalUnits.clear();
+    }
 
 }

@@ -36,10 +36,8 @@ import abc.weaving.weaver.AbstractReweavingAnalysis;
  */
 public class OptIntraProcedural extends AbstractReweavingAnalysis {
 
-	protected TMGlobalAspectInfo gai;
-	
 	public boolean analyze() {
-    	gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
+		TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 
 		//nothing to do?
     	if(gai.getTraceMatches().size()==0) {

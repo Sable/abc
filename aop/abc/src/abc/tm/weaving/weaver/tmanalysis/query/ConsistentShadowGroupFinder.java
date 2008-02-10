@@ -307,4 +307,11 @@ public class ConsistentShadowGroupFinder {
 		return instance;		
 	}
 	
+	/**
+	 * Resets all static data structures. 
+	 */
+	public static void reset() {
+		instance = null;
+	}
+	
 }

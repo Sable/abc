@@ -40,13 +40,17 @@ import abc.tm.weaving.weaver.itds.ITDAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural;
 import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
+import abc.tm.weaving.weaver.tmanalysis.Statistics;
+import abc.tm.weaving.weaver.tmanalysis.ds.FinalConfigsUnitGraph;
 import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
+import abc.tm.weaving.weaver.tmanalysis.query.ConsistentShadowGroupFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.WeavableMethods;
 import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
 import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
+import abc.tm.weaving.weaver.tmanalysis.stages.IntraproceduralAnalysis;
 import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
 import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
@@ -244,16 +248,9 @@ public class AbcExtension extends abc.eaj.AbcExtension
                     //dump shadows in the end
                     ShadowRegistry.v().dumpShadows();
                     //reset state
-                    CallGraphAbstraction.reset();
-                    FlowInsensitiveAnalysis.reset();
-                    QuickCheck.reset();
-                    ReachableShadowFinder.reset();
-                    ShadowGroupRegistry.reset();
-                    ShadowRegistry.reset();
-                    TMShadowTagger.reset();
-                    WeavableMethods.reset();
-                    SymbolShadow.reset();
+                    resetAnalysisDataStructures();
                 }
+
             };
             passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );
         }
@@ -433,6 +430,25 @@ public class AbcExtension extends abc.eaj.AbcExtension
 		        abc.tm.weaving.aspectinfo.TraceMatch.reset();
 			}
 		};
+	}
+	
+	/**
+	 * Resets all static data structures used for static tracematch optimizations.
+	 */
+	public void resetAnalysisDataStructures() {
+		CallGraphAbstraction.reset();
+        FlowInsensitiveAnalysis.reset();
+        QuickCheck.reset();
+        ReachableShadowFinder.reset();
+        ShadowGroupRegistry.reset();
+        ShadowRegistry.reset();
+        TMShadowTagger.reset();
+        WeavableMethods.reset();
+        SymbolShadow.reset();
+		FinalConfigsUnitGraph.reset();
+		ConsistentShadowGroupFinder.reset();
+		Statistics.reset();
+		IntraproceduralAnalysis.reset();
 	}
    
 }

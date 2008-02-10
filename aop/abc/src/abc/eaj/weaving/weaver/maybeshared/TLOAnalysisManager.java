@@ -47,15 +47,13 @@ public class TLOAnalysisManager extends AbstractReweavingAnalysis {
 	
 	protected State state = State.INIT;
 	
-	protected Weaver weaver;
-
 	protected Map<AssignStmt,SootMethod> stmtToOwner = new HashMap<AssignStmt, SootMethod>();
 	protected Map<AssignStmt,Boolean> stmtToResult = new HashMap<AssignStmt, Boolean>();
 	
 	public boolean analyze() {
 		boolean success = false;
 		
-		weaver = Main.v().getAbcExtension().getWeaver();
+		Weaver weaver = Main.v().getAbcExtension().getWeaver();
 		
 		state = State.REGISTERING;
 		//optimise residues; this will cause MaybeSharedResidue to call back to requestAnalysis(..) and
@@ -113,10 +111,14 @@ public class TLOAnalysisManager extends AbstractReweavingAnalysis {
 			}
 		}
 		
+		//clean up
+		stmtToOwner.clear();
+		
 		return false;
 	}
 	
 	public void requestAnalysis(AssignStmt fieldRefStmt, SootMethod owner) {
+		Weaver weaver = Main.v().getAbcExtension().getWeaver();
 		if(state==State.REGISTERING) {
 			AssignStmt stmtAfterWeaving = (AssignStmt) weaver.rebind(fieldRefStmt);
 			if(!owner.getActiveBody().getUnits().contains(stmtAfterWeaving)) {

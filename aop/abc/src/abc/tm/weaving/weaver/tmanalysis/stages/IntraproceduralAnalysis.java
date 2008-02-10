@@ -40,17 +40,18 @@ import soot.toolkits.graph.ExceptionalUnitGraph;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
+import abc.tm.AbcExtension;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.aspectinfo.TraceMatch;
-import abc.tm.weaving.weaver.tmanalysis.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.ShadowUtils;
+import abc.tm.weaving.weaver.tmanalysis.Statistics;
 import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
 import abc.tm.weaving.weaver.tmanalysis.query.SymbolShadowWithPTS;
 import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger.SymbolShadowTag;
-import abc.tm.weaving.weaver.tmanalysis.subanalyses.UnnecessaryShadowsElimination;
 import abc.tm.weaving.weaver.tmanalysis.subanalyses.RunOnceOptimization;
+import abc.tm.weaving.weaver.tmanalysis.subanalyses.UnnecessaryShadowsElimination;
 import abc.tm.weaving.weaver.tmanalysis.util.ISymbolShadow;
 import abc.tm.weaving.weaver.tmanalysis.util.ShadowsPerTMSplitter;
 
@@ -63,7 +64,7 @@ import abc.tm.weaving.weaver.tmanalysis.util.ShadowsPerTMSplitter;
  */
 public class IntraproceduralAnalysis extends AbstractAnalysisStage {
 	
-	public static TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
+	protected TMGlobalAspectInfo gai = (TMGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
 	
     protected CallGraph cg;
 
@@ -73,25 +74,35 @@ public class IntraproceduralAnalysis extends AbstractAnalysisStage {
 	 * {@inheritDoc}
 	 */
 	protected void doAnalysis() {
-		cg = CallGraphAbstraction.v().abstractedCallGraph();
-		long timeBefore = System.currentTimeMillis();
-		
-		final int MAX_ITERATIONS = OptionsParser.v().wp_tmopt_iterations();
-		if(MAX_ITERATIONS<1) {
-			throw new IllegalArgumentException("Invalie argument: wp-tmopt-iterations"+MAX_ITERATIONS);
-		}
-		
-		for(int i=0;i<MAX_ITERATIONS;i++) {
-	        oneIteration();
-	        ShadowGroupRegistry.v().pruneShadowGroupsWhichHaveBecomeIncomplete();
-	        if(!ShadowRegistry.v().wasShadowDisabled()) {
-	            break;
-	        }
-		}
-		
-		if(Debug.v().tmShadowStatistics) {
-			Statistics.v().totalIntraProceduralAnalysisTime = System.currentTimeMillis() - timeBefore;		
-			Statistics.v().dump();
+		try {
+			cg = CallGraphAbstraction.v().abstractedCallGraph();
+			long timeBefore = System.currentTimeMillis();
+			
+			final int MAX_ITERATIONS = OptionsParser.v().wp_tmopt_iterations();
+			if(MAX_ITERATIONS<1) {
+				throw new IllegalArgumentException("Invalid argument: wp-tmopt-iterations"+MAX_ITERATIONS);
+			}
+			
+			for(int i=0;i<MAX_ITERATIONS;i++) {
+		        oneIteration();
+		        ShadowGroupRegistry.v().pruneShadowGroupsWhichHaveBecomeIncomplete();
+		        if(!ShadowRegistry.v().wasShadowDisabled()) {
+		            break;
+		        }
+			}
+			
+			if(Debug.v().tmShadowStatistics) {
+				Statistics.v().totalIntraProceduralAnalysisTime = System.currentTimeMillis() - timeBefore;		
+				Statistics.v().dump();
+			}
+		} catch(OutOfMemoryError e) {
+			//in case we run out of memory, clean up right away
+			e.printStackTrace();
+			System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			System.err.println("Ran out of memory! Cleaning up...");
+			System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			AbcExtension abcExtension = (AbcExtension) Main.v().getAbcExtension();
+			abcExtension.resetAnalysisDataStructures();
 		}
 	}
 

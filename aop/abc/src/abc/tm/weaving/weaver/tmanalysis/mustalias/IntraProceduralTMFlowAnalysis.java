@@ -338,6 +338,11 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Intr
 		    doAnalysis();
 		} catch(AbortedException e) {
 		    //ignore
+		} finally {
+			//clear caches
+			Disjunct.reset();
+			Constraint.reset();
+			Configuration.reset();
 		}
 		if(!this.status.isAborted()) {
 	        Statistics.v().maxNumVisitedOnSuccessfulRun = Math.max(Statistics.v().maxNumVisitedOnSuccessfulRun, maxNumVisitedInThisRun); 
@@ -351,11 +356,6 @@ public class IntraProceduralTMFlowAnalysis extends ForwardFlowAnalysis<Unit,Intr
         }
 				
 		this.status.countForStatistics();
-		
-		//clear caches
-		Disjunct.reset();
-		Constraint.reset();
-		Configuration.reset();
 	}
 
     protected void flowThrough(Abstraction in, Unit u, Abstraction out) {
