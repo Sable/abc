@@ -395,8 +395,8 @@ aspect AccessVariable {
 	public Access Access.getAccessTo(Variable v) {
 		SymbolicVarAccess acc = accessVariable(v);
 		if(acc == null) return null;
-		if(hasPrevExpr())
-			return acc.getAccess(prevExpr().type().getBodyDecl(0).getNamingContext());
+		if(isQualified())
+			return acc.getAccess(qualifier().type().getBodyDecl(0).getNamingContext());
 		else
 			return acc.getAccess(getNamingContext());
 	}

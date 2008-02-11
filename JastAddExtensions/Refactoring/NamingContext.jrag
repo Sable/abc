@@ -15,13 +15,7 @@ aspect NamingContext {
 	 * this should be an abstract class, but JastAdd messes that up at the moment...
 	 */
 	class NamingContext implements ShadowingDetector {
-		public NameType nameType() { throw new Error("abstract method"); }
-		
-		public boolean isAmbiguous() {
-			return nameType() == NameType.AMBIGUOUS_NAME || 
-			   nameType() == NameType.EXPRESSION_NAME;
-		}
-		
+		public boolean isAmbiguous() { throw new Error("abstract method"); }
 		public boolean isStatic() { throw new Error("abstract method"); } 
 		public TypeDecl enclosingType() { throw new Error("abstract method"); }
 		public NamingContext prevCtxt() { throw new Error("abstract method"); }
@@ -46,7 +40,6 @@ aspect NamingContext {
 		public SimpleSet lookupType(String name) { throw new Error("abstract method"); }
 		public SimpleSet lookupVariable(String name) { throw new Error("abstract method"); }
 		public Access accessType(TypeDecl td, boolean ambiguous) { throw new Error("abstract method"); }
-		public Access accessVariable(Variable v) { throw new Error("abstract method"); }
 		
 		public Access accessType(TypeDecl td) {
 			return accessType(td, isAmbiguous());
@@ -60,7 +53,10 @@ aspect NamingContext {
 	// TODO: make two implementations, one for Expr and one for Access
 	public NamingContext Expr.getNamingContext() {
 		return new NamingContext() {
-			public NameType nameType() { return Expr.this.nameType(); }
+			public boolean isAmbiguous() {
+				return nameType() == NameType.AMBIGUOUS_NAME || 
+					   nameType() == NameType.EXPRESSION_NAME;
+			}
 			public boolean isStatic() { return inStaticContext(); }
 			public TypeDecl enclosingType() { return hostType(); }
 			public NamingContext prevCtxt() {
@@ -78,11 +74,6 @@ aspect NamingContext {
 			public Access accessType(TypeDecl td, boolean ambiguous) {
 				return Expr.this.accessType(td, ambiguous);
 			}
-			public Access accessVariable(Variable v) {
-				SymbolicVarAccess acc = Expr.this.accessVariable(v);
-				if(acc == null) return null;
-				return acc.getAccess(this);
-			}
 		};
 	}
 	
@@ -90,7 +81,10 @@ aspect NamingContext {
 	
 	public NamingContext BodyDecl.getNamingContext() {
 		return new NamingContext() {
-			public NameType nameType() { return BodyDecl.this.nameType(); }
+			public boolean isAmbiguous() {
+				return nameType() == NameType.AMBIGUOUS_NAME || 
+					   nameType() == NameType.EXPRESSION_NAME;
+			}
 			public boolean isStatic() { return inStaticContext(); }
 			public TypeDecl enclosingType() { return hostType(); }
 			public NamingContext prevCtxt() { return this; }
@@ -100,11 +94,6 @@ aspect NamingContext {
 			public Access accessType(TypeDecl td, boolean ambiguous) {
 				return BodyDecl.this.accessType(td, ambiguous);
 			}
-			public Access accessVariable(Variable v) {
-				SymbolicVarAccess acc = BodyDecl.this.accessVariable(v);
-				if(acc == null) return null;
-				return acc.getAccess(this);
-			}
 		};
 	}
 	
@@ -113,7 +102,7 @@ aspect NamingContext {
 	
 	public NamingContext ImportDecl.getNamingContext() {
 		return new NamingContext() {
-			public NameType nameType() { return NameType.NO_NAME; }
+			public boolean isAmbiguous() { return false; }
 			public boolean isStatic() { return true; }
 			public TypeDecl enclosingType() { return null; }
 			public NamingContext prevCtxt() { return this; }
@@ -129,7 +118,6 @@ aspect NamingContext {
 				if(acc == null) return null;
 				return acc.getAccess(this);
 			}
-			public Access accessVariable(Variable v) { return null; }
 		};
 	}
 	
