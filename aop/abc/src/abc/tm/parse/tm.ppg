@@ -27,7 +27,7 @@ import abc.tm.ast.*;
 
 import java.util.LinkedList;
 
-parser Grm extends abc.aspectj.parse.Grm
+parser Grm extends abc.eaj.parse.Grm
 {:
     public final TMNodeFactory nf;
 
