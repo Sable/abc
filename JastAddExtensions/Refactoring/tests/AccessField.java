@@ -3,13 +3,9 @@ package tests;
 import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.Access;
-import AST.Block;
-import AST.Expr;
-import AST.FieldDeclaration;
 import AST.FileRange;
-import AST.List;
+import AST.NameType;
 import AST.Program;
-import AST.TypeDecl;
 import AST.Variable;
 
 public abstract class AccessField extends TestCase {

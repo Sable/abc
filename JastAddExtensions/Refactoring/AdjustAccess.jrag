@@ -65,12 +65,10 @@ aspect AdjustAccess {
 	public void Expr.adjust(AdjustmentTable table) throws RefactoringException {
 	}
 	
-	// first adjust access to the right of the dot, then merge it with the adjusted
-	// access to the left
+	// adjust on the left first
 	public void AbstractDot.adjust(AdjustmentTable table) throws RefactoringException {
 		table.adjust(getLeft());
 		table.adjust(getRight());
-		replaceWith(getLeft().mergeWithAccess(getRight()));
 	}
 	
 	public void ParExpr.adjust(AdjustmentTable table) throws RefactoringException {
@@ -91,7 +89,13 @@ aspect AdjustAccess {
 				newacc = this.getAccessTo((Variable)target);
 				if(newacc == null)
 					throw new RefactoringException("variable would become shadowed at "+pos);
-				replaceWith(newacc);
+				if(isLeftChildOfDot()) {
+					Access right = parentDot().getRight();
+					Expr p = nestedScope();
+					p.replaceWith(newacc.qualifiesAccess(right));
+				} else {
+					this.unqualifiedScope().replaceWith(newacc);
+				}
 			}
 		} else if(target instanceof MethodDecl) {
 			MethodDecl md = (MethodDecl)target;
@@ -104,11 +108,17 @@ aspect AdjustAccess {
 		} else if(target instanceof TypeDecl) {
 			TypeAccess tacc = (TypeAccess)this;
             if(tacc.decl() != target) {
-                boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
+            	boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
                 newacc = this.accessType((TypeDecl)target, ambiguous);
                 if(newacc == null)
                     throw new RefactoringException("couldn't consistently rename type access at "+pos);
-                replaceWith(newacc);
+				if(isLeftChildOfDot()) {
+					Access right = parentDot().getRight();
+					Expr p = nestedScope();
+					p.replaceWith(newacc.qualifiesAccess(right));
+				} else {
+					this.unqualifiedScope().replaceWith(newacc);
+				}
             } else {
                 ASTNode parent = tacc.getParent();
                 int idx = parent.getIndexOfChild(tacc);
@@ -122,7 +132,13 @@ aspect AdjustAccess {
                 		newacc = this.accessType((TypeDecl)target, ambiguous);
                 		if(newacc == null)
                 			throw new RefactoringException("couldn't consistently rename type access at "+pos);
-               			replaceWith(newacc);
+        				if(isLeftChildOfDot()) {
+        					Access right = parentDot().getRight();
+        					Expr p = nestedScope();
+        					p.replaceWith(newacc.qualifiesAccess(right));
+        				} else {
+        					this.unqualifiedScope().replaceWith(newacc);
+        				}
                 	}
                 } finally {
                 	parent.setChild(tacc, idx);

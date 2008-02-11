@@ -17,13 +17,15 @@ public class AccessTypeTests extends AccessType {
 	}
 
 	public void test0() {
-		runTypeAccessTest(new FileRange("AccessType/test16/Test.java", 18, 5, 18, 19), new FileRange("AccessType/test16/Test.java", 12, 19, 12, 19), new TypeAccess("B"));
+		runTypeAccessTest(new FileRange("AccessType/test16/Test.java", 18, 5, 18, 19), new FileRange("AccessType/test16/Test.java", 12, 19, 12, 19), 
+						  new TypeAccess("A").qualifiesAccess(new TypeAccess("B")));
 	}
 	public void test1() {
 		runTypeAccessTest(new FileRange("AccessType/test17/Test.java", 14, 5, 16, 5), new FileRange("AccessType/test17/Test.java", 12, 16, 12, 20), new TypeAccess("A"));
 	}		
 	public void test2() {
-		runTypeAccessTest(new FileRange("AccessType/test17/Test.java", 15, 9, 15, 19), new FileRange("AccessType/test17/Test.java", 12, 19, 12, 19), new TypeAccess("B"));
+		runTypeAccessTest(new FileRange("AccessType/test17/Test.java", 15, 9, 15, 19), new FileRange("AccessType/test17/Test.java", 12, 19, 12, 19), 
+						  new TypeAccess("A").qualifiesAccess(new TypeAccess("B")));
 	}	
 	public void test3() {
 		runTypeAccessTest(new FileRange("AccessType/test19/Test.java", 11, 1, 16, 1), new FileRange("AccessType/test19/Test.java", 14, 17, 14, 19), new TypeAccess("Access.test19", "Test"));
@@ -41,7 +43,8 @@ public class AccessTypeTests extends AccessType {
 		runTypeAccessTest(new FileRange("AccessType/test23/Test.java", 10, 1, 11, 1), new FileRange("AccessType/test23/Test.java", 14, 5, 14, 7), new TypeAccess("Test"));
 	}	
 	public void test8() {
-		runTypeAccessTest(new FileRange("AccessType/test39/A.java", 5, 5, 7, 5), new FileRange("AccessType/test39/A.java", 16, 7, 16, 9), new TypeAccess("XYZ"));
+		runTypeAccessTest(new FileRange("AccessType/test39/A.java", 5, 5, 7, 5), new FileRange("AccessType/test39/A.java", 16, 7, 16, 9), 
+						  new TypeAccess("A").qualifiesAccess(new TypeAccess("XYZ")));
 	}	
 	public void test9() {
 		runTypeAccessTest(new FileRange("AccessType/test40/Test.java", 12, 5, 17, 5), new FileRange("AccessType/test40/Test.java", 15, 27, 15, 39), new TypeAccess("Inner1"));
@@ -72,6 +75,16 @@ public class AccessTypeTests extends AccessType {
 	}
 	public void test18() {
 		runTypeAccessTest(new FileRange("AccessType/test39/A.java", 5, 5, 7, 5), new FileRange("AccessType/test39/A.java", 16, 28, 16, 28), new TypeAccess("XYZ"));
+	}	
+
+	public void test19() {
+		runTypeAccessTest(new FileRange("AccessType/test48/Test.java", 4, 5, 5, 5), new FileRange("AccessType/test48/Test.java", 11, 14, 11, 14),
+						  new TypeAccess("Test").qualifiesAccess(new TypeAccess("B")));
+	}	
+
+	public void test20() {
+		runTypeAccessTest(new FileRange("AccessType/test48/Test.java", 4, 5, 5, 5), new FileRange("AccessType/test48/Test.java", 11, 9, 11, 14),
+						  new TypeAccess("A").qualifiesAccess(new TypeAccess("B")));
 	}	
 
 }

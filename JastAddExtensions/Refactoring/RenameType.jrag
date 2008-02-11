@@ -18,8 +18,9 @@ aspect RenameType {
 		table.adjust();
 		// for toplevel types, we might need to change the name of the containing
 		// compilation unit
-		if(isTopLevelType() && cu.getID().equals(old_name))
+		if(isTopLevelType() && cu.getID().equals(old_name)) {
 			cu.changeID(new_name);
+		}
 	}
 	
 	private AdjustmentTable TypeDecl.find_uses(String new_name) {
@@ -95,7 +96,7 @@ aspect RenameType {
 				if(id instanceof SingleTypeImportDecl) {
 					Access acc = ((SingleTypeImportDecl)id).getAccess();
 					if(acc.type() == this) {
-						Access tacc = id.accessType(this).getAccess(id.getNamingContext());
+						Access tacc = id.accessType(this).getAccess(id.getNamingContext(), false);
 						if(tacc == null)
 							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
 						id.replaceWith(new SingleTypeImportDecl(tacc));

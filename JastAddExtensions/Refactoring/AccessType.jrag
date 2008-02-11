@@ -22,6 +22,10 @@
 
 aspect AccessType {
 	
+	interface ShadowingDetector {
+		boolean isShadowed(String name);
+	}
+	
 	class SymbolicTypeAccess {
 		protected TypeDecl target;
 		
@@ -31,14 +35,20 @@ aspect AccessType {
 		
 		public TypeDecl getTarget() { return target; }
 		
-		public Access getAccess(NamingContext ctxt) {
-			if(ctxt.isShadowed(target))
+		public Access getAccess(NamingContext ctxt, boolean ambiguous) {
+			if(ctxt.isShadowed(target, ambiguous))
 				return null;
 			return new TypeAccess(target.name()); 
 		}
 		
+		public Access getQualifiedAccess(NamingContext ctxt, boolean ambiguous,
+										 Expr qualifier) {
+			// raw SymbolicTypeAccesses are for classes that cannot be qualified
+			return null;
+		}
+		
 		public SymbolicTypeAccess protect(ShadowingDetector d) {
-			if(d.isShadowed(target))
+			if(d.isShadowed(target.name()))
 				return null;
 			return this;
 		}
@@ -55,7 +65,7 @@ aspect AccessType {
 		public boolean needsQualifier() { return needsQualifier; }
 		public void setNeedsQualifier() { needsQualifier = true; }
 		public SymbolicTypeAccess protect(ShadowingDetector d) {
-			if(d.isShadowed(target))
+			if(d.isShadowed(target.name()))
 				needsQualifier = true;
 			return this;
 		}
@@ -71,14 +81,25 @@ aspect AccessType {
 		
 		public String getPkg() { return pkg; }
 		
-		public Access getAccess(NamingContext ctxt) {
-			if(needsQualifier || ctxt.isShadowed(target)) {
-				if(ctxt.isShadowed(new PackageAccess(pkg)))
+		public Access getAccess(NamingContext ctxt, boolean ambiguous) {
+			if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
+				if(ctxt.isShadowed(new PackageAccess(pkg), ambiguous))
 					return null;
 				return new TypeAccess(pkg, target.name());
 			} else {
 				return new TypeAccess(target.name());
 			}
+		}
+		
+		public Access getQualifiedAccess(NamingContext ctxt, boolean ambiguous,
+										 Expr qualifier) {
+			if(qualifier instanceof PackageAccess) {
+				PackageAccess pkgacc = (PackageAccess)qualifier;
+				if(pkgacc.packageName().equals(pkg) &&
+					!ctxt.isShadowed(pkgacc, ambiguous))
+					return qualifier.qualifiesAccess(new TypeAccess(target.name()));
+			}
+			return null;
 		}
 		
 	}
@@ -91,11 +112,11 @@ aspect AccessType {
 			this.outer = outer;
 		}
 		
-		public Access getAccess(NamingContext ctxt) {
-			if(needsQualifier || ctxt.isShadowed(target)) {
-				if(ctxt.isAmbiguous() && !outer.memberFields(target.name()).isEmpty())
+		public Access getAccess(NamingContext ctxt, boolean ambiguous) {
+			if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
+				if(ambiguous && !outer.memberFields(target.name()).isEmpty())
 					return null;
-				Access outer_acc = ctxt.prevCtxt().accessType(outer);
+				Access outer_acc = ctxt.accessType(outer, ambiguous);
 				if(outer_acc == null) return null;
 				return outer_acc.qualifiesAccess(new TypeAccess(target.name()));
 			} else {
@@ -103,6 +124,18 @@ aspect AccessType {
 			}
 		}
 		
+		public Access getQualifiedAccess(NamingContext ctxt, boolean ambiguous,
+				 Expr qualifier) {
+			if(qualifier.isTypeAccess()) {
+				TypeDecl td = qualifier.type();
+				// TODO: check that td is something we want to qualify with
+				//       (i.e., td == outer, or maybe an ancestor class)
+				if(ambiguous && !outer.memberFields(target.name()).isEmpty())
+					return null;
+				return qualifier.qualifiesAccess(new TypeAccess(target.name()));
+			}
+			return null;
+		}
 	}
 	
 	inh NameType Access.nameType();
@@ -154,7 +187,9 @@ aspect AccessType {
 		return null;
 	}
 
-	eq TypeDecl.getBodyDecl().accessType(TypeDecl td) {
+	eq TypeDecl.getBodyDecl().accessType(TypeDecl td) = accessTypeFromInside(td);
+	
+	public SymbolicTypeAccess TypeDecl.accessTypeFromInside(TypeDecl td) {
 		SymbolicTypeAccess acc = accessMemberType(td);
 		if(acc != null)
 			return acc;
@@ -345,7 +380,7 @@ aspect AccessType {
 	
 	public SymbolicTypeAccess Block.moveInto(SymbolicTypeAccess acc, int index) {
 		if(acc == null) return null;
-		return acc.protect(getLocalShadowingDetector(index));
+		return acc.protect(getTypeShadowingDetector(index));
 	}
 	
 	public SymbolicTypeAccess ClassInstanceExpr.moveInto(SymbolicTypeAccess acc) {
@@ -355,24 +390,40 @@ aspect AccessType {
 	
 	public SymbolicTypeAccess TypeDecl.moveInto(SymbolicTypeAccess acc) {
 		if(acc == null)	return null;
-		return acc.protect(getShadowingDetector());
+		return acc.protect(getTypeShadowingDetector());
 	}
 	
 	public SymbolicTypeAccess TypeDecl.moveDownTo(SymbolicTypeAccess acc) {
 		if(acc == null)	return null;
-		return acc.protect(getShadowingDetector());
+		return acc.protect(getTypeShadowingDetector());
 	}
 	
-	public Access BodyDecl.accessType(TypeDecl td, final boolean ambiguous) {
-		SymbolicTypeAccess stacc = accessType(td);
-		if(stacc == null) return null;
-		return stacc.getAccess(getNamingContext());
+	public Access TypeDecl.accessTypeFromInside(TypeDecl td, boolean ambiguous) {
+		SymbolicTypeAccess acc = accessTypeFromInside(td);
+		if(acc == null) return null;
+		return acc.getAccess(getMemberNamingContext(), ambiguous);
 	}
 	
-	public Access Expr.accessType(TypeDecl td, final boolean ambiguous) {
-		SymbolicTypeAccess stacc = accessType(td);
-		if(stacc == null) return null;
-		return stacc.getAccess(getNamingContext());
+	public Access BodyDecl.accessType(TypeDecl td, boolean ambiguous) {
+		SymbolicTypeAccess acc = accessType(td);
+		if(acc == null) return null;
+		return acc.getAccess(getNamingContext(), ambiguous);
+	}
+	
+	public Access Expr.accessType(TypeDecl td, boolean ambiguous) {
+		SymbolicTypeAccess acc = accessType(td);
+		if(acc == null) return null;
+		return acc.getAccess(getNamingContext(), ambiguous);
+	}
+	
+	public Access Access.accessType(TypeDecl td, boolean ambiguous) {
+		SymbolicTypeAccess acc = accessType(td);
+		if(acc == null) return null;
+		if(isQualified())
+			return acc.getQualifiedAccess(qualifier().type().getMemberNamingContext(),
+										  ambiguous, getCompleteQualifier());
+		else
+			return acc.getAccess(getNamingContext(), ambiguous);
 	}
 	
 }

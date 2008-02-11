@@ -5,70 +5,44 @@
 
 aspect NamingContext {
 	
-	interface ShadowingDetector {
-		abstract boolean isShadowed(PackageAccess pkg);
-		abstract boolean isShadowed(TypeDecl td);
-		abstract boolean isShadowed(Variable v);
-	}
-	
 	/*
 	 * this should be an abstract class, but JastAdd messes that up at the moment...
 	 */
-	class NamingContext implements ShadowingDetector {
-		public boolean isAmbiguous() { throw new Error("abstract method"); }
+	/*abstract*/ class NamingContext {
 		public boolean isStatic() { throw new Error("abstract method"); } 
 		public TypeDecl enclosingType() { throw new Error("abstract method"); }
-		public NamingContext prevCtxt() { throw new Error("abstract method"); }
 		public NamingContext unqualifiedCtxt() { throw new Error("abstract method"); }
 		
-		public boolean isShadowed(PackageAccess pkg) {
+		public boolean isShadowed(PackageAccess pkg, boolean ambiguous) {
 			String fst = pkg.packageName().split("\\.")[0];
-			return isAmbiguous() && 
+			return ambiguous && 
 				(!lookupType(fst).isEmpty() || !lookupVariable(fst).isEmpty()); 
 		}
 		
-		public boolean isShadowed(TypeDecl td) {
-			if(isAmbiguous() && !lookupVariable(td.name()).isEmpty())
+		public boolean isShadowed(TypeDecl td, boolean ambiguous) {
+			if(ambiguous && !lookupVariable(td.name()).isEmpty())
 				return true;
 			return !lookupType(td.name()).contains(td);
 		}
 		
-		public boolean isShadowed(Variable v) {
+		/*public boolean isShadowed(Variable v) {
 			return !lookupVariable(v.name()).contains(v);
-		}
+		}*/
 		
 		public SimpleSet lookupType(String name) { throw new Error("abstract method"); }
 		public SimpleSet lookupVariable(String name) { throw new Error("abstract method"); }
 		public Access accessType(TypeDecl td, boolean ambiguous) { throw new Error("abstract method"); }
-		
-		public Access accessType(TypeDecl td) {
-			return accessType(td, isAmbiguous());
-		}
 	}
 	
 	inh NameType Expr.nameType();
 	inh NameType BodyDecl.nameType();
 	inh boolean BodyDecl.inStaticContext();
 	
-	// TODO: make two implementations, one for Expr and one for Access
 	public NamingContext Expr.getNamingContext() {
 		return new NamingContext() {
-			public boolean isAmbiguous() {
-				return nameType() == NameType.AMBIGUOUS_NAME || 
-					   nameType() == NameType.EXPRESSION_NAME;
-			}
 			public boolean isStatic() { return inStaticContext(); }
 			public TypeDecl enclosingType() { return hostType(); }
-			public NamingContext prevCtxt() {
-				if(Expr.this instanceof Access && ((Access)Expr.this).hasPrevExpr())
-					return ((Access)Expr.this).prevExpr().getNamingContext();
-				return this;
-			}
-			public NamingContext unqualifiedCtxt() {
-				if(Expr.this instanceof Access)
-					return ((Access)Expr.this).unqualifiedScope().getNamingContext();
-				return this;
-			}
+			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, boolean ambiguous) {
@@ -77,17 +51,31 @@ aspect NamingContext {
 		};
 	}
 	
+	public NamingContext Access.getNamingContext() {
+		return new NamingContext() {
+			public boolean isStatic() { return inStaticContext(); }
+			public TypeDecl enclosingType() { return hostType(); }
+			public NamingContext unqualifiedCtxt() {
+				return Access.this.unqualifiedScope().getNamingContext();
+			}
+			public SimpleSet lookupType(String name) { 
+				return Access.this.lookupType(name); 
+			}
+			public SimpleSet lookupVariable(String name) { 
+				return Access.this.lookupVariable(name); 
+			}
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return Access.this.accessType(td, ambiguous);
+			}
+		};
+	}
+	
 	inh SimpleSet BodyDecl.lookupType(String name);
 	
 	public NamingContext BodyDecl.getNamingContext() {
 		return new NamingContext() {
-			public boolean isAmbiguous() {
-				return nameType() == NameType.AMBIGUOUS_NAME || 
-					   nameType() == NameType.EXPRESSION_NAME;
-			}
 			public boolean isStatic() { return inStaticContext(); }
 			public TypeDecl enclosingType() { return hostType(); }
-			public NamingContext prevCtxt() { return this; }
 			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { return BodyDecl.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return BodyDecl.this.lookupVariable(name); }
@@ -97,15 +85,49 @@ aspect NamingContext {
 		};
 	}
 	
+	public NamingContext TypeDecl.getMemberNamingContext() {
+		return new NamingContext() {
+			public boolean isStatic() { return TypeDecl.this.isStatic(); }
+			public TypeDecl enclosingType() { return TypeDecl.this; }
+			public NamingContext unqualifiedCtxt() { return this; }
+			// BAD: this is (pretty much) c-n-p-ed from LookupType.jrag
+			public SimpleSet lookupType(String name) {
+			    SimpleSet c = memberTypes(name);
+			    if(!c.isEmpty()) return c;
+			    return TypeDecl.this.lookupType(name);
+		    }
+			// BAD: this is c-n-p-ed from LookupVariable.jrag
+			public SimpleSet lookupVariable(String name) {
+				SimpleSet list = memberFields(name);
+				if(!list.isEmpty()) return list;
+				list = TypeDecl.this.lookupVariable(name);
+				if(inStaticContext() || isStatic())
+					list = removeInstanceVariables(list);
+				else if(isAnonymous() && inExplicitConstructorInvocation()) {
+					TypeDecl typeDecl = enclosingType();
+					SimpleSet newSet = SimpleSet.emptySet;
+					for(Iterator iter = list.iterator(); iter.hasNext(); ) {
+						Variable v = (Variable)iter.next();
+						if(!v.isInstanceVariable() || !typeDecl.memberFields(name).contains(v))
+							newSet = newSet.add(v);
+					}
+					return newSet;
+				}
+				return list;
+			}
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return TypeDecl.this.accessTypeFromInside(td, ambiguous);
+			}
+		};
+	}
+	
 	inh SimpleSet ImportDecl.lookupType(String name);
 	inh SimpleSet ImportDecl.lookupVariable(String name);
 	
 	public NamingContext ImportDecl.getNamingContext() {
 		return new NamingContext() {
-			public boolean isAmbiguous() { return false; }
 			public boolean isStatic() { return true; }
 			public TypeDecl enclosingType() { return null; }
-			public NamingContext prevCtxt() { return this; }
 			public NamingContext unqualifiedCtxt() { return this; }
 			public SimpleSet lookupType(String name) { 
 				return ImportDecl.this.lookupType(name); 
@@ -116,40 +138,35 @@ aspect NamingContext {
 			public Access accessType(TypeDecl td, boolean ambiguous) {
 				SymbolicTypeAccess acc = ImportDecl.this.accessType(td);
 				if(acc == null) return null;
-				return acc.getAccess(this);
+				return acc.getAccess(this, ambiguous);
 			}
 		};
 	}
 	
-	public ShadowingDetector TypeDecl.getShadowingDetector() {
+	syn lazy SimpleSet TypeDecl.localMemberTypes(String name) {
+	    SimpleSet set = SimpleSet.emptySet;
+	    for(int i = 0; i < getNumBodyDecl(); i++) {
+	      if(getBodyDecl(i).declaresType(name)) {
+	        set = set.add(getBodyDecl(i).type(name));
+	      }
+	    }
+	    return set;
+	}
+	
+	public ShadowingDetector TypeDecl.getTypeShadowingDetector() {
 		return new ShadowingDetector() {
-			public boolean isShadowed(PackageAccess pkg) {
-				return false;
-			}
-			public boolean isShadowed(TypeDecl td) {
-				SimpleSet set = memberTypes(td.name());
-				return !set.isEmpty() && !set.contains(td);
-			}
-			public boolean isShadowed(Variable v) {
-				SimpleSet set = memberFields(v.name());
-				return !set.isEmpty() && !set.contains(v);
+			public boolean isShadowed(String name) {
+				return !localMemberTypes(name).isEmpty();
 			}
 		};
 	}
-
-	// Note: the local shadowing detector always assumes non-ambiguity! 
-	public ShadowingDetector Block.getLocalShadowingDetector(final int index) {
+	
+	public ShadowingDetector Block.getTypeShadowingDetector(final int index) {
 		return new ShadowingDetector() {
-			public boolean isShadowed(PackageAccess pkg) {
-				return false;
-			}
-			public boolean isShadowed(TypeDecl td) {
-				return localLookupType(td.name(), index) != null;
-			}
-			public boolean isShadowed(Variable v) {
-				return localLookupVariable(v.name(), index) != null;
+			public boolean isShadowed(String name) {
+				return localLookupType(name, index) != null;
 			}
 		};
 	}
-
+	
 }

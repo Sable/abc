@@ -24,19 +24,24 @@ aspect AccessVariable {
 			this.target = target;
 		}
 		
-		public SymbolicVarAccess moveDownTo(ShadowingDetector d, TypeDecl td) {
-			if(d.isShadowed(target))
+		public SymbolicVarAccess moveDownTo(TypeDecl td) {
+			if(!td.localFields(target.name()).isEmpty())
 				return null;
 			return this;
 		}
 		
-		public SymbolicVarAccess moveInto(ShadowingDetector d) {
-			return moveDownTo(d, null);
+		public SymbolicVarAccess moveInto(LocalScope s) {
+			if(s.hasVariable(target.name()))
+				return null;
+			return this;
 		}
 		
 		public Access getAccess(NamingContext ctxt) {
-			if(ctxt.isShadowed(target))	return null;
 			return new VarAccess(target.name());
+		}
+		
+		public Access getQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+			return qualifier.qualifiesAccess(new VarAccess(target.name()));
 		}
 	}
 
@@ -56,24 +61,24 @@ aspect AccessVariable {
 		public boolean needsQualifier() { return needsQualifier; }
 		public void setNeedsQualifier() { needsQualifier = true; }
 		
-		public SymbolicVarAccess moveDownTo(ShadowingDetector d, TypeDecl td) {
+		public SymbolicVarAccess moveDownTo(TypeDecl td) {
 			bend = td;
-			if(d.isShadowed(target))
+			if(!td.localFields(target.name()).isEmpty())
 				needsQualifier = true;
-			else
+			else if(!needsQualifier)
 				source = td;
 			return this;
 		}
 	
-		public SymbolicVarAccess moveInto(ShadowingDetector d) {
-			if(d.isShadowed(target))
+		public SymbolicVarAccess moveInto(LocalScope s) {
+			if(s.hasVariable(target.name()))
 				needsQualifier = true;
 			return this;
 		}
 		
 		public Access getAccess(NamingContext ctxt) {
 			VarAccess va = new VarAccess(target.name());
-			if(needsQualifier || ctxt.isShadowed(target)) {
+			if(needsQualifier /*|| ctxt.isShadowed(target)*/) {
 				if(ctxt.isStatic()) return null;
 				if(source == bend) {
 					if(source == ctxt.enclosingType())
@@ -105,9 +110,28 @@ aspect AccessVariable {
 					}
 				}
 			} else {
-				return new VarAccess(target.name());
+				return va;
 			}
 		}
+
+		public Access getQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+			VarAccess va = new VarAccess(target.name());
+			if(needsQualifier /*|| ctxt.isShadowed(target)*/) {
+				if(ctxt.isStatic())
+					// we actually could do something clever here...
+					return null;
+				if(source == bend && source == ctxt.enclosingType())
+					return qualifier.qualifiesAccess(va);
+				else if(!qualifier.isTypeAccess()) {
+					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+					if(upper != null && bend == ctxt.enclosingType())
+						return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
+				}
+				return null;
+			} else {
+				return qualifier.qualifiesAccess(new VarAccess(target.name()));
+			}
+		}	
 	}
 
 	inh lazy SymbolicVarAccess TypeDecl.accessVariable(Variable decl);
@@ -131,7 +155,10 @@ aspect AccessVariable {
 				decl.isInstanceVariable() && 
 				enclosingType().memberFields(decl.name()).contains(decl))
 			return null;
-		return moveInto(accessVariable(decl));
+		acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(this);
+		return null;
 	}
 
 	// The scope of a parameter of a method is the entire body of the method
@@ -140,7 +167,10 @@ aspect AccessVariable {
 		// A declaration of a method parameter name shadows any other variable declarations
 		if(acc != null) return acc;
 		// Delegate to other declarations in scope
-		return moveInto(accessVariable(decl));
+		acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(this);
+		return null;
 	}
 
 	// A method declaration may only declare one parameter named name
@@ -151,7 +181,10 @@ aspect AccessVariable {
 	eq ConstructorDecl.getBlock().accessVariable(Variable decl) {
 		SymbolicVarAccess acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
-		return moveInto(accessVariable(decl));
+		acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(this);
+		return null;
 	}
 
 	eq ConstructorDecl.getConstructorInvocation().accessVariable(Variable decl) {
@@ -160,8 +193,11 @@ aspect AccessVariable {
 		acc = hostType().accessMemberField(decl); // search members
 		if(acc != null && !decl.isInstanceVariable())
 			return acc;
-		if(hostType().isNestedType() || hostType().isAnonymous())
-			return moveInto(hostType().accessVariable(decl));
+		if(hostType().isNestedType() || hostType().isAnonymous()) {
+			acc = hostType().accessVariable(decl);
+			if(acc != null)
+				return acc.moveInto(this);
+		}
 		return null;
 	}
 
@@ -171,9 +207,17 @@ aspect AccessVariable {
 	// The scope of a local variable declaration in a block is the rest of
 	// the block in which the declaration appears
 	eq Block.getStmt(int index).accessVariable(Variable decl) {
+		final int i = index;
 		SymbolicVarAccess acc = accessLocalVariableDeclaration(decl, index);
 		if(acc != null) return acc;
-		return moveInto(accessVariable(decl));
+		acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(new LocalScope() {
+				public boolean hasVariable(String name) {
+					return localLookupVariable(name, i) != null;
+				}
+			});
+		return null;
 	}
 
 	// The scope of the parameter of an exception handler that is declared in a
@@ -181,7 +225,10 @@ aspect AccessVariable {
 	eq CatchClause.getBlock().accessVariable(Variable decl) {
 		SymbolicVarAccess acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
-		return moveInto(accessVariable(decl));
+		acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(this);
+		return null;
 	}
 
 	eq CatchClause.getParameter().accessVariable(Variable decl) = 
@@ -197,7 +244,10 @@ aspect AccessVariable {
 	syn lazy SymbolicVarAccess ForStmt.localAccess(Variable decl) {
 		SymbolicVarAccess acc = accessLocalVariableDeclaration(decl);
 		if(acc != null) return acc;
-		return moveInto(accessVariable(decl));
+		acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(this);
+		return null;
 	}
 
 	// Return the first variable declaration named name
@@ -304,13 +354,13 @@ aspect AccessVariable {
 		if(hasSuperclass()) {
 			acc = superclass().accessField(decl);
 			if(acc != null && !decl.isPrivateField() && decl.isAccessibleFrom(this))
-				return moveDownTo(acc);
+				return acc.moveDownTo(this);
 		}
 		for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)iter.next();
 			acc = type.accessField(decl);
 			if(acc != null && !decl.isPrivateField() && decl.isAccessibleFrom(this))
-				return moveDownTo(acc);
+				return acc.moveDownTo(this);
 		}
 		return null;
 	}
@@ -322,33 +372,33 @@ aspect AccessVariable {
 			TypeDecl type = (TypeDecl)iter.next();
 			acc = type.accessField(decl);
 			if(acc != null && !decl.isPrivateField() && decl.isAccessibleFrom(this))
-				return moveDownTo(acc);
+				return acc.moveDownTo(this);
 		}
 		return null;
 	}
 		
 	interface LocalScope {
-		boolean hasLocalVariable(String name);
+		boolean hasVariable(String name);
 	}
 
-	Block implements LocalScope;
-	public boolean Block.hasLocalVariable(String name) {
-		return localVariableDeclaration(name) != null;
+	TypeDecl implements LocalScope;
+	public boolean TypeDecl.hasVariable(String name) {
+		return !memberFields(name).isEmpty();
 	}
 	ConstructorDecl implements LocalScope;
-	public boolean ConstructorDecl.hasLocalVariable(String name) {
+	public boolean ConstructorDecl.hasVariable(String name) {
 		return parameterDeclaration(name) != SimpleSet.emptySet;
 	}
 	MethodDecl implements LocalScope;
-	public boolean MethodDecl.hasLocalVariable(String name) {
+	public boolean MethodDecl.hasVariable(String name) {
 		return parameterDeclaration(name) != SimpleSet.emptySet;
 	}
 	CatchClause implements LocalScope;
-	public boolean CatchClause.hasLocalVariable(String name) {
+	public boolean CatchClause.hasVariable(String name) {
 		return parameterDeclaration(name) != SimpleSet.emptySet;
 	}
 	ForStmt implements LocalScope;
-	public boolean ForStmt.hasLocalVariable(String name) { 
+	public boolean ForStmt.hasVariable(String name) { 
 		return localVariableDeclaration(name) != null;
 	}
 	
@@ -359,44 +409,26 @@ aspect AccessVariable {
 				return (VariableDeclaration)getStmt(i);
 		return null;
 	}
-		
-	public SymbolicVarAccess Block.moveInto(SymbolicVarAccess acc, int index) {
-		if(acc == null)	return null;
-		return acc.moveInto(getLocalShadowingDetector(index));
-	}
-		
-	public SymbolicVarAccess LocalScope.moveInto(SymbolicVarAccess acc) {
-		if(acc == null)	return null;
-		return acc.moveInto(new ShadowingDetector() {
-			public boolean isShadowed(PackageAccess pkg) {
-				return false;
-			}
-			public boolean isShadowed(TypeDecl td) {
-				return false;
-			}
-			public boolean isShadowed(Variable v) {
-				return hasLocalVariable(v.name());
-			}
-		});
-	}
-		
-	public SymbolicVarAccess TypeDecl.moveInto(SymbolicVarAccess acc) {
-		if(acc == null)
+	
+	public Expr Access.getCompleteQualifier() {
+		if(this.isLeftChildOfDot()) {
+			return parentDot().getCompleteQualifier();
+		} else if(this.isRightChildOfDot()) {
+			Expr uncle = (Expr)parentDot().getLeft().fullCopy();
+			Expr qual = parentDot().getCompleteQualifier();
+			if(qual == null) return uncle;
+			return qual.qualifiesAccess((Access)uncle);
+		} else {
 			return null;
-		return acc.moveInto(getShadowingDetector());
+		}
 	}
 
-	public SymbolicVarAccess TypeDecl.moveDownTo(SymbolicVarAccess acc) {
-		if(acc == null)
-			return null;
-		return acc.moveDownTo(getShadowingDetector(), this);
-	}
-	
 	public Access Access.getAccessTo(Variable v) {
 		SymbolicVarAccess acc = accessVariable(v);
 		if(acc == null) return null;
 		if(isQualified())
-			return acc.getAccess(qualifier().type().getBodyDecl(0).getNamingContext());
+			return acc.getQualifiedAccess(qualifier().type().getMemberNamingContext(),
+										  getCompleteQualifier());
 		else
 			return acc.getAccess(getNamingContext());
 	}
