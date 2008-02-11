@@ -80,4 +80,12 @@ public class AccessFieldTests extends AccessField {
 		runFieldAccessTest(new FileRange("AccessField/test38/Test.java", 12, 5, 12, 12), new FileRange("AccessField/test38/Test.java", 19, 24, 19, 37), new Dot(new TypeAccess("Test"), new Dot(new SuperAccess("super"), new VarAccess("bar"))));
 	}
 
+	public void test15() {
+		runFieldAccessTest(new FileRange("AccessField/test26/Test.java", 11, 5, 11, 14), new FileRange("AccessField/test26/Test.java", 16, 13, 16, 15), new VarAccess("foo"));
+	}
+
+	public void test16() {
+		runFieldAccessTest(new FileRange("AccessField/test39/Test.java", 12, 5, 12, 20), new FileRange("AccessField/test39/Test.java", 17, 14, 17, 16), null);
+	}
+
 }
