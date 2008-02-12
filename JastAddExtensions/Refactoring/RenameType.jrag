@@ -19,6 +19,16 @@ aspect RenameType {
 		// for toplevel types, we might need to change the name of the containing
 		// compilation unit
 		if(isTopLevelType() && cu.getID().equals(old_name)) {
+			/* sometimes an old copy of cu might be reloaded by the type lookup
+			 * mechanism; we need to get rid of it */
+			for(int i=0;i<programRoot().getNumCompilationUnit();++i) {
+				CompilationUnit cu2 = programRoot().getCompilationUnit(i);
+				if(cu2.fromSource() && cu != cu2 && 
+						cu2.relativeName().equals(cu.relativeName())) {
+					programRoot().getCompilationUnitList().removeChild(i);
+					break;
+				}
+			}
 			cu.changeID(new_name);
 		}
 	}
