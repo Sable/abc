@@ -2942,8 +2942,6 @@
             <ajcmessage kind="error" line="12"/>
             <ajcmessage kind="error" line="18"/>
             <message kind="error" line="18"/>
-            <jamessage kind="error" line="12"/>
-            <jamessage kind="error" line="18"/>
         </compile>
     </ajc-test>
 
@@ -3439,8 +3437,6 @@
             <ajcmessage kind="error" line="8"/>
             <ajcmessage kind="error" line="23"/>
             <message kind="error" line="23"/> 
-            <jamessage kind="error" line="8"/> 
-            <jamessage kind="error" line="23"/> 
        </compile>
     </ajc-test>
 
