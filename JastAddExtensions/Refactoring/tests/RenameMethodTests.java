@@ -53,4 +53,43 @@ public class RenameMethodTests extends RenameMethod {
 	public void test13() {
 		runMethodRenameTest("test13");
 	}
+	public void test14() {
+		runMethodRenameTest("test14");
+	}
+	public void test15() {
+		runMethodRenameTest("test15");
+	}
+	public void test16() {
+		runMethodRenameTest("test16");
+	}
+	public void test17() {
+		runMethodRenameTest("test17");
+	}
+	public void test18() {
+		runMethodRenameTest("test18");
+	}
+	public void test19() {
+		runMethodRenameTest("test19");
+	}
+	public void test20() {
+		runMethodRenameTest("test20");
+	}
+	public void test21() {
+		runMethodRenameTest("test21");
+	}
+	public void test22() {
+		runMethodRenameTest("test22");
+	}
+	public void test23() {
+		runMethodRenameTest("test23");
+	}
+	public void test24() {
+		runMethodRenameTest("test24");
+	}
+	public void test25() {
+		runMethodRenameTest("test25");
+	}
+	public void test26() {
+		runMethodRenameTest("test26");
+	}
 }
