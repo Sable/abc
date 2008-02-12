@@ -43,6 +43,20 @@ aspect AdviceCodegen {
     return list;
   }
 
+  syn lazy java.util.List AdviceDecl.sootExceptionList() {
+    ArrayList list = new ArrayList();
+    for (int i = 0; i < getNumException(); i++)
+      list.add(getException(i).type().getSootClassDecl());
+    return list;
+  }
+
+  syn lazy java.util.List AdviceDecl.abcExceptionList() {
+    ArrayList list = new ArrayList();
+    for (int i = 0; i < getNumException(); i++)
+      list.add(AbcFactory.AbcType(getException(i).type().getSootType()));
+    return list;
+  }
+
   syn lazy ArrayList AdviceSpec.paramNameList() {
     ArrayList list = new ArrayList();
     for(int i = 0; i < getNumParameter(); i++)
@@ -68,7 +82,7 @@ aspect AdviceCodegen {
     SootMethod advice =
         new SootMethod(name(), getAdviceSpec().paramList(),
                        returnType().getSootType(),
-                       sootTypeModifiers(), new ArrayList());
+                       sootTypeModifiers(), sootExceptionList());
     advice.addTag(
         new soot.tagkit.ParamNamesTag(getAdviceSpec().paramNameList()));
     return advice;
@@ -140,7 +154,7 @@ aspect AdviceCodegen {
       AbcFactory.AbcType(returnType().getSootType()),
       name(),
       getAdviceSpec().methodFormals(),
-      new ArrayList(),
+      abcExceptionList(),
       pos()
     );
   }

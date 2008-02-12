@@ -371,8 +371,6 @@ aspect PatternsCodegen
 
             smr = Scene.v().makeMethodRef(real_class, real_name,
                 smr.parameterTypes(), smr.returnType(), is_static);
-
-            // special case:
         }
 
         // match member part

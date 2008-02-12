@@ -199,7 +199,7 @@ AdviceDecl advice_declaration =
      /* only valid modifier is strictfp */
         block.d 
        {: ParserTrace.parserTrace("advice declaration without strictfp");
-          return new AdviceDecl(new Modifiers(m), a, c, d);
+          return new AdviceDecl(new Modifiers(m), a, c, b, d);
        :}
   ;
 

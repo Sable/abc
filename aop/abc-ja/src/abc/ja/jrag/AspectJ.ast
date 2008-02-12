@@ -10,7 +10,8 @@ AspectDecl : ClassDecl ::= Modifiers
 
 // ----------------------- Advice -------------------------
 
-AdviceDecl : BodyDecl ::= Modifiers AdviceSpec PointcutExpr Block;
+AdviceDecl : BodyDecl ::= Modifiers AdviceSpec PointcutExpr
+                          Exception:Access* Block;
 
 abstract AdviceSpec ::= Parameter:ParameterDeclaration*;
 BeforeSpec : AdviceSpec;
