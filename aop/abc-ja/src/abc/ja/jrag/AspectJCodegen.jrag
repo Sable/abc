@@ -218,8 +218,9 @@ aspect AspectJCodegen {
 
   public void AspectDecl.jimplify1phase1() {
     super.jimplify1phase1();
+    Per perclause = hasPerClause() ? getPerClause().aspectInfo() : null;
     globalAspectInfo().addAspect(
-      new Aspect(abcClass(), getPerClause().aspectInfo(), pos())
+      new Aspect(abcClass(), perclause, pos())
     );
   }
 

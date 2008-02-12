@@ -56,14 +56,14 @@ AspectDecl aspect_declaration =
        :}
   ;
 
-PerClause perclause_opt =
+Opt perclause_opt =
      perclause.a
        {: ParserTrace.parserTrace("non-empty perclause in perclause_opt");
-          return a;
+          return new Opt(a);
        :}
   | /* epsilon */
        {: ParserTrace.parserTrace("empty perclause in perclause_opt");
-          return new IsSingleton(); // default perclause
+          return new Opt();
        :}
   ;
 

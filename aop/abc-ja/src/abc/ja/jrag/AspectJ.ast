@@ -5,7 +5,7 @@ AspectDecl : ClassDecl ::= Modifiers
                            BodyDecl*
                            [SuperClassAccess:Access]
                            Implements:Access*
-                           PerClause;
+                           [PerClause];
 
 
 // ----------------------- Advice -------------------------

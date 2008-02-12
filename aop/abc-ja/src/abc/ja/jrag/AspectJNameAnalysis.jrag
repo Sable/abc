@@ -20,7 +20,7 @@ aspect AspectJNameAnalysis {
       return;
     addImplicitMethods = false;
     List parameters = new List();
-    if(getPerClause().isPerObject())
+    if(isPerObject())
       parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
     MethodDecl aspectOf = 
       new MethodDecl(
@@ -32,7 +32,7 @@ aspect AspectJNameAnalysis {
         new Opt(new Block(new List().add(new ReturnStmt(new Opt(new NullLiteral())))))
       );
     parameters = new List();
-    if(getPerClause().isPerObject())
+    if(isPerObject())
       parameters.add(new ParameterDeclaration(new Modifiers(new List()), typeObject().createQualifiedAccess(), "obj"));
     MethodDecl hasAspect =
       new MethodDecl(
@@ -49,6 +49,10 @@ aspect AspectJNameAnalysis {
     addBodyDecl(hasAspect);
   }
   inh TypeDecl AspectDecl.typeBoolean();
+
+  syn boolean ClassDecl.isPerObject() = false;
+  eq AspectDecl.isPerObject() =
+    hasPerClause() ? getPerClause().isPerObject() : superclass().isPerObject();
 
   syn boolean PerClause.isPerObject() = false;
   eq PerTarget.isPerObject() = true;
