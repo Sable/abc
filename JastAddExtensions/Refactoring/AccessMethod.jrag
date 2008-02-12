@@ -43,7 +43,7 @@ aspect AccessMethod {
 
 		public SymbolicMethodAccess moveDownTo(TypeDecl td) {
 			bend = td;
-			if(!td.memberMethods(target.name()).isEmpty())
+			if(!td.localMethods(target.name()).isEmpty())
 				needsQualifier = true;
 			else if(!needsQualifier)
 				source = td;
@@ -51,7 +51,7 @@ aspect AccessMethod {
 		}
 		
 		public SymbolicMethodAccess moveInto(TypeDecl td) {
-			if(!td.localMethods(target.name()).isEmpty())
+			if(!td.memberMethods(target.name()).isEmpty())
 				needsQualifier = true;
 			return this;
 		}
