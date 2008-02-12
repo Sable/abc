@@ -100,10 +100,16 @@ aspect AdjustAccess {
 		} else if(target instanceof MethodDecl) {
 			MethodDecl md = (MethodDecl)target;
 			if(((MethodAccess)this).decl() != md) {
-				newacc = this.accessMethod(md, (List)((MethodAccess)this).getArgList().fullCopy());
+				newacc = this.getAccessTo(md, (List)((MethodAccess)this).getArgList().fullCopy());
 				if(newacc == null)
 					throw new RefactoringException("couldn't consistently rename method access at "+pos);
-				replaceWith(newacc);
+				if(isLeftChildOfDot()) {
+					Access right = parentDot().getRight();
+					Expr p = nestedScope();
+					p.replaceWith(newacc.qualifiesAccess(right));
+				} else {
+					this.unqualifiedScope().replaceWith(newacc);
+				}
 			}
 		} else if(target instanceof TypeDecl) {
 			TypeAccess tacc = (TypeAccess)this;
@@ -157,7 +163,6 @@ aspect AdjustAccess {
 			try {
 				if(parent.getChild(idx) instanceof VarAccess)
 					throw new RefactoringException("package access at "+pos+" is shadowed");
-				// package accesses never have to be merged through mergeWithAccess()
 			} finally {
 				parent.setChild(acc, idx);
 			}

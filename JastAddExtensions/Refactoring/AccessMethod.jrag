@@ -16,56 +16,195 @@ import java.util.*;
  */
 
 aspect AccessMethod {
+	
+	public SimpleSet TypeDecl.localMethods(String name) {
+		SimpleSet res = SimpleSet.emptySet;
+		for(Iterator i=localMethodsIterator();i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			if(md.name().equals(name))
+				res = res.add(md);
+		}
+		return res;
+	}
+	
+	class SymbolicMethodAccess {
+		protected TypeDecl source;
+		protected TypeDecl bend;
+		protected boolean needsQualifier;
+		protected MethodDecl target;
+		
+		public SymbolicMethodAccess(TypeDecl source, TypeDecl bend, boolean needsQualifier,
+									MethodDecl target) {
+			this.source = source;
+			this.bend = bend;
+			this.needsQualifier = needsQualifier;
+			this.target = target;
+		}
 
-	inh lazy Access TypeDecl.accessMethod(MethodDecl md, List args);
-	inh lazy Access BodyDecl.accessMethod(MethodDecl md, List args);
-	inh lazy Access Block.accessMethod(MethodDecl md, List args);
-	inh lazy Access Access.accessMethod(MethodDecl md, List args);
-
-	eq Program.getChild().accessMethod(MethodDecl md, List args) = null;
-
-	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md, List args) {
-		Collection lookup_res = getBodyDecl(i).lookupMethod(md.getID());
-		Iterator r = lookup_res.iterator();
-		if(r.hasNext() && r.next() == md && !r.hasNext()) {
-			return new MethodAccess(md.getID(), args);
-		} else if(md.hostType().encloses(hostType())) {
-			// we need an expression of the form A.this.x
-			Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
-			if(typacc == null)
-				return null;
-			return typacc.qualifiesAccess(new ThisAccess("this").qualifiesAccess(
-					new MethodAccess(md.getID(), args)));
-		} else if(hostType().instanceOf(md.hostType())) {
-			// we need to qualify either with `super' or with `(A)this'
-			if(hostType() instanceof ClassDecl && 
-					((ClassDecl)hostType()).superclass() == md.hostType()) {
-				return new SuperAccess("super").qualifiesAccess(
-						new MethodAccess(md.getID(), args));
-			} else if(md.isStatic()) {
-				// non-static overridden methods of the superclass can be accessed,
-				// anything further up is off-limits
-				Access typacc = getBodyDecl(i).accessType(md.hostType(), true);
-				if(typacc == null) return null;
-				return new ParExpr(new CastExpr(typacc, new ThisAccess("this"))).
-					qualifiesAccess(new MethodAccess(md.getID(), args));
+		public SymbolicMethodAccess moveDownTo(TypeDecl td) {
+			bend = td;
+			if(!td.memberMethods(target.name()).isEmpty())
+				needsQualifier = true;
+			else if(!needsQualifier)
+				source = td;
+			return this;
+		}
+		
+		public SymbolicMethodAccess moveInto(TypeDecl td) {
+			if(!td.localMethods(target.name()).isEmpty())
+				needsQualifier = true;
+			return this;
+		}
+		
+		public Access getAccess(NamingContext ctxt, List args) {
+			MethodAccess ma = new MethodAccess(target.name(), args);
+			if(needsQualifier) {
+				if(ctxt.isStatic()) return null;
+				if(source == bend) {
+					if(source == ctxt.enclosingType())
+						return ma;
+					else {
+						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+						if(outer == null) return null;
+						return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
+					}
+				} else if(bend instanceof ClassDecl && 
+							source == ((ClassDecl)bend).superclass()) {
+					if(bend == ctxt.enclosingType())
+						return new SuperAccess("super").qualifiesAccess(ma);
+					else {
+						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+						if(outer == null) return null;
+						return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
+					}
+				} else if(target.isStatic()) {
+					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+					if(upper == null) return null;
+					if(bend == ctxt.enclosingType()) {
+						return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(ma);
+					} else {
+						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+						if(outer == null) return null;
+						return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
+										   qualifiesAccess(ma);
+					}
+				} else {
+					return null;
+				}
+			} else {
+				return ma;
 			}
+		}
+		
+		public Access getQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
+			MethodAccess ma = new MethodAccess(target.name(), args);
+			if(needsQualifier) {
+				if(!target.isStatic())
+					return null;
+				if(ctxt.isStatic())
+					return null;
+				if(source == bend && source == ctxt.enclosingType())
+					return qualifier.qualifiesAccess(ma);
+				else if(!qualifier.isTypeAccess()) {
+					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+					if(upper != null && bend == ctxt.enclosingType())
+						return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
+				}
+				return null;
+			} else {
+				return qualifier.qualifiesAccess(ma);
+			}
+		}	
+		
+	}
+
+	inh SymbolicMethodAccess Expr.accessMethod(MethodDecl md);
+	inh lazy SymbolicMethodAccess TypeDecl.accessMethod(MethodDecl md);
+
+	eq MethodAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+	eq ConstructorAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+	eq ArrayAccess.getExpr().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+	eq ArrayTypeWithSizeAccess.getExpr().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
+
+	eq Program.getChild().accessMethod(MethodDecl md) = null;
+	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md) = unqualifiedAccessMethod(md);
+
+	syn lazy SymbolicMethodAccess TypeDecl.unqualifiedAccessMethod(MethodDecl md) {
+		SymbolicMethodAccess acc = accessMemberMethod(md);
+		if(acc != null) return acc;
+		if(isInnerType() || md.isStatic()) {
+			acc = accessMethod(md);
+			if(acc != null)
+				return acc.moveInto(this);
+		}
+		return null;
+	}
+
+	// in explicit constructor invocation
+	eq ConstructorDecl.getConstructorInvocation().accessMethod(MethodDecl md) {
+		SymbolicMethodAccess acc = hostType().accessMemberMethod(md);
+		if(acc != null && md.isStatic()) return acc;
+		if(hostType().isNestedType()) {
+			acc = hostType().accessMethod(md);
+			if(acc != null)
+				return acc.moveInto(hostType());
 		}
 		return null;
 	}
 	
-	eq AbstractDot.getRight().accessMethod(MethodDecl md, List args) {
-		return getLeft().qualifiedAccessMethod(md, args);
+	eq AbstractDot.getRight().accessMethod(MethodDecl md) = 
+		getLeft().type().accessMemberMethod(md);
+
+	syn SymbolicMethodAccess TypeDecl.accessMemberMethod(MethodDecl md) =
+		accessLocalMethod(md);
+	
+	eq ClassDecl.accessMemberMethod(MethodDecl md) {
+		SymbolicMethodAccess acc = accessLocalMethod(md);
+		if(acc != null) return acc;
+		if(hasSuperclass()) {
+			acc = superclass().accessMemberMethod(md);
+			if(acc != null && !md.isPrivate() && md.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		for(Iterator iter = interfacesIterator(); iter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)iter.next();
+			acc = type.accessMemberMethod(md);
+			if(acc != null && !md.isPrivate() && md.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		return null;
 	}
 	
-	syn Access Expr.qualifiedAccessMethod(MethodDecl md, List args) {
-		return type().getBodyDecl(0).accessMethod(md, args);
-	}
-
-	eq PackageAccess.qualifiedAccessMethod(MethodDecl md, List args) = null;
-
-	eq TypeAccess.qualifiedAccessMethod(MethodDecl md, List args) {
-		return type().getBodyDecl(0).accessMethod(md, args);
+	eq InterfaceDecl.accessMemberMethod(MethodDecl md) {
+		SymbolicMethodAccess acc = accessLocalMethod(md);
+		if(acc != null) return acc;
+		for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)iter.next();
+			acc = type.accessMemberMethod(md);
+			if(acc != null && !md.isPrivate() && md.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		acc = typeObject().accessMemberMethod(md);
+		if(acc != null && md.isPublic())
+			return acc.moveDownTo(this);
+		return null;
 	}
 	
+	public SymbolicMethodAccess TypeDecl.accessLocalMethod(MethodDecl md) {
+		for(int i=0;i<getNumBodyDecl();++i) {
+			if(getBodyDecl(i) == md)
+				return new SymbolicMethodAccess(this, this, false, md); 
+		}
+		return null;
+	}
+	
+	public Access Access.getAccessTo(MethodDecl md, List args) {
+		SymbolicMethodAccess acc = accessMethod(md);
+		if(acc == null) return null;
+		if(isQualified())
+			return acc.getQualifiedAccess(qualifier().type().getMemberNamingContext(),
+										  getCompleteQualifier(), args);
+		else
+			return acc.getAccess(getNamingContext(), args);
+	}
 }
