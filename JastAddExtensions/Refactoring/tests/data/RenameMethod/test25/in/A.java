@@ -1,17 +1,17 @@
-// RenameMethod/test25/in/A.java p A m() n
+// RenameMethod/test12/in/A.java p A m() n
 package p;
 
 class Z {
-    int n() { return 42; }
+    static void n() { }
 }
 
 public class A extends Z {
-    int m() { return 23; }
+    static void m() { }
 }
 
 class B {
-    A a;
-    int p() {
-	return a.n();
+    void m() {
+	A a = new A();
+	a.n();
     }
 }
