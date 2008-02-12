@@ -1,6 +1,5 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Julian Tibble
- * Copyright (C) 2007 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +29,6 @@ import abc.tm.weaving.matching.StateMachine;
 
 /**
  * @author Julian Tibble
- * @author Eric Bodden
  */
 public interface Regex extends Node
 {

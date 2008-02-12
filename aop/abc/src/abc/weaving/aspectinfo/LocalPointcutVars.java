@@ -1,7 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,7 +42,6 @@ import abc.weaving.residues.Residue;
  *  after inlining
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
- *  @author Eric Bodden
  */
 public class LocalPointcutVars extends Pointcut {
     private Pointcut pc;

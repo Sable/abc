@@ -1,6 +1,5 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,7 +37,6 @@ import abc.weaving.residues.WeavingVar;
 /** Cast from one pointcut variable to another. 
  *  This can appear after inlining
  *  @author Ganesh Sittampalam
- *  @author Eric Bodden
  */
 public class CastPointcutVar extends Pointcut {
 	protected Var from;

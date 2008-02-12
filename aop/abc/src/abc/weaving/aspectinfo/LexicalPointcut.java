@@ -1,6 +1,5 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +31,6 @@ import abc.weaving.residues.Residue;
 /** A pointcut designator representing a condition on the
  *  lexical context
  *  @author Ganesh Sittampalam
- *  @author Eric Bodden
  *  @date 30-Apr-04
  */
 public abstract class LexicalPointcut extends Pointcut {

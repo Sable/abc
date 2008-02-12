@@ -1,6 +1,5 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Neil Ongkingco
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +36,6 @@ import abc.weaving.residues.Residue;
 /**
  * Internal representation of the thisAspect pointcut.
  * @author Neil Ongkingco
- * @author Eric Bodden
  */
 public class ThisAspectPointcut extends Pointcut {
 

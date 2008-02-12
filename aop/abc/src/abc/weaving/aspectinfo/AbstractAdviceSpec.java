@@ -1,7 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +26,6 @@ import polyglot.util.Position;
  *  Useful when implementing advice specifications.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
- *  @author Eric Bodden
  */
 public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {
 

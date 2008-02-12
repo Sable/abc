@@ -1,7 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +31,6 @@ import abc.weaving.residues.WeavingVar;
 /** Advice specification for after returning advice with return variable binding. 
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
- *  @author Eric Bodden
  */
 public class AfterReturningArgAdvice extends AfterReturningAdvice {
     protected Formal formal;

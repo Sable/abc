@@ -42,7 +42,6 @@ import abc.weaving.weaver.ConstructorInliningMap;
 /** The results of matching at a handler shadow
  *  @author Ganesh Sittampalam
  *  @author Ondrej Lhotak
- *  @author Eric Bodden
  *  @date 05-May-04
  */
 public class HandlerShadowMatch extends StmtShadowMatch {

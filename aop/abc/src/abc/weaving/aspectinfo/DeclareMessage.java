@@ -1,7 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Ganesh Sittampalam
- * Copyright (C) 2006 Eric Bodden
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +59,6 @@ import abc.weaving.weaver.WeavingContext;
 /** A <code>declare warning</code> or <code>declare error</code> declaration.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
- *  @author Eric Bodden
  */
 public class DeclareMessage extends AbstractAdviceDecl {
     public static final int WARNING = 0;
