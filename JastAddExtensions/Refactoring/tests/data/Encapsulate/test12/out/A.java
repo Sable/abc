@@ -3,7 +3,7 @@ class A {
   private int i;
   A[] a;
   void m() {
-    a.[preIncI()].preIncI();
+    a[preIncI()].preIncI();
   }
   A() {
     super();

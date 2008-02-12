@@ -8,7 +8,7 @@ public class A {
   void m() {
     a = new A[1];
     a[0] = new A();
-    a.[n()].assignPlusI(2);
+    a[n()].assignPlusI(2);
   }
   int n() {
     System.out.println("here");

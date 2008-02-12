@@ -8,10 +8,10 @@ aspect NamingContext {
 	/*
 	 * this should be an abstract class, but JastAdd messes that up at the moment...
 	 */
-	/*abstract*/ class NamingContext {
-		public boolean isStatic() { throw new Error("abstract method"); } 
-		public TypeDecl enclosingType() { throw new Error("abstract method"); }
-		public NamingContext unqualifiedCtxt() { throw new Error("abstract method"); }
+	abstract class NamingContext {
+		public abstract boolean isStatic();
+		public abstract TypeDecl enclosingType();
+		public abstract NamingContext unqualifiedCtxt();
 		
 		public boolean isShadowed(PackageAccess pkg, boolean ambiguous) {
 			String fst = pkg.packageName().split("\\.")[0];
@@ -25,13 +25,9 @@ aspect NamingContext {
 			return !lookupType(td.name()).contains(td);
 		}
 		
-		/*public boolean isShadowed(Variable v) {
-			return !lookupVariable(v.name()).contains(v);
-		}*/
-		
-		public SimpleSet lookupType(String name) { throw new Error("abstract method"); }
-		public SimpleSet lookupVariable(String name) { throw new Error("abstract method"); }
-		public Access accessType(TypeDecl td, boolean ambiguous) { throw new Error("abstract method"); }
+		public abstract SimpleSet lookupType(String name);
+		public abstract SimpleSet lookupVariable(String name);
+		public abstract Access accessType(TypeDecl td, boolean ambiguous);
 	}
 	
 	inh NameType Expr.nameType();

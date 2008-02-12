@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 
 import AST.ASTNode;
 import AST.BytecodeParser;
@@ -16,8 +17,11 @@ import AST.Program;
 
 public class TestHelper {
 	
-	static Program compile(String... files) {
-		Frontend f = new Frontend() { };
+	public static Program compile(String... files) {
+		Frontend f = new Frontend() { 
+			protected void processErrors(Collection errors, CompilationUnit unit) { }
+			protected void processWarnings(Collection errors, CompilationUnit unit) { }
+		};
 		BytecodeReader br = new BytecodeParser();
 		JavaParser jp = new JavaParser() {
             public CompilationUnit parse(java.io.InputStream is, String fileName) 
