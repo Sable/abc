@@ -1,0 +1,152 @@
+aspect SymbolicVarAccess {
+	
+	/*
+	 * A SymbolicVarAccess contains information about how to access a variable from
+	 * some point in the syntax tree. In general, to looking up a variable may
+	 * involve going out through lexically enclosing scopes, possibly reaching
+	 * a type declaration and from there going up its ancestor chain until reaching
+	 * a type of which the variable is a non-shadowed member.
+	 * 
+	 * For fields, we refer to the final type reached on this path (which may be
+	 * the type where the field is declared, or one of its descendants such that no
+	 * shadowing fields are declared in between) as the "source", and to the type
+	 * declaration where we switched from the "out" movement to the "up" movement as
+	 * the "bend". Given a field [f] with source [A] and bend [B], the most
+	 * general way of accessing it is [((A)B.this).f]; the information to construct
+	 * such an access is contained in a SymbolicVarAccess.
+	 * 
+	 * Usually, however, we do not need this much generality. If the source and bend
+	 * coincide, we can use [A.this.f]; if they additionally equal the innermost
+	 * surrounding type of the current position, a simple [A.f] will do.
+	 * 
+	 * Otherwise, if the source is the bend's parent class, and the bend again equals
+	 * the innermost surrounding type of the current position, we would want to
+	 * construct the access [super.f], or [((A)this).f] if the source is an ancestor
+	 * of the bend, but not its immediate parent.
+	 * 
+	 * Finally, if the bend does not equal the innermost surrounding type, we use
+	 * [B.super.f] if the source is a direct parent of the bend.
+	 * 
+	 * If no qualification is needed at all, of course, the access [f] suffices.
+	 * 
+	 * For greater uniformity, we treat local variables (including parameters)
+	 * with the same framework by letting source and bend always be [null] in these
+	 * cases.
+	 * 
+	 * The methods of [SymbolicVarAccess] are mainly concerned with keeping
+	 * the information about source, bend, and qualification up to date when moving
+	 * downwards or inwards through different scopes (methods [moveInto] and
+	 * [moveDownTo]) as well as constructing accesses according to the procedure 
+	 * outlined above, either with or without some other qualifier (methods
+	 * [computeAccess] and [computeQualifiedAccess]).
+	 */
+
+	class SymbolicVarAccess extends SymbolicAccess {
+		public SymbolicVarAccess(TypeDecl source, TypeDecl bend,
+				boolean needsQualifier, Variable target) {
+			super(source, bend, needsQualifier, target);
+		}
+
+		public SymbolicVarAccess(Variable target) {
+			super(null, null, false, target);
+		}
+
+		public boolean isLocalVarAccess() {
+			return (source == null) || (bend == null);
+		}
+
+		private SymbolicVarAccess addQualifier(boolean flag) {
+			if(flag)
+				if(isLocalVarAccess())
+					return null;
+				else
+					needsQualifier = true;
+			return this;
+		}
+
+		public SymbolicVarAccess moveDownTo(TypeDecl td) {
+			Variable target = (Variable)this.target;
+			if(isLocalVarAccess()) {
+				if(!td.localFields(target.name()).isEmpty())
+					return null;
+				return this;
+			} else {
+				bend = td;
+				if(!td.localFields(target.name()).isEmpty())
+					needsQualifier = true;
+				else if(!needsQualifier)
+					source = td;
+				return this;
+			}
+		}
+
+		public SymbolicVarAccess moveInto(LocalScope s) {
+			Variable target = (Variable)this.target;
+			return addQualifier(s.hasVariable(target.name()));
+		}
+
+		public Access computeAccess(NamingContext ctxt) {
+			Variable target = (Variable)this.target;
+			if(isLocalVarAccess()) {
+				return new VarAccess(target.name());
+			} else {
+				VarAccess va = new VarAccess(target.name());
+				if(needsQualifier) {
+					if(ctxt.isStatic()) return null;
+					if(source == bend) {
+						if(source == ctxt.enclosingType())
+							return new ThisAccess("this").qualifiesAccess(va);
+						else {
+							Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+							if(outer == null) return null;
+							return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
+						}
+					} else if(bend instanceof ClassDecl && 
+							source == ((ClassDecl)bend).superclass()) {
+						if(bend == ctxt.enclosingType())
+							return new SuperAccess("super").qualifiesAccess(va);
+						else {
+							Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+							if(outer == null) return null;
+							return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
+						}
+					} else {
+						Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+						if(upper == null) return null;
+						if(bend == ctxt.enclosingType()) {
+							return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(va);
+						} else {
+							Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+							if(outer == null) return null;
+							return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
+							qualifiesAccess(va);
+						}
+					}
+				} else {
+					return va;
+				}
+			}
+		}
+
+		public Access computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+			Variable target = (Variable)this.target;
+			if(isLocalVarAccess()) {
+				return qualifier.qualifiesAccess(new VarAccess(target.name()));
+			} else {
+				VarAccess va = new VarAccess(target.name());
+				if(needsQualifier) {
+					if(source == bend && source == ctxt.enclosingType())
+						return qualifier.qualifiesAccess(va);
+					else if(!qualifier.isTypeAccess()) {
+						Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+						if(upper != null && bend == ctxt.enclosingType())
+							return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
+					}
+					return null;
+				} else {
+					return qualifier.qualifiesAccess(new VarAccess(target.name()));
+				}
+			}
+		}
+	}
+}

@@ -1,139 +1,20 @@
 import java.util.*;
 
 /*
- * The inherited attribute accessField tries to compute an access to a field. If,
- * for some node n, calling n.accessField(f) yields an access a, then looking up
- * a at node n should yield field f.
+ * The inherited attribute accessVariable(v) computes a SymbolicVarAccess which
+ * describes how to access variable v from the current location in the AST. This
+ * SymbolicVarAccess can in turn be used to construct an actual access.
  * 
- * For a field named "f", the code will return one of the following
- *   1. a variable access "f" if the field is directly visible
- *   2. a qualified access "this.f", "super.f", or "((A)this).f", if "f" is
- *      visible in this class, its direct superclass, or its ancestor class/interface
- *      "A", respectively
- *   3. a qualified access "A.this.f" or "((B)A.this).f" if "f" is visible in
- *      enclosing class "A", or "A"'s ancestor class "B"
- *   4. null if none of the above works 
+ * The implementation of accessVariable is mostly parallel to lookupVariable with
+ * the same clauses and the same control flow, but with additional calls to
+ * methods "moveInto" and "moveDownTo", which transport a symbolic access from a
+ * parent type to a child type resp. an enclosing type to a nested type, adding
+ * information about required qualifications in the process. For the implementation
+ * of these methods see SymbolicVarAccess.jrag
  */
 
 aspect AccessVariable {
 	
-	class SymbolicVarAccess {
-		protected Variable target;
-
-		public SymbolicVarAccess(Variable target) {
-			this.target = target;
-		}
-		
-		public SymbolicVarAccess moveDownTo(TypeDecl td) {
-			if(!td.localFields(target.name()).isEmpty())
-				return null;
-			return this;
-		}
-		
-		public SymbolicVarAccess moveInto(LocalScope s) {
-			if(s.hasVariable(target.name()))
-				return null;
-			return this;
-		}
-		
-		public Access getAccess(NamingContext ctxt) {
-			return new VarAccess(target.name());
-		}
-		
-		public Access getQualifiedAccess(NamingContext ctxt, Expr qualifier) {
-			return qualifier.qualifiesAccess(new VarAccess(target.name()));
-		}
-	}
-
-	class SymbolicFieldAccess extends SymbolicVarAccess {
-		protected TypeDecl source;
-		protected TypeDecl bend;
-		protected boolean needsQualifier;
-
-		public SymbolicFieldAccess(TypeDecl source, TypeDecl bend, 
-				boolean needsQualifier, Variable decl) {
-			super(decl);
-			this.source = source;
-			this.bend = bend;
-			this.needsQualifier = needsQualifier;
-		}
-
-		public boolean needsQualifier() { return needsQualifier; }
-		public void setNeedsQualifier() { needsQualifier = true; }
-		
-		public SymbolicVarAccess moveDownTo(TypeDecl td) {
-			bend = td;
-			if(!td.localFields(target.name()).isEmpty())
-				needsQualifier = true;
-			else if(!needsQualifier)
-				source = td;
-			return this;
-		}
-	
-		public SymbolicVarAccess moveInto(LocalScope s) {
-			if(s.hasVariable(target.name()))
-				needsQualifier = true;
-			return this;
-		}
-		
-		public Access getAccess(NamingContext ctxt) {
-			VarAccess va = new VarAccess(target.name());
-			if(needsQualifier /*|| ctxt.isShadowed(target)*/) {
-				if(ctxt.isStatic()) return null;
-				if(source == bend) {
-					if(source == ctxt.enclosingType())
-						return new ThisAccess("this").qualifiesAccess(va);
-					else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
-					}
-				} else if(bend instanceof ClassDecl && 
-							source == ((ClassDecl)bend).superclass()) {
-					if(bend == ctxt.enclosingType())
-						return new SuperAccess("super").qualifiesAccess(va);
-					else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
-					}
-				} else {
-					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper == null) return null;
-					if(bend == ctxt.enclosingType()) {
-						return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(va);
-					} else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
-										qualifiesAccess(va);
-					}
-				}
-			} else {
-				return va;
-			}
-		}
-
-		public Access getQualifiedAccess(NamingContext ctxt, Expr qualifier) {
-			VarAccess va = new VarAccess(target.name());
-			if(needsQualifier /*|| ctxt.isShadowed(target)*/) {
-				if(ctxt.isStatic())
-					// we actually could do something clever here...
-					return null;
-				if(source == bend && source == ctxt.enclosingType())
-					return qualifier.qualifiesAccess(va);
-				else if(!qualifier.isTypeAccess()) {
-					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper != null && bend == ctxt.enclosingType())
-						return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
-				}
-				return null;
-			} else {
-				return qualifier.qualifiesAccess(new VarAccess(target.name()));
-			}
-		}	
-	}
-
 	inh lazy SymbolicVarAccess TypeDecl.accessVariable(Variable decl);
 	inh lazy SymbolicVarAccess BodyDecl.accessVariable(Variable decl);
 	inh SymbolicVarAccess Stmt.accessVariable(Variable decl);
@@ -330,7 +211,7 @@ aspect AccessVariable {
 	syn SymbolicVarAccess TypeDecl.accessLocalField(Variable decl) { 
 		for(int i = 0; i < getNumBodyDecl(); i++)
 			if(getBodyDecl(i) == decl)
-				return new SymbolicFieldAccess(this, this, false, decl);
+				return new SymbolicVarAccess(this, this, false, decl);
 		return null;
 	}
 
@@ -377,39 +258,6 @@ aspect AccessVariable {
 		return null;
 	}
 		
-	interface LocalScope {
-		boolean hasVariable(String name);
-	}
-
-	TypeDecl implements LocalScope;
-	public boolean TypeDecl.hasVariable(String name) {
-		return !memberFields(name).isEmpty();
-	}
-	ConstructorDecl implements LocalScope;
-	public boolean ConstructorDecl.hasVariable(String name) {
-		return parameterDeclaration(name) != SimpleSet.emptySet;
-	}
-	MethodDecl implements LocalScope;
-	public boolean MethodDecl.hasVariable(String name) {
-		return parameterDeclaration(name) != SimpleSet.emptySet;
-	}
-	CatchClause implements LocalScope;
-	public boolean CatchClause.hasVariable(String name) {
-		return parameterDeclaration(name) != SimpleSet.emptySet;
-	}
-	ForStmt implements LocalScope;
-	public boolean ForStmt.hasVariable(String name) { 
-		return localVariableDeclaration(name) != null;
-	}
-	
-	public Variable Block.localLookupVariable(String name, int index) {
-		for(int i=0;i<=index;++i)
-			if(getStmt(i) instanceof VariableDeclaration &&
-					((VariableDeclaration)getStmt(i)).name().equals(name))
-				return (VariableDeclaration)getStmt(i);
-		return null;
-	}
-	
 	public Expr Access.getCompleteQualifier() {
 		if(this.isLeftChildOfDot()) {
 			return parentDot().getCompleteQualifier();
@@ -423,14 +271,14 @@ aspect AccessVariable {
 		}
 	}
 
-	public Access Access.getAccessTo(Variable v) {
+	public Access Access.access(Variable v) {
 		SymbolicVarAccess acc = accessVariable(v);
 		if(acc == null) return null;
 		if(isQualified())
-			return acc.getQualifiedAccess(qualifier().type().getMemberNamingContext(),
-										  getCompleteQualifier());
+			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),
+										  	  getCompleteQualifier());
 		else
-			return acc.getAccess(getNamingContext());
+			return acc.computeAccess(getNamingContext());
 	}
 		
 }

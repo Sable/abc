@@ -28,7 +28,7 @@ public abstract class AccessField extends TestCase {
         ASTNode n = TestHelper.findSmallestCoveringNode(prog, obsloc);
         assertNotNull(n);
         assertTrue(n instanceof Access);
-        Access res = ((Access)n).getAccessTo((Variable)m);
+        Access res = ((Access)n).access((Variable)m);
         if(expected == null) {
         	assertNull(res);
         } else {

@@ -1,18 +1,16 @@
 import java.util.*;
 
 /*
- * The inherited attribute accessMethod tries to compute an access to a method. If,
- * for some node n, calling n.accessMethod(m) yields an access a, then looking up
- * a at node n should yield method m.
+ * The inherited attribute accessMethod(m) computes a SymbolicMethodAccess which
+ * describes how to access method m from the current location in the AST. This
+ * SymbolicMethodAccess can in turn be used to construct an actual access.
  * 
- * For a method named "m", the code will return one of the following
- *   1. a method access "m" if the method is directly visible
- *   2. a qualified access "super.m()" or "((A)this).m()", if "m" is
- *      visible in the direct superclass, or an ancestor class/interface
- *      "A", respectively; the second form only works for static methods
- *   3. a qualified access "A.this.m" if "m" is visible in
- *      enclosing class "A"
- *   4. null if none of the above works 
+ * The implementation of accessMethod tries to stay close to lookupMethod with
+ * basically the same clauses and the same control flow, but with additional calls to
+ * methods "moveInto" and "moveDownTo", which transport a symbolic access from a
+ * parent type to a child type resp. an enclosing type to a nested type, adding
+ * information about required qualifications in the process. For the implementation
+ * of these methods see SymbolicMethodAccess.jrag
  */
 
 aspect AccessMethod {
@@ -27,97 +25,6 @@ aspect AccessMethod {
 		return res;
 	}
 	
-	class SymbolicMethodAccess {
-		protected TypeDecl source;
-		protected TypeDecl bend;
-		protected boolean needsQualifier;
-		protected MethodDecl target;
-		
-		public SymbolicMethodAccess(TypeDecl source, TypeDecl bend, boolean needsQualifier,
-									MethodDecl target) {
-			this.source = source;
-			this.bend = bend;
-			this.needsQualifier = needsQualifier;
-			this.target = target;
-		}
-
-		public SymbolicMethodAccess moveDownTo(TypeDecl td) {
-			bend = td;
-			if(!td.localMethods(target.name()).isEmpty())
-				needsQualifier = true;
-			else if(!needsQualifier)
-				source = td;
-			return this;
-		}
-		
-		public SymbolicMethodAccess moveInto(TypeDecl td) {
-			if(!td.memberMethods(target.name()).isEmpty())
-				needsQualifier = true;
-			return this;
-		}
-		
-		public Access getAccess(NamingContext ctxt, List args) {
-			MethodAccess ma = new MethodAccess(target.name(), args);
-			if(needsQualifier) {
-				if(ctxt.isStatic()) return null;
-				if(source == bend) {
-					if(source == ctxt.enclosingType())
-						return ma;
-					else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
-					}
-				} else if(bend instanceof ClassDecl && 
-							source == ((ClassDecl)bend).superclass()) {
-					if(bend == ctxt.enclosingType())
-						return new SuperAccess("super").qualifiesAccess(ma);
-					else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
-					}
-				} else if(target.isStatic()) {
-					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper == null) return null;
-					if(bend == ctxt.enclosingType()) {
-						return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(ma);
-					} else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
-										   qualifiesAccess(ma);
-					}
-				} else {
-					return null;
-				}
-			} else {
-				return ma;
-			}
-		}
-		
-		public Access getQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
-			MethodAccess ma = new MethodAccess(target.name(), args);
-			if(needsQualifier) {
-				if(!target.isStatic())
-					return null;
-				if(ctxt.isStatic())
-					return null;
-				if(source == bend && source == ctxt.enclosingType())
-					return qualifier.qualifiesAccess(ma);
-				else if(!qualifier.isTypeAccess()) {
-					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper != null && bend == ctxt.enclosingType())
-						return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
-				}
-				return null;
-			} else {
-				return qualifier.qualifiesAccess(ma);
-			}
-		}	
-		
-	}
-
 	inh SymbolicMethodAccess Expr.accessMethod(MethodDecl md);
 	inh lazy SymbolicMethodAccess TypeDecl.accessMethod(MethodDecl md);
 
@@ -198,13 +105,13 @@ aspect AccessMethod {
 		return null;
 	}
 	
-	public Access Access.getAccessTo(MethodDecl md, List args) {
+	public Access Access.access(MethodDecl md, List args) {
 		SymbolicMethodAccess acc = accessMethod(md);
 		if(acc == null) return null;
 		if(isQualified())
-			return acc.getQualifiedAccess(qualifier().type().getMemberNamingContext(),
-										  getCompleteQualifier(), args);
+			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),
+										      getCompleteQualifier(), args);
 		else
-			return acc.getAccess(getNamingContext(), args);
+			return acc.computeAccess(getNamingContext(), args);
 	}
 }

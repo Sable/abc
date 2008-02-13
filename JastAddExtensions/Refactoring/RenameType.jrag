@@ -106,7 +106,7 @@ aspect RenameType {
 				if(id instanceof SingleTypeImportDecl) {
 					Access acc = ((SingleTypeImportDecl)id).getAccess();
 					if(acc.type() == this) {
-						Access tacc = id.accessType(this).getAccess(id.getNamingContext(), false);
+						Access tacc = id.access(this, false);
 						if(tacc == null)
 							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
 						id.replaceWith(new SingleTypeImportDecl(tacc));

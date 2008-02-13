@@ -5,9 +5,6 @@
 
 aspect NamingContext {
 	
-	/*
-	 * this should be an abstract class, but JastAdd messes that up at the moment...
-	 */
 	abstract class NamingContext {
 		public abstract boolean isStatic();
 		public abstract TypeDecl enclosingType();
@@ -42,7 +39,7 @@ aspect NamingContext {
 			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Expr.this.accessType(td, ambiguous);
+				return Expr.this.access(td, ambiguous);
 			}
 		};
 	}
@@ -61,7 +58,7 @@ aspect NamingContext {
 				return Access.this.lookupVariable(name); 
 			}
 			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return Access.this.accessType(td, ambiguous);
+				return Access.this.access(td, ambiguous);
 			}
 		};
 	}
@@ -76,7 +73,7 @@ aspect NamingContext {
 			public SimpleSet lookupType(String name) { return BodyDecl.this.lookupType(name); }
 			public SimpleSet lookupVariable(String name) { return BodyDecl.this.lookupVariable(name); }
 			public Access accessType(TypeDecl td, boolean ambiguous) {
-				return BodyDecl.this.accessType(td, ambiguous);
+				return BodyDecl.this.access(td, ambiguous);
 			}
 		};
 	}
@@ -132,9 +129,7 @@ aspect NamingContext {
 				return ImportDecl.this.lookupVariable(name); 
 			}
 			public Access accessType(TypeDecl td, boolean ambiguous) {
-				SymbolicTypeAccess acc = ImportDecl.this.accessType(td);
-				if(acc == null) return null;
-				return acc.getAccess(this, ambiguous);
+				return ImportDecl.this.access(td, ambiguous);
 			}
 		};
 	}
@@ -147,22 +142,6 @@ aspect NamingContext {
 	      }
 	    }
 	    return set;
-	}
-	
-	public ShadowingDetector TypeDecl.getTypeShadowingDetector() {
-		return new ShadowingDetector() {
-			public boolean isShadowed(String name) {
-				return !localMemberTypes(name).isEmpty();
-			}
-		};
-	}
-	
-	public ShadowingDetector Block.getTypeShadowingDetector(final int index) {
-		return new ShadowingDetector() {
-			public boolean isShadowed(String name) {
-				return localLookupType(name, index) != null;
-			}
-		};
 	}
 	
 }

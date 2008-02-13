@@ -87,4 +87,14 @@ public class AccessTypeTests extends AccessType {
 						  new TypeAccess("A").qualifiesAccess(new TypeAccess("B")));
 	}	
 
+	public void test21() {
+		runTypeAccessTest(new FileRange("AccessType/test49/Test.java", 4, 5, 5, 5), new FileRange("AccessType/test49/Test.java", 9, 5, 9, 5),
+						  new TypeAccess("B"));
+	}
+
+	public void test23() {
+		runTypeAccessTest(new FileRange("AccessType/test50/Test.java", 9, 5, 9, 15), new FileRange("AccessType/test50/Test.java", 11, 9, 11, 14),
+						  new TypeAccess("Test").qualifiesAccess(new TypeAccess("B")));
+	}
+
 }

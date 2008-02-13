@@ -139,7 +139,7 @@ aspect MakeMethod {
 		List throwdecls = new List();
 		for(Iterator i=exns.iterator();i.hasNext();) {
 			TypeDecl exn = ((ThrowStmt)i.next()).getExpr().type();
-			Access exnacc = hostBodyDecl().accessType(exn, false);
+			Access exnacc = hostBodyDecl().access(exn, false);
 			if(exnacc == null)
 				throw new RefactoringException("cannot access type "+exn);
 			throwdecls.add(exnacc);

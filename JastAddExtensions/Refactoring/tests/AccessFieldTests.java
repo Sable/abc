@@ -130,4 +130,14 @@ public class AccessFieldTests extends AccessField {
 						   null);
 	}
 
+	public void test25() {
+		runFieldAccessTest(new FileRange("AccessField/test46/Test.java", 8, 5, 8, 12), new FileRange("AccessField/test46/Test.java", 10, 20, 10, 30),
+						   new TypeAccess("Test").qualifiesAccess(new ThisAccess("this").qualifiesAccess(new VarAccess("x"))));
+	}
+
+	public void test26() {
+		runFieldAccessTest(new FileRange("AccessField/test47/Test.java", 4, 5, 4, 13), new FileRange("AccessField/test47/Test.java", 8, 16, 8, 16),
+						   new VarAccess("x"));
+	}
+
 }

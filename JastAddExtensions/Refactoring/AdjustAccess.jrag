@@ -86,7 +86,7 @@ aspect AdjustAccess {
         							  getStart(), getEnd());
 		if(target instanceof Variable) {
 			if(((VarAccess)this).decl() != target) {
-				newacc = this.getAccessTo((Variable)target);
+				newacc = this.access((Variable)target);
 				if(newacc == null)
 					throw new RefactoringException("variable would become shadowed at "+pos);
 				if(isLeftChildOfDot()) {
@@ -100,7 +100,7 @@ aspect AdjustAccess {
 		} else if(target instanceof MethodDecl) {
 			MethodDecl md = (MethodDecl)target;
 			if(((MethodAccess)this).decl() != md) {
-				newacc = this.getAccessTo(md, (List)((MethodAccess)this).getArgList().fullCopy());
+				newacc = this.access(md, (List)((MethodAccess)this).getArgList().fullCopy());
 				if(newacc == null)
 					throw new RefactoringException("couldn't consistently rename method access at "+pos);
 				if(isLeftChildOfDot()) {
@@ -115,7 +115,7 @@ aspect AdjustAccess {
 			TypeAccess tacc = (TypeAccess)this;
             if(tacc.decl() != target) {
             	boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-                newacc = this.accessType((TypeDecl)target, ambiguous);
+                newacc = this.access((TypeDecl)target, ambiguous);
                 if(newacc == null)
                     throw new RefactoringException("couldn't consistently rename type access at "+pos);
 				if(isLeftChildOfDot()) {
@@ -135,7 +135,7 @@ aspect AdjustAccess {
                 	if(tmp instanceof VarAccess) {
                 		parent.setChild(tacc, idx);
                 		boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-                		newacc = this.accessType((TypeDecl)target, ambiguous);
+                		newacc = this.access((TypeDecl)target, ambiguous);
                 		if(newacc == null)
                 			throw new RefactoringException("couldn't consistently rename type access at "+pos);
         				if(isLeftChildOfDot()) {
