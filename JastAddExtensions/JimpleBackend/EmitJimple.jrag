@@ -63,6 +63,7 @@ aspect EmitJimple {
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers()); 
     Scene.v().addClass(sc);
     sc.setApplicationClass();
+    sc.setSuperclass(typeObject().getSootClassDecl());
     sc.addTag(new soot.tagkit.SourceFileTag(sourceFile()));
     return sc;
   }

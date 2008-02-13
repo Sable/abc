@@ -110,13 +110,13 @@ aspect Advice
   public void AdviceDecl.typeCheck() {
     AdviceSpec spec = getAdviceSpec();
     for(int i = 0; i < spec.getNumParameter(); i++) {
-      int bindings = getPointcutExpr().binds(spec.getParameter(i).getID());
+      int bindings = getPointcutExpr().binds(spec.getParameter(i).name());
 
       if(bindings > 1) {
-        error("Advice formal " + spec.getParameter(i).getID() + " is bound " +
+        error("Advice formal " + spec.getParameter(i).name() + " is bound " +
               "multiple times in pointcut.");
       } else if(bindings == 0) {
-        error("Advice formal " + spec.getParameter(i).getID() +
+        error("Advice formal " + spec.getParameter(i).name() +
               " is not bound " + "in pointcut.");
       }		
     }
@@ -130,14 +130,14 @@ aspect Advice
   public void PointcutDecl.typeCheck() {
     if(!isAbstract()) {
       for(int i = 0; i < getNumParameter(); i++) {
-        int bindings = getPointcutExpr().binds(getParameter(i).getID());
+        int bindings = getPointcutExpr().binds(getParameter(i).name());
         
         if(bindings == 0) {
-          error("Concrete pointcut " + hostType().typeName() + "." + getID() +
-                " should bind its formal argument " + getParameter(i).getID());
+          error("Concrete pointcut " + hostType().typeName() + "." + name() +
+                " should bind its formal argument " + getParameter(i).name());
         } else if(bindings > 1) {
-          error("Pointcut " + hostType().typeName() + "." + getID() +
-                " binds formal argument " + getParameter(i).getID() +
+          error("Pointcut " + hostType().typeName() + "." + name() +
+                " binds formal argument " + getParameter(i).name() +
                 " multiple times.");
         }
       }

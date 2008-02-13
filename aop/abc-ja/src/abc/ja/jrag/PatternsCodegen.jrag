@@ -64,6 +64,7 @@ aspect PatternsCodegen
     {
         SootMethod sm = smr.resolve();
         int real_mods = MethodCategory.getModifiers(sm);
+        int first_real_arg = MethodCategory.getSkipFirst(sm);
 
         // exclude ITD-generated methods which correspond to constructors
         // and ITD-generated accessor methods for fields
@@ -92,7 +93,7 @@ aspect PatternsCodegen
         LinkedList/*<FormalPattern>*/ fpats = new LinkedList();
         for(int i = 0; i < getNumFormalPattern(); i++)
           fpats.add(getFormalPattern(i));
-        if(!matchesFormals(fpats, 0, ftypes, 0))
+        if(!matchesFormals(fpats, 0, ftypes, first_real_arg))
           return false;
 
         // check exceptions

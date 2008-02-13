@@ -59,12 +59,25 @@ aspect Pointcuts
         while (i.hasNext()) {
             ParameterDeclaration param = (ParameterDeclaration) i.next();
             if (!param.isImplicit() && this.refersTo(param) &&
-                !bindsInCurrentCflow(param.getID()))
+                !bindsInCurrentCflow(param.name()))
             {
-                error("Pointcut formal " + param.getID() +
+                error("Pointcut formal " + param.name() +
                       " is not bound within the enclosing cflow:" +
                       " it cannot be used within this if(..)");
             }
+        }
+    }
+
+    // variables may not be bound under negation in a pointcut expression
+    public void NegPointcutExpr.typeCheck()
+    {
+        super.typeCheck();
+        Iterator i = pointcutFormals().iterator();
+        while (i.hasNext()) {
+            ParameterDeclaration param = (ParameterDeclaration) i.next();
+            if (getPointcutExpr().binds(param.name()) > 0)
+                error("Pointcut formal " + param.name() +
+                    " cannot be bound within a negated pointcut expression");
         }
     }
 
@@ -353,7 +366,7 @@ aspect Pointcuts
     public void PointcutDecl.circularNameCheck()
     {
         if(isCircular())
-            error("The pointcut " + getID() + " has a circular dependency.");
+            error("The pointcut " + name() + " has a circular dependency.");
     }
 
     syn PointcutDecl NamedPointcutExpr.decl() =
@@ -409,7 +422,7 @@ aspect Pointcuts
         if (! (getName() instanceof PointcutAccess))
             return decl().checkCallGraph(decl().hostType());
 
-        String name = ((PointcutAccess) getName()).getID();
+        String name = ((PointcutAccess) getName()).name();
         Iterator i = context.lookupMemberPointcut(name).iterator();
         while (i.hasNext()) {
             PointcutDecl decl = (PointcutDecl) i.next();
@@ -500,7 +513,7 @@ aspect Pointcuts
     public void BodyDecl.addLocalPointcuts(Set names) { }
     public void PointcutDecl.addLocalPointcuts(Set names)
     {
-        names.add(getID());
+        names.add(name());
     }
 
 
