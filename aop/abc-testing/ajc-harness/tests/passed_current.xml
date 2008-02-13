@@ -1747,8 +1747,6 @@
             <ajcmessage line="12" kind="error"></ajcmessage>
             <ajcmessage line="18" kind="error"></ajcmessage>
             <message line="18" kind="error"></message>
-            <jamessage line="12" kind="error"></jamessage>
-            <jamessage line="18" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="test for not folding circular constants" num="297" keywords="from-errors" dir="pureJava">
@@ -2105,8 +2103,6 @@
             <ajcmessage line="8" kind="error"></ajcmessage>
             <ajcmessage line="23" kind="error"></ajcmessage>
             <message line="23" kind="error"></message> 
-            <jamessage line="8" kind="error"></jamessage> 
-            <jamessage line="23" kind="error"></jamessage> 
        </compile>
     </ajc-test>
 <ajc-test title="declared exceptions are checked correctly on intros (errors) 2" num="330" dir="abctests/design/intro" abccomment="abc bails out early, so copied. ODM 09/07/04">
