@@ -11,6 +11,25 @@
 
 aspect LocalVarNesting {
 	
+	interface Initializer {
+		Block getBlock();
+	}
+	
+	InstanceInitializer implements Initializer;
+	StaticInitializer implements Initializer;
+	
+	syn RefactoringException BodyDecl.acceptLocal(String name) = null;
+	
+	eq Methodoid.acceptLocal(String name) {
+		if(!parameterDeclaration(name).isEmpty())
+			return new RefactoringException("parameter of the same name exists");
+		if(hasBody())
+			return getBlock().acceptLocal(name);
+		return null;
+	}
+	
+	eq Initializer.acceptLocal(String name) = getBlock().acceptLocal(name);
+	
 	syn RefactoringException Stmt.acceptLocal(String name) = null;
 	
 	eq Block.acceptLocal(String name) {

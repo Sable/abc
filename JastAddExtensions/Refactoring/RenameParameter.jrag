@@ -18,7 +18,13 @@ aspect RenameParameter {
 	}
 	
 	eq CatchClause.getParameter().canRenameTo(String new_name) {
-		return getBlock().acceptLocal(new_name);
+		return hostBodyDecl().acceptLocal(new_name);
+	}
+	
+	public BodyDecl CatchClause.hostBodyDecl() {
+		ASTNode p=null;
+		for(p=this;!(p==null || p instanceof BodyDecl);p=p.getParent());
+		return (BodyDecl)p;
 	}
 	
 	public void ParameterDeclaration.rename(String new_name) throws RefactoringException {

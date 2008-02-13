@@ -8,10 +8,14 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import AST.ASTNode;
 import AST.FieldDeclaration;
+import AST.LocalDeclaration;
+import AST.ParameterDeclaration;
 import AST.Program;
-import AST.TypeDecl;
 import AST.RefactoringException;
+import AST.TypeDecl;
+import AST.VariableDeclaration;
 
 public abstract class RenameVariable extends TestCase {
 	
@@ -29,7 +33,13 @@ public abstract class RenameVariable extends TestCase {
         	String cmd = br.readLine();
         	assertTrue(cmd.matches("^// .*$"));
         	String[] fields = cmd.substring(3).split("\\s+");
-        	Program prog = rename(fields[0], fields[1], fields[2], fields[3], fields[4]);
+        	Program prog;
+        	if(fields.length == 3) {
+        		prog = rename(fields[0], fields[1], fields[2]);
+        	} else {
+        		assertTrue(fields.length == 5);
+        		prog = rename(fields[0], fields[1], fields[2], fields[3], fields[4]);
+        	}
         	try {
         		File rf = new File(resfile);
         		FileReader rfr = new FileReader(rf);
@@ -38,7 +48,7 @@ public abstract class RenameVariable extends TestCase {
         		rfr.read(buf);
         		assertEquals(new String(buf), prog.toString()+"\n");
         	} catch(FileNotFoundException fnfe) {
-        		fail(name+" was supposed to fail but yielded result");
+        		fail(name+" was supposed to fail but yielded result "+prog);
         	}
         } catch(IOException ioe) {
         	fail("unable to read from file");
@@ -65,6 +75,33 @@ public abstract class RenameVariable extends TestCase {
         FieldDeclaration f = (FieldDeclaration)iter.next();
         f.rename(newname);
         return prog;
+	}
+	
+	private Program rename(String file, String varname, String newname) 
+			throws RefactoringException {
+		Program prog = TestHelper.compile(file);
+		assertNotNull(prog);
+		LocalDeclaration v = findVariable(prog, varname);
+		assertNotNull(v);
+		if(v instanceof VariableDeclaration) {
+			((VariableDeclaration)v).rename(newname);
+		} else {
+			assert(v instanceof ParameterDeclaration);
+			((ParameterDeclaration)v).rename(newname);
+		}
+		return prog;
+	}
+	
+	private LocalDeclaration findVariable(ASTNode n, String name) {
+		if(n == null) return null;
+		if(n instanceof LocalDeclaration &&
+				((LocalDeclaration)n).getID().equals(name))
+			return (LocalDeclaration)n;
+		for(int i=0;i<n.getNumChild();++i) {
+			LocalDeclaration v = findVariable(n.getChild(i), name);
+			if(v != null) return v;
+		}
+		return null;
 	}
 
 }
