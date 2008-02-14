@@ -878,9 +878,9 @@ aspect Expressions {
       return Jimple.v().newStaticFieldRef(f.sootRef());
     }
     else {
-      FieldDeclaration f = hostType().createStaticClassField(prevExpr().type().referenceClassFieldName());
+      FieldDeclaration f = hostType().topLevelType().createStaticClassField(prevExpr().type().referenceClassFieldName());
       // add method to perform lookup as a side-effect
-      MethodDecl m = hostType().createStaticClassMethod();
+      MethodDecl m = hostType().topLevelType().createStaticClassMethod();
 
       soot.jimple.Stmt next_label = b.newLabel();
       soot.jimple.Stmt end_label = b.newLabel();
