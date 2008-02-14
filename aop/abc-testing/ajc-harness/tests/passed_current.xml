@@ -3386,6 +3386,8 @@
             <ajcmessage line="29" kind="error"></ajcmessage>
             <ajcmessage line="32" kind="error"></ajcmessage>
             <message line="32" kind="error"></message>
+            <jamessage line="29" kind="error"></jamessage>
+            <jamessage line="32" kind="error"></jamessage>
         </compile>
     </ajc-test>
 <ajc-test title="no circularity errors simply because of inners (1)" pr="737" num="617" keywords="from-resolved_105,purejava" dir="pureJava">
