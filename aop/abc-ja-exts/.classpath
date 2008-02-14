@@ -2,7 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src-eaj"/>
 	<classpathentry kind="src" path="src-tm"/>
+	<classpathentry kind="src" path="generated"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/abc-ja"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="classes"/>
 </classpath>
