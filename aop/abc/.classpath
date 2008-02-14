@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="generated"/>
+	<classpathentry kind="src" path="paddle-src"/>
+	<classpathentry kind="src" path="runtime-src"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="testing-src"/>
+	<classpathentry kind="src" path="util"/>
+	<classpathentry kind="lib" path="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+	<classpathentry kind="lib" path="lib/abc-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/abc-testing.jar"/>
+	<classpathentry kind="lib" path="lib/abc.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/libs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="testing-classes"/>
+</classpath>

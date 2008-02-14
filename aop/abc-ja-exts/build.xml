@@ -6,7 +6,10 @@
 <project name="AspectJ JastAdd Frontend" default="build">
 
 <property file="ant.settings"/>
-<fail message="Please fix ant.settings" unless="abc.loc"/>
+<fail message="Please fix ant.settings" unless="abc-ja.loc"/>
+
+<property file="${abc-ja.loc}/ant.settings"/>
+<fail message="Please fix ${abc-ja.loc}/ant.settings" unless="abc.loc"/>
 
 <property file="${abc.loc}/ant.settings"/>
 <fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
@@ -27,7 +30,7 @@
                       classpath="${tools}/JFlex.jar"/>
 <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
 <taskdef name="beaver" classname="beaver.comp.run.AntTask"
-                       classpath="${aspectj}/tools/beaver.jar"/>
+                       classpath="${abc-ja.loc}/tools/beaver.jar"/>
 <!-- "jastadd" is an ant task class in jastadd2.jar -->
 <taskdef name="jastadd" classname="jastadd.JastAddTask"
                         classpath="${tools}/jastadd2.jar"/>
@@ -69,7 +72,7 @@
               <pathelement location="${xact.loc}"/>
               <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
               <pathelement location="${abc.loc}/testing-classes"/>
-              <pathelement location="${aspectj}/classes"/>
+              <pathelement location="${abc-ja.loc}/classes"/>
 	      <pathelement location="."/>
             </classpath>
                 <src path="src-tm"/>
@@ -117,7 +120,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${aspectj}/src/abc/ja/jrag">
+		<fileset dir="${abc-ja.loc}/src/abc/ja/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -166,7 +169,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${aspectj}/src/abc/ja/jrag">
+		<fileset dir="${abc-ja.loc}/src/abc/ja/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -191,7 +194,7 @@
     <filelist dir="${frontend}">
       <file name="parser/java14.parser"/>
     </filelist>
-    <filelist dir="${aspectj}">
+    <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
     </filelist>
@@ -222,7 +225,7 @@
     <filelist dir="${frontend}">
       <file name="parser/java14.parser"/>
     </filelist>
-    <filelist dir="${aspectj}">
+    <filelist dir="${abc-ja.loc}">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
     </filelist>
@@ -260,7 +263,7 @@
     <arg line="${test.args} abcTests.xml ${test.pat}"/>
     <classpath>
       <pathelement location="classes"/>
-      <pathelement location="${aspectj}/classes"/>
+      <pathelement location="${abc-ja.loc}/classes"/>
       <pathelement location="${abc.loc}/classes"/>
       <pathelement location="${abc.loc}/runtime-classes"/>
       <pathelement location="${abc.loc}/testing-classes"/>
@@ -290,7 +293,7 @@
       <pathelement location="${soot.loc}"/>
       <pathelement location="${jasmin.loc}"/>
       <pathelement location="${xact.loc}"/>
-      <pathelement location="${aspectj}/classes"/>
+      <pathelement location="${abc-ja.loc}/classes"/>
       <pathelement
           location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
     </classpath>
