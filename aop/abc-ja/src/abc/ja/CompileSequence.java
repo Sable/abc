@@ -106,6 +106,15 @@ public class CompileSequence extends abc.main.CompileSequence {
 
       for(Iterator iter = files.iterator(); iter.hasNext(); ) {
         String name = (String)iter.next();
+        File file = new File(name);
+        if(!file.exists()) {
+          error_queue().enqueue(
+              ErrorInfo.IO_ERROR,
+              "Cannot find source file \"" + name + "\"",
+              new Position("NoSuchFile.java")
+          );
+          throw new CompilerFailedException("There were errors.");
+        }
         program.addSourceFile(name);
       }
       
