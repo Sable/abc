@@ -35,20 +35,29 @@ aspect RenameType {
 	
 	private AdjustmentTable TypeDecl.find_uses(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the type we are renaming */
+		/* first, collect all uses of the field we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
-			Access a = (Access)i.next();
-			table.add(a);
+			Access acc = (Access)i.next();
+			table.add(acc);
 		}
-		/* now, collect all uses of types and packages that the type
-		 * might be shadowing after renaming */
-		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-			TypeDecl d = (TypeDecl)i.next();
-			for(Iterator j = d.uses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc);
+		/* now, collect all uses of fields and types that the variable
+		 * might be shadowing after renaming, in this class or any descendant */
+		if(this.isNestedType()) {
+			Collection descendants = enclosingType().descendants();
+			for(Iterator i = descendants.iterator(); i.hasNext();) {
+				TypeDecl td = (TypeDecl)i.next();
+				find_shadowed_in(new_name, td, table);
+			}
+		} else {
+			for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
+				TypeDecl d = (TypeDecl)i.next();
+				for(Iterator j = d.uses().iterator(); j.hasNext();) {
+					Access acc = (Access)j.next();
+					table.add(acc);
+				}
 			}
 		}
+		// same for packages
 		PackageDecl pd = programRoot().getPackageDecl(new_name);
 		if(pd != null)
 			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
@@ -60,6 +69,21 @@ aspect RenameType {
 		return table;
 	}
 	
+	public AdjustmentTable TypeDecl.find_shadowed_in(String new_name,
+			TypeDecl td, AdjustmentTable table) {
+		if(td.getNumBodyDecl() == 0)
+			return table;
+		BodyDecl fst = td.getBodyDecl(0);
+		for(Iterator i = td.lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc);
+			}
+		}
+		return table;
+	}
+
 	private void TypeDecl.checkRenamingPreconds(String new_name) throws RefactoringException {
         if(hasNestedType(new_name))
             throw new RefactoringException("nested type of the same name exists");

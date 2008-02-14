@@ -22,4 +22,58 @@ aspect RenameField {
 		table.adjust();
 	}
 
+	/* in preparation for renaming a field to new_name, this method finds all
+	 * uses of the variable before renaming and all uses of fields, types and
+	 * packages that might become shadowed by the renaming and collects them into
+	 * an adjustment table */ 
+	public AdjustmentTable FieldDeclaration.find_uses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		/* first, collect all uses of the field we are renaming */
+		for(Iterator i = uses().iterator(); i.hasNext();) {
+			Access acc = (Access)i.next();
+			table.add(acc);
+		}
+		/* now, collect all uses of fields and types that the variable
+		 * might be shadowing after renaming, in this class or any descendant */
+		Collection descendants = hostType().descendants();
+		for(Iterator i = descendants.iterator(); i.hasNext();) {
+			TypeDecl td = (TypeDecl)i.next();
+			find_shadowed_in(new_name, td, table);
+		}
+		// same for packages
+		PackageDecl pd = programRoot().getPackageDecl(new_name);
+		if(pd != null)
+			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
+						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
+					table.add(acc);
+			}
+		return table;
+	}
+	
+	public AdjustmentTable FieldDeclaration.find_shadowed_in(String new_name,
+									TypeDecl td, AdjustmentTable table) {
+		if(td.getNumBodyDecl() == 0)
+			return table;
+		BodyDecl fst = td.getBodyDecl(0);
+		for(Iterator i = fst.lookupVariable(new_name).iterator(); i.hasNext();) {
+			Variable v = (Variable)i.next();
+			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc);
+			}
+		}
+		for(Iterator i = td.lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				// only a type in an ambiguous position can be shadowed by a variable
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
+					table.add(acc);
+			}
+		}
+		return table;
+	}
+
 }

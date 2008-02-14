@@ -220,6 +220,29 @@
 	refer to the field j, so the resulting program prints "42".
 	
 	Reported as bug 213144.
+	
+11. Renaming an inner class in a supertype can lead to confusion.
+
+	Test case:
+	  class A {
+	    static class B {
+	      static int x = 42;
+	    }
+	  }
+	  
+	  public class D {
+	    static class C extends A {
+	      static int x = 23;
+	      static int m() { return C.x; }
+	    }
+	    public static void main(String[] args) {
+	      System.out.println(C.m());
+	    }
+	  }
+	  
+	This prints "23". Renaming the class B inside A to C does not notice that the
+	reference C.x will now refer to A.C.x instead of D.C.x, so the resulting
+	program prints "42".
 
 Just to be fair, here is a test case where Eclipse refuses to refactor, whereas
 Netbeans walks into the trap:

@@ -55,7 +55,42 @@ aspect Uses {
 		return set;
 	}
 	
+	/*protected Collection ASTNode.addTo(Collection c) {
+		c.add(this);
+		return c;
+	}*/
+	
 	MethodDecl contributes uses() to MethodDecl.uses() for each overriders();
+	
+	coll Collection TypeDecl.descendants() circular [new HashSet()] with addAll;
+	TypeDecl contributes 
+	this.asSet() to TypeDecl.descendants() for this;
+
+	ClassDecl contributes
+	descendants() when hasSuperclass()
+	to TypeDecl.descendants() for superclass();
+	
+	ClassDecl contributes
+	descendants() 
+	to TypeDecl.descendants() for each interfaces();
+	
+	InterfaceDecl contributes
+	descendants() 
+	to TypeDecl.descendants() for each superInterfaces();
+	
+	public Collection ClassDecl.interfaces() {
+		Collection res = new LinkedList();
+		for(Iterator i=interfacesIterator();i.hasNext();)
+			res.add(i.next());
+		return res;
+	}
+	
+	public Collection InterfaceDecl.superInterfaces() {
+		Collection res = new LinkedList();
+		for(Iterator i=superinterfacesIterator();i.hasNext();)
+			res.add(i.next());
+		return res;
+	}
 	
 	coll HashSet MethodDecl.overriders() [new HashSet()] with add;
 	MethodDecl contributes this to MethodDecl.overriders() for each overrides();
@@ -107,7 +142,7 @@ aspect Uses {
 	 * uses of the variable before renaming and all uses of fields, types and
 	 * packages that might become shadowed by the renaming and collects them into
 	 * an adjustment table */ 
-	public AdjustmentTable Variable.find_uses(String new_name) {
+	public AdjustmentTable LocalDeclaration.find_uses(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
 		/* first, collect all uses of the variable we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
