@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="jasminclasses-custom.jar"/>
+	<classpathentry exported="true" kind="lib" path="java_cup.jar"/>
+	<classpathentry exported="true" kind="lib" path="javabdd_0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="jedd-runtime.jar"/>
+	<classpathentry exported="true" kind="lib" path="JFlex.jar"/>
+	<classpathentry exported="true" kind="lib" path="paddle-custom.jar"/>
+	<classpathentry exported="true" kind="lib" path="polyglot-JFlex.jar"/>
+	<classpathentry exported="true" kind="lib" path="polyglot.jar" sourcepath="/home/pavel/work/polyglot-dev"/>
+	<classpathentry exported="true" kind="lib" path="sootclasses-custom.jar"/>
+	<classpathentry exported="true" kind="lib" path="xact-complete.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
