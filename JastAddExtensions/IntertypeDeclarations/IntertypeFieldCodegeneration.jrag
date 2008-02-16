@@ -293,4 +293,12 @@ aspect IntertypeFieldCodegeneration {
     return set;
   }
 
+  refine InnerClasses eq VarAccess.requiresAccessor() {
+    if (decl() instanceof IntertypeFieldDeclaration) {
+      IntertypeFieldDeclaration itd = (IntertypeFieldDeclaration) decl();
+      if (itd.hostType().isInterfaceDecl())
+        return false;
+    }
+    return InnerClasses.VarAccess.requiresAccessor();
+  }
 }

@@ -126,27 +126,13 @@ aspect AspectJCodegen {
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
-  /*
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceGetter() {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceGetter();
     m.category = MethodCategory.ACCESSOR_GET;
     return m;
   }
-  */
-  refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceGetterImplementation(TypeDecl typeDecl) {
-    MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceGetterImplementation(typeDecl);
-    m.category = MethodCategory.ACCESSOR_GET;
-    return m;
-  }
-  /*
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceSetter() {
     MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceSetter();
-    m.category = MethodCategory.ACCESSOR_SET;
-    return m;
-  }
-  */
-  refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceSetterImplementation(TypeDecl typeDecl) {
-    MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceSetterImplementation(typeDecl);
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }

@@ -1,24 +1,56 @@
 aspect IntertypeJimple {
 
   refine Expressions public soot.Value VarAccess.eval(Body b) {
-    if(decl() instanceof IntertypeFieldDeclaration && fieldQualifierType().isInterfaceDecl()) {
-      soot.Local base = base(b);
+    if(decl() instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
-      ArrayList list = new ArrayList();
-      return Jimple.v().newInterfaceInvokeExpr(base, f.createInterfaceGetterImplementation(decl().hostType()).sootRef(), list);
+
+      if (f.hostType().isInterfaceDecl()) {
+        soot.Local base = base(b);
+        ArrayList list = new ArrayList();
+
+        if (fieldQualifierType().isInterfaceDecl()) {
+          return Jimple.v().newInterfaceInvokeExpr(
+            base,
+            f.createInterfaceGetter().sootRef(),
+            list);
+        }
+        return Jimple.v().newInstanceFieldRef(
+          base,
+          f.introducedSootRef(fieldQualifierType()));
+      }
     }
     return Expressions.VarAccess.eval(b);
   }
 
   refine Expressions public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
-    if(decl() instanceof IntertypeFieldDeclaration && fieldQualifierType().isInterfaceDecl()) {
-      soot.Local base = base(b);
+    if(decl() instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
-      ArrayList list = new ArrayList();
-      list.add(asLocal(b, rvalue, lvalue.getType()));
-      return asLocal(b, Jimple.v().newInterfaceInvokeExpr(base, f.createInterfaceSetterImplementation(decl().hostType()).sootRef(), list));
+
+      if (f.hostType().isInterfaceDecl()) {
+        soot.Local base = base(b);
+        ArrayList list = new ArrayList();
+        list.add(asLocal(b, rvalue, lvalue.getType()));
+
+        if (fieldQualifierType().isInterfaceDecl()) {
+          return asLocal(b,
+            Jimple.v().newInterfaceInvokeExpr(
+              base,
+              f.createInterfaceSetter().sootRef(),
+              list));
+        }
+      }
     }
     return Expressions.VarAccess.emitStore(b, lvalue, rvalue);
+  }
+
+  SootFieldRef IntertypeFieldDeclaration.introducedSootRef(TypeDecl base)
+  {
+    return Scene.v().makeFieldRef(
+      base.getSootClassDecl(),
+      introducedName(),
+      type().getSootType(),
+      isStatic()
+    );
   }
 
   refine Expressions private SootMethodRef MethodAccess.sootRef() {

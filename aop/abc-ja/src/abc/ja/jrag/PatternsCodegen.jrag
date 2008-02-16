@@ -605,7 +605,12 @@ aspect PatternsCodegen
 
 
     // find super types
-    syn lazy Set TypeDecl.superTypes()
+    // ----------------
+    // note that this version --- on JastAdd TypeDecls --- is only
+    // called for matching declare-parents patterns, so we manually
+    // look at the SuperClassAccess / Implements / SuperInterfaceId
+    // attributes, in order to ignore declare-parents.
+    syn Set TypeDecl.superTypes()
     {
         Set set = new HashSet();
         addSuperTypes(set);
@@ -614,14 +619,16 @@ aspect PatternsCodegen
     public void TypeDecl.addSuperTypes(Set set) { }
     public void ClassDecl.addSuperTypes(Set set)
     {
-        if (hasSuperclass() && !set.contains(superclass())) {
-            set.add(superclass());
-            superclass().addSuperTypes(set);
+        if (hasSuperClassAccess()) {
+            TypeDecl superclass = getSuperClassAccess().type();
+            if (!superclass.isUnknown() && !set.contains(superclass)) {
+                set.add(superclass);
+                superclass.addSuperTypes(set);
+            }
         }
-        Iterator i = interfacesIterator();
-        while (i.hasNext()) {
-            TypeDecl iface = (TypeDecl) i.next();
-            if (!set.contains(iface)) {
+        for (int i = 0; i < getNumImplements; i++) {
+            TypeDecl iface = getImplements(i).type();
+            if (!iface.isUnknown() && !set.contains(iface)) {
                 set.add(iface);
                 iface.addSuperTypes(set);
             }
@@ -629,10 +636,9 @@ aspect PatternsCodegen
     }
     public void InterfaceDecl.addSuperTypes(Set set)
     {
-        Iterator i = superinterfacesIterator();
-        while (i.hasNext()) {
-            TypeDecl iface = (TypeDecl) i.next();
-            if (!set.contains(iface)) {
+        for (int i = 0; i < getNumSuperInterfaceId; i++) {
+            TypeDecl iface = getSuperInterfaceId(i).type();
+            if (!iface.isUnknown() && !set.contains(iface)) {
                 set.add(iface);
                 iface.addSuperTypes(set);
             }
