@@ -553,8 +553,11 @@ aspect PatternsCodegen
     }
     eq ExplicitTypeNamePattern.matchesType(TypeDecl t)
     {
+      if (getAccess().type() == t)
+        return true;
+
       if (!matchSubtype())
-        return getAccess().type() == t;
+        return false;
 
       Iterator i = t.superTypes().iterator();
       while (i.hasNext()) {
