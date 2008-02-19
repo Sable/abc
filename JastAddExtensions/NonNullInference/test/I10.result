@@ -1,4 +1,5 @@
 package test;
+
 public class I10 {
   void test() {
     Object v1 = null;
@@ -7,10 +8,8 @@ public class I10 {
       v2 = v1;
     }
   }
+
   public static void main(@NonNull String[] args) {
     System.out.println("guarded possibly null variables may be non-null locally");
-  }
-  public I10() {
-    super();
   }
 }

@@ -29,7 +29,7 @@ class JavaChecker extends Frontend {
 
     program.updateRemoteAttributeCollectionsFrontend();
     if(program.hasOption("-test"))
-      System.out.println(program);
+      program.emitTest();
     else
       program.emit();
     return true;
@@ -47,6 +47,25 @@ class JavaChecker extends Frontend {
   }
 
   protected String name() { return "NonNullInferencer"; }
-  protected String version() { return "R20070806"; }
+  protected String version() { return "R20080219"; }
+
+  protected void printUsage() {
+      printVersion();
+      System.out.println(
+          "\n" + name() + "\n\n" +
+          "Usage: java -jar JavaNonNullInferencer.jar <options> <source files>\n" +
+          "  -verbose                  Output messages about what the compiler is doing\n" +
+          "  -classpath <path>         Specify where to find user class files\n" +
+          "  -sourcepath <path>        Specify where to find input source files\n" + 
+          "  -bootclasspath <path>     Override location of bootstrap class files\n" + 
+          "  -extdirs <dirs>           Override location of installed extensions\n" +
+          "  -d <directory>            Specify where to place source files with inferred annotations\n" +
+          "                            The default location is a folder named 'inferred'\n" +
+          "  -test                     Emit inferred source files to standard output rather than a file\n" +
+          "  -help                     Print a synopsis of standard options\n" +
+          "  -version                  Print version information\n"
+          );
+    }
+
 
 }

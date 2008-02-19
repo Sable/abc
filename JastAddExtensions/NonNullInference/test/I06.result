@@ -1,16 +1,20 @@
 package test;
+
 public class I06 {
   public I06() {
-    super();
     testConstructor();
     testConstructorStatic();
   }
+  
   void test() {
   }
-@RawThis   void testConstructor() {
+
+  void testConstructor() @Raw  {
   }
+
   static void testConstructorStatic() {
   }
+  
   public static void main(@NonNull String[] args) {
     System.out.println("infer raw for implicit this paramter");
   }

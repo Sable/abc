@@ -67,6 +67,27 @@ aspect NonNullEmit {
     }
   }
 
+  public void Program.emitTest() {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit unit = (CompilationUnit)iter.next();
+      if(unit.fromSource()) {
+        String fileName = unit.pathName();
+        try {
+          Input input = new Input(fileName);
+          java.io.PrintWriter w = new java.io.PrintWriter(System.out);
+          unit.emit(w, input);
+          int line = getLine(unit.getEnd());
+          int column = getColumn(unit.getEnd());
+          input.emitUntil(line+1, column, w);
+          w.close();
+          input.close();
+        } catch(IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
   public void ASTNode.emit(PrintWriter p, Input input) throws java.io.IOException {
     if(this instanceof NonNullAnnotated) {
       NonNullAnnotated a = (NonNullAnnotated)this;

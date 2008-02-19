@@ -1,4 +1,5 @@
 package test;
+
 public class I15 {
   public static void main(@NonNull String[] args) {
     System.out.println("string literals are non-null");
@@ -6,8 +7,5 @@ public class I15 {
   public void v() {
     @NonNull String s = "";
     String t = null;
-  }
-  public I15() {
-    super();
   }
 }
