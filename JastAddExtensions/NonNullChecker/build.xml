@@ -6,7 +6,7 @@
        gen             - generates java files
        genClean        - removes all generated files and their class files
 -->
-<project name="NonNullTypes" default="build">
+<project name="NonNullChecker" default="build">
 
 <!-- location of Java1.4Frontend -->
 <property name="Java1.4Frontend" value="../Java1.4Frontend"/>
@@ -16,8 +16,8 @@
 <property name="Java1.5Frontend" value="../Java1.5Frontend"/>
 <!-- location of Java1.5Backend -->
 <property name="Java1.5Backend" value="../Java1.5Backend"/>
-<!-- location of NonNullTypes -->
-<property name="NonNullTypes" value="../NonNullTypes"/>
+<!-- location of NonNullChecker -->
+<property name="NonNullChecker" value="../NonNullChecker"/>
 <!-- location of JSR308 -->
 <property name="JSR308" value="../JSR308"/>
 
@@ -67,7 +67,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir=".">
+		<fileset dir="${NonNullChecker}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -101,7 +101,7 @@
       <filelist dir="${Java1.5Frontend}">
         <file name="java15keywords.flex"/>
       </filelist>
-       <filelist dir="${NonNullTypes}">
+       <filelist dir="${NonNullChecker}">
         <file name="NonNull.flex"/>
       </filelist>
       <filelist dir="${Java1.4Frontend}/scanner">
@@ -134,13 +134,10 @@
 	    <fileset dir="${Java1.5Frontend}">
 	      <include name="*.parser"/>
 	    </fileset>
-		<fileset dir="${NonNullTypes}">
-	      <include name="*.parser"/>
-		</fileset>
 		<fileset dir="${JSR308}">
 	      <include name="*.parser"/>
 		</fileset>
-      <fileset dir=".">
+      <fileset dir="${NonNullChecker}">
 	      <include name="*.parser"/>
 	    </fileset>
 	</concat>
@@ -159,7 +156,7 @@
       <fileset dir="." includes="**/*.class"/>
     </delete>
     <delete file="JavaNonNullChecker.jar"/>
-	  <delete file="NonNullTypes-src.jar"/>
+	  <delete file="JavaNonNullChecker-src.jar"/>
 </target>
 
 <!-- remove generated source files and .class files -->
@@ -187,25 +184,25 @@
 
 <!-- build a source distribution -->
 <target name="source">
-  <jar destfile="NonNullTypes-src.jar">
-      <!-- the NonNullTypes language extension -->
+  <jar destfile="JavaNonNullChecker-src.jar">
+      <!-- the NonNullChecker language extension -->
 			<fileset dir="..">
         <!-- include source file -->
-				<include name="NonNullTypes/JavaChecker.java"/>
-				<include name="NonNullTypes/**/*.ast"/>
-				<include name="NonNullTypes/**/*.jrag"/>
-				<include name="NonNullTypes/**/*.jadd"/>
-				<include name="NonNullTypes/NonNull.parser"/>
-				<include name="NonNullTypes/NonNull.flex"/>
+				<include name="NonNullChecker/JavaChecker.java"/>
+				<include name="NonNullChecker/**/*.ast"/>
+				<include name="NonNullChecker/**/*.jrag"/>
+				<include name="NonNullChecker/**/*.jadd"/>
+				<include name="NonNullChecker/NonNull.parser"/>
+				<include name="NonNullChecker/NonNull.flex"/>
         <!-- include tests -->
-				<include name="NonNullTypes/RunTests.java"/>
-				<include name="NonNullTypes/test/*.java"/>
-				<include name="NonNullTypes/test/*.result"/>
+				<include name="NonNullChecker/RunTests.java"/>
+				<include name="NonNullChecker/test/*.java"/>
+				<include name="NonNullChecker/test/*.result"/>
         <!-- include buildfile -->
-				<include name="NonNullTypes/*.xml"/>
+				<include name="NonNullChecker/*.xml"/>
         <!-- include readme and licence -->
-				<include name="NonNullTypes/index.html"/>
-				<include name="NonNullTypes/licences/BSD"/>
+				<include name="NonNullChecker/index.html"/>
+				<include name="NonNullChecker/licences/BSD"/>
 			</fileset>
       <manifest>
       </manifest>
