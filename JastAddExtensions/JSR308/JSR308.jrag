@@ -1,0 +1,112 @@
+aspect JSR308 {
+  public void AnnotatedName.checkModifiers() {
+    if(!getAccess().isTypeAccess())
+      error("only type names may be annotated");
+  }
+  rewrite AnnotatedName {
+    when(getAccess().isTypeAccess())
+    to Access {
+      Access result = getAccess();
+      TypeAccess typeAccess = (TypeAccess)result.lastAccess();
+      typeAccess.setAnnotations(getModifiers());
+      return result;
+    }
+  }
+  public void TypeAccess.setAnnotations(Modifiers m) { annotations = m; }
+  private Modifiers TypeAccess.annotations = null;
+  syn nta Modifiers TypeAccess.getModifiers() = annotations != null ? annotations : new Modifiers();
+  syn boolean TypeAccess.hasAnnotations() = annotations != null || 
+    (!hasNextAccess() || !nextAccess().isExactTypeAccess()) && contextAnnotations() != null;
+  syn Modifiers TypeAccess.getAnnotations() = annotations != null ? getModifiers() : contextAnnotations();
+
+  syn boolean Access.isExactTypeAccess() = false;
+  eq TypeAccess.isExactTypeAccess() = true;
+  eq ArrayTypeAccess.isExactTypeAccess() = false;
+
+  inh Modifiers TypeAccess.contextAnnotations();
+  eq Program.getChild().contextAnnotations() = null;
+  eq FieldDeclaration.getTypeAccess().contextAnnotations() = getModifiers();
+  eq VariableDeclaration.getTypeAccess().contextAnnotations() = getModifiers();
+  eq ParameterDeclaration.getTypeAccess().contextAnnotations() = getModifiers();
+  eq MethodDecl.getTypeAccess().contextAnnotations() = getModifiers();
+
+  eq ArrayTypeWithSizeAccess.getExpr().contextAnnotations() = null;
+  eq ParTypeAccess.getTypeArgument(int i).contextAnnotations() = null;
+
+  eq AnnotatedName.type() = getAccess().type();
+
+  public void TypeAccess.collectErrors() {
+    super.collectErrors();
+    if(annotations != null) getModifiers().collectErrors();
+  }
+
+  // array type dimensions may have annotations
+  // array type dimensons are converted into array type accesses by the parser
+  public Dims Dims.setAnnotations(Modifiers m) { annotations = m; return this; }
+  public Modifiers Dims.annotations = null;
+  refine ResolveAmbiguousNames public Access Access.addArrayDims(List list) {
+    Access a = this;
+    for(int i = 0; i < list.getNumChildNoTransform(); i++) {
+      Dims dims = (Dims)list.getChildNoTransform(i);
+      Opt opt = dims.getExprOpt();
+      if(opt.getNumChildNoTransform() == 1)
+        a = new ArrayTypeWithSizeAccess(a, (Expr)opt.getChildNoTransform(0));
+      else
+        a = new ArrayTypeAccess(a);
+      if(dims.annotations != null)
+        a = new AnnotatedName(dims.annotations, a);
+    }
+    return a;
+  }
+
+  public Access Access.annotate(List list) {
+    return new AnnotatedName(new Modifiers(list), this);
+  }
+
+  // add receiver annotations for method declarations
+  public MethodDecl MethodDecl.setReceiverAnnotations(Modifiers m) {
+    receiverAnnotations = m;
+    return this;
+  }
+  private Modifiers MethodDecl.receiverAnnotations = null;
+  syn nta Modifiers MethodDecl.getReceiverModifiers() =
+    receiverAnnotations != null ? receiverAnnotations : new Modifiers();
+
+  // add receiver annotations for constructors
+  public ConstructorDecl ConstructorDecl.setReceiverAnnotations(Modifiers m) {
+    receiverAnnotations = m;
+    return this;
+  }
+  private Modifiers ConstructorDecl.receiverAnnotations = null;
+  syn nta Modifiers ConstructorDecl.getReceiverModifiers() =
+    receiverAnnotations != null ? receiverAnnotations : new Modifiers();
+
+
+  // debug information
+
+  refine PrettyPrint eq TypeAccess.dumpString() {
+    String s = super.dumpString();
+    if(!hasAnnotations())
+      return s;
+    return s + "[" + getAnnotations().annotationString() + "]";
+  }
+  refine PrettyPrint eq ArrayTypeAccess.dumpString() {
+    String s = getClass().getName();
+    if(!hasAnnotations())
+      return s;
+    return s + "[" + getAnnotations().annotationString() + "]";
+  }
+
+  public String Annotation.toString() {
+    return "@" + decl().typeName();
+  }
+
+  syn String Modifiers.annotationString() {
+    StringBuffer buf = new StringBuffer();
+    for(int i = 0; i < getNumModifier(); i++)
+      if(getModifier(i) instanceof Annotation)
+        buf.append(getModifier(i).toString() + " ");
+    return buf.toString();
+  }
+
+}

@@ -1,0 +1,196 @@
+Opt super =
+  EXTENDS modifiers.m class_type.c {: return new Opt(c.annotate(m)); :}
+  ;
+
+List interface_type_list =
+    modifiers.m interface_type.i                              {: return new List().add(i.annotate(m)); :}
+  | interface_type_list.l COMMA modifiers.m interface_type.i  {: return l.add(i.annotate(m)); :}
+  ;
+
+MethodDecl method_header =
+    modifiers.m? type.t IDENTIFIER.id LPAREN formal_parameter_list.l? RPAREN dims.d? modifiers.m2 throws.tl?
+    {: return new MethodDecl(new Modifiers(m), t.addArrayDims(d), id, l, tl, new Opt()).setReceiverAnnotations(new Modifiers(m2)); :}
+  | modifiers.m? VOID   IDENTIFIER.id LPAREN formal_parameter_list.l? RPAREN modifiers.m2 throws.tl?
+    {: return new MethodDecl(new Modifiers(m), new PrimitiveTypeAccess("void"), id, l, tl, new Opt()).setReceiverAnnotations(new Modifiers(m2)); :}
+  ;
+
+List class_type_list =
+    modifiers.m class_type.c                               {: return new List().add(c.annotate(m)); :}
+  | class_type_list.l COMMA modifiers.m class_type.c       {: return l.add(c.annotate(m)); :}
+  ;
+
+ConstructorDecl constructor_declaration =
+    modifiers.m? IDENTIFIER.id LPAREN formal_parameter_list.pl? RPAREN modifiers.m2 throws.tl? constructor_body.b
+    {: b.setModifiers(new Modifiers(m)); b.setID(id); b.setParameterList(pl); b.setExceptionList(tl); return b.setReceiverAnnotations(new Modifiers(m2)); :}
+ ;
+
+List extends_interfaces =
+    EXTENDS modifiers.m interface_type.i                    {: return new List().add(i.annotate(m)); :}
+  | extends_interfaces.l COMMA modifiers.m interface_type.i {: return l.add(i.annotate(m)); :}
+  ;
+
+Expr class_instance_creation_expression =
+    NEW modifiers.m class_or_interface_type.t LPAREN argument_list.l? RPAREN 
+    {: return new ClassInstanceExpr(t.annotate(m), l, new Opt()); :}
+  | primary.n DOT NEW modifiers.m simple_name.id LPAREN argument_list.l? RPAREN
+    {: ClassInstanceExpr e = new ClassInstanceExpr(id.annotate(m), l, new Opt());
+       e.setStart(NEW.getStart());
+       e.setEnd(RPAREN.getEnd());
+       return n.qualifiesAccess(e); :}
+  | name.n DOT NEW modifiers.m simple_name.id LPAREN argument_list.l? RPAREN
+    {: ClassInstanceExpr e = new ClassInstanceExpr(id.annotate(m), l, new Opt());
+       e.setStart(NEW.getStart());
+       e.setEnd(RPAREN.getEnd());
+       return n.qualifiesAccess(e); :}
+  | NEW modifiers.m class_or_interface_type.t LPAREN argument_list.l? RPAREN subclass_body.b 
+    {: return new ClassInstanceExpr(t.annotate(m), l, b); :}
+  | primary.n DOT NEW modifiers.m simple_name.id LPAREN argument_list.l? RPAREN subclass_body.b
+    {: ClassInstanceExpr e = new ClassInstanceExpr(id.annotate(m), l, b);
+       e.setStart(NEW.getStart());
+       e.setEnd(b.getEnd());
+       return n.qualifiesAccess(e); :}
+  | name.n DOT NEW modifiers.m simple_name.id LPAREN argument_list.l? RPAREN subclass_body.b
+    {: ClassInstanceExpr e = new ClassInstanceExpr(id.annotate(m), l, b);
+       e.setStart(NEW.getStart());
+       e.setEnd(b.getEnd());
+       return n.qualifiesAccess(e); :}
+  ;
+Expr array_creation_uninit =
+    NEW modifiers.m primitive_type.t dim_exprs.d           {: return new ArrayCreationExpr(t.annotate(m).addArrayDims(d), new Opt()); :}
+  | NEW modifiers.m primitive_type.t dim_exprs.d dims.e    {: return new ArrayCreationExpr(t.annotate(m).addArrayDims(d).addArrayDims(e), new Opt()); :}
+  | NEW modifiers.m class_or_interface_type.t dim_exprs.d  {: return new ArrayCreationExpr(t.annotate(m).addArrayDims(d), new Opt()); :}
+  | NEW modifiers.m class_or_interface_type.t dim_exprs.d dims.e {: return new ArrayCreationExpr(t.annotate(m).addArrayDims(d).addArrayDims(e), new Opt()); :}
+  ;
+Expr array_creation_init =
+    NEW modifiers.m primitive_type.t dims.d array_initializer.i           {: return new ArrayCreationExpr(t.annotate(m).addArrayDims(d), new Opt(i)); :}
+  | NEW modifiers.m class_or_interface_type.t dims.d array_initializer.i  {: return new ArrayCreationExpr(t.annotate(m).addArrayDims(d), new Opt(i)); :}
+  ;
+
+List dims =
+    LBRACK modifiers.m RBRACK                              {: return new List().add(new Dims(new Opt()).setAnnotations(new Modifiers(m))); :}
+  | dims.l LBRACK modifiers.m RBRACK                       {: return l.add(new Dims(new Opt()).setAnnotations(new Modifiers(m))); :}
+  ;
+
+//Dims dim_expr =
+//    LBRACK modifiers expression.e RBRACK                 {: return new Dims(new Opt(e)); :}
+//  ;
+
+Expr cast_expression =
+    LPAREN modifiers.m primitive_type.t dims.d? RPAREN unary_expression.e      {: return new CastExpr(t.annotate(m).addArrayDims(d), e); :}
+  | LPAREN modifiers.m name.n dims.d? RPAREN unary_expression_not_plus_minus.e {: return new CastExpr(n.annotate(m).addArrayDims(d), e); :}
+  ;
+
+MethodDecl method_header =
+	  modifiers.m? LT type_parameter_list_1.l type.t IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN dims.d? modifiers.m2 throws.tl?
+    {: return new GenericMethodDecl(new Modifiers(m), t.addArrayDims(d), id, p, tl, new Opt(), l, new List()).setReceiverAnnotations(new Modifiers(m2)); :}
+	| modifiers.m? LT type_parameter_list_1.l VOID IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN modifiers.m2 throws.tl?
+    {: return new GenericMethodDecl(new Modifiers(m), new PrimitiveTypeAccess("void"), id, p, tl, new Opt(), l, new List()).setReceiverAnnotations(new Modifiers(m2)); :}
+  ;
+
+ConstructorDecl constructor_declaration =
+	  modifiers.m? LT type_parameter_list_1.l IDENTIFIER LPAREN formal_parameter_list.pl? RPAREN modifiers.m2 throws.tl? 
+      LBRACE explicit_constructor_invocation.c? block_statements.bl? RBRACE
+    {: return new GenericConstructorDecl(new Modifiers(m), IDENTIFIER, pl, tl, c, new Block(bl), l, new List()).setReceiverAnnotations(new Modifiers(m2)); :}
+	;
+
+Access wildcard =
+	  QUESTION EXTENDS modifiers.m reference_type.t    {: return new WildcardExtends(t.annotate(m)); :}
+  | QUESTION SUPER modifiers.m reference_type.t    {: return new WildcardSuper(t.annotate(m)); :}
+  ;
+
+Access wildcard_1 =
+	 	QUESTION EXTENDS modifiers.m reference_type_1.t  {: return new WildcardExtends(t.annotate(m)); :}
+	|	QUESTION SUPER modifiers.m reference_type_1.t    {: return new WildcardSuper(t.annotate(m)); :}
+	;
+	
+Access wildcard_2 =
+	 	QUESTION EXTENDS modifiers.m reference_type_2.t  {: return new WildcardExtends(t.annotate(m)); :}
+	|	QUESTION SUPER modifiers.m reference_type_2.t    {: return new WildcardSuper(t.annotate(m)); :}
+	;
+	
+Access wildcard_3 =
+	 	QUESTION EXTENDS modifiers.m reference_type_3.t  {: return new WildcardExtends(t.annotate(m)); :}
+	|	QUESTION SUPER modifiers.m reference_type_3.t    {: return new WildcardSuper(t.annotate(m)); :}
+	;
+
+/*
+Expr class_instance_creation_expression :=
+    NEW modifiers.m class_or_interface_type.t LPAREN argument_list.l? RPAREN subclass_body.b?
+    {: return new ClassInstanceExpr(t.annotate(m), l, b); :}
+  |	NEW type_arguments.a modifiers.m class_or_interface_type.t LPAREN argument_list.l? RPAREN subclass_body.b?
+		{:  return new ParClassInstanceExpr(t.annotate(m), l, b, a); :}
+	|	primary.n DOT NEW modifiers.m simple_name.id type_arguments.a LPAREN argument_list.l? RPAREN subclass_body.b?
+    {:  ClassInstanceExpr e = new ClassInstanceExpr(new ParTypeAccess(id.annotate(m), a), l, b); 
+        e.setStart(NEW.getStart());
+        e.setEnd(RPAREN.getEnd());
+        return n.qualifiesAccess(e);
+    :}
+	|	primary.n DOT NEW type_arguments.ca modifiers.m simple_name.id LPAREN argument_list.l? RPAREN subclass_body.b?
+		{:  return n.qualifiesAccess(new ParClassInstanceExpr(id.annotate(m), l, b, ca)); :}
+	|	primary.n DOT NEW type_arguments.ca modifiers.m simple_name.id type_arguments.ta LPAREN argument_list.l? RPAREN subclass_body.b?
+		{:  return n.qualifiesAccess(new ParClassInstanceExpr(new ParTypeAccess(id.annotate(m), ta), l, b, ca)); :}
+	|	name.n DOT NEW modifiers.m simple_name.id LPAREN argument_list.l? RPAREN subclass_body.b?
+    {:  ClassInstanceExpr e = new ClassInstanceExpr(id.annotate(m), l, b); 
+        e.setStart(NEW.getStart());
+        e.setEnd(RPAREN.getEnd());
+        return n.qualifiesAccess(e);
+    :}
+	|	name.n DOT NEW modifiers.m simple_name.id type_arguments.a LPAREN argument_list.l? RPAREN subclass_body.b?
+    {:  ClassInstanceExpr e = new ClassInstanceExpr(new ParTypeAccess(id.annotate(m), a), l, b); 
+        e.setStart(NEW.getStart());
+        e.setEnd(RPAREN.getEnd());
+        return n.qualifiesAccess(e);
+    :}
+	|	name.n DOT NEW type_arguments.ca modifiers.m simple_name.id LPAREN argument_list.l? RPAREN subclass_body.b?
+		{:  return n.qualifiesAccess(new ParClassInstanceExpr(id.annotate(m), l, b, ca)); :}
+	|	name.n DOT NEW type_arguments.ca modifiers.m simple_name.id type_arguments.ta LPAREN argument_list.l? RPAREN subclass_body.b?
+		{:  return n.qualifiesAccess(new ParClassInstanceExpr(new ParTypeAccess(id.annotate(m), ta), l, b, ca)); :}
+	;
+*/
+
+Access type_argument =
+		modifiers.m reference_type.t {:  return t.annotate(m);  :}
+  ;
+
+Access type_argument_1 =
+		modifiers.m reference_type_1.t {:  return t.annotate(m);  :}
+	;
+	
+Access type_argument_2 =
+		modifiers.m reference_type_2.t {:  return t.annotate(m);  :}
+	;
+	
+Access type_argument_3 =
+	modifiers.m	reference_type_3.t {:  return t.annotate(m);  :}
+	;
+
+Expr cast_expression =
+		LPAREN modifiers.m name.n LT type_argument_list_1.a dims.d? RPAREN unary_expression_not_plus_minus.e 
+		{:  return new CastExpr(new ParTypeAccess(n.annotate(m), a).addArrayDims(d), e);  :}
+	|	LPAREN modifiers.m name.n LT type_argument_list_1.a DOT class_or_interface_type.t dims.d? RPAREN unary_expression_not_plus_minus.e 
+		{:  return new CastExpr(new ParTypeAccess(n.annotate(m), a).qualifiesAccess(t).addArrayDims(d), e);  :}
+  ;
+	
+List type_bound =
+		EXTENDS modifiers.m reference_type.t {:  return new List().add(t.annotate(m));  :}
+	|	EXTENDS modifiers.m reference_type.t additional_bound_list.l {:  l.insertChild(t.annotate(m),0); return l; :}
+    ;
+List type_bound_1 =
+		EXTENDS modifiers.m reference_type_1.t {:  return new List().add(t.annotate(m));  :}
+	|	EXTENDS modifiers.m reference_type.t additional_bound_list_1.l {:  l.insertChild(t.annotate(m),0); return l; :}
+    ;
+    
+Access additional_bound =
+		AND modifiers.m interface_type.t {:  return t.annotate(m);  :}
+	;
+	
+Access additional_bound_1 =
+		AND modifiers.m reference_type_1.t {:  return t.annotate(m);  :}
+	;
+
+Expr primary_no_new_array =
+    modifiers.m primitive_type.n dims.d? DOT class_literal.c       {: return n.annotate(m).addArrayDims(d).qualifiesAccess(c); :}
+  | modifiers.m name.n dims.d? DOT class_literal.c                 {: return n.annotate(m).addArrayDims(d).qualifiesAccess(c); :}
+  ;
+  
+
