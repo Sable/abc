@@ -1,0 +1,5 @@
+Errors:
+test/Test02.java:11:
+  Semantic Error: qualifier t may be null
+test/Test02.java:12,19:
+  Semantic Error: qualifier t may be null

@@ -1,0 +1,11 @@
+Errors:
+test/Test03.java:6:
+  Semantic Error: can not assign nNN of type java.lang.Number- a value of type null
+test/Test03.java:8:
+  Semantic Error: can not assign iNN of type java.lang.Integer- a value of type null
+test/Test03.java:11:
+  Semantic Error: can not assign nNN of type java.lang.Number- a value of type java.lang.Number
+test/Test03.java:14:
+  Semantic Error: can not assign iNN of type java.lang.Integer- a value of type java.lang.Number-
+test/Test03.java:15:
+  Semantic Error: can not assign nNN of type java.lang.Number- a value of type java.lang.Integer

@@ -1,0 +1,13 @@
+Errors:
+test/Test04.java:9:
+  Semantic Error: qualifier t may be null
+test/Test04.java:13:
+  Semantic Error: can not assign t of type test.Test04- a value of type null
+test/Test04.java:18:
+  Semantic Error: qualifier self may be null
+test/Test04.java:22:
+  Semantic Error: can not assign self of type test.Test04- a value of type null
+test/Test04.java:25:
+  Semantic Error: qualifier field may be null
+test/Test04.java:29:
+  Semantic Error: can not assign field of type test.Test04- a value of type null

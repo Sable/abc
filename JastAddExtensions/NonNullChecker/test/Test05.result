@@ -1,0 +1,3 @@
+Errors:
+test/Test05.java:20:
+  Semantic Error: non null field n4 is not definitely non null after constructor
