@@ -1,0 +1,62 @@
+package test;
+public class Test04 {
+  void test1(Test04 p1, @NonNull Test04 p2) {
+    test1(null, new Test04());
+  }
+  void test2(@NonNull Test04 p1) {
+    test2(p1);
+  }
+  void test3(@NonNull Test04 p1) {
+    test3(p1);
+    test3(new Test04());
+  }
+  void test4(Test04 p1) {
+    test4(p1);
+    test4(null);
+  }
+  void test5(@NonNull Test04 p1, Test04 p2, Test04 p3) {
+    test5(new Test04(), null, new Test04());
+  }
+  static class SubTest04 extends Test04 {
+    void test5(@NonNull Test04 p1, Test04 p2, Test04 p3) {
+      test5(new Test04(), new Test04(), null);
+    }
+    SubTest04() {
+      super();
+    }
+  }
+  interface I6 {
+    void test6(@NonNull Test04 p1, Test04 p2, Test04 p3, Test04 p4);
+  }
+  static class X6 implements I6 {
+    public void test6(@NonNull Test04 p1, Test04 p2, Test04 p3, Test04 p4) {
+      new X6().test6(new Test04(), null, new Test04(), new Test04());
+      ((I6)null).test6(new Test04(), new Test04(), new Test04(), null);
+    }
+    X6() {
+      super();
+    }
+  }
+  static class Y6 implements I6 {
+    public void test6(@NonNull Test04 p1, Test04 p2, Test04 p3, Test04 p4) {
+      new Y6().test6(new Test04(), new Test04(), null, new Test04());
+    }
+    Y6() {
+      super();
+    }
+  }
+  void test7() {
+    try {
+      throw new Exception();
+    }
+    catch (@NonNull Exception e) {
+    }
+  }
+  void test8() {
+    for (String s : new java.util.ArrayList<String>()) {
+    }
+  }
+  public Test04() {
+    super();
+  }
+}

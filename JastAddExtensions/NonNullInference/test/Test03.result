@@ -1,0 +1,51 @@
+package test;
+public class Test03 {
+  Test03 field1 = null;
+@NonNull   Test03 field2 = new Test03();
+  public void test(Test03 p1, @NonNull Test03 p2) {
+    test(null, new Test03());
+    Test03 l1 = null;
+    @NonNull Test03 l2 = new Test03();
+    if(l1 != null) {
+      @NonNull Test03 m1 = l1;
+    }
+    if(p1 != null) {
+      @NonNull Test03 m1 = p1;
+    }
+    if(field1 != null) {
+      Test03 m2 = field1;
+    }
+    if(null != l1) {
+      @NonNull Test03 m1 = l1;
+    }
+    if(l1 == null) ;
+    else {
+      @NonNull Test03 m1 = l1;
+    }
+    if(p1 == null) ;
+    else {
+      @NonNull Test03 m1 = p1;
+    }
+    if(field1 == null) ;
+    else {
+      Test03 m2 = field1;
+    }
+    if(null == l1) ;
+    else {
+      @NonNull Test03 m1 = l1;
+    }
+    if(l1 != null) {
+      l1 = new Test03();
+      @NonNull Test03 m1 = l1;
+      l1 = new Test03();
+    }
+    if(l1 != null) {
+      l1 = new Test03();
+      Test03 m1 = l1;
+      l1 = null;
+    }
+  }
+  public Test03() {
+    super();
+  }
+}

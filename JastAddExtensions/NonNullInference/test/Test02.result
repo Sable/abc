@@ -1,0 +1,23 @@
+package test;
+public class Test02 {
+  void test(boolean condition) {
+    @NonNull Test02 l1 = new Test02();
+    @NonNull Test02 l2 = new Test02();
+    @NonNull Test02 l3 = condition ? l1 : l2;
+    @NonNull Test02 l4 = (Test02)l1;
+    @NonNull Test02 l5 = (l1);
+    @NonNull String l6 = "";
+    @NonNull Test02[] l7 = new Test02[1];
+    @NonNull Object l8 = "" + null;
+    @NonNull Object l9 = Test02.class;
+    Test02 m1 = null;
+    Test02 m2 = null;
+    Test02 m3 = condition ? m1 : m2;
+    Test02 m4 = condition ? l1 : m1;
+    Test02 m5 = (Test02)m1;
+    Test02 m6 = (m1);
+  }
+  public Test02() {
+    super();
+  }
+}

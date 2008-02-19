@@ -1,0 +1,77 @@
+package test;
+public class Test05 {
+@NonNull   Object test1() {
+    return new Test05();
+  }
+@NonNull   Object test2(boolean condition) {
+    if(condition) return new Test05();
+    else return new Test05();
+  }
+  Object test3(boolean condition) {
+    if(condition) return new Test05();
+    else return null;
+  }
+@NonNull   Object test4() {
+    return new Test05();
+  }
+  Object test5() {
+    return new Test05();
+  }
+  Object test6() {
+    return null;
+  }
+  static class SubTest05 extends Test05 {
+@NonNull     Object test4() {
+      return new Test05();
+    }
+    Object test5() {
+      return null;
+    }
+    Object test6() {
+      return new Test05();
+    }
+    SubTest05() {
+      super();
+    }
+  }
+  interface I7 {
+@NonNull     Object test7();
+  }
+  interface I8 {
+    Object test8();
+  }
+  interface I9 {
+    Object test9();
+  }
+  static class X implements I7, I8, I9 {
+@NonNull     public Object test7() {
+      return new Test05();
+    }
+    public Object test8() {
+      return null;
+    }
+    public Object test9() {
+      return new Test05();
+    }
+    X() {
+      super();
+    }
+  }
+  static class Y implements I7, I8, I9 {
+@NonNull     public Object test7() {
+      return new Test05();
+    }
+    public Object test8() {
+      return new Test05();
+    }
+    public Object test9() {
+      return null;
+    }
+    Y() {
+      super();
+    }
+  }
+  public Test05() {
+    super();
+  }
+}
