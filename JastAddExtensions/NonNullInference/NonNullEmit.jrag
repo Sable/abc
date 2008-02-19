@@ -1,0 +1,122 @@
+aspect NonNullEmit {
+  class Input {
+    java.io.FileReader r;
+    int line;
+    int column;
+    public Input(String fileName) throws java.io.IOException {
+      r = new java.io.FileReader(fileName);
+      line = 1;
+      column = 1;
+    }
+    public void emitUntil(int line, int column, java.io.PrintWriter w) throws java.io.IOException {
+      l: while(this.line < line || this.column < column) {
+        while(this.line < line) {
+          int c = r.read();
+          if(c == -1)
+            break l;
+          w.write((char)c);
+          if(c == '\n' || c == '\r') {
+            this.line++;
+            this.column = 1;
+          }
+        }
+        while(this.column < column) {
+          int c = r.read();
+          if(c == -1)
+            break l;
+          w.write(c);
+          this.column++;
+        }
+      }
+    }
+    public void emitUntil(char stop, java.io.PrintWriter w) throws java.io.IOException {
+      while(true) {
+        int c = r.read();
+        w.write((char)c);
+        if(c == stop)
+          return;
+      }
+    }
+    public void close() throws java.io.IOException {
+      r.close();
+    }
+  }
+
+  public void Program.emit() {
+    String destinationPath = Program.getValueForOption("-d");
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit unit = (CompilationUnit)iter.next();
+      if(unit.fromSource()) {
+        String fileName = unit.pathName();
+        String destinationName = destinationPath + java.io.File.separator + unit.relativeName();
+        System.out.println("Writing " + destinationName);
+        try {
+          Input input = new Input(fileName);
+          new java.io.File(destinationName).getParentFile().mkdirs();
+          java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(destinationName));
+          unit.emit(w, input);
+          int line = getLine(unit.getEnd());
+          int column = getColumn(unit.getEnd());
+          input.emitUntil(line+1, column, w);
+          input.close();
+          w.close();
+        } catch(IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  public void ASTNode.emit(PrintWriter p, Input input) throws java.io.IOException {
+    if(this instanceof NonNullAnnotated) {
+      NonNullAnnotated a = (NonNullAnnotated)this;
+      int line = getLine(getStart());
+      int column = getColumn(getStart());
+      input.emitUntil(line, column, p);
+      a.emitAnnotations(p);
+    }
+    for(int i = 0; i < getNumChild(); i++) {
+      getChild(i).emit(p, input);
+    }
+  }
+
+  interface NonNullAnnotated {
+    void emitAnnotations(java.io.PrintWriter p);
+  }
+  ParameterDeclaration implements NonNullAnnotated;
+  VariableDeclaration implements NonNullAnnotated;
+  FieldDeclaration implements NonNullAnnotated;
+  MethodDecl implements NonNullAnnotated;
+
+  public void ParameterDeclaration.emitAnnotations(java.io.PrintWriter p) {
+    if(inferedNonNull() && !getModifiers().isNotNull())
+      p.write("@NonNull ");
+    if(inferedRaw() && !getModifiers().isRawObjectType())
+      p.write("@Raw ");
+  }
+
+  public void VariableDeclaration.emitAnnotations(java.io.PrintWriter p) {
+    if(addNonNull())
+      p.write("@NonNull ");
+    if(inferedRaw() && !getModifiers().isRawObjectType())
+      p.write("@Raw ");
+  }
+
+  public void FieldDeclaration.emitAnnotations(java.io.PrintWriter p) {
+    if(addNonNull())
+      p.write("@NonNull ");
+    if(inferedRaw() && !getModifiers().isRawObjectType())
+      p.write("@Raw ");
+  }
+
+  public void MethodDecl.emitAnnotations(java.io.PrintWriter p) {
+    if(addNonNull())
+      p.write("@NonNull ");
+    if(inferedRaw() && !getModifiers().isRawObjectType())
+      p.write("@Raw ");
+    if(inferedRawThis() && !getModifiers().isRawThisObjectType())
+      p.write("@RawThis ");
+  }
+
+}
+

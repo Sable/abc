@@ -1,0 +1,17 @@
+package test;
+public class I09 {
+  public I09() {
+    super();
+    test(this);
+    test();
+  }
+@Raw   static Object test(@Raw Object o) {
+    return o;
+  }
+@Raw @RawThis   Object test() {
+    return this;
+  }
+  public static void main(@NonNull String[] args) {
+    System.out.println("return values can be raw");
+  }
+}

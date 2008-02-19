@@ -1,0 +1,25 @@
+package test;
+public class I14 {
+  public static void main(@NonNull String[] args) {
+    System.out.println("parameter assingments in constructor invocations");
+  }
+  public I14() {
+    this(null);
+  }
+  public I14(Object o) {
+    super();
+  }
+  public I14(Object o, @NonNull Object p) {
+    super();
+  }
+}
+
+class I14Sub extends I14 {
+  public I14Sub() {
+    super(null, new Object());
+    new I14Sub(null, new Object());
+  }
+  public I14Sub(Object o, @NonNull Object p) {
+    super();
+  }
+}

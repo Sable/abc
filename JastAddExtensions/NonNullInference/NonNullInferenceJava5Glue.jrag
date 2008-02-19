@@ -1,0 +1,212 @@
+aspect NonNullInferenceJava5Glue {
+  // update collections for the generic construct rather than its parameterizations
+  // add assignments to entities which type is a type variable
+
+  refine NonNullInference public void VarAccess.updateRemoteAttributeCollectionsFrontend() {
+    if(isDest()) {
+      ASTNode node = this;
+      while(node != null && !(node instanceof AssignExpr))
+        node = node.getParent();
+      if(node != null && node instanceof AssignExpr) {
+        AssignExpr assignExpr = (AssignExpr)node;
+        Expr rhs = assignExpr.getSource();
+        Variable v = decl();
+        if(v.type() instanceof TypeVariable) {
+          TypeVariable t = (TypeVariable)v.type();
+          t.addAssignment(rhs);
+        }
+        if(v instanceof FieldDeclarationSubstituted) {
+          ((FieldDeclarationSubstituted)v).erasedField().addAssignment(rhs);
+          super.updateRemoteAttributeCollectionsFrontend();
+          return;
+        }
+      }
+    }
+    NonNullInference.VarAccess.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  refine NonNullInference public void MethodAccess.updateRemoteAttributeCollectionsFrontend() {
+    MethodDecl m = decl();
+    if(m instanceof MethodDeclSubstituted)
+      m = ((MethodDeclSubstituted)m).erasedMethod();
+    m.addInvocation(this);
+    // TODO: deal with varargs
+    for(int i = 0; i < m.getNumParameter() && i < getNumArg(); i++) {
+      ParameterDeclaration p = m.getParameter(i);
+      if(p.type() instanceof TypeVariable) {
+        TypeVariable t = (TypeVariable)p.type();
+        t.addAssignment(getArg(i));
+      }
+      p.addArgumentValue(getArg(i));
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  refine NonNullInference public void ClassInstanceExpr.updateRemoteAttributeCollectionsFrontend() {
+    ConstructorDecl c = decl();
+    if(c instanceof ConstructorDeclSubstituted)
+      c = ((ConstructorDeclSubstituted)c).erasedConstructor();
+    // TODO: deal with varargs
+    for(int i = 0; i < c.getNumParameter() && i < getNumArg(); i++) {
+      ParameterDeclaration p = c.getParameter(i);
+      if(p.type() instanceof TypeVariable) {
+        TypeVariable t = (TypeVariable)p.type();
+        t.addAssignment(getArg(i));
+      }
+      p.addArgumentValue(getArg(i));
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+  // both constructor and superconstructor
+  refine NonNullInference public void ConstructorAccess.updateRemoteAttributeCollectionsFrontend() {
+    ConstructorDecl c = decl();
+    if(c instanceof ConstructorDeclSubstituted)
+      c = ((ConstructorDeclSubstituted)c).erasedConstructor();
+    // TODO: deal with varargs
+    for(int i = 0; i < c.getNumParameter() && i < getNumArg(); i++) {
+      ParameterDeclaration p = c.getParameter(i);
+      if(p.type() instanceof TypeVariable) {
+        TypeVariable t = (TypeVariable)p.type();
+        t.addAssignment(getArg(i));
+      }
+      p.addArgumentValue(getArg(i));
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  refine NonNullInference public void MethodDecl.updateRemoteAttributeCollectionsFrontend() {
+    for(Iterator iter = overrides().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof MethodDeclSubstituted) {
+        m = ((MethodDeclSubstituted)m).erasedMethod();
+      }
+      m.addOverriddenBy(this);
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  refine NonNullInference public void ReturnStmt.updateRemoteAttributeCollectionsFrontend() {
+    if(hasResult()) {
+      BodyDecl bodyDecl = hostBodyDecl();
+      if(bodyDecl instanceof MethodDecl) {
+        MethodDecl m = (MethodDecl)bodyDecl;
+        if(m.type() instanceof TypeVariable)
+          ((TypeVariable)m.type()).addAssignment(getResult());
+      }
+    }
+    NonNullInference.ReturnStmt.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  // use the generic construct rather than the bound parameterization
+
+  refine NonNullInference eq MethodAccess.inferedNonNull() {
+    MethodDecl m = decl();
+    if(m instanceof MethodDeclSubstituted) {
+      m = ((MethodDecl)m).erasedMethod();
+    }
+    return m.inferedNonNull();
+  }
+
+  refine NonNullInference eq VarAccess.inferedNonNull() {
+    Variable v = decl();
+    if(v instanceof FieldDeclarationSubstituted) {
+      FieldDeclaration f = ((FieldDeclarationSubstituted)v).erasedField();
+      if(isQualified())
+        return (f.inferedNonNull() && !qualifier().inferedRaw()) || inferedGuardedByNullCheck(f);
+      else
+        return (f.inferedNonNull() && !inferedRawThisType()) || inferedGuardedByNullCheck(f);
+    }
+    else
+      return NonNullInference.VarAccess.inferedNonNull();
+  }
+
+  refine NonNullInference eq VarAccess.inferedRaw() {
+    Variable v = decl();
+    if(v instanceof FieldDeclarationSubstituted)
+      return ((FieldDeclarationSubstituted)v).erasedField().inferedRaw();
+    else
+      return NonNullInference.VarAccess.inferedRaw();
+  }
+  refine NonNullInference eq MethodAccess.inferedRaw() {
+    MethodDecl m = decl();
+    if(m instanceof MethodDeclSubstituted)
+      m = ((MethodDecl)m).erasedMethod();
+    return m.inferedRaw();
+  }
+
+  syn boolean TypeVariable.inferedNonNull() circular [true] {
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr e = (Expr)iter.next();
+      if(!e.inferedNonNull())
+        return false;
+    }
+    return true;
+  }
+
+  public void TypeVariable.addAssignment(Expr rhs) {
+    if(assignments == null) assignments = new ArrayList();
+    assignments.add(rhs);
+  }
+  private Collection TypeVariable.assignments = null;
+  public Collection TypeVariable.assignments() {
+    return assignments != null ? assignments : Collections.EMPTY_LIST;
+  }
+
+  /*
+  refine GenericsPrettyPrint public void TypeVariable.toString(StringBuffer s) {
+    if(inferedNonNull())
+      s.append("@NonNull ");
+    GenericsPrettyPrint.TypeVariable.toString(s);
+  }
+  */
+
+  // the non-null annotation is on the type variable declaration not individual uses
+  /*
+  refine NonNullInference eq ParameterDeclaration.addNonNull() =
+    !(type() instanceof TypeVariable) && NonNullInference.ParameterDeclaration.addNonNull();
+  refine NonNullInference eq VariableDeclaration.addNonNull() =
+    !(type() instanceof TypeVariable) && NonNullInference.VariableDeclaration.addNonNull();
+  refine NonNullInference eq FieldDeclaration.addNonNull() =
+    !(type() instanceof TypeVariable) && NonNullInference.FieldDeclaration.addNonNull();
+  refine NonNullInference eq MethodDecl.addNonNull() =
+    !(type() instanceof TypeVariable) && NonNullInference.MethodDecl.addNonNull();
+  */
+
+
+  inh SimpleSet Modifiers.lookupType(String name);
+  refine NonNullInference eq Modifiers.isNotNull() {
+    SimpleSet set = lookupType("NonNull");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNullInference.Modifiers.isNotNull();
+  }
+  refine NonNullInference eq Modifiers.isRawObjectType() {
+    SimpleSet set = lookupType("Raw");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNullInference.Modifiers.isRawObjectType();
+  }
+  refine NonNullInference eq Modifiers.isRawThisObjectType() {
+    SimpleSet set = lookupType("RawThis");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNullInference.Modifiers.isRawThisObjectType();
+  }
+
+  refine NonNullInference eq ParameterDeclaration.inferedNonNullLocally() {
+    if(!NonNullInference.ParameterDeclaration.inferedNonNullLocally())
+      return false;
+    if(getParent() instanceof EnhancedForStmt) {
+      EnhancedForStmt stmt = (EnhancedForStmt)getParent();
+      if(stmt.getExpr().type().isArrayDecl())
+        return false;
+      else if(stmt.getExpr().type().isIterable()) {
+        MethodDecl iterator = (MethodDecl)stmt.getExpr().type().memberMethods("iterator").iterator().next();
+        MethodDecl next = (MethodDecl)iterator.type().memberMethods("next").iterator().next();
+        return next.inferedNonNull();
+      }
+    }
+    return true;
+  }
+
+}

@@ -1,0 +1,595 @@
+aspect NonNullInference {
+
+  syn boolean ParameterDeclaration.addNonNull() =
+    inferedNonNull() && !getModifiers().isNotNull();
+  syn boolean VariableDeclaration.addNonNull() =
+    inferedNonNull() && !getModifiers().isNotNull();
+  syn boolean FieldDeclaration.addNonNull() =
+    inferedNonNull() && !getModifiers().isNotNull();
+  syn boolean MethodDecl.addNonNull() =
+    inferedNonNull() && !getModifiers().isNotNull();
+
+  // refine pretty printer to include infered annotations
+  refine PrettyPrint public void ParameterDeclaration.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append("@NonNull ");
+    if(inferedRaw())
+      s.append("@Raw ");
+    PrettyPrint.ParameterDeclaration.toString(s);
+  }
+  refine PrettyPrint public void VariableDeclaration.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append("@NonNull ");
+    if(inferedRaw())
+      s.append("@Raw ");
+    PrettyPrint.VariableDeclaration.toString(s);
+  }
+  refine PrettyPrint public void FieldDeclaration.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append("@NonNull ");
+    if(inferedRaw())
+      s.append("@Raw ");
+    PrettyPrint.FieldDeclaration.toString(s);
+  }
+  refine PrettyPrint public void MethodDecl.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append("@NonNull ");
+    if(inferedRaw())
+      s.append("@Raw ");
+    if(inferedRawThis())
+      s.append("@RawThis ");
+    PrettyPrint.MethodDecl.toString(s);
+  }
+
+  // collect assignment sites through the generic collecting phase in the front-end
+  public void VarAccess.updateRemoteAttributeCollectionsFrontend() {
+    if(isDest()) {
+      ASTNode node = this;
+      while(node != null && !(node instanceof AssignExpr))
+        node = node.getParent();
+      if(node != null && node instanceof AssignExpr) {
+        AssignExpr assignExpr = (AssignExpr)node;
+        Expr rhs = assignExpr.getSource();
+        Variable v = decl();
+        if(v instanceof FieldDeclaration)
+          ((FieldDeclaration)v).addAssignment(rhs);
+        else if(v instanceof ParameterDeclaration)
+          ((ParameterDeclaration)v).addAssignment(rhs);
+        else if(v instanceof VariableDeclaration)
+          ((VariableDeclaration)v).addAssignment(rhs);
+      }
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+  public void VariableDeclaration.addAssignment(Expr rhs) {
+    if(assignments == null) assignments = new ArrayList();
+    assignments.add(rhs);
+  }
+  private Collection VariableDeclaration.assignments = null;
+  public Collection VariableDeclaration.assignments() {
+    return assignments != null ? assignments : Collections.EMPTY_LIST;
+  }
+  public void FieldDeclaration.addAssignment(Expr rhs) {
+    if(assignments == null) assignments = new ArrayList();
+    assignments.add(rhs);
+  }
+  private Collection FieldDeclaration.assignments = null;
+  public Collection FieldDeclaration.assignments() {
+    return assignments != null ? assignments : Collections.EMPTY_LIST;
+  }
+  public void ParameterDeclaration.addAssignment(Expr rhs) {
+    if(assignments == null) assignments = new ArrayList();
+    assignments.add(rhs);
+  }
+  private Collection ParameterDeclaration.assignments = null;
+  public Collection ParameterDeclaration.assignments() {
+    return assignments != null ? assignments : Collections.EMPTY_LIST;
+  }
+
+  // collect returnValues for methods from return statements through the generic collecting phase in the front-end
+  public void ReturnStmt.updateRemoteAttributeCollectionsFrontend() {
+    if(hasResult()) {
+      BodyDecl bodyDecl = hostBodyDecl();
+      if(bodyDecl instanceof MethodDecl) {
+        MethodDecl m = (MethodDecl)bodyDecl;
+        if(m.type().isReferenceType())
+          m.addReturnValue(getResult());
+      }
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+  public void MethodDecl.addReturnValue(Expr rhs) {
+    if(returnValues == null) returnValues = new ArrayList();
+    returnValues.add(rhs);
+  }
+  private Collection MethodDecl.returnValues = null;
+  public Collection MethodDecl.returnValues() {
+    return returnValues != null ? returnValues : Collections.EMPTY_LIST;
+  }
+  
+  // collect argumentValues for parameters from method accesses through the generic collecting phase in the front-end
+  public void MethodAccess.updateRemoteAttributeCollectionsFrontend() {
+    MethodDecl m = decl();
+    m.addInvocation(this);
+    for(int i = 0; i < m.getNumParameter(); i++)
+      m.getParameter(i).addArgumentValue(getArg(i));
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+  public void MethodDecl.addInvocation(MethodAccess m) {
+    if(invocations == null) invocations = new ArrayList();
+    invocations.add(m);
+  }
+  private Collection MethodDecl.invocations = null;
+  public Collection MethodDecl.invocations() {
+    return invocations != null ? invocations : Collections.EMPTY_LIST;
+  }
+  public void ParameterDeclaration.addArgumentValue(Expr rhs) {
+    if(argumentValues == null) argumentValues = new ArrayList();
+    argumentValues.add(rhs);
+  }
+  private Collection ParameterDeclaration.argumentValues = null;
+  public Collection ParameterDeclaration.argumentValues() {
+    return argumentValues != null ? argumentValues : Collections.EMPTY_LIST;
+  }
+  
+  // collect argumentValues for paramters from class instance expressions, this(), and super() invocations
+  public void ClassInstanceExpr.updateRemoteAttributeCollectionsFrontend() {
+    ConstructorDecl c = decl();
+    for(int i = 0; i < c.getNumParameter(); i++)
+      c.getParameter(i).addArgumentValue(getArg(i));
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+  // both constructor and superconstructor
+  public void ConstructorAccess.updateRemoteAttributeCollectionsFrontend() {
+    ConstructorDecl c = decl();
+    for(int i = 0; i < c.getNumParameter(); i++)
+      c.getParameter(i).addArgumentValue(getArg(i));
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  // collect back links for overrides, that is overriddenBy
+  public void MethodDecl.updateRemoteAttributeCollectionsFrontend() {
+    for(Iterator iter = overrides().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      m.addOverriddenBy(this);
+    }
+    super.updateRemoteAttributeCollectionsFrontend();
+  }
+  public void MethodDecl.addOverriddenBy(MethodDecl m) {
+    if(overriddenBy == null) overriddenBy = new ArrayList();
+    overriddenBy.add(m);
+  }
+  private Collection MethodDecl.overriddenBy = null;
+  public Collection MethodDecl.overriddenBy() {
+    return overriddenBy != null ? overriddenBy : Collections.EMPTY_LIST;
+  }  
+
+
+  syn lazy boolean Modifiers.isNotNull() = numModifier("@NonNull") != 0;
+  syn lazy boolean Modifiers.isRawObjectType() = numModifier("@Raw") != 0;
+  syn lazy boolean Modifiers.isRawThisObjectType() = numModifier("@RawThis") != 0;
+
+  // infere types
+  syn lazy boolean FieldDeclaration.inferedNonNull() circular [true] {
+    if(!type().isReferenceType()) return false;
+    if(isStatic()) return false;
+    if(getModifiers().isNotNull()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    if(hasInit() && !getInit().inferedNonNull())
+      return false;
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(!rhs.inferedNonNull())
+        return false;
+    }
+
+    for(int j = 0; j < hostType().getNumBodyDecl(); j++) {
+      if(hostType().getBodyDecl(j) instanceof ConstructorDecl) {
+        ConstructorDecl c = (ConstructorDecl)hostType().getBodyDecl(j);
+          if(!c.isDAafter(this))
+            return false;
+      }
+    }
+    return true;
+  }
+  syn lazy boolean VariableDeclaration.inferedNonNull() circular [true] {
+    if(!type().isReferenceType()) return false;
+    if(getModifiers().isNotNull()) return true;
+    if(hasInit() && !getInit().inferedNonNull())
+      return false;
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(!rhs.inferedNonNull())
+        return false;
+    }
+    return true;
+  }
+
+  syn lazy boolean ParameterDeclaration.inferedNonNullLocally() circular [true] {
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(!rhs.inferedNonNull())
+        return false;
+    }
+    for(Iterator iter = argumentValues().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(!rhs.inferedNonNull())
+        return false;
+    }
+    return true;
+  }
+    
+  syn lazy boolean ParameterDeclaration.inferedNonNull() circular [true] {
+    if(!type().isReferenceType()) return false;
+    if(getModifiers().isNotNull()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    if(getParent().getParent() instanceof MethodDecl) {
+      int i = getParent().getIndexOfChild(this);
+      MethodDecl hostMethod = (MethodDecl)getParent().getParent();
+      MethodDecl firstMethod = hostMethod.firstMethod();
+      if(hostMethod != firstMethod)
+        return firstMethod.getParameter(i).inferedNonNull();
+
+      for(Iterator iter = firstMethod.methodSet().iterator(); iter.hasNext(); ) {
+        MethodDecl m = (MethodDecl)iter.next();
+        if(!m.getParameter(i).inferedNonNullLocally())
+          return false;
+      }
+      return true;
+    }
+    return inferedNonNullLocally();
+  }
+  
+  syn lazy boolean MethodDecl.inferedNonNullLocally() circular [true] {
+    for(Iterator iter = returnValues().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(!rhs.inferedNonNull())
+        return false;
+    }
+    return true;
+  }
+  
+  syn lazy boolean MethodDecl.inferedNonNull() circular [true] {
+    if(!type().isReferenceType()) return false;
+    if(getModifiers().isNotNull()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    MethodDecl firstMethod = firstMethod();
+    if(this != firstMethod)
+      return firstMethod.inferedNonNull();
+    for(Iterator iter = firstMethod.methodSet().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(!m.inferedNonNullLocally())
+        return false;
+    }
+    return true;
+  }
+  
+  eq VarAccess.inferedNonNull() {
+    Variable v = decl();
+    if(!v.type().isReferenceType())
+      return false;
+    if(v instanceof FieldDeclaration) {
+      FieldDeclaration f = (FieldDeclaration)v;
+      if(isQualified())
+        return (f.inferedNonNull() && !qualifier().inferedRaw()) || inferedGuardedByNullCheck(f);
+      else
+        return (f.inferedNonNull() && !inferedRawThisType()) || inferedGuardedByNullCheck(f);
+    }
+    else if(v instanceof ParameterDeclaration)
+      return ((ParameterDeclaration)v).inferedNonNull() || inferedGuardedByNullCheck(v);
+    else if(v instanceof VariableDeclaration)
+      return ((VariableDeclaration)v).inferedNonNull() || inferedGuardedByNullCheck(v);
+    else
+      return false;
+  }
+  eq MethodAccess.inferedNonNull() = decl().inferedNonNull();
+  
+  eq ClassInstanceExpr.inferedNonNull() = true;
+
+  eq StringLiteral.inferedNonNull() = true;
+
+  syn lazy boolean Expr.inferedNonNull() circular [true] = false;
+  
+  eq AbstractDot.inferedNonNull() = lastAccess().inferedNonNull();
+  
+  eq ArrayInit.inferedNonNull() = false;
+
+  eq AssignExpr.inferedNonNull() = getDest().inferedNonNull();
+  
+  eq ParExpr.inferedNonNull() = getExpr().inferedNonNull();
+
+  eq ArrayCreationExpr.inferedNonNull() = true;
+
+  eq Unary.inferedNonNull() = getOperand().inferedNonNull();
+
+  eq CastExpr.inferedNonNull() = getExpr().inferedNonNull();
+
+  eq ConditionalExpr.inferedNonNull() = getTrueExpr().inferedNonNull() && getFalseExpr().inferedNonNull();
+
+  eq Binary.inferedNonNull() = false;
+  eq AddExpr.inferedNonNull() = type().isString();
+
+  eq ClassAccess.inferedNonNull() = true;
+  
+  eq RelationalExpr.inferedNonNull() = getLeftOperand().inferedNonNull() && getRightOperand().inferedNonNull();
+
+
+
+  // infer rawness
+  syn lazy boolean FieldDeclaration.inferedRaw() circular [false] {
+    if(!type().isReferenceType()) return false;
+    if(isStatic()) return true;
+    if(getModifiers().isRawObjectType()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    if(hasInit() && getInit().inferedRaw())
+      return true;
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(rhs.inferedRaw())
+        return true;
+    }
+    return false;
+  }
+  syn lazy boolean VariableDeclaration.inferedRaw() circular [false] {
+    if(!type().isReferenceType()) return false;
+    if(getModifiers().isRawObjectType()) return true;
+    if(hasInit() && getInit().inferedRaw())
+      return true;
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(rhs.inferedRaw())
+        return true;
+    }
+    return false;
+  }
+  
+  syn lazy boolean ParameterDeclaration.inferedRawLocally() circular [false] {
+    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(rhs.inferedRaw())
+        return true;
+    }
+    for(Iterator iter = argumentValues().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(rhs.inferedRaw())
+        return true;
+    }
+    return false;
+  }
+  
+  syn lazy boolean ParameterDeclaration.inferedRaw() circular [false] {
+    if(!type().isReferenceType()) return false;
+    if(getModifiers().isRawObjectType()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    if(getParent().getParent() instanceof MethodDecl) {
+      int i = getParent().getIndexOfChild(this);
+      MethodDecl hostMethod = (MethodDecl)getParent().getParent();
+      MethodDecl firstMethod = hostMethod.firstMethod();
+      if(hostMethod != firstMethod)
+        return firstMethod.getParameter(i).inferedRaw();
+
+      for(Iterator iter = firstMethod.methodSet().iterator(); iter.hasNext(); ) {
+        MethodDecl m = (MethodDecl)iter.next();
+        if(m.getParameter(i).inferedRawLocally())
+          return true;
+      }
+      return false;
+    }
+    return inferedRawLocally();
+  }
+  
+  syn lazy boolean MethodDecl.inferedRawLocally() circular [false] {
+    for(Iterator iter = returnValues().iterator(); iter.hasNext(); ) {
+      Expr rhs = (Expr)iter.next();
+      if(rhs.inferedRaw())
+        return true;
+    }
+    return false;
+  }
+  
+  syn lazy boolean MethodDecl.inferedRaw() circular [false] {
+    if(!type().isReferenceType()) return false;
+    if(getModifiers().isRawObjectType()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    MethodDecl firstMethod = firstMethod();
+    if(this != firstMethod)
+      return firstMethod.inferedRaw();
+    for(Iterator iter = firstMethod.methodSet().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.inferedRawLocally())
+        return true;
+    }
+    return false;
+  }
+
+  eq Program.getCompilationUnit().inferedRawThisType() {
+    throw new Error("Unsupported inferRawThisType");
+  }
+  eq TypeDecl.getBodyDecl().inferedRawThisType() = false;
+
+  eq ConstructorDecl.getConstructorInvocation().inferedRawThisType() = true;
+  eq ConstructorDecl.getBlock().inferedRawThisType() = true;
+
+  eq InstanceInitializer.getBlock().inferedRawThisType() = true;
+    
+  eq MethodDecl.getBlock().inferedRawThisType() = inferedRawThis();
+  
+  inh lazy boolean ThisAccess.inferedRawThisType() circular [false];
+  inh lazy boolean VarAccess.inferedRawThisType() circular [false];
+  inh lazy boolean MethodAccess.inferedRawThisType() circular [false];
+
+  syn lazy boolean MethodDecl.inferedRawThisLocally() circular [false] {
+    for(Iterator iter = invocations().iterator(); iter.hasNext(); ) {
+      MethodAccess m = (MethodAccess)iter.next();
+      if(m.isQualified() && m.qualifier().inferedRaw())
+        return true;
+      if(!m.isQualified() && m.inferedRawThisType())
+        return true;
+    }
+    return false;
+  }
+  
+  syn lazy boolean MethodDecl.inferedRawThis() circular [false] {
+    if(isStatic()) return false;
+    if(getModifiers().isRawThisObjectType()) return true;
+    if(!hostType().compilationUnit().fromSource()) return false;
+    MethodDecl firstMethod = firstMethod();
+    if(this != firstMethod)
+      return firstMethod.inferedRawThis();
+    for(Iterator iter = firstMethod.methodSet().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.inferedRawThisLocally())
+        return true;
+    }
+    return false;
+  }
+  
+  eq VarAccess.inferedRaw() {
+    Variable v = decl();
+    if(!v.type().isReferenceType())
+      return false;
+    if(v instanceof FieldDeclaration)
+      return ((FieldDeclaration)v).inferedRaw();
+    else if(v instanceof ParameterDeclaration)
+      return ((ParameterDeclaration)v).inferedRaw();
+    else if(v instanceof VariableDeclaration)
+      return ((VariableDeclaration)v).inferedRaw();
+    else
+      return false;
+  }
+
+  eq MethodAccess.inferedRaw() = decl().inferedRaw();
+  
+  eq ClassInstanceExpr.inferedRaw() = false;
+  eq StringLiteral.inferedRaw() = false;
+
+  eq ThisAccess.inferedRaw() = inferedRawThisType();
+
+  syn lazy boolean Expr.inferedRaw() circular [false] = false;
+  
+  eq AbstractDot.inferedRaw() = lastAccess().inferedRaw();
+  
+  eq ArrayInit.inferedRaw() = false; //type().isNonNull();
+
+  eq AssignExpr.inferedRaw() = getDest().inferedRaw();
+  
+  eq ParExpr.inferedRaw() = getExpr().inferedRaw();
+
+  eq ArrayCreationExpr.inferedRaw() = false;
+
+  eq Unary.inferedRaw() = getOperand().inferedRaw();
+  eq CastExpr.inferedRaw() = getTypeAccess().inferedRaw();
+
+  eq Binary.inferedRaw() = false;
+  
+  eq RelationalExpr.inferedRaw() = getLeftOperand().inferedRaw() || getRightOperand().inferedRaw();
+
+
+  inh lazy boolean VarAccess.inferedGuardedByNullCheck(Variable v) circular [false];
+  inh lazy boolean IfStmt.inferedGuardedByNullCheck(Variable v) circular [false];
+  eq Program.getCompilationUnit(int index).inferedGuardedByNullCheck(Variable v) = false;
+  eq TypeDecl.getBodyDecl().inferedGuardedByNullCheck(Variable v) = false;
+
+  // IfStmt with explicit check against null is a guard
+  eq IfStmt.getThen().inferedGuardedByNullCheck(Variable v) {
+    if(getCondition() instanceof NEExpr) {
+      NEExpr expr = (NEExpr)getCondition();
+      if(expr.getLeftOperand().readOf(v) && expr.getRightOperand().type().isNull() ||
+         expr.getRightOperand().readOf(v) && expr.getLeftOperand().type().isNull())
+        return !updatedWithPossiblyNull(v);
+    }
+    return inferedGuardedByNullCheck(v);
+  }
+  eq IfStmt.getElse().inferedGuardedByNullCheck(Variable v) {
+    if(getCondition() instanceof EQExpr) {
+      EQExpr expr = (EQExpr)getCondition();
+      if(expr.getLeftOperand().readOf(v) && expr.getRightOperand().type().isNull() ||
+         expr.getRightOperand().readOf(v) && expr.getLeftOperand().type().isNull())
+        return !updatedWithPossiblyNull(v);
+      
+    }
+    return inferedGuardedByNullCheck(v);
+  }
+
+  syn boolean Expr.readOf(Variable v) = false;
+  eq VarAccess.readOf(Variable v) = decl() == v && !isQualified() && !(v instanceof FieldDeclaration);
+  //eq VarAccess.readOf(Variable v) = decl() == v && !(isQualified() && !qualifier().isThisAccess());
+  //eq AbstractDot.readOf(Variable v) = getRight().readOf(v); 
+
+  public boolean ASTNode.updatedWithPossiblyNull(Variable v) {
+    for(int i = 0; i < getNumChild(); i++)
+      if(getChild(i).updatedWithPossiblyNull(v))
+        return true;
+    return false;
+  }
+  public boolean VarAccess.updatedWithPossiblyNull(Variable v) {
+    if(isDest()) {
+      ASTNode node = this;
+      while(node != null && !(node instanceof AssignExpr))
+        node = node.getParent();
+      if(node != null && node instanceof AssignExpr) {
+        AssignExpr assignExpr = (AssignExpr)node;
+        Expr rhs = assignExpr.getSource();
+        if(decl() == v && !rhs.inferedNonNull())
+          return true;
+      }
+    }
+    return false;
+  }
+
+
+  // group all methods that overrides one another taking both classes and interface into account
+
+  // the first method in the set
+  syn MethodDecl MethodDecl.firstMethod() = overrides().isEmpty() && overriddenBy().isEmpty() ? this : (MethodDecl)methodSet().iterator().next();
+
+  // the set of methods that overrides each other
+  public HashSet MethodDecl.methodSet = null;
+  public HashSet MethodDecl.methodSet() {
+    if(methodSet == null) {
+      methodSet = new HashSet();
+      buildSet(methodSet);
+    }
+    return methodSet;
+  }
+
+  // transitatively visit overriding methods and build a set that each method references
+  // only visit methods that have not been processed yet
+  // use the set reference in each method to indicate that the method is visited
+  public void MethodDecl.buildSet(HashSet set) {
+    set.add(this);
+    methodSet = set;
+    for(Iterator iter = overrides().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.methodSet == null)
+        m.buildSet(set);
+    }
+    for(Iterator iter = overriddenBy().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.methodSet == null)
+        m.buildSet(set);
+    }
+  }
+
+  public void ASTNode.updateRemoteAttributeCollectionsFrontend() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).updateRemoteAttributeCollectionsFrontend();
+  }
+  public void CompilationUnit.updateRemoteAttributeCollectionsFrontend() {
+    if(fromSource())
+      super.updateRemoteAttributeCollectionsFrontend();
+  }
+
+  syn lazy HashSet MethodDecl.overrides() {
+    HashSet set = new HashSet();
+    for(Iterator iter = hostType().ancestorMethods(signature()).iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(overrides(m)) {
+        set.add(m);
+        set.addAll(m.overrides());
+      }
+    }
+    return set;
+  }
+
+}

@@ -1,0 +1,32 @@
+aspect JSR308NonNullInference {
+  refine NonNullInference eq MethodDecl.inferedRawThis() {
+    if(getReceiverModifiers().isRawObjectType())
+      return true;
+    return NonNullInference.MethodDecl.inferedRawThis();
+  }
+
+  public void MethodDecl.emit(PrintWriter p, Input input) throws java.io.IOException {
+    // emit source until the method start
+    int line = getLine(getStart());
+    int column = getColumn(getStart());
+    input.emitUntil(line, column, p);
+    // emit annotations 
+    if(addNonNull())
+      p.write("@NonNull ");
+    if(inferedRaw() && !getModifiers().isRawObjectType())
+      p.write("@Raw ");
+
+    // emit upto parameter list inclusive
+    for(int i = 0; i <= 2; i++) {
+      getChild(i).emit(p, input);
+    }
+    input.emitUntil(')', p);
+    if(inferedRawThis() && !getReceiverModifiers().isRawObjectType() && !getModifiers().isRawThisObjectType())
+      p.write(" @Raw ");
+
+    for(int i = 3; i < getNumChild(); i++) {
+      getChild(i).emit(p, input);
+    }
+  }
+
+}

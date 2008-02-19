@@ -1,0 +1,71 @@
+aspect NonNullInferenceStatistics {
+  public void Program.collectStatistics(int num) {
+    ASTNode.numReferenceReturnTypes = 0;
+    ASTNode.numNonNullReturnTypes = 0;
+    ASTNode.numNativeReferenceReturnTypes = 0;
+    ASTNode.numReferenceInstanceFields = 0;
+    ASTNode.numNonNullInstanceFields = 0;
+    ASTNode.numPointerDereferences = 0;
+    ASTNode.numSafePointerDereferences = 0;
+    for(int i = 0; i < num && i < getNumCompilationUnit(); i++)
+      getCompilationUnit(i).collectStatistics();
+    System.out.println("Number of reference return types " + ASTNode.numReferenceReturnTypes);
+    System.out.println("Number of non null return types " + ASTNode.numNonNullReturnTypes);
+    System.out.println("Number of native reference methods " + ASTNode.numNativeReferenceReturnTypes);
+    System.out.println();
+    System.out.println("Number of reference instance fields " + ASTNode.numReferenceInstanceFields);
+    System.out.println("Number of non null instance fields " + ASTNode.numNonNullInstanceFields);
+    System.out.println();
+    System.out.println("Number of pointer dereferences " + ASTNode.numPointerDereferences);
+    System.out.println("Number of safe pointer dereferences " + ASTNode.numSafePointerDereferences);
+  }
+  protected void ASTNode.collectStatistics() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectStatistics();
+  }
+
+  public static int ASTNode.numReferenceReturnTypes = 0;
+  public static int ASTNode.numNonNullReturnTypes = 0;
+  public static int ASTNode.numNativeReferenceReturnTypes = 0;
+  public static int ASTNode.numNonNullInstanceFields = 0;
+  public static int ASTNode.numReferenceInstanceFields = 0;
+  public static int ASTNode.numPointerDereferences = 0;
+  public static int ASTNode.numSafePointerDereferences = 0;
+
+  protected void MethodDecl.collectStatistics() {
+    super.collectStatistics();
+    if(type().isReferenceType()) {
+      ASTNode.numReferenceReturnTypes++;
+      if(inferedNonNull())
+        ASTNode.numNonNullReturnTypes++;
+      if(isNative())
+        ASTNode.numNativeReferenceReturnTypes++;
+    }
+  }
+
+  protected void FieldDeclaration.collectStatistics() {
+    super.collectStatistics();
+    if(!isStatic() && type().isReferenceType()) {
+      ASTNode.numReferenceInstanceFields++;
+      if(inferedNonNull())
+        ASTNode.numNonNullInstanceFields++;
+    }
+  }
+  
+  protected void VarAccess.collectStatistics() {
+    super.collectStatistics();
+    if(decl().isInstanceVariable()) {
+      ASTNode.numPointerDereferences++;
+      if(!isQualified() || qualifier().inferedNonNull())
+        ASTNode.numSafePointerDereferences++;
+    }
+  }
+  protected void MethodAccess.collectStatistics() {
+    super.collectStatistics();
+    if(!decl().isStatic()) {
+      ASTNode.numPointerDereferences++;
+      if(!isQualified() || qualifier().inferedNonNull())
+        ASTNode.numSafePointerDereferences++;
+    }
+  }
+}

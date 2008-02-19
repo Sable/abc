@@ -1,0 +1,14 @@
+package test;
+public class I08 {
+@Raw   Object f;
+  public I08() {
+    super();
+    f = this;
+  }
+  void test() {
+    @Raw Object v = f;
+  }
+  public static void main(@NonNull String[] args) {
+    System.out.println("explicit this in constructor is raw and propagates accordingly");
+  }
+}

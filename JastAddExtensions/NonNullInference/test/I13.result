@@ -1,0 +1,32 @@
+package test;
+public class I13 {
+  public static void main(@NonNull String[] args) {
+    System.out.println("overriding, merge return values, rawness, and parameters");
+  }
+  public I13() {
+    super();
+  }
+}
+
+class A {
+  public Object m(Object p) {
+    m(null);
+    return null;
+  }
+  A() {
+    super();
+  }
+}
+
+interface B {
+@NonNull   Object m(@NonNull Object p);
+}
+
+class C extends A implements B {
+  public Object m(Object p) {
+    return new Object();
+  }
+  C() {
+    super();
+  }
+}
