@@ -160,8 +160,8 @@
     <delete>
       <fileset dir="." includes="**/*.class"/>
     </delete>
-    <delete file="JavaNonNullChecker.jar"/>
-	  <delete file="NonNullChecker-src.jar"/>
+    <delete file="JavaNonNullInferencer.jar"/>
+	  <delete file="NonNullInference-src.jar"/>
 </target>
 
 <!-- remove generated source files and .class files -->
@@ -180,7 +180,7 @@
 
 <!-- build binaries -->
 <target name="jar" depends="build">
-  <jar destfile="JavaNonNullChecker.jar" basedir="." includes="**/*.class" excludes="test*/**">
+  <jar destfile="JavaNonNullInferencer.jar" basedir="." includes="**/*.class" excludes="test*/**">
     <manifest>
       <attribute name="Main-Class" value="JavaChecker"/>
     </manifest>
