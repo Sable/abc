@@ -1,0 +1,15 @@
+// new node types for the NonNull language extension\
+
+// a tagged class declaration is a class that shares structural properties
+// with a base declaration but representes additional properties in its node type
+abstract TaggedClassDecl : ClassDecl ::= /Modifiers/ <ID:String> /[SuperClassAccess:Access]/ /Implements:Access*/ /BodyDecl*/ <ClassDecl:TypeDecl>;
+
+NonNullClassDecl : TaggedClassDecl ::= ;
+RawObjectDecl : TaggedClassDecl ::= ;
+RawUptoObjectDecl : TaggedClassDecl ::= <Upto:ClassDecl>;
+
+// additional modifiers
+NotNullModifier : Modifier;
+RawModifier : Modifier;
+RawUptoModifier : Modifier ::= Access;
+

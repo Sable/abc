@@ -1,0 +1,287 @@
+aspect NonNull {
+  // A tagged class decls is a base class decl extended with non null tags
+  // All lookup methods are delegated to the base class decl
+  syn lazy Modifiers TaggedClassDecl.getModifiers() = (Modifiers)getClassDecl().getModifiers().fullCopy();
+  syn lazy Opt TaggedClassDecl.getSuperClassAccessOpt() = getClassDecl() instanceof ClassDecl ? (Opt)((ClassDecl)getClassDecl()).getSuperClassAccessOpt().fullCopy() : new Opt();
+  syn lazy List TaggedClassDecl.getImplementsList() = getClassDecl() instanceof ClassDecl ? (List)((ClassDecl)getClassDecl()).getImplementsList().fullCopy() : (List)((InterfaceDecl)getClassDecl()).getSuperInterfaceIdList().fullCopy();
+  syn lazy List TaggedClassDecl.getBodyDeclList() = (List)getClassDecl().getBodyDeclList().fullCopy();
+  
+  eq TaggedClassDecl.memberFields(String name) = getClassDecl().memberFields(name);
+  eq TaggedClassDecl.memberMethods(String name) = getClassDecl().memberMethods(name);
+  
+  // build non null version of a class decl
+  syn lazy TypeDecl TypeDecl.nonNullType() = this;
+  eq ClassDecl.nonNullType() = nonNullTypeDecl();
+  eq InterfaceDecl.nonNullType() = nonNullTypeDecl();
+  syn nta TypeDecl ClassDecl.nonNullTypeDecl() = new NonNullClassDecl(name() + "-", this);
+  syn nta TypeDecl InterfaceDecl.nonNullTypeDecl() = new NonNullClassDecl(name() + "-", this);
+  eq NonNullClassDecl.nonNullType() = this;
+
+  syn boolean TypeDecl.isNonNull() = false;
+  eq NonNullClassDecl.isNonNull() = true;
+
+  // build raw version of a class decl
+  syn lazy TypeDecl TypeDecl.rawObjectType() = this;
+  eq ClassDecl.rawObjectType() = rawObjectTypeDecl();
+  syn nta TypeDecl ClassDecl.rawObjectTypeDecl() = new RawObjectDecl(name() + "raw-", this);
+  eq RawObjectDecl.rawObjectType() = this;
+
+  syn boolean TypeDecl.isRawObjectType() = false;
+  eq RawObjectDecl.isRawObjectType() = true;
+
+  // build raw upto version of a class decl
+  syn lazy TypeDecl TypeDecl.rawUptoType(ClassDecl upto) = this;
+  eq ClassDecl.rawUptoType(ClassDecl upto) = rawUptoTypeDecl(upto);
+  syn nta TypeDecl ClassDecl.rawUptoTypeDecl(ClassDecl upto) = new RawUptoObjectDecl(name() + "raw(" + upto.fullName() + ")-", this, upto);
+  eq RawUptoObjectDecl.rawUptoType(ClassDecl upto) = getClassDecl().rawUptoType(upto);
+
+  syn boolean TypeDecl.isRawUpto() = false;
+  eq RawUptoObjectDecl.isRawUpto() = true;
+  
+  // detect the [NotNull] modifier
+  syn lazy boolean Modifiers.isNotNull() = numModifier("@NonNull") != 0;
+  
+  // only allow [NotNull] for reference types
+  inh boolean Modifiers.mayBeNotNull();
+  eq Program.getCompilationUnit().mayBeNotNull() = false;
+  eq VariableDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq FieldDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq ParameterDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq MethodDecl.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+
+  // detect the [Raw] modifier
+  syn lazy boolean Modifiers.isRawObjectType() = numModifier("@Raw") != 0;
+  syn lazy boolean Modifiers.isRawThisObjectType() = numModifier("@RawThis") != 0;
+
+  inh boolean Modifiers.mayBeRaw();
+  eq Program.getCompilationUnit().mayBeRaw() = false;
+  eq MethodDecl.getModifiers().mayBeRaw() = true;
+  eq ParameterDeclaration.getModifiers().mayBeRaw() = true;
+  eq FieldDeclaration.getModifiers().mayBeRaw() = true;
+
+  // only allow [RawThis] for instance methods 
+  inh boolean Modifiers.mayBeRawThis();
+  eq Program.getCompilationUnit().mayBeRawThis() = false;
+  eq MethodDecl.getModifiers().mayBeRawThis() = !isStatic();
+ 
+  // detect the [Raw](TypeName) modifier
+  syn lazy boolean Modifiers.isRawTyped() = rawTyped() != null;
+
+  syn lazy TypeDecl Modifiers.rawTyped() {
+    for(int i = 0; i < getNumModifier(); i++) {
+      if(getModifier(i) instanceof RawUptoModifier) {
+        RawUptoModifier m = (RawUptoModifier)getModifier(i);
+        return m.getAccess().type();
+      }
+    }
+    return null;
+  }
+  
+  // the expected kind of name for RawUpto modifiers is a type name
+  eq RawUptoModifier.getAccess().nameType() = NameType.TYPE_NAME;
+  
+  
+  // refine modifiers checking
+  refine Modifiers public void Modifiers.checkModifiers() {
+    Modifiers.Modifiers.checkModifiers();
+    if(isNotNull() && !mayBeNotNull())
+      error("only reference typed values may be non null");
+    if(isRawThisObjectType() && !mayBeRawThis())
+      error("only instance methods may be raw this");
+    if((isRawObjectType() || isRawTyped()) && !mayBeRaw())
+      error("only type names may be raw");
+  }
+  
+  // refine types using possible [NotNull] modifiers
+  refine TypeAnalysis eq FieldDeclaration.type() = getModifiers().refineUsingModifiers(TypeAnalysis.FieldDeclaration.type());
+  refine TypeAnalysis eq VariableDeclaration.type() = getModifiers().refineUsingModifiers(TypeAnalysis.VariableDeclaration.type());
+  refine TypeAnalysis eq ParameterDeclaration.type() = getModifiers().refineUsingModifiers(TypeAnalysis.ParameterDeclaration.type());
+  refine TypeAnalysis eq MethodDecl.type() = getModifiers().refineUsingModifiers(TypeAnalysis.MethodDecl.type());
+
+  public TypeDecl Modifiers.refineUsingModifiers(TypeDecl type) {
+    if(isNotNull())
+      return type.nonNullType();
+    if(isRawObjectType())
+      return type.rawObjectType();
+    if(isRawTyped()) {
+      TypeDecl bound = rawTyped();
+      if(bound instanceof ClassDecl)
+        return type.rawUptoType((ClassDecl)bound);
+    }
+    return type;
+  }
+  
+  // refine implicit [NotNull] expression
+  refine TypeAnalysis eq ClassInstanceExpr.type() = TypeAnalysis.ClassInstanceExpr.type().nonNullType();
+  refine TypeAnalysis eq StringLiteral.type() = TypeAnalysis.StringLiteral.type().nonNullType();
+  
+  // applies to both this and super
+  refine LookupType eq ThisAccess.decl() {
+    TypeDecl typeDecl = LookupType.ThisAccess.decl();
+    if(!typeDecl.isNonNull()) {
+      return nonNullThisType();
+    }
+    return typeDecl;
+  }
+  
+  // compute the type of "this" for a given context
+  eq Program.getCompilationUnit().nonNullThisType() {
+    throw new Error("Unsupported nonNullThisType");
+  }
+  eq TypeDecl.getBodyDecl().nonNullThisType() = this;
+
+  eq ConstructorDecl.getConstructorInvocation().nonNullThisType() = hostType().rawObjectType();
+  eq ConstructorDecl.getBlock().nonNullThisType() = hostType().rawUptoType((ClassDecl)hostType());
+
+  eq InstanceInitializer.getBlock().nonNullThisType() = hostType().rawUptoType((ClassDecl)hostType());
+    
+  eq MethodDecl.getBlock().nonNullThisType() = thisType();
+
+  syn lazy TypeDecl MethodDecl.thisType() {
+    if(getModifiers().isRawThisObjectType())
+      return hostType().rawObjectType();
+    else if(getModifiers().isRawTyped())
+      return hostType().rawUptoType((ClassDecl)getModifiers().rawTyped());
+    else return hostType().nonNullType();
+  }
+  
+  inh TypeDecl ThisAccess.nonNullThisType();
+  inh TypeDecl VarAccess.nonNullThisType();
+
+  // refine subtype rules
+  // S, T are reference types where S <: T
+  // S- NonNullClassDecl, S+ ClassDecl
+  // S- <: T+ needs to be added
+  // S- <: T- needs to be added
+  // S+ <: T+ exists already
+  eq NonNullClassDecl.instanceOf(TypeDecl type) = type.isSupertypeOfNonNullClassDecl(this);
+  
+  // T+ vs S-
+  syn lazy boolean TypeDecl.isSupertypeOfNonNullClassDecl(NonNullClassDecl type) {
+    if(type == this) return true;
+    return type.getClassDecl().instanceOf(this);
+  }
+  // T- vs S-
+  eq NonNullClassDecl.isSupertypeOfNonNullClassDecl(NonNullClassDecl type) {
+    if(type == this) return true;
+    return type.getClassDecl().instanceOf(getClassDecl());
+  }
+  // T- vs S+
+  eq NonNullClassDecl.isSupertypeOfClassDecl(ClassDecl type) = false;
+  // T- vs Null
+  eq NonNullClassDecl.isSupertypeOfNullType(NullType type) = false;
+
+  // S, T are reference types where S <: T
+  // Sraw- <: Traw-
+  // Traw(S)- <: Traw(R)-, when S <:R
+  // Traw(R)- <: Traw-
+  // T- <: Traw-
+  eq RawObjectDecl.instanceOf(TypeDecl type) = type.isSupertypeOfRawObjectDecl(this);
+
+  syn lazy boolean TypeDecl.isSupertypeOfRawObjectDecl(RawObjectDecl type) = type == this;
+  // Sraw- <: Traw-
+  eq RawObjectDecl.isSupertypeOfRawObjectDecl(RawObjectDecl type) =
+    type == this ? true : type.getClassDecl().instanceOf(getClassDecl());
+    
+  // S- <: Traw- TODO: is this correct or should it only be T- <: Traw-
+  eq RawObjectDecl.isSupertypeOfNonNullClassDecl(NonNullClassDecl type) =
+    type.getClassDecl().instanceOf(getClassDecl());
+    
+  // Traw- vs S+
+  eq RawObjectDecl.isSupertypeOfClassDecl(ClassDecl type) = false;
+
+  eq RawUptoObjectDecl.instanceOf(TypeDecl type) = type.isSupertypeOfRawUptoObjectDecl(this);
+
+  syn lazy boolean TypeDecl.isSupertypeOfRawUptoObjectDecl(RawUptoObjectDecl type) = type == this;
+  
+  eq RawUptoObjectDecl.isSupertypeOfRawUptoObjectDecl(RawUptoObjectDecl type) =
+    type.getUpto().instanceOf(getUpto());
+    
+  eq RawObjectDecl.isSupertypeOfRawUptoObjectDecl(RawUptoObjectDecl type) =
+    type.getClassDecl().instanceOf(getClassDecl());
+  
+  // refine type checking rules for qualified access to instance methods and fields
+  // these should only allow [NotNull] types as the type of their respective qualifier
+
+  refine TypeCheck public void MethodAccess.typeCheck() {
+    TypeCheck.MethodAccess.typeCheck();
+    if(isQualified() && !decl().isStatic() && !decl().hostType().isUnknown()) {
+      TypeDecl typeDecl = qualifier().type();
+      if(qualifier().isThisAccess() && !typeDecl.instanceOf(decl().thisType()))
+        error("this is only partially initialized at this point, and " + typeDecl.fullName() + " is not a subtype of " + decl().thisType().fullName());
+      if(!typeDecl.isNonNull() && !typeDecl.isRawObjectType() && !typeDecl.isRawUpto())
+        error("qualifier " + qualifier() + " may be null");
+    }
+  }
+
+  public void VarAccess.typeCheck() {
+    super.typeCheck();
+    if(isQualified() && !decl().isStatic() && !decl().hostType().isUnknown()) {
+      TypeDecl typeDecl = qualifier().type();
+      if(!typeDecl.isNonNull() && !typeDecl.isRawObjectType() && !typeDecl.isRawUpto())
+        error("qualifier " + qualifier() + " may be null");
+    }
+  }
+
+  // ensure that all non-null instance fields are definitely assigned after each constructor
+  public void ClassDecl.typeCheck() {
+    super.typeCheck();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof FieldDeclaration) {
+        FieldDeclaration f = (FieldDeclaration)getBodyDecl(i);
+        if(f.type().isNonNull()) {
+          for(int j = 0; j < getNumBodyDecl(); j++) {
+            if(getBodyDecl(j) instanceof ConstructorDecl) {
+              ConstructorDecl c = (ConstructorDecl)getBodyDecl(j);
+              if(!c.isDAafter(f))
+                c.error("non null field " + f.name() + " is not definitely non null after constructor");
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // the context should be taken into account when computing the type
+  // E.g. in if(n != null) { t = n; } the type of n is non null since
+  // it is guarded by a check
+
+  refine TypeAnalysis eq VarAccess.type() {
+    TypeDecl typeDecl = TypeAnalysis.VarAccess.type();
+    Variable v = decl();
+    if(v.isInstanceVariable()) {
+      TypeDecl qualifierType = isQualified() ? qualifier().type() : nonNullThisType();
+      boolean mayBeNull = false;
+      if(qualifierType.isRawObjectType())
+        mayBeNull = true;
+      if(qualifierType.isRawUpto()) {
+        RawUptoObjectDecl c = (RawUptoObjectDecl)qualifierType;
+        if(!c.getUpto().instanceOf(v.hostType()))
+          mayBeNull = true;
+      }
+      if(typeDecl.isNonNull() && mayBeNull && isSource() && !guardedByNullCheck(decl()))
+        return ((NonNullClassDecl)typeDecl).getClassDecl();
+    }
+    if(!typeDecl.isNonNull() && guardedByNullCheck(decl()))
+      return typeDecl.nonNullType();
+    return typeDecl;
+  }
+
+  inh boolean VarAccess.guardedByNullCheck(Variable v);
+  inh boolean IfStmt.guardedByNullCheck(Variable v);
+  eq Program.getCompilationUnit(int index).guardedByNullCheck(Variable v) = false;
+  eq TypeDecl.getBodyDecl().guardedByNullCheck(Variable v) = false;
+  eq IfStmt.getThen().guardedByNullCheck(Variable v) {
+    if(getCondition() instanceof NEExpr) {
+      NEExpr expr = (NEExpr)getCondition();
+      if(expr.getLeftOperand().readOf(v) && expr.getRightOperand().type().isNull() ||
+         expr.getRightOperand().readOf(v) && expr.getLeftOperand().type().isNull())
+        return true;
+    }
+    return guardedByNullCheck(v);
+  }
+
+  syn boolean Expr.readOf(Variable v) = false;
+  eq VarAccess.readOf(Variable v) = decl() == v && !(isQualified() && !qualifier().isThisAccess());
+  eq AbstractDot.readOf(Variable v) = getRight().readOf(v); 
+}

@@ -1,0 +1,56 @@
+aspect NonNullJava5Glue {
+  eq NonNullClassDecl.subtype(TypeDecl type) = type.isSupertypeOfNonNullClassDecl(this);
+  eq RawObjectDecl.subtype(TypeDecl type) = type.isSupertypeOfRawObjectDecl(this);
+  eq RawUptoObjectDecl.subtype(TypeDecl type) = type.isSupertypeOfRawUptoObjectDecl(this);
+
+  refine NonNull void MethodAccess.typeCheck()
+  to refine MethodSignature public void MethodAccess.typeCheck() {
+    MethodSignature.MethodAccess.typeCheck();
+    if(isQualified() && !decl().isStatic() && !decl().hostType().isUnknown()) {
+      TypeDecl typeDecl = qualifier().type();
+      if(qualifier().isThisAccess() && !typeDecl.instanceOf(decl().thisType()))
+        error("this is only partially initialized at this point, and " + typeDecl.fullName() + " is not a subtype of " + decl().thisType().fullName());
+      if(!typeDecl.isNonNull() && !typeDecl.isRawObjectType() && !typeDecl.isRawUpto())
+        error("qualifier " + qualifier() + " may be null");
+    }
+  }
+
+  eq NonNullClassDecl.erasure() = getClassDecl().erasure().nonNullType();
+  eq RawObjectDecl.erasure() = getClassDecl().erasure().rawObjectType();
+  eq RawUptoObjectDecl.erasure() = getClassDecl().erasure().rawUptoType(getUpto());
+
+  eq NonNullClassDecl.supertypeNullType(NullType type) = false;
+  eq NonNullClassDecl.supertypeClassDecl(ClassDecl type) = false;
+  eq NonNullClassDecl.supertypeInterfaceDecl(InterfaceDecl type) = false;
+  eq NonNullClassDecl.supertypeParClassDecl(ParClassDecl type) = false;
+  eq NonNullClassDecl.supertypeParInterfaceDecl(ParInterfaceDecl type) = false;
+  eq NonNullClassDecl.supertypeRawClassDecl(RawClassDecl type) = false;
+  eq NonNullClassDecl.supertypeRawInterfaceDecl(RawInterfaceDecl type) = false;
+  eq NonNullClassDecl.supertypeGenericClassDecl(GenericClassDecl type) = false;
+  eq NonNullClassDecl.supertypeGenericInterfaceDecl(GenericInterfaceDecl type) = false;
+  eq NonNullClassDecl.supertypeTypeVariable(TypeVariable type) = false;
+  eq NonNullClassDecl.supertypeWildcard(WildcardType type) = false;
+  eq NonNullClassDecl.supertypeWildcardExtends(WildcardExtendsType type) = false;
+  eq NonNullClassDecl.supertypeWildcardSuper(WildcardSuperType type) = false;
+
+  inh SimpleSet Modifiers.lookupType(String name);
+  refine NonNull eq Modifiers.isNotNull() {
+    SimpleSet set = lookupType("NonNull");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNull.Modifiers.isNotNull();
+  }
+  refine NonNull eq Modifiers.isRawObjectType() {
+    SimpleSet set = lookupType("Raw");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNull.Modifiers.isRawObjectType();
+  }
+  refine NonNull eq Modifiers.isRawThisObjectType() {
+    SimpleSet set = lookupType("RawThis");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNull.Modifiers.isRawThisObjectType();
+  }
+    
+}

@@ -1,0 +1,82 @@
+aspect JSR308NonNull {
+  eq TypeAccess.getChild().mayBeNotNull() = type().isReferenceType();
+  refine TypeAnalysis eq TypeAccess.type() {
+    TypeDecl type = TypeAnalysis.TypeAccess.type();
+    if(type.isNonNull() || !hasAnnotations() || !getAnnotations().isNotNull())
+      return type;
+    return type.nonNullType();
+  }
+
+  eq TypeVariable.isSupertypeOfNonNullClassDecl(NonNullClassDecl type) {
+    for(int i = 0; i < getNumTypeBound(); i++)
+      if(!type.subtype(getTypeBound(i).type()))
+        return false;
+    return true;
+  }
+
+  syn TypeDecl TypeDecl.possiblyNull() = this;
+  eq NonNullClassDecl.possiblyNull() = getClassDecl();
+  syn TypeDecl TypeDecl.nonNull() = nonNullType();
+
+  refine Generics eq ParTypeAccess.genericDecl() {
+    TypeDecl typeDecl = Generics.ParTypeAccess.genericDecl();
+    return typeDecl.possiblyNull();
+  }
+
+  refine Generics public void ParTypeAccess.typeCheck() {
+    super.typeCheck();
+    if(!genericDecl().isUnknown()) {
+      if(!genericDecl().isGenericType()) {
+        error(genericDecl().typeName() + " is not a generic type but used as one in " + this);
+      }
+      else {
+        GenericTypeDecl decl = (GenericTypeDecl)genericDecl();
+        GenericTypeDecl original = (GenericTypeDecl)decl.original();
+        if(original.getNumTypeParameter() != getNumTypeArgument()) {
+          error(decl.typeName() + " takes " + original.getNumTypeParameter() + " type parameters, not " + getNumTypeArgument() + " as used in " + this);
+        }
+        else {
+          ParTypeDecl typeDecl = (ParTypeDecl)type().possiblyNull();
+          for(int i = 0; i < getNumTypeArgument(); i++) {
+            if(!getTypeArgument(i).type().instanceOf(original.getTypeParameter(i))) {
+              error("type argument " + i + " is of type " + getTypeArgument(i).type().typeName() 
+                  + " which is not a subtype of " + original.getTypeParameter(i).typeName());
+            }
+          }
+          decl.original().checkNonNullFieldAssignment(this);
+        }
+      }
+    }
+  }
+
+  refine Generics eq ParTypeAccess.type() {
+    TypeDecl typeDecl = Generics.ParTypeAccess.type();
+    return getTypeAccess().type().isNonNull() ? typeDecl.nonNull() : typeDecl;
+  }
+
+  eq NonNullClassDecl.typeName() = possiblyNull().typeName() + "-";
+
+  public void TypeDecl.checkNonNullFieldAssignment(ParTypeAccess p) {
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof FieldDeclaration) {
+        FieldDeclaration f = (FieldDeclaration)getBodyDecl(i);
+        if(f.type().possiblyNull().isTypeVariable()) {
+          for(int j = 0; j < getNumBodyDecl(); j++) {
+            if(getBodyDecl(j) instanceof ConstructorDecl) {
+              ConstructorDecl c = (ConstructorDecl)getBodyDecl(j);
+              if(!c.isDAafter(f))
+                p.error("non null field " + f.name() + " may be null after constructor");
+            }
+          }
+        }
+      }
+    }
+  }
+
+  refine NonNull eq MethodDecl.thisType() {
+    if(getReceiverModifiers().isRawObjectType())
+      return hostType().rawObjectType();
+    return NonNull.MethodDecl.thisType();
+  }
+
+}
