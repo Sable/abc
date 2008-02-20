@@ -163,7 +163,7 @@ aspect Transformations {
     return node.getParent();
   }
   protected ASTNode ASTNode.with(ASTNode node) {
-   setChild(node, replacePos);
+   ((ASTNode)this).setChild(node, replacePos);
    return node;
   }
   private static int ASTNode.replacePos = 0;
