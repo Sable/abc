@@ -117,9 +117,9 @@ aspect ASTUtil {
 		addAll(c);
 	}
 	
-	public List List.addAll(Collection c) {
-		for(Iterator i=c.iterator();i.hasNext();)
-			add((ASTNode)i.next());
+	public List List.addAll(Collection<T> c) {
+		for(Iterator<T> i=c.iterator();i.hasNext();)
+			add(i.next());
 		return this;
 	}
 	
