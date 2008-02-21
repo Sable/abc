@@ -25,6 +25,7 @@ aspect AccessMethod {
 		return res;
 	}
 	
+	// cf. attribute lookupMethod(String) in LookupMethod.jrag
 	inh SymbolicMethodAccess Expr.accessMethod(MethodDecl md);
 	inh lazy SymbolicMethodAccess TypeDecl.accessMethod(MethodDecl md);
 
@@ -36,6 +37,7 @@ aspect AccessMethod {
 	eq Program.getChild().accessMethod(MethodDecl md) = null;
 	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md) = unqualifiedAccessMethod(md);
 
+	// cf. attribute unqualifiedLookupMethod in LookupMethod.jrag
 	syn lazy SymbolicMethodAccess TypeDecl.unqualifiedAccessMethod(MethodDecl md) {
 		SymbolicMethodAccess acc = accessMemberMethod(md);
 		if(acc != null) return acc;
@@ -62,6 +64,7 @@ aspect AccessMethod {
 	eq AbstractDot.getRight().accessMethod(MethodDecl md) = 
 		getLeft().type().accessMemberMethod(md);
 
+	// cf. attribute memberMethods(String)
 	syn SymbolicMethodAccess TypeDecl.accessMemberMethod(MethodDecl md) =
 		accessLocalMethod(md);
 	
@@ -97,6 +100,7 @@ aspect AccessMethod {
 		return null;
 	}
 	
+	// somewhat similar to attribute localMethodsSignature(String)
 	public SymbolicMethodAccess TypeDecl.accessLocalMethod(MethodDecl md) {
 		for(int i=0;i<getNumBodyDecl();++i) {
 			if(getBodyDecl(i) == md)

@@ -14,7 +14,8 @@
 aspect AccessType {
 	
 	inh NameType Access.nameType();
-	
+
+	// cf. attribute lookupType(String)
 	inh SymbolicTypeAccess Expr.accessType(TypeDecl td);
 	inh SymbolicTypeAccess Stmt.accessType(TypeDecl td);
 	inh SymbolicTypeAccess BodyDecl.accessType(TypeDecl td);
@@ -24,6 +25,7 @@ aspect AccessType {
 
 	eq Program.getChild().accessType(TypeDecl td) = accessType(td);
 
+	// cf. attribute lookupType(String, String)
 	syn lazy SymbolicTypeAccess Program.accessType(TypeDecl td) {
 		addPrimitiveTypes();
 		for(int i = 0; i < getNumCompilationUnit(); i++) {
@@ -62,6 +64,7 @@ aspect AccessType {
 
 	eq TypeDecl.getBodyDecl().accessType(TypeDecl td) = accessTypeFromInside(td);
 	
+	// encapsulate lookup inside a type declaration for use in other circumstances
 	public SymbolicTypeAccess TypeDecl.accessTypeFromInside(TypeDecl td) {
 		SymbolicTypeAccess acc = accessMemberType(td);
 		if(acc != null) return acc;
@@ -101,6 +104,7 @@ aspect AccessType {
 		return acc.moveInto(this);
 	}
 
+	// cf. qualifiedLookupType(String)
 	eq ParseName.qualifiedAccessType(TypeDecl td) = null;
 	eq PackageOrTypeAccess.qualifiedAccessType(TypeDecl td) = null;
 	eq AmbiguousAccess.qualifiedAccessType(TypeDecl td) = null;
@@ -139,12 +143,14 @@ aspect AccessType {
 		return null;
 	}
 	
+	// cf. localLookupType(String)
 	syn lazy SymbolicTypeAccess ClassInstanceExpr.localAccessType(TypeDecl td) {
 		if(hasTypeDecl() && getTypeDecl() == td)
 			return new SymbolicTypeAccess(td);
 		return null;
 	}
 
+	// cf. memberTypes(String)
 	syn lazy SymbolicTypeAccess TypeDecl.accessMemberType(TypeDecl td) = null;
 	eq ClassDecl.accessMemberType(TypeDecl td) {
 		for(int i = 0; i < getNumBodyDecl(); i++) {
@@ -185,6 +191,7 @@ aspect AccessType {
 		return null;
 	}
 
+	// cf. localLookupType(String)
 	syn lazy SymbolicTypeAccess CompilationUnit.localAccessType(TypeDecl td) {
 	    for(int i = 0; i < getNumTypeDecl(); i++)
 	    	if(getTypeDecl(i) == td)
@@ -220,6 +227,7 @@ aspect AccessType {
 	    return null;
 	}
 
+	// cf. importedTypes(String)
 	syn lazy SymbolicTypeAccess ImportDecl.accessImportedType(TypeDecl td) = null;
 	
 	eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
@@ -255,6 +263,7 @@ aspect AccessType {
 		return null;
 	}
 	
+	// convenience methods to compute accesses at different nodes
 	public Access TypeDecl.accessTypeFromInside(TypeDecl td, boolean ambiguous) {
 		SymbolicTypeAccess acc = accessTypeFromInside(td);
 		if(acc == null) return null;

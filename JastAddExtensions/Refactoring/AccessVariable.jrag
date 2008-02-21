@@ -15,6 +15,7 @@ import java.util.*;
 
 aspect AccessVariable {
 	
+	// cf. lookupVariable(String)
 	inh lazy SymbolicVarAccess TypeDecl.accessVariable(Variable decl);
 	inh lazy SymbolicVarAccess BodyDecl.accessVariable(Variable decl);
 	inh SymbolicVarAccess Stmt.accessVariable(Variable decl);
@@ -122,6 +123,7 @@ aspect AccessVariable {
 	eq ForStmt.getUpdateStmt().accessVariable(Variable decl) = localAccess(decl);
 	eq ForStmt.getStmt().accessVariable(Variable decl) = localAccess(decl);
 
+	// cf. localLookup(String)
 	syn lazy SymbolicVarAccess ForStmt.localAccess(Variable decl) {
 		SymbolicVarAccess acc = accessLocalVariableDeclaration(decl);
 		if(acc != null) return acc;
@@ -131,11 +133,10 @@ aspect AccessVariable {
 		return null;
 	}
 
-	// Return the first variable declaration named name
-
+	// cf. parameterDeclaration(String)
 	syn lazy SymbolicVarAccess MethodDecl.accessParameterDeclaration(Variable decl) {
-		for(int i = 0; i < getNumParameter(); i++)
-			if(getParameter(i) == decl)
+		for(ParameterDeclaration d : getParameters())
+			if(d == decl)
 				return new SymbolicVarAccess(decl);
 		return null;
 	}
@@ -150,6 +151,7 @@ aspect AccessVariable {
 	syn lazy SymbolicVarAccess CatchClause.accessParameterDeclaration(Variable decl) = 
 		getParameter() == decl ? new SymbolicVarAccess(decl) : null;
 
+	// cf. localVariableDeclaration(String)
 	syn lazy SymbolicVarAccess Block.accessLocalVariableDeclaration(Variable decl, int index) {
 		for(int i = 0; i<=index; i++)
 			if(getStmt(i) == decl)
@@ -177,9 +179,7 @@ aspect AccessVariable {
 	eq PackageOrTypeAccess.qualifiedAccessVariable(Variable decl) = null;
 	eq AmbiguousAccess.qualifiedAccessVariable(Variable decl) = null;
 
-	// Access control specifies the part of a program where a declared entity can
-	// be referred to by a qualified name, field access expression, method
-	// invocation expression without a simple name
+	// cf. qualifiedLookupVariable(String)
 	syn SymbolicVarAccess Expr.qualifiedAccessVariable(Variable decl) {
 		if(type().accessibleFrom(hostType())) {
 			SymbolicVarAccess acc = type().accessMemberField(decl);
@@ -205,9 +205,11 @@ aspect AccessVariable {
 				mayAccess((FieldDeclaration)decl);
 	}
 
+	// cf. memberFields(String)
 	syn lazy SymbolicVarAccess TypeDecl.accessMemberField(Variable decl) = 
 		accessField(decl);
 
+	// cf. localFields(String)
 	syn SymbolicVarAccess TypeDecl.accessLocalField(Variable decl) { 
 		for(int i = 0; i < getNumBodyDecl(); i++)
 			if(getBodyDecl(i) == decl)
@@ -215,6 +217,7 @@ aspect AccessVariable {
 		return null;
 	}
 
+	// cf. fields(String)
 	syn SymbolicVarAccess TypeDecl.accessField(Variable decl) = 
 		accessLocalField(decl);
 	
@@ -228,7 +231,6 @@ aspect AccessVariable {
 	eq VariableDeclaration.isAccessibleFrom(TypeDecl td) = true;
 	eq ParameterDeclaration.isAccessibleFrom(TypeDecl td) = true;
 
-	// member fields
 	eq ClassDecl.accessField(Variable decl) {
 		SymbolicVarAccess acc = accessLocalField(decl);
 		if(acc != null) return acc;
