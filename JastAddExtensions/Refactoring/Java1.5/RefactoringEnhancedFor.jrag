@@ -1,0 +1,21 @@
+aspect RefactoringEnhancedFor {
+	
+	eq EnhancedForStmt.getVariableDeclaration().accessVariable(Variable decl) = localAccessVariable(decl);
+	eq EnhancedForStmt.getExpr().accessVariable(Variable decl) = localAccessVariable(decl);
+	eq EnhancedForStmt.getStmt().accessVariable(Variable decl) = localAccessVariable(decl);
+
+	// cf. localLookupVariable(String)
+	syn lazy SymbolicVarAccess EnhancedForStmt.localAccessVariable(Variable decl) {
+		if(getVariableDeclaration() == decl)
+			return new SymbolicVarAccess(decl);
+		SymbolicVarAccess acc = accessVariable(decl);
+		if(acc != null)
+			return acc.moveInto(this);
+		return null;
+	}
+
+	EnhancedForStmt implements LocalScope;
+	public boolean EnhancedForStmt.hasVariable(String name) { 
+		return getVariableDeclaration().name().equals(name);
+	}
+}

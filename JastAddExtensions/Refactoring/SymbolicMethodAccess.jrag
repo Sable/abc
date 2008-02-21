@@ -28,7 +28,11 @@ aspect SymbolicMethodAccess {
 			MethodDecl target = (MethodDecl)this.target;
 			MethodAccess ma = new MethodAccess(target.name(), args);
 			if(needsQualifier) {
-				if(ctxt.isStatic()) return null;
+				if(ctxt.isStatic()) {
+					Access source_acc = ctxt.accessType(source, true);
+					if(source_acc == null) return null;
+					return source_acc.qualifiesAccess(ma);
+				}
 				if(source == bend) {
 					if(source == ctxt.enclosingType())
 						return ma;
@@ -72,7 +76,10 @@ aspect SymbolicMethodAccess {
 				if(!target.isStatic())
 					return null;
 				if(ctxt.isStatic())
-					return null;
+					if(qualifier.isTypeAccess() && qualifier.type() == source)
+						return qualifier.qualifiesAccess(ma);
+					else
+						return null;
 				if(source == bend && source == ctxt.enclosingType())
 					return qualifier.qualifiesAccess(ma);
 				else if(!qualifier.isTypeAccess()) {

@@ -243,6 +243,40 @@
 	This prints "23". Renaming the class B inside A to C does not notice that the
 	reference C.x will now refer to A.C.x instead of D.C.x, so the resulting
 	program prints "42".
+	
+12. Shadowing of a statically imported method or field due to renaming is not recognised.
+
+	Test case:
+	  import static java.lang.String.*;
+
+	  public class D {
+	    static String m(int i) { return "42"; }
+	    public static void main(String[] args) {
+		  System.out.println(valueOf(23));
+	    }
+	  }	
+	  
+	This prints "23". Renaming the method D.m to valueOf shadows the statically
+	imported method String.valueOf, so the resulting program prints "42".
+	
+13. Liveness analysis in Extract Method is not precise enough.
+
+    Test case:
+      public class A {
+        void m() {
+	  	  int y;
+		  int z;
+		  try {
+			if(3==3)
+			  y = 1;
+			else
+			  throw new Exception("boo");
+		  } catch(Throwable t) {
+			y=2;
+		  }
+		  z=y;
+		}
+	  }
 
 Just to be fair, here is a test case where Eclipse refuses to refactor, whereas
 Netbeans walks into the trap:

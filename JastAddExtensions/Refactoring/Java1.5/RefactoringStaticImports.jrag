@@ -1,0 +1,43 @@
+aspect RefactoringStaticImports {
+
+	eq CompilationUnit.getTypeDecl().accessVariable(Variable decl) {
+		String name = decl.name();
+		for(ImportDecl i : getImportDecls())
+			if(!i.isOnDemand())
+				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
+					FieldDeclaration fd = (FieldDeclaration)iter.next();
+					if(fd == decl)
+						return new SymbolicVarAccess(decl);
+				}
+		for(ImportDecl i : getImportDecls())
+			if(i.isOnDemand())
+				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
+					FieldDeclaration fd = (FieldDeclaration)iter.next();
+					if(fd == decl)
+						return new SymbolicVarAccess(decl);
+				}
+		return accessVariable(decl);
+	}
+	inh SymbolicVarAccess CompilationUnit.accessVariable(Variable decl);
+
+	eq CompilationUnit.getTypeDecl().accessMethod(MethodDecl md) {
+		String name = md.name();
+		for(ImportDecl i : getImportDecls())
+			if(!i.isOnDemand())
+				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
+					MethodDecl md2 = (MethodDecl)iter.next();
+					if(md == md2)
+						return new SymbolicMethodAccess(md.hostType(), md.hostType(), false, md);
+				}
+		for(ImportDecl i : getImportDecls())
+			if(i.isOnDemand())
+				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
+					MethodDecl md2 = (MethodDecl)iter.next();
+					if(md == md2)
+						return new SymbolicMethodAccess(md.hostType(), md.hostType(), false, md);
+				}
+		return accessMethod(md);
+	}
+	inh SymbolicMethodAccess CompilationUnit.accessMethod(MethodDecl md);
+
+}

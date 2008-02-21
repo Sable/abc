@@ -17,22 +17,25 @@ aspect Uses {
 		return ((TypeAccess)qualifier()).decl();
 	}
 		
-	public Collection Variable.collectedUses() {
+	public Collection<VarAccess> Variable.collectedUses() {
 		return uses();
 	}
 	
 	// bind all uses of a variable to its declaration
-	coll Collection FieldDeclaration.uses() [new ArrayList()] with add;
+	coll Collection<VarAccess> FieldDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                                                    with add;
 	VarAccess contributes
 	this when decl() instanceof FieldDeclaration
 	to FieldDeclaration.uses() for (FieldDeclaration)decl();
 	
-	coll Collection VariableDeclaration.uses() [new ArrayList()] with add;
+	coll Collection<VarAccess> VariableDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                                                       with add;
 	VarAccess contributes
 	this when decl() instanceof VariableDeclaration
 	to VariableDeclaration.uses() for (VariableDeclaration)decl();
 
-	coll Collection ParameterDeclaration.uses() [new ArrayList()] with add;
+	coll Collection<VarAccess> ParameterDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                                                        with add;
 	VarAccess contributes
 	this when decl() instanceof ParameterDeclaration
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
@@ -41,28 +44,27 @@ aspect Uses {
 	// since this is in general undecidable, we can either only bind those
 	// uses that definitely refer to the method (attribute definiteUses), or
 	// all uses that possibly might refer to it (attribute uses)
-	coll Collection MethodDecl.definiteUses() [new ArrayList()] with add;
+	coll Collection<MethodAccess> MethodDecl.definiteUses() [new ArrayList<MethodAccess>()] 
+	                                                         with add;
 	MethodAccess contributes
 	this to MethodDecl.definiteUses() for decl();
 	
-	coll Collection MethodDecl.uses() [new ArrayList()] with addAll;
+	coll Collection<MethodAccess> MethodDecl.uses() [new ArrayList<MethodAccess>()] 
+	                                                 with addAll;
 	MethodAccess contributes
 	this.asSet() to MethodDecl.uses() for decl();
+	
+	MethodDecl contributes uses() to MethodDecl.uses() for each overriders();
 	
 	protected HashSet ASTNode.asSet() {
 		HashSet set = new HashSet();
 		set.add(this);
 		return set;
 	}
-	
-	/*protected Collection ASTNode.addTo(Collection c) {
-		c.add(this);
-		return c;
-	}*/
-	
-	MethodDecl contributes uses() to MethodDecl.uses() for each overriders();
-	
-	coll Collection TypeDecl.descendants() circular [new HashSet()] with addAll;
+
+	// collects all descendants of a type declaration, including itself
+	coll Collection<TypeDecl> TypeDecl.descendants() circular [new HashSet<TypeDecl>()] 
+	                                                           with addAll;
 	TypeDecl contributes 
 	this.asSet() to TypeDecl.descendants() for this;
 
@@ -78,6 +80,7 @@ aspect Uses {
 	descendants() 
 	to TypeDecl.descendants() for each superInterfaces();
 	
+	// retrieve all interfaces implemented by a class declaration
 	public Collection ClassDecl.interfaces() {
 		Collection res = new LinkedList();
 		for(Iterator i=interfacesIterator();i.hasNext();)
@@ -85,6 +88,7 @@ aspect Uses {
 		return res;
 	}
 	
+	// retrieve all interfaces extended by an interface declaration
 	public Collection InterfaceDecl.superInterfaces() {
 		Collection res = new LinkedList();
 		for(Iterator i=superinterfacesIterator();i.hasNext();)
@@ -92,9 +96,11 @@ aspect Uses {
 		return res;
 	}
 	
+	// collect all method declarations overriding a given method declaration
 	coll HashSet MethodDecl.overriders() [new HashSet()] with add;
 	MethodDecl contributes this to MethodDecl.overriders() for each overrides();
 	
+	// get all method declarations overridden by a given method declaration
 	syn lazy SimpleSet MethodDecl.overrides() {
 		SimpleSet anc = hostType().ancestorMethods(signature());
 		for(Iterator i=anc.iterator();i.hasNext();)
@@ -134,48 +140,6 @@ aspect Uses {
 		// the following gives null-pointer exceptions in generated code
 		//return hasPackage(name) ? new PackageDecl(name) : null;
 		return new PackageDecl(name);
-	}
-
-	inh SimpleSet VariableDeclaration.lookupType(String name);
-	
-	/* in preparation for renaming a variable to new_name, this method finds all
-	 * uses of the variable before renaming and all uses of fields, types and
-	 * packages that might become shadowed by the renaming and collects them into
-	 * an adjustment table */ 
-	public AdjustmentTable LocalDeclaration.find_uses(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the variable we are renaming */
-		for(Iterator i = uses().iterator(); i.hasNext();) {
-			Access acc = (Access)i.next();
-			table.add(acc);
-		}
-		/* now, collect all uses of fields, types, and packages that the variable
-		 * might be shadowing after renaming */
-		for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
-			Variable v = (Variable)i.next();
-			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc);
-			}
-		}
-		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-			TypeDecl d = (TypeDecl)i.next();
-			for(Iterator j = d.uses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				// only a type in an ambiguous position can be shadowed by a variable
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
-					table.add(acc);
-			}
-		}
-		PackageDecl pd = programRoot().getPackageDecl(new_name);
-		if(pd != null)
-			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
-						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc);
-			}
-		return table;
 	}
 
 }
