@@ -146,15 +146,18 @@ aspect ControlFlowGraph {
 	inh TryStmt ReturnStmt.enclosingTryStmt(); 
 	inh TryStmt ThrowStmt.enclosingTryStmt();
 	inh TryStmt TryStmt.enclosingTryStmt();
+	eq CompilationUnit.getChild().enclosingTryStmt() = null;
 	eq TypeDecl.getBodyDecl().enclosingTryStmt() = null;
 	eq TryStmt.getBlock().enclosingTryStmt() = this;
 	eq TryStmt.getCatchClause(int index).enclosingTryStmt() = this;
 
 	inh boolean Stmt.hasEnclosingTryStmt();
+	eq CompilationUnit.getChild().hasEnclosingTryStmt() = false;
 	eq TypeDecl.getBodyDecl().hasEnclosingTryStmt() = false;
 	eq TryStmt.getBlock().hasEnclosingTryStmt() = true;
 
 	inh boolean Stmt.isFinallyBlock();
+	eq CompilationUnit.getChild().isFinallyBlock() = false;
 	eq TypeDecl.getBodyDecl().isFinallyBlock() = false;
 	eq TryStmt.getFinally().isFinallyBlock() = true;
 	eq Block.getStmt(int index).isFinallyBlock() = isFinallyBlock() ? false : isFinallyBlock();
@@ -165,6 +168,7 @@ aspect ControlFlowGraph {
 
 	inh Set Stmt.enclosingFinally();
 	inh Set CatchClause.enclosingFinally();
+	eq CompilationUnit.getChild().enclosingFinally() = Set.empty();
 	eq TypeDecl.getBodyDecl().enclosingFinally() = Set.empty();
 	eq TryStmt.getBlock().enclosingFinally() = hasFinally() ? Set.empty().union(getFinally()) : Set.empty();
 	eq TryStmt.getCatchClause(int index).enclosingFinally() = hasFinally() ? Set.empty().union(getFinally()) : Set.empty();
@@ -172,6 +176,7 @@ aspect ControlFlowGraph {
 
 
 	inh boolean Stmt.withInCatchClause();
+	eq CompilationUnit.getChild().withInCatchClause() = false;
 	eq TypeDecl.getBodyDecl().withInCatchClause() = false;
 	eq CatchClause.getBlock().withInCatchClause() = true;
 
@@ -203,6 +208,7 @@ aspect ControlFlowGraph {
 	// helpers case-default
 
 	inh ConstCase Stmt.followingConstCase();
+	eq CompilationUnit.getChild().followingConstCase() = null;
 	eq TypeDecl.getBodyDecl().followingConstCase() = null;
 	eq Block.getStmt(int i).followingConstCase() {
 		if (!(getParent() instanceof SwitchStmt) || i == getNumStmt() - 1) {
@@ -218,6 +224,7 @@ aspect ControlFlowGraph {
 	}
 
 	inh DefaultCase Stmt.followingDefaultCase();
+	eq CompilationUnit.getChild().followingDefaultCase() = null;
 	eq TypeDecl.getBodyDecl().followingDefaultCase() = null;
 	eq Block.getStmt(int i).followingDefaultCase() {
 		if (!(getParent() instanceof SwitchStmt) || i == getNumStmt() - 1) {
@@ -235,6 +242,7 @@ aspect ControlFlowGraph {
 	// helpers
 
 	inh Set Stmt.following();
+	eq CompilationUnit.getChild().following() = Set.empty();
 	eq TypeDecl.getBodyDecl().following() = Set.empty();
 	eq Block.getStmt(int i).following() { 
 		if (i == getNumStmt() - 1) {
@@ -410,9 +418,11 @@ aspect ControlFlowGraph {
 	syn boolean Stmt.isExitBlock() = this == exitBlock();
 
 	inh Stmt Stmt.exitBlock();
+	eq CompilationUnit.getChild().exitBlock() = null;
 	eq TypeDecl.getBodyDecl(int i).exitBlock() = getBodyDecl(i).exitBlock();
 
 	inh Stmt Stmt.entryBlock();
+	eq CompilationUnit.getChild().entryBlock() = null;
 	eq TypeDecl.getBodyDecl(int i).entryBlock() = getBodyDecl(i).entryBlock();
 
 }

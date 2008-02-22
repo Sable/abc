@@ -34,6 +34,7 @@ aspect LocalDeclaration {
 	inh java.util.Set Stmt.visibleLocalDecls();
 	inh java.util.Set CatchClause.visibleLocalDecls();
 	
+	eq CompilationUnit.getChild().visibleLocalDecls() = new HashSet();
 	eq TypeDecl.getChild().visibleLocalDecls() = new HashSet();
 	eq MethodDecl.getBlock().visibleLocalDecls() {
 		HashSet decls = new HashSet();

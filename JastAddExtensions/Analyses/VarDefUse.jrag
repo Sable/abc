@@ -43,6 +43,10 @@ aspect VarDefUse {
 		return hasCondition() && getCondition().mustDef(v);
 	}
 	
+	eq EnhancedForStmt.mustDef(Variable v) {
+		return getExpr().mustDef(v);
+	}
+	
 	eq LabeledStmt.mustDef(Variable v) = getStmt().mustDef(v);
 	
 	eq SwitchStmt.mustDef(Variable v) = getBlock().mustDef(v);
