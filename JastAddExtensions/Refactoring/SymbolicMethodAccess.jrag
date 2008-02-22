@@ -76,15 +76,15 @@ aspect SymbolicMethodAccess {
 				if(!target.isStatic())
 					return null;
 				if(ctxt.isStatic())
-					if(qualifier.isTypeAccess() && qualifier.type() == source)
+					if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source) /*qualifier.type() == source*/)
 						return qualifier.qualifiesAccess(ma);
 					else
 						return null;
-				if(source == bend && source == ctxt.enclosingType())
+				if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()) /*source == ctxt.enclosingType()*/)
 					return qualifier.qualifiesAccess(ma);
 				else if(!qualifier.isTypeAccess()) {
 					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper != null && bend == ctxt.enclosingType())
+					if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()) /*bend == ctxt.enclosingType()*/)
 						return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
 				}
 				return null;

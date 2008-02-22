@@ -27,23 +27,10 @@ aspect AccessType {
 
 	// cf. attribute lookupType(String, String)
 	syn lazy SymbolicTypeAccess Program.accessType(TypeDecl td) {
-		addPrimitiveTypes();
 		for(int i = 0; i < getNumCompilationUnit(); i++) {
 			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
 				if(getCompilationUnit(i).getTypeDecl(j) == td)
 					return new SymbolicTypeAccess(true, td);
-			}
-		}
-
-		/* the following is probably unneccessary */
-		CompilationUnit u = getCompilationUnit(td.fullName());
-		if(u != null) {
-			addCompilationUnit(u);
-			getCompilationUnit(getNumCompilationUnit()-1);
-			for(int j = 0; j < u.getNumTypeDecl(); j++) {
-				if(u.getTypeDecl(j) == td) {
-					return new SymbolicTypeAccess(true, td);
-				}
 			}
 		}
 		return null;
@@ -150,24 +137,28 @@ aspect AccessType {
 		return null;
 	}
 
+  syn lazy SymbolicTypeAccess TypeDecl.accessLocalType(TypeDecl td) {
+    for(Iterator iter = localTypeDecls(td.name()).iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      if(t == td)
+			  return new SymbolicTypeAccess(this, false, td);
+    }
+    return null;
+  }
+
 	// cf. memberTypes(String)
 	syn lazy SymbolicTypeAccess TypeDecl.accessMemberType(TypeDecl td) = null;
 	eq ClassDecl.accessMemberType(TypeDecl td) {
-		for(int i = 0; i < getNumBodyDecl(); i++) {
-			if(getBodyDecl(i) instanceof MemberTypeDecl) {
-				TypeDecl t = ((MemberTypeDecl)getBodyDecl(i)).typeDecl();
-				if(t == td)
-					return new SymbolicTypeAccess(this, false, td);
-			}
-		}
+    SymbolicTypeAccess acc = accessLocalType(td);
+    if(acc != null) return acc;
 		for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
-			SymbolicTypeAccess acc = type.accessMemberType(td);
+			acc = type.accessMemberType(td);
 			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
 				return acc.moveDownTo(this);
 		}
 		if(hasSuperclass()) {
-			SymbolicTypeAccess acc = superclass().accessMemberType(td);
+			acc = superclass().accessMemberType(td);
 			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
 				return acc.moveDownTo(this);
 		}
@@ -175,16 +166,11 @@ aspect AccessType {
 	}
 
 	eq InterfaceDecl.accessMemberType(TypeDecl td) {
-		for(int i = 0; i < getNumBodyDecl(); i++) {
-			if(getBodyDecl(i) instanceof MemberTypeDecl) {
-				TypeDecl t = ((MemberTypeDecl)getBodyDecl(i)).typeDecl();
-				if(t == td)
-					return new SymbolicTypeAccess(this, false, td);
-			}
-		}
+    SymbolicTypeAccess acc = accessLocalType(td);
+    if(acc != null) return acc;
 		for(Iterator outerIter = superinterfacesIterator(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
-			SymbolicTypeAccess acc = type.accessMemberType(td);
+			acc = type.accessMemberType(td);
 			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
 				return acc.moveDownTo(this);
 		}
@@ -233,9 +219,7 @@ aspect AccessType {
 	syn lazy SymbolicTypeAccess ImportDecl.accessImportedType(TypeDecl td) = null;
 	
 	eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
-		TypeDecl td2 = getAccess().type() instanceof ParTypeDecl ?
-				((ParTypeDecl)getAccess().type()).genericDecl() : getAccess().type();
-		if(td == td2)
+		if(td == getAccess().type())
 		    return new SymbolicTypeAccess(false, td);
 		return null;
 	}

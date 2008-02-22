@@ -1,0 +1,143 @@
+/* bind all name uses to their declarations */
+
+aspect Uses {
+	
+	syn ASTNode Access.getDecl() { throw new UnsupportedOperationException(); }
+	
+	eq AbstractDot.getDecl() = getRight().getDecl();
+	eq PackageAccess.getDecl() = findPackageDecl(getPackage());
+	eq VarAccess.getDecl() = (ASTNode)decl().sourceVariableDecl();
+	eq MethodAccess.getDecl() = decl().sourceMethodDecl(); 
+	eq ConstructorAccess.getDecl() = decl().sourceConstructorDecl(); 
+	eq TypeAccess.getDecl() = decl().sourceTypeDecl(); 
+	eq ThisAccess.getDecl() = decl().sourceTypeDecl(); 
+	eq SuperAccess.getDecl() = decl().sourceTypeDecl();
+	eq ClassInstanceExpr.getDecl() = decl().sourceConstructorDecl();
+	eq ClassAccess.getDecl() = ((TypeAccess)qualifier()).decl().sourceTypeDecl();
+		
+	public Collection<VarAccess> Variable.collectedUses() {
+		return uses();
+	}
+	
+	// bind all uses of a variable to its declaration
+	coll Collection<VarAccess> FieldDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                                                    with add;
+	VarAccess contributes
+	this when decl().sourceVariableDecl() instanceof FieldDeclaration
+	to FieldDeclaration.uses() for (FieldDeclaration)decl().sourceVariableDecl();
+	
+	coll Collection<VarAccess> VariableDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                                                       with add;
+	VarAccess contributes
+	this when decl().sourceVariableDecl() instanceof VariableDeclaration
+	to VariableDeclaration.uses() for (VariableDeclaration)decl().sourceVariableDecl();
+
+	coll Collection<VarAccess> ParameterDeclaration.uses() [new ArrayList<VarAccess>()] 
+	                                                        with add;
+	VarAccess contributes
+	this when decl().sourceVariableDecl() instanceof ParameterDeclaration
+	to ParameterDeclaration.uses() for (ParameterDeclaration)decl().sourceVariableDecl();
+	
+	// bind all uses of a method to its declaration
+	// since this is in general undecidable, we can either only bind those
+	// uses that definitely refer to the method (attribute definiteUses), or
+	// all uses that possibly might refer to it (attribute uses)
+	coll Collection<MethodAccess> MethodDecl.definiteUses() [new ArrayList<MethodAccess>()] 
+	                                                         with add;
+	MethodAccess contributes
+	this to MethodDecl.definiteUses() for decl().sourceMethodDecl();
+	
+	coll Collection<MethodAccess> MethodDecl.uses() [new ArrayList<MethodAccess>()] 
+	                                                 with addAll;
+	MethodAccess contributes
+	this.asSet() to MethodDecl.uses() for decl().sourceMethodDecl();
+	
+	MethodDecl contributes uses() to MethodDecl.uses() for each overriders();
+	
+	protected HashSet ASTNode.asSet() {
+		HashSet set = new HashSet();
+		set.add(this);
+		return set;
+	}
+
+	// collects all descendants of a type declaration, including itself
+	coll Collection<TypeDecl> TypeDecl.descendants() circular [new HashSet<TypeDecl>()] 
+	                                                           with addAll;
+	TypeDecl contributes 
+	this.asSet() to TypeDecl.descendants() for this;
+
+	ClassDecl contributes
+	descendants() when hasSuperclass()
+	to TypeDecl.descendants() for superclass();
+	
+	ClassDecl contributes
+	descendants() 
+	to TypeDecl.descendants() for each interfaces();
+	
+	InterfaceDecl contributes
+	descendants() 
+	to TypeDecl.descendants() for each superInterfaces();
+	
+	// retrieve all interfaces implemented by a class declaration
+	public Collection ClassDecl.interfaces() {
+		Collection res = new LinkedList();
+		for(Iterator i=interfacesIterator();i.hasNext();)
+			res.add(i.next());
+		return res;
+	}
+	
+	// retrieve all interfaces extended by an interface declaration
+	public Collection InterfaceDecl.superInterfaces() {
+		Collection res = new LinkedList();
+		for(Iterator i=superinterfacesIterator();i.hasNext();)
+			res.add(i.next());
+		return res;
+	}
+	
+	// collect all method declarations overriding a given method declaration
+	coll HashSet MethodDecl.overriders() [new HashSet()] with add;
+	MethodDecl contributes this to MethodDecl.overriders() for each overrides();
+	
+	// get all method declarations overridden by a given method declaration
+	syn lazy SimpleSet MethodDecl.overrides() {
+		SimpleSet anc = hostType().ancestorMethods(signature());
+		for(Iterator i=anc.iterator();i.hasNext();)
+			if(!overrides((MethodDecl)i.next()))
+				i.remove();
+		return anc;
+	}
+
+	// bind all uses of a type to its declaration
+	coll Collection TypeDecl.uses() [new ArrayList()] with add;
+	TypeAccess contributes
+	this to TypeDecl.uses() for (TypeDecl)decl().sourceTypeDecl();
+	
+	// bind all uses of a package to its declaration
+	/*
+	 * a package declaration has two kinds of uses:
+	 *  1) a toplevel package can have "prefix uses", where its name appears
+	 *     as the first element of a package access or of the package qualification
+	 *     of a type access
+	 *  2) all packages can have general uses, where their name appears as
+	 *     prefix of a package access or of the package qualification of a type access,
+	 *     or in a package or import declaration
+	 *     
+	 * the point of making this distinction is that prefix uses can be shadowed by
+	 * variables or types of the same name, while other uses cannot
+	 */
+	coll Collection PackageDecl.prefixUses() [new ArrayList()] with add;
+	PackageAccess contributes this
+	to PackageDecl.prefixUses() for findPackageDecl(name().split("\\.")[0]);
+	TypeAccess contributes this when !packageName().equals("")
+	to PackageDecl.prefixUses() for findPackageDecl(packageName().split("\\.")[0]);
+	
+	eq Program.getChild().findPackageDecl(String name) = getPackageDecl(name);
+	inh PackageDecl Access.findPackageDecl(String name);
+	
+	syn nta PackageDecl Program.getPackageDecl(String name) {
+		// the following gives null-pointer exceptions in generated code
+		//return hasPackage(name) ? new PackageDecl(name) : null;
+		return new PackageDecl(name);
+	}
+
+}
