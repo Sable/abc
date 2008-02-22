@@ -193,14 +193,15 @@ aspect AccessType {
 
 	// cf. localLookupType(String)
 	syn lazy SymbolicTypeAccess CompilationUnit.localAccessType(TypeDecl td) {
-	    for(int i = 0; i < getNumTypeDecl(); i++)
-	    	if(getTypeDecl(i) == td)
-	    		return new SymbolicTypeAccess(false, td);
-	    SymbolicTypeAccess acc = null;
+		for(TypeDecl td2 : getTypeDecls())
+			if(td == td2)
+				return new SymbolicTypeAccess(false, td);
+
+		SymbolicTypeAccess acc = null;
 	    // The scope of a type imported by a single-type-import declaration
-	    for(int i = 0; i < getNumImportDecl(); i++) {
-	      if(!getImportDecl(i).isOnDemand()) {
-	    	  acc = getImportDecl(i).accessImportedType(td);
+	    for(ImportDecl id : getImportDecls()) {
+	      if(!id.isOnDemand()) {
+	    	  acc = id.accessImportedType(td);
 	    	  if(acc != null) return acc;
 	      }
 	    }
@@ -209,10 +210,11 @@ aspect AccessType {
 	    	return new SymbolicTypeAccess(false, td);
 		    
 	    // The scope of a type imported by a type-import-on-demand declaration
-	    for(int i = 0; i < getNumImportDecl(); i++) {
-	      if(getImportDecl(i).isOnDemand())
-	    	  acc = getImportDecl(i).accessImportedType(td);
+	    for(ImportDecl id : getImportDecls()) {
+	      if(id.isOnDemand()) {
+	    	  acc = id.accessImportedType(td);
 	    	  if(acc != null) return acc;
+	      }
 	    }
 	    
 	    if(lookupType(PRIMITIVE_PACKAGE_NAME, td.name()) == td)
@@ -231,8 +233,10 @@ aspect AccessType {
 	syn lazy SymbolicTypeAccess ImportDecl.accessImportedType(TypeDecl td) = null;
 	
 	eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
-		if(getAccess().type() == td)
-			return new SymbolicTypeAccess(false, td);
+		TypeDecl td2 = getAccess().type() instanceof ParTypeDecl ?
+				((ParTypeDecl)getAccess().type()).genericDecl() : getAccess().type();
+		if(td == td2)
+		    return new SymbolicTypeAccess(false, td);
 		return null;
 	}
 	

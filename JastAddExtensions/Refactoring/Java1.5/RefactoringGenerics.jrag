@@ -1,0 +1,34 @@
+aspect RefactoringGenerics {
+	
+	/* we need to adjust the definitions of accessImportedType, since in Java 5 imported
+	 * types are by default converted to "raw" types, so we have to re-generify them before
+	 * comparing to the type we're looking for */
+	refine AccessType eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
+		// changed:
+		TypeDecl td2 = getAccess().type() instanceof ParTypeDecl ?
+				((ParTypeDecl)getAccess().type()).genericDecl() : getAccess().type();
+		if(td == td2)
+		    return new SymbolicTypeAccess(false, td);
+		return null;
+	}
+	
+	refine AccessType eq TypeImportOnDemandDecl.accessImportedType(TypeDecl td) {
+		if(getAccess() instanceof PackageAccess) {
+			String packageName = ((PackageAccess)getAccess()).getPackage();
+			if(packageName.equals(td.packageName()) &&
+					td.accessibleFromPackage(packageName()))
+				return new SymbolicTypeAccess(false, td);
+		}
+		else {
+			// changed:
+			TypeDecl outer = getAccess().type() instanceof ParTypeDecl ?
+					((ParTypeDecl)getAccess().type()).genericDecl() : getAccess().type();
+			SymbolicTypeAccess acc = outer.accessMemberType(td);
+			if(acc != null && td.accessibleFromPackage(packageName()))
+				return new SymbolicTypeAccess(outer, false, td);
+		}
+		return null;
+	}
+	
+	
+}

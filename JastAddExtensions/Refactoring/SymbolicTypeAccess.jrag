@@ -18,15 +18,16 @@ aspect SymbolicTypeAccess {
 		
 		public SymbolicTypeAccess(TypeDecl outer, boolean needsQualifier,
 								  TypeDecl target) {
-			super(outer, outer, needsQualifier, target);
+			this(outer, outer, needsQualifier, target);
 		}
 		
 		public SymbolicTypeAccess(boolean needsQualifier, TypeDecl target) {
-			super(null, null, needsQualifier, target);
+			this(target.isNestedType() ? target.enclosingType() : null, 
+					needsQualifier, target);
 		}
 		
 		public SymbolicTypeAccess(TypeDecl target) {
-			super(null, null, false, target);
+			this(false, target);
 		}
 		
 		public boolean isTopLevelTypeAccess() {

@@ -39,5 +39,15 @@ aspect RefactoringStaticImports {
 		return accessMethod(md);
 	}
 	inh SymbolicMethodAccess CompilationUnit.accessMethod(MethodDecl md);
+	
+	eq StaticImportDecl.accessImportedType(TypeDecl td) {
+		String name = td.name();
+	    for(Iterator iter = type().memberTypes(name).iterator(); iter.hasNext(); ) {
+	      TypeDecl td2 = (TypeDecl)iter.next();
+	      if(td2.isStatic() && td2.accessibleFromPackage(packageName()) && td == td2)
+	        return new SymbolicTypeAccess(td);
+	    }
+	    return null;
+	  }
 
 }

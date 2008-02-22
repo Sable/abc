@@ -277,6 +277,11 @@
 		  z=y;
 		}
 	  }
+	  
+	If we extract the try statement and the following assignment into a method,
+	Eclipse infers the local variable y to be live and passes it as a parameter to the
+	newly created method. In fact, however, y is not live, so the resulting code
+	does not compile due to a violation of the definite assignment restriction.
 
 Just to be fair, here is a test case where Eclipse refuses to refactor, whereas
 Netbeans walks into the trap:
