@@ -30,7 +30,7 @@ aspect AccessType {
 		for(int i = 0; i < getNumCompilationUnit(); i++) {
 			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
 				if(getCompilationUnit(i).getTypeDecl(j) == td)
-					return new SymbolicTypeAccess(true, td);
+					return td.getSymbolicAccess(true);
 			}
 		}
 		return null;
@@ -65,7 +65,7 @@ aspect AccessType {
 	      if(getStmt(i) instanceof LocalClassDeclStmt) {
 	        TypeDecl t = ((LocalClassDeclStmt)getStmt(i)).getClassDecl();
 	        if(td == t)
-	        	return new SymbolicTypeAccess(td);
+	        	return td.getSymbolicAccess();
 	      }
 	    }
 	    SymbolicTypeAccess acc = accessType(td);
@@ -115,7 +115,7 @@ aspect AccessType {
 		if(acc != null && typeAccessible(td))
 			return acc;
 		if(type() == td)
-			return new SymbolicTypeAccess(td).moveInto(this);
+			return td.getSymbolicAccess().moveInto(this);
 		return null;
 	}
 
@@ -123,9 +123,9 @@ aspect AccessType {
 		if(td.isTopLevelType() && td.packageName().equals(packageName())) {
 			if(nextAccess() instanceof ClassInstanceExpr &&
 					td.accessibleFrom(hostType()))
-				return new SymbolicTypeAccess(td);
+				return td.getSymbolicAccess();
 			else if(typeAccessible(td))
-				return new SymbolicTypeAccess(td);
+				return td.getSymbolicAccess();
 		}
 		return null;
 	}
@@ -133,18 +133,18 @@ aspect AccessType {
 	// cf. localLookupType(String)
 	syn lazy SymbolicTypeAccess ClassInstanceExpr.localAccessType(TypeDecl td) {
 		if(hasTypeDecl() && getTypeDecl() == td)
-			return new SymbolicTypeAccess(td);
+			return td.getSymbolicAccess();
 		return null;
 	}
 
-  syn lazy SymbolicTypeAccess TypeDecl.accessLocalType(TypeDecl td) {
-    for(Iterator iter = localTypeDecls(td.name()).iterator(); iter.hasNext(); ) {
-      TypeDecl typeDecl = (TypeDecl)iter.next();
-      if(t == td)
-			  return new SymbolicTypeAccess(this, false, td);
-    }
-    return null;
-  }
+	syn lazy SymbolicTypeAccess TypeDecl.accessLocalType(TypeDecl td) {
+		for(Iterator iter = localTypeDecls(td.name()).iterator(); iter.hasNext(); ) {
+			TypeDecl typeDecl = (TypeDecl)iter.next();
+			if(t == td)
+				return td.getSymbolicAccess();
+		}
+		return null;
+	}
 
 	// cf. memberTypes(String)
 	syn lazy SymbolicTypeAccess TypeDecl.accessMemberType(TypeDecl td) = null;
@@ -179,11 +179,9 @@ aspect AccessType {
 
 	// cf. localLookupType(String)
 	syn lazy SymbolicTypeAccess CompilationUnit.localAccessType(TypeDecl td) {
-		for(TypeDecl td2 : getTypeDecls())
-			if(td == td2)
-				return new SymbolicTypeAccess(false, td);
+		SymbolicTypeAccess acc = accessLocallyDefinedType(td);
+		if(acc != null) return acc;
 
-		SymbolicTypeAccess acc = null;
 	    // The scope of a type imported by a single-type-import declaration
 	    for(ImportDecl id : getImportDecls()) {
 	      if(!id.isOnDemand()) {
@@ -193,7 +191,7 @@ aspect AccessType {
 	    }
 		 
 	    if(lookupType(packageName(), td.name()) == td)
-	    	return new SymbolicTypeAccess(false, td);
+	    	return td.getSymbolicAccess();
 		    
 	    // The scope of a type imported by a type-import-on-demand declaration
 	    for(ImportDecl id : getImportDecls()) {
@@ -204,15 +202,21 @@ aspect AccessType {
 	    }
 	    
 	    if(lookupType(PRIMITIVE_PACKAGE_NAME, td.name()) == td)
-	    	return new SymbolicTypeAccess(td);
+	    	return td.getSymbolicAccess();
 	    
 	    if(lookupType("java.lang", td.name()) == td)
-	    	return new SymbolicTypeAccess(false, td);
+	    	return td.getSymbolicAccess();
 	    
 	    if(lookupType(td.packageName(), td.name()) == td)
-	    	return new SymbolicTypeAccess(true, td);
+	    	return td.getSymbolicAccess(true);
 
 	    return null;
+	}
+
+	syn lazy SymbolicTypeAccess CompilationUnit.accessLocallyDefinedType(TypeDecl td) {
+		for(TypeDecl td2 : getTypeDecls())
+			if(td == td2)
+				return td.getSymbolicAccess();
 	}
 
 	// cf. importedTypes(String)
@@ -220,7 +224,7 @@ aspect AccessType {
 	
 	eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
 		if(td == getAccess().type())
-		    return new SymbolicTypeAccess(false, td);
+			return td.getSymbolicAccess();
 		return null;
 	}
 	
@@ -229,13 +233,13 @@ aspect AccessType {
 			String packageName = ((PackageAccess)getAccess()).getPackage();
 			if(packageName.equals(td.packageName()) &&
 					td.accessibleFromPackage(packageName()))
-				return new SymbolicTypeAccess(false, td);
+				return td.getSymbolicAccess();
 		}
 		else {
 			TypeDecl outer = getAccess().type();
 			SymbolicTypeAccess acc = outer.accessMemberType(td);
 			if(acc != null && td.accessibleFromPackage(packageName()))
-				return new SymbolicTypeAccess(outer, false, td);
+				return td.getSymbolicAccess();
 		}
 		return null;
 	}

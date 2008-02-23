@@ -68,7 +68,7 @@
 			<include name="**/*.jrag"/>
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
-      <exclude name="Uses.jrag"/>
+			<exclude name="Uses.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
