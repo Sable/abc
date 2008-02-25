@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import AST.ASTNode;
 import AST.CompilationUnit;
+import AST.LocalDeclaration;
 import AST.Program;
 import AST.TypeDecl;
 import AST.RefactoringException;
@@ -29,8 +31,14 @@ public abstract class RenameType extends TestCase {
         	String cmd = br.readLine();
         	assertTrue(cmd.matches("^// .*$"));
         	String[] fields = cmd.substring(3).split("\\s+");
-        	String[] files = fields[0].split(",");        	
-        	Program prog = rename(files, fields[1], fields[2], fields[3]);
+        	String[] files = fields[0].split(",");
+        	Program prog;
+        	if(fields.length == 3) {
+        		prog = rename(files, fields[1], fields[2]);
+        	} else {
+        		assertTrue(fields.length == 4);
+        		prog = rename(files, fields[1], fields[2], fields[3]);
+        	}
             for(int i=0;i<prog.getNumCompilationUnit();++i) {
                 CompilationUnit cu = prog.getCompilationUnit(i);
                 if(cu.fromSource())
@@ -71,4 +79,25 @@ public abstract class RenameType extends TestCase {
         return prog;
 	}
 
+	private Program rename(String[] file, String tp, String newname) throws RefactoringException {
+		Iterator iter;
+		Program prog = TestHelper.compile(file);
+		assertNotNull(prog);
+		TypeDecl td = findType(prog, tp);
+		assertNotNull(td);
+		td.rename(newname);
+		return prog;
+	}
+	
+	private TypeDecl findType(ASTNode n, String name) {
+		if(n == null) return null;
+		if(n instanceof TypeDecl &&	((TypeDecl)n).name().equals(name))
+			return (TypeDecl)n;
+		for(int i=0;i<n.getNumChild();++i) {
+			TypeDecl td = findType(n.getChild(i), name);
+			if(td != null) return td;
+		}
+		return null;
+	}
+	
 }

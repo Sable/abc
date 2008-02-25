@@ -262,12 +262,6 @@ aspect AccessType {
 		return acc.computeAccess(getMemberNamingContext(), ambiguous);
 	}
 	
-	public Access ImportDecl.access(TypeDecl td, boolean ambiguous) {
-		SymbolicTypeAccess acc = accessType(td);
-		if(acc == null) return null;
-		return acc.computeAccess(getNamingContext(), ambiguous);
-	}
-	
 	public Access BodyDecl.access(TypeDecl td, boolean ambiguous) {
 		SymbolicTypeAccess acc = accessType(td);
 		if(acc == null) return null;

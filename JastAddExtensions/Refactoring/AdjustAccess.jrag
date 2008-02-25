@@ -78,97 +78,99 @@ aspect AdjustAccess {
 	public void ClassAccess.adjust(AdjustmentTable table) throws RefactoringException {
 	}
 	
+	public FileRange Access.getPos() {
+		return new FileRange(compilationUnit().relativeName(), getStart(), getEnd());
+	}
+	
+	public void Access.plugInNewAccess(Access newacc) {
+		if(isLeftChildOfDot()) {
+			Access right = parentDot().getRight();
+			Expr p = nestedScope();
+			p.replaceWith(newacc.qualifiesAccess(right));
+		} else {
+			this.unqualifiedScope().replaceWith(newacc);
+		}
+	}
+	
+	public void ASTNode.adjustAccess(Access acc) throws RefactoringException {
+		throw new RefactoringException("cannot adjust access at "+acc.getPos());
+	}
+	
+	public void Variable.adjustAccess(Access acc) throws RefactoringException {
+		assert(acc instanceof VarAccess);
+		VarAccess va = (VarAccess)acc;
+		if(va.decl() != this) {
+			Access newacc = va.access(this);
+			if(newacc == null)
+				throw new RefactoringException("variable would become shadowed at "+acc.getPos());
+			acc.plugInNewAccess(newacc);
+		}
+	}
+	
+	public void MethodDecl.adjustAccess(Access acc) throws RefactoringException {
+		assert(acc instanceof MethodAccess);
+		MethodAccess ma = (MethodAccess)acc;
+		if(ma.decl() != this) {
+			Access newacc = ma.access(this, (List)ma.getArgList().fullCopy());
+			if(newacc == null)
+				throw new RefactoringException("couldn't consistently rename method access at "+pos);
+			acc.plugInNewAccess(newacc);
+		}
+	}
+	
+	public void TypeDecl.adjustAccess(Access acc) throws RefactoringException {
+		assert(acc instanceof TypeAccess);
+		FileRange pos = acc.getPos();
+		TypeAccess tacc = (TypeAccess)acc;
+        if(tacc.decl() != this) {
+        	boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
+            Access newacc = tacc.access(this, ambiguous);
+            if(newacc == null)
+                throw new RefactoringException("couldn't consistently rename type access at "+acc.getPos());
+            acc.plugInNewAccess(newacc);
+        } else {
+            ASTNode parent = tacc.getParent();
+            int idx = parent.getIndexOfChild(tacc);
+            ParseName pn = new ParseName(tacc.getID());
+            parent.setChild(pn, idx);
+            try {
+            	Access tmp = (Access)parent.getChild(idx);
+            	if(tmp instanceof VarAccess) {
+            		parent.setChild(tacc, idx);
+            		boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
+            		Access newacc = tacc.access(this, ambiguous);
+            		if(newacc == null)
+            			throw new RefactoringException("couldn't consistently rename type access at "+acc.getPos());
+            		acc.plugInNewAccess(newacc);
+            	}
+            } finally {
+            	parent.setChild(tacc, idx);
+            }
+        }
+	}
+	
+	public void PackageDecl.adjustAccess(Access acc) throws RefactoringException {
+		ASTNode parent = acc; 
+		int idx;
+		do {
+			acc = (Access)parent;
+			parent = acc.getParent();
+			idx = parent.getIndexOfChild(acc);
+		} while(parent instanceof AbstractDot);
+		ParseName pn = new ParseName(acc.packageName());
+		parent.setChild(pn, idx);
+		try {
+			if(parent.getChild(idx) instanceof VarAccess)
+				throw new RefactoringException("package access at "+acc.getPos()+" is shadowed");
+		} finally {
+			parent.setChild(acc, idx);
+		}
+	}
+	
 	public void Access.adjust(AdjustmentTable table) throws RefactoringException {
 		ASTNode target = table.getTarget(this);
 		if(target == null) return;
-		Access newacc;
-        FileRange pos = new FileRange(compilationUnit().relativeName(),
-        							  getStart(), getEnd());
-		if(target instanceof Variable) {
-			if(((VarAccess)this).decl() != target) {
-				newacc = this.access((Variable)target);
-				if(newacc == null)
-					throw new RefactoringException("variable would become shadowed at "+pos);
-				if(isLeftChildOfDot()) {
-					Access right = parentDot().getRight();
-					Expr p = nestedScope();
-					p.replaceWith(newacc.qualifiesAccess(right));
-				} else {
-					this.unqualifiedScope().replaceWith(newacc);
-				}
-			}
-		} else if(target instanceof MethodDecl) {
-			MethodDecl md = (MethodDecl)target;
-			if(((MethodAccess)this).decl() != md) {
-				newacc = this.access(md, (List)((MethodAccess)this).getArgList().fullCopy());
-				if(newacc == null)
-					throw new RefactoringException("couldn't consistently rename method access at "+pos);
-				if(isLeftChildOfDot()) {
-					Access right = parentDot().getRight();
-					Expr p = nestedScope();
-					p.replaceWith(newacc.qualifiesAccess(right));
-				} else {
-					this.unqualifiedScope().replaceWith(newacc);
-				}
-			}
-		} else if(target instanceof TypeDecl) {
-			TypeAccess tacc = (TypeAccess)this;
-            if(tacc.decl() != target) {
-            	boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-                newacc = this.access((TypeDecl)target, ambiguous);
-                if(newacc == null)
-                    throw new RefactoringException("couldn't consistently rename type access at "+pos);
-				if(isLeftChildOfDot()) {
-					Access right = parentDot().getRight();
-					Expr p = nestedScope();
-					p.replaceWith(newacc.qualifiesAccess(right));
-				} else {
-					this.unqualifiedScope().replaceWith(newacc);
-				}
-            } else {
-                ASTNode parent = tacc.getParent();
-                int idx = parent.getIndexOfChild(tacc);
-                ParseName pn = new ParseName(tacc.getID());
-                parent.setChild(pn, idx);
-                try {
-                	Access tmp = (Access)parent.getChild(idx);
-                	if(tmp instanceof VarAccess) {
-                		parent.setChild(tacc, idx);
-                		boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-                		newacc = this.access((TypeDecl)target, ambiguous);
-                		if(newacc == null)
-                			throw new RefactoringException("couldn't consistently rename type access at "+pos);
-        				if(isLeftChildOfDot()) {
-        					Access right = parentDot().getRight();
-        					Expr p = nestedScope();
-        					p.replaceWith(newacc.qualifiesAccess(right));
-        				} else {
-        					this.unqualifiedScope().replaceWith(newacc);
-        				}
-                	}
-                } finally {
-                	parent.setChild(tacc, idx);
-                }
-            }
-		} else if(target instanceof PackageDecl) {
-			Access acc = this;
-			ASTNode parent = acc; int idx;
-			do {
-				acc = (Access)parent;
-				parent = acc.getParent();
-				idx = parent.getIndexOfChild(acc);
-			} while(parent instanceof AbstractDot);
-			ParseName pn = new ParseName(acc.packageName());
-			parent.setChild(pn, idx);
-			try {
-				if(parent.getChild(idx) instanceof VarAccess)
-					throw new RefactoringException("package access at "+pos+" is shadowed");
-			} finally {
-				parent.setChild(acc, idx);
-			}
-		} else {
-			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
-		}
+		target.adjustAccess(this);
 	}
 	
 }

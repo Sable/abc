@@ -62,6 +62,7 @@
 		</fileset>
 		<fileset file="${Refactoring}/Methodoid.jadd"/>
 		<fileset file="${Refactoring}/Scope.jadd"/>
+		<fileset file="${Refactoring}/SymbolicTypeAccess.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
@@ -69,6 +70,7 @@
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
+			<exclude name="SymbolicTypeAccess.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
@@ -165,6 +167,16 @@
       <fileset dir="parser" includes="JavaParser.beaver"/>
       <fileset dir="parser" includes="JavaParser.all"/>
     </delete>
+</target>
+
+<target name="jar" depends="build">
+  <jar destfile="org.jastadd.refactoring.jar" basedir=".">
+    <include name="AST/*.class"/>
+    <include name="beaver/*.class"/>
+    <include name="parser/*.class"/>
+    <include name="scanner/*.class"/>
+    <include name="tests/TestHelper*.class"/>
+  </jar>
 </target>
 
 <target name="test" depends="build">

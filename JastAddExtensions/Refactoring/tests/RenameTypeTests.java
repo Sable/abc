@@ -203,6 +203,15 @@ public class RenameTypeTests extends RenameType {
 	public void test62() {
 		runTypeRenameTest("test62");
 	}
+	public void test63() {
+		runTypeRenameTest("test63");
+	}
+	public void test64() {
+		runTypeRenameTest("test64");
+	}
+	public void test65() {
+		runTypeRenameTest("test65");
+	}
 	public void test66() {
 		runTypeRenameTest("test66");
 	}
@@ -214,6 +223,9 @@ public class RenameTypeTests extends RenameType {
 	}
 	public void test69() {
 		runTypeRenameTest("test69");
+	}
+	public void test70() {
+		runTypeRenameTest("test70");
 	}
 	public void test71() {
 		runTypeRenameTest("test71");
@@ -260,6 +272,9 @@ public class RenameTypeTests extends RenameType {
 	public void test85() {
 		runTypeRenameTest("test85");
 	}
+	public void test86() {
+		runTypeRenameTest("test86");
+	}
 	public void test87() {
 		runTypeRenameTest("test87");
 	}
@@ -271,5 +286,23 @@ public class RenameTypeTests extends RenameType {
 	}
 	public void test90() {
 		runTypeRenameTest("test90");
+	}
+	public void test91() {
+		runTypeRenameTest("test91");
+	}
+	public void test92() {
+		runTypeRenameTest("test92");
+	}
+	public void test93() {
+		runTypeRenameTest("test93");
+	}
+	public void test94() {
+		runTypeRenameTest("test94");
+	}
+	public void test95() {
+		runTypeRenameTest("test95");
+	}
+	public void test96() {
+		runTypeRenameTest("test96");
 	}
 }

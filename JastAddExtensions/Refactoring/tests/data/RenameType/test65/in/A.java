@@ -1,9 +1,12 @@
-// RenameType/test65/in/A.java p A.X XYZ
+// RenameType/test65/in/A.java p A B
 package p;
-public class A{
-  class X{ }
+
+public class A { }
+
+class C {
+  class D<T> { }
 }
-class B{
-  A a = new A();
-  A.X ax = a.new X();
+
+class E {
+    C.D<A> b = new C().new D<A>();
 }

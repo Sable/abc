@@ -31,7 +31,7 @@ public abstract class AccessType extends TestCase {
         Access res;
         if(n instanceof ImportDecl) {
         	ImportDecl id = (ImportDecl)n;
-        	res = id.access((TypeDecl)m, false);
+        	res = id.getAccess().access((TypeDecl)m, false);
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;
@@ -57,7 +57,7 @@ public abstract class AccessType extends TestCase {
         Access res;
         if(n instanceof ImportDecl) {
         	ImportDecl id = (ImportDecl)n;
-        	res = id.access(td, false);
+        	res = id.getAccess().access(td, false);
         } else {
         	assertTrue(n instanceof Access);
         	Access acc = (Access)n;

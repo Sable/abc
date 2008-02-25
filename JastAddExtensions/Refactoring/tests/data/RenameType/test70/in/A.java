@@ -1,4 +1,6 @@
-// RenameType/test70/in/A.java,RenameType/test70/in/B.java p A B
+// RenameType/test70/in/A.java,RenameType/test70/in/B.java p A C
 package p;
-class A{
+
+class A {
+  static class D { }
 }

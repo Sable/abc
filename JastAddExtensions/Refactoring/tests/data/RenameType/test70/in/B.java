@@ -1,4 +1,6 @@
 package p;
-class B extends A{
+
+import p.A.*;
+
+class B extends D {
 }
- 

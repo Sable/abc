@@ -1,0 +1,11 @@
+aspect RefactoringAnnotations {
+	
+	eq AnnotatedCompilationUnit.getModifiers().accessType(TypeDecl td) {
+		SimpleSet set = SimpleSet.emptySet;
+		SymbolicTypeAccess acc = localAccessType(td);
+		if(acc != null && td.accessibleFromPackage(packageName()))
+			return acc;
+		return null;
+	}
+
+}

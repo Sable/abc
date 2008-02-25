@@ -48,7 +48,7 @@ aspect RefactoringGenerics {
 				return td.getSymbolicAccess();
 		return null;
 	}
-	
+
 	refine AccessType eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
 		if(td.sameSourceDeclAs(getAccess().type()))
 			return td.getSymbolicAccess();
@@ -78,114 +78,56 @@ aspect RefactoringGenerics {
 		return null;
 	}
 
-	refine RenameType private void TypeDecl.adjustImportDecls() throws RefactoringException {
-		Program p = programRoot();
-		for(int i = 0; i < p.getNumCompilationUnit(); i++) {
-			for(int j=0;j<p.getCompilationUnit(i).getNumImportDecl();++j) {
-				ImportDecl id = p.getCompilationUnit(i).getImportDecl(j);
-				if(id instanceof SingleTypeImportDecl) {
-					Access acc = ((SingleTypeImportDecl)id).getAccess();
-					if(acc.type().sameSourceDeclAs(this)) {
-						Access tacc = id.access(this, false);
-						if(tacc == null)
-							throw new RefactoringException("couldn't access type "+this+" from import decl "+id);
-						id.replaceWith(new SingleTypeImportDecl(tacc));
-					}
-				}
-			}
+	refine AdjustAccess public void Variable.adjustAccess(Access acc) throws RefactoringException {
+		assert(acc instanceof VarAccess);
+		VarAccess va = (VarAccess)acc;
+		if(va.decl().sourceVariableDecl() != this) {
+			Access newacc = va.access(this);
+			if(newacc == null)
+				throw new RefactoringException("variable would become shadowed at "+acc.getPos());
+			acc.plugInNewAccess(newacc);
 		}
 	}
 
-	refine AdjustAccess public void Access.adjust(AdjustmentTable table) throws RefactoringException {
-		ASTNode target = table.getTarget(this);
-		if(target == null) return;
-		Access newacc;
-		FileRange pos = new FileRange(compilationUnit().relativeName(),
-				getStart(), getEnd());
-		if(target instanceof Variable) {
-			if(((VarAccess)this).decl().sourceVariableDecl() != target) {
-				newacc = this.access((Variable)target);
-				if(newacc == null)
-					throw new RefactoringException("variable would become shadowed at "+pos);
-				if(isLeftChildOfDot()) {
-					Access right = parentDot().getRight();
-					Expr p = nestedScope();
-					p.replaceWith(newacc.qualifiesAccess(right));
-				} else {
-					this.unqualifiedScope().replaceWith(newacc);
-				}
-			}
-		} else if(target instanceof MethodDecl) {
-			MethodDecl md = (MethodDecl)target;
-			if(((MethodAccess)this).decl().sourceMethodDecl() != md) {
-				newacc = this.access(md, (List)((MethodAccess)this).getArgList().fullCopy());
-				if(newacc == null)
-					throw new RefactoringException("couldn't consistently rename method access at "+pos);
-				if(isLeftChildOfDot()) {
-					Access right = parentDot().getRight();
-					Expr p = nestedScope();
-					p.replaceWith(newacc.qualifiesAccess(right));
-				} else {
-					this.unqualifiedScope().replaceWith(newacc);
-				}
-			}
-		} else if(target instanceof TypeDecl) {
-			TypeAccess tacc = (TypeAccess)this;
-			if(tacc.decl().sourceTypeDecl() != target) {
-				boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-				newacc = this.access((TypeDecl)target, ambiguous);
-				if(newacc == null)
-					throw new RefactoringException("couldn't consistently rename type access at "+pos);
-				if(isLeftChildOfDot()) {
-					Access right = parentDot().getRight();
-					Expr p = nestedScope();
-					p.replaceWith(newacc.qualifiesAccess(right));
-				} else {
-					this.unqualifiedScope().replaceWith(newacc);
-				}
-			} else {
-				ASTNode parent = tacc.getParent();
-				int idx = parent.getIndexOfChild(tacc);
-				ParseName pn = new ParseName(tacc.getID());
-				parent.setChild(pn, idx);
-				try {
-					Access tmp = (Access)parent.getChild(idx);
-					if(tmp instanceof VarAccess) {
-						parent.setChild(tacc, idx);
-						boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-						newacc = this.access((TypeDecl)target, ambiguous);
-						if(newacc == null)
-							throw new RefactoringException("couldn't consistently rename type access at "+pos);
-						if(isLeftChildOfDot()) {
-							Access right = parentDot().getRight();
-							Expr p = nestedScope();
-							p.replaceWith(newacc.qualifiesAccess(right));
-						} else {
-							this.unqualifiedScope().replaceWith(newacc);
-						}
-					}
-				} finally {
-					parent.setChild(tacc, idx);
-				}
-			}
-		} else if(target instanceof PackageDecl) {
-			Access acc = this;
-			ASTNode parent = acc; int idx;
-			do {
-				acc = (Access)parent;
-				parent = acc.getParent();
-				idx = parent.getIndexOfChild(acc);
-			} while(parent instanceof AbstractDot);
-			ParseName pn = new ParseName(acc.packageName());
+	refine AdjustAccess public void MethodDecl.adjustAccess(Access acc) throws RefactoringException {
+		assert(acc instanceof MethodAccess);
+		MethodAccess ma = (MethodAccess)acc;
+		if(ma.decl().sourceMethodDecl() != this) {
+			Access newacc = ma.access(this, (List)ma.getArgList().fullCopy());
+			if(newacc == null)
+				throw new RefactoringException("couldn't consistently rename method access at "+acc.getPos());
+			acc.plugInNewAccess(newacc);
+		}
+	}
+
+	refine AdjustAccess public void TypeDecl.adjustAccess(Access acc) throws RefactoringException {
+		assert(acc instanceof TypeAccess);
+		FileRange pos = acc.getPos();
+		TypeAccess tacc = (TypeAccess)acc;
+		if(tacc.decl().sourceTypeDecl() != this) {
+			boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
+			Access newacc = tacc.access(this, ambiguous);
+			if(newacc == null)
+				throw new RefactoringException("couldn't consistently rename type access at "+acc.getPos());
+			acc.plugInNewAccess(newacc);
+		} else {
+			ASTNode parent = tacc.getParent();
+			int idx = parent.getIndexOfChild(tacc);
+			ParseName pn = new ParseName(tacc.getID());
 			parent.setChild(pn, idx);
 			try {
-				if(parent.getChild(idx) instanceof VarAccess)
-					throw new RefactoringException("package access at "+pos+" is shadowed");
+				Access tmp = (Access)parent.getChild(idx);
+				if(tmp instanceof VarAccess) {
+					parent.setChild(tacc, idx);
+					boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
+					Access newacc = tacc.access(this, ambiguous);
+					if(newacc == null)
+						throw new RefactoringException("couldn't consistently rename type access at "+acc.getPos());
+					acc.plugInNewAccess(newacc);
+				}
 			} finally {
-				parent.setChild(acc, idx);
+				parent.setChild(tacc, idx);
 			}
-		} else {
-			throw new RefactoringException("don't know how to adjust access to "+target.getClass()+" "+target);
 		}
 	}
 
@@ -248,21 +190,21 @@ aspect RefactoringGenerics {
 	class SymbolicParTypeAccess extends SymbolicTypeAccess {
 		private ParTypeDecl target;
 		private SymbolicTypeAccess sourceAccess;
-		
+
 		public SymbolicParTypeAccess(boolean needsQualifier, ParTypeDecl target) {
 			super(null, needsQualifier, (TypeDecl)target);
 			this.target = target;
 			this.sourceAccess = ((TypeDecl)target).sourceTypeDecl().getSymbolicAccess(needsQualifier);
 		}
 	}
-		
+
 	protected SymbolicTypeAccess SymbolicParTypeAccess.addQualifier(boolean flag) {
 		SymbolicTypeAccess acc = sourceAccess.addQualifier(flag);
 		if(acc == null) return null;
 		sourceAccess = acc;
 		return this;
 	}
-	
+
 	public Access SymbolicParTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
 		Access source_acc = sourceAccess.computeAccess(ctxt, ambiguous);
 		if(source_acc == null) return null;
@@ -285,12 +227,135 @@ aspect RefactoringGenerics {
 			if(acc == null) return null;
 			arg_accs.add(acc);
 		}
-		// TODO: now we have to fiddle the type arguments into source_acc, which might
-		//       be qualified...
-		return null;
+		/* the last access in source_acc will be an access to the raw type which we
+		 * have to replace by an access to the parametrised type */
+		Access last = source_acc.lastAccess();
+		ASTNode lastparent = last.getParent();
+		int idx = lastparent.getIndexOfChild(last);
+		lastparent.setChild(new ParTypeAccess(last, arg_accs), idx);
+		return source_acc;
 	}
-	
+
 	public SymbolicTypeAccess ParTypeDecl.getSymbolicAccess(boolean needsQualifier) {
 		return new SymbolicParTypeAccess(needsQualifier, this);
+	}
+
+	// access computational rules (see Generics.jrag for the corresponding lookup rules)
+	eq ParTypeAccess.getTypeArgument().accessType(TypeDecl td) 
+	  = unqualifiedScope().accessType(td);
+
+	public SymbolicTypeAccess SymbolicTypeAccess.movePastTypeVars(GenericTypeDecl td) {
+		TypeDecl target = (TypeDecl)this.target;
+		return addQualifier(!td.addTypeVariables(SimpleSet.emptySet, 
+												 target.name()).isEmpty());
+
+	}
+
+	public SymbolicTypeAccess GenericTypeDecl.accessTypeVariable(TypeDecl td) {
+		GenericTypeDecl original = (GenericTypeDecl)original();
+		for(int i = 0; i < original.getNumTypeParameter(); i++) {
+			TypeVariable td2 = original.getTypeParameter(i);
+			if(td2.sameSourceDeclAs(td))
+				return td.getSymbolicAccess();
+		}
+		return null;
+	}
+
+	eq GenericInterfaceDecl.getSuperInterfaceId().accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = accessTypeVariable(td);
+		if(acc != null)
+			return acc;
+		acc = accessType(td);
+		if(acc != null)
+			return acc.movePastTypeVars(this);
+		return null;
+	}
+
+	eq GenericClassDecl.getSuperClassAccess().accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = accessTypeVariable(td);
+		if(acc != null)
+			return acc;
+		acc = accessType(td);
+		if(acc != null)
+			return acc.movePastTypeVars(this);
+		return null;
+	}
+
+	eq GenericClassDecl.getImplements().accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = accessTypeVariable(td);
+		if(acc != null)
+			return acc;
+		acc = accessType(td);
+		if(acc != null)
+			return acc.movePastTypeVars(this);
+		return null;
+	}
+
+	eq GenericTypeDecl.getTypeParameter().accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = accessMemberType(td);
+		if(acc != null) 
+			return acc;
+		acc = accessTypeVariable(td);
+		if(acc != null) 
+			return acc.movePastTypeVars(this);
+		acc = accessType(td);
+		if(acc != null) {
+			acc = acc.movePastTypeVars(this);
+			if(acc == null) return null;
+			acc = acc.moveInto(this);
+			if(isClassDecl() && isStatic() && !isTopLevelType()) {
+				if(td.isStatic() || 
+						(td.enclosingType() != null && instanceOf(td.enclosingType())))
+					return acc;
+			} else {
+				return acc;
+			}
+		}
+		acc = topLevelType().accessType(td);
+		if(acc == null) return null;
+		acc = acc.movePastTypeVars(this);
+		if(acc == null) return null;
+		return acc.moveInto(this);
+	}
+
+	eq GenericTypeDecl.getBodyDecl(int index).accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = accessMemberType(td);
+		if(acc != null)
+			return acc;
+		if(getBodyDecl(index).visibleTypeParameters()) {
+			acc = accessTypeVariable(td);
+			if(acc != null)
+				return acc.movePastTypeVars(this);
+		}
+		acc = accessType(td);
+		if(acc != null) {
+			acc = acc.movePastTypeVars(this);
+			if(acc == null) return null;
+			acc = acc.moveInto(this);
+			if(isClassDecl() && isStatic() && !isTopLevelType()) {
+				if(td.isStatic() || 
+						(td.enclosingType() != null && instanceOf(td.enclosingType())))
+					return acc;
+			} else {
+				return acc;
+			}
+		}
+		acc = topLevelType().accessType(td);
+		if(acc == null) return null;
+		acc = acc.movePastTypeVars(this);
+		if(acc == null) return null;
+		return acc.moveInto(this);
+	}
+
+	// SymbolicTypeVarAccess has the same behaviour as SymbolicLocalTypeAccess
+	class SymbolicTypeVarAccess extends SymbolicLocalTypeAccess {
+		public SymbolicTypeVarAccess(boolean needsQualifier, TypeVariable target) {
+			super(target);
+			addQualifier(needsQualifier);
+		}
+	}
+
+	public SymbolicTypeAccess TypeVariable.getSymbolicAccess(boolean needsQualifier) {
+		return new SymbolicTypeVarAccess(needsQualifier, this);
 	}
 }

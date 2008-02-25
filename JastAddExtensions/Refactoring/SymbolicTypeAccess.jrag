@@ -49,7 +49,7 @@ aspect SymbolicTypeAccess {
 	
 	public SymbolicTypeAccess SymbolicTypeAccess.moveDownTo(TypeDecl td) {
 		TypeDecl target = (TypeDecl)this.target;
-		return addQualifier(!td.localMemberTypes(target.name()).isEmpty());
+		return addQualifier(!td.localTypeDecls(target.name()).isEmpty());
 	}
 		
 	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(Block blk, int index) {

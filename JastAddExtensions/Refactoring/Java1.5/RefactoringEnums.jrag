@@ -1,0 +1,7 @@
+aspect RefactoringEnums {
+	
+	eq ConstCase.getValue().accessVariable(Variable decl)
+	  = switchType().isEnumDecl() ? switchType().accessMemberField(decl) 
+			  					  : accessVariable(decl);
+	
+}
