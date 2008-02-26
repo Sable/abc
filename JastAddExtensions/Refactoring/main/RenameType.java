@@ -59,6 +59,7 @@ public class RenameType {
 	        	d.rename(newname);
 	        } catch(RefactoringException rfe) {
 	        	System.err.println("refactoring failed");
+	        	rfe.printStackTrace();
 	        }
 		} else {
 			System.err.println("There were compilation errors.");
