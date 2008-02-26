@@ -250,6 +250,16 @@ aspect RefactoringGenerics {
 												 target.name()).isEmpty());
 
 	}
+	
+	public SymbolicTypeAccess SymbolicTypeAccess.movePastTypeVars(GenericMethodDecl md) {
+		TypeDecl target = (TypeDecl)this.target;
+		return addQualifier(!md.localLookupType(target.name()).isEmpty());
+	}
+
+	public SymbolicTypeAccess SymbolicTypeAccess.movePastTypeVars(GenericConstructorDecl cd) {
+		TypeDecl target = (TypeDecl)this.target;
+		return addQualifier(!cd.localLookupType(target.name()).isEmpty());
+	}
 
 	public SymbolicTypeAccess GenericTypeDecl.accessTypeVariable(TypeDecl td) {
 		GenericTypeDecl original = (GenericTypeDecl)original();
@@ -346,6 +356,49 @@ aspect RefactoringGenerics {
 		if(acc == null) return null;
 		return acc.moveInto(this);
 	}
+	
+	eq ParMethodAccess.getTypeArgument().accessType(TypeDecl td) 
+	  = unqualifiedScope().accessType(td);
+
+	inh SymbolicTypeAccess GenericMethodDecl.accessType(TypeDecl td);
+	syn SymbolicTypeAccess GenericMethodDecl.localAccessType(TypeDecl td) {
+		for(int i = 0; i < getNumTypeParameter(); i++)
+			if(original().getTypeParameter(i).sameSourceDeclAs(td))
+				return td.getSymbolicAccess();
+		return null;
+	}
+	eq GenericMethodDecl.getChild().accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = localAccessType(td);
+		if(acc != null) return acc;
+		acc = accessType(td);
+		if(acc != null) return acc.movePastTypeVars(this);
+		return null;
+	}
+	
+	eq ParConstructorAccess.getTypeArgument().accessType(TypeDecl td) 
+	  = unqualifiedScope().accessType(td);
+	eq ParSuperConstructorAccess.getTypeArgument().accessType(TypeDecl td) 
+	  = unqualifiedScope().accessType(td);
+	
+	inh SymbolicTypeAccess GenericConstructorDecl.accessType(TypeDecl td);
+	syn SymbolicTypeAccess GenericConstructorDecl.localAccessType(TypeDecl td) {
+	  for(int i = 0; i < getNumTypeParameter(); i++) {
+	    if(original().getTypeParameter(i).sameSourceDeclAs(td))
+	      return td.getSymbolicAccess();
+	  }
+	  return null;
+	}
+	  
+	eq GenericConstructorDecl.getChild().accessType(TypeDecl td) { 
+		SymbolicTypeAccess acc = localAccessType(td);
+		if(acc != null) return acc;
+		acc = accessType(td);
+		if(acc != null) return acc.movePastTypeVars(this);
+		return null;
+	}
+	
+	eq ParClassInstanceExpr.getTypeArgument().accessType(TypeDecl td)
+	  = unqualifiedScope().accessType(td);
 
 	// SymbolicTypeVarAccess has the same behaviour as SymbolicLocalTypeAccess
 	class SymbolicTypeVarAccess extends SymbolicLocalTypeAccess {

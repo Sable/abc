@@ -305,4 +305,20 @@ public class RenameTypeTests extends RenameType {
 	public void test96() {
 		runTypeRenameTest("test96");
 	}
+	public void test97() {
+		runTypeRenameTest("test97");
+	}
+	public void test98() {
+		runTypeRenameTest("test98");
+	}
+	public void test99() {
+		runTypeRenameTest("test99");
+	}
+	// yay!
+	public void test100() {
+		runTypeRenameTest("test100");
+	}
+	public void test101() {
+		runTypeRenameTest("test101");
+	}
 }
