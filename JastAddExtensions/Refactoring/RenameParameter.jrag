@@ -33,7 +33,7 @@ aspect RenameParameter {
 		RefactoringException e = canRenameTo(new_name);
 		if(e != null)
 			throw e;
-		AdjustmentTable table = find_uses(new_name);
+		AdjustmentTable table = findEndangered(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();

@@ -10,7 +10,7 @@ aspect RenameType {
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		String old_name = getID();
-		AdjustmentTable table = find_uses(new_name);
+		AdjustmentTable table = findEndangered(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
@@ -31,7 +31,7 @@ aspect RenameType {
 		}
 	}
 	
-	private AdjustmentTable TypeDecl.find_uses(String new_name) {
+	private AdjustmentTable TypeDecl.findEndangered(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
 		/* first, collect all uses of the field we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
@@ -44,7 +44,7 @@ aspect RenameType {
 			Collection descendants = enclosingType().descendants();
 			for(Iterator i = descendants.iterator(); i.hasNext();) {
 				TypeDecl td = (TypeDecl)i.next();
-				find_shadowed_in(new_name, td, table);
+				findEndangered(new_name, td, table);
 			}
 		} else {
 			for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
@@ -67,7 +67,7 @@ aspect RenameType {
 		return table;
 	}
 	
-	public AdjustmentTable TypeDecl.find_shadowed_in(String new_name,
+	public AdjustmentTable TypeDecl.findEndangered(String new_name,
 			TypeDecl td, AdjustmentTable table) {
 		if(td.getNumBodyDecl() == 0)
 			return table;

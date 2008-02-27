@@ -38,13 +38,13 @@ aspect RenameMethod {
 			if(!canOverrideOrHide(md))
 				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
 		}
-		AdjustmentTable table = find_uses(new_name);
+		AdjustmentTable table = findEndangered(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
 	}
 
-	private AdjustmentTable MethodDecl.find_uses(String new_name) {
+	private AdjustmentTable MethodDecl.findEndangered(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
 		/* first, collect all uses of the method we are renaming */
 		for(Iterator i = definiteUses().iterator(); i.hasNext();) {

@@ -16,7 +16,7 @@ aspect RenameField {
 			return;
 		if(!hostType().localFields(new_name).isEmpty())
 			throw new RefactoringException("couldn't rename: field name clash");
-		AdjustmentTable table = find_uses(new_name);
+		AdjustmentTable table = findEndangered(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
@@ -26,7 +26,7 @@ aspect RenameField {
 	 * uses of the variable before renaming and all uses of fields, types and
 	 * packages that might become shadowed by the renaming and collects them into
 	 * an adjustment table */ 
-	public AdjustmentTable FieldDeclaration.find_uses(String new_name) {
+	public AdjustmentTable FieldDeclaration.findEndangered(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
 		/* first, collect all uses of the field we are renaming */
 		for(Iterator i = uses().iterator(); i.hasNext();) {
@@ -38,7 +38,7 @@ aspect RenameField {
 		Collection descendants = hostType().descendants();
 		for(Iterator i = descendants.iterator(); i.hasNext();) {
 			TypeDecl td = (TypeDecl)i.next();
-			find_shadowed_in(new_name, td, table);
+			findEndangered(new_name, td, table);
 		}
 		// same for packages
 		PackageDecl pd = programRoot().getPackageDecl(new_name);
@@ -52,7 +52,7 @@ aspect RenameField {
 		return table;
 	}
 	
-	public AdjustmentTable FieldDeclaration.find_shadowed_in(String new_name,
+	public AdjustmentTable FieldDeclaration.findEndangered(String new_name,
 									TypeDecl td, AdjustmentTable table) {
 		if(td.getNumBodyDecl() == 0)
 			return table;
