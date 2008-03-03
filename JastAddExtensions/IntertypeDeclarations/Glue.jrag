@@ -7,4 +7,7 @@ aspect Glue {
 
   eq DeclareParentsImplements.getPattern().nameType() = NameType.TYPE_NAME;
   eq DeclareParentsImplements.getTypeAccess().nameType() = NameType.TYPE_NAME;
+
+  syn boolean Access.matchesType(TypeDecl t) = type() == t;
+
 }
