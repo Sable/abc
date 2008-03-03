@@ -66,10 +66,10 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${flattening}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
+    <fileset dir="${javabackend}">
+			<include name="InnerClasses.jrag"/>
+			<include name="Transformations.jrag"/>
+			<include name="Java2Rewrites.jrag"/>
 		</fileset>
 		<fileset dir="${itds}">
 			<include name="**/*.ast"/>
