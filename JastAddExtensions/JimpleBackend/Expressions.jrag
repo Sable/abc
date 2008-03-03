@@ -93,7 +93,7 @@ aspect Expressions {
       // append right
       Local rightResult = b.newTemp(
         Jimple.v().newVirtualInvokeExpr(local,
-          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.StringBuffer append(" + source.stringPromotion() + ")>").makeRef(),
+          lookupType("java.lang", "StringBuffer").methodWithArgs("append", new TypeDecl[] { source.stringPromotion() }).sootRef(),
           asImmediate(b, getSource().eval(b))
         ));
 
@@ -821,7 +821,7 @@ aspect Expressions {
         b.setLine(this);
         b.add(Jimple.v().newInvokeStmt(
           Jimple.v().newVirtualInvokeExpr(v,
-            Scene.v().getMethod("<java.lang.StringBuffer: java.lang.StringBuffer append(" + getLeftOperand().type().stringPromotion() + ")>").makeRef(),
+            lookupType("java.lang", "StringBuffer").methodWithArgs("append", new TypeDecl[] { getLeftOperand().type().stringPromotion() }).sootRef(),
             asImmediate(b, getLeftOperand().eval(b))
           )));
       }
@@ -831,7 +831,7 @@ aspect Expressions {
       b.setLine(this);
       b.add(Jimple.v().newInvokeStmt(
         Jimple.v().newVirtualInvokeExpr(v,
-          Scene.v().getMethod("<java.lang.StringBuffer: java.lang.StringBuffer append(" + getRightOperand().type().stringPromotion() + ")>").makeRef(),
+          lookupType("java.lang", "StringBuffer").methodWithArgs("append", new TypeDecl[] { getRightOperand().type().stringPromotion() }).sootRef(),
           asImmediate(b, getRightOperand().eval(b))
         )));
       if(lastStringAddPart()) {

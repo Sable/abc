@@ -140,6 +140,8 @@ aspect EmitJimple {
         getBodyDecl(i).jimplify1phase2();
   }
 
+  syn boolean BodyDecl.generate() = true;
+
   public void ClassDecl.jimplify1phase2() {
     SootClass sc = getSootClassDecl();
     if(hasSuperclass()) {
