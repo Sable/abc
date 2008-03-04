@@ -82,15 +82,15 @@ Expr cast_expression =
 
 MethodDecl method_header =
 	  modifiers.m? LT type_parameter_list_1.l type.t IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN dims.d? modifiers.m2 throws.tl?
-    {: return new GenericMethodDecl(new Modifiers(m), t.addArrayDims(d), id, p, tl, new Opt(), l, new List()).setReceiverAnnotations(new Modifiers(m2)); :}
+    {: return new GenericMethodDecl(new Modifiers(m), t.addArrayDims(d), id, p, tl, new Opt(), l).setReceiverAnnotations(new Modifiers(m2)); :}
 	| modifiers.m? LT type_parameter_list_1.l VOID IDENTIFIER.id LPAREN formal_parameter_list.p? RPAREN modifiers.m2 throws.tl?
-    {: return new GenericMethodDecl(new Modifiers(m), new PrimitiveTypeAccess("void"), id, p, tl, new Opt(), l, new List()).setReceiverAnnotations(new Modifiers(m2)); :}
+    {: return new GenericMethodDecl(new Modifiers(m), new PrimitiveTypeAccess("void"), id, p, tl, new Opt(), l).setReceiverAnnotations(new Modifiers(m2)); :}
   ;
 
 ConstructorDecl constructor_declaration =
 	  modifiers.m? LT type_parameter_list_1.l IDENTIFIER LPAREN formal_parameter_list.pl? RPAREN modifiers.m2 throws.tl? 
       LBRACE explicit_constructor_invocation.c? block_statements.bl? RBRACE
-    {: return new GenericConstructorDecl(new Modifiers(m), IDENTIFIER, pl, tl, c, new Block(bl), l, new List()).setReceiverAnnotations(new Modifiers(m2)); :}
+    {: return new GenericConstructorDecl(new Modifiers(m), IDENTIFIER, pl, tl, c, new Block(bl), l).setReceiverAnnotations(new Modifiers(m2)); :}
 	;
 
 Access wildcard =
