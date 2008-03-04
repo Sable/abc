@@ -132,6 +132,20 @@
         </jar>
    </target>
 
+   <!-- Largely for Jimple type inference testing, we can obfuscate the abc-complete.jar.
+	To do so, place yguard.jar in the current directory. -->
+   <target name="obfuscate" depends="complete-jar">
+     <taskdef name="yguard" classname="com.yworks.yguard.YGuardTask" classpath="yguard.jar"/>
+     <yguard>
+       <inoutpair in="lib/abc-complete.jar" out="lib/abc-obfuscated.jar"/>
+       <shrink logfile="shrinklog.xml">
+	 <keep>
+	   <class classes="protected" methods="protected" fields="protected"/>
+	 </keep>
+       </shrink>
+     </yguard>
+   </target>
+
     <target name="abc" depends="settings,flex-translator,cup-translator,options-code">
         <mkdir dir="classes"/>
         <javac
