@@ -318,7 +318,6 @@ aspect NonNullInference {
   // infer rawness
   syn lazy boolean FieldDeclaration.inferedRaw() circular [false] {
     if(!type().isReferenceType()) return false;
-    if(isStatic()) return true;
     if(getModifiers().isRawObjectType()) return true;
     if(!hostType().compilationUnit().fromSource()) return false;
     if(hasInit() && getInit().inferedRaw())
