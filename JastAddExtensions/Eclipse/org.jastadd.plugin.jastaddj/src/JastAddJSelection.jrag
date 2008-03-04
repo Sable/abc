@@ -1,0 +1,31 @@
+aspect JastAddJSelection {
+
+    eq MethodDecl.selectionLine() = ASTNode.getLine(IDstart);
+    eq MethodDecl.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq MethodDecl.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+    
+    eq ConstructorDecl.selectionLine() = ASTNode.getLine(IDstart);
+    eq ConstructorDecl.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq ConstructorDecl.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+    
+    eq FieldDeclaration.selectionLine() = ASTNode.getLine(IDstart);
+    eq FieldDeclaration.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq FieldDeclaration.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+    
+    eq ParameterDeclaration.selectionLine() = ASTNode.getLine(IDstart);
+    eq ParameterDeclaration.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq ParameterDeclaration.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+    
+    eq VariableDeclaration.selectionLine() = ASTNode.getLine(IDstart);
+    eq VariableDeclaration.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq VariableDeclaration.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+    
+    eq ClassDecl.selectionLine() = ASTNode.getLine(IDstart);
+    eq ClassDecl.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq ClassDecl.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+    
+    eq InterfaceDecl.selectionLine() = ASTNode.getLine(IDstart);
+    eq InterfaceDecl.selectionColumn() = ASTNode.getColumn(IDstart);
+    eq InterfaceDecl.selectionLength() = ASTNode.getColumn(IDend) - selectionColumn() + 1;
+
+}

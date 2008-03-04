@@ -44,8 +44,21 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
+			<exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="BytecodeDescriptor.jrag"/>
+			<exclude name="BytecodeReader.jrag"/>
+		</fileset>
+		<fileset dir="../../Java1.5Frontend">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
 		</fileset>
 		<fileset dir="../../Java1.4Backend">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="../../Java1.5Backend">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -63,12 +76,15 @@
 		</fileset>
 		<fileset file="${Refactoring}/Methodoid.jadd"/>
 		<fileset file="${Refactoring}/Scope.jadd"/>
+		<fileset file="${Refactoring}/SymbolicTypeAccess.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
 			<include name="**/*.jrag"/>
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
+			<exclude name="Uses.jrag"/>
+			<exclude name="SymbolicTypeAccess.jrag"/>
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>
@@ -163,6 +179,17 @@
   </jar>
 </target>
 
+
+<!-- build a jar for use with astgen test suite -->
+<!-- <target name="testjar">
+  <jar destfile="org.jastadd.refactoring.jar" basedir="../bin">
+    <include name="AST/*.class"/>
+    <include name="beaver/*.class"/>
+    <include name="parser/*.class"/>
+    <include name="scanner/*.class"/>
+    <include name="../../Refactoring/tests/TestHelper*.class"/>
+  </jar>
+</target> -->
 
 <target name="test" depends="build">
         <java classname="RunTests" classpath="." fork="true" dir="executiontests"/>

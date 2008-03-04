@@ -173,7 +173,7 @@ aspect JastAddJCompletion {
     if(hasSuperclass()) {
       for(Iterator iter = superclass().fields().iterator(); iter.hasNext(); ) {
         Variable v = (Variable)iter.next();
-        if(!fields(v.name()).contains(v) && !v.isSynthetic())
+        if(!memberFields(v.name()).contains(v) && !v.isSynthetic())
           c.add(v);
       }
     }
@@ -181,7 +181,7 @@ aspect JastAddJCompletion {
       TypeDecl type = (TypeDecl)outerIter.next();
       for(Iterator iter = type.fields().iterator(); iter.hasNext(); ) {
         Variable v = (Variable)iter.next();
-        if(!fields(v.name()).contains(v) && !v.isSynthetic())
+        if(!memberFields(v.name()).contains(v) && !v.isSynthetic())
           c.add(v);
       }
     }
@@ -193,7 +193,7 @@ aspect JastAddJCompletion {
       TypeDecl type = (TypeDecl)outerIter.next();
       for(Iterator iter = type.fields().iterator(); iter.hasNext(); ) {
         Variable v = (Variable)iter.next();
-        if(!fields(v.name()).contains(v) && !v.isSynthetic())
+        if(!memberFields(v.name()).contains(v) && !v.isSynthetic())
           c.add(v);
       }
     }
