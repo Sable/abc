@@ -193,8 +193,8 @@ aspect NonNullInferenceJava5Glue {
     return NonNullInference.Modifiers.isRawThisObjectType();
   }
 
-  refine NonNullInference eq ParameterDeclaration.inferedNonNullLocally() {
-    if(!NonNullInference.ParameterDeclaration.inferedNonNullLocally())
+  refine NonNullInference eq VariableDeclaration.inferedNonNull() {
+    if(!NonNullInference.VariableDeclaration.inferedNonNull())
       return false;
     if(getParent() instanceof EnhancedForStmt) {
       EnhancedForStmt stmt = (EnhancedForStmt)getParent();
