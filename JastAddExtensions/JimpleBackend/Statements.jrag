@@ -260,13 +260,6 @@ aspect Statements {
     }
   }
 
-  public void ASTNode.flushCaches() {
-    flushCache();
-    for(int i = 0; i < getNumChild(); i++)
-      getChild(i).flushCaches();
-  }
-
-
   syn lazy soot.Local SynchronizedStmt.monitor(Body b) {
     return b.newTemp(getExpr().eval(b));
   }
