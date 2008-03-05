@@ -24,7 +24,7 @@ aspect IntertypeMethodNameAnalysis {
     if(!c.isEmpty()) return c;
     return lookupMethod(name);
   }
-  eq IntertypeMethodDecl.getBlock().lookupVariable(String name) {
+  eq IntertypeMethodDecl.getChild().lookupVariable(String name) {
     SimpleSet set = parameterDeclaration(name);
     // A declaration of a method parameter name shadows any other variable declarations
     if(!set.isEmpty()) return set;
