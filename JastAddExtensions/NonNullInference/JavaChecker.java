@@ -51,7 +51,7 @@ class JavaChecker extends Frontend {
   }
 
   protected String name() { return "NonNullInferencer"; }
-  protected String version() { return "R20080304"; }
+  protected String version() { return "R20080305"; }
 
   protected void printUsage() {
       printVersion();
