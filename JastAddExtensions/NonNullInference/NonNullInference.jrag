@@ -12,32 +12,32 @@ aspect NonNullInference {
   // refine pretty printer to include infered annotations
   refine PrettyPrint public void ParameterDeclaration.toString(StringBuffer s) {
     if(addNonNull())
-      s.append("@NonNull ");
+      s.append(Program.nonNullAnnotation());
     if(inferedRaw())
-      s.append("@Raw ");
+      s.append(Program.rawAnnotation());
     PrettyPrint.ParameterDeclaration.toString(s);
   }
   refine PrettyPrint public void VariableDeclaration.toString(StringBuffer s) {
     if(addNonNull())
-      s.append("@NonNull ");
+      s.append(Program.nonNullAnnotation());
     if(inferedRaw())
-      s.append("@Raw ");
+      s.append(Program.rawAnnotation());
     PrettyPrint.VariableDeclaration.toString(s);
   }
   refine PrettyPrint public void FieldDeclaration.toString(StringBuffer s) {
     if(addNonNull())
-      s.append("@NonNull ");
+      s.append(Program.nonNullAnnotation());
     if(inferedRaw())
-      s.append("@Raw ");
+      s.append(Program.rawAnnotation());
     PrettyPrint.FieldDeclaration.toString(s);
   }
   refine PrettyPrint public void MethodDecl.toString(StringBuffer s) {
     if(addNonNull())
-      s.append("@NonNull ");
+      s.append(Program.nonNullAnnotation());
     if(inferedRaw())
-      s.append("@Raw ");
+      s.append(Program.rawAnnotation());
     if(inferedRawThis())
-      s.append("@RawThis ");
+      s.append(Program.rawThisAnnotation());
     PrettyPrint.MethodDecl.toString(s);
   }
 
@@ -270,10 +270,11 @@ aspect NonNullInference {
       return false;
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
+      if(!Program.rawEnabled) return false;
       if(isQualified())
-        return (f.inferedNonNull() && !qualifier().inferedRaw()) || inferedGuardedByNullCheck(f);
+        return f.inferedNonNull() && !qualifier().inferedRaw();
       else
-        return (f.inferedNonNull() && !inferedRawThisType()) || inferedGuardedByNullCheck(f);
+        return f.inferedNonNull() && !inferedRawThisType();
     }
     else if(v instanceof ParameterDeclaration)
       return ((ParameterDeclaration)v).inferedNonNull() || inferedGuardedByNullCheck(v);
@@ -314,9 +315,11 @@ aspect NonNullInference {
   eq RelationalExpr.inferedNonNull() = getLeftOperand().inferedNonNull() && getRightOperand().inferedNonNull();
 
 
+  public static boolean Program.rawEnabled;
 
   // infer rawness
   syn lazy boolean FieldDeclaration.inferedRaw() circular [false] {
+    if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
     if(getModifiers().isRawObjectType()) return true;
     if(!hostType().compilationUnit().fromSource()) return false;
@@ -330,6 +333,7 @@ aspect NonNullInference {
     return false;
   }
   syn lazy boolean VariableDeclaration.inferedRaw() circular [false] {
+    if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
     if(getModifiers().isRawObjectType()) return true;
     if(hasInit() && getInit().inferedRaw())
@@ -343,6 +347,7 @@ aspect NonNullInference {
   }
   
   syn lazy boolean ParameterDeclaration.inferedRawLocally() circular [false] {
+    if(!Program.rawEnabled) return false;
     for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
       Expr rhs = (Expr)iter.next();
       if(rhs.inferedRaw())
@@ -357,6 +362,7 @@ aspect NonNullInference {
   }
   
   syn lazy boolean ParameterDeclaration.inferedRaw() circular [false] {
+    if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
     if(getModifiers().isRawObjectType()) return true;
     if(!hostType().compilationUnit().fromSource()) return false;
@@ -378,6 +384,7 @@ aspect NonNullInference {
   }
   
   syn lazy boolean MethodDecl.inferedRawLocally() circular [false] {
+    if(!Program.rawEnabled) return false;
     for(Iterator iter = returnValues().iterator(); iter.hasNext(); ) {
       Expr rhs = (Expr)iter.next();
       if(rhs.inferedRaw())
@@ -387,6 +394,7 @@ aspect NonNullInference {
   }
   
   syn lazy boolean MethodDecl.inferedRaw() circular [false] {
+    if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
     if(getModifiers().isRawObjectType()) return true;
     if(!hostType().compilationUnit().fromSource()) return false;
@@ -429,6 +437,7 @@ aspect NonNullInference {
   }
   
   syn lazy boolean MethodDecl.inferedRawThis() circular [false] {
+    if(!Program.rawEnabled) return false;
     if(isStatic()) return false;
     if(getModifiers().isRawThisObjectType()) return true;
     if(!hostType().compilationUnit().fromSource()) return false;

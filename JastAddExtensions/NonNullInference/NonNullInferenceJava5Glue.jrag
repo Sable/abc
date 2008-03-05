@@ -155,7 +155,7 @@ aspect NonNullInferenceJava5Glue {
   /*
   refine GenericsPrettyPrint public void TypeVariable.toString(StringBuffer s) {
     if(inferedNonNull())
-      s.append("@NonNull ");
+      s.append(Program.nonNullAnnotation());
     GenericsPrettyPrint.TypeVariable.toString(s);
   }
   */

@@ -100,14 +100,16 @@
         <file name="macros.flex"/>
         <file name="rules_preamble.flex"/>
         <file name="WhiteSpace.flex"/>
+      </filelist>
+       <filelist dir="${NonNullChecker}">
+        <file name="NonNull.flex"/>
+      </filelist>
+      <filelist dir="${Java1.4Frontend}/scanner">
         <file name="Comments.flex"/>
         <file name="Keywords.flex"/>
       </filelist>
       <filelist dir="${Java1.5Frontend}">
         <file name="java15keywords.flex"/>
-      </filelist>
-       <filelist dir="${NonNullChecker}">
-        <file name="NonNull.flex"/>
       </filelist>
       <filelist dir="${Java1.4Frontend}/scanner">
         <file name="Literals.flex"/>

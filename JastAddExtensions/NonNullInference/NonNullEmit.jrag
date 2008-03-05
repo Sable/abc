@@ -129,6 +129,34 @@ aspect NonNullEmit {
     }
   }
 
+  public void CompilationUnit.emit(PrintWriter p, Input input) throws java.io.IOException {
+    if(Program.hasValueForOption("-import") && getNumTypeDecl() > 0) {
+      String importString = "import " + Program.getValueForOption("-import") + ";";
+      boolean found = false;
+      for(int i = 0; i < getNumImportDecl() && !found; i++)
+        if(getImportDecl(i).toString().equals(importString))
+          found = true;
+      if(!found) {
+        int line = getLine(getImportDeclList().getEnd());
+        int column = getColumn(getImportDeclList().getEnd());
+        if(line != 0 && column != 0) {
+          line += 1;
+          column = 1;
+          input.emitUntil(line, column, p);
+          p.println(importString);
+        }
+        else {
+          input.emitUntil(';', p);
+          input.emitUntil(input.line + 1, 1, p);
+          p.println("\n" + importString);
+        }
+        getTypeDeclList().emit(p, input);
+        return;
+      }
+    }
+    super.emit(p, input);
+  }
+
   interface NonNullAnnotated {
     void emitAnnotations(java.io.PrintWriter p);
   }
@@ -139,32 +167,51 @@ aspect NonNullEmit {
 
   public void ParameterDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(inferedNonNull() && !getModifiers().isNotNull())
-      p.write("@NonNull ");
+      p.write(Program.nonNullAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write("@Raw ");
+      p.write(Program.rawAnnotation());
   }
 
   public void VariableDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(addNonNull())
-      p.write("@NonNull ");
+      p.write(Program.nonNullAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write("@Raw ");
+      p.write(Program.rawAnnotation());
   }
 
   public void FieldDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(addNonNull())
-      p.write("@NonNull ");
+      p.write(Program.nonNullAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write("@Raw ");
+      p.write(Program.rawAnnotation());
   }
 
   public void MethodDecl.emitAnnotations(java.io.PrintWriter p) {
     if(addNonNull())
-      p.write("@NonNull ");
+      p.write(Program.nonNullAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write("@Raw ");
+      p.write(Program.rawAnnotation());
     if(inferedRawThis() && !getModifiers().isRawThisObjectType())
-      p.write("@RawThis ");
+      p.write(Program.rawThisAnnotation());
+  }
+
+  public static String Program.nonNullAnnotation() {
+    if(Program.hasOption("-legacysyntax"))
+      return "/*@NonNull*/ ";
+    else
+      return "@NonNull ";
+  }
+  public static String Program.rawAnnotation() {
+    if(Program.hasOption("-legacysyntax"))
+      return "/*@Raw*/ ";
+    else
+      return "@Raw ";
+  }
+  public static String Program.rawThisAnnotation() {
+    if(Program.hasOption("-legacysyntax"))
+      return "/*@RawThis*/ ";
+    else
+      return "@RawThis ";
   }
 
 }

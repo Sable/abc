@@ -38,16 +38,20 @@ class JavaChecker extends Frontend {
   protected void initOptions() {
     super.initOptions();
     program.addKeyOption("-test");
+    program.addKeyValueOption("-import");
+    program.addKeyOption("-legacysyntax");
+    program.addKeyOption("-disableraw");
   }
   
   protected void processArgs(String[] args) {
     program.addOptions(args);
     if(!program.hasOption("-d"))
       program.addOptions(new String[] { "-d", "inferred" });
+    program.rawEnabled = !program.hasOption("-disableraw");
   }
 
   protected String name() { return "NonNullInferencer"; }
-  protected String version() { return "R20080219"; }
+  protected String version() { return "R20080304"; }
 
   protected void printUsage() {
       printVersion();
@@ -62,6 +66,11 @@ class JavaChecker extends Frontend {
           "  -d <directory>            Specify where to place source files with inferred annotations\n" +
           "                            The default location is a folder named 'inferred'\n" +
           "  -test                     Emit inferred source files to standard output rather than a file\n" +
+          "  -import <package>         Include the specified import in the generated source file unless\n" +
+          "                            it already exists\n" +
+          "  -legacysyntax             Use legacy syntax for inferred annotations, i.e., /*@NonNull*/\n" +
+          "  -disableraw               Disable raw types for partially initialised objects. This has\n" +
+          "                            the effect that all fields are considered possibly-null\n" +
           "  -help                     Print a synopsis of standard options\n" +
           "  -version                  Print version information\n"
           );
