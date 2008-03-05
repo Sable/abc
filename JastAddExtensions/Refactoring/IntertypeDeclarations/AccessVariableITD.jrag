@@ -1,0 +1,22 @@
+aspect AccessVariableITD {
+
+    eq IntertypeMethodDecl.getBlock().accessVariable(Variable decl) {
+	SymbolicVarAccess acc = accessParameterDeclaration(decl);
+	// A declaration of a method parameter name shadows any other variable declarations
+	if(acc != null) return acc;
+	acc = introducedType().accessMemberField(decl);
+	if(acc != null) return acc.moveInto((MethodDecl)this);
+	// Delegate to other declarations in scope
+	acc = accessVariable(decl);
+	if(acc != null)
+	    return acc.moveInto(this);
+	return null;
+    }
+
+    SymbolicVarAccess SymbolicVarAccess.moveInto(IntertypeMethodDecl md) {
+	Variable target = (Variable)this.target;
+	return addQualifier(!md.introducedType().memberFields(target.name()).isEmpty() ||
+			    !md.parameterDeclaration(target.name()).isEmpty());
+    }
+
+}

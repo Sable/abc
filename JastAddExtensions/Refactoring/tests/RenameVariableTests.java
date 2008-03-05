@@ -6,6 +6,10 @@ import junit.framework.TestSuite;
 
 public class RenameVariableTests extends RenameVariable {
 
+	protected String getTestBase() {
+		return "RenameVariable";
+	}
+
 	public RenameVariableTests(String arg0) {
 		super(arg0);
 	}

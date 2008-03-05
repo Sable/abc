@@ -85,48 +85,57 @@ aspect SymbolicVarAccess {
 			return addQualifier(s.hasVariable(target.name()));
 		}
 
-		public Access computeAccess(NamingContext ctxt) {
-			Variable target = (Variable)this.target;
-			if(isLocalVarAccess()) {
-				return new VarAccess(target.name());
+	    public Access computeAccess(NamingContext ctxt) {
+		Variable target = (Variable)this.target;
+		if(isLocalVarAccess()) {
+		    return new VarAccess(target.name());
+		} else {
+		    VarAccess va = new VarAccess(target.name());
+		    if(needsQualifier) {
+			if(((FieldDeclaration)target).isStatic())
+			    return computeStaticFieldAccess(ctxt);
+			if(ctxt.isStatic()) 
+			    return null;
+			if(source == bend) {
+			    if(source == ctxt.enclosingType())
+				return new ThisAccess("this").qualifiesAccess(va);
+			    else {
+				Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+				if(outer == null) return null;
+				return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
+			    }
+			} else if(bend instanceof ClassDecl && 
+				  source == ((ClassDecl)bend).superclass()) {
+			    if(bend == ctxt.enclosingType())
+				return new SuperAccess("super").qualifiesAccess(va);
+			    else {
+				Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+				if(outer == null) return null;
+				return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
+			    }
 			} else {
-				VarAccess va = new VarAccess(target.name());
-				if(needsQualifier) {
-					if(ctxt.isStatic()) return null;
-					if(source == bend) {
-						if(source == ctxt.enclosingType())
-							return new ThisAccess("this").qualifiesAccess(va);
-						else {
-							Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-							if(outer == null) return null;
-							return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(va));
-						}
-					} else if(bend instanceof ClassDecl && 
-							source == ((ClassDecl)bend).superclass()) {
-						if(bend == ctxt.enclosingType())
-							return new SuperAccess("super").qualifiesAccess(va);
-						else {
-							Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-							if(outer == null) return null;
-							return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(va));
-						}
-					} else {
-						Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-						if(upper == null) return null;
-						if(bend == ctxt.enclosingType()) {
-							return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(va);
-						} else {
-							Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-							if(outer == null) return null;
-							return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
-							qualifiesAccess(va);
-						}
-					}
-				} else {
-					return va;
-				}
+			    Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+			    if(upper == null) return null;
+			    if(bend == ctxt.enclosingType()) {
+				return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(va);
+			    } else {
+				Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+				if(outer == null) return null;
+				return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
+				    qualifiesAccess(va);
+			    }
 			}
+		    } else {
+			return va;
+		    }
 		}
+	    }
+
+	    public Access computeStaticFieldAccess(NamingContext ctxt) {
+		Access outer = ctxt.accessType(bend, true);
+		if(outer == null) return null;
+		return outer.qualifiesAccess(new VarAccess(((Variable)target).name()));
+	    }
 
 		public Access computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
 			Variable target = (Variable)this.target;

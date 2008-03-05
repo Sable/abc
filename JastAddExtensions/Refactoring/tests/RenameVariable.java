@@ -19,15 +19,13 @@ import AST.VariableDeclaration;
 
 public abstract class RenameVariable extends TestCase {
 	
-	private static String TEST_BASE = "RenameVariable";
-
 	public RenameVariable(String arg0) {
 		super(arg0);
 	}
 	
 	public void runFieldRenameTest(String name) {
-        String infile = TEST_BASE+"/"+name+"/in/A.java";
-        String resfile = TEST_BASE+"/"+name+"/out/A.java";
+        String infile = getTestBase()+"/"+name+"/in/A.java";
+        String resfile = getTestBase()+"/"+name+"/out/A.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();
@@ -103,5 +101,7 @@ public abstract class RenameVariable extends TestCase {
 		}
 		return null;
 	}
+
+	protected abstract String getTestBase();
 
 }

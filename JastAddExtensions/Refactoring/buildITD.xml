@@ -72,6 +72,7 @@
 		</fileset>
 		<fileset file="${Refactoring}/Methodoid.jadd"/>
 		<fileset file="${Refactoring}/Scope.jadd"/>
+		<fileset file="${Refactoring}/SymbolicVarAccess.jrag"/>
 		<fileset file="${Refactoring}/SymbolicTypeAccess.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
@@ -80,6 +81,7 @@
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
+			<exclude name="SymbolicVarAccess.jrag"/>
 			<exclude name="SymbolicTypeAccess.jrag"/>
 		</fileset>
   </jastadd>
