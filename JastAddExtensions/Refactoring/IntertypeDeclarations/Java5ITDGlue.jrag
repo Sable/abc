@@ -1,0 +1,31 @@
+aspect Java5ITDGlue {
+  refine IntertypeConstructorNameAnalysis eq SuperConstructorAccess.decls()
+  to refine MethodSignature eq SuperConstructorAccess.decls() {
+    Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?
+      thisType().lookupSuperConstructor() : lookupSuperConstructor();
+    return chooseConstructor(c, getArgList());
+  }
+
+  refine Generics public void TypeDecl.typeCheck()
+  to refine IntertypeMethodErrorCheck public void TypeDecl.typeCheck() {
+    IntertypeMethodErrorCheck.TypeDecl.typeCheck();
+    ArrayList list = new ArrayList();
+    list.addAll(implementedInterfaces());
+    for(int i = 0; i < list.size(); i++) {
+      InterfaceDecl decl = (InterfaceDecl)list.get(i);
+      if(decl instanceof ParInterfaceDecl) {
+        ParInterfaceDecl p = (ParInterfaceDecl)decl;
+        for(Iterator i2 = list.listIterator(i); i2.hasNext(); ) {
+          InterfaceDecl decl2 = (InterfaceDecl)i2.next();
+          if(decl2 instanceof ParInterfaceDecl) {
+            ParInterfaceDecl q = (ParInterfaceDecl)decl2;
+            if(p != q && p.genericDecl() == q.genericDecl() && !p.sameArgument(q))
+              error(p.genericDecl().name() + " cannot be inherited with different arguments: " +
+                p.typeName() + " and " + q.typeName());
+          }
+        }
+      }
+    }
+  }
+
+}

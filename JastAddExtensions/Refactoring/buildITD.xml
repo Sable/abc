@@ -12,6 +12,8 @@
 <property name="Java1.4Frontend" value="../Java1.4Frontend"/>
 <!-- location of Java1.5Frontend -->
 <property name="Java1.5Frontend" value="../Java1.5Frontend"/>
+<!-- location of IntertypeDeclarations -->
+<property name="IntertypeDeclarations" value="../IntertypeDeclarations"/>
 <!-- location of Analyses -->
 <property name="Analyses" value="../Analyses"/>
 <!-- location of self -->
@@ -55,6 +57,12 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
+		<fileset dir="${IntertypeDeclarations}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+      <exclude name="**/*Codegen*"/>
+		</fileset>
 		<fileset file="${Analyses}/LocalDeclaration.jrag"/>
 		<fileset dir="${Analyses}">
 			<include name="**/*.ast"/>
@@ -73,7 +81,6 @@
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
 			<exclude name="SymbolicTypeAccess.jrag"/>
-			<exclude name="IntertypeDeclarations/**/*"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
@@ -121,6 +128,9 @@
       <file name="WhiteSpace.flex"/>
       <file name="Comments.flex"/>
       <file name="Keywords.flex"/>
+    </filelist>
+    <filelist dir="${Refactoring}/IntertypeDeclarations">
+       <file name="ITDKeywords.flex"/>
     </filelist>
     <filelist dir="${Java1.5Frontend}">
       <file name="java15keywords.flex"/>
@@ -175,6 +185,9 @@
       <file name="parser/errorrecovery.parser"/>
     </filelist>
     <fileset dir="${Java1.5Frontend}">
+      <include name="*.parser"/>
+    </fileset>
+    <fileset dir="${IntertypeDeclarations}">
       <include name="*.parser"/>
     </fileset>
   </concat>

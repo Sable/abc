@@ -27,8 +27,6 @@ aspect NamingContext {
 		public abstract Access accessType(TypeDecl td, boolean ambiguous);
 	}
 	
-	inh NameType Expr.nameType();
-	inh NameType BodyDecl.nameType();
 	inh boolean BodyDecl.inStaticContext();
 	
 	public NamingContext Expr.getNamingContext() {
@@ -62,8 +60,6 @@ aspect NamingContext {
 			}
 		};
 	}
-	
-	inh SimpleSet BodyDecl.lookupType(String name);
 	
 	public NamingContext BodyDecl.getNamingContext() {
 		return new NamingContext() {
