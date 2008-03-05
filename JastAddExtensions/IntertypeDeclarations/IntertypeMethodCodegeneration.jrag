@@ -442,7 +442,6 @@ aspect IntertypeMethodCodegeneration {
       return c;
     return getITDBodyDecl().lookupMethod(name);
   }
-  inh Collection BodyDecl.lookupMethod(String name);
   
   eq IntroducedMethodDecl.getBlock().lookupVariable(String name) {
     SimpleSet set = parameterDeclaration(name);
@@ -464,13 +463,17 @@ aspect IntertypeMethodCodegeneration {
       return set;
     return getITDBodyDecl().lookupType(name);
   }
-  inh SimpleSet BodyDecl.lookupType(String name);
 
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();
   eq IntroducedMethodDecl.getParameter(int index).hostType() = introducedType();
 
   // TODO: make this use the modifier prior to transformation instead of hardcoded false
   eq IntroducedMethodDecl.getBlock().inStaticContext() = false;
+
+  eq IntroducedMethodDecl.getBlock().enclosingType() = introducedType();
+  eq IntroducedMethodDecl.getBlock().enclosingInstance() = introducedType();
+
+  eq IntroducedMethodDecl.getChild().thisType() = introducedType();
 
   refine Transformations public void MethodAccess.transformation() {
     if(needsSuperDispatchDelegate()) {

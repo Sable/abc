@@ -14,9 +14,6 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeMethodDecl.getBlock().isMemberType() = introducedType().isMemberType();
   eq IntertypeMethodDecl.getBlock().enclosingInstance() = introducedType();
 
-  eq IntroducedMethodDecl.getBlock().enclosingType() = introducedType();
-  eq IntroducedMethodDecl.getBlock().enclosingInstance() = introducedType();
-
   // override ag-inherited attribute, this will cause calls bound to an
   // IntertypeMethodDecl to invoke a method in the introducedType instead of the hostAspect
   syn TypeDecl IntertypeMethodDecl.hostType() = introducedType();

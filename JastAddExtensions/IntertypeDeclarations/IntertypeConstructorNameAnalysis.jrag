@@ -37,7 +37,6 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeConstructorDecl.getChild().thisType() = introducedType();
   eq IntertypeFieldDeclaration.getChild().thisType() = introducedType();
   eq IntertypeMethodDecl.getChild().thisType() = introducedType();
-  eq IntroducedMethodDecl.getChild().thisType() = introducedType();
   eq Program.getChild().thisType() = null;
 
   refine LookupConstructor eq SuperConstructorAccess.decls() {
