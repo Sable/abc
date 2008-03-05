@@ -19,5 +19,5 @@ class JavaChecker extends Frontend {
   }
 
   protected String name() { return "JavaChecker with NonNullTypes"; }
-  protected String version() { return "R20080219"; }
+  protected String version() { return "R20080304"; }
 }
