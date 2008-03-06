@@ -1,0 +1,29 @@
+aspect RenameTypeITD {
+
+	refine RenameType public AdjustmentTable TypeDecl.findEndangered(String new_name) {
+		AdjustmentTable table = RenameType.TypeDecl.findEndangered(new_name);
+		findEndangeredITD(new_name, this, table);
+		if(this.isNestedType())
+			for(TypeDecl td : (Collection<TypeDecl>)enclosingType().descendants())
+				findEndangeredITD(new_name, td, table);
+		return table;
+	}
+
+	public void TypeDecl.findEndangeredITD(String new_name, TypeDecl td, AdjustmentTable table) {
+		for(IntertypeFieldDeclaration f : (Collection<IntertypeFieldDeclaration>)td.introducedFields())
+			f.findEndangeredTypeITD(new_name, table);
+		for(IntertypeMethodDecl m : (Collection<IntertypeMethodDecl>)td.introducedMethods())
+			m.findEndangeredTypeITD(new_name, table);
+	}
+
+	public void BodyDecl.findEndangeredTypeITD(String new_name, AdjustmentTable table) {
+		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc);
+			}
+		}
+	}
+	
+}

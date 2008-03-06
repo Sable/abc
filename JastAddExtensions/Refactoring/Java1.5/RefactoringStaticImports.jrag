@@ -7,14 +7,14 @@ aspect RefactoringStaticImports {
 				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
 					FieldDeclaration fd = (FieldDeclaration)iter.next();
 					if(fd == decl)
-						return new SymbolicVarAccess(decl);
+						return new SymbolicLocalVarAccess(decl);
 				}
 		for(ImportDecl i : getImportDecls())
 			if(i.isOnDemand())
 				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
 					FieldDeclaration fd = (FieldDeclaration)iter.next();
 					if(fd == decl)
-						return new SymbolicVarAccess(decl);
+						return new SymbolicLocalVarAccess(decl);
 				}
 		return accessVariable(decl);
 	}

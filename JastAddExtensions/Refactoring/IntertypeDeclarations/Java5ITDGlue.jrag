@@ -1,4 +1,5 @@
 aspect Java5ITDGlue {
+	
   refine IntertypeConstructorNameAnalysis eq SuperConstructorAccess.decls()
   to refine MethodSignature eq SuperConstructorAccess.decls() {
     Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?

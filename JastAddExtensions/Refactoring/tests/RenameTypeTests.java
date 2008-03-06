@@ -5,13 +5,17 @@ import junit.framework.TestSuite;
 
 
 public class RenameTypeTests extends RenameType {
-
+	
 	public RenameTypeTests(String arg0) {
 		super(arg0);
 	}
 
 	public static Test suite() {
 		return new TestSuite(RenameTypeTests.class);
+	}
+
+	public String getTestBase() {
+		return "RenameType";
 	}
 
 	public void test0() {

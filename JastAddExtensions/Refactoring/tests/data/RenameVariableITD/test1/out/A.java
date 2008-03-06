@@ -14,8 +14,8 @@ class A {
   }
 }
 
-class X {
-  int a;
+aspect X {
+  int A.B.a;
   X() {
     super();
   }

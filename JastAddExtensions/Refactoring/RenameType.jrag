@@ -38,8 +38,8 @@ aspect RenameType {
 			Access acc = (Access)i.next();
 			table.add(acc);
 		}
-		/* now, collect all uses of fields and types that the variable
-		 * might be shadowing after renaming, in this class or any descendant */
+		/* now, collect all types that we might be shadowing after renaming, 
+		 * in this class or any descendant */
 		if(this.isNestedType()) {
 			Collection descendants = enclosingType().descendants();
 			for(Iterator i = descendants.iterator(); i.hasNext();) {

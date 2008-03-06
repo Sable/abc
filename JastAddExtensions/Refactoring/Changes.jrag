@@ -173,9 +173,9 @@ class Rename extends ASTChange {
 	}
 
 	public String getOldName() {
-	       return old_name;
-        }
-	
+		return old_name;
+	}
+
 	public String getNewName() {
 		return new_name;
 	}

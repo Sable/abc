@@ -58,14 +58,14 @@ aspect RefactoringGenerics {
 	refine AccessVariable eq MethodDecl.accessParameterDeclaration(Variable decl) {
 		for(ParameterDeclaration d : getParameters())
 			if(d.sameSourceDeclAs(decl))
-				return new SymbolicVarAccess(decl);
+				return new SymbolicLocalVarAccess(decl);
 		return null;
 	}
 
 	refine AccessVariable eq ConstructorDecl.accessParameterDeclaration(Variable decl) {
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).sameSourceDeclAs(decl))
-				return new SymbolicVarAccess(decl);
+				return new SymbolicLocalVarAccess(decl);
 		return null;
 	}
 

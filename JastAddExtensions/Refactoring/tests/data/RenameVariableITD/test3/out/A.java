@@ -1,5 +1,5 @@
 package p;
-class X {
+aspect X {
   static int a;
   void A.m(int a) {
     int i = X.a;

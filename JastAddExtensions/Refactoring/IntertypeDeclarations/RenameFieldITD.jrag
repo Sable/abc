@@ -1,38 +1,36 @@
 aspect RenameFieldITD {
 
-    inh TypeDecl FieldDeclaration.thisType();
-
-    refine RenameField public AdjustmentTable FieldDeclaration.findEndangered(String new_name) {
-	AdjustmentTable table = RenameField.FieldDeclaration.findEndangered(new_name);
-	for(TypeDecl td : (Collection<TypeDecl>)thisType().descendants())
-	    findEndangeredITD(new_name, td, table);
-	return table;
-    }
-
-    public void FieldDeclaration.findEndangeredITD(String new_name, TypeDecl td, AdjustmentTable table) {
-	for(IntertypeFieldDeclaration f : (Collection<IntertypeFieldDeclaration>)td.introducedFields())
-	    f.findEndangeredITD(new_name, table);
-	for(IntertypeMethodDecl m : (Collection<IntertypeMethodDecl>)td.introducedMethods())
-	    m.findEndangeredITD(new_name, table);
-    }
-
-    public void BodyDecl.findEndangeredITD(String new_name, AdjustmentTable table) {
-	for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
-	    Variable v = (Variable)i.next();
-	    for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
-		Access acc = (Access)j.next();
-		table.add(acc);
-	    }
+	refine RenameField public AdjustmentTable FieldDeclaration.findEndangered(String new_name) {
+		AdjustmentTable table = RenameField.FieldDeclaration.findEndangered(new_name);
+		for(TypeDecl td : (Collection<TypeDecl>)hostType().descendants())
+			findEndangeredITD(new_name, td, table);
+		return table;
 	}
-	for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-	    TypeDecl d = (TypeDecl)i.next();
-	    for(Iterator j = d.uses().iterator(); j.hasNext();) {
-		Access acc = (Access)j.next();
-		// only a type in an ambiguous position can be shadowed by a variable
-		if(acc.nameType() == NameType.AMBIGUOUS_NAME)
-		    table.add(acc);
-	    }
+
+	public void FieldDeclaration.findEndangeredITD(String new_name, TypeDecl td, AdjustmentTable table) {
+		for(IntertypeFieldDeclaration f : (Collection<IntertypeFieldDeclaration>)td.introducedFields())
+			f.findEndangeredITD(new_name, table);
+		for(IntertypeMethodDecl m : (Collection<IntertypeMethodDecl>)td.introducedMethods())
+			m.findEndangeredITD(new_name, table);
 	}
-    }
+
+	public void BodyDecl.findEndangeredITD(String new_name, AdjustmentTable table) {
+		for(Iterator i = lookupVariable(new_name).iterator(); i.hasNext();) {
+			Variable v = (Variable)i.next();
+			for(Iterator j = v.collectedUses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				table.add(acc);
+			}
+		}
+		for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
+			TypeDecl d = (TypeDecl)i.next();
+			for(Iterator j = d.uses().iterator(); j.hasNext();) {
+				Access acc = (Access)j.next();
+				// only a type in an ambiguous position can be shadowed by a variable
+				if(acc.nameType() == NameType.AMBIGUOUS_NAME)
+					table.add(acc);
+			}
+		}
+	}
 
 }

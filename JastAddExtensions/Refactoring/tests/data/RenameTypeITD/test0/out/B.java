@@ -1,15 +1,15 @@
 package p;
 aspect X {
-  static int a;
-  int A.x = X.a;
+  public B.B() {
+    super();
+  }
   X() {
     super();
   }
 }
 
-class A {
-  int a;
-  A() {
+class B {
+  B() {
     super();
   }
 }

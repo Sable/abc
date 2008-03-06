@@ -1,0 +1,43 @@
+aspect AccessTypeITD {
+	
+	eq IntertypeFieldDeclaration.getInit().accessType(TypeDecl td) {
+	    SymbolicTypeAccess acc = introducedType().accessMemberType(td);
+	    if(acc != null) return acc;
+		if(introducedType().sameSourceDeclAs(td))
+			return introducedType().getSymbolicAccess().moveInto(introducedType());
+		acc = accessType(td);
+		if(acc != null)
+			return acc.moveInto(this);
+	    return null;
+	}	
+	
+	eq IntertypeMethodDecl.getBlock().accessType(TypeDecl td) {
+		SymbolicTypeAccess acc = introducedType().accessMemberType(td);
+		if(acc != null) return acc;
+		if(introducedType().sameSourceDeclAs(td))
+			return introducedType().getSymbolicAccess().moveInto(introducedType());
+		acc = accessType(td);
+		if(acc != null)
+			return acc.moveInto(this);
+	    return null;
+	}
+	
+	SymbolicTypeAccess SymbolicTypeAccess.moveInto(IntertypeFieldDeclaration fd) {
+		return addQualifier(!fd.introducedType().memberTypes(target.name()).isEmpty()
+						|| fd.introducedType().name().equals(target.name()));
+	}
+	
+	SymbolicTypeAccess SymbolicTypeAccess.moveInto(IntertypeMethodDecl md) {
+		return addQualifier(!md.introducedType().memberTypes(target.name()).isEmpty()
+						|| md.introducedType().name().equals(target.name()));
+	}
+	
+	// a type in a surrounding aspect cannot be accessed as <Aspect>.<Type> unless it is static
+	refine SymbolicTypeAccess public Access SymbolicMemberTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
+		if(needsQualifier || ctxt.isShadowed(target, ambiguous))
+			if(source instanceof AspectDecl && !target.isStatic())
+				return null;
+		return SymbolicTypeAccess.SymbolicMemberTypeAccess.computeAccess(ctxt, ambiguous);
+	}
+	
+}

@@ -17,15 +17,15 @@ import AST.RefactoringException;
 
 public abstract class RenameType extends TestCase {
 	
-	private static String TEST_BASE = "RenameType";
-
 	public RenameType(String arg0) {
 		super(arg0);
 	}
 	
+	public abstract String getTestBase();
+	
 	public void runTypeRenameTest(String name) {
-        String infile = TEST_BASE+"/"+name+"/in/A.java";
-        String outdir = TEST_BASE+"/"+name+"/out";
+        String infile = getTestBase()+"/"+name+"/in/A.java";
+        String outdir = getTestBase()+"/"+name+"/out";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();
@@ -53,7 +53,7 @@ public abstract class RenameType extends TestCase {
 	}
 
     private void check_cu(String testname, CompilationUnit cu) throws FileNotFoundException, IOException{
-        String filename = TEST_BASE+"/"+testname+"/out/"+cu.getID()+".java";
+        String filename = getTestBase()+"/"+testname+"/out/"+cu.getID()+".java";
         File rf = new File(filename);
         FileReader rfr = new FileReader(rf);
         long l = rf.length();

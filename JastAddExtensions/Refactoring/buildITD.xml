@@ -61,7 +61,7 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-      <exclude name="**/*Codegen*"/>
+			<exclude name="**/*Codegen*"/>
 		</fileset>
 		<fileset file="${Analyses}/LocalDeclaration.jrag"/>
 		<fileset dir="${Analyses}">
