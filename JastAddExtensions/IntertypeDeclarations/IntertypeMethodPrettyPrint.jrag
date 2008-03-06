@@ -31,37 +31,5 @@ aspect IntertypeMethodPrettyPrint {
     }
   }
 
-  public void IntroducedMethodDecl.toString(StringBuffer s) {
-    s.append(indent());
-    s.append("@IntroducedType(" + getIntroducedType().typeName() + ") ");
-    //s.append("@ITDBodyDecl(" + getITDBodyDecl().typeName() + ") ");
-
-    getModifiers().toString(s);
-    getTypeAccess().toString(s);
-    s.append(" " + name() + "(");
-    if(getNumParameter() > 0) {
-      getParameter(0).toString(s);
-      for(int i = 1; i < getNumParameter(); i++) {
-        s.append(", ");
-        getParameter(i).toString(s);
-      }
-    }
-    s.append(")");
-    if(getNumException() > 0) {
-      s.append(" throws ");
-      getException(0).toString(s);
-      for(int i = 1; i < getNumException(); i++) {
-        s.append(", ");
-        getException(i).toString(s);
-      }
-    }
-    if(hasBlock()) {
-      s.append(" ");
-      getBlock().toString(s);
-    }
-    else {
-      s.append(";\n");
-    }
-  }
 
 }

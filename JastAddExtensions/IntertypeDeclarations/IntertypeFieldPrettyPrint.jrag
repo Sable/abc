@@ -13,18 +13,5 @@ aspect IntertypeFieldPrettyPrint {
     s.append(";\n");
   }
 
- public void IntroducedFieldDeclaration.toString(StringBuffer s) {
-    s.append(indent());
-     s.append("@AspectType(" + aspectType().typeName() + ") ");
-    getModifiers().toString(s);
-    getTypeAccess().toString(s);
-    s.append(" " + name());
-    if(hasInit()) {
-      s.append(" = ");
-      getInit().toString(s);
-    }
-    s.append(";\n");
-  }
-
 
 }
