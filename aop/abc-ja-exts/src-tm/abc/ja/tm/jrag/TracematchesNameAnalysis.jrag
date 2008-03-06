@@ -1,0 +1,196 @@
+aspect TracematchesNameAnalysis {
+	// Convenience method for getting at the Regex
+	public Regex TMDecl.getRegex() {
+		return (Regex)getPointcutExpr();
+	}
+	
+	// Used to determine the name of generated methods for advice -- probably not needed for TM
+	eq TMAdviceSpec.kind() = "tracematch_advice";
+	eq TMAroundAdviceSpec.kind() = "tracematch_around_advice";
+	
+	// Return type and exceptions resolve to type names
+	eq TMAroundAdviceSpec.getTypeAccess().nameType() = NameType.TYPE_NAME;
+	eq TMDecl.getException().nameType() = NameType.TYPE_NAME;
+	
+	// After Returning and Throwing symbols can have a variable
+	eq AfterReturningSymbol.getReturnParameter().nameType() = NameType.EXPRESSION_NAME;
+	eq AfterThrowingSymbol.getThrownException().nameType() = NameType.EXPRESSION_NAME;
+
+	// around symbols can have a list of variables
+	eq AroundSymbol.getProceedArg().nameType() = NameType.EXPRESSION_NAME;
+	
+	
+	eq TMAdviceSpec.getParameter().isMethodParameter() = false;
+	eq TMAdviceSpec.getParameter().isConstructorParameter() = false;
+	eq TMAdviceSpec.getParameter().isExceptionHandlerParameter() = false;
+	eq TMAroundAdviceSpec.getParameter().isMethodParameter() = false;
+	eq TMAroundAdviceSpec.getParameter().isConstructorParameter() = false;
+	eq TMAroundAdviceSpec.getParameter().isExceptionHandlerParameter() = false;
+	
+	eq TMDecl.getBlock().reachable() = true;
+	
+	eq SymbolDecl.getPointcutExpr().bindsInCurrentCflow(String name) =
+		getPointcutExpr().binds(name) > 0;
+
+	private static int TMDecl.nameCounter = 0;
+	public static String TMDecl.getNextName() {
+		return "tracematch$" + nameCounter++;
+	}
+	
+	// Deal with variable lookup: Each symbol can refer to tracematch formals, as can
+	// the tracematch body.
+	eq TMDecl.getSymbolDecl().lookupVariable(String name) {
+		SimpleSet result = lookupTracematchVariable(name);
+		if(!result.isEmpty())
+			return result;
+		return lookupVariable(name);
+	}
+	
+	eq TMDecl.getBlock().lookupVariable(String name) {
+		SimpleSet result = lookupTracematchVariable(name);
+		if(!result.isEmpty())
+			return result;
+		return lookupVariable(name);
+	}
+	
+	syn SimpleSet TMDecl.lookupTracematchVariable(String name) {
+		for(ParameterDeclaration p : getAdviceSpec().getParameterList()) {
+			if(p.name().equals(name))
+				return SimpleSet.emptySet.add(p);
+		}
+		return SimpleSet.emptySet;
+	}
+	
+	inh TMDecl PointcutExpr.enclosingTracematch();
+	eq Program.getCompilationUnit().enclosingTracematch() = null;
+	eq TMDecl.getPointcutExpr().enclosingTracematch() = this;
+	
+	// Symbol lookup
+	inh lazy SymbolDecl ASTNode.lookupSymbol(String name);
+	eq TMDecl.getChild().lookupSymbol(String name ){
+		for(SymbolDecl s : getSymbolDecls())
+			if(s.getSymbolName().getID() == name)
+				return s;
+		return null;
+	}
+	
+	inh lazy SymbolDecl ASTNode.lookupSymbol(SymbolName sym);
+	eq TMDecl.getChild().lookupSymbol(SymbolName sym) {
+		return lookupSymbol(sym.getID());
+	}
+	
+	syn SymbolDecl SymbolName.decl() = lookupSymbol(this);
+	
+	// Access to the list of symbol names
+	inh lazy java.util.List<SymbolName> PointcutExpr.tracematchSymbolNames();
+	eq Program.getCompilationUnit().tracematchSymbolNames() = new java.util.ArrayList<SymbolName>();
+	eq TMDecl.getPointcutExpr().tracematchSymbolNames() {
+		java.util.List<SymbolName> result = new java.util.ArrayList<SymbolName>();
+		for(SymbolDecl d : getSymbolDeclList()) {
+			result.add(d.getSymbolName());
+		}
+		return result;
+	}
+	
+	syn boolean TMDecl.isAround() = getAdviceSpec() instanceof TMAroundAdviceSpec;
+	syn boolean SymbolDecl.isAround() = getAbstractSymbol() instanceof AroundSymbol;
+	
+	syn int TMDecl.getNumAroundSymbols() {
+		int result = 0;
+		for(SymbolDecl s : getSymbolDecls())
+			if(s.isAround())
+				result++;
+		return result;
+	}
+	
+	public void TMDecl.typeCheck() {
+		if(getRegex().matchesEmptyTrace())
+			getRegex().error("The provided regular expression matches the empty trace.");
+		
+		if(getNumAroundSymbols() > 1) {
+			error("A tracematch is allowed to have at most one 'around' symbol.");
+		}
+		
+		SymbolDecl aroundSymbol = null;
+		
+		for(SymbolDecl s : getSymbolDecls()) {
+			if(s.isAround()) {
+				// We're only allowed one around() symbol...
+				aroundSymbol = s;
+				if(!this.isAround())
+					s.error("'Around' symbols are only allowed in 'around' tracematches.");
+				if(getRegex().middleSymbols().contains(s.getSymbolName()))
+					s.error("'Around' symbols may not appear in the middle of the trace.");
+			} else {
+				if(this.isAround() && getRegex().finalSymbols().contains(s))
+					s.error("'Around' tracematches may not have non-'around' final symbols.");
+			}
+		}
+		
+		if(isAround()) {
+			if(aroundSymbol == null) {
+				error("'Around' tracematches must have exactly one around symbol.");
+			} else {
+				java.util.HashSet<String> seen = new java.util.HashSet<String>();
+				for(VarAccess a : ((AroundSymbol)aroundSymbol.getAbstractSymbol()).getProceedArgs()) {
+					if(a.decl() == null)
+						a.error("Undefined advice formal '" + a.name() + "'.");
+					if(seen.contains(a.name()))
+						a.error("Duplicate advice formal '" + a.name() + "'.");
+					seen.add(a.name());
+				}
+			}
+		}
+		
+		for(ParameterDeclaration p : getAdviceSpec().getParameters())
+			if(!getRegex().mustBind().contains(p.name()))
+				p.error("Tracematch parameter " + p.name() + " is not guaranteed bound by the pattern.");
+		
+		// check the list of frequent symbol decls only refers to declared symbols
+		for(SymbolName s : getFrequentList()) {
+			if(lookupSymbol(s) == null) {
+				s.error("Undeclared variable: " + s.getID());
+			}
+		}
+	}
+	
+	//////////// Regex attributes
+	// Does this Regex match the empty trace?
+	syn lazy boolean Regex.matchesEmptyTrace();
+	eq Regex.matchesEmptyTrace() = false;
+	eq RegexStar.matchesEmptyTrace() = true;
+	eq RegexAlternation.matchesEmptyTrace() = getLhs().matchesEmptyTrace() || getRhs().matchesEmptyTrace();
+	eq RegexConjunction.matchesEmptyTrace() = getLhs().matchesEmptyTrace() && getRhs().matchesEmptyTrace();
+	eq RegexSkipSeq.matchesEmptyTrace() = getLhs().matchesEmptyTrace() && getRhs().matchesEmptyTrace();
+	eq RegexCount.matchesEmptyTrace() = getRepeatFrom() == 0;
+	
+	// Which tracematch formals are guarnateed bound by this Regex?
+	syn lazy PersistentSet<ParameterDeclaration> Regex.mustBind();
+	eq RegexSymbol.mustBind() {
+		PersistentSet<ParameterDeclaration> result = new PersistentSet<ParameterDeclaration>();
+		for(ParameterDeclaration p : enclosingTracematch().getAdviceSpec().getParameters())
+			if(getSymbolName().decl().getPointcutExpr().binds(p.getID()) > 0)
+				result.add(p);
+		return result;
+	}
+	eq BinaryRegex.mustBind() = getLhs().mustBind().union(getRhs().mustBind());
+	eq RegexAlternation.mustBind() = getLhs().mustBind().intersect(getRhs().mustBind());
+	eq RegexStar.mustBind() = new PersistentSet<ParameterDeclaration>();
+	eq RegexPlus.mustBind() = getRegex().mustBind();
+	eq RegexCount.mustBind() = getRepeatFrom() > 0 ? getRegex().mustBind() : new PersistentSet<ParameterDeclaration>();
+	
+	// What is the set of symbols that may complete a match for this Regex?
+	syn lazy PersistentSet<SymbolName> Regex.finalSymbols();
+	eq RegexSymbol.finalSymbols() = new PersistentSet<SymbolName>().add(getSymbolName());
+	eq BinaryRegex.finalSymbols() = getRhs().finalSymbols();
+	eq RegexAlternation.finalSymbols() = getLhs().finalSymbols().union(getRhs().finalSymbols());
+	eq UnaryRegex.finalSymbols() = getRegex().finalSymbols();
+	
+	// What symbols may occur in the middle of a match?
+	syn lazy PersistentSet<SymbolName> Regex.middleSymbols();
+	eq RegexSymbol.middleSymbols() = new PersistentSet<SymbolName>();
+	eq BinaryRegex.middleSymbols() = getLhs().middleSymbols().union(getLhs().finalSymbols()).union(getRhs().middleSymbols());
+	eq RegexAlternation.middleSymbols() = getLhs().middleSymbols().union(getRhs().middleSymbols());
+	eq UnaryRegex.middleSymbols() = getRegex().middleSymbols().union(getRegex().finalSymbols());
+	eq RegexCount.middleSymbols() = getRepeatTo() > 1 ? super.middleSymbols() : getRegex().middleSymbols();
+}

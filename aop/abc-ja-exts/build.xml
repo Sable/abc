@@ -230,6 +230,7 @@
 </target>
 	
 <target name="jar" depends="build">
+  <mkdir dir="lib"/>
   <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
 </target>
 

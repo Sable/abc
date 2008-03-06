@@ -25,7 +25,7 @@ import polyglot.util.InternalCompilerError;
 import soot.Scene;
 import soot.SootMethod;
 import abc.aspectj.visit.PatternMatcher;
-import abc.ja.eaj.jrag.*;
+import abc.ja.tm.jrag.*;
 
 import java.io.*;
 
@@ -83,7 +83,7 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
       program.initJavaParser(
         new JavaParser() {
           public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
-            return new abc.ja.eaj.parse.JavaParser().parse(is, fileName, error_queue);
+            return new abc.ja.tm.parse.JavaParser().parse(is, fileName, error_queue);
           }
         }
       );

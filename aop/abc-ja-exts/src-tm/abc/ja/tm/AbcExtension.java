@@ -113,17 +113,17 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
 		
         // keyword for the "cast" pointcut extension
         lexer.addAspectJKeyword("tracematch", new LexerAction_c(
-                            new Integer(abc.tm.parse.sym.TRACEMATCH)));
+                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.TRACEMATCH)));
         lexer.addAspectJKeyword("sym", new LexerAction_c(
-                            new Integer(abc.tm.parse.sym.SYM)));
+                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.SYM)));
         lexer.addAspectJKeyword("perthread", new LexerAction_c(
-                            new Integer(abc.tm.parse.sym.PERTHREAD)));
+                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.PERTHREAD)));
         lexer.addAspectJKeyword("frequent", new LexerAction_c(
-                            new Integer(abc.tm.parse.sym.FREQUENT)));
+                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.FREQUENT)));
         lexer.addAspectJKeyword("filtermatch", new LexerAction_c(
-				new Integer(abc.tm.parse.sym.FILTERMATCH)));
+				new Integer(abc.ja.tm.parse.JavaParser.Terminals.FILTERMATCH)));
         lexer.addAspectJKeyword("skipmatch", new LexerAction_c(
-				new Integer(abc.tm.parse.sym.SKIPMATCH)));
+				new Integer(abc.ja.tm.parse.JavaParser.Terminals.SKIPMATCH)));
     }
     
 	public void addBasicClassesToSoot()

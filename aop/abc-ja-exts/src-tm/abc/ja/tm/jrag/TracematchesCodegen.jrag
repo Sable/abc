@@ -1,0 +1,145 @@
+import abc.tm.weaving.matching.*;
+
+aspect TracematchesCodegen {
+	// Regex extends PointcutExpr for convenience, but doesn't actually produce
+	// the Pointcut IR for the weaver...
+	public abc.weaving.aspectinfo.Pointcut Regex.pointcut() {
+		throw new RuntimeException("The 'pointcut()' method on Regex should never be called.");
+	}
+	
+	// Same for TM advice specs
+	public abc.weaving.aspectinfo.AdviceSpec TMAdviceSpec.adviceSpec() {
+		throw new RuntimeException("The 'adviceSpec()' method on TMAdviceSpec should never be called.");
+	}
+	
+	// Usually: Create soot method for advice
+	// For TM: Don't need to do anything, as all advice decls are nonterminal AST nodes
+	// and hence will be jimplified automatically.
+	public void TMDecl.jimplify1phase2() {
+		
+	}
+	
+	eq TMSomeAdviceDecl.name() = "tm$some$" + super.name();
+	eq TMSynchAdviceDecl.name() = "tm$synch$" + super.name();
+	eq TMBodyAdviceDecl.name() = "tm$body$" + super.name();
+	eq TMSymbolAdviceDecl.name() = "tm$symbol$" + super.name();
+	
+	// A tracematch introduces a bunch of synthetic advice decls:
+	// * Synch() advice -- handled in TMDecl.jimplify
+	// * Some() advice -- handled in TMDecl.jimplify
+	// * Symbol() advice -- one per symbol
+	syn List<AdviceDecl> TMDecl.getSymbolAdviceList() {
+		List<AdviceDecl> result = new List<AdviceDecl>();
+		for(SymbolDecl s : getSymbolDecls()) {
+			result.add(s.getAdviceDecl());
+		}
+	}
+	
+	syn AdviceDecl SymbolDecl.getBeforeSynchAdvice() {
+		if(false /*no need for before synch*/) {
+			return new Opt();
+		} else {
+			AdviceDecl result = null; //new AdviceDecl(...);
+			return new Opt(result);
+		}
+	}
+	
+	syn AdviceDecl SymbolDecl.getAdviceDecl() {
+		return new TMSymbolAdviceDecl(new Modifiers(), 
+					getAbstractSymbol().getAdviceSpec(), 
+					getPointcutExpr(), new List(), body);
+	}
+	
+	syn AdviceSpec AbstractSymbol.getAdviceSpec();
+	eq BeforeSymbol.getAdviceSpec() = new BeforeSpec(enclosingTracematch().getAdviceSpec().getParameters());
+	eq AfterSymbol.getAdviceSpec() = new AfterSpec(enclosingTracematch().getAdviceSpec().getParameters());
+	eq AfterReturningSymbol.getAdviceSpec() = new AfterReturningSpec(enclosingTracematch().getAdviceSpec().getParameters(),
+					hasReturnParameter() ? getReturnParameter().decl() : new Opt());
+	eq AfterThrowingSymbol.getAdviceSpec() = new AfterThrowingSpec(enclosingTracematch().getAdviceSpec().getParameters(),
+			hasThrownException() ? getThrownException().decl() : new Opt());
+	// just return a BeforeSpec for around, as it only updates matching state etc
+	eq AroundSymbol.getAdviceSpec() = new AroundSpec(enclosingTracematch().getAdviceSpec().getParameters());
+	
+	// Synthesized attribute to construct the state machine of a regex 
+	public abc.tm.weaving.matching.StateMachine Regex.makeSM() {
+        abc.tm.weaving.matching.StateMachine sm = new TMStateMachine();
+
+        abc.tm.weaving.matching.State start = sm.newState();
+        start.setInitial(true);
+
+        abc.tm.weaving.matching.State finish = sm.newState();
+        finish.setFinal(true);
+
+        makeSM(sm, start, finish, true);
+        return sm;
+	}
+	
+	// Conversion from regex to StateMachine
+	abstract public void Regex.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart);
+	
+	public void RegexSymbol.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		sm.newTransition(start, finish, getSymbolName().getID());
+	}
+	
+	public void RegexAlternation.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		getLhs().makeSM(sm, start, finish, ownStart);
+		getRhs().makeSM(sm, start, finish, ownStart);
+	}
+	
+	public void RegexConjunction.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		abc.tm.weaving.matching.State middle = sm.newState();
+		getLhs().makeSM(sm, start, middle, ownStart);
+		getRhs().makeSM(sm, middle, finish, true);
+	}
+	
+	public void RegexSkipSeq.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		abc.tm.weaving.matching.State middle = sm.newState();
+		getLhs().makeSM(sm, start, middle, ownStart);
+		getRhs().makeSM(sm, middle, finish, false);
+		java.util.Set<SymbolName> allowed = new java.util.LinkedHashSet<SymbolName>(tracematchSymbolNames());
+		for(SymbolName s : getNegatedSymbolList()) {
+			allowed.remove(s);
+		}
+		for(SymbolName s : allowed) {
+			sm.newTransition(middle, middle, s.getID());
+		}
+	}
+
+	public void RegexStar.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		abc.tm.weaving.matching.State loopNode;
+		if(ownStart) {
+			loopNode = start;
+		} else {
+			loopNode = sm.newState();
+			sm.newTransition(start, loopNode, null);
+		}
+		getRegex().makeSM(sm, loopNode, loopNode, false);
+		sm.newTransition(loopNode, finish, null);
+	}
+
+	public void RegexPlus.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		abc.tm.weaving.matching.State loopNode;
+		if(ownStart) {
+			loopNode = start;
+		} else {
+			loopNode = sm.newState();
+			sm.newTransition(start, loopNode, null);
+		}
+		getRegex().makeSM(sm, loopNode, loopNode, false);
+		getRegex().makeSM(sm, loopNode, finish, false);
+	}
+	
+	public void RegexCount.makeSM(StateMachine sm, abc.tm.weaving.matching.State start, abc.tm.weaving.matching.State finish, boolean ownStart) {
+		if(getRepeatFrom() == 0)
+			sm.newTransition(start, finish, null);
+		
+		abc.tm.weaving.matching.State middle = start;
+		for(int i = 1; i < getRepeatTo(); i++) {
+            abc.tm.weaving.matching.State s = sm.newState();
+            getRegex().makeSM(sm, middle, s, false);
+            middle = s;
+        }
+
+        getRegex().makeSM(sm, middle, finish, false);
+	}
+}
