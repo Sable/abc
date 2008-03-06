@@ -47,5 +47,15 @@ aspect ITDLookup {
 	    if(!c.isEmpty()) return c;
 	    return lookupMethod(name);
     }
+	
+	refine IntertypeConstructorNameAnalysis eq IntertypeConstructorDecl.getConstructorInvocation().lookupMethod(String name) {
+		Collection c = introducedType().memberMethods(name);
+		return !c.isEmpty() ? c : lookupMethod(name);
+	}
+
+	refine IntertypeConstructorNameAnalysis eq IntertypeConstructorDecl.getBlock().lookupMethod(String name) {
+		Collection c = introducedType().memberMethods(name);
+		return !c.isEmpty() ? c : lookupMethod(name);
+	}
 
 }

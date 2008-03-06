@@ -18,6 +18,24 @@ aspect AccessMethodITD {
 	    return acc;
     }
 	
+	eq IntertypeConstructorDecl.getConstructorInvocation().accessMethod(MethodDecl md) {
+		SymbolicMethodAccess acc = introducedType().accessMemberMethod(md);
+		if(acc != null) return acc;
+	    acc = accessMethod(md);
+	    if(acc != null)
+	    	return acc.moveInto(introducedType());
+	    return acc;
+	}
+
+	eq IntertypeConstructorDecl.getBlock().accessMethod(MethodDecl md) {
+		SymbolicMethodAccess acc = introducedType().accessMemberMethod(md);
+		if(acc != null) return acc;
+	    acc = accessMethod(md);
+	    if(acc != null)
+	    	return acc.moveInto(introducedType());
+	    return acc;
+	}
+	
 	// we have to avoid refering to the enclosing aspect as "this" (or "super")
 	// if that would happen, we just reject
 
