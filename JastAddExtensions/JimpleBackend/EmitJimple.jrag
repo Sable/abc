@@ -19,10 +19,6 @@ aspect EmitJimple {
     }
   }
   
-  inh CompilationUnit TypeDecl.compilationUnit();
-  eq CompilationUnit.getTypeDecl(int i).compilationUnit() = this;
-  eq CompilationUnit.getImportDecl(int i).compilationUnit() = this;
-
   syn lazy SootClass TypeDecl.getSootClassDecl() {
     if(compilationUnit().fromSource()) {
       return sootClass();
@@ -650,7 +646,7 @@ aspect EmitJimple {
       b.add(Jimple.v().newAssignStmt(
         Jimple.v().newInstanceFieldRef(
           b.emitThis(hostType()),
-          hostType().getSootField("val$" + v.name(), v.type()).makeRef()
+          hostType().getSootClassDecl().getField("val$" + v.name(), v.type().getSootType()).makeRef()
         ),
         p.local
       ));

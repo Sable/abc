@@ -282,7 +282,7 @@ aspect Expressions {
     else {
       return Jimple.v().newInstanceFieldRef(
         b.emitThis(hostType()),
-        hostType().getSootField("val$" + v.name(), v.type()).makeRef()
+        hostType().getSootClassDecl().getField("val$" + v.name(), v.type().getSootType()).makeRef()
       );
     }
   }
