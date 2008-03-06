@@ -171,6 +171,10 @@ class Rename extends ASTChange {
 	public Named getEntity() {
 		return entity;
 	}
+
+	public String getOldName() {
+	       return old_name;
+        }
 	
 	public String getNewName() {
 		return new_name;

@@ -10,7 +10,7 @@ aspect SymbolicTypeAccess {
 	 * target type contains information about the package they live in.
 	 */
 	
-	abstract class SymbolicTypeAccess extends SymbolicAccess {
+	abstract class SymbolicTypeAccess extends SymbolicAccess<TypeDecl> {
 		public SymbolicTypeAccess(TypeDecl outer, boolean needsQualifier,
 								  TypeDecl target) {
 			super(outer, outer, needsQualifier, target);
@@ -48,29 +48,24 @@ aspect SymbolicTypeAccess {
 	}
 	
 	public SymbolicTypeAccess SymbolicTypeAccess.moveDownTo(TypeDecl td) {
-		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(!td.localTypeDecls(target.name()).isEmpty());
 	}
 		
 	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(Block blk, int index) {
-		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(blk.localLookupType(target.name(), index) != null);
 	}
 		
 	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(ClassInstanceExpr cie) {
-		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(false);
 	}
 		
 	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(TypeDecl td) {
-		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(!td.memberTypes(target.name()).isEmpty());
 	}
 		
 	public abstract Access SymbolicTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous);
 	
 	public Access SymbolicLocalTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		TypeDecl target = (TypeDecl)this.target;
 		if(ctxt.isShadowed(target, ambiguous))
 			return null;
 		else
@@ -78,7 +73,6 @@ aspect SymbolicTypeAccess {
 	}
 	
 	public Access SymbolicTopLevelTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		TypeDecl target = (TypeDecl)this.target;
 		String pkg = target.packageName();
 		if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
 			if(ctxt.isShadowed(new PackageAccess(pkg), ambiguous))
@@ -90,7 +84,6 @@ aspect SymbolicTypeAccess {
 	}
 
 	public Access SymbolicMemberTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
-		TypeDecl target = (TypeDecl)this.target;
 		if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
 			if(ambiguous && !source.memberFields(target.name()).isEmpty())
 				return null;
@@ -112,7 +105,6 @@ aspect SymbolicTypeAccess {
 
 	public Access SymbolicTopLevelTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier) {
-		TypeDecl target = (TypeDecl)this.target;
 		String pkg = target.packageName();
 		if(qualifier instanceof PackageAccess) {
 			PackageAccess pkgacc = (PackageAccess)qualifier;
@@ -125,7 +117,6 @@ aspect SymbolicTypeAccess {
 	
 	public Access SymbolicMemberTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier) {
-		TypeDecl target = (TypeDecl)this.target;
 		if(qualifier.isTypeAccess()) {
 			TypeDecl td = qualifier.type();
 			// TODO: check that td is something we want to qualify with

@@ -1,12 +1,19 @@
 aspect RenameFieldITD {
 
+    inh TypeDecl FieldDeclaration.thisType();
+
     refine RenameField public AdjustmentTable FieldDeclaration.findEndangered(String new_name) {
 	AdjustmentTable table = RenameField.FieldDeclaration.findEndangered(new_name);
-	for(IntertypeFieldDeclaration f : (Collection<IntertypeFieldDeclaration>)hostType().introducedFields())
-	    f.findEndangeredITD(new_name, table);
-	for(IntertypeMethodDecl m : (Collection<IntertypeMethodDecl>)hostType().introducedMethods())
-	    m.findEndangeredITD(new_name, table);
+	for(TypeDecl td : (Collection<TypeDecl>)thisType().descendants())
+	    findEndangeredITD(new_name, td, table);
 	return table;
+    }
+
+    public void FieldDeclaration.findEndangeredITD(String new_name, TypeDecl td, AdjustmentTable table) {
+	for(IntertypeFieldDeclaration f : (Collection<IntertypeFieldDeclaration>)td.introducedFields())
+	    f.findEndangeredITD(new_name, table);
+	for(IntertypeMethodDecl m : (Collection<IntertypeMethodDecl>)td.introducedMethods())
+	    m.findEndangeredITD(new_name, table);
     }
 
     public void BodyDecl.findEndangeredITD(String new_name, AdjustmentTable table) {

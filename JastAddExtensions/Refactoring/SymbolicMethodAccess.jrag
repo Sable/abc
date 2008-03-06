@@ -1,6 +1,6 @@
 aspect SymbolicMethodAccess {
 	
-	class SymbolicMethodAccess extends SymbolicAccess {
+	class SymbolicMethodAccess extends SymbolicAccess<MethodDecl> {
 		
 		public SymbolicMethodAccess(TypeDecl source, TypeDecl bend, 
 									boolean needsQualifier,	MethodDecl target) {
@@ -8,7 +8,6 @@ aspect SymbolicMethodAccess {
 		}
 
 		public SymbolicMethodAccess moveDownTo(TypeDecl td) {
-			MethodDecl target = (MethodDecl)this.target;
 			bend = td;
 			if(!td.localMethods(target.name()).isEmpty())
 				needsQualifier = true;
@@ -18,14 +17,12 @@ aspect SymbolicMethodAccess {
 		}
 		
 		public SymbolicMethodAccess moveInto(TypeDecl td) {
-			MethodDecl target = (MethodDecl)this.target;
 			if(!td.memberMethods(target.name()).isEmpty())
 				needsQualifier = true;
 			return this;
 		}
 		
 		public Access computeAccess(NamingContext ctxt, List args) {
-			MethodDecl target = (MethodDecl)this.target;
 			MethodAccess ma = new MethodAccess(target.name(), args);
 			if(needsQualifier) {
 				if(ctxt.isStatic()) {
@@ -70,7 +67,6 @@ aspect SymbolicMethodAccess {
 		}
 		
 		public Access computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
-			MethodDecl target = (MethodDecl)this.target;
 			MethodAccess ma = new MethodAccess(target.name(), args);
 			if(needsQualifier) {
 				if(!target.isStatic())

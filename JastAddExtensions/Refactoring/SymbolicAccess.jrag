@@ -25,15 +25,14 @@
 
 aspect SymbolicAccess {
 	
-	// this class should actually be parametrised over the type of target
-	class SymbolicAccess {
+	class SymbolicAccess<T> {
 		 public TypeDecl source;
 		 public TypeDecl bend;
 		 public boolean needsQualifier;
-		 public Object target;
+		 public T target;
 		 
 		 public SymbolicAccess(TypeDecl source, TypeDecl bend, 
-				 			   boolean needsQualifier, Object target) {
+				 			   boolean needsQualifier, T target) {
 			 this.source = source;
 			 this.bend = bend;
 			 this.needsQualifier = needsQualifier;

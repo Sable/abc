@@ -64,6 +64,7 @@
 		</fileset>
 		<fileset file="${Refactoring}/Methodoid.jadd"/>
 		<fileset file="${Refactoring}/Scope.jadd"/>
+		<fileset file="${Refactoring}/SymbolicAccess.jrag"/>
 		<fileset file="${Refactoring}/SymbolicTypeAccess.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
