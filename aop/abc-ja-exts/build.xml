@@ -35,28 +35,6 @@
 <taskdef name="jastadd" classname="jastadd.JastAddTask"
                         classpath="${tools}/jastadd2.jar"/>
 
-<!-- update dependencies from CVS -->
-<target name="update">
-	<exec executable="cvs" dir="${frontend}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${backend}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${flattening}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${itds}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs" dir="${abc.loc}">
-		<arg line="-q up -dP"/>
-	</exec>
-	<exec executable="cvs">
-		<arg line="-q up -dP"/>
-	</exec>
-</target>
-
 <!-- compile sources -->
 <target name="build" depends="gen">
         <mkdir dir="classes"/>
@@ -101,10 +79,10 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${flattening}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
+    <fileset dir="${javabackend}">
+			<include name="InnerClasses.jrag"/>
+			<include name="Transformations.jrag"/>
+			<include name="Java2Rewrites.jrag"/>
 		</fileset>
 		<fileset dir="${itds}">
 			<include name="**/*.ast"/>
@@ -150,10 +128,10 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="${flattening}">
-			<include name="**/*.ast"/>
-			<include name="**/*.jrag"/>
-			<include name="**/*.jadd"/>
+    <fileset dir="${javabackend}">
+			<include name="InnerClasses.jrag"/>
+			<include name="Transformations.jrag"/>
+			<include name="Java2Rewrites.jrag"/>
 		</fileset>
 		<fileset dir="${itds}">
 			<include name="**/*.ast"/>
