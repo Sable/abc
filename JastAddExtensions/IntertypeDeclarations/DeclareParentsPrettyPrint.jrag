@@ -1,0 +1,25 @@
+aspect DeclareParentsPrettyPrint {
+  public void DeclareParentsExtends.toString(StringBuffer s) {
+    s.append(indent());
+    s.append("declare parents: ");
+    getPattern().toString(s);
+    s.append(" extends ");
+    for(int i = 0; i < getNumTypeAccess(); i++) {
+      if(i != 0) s.append(", ");
+      getTypeAccess(i).toString(s);
+    }
+    s.append(";\n");
+  }
+  public void DeclareParentsImplements.toString(StringBuffer s) {
+    s.append(indent());
+    s.append("declare parents: ");
+    getPattern().toString(s);
+    s.append(" implements ");
+    for(int i = 0; i < getNumTypeAccess(); i++) {
+      if(i != 0) s.append(", ");
+      getTypeAccess(i).toString(s);
+    }
+    s.append(";\n");
+  }
+
+}
