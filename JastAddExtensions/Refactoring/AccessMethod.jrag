@@ -28,6 +28,7 @@ aspect AccessMethod {
 	// cf. attribute lookupMethod(String) in LookupMethod.jrag
 	inh SymbolicMethodAccess Expr.accessMethod(MethodDecl md);
 	inh lazy SymbolicMethodAccess TypeDecl.accessMethod(MethodDecl md);
+	inh SymbolicMethodAccess BodyDecl.accessMethod(MethodDecl md);
 
 	eq MethodAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
 	eq ConstructorAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);

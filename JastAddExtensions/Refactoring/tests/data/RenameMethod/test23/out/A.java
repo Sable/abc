@@ -19,7 +19,7 @@ public class A extends Z {
 
 class B extends A {
   class C {
-    int k = ((Z)B.this).n();
+    int k = Z.n();
     C() {
       super();
     }

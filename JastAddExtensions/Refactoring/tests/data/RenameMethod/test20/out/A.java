@@ -17,7 +17,7 @@ public class A extends Z {
 
 class B extends A {
   {
-    ((Z)this).n();
+    Z.n();
   }
   B() {
     super();

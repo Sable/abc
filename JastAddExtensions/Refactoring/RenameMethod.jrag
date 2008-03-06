@@ -8,7 +8,7 @@ aspect RenameMethod {
 	
 	public void MethodDecl.rename(String new_name) throws RefactoringException {
 		// first check which methods override this one/are overriden by this
-		// obviously, we need to do that before we change its name
+		// (obviously, we need to do that before we change its name)
 		// ("obvious" after I got tripped up by it, that is)
 		SimpleSet overrides = overrides();
 		java.util.Set overriders = overriders();
@@ -52,11 +52,16 @@ aspect RenameMethod {
 			table.add(a);
 		}
 		/* now, collect all uses of methods that we might be shadowing after renaming */
-		for(Iterator i = lookupMethod(new_name).iterator(); i.hasNext();) {
-			MethodDecl md = (MethodDecl)i.next();
-			for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc);
+		for(TypeDecl td : (Collection<TypeDecl>)hostType().descendants()) {
+			if(td.getNumBodyDecl() == 0)
+				continue;
+			BodyDecl fst = td.getBodyDecl(0);
+			for(Iterator i = fst.lookupMethod(new_name).iterator(); i.hasNext();) {
+				MethodDecl md = (MethodDecl)i.next();
+				for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
+					Access acc = (Access)j.next();
+					table.add(acc);
+				}
 			}
 		}
 		return table;

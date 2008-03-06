@@ -13,6 +13,10 @@ public class RenameMethodTests extends RenameMethod {
 	public static Test suite() {
 		return new TestSuite(RenameMethodTests.class);
 	}
+	
+	protected String getTestBase() {
+		return "RenameMethod";
+	}
 
 	public void test1() {
 		runMethodRenameTest("test1");
@@ -109,5 +113,8 @@ public class RenameMethodTests extends RenameMethod {
 	}
 	public void test32() {
 		runMethodRenameTest("test32");
+	}
+	public void test33() {
+		runMethodRenameTest("test33");
 	}
 }

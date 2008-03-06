@@ -15,15 +15,15 @@ import AST.RefactoringException;
 
 public abstract class RenameMethod extends TestCase {
 	
-	private static String TEST_BASE = "RenameMethod";
-
 	public RenameMethod(String arg0) {
 		super(arg0);
 	}
 	
+	protected abstract String getTestBase();
+	
 	public void runMethodRenameTest(String name) {
-        String infile = TEST_BASE+"/"+name+"/in/A.java";
-        String resfile = TEST_BASE+"/"+name+"/out/A.java";
+        String infile = getTestBase()+"/"+name+"/in/A.java";
+        String resfile = getTestBase()+"/"+name+"/out/A.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();

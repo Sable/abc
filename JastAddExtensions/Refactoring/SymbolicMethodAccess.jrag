@@ -6,89 +6,103 @@ aspect SymbolicMethodAccess {
 									boolean needsQualifier,	MethodDecl target) {
 			super(source, bend, needsQualifier, target);
 		}
-
-		public SymbolicMethodAccess moveDownTo(TypeDecl td) {
-			bend = td;
-			if(!td.localMethods(target.name()).isEmpty())
-				needsQualifier = true;
-			else if(!needsQualifier)
-				source = td;
-			return this;
-		}
-		
-		public SymbolicMethodAccess moveInto(TypeDecl td) {
-			if(!td.memberMethods(target.name()).isEmpty())
-				needsQualifier = true;
-			return this;
-		}
-		
-		public Access computeAccess(NamingContext ctxt, List args) {
-			MethodAccess ma = new MethodAccess(target.name(), args);
-			if(needsQualifier) {
-				if(ctxt.isStatic()) {
-					Access source_acc = ctxt.accessType(source, true);
-					if(source_acc == null) return null;
-					return source_acc.qualifiesAccess(ma);
-				}
-				if(source == bend) {
-					if(source == ctxt.enclosingType())
-						return ma;
-					else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
-					}
-				} else if(bend instanceof ClassDecl && 
-							source == ((ClassDecl)bend).superclass()) {
-					if(bend == ctxt.enclosingType())
-						return new SuperAccess("super").qualifiesAccess(ma);
-					else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
-					}
-				} else if(target.isStatic()) {
-					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper == null) return null;
-					if(bend == ctxt.enclosingType()) {
-						return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(ma);
-					} else {
-						Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
-						if(outer == null) return null;
-						return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
-										   qualifiesAccess(ma);
-					}
-				} else {
-					return null;
-				}
-			} else {
-				return ma;
-			}
-		}
-		
-		public Access computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
-			MethodAccess ma = new MethodAccess(target.name(), args);
-			if(needsQualifier) {
-				if(!target.isStatic())
-					return null;
-				if(ctxt.isStatic())
-					if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source) /*qualifier.type() == source*/)
-						return qualifier.qualifiesAccess(ma);
-					else
-						return null;
-				if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()) /*source == ctxt.enclosingType()*/)
-					return qualifier.qualifiesAccess(ma);
-				else if(!qualifier.isTypeAccess()) {
-					Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-					if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()) /*bend == ctxt.enclosingType()*/)
-						return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
-				}
-				return null;
-			} else {
-				return qualifier.qualifiesAccess(ma);
-			}
-		}	
-		
 	}
 
+	public SymbolicMethodAccess SymbolicMethodAccess.moveDownTo(TypeDecl td) {
+		bend = td;
+		if(!td.localMethods(target.name()).isEmpty())
+			needsQualifier = true;
+		else if(!needsQualifier)
+			source = td;
+		return this;
+	}
+		
+	public SymbolicMethodAccess SymbolicMethodAccess.moveInto(TypeDecl td) {
+		if(!td.memberMethods(target.name()).isEmpty())
+			needsQualifier = true;
+		return this;
+	}
+		
+	public Access SymbolicMethodAccess.computeAccess(NamingContext ctxt, List args) {
+		if(needsQualifier) {
+			if(target.isStatic())
+				return computeStaticAccess(ctxt, args);
+			if(ctxt.isStatic())
+				return null;
+			if(source == bend) {
+				return computeThisAccess(ctxt, args);
+			} else if(bend instanceof ClassDecl && 
+						source == ((ClassDecl)bend).superclass()) {
+				return computeSuperAccess(ctxt, args);
+			/*} else if(target.isStatic()) {
+				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+				if(upper == null) return null;
+				if(bend == ctxt.enclosingType()) {
+					return new ParExpr(new CastExpr(upper, new ThisAccess("this"))).qualifiesAccess(ma);
+				} else {
+					Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+					if(outer == null) return null;
+					return new ParExpr(new CastExpr(upper, outer.qualifiesAccess(new ThisAccess("this")))).
+									   qualifiesAccess(ma);
+				}*/
+			} else {
+				return null;
+			}
+		} else {
+			return new MethodAccess(target.name(), args);
+		}
+	}
+	
+	public Access SymbolicMethodAccess.computeStaticAccess(NamingContext ctxt, List args) {
+		MethodAccess ma = new MethodAccess(target.name(), args);
+		Access source_acc = ctxt.accessType(source, true);
+		if(source_acc == null) return null;
+		return source_acc.qualifiesAccess(ma);
+	}
+	
+	public Access SymbolicMethodAccess.computeThisAccess(NamingContext ctxt, List args) {
+		MethodAccess ma = new MethodAccess(target.name(), args);
+		if(source == ctxt.enclosingType()) {
+			return ma;
+		} else {
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			if(outer == null) return null;
+			return outer.qualifiesAccess(new ThisAccess("this").qualifiesAccess(ma));
+		}
+	}
+	
+	public Access SymbolicMethodAccess.computeSuperAccess(NamingContext ctxt, List args) {
+		MethodAccess ma = new MethodAccess(target.name(), args);
+		if(bend == ctxt.enclosingType())
+			return new SuperAccess("super").qualifiesAccess(ma);
+		else {
+			Access outer = ctxt.unqualifiedCtxt().accessType(bend, false);
+			if(outer == null) return null;
+			return outer.qualifiesAccess(new SuperAccess("super").qualifiesAccess(ma));
+		}
+	}
+	
+	public Access SymbolicMethodAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
+		MethodAccess ma = new MethodAccess(target.name(), args);
+		if(needsQualifier) {
+			if(!target.isStatic())
+				return null;
+			if(ctxt.isStatic())
+				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source) /*qualifier.type() == source*/)
+					return qualifier.qualifiesAccess(ma);
+				else
+					return null;
+			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()) /*source == ctxt.enclosingType()*/)
+				return qualifier.qualifiesAccess(ma);
+			else if(!qualifier.isTypeAccess()) {
+				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+				if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()) /*bend == ctxt.enclosingType()*/)
+					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
+			}
+			return null;
+		} else {
+			return qualifier.qualifiesAccess(ma);
+		}
+	}	
+		
 }

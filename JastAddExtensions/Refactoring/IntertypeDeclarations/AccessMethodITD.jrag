@@ -1,0 +1,36 @@
+aspect AccessMethodITD {
+
+	eq IntertypeFieldDeclaration.getInit().accessMethod(MethodDecl md) {
+	    SymbolicMethodAccess acc = introducedType().accessMemberMethod(md);
+	    if(acc != null) return acc;
+	    acc = accessMethod(md);
+	    if(acc != null)
+	    	return acc.moveInto(introducedType());
+	    return acc;
+	}
+	
+	eq IntertypeMethodDecl.getBlock().accessMethod(MethodDecl md) {
+	    SymbolicMethodAccess acc = introducedType().accessMemberMethod(md);
+	    if(acc != null) return acc;
+	    acc = accessMethod(md);
+	    if(acc != null)
+	    	return acc.moveInto(introducedType());
+	    return acc;
+    }
+	
+	// we have to avoid refering to the enclosing aspect as "this" (or "super")
+	// if that would happen, we just reject
+
+	refine SymbolicMethodAccess public Access SymbolicMethodAccess.computeThisAccess(NamingContext ctxt, List args) {
+		if(bend instanceof AspectDecl)
+			return null;
+		return SymbolicMethodAccess.SymbolicMethodAccess.computeThisAccess(ctxt, args);
+	}
+		
+	refine SymbolicMethodAccess public Access SymbolicMethodAccess.computeSuperAccess(NamingContext ctxt, List args) {
+		if(bend instanceof AspectDecl)
+			return null;
+		return SymbolicMethodAccess.SymbolicMethodAccess.computeSuperAccess(ctxt, args);
+	}
+
+}

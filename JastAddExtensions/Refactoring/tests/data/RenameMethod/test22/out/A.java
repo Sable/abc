@@ -6,7 +6,7 @@ public class A {
   static class B {
     static void n(int i) {
     }
-    int k = A.this.n();
+    int k = A.n();
     B() {
       super();
     }
