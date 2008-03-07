@@ -5,7 +5,7 @@ aspect RefactoringEnhancedFor {
 	eq EnhancedForStmt.getStmt().accessVariable(Variable decl) = localAccessVariable(decl);
 
 	// cf. localLookupVariable(String)
-	syn lazy SymbolicVarAccess EnhancedForStmt.localAccessVariable(Variable decl) {
+	syn SymbolicVarAccess EnhancedForStmt.localAccessVariable(Variable decl) {
 		if(getVariableDeclaration() == decl)
 			return new SymbolicLocalVarAccess(decl);
 		SymbolicVarAccess acc = accessVariable(decl);

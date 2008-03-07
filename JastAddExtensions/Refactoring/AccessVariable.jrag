@@ -16,13 +16,13 @@ import java.util.*;
 aspect AccessVariable {
 	
 	// cf. lookupVariable(String)
-	inh lazy SymbolicVarAccess TypeDecl.accessVariable(Variable decl);
-	inh lazy SymbolicVarAccess BodyDecl.accessVariable(Variable decl);
+	inh SymbolicVarAccess TypeDecl.accessVariable(Variable decl);
+	inh SymbolicVarAccess BodyDecl.accessVariable(Variable decl);
 	inh SymbolicVarAccess Stmt.accessVariable(Variable decl);
-	inh lazy SymbolicVarAccess Block.accessVariable(Variable decl);
-	inh lazy SymbolicVarAccess ForStmt.accessVariable(Variable decl);
+	inh SymbolicVarAccess Block.accessVariable(Variable decl);
+	inh SymbolicVarAccess ForStmt.accessVariable(Variable decl);
 	inh SymbolicVarAccess Expr.accessVariable(Variable decl);
-	inh lazy SymbolicVarAccess CatchClause.accessVariable(Variable decl);
+	inh SymbolicVarAccess CatchClause.accessVariable(Variable decl);
 	inh SymbolicVarAccess VariableDeclaration.accessVariable(Variable decl);
 	inh SymbolicVarAccess ParameterDeclaration.accessVariable(Variable decl);
 
@@ -125,7 +125,7 @@ aspect AccessVariable {
 	eq ForStmt.getStmt().accessVariable(Variable decl) = localAccess(decl);
 
 	// cf. localLookup(String)
-	syn lazy SymbolicVarAccess ForStmt.localAccess(Variable decl) {
+	syn SymbolicVarAccess ForStmt.localAccess(Variable decl) {
 		SymbolicVarAccess acc = accessLocalVariableDeclaration(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
@@ -135,32 +135,32 @@ aspect AccessVariable {
 	}
 
 	// cf. parameterDeclaration(String)
-	syn lazy SymbolicVarAccess MethodDecl.accessParameterDeclaration(Variable decl) {
+	syn SymbolicVarAccess MethodDecl.accessParameterDeclaration(Variable decl) {
 		for(ParameterDeclaration d : getParameters())
 			if(d == decl)
 				return new SymbolicLocalVarAccess(decl);
 		return null;
 	}
 
-	syn lazy SymbolicVarAccess ConstructorDecl.accessParameterDeclaration(Variable decl) {
+	syn SymbolicVarAccess ConstructorDecl.accessParameterDeclaration(Variable decl) {
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i) == decl)
 				return new SymbolicLocalVarAccess(decl);
 		return null;
 	}
 
-	syn lazy SymbolicVarAccess CatchClause.accessParameterDeclaration(Variable decl) = 
+	syn SymbolicVarAccess CatchClause.accessParameterDeclaration(Variable decl) = 
 		getParameter() == decl ? new SymbolicLocalVarAccess(decl) : null;
 
 	// cf. localVariableDeclaration(String)
-	syn lazy SymbolicVarAccess Block.accessLocalVariableDeclaration(Variable decl, int index) {
+	syn SymbolicVarAccess Block.accessLocalVariableDeclaration(Variable decl, int index) {
 		for(int i = 0; i<=index; i++)
 			if(getStmt(i) == decl)
 				return new SymbolicLocalVarAccess(decl);
 		return null;
 	}
 
-	syn lazy SymbolicVarAccess ForStmt.accessLocalVariableDeclaration(Variable decl) {
+	syn SymbolicVarAccess ForStmt.accessLocalVariableDeclaration(Variable decl) {
 		for(int i = 0; i < getNumInitStmt(); i++)
 			if(getInitStmt(i) == decl)
 				return new SymbolicLocalVarAccess(decl);
@@ -207,7 +207,7 @@ aspect AccessVariable {
 	}
 
 	// cf. memberFields(String)
-	syn lazy SymbolicVarAccess TypeDecl.accessMemberField(Variable decl) = 
+	syn SymbolicVarAccess TypeDecl.accessMemberField(Variable decl) = 
 		accessField(decl);
 
 	// cf. localFields(String)
