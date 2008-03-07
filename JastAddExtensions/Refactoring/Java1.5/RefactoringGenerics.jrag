@@ -143,53 +143,44 @@ aspect RefactoringGenerics {
 		}
 	}
 
-
-	/* TODO: fix JastAdd
-  refine SymbolicMethodAccess public Access computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
-    MethodDecl target = (MethodDecl)this.target;
-    MethodAccess ma = new MethodAccess(target.name(), args);
-    if(needsQualifier) {
-      if(!target.isStatic())
-        return null;
-      if(ctxt.isStatic())
-        if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
-          return qualifier.qualifiesAccess(ma);
-        else
-          return null;
-      if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
-        return qualifier.qualifiesAccess(ma);
-      else if(!qualifier.isTypeAccess()) {
-        Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-        if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()))
-          return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
-      }
-      return null;
-    } else {
-      return qualifier.qualifiesAccess(ma);
-    }
-  }	
-
-  refine SymbolicVarAccess public Access computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
-			Variable target = (Variable)this.target;
-			if(isLocalVarAccess()) {
-				return qualifier.qualifiesAccess(new VarAccess(target.name()));
-			} else {
-				VarAccess va = new VarAccess(target.name());
-				if(needsQualifier) {
-					if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
-						return qualifier.qualifiesAccess(va);
-					else if(!qualifier.isTypeAccess()) {
-						Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-						if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()))
-							return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
-					}
+	refine SymbolicMethodAccess public Access SymbolicMethodAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
+		MethodAccess ma = new MethodAccess(target.name(), args);
+		if(needsQualifier) {
+			if(!target.isStatic())
+				return null;
+			if(ctxt.isStatic())
+				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
+					return qualifier.qualifiesAccess(ma);
+				else
 					return null;
-				} else {
-					return qualifier.qualifiesAccess(new VarAccess(target.name()));
-				}
+			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
+				return qualifier.qualifiesAccess(ma);
+			else if(!qualifier.isTypeAccess()) {
+				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+				if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()))
+					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
 			}
+			return null;
+		} else {
+			return qualifier.qualifiesAccess(ma);
 		}
-	 */
+	}
+	
+	refine SymbolicVarAccess public Access SymbolicVarAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+		VarAccess va = new VarAccess(target.name());
+		if(needsQualifier) {
+			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
+				return qualifier.qualifiesAccess(va);
+			else if(!qualifier.isTypeAccess()) {
+				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
+				if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()))
+					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
+			}
+			return null;
+		} else {
+			return qualifier.qualifiesAccess(new VarAccess(target.name()));
+		}
+	}
 
 	// return a list of type declarations for the arguments of a parametrised type
 	public Collection<TypeDecl> ParTypeDecl.getArgumentTypes() {

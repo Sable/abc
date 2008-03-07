@@ -158,11 +158,11 @@ aspect SymbolicVarAccess {
 	public Access SymbolicVarAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
 		VarAccess va = new VarAccess(target.name());
 		if(needsQualifier) {
-			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()) /*source == ctxt.enclosingType()*/)
+			if(source == bend && source == ctxt.enclosingType())
 				return qualifier.qualifiesAccess(va);
 			else if(!qualifier.isTypeAccess()) {
 				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-				if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()) /*bend == ctxt.enclosingType()*/)
+				if(upper != null && bend == ctxt.enclosingType())
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
 			}
 			return null;

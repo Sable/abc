@@ -24,7 +24,7 @@ aspect AccessTypeITD {
 	
 	// member type lookup becomes a bit more complicated because of declared parents
 	refine AccessType eq ClassDecl.accessMemberType(TypeDecl td) {
-		SymbolicTypeAccess acc = localTypeDecls(name);
+		SymbolicTypeAccess acc = accessLocalType(td);
 		if(acc != null) return acc;
 		for(Iterator outerIter = interfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
@@ -33,10 +33,10 @@ aspect AccessTypeITD {
 				return acc.moveDownTo(this);
 		}
 		if(hasSuperclass()) {
-			acc = superclassWithOutDeclareParents().accessMemberType(decl);
+			acc = superclassWithoutDeclareParents().accessMemberType(td);
 			if(acc != null && !td.isPrivate() && td.accessibleFrom(this)) {
 				if(introducedSuperclass() != null && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass())) {
-					acc = introducedSuperclass().accessLocalType(decl);
+					acc = introducedSuperclass().accessLocalType(td);
 					if(acc != null)
 						return acc.moveDownTo(this);
 				}
@@ -47,7 +47,7 @@ aspect AccessTypeITD {
 	}
 	
 	refine AccessType eq InterfaceDecl.accessMemberType(TypeDecl td) {
-		SymbolicTypeAccess acc = localTypeDecls(name);
+		SymbolicTypeAccess acc = accessLocalType(td);
 		if(acc != null) return acc;
 		for(Iterator outerIter = superinterfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
