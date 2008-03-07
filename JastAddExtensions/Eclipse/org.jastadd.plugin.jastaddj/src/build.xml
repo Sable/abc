@@ -85,6 +85,7 @@
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
 			<exclude name="SymbolicTypeAccess.jrag"/>
+			<exclude name="IntertypeDeclarations/*.jrag"/>
 		</fileset>
 		<fileset dir=".">
 			<include name="**/*.ast"/>

@@ -6,6 +6,17 @@ import org.jastadd.plugin.model.JastAddModel;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.resource.ResourceChange;
 
 aspect CreateTextEdit {
 	
@@ -64,6 +75,11 @@ aspect CreateTextEdit {
 				((ASTChange)iter.next()).createTextEdit(model, this);
 		}
 		
+		// directly add a non-TextChange
+		public void addChange(Change ch) {
+			changes.add(ch);
+		}
+		
 		public Change getChange() {
 			return changes;
 		}
@@ -82,14 +98,15 @@ aspect CreateTextEdit {
 	}
 
 	public void Rename.createTextEdit(JastAddModel model, ChangeAccumulator accu) {
-		entity.createRenameTextEdit(model, accu, new_name);
+		entity.createRenameTextEdit(model, accu, old_name, new_name);
 	}
 	
 	// creates a TextEdit corresponding to a rename of this entity
-	public void Named.createRenameTextEdit(JastAddModel model, ChangeAccumulator accu, String new_name);
+	public void Named.createRenameTextEdit(JastAddModel model, ChangeAccumulator accu, 
+			String old_name, String new_name);
 
 	public void VariableDeclaration.createRenameTextEdit(JastAddModel model, 
-				ChangeAccumulator accu, String new_name) {
+				ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
@@ -97,7 +114,7 @@ aspect CreateTextEdit {
 	}
 
 	public void ParameterDeclaration.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String new_name) {
+			ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
@@ -105,7 +122,7 @@ aspect CreateTextEdit {
 	}
 
 	public void FieldDeclaration.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String new_name) {
+			ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
@@ -113,7 +130,7 @@ aspect CreateTextEdit {
 	}
 
 	public void MethodDecl.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String new_name) {
+			ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
@@ -121,7 +138,7 @@ aspect CreateTextEdit {
 	}
 
 	public void ConstructorDecl.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String new_name) {
+			ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
@@ -129,7 +146,7 @@ aspect CreateTextEdit {
 	}
 
 	public void TypeDecl.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String new_name) {
+			ChangeAccumulator accu, String old_name, String new_name) {
 		int offset = createOffset(IDstart);
 		int offsetEnd = createOffset(IDend);
 		int length = offsetEnd - offset + 1;
@@ -137,9 +154,85 @@ aspect CreateTextEdit {
 	}
 
 	public void CompilationUnit.createRenameTextEdit(JastAddModel model, 
-			ChangeAccumulator accu, String new_name) {
+			ChangeAccumulator accu, String old_name, String new_name) {
 		IFile file = model.getFile(this);
-		// TODO: create change for moving file
+		accu.addChange(new RenameCompilationUnitChange(file, old_name, new_name));
+	}
+	
+	class RenameCompilationUnitChange extends ResourceChange {
+		private final IFile file;
+		private final String old_name;
+		private final String new_name;
+		private final long stamp_to_restore;
+		
+		public RenameCompilationUnitChange(IFile file, String old_name, String new_name) {
+			this(file, old_name, new_name, IResource.NULL_STAMP);
+		}
+		
+		public RenameCompilationUnitChange(IFile file, String old_name, String new_name, long stamp_to_restore) {
+			this.file = file;
+			this.old_name = old_name;
+			this.new_name = new_name;
+			this.stamp_to_restore = stamp_to_restore;
+		}
+
+		protected final IResource getResource() {
+			return ResourcesPlugin.getWorkspace().getRoot().findMember(file.getFullPath());
+		}
+
+		public Object getModifiedElement() {
+			return JavaCore.create(getResource());
+		}
+
+		public String getNewName() {
+			return new_name;
+		}
+
+		public String getOldName() {
+			return old_name;
+		}
+
+		public final Change perform(IProgressMonitor pm) throws CoreException {
+			try {
+				pm.beginTask("Renaming Compilation Unit", 1);
+				IResource resource = getResource();
+				IPath newPath = createNewPath();
+				Change result = createUndoChange(resource.getModificationStamp());
+				doRename(new SubProgressMonitor(pm, 1));
+				if (stamp_to_restore != IResource.NULL_STAMP) {
+					IResource newResource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
+					newResource.revertModificationStamp(stamp_to_restore);
+				}
+				return result;
+			} finally {
+				pm.done();
+			}
+		}
+		
+		protected IPath createNewPath() {
+			final IPath path = file.getFullPath();
+			if (path.getFileExtension() != null)
+				return path.removeFileExtension().removeLastSegments(1).append(getNewName());
+			else
+				return path.removeLastSegments(1).append(getNewName());
+		}
+
+		protected Change createUndoChange(long stampToRestore) throws JavaModelException {
+			//return new RenameCompilationUnitChange(createNewPath(), getNewName(), getOldName(), stampToRestore);
+			return null;
+		}
+
+		protected void doRename(IProgressMonitor pm) throws CoreException {
+			file.move(createNewPath(), false, pm);
+		}
+		
+		public String getName() {
+			return "Rename Compilation Unit";
+		}
+
+		protected IResource getModifiedResource() {	
+			return getResource();
+		}
 	}
 
 }
