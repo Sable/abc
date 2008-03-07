@@ -53,4 +53,40 @@ aspect AccessVariableITD {
 		return SymbolicVarAccess.SymbolicVarAccess.computeMonsterAccess(ctxt);
 	}
 	
+	// the enclosing type of expressions and accesses has to be the thisType()
+	// instead of the hostType()
+	
+	refine NamingContext public NamingContext Expr.getNamingContext() {
+		return new NamingContext() {
+			public boolean isStatic() { return inStaticContext(); }
+			public TypeDecl enclosingType() { return thisType(); }
+			public NamingContext unqualifiedCtxt() { return this; }
+			public SimpleSet lookupType(String name) { return Expr.this.lookupType(name); }
+			public SimpleSet lookupVariable(String name) { return Expr.this.lookupVariable(name); }
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return Expr.this.access(td, ambiguous);
+			}
+		};
+	}
+	
+	refine NamingContext public NamingContext Access.getNamingContext() {
+		return new NamingContext() {
+			public boolean isStatic() { return inStaticContext(); }
+			public TypeDecl enclosingType() { return thisType(); }
+			public NamingContext unqualifiedCtxt() {
+				return Access.this.unqualifiedScope().getNamingContext();
+			}
+			public SimpleSet lookupType(String name) { 
+				return Access.this.lookupType(name); 
+			}
+			public SimpleSet lookupVariable(String name) { 
+				return Access.this.lookupVariable(name); 
+			}
+			public Access accessType(TypeDecl td, boolean ambiguous) {
+				return Access.this.access(td, ambiguous);
+			}
+		};
+	}
+	
+	
 }
