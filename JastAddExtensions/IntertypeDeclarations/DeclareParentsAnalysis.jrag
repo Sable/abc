@@ -129,12 +129,7 @@ aspect DeclareParentsAnalysis {
   }
 
   refine LookupType eq ClassDecl.memberTypes(String name) {
-    SimpleSet set = SimpleSet.emptySet;
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i).declaresType(name)) {
-        set = set.add(getBodyDecl(i).type(name));
-      }
-    }
+    SimpleSet set = localTypeDecls(name);
     if(!set.isEmpty()) return set;
     for(Iterator outerIter = interfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
       TypeDecl type = (TypeDecl)outerIter.next();
@@ -151,12 +146,11 @@ aspect DeclareParentsAnalysis {
           boolean found = false;
           if(introducedSuperclass() != null && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass())) {
             ClassDecl c = introducedSuperclass();
-            for(int i = 0; i < c.getNumBodyDecl(); i++) {
-              if(c.getBodyDecl(i).declaresType(name)) {
-                set = set.add(c.getBodyDecl(i).type(name));
-                found = true;
-              }
-            }
+            for(Iterator i2 = c.localTypeDecls(name).iterator(); i2.hasNext(); ) {
+	      TypeDecl typeDecl = (TypeDecl)i2.next();
+	      set = set.add(typeDecl);
+	      found = true;
+	    }
           }
           if(!found)
             set = set.add(decl);
@@ -238,12 +232,7 @@ aspect DeclareParentsAnalysis {
   }
 
   refine LookupType eq InterfaceDecl.memberTypes(String name) {
-    SimpleSet set = SimpleSet.emptySet;
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i).declaresType(name)) {
-        set = set.add(getBodyDecl(i).type(name));
-      }
-    }
+    SimpleSet set = localTypeDecls(name);
     if(!set.isEmpty()) return set;
     for(Iterator outerIter = superinterfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)outerIter.next();
