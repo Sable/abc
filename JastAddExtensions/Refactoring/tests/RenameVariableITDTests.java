@@ -45,4 +45,7 @@ public class RenameVariableITDTests extends RenameVariable {
 	public void test9() {
 		runFieldRenameTest("test9");
 	}
+	public void test10() {
+		runFieldRenameTest("test10");
+	}
 }

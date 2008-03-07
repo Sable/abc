@@ -149,8 +149,8 @@ aspect AccessType {
 	// cf. memberTypes(String)
 	syn SymbolicTypeAccess TypeDecl.accessMemberType(TypeDecl td) = null;
 	eq ClassDecl.accessMemberType(TypeDecl td) {
-    SymbolicTypeAccess acc = accessLocalType(td);
-    if(acc != null) return acc;
+		SymbolicTypeAccess acc = accessLocalType(td);
+		if(acc != null) return acc;
 		for(Iterator outerIter = interfacesIterator(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
 			acc = type.accessMemberType(td);

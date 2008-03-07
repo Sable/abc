@@ -22,6 +22,42 @@ aspect AccessTypeITD {
 	    return null;
 	}
 	
+	// member type lookup becomes a bit more complicated because of declared parents
+	refine AccessType eq ClassDecl.accessMemberType(TypeDecl td) {
+		SymbolicTypeAccess acc = localTypeDecls(name);
+		if(acc != null) return acc;
+		for(Iterator outerIter = interfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)outerIter.next();
+			acc = type.accessMemberType(td);
+			if(acc != null && !td.isPrivate() && td.accessibleFrom(this))
+				return acc.moveDownTo(this);
+		}
+		if(hasSuperclass()) {
+			acc = superclassWithOutDeclareParents().accessMemberType(decl);
+			if(acc != null && !td.isPrivate() && td.accessibleFrom(this)) {
+				if(introducedSuperclass() != null && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass())) {
+					acc = introducedSuperclass().accessLocalType(decl);
+					if(acc != null)
+						return acc.moveDownTo(this);
+				}
+				return acc.moveDownTo(this);
+			}
+		}
+		return null;
+	}
+	
+	refine AccessType eq InterfaceDecl.accessMemberType(TypeDecl td) {
+		SymbolicTypeAccess acc = localTypeDecls(name);
+		if(acc != null) return acc;
+		for(Iterator outerIter = superinterfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
+			TypeDecl type = (TypeDecl)outerIter.next();
+			acc = type.accessMemberType(td);
+			if(acc != null && !td.isPrivate())
+				return acc.moveDownTo(this);
+		}
+		return null;
+	}
+	
 	SymbolicTypeAccess SymbolicTypeAccess.moveInto(IntertypeFieldDeclaration fd) {
 		return addQualifier(!fd.introducedType().memberTypes(target.name()).isEmpty()
 						|| fd.introducedType().name().equals(target.name()));
