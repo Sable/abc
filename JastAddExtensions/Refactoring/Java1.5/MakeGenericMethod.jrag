@@ -1,0 +1,93 @@
+aspect MakeGenericMethod {
+	
+	/* when extracting a block from a generic method into a new method,
+	 * we need to give the new method the same type parameters as the old one;
+	 * some methods need to be refined to achieve that */
+	refine MakeMethod public void CompilationUnit.makeMethod(String name, String vis, Block blk) 
+			throws RefactoringException {
+		check_make_method_preconds(blk);
+		Block host = blk.hostBlock();
+		BodyDecl bd = host.hostBodyDecl();
+		boolean static_ctxt = false;           // are we in a static context?
+		List<TypeVariable> tvars = null;       // type variables of host method (if any)
+		if(bd instanceof StaticInitializer)
+			static_ctxt = true;
+		if(bd instanceof MethodDecl) {
+			MethodDecl md = (MethodDecl)bd;
+			if(md.isStatic())
+				static_ctxt = true;
+			if(md instanceof GenericMethodDecl)
+				tvars = ((GenericMethodDecl)md).getTypeParameters().fullCopy();
+		}
+		host.createMethod(name, vis, blk.indexInHostBlock(), blk, static_ctxt, tvars);
+	}
+
+	public void Block.createMethod(String name, String vis, int pos, Block blk, 
+			boolean static_ctxt, List<TypeVariable> tvars) 
+				throws RefactoringException {
+		Block hostblock = blk.hostBlock();
+		Collection parms = blk.inputParameters();      // parameters of extracted method
+		Collection localVars = blk.extraLocalVars();   // local variables of extracted method
+		Collection outparms = blk.outputParameters();
+		Opt ret = new Opt();                       // return value of extracted method
+		if(outparms.size() == 1)
+			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
+		if(outparms.size() > 1)
+			throw new RefactoringException("ambiguous return value");
+		// create declaration of method
+		MethodDecl md = createMethodDecl(tvars, static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		// insert method invocation and body into type declaration
+		hostBodyDecl().hostType().insertMethod(md, hostblock, pos, parms, ret);
+	}
+	
+	private MethodDecl Block.createMethodDecl(List<TypeVariable> tvars, 
+				boolean static_ctxt, String name, String visibility,
+				Collection parms, Opt ret, 
+				Set exns, Collection localVariables, Block blk) 
+			throws RefactoringException {
+		// modifiers: visibility, perhaps with a "static"
+		Modifiers mod = new Modifiers();
+		if(!visibility.equals("default"))
+			mod.addModifier(new Modifier(visibility));
+		if(static_ctxt)
+			mod.addModifier(new Modifier("static"));
+		// type access: either "void" or the type of the variable to be assigned to
+		Access acc;
+		if(ret.isEmpty()) {
+			acc = new TypeAccess("void");
+		} else {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			acc = (Access)decl.getTypeAccess().fullCopy(); 
+		}
+		// parameter declarations
+		List parmdecls = new List();
+		for(Iterator i=parms.iterator();i.hasNext();)
+			parmdecls.add(((LocalDeclaration)i.next()).asParameterDeclaration());
+		// thrown exceptions
+		List throwdecls = new List();
+		for(Iterator i=exns.iterator();i.hasNext();) {
+			TypeDecl exn = ((ThrowStmt)i.next()).getExpr().type();
+			Access exnacc = hostBodyDecl().access(exn, false);
+			if(exnacc == null)
+				throw new RefactoringException("cannot access type "+exn);
+			throwdecls.add(exnacc);
+		}
+		// body
+		int i; Iterator iter;
+		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
+			blk.insertStmt(i, (Stmt)iter.next());
+		if(!ret.isEmpty()) {
+			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			String varname = decl.getID();
+			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
+			blk.insertStmt(blk.getNumStmt(), stmt);
+		}
+		if(tvars == null)
+			return new MethodDecl(mod, acc, name, parmdecls, 
+					throwdecls, new Opt(blk));
+		else
+			return new GenericMethodDecl(mod, acc, name, parmdecls,
+					throwdecls, new Opt(blk), tvars);
+	}
+	
+}
