@@ -104,4 +104,7 @@ public class ExtractMethodTests extends ExtractMethod {
 	public void test29() {
 		runExtractionTest("test29");
 	}
+	public void test30() {
+		runExtractionTest("test30");
+	}
 }

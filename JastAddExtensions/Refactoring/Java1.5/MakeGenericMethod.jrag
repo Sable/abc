@@ -37,7 +37,7 @@ aspect MakeGenericMethod {
 		// create declaration of method
 		MethodDecl md = createMethodDecl(tvars, static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// insert method invocation and body into type declaration
-		hostBodyDecl().hostType().insertMethod(md, hostblock, pos, parms, ret);
+		hostType().insertMethod(md, hostblock, pos, parms, ret);
 	}
 	
 	private MethodDecl Block.createMethodDecl(List<TypeVariable> tvars, 

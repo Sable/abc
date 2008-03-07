@@ -74,6 +74,8 @@ aspect MakeMethod {
 		return parms;
 	}
 	
+	inh TypeDecl Block.hostType();
+	
 	public void Block.createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
 		Block hostblock = blk.hostBlock();
@@ -88,7 +90,7 @@ aspect MakeMethod {
 		// create declaration of method
 		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// insert method invocation and body into type declaration
-		hostBodyDecl().hostType().insertMethod(md, hostblock, pos, parms, ret);
+		hostType().insertMethod(md, hostblock, pos, parms, ret);
 	}
 	
 	private void TypeDecl.insertMethod(MethodDecl md, Block host, int index, Collection parms, Opt ret) 
