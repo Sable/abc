@@ -33,6 +33,18 @@ aspect RefactoringGenerics {
 		return null;
 	}
 
+	refine AccessVariable eq ConstructorDecl.getConstructorInvocation().accessVariable(Variable decl) {
+		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		if(acc != null) return acc;
+		acc = accessVariable(decl);
+		if(!decl.isStatic() && decl instanceof FieldDeclaration &&
+				((FieldDeclaration)decl).hostType().sameSourceDeclAs(hostType()))
+			return null;
+	    if(acc != null)
+			return acc.moveInto(this);
+		return null;
+	}
+
 	refine AccessType eq TypeDecl.accessLocalType(TypeDecl td) {
 		for(Iterator iter = localTypeDecls(td.name()).iterator(); iter.hasNext(); ) {
 			TypeDecl t = (TypeDecl)iter.next();

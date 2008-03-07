@@ -31,13 +31,9 @@ aspect AccessVariable {
 	eq TypeDecl.getBodyDecl(int i).accessVariable(Variable decl) {
 		SymbolicVarAccess acc = accessMemberField(decl);
 		if(acc != null)	return acc;
+		acc = accessVariable(decl);
 		if((inStaticContext() || isStatic()) && decl.isInstanceVariable())
 			return null;
-		else if(isAnonymous() && inExplicitConstructorInvocation() &&
-				decl.isInstanceVariable() && 
-				enclosingType().memberFields(decl.name()).contains(decl))
-			return null;
-		acc = accessVariable(decl);
 		if(acc != null)
 			return acc.moveInto(this);
 		return null;
@@ -72,15 +68,12 @@ aspect AccessVariable {
 	eq ConstructorDecl.getConstructorInvocation().accessVariable(Variable decl) {
 		SymbolicVarAccess acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
-		if(hostType().isNestedType() || hostType().isAnonymous()) {
-		    acc = accessVariable(decl);
-		    if(acc != null)
+		acc = accessVariable(decl);
+		if(!decl.isStatic() && decl instanceof FieldDeclaration &&
+				((FieldDeclaration)decl).hostType() == hostType())
+			return null;
+	    if(acc != null)
 			return acc.moveInto(this);
-		} else {
-		    acc = hostType().accessMemberField(decl);
-		    if(acc != null && !decl.isInstanceVariable())
-			return acc.moveInto(this);
-		}
 		return null;
 	}
 
