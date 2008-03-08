@@ -1,6 +1,5 @@
 aspect Advice
 {
-  eq AdviceDecl.getBlock().hostBodyDecl() = this;
   eq AdviceDecl.getBlock().returnType() = returnType();
   syn TypeDecl AdviceDecl.returnType() = getAdviceSpec().returnType();
 

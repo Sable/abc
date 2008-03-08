@@ -118,6 +118,5 @@ aspect Privileged {
       return true;
     return IntertypeFieldNameAnalysis.Expr.mayAccess(f);
   }
-  inh BodyDecl Expr.enclosingBodyDecl();
 
 }
