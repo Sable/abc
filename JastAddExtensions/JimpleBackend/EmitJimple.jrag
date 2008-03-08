@@ -496,7 +496,6 @@ aspect EmitJimple {
 
 
 
-  inh TypeDecl Stmt.hostType();
   inh TypeDecl CatchClause.hostType();
   
   syn lazy boolean TypeDecl.hasClinit() {
