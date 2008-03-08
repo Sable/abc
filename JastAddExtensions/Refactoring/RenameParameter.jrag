@@ -21,7 +21,7 @@ aspect RenameParameter {
 		return hostBodyDecl().acceptLocal(new_name);
 	}
 	
-	public BodyDecl CatchClause.hostBodyDecl() {
+	public BodyDecl ASTNode.hostBodyDecl() {
 		ASTNode p=null;
 		for(p=this;!(p==null || p instanceof BodyDecl);p=p.getParent());
 		return (BodyDecl)p;
