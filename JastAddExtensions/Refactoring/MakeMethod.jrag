@@ -7,6 +7,8 @@
 
 aspect MakeMethod {
 	
+	public Access Variable.getTypeAccess();
+	
 	public void CompilationUnit.makeMethod(String name, String vis, Block blk) 
 			throws RefactoringException {
 		check_make_method_preconds(blk);
@@ -87,10 +89,20 @@ aspect MakeMethod {
 			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
 		if(outparms.size() > 1)
 			throw new RefactoringException("ambiguous return value");
+		if(mayDefFinal())
+			throw new RefactoringException("code may assign to a final field");
 		// create declaration of method
 		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// insert method invocation and body into type declaration
 		hostType().insertMethod(md, hostblock, pos, parms, ret);
+	}
+	
+	private boolean Block.mayDefFinal() {	
+		for(FieldDeclaration fd  : 
+			  (Collection<FieldDeclaration>)hostType().localFieldsMap().values())
+			if(mayDef(fd) && fd.isFinal())
+				return true;
+		return false;
 	}
 	
 	private void TypeDecl.insertMethod(MethodDecl md, Block host, int index, Collection parms, Opt ret) 
@@ -105,8 +117,8 @@ aspect MakeMethod {
 		if(ret.isEmpty())
 			invocation = new ExprStmt(ma);
 		else {
-			LocalDeclaration ld = (LocalDeclaration)ret.getChild(0);
-			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(ld.getID()), ma));
+			Variable v = (Variable)ret.getChild(0);
+			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(v.name()), ma));
 		}
 		// insert the method
 		/* it is crucial that this happens first, since the invocation references
@@ -130,7 +142,7 @@ aspect MakeMethod {
 		if(ret.isEmpty()) {
 			acc = new TypeAccess("void");
 		} else {
-			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			Variable decl = (Variable)ret.getChild(0);
 			acc = (Access)decl.getTypeAccess().fullCopy(); 
 		}
 		// parameter declarations
@@ -151,8 +163,8 @@ aspect MakeMethod {
 		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
 			blk.insertStmt(i, (Stmt)iter.next());
 		if(!ret.isEmpty()) {
-			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
-			String varname = decl.getID();
+			Variable decl = (Variable)ret.getChild(0);
+			String varname = decl.name();
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
 			blk.insertStmt(blk.getNumStmt(), stmt);
 		}

@@ -1,7 +1,7 @@
 aspect AccessVariableITD {
 
 	eq IntertypeMethodDecl.getBlock().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		VarAccessInfo acc = accessParameterDeclaration(decl);
 		// A declaration of a method parameter name shadows any other variable declarations
 		if(acc != null) return acc;
 		acc = introducedType().accessMemberField(decl);
@@ -15,7 +15,7 @@ aspect AccessVariableITD {
 	}
 	
 	eq IntertypeFieldDeclaration.getInit().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = introducedType().accessMemberField(decl);
+		VarAccessInfo acc = introducedType().accessMemberField(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(acc != null)
@@ -23,34 +23,34 @@ aspect AccessVariableITD {
 		return null;
 	}
 
-	SymbolicVarAccess SymbolicVarAccess.moveInto(IntertypeMethodDecl md) {
+	VarAccessInfo VarAccessInfo.moveInto(IntertypeMethodDecl md) {
 		return addQualifier(!md.introducedType().memberFields(target.name()).isEmpty() ||
 				!md.parameterDeclaration(target.name()).isEmpty());
 	}
 	
-	SymbolicVarAccess SymbolicVarAccess.moveInto(IntertypeFieldDeclaration fd) {
+	VarAccessInfo VarAccessInfo.moveInto(IntertypeFieldDeclaration fd) {
 		return addQualifier(!fd.introducedType().memberFields(target.name()).isEmpty());
 	}
 
 	// we have to avoid refering to the enclosing aspect as "this" (or "super")
 	// if that would happen, we just reject
 
-	refine SymbolicVarAccess public Access SymbolicVarAccess.computeThisAccess(NamingContext ctxt) {
+	refine VarAccessInfo public Access VarAccessInfo.computeThisAccess(NamingContext ctxt) {
 		if(bend instanceof AspectDecl)
 			return null;
-		return SymbolicVarAccess.SymbolicVarAccess.computeThisAccess(ctxt);
+		return VarAccessInfo.VarAccessInfo.computeThisAccess(ctxt);
 	}
 		
-	refine SymbolicVarAccess public Access SymbolicVarAccess.computeSuperAccess(NamingContext ctxt) {
+	refine VarAccessInfo public Access VarAccessInfo.computeSuperAccess(NamingContext ctxt) {
 		if(bend instanceof AspectDecl)
 			return null;
-		return SymbolicVarAccess.SymbolicVarAccess.computeSuperAccess(ctxt);
+		return VarAccessInfo.VarAccessInfo.computeSuperAccess(ctxt);
 	}
 		
-	refine SymbolicVarAccess public Access SymbolicVarAccess.computeMonsterAccess(NamingContext ctxt) {
+	refine VarAccessInfo public Access VarAccessInfo.computeMonsterAccess(NamingContext ctxt) {
 		if(bend instanceof AspectDecl)
 			return null;
-		return SymbolicVarAccess.SymbolicVarAccess.computeMonsterAccess(ctxt);
+		return VarAccessInfo.VarAccessInfo.computeMonsterAccess(ctxt);
 	}
 	
 	// the enclosing type of expressions and accesses has to be the thisType()

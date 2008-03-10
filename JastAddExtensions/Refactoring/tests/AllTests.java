@@ -11,6 +11,7 @@ public class AllTests {
 		suite.addTest(EncapsulateFieldTests.suite());
 		suite.addTest(ExtractMethodTests.suite());
 		suite.addTest(RenameTests.suite());
+		suite.addTest(RenameTestsITD.suite());
 		return suite;
 	}
 }

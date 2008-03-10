@@ -23,15 +23,15 @@
  * AccessVariable.jrag, and AccessMethod.jrag.
  */
 
-aspect SymbolicAccess {
+aspect AccessInfo {
 	
-	class SymbolicAccess<T> {
+	class AccessInfo<T> {
 		 public TypeDecl source;
 		 public TypeDecl bend;
 		 public boolean needsQualifier;
 		 public T target;
 		 
-		 public SymbolicAccess(TypeDecl source, TypeDecl bend, 
+		 public AccessInfo(TypeDecl source, TypeDecl bend, 
 				 			   boolean needsQualifier, T target) {
 			 this.source = source;
 			 this.bend = bend;

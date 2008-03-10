@@ -1,14 +1,14 @@
-aspect SymbolicMethodAccess {
+aspect MethodAccessInfo {
 	
-	class SymbolicMethodAccess extends SymbolicAccess<MethodDecl> {
+	class MethodAccessInfo extends AccessInfo<MethodDecl> {
 		
-		public SymbolicMethodAccess(TypeDecl source, TypeDecl bend, 
+		public MethodAccessInfo(TypeDecl source, TypeDecl bend, 
 									boolean needsQualifier,	MethodDecl target) {
 			super(source, bend, needsQualifier, target);
 		}
 	}
 
-	public SymbolicMethodAccess SymbolicMethodAccess.moveDownTo(TypeDecl td) {
+	public MethodAccessInfo MethodAccessInfo.moveDownTo(TypeDecl td) {
 		bend = td;
 		if(!td.localMethods(target.name()).isEmpty())
 			needsQualifier = true;
@@ -17,13 +17,13 @@ aspect SymbolicMethodAccess {
 		return this;
 	}
 		
-	public SymbolicMethodAccess SymbolicMethodAccess.moveInto(TypeDecl td) {
+	public MethodAccessInfo MethodAccessInfo.moveInto(TypeDecl td) {
 		if(!td.memberMethods(target.name()).isEmpty())
 			needsQualifier = true;
 		return this;
 	}
 		
-	public Access SymbolicMethodAccess.computeAccess(NamingContext ctxt, List args) {
+	public Access MethodAccessInfo.computeAccess(NamingContext ctxt, List args) {
 		if(needsQualifier) {
 			if(target.isStatic())
 				return computeStaticAccess(ctxt, args);
@@ -53,14 +53,14 @@ aspect SymbolicMethodAccess {
 		}
 	}
 	
-	public Access SymbolicMethodAccess.computeStaticAccess(NamingContext ctxt, List args) {
+	public Access MethodAccessInfo.computeStaticAccess(NamingContext ctxt, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
 		Access source_acc = ctxt.accessType(source, true);
 		if(source_acc == null) return null;
 		return source_acc.qualifiesAccess(ma);
 	}
 	
-	public Access SymbolicMethodAccess.computeThisAccess(NamingContext ctxt, List args) {
+	public Access MethodAccessInfo.computeThisAccess(NamingContext ctxt, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
 		if(source == ctxt.enclosingType()) {
 			return ma;
@@ -71,7 +71,7 @@ aspect SymbolicMethodAccess {
 		}
 	}
 	
-	public Access SymbolicMethodAccess.computeSuperAccess(NamingContext ctxt, List args) {
+	public Access MethodAccessInfo.computeSuperAccess(NamingContext ctxt, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
 		if(bend == ctxt.enclosingType())
 			return new SuperAccess("super").qualifiesAccess(ma);
@@ -82,7 +82,7 @@ aspect SymbolicMethodAccess {
 		}
 	}
 	
-	public Access SymbolicMethodAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
+	public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
 		if(needsQualifier) {
 			if(!target.isStatic())

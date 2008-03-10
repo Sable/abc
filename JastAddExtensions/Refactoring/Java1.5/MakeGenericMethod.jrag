@@ -34,6 +34,8 @@ aspect MakeGenericMethod {
 			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
 		if(outparms.size() > 1)
 			throw new RefactoringException("ambiguous return value");
+		if(mayDefFinal())
+			throw new RefactoringException("code may assign to a final field");
 		// create declaration of method
 		MethodDecl md = createMethodDecl(tvars, static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
 		// insert method invocation and body into type declaration
@@ -56,7 +58,7 @@ aspect MakeGenericMethod {
 		if(ret.isEmpty()) {
 			acc = new TypeAccess("void");
 		} else {
-			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
+			Variable decl = (Variable)ret.getChild(0);
 			acc = (Access)decl.getTypeAccess().fullCopy(); 
 		}
 		// parameter declarations
@@ -77,8 +79,8 @@ aspect MakeGenericMethod {
 		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
 			blk.insertStmt(i, (Stmt)iter.next());
 		if(!ret.isEmpty()) {
-			LocalDeclaration decl = (LocalDeclaration)ret.getChild(0);
-			String varname = decl.getID();
+			Variable decl = (Variable)ret.getChild(0);
+			String varname = decl.name();
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
 			blk.insertStmt(blk.getNumStmt(), stmt);
 		}

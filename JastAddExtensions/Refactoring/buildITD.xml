@@ -72,10 +72,10 @@
 		</fileset>
 		<fileset file="${Refactoring}/Methodoid.jadd"/>
 		<fileset file="${Refactoring}/Scope.jadd"/>
-		<fileset file="${Refactoring}/SymbolicAccess.jrag"/>
-		<fileset file="${Refactoring}/SymbolicVarAccess.jrag"/>
-		<fileset file="${Refactoring}/SymbolicMethodAccess.jrag"/>
-		<fileset file="${Refactoring}/SymbolicTypeAccess.jrag"/>
+		<fileset file="${Refactoring}/AccessInfo.jrag"/>
+		<fileset file="${Refactoring}/VarAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/MethodAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/TypeAccessInfo.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
@@ -83,9 +83,9 @@
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
-			<exclude name="SymbolicVarAccess.jrag"/>
-			<exclude name="SymbolicMethodAccess.jrag"/>
-			<exclude name="SymbolicTypeAccess.jrag"/>
+			<exclude name="VarAccessInfo.jrag"/>
+			<exclude name="MethodAccessInfo.jrag"/>
+			<exclude name="TypeAccessInfo.jrag"/>
 		</fileset>
   </jastadd>
   <!-- copy library files-->
@@ -243,6 +243,7 @@
      classname="junit.awtui.TestRunner"
      classpath=".:tools/junit.jar" 
      fork="true" 
+     maxmemory="2048M"
      dir="tests/data">
     <arg line="tests.AllTests"/>
   </java>

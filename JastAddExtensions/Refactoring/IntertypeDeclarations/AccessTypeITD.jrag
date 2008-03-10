@@ -1,10 +1,10 @@
 aspect AccessTypeITD {
 	
 	eq IntertypeFieldDeclaration.getInit().accessType(TypeDecl td) {
-	    SymbolicTypeAccess acc = introducedType().accessMemberType(td);
+	    TypeAccessInfo acc = introducedType().accessMemberType(td);
 	    if(acc != null) return acc;
 		if(introducedType().sameSourceDeclAs(td))
-			return introducedType().getSymbolicAccess().moveInto(introducedType());
+			return introducedType().getAccessInfo().moveInto(introducedType());
 		acc = accessType(td);
 		if(acc != null)
 			return acc.moveInto(this);
@@ -12,10 +12,10 @@ aspect AccessTypeITD {
 	}	
 	
 	eq IntertypeMethodDecl.getBlock().accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = introducedType().accessMemberType(td);
+		TypeAccessInfo acc = introducedType().accessMemberType(td);
 		if(acc != null) return acc;
 		if(introducedType().sameSourceDeclAs(td))
-			return introducedType().getSymbolicAccess().moveInto(introducedType());
+			return introducedType().getAccessInfo().moveInto(introducedType());
 		acc = accessType(td);
 		if(acc != null)
 			return acc.moveInto(this);
@@ -24,7 +24,7 @@ aspect AccessTypeITD {
 	
 	// member type lookup becomes a bit more complicated because of declared parents
 	refine AccessType eq ClassDecl.accessMemberType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessLocalType(td);
+		TypeAccessInfo acc = accessLocalType(td);
 		if(acc != null) return acc;
 		for(Iterator outerIter = interfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
@@ -47,7 +47,7 @@ aspect AccessTypeITD {
 	}
 	
 	refine AccessType eq InterfaceDecl.accessMemberType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessLocalType(td);
+		TypeAccessInfo acc = accessLocalType(td);
 		if(acc != null) return acc;
 		for(Iterator outerIter = superinterfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)outerIter.next();
@@ -58,22 +58,22 @@ aspect AccessTypeITD {
 		return null;
 	}
 	
-	SymbolicTypeAccess SymbolicTypeAccess.moveInto(IntertypeFieldDeclaration fd) {
+	TypeAccessInfo TypeAccessInfo.moveInto(IntertypeFieldDeclaration fd) {
 		return addQualifier(!fd.introducedType().memberTypes(target.name()).isEmpty()
 						|| fd.introducedType().name().equals(target.name()));
 	}
 	
-	SymbolicTypeAccess SymbolicTypeAccess.moveInto(IntertypeMethodDecl md) {
+	TypeAccessInfo TypeAccessInfo.moveInto(IntertypeMethodDecl md) {
 		return addQualifier(!md.introducedType().memberTypes(target.name()).isEmpty()
 						|| md.introducedType().name().equals(target.name()));
 	}
 	
 	// a type in a surrounding aspect cannot be accessed as <Aspect>.<Type> unless it is static
-	refine SymbolicTypeAccess public Access SymbolicMemberTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
+	refine TypeAccessInfo public Access MemberTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
 		if(needsQualifier || ctxt.isShadowed(target, ambiguous))
 			if(source instanceof AspectDecl && !target.isStatic())
 				return null;
-		return SymbolicTypeAccess.SymbolicMemberTypeAccess.computeAccess(ctxt, ambiguous);
+		return TypeAccessInfo.MemberTypeAccessInfo.computeAccess(ctxt, ambiguous);
 	}
 	
 }

@@ -7,18 +7,18 @@ aspect RefactoringStaticImports {
 				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
 					FieldDeclaration fd = (FieldDeclaration)iter.next();
 					if(fd == decl)
-						return new SymbolicLocalVarAccess(decl);
+						return new LocalVarAccessInfo(decl);
 				}
 		for(ImportDecl i : getImportDecls())
 			if(i.isOnDemand())
 				for(Iterator iter = i.importedFields(name).iterator(); iter.hasNext(); ) {
 					FieldDeclaration fd = (FieldDeclaration)iter.next();
 					if(fd == decl)
-						return new SymbolicLocalVarAccess(decl);
+						return new LocalVarAccessInfo(decl);
 				}
 		return accessVariable(decl);
 	}
-	inh SymbolicVarAccess CompilationUnit.accessVariable(Variable decl);
+	inh VarAccessInfo CompilationUnit.accessVariable(Variable decl);
 
 	eq CompilationUnit.getTypeDecl().accessMethod(MethodDecl md) {
 		String name = md.name();
@@ -27,25 +27,25 @@ aspect RefactoringStaticImports {
 				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
 					MethodDecl md2 = (MethodDecl)iter.next();
 					if(md == md2)
-						return new SymbolicMethodAccess(md.hostType(), md.hostType(), false, md);
+						return new MethodAccessInfo(md.hostType(), md.hostType(), false, md);
 				}
 		for(ImportDecl i : getImportDecls())
 			if(i.isOnDemand())
 				for(Iterator iter = i.importedMethods(name).iterator(); iter.hasNext(); ) {
 					MethodDecl md2 = (MethodDecl)iter.next();
 					if(md == md2)
-						return new SymbolicMethodAccess(md.hostType(), md.hostType(), false, md);
+						return new MethodAccessInfo(md.hostType(), md.hostType(), false, md);
 				}
 		return accessMethod(md);
 	}
-	inh SymbolicMethodAccess CompilationUnit.accessMethod(MethodDecl md);
+	inh MethodAccessInfo CompilationUnit.accessMethod(MethodDecl md);
 	
 	eq StaticImportDecl.accessImportedType(TypeDecl td) {
 		String name = td.name();
 	    for(Iterator iter = type().memberTypes(name).iterator(); iter.hasNext(); ) {
 	      TypeDecl td2 = (TypeDecl)iter.next();
 	      if(td2.isStatic() && td2.accessibleFromPackage(packageName()) && td == td2)
-	        return td.getSymbolicAccess();
+	        return td.getAccessInfo();
 	    }
 	    return null;
 	  }

@@ -1,16 +1,16 @@
 import java.util.*;
 
 /*
- * The inherited attribute accessMethod(m) computes a SymbolicMethodAccess which
+ * The inherited attribute accessMethod(m) computes a MethodAccessInfo which
  * describes how to access method m from the current location in the AST. This
- * SymbolicMethodAccess can in turn be used to construct an actual access.
+ * MethodAccessInfo can in turn be used to construct an actual access.
  * 
  * The implementation of accessMethod tries to stay close to lookupMethod with
  * basically the same clauses and the same control flow, but with additional calls to
  * methods "moveInto" and "moveDownTo", which transport a symbolic access from a
  * parent type to a child type resp. an enclosing type to a nested type, adding
  * information about required qualifications in the process. For the implementation
- * of these methods see SymbolicMethodAccess.jrag
+ * of these methods see MethodAccessInfo.jrag
  */
 
 aspect AccessMethod {
@@ -26,9 +26,9 @@ aspect AccessMethod {
 	}
 	
 	// cf. attribute lookupMethod(String) in LookupMethod.jrag
-	inh SymbolicMethodAccess Expr.accessMethod(MethodDecl md);
-	inh SymbolicMethodAccess TypeDecl.accessMethod(MethodDecl md);
-	inh SymbolicMethodAccess BodyDecl.accessMethod(MethodDecl md);
+	inh MethodAccessInfo Expr.accessMethod(MethodDecl md);
+	inh MethodAccessInfo TypeDecl.accessMethod(MethodDecl md);
+	inh MethodAccessInfo BodyDecl.accessMethod(MethodDecl md);
 
 	eq MethodAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
 	eq ConstructorAccess.getArg().accessMethod(MethodDecl md) = unqualifiedScope().accessMethod(md);
@@ -39,8 +39,8 @@ aspect AccessMethod {
 	eq TypeDecl.getBodyDecl(int i).accessMethod(MethodDecl md) = unqualifiedAccessMethod(md);
 
 	// cf. attribute unqualifiedLookupMethod in LookupMethod.jrag
-	syn SymbolicMethodAccess TypeDecl.unqualifiedAccessMethod(MethodDecl md) {
-		SymbolicMethodAccess acc = accessMemberMethod(md);
+	syn MethodAccessInfo TypeDecl.unqualifiedAccessMethod(MethodDecl md) {
+		MethodAccessInfo acc = accessMemberMethod(md);
 		if(acc != null) return acc;
 		if(isInnerType() || md.isStatic()) {
 			acc = accessMethod(md);
@@ -52,7 +52,7 @@ aspect AccessMethod {
 
 	// in explicit constructor invocation
 	eq ConstructorDecl.getConstructorInvocation().accessMethod(MethodDecl md) {
-		SymbolicMethodAccess acc = hostType().accessMemberMethod(md);
+		MethodAccessInfo acc = hostType().accessMemberMethod(md);
 		if(acc != null && md.isStatic()) return acc;
 		if(hostType().isNestedType()) {
 			acc = hostType().accessMethod(md);
@@ -66,11 +66,11 @@ aspect AccessMethod {
 		getLeft().type().accessMemberMethod(md);
 
 	// cf. attribute memberMethods(String)
-	syn SymbolicMethodAccess TypeDecl.accessMemberMethod(MethodDecl md) =
+	syn MethodAccessInfo TypeDecl.accessMemberMethod(MethodDecl md) =
 		accessLocalMethod(md);
 	
 	eq ClassDecl.accessMemberMethod(MethodDecl md) {
-		SymbolicMethodAccess acc = accessLocalMethod(md);
+		MethodAccessInfo acc = accessLocalMethod(md);
 		if(acc != null) return acc;
 		if(hasSuperclass()) {
 			acc = superclass().accessMemberMethod(md);
@@ -87,7 +87,7 @@ aspect AccessMethod {
 	}
 	
 	eq InterfaceDecl.accessMemberMethod(MethodDecl md) {
-		SymbolicMethodAccess acc = accessLocalMethod(md);
+		MethodAccessInfo acc = accessLocalMethod(md);
 		if(acc != null) return acc;
 		for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)iter.next();
@@ -102,16 +102,16 @@ aspect AccessMethod {
 	}
 	
 	// somewhat similar to attribute localMethodsSignature(String)
-	public SymbolicMethodAccess TypeDecl.accessLocalMethod(MethodDecl md) {
+	public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
 		for(int i=0;i<getNumBodyDecl();++i) {
 			if(getBodyDecl(i) == md)
-				return new SymbolicMethodAccess(this, this, false, md); 
+				return new MethodAccessInfo(this, this, false, md); 
 		}
 		return null;
 	}
 	
 	public Access Access.access(MethodDecl md, List args) {
-		SymbolicMethodAccess acc = accessMethod(md);
+		MethodAccessInfo acc = accessMethod(md);
 		if(acc == null) return null;
 		if(isQualified())
 			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),

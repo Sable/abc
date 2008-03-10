@@ -1,35 +1,35 @@
 import java.util.*;
 
 /*
- * The inherited attribute accessVariable(v) computes a SymbolicVarAccess which
+ * The inherited attribute accessVariable(v) computes a VarAccessInfo which
  * describes how to access variable v from the current location in the AST. This
- * SymbolicVarAccess can in turn be used to construct an actual access.
+ * VarAccessInfo can in turn be used to construct an actual access.
  * 
  * The implementation of accessVariable is mostly parallel to lookupVariable with
  * the same clauses and the same control flow, but with additional calls to
  * methods "moveInto" and "moveDownTo", which transport a symbolic access from a
  * parent type to a child type resp. an enclosing type to a nested type, adding
  * information about required qualifications in the process. For the implementation
- * of these methods see SymbolicVarAccess.jrag
+ * of these methods see VarAccessInfo.jrag
  */
 
 aspect AccessVariable {
 	
 	// cf. lookupVariable(String)
-	inh SymbolicVarAccess TypeDecl.accessVariable(Variable decl);
-	inh SymbolicVarAccess BodyDecl.accessVariable(Variable decl);
-	inh SymbolicVarAccess Stmt.accessVariable(Variable decl);
-	inh SymbolicVarAccess Block.accessVariable(Variable decl);
-	inh SymbolicVarAccess ForStmt.accessVariable(Variable decl);
-	inh SymbolicVarAccess Expr.accessVariable(Variable decl);
-	inh SymbolicVarAccess CatchClause.accessVariable(Variable decl);
-	inh SymbolicVarAccess VariableDeclaration.accessVariable(Variable decl);
-	inh SymbolicVarAccess ParameterDeclaration.accessVariable(Variable decl);
+	inh VarAccessInfo TypeDecl.accessVariable(Variable decl);
+	inh VarAccessInfo BodyDecl.accessVariable(Variable decl);
+	inh VarAccessInfo Stmt.accessVariable(Variable decl);
+	inh VarAccessInfo Block.accessVariable(Variable decl);
+	inh VarAccessInfo ForStmt.accessVariable(Variable decl);
+	inh VarAccessInfo Expr.accessVariable(Variable decl);
+	inh VarAccessInfo CatchClause.accessVariable(Variable decl);
+	inh VarAccessInfo VariableDeclaration.accessVariable(Variable decl);
+	inh VarAccessInfo ParameterDeclaration.accessVariable(Variable decl);
 
 	eq Program.getChild().accessVariable(Variable decl) = null;
 
 	eq TypeDecl.getBodyDecl(int i).accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessMemberField(decl);
+		VarAccessInfo acc = accessMemberField(decl);
 		if(acc != null)	return acc;
 		acc = accessVariable(decl);
 		if((inStaticContext() || isStatic()) && decl.isInstanceVariable())
@@ -41,7 +41,7 @@ aspect AccessVariable {
 
 	// The scope of a parameter of a method is the entire body of the method
 	eq MethodDecl.getBlock().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		VarAccessInfo acc = accessParameterDeclaration(decl);
 		// A declaration of a method parameter name shadows any other variable declarations
 		if(acc != null) return acc;
 		// Delegate to other declarations in scope
@@ -57,7 +57,7 @@ aspect AccessVariable {
 		accessParameterDeclaration(decl);
 
 	eq ConstructorDecl.getBlock().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		VarAccessInfo acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(acc != null)
@@ -66,7 +66,7 @@ aspect AccessVariable {
 	}
 
 	eq ConstructorDecl.getConstructorInvocation().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		VarAccessInfo acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(!decl.isStatic() && decl instanceof FieldDeclaration &&
@@ -84,7 +84,7 @@ aspect AccessVariable {
 	// the block in which the declaration appears
 	eq Block.getStmt(int index).accessVariable(Variable decl) {
 		final int i = index;
-		SymbolicVarAccess acc = accessLocalVariableDeclaration(decl, index);
+		VarAccessInfo acc = accessLocalVariableDeclaration(decl, index);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(acc != null)
@@ -99,7 +99,7 @@ aspect AccessVariable {
 	// The scope of the parameter of an exception handler that is declared in a
 	// catch clause of a try statement is the entire block associated with the catch
 	eq CatchClause.getBlock().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		VarAccessInfo acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(acc != null)
@@ -118,8 +118,8 @@ aspect AccessVariable {
 	eq ForStmt.getStmt().accessVariable(Variable decl) = localAccess(decl);
 
 	// cf. localLookup(String)
-	syn SymbolicVarAccess ForStmt.localAccess(Variable decl) {
-		SymbolicVarAccess acc = accessLocalVariableDeclaration(decl);
+	syn VarAccessInfo ForStmt.localAccess(Variable decl) {
+		VarAccessInfo acc = accessLocalVariableDeclaration(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(acc != null)
@@ -128,35 +128,35 @@ aspect AccessVariable {
 	}
 
 	// cf. parameterDeclaration(String)
-	syn SymbolicVarAccess MethodDecl.accessParameterDeclaration(Variable decl) {
+	syn VarAccessInfo MethodDecl.accessParameterDeclaration(Variable decl) {
 		for(ParameterDeclaration d : getParameters())
 			if(d == decl)
-				return new SymbolicLocalVarAccess(decl);
+				return new LocalVarAccessInfo(decl);
 		return null;
 	}
 
-	syn SymbolicVarAccess ConstructorDecl.accessParameterDeclaration(Variable decl) {
+	syn VarAccessInfo ConstructorDecl.accessParameterDeclaration(Variable decl) {
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i) == decl)
-				return new SymbolicLocalVarAccess(decl);
+				return new LocalVarAccessInfo(decl);
 		return null;
 	}
 
-	syn SymbolicVarAccess CatchClause.accessParameterDeclaration(Variable decl) = 
-		getParameter() == decl ? new SymbolicLocalVarAccess(decl) : null;
+	syn VarAccessInfo CatchClause.accessParameterDeclaration(Variable decl) = 
+		getParameter() == decl ? new LocalVarAccessInfo(decl) : null;
 
 	// cf. localVariableDeclaration(String)
-	syn SymbolicVarAccess Block.accessLocalVariableDeclaration(Variable decl, int index) {
+	syn VarAccessInfo Block.accessLocalVariableDeclaration(Variable decl, int index) {
 		for(int i = 0; i<=index; i++)
 			if(getStmt(i) == decl)
-				return new SymbolicLocalVarAccess(decl);
+				return new LocalVarAccessInfo(decl);
 		return null;
 	}
 
-	syn SymbolicVarAccess ForStmt.accessLocalVariableDeclaration(Variable decl) {
+	syn VarAccessInfo ForStmt.accessLocalVariableDeclaration(Variable decl) {
 		for(int i = 0; i < getNumInitStmt(); i++)
 			if(getInitStmt(i) == decl)
-				return new SymbolicLocalVarAccess(decl);
+				return new LocalVarAccessInfo(decl);
 		return null;
 	}
 
@@ -174,9 +174,9 @@ aspect AccessVariable {
 	eq AmbiguousAccess.qualifiedAccessVariable(Variable decl) = null;
 
 	// cf. qualifiedLookupVariable(String)
-	syn SymbolicVarAccess Expr.qualifiedAccessVariable(Variable decl) {
+	syn VarAccessInfo Expr.qualifiedAccessVariable(Variable decl) {
 		if(type().accessibleFrom(hostType())) {
-			SymbolicVarAccess acc = type().accessMemberField(decl);
+			VarAccessInfo acc = type().accessMemberField(decl);
 			if(acc != null && isAccessibleField(decl)) return acc;
 		}
 		return null;
@@ -186,7 +186,7 @@ aspect AccessVariable {
 
 	eq TypeAccess.qualifiedAccessVariable(Variable decl) {
 		if(type().accessibleFrom(hostType())) {
-			SymbolicVarAccess acc = type().accessMemberField(decl);
+			VarAccessInfo acc = type().accessMemberField(decl);
 			if(acc != null && isAccessibleField(decl) && !decl.isInstanceVariable())
 				return acc;
 		}
@@ -200,21 +200,21 @@ aspect AccessVariable {
 	}
 
 	// cf. memberFields(String)
-	syn SymbolicVarAccess TypeDecl.accessMemberField(Variable decl) = 
+	syn VarAccessInfo TypeDecl.accessMemberField(Variable decl) = 
 		accessField(decl);
 
 	// cf. localFields(String)
-	syn SymbolicVarAccess TypeDecl.accessLocalField(Variable decl) {
+	syn VarAccessInfo TypeDecl.accessLocalField(Variable decl) {
     for(Iterator iter = localFields(decl.name()).iterator(); iter.hasNext(); ) {
       FieldDeclaration f = (FieldDeclaration)iter.next();
       if(f == decl)
-				return new SymbolicVarAccess(this, this, false, decl);
+				return new VarAccessInfo(this, this, false, decl);
     }
 		return null;
 	}
 
 	// cf. fields(String)
-	syn SymbolicVarAccess TypeDecl.accessField(Variable decl) = 
+	syn VarAccessInfo TypeDecl.accessField(Variable decl) = 
 		accessLocalField(decl);
 	
 	syn boolean Variable.isPrivateField();
@@ -228,7 +228,7 @@ aspect AccessVariable {
 	eq ParameterDeclaration.isAccessibleFrom(TypeDecl td) = true;
 
 	eq ClassDecl.accessField(Variable decl) {
-		SymbolicVarAccess acc = accessLocalField(decl);
+		VarAccessInfo acc = accessLocalField(decl);
 		if(acc != null) return acc;
 		if(hasSuperclass()) {
 			acc = superclass().accessField(decl);
@@ -245,7 +245,7 @@ aspect AccessVariable {
 	}
 
 	eq InterfaceDecl.accessField(Variable decl) {
-		SymbolicVarAccess acc = accessLocalField(decl);
+		VarAccessInfo acc = accessLocalField(decl);
 		if(acc != null) return acc;
 		for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
 			TypeDecl type = (TypeDecl)iter.next();
@@ -270,7 +270,7 @@ aspect AccessVariable {
 	}
 
 	public Access Access.access(Variable v) {
-		SymbolicVarAccess acc = accessVariable(v);
+		VarAccessInfo acc = accessVariable(v);
 		if(acc == null) return null;
 		if(isQualified())
 			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),

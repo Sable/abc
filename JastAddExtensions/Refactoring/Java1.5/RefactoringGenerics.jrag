@@ -7,11 +7,11 @@ aspect RefactoringGenerics {
 	syn boolean Variable.sameSourceDeclAs(Variable decl) = sourceVariableDecl() == decl.sourceVariableDecl();
 
 	// we need to refine a bunch of methods to use sameSourceDeclAs() instead of "=="
-	refine AccessMethod	public SymbolicMethodAccess TypeDecl.accessLocalMethod(MethodDecl md) {
+	refine AccessMethod	public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
 		for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
 			MethodDecl m = (MethodDecl)iter.next();
 			if(m.sameSourceDeclAs(md))
-				return new SymbolicMethodAccess(this, this, false, md); 
+				return new MethodAccessInfo(this, this, false, md); 
 		}
 		return null;
 	}
@@ -20,21 +20,21 @@ aspect RefactoringGenerics {
 		for(int i = 0; i < getNumCompilationUnit(); i++)
 			for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++)
 				if(getCompilationUnit(i).getTypeDecl(j).sameSourceDeclAs(td))
-					return td.getSymbolicAccess(true);
+					return td.getAccessInfo(true);
 		return null;
 	}
 
 	refine AccessType eq ClassInstanceExpr.qualifiedAccessType(TypeDecl td) {
-		SymbolicTypeAccess acc = type().accessMemberType(td);
+		TypeAccessInfo acc = type().accessMemberType(td);
 		if(acc != null && typeAccessible(td))
 			return acc;
 		if(type().sameSourceDeclAs(td))
-			return td.getSymbolicAccess().moveInto(this);
+			return td.getAccessInfo().moveInto(this);
 		return null;
 	}
 
 	refine AccessVariable eq ConstructorDecl.getConstructorInvocation().accessVariable(Variable decl) {
-		SymbolicVarAccess acc = accessParameterDeclaration(decl);
+		VarAccessInfo acc = accessParameterDeclaration(decl);
 		if(acc != null) return acc;
 		acc = accessVariable(decl);
 		if(!decl.isStatic() && decl instanceof FieldDeclaration &&
@@ -49,7 +49,7 @@ aspect RefactoringGenerics {
 		for(Iterator iter = localTypeDecls(td.name()).iterator(); iter.hasNext(); ) {
 			TypeDecl t = (TypeDecl)iter.next();
 			if(t.sameSourceDeclAs(td))
-				return td.getSymbolicAccess();
+				return td.getAccessInfo();
 		}
 		return null;
 	}
@@ -57,27 +57,27 @@ aspect RefactoringGenerics {
 	refine AccessType eq CompilationUnit.accessLocallyDefinedType(TypeDecl td) {
 		for(TypeDecl td2 : getTypeDecls())
 			if(td.sameSourceDeclAs(td2))
-				return td.getSymbolicAccess();
+				return td.getAccessInfo();
 		return null;
 	}
 
 	refine AccessType eq SingleTypeImportDecl.accessImportedType(TypeDecl td) {
 		if(td.sameSourceDeclAs(getAccess().type()))
-			return td.getSymbolicAccess();
+			return td.getAccessInfo();
 		return null;
 	}
 
 	refine AccessVariable eq MethodDecl.accessParameterDeclaration(Variable decl) {
 		for(ParameterDeclaration d : getParameters())
 			if(d.sameSourceDeclAs(decl))
-				return new SymbolicLocalVarAccess(decl);
+				return new LocalVarAccessInfo(decl);
 		return null;
 	}
 
 	refine AccessVariable eq ConstructorDecl.accessParameterDeclaration(Variable decl) {
 		for(int i = 0; i < getNumParameter(); i++)
 			if(getParameter(i).sameSourceDeclAs(decl))
-				return new SymbolicLocalVarAccess(decl);
+				return new LocalVarAccessInfo(decl);
 		return null;
 	}
 
@@ -85,7 +85,7 @@ aspect RefactoringGenerics {
 		for(Iterator iter = localFields(decl.name()).iterator(); iter.hasNext(); ) {
 			FieldDeclaration f = (FieldDeclaration)iter.next();
 			if(f.sameSourceDeclAs(decl))
-				return new SymbolicVarAccess(this, this, false, decl);
+				return new VarAccessInfo(this, this, false, decl);
 		}
 		return null;
 	}
@@ -143,7 +143,7 @@ aspect RefactoringGenerics {
 		}
 	}
 
-	refine SymbolicMethodAccess public Access SymbolicMethodAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
+	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
 		if(needsQualifier) {
 			if(!target.isStatic())
@@ -166,7 +166,7 @@ aspect RefactoringGenerics {
 		}
 	}
 	
-	refine SymbolicVarAccess public Access SymbolicVarAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+	refine VarAccessInfo public Access VarAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
 		VarAccess va = new VarAccess(target.name());
 		if(needsQualifier) {
 			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
@@ -190,25 +190,25 @@ aspect RefactoringGenerics {
 		return res;
 	}
 
-	class SymbolicParTypeAccess extends SymbolicTypeAccess {
+	class ParTypeAccessInfo extends TypeAccessInfo {
 		private ParTypeDecl target;
-		private SymbolicTypeAccess sourceAccess;
+		private TypeAccessInfo sourceAccess;
 
-		public SymbolicParTypeAccess(boolean needsQualifier, ParTypeDecl target) {
+		public ParTypeAccessInfo(boolean needsQualifier, ParTypeDecl target) {
 			super(null, needsQualifier, (TypeDecl)target);
 			this.target = target;
-			this.sourceAccess = ((TypeDecl)target).sourceTypeDecl().getSymbolicAccess(needsQualifier);
+			this.sourceAccess = ((TypeDecl)target).sourceTypeDecl().getAccessInfo(needsQualifier);
 		}
 	}
 
-	protected SymbolicTypeAccess SymbolicParTypeAccess.addQualifier(boolean flag) {
-		SymbolicTypeAccess acc = sourceAccess.addQualifier(flag);
+	protected TypeAccessInfo ParTypeAccessInfo.addQualifier(boolean flag) {
+		TypeAccessInfo acc = sourceAccess.addQualifier(flag);
 		if(acc == null) return null;
 		sourceAccess = acc;
 		return this;
 	}
 
-	public Access SymbolicParTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
+	public Access ParTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
 		Access source_acc = sourceAccess.computeAccess(ctxt, ambiguous);
 		if(source_acc == null) return null;
 		List<Access> arg_accs = new List<Access>();
@@ -220,7 +220,7 @@ aspect RefactoringGenerics {
 		return new ParTypeAccess(source_acc, arg_accs);
 	}
 
-	public Access SymbolicParTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
+	public Access ParTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier) {
 		Access source_acc = sourceAccess.computeQualifiedAccess(ctxt, ambiguous, qualifier);
 		if(source_acc == null) return null;
@@ -239,43 +239,43 @@ aspect RefactoringGenerics {
 		return source_acc;
 	}
 
-	public SymbolicTypeAccess ParTypeDecl.getSymbolicAccess(boolean needsQualifier) {
-		return new SymbolicParTypeAccess(needsQualifier, this);
+	public TypeAccessInfo ParTypeDecl.getAccessInfo(boolean needsQualifier) {
+		return new ParTypeAccessInfo(needsQualifier, this);
 	}
 
 	// access computational rules (see Generics.jrag for the corresponding lookup rules)
 	eq ParTypeAccess.getTypeArgument().accessType(TypeDecl td) 
 	  = unqualifiedScope().accessType(td);
 
-	public SymbolicTypeAccess SymbolicTypeAccess.movePastTypeVars(GenericTypeDecl td) {
+	public TypeAccessInfo TypeAccessInfo.movePastTypeVars(GenericTypeDecl td) {
 		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(!td.addTypeVariables(SimpleSet.emptySet, 
 												 target.name()).isEmpty());
 
 	}
 	
-	public SymbolicTypeAccess SymbolicTypeAccess.movePastTypeVars(GenericMethodDecl md) {
+	public TypeAccessInfo TypeAccessInfo.movePastTypeVars(GenericMethodDecl md) {
 		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(!md.localLookupType(target.name()).isEmpty());
 	}
 
-	public SymbolicTypeAccess SymbolicTypeAccess.movePastTypeVars(GenericConstructorDecl cd) {
+	public TypeAccessInfo TypeAccessInfo.movePastTypeVars(GenericConstructorDecl cd) {
 		TypeDecl target = (TypeDecl)this.target;
 		return addQualifier(!cd.localLookupType(target.name()).isEmpty());
 	}
 
-	public SymbolicTypeAccess GenericTypeDecl.accessTypeVariable(TypeDecl td) {
+	public TypeAccessInfo GenericTypeDecl.accessTypeVariable(TypeDecl td) {
 		GenericTypeDecl original = (GenericTypeDecl)original();
 		for(int i = 0; i < original.getNumTypeParameter(); i++) {
 			TypeVariable td2 = original.getTypeParameter(i);
 			if(td2.sameSourceDeclAs(td))
-				return td.getSymbolicAccess();
+				return td.getAccessInfo();
 		}
 		return null;
 	}
 
 	eq GenericInterfaceDecl.getSuperInterfaceId().accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessTypeVariable(td);
+		TypeAccessInfo acc = accessTypeVariable(td);
 		if(acc != null)
 			return acc;
 		acc = accessType(td);
@@ -285,7 +285,7 @@ aspect RefactoringGenerics {
 	}
 
 	eq GenericClassDecl.getSuperClassAccess().accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessTypeVariable(td);
+		TypeAccessInfo acc = accessTypeVariable(td);
 		if(acc != null)
 			return acc;
 		acc = accessType(td);
@@ -295,7 +295,7 @@ aspect RefactoringGenerics {
 	}
 
 	eq GenericClassDecl.getImplements().accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessTypeVariable(td);
+		TypeAccessInfo acc = accessTypeVariable(td);
 		if(acc != null)
 			return acc;
 		acc = accessType(td);
@@ -305,7 +305,7 @@ aspect RefactoringGenerics {
 	}
 
 	eq GenericTypeDecl.getTypeParameter().accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessMemberType(td);
+		TypeAccessInfo acc = accessMemberType(td);
 		if(acc != null) 
 			return acc;
 		acc = accessTypeVariable(td);
@@ -332,7 +332,7 @@ aspect RefactoringGenerics {
 	}
 
 	eq GenericTypeDecl.getBodyDecl(int index).accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = accessMemberType(td);
+		TypeAccessInfo acc = accessMemberType(td);
 		if(acc != null)
 			return acc;
 		if(getBodyDecl(index).visibleTypeParameters()) {
@@ -363,15 +363,15 @@ aspect RefactoringGenerics {
 	eq ParMethodAccess.getTypeArgument().accessType(TypeDecl td) 
 	  = unqualifiedScope().accessType(td);
 
-	inh SymbolicTypeAccess GenericMethodDecl.accessType(TypeDecl td);
-	syn SymbolicTypeAccess GenericMethodDecl.localAccessType(TypeDecl td) {
+	inh TypeAccessInfo GenericMethodDecl.accessType(TypeDecl td);
+	syn TypeAccessInfo GenericMethodDecl.localAccessType(TypeDecl td) {
 		for(int i = 0; i < getNumTypeParameter(); i++)
 			if(original().getTypeParameter(i).sameSourceDeclAs(td))
-				return td.getSymbolicAccess();
+				return td.getAccessInfo();
 		return null;
 	}
 	eq GenericMethodDecl.getChild().accessType(TypeDecl td) {
-		SymbolicTypeAccess acc = localAccessType(td);
+		TypeAccessInfo acc = localAccessType(td);
 		if(acc != null) return acc;
 		acc = accessType(td);
 		if(acc != null) return acc.movePastTypeVars(this);
@@ -383,17 +383,17 @@ aspect RefactoringGenerics {
 	eq ParSuperConstructorAccess.getTypeArgument().accessType(TypeDecl td) 
 	  = unqualifiedScope().accessType(td);
 	
-	inh SymbolicTypeAccess GenericConstructorDecl.accessType(TypeDecl td);
-	syn SymbolicTypeAccess GenericConstructorDecl.localAccessType(TypeDecl td) {
+	inh TypeAccessInfo GenericConstructorDecl.accessType(TypeDecl td);
+	syn TypeAccessInfo GenericConstructorDecl.localAccessType(TypeDecl td) {
 	  for(int i = 0; i < getNumTypeParameter(); i++) {
 	    if(original().getTypeParameter(i).sameSourceDeclAs(td))
-	      return td.getSymbolicAccess();
+	      return td.getAccessInfo();
 	  }
 	  return null;
 	}
 	  
 	eq GenericConstructorDecl.getChild().accessType(TypeDecl td) { 
-		SymbolicTypeAccess acc = localAccessType(td);
+		TypeAccessInfo acc = localAccessType(td);
 		if(acc != null) return acc;
 		acc = accessType(td);
 		if(acc != null) return acc.movePastTypeVars(this);
@@ -403,15 +403,15 @@ aspect RefactoringGenerics {
 	eq ParClassInstanceExpr.getTypeArgument().accessType(TypeDecl td)
 	  = unqualifiedScope().accessType(td);
 
-	// SymbolicTypeVarAccess has the same behaviour as SymbolicLocalTypeAccess
-	class SymbolicTypeVarAccess extends SymbolicLocalTypeAccess {
-		public SymbolicTypeVarAccess(boolean needsQualifier, TypeVariable target) {
+	// TypeVarAccessInfo has the same behaviour as LocalTypeAccessInfo
+	class TypeVarAccessInfo extends LocalTypeAccessInfo {
+		public TypeVarAccessInfo(boolean needsQualifier, TypeVariable target) {
 			super(target);
 			addQualifier(needsQualifier);
 		}
 	}
 
-	public SymbolicTypeAccess TypeVariable.getSymbolicAccess(boolean needsQualifier) {
-		return new SymbolicTypeVarAccess(needsQualifier, this);
+	public TypeAccessInfo TypeVariable.getAccessInfo(boolean needsQualifier) {
+		return new TypeVarAccessInfo(needsQualifier, this);
 	}
 }

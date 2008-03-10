@@ -1,7 +1,7 @@
-aspect SymbolicVarAccess {
+aspect VarAccessInfo {
 
 	/*
-	 * A SymbolicVarAccess contains information about how to access a variable from
+	 * A VarAccessInfo contains information about how to access a variable from
 	 * some point in the syntax tree. In general, to looking up a variable may
 	 * involve going out through lexically enclosing scopes, possibly reaching
 	 * a type declaration and from there going up its ancestor chain until reaching
@@ -13,7 +13,7 @@ aspect SymbolicVarAccess {
 	 * declaration where we switched from the "out" movement to the "up" movement as
 	 * the "bend". Given a field [f] with source [A] and bend [B], the most
 	 * general way of accessing it is [((A)B.this).f]; the information to construct
-	 * such an access is contained in a SymbolicVarAccess.
+	 * such an access is contained in a VarAccessInfo.
 	 * 
 	 * Usually, however, we do not need this much generality. If the source and bend
 	 * coincide, we can use [A.this.f]; if they additionally equal the innermost
@@ -31,9 +31,9 @@ aspect SymbolicVarAccess {
 	 * 
 	 * For greater uniformity, we treat local variables (including parameters)
 	 * with the same framework by letting source and bend always be [null] in these
-	 * cases. Their accesses are represented by [SymbolicLocalVarAccess]es.
+	 * cases. Their accesses are represented by [LocalVarAccessInfo]es.
 	 * 
-	 * The methods of [SymbolicVarAccess] are mainly concerned with keeping
+	 * The methods of [VarAccessInfo] are mainly concerned with keeping
 	 * the information about source, bend, and qualification up to date when moving
 	 * downwards or inwards through different scopes (methods [moveInto] and
 	 * [moveDownTo]) as well as constructing accesses according to the procedure 
@@ -41,30 +41,30 @@ aspect SymbolicVarAccess {
 	 * [computeAccess] and [computeQualifiedAccess]).
 	 */
 
-	class SymbolicVarAccess extends SymbolicAccess<Variable> {
-		public SymbolicVarAccess(TypeDecl source, TypeDecl bend,
+	class VarAccessInfo extends AccessInfo<Variable> {
+		public VarAccessInfo(TypeDecl source, TypeDecl bend,
 				boolean needsQualifier, Variable target) {
 			super(source, bend, needsQualifier, target);
 		}
 	}
 	
-	class SymbolicLocalVarAccess extends SymbolicVarAccess {
-		public SymbolicLocalVarAccess(Variable target) {
+	class LocalVarAccessInfo extends VarAccessInfo {
+		public LocalVarAccessInfo(Variable target) {
 			super(null, null, false, target);
 		}
 	}
 
-	protected SymbolicVarAccess SymbolicVarAccess.addQualifier(boolean flag) {
+	protected VarAccessInfo VarAccessInfo.addQualifier(boolean flag) {
 		if(flag)
 			needsQualifier = true;
 		return this;
 	}
 	
-	protected SymbolicVarAccess SymbolicLocalVarAccess.addQualifier(boolean flag) {
+	protected VarAccessInfo LocalVarAccessInfo.addQualifier(boolean flag) {
 		return flag ? null : this;
 	}
 
-	public SymbolicVarAccess SymbolicVarAccess.moveDownTo(TypeDecl td) {
+	public VarAccessInfo VarAccessInfo.moveDownTo(TypeDecl td) {
 		bend = td;
 		if(!td.localFields(target.name()).isEmpty())
 			needsQualifier = true;
@@ -73,19 +73,19 @@ aspect SymbolicVarAccess {
 		return this;
 	}
 	
-	public SymbolicVarAccess SymbolicLocalVarAccess.moveDownTo(TypeDecl td) {
+	public VarAccessInfo LocalVarAccessInfo.moveDownTo(TypeDecl td) {
 		return td.localFields(target.name()).isEmpty() ? this : null;
 	}
 
-	public SymbolicVarAccess SymbolicVarAccess.moveInto(LocalScope s) {
+	public VarAccessInfo VarAccessInfo.moveInto(LocalScope s) {
 		return addQualifier(s.hasVariable(target.name()));
 	}
 	
-	public Access SymbolicLocalVarAccess.computeAccess(NamingContext ctxt) {
+	public Access LocalVarAccessInfo.computeAccess(NamingContext ctxt) {
 		return new VarAccess(target.name());
 	}
 
-	public Access SymbolicVarAccess.computeAccess(NamingContext ctxt) {
+	public Access VarAccessInfo.computeAccess(NamingContext ctxt) {
 		if(needsQualifier) {
 			if(((FieldDeclaration)target).isStatic())
 				return computeStaticFieldAccess(ctxt);
@@ -105,7 +105,7 @@ aspect SymbolicVarAccess {
 	}
 
 	// creates an access of the form <Type>.<Field>
-	public Access SymbolicVarAccess.computeStaticFieldAccess(NamingContext ctxt) {
+	private Access VarAccessInfo.computeStaticFieldAccess(NamingContext ctxt) {
 		VarAccess va = new VarAccess(target.name());
 		Access outer = ctxt.accessType(source, true);
 		if(outer == null) return null;
@@ -113,7 +113,7 @@ aspect SymbolicVarAccess {
 	}
 		
 	// creates an access of the form this.<Field> or <Type>.this.<Field>
-	public Access SymbolicVarAccess.computeThisAccess(NamingContext ctxt) {
+	private Access VarAccessInfo.computeThisAccess(NamingContext ctxt) {
 		VarAccess va = new VarAccess(target.name());
 		if(source == ctxt.enclosingType())
 			return new ThisAccess("this").qualifiesAccess(va);
@@ -125,7 +125,7 @@ aspect SymbolicVarAccess {
 	}
 		
 	// creates an access of the form super.<Field> or <Type>.super.<Field>
-	public Access SymbolicVarAccess.computeSuperAccess(NamingContext ctxt) {
+	private Access VarAccessInfo.computeSuperAccess(NamingContext ctxt) {
 		VarAccess va = new VarAccess(target.name());
 		if(bend == ctxt.enclosingType())
 			return new SuperAccess("super").qualifiesAccess(va);
@@ -137,7 +137,7 @@ aspect SymbolicVarAccess {
 	}
 		
 	// creates an access of the form ((<Type>)this).<Field> or ((<Type>)<Type>this).<Field>
-	public Access SymbolicVarAccess.computeMonsterAccess(NamingContext ctxt) {
+	private Access VarAccessInfo.computeMonsterAccess(NamingContext ctxt) {
 		VarAccess va = new VarAccess(target.name());
 		Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
 		if(upper == null) return null;
@@ -151,11 +151,11 @@ aspect SymbolicVarAccess {
 		}
 	}
 	
-	public Access SymbolicLocalVarAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+	public Access LocalVarAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
 		return null;
 	}
 
-	public Access SymbolicVarAccess.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+	public Access VarAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
 		VarAccess va = new VarAccess(target.name());
 		if(needsQualifier) {
 			if(source == bend && source == ctxt.enclosingType())

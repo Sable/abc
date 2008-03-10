@@ -5,15 +5,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import AST.Block;
-import AST.MethodDecl;
+import AST.ConstructorDecl;
+import AST.Methodoid;
 import AST.Program;
+import AST.RefactoringException;
 import AST.Stmt;
 import AST.TypeDecl;
-import AST.RefactoringException;
 
 public abstract class ExtractMethod extends TestCase {
 	
@@ -64,9 +66,7 @@ public abstract class ExtractMethod extends TestCase {
         	assertTrue(iter.hasNext());
             d = (TypeDecl)iter.next();
         }
-        iter = d.memberMethods(meth).iterator();
-        assertTrue(iter.hasNext());
-		MethodDecl md = (MethodDecl)iter.next();
+		Methodoid md = findMethodoid(d, meth);
 		Stmt start_stmt = md.getBlock().getStmt(start);
 		Stmt end_stmt = md.getBlock().getStmt(end);
 		d.compilationUnit().extractBlock(start_stmt, end_stmt);
@@ -78,6 +78,16 @@ public abstract class ExtractMethod extends TestCase {
 		Block blk = (Block)md.getBlock().getStmt(i);
 		d.compilationUnit().makeMethod(name, vis, blk);
 		return prog;
+	}
+	
+	private Methodoid findMethodoid(TypeDecl td, String name) {
+		for(ConstructorDecl c : (Collection<ConstructorDecl>)td.constructors()) {
+			if(c.name().equals(name))
+				return c;
+		}
+		Iterator iter = td.memberMethods(name).iterator();
+		assertTrue(iter.hasNext());
+		return (Methodoid)iter.next();
 	}
 
 }

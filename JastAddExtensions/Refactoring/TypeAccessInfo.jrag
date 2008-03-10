@@ -1,8 +1,8 @@
-aspect SymbolicTypeAccess {
+aspect TypeAccessInfo {
 	
 	/*
 	 * For a description of the general idea behind symbolic accesses, see
-	 * SymbolicAccess.jrag and SymbolicVarAccess.jrag. The case for types
+	 * AccessInfo.jrag and VarAccessInfo.jrag. The case for types
 	 * is a bit simpler than for fields, since the source and bend must always
 	 * be equal. Similar to variables, we set both of them to [null] for
 	 * accesses to local or anonymous classes. Additionally, we have the case
@@ -10,69 +10,69 @@ aspect SymbolicTypeAccess {
 	 * target type contains information about the package they live in.
 	 */
 	
-	abstract class SymbolicTypeAccess extends SymbolicAccess<TypeDecl> {
-		public SymbolicTypeAccess(TypeDecl outer, boolean needsQualifier,
+	abstract class TypeAccessInfo extends AccessInfo<TypeDecl> {
+		public TypeAccessInfo(TypeDecl outer, boolean needsQualifier,
 								  TypeDecl target) {
 			super(outer, outer, needsQualifier, target);
 		}
 	}
 	
-	class SymbolicTopLevelTypeAccess extends SymbolicTypeAccess {
-		public SymbolicTopLevelTypeAccess(boolean needsQualifier, TypeDecl target) {
+	class TopLevelTypeAccessInfo extends TypeAccessInfo {
+		public TopLevelTypeAccessInfo(boolean needsQualifier, TypeDecl target) {
 			super(null, needsQualifier, target);
 		}
 	}
 	
-	class SymbolicMemberTypeAccess extends SymbolicTypeAccess {
-		public SymbolicMemberTypeAccess(boolean needsQualifier, TypeDecl target) {
+	class MemberTypeAccessInfo extends TypeAccessInfo {
+		public MemberTypeAccessInfo(boolean needsQualifier, TypeDecl target) {
 			super(target.enclosingType(), needsQualifier, target);
 		}
 	}
 	
-	class SymbolicLocalTypeAccess extends SymbolicTypeAccess {
-		public SymbolicLocalTypeAccess(TypeDecl target) {
+	class LocalTypeAccessInfo extends TypeAccessInfo {
+		public LocalTypeAccessInfo(TypeDecl target) {
 			super(null, false, target);
 		}
 	}
 	
-	protected SymbolicTypeAccess SymbolicTypeAccess.addQualifier(boolean flag) {
+	protected TypeAccessInfo TypeAccessInfo.addQualifier(boolean flag) {
 		if(flag)
 			needsQualifier = true;
 		return this;
 	}
 	
-	protected SymbolicTypeAccess SymbolicLocalTypeAccess.addQualifier(boolean flag) {
+	protected TypeAccessInfo LocalTypeAccessInfo.addQualifier(boolean flag) {
 		if(flag)
 			return null;
 		return this;
 	}
 	
-	public SymbolicTypeAccess SymbolicTypeAccess.moveDownTo(TypeDecl td) {
+	public TypeAccessInfo TypeAccessInfo.moveDownTo(TypeDecl td) {
 		return addQualifier(!td.localTypeDecls(target.name()).isEmpty());
 	}
 		
-	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(Block blk, int index) {
+	public TypeAccessInfo TypeAccessInfo.moveInto(Block blk, int index) {
 		return addQualifier(blk.localLookupType(target.name(), index) != null);
 	}
 		
-	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(ClassInstanceExpr cie) {
+	public TypeAccessInfo TypeAccessInfo.moveInto(ClassInstanceExpr cie) {
 		return addQualifier(false);
 	}
 		
-	public SymbolicTypeAccess SymbolicTypeAccess.moveInto(TypeDecl td) {
+	public TypeAccessInfo TypeAccessInfo.moveInto(TypeDecl td) {
 		return addQualifier(!td.memberTypes(target.name()).isEmpty());
 	}
 		
-	public abstract Access SymbolicTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous);
+	public abstract Access TypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous);
 	
-	public Access SymbolicLocalTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
+	public Access LocalTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
 		if(ctxt.isShadowed(target, ambiguous))
 			return null;
 		else
 			return new TypeAccess(target.name());
 	}
 	
-	public Access SymbolicTopLevelTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
+	public Access TopLevelTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
 		String pkg = target.packageName();
 		if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
 			if(ctxt.isShadowed(new PackageAccess(pkg), ambiguous))
@@ -83,7 +83,7 @@ aspect SymbolicTypeAccess {
 		}
 	}
 
-	public Access SymbolicMemberTypeAccess.computeAccess(NamingContext ctxt, boolean ambiguous) {
+	public Access MemberTypeAccessInfo.computeAccess(NamingContext ctxt, boolean ambiguous) {
 		if(needsQualifier || ctxt.isShadowed(target, ambiguous)) {
 			if(ambiguous && !source.memberFields(target.name()).isEmpty())
 				return null;
@@ -95,15 +95,15 @@ aspect SymbolicTypeAccess {
 		}
 	}
 	
-	public abstract Access SymbolicTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
+	public abstract Access TypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier);
 	
-	public Access SymbolicLocalTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
+	public Access LocalTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier) {
 		return null;
 	}
 
-	public Access SymbolicTopLevelTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
+	public Access TopLevelTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier) {
 		String pkg = target.packageName();
 		if(qualifier instanceof PackageAccess) {
@@ -115,7 +115,7 @@ aspect SymbolicTypeAccess {
 		return null;
 	}
 	
-	public Access SymbolicMemberTypeAccess.computeQualifiedAccess(NamingContext ctxt, 
+	public Access MemberTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
 			boolean ambiguous, Expr qualifier) {
 		if(qualifier.isTypeAccess()) {
 			TypeDecl td = qualifier.type();
@@ -128,17 +128,17 @@ aspect SymbolicTypeAccess {
 		return null;
 	}
 	
-	public SymbolicTypeAccess TypeDecl.getSymbolicAccess(boolean needsQualifier) {
+	public TypeAccessInfo TypeDecl.getAccessInfo(boolean needsQualifier) {
 		if(isTopLevelType())
-			return new SymbolicTopLevelTypeAccess(needsQualifier, this);
+			return new TopLevelTypeAccessInfo(needsQualifier, this);
 		else if(isMemberType())
-			return new SymbolicMemberTypeAccess(needsQualifier, this);
+			return new MemberTypeAccessInfo(needsQualifier, this);
 		else
-			return new SymbolicLocalTypeAccess(this);
+			return new LocalTypeAccessInfo(this);
 	}
 	
-	public SymbolicTypeAccess TypeDecl.getSymbolicAccess() {
-		return getSymbolicAccess(false);
+	public TypeAccessInfo TypeDecl.getAccessInfo() {
+		return getAccessInfo(false);
 	}
 	
 }
