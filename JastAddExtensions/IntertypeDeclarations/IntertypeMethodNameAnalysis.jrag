@@ -82,23 +82,30 @@ aspect IntertypeMethodNameAnalysis {
   refine LookupMethod eq ClassDecl.methodsSignatureMap() {
     HashMap map = new HashMap(localMethodsSignatureMap());
     if(hasSuperclass()) {
+      // we only inherit methods that are not overridden locally
       for(Iterator iter = superclass().methodsIterator(); iter.hasNext(); ) {
         MethodDecl m = (MethodDecl)iter.next();
         if(m instanceof IntertypeMethodDecl) {
           if(m.isPrivate()) {
-            boolean found = true;
+            boolean found = false;
             for(Iterator i2 = localMethodsSignature(m.signature()).iterator(); i2.hasNext(); ) {
               MethodDecl n = (MethodDecl)i2.next();
+              // a private method m introduced from an aspect may be overridden by other
+              // private methods in another aspect if both aspects share the same top level type
               if(n.isPrivate() && n.hostType().topLevelType() == m.hostType().topLevelType())
                 found = true;
             }
             if(!found)
               putSimpleSetElement(map, m.signature(), m);
           }
+          // public or package protected methods from aspects are inherited
+          // we don't want to discard methods that are visible in aspects
+          // just because they are not visible in the introduced type
           else if(!localMethodsSignatureMap().containsKey(m.signature())) {
             putSimpleSetElement(map, m.signature(), m);
           }
         }
+        // methods from ordinary classes are inherited if they are accessible and not private
         else if(!m.isPrivate() && m.accessibleFrom(this) && !localMethodsSignatureMap().containsKey(m.signature())) {
           putSimpleSetElement(map, m.signature(), m);
         }
