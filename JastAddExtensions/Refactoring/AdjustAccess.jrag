@@ -23,7 +23,9 @@ aspect AdjustAccess {
 		}
 		
 		public void add(Access acc) {
-			add(acc, acc.getDecl());
+			ASTNode target = acc.getDecl();
+			if(target != null)
+				add(acc, acc.getDecl());
 		}
 		
 		public void add(Access acc, ASTNode target) {

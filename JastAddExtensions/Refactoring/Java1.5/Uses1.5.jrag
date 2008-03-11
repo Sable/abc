@@ -2,7 +2,7 @@
 
 aspect Uses {
 	
-	syn ASTNode Access.getDecl() { throw new UnsupportedOperationException(); }
+	syn ASTNode Access.getDecl() = null;
 	
 	eq AbstractDot.getDecl() = getRight().getDecl();
 	eq PackageAccess.getDecl() = findPackageDecl(getPackage());
