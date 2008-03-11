@@ -92,7 +92,8 @@ aspect IntertypeMethodNameAnalysis {
               MethodDecl n = (MethodDecl)i2.next();
               // a private method m introduced from an aspect may be overridden by other
               // private methods in another aspect if both aspects share the same top level type
-              if(n.isPrivate() && n.hostType().topLevelType() == m.hostType().topLevelType())
+              if(n.isPrivate() && n instanceof IntertypeMethodDecl && 
+                 ((IntertypeMethodDecl)n).hostAspect().topLevelType() == ((IntertypeMethodDecl)m).hostAspect().topLevelType())
                 found = true;
             }
             if(!found)
