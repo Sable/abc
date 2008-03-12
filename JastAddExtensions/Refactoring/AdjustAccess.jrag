@@ -18,8 +18,12 @@ aspect AdjustAccess {
 		
 		public AdjustmentTable() {
 			adjustments = new HashMap();
-			pending = new ArrayList();
+			pending = new LinkedList();
 			adjusted = new HashSet();
+		}
+		
+		public int size() {
+			return adjustments.size();
 		}
 		
 		public void add(Access acc) {
@@ -35,6 +39,21 @@ aspect AdjustAccess {
 				add((AbstractDot)acc.getParent());
 			else
 				pending.add(acc);
+		}
+		
+		public void addFront(Access acc) {
+			ASTNode target = acc.getDecl();
+			if(target != null)
+				addFront(acc, acc.getDecl());
+		}
+		
+		public void addFront(Access acc, ASTNode target) {
+			if(!adjustments.containsKey(acc))
+				adjustments.put(acc, target);
+			if(acc.getParent() instanceof AbstractDot)
+				add((AbstractDot)acc.getParent());
+			else
+				pending.add(0, acc);
 		}
 		
 		public ASTNode getTarget(Expr exp) {

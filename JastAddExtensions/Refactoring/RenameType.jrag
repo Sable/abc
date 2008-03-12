@@ -10,7 +10,7 @@ aspect RenameType {
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		String old_name = getID();
-		AdjustmentTable table = findEndangered(new_name);
+		AdjustmentTable table = findEndangeredTypes(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
@@ -31,57 +31,52 @@ aspect RenameType {
 		}
 	}
 	
-	private AdjustmentTable TypeDecl.findEndangered(String new_name) {
+	private AdjustmentTable TypeDecl.findEndangeredTypes(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the field we are renaming */
-		for(Iterator i = uses().iterator(); i.hasNext();) {
-			Access acc = (Access)i.next();
-			table.add(acc);
-		}
-		/* now, collect all types that we might be shadowing after renaming, 
-		 * in this class or any descendant */
-		if(this.isNestedType()) {
-			Collection descendants = enclosingType().descendants();
-			for(Iterator i = descendants.iterator(); i.hasNext();) {
-				TypeDecl td = (TypeDecl)i.next();
-				findEndangered(new_name, td, table);
-			}
-		} else {
-			for(Iterator i = lookupType(new_name).iterator(); i.hasNext();) {
-				TypeDecl d = (TypeDecl)i.next();
-				for(Iterator j = d.uses().iterator(); j.hasNext();) {
-					Access acc = (Access)j.next();
-					table.add(acc);
-				}
-			}
-		}
-		// same for packages
-		PackageDecl pd = programRoot().getPackageDecl(new_name);
-		if(pd != null)
-			for(Iterator j = pd.prefixUses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				if(acc.nameType() == NameType.AMBIGUOUS_NAME ||
-						acc.nameType() == NameType.PACKAGE_OR_TYPE_NAME)
-					table.add(acc);
-			}
+		programRoot().findEndangeredTypes(table, name(), new_name);
 		return table;
 	}
 	
-	public AdjustmentTable TypeDecl.findEndangered(String new_name,
-			TypeDecl td, AdjustmentTable table) {
-		if(td.getNumBodyDecl() == 0)
-			return table;
-		BodyDecl fst = td.getBodyDecl(0);
-		for(Iterator i = td.lookupType(new_name).iterator(); i.hasNext();) {
-			TypeDecl d = (TypeDecl)i.next();
-			for(Iterator j = d.uses().iterator(); j.hasNext();) {
-				Access acc = (Access)j.next();
-				table.add(acc);
-			}
-		}
-		return table;
+	protected void ASTNode.findEndangeredTypes(AdjustmentTable tbl, 
+												String oldname, String newname) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).findEndangeredTypes(tbl, oldname, newname);
 	}
-
+	
+	protected void TypeAccess.findEndangeredTypes(AdjustmentTable table, 
+												String oldname, String newname) {
+		String name = name();
+		if(name.equals(oldname))
+			table.addFront(this);
+		else if(name.equals(newname))
+			table.add(this);
+		String pkg = getPackage();
+		if(pkgNameStartsWith(pkg, oldname))
+			table.addFront(this);
+		else if(pkgNameStartsWith(pkg, newname))
+			table.add(this);
+	}
+	
+	protected void ArrayTypeAccess.findEndangeredTypes(AdjustmentTable table, 
+												String oldname, String newname) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).findEndangeredTypes(table, oldname, newname);
+	}
+	
+	protected void BoundTypeAccess.findEndangeredTypes(AdjustmentTable table,
+												String oldname, String newname) {
+		// nothing to be done here
+	}
+	
+	protected void PackageAccess.findEndangeredTypes(AdjustmentTable table,
+												String oldname, String newname) {
+		String pkg = name();
+		if(pkgNameStartsWith(pkg, oldname))
+			table.addFront(this);
+		else if(pkgNameStartsWith(pkg, newname))
+			table.add(this);
+	}
+	
 	private void TypeDecl.checkRenamingPreconds(String new_name) throws RefactoringException {
         if(hasNestedType(new_name))
             throw new RefactoringException("nested type of the same name exists");

@@ -2,6 +2,7 @@ package main;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import AST.BytecodeParser;
 import AST.BytecodeReader;
@@ -15,6 +16,7 @@ import AST.TypeDecl;
 public class RenameType {
 	
 	public static void main(String[] args) {
+		time("start");
 		if(args.length < 4) {
 			usage();
 			return;
@@ -46,6 +48,8 @@ public class RenameType {
             }
 		};
 		if(f.process(files, br, jp)) {
+			time("after processing");
+			for(int cnt=0;cnt<5;cnt++) {
 			Program prog = f.getProgram();
 	        String path[] = tp.split("\\.");
 	        TypeDecl d = (TypeDecl)prog.lookupType(pkg, path[0]);
@@ -57,13 +61,42 @@ public class RenameType {
 	        }
 	        try {
 	        	d.rename(newname);
+	        	//if(hasErrors(prog))
+	        	//	System.err.println("Output program has errors!");
+	        	time("after renaming");
+	        	prog.undo();
+	        	prog.flushCaches();
+	        	time("after undo");
 	        } catch(RefactoringException rfe) {
 	        	System.err.println("refactoring failed");
 	        	rfe.printStackTrace();
 	        }
+			}
 		} else {
 			System.err.println("There were compilation errors.");
 		}
 	}
+	
+	public static void time(String msg) {
+		System.out.println(/*msg+": "+*/System.currentTimeMillis());
+	}
+	
+	protected static boolean hasErrors(Program p) {
+		boolean has_errors = false;
+		Collection errors, warnings;
+		for(int i=0;i<p.getNumCompilationUnit();++i) {
+			AST.CompilationUnit cu = p.getCompilationUnit(i);
+			if(!cu.fromSource())
+				continue;
+			errors = cu.parseErrors();
+			warnings = new LinkedList();
+			cu.errorCheck(errors, warnings);
+			if(!errors.isEmpty()) {
+				has_errors = true;
+				break;
+			}
+		}
+		return has_errors;
+	}	
 	
 }
