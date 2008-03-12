@@ -1,6 +1,6 @@
 aspect AccessVariableITD {
 
-	eq IntertypeMethodDecl.getBlock().accessVariable(Variable decl) {
+	eq IntertypeMethodDecl.getChild().accessVariable(Variable decl) {
 		VarAccessInfo acc = accessParameterDeclaration(decl);
 		// A declaration of a method parameter name shadows any other variable declarations
 		if(acc != null) return acc;

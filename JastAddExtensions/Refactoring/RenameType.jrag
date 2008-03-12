@@ -10,7 +10,9 @@ aspect RenameType {
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		String old_name = getID();
-		AdjustmentTable table = findEndangeredTypes(new_name);
+		AdjustmentTable table = findEndangeredTypeAccesses(new_name);
+System.out.println(table.size());
+main.RenameType.time("after finding endangered accesses");
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
@@ -31,19 +33,19 @@ aspect RenameType {
 		}
 	}
 	
-	private AdjustmentTable TypeDecl.findEndangeredTypes(String new_name) {
+	private AdjustmentTable TypeDecl.findEndangeredTypeAccesses(String new_name) {
 		AdjustmentTable table = new AdjustmentTable();
-		programRoot().findEndangeredTypes(table, name(), new_name);
+		programRoot().findEndangeredTypeAccesses(table, name(), new_name);
 		return table;
 	}
 	
-	protected void ASTNode.findEndangeredTypes(AdjustmentTable tbl, 
+	protected void ASTNode.findEndangeredTypeAccesses(AdjustmentTable tbl, 
 												String oldname, String newname) {
 		for(int i=0;i<getNumChild();++i)
-			getChild(i).findEndangeredTypes(tbl, oldname, newname);
+			getChild(i).findEndangeredTypeAccesses(tbl, oldname, newname);
 	}
 	
-	protected void TypeAccess.findEndangeredTypes(AdjustmentTable table, 
+	protected void TypeAccess.findEndangeredTypeAccesses(AdjustmentTable table, 
 												String oldname, String newname) {
 		String name = name();
 		if(name.equals(oldname))
@@ -57,18 +59,18 @@ aspect RenameType {
 			table.add(this);
 	}
 	
-	protected void ArrayTypeAccess.findEndangeredTypes(AdjustmentTable table, 
+	protected void ArrayTypeAccess.findEndangeredTypeAccesses(AdjustmentTable table, 
 												String oldname, String newname) {
 		for(int i=0;i<getNumChild();++i)
-			getChild(i).findEndangeredTypes(table, oldname, newname);
+			getChild(i).findEndangeredTypeAccesses(table, oldname, newname);
 	}
 	
-	protected void BoundTypeAccess.findEndangeredTypes(AdjustmentTable table,
+	protected void BoundTypeAccess.findEndangeredTypeAccesses(AdjustmentTable table,
 												String oldname, String newname) {
 		// nothing to be done here
 	}
 	
-	protected void PackageAccess.findEndangeredTypes(AdjustmentTable table,
+	protected void PackageAccess.findEndangeredTypeAccesses(AdjustmentTable table,
 												String oldname, String newname) {
 		String pkg = name();
 		if(pkgNameStartsWith(pkg, oldname))
