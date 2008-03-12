@@ -16,10 +16,14 @@ aspect AdviceCodegen {
   eq AfterThrowingSpec.kind() = "after";
   eq AroundSpec.kind() = "around";
 
+  syn boolean AdviceDecl.isEnabled() = !(abc.main.Debug.v().lazyAdviceGeneration && getPointcutExpr().isStaticallyFalse());		  
+  
   public void AdviceDecl.jimplify1phase2() {
-    hostType().getSootClassDecl().addMethod(sootMethod());
-    createAspectInfo();
-    getAdviceSpec().jimplify1phase2();
+	  if(isEnabled()) {
+	    hostType().getSootClassDecl().addMethod(sootMethod());
+	    createAspectInfo();
+	    getAdviceSpec().jimplify1phase2();
+	  }
   }
 
   syn lazy java.util.List AdviceSpec.paramList() {
@@ -219,16 +223,18 @@ aspect AdviceCodegen {
   }
 
   public void AdviceDecl.jimplify2() {
-    JimpleBody body = Jimple.v().newBody(sootMethod());
-    sootMethod().setActiveBody(body);
-    Body b = new Body(hostType(), body, this);
-    getAdviceSpec().jimplify2(b);
-    getBlock().jimplify2(b);
-    if (getBlock().canCompleteNormally())
-        b.add(Jimple.v().newReturnVoidStmt());
-    getAdviceSpec().jimplify2();
-    getPointcutExpr().jimplify2();
-    MethodCategory.register(sootMethod(), MethodCategory.ADVICE_BODY);
+	  if(isEnabled()) {
+	    JimpleBody body = Jimple.v().newBody(sootMethod());
+	    sootMethod().setActiveBody(body);
+	    Body b = new Body(hostType(), body, this);
+	    getAdviceSpec().jimplify2(b);
+	    getBlock().jimplify2(b);
+	    if (getBlock().canCompleteNormally())
+	        b.add(Jimple.v().newReturnVoidStmt());
+	    getAdviceSpec().jimplify2();
+	    getPointcutExpr().jimplify2();
+	    MethodCategory.register(sootMethod(), MethodCategory.ADVICE_BODY);
+	  }
   }
   eq AdviceSpec.getParameter(int index).localNum() = index;
 

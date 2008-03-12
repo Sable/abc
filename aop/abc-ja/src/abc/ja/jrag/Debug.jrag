@@ -1,10 +1,10 @@
 aspect ParserTraceAspect {
   class ParserTrace {
-    /* Flag for personalized parser trace. */
-    public static boolean parserTraceOn = false;
+    /*PA: Using Debug.parserTrace instead Flag for personalized parser trace. */
+    //public static boolean parserTraceOn = false;
 
     public static void parserTrace (String s)
-      { if (parserTraceOn) 
+      { if (abc.main.Debug.v().parserTrace) 
           System.err.println(" REDUCED: " + s); 
       }
   }

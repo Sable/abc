@@ -604,4 +604,11 @@ aspect Pointcuts
 
     syn boolean NamePattern.explicitInterface() = false;
     eq ExplicitTypeNamePattern.explicitInterface() = type().isInterfaceDecl();
+    
+    syn boolean PointcutExpr.isStaticallyFalse() circular [false] = false;
+    eq IfPointcutExpr.isStaticallyFalse() = getExpr().type().isBoolean() && getExpr().isConstant() 
+    											&& !getExpr().constant().booleanValue();
+    eq AndPointcutExpr.isStaticallyFalse() = getLhs().isStaticallyFalse() || getRhs().isStaticallyFalse();
+    eq OrPointcutExpr.isStaticallyFalse() = getLhs().isStaticallyFalse() && getRhs().isStaticallyFalse();
+    eq NamedPointcutExpr.isStaticallyFalse() = decl().getPointcutExpr().isStaticallyFalse();
 }
