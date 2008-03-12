@@ -54,10 +54,15 @@ public class Debug {
     	loadDebug();
     }
 
-
+    public boolean parserTrace=false;
+    
     public boolean aspectInfo=false;
     public boolean precedenceRelation=false;
 
+    // Follow ajc in not generating adviceDecls with statically false pointcuts;
+    // may suppress some errors in the presence of && if(false);
+    public boolean lazyAdviceGeneration = false;
+    
     public boolean patternMatches=false;
     public boolean namePatternMatches=false;
     public boolean namePatternProcessing=false;
