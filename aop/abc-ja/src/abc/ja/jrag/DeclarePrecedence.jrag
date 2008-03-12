@@ -92,7 +92,7 @@ aspect DeclarePrecedence {
   refine DeclarePrecedenceNameAnalysis
   eq DeclarePrecedence.matchPattern(int i, TypeDecl typeDecl)
   {
-    if (!getPattern(i).containsWildcard())
+    if (!getPattern(i).isStar())
       return getPattern(i).matchesType(typeDecl);
 
     for (int j = 0; j < getNumPattern(); j++)
@@ -115,19 +115,21 @@ aspect DeclarePrecedence {
   refine DeclarePrecedenceNameAnalysis public void DeclarePrecedence.typeCheck()
   {
     DeclarePrecedenceNameAnalysis.DeclarePrecedence.typeCheck();
-    if (numWildcards() > 1)
+    if (numStars() > 1)
       error("multiple * patterns not allowed");
 
     updatePrecedenceMap();
   }
 
-  syn int DeclarePrecedence.numWildcards()
+  syn int DeclarePrecedence.numStars()
   {
     int num = 0;
     for(int i = 0; i < getNumPattern(); i++)
-      if(getPattern(i).containsWildcard())
+      if(getPattern(i).isStar())
         num++;
     return num;
   }
 
+  syn boolean Pattern.isStar() = false;
+  eq SimpleNamePattern.isStar() = getPattern().equals("*");
 }
