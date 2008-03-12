@@ -163,6 +163,7 @@ public class Main {
     public static void resetStatic() {
     	if(v != null) v.reset();
     	v = null;
+    	G.reset();
     	
         abc.main.Debug.reset();
         abc.main.AbcTimer.reset();
@@ -561,7 +562,7 @@ public class Main {
         sb.append(File.separator);
         sb.append("rt.jar");
 
-        if(OptionsParser.v().w() || OptionsParser.v().wp_tmopt() || OptionsParser.v().dava()) {
+        if(OptionsParser.v().w() || OptionsParser.v().dava()) {
             //necessary for some whole-program analyses and dava
             sb.append(File.pathSeparator);
             sb.append(System.getProperty("java.home"));
