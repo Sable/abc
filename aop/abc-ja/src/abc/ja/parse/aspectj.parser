@@ -47,12 +47,12 @@ BodyDecl interface_member_declaration =
    conflict with modifiers_opt, which can also go to epsilon. */
 
 AspectDecl aspect_declaration =
-      modifiers.a? ASPECT.n IDENTIFIER.b
+      modifiers.a? ASPECT.n IDENTIFIER
                          super.c? interfaces.d?  perclause_opt.f  
                          aspect_body.g
        {: ParserTrace.parserTrace( "aspect declaration: " + 
-                                               b); 
-	  return new AspectDecl(new Modifiers(a), b, g, c, d, f); 
+                                               IDENTIFIER.value); 
+	  return new AspectDecl(new Modifiers(a), IDENTIFIER, g, c, d, f); 
        :}
   ;
 
@@ -179,18 +179,18 @@ BodyDecl declare_declaration =
   ;
 
 BodyDecl pointcut_declaration =
-     modifiers.a? POINTCUT IDENTIFIER.b 
+     modifiers.a? POINTCUT IDENTIFIER 
              LPAREN formal_parameter_list.c? RPAREN SEMICOLON.e
      {: ParserTrace.parserTrace("empty pointcut declaration");
-        return new PointcutDecl(new Modifiers(a), b, c,
+        return new PointcutDecl(new Modifiers(a), IDENTIFIER, c,
                                 new EmptyPointcutExpr());
      :}
-  |  modifiers.a? POINTCUT IDENTIFIER.b 
+  |  modifiers.a? POINTCUT IDENTIFIER
              LPAREN formal_parameter_list.c? RPAREN 
              COLON pointcut_expr.d SEMICOLON.e 
      /* must check that modifiers DO NOT include ABSTRACT */
      {: ParserTrace.parserTrace("non-abstract pointcut declaration");
-        return new PointcutDecl(new Modifiers(a), b, c, d);
+        return new PointcutDecl(new Modifiers(a), IDENTIFIER, c, d);
      :}
   ;
 
@@ -249,19 +249,19 @@ AdviceSpec advice_spec =
   ;
 
 BodyDecl intertype_member_declaration =
-     modifiers.a? VOID.b name.c DOT IDENTIFIER.d 
+     modifiers.a? VOID.b name.c DOT IDENTIFIER
          LPAREN formal_parameter_list.e? RPAREN.r throws.f? method_body.g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: ParserTrace.parserTrace("Intertype VOID METHOD declaration");
-           return new IntertypeMethodDecl(new Modifiers(a), new TypeAccess("void"), d, e, f, g, c);
+           return new IntertypeMethodDecl(new Modifiers(a), new TypeAccess("void"), IDENTIFIER, e, f, g, c);
        :}
-  |  modifiers.a? type.b name.c DOT IDENTIFIER.d 
+  |  modifiers.a? type.b name.c DOT IDENTIFIER
          LPAREN formal_parameter_list.e? RPAREN.r throws.f? method_body.g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: ParserTrace.parserTrace("Intertype METHOD declaration");
-           return new IntertypeMethodDecl(new Modifiers(a), b, d, e, f, g, c);
+           return new IntertypeMethodDecl(new Modifiers(a), b, IDENTIFIER, e, f, g, c);
        :}
   | modifiers.a? name.b DOT NEW 
          LPAREN formal_parameter_list.c? RPAREN throws.d? constructor_body.e
@@ -276,14 +276,14 @@ BodyDecl intertype_member_declaration =
           icd.setBlock(e.getBlock());
           return icd;
        :}
-  | modifiers.a? type.b name.c DOT IDENTIFIER.d SEMICOLON 
+  | modifiers.a? type.b name.c DOT IDENTIFIER SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD without initializer");
-          return new IntertypeFieldDeclaration(new Modifiers(a), b, d, new Opt(), c);
+          return new IntertypeFieldDeclaration(new Modifiers(a), b, IDENTIFIER, new Opt(), c);
        :}
-  | modifiers.a? type.b name.c DOT IDENTIFIER.d  
+  | modifiers.a? type.b name.c DOT IDENTIFIER  
         EQ variable_initializer.e SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD with initializer");
-          return new IntertypeFieldDeclaration(new Modifiers(a), b, d, new Opt(e), c);
+          return new IntertypeFieldDeclaration(new Modifiers(a), b, IDENTIFIER, new Opt(e), c);
        :}
   ;
 
@@ -442,9 +442,9 @@ SimpleNamePattern simple_name_pattern =
         {: ParserTrace.parserTrace("name_pattern is simple name pattern: " + a);
            return new SimpleNamePattern(a);
         :}
-   | IDENTIFIER.a
-        {: ParserTrace.parserTrace("name_pattern is identifer: " + a);
-           return new SimpleNamePattern(a);
+   | IDENTIFIER
+        {: ParserTrace.parserTrace("name_pattern is identifer: " + IDENTIFIER.value);
+           return new SimpleNamePattern(IDENTIFIER);
         :}
    | ASPECT.a
      {: ParserTrace.parserTrace("aspectj_reserved_identifier: " + a);
