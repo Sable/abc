@@ -112,25 +112,6 @@ aspect Uses {
 	TypeAccess contributes
 	this to TypeDecl.uses() for (TypeDecl)decl().sourceTypeDecl();
 	
-	// bind all uses of a package to its declaration
-	/*
-	 * a package declaration has two kinds of uses:
-	 *  1) a toplevel package can have "prefix uses", where its name appears
-	 *     as the first element of a package access or of the package qualification
-	 *     of a type access
-	 *  2) all packages can have general uses, where their name appears as
-	 *     prefix of a package access or of the package qualification of a type access,
-	 *     or in a package or import declaration
-	 *     
-	 * the point of making this distinction is that prefix uses can be shadowed by
-	 * variables or types of the same name, while other uses cannot
-	 */
-	coll Collection PackageDecl.prefixUses() [new ArrayList()] with add;
-	PackageAccess contributes this
-	to PackageDecl.prefixUses() for findPackageDecl(name().split("\\.")[0]);
-	TypeAccess contributes this when !packageName().equals("")
-	to PackageDecl.prefixUses() for findPackageDecl(packageName().split("\\.")[0]);
-	
 	public static boolean ASTNode.pkgNameStartsWith(String pkg, String str) {
 		int strlength = str.length();
 		return	pkg.startsWith(str) &&

@@ -33,10 +33,16 @@ aspect RenameParameter {
 		RefactoringException e = canRenameTo(new_name);
 		if(e != null)
 			throw e;
-		AdjustmentTable table = findEndangered(new_name);
+		AdjustmentTable table = findEndangeredVarAccesses(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
+	}
+	
+	private AdjustmentTable ParameterDeclaration.findEndangeredVarAccesses(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		programRoot().findEndangeredVarAccesses(table, name(), new_name);
+		return table;
 	}
 	
 }
