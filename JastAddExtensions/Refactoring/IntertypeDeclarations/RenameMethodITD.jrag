@@ -1,6 +1,6 @@
 aspect RenameMethodITD {
 	
-	refine RenameMethod private AdjustmentTable MethodDecl.findEndangered(String new_name) {
+	/*refine RenameMethod private AdjustmentTable MethodDecl.findEndangered(String new_name) {
 		AdjustmentTable table = RenameMethod.MethodDecl.findEndangered(new_name);
 		for(TypeDecl td : (Collection<TypeDecl>)hostType().descendants())
 			findEndangeredITD(new_name, td, table);
@@ -22,6 +22,6 @@ aspect RenameMethodITD {
 				table.add(acc);
 			}
 		}
-	}
+	}*/
 	
 }

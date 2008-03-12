@@ -38,20 +38,49 @@ aspect RenameMethod {
 			if(!canOverrideOrHide(md))
 				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
 		}
-		AdjustmentTable table = findEndangered(new_name);
+		AdjustmentTable table = findEndangeredMethodAccesses(new_name);
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();
 	}
-
-	private AdjustmentTable MethodDecl.findEndangered(String new_name) {
+	
+	private AdjustmentTable MethodDecl.findEndangeredMethodAccesses(String newname) {
 		AdjustmentTable table = new AdjustmentTable();
-		/* first, collect all uses of the method we are renaming */
+		programRoot().findEndangeredMethodAccesses(table, name(), newname);
+		return table;
+	}
+	
+	protected void ASTNode.findEndangeredMethodAccesses(AdjustmentTable tbl, 
+													String oldname, String newname) {
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).findEndangeredMethodAccesses(tbl, oldname, newname);
+	}
+		
+	protected void MethodAccess.findEndangeredMethodAccesses(AdjustmentTable tbl,
+													String oldname, String newname) {
+		String name = name();
+		if(name.equals(oldname))
+			tbl.addFront(this);
+		else if(name.equals(newname))
+			tbl.add(this);
+		// we also need to process the arguments
+		for(int i=0;i<getNumChild();++i)
+			getChild(i).findEndangeredMethodAccesses(tbl, oldname, newname);
+	}
+	
+	protected void BoundMethodAccess.findEndangeredMethodAccesses(AdjustmentTable tbl,
+													String oldname, String newname) {
+		// nothing to be done here
+	}
+	
+/*	private AdjustmentTable MethodDecl.findEndangered(String new_name) {
+		AdjustmentTable table = new AdjustmentTable();
+		 first, collect all uses of the method we are renaming 
 		for(Iterator i = definiteUses().iterator(); i.hasNext();) {
 			Access a = (Access)i.next();
 			table.add(a);
 		}
-		/* now, collect all uses of methods that we might be shadowing after renaming */
+		 now, collect all uses of methods that we might be shadowing after renaming 
 		for(TypeDecl td : (Collection<TypeDecl>)hostType().descendants()) {
 			if(td.getNumBodyDecl() == 0)
 				continue;
@@ -66,5 +95,5 @@ aspect RenameMethod {
 		}
 		return table;
 	}
-
+*/
 }
