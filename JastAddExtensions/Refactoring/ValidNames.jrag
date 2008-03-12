@@ -1,0 +1,24 @@
+import java.io.StringReader;
+import scanner.JavaScanner;
+import beaver.Symbol;
+import parser.JavaParser.Terminals;
+
+aspect ValidNames {
+	
+	// check that [name] is a valid Java identifier
+	public static boolean ASTNode.isValidName(String name) {
+		if(name == null)
+			return false;
+		StringReader r = new StringReader(name);
+		JavaScanner s = new JavaScanner(r);
+		try {
+			Symbol tk1 = s.nextToken();
+			Symbol tk2 = s.nextToken();
+			return tk1.getId() == Terminals.IDENTIFIER &&
+			       tk2.getId() == Terminals.EOF;
+		} catch(Exception e) {
+			return false;
+		}
+	}
+	
+}

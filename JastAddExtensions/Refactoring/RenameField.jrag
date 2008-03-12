@@ -14,6 +14,8 @@ aspect RenameField {
 		if(getID().equals(new_name))
 			// haha, very funny
 			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
 		if(!hostType().localFields(new_name).isEmpty())
 			throw new RefactoringException("couldn't rename: field name clash");
 		AdjustmentTable table = findEndangeredVarAccesses(new_name);

@@ -7,6 +7,10 @@ import java.util.*;
 aspect RenameMethod {
 	
 	public void MethodDecl.rename(String new_name) throws RefactoringException {
+		if(getID().equals(new_name))
+			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
 		// first check which methods override this one/are overriden by this
 		// (obviously, we need to do that before we change its name)
 		// ("obvious" after I got tripped up by it, that is)
@@ -24,8 +28,6 @@ aspect RenameMethod {
 
 	// rename a method, don't care about overriding/overridden methods
 	public void MethodDecl.nonCascadingRename(String new_name) throws RefactoringException {
-		if(getID().equals(new_name))
-			return;
 		String sig = signature();
 		int idx = sig.indexOf('(');
 		String new_sig = new_name + sig.substring(idx);
@@ -68,32 +70,4 @@ aspect RenameMethod {
 			getChild(i).findEndangeredMethodAccesses(tbl, oldname, newname);
 	}
 	
-	protected void BoundMethodAccess.findEndangeredMethodAccesses(AdjustmentTable tbl,
-													String oldname, String newname) {
-		// nothing to be done here
-	}
-	
-/*	private AdjustmentTable MethodDecl.findEndangered(String new_name) {
-		AdjustmentTable table = new AdjustmentTable();
-		 first, collect all uses of the method we are renaming 
-		for(Iterator i = definiteUses().iterator(); i.hasNext();) {
-			Access a = (Access)i.next();
-			table.add(a);
-		}
-		 now, collect all uses of methods that we might be shadowing after renaming 
-		for(TypeDecl td : (Collection<TypeDecl>)hostType().descendants()) {
-			if(td.getNumBodyDecl() == 0)
-				continue;
-			BodyDecl fst = td.getBodyDecl(0);
-			for(Iterator i = fst.lookupMethod(new_name).iterator(); i.hasNext();) {
-				MethodDecl md = (MethodDecl)i.next();
-				for(Iterator j = md.definiteUses().iterator(); j.hasNext();) {
-					Access acc = (Access)j.next();
-					table.add(acc);
-				}
-			}
-		}
-		return table;
-	}
-*/
 }

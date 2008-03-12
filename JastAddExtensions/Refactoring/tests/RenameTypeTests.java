@@ -1,7 +1,12 @@
 package tests;
 
+import java.io.File;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import AST.Program;
+import AST.RefactoringException;
+import AST.TypeDecl;
 
 
 public class RenameTypeTests extends RenameType {
@@ -324,5 +329,25 @@ public class RenameTypeTests extends RenameType {
 	}
 	public void test101() {
 		runTypeRenameTest("test101");
+	}
+	public void test102() {
+        String infile = getTestBase()+"/test102/in/A.java";
+        try {
+        	Program prog = TestHelper.compile(infile);
+        	TypeDecl d = (TypeDecl)prog.lookupType("p", "A");
+        	d.rename(null);
+        	fail("rename to null should be rejected");
+        } catch(RefactoringException rfe) {
+        }
+	}
+	public void test103() {
+        String infile = getTestBase()+"/test103/in/A.java";
+        try {
+        	Program prog = TestHelper.compile(infile);
+        	TypeDecl d = (TypeDecl)prog.lookupType("p", "A");
+        	d.rename("");
+        	fail("rename to empty string should be rejected");
+        } catch(RefactoringException rfe) {
+        }
 	}
 }

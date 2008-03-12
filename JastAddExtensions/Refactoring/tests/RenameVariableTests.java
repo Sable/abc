@@ -123,4 +123,10 @@ public class RenameVariableTests extends RenameVariable {
 	public void test35() {
 		runFieldRenameTest("test35");
 	}
+	public void test36() {
+		runFieldRenameTest("test36");
+	}
+	public void test37() {
+		runFieldRenameTest("test37");
+	}
 }

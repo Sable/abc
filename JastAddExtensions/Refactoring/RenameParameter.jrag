@@ -30,6 +30,8 @@ aspect RenameParameter {
 	public void ParameterDeclaration.rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
 			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
 		RefactoringException e = canRenameTo(new_name);
 		if(e != null)
 			throw e;

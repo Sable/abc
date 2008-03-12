@@ -7,6 +7,8 @@ aspect RenameType {
 	public void TypeDecl.rename(String new_name) throws RefactoringException {
 		if(getID().equals(new_name))
 			return;
+		if(!isValidName(new_name))
+			throw new RefactoringException("not a valid name: "+new_name);
 		CompilationUnit cu = compilationUnit();
 		checkRenamingPreconds(new_name);
 		String old_name = getID();

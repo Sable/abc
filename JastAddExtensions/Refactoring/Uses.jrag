@@ -41,14 +41,8 @@ aspect Uses {
 	to ParameterDeclaration.uses() for (ParameterDeclaration)decl();
 	
 	// bind all uses of a method to its declaration
-	// since this is in general undecidable, we can either only bind those
-	// uses that definitely refer to the method (attribute definiteUses), or
-	// all uses that possibly might refer to it (attribute uses)
-	coll Collection<MethodAccess> MethodDecl.definiteUses() [new ArrayList<MethodAccess>()] 
-	                                                         with add;
-	MethodAccess contributes
-	this to MethodDecl.definiteUses() for decl();
-	
+	// since this is in general undecidable, we report
+	// all uses that possibly might refer to it
 	coll Collection<MethodAccess> MethodDecl.uses() [new ArrayList<MethodAccess>()] 
 	                                                 with addAll;
 	MethodAccess contributes
