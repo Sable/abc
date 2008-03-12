@@ -123,7 +123,7 @@ aspect DeclareParentsAnalysis {
   public ClassDecl ClassDecl.superclassWithoutDeclareParents() {
     if(isObject())
       return null;
-    if(hasSuperClassAccess() && !isCircular() && getSuperClassAccess().type().isClassDecl())
+    if(hasSuperClassAccess() && !isCircularWithoutDeclareParents() && getSuperClassAccess().type().isClassDecl())
       return (ClassDecl)getSuperClassAccess().type();
     return (ClassDecl)typeObject();
   }
@@ -218,17 +218,49 @@ aspect DeclareParentsAnalysis {
       private TypeDecl current = null;
       private void computeNextCurrent() {
         current = null;
-        if(isObject() || isCircular())
+        if(isObject() || isCircularWithoutDeclareParents())
           return;
         while(index < getNumImplements()) {
           TypeDecl typeDecl = getImplements(index++).type();
-          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+          if(!typeDecl.isCircularWithoutDeclareParents() && typeDecl.isInterfaceDecl()) {
             current = typeDecl;
             return;
           }
         }
       }
     };
+  }
+
+  syn lazy boolean TypeDecl.isCircularWithoutDeclareParents() circular [true] = false;
+  eq ClassDecl.isCircularWithoutDeclareParents() {
+    if(hasSuperClassAccess()) {
+      Access a = getSuperClassAccess().lastAccess();
+      while(a != null) {
+        if(a.type().isCircularWithoutDeclareParents())
+          return true;
+        a = (a.isQualified() && a.qualifier().isTypeAccess()) ? (Access)a.qualifier() : null;
+      }
+    }
+    for(int i = 0; i < getNumImplements(); i++) {
+      Access a = getImplements(i).lastAccess();
+      while(a != null) {
+        if(a.type().isCircularWithoutDeclareParents())
+          return true;
+        a = (a.isQualified() && a.qualifier().isTypeAccess()) ? (Access)a.qualifier() : null;
+      }
+    }
+    return false;
+  }
+  eq InterfaceDecl.isCircularWithoutDeclareParents() {
+    for(int i = 0; i < getNumSuperInterfaceId(); i++) {
+      Access a = getSuperInterfaceId(i).lastAccess();
+      while(a != null) {
+        if(a.type().isCircularWithoutDeclareParents())
+          return true;
+        a = (a.isQualified() && a.qualifier().isTypeAccess()) ? (Access)a.qualifier() : null;
+      }
+    }
+    return false;
   }
 
   refine LookupType eq InterfaceDecl.memberTypes(String name) {
@@ -322,10 +354,10 @@ aspect DeclareParentsAnalysis {
       private TypeDecl current = null;
       private void computeNextCurrent() {
         current = null;
-        if(isCircular()) return;
+        if(isCircularWithoutDeclareParents()) return;
         while(index < getNumSuperInterfaceId()) {
           TypeDecl typeDecl = getSuperInterfaceId(index++).type();
-          if(!typeDecl.isCircular() && typeDecl.isInterfaceDecl()) {
+          if(!typeDecl.isCircularWithoutDeclareParents() && typeDecl.isInterfaceDecl()) {
             current = typeDecl;
             return;
           }
