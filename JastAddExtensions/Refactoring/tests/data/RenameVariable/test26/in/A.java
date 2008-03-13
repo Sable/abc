@@ -6,7 +6,7 @@ import static java.lang.System.*;
 
 public class A {
     static PrintStream f = 
-        new PrintStream(System.out) { 
+        new PrintStream(out) { 
             public void println(String s) {
 	        super.println(42);
 	    }
