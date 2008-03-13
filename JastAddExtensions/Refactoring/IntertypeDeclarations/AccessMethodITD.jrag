@@ -39,8 +39,8 @@ aspect AccessMethodITD {
 	/* refine access computation for local methods: intertype declarations can
 	 * only be accessed if they aren't zapped; in turn, locally declared methods
 	 * can only be accessed if they aren't zapped by an intertype declaration */
-	refine RefactoringGenerics public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
-		MethodAccessInfo acc = RefactoringGenerics.TypeDecl.accessLocalMethod(md);
+	refine MergeGenericDecls public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
+		MethodAccessInfo acc = MergeGenericDecls.TypeDecl.accessLocalMethod(md);
 		for(Iterator iter = introducedMethods().iterator(); iter.hasNext();) {
 			MethodDecl md2 = (MethodDecl)iter.next();
 			if(md2.sameSourceDeclAs(md))
