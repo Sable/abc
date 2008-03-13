@@ -1785,6 +1785,7 @@
             <ajcmessage kind="error" line="2"/>
             <ajcmessage kind="error" line="10"/>
             <message kind="error" line="0"/>
+            <jamessage kind="error" line="1"/>
             <jamessage kind="error" line="2"/>
             <jamessage kind="error" line="10"/>
         </compile>
