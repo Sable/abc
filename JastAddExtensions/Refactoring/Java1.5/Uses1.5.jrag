@@ -94,10 +94,12 @@ aspect Uses {
 	
 	// get all method declarations overridden by a given method declaration
 	syn lazy SimpleSet MethodDecl.overrides() {
-		SimpleSet anc = hostType().ancestorMethods(signature());
-		for(Iterator i=anc.iterator();i.hasNext();)
-			if(!overrides((MethodDecl)i.next()))
-				i.remove();
+		SimpleSet anc = SimpleSet.emptySet;
+		for(Iterator i=hostType().ancestorMethods(signature()).iterator();i.hasNext();) {
+			MethodDecl md = (MethodDecl)i.next();
+			if(overrides(md))
+				anc = anc.add(md);
+		}
 		return anc;
 	}
 

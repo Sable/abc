@@ -29,7 +29,8 @@ public abstract class RenameMethod extends TestCase {
         	String cmd = br.readLine();
         	assertTrue(cmd.matches("^// .*$"));
         	String[] fields = cmd.substring(3).split("\\s+");
-        	Program prog = rename(fields[0], fields[1], fields[2], fields[3], fields[4]);
+        	String[] files = fields[0].split(",");
+        	Program prog = rename(files, fields[1], fields[2], fields[3], fields[4]);
         	try {
         		File rf = new File(resfile);
         		FileReader rfr = new FileReader(rf);
@@ -47,10 +48,10 @@ public abstract class RenameMethod extends TestCase {
         }
 	}
 
-	private Program rename(String file, String pkg, String tp, String meth, String newname) 
+	private Program rename(String[] files, String pkg, String tp, String meth, String newname) 
 			throws RefactoringException {
 		Iterator iter;
-		Program prog = TestHelper.compile(file);
+		Program prog = TestHelper.compile(files);
         assertNotNull(prog);
         String path[] = tp.split("\\.");
         TypeDecl d = (TypeDecl)prog.lookupType(pkg, path[0]);
