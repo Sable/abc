@@ -24,8 +24,8 @@ public class QuickCheck {
 
 aspect FG {
     tracematch() {
-	  sym f after : call(* *.f(..));
-	  sym g after : call(* *.g(..));
+	  sym f before : call(* *.f(..));
+	  sym g before : call(* *.g(..));
 
 	  f g {
 	    	Tester.event("f g");    	
@@ -33,8 +33,8 @@ aspect FG {
     }
 
     tracematch() {
-  	  sym f after : call(* *.f(..));
-  	  sym g after : call(* *.g(..));
+  	  sym f before : call(* *.f(..));
+  	  sym g before : call(* *.g(..));
 
   	  f g* {
 	    	Tester.event("f g*");    	
@@ -42,8 +42,8 @@ aspect FG {
     }
 
     tracematch() {
-  	  sym f after : call(* *.f(..));
-  	  sym g after : call(* *.g(..));
+  	  sym f before : call(* *.f(..));
+  	  sym g before : call(* *.g(..));
 
   	  f g | f {
 	    	Tester.event("f g | f");    	
@@ -53,8 +53,8 @@ aspect FG {
 
 aspect AB {
     tracematch(Object o) {
-    	sym a after : call(* *.a(..)) && target(o);
-		sym b after : call(* *.b(..)) && target(o);
+    	sym a before : call(* *.a(..)) && target(o);
+		sym b before : call(* *.b(..)) && target(o);
 
     	a b {
 	    	Tester.event("a b");    	

@@ -23,8 +23,8 @@ public class FlowIns {
 
 aspect AB {
     tracematch(Object o) {
-    	sym a after : call(* *.a(..)) && target(o);
-		sym b after : call(* *.b(..)) && target(o);
+    	sym a before : call(* *.a(..)) && target(o);
+		sym b before : call(* *.b(..)) && target(o);
 
     	a b {
 	    	FlowIns.matches++;
