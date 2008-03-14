@@ -21,15 +21,17 @@ package abc.da.weaving.weaver.depadviceopt.ds;
 import java.util.List;
 import java.util.Map;
 
-import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
-import abc.main.Main;
-
 import soot.PointsToSet;
+import abc.da.HasDAInfo;
+import abc.da.weaving.aspectinfo.DAInfo;
+import abc.main.Main;
 
 /**
  * A comparator that compares two shadows via an indirection on their variable names.
  * In a dependency declarations, advice formal names can differ from the actual advice formal names.
  * This comparator takes this difference into account.
+ * 
+ * @author Eric Bodden
  */
 public class ShadowComparator {
 
@@ -39,15 +41,19 @@ public class ShadowComparator {
 		this.adviceNameToVars = adviceNameToVarsFilter;
 	}
 
+	/**
+	 * This method returns <code>true</code> if the given shadows have compatible bindings w.r.t.
+	 * the given filter ({@link #adviceNameToVars}).
+	 */
 	public boolean compatibleBindings(Shadow s1, Shadow s2) {
 
 		//assert that both shadows actually belong to a dependent advice
-		final DAGlobalAspectInfo gai = (DAGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
-		assert gai.isDependentAdvice(s1.getAdviceDecl());
-		assert gai.isDependentAdvice(s2.getAdviceDecl());
+		final DAInfo dai = ((HasDAInfo) Main.v().getAbcExtension()).getDependentAdviceInfo();
+		assert dai.isDependentAdvice(s1.getAdviceDecl());
+		assert dai.isDependentAdvice(s2.getAdviceDecl());
 		
-		String adviceName1 = gai.replaceForHumanReadableName(gai.qualifiedNameOfAdvice(s1.getAdviceDecl()));
-		String adviceName2 = gai.replaceForHumanReadableName(gai.qualifiedNameOfAdvice(s2.getAdviceDecl()));
+		String adviceName1 = dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(s1.getAdviceDecl()));
+		String adviceName2 = dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(s2.getAdviceDecl()));
 		List<String> filter1 = adviceNameToVars.get(adviceName1);
 		List<String> filter2 = adviceNameToVars.get(adviceName2);
 		assert filter1!=null && filter2!=null;

@@ -50,13 +50,13 @@ public class MethodAdviceList {
 	// find all members of an AdviceApplication list that have no successors
 	// in the precedence ordering
 	private static AdviceApplication noPreds(List<AdviceApplication> aalist) {
-		List results = new ArrayList();
+		List<AdviceApplication> results = new ArrayList<AdviceApplication>();
 		AdviceApplication res = null;
-		for (Iterator it = aalist.iterator(); it.hasNext(); ) {
-			res = (AdviceApplication) it.next();
+		for (Iterator<AdviceApplication> it = aalist.iterator(); it.hasNext(); ) {
+			res = it.next();
 			boolean resHasPred = false;
-			for (Iterator it2 = aalist.iterator(); it2.hasNext() && !resHasPred; ) {
-				AdviceApplication aa = (AdviceApplication) it2.next();
+			for (Iterator<AdviceApplication> it2 = aalist.iterator(); it2.hasNext() && !resHasPred; ) {
+				AdviceApplication aa = it2.next();
 				if (aa == res) continue;
 				int prec = Main.v().getAbcExtension().getPrecedence(res.advice,aa.advice);
 				resHasPred =    (prec == GlobalAspectInfo.PRECEDENCE_FIRST)
@@ -69,7 +69,7 @@ public class MethodAdviceList {
 			if (abc.main.options.OptionsParser.v().warn_prec_ambiguity()
 					&& results.size() > 1)
 		    		reportAmbiguousPrecedence(results);
-			res = (AdviceApplication)results.get(0);
+			res = results.get(0);
 			aalist.remove(res);
 			return res;
 		}
@@ -81,15 +81,15 @@ public class MethodAdviceList {
 	// topological sort in order of reverse precedence
 	private static List<AdviceApplication> sortWithPrecedence(List<AdviceApplication> aalist) {
         //remove advice applications that never match
-	    for (Iterator iterator = aalist.iterator(); iterator.hasNext();) {
-            AdviceApplication aa = (AdviceApplication) iterator.next();
+	    for (Iterator<AdviceApplication> iterator = aalist.iterator(); iterator.hasNext();) {
+            AdviceApplication aa = iterator.next();
             if(NeverMatch.neverMatches(aa.getResidue())) {
                 iterator.remove();
             }
         }
 
         //sort
-		List<AdviceApplication> result = new ArrayList();
+		List<AdviceApplication> result = new ArrayList<AdviceApplication>();
 		AdviceApplication start = noPreds(aalist);
 		while (start != null) {
 			result.add(start);
@@ -100,17 +100,17 @@ public class MethodAdviceList {
 	
 	
 
-    private static void reportPrecedenceConflict(List aaList) {
+    private static void reportPrecedenceConflict(List<AdviceApplication> aaList) {
     	// FIXME: Should be a multiple position warning
     	String msg="";
 
     	msg+="Pieces of advice from ";
 		
-    	Iterator it = aaList.iterator();
-    	AdviceApplication aa = (AdviceApplication) it.next();
+    	Iterator<AdviceApplication> it = aaList.iterator();
+    	AdviceApplication aa = it.next();
     	msg += aa.advice.errorInfo();
 		while (it.hasNext()) {
-			aa = (AdviceApplication) it.next();
+			aa = it.next();
 			msg += " and " + aa.advice.errorInfo();
 		}
 		msg += " are in precedence conflict, and all apply here";
@@ -122,17 +122,17 @@ public class MethodAdviceList {
     					   aa.shadowmatch.getHost()));
     }
     
-    private static void reportAmbiguousPrecedence(List aaList) {
+    private static void reportAmbiguousPrecedence(List<AdviceApplication> aaList) {
     	// FIXME: Should be a multiple position warning
     	String msg="";
 
     	msg+="Pieces of advice from ";
 		
-    	Iterator it = aaList.iterator();
-    	AdviceApplication aa = (AdviceApplication) it.next();
+    	Iterator<AdviceApplication> it = aaList.iterator();
+    	AdviceApplication aa = it.next();
     	msg += aa.advice.errorInfo();
 		while (it.hasNext()) {
-			aa = (AdviceApplication) it.next();
+			aa = it.next();
 			msg += " and " + aa.advice.errorInfo();
 		}
 		msg += " can be ordered arbitrarily, and all apply here";
@@ -157,29 +157,29 @@ public class MethodAdviceList {
             stmtAdvice.addAll(sortWithPrecedence(stmtAdviceP));
         	preinitializationAdvice.addAll(sortWithPrecedence(preinitializationAdviceP));
         	initializationAdvice.addAll(sortWithPrecedence(initializationAdviceP));
-        	bodyAdviceP=new LinkedList();
-        	stmtAdviceP=new LinkedList();
-        	preinitializationAdviceP=new LinkedList();
-        	initializationAdviceP=new LinkedList();
+        	bodyAdviceP=new LinkedList<AdviceApplication>();
+        	stmtAdviceP=new LinkedList<AdviceApplication>();
+        	preinitializationAdviceP=new LinkedList<AdviceApplication>();
+        	initializationAdviceP=new LinkedList<AdviceApplication>();
             state=FLUSHED;
         }
     }
 
-    public List bodyAdviceP=new LinkedList();
-    public List stmtAdviceP=new LinkedList();
-    public List preinitializationAdviceP=new LinkedList();
-    public List initializationAdviceP=new LinkedList();
+    public List<AdviceApplication> bodyAdviceP=new LinkedList<AdviceApplication>();
+    public List<AdviceApplication> stmtAdviceP=new LinkedList<AdviceApplication>();
+    public List<AdviceApplication> preinitializationAdviceP=new LinkedList<AdviceApplication>();
+    public List<AdviceApplication> initializationAdviceP=new LinkedList<AdviceApplication>();
 
     /** Advice that would apply to the whole body, i.e. at 
 	execution joinpoints */
-    public List<AdviceApplication> bodyAdvice=new LinkedList();
+    public List<AdviceApplication> bodyAdvice=new LinkedList<AdviceApplication>();
     public void addBodyAdvice(AdviceApplication aa) {
 	    bodyAdviceP.add(aa);
         state=MODIFIED;
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
-    public List<AdviceApplication> stmtAdvice=new LinkedList();
+    public List<AdviceApplication> stmtAdvice=new LinkedList<AdviceApplication>();
     public void addStmtAdvice(AdviceApplication aa) {
 	    stmtAdviceP.add(aa);
         state=MODIFIED;
@@ -187,14 +187,14 @@ public class MethodAdviceList {
 
     /** pre-initialization joinpoints */
     public List<AdviceApplication> preinitializationAdvice
-	=new LinkedList();
+	=new LinkedList<AdviceApplication>();
     public void addPreinitializationAdvice(AdviceApplication aa) {
 	    preinitializationAdviceP.add(aa);
         state=MODIFIED;
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
-    public List<AdviceApplication> initializationAdvice=new LinkedList();
+    public List<AdviceApplication> initializationAdvice=new LinkedList<AdviceApplication>();
     public void addInitializationAdvice(AdviceApplication aa) {
         initializationAdviceP.add(aa);
         state=MODIFIED;
@@ -242,30 +242,30 @@ public class MethodAdviceList {
 
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"body advice:\n");
-	Iterator it;
+	Iterator<AdviceApplication> it;
 	for(it=bodyAdvice.iterator();it.hasNext();) {
-	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    final AdviceApplication aa=it.next();
 	    aa.debugInfo(prefix+" ",sb);
 	}
 	sb.append(prefix+"stmt advice:\n");
 	for(it=stmtAdvice.iterator();it.hasNext();) {
-	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    final AdviceApplication aa=it.next();
 	    aa.debugInfo(prefix+" ",sb);
 	}
 	sb.append(prefix+"preinit advice:\n");
 	for(it=preinitializationAdvice.iterator();it.hasNext();) {
-	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    final AdviceApplication aa=it.next();
 	    aa.debugInfo(prefix+" ",sb);
 	}
 	sb.append(prefix+"init advice:\n");
 	for(it=initializationAdvice.iterator();it.hasNext();) {
-	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    final AdviceApplication aa=it.next();
 	    aa.debugInfo(prefix+" ",sb);
 	}
     }
-    public List/*AdviceApplication*/ allAdvice() {
+    public List<AdviceApplication> allAdvice() {
         flush();
-        List/*AdviceApplication*/ ret = new ArrayList();
+        List<AdviceApplication> ret = new ArrayList<AdviceApplication>();
         ret.addAll(bodyAdvice);
         ret.addAll(stmtAdvice);
         ret.addAll(preinitializationAdvice);
@@ -279,10 +279,10 @@ public class MethodAdviceList {
      */
     public void unflush() {
         flush();
-        bodyAdviceP = new ArrayList(bodyAdvice);
-        initializationAdviceP = new ArrayList(initializationAdvice);
-        preinitializationAdviceP = new ArrayList(preinitializationAdvice);
-        stmtAdviceP = new ArrayList(stmtAdvice);
+        bodyAdviceP = new ArrayList<AdviceApplication>(bodyAdvice);
+        initializationAdviceP = new ArrayList<AdviceApplication>(initializationAdvice);
+        preinitializationAdviceP = new ArrayList<AdviceApplication>(preinitializationAdvice);
+        stmtAdviceP = new ArrayList<AdviceApplication>(stmtAdvice);
         bodyAdvice.clear();
         initializationAdvice.clear();
         preinitializationAdvice.clear();

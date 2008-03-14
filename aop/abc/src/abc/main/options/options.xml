@@ -291,17 +291,6 @@ any of their subdirectories.
   </section>
   <section>
     <name>Static whole-program analysis for tracematches</name>
-      <boolopt>
-      <alias>wp-tmopt</alias>
-      <default>false</default>
-      <short_desc>Turn on static whole-program optimizations for tracematches.</short_desc>
-      <long_desc>
-		Turns on static whole program analysis to speed up tracematches.
-		This analysis involves multiple stages which can be selected using the
-		-laststage option.
-		Default is false.
-      </long_desc>
-    </boolopt>
     <stringopt>
       <alias>laststage</alias>
       <default>quick</default>
@@ -315,14 +304,16 @@ any of their subdirectories.
       Default is quick.
       </long_desc>
     </stringopt>
-    <intopt>
-      <alias>wp-tmopt-iterations</alias>
-      <default>1</default>
-      <short_desc>Iterate the intraprocedural optimizations (abc-2007-6) so many times.</short_desc>
-      <long_desc>The optimizations are executed in this sequence: quick-check (flow-ins unnecessary-shadows run-once)^i.
-      The number i is the value set here. Must be >0. Default is: -wp-tmopt-iterations1
+    <boolopt>
+      <alias>warn-about-individual-shadows</alias>
+      <default>false</default>
+      <short_desc>Warn about each individual shadow that gets removed through the analyses.</short_desc>
+      <long_desc>
+		If enabled, abc issues a warning for each individual shadow removed by the analyses.
+		If disabled, only summary information about disabled shadows and tracematches will be given.
+		Default is false.
       </long_desc>
-    </intopt>
+    </boolopt>
   </section>
   <section undoc="">
     <name>Debug options</name>

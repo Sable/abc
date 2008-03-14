@@ -19,17 +19,16 @@
 
 package abc.aspectj.visit;
 
-import polyglot.frontend.*;
-import polyglot.ast.*;
-import polyglot.visit.*;
-import polyglot.types.*;
+import java.util.Iterator;
+
+import polyglot.frontend.Pass;
+import polyglot.types.ClassType;
+import polyglot.types.Resolver;
+import polyglot.types.SemanticException;
+import polyglot.types.TypeSystem;
 import polyglot.util.InternalCompilerError;
-
 import abc.aspectj.ExtensionInfo;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcFactory;
-
-import java.util.*;
 
 /** Loads all classes specified as classfile input and
  *  registers them as weavable classes.
@@ -52,9 +51,9 @@ public class InitClasses extends OncePass {
             AbcFactory.init(res);
 
             // Fetch all the weavable classes and put them in the right places
-            Iterator wcni = ext.jar_classes.iterator();
+            Iterator<String> wcni = ext.jar_classes.iterator();
             while (wcni.hasNext()) {
-                String wcn = (String)wcni.next();
+                String wcn = wcni.next();
                 ClassType ct = (ClassType)res.find(wcn);
                 if (ct == null) {
                     throw new InternalCompilerError("Class type of jar class was null");

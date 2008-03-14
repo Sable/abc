@@ -50,6 +50,7 @@ import abc.main.Debug;
 import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.matching.SMEdge;
 import abc.tm.weaving.matching.SMNode;
+import abc.tm.weaving.matching.State;
 import abc.tm.weaving.matching.StateMachine;
 import abc.tm.weaving.matching.TMStateMachine;
 import abc.tm.weaving.weaver.CodeGenHelper;
@@ -707,6 +708,23 @@ public class TraceMatch
         }
         return initial_symbols;
     }
+    
+    public Set<String> getFinalSymbols()
+    {
+        Set<String> final_symbols = new HashSet<String>();
+        TMStateMachine sm = ((TMStateMachine) getStateMachine());
+        for (Iterator<State> stateIter = sm.getStateIterator(); stateIter.hasNext();) {
+			State s = stateIter.next();
+			if(s.isFinalNode()) {
+				SMNode node = (SMNode) s;
+				for (Iterator<SMEdge> inEdgeIter = node.getInEdgeIterator(); inEdgeIter.hasNext();) {
+					SMEdge inEdge = inEdgeIter.next();
+	                final_symbols.add(inEdge.getLabel());
+				}
+			}
+		}
+        return final_symbols;
+    }
 
     public int getInitialStateNumber()
     {
@@ -731,4 +749,8 @@ public class TraceMatch
         }
         throw new RuntimeException("can't find final state");
     }
+
+	public Aspect getContainer() {
+		return container;
+	}
 }

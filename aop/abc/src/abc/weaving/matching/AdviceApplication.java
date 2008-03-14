@@ -32,6 +32,7 @@ import soot.Body;
 import soot.Modifier;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Unit;
 import soot.VoidType;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
@@ -65,8 +66,8 @@ public abstract class AdviceApplication {
     public Residue getResidue() { return residueBox.getResidue(); }
     public void setResidue(Residue r) { residueBox.setResidue(r); }
 
-    public List/*ResidueBox*/ getResidueBoxes() {
-        List/*ResidueBox*/ret = new ArrayList();
+    public List<ResidueBox> getResidueBoxes() {
+        List<ResidueBox>ret = new ArrayList<ResidueBox>();
         ret.add(residueBox);
         ret.addAll(residueBox.getResidue().getResidueBoxes());
         return ret;
@@ -98,13 +99,13 @@ public abstract class AdviceApplication {
     }
     
     /** return the list of residue conjuncts */
-    public static List residueConjuncts(final AbstractAdviceDecl ad,
+    public static List<ResidueConjunct> residueConjuncts(final AbstractAdviceDecl ad,
                                              final Pointcut pc,
                                              final ShadowMatch sm,
                                              final SootMethod method,
                                              final SootClass cls,
                                              final WeavingEnv we) {
-        List result = new ArrayList();
+        List<ResidueConjunct> result = new ArrayList<ResidueConjunct>();
         result.add(new ResidueConjunct() {
         	             public Residue run() throws SemanticException {
         	             	return ad.preResidue(sm);
@@ -141,11 +142,11 @@ public abstract class AdviceApplication {
                                   MethodPosition pos)
         throws SemanticException
     {
-        Iterator shadowIt;
+        Iterator<ShadowType> shadowIt;
         for(shadowIt = abc.main.Main.v().getAbcExtension().shadowTypes();
             shadowIt.hasNext();) {
 
-            ShadowType st=(ShadowType) shadowIt.next();
+            ShadowType st=  shadowIt.next();
             ShadowMatch sm;
             try {
                 sm=st.matchesAt(pos);
@@ -166,11 +167,11 @@ public abstract class AdviceApplication {
 
             if(sm==null) continue;
 
-            Iterator adviceIt;
+            Iterator<AbstractAdviceDecl> adviceIt;
 
             for(adviceIt=info.getAdviceDecls().iterator();
                 adviceIt.hasNext();) {
-                final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
+                final AbstractAdviceDecl ad =  adviceIt.next();
 
                 try {
 
@@ -183,10 +184,10 @@ public abstract class AdviceApplication {
                     // manual short-circuit logic
                     Residue residue=AlwaysMatch.v();
 
-                    List conjuncts = abc.main.Main.v().getAbcExtension().residueConjuncts(ad,pc,sm,method,cls,we);
+                    List<ResidueConjunct> conjuncts = abc.main.Main.v().getAbcExtension().residueConjuncts(ad,pc,sm,method,cls,we);
                     
-                    for (Iterator cit=conjuncts.iterator(); cit.hasNext(); ) {
-                    	ResidueConjunct rc = (ResidueConjunct) cit.next();
+                    for (Iterator<ResidueConjunct> cit=conjuncts.iterator(); cit.hasNext(); ) {
+                    	ResidueConjunct rc =  cit.next();
 						if(!NeverMatch.neverMatches(residue))
 				            residue=AndResidue.construct(residue,rc.run());
                     }
@@ -218,7 +219,7 @@ public abstract class AdviceApplication {
     private static void doMethod(GlobalAspectInfo info,
                                 SootClass cls,
                                 SootMethod method,
-                                Hashtable ret)
+                                Hashtable<SootMethod, MethodAdviceList> ret)
         throws SemanticException
     {
 
@@ -238,7 +239,7 @@ public abstract class AdviceApplication {
         // Either that or pre-compute the list of all classes that our
         // pointcuts could match
 
-        HashMap m=new HashMap();
+        HashMap<String, String> m=new HashMap<String, String>();
         m.put("enabled","true");
         if(abc.main.Debug.v().restructure)
             System.out.println("restructuring "+method);
@@ -261,7 +262,7 @@ public abstract class AdviceApplication {
                 throw new InternalCompilerError("exception while processing "+method,e);
             }
 
-            Iterator stmtsIt=method.getActiveBody().getUnits().iterator();
+            Iterator<Unit> stmtsIt=method.getActiveBody().getUnits().iterator();
             while(stmtsIt.hasNext()) {
                 Stmt stmt=(Stmt) stmtsIt.next();
                 if(stmt==thisOrSuper) break;
@@ -282,20 +283,19 @@ public abstract class AdviceApplication {
     /** Construct a hash table mapping each concrete {@link soot.SootMethod}
      *  in each weaveable class to a {@link MethodAdviceList} for that method.
      */
-    public static Hashtable computeAdviceLists(GlobalAspectInfo info)
+    public static Hashtable<SootMethod, MethodAdviceList> computeAdviceLists(GlobalAspectInfo info)
         throws SemanticException
     {
-        Iterator clsIt;
+        Iterator<AbcClass> clsIt;
 
-        Hashtable ret=new Hashtable();
+        Hashtable<SootMethod, MethodAdviceList> ret=new Hashtable<SootMethod, MethodAdviceList>();
 
         for(clsIt=info.getWeavableClasses().iterator();clsIt.hasNext();) {
 
-            final AbcClass cls
-                = (AbcClass) clsIt.next();
+            final AbcClass cls =  clsIt.next();
 
             SootClass sootCls = cls.getSootClass();
-            Iterator methodIt;
+            Iterator<SootMethod> methodIt;
 
             boolean hasclinit=false;
 

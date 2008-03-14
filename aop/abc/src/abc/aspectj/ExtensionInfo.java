@@ -21,26 +21,76 @@
 
 package abc.aspectj;
 
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import polyglot.ast.Node;
+import polyglot.ast.NodeFactory;
+import polyglot.frontend.BarrierPass;
+import polyglot.frontend.CupParser;
+import polyglot.frontend.EmptyPass;
+import polyglot.frontend.FileSource;
+import polyglot.frontend.GlobalBarrierPass;
+import polyglot.frontend.Job;
+import polyglot.frontend.Parser;
+import polyglot.frontend.ParserPass;
+import polyglot.frontend.Pass;
+import polyglot.frontend.Source;
+import polyglot.frontend.VisitorPass;
 import polyglot.lex.Lexer;
-import abc.aspectj.parse.Lexer_c;
+import polyglot.types.TypeSystem;
+import polyglot.util.ErrorQueue;
+import polyglot.util.InternalCompilerError;
+import polyglot.visit.AddMemberVisitor;
+import polyglot.visit.AmbiguityRemover;
+import polyglot.visit.ConstructorCallChecker;
+import polyglot.visit.ExitChecker;
+import polyglot.visit.FwdReferenceChecker;
+import polyglot.visit.InitChecker;
+import polyglot.visit.ReachChecker;
+import polyglot.visit.TypeChecker;
+import soot.javaToJimple.AnonConstructorFinder;
+import soot.javaToJimple.CastInsertionVisitor;
+import soot.javaToJimple.SaveASTVisitor;
+import soot.javaToJimple.StrictFPPropagator;
+import abc.aspectj.ast.AJNodeFactory_c;
 import abc.aspectj.parse.Grm;
-import abc.aspectj.ast.*;
-import abc.aspectj.types.*;
-import abc.aspectj.visit.*;
+import abc.aspectj.parse.Lexer_c;
+import abc.aspectj.types.AJTypeSystem_c;
+import abc.aspectj.visit.AJAmbiguityRemover;
+import abc.aspectj.visit.AJTypeBuilder;
+import abc.aspectj.visit.AnonBodyITDs;
+import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.AspectMethods;
+import abc.aspectj.visit.AspectNameCollector;
+import abc.aspectj.visit.AspectReflectionInspect;
+import abc.aspectj.visit.AspectReflectionRewrite;
+import abc.aspectj.visit.CheckPackageNames;
+import abc.aspectj.visit.CleanAspectMembers;
+import abc.aspectj.visit.CollectJimplifyVisitor;
+import abc.aspectj.visit.ComputePrecedenceRelation;
+import abc.aspectj.visit.DeclareParentsAmbiguityRemover;
+import abc.aspectj.visit.DependsChecker;
+import abc.aspectj.visit.HierarchyBuilder;
+import abc.aspectj.visit.InitClasses;
+import abc.aspectj.visit.InterfaceITDs;
+import abc.aspectj.visit.JarCheck;
+import abc.aspectj.visit.Jimplify;
+import abc.aspectj.visit.MangleNameComponents;
+import abc.aspectj.visit.MangleNames;
+import abc.aspectj.visit.NamePatternEvaluator;
+import abc.aspectj.visit.NamePatternReevaluator;
+import abc.aspectj.visit.PCStructure;
+import abc.aspectj.visit.ParentDeclarer;
+import abc.aspectj.visit.PatternMatcher;
+import abc.aspectj.visit.PatternTester;
+import abc.aspectj.visit.SourceClasses;
 import abc.main.AbcTimer;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
-
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
-import polyglot.visit.*;
-import polyglot.frontend.*;
-import polyglot.main.*;
-
-import soot.javaToJimple.*;
-
-import java.util.*;
-import java.io.*;
 
 /**
  * Extension information for aspectj extension.
@@ -110,26 +160,26 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     
 
     /** The JVM names for all classes loaded from jar files */
-    public Collection/*<String>*/ jar_classes;
+    public Collection<String> jar_classes;
 
-    public Collection/*<String>*/ source_files;
-    public Map/*<String,Node>*/ class_to_ast;
+    public Collection<String> source_files;
+    public Map<String,Node> class_to_ast;
     public PCStructure hierarchy;
     public PatternMatcher pattern_matcher;
-    public Collection/*<String>*/ aspect_names;
-    public Map/*<String,Set<String>>*/ prec_rel = new HashMap();
+    public Collection<String> aspect_names;
+    public Map<String,Set<String>> prec_rel = new HashMap<String,Set<String>>();
 
-    public ExtensionInfo(Collection jar_classes, Collection source_files)  {
+    public ExtensionInfo(Collection<String> jar_classes, Collection<String> source_files)  {
 	this.jar_classes = jar_classes;
 	this.source_files = source_files;
-	class_to_ast = new HashMap();
-	aspect_names = new ArrayList();
+	class_to_ast = new HashMap<String,Node>();
+	aspect_names = new ArrayList<String>();
 	hierarchy = PCStructure.v();
     }
 
     static {
         // force Topics to load
-        Topics t = new Topics();
+        new Topics();
     }
 
     public String defaultFileExtension() {
@@ -166,8 +216,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	} catch (InternalCompilerError e) {}
     }
 
-    public List passes(Job job) {
-        ArrayList l = new ArrayList(25);
+    public List<Pass> passes(Job job) {
+        ArrayList<Pass> l = new ArrayList<Pass>(25);
         l.add(new InitClasses(INIT_CLASSES, this, ts));
 
         passes_parse_and_clean(l, job);
@@ -197,7 +247,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         return l;
     }
 
-    protected void passes_parse_and_clean(List l, Job job)
+    protected void passes_parse_and_clean(List<Pass> l, Job job)
     {
         l.add(new ParserPass(Pass.PARSE,compiler,job));
 
@@ -210,7 +260,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
        
     }
 
-    protected void passes_patterns_and_parents(List l, Job job)
+    protected void passes_patterns_and_parents(List<Pass> l, Job job)
     {
     	// Disambiguate inner/outer classes
 		l.add(new VisitorPass(CLEAN_CLASSES,job, new AJAmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
@@ -242,14 +292,14 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new GlobalBarrierPass(PATTERNS_EVALUATED_AGAIN, job));
     }
 
-    protected void passes_precedence_relation(List l, Job job)
+    protected void passes_precedence_relation(List<Pass> l, Job job)
     {
     	 // compute precedence relation between aspects, based on matched name patterns
         l.add(new VisitorPass(COMPUTE_PRECEDENCE_RELATION, job, new ComputePrecedenceRelation(job, ts, nf, this)));
         l.add(new GlobalBarrierPass(PRECEDENCE_COMPUTED, job));
     }
 
-    protected void passes_fold_and_checkcode(List l, Job job)
+    protected void passes_fold_and_checkcode(List<Pass> l, Job job)
     {
     	// constant folder. FIXME: this folds bytes to ints
         //l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
@@ -284,14 +334,14 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         
     }
 
-    protected void passes_saveAST(List l, Job job)
+    protected void passes_saveAST(List<Pass> l, Job job)
     {
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	// tell soot the connection between source and job, so it doesn't re-compile
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
     }
 
-    protected void passes_mangle_names(List l, Job job)
+    protected void passes_mangle_names(List<Pass> l, Job job)
     {
     	// determine components that need to get the same mangled name
     l.add(new VisitorPass(MANGLE_NAME_COMPONENTS, job, new MangleNameComponents()));
@@ -301,7 +351,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new GlobalBarrierPass(NAMES_MANGLED, job));
     }
 
-    protected void passes_aspectj_transforms(List l, Job job)
+    protected void passes_aspectj_transforms(List<Pass> l, Job job)
     {
 	// look to see if all thisJoinPoint references could be changed into thisJoinPointStaticPart
 	l.add(new VisitorPass(ASPECT_REFLECTION_INSPECT,job, new AspectReflectionInspect()));
@@ -322,7 +372,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         // l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
     }
 
-    protected void passes_jimple(List l, Job job)
+    protected void passes_jimple(List<Pass> l, Job job)
     {
     	// set up map from top-level classes to asts for j2j
         l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job,
@@ -332,21 +382,21 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new GlobalBarrierPass(JIMPLIFY_DONE, job));
     }
 
-    protected void passes_disambiguate_signatures(List l, Job job)
+    protected void passes_disambiguate_signatures(List<Pass> l, Job job)
     {
     	// disambiguate inner/outer classes, signatures of methods
         l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));
     }
 
-    protected void passes_add_members(List l, Job job)
+    protected void passes_add_members(List<Pass> l, Job job)
     {
     	// populate class types with members
         l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));
         l.add(new GlobalBarrierPass(Pass.ADD_MEMBERS_ALL, job));
     }
 
-    protected void passes_interface_ITDs(List l, Job job)
+    protected void passes_interface_ITDs(List<Pass> l, Job job)
     {
     	// put interface itds in types
         l.add(new InterfaceITDs(INTERFACE_ITDS));
@@ -358,7 +408,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new GlobalBarrierPass(INTERFACE_ITDS_ALL,job));
     }
 
-    protected void passes_disambiguate_all(List l, Job job)
+    protected void passes_disambiguate_all(List<Pass> l, Job job)
     {
     	// resolve all variable, class references
         l.add(new VisitorPass(Pass.DISAM, job,

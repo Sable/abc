@@ -36,6 +36,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Transform;
 import soot.Trap;
+import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
@@ -75,9 +76,11 @@ import abc.weaving.matching.NewStmtMethodPosition;
 import abc.weaving.matching.PreinitializationShadowType;
 import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.SetFieldShadowType;
+import abc.weaving.matching.ShadowType;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
+import abc.weaving.matching.AdviceApplication.ResidueConjunct;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.CflowCodeGenUtils;
@@ -103,7 +106,7 @@ public class AbcExtension
     private GlobalAspectInfo globalAspectInfo = null;
     private Weaver weaver = null;
     private CompileSequence compileSequence = null;
-    private List reweavingPasses;
+    private List<ReweavingPass> reweavingPasses;
     
 	/** If true, error reporting is suspended. */
 	private boolean suspendErrorReporting;
@@ -179,8 +182,8 @@ public class AbcExtension
      * Creates an instance of the <code>ExtensionInfo</code> structure
      * used for extending the Polyglot-based frontend.
      */
-    public ExtensionInfo makeExtensionInfo(Collection jar_classes,
-                                            Collection aspect_sources)
+    public ExtensionInfo makeExtensionInfo(Collection<String> jar_classes,
+                                            Collection<String> aspect_sources)
     {
         return new abc.aspectj.ExtensionInfo(jar_classes, aspect_sources);
     }
@@ -241,7 +244,7 @@ public class AbcExtension
      * Get all the shadow joinpoints that are matched
      * in this extension of AspectJ
      */
-    final public Iterator /*<ShadowType>*/ shadowTypes()
+    final public Iterator<ShadowType> shadowTypes()
     {
         return listShadowTypes().iterator();
     }
@@ -251,9 +254,9 @@ public class AbcExtension
      * Call the same method in the super-class to ensure
      * the standard joinpoints needed are loaded too.
      */
-    protected List /*<ShadowType>*/ listShadowTypes()
+    protected List<ShadowType> listShadowTypes()
     {
-        List /*<ShadowType*/ shadowTypes = new LinkedList();
+        List<ShadowType> shadowTypes = new LinkedList<ShadowType>();
 
         shadowTypes.add(new ConstructorCallShadowType());
         shadowTypes.add(new ExecutionShadowType());
@@ -529,7 +532,7 @@ public class AbcExtension
             System.err.println("Doing statement shadows");
 
         if(MethodCategory.weaveInside(method)) {
-            Chain stmtsChain=method.getActiveBody().getUnits();
+            Chain<Unit> stmtsChain=method.getActiveBody().getUnits();
             Stmt current,next;
 
             if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
@@ -552,7 +555,7 @@ public class AbcExtension
         if(abc.main.Debug.v().traceMatcher)
             System.err.println("Doing exception shadows");
 
-        Chain trapsChain=method.getActiveBody().getTraps();
+        Chain<Trap> trapsChain=method.getActiveBody().getTraps();
         Trap currentTrap;
 
         if(!trapsChain.isEmpty()) {
@@ -624,7 +627,7 @@ public class AbcExtension
 	/** return the list of residue conjuncts. This should return a list all of whose elements
 	 *   are of type abc.weaving.matching.AdviceApplication.ResidueConjunct.
 	 */
-	public List residueConjuncts(final AbstractAdviceDecl ad,
+	public List<ResidueConjunct> residueConjuncts(final AbstractAdviceDecl ad,
 												 final abc.weaving.aspectinfo.Pointcut pc,
 												 final abc.weaving.matching.ShadowMatch sm,
 												 final SootMethod method,
@@ -638,7 +641,7 @@ public class AbcExtension
      * @param passes the current list of reweaving passes; add your analysis passes
      * here as needed; do not forget to call <code>super</code>
      */
-    protected void createReweavingPasses(List passes) {
+    protected void createReweavingPasses(List<ReweavingPass> passes) {
         if( OptionsParser.v().O() >= 3 ) {
             try {
                 ReweavingAnalysis ana = (ReweavingAnalysis) Class.forName("abc.weaving.weaver.CflowAnalysisImpl").newInstance();                
@@ -663,9 +666,9 @@ public class AbcExtension
      * Returns the reweaving passes for this extension.
      * @return the reweaving passes
      */
-    public final List getReweavingPasses() {
+    public final List<ReweavingPass> getReweavingPasses() {
         if(reweavingPasses == null) {
-            reweavingPasses = new ArrayList();
+            reweavingPasses = new ArrayList<ReweavingPass>();
             createReweavingPasses(reweavingPasses);
         }
         return reweavingPasses;

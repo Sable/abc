@@ -45,16 +45,18 @@ import polyglot.visit.TypeChecker;
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.ContainsAspectInfo;
+import abc.da.HasDAInfo;
 import abc.da.types.DAAspectType;
 import abc.da.types.DAContext;
-import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
+import abc.da.weaving.aspectinfo.DAInfo;
+import abc.da.weaving.weaver.depadviceopt.ds.Bag;
+import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
 import abc.main.Main;
-import abc.tm.weaving.weaver.tmanalysis.ds.Bag;
-import abc.tm.weaving.weaver.tmanalysis.ds.HashBag;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /**
+ * AST node for an advice depencency declaration.
  * @author Eric Bodden
  */
 public class AdviceDependency_c extends Term_c implements AdviceDependency, ContainsAspectInfo {
@@ -210,7 +212,7 @@ public class AdviceDependency_c extends Term_c implements AdviceDependency, Cont
 	 * {@inheritDoc}
 	 */
 	public void update(GlobalAspectInfo gai, Aspect current_aspect) {
-		DAGlobalAspectInfo daGai = (DAGlobalAspectInfo) gai;
+		final DAInfo dai = ((HasDAInfo) Main.v().getAbcExtension()).getDependentAdviceInfo();
 		
 		Map<String,List<String>> strongAdviceNameToVars = new HashMap<String, List<String>>();
 		for (AdviceNameAndParams anap : strongAdvice) {
@@ -230,7 +232,7 @@ public class AdviceDependency_c extends Term_c implements AdviceDependency, Cont
 					position()
 		);
 		
-		daGai.addAdviceDependency(ad);
+		dai.addAdviceDependency(ad);
 	}
 	
 	/** 
@@ -297,7 +299,8 @@ public class AdviceDependency_c extends Term_c implements AdviceDependency, Cont
     /** 
      * {@inheritDoc}
      */
-    public Node visitChildren(NodeVisitor v) {
+    @SuppressWarnings("unchecked")
+	public Node visitChildren(NodeVisitor v) {
         List<AdviceNameAndParams> strongAdvice= visitList(this.strongAdvice, v);
         List<AdviceNameAndParams> weakAdvice= visitList(this.weakAdvice, v);
         return reconstruct(strongAdvice,weakAdvice);
@@ -306,6 +309,7 @@ public class AdviceDependency_c extends Term_c implements AdviceDependency, Cont
 	/** 
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public List acceptCFG(CFGBuilder v, List succs) {
 		return succs;
 	}

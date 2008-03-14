@@ -21,12 +21,11 @@
 
 package abc.tm.weaving.weaver;
 
-import abc.weaving.weaver.Weaver;
-import abc.main.Debug;
-import abc.tm.weaving.aspectinfo.*;
-import abc.tm.weaving.weaver.tmanalysis.dynainst.ShadowCountManager;
+import java.util.Iterator;
 
-import java.util.*;
+import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import abc.tm.weaving.aspectinfo.TraceMatch;
+import abc.weaving.weaver.Weaver;
 
 /** 
  * Modified weaver to implement TraceMatching
@@ -73,11 +72,6 @@ public class TMWeaver extends Weaver
 
     public void weaveAdvice()
     {
-        if(Debug.v().shadowCount && nowLastWeavingPass) {
-            //conjoin all residues with a residue for counting shadows
-            ShadowCountManager.setCountResidues();
-        }
-
         super.weaveAdvice();
 
         Iterator i = ((TMGlobalAspectInfo)

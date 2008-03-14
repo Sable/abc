@@ -67,7 +67,7 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
         new Topics();
     }
 
-    public ExtensionInfo(Collection jar_classes, Collection source_files)
+    public ExtensionInfo(Collection<String> jar_classes, Collection<String> source_files)
     {
         super(jar_classes, source_files);
     }
@@ -90,7 +90,7 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
         return new EAJTypeSystem_c();
     }
 
-    protected void passes_patterns_and_parents(List l, Job job)
+    protected void passes_patterns_and_parents(List<Pass> l, Job job)
     {
         super.passes_patterns_and_parents(l, job);
 

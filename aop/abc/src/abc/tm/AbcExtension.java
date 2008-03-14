@@ -37,31 +37,12 @@ import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.itds.ITDAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural;
-import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
-import abc.tm.weaving.weaver.tmanalysis.Statistics;
-import abc.tm.weaving.weaver.tmanalysis.ds.FinalConfigsUnitGraph;
-import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
-import abc.tm.weaving.weaver.tmanalysis.query.ConsistentShadowGroupFinder;
-import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
-import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
-import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
-import abc.tm.weaving.weaver.tmanalysis.query.WeavableMethods;
-import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
-import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.stages.IntraproceduralAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
-import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.CflowSetup;
 import abc.weaving.aspectinfo.DeclareMessage;
 import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.weaver.AbstractReweavingAnalysis;
-import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 import abc.weaving.weaver.ReweavingPass.ID;
@@ -74,13 +55,7 @@ import abc.weaving.weaver.ReweavingPass.ID;
 public class AbcExtension extends abc.eaj.AbcExtension
 {
 
-    private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
-    private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
-    private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
-    private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
-    private static final ID PASS_DYNAMIC_INSTRUMENTATION = new ID("Dynamic instrumentation");
-    private static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
-    
+    protected static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
 
     protected void collectVersions(StringBuffer versions)
     {
@@ -91,8 +66,8 @@ public class AbcExtension extends abc.eaj.AbcExtension
     }
 
     public abc.aspectj.ExtensionInfo
-            makeExtensionInfo(Collection jar_classes,
-                              Collection aspect_sources)
+            makeExtensionInfo(Collection<String> jar_classes,
+                              Collection<String> aspect_sources)
     {
         return new abc.tm.ExtensionInfo(jar_classes, aspect_sources);
     }
@@ -180,79 +155,13 @@ public class AbcExtension extends abc.eaj.AbcExtension
     /** 
      * {@inheritDoc}
      */
-    protected void createReweavingPasses(List passes) {
+    protected void createReweavingPasses(List<ReweavingPass> passes) {
         super.createReweavingPasses(passes);
         
         if (abc.main.Debug.v().useITDs) {
             OptionsParser.v().set_tag_instructions(true);
             passes.add(new ReweavingPass(PASS_ITD_ANALYSIS,
                                          new ITDAnalysis()));
-        }
-
-        if(OptionsParser.v().wp_tmopt()) {
-            //we need instruction tags so that we can identify shadow IDs after weaving
-            OptionsParser.v().set_tag_instructions(true);
-
-            //Quick check
-            ReweavingAnalysis quick = new OptQuickCheck();                
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
-            
-            final String laststage = OptionsParser.v().laststage();
-            
-            if(Debug.v().dynaInstr && laststage.equals("quick")) {
-            	throw new IllegalArgumentException("Dynamic instrumentation only possible with flow-insensitive analysis enabled.");
-            }
-            
-            if(!laststage.equals("quick")) {
-            
-                ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
-                passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
-    
-                if(!laststage.equals("flowins")) {
-    
-    				ReweavingAnalysis intra = new OptIntraProcedural();
-    	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-                    
-                    //need unique advice actuals for this analysis; TODO do we really?
-                    TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
-                }
-            }
-            
-            //pass for dynamic instrumentation 
-
-            if(Debug.v().dynaInstr) {
-                ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
-                    @Override
-                    public boolean analyze() {
-                        DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
-                        return false;
-                    }
-                };
-                passes.add( new ReweavingPass( PASS_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
-            }
-
-            //add a pass which just cleans up resources;
-            //this is necessary in order to reset static fields for the test harness
-            
-            ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
-
-                @Override
-                public boolean analyze() {
-                    //disable all some and sync advice that became inactive
-                    ShadowRegistry.v().disableAllUnneededSomeSyncAndBodyAdvice();
-                    return false;
-                }
-                
-                @Override
-                public void cleanup() {
-                    //dump shadows in the end
-                    ShadowRegistry.v().dumpShadows();
-                    //reset state
-                    resetAnalysisDataStructures();
-                }
-
-            };
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );
         }
     }
     
@@ -430,25 +339,6 @@ public class AbcExtension extends abc.eaj.AbcExtension
 		        abc.tm.weaving.aspectinfo.TraceMatch.reset();
 			}
 		};
-	}
-	
-	/**
-	 * Resets all static data structures used for static tracematch optimizations.
-	 */
-	public void resetAnalysisDataStructures() {
-		CallGraphAbstraction.reset();
-        FlowInsensitiveAnalysis.reset();
-        QuickCheck.reset();
-        ReachableShadowFinder.reset();
-        ShadowGroupRegistry.reset();
-        ShadowRegistry.reset();
-        TMShadowTagger.reset();
-        WeavableMethods.reset();
-        SymbolShadow.reset();
-		FinalConfigsUnitGraph.reset();
-		ConsistentShadowGroupFinder.reset();
-		Statistics.reset();
-		IntraproceduralAnalysis.reset();
-	}
+	}	
    
 }

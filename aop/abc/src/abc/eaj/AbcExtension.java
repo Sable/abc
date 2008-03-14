@@ -68,8 +68,8 @@ public class AbcExtension extends abc.main.AbcExtension
     }
 
     public abc.aspectj.ExtensionInfo
-            makeExtensionInfo(Collection jar_classes,
-                              Collection aspect_sources)
+            makeExtensionInfo(Collection<String> jar_classes,
+                              Collection<String> aspect_sources)
     {
         return new abc.eaj.ExtensionInfo(jar_classes, aspect_sources);
     }
@@ -188,7 +188,7 @@ public class AbcExtension extends abc.main.AbcExtension
     	super.doMethodRestructuring();
     }
     
-    protected void createReweavingPasses(List passes) {
+    protected void createReweavingPasses(List<ReweavingPass> passes) {
     	super.createReweavingPasses(passes);
     	
     	if(Debug.v().optimizeMaybeSharedPointcut) {	    	

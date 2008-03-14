@@ -26,41 +26,22 @@ import java.util.List;
 
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
-import soot.CompilationDeathException;
 import soot.Scene;
 import soot.SootClass;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
-import abc.ja.tm.CompileSequence;
-import abc.main.CompilerAbortedException;
-import abc.main.CompilerFailedException;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import abc.tm.weaving.weaver.TMWeaver;
 import abc.tm.weaving.weaver.itds.ITDAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.OptFlowInsensitiveAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.OptIntraProcedural;
-import abc.tm.weaving.weaver.tmanalysis.OptQuickCheck;
-import abc.tm.weaving.weaver.tmanalysis.dynainst.DynamicInstrumenter;
-import abc.tm.weaving.weaver.tmanalysis.query.ReachableShadowFinder;
-import abc.tm.weaving.weaver.tmanalysis.query.ShadowGroupRegistry;
-import abc.tm.weaving.weaver.tmanalysis.query.ShadowRegistry;
-import abc.tm.weaving.weaver.tmanalysis.query.WeavableMethods;
-import abc.tm.weaving.weaver.tmanalysis.stages.CallGraphAbstraction;
-import abc.tm.weaving.weaver.tmanalysis.stages.FlowInsensitiveAnalysis;
-import abc.tm.weaving.weaver.tmanalysis.stages.QuickCheck;
-import abc.tm.weaving.weaver.tmanalysis.stages.TMShadowTagger;
-import abc.tm.weaving.weaver.tmanalysis.util.SymbolShadow;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.CflowSetup;
 import abc.weaving.aspectinfo.DeclareMessage;
 import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.weaver.AbstractReweavingAnalysis;
-import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.Weaver;
 import abc.weaving.weaver.ReweavingPass.ID;
@@ -70,28 +51,22 @@ import abc.weaving.weaver.ReweavingPass.ID;
  * @author Oege de Moor
  * @author Eric Bodden
  */
-public class AbcExtension extends abc.ja.eaj.AbcExtension
+public class AbcExtension extends abc.eaj.AbcExtension
 {
 
-    private static final ID PASS_TM_ANALYSIS_QUICK_CHECK = new ID("Tracematch analysis - quick check");
-    private static final ID PASS_TM_ANALYSIS_FLOWINS = new ID("Tracematch analysis - flow-insensitive stage");
-    private static final ID PASS_TM_ANALYSIS_INTRAPROC = new ID("Tracematch analysis - intraprocedural stage");
-    private static final ID PASS_TM_ANALYSIS_FLOWINS_REITER = new ID("Tracematch analysis - reiteration of flow-insensitive stage");
-    private static final ID PASS_TM_ANALYSIS_CLEANUP = new ID("Tracematch analysis - cleanup stage");
-    private static final ID PASS_DYNAMIC_INSTRUMENTATION = new ID("Dynamic instrumentation");
-    private static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");    
+    protected static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
 
     protected void collectVersions(StringBuffer versions)
     {
         super.collectVersions(versions);
-        versions.append(" with TraceMatching (JastAdd version) " +
-                        new abc.ja.tm.Version().toString() +
+        versions.append(" with TraceMatching " +
+                        new abc.tm.Version().toString() +
                         "\n");
     }
 
     public abc.aspectj.ExtensionInfo
-            makeExtensionInfo(Collection jar_classes,
-                              Collection aspect_sources)
+            makeExtensionInfo(Collection<String> jar_classes,
+                              Collection<String> aspect_sources)
     {
         return new abc.tm.ExtensionInfo(jar_classes, aspect_sources);
     }
@@ -113,133 +88,79 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
 		
         // keyword for the "cast" pointcut extension
         lexer.addAspectJKeyword("tracematch", new LexerAction_c(
-                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.TRACEMATCH)));
+                            new Integer(abc.tm.parse.sym.TRACEMATCH)));
         lexer.addAspectJKeyword("sym", new LexerAction_c(
-                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.SYM)));
+                            new Integer(abc.tm.parse.sym.SYM)));
         lexer.addAspectJKeyword("perthread", new LexerAction_c(
-                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.PERTHREAD)));
+                            new Integer(abc.tm.parse.sym.PERTHREAD)));
         lexer.addAspectJKeyword("frequent", new LexerAction_c(
-                            new Integer(abc.ja.tm.parse.JavaParser.Terminals.FREQUENT)));
+                            new Integer(abc.tm.parse.sym.FREQUENT)));
         lexer.addAspectJKeyword("filtermatch", new LexerAction_c(
-				new Integer(abc.ja.tm.parse.JavaParser.Terminals.FILTERMATCH)));
+				new Integer(abc.tm.parse.sym.FILTERMATCH)));
         lexer.addAspectJKeyword("skipmatch", new LexerAction_c(
-				new Integer(abc.ja.tm.parse.JavaParser.Terminals.SKIPMATCH)));
+				new Integer(abc.tm.parse.sym.SKIPMATCH)));
     }
     
-	public void addBasicClassesToSoot()
-	   {
-		   super.addBasicClassesToSoot();
-           // Need to add all standard library classes used in the codegen (minus some default ones)
-		   Scene.v().addBasicClass("java.util.Iterator", SootClass.SIGNATURES);
-		   Scene.v().addBasicClass("java.util.LinkedHashSet",
-                                    SootClass.SIGNATURES);
-		   Scene.v().addBasicClass("java.util.LinkedList", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.lang.ref.WeakReference", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.lang.ThreadLocal", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.PersistentWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ClashPersistentWeakRef", SootClass.SIGNATURES);
-           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);
-           if(abc.main.Debug.v().useCommonsCollections)
-        	   Scene.v().addBasicClass("org.apache.commons.collections.map.ReferenceIdentityMap", SootClass.SIGNATURES);
-           else {
-        	   Scene.v().addBasicClass("java.util.NoSuchElementException", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IdentityHashMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyIdentityHashMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.WeakKeyCollectingIdentityHashMap", SootClass.SIGNATURES);
-        	   Scene.v().addBasicClass("java.util.Map$Entry", SootClass.SIGNATURES);
-           }
-           if(Debug.v().dynaInstr) {
-               Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.IShadowSwitchInitializer", SootClass.SIGNATURES);
-               Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.ShadowSwitch", SootClass.SIGNATURES);               
-           }
-	   }
-    
+    public void addBasicClassesToSoot()
+    {
+        super.addBasicClassesToSoot();
+        // Need to add all standard library classes used in the
+        // codegen (minus some default ones)
+        final String tmRuntime = "org.aspectbench.tm.runtime.internal.";
+
+        addClassSignature("java.util.Iterator");
+        addClassSignature("java.util.LinkedHashSet");
+        addClassSignature("java.util.LinkedList");
+        addClassSignature("java.lang.ref.WeakReference");
+        addClassSignature("java.lang.ThreadLocal");
+        addClassSignature("java.util.Set");
+        addClassSignature(tmRuntime + "MyWeakRef");
+        addClassSignature(tmRuntime + "PersistentWeakRef");
+        addClassSignature(tmRuntime + "ClashWeakRef");
+        addClassSignature(tmRuntime + "ClashPersistentWeakRef");
+        addClassSignature(tmRuntime + "Lock");
+
+        if(abc.main.Debug.v().useCommonsCollections)
+            addClassSignature(
+                "org.apache.commons.collections.map.ReferenceIdentityMap");
+        else {
+            addClassSignature("java.util.NoSuchElementException");
+            addClassSignature("java.util.Map$Entry");
+            addClassSignature(tmRuntime + "IdentityHashMap");
+            addClassSignature(tmRuntime + "WeakKeyIdentityHashMap");
+            addClassSignature(tmRuntime + "WeakKeyCollectingIdentityHashMap");
+        }
+
+        if(Debug.v().dynaInstr || Debug.v().shadowCount) {
+            addClassSignature(tmRuntime + "IShadowSwitchInitializer");
+            addClassSignature(tmRuntime + "ShadowSwitch");
+        }
+
+        if(Debug.v().useITDs) {
+            addClassSignature("java.lang.Thread");
+            addClassSignature("java.util.BitSet");
+            addClassSignature("java.lang.ref.ReferenceQueue");
+            addClassSignature(tmRuntime + "IndexTree");
+            addClassSignature(tmRuntime + "IndexTreeMap");
+            addClassSignature(tmRuntime + "MaybeWeakRef");
+        }
+    }
+ 
+    private void addClassSignature(String name)
+    {
+        Scene.v().addBasicClass(name, SootClass.SIGNATURES);
+    }
+
     /** 
      * {@inheritDoc}
      */
-    protected void createReweavingPasses(List passes) {
+    protected void createReweavingPasses(List<ReweavingPass> passes) {
         super.createReweavingPasses(passes);
         
         if (abc.main.Debug.v().useITDs) {
             OptionsParser.v().set_tag_instructions(true);
             passes.add(new ReweavingPass(PASS_ITD_ANALYSIS,
                                          new ITDAnalysis()));
-        }
-
-        if(OptionsParser.v().wp_tmopt()) {
-            //we need instruction tags so that we can identify shadow IDs after weaving
-            OptionsParser.v().set_tag_instructions(true);
-
-            //Quick check
-            ReweavingAnalysis quick = new OptQuickCheck();                
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_QUICK_CHECK, quick ) );
-            
-            final String laststage = OptionsParser.v().laststage();
-            
-            if(Debug.v().dynaInstr && laststage.equals("quick")) {
-            	throw new IllegalArgumentException("Dynamic instrumentation only possible with flow-insensitive analysis enabled.");
-            }
-            
-            if(!laststage.equals("quick")) {
-            
-                ReweavingAnalysis flowins = new OptFlowInsensitiveAnalysis();                
-                passes.add( new ReweavingPass( PASS_TM_ANALYSIS_FLOWINS , flowins ) );
-    
-                if(!laststage.equals("flowins")) {
-    
-    				ReweavingAnalysis intra = new OptIntraProcedural();
-    	            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_INTRAPROC , intra ) );
-                    
-                    //need unique advice actuals for this analysis; TODO do we really?
-                    TMShadowTagger.UNIQUE_ADVICE_ACTUALS = true;
-                }
-            }
-            
-            //pass for dynamic instrumentation 
-
-            if(Debug.v().dynaInstr) {
-                ReweavingAnalysis dynaInstr = new AbstractReweavingAnalysis() {
-                    @Override
-                    public boolean analyze() {
-                        DynamicInstrumenter.v().createClassesAndSetDynamicResidues();
-                        return false;
-                    }
-                };
-                passes.add( new ReweavingPass( PASS_DYNAMIC_INSTRUMENTATION , dynaInstr ) );
-            }
-
-            //add a pass which just cleans up resources;
-            //this is necessary in order to reset static fields for the test harness
-            
-            ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
-
-                @Override
-                public boolean analyze() {
-                    //disable all some and sync advice that became inactive
-                    ShadowRegistry.v().disableAllUnneededSomeSyncAndBodyAdvice();
-                    return false;
-                }
-                
-                @Override
-                public void cleanup() {
-                    //dump shadows in the end
-                    ShadowRegistry.v().dumpShadows();
-                    //reset state
-                    CallGraphAbstraction.reset();
-                    FlowInsensitiveAnalysis.reset();
-                    QuickCheck.reset();
-                    ReachableShadowFinder.reset();
-                    ShadowGroupRegistry.reset();
-                    ShadowRegistry.reset();
-                    TMShadowTagger.reset();
-                    WeavableMethods.reset();
-                    SymbolShadow.reset();
-                }
-            };
-            passes.add( new ReweavingPass( PASS_TM_ANALYSIS_CLEANUP , cleanup ) );
         }
     }
     
@@ -417,6 +338,6 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
 		        abc.tm.weaving.aspectinfo.TraceMatch.reset();
 			}
 		};
-	}
-       
+	}	
+   
 }

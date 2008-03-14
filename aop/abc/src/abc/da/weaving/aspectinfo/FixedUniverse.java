@@ -32,7 +32,7 @@ import java.util.Set;
 
 /**
  * A fixed universe of values of type E. This can be used to generate memory-efficient maps for keys of this universe.
- * The maps can be cloned very efficiently. They are compared by identity!
+ * The maps can be cloned very efficiently. Their keys are compared by identity. A set implementation is also provided.
  * @author Eric Bodden
  */
 public class FixedUniverse<E> {
@@ -53,8 +53,8 @@ public class FixedUniverse<E> {
     /**
      * Returns a new map from values of the universe to int values, initialized to 0.
      */
-    public <V> FixedUniverseMap newMap() {
-        return new FixedUniverseMap();
+    public FixedUniverseMap<Integer> newMap() {
+        return new FixedUniverseMap<Integer>();
     }
     
     /**
@@ -69,7 +69,7 @@ public class FixedUniverse<E> {
 		private int size;
 
 		FixedUniverseSet() {
-			m = new FixedUniverseMap();
+			m = new FixedUniverseMap<Boolean>();
 			size = 0;
 		}
 
@@ -89,6 +89,7 @@ public class FixedUniverse<E> {
 			return m.get(o)==Boolean.TRUE;
 		}
 
+		@SuppressWarnings("unchecked")
 		public boolean remove(Object o) {
 			if(!contains(o)) {
 				return false;
@@ -170,7 +171,8 @@ public class FixedUniverse<E> {
 
         protected V[] array;
         
-        private FixedUniverseMap() {
+        @SuppressWarnings("unchecked")
+		private FixedUniverseMap() {
             array = (V[]) new Object[elemToIndex.size()];
         }
         
@@ -246,15 +248,7 @@ public class FixedUniverse<E> {
         }
 
         /** 
-         * Returns <code>true</code> if and only if the universe is empty.//		public int hashCode() {
-//			return System.identityHashCode(this);
-//		}
-//
-//		public FixedUniverseSet clone() throws CloneNotSupportedException {
-//			FixedUniverseSet clone = (FixedUniverseSet) super.clone();
-//			clone.m = m.clone();
-//			return clone;
-//		}
+         * Returns <code>true</code> if and only if the universe is empty.
          */
         public boolean isEmpty() {
             return elemToIndex.isEmpty();
@@ -321,10 +315,11 @@ public class FixedUniverse<E> {
         /** 
          * Clones this map (deep copy). It is still limited to the same fixed universe.
          */
-        @Override
-        protected FixedUniverseMap clone() throws CloneNotSupportedException {
-            FixedUniverseMap clone = (FixedUniverseMap) super.clone();
-            clone.array = new Object[array.length];
+        @SuppressWarnings("unchecked")
+		@Override
+        public FixedUniverseMap<V> clone() throws CloneNotSupportedException {
+            FixedUniverseMap<V> clone = (FixedUniverseMap<V>) super.clone();
+            clone.array = (V[]) new Object[array.length];
             System.arraycopy(array, 0, clone.array, 0, array.length);
             return clone;
         }
@@ -338,6 +333,7 @@ public class FixedUniverse<E> {
 			return result;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)

@@ -260,19 +260,16 @@ public class Debug {
 	public boolean csv = false;
 	//dump shadows as they are disabled
 	public boolean tmShadowDump = false;
-	//generate a warning when changing a shadow (for harness)
-	public boolean warnWhenAlteringShadow = false;    
 	//enable dynamic instrumentation
 	public boolean dynaInstr = false;
 	//enable shadow counting
 	public boolean shadowCount = false;
-    //enable run-once optimization
-    public boolean useRunOnce = true;
+	
+    //output potential points of failure in PFG files    
+    public boolean outputPFGs = false;
+    //output clickable HTML graphs
+    public boolean outputHTML = false;
     
-    //quick check for dependent advice
-    public boolean daQuickCheck = false;
-    //flow-insensitive analysis for dependent advice
-    public boolean daFlowIns = false;
 
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
