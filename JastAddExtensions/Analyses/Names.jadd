@@ -7,7 +7,7 @@ aspect Names {
 	interface Named {
 		String getID();
 		void setID(String id);
-		void changeID(String id);
+		void changeID(String id) throws RefactoringException;
 	}
 	
 	// in file LocalDeclaration.jadd: LocalDeclaration extends Named	
@@ -17,14 +17,19 @@ aspect Names {
 	TypeDecl implements Named;
 	CompilationUnit implements Named;
 	
-	public void VariableDeclaration.changeID(String id) { setID(id); }
-	public void ParameterDeclaration.changeID(String id) { setID(id); }
-	public void FieldDeclaration.changeID(String id) { setID(id); }
-	public void ConstructorDecl.changeID(String id) { setID(id); }
-	public void MethodDecl.changeID(String id) { setID(id); }
+	public void VariableDeclaration.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void ParameterDeclaration.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void FieldDeclaration.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void ConstructorDecl.changeID(String id) throws RefactoringException
+		{ setID(id); }
+	public void MethodDecl.changeID(String id) throws RefactoringException
+		{ setID(id); }
 	
 	// when we change the ID of a class, we also need to rename its constructors
-	public void TypeDecl.changeID(String id) { 
+	public void TypeDecl.changeID(String id) throws RefactoringException { 
 		setID(id);
 		for(int i=0;i<getNumBodyDecl();++i) {
             BodyDecl bd = getBodyDecl(i);
@@ -35,7 +40,7 @@ aspect Names {
         }		
 	}
 	
-	public void CompilationUnit.changeID(String id) { 
+	public void CompilationUnit.changeID(String id) throws RefactoringException { 
 		// we also need to rename the file the compilation unit is in
 		setID(id); 
 	}

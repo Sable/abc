@@ -37,7 +37,7 @@ aspect ASTUtil {
 		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
 	}
 
-    public void FieldDeclaration.makePrivate() {
+    public void FieldDeclaration.makePrivate() throws RefactoringException {
         if(isPrivate())
             return;
         Modifiers m = getModifiers();
@@ -51,7 +51,7 @@ aspect ASTUtil {
         m.addModifier(new Modifier("private"));
     }
     
-    protected void ASTNode.replaceWith(ASTNode newnode) {
+    protected void ASTNode.replaceWith(ASTNode newnode) throws RefactoringException {
     	ASTNode parent = getParent();
     	parent.setChild(newnode, parent.getIndexOfChild(this));
     }
@@ -89,16 +89,16 @@ aspect ASTUtil {
     		}
     }*/
     
-    public void Block.insertStmt(int idx, Stmt stmt) {
+    public void Block.insertStmt(int idx, Stmt stmt) throws RefactoringException {
     	getStmtList().insertChild(stmt, idx);
     }
     
-    public void Block.moveStmt(Stmt stmt, int new_idx) {
+    public void Block.moveStmt(Stmt stmt, int new_idx) throws RefactoringException {
     	int old_idx = getStmtList().getIndexOfChild(stmt);
     	getStmtList().moveChild(old_idx, new_idx);
     }
     
-    public void Block.pullTogether(int start, int end) {
+    public void Block.pullTogether(int start, int end) throws RefactoringException {
     	List stmts = new List();
     	for(int i=start;i<=end;++i)
     		stmts.add(getStmt(i));
