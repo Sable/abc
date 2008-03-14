@@ -13,8 +13,8 @@ aspect RenameType {
 		checkRenamingPreconds(new_name);
 		String old_name = getID();
 		AdjustmentTable table = findEndangeredTypeAccesses(new_name);
-System.out.println(table.size());
-main.RenameType.time("after finding endangered accesses");
+//System.out.println(table.size());
+//main.RenameType.time("after finding endangered accesses");
 		changeID(new_name);
 		programRoot().flushCaches();
 		table.adjust();

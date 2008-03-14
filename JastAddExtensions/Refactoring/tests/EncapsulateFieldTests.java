@@ -80,4 +80,7 @@ public class EncapsulateFieldTests extends EncapsulateField {
 	public void test22() {
 		runEncapsulationTest("test22");
 	}
+	public void test23() {
+		runEncapsulationTest("test23");
+	}
 }
