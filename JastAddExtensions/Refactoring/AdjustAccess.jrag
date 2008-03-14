@@ -103,7 +103,7 @@ aspect AdjustAccess {
 		return new FileRange(compilationUnit().relativeName(), getStart(), getEnd());
 	}
 	
-	public void Access.plugInNewAccess(Access newacc) {
+	public void Access.plugInNewAccess(Access newacc) throws RefactoringException {
 		if(isLeftChildOfDot()) {
 			Access right = parentDot().getRight();
 			Expr p = nestedScope();

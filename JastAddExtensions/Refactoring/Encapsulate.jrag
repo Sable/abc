@@ -94,7 +94,7 @@ aspect Encapsulate {
 	/* [m.replaceWithStripped(n)] replaces node [m] with node [n], but if
 	 * [m]'s parent is an expression statement, then any parentheses surrounding
 	 * [n] are stripped off first (otherwise the result would not be valid Java) */
-	public void ASTNode.replaceWithStripped(ASTNode n) {
+	public void ASTNode.replaceWithStripped(ASTNode n) throws RefactoringException {
 		if(getParent() instanceof ExprStmt && n instanceof ParExpr)
 			replaceWithStripped(((ParExpr)n).getExpr());
 		else

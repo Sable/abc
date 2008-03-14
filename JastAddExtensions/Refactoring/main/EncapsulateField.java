@@ -8,10 +8,10 @@ import AST.JavaParser;
 import AST.TypeDecl;
 import AST.RefactoringException;
 
-public class EncapsulateTest extends Frontend {
+public class EncapsulateField extends Frontend {
 
 	/*
-	 * Usage: EncapsulateTest <file> <package> <type> <field>
+	 * Usage: EncapsulateField <file> <package> <type> <field>
 	 * 
 	 *   <file> : the file containing the code to be refactored
 	 *   <field> : the field to be encapsulated
@@ -20,7 +20,7 @@ public class EncapsulateTest extends Frontend {
 	 */
 	
 	public static void main(String args[]) throws Throwable {
-        EncapsulateTest e = new EncapsulateTest();
+        EncapsulateField e = new EncapsulateField();
         e.encapsulate(args[0], args[1], args[2], args[3]);
 	}
     

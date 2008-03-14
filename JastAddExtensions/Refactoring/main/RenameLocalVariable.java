@@ -2,35 +2,39 @@ package main;
 
 import java.util.Collection;
 
+import AST.ASTNode;
 import AST.BytecodeParser;
 import AST.CompilationUnit;
-import AST.FieldDeclaration;
 import AST.Frontend;
 import AST.JavaParser;
+import AST.MethodDecl;
 import AST.Program;
 import AST.RefactoringException;
 import AST.TypeDecl;
+import AST.VariableDecl;
+import AST.VariableDeclaration;
 
-public class RenameField extends Frontend {
+public class RenameLocalVariable extends Frontend {
 
 	public static void main(String args[]) throws Throwable {
 		String pkgname = args[0];
 		String classname = args[1];
-		String fieldname = args[2];
-		String newname = args[3];
-		String[] filenames = new String[args.length-4];
-		System.arraycopy(args, 4, filenames, 0, filenames.length);
+		String methoddname = args[2];
+		String var = args[3];
+		String newname = args[4];
+		String[] filenames = new String[args.length-5];
+		System.arraycopy(args, 5, filenames, 0, filenames.length);
 		try {
-			rename(pkgname, classname, fieldname, newname, filenames);
+			rename(pkgname, classname, methoddname, var, newname, filenames);
 		} catch(RefactoringException e) {
 			System.err.println("Cannot refactor: "+e.getMessage());
 		}
 	}
 	
-	public static void rename(String pkgname, String classname, String fieldname, String newname, String[] filenames) 
+	public static void rename(String pkgname, String classname, String methodname, String var, String newname, String[] filenames) 
 			throws RefactoringException {
 		long time = System.currentTimeMillis();
-		RenameField c = new RenameField();
+		RenameLocalVariable c = new RenameLocalVariable();
 		if(!c.process(
 				filenames,
 				new BytecodeParser(),
@@ -49,8 +53,9 @@ public class RenameField extends Frontend {
 			TypeDecl d = (TypeDecl)program.lookupType(pkgname, path[0]);
 			for(int i=1;i<path.length;++i)
 				d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
-			FieldDeclaration f = (FieldDeclaration)d.memberFields(fieldname).iterator().next();
-			f.rename(newname);
+			MethodDecl m = (MethodDecl)d.memberMethods(methodname).iterator().next();
+			VariableDeclaration v = findLocalVariable(m, var);
+			v.rename(newname);
 			System.out.println("total: "+(System.currentTimeMillis()-time));
 			if(cnt == 0 && RenameType.hasErrors(program))
 				System.err.println("Output program has errors!");
@@ -59,6 +64,17 @@ public class RenameField extends Frontend {
 			System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
 			program.flushCaches();
 		}
+	}
+	
+	protected static VariableDeclaration findLocalVariable(ASTNode p, String n) {
+		if(p instanceof VariableDeclaration && ((VariableDeclaration)p).name().equals(n))
+			return (VariableDeclaration)p;
+		for(int i=0;i<p.getNumChild();++i) {
+			VariableDeclaration v = findLocalVariable(p.getChild(i), n);
+			if(v != null)
+				return v;
+		}
+		return null;
 	}
 
 	protected void processWarnings(Collection errors, CompilationUnit unit) { }

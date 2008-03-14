@@ -11,10 +11,10 @@ import AST.Program;
 import AST.TypeDecl;
 import AST.RefactoringException;
 
-public class ParameterRenameTest extends Frontend {
+public class RenameParameter extends Frontend {
 
 	/*
-	 * Usage: ParameterRenameTest <file> <pkg> <type> <method> <parm> <newname>
+	 * Usage: RenameParameter <file> <pkg> <type> <method> <parm> <newname>
 	 * 
 	 *   file : file containing the code to be refactored
 	 *   parm : the parameter to be renamed, with <newname> its new name
@@ -23,7 +23,7 @@ public class ParameterRenameTest extends Frontend {
 	 *   pkg : the package containing <type>
 	 */
     public static void main(String[] args) throws Throwable {
-        ParameterRenameTest r = new ParameterRenameTest();
+        RenameParameter r = new RenameParameter();
         //r.test(args[0]);
         String[] files = {args[0]};
         Program prog = r.test(files, args[1], args[2], args[3], args[4], args[5]);
@@ -32,21 +32,6 @@ public class ParameterRenameTest extends Frontend {
         System.out.println(prog);
     }
     
-    /*private void test(String name) throws Throwable {
-        String file = name;
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
-        String cmd = br.readLine();
-        if(!cmd.matches("^// .*$"))
-            throw new Exception("input file doesn't have the right format");
-        String[] fields = cmd.substring(3).split("\\s+");
-        String[] files = fields[0].split(",");
-        Program prog = test(files, fields[1], fields[2], fields[3], fields[4], fields[5]);
-        if(prog == null)
-            throw new Exception("failed to process input file");
-        System.out.println(prog);
-    }*/
-
     private Program test(String[] files, String pkg, String tp, String meth, String parm, String n) throws RefactoringException {
         if(process(files, new BytecodeParser(), 
                 new JavaParser() {

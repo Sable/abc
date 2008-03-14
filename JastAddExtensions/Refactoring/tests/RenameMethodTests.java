@@ -120,4 +120,7 @@ public class RenameMethodTests extends RenameMethod {
 	public void test34() {
 		runMethodRenameTest("test34");
 	}
+	public void test35() {
+		runMethodRenameTest("test35");
+	}
 }

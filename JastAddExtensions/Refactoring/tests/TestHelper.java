@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import AST.ASTNode;
 import AST.BytecodeParser;
@@ -18,6 +20,13 @@ import AST.Program;
 public class TestHelper {
 	
 	public static Program compile(String... files) {
+		List<String> sources = new LinkedList<String>();
+		List<String> jars = new LinkedList<String>();
+		for(String n : files)
+			if(n.endsWith(".jar"))
+				jars.add(n);
+			else
+				sources.add(n);
 		Frontend f = new Frontend() { 
 			protected void processErrors(Collection errors, CompilationUnit unit) { }
 			protected void processWarnings(Collection errors, CompilationUnit unit) { }
@@ -29,9 +38,23 @@ public class TestHelper {
                 return new parser.JavaParser().parse(is, fileName);
             }
 		};
-		if(f.process(files, br, jp))
+		if(f.process(createArglist(sources, jars), br, jp))
 			return f.getProgram();
 		return null;
+	}
+	
+	static String[] createArglist(List<String> sources, List<String> jars) {
+		if(jars.size() == 0)
+			return sources.toArray(new String[]{});
+		StringBuffer classpath = new StringBuffer();
+		for(String j : jars) {
+			classpath.append(j);
+			classpath.append(':');
+		}
+		classpath.append(".");
+		sources.add(0, "-classpath");
+		sources.add(1, classpath.toString());
+		return sources.toArray(new String[]{});
 	}
 
     static ASTNode findSmallestCoveringNode(ASTNode r, FileRange rng) {

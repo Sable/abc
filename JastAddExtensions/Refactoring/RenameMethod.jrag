@@ -40,10 +40,15 @@ aspect RenameMethod {
 			if(!canOverrideOrHide(md))
 				throw new RefactoringException("renamed method cannot override or hide "+md.hostType().typeName()+"."+md.signature());
 		}
+//TIME long time = System.currentTimeMillis();
 		AdjustmentTable table = findEndangeredMethodAccesses(new_name);
+//TIME System.out.println("endangered accesses: "+table.size());
+//TIME System.out.println("time to find: "+(System.currentTimeMillis()-time));
 		changeID(new_name);
 		programRoot().flushCaches();
+//TIME time = System.currentTimeMillis();
 		table.adjust();
+//TIME System.out.println("adjustment: "+(System.currentTimeMillis()-time));
 	}
 	
 	private AdjustmentTable MethodDecl.findEndangeredMethodAccesses(String newname) {
