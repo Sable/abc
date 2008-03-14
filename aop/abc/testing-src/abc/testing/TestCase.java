@@ -289,6 +289,9 @@ public class TestCase {
 						main.run();
 						// Compilation successful. If we were expecting errors, this means the test failed.
 					    List warnings = sortList(main.getErrors());
+					    //free main early so that we get more accurate info w.r.t. memory usage
+					    main = null;
+					    SilentMain.resetStatic();
 						if(xChildren[i].has("//abc:message[@kind != \"warning\"]")
 								|| xChildren[i].has("//abc:" + messageOverride + "[@kind != \"warning\"]")) {
 						    System.err.println("Compilation succeeded but was expected to fail.");
@@ -337,6 +340,9 @@ public class TestCase {
 					} catch (CompilerFailedException ex) {
 						//logln("CompilerFailedException: "+ex.getMessage());
 						List errors = sortList(main.getErrors());
+					    //free main early so that we get more accurate info w.r.t. memory usage
+					    main = null;
+					    SilentMain.resetStatic();
 						if(!checkErrors(errors, xChildren[i])) {
 						    failTest();
 						    return;
