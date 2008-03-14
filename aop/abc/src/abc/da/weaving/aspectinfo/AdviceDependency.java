@@ -18,20 +18,25 @@
  */
 package abc.da.weaving.aspectinfo;
 
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.Position;
 import soot.SootMethod;
+import abc.da.HasDAInfo;
+import abc.da.weaving.weaver.depadviceopt.ds.Bag;
+import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
 import abc.da.weaving.weaver.depadviceopt.ds.ShadowComparator;
 import abc.main.Main;
+import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
@@ -81,14 +86,11 @@ public class AdviceDependency {
 	protected final Position pos;
 	
 	/**
-	 * The cached set of consistent shadow groups.
-	 */
-	protected Set<DependentShadowGroup> consistentShadowGroups;
-
-	/**
 	 * A fixed universe of shadows of dependent advice.
 	 */
 	protected FixedUniverse<Shadow> fixedUniverse;
+
+	protected ShadowGroupsRecord shadowGroupsRecord;
 
 	/**
 	 * Creates a new advice dependency.
@@ -141,15 +143,15 @@ public class AdviceDependency {
 	 */
 	public boolean fulfillsQuickCheck() {
 		final Set<String> strongAdviceNamesThatDidNotMatch = new HashSet<String>(strongAdviceNameToVars.keySet());
-		final DAGlobalAspectInfo gai = (DAGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
+		final DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
 		AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
 
 			public void adviceApplication(AdviceApplication aa, SootMethod m) {
-				boolean isDependent = gai.isDependentAdvice(aa.advice);
+				boolean isDependent = dai.isDependentAdvice(aa.advice);
 				if(aa.advice.getAspect().equals(container) && isDependent && aa.advice.getApplCount()>0) {
 						//found a matched dependent advice; remove it from the set of strong advice
 						strongAdviceNamesThatDidNotMatch.remove(
-								gai.replaceForHumanReadableName(gai.qualifiedNameOfAdvice((AdviceDecl) aa.advice))
+								dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice((AdviceDecl) aa.advice))
 						);					
 				}
 			}
@@ -172,108 +174,6 @@ public class AdviceDependency {
 	public boolean containsAdviceNamed(String adviceName) {
 		return strongAdviceNameToVars.keySet().contains(adviceName) ||
 		       weakAdviceNameToVars.keySet().contains(adviceName);
-	}
-
-	/**
-	 * Computes, respectively re-computes all consistent shadow groups of this advice dependency.
-	 */
-	public Set<DependentShadowGroup> computeOrUpdateConsistentShadowGroups(Set<Shadow> dependentAdviceShadows) {
-		
-		final DAGlobalAspectInfo gai = (DAGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
-
-		fixedUniverse = new FixedUniverse<Shadow>(dependentAdviceShadows);
-		
-		if(consistentShadowGroups==null) {
-			Map<String,Set<Shadow>> adviceNameToShadows = new HashMap<String,Set<Shadow>>();
-			for (String adviceName : adviceNames()) {
-				Set<Shadow> shadows = fixedUniverse.newSet();
-				adviceNameToShadows.put(adviceName,shadows);
-				for (Shadow shadow : dependentAdviceShadows) {
-					assert gai.isDependentAdvice(shadow.getAdviceDecl());
-					String depdendentAdviceName =
-						gai.replaceForHumanReadableName(gai.qualifiedNameOfAdvice(shadow.getAdviceDecl()));
-					if(shadow.declaringAspect().equals(container) && adviceName.equals(depdendentAdviceName)) {
-						shadows.add(shadow);
-					}
-				}
-			}
-
-			List<Set<Shadow>> setsOfStrongShadows = new LinkedList<Set<Shadow>>();
-			for (String strongAdviceName : strongAdviceNameToVars.keySet()) {
-				setsOfStrongShadows.add(adviceNameToShadows.get(strongAdviceName));
-			}
-			
-			//compute cross product for strong shadows
-			Set<DependentShadowGroup> shadowGroups = consistentCrossProduct(setsOfStrongShadows);
-
-			//add weak shadows
-			Set<Shadow> weakShadows = new HashSet<Shadow>();
-			for (String weakAdviceName : weakAdviceNameToVars.keySet()) {
-				weakShadows.addAll(adviceNameToShadows.get(weakAdviceName));
-			}
-			addCompatibleWeakShadows(weakShadows,shadowGroups);
-			
-			//cache the groups
-			consistentShadowGroups = shadowGroups;
-		} else {
-			//remove all shadow groups for which a strong shadow has been disabled in the meantime
-			for (Iterator<DependentShadowGroup> iterator = consistentShadowGroups.iterator(); iterator.hasNext();) {
-				DependentShadowGroup shadowGroup = iterator.next();
-				for (Shadow shadow : shadowGroup.strongShadows) {
-					if(!shadow.isEnabled()) {
-						iterator.remove();
-					}
-				}
-			}
-		}
-		
-		return new HashSet<DependentShadowGroup>(consistentShadowGroups);
-	}	
-	
-	/**
-	 * Adds each shadow contained in the shadow set to each of the consistent shadow group where this shadow has a compatible binding. 
-	 */
-	protected void addCompatibleWeakShadows(Set<Shadow> weakShadows, Set<DependentShadowGroup> shadowGroups) {
-		for (DependentShadowGroup shadowGroup : shadowGroups) {
-			for (Shadow weakShadow : weakShadows) {
-				shadowGroup.tryAddWeakShadow(weakShadow);
-			}
-		}
-	}
-
-	/**
-	 * Computes a consistent cross product of the given sets of strong shadows.
-	 */
-	protected Set<DependentShadowGroup> consistentCrossProduct(Collection<Set<Shadow>> toCrossStrong) {
-		HashSet<DependentShadowGroup> result = new HashSet<DependentShadowGroup>();
-		DependentShadowGroup seed = new DependentShadowGroup();
-		result.add(seed);
-		
-		for (Set<Shadow> currSet : toCrossStrong) {			
-			result = singleProduct(currSet, result);			
-		}
-
-		//remove the empty group as it was only used as a seed
-		result.remove(seed);
-		
-		return result;
-	}
-
-	private HashSet singleProduct(Set<Shadow> currSet, HashSet<DependentShadowGroup> result) {
-		HashSet newResult = new HashSet();
-		
-		for (DependentShadowGroup resGroup : result) {
-			
-			for (Shadow shadow : currSet) {
-				
-				DependentShadowGroup currCopy = resGroup.clone(); 
-
-				if(currCopy.tryAddStrongShadow(shadow)) {
-					newResult.add(currCopy);
-				} 
-			}
-		}
-		return newResult;
 	}
 	
 	/**
@@ -302,15 +202,6 @@ public class AdviceDependency {
 		if(!weakAdviceNameToVars.isEmpty()) {
 			sb.append("weak: ");
 			mapToString(weakAdviceNameToVars, sb);
-		}
-		
-		if(consistentShadowGroups!=null && !consistentShadowGroups.isEmpty()) {
-			sb.append("\n\n\n");
-			sb.append("Consistent shadow groups:");
-			sb.append("\n\n");
-			for (DependentShadowGroup group : consistentShadowGroups) {
-				sb.append(group.toString());
-			}
 		}
 
 		return sb.toString();
@@ -341,139 +232,370 @@ public class AdviceDependency {
 		sb.append("\n");
 	}
 	
-	
+	public boolean keepsShadowAlive(Shadow s) {
+		if(shadowGroupsRecord==null) {
+			throw new IllegalStateException("Shadow groups have not yet been computed.");			
+		}
+		return shadowGroupsRecord.keepsShadowAlive(s);
+	}
 	
 	/**
-	 * A group of dependent shadows, all shadows only have to execute
-	 * if the strong shadows in the group may execute.
-	 * @author Eric Bodden
+     * This data structure keeps track of shadow groups in form of a lower-triangular boolean matrix, which
+     * tells for shadows with numbers i,j whether the shadows with these numbers have compatible bindings.
+     * The indices i,j are internal indices, starting at 0 and ending at "number of shadows"-1.
+     * Strong shadows generally precede weak shadows in the index, and are grouped by their advice name.
+     * @author Eric Bodden
 	 */
-	public class DependentShadowGroup implements Cloneable {
+	protected class ShadowGroupsRecord {
 		
-		protected FixedUniverse<Shadow>.FixedUniverseSet strongShadows;
+		/**
+		 * A mapping from a shadow to its index.
+		 */
+		protected final Map<Shadow, Integer> shadowToIndex;
+		
+		/**
+		 * The boolean matrix that we use to cache the "is compatible with" relation. 
+		 */
+		protected final boolean[][] shadowIsCompatibleWith;
+				
+		/**
+		 * The number of all strong shadows for this dependency. 
+		 */
+		protected final int numStrongShadows;
+		
+		/**
+		 * An array that stores for each shadow with index i its dependent advice name.
+		 * (Stored here to avoid re-computation.) 
+		 */
+		protected final String[] dependentAdviceNames;
+		
+		/**
+		 * Array mapping from a shadow's index to the shadow itself.
+		 */
+		protected final Shadow[] shadows;
+		
+		/**
+		 * An array of BitSets where overlappingShadows[i] holds a bit <i>true</i>
+		 * for each shadow that overlaps with shadow i.
+		 */
+		protected final BitSet[] overlappingShadows;
+		
+		/**
+		 * Creates a new {@link ShadowGroupsRecord}.
+		 * @param strong a set of strong advice
+		 * @param weak a set of weak advice
+		 */
+		public ShadowGroupsRecord(Set<Shadow> strong, Set<Shadow> weak) {
+			DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
 
-		protected FixedUniverse<Shadow>.FixedUniverseSet weakShadows;
-		
-		public DependentShadowGroup() {
-			strongShadows = fixedUniverse.newSet();
-			weakShadows = fixedUniverse.newSet();
-		}
-		
-		/**
-		 * Tries to add a strong shadow to the group.
-		 * The shadow is only added if its points-to sets overlap with
-		 * all other shadows in the group on the variables that were
-		 * stated in the dependency declaration.
-		 * Returns <code>true</code> if the shadow was added. 
-		 */
-		public boolean tryAddStrongShadow(Shadow newShadow) {
-			return tryAddShadow(newShadow, strongShadows);
-		}
-		
-		/**
-		 * Tries to add a weak shadow to the group.
-		 * The shadow is only added if its points-to sets overlap with
-		 * all other shadows in the group on the variables that were
-		 * stated in the dependency declaration.
-		 * Returns <code>true</code> if the shadow was added. 
-		 */
-		public boolean tryAddWeakShadow(Shadow newShadow) {
-			return tryAddShadow(newShadow, weakShadows);
-		}
-		
-		protected boolean tryAddShadow(Shadow newShadow, Set<Shadow> setToAddTo) {
-			for (Shadow s : strongShadows) {
-				if(!comparator.compatibleBindings(s, newShadow)) {
-					return false;
+			numStrongShadows = strong.size();
+			
+			//*HAS* to be a LinkedHashSet, because we want to make sure that strong shadows come first!
+			Set<Shadow> domain = new LinkedHashSet<Shadow>(strong);
+			domain.addAll(weak);
+			
+			/*
+			 * Build up mappings etc.
+			 */
+			final int NUM = domain.size();
+			int i=0;
+			Shadow[] shadowList = new Shadow[NUM];
+			dependentAdviceNames = new String[NUM];
+			shadows = new Shadow[NUM];
+			shadowToIndex = new HashMap<Shadow, Integer>();
+			for (Shadow shadow : domain) {
+				shadowList[i] = shadow;
+				String depdendentAdviceName =
+					dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(shadow.getAdviceDecl()));
+				dependentAdviceNames[i] = depdendentAdviceName;
+				shadows[i] = shadow;
+				shadowToIndex.put(shadow, i++);
+			}
+			
+			/*
+			 * Initialize ragged array.
+			 */
+			shadowIsCompatibleWith = new boolean[NUM][];
+			for(i=0; i<NUM; i++) {
+				shadowIsCompatibleWith[i] = new boolean[i+1];
+			}		
+			
+			overlappingShadows = new BitSet[NUM];
+			
+			/*
+			 * Fill array with computed values...
+			 */
+			for(i=0; i<NUM; i++) {
+				for(int j=0; j<=i; j++) {
+					boolean compatible;
+					if(i==j) {
+						//a shadow is always compatible to itself.
+						compatible = true;
+					} else {
+						//get shadow at position i
+						Shadow s1 = shadowList[i];
+						//get shadow at position j
+						Shadow s2 = shadowList[j];
+						//compare
+						compatible = comparator.compatibleBindings(s1, s2);
+					}
+					shadowIsCompatibleWith[i][j] = compatible;
 				}
 			}
-			for (Shadow s : weakShadows) {
-				if(!comparator.compatibleBindings(s, newShadow)) {
-					return false;
+			
+		}
+			
+		/**
+		 * For two shadows s1, s2 returns <code>true</code> if s1 is compatible with s2,
+		 * according to this dependency.
+		 * @see ShadowComparator#compatibleBindings(Shadow, Shadow)
+		 */
+		public boolean compatible(Shadow s1, Shadow s2) {
+			Integer n1 = shadowToIndex.get(s1); 
+			Integer n2 = shadowToIndex.get(s2);
+			if(n1==null || n2==null) {
+				throw new IllegalArgumentException("Shadow not part of this dependency!");
+			}
+			//make i1 the larger of the two indices
+			int i1, i2;
+			if(n1>n2){
+				i1 = n1;
+				i2 = n2;
+			} else {
+				i1 = n2;
+				i2 = n1;
+			}
+			return shadowIsCompatibleWith[i1][i2];
+		}
+		
+		/**
+		 * Returns the value at position (j,i) of {@link #shadowIsCompatibleWith} if i<j, or
+		 * the value at position (i,j) otherwise. Therefore, by accessing the array through this method,
+		 * the array is virtually completed from a ragged array to a (mirrored) square array.
+		 */
+		protected boolean get(int i, int j) {
+			if(i<j){
+				//swap
+				int z = j;
+				j = i;
+				i = z;
+			} 
+			return shadowIsCompatibleWith[i][j];
+		}
+		
+		/**
+		 * Returns <code>true</code> if the shadow s is kept alive by this dependency.
+		 * This is the case if for each strong shadow name in the dependency there exists
+		 * one shadow with that name that is (a) enabled and (b) compatible with s.
+		 * We return <code>false</code> also in cases where s is not at all a shadow
+		 * referred to by this dependency.
+		 * @see Shadow#isEnabled() 
+		 * @see ShadowComparator#compatibleBindings(Shadow, Shadow)
+		 */
+		protected boolean keepsShadowAlive(Shadow s) {
+			Integer num = shadowToIndex.get(s);
+			if(num==null) {
+				return false;
+			}
+			int shadowNumber = num;
+			
+			/*
+			 * We compute the result as follows. We can assume that shadows in the array are
+			 * ordered such that (a) strong shadows precede weak shadows.
+			 *
+			 * Shadow s is kept alive, if in each such group there exists at least one such shadow in each group.
+			 * Because of (a) it suffices to iterate up to numStrongShadows.
+			 */
+			 
+			Set<String> strongNamesSeen = new HashSet<String>();
+			
+			for(int i=0;i<numStrongShadows;i++) {
+				if(shadows[i].isEnabled() && get(shadowNumber,i)) {
+					strongNamesSeen.add(dependentAdviceNames[i]);
+				}
+			}			
+			
+			return strongNamesSeen.containsAll(strongAdviceNameToVars.keySet());			
+		}
+
+		public Collection<Shadow> getOverlappingEnabledShadows(Shadow s) {
+			Set<Shadow> res = new HashSet<Shadow>();
+			//every shadow overlaps with itself
+			res.add(s);
+			
+			Integer num = shadowToIndex.get(s);
+			if(num==null) {
+				//shadow is not even part of this dependency; no overlaps
+				return res;
+			}
+			
+			BitSet overlappingShadows = overlappingShadows(num);
+			for(int i=0; i<shadows.length; i++) {
+				if (overlappingShadows.get(i)) {
+					Shadow shadow = shadows[i];
+					if(shadow.isEnabled()) {
+						res.add(shadow);
+					}
 				}
 			}
-			setToAddTo.add(newShadow);
-			return true;
-		}
-		
-		@Override
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			sb.append("=================================================================\n");
-			sb.append("Strong shadows:\n\n");
-			for (Shadow s : strongShadows) {
-				sb.append(s.toString());
-				sb.append("\n");
-				sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-			}
-			sb.append("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =\n");
-			sb.append("Weak shadows:\n\n");
-			for (Shadow s : weakShadows) {
-				sb.append(s.toString());
-				sb.append("\n");
-				sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-			}
-			sb.append("=================================================================\n\n");
-			return sb.toString();
-		}
-		
-		@Override
-		public DependentShadowGroup clone() {
-			try {
-				DependentShadowGroup clone = (DependentShadowGroup) super.clone();
-				clone.strongShadows = strongShadows.clone();
-				clone.weakShadows = weakShadows.clone();
-				return clone;
-			} catch (CloneNotSupportedException e) {
-				throw new RuntimeException(e);
-			}
+			
+			return res;
 		}
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ ((strongShadows == null) ? 0 : strongShadows.hashCode());
-			result = prime * result
-					+ ((weakShadows == null) ? 0 : weakShadows.hashCode());
-			return result;
-		}
+		protected BitSet overlappingShadows(int num) {
+			if(overlappingShadows[num]==null) {
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			DependentShadowGroup other = (DependentShadowGroup) obj;
-			if (strongShadows == null) {
-				if (other.strongShadows != null)
-					return false;
-			} else if (!strongShadows.equals(other.strongShadows))
-				return false;
-			if (weakShadows == null) {
-				if (other.weakShadows != null)
-					return false;
-			} else if (!weakShadows.equals(other.weakShadows))
-				return false;
-			return true;
-		}
-
-		/**
-		 * Returns the set of all shadows in this group.
-		 */
-		public Set<Shadow> allShadows() {
-			Set<Shadow> allShadows = new HashSet<Shadow>();
-			allShadows.addAll(strongShadows);
-			allShadows.addAll(weakShadows);
-			return allShadows;
+				BitSet bitSet = new BitSet(shadows.length);
+				//for all enabled shadows that overlap with s
+				for(int i=0;i<shadows.length;i++) {
+					Shadow otherShadow = shadows[i];
+					if(get(num,i) && otherShadow.isEnabled()) {
+						//fix this shadow "otherShadow";
+						//now see if for the combination of s and otherShadow there
+						//is for every strong symbol at least one shadow that
+						//overlaps with both					
+						
+						Set<String> strongNamesSeen = new HashSet<String>();					
+						for(int j=0;j<numStrongShadows;j++) {
+							Shadow strongShadow = shadows[j];
+							if(get(num,j) && get(i,j) && strongShadow.isEnabled()) {
+								strongNamesSeen.add(dependentAdviceNames[j]);
+							}
+						}
+						//if we have seen all necessary strong names
+						if(strongNamesSeen.containsAll(strongAdviceNameToVars.keySet())) {
+							bitSet.set(i);
+						}
+					}
+				}
+				overlappingShadows[num] = bitSet;
+			}
+			return overlappingShadows[num];
 		}
 		
 	}
-
 	
+	
+	public void computeConsistentShadowGroups(Set<Shadow> dependentAdviceShadows) {
+		DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+
+		if(shadowGroupsRecord==null) {
+		
+			Set<String> strongAdviceNames = strongAdviceNameToVars.keySet();
+			LinkedHashSet<Shadow> strongShadows = new LinkedHashSet<Shadow>();
+			for (Shadow shadow : dependentAdviceShadows) {
+				for (String adviceName : strongAdviceNames) {
+					String depdendentAdviceName =
+						dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(shadow.getAdviceDecl()));
+					if(shadow.declaringAspect().equals(container) && adviceName.equals(depdendentAdviceName)) {
+						if(shadow.isEnabled())
+							strongShadows.add(shadow);
+					}					
+				}				
+			}
+	
+			Set<String> weakAdviceNames = weakAdviceNameToVars.keySet();
+			LinkedHashSet<Shadow> weakShadows = new LinkedHashSet<Shadow>();
+			for (Shadow shadow : dependentAdviceShadows) {
+				for (String adviceName : weakAdviceNames) {
+					String depdendentAdviceName =
+						dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice(shadow.getAdviceDecl()));
+					if(shadow.declaringAspect().equals(container) && adviceName.equals(depdendentAdviceName)) {
+						if(shadow.isEnabled())
+							weakShadows.add(shadow);
+					}					
+				}				
+			}
+			
+			weakShadows.removeAll(strongShadows);
+
+			shadowGroupsRecord = new ShadowGroupsRecord(strongShadows,weakShadows);
+		} 
+	}
+	
+	public static Bag<AdviceDecl> disableShadowsWithNoStrongSupportByAnyGroup(Set<Shadow> dependentAdviceShadows) {
+		DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+
+		Set<AdviceDependency> dependencies = dependenciesPassingQuickCheck();
+		
+		Bag<AdviceDecl> disabledShadowsPerAdvice = new HashBag<AdviceDecl>();
+		
+		for (Shadow shadow : dependentAdviceShadows) {
+			if(dai.isDependentAdvice(shadow.getAdviceDecl())) {
+				boolean isAlive = false;
+				for (AdviceDependency dependency : dependencies) {
+					if(dependency.keepsShadowAlive(shadow)) {
+						isAlive = true;
+						break;
+					}
+				}
+				if(!isAlive && shadow.isEnabled()) {					
+					shadow.disable();
+					disabledShadowsPerAdvice.add(shadow.getAdviceDecl());
+					
+					if(OptionsParser.v().warn_about_individual_shadows()) {
+						((HasDAInfo)Main.v().getAbcExtension()).flowInsensitiveAnalysis().warn(
+								shadow,
+								"Orphan shadow disabled by flow-insensitive analysis."
+						);
+					}
+				}
+			}
+		}
+
+		for (AdviceDependency dependency : dependencies) {
+			dependency.invalidateCache();
+		}
+
+		return disabledShadowsPerAdvice;
+	}
+
+	/**
+	 * Invalidates the cache that is used when computing overlapping shadows.
+	 */
+	protected void invalidateCache() {
+		if(shadowGroupsRecord!=null) {
+			for(int i=0;i<shadowGroupsRecord.overlappingShadows.length;i++) {
+				shadowGroupsRecord.overlappingShadows[i] = null;
+			}
+		}
+	}
+
+	protected static Set<AdviceDependency> dependenciesPassingQuickCheck() {
+		DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+		Set<AdviceDependency> dependencies = new HashSet<AdviceDependency>(dai.getAdviceDependencies());
+		//prune dependencies that already fail the quick check; those we don't care about
+		for (Iterator<AdviceDependency> depIter = dependencies.iterator(); depIter.hasNext();) {
+			AdviceDependency ad = (AdviceDependency) depIter.next();
+			if(!ad.fulfillsQuickCheck()) {
+				depIter.remove();
+			}
+		}
+		return dependencies;
+	}
+	
+	public static Set<Shadow> getAllEnabledShadowsOverlappingWith(Collection<Shadow> shadows) {
+		DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+		
+		Set<Shadow> overlappingShadows = new HashSet<Shadow>();
+		Set<AdviceDependency> dependencies = dependenciesPassingQuickCheck();
+		
+		for (Shadow shadow : shadows) {
+			if(dai.isDependentAdvice(shadow.getAdviceDecl())) {
+				for (AdviceDependency dependency : dependencies) {
+					overlappingShadows.addAll(dependency.getOverlappingEnabledShadows(shadow));
+				}
+			}
+		}
+		
+		return overlappingShadows;
+	}
+
+	protected Collection<Shadow> getOverlappingEnabledShadows(Shadow shadow) {
+		if(shadowGroupsRecord==null) {
+			throw new IllegalStateException("Shadow groups have not yet been computed.");			
+		}
+		return shadowGroupsRecord.getOverlappingEnabledShadows(shadow);
+	}
 
 }
