@@ -27,13 +27,18 @@ import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import soot.PackManager;
+import soot.PointsToAnalysis;
 import soot.Scene;
+import soot.jimple.spark.ondemand.DemandCSPointsTo;
+import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.AdviceDependency;
-import abc.da.weaving.aspectinfo.AdviceDependency.DependentShadowGroup;
-import abc.da.weaving.aspectinfo.DAGlobalAspectInfo;
+import abc.da.weaving.aspectinfo.DAInfo;
+import abc.da.weaving.weaver.depadviceopt.ds.Bag;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
+import abc.tmwpopt.fsanalysis.CustomizedDemandCSPointsTo;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 
@@ -50,13 +55,15 @@ import abc.weaving.weaver.AbstractReweavingAnalysis;
 public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 
 	
+	protected Set<Shadow> stillActiveDependentAdviceShadows = new HashSet<Shadow>();
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public boolean analyze() {
 		
-		final DAGlobalAspectInfo gai = (DAGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
-		final Set<AdviceDependency> adviceDependencies = new HashSet<AdviceDependency>(gai.getAdviceDependencies());
+		final DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+		final Set<AdviceDependency> adviceDependencies = new HashSet<AdviceDependency>(dai.getAdviceDependencies());
 		//prune dependencies that already fail the quick check; those we don't care about
 		for (Iterator<AdviceDependency> depIter = adviceDependencies.iterator(); depIter.hasNext();) {
 			AdviceDependency ad = (AdviceDependency) depIter.next();
@@ -65,74 +72,122 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 			}
 		}		
 		if(adviceDependencies.isEmpty()) return false;
+
+		long before = System.currentTimeMillis();
 		
 		//perform pointer analysis if necessary
 		if(!Scene.v().hasCallGraph() || !Scene.v().hasPointsToAnalysis()) {
 			runCGPhase();
 		}
 
+		if(Debug.v().debugTmAnalysis)
+			System.err.println("cg phase took: " +(System.currentTimeMillis()-before));
+		before = System.currentTimeMillis();
+		
 		//compute all active shadows reachable from entry points
 		final Set<Shadow> reachableActiveShadows = Shadow.reachableActiveShadows();
 		
 		//filter out shadows that do not belong to a dependent advice
-		filterForDependentAdvice(reachableActiveShadows);		
-
-		//compute consistent shadow groups and build the set of shadows to retain
-		Set<Shadow> shadowsToRetain = new HashSet<Shadow>();
-		for (AdviceDependency dep : adviceDependencies) {
-			Set<DependentShadowGroup> shadowGroups = dep.computeOrUpdateConsistentShadowGroups(reachableActiveShadows);
-			for (DependentShadowGroup shadowGroup : shadowGroups) {
-				shadowsToRetain.addAll(shadowGroup.allShadows());
-			}
-		}
+		filterForDependentAdvice(reachableActiveShadows);	
+		
+		disableAndFilterShadowsWithEmptyPointsToSet(reachableActiveShadows);
 
 		//compute all active shadows in the program (including unreachable ones)
 		final Set<Shadow> allActiveShadows = Shadow.allActiveShadows();
 		
+		if(Debug.v().debugTmAnalysis)
+			System.err.println("DemandCS queries took: " +(System.currentTimeMillis()-before));
+
+		CustomizedDemandCSPointsTo pta = (CustomizedDemandCSPointsTo) Scene.v().getPointsToAnalysis();
+		if(Debug.v().debugTmAnalysis) {
+			System.err.println("PTA requests: "+pta.requests);
+			System.err.println("PTA retries:  "+pta.retry);
+			System.err.println("PTA success:  "+pta.success);
+		}
+
+		//compute consistent shadow groups and build the set of shadows to retain
+		before = System.currentTimeMillis();
+		for (AdviceDependency dep : adviceDependencies) {
+			dep.computeConsistentShadowGroups(reachableActiveShadows);
+		}
+		if(Debug.v().debugTmAnalysis)
+			System.err.println("Shadow groups took: " +(System.currentTimeMillis()-before));
+
+		//disable all shadows that have no support by any group
+		Bag<AdviceDecl> shadowsDisabledPerAdviceDecl =
+			AdviceDependency.disableShadowsWithNoStrongSupportByAnyGroup(reachableActiveShadows);		
+
 		//filter out shadows that do not belong to a dependent advice
 		filterForDependentAdvice(allActiveShadows);
+				
+		//disable all unreachable shadows
+		for (Shadow shadow : allActiveShadows) {
+			if(!reachableActiveShadows.contains(shadow)) {
+				shadow.disable();
+				if(OptionsParser.v().warn_about_individual_shadows())
+					warn(shadow,"Shadow disabled because it was deemed unreachable from main method in: "+Scene.v().getMainClass());
+			}			
+		}
 		
-		//disable all shadows that are contained in no consistent shadow group
-		final Map<AdviceDecl,Integer> adviceToNumTotal  = new HashMap<AdviceDecl, Integer>();
-		final Map<AdviceDecl,Integer> adviceToNumDisabled = new HashMap<AdviceDecl, Integer>();
-		for (Shadow shadow : allActiveShadows) {				//TODO document
-		
-			//count total number
-			Integer num = adviceToNumTotal.get(shadow.getAdviceDecl());
-			if(num==null) num = 0;
-			num++;
-			adviceToNumTotal.put(shadow.getAdviceDecl(),num);
+		if(!OptionsParser.v().warn_about_individual_shadows()) {
+			//generate summary warning
 			
-			//if shadow can be disabled
-			if(!shadowsToRetain.contains(shadow)) {
-				//count
-				num = adviceToNumDisabled.get(shadow.getAdviceDecl());
+			final Map<AdviceDecl,Integer> adviceToNumTotal = new HashMap<AdviceDecl, Integer>();
+			for (Shadow shadow : allActiveShadows) {						
+				//count total number
+				Integer num = adviceToNumTotal.get(shadow.getAdviceDecl());
 				if(num==null) num = 0;
 				num++;
-				adviceToNumDisabled.put(shadow.getAdviceDecl(),num);
-				//disable
-				shadow.disable();
+				adviceToNumTotal.put(shadow.getAdviceDecl(),num);			
+			}
+			
+			//give warnings
+			for (AdviceDecl ad : adviceToNumTotal.keySet()) {
+				Integer disabled = shadowsDisabledPerAdviceDecl.countOf(ad);
+				if(disabled>0) {
+					Integer total = adviceToNumTotal.get(ad);
+					
+					warn(ad, total, disabled);
+				}
 			}
 		}
 		
-		//give warnings
-		for (AdviceDecl ad : adviceToNumTotal.keySet()) {
-			Integer disabled = adviceToNumDisabled.get(ad);
-			if(disabled!=null) {
-				Integer total = adviceToNumTotal.get(ad);
-				
-				warn(ad, total, disabled);
+		stillActiveDependentAdviceShadows = new HashSet<Shadow>(reachableActiveShadows);
+		for (Iterator<Shadow> iter = stillActiveDependentAdviceShadows.iterator(); iter.hasNext();) {
+			Shadow shadow = iter.next();
+			if(!shadow.isEnabled()) {
+				iter.remove();
 			}
-		}		
-
+		}
+		
 		return false;
+	}
+	
+	protected void disableAndFilterShadowsWithEmptyPointsToSet(Set<Shadow> shadows) {
+		for (Iterator<Shadow> iter = shadows.iterator(); iter.hasNext();) {
+			Shadow shadow = iter.next();
+			for (String var : shadow.getAdviceFormalNames()) {				
+				if(!shadow.isPrimitiveFormal(var) && shadow.pointsToSetOf(var).isEmpty()) {
+					shadow.disable();
+					if(OptionsParser.v().warn_about_individual_shadows())
+						warn(shadow,"Shadow disabled because it has empty points-to sets.");
+					iter.remove();
+					break;
+				}
+			}
+		}
+		
+	}
+
+	public Set<Shadow> getDependentAdviceShadowsEnabledAfterThisStage() {
+		return stillActiveDependentAdviceShadows;
 	}
 
 	protected void filterForDependentAdvice(Set<Shadow> reachableActiveShadows) {
-		final DAGlobalAspectInfo gai = (DAGlobalAspectInfo) Main.v().getAbcExtension().getGlobalAspectInfo();
-		for (Iterator shadowIter = reachableActiveShadows.iterator(); shadowIter.hasNext();) {
-			Shadow s = (Shadow) shadowIter.next();
-			if(!gai.isDependentAdvice(s.getAdviceDecl())) {
+		final DAInfo dai = ((HasDAInfo)Main.v().getAbcExtension()).getDependentAdviceInfo();
+		for (Iterator<Shadow> shadowIter = reachableActiveShadows.iterator(); shadowIter.hasNext();) {
+			Shadow s = shadowIter.next();
+			if(!dai.isDependentAdvice(s.getAdviceDecl())) {
 				shadowIter.remove();
 			}
 		}
@@ -140,9 +195,23 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 
 	protected void runCGPhase() {
 		PackManager.v().getPack("cg").apply();
+		
+		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
+		CustomizedDemandCSPointsTo customPta = new CustomizedDemandCSPointsTo((DemandCSPointsTo) pta);
+		Scene.v().setPointsToAnalysis(customPta);
+		
+		DemandCSPointsTo.DEBUG = true;
 	}
 
-	protected void warn(AdviceDecl ad, int total, int disabled) {
+	public void warn(Shadow s,String msg) {
+		Main.v().getAbcExtension().forceReportError(
+				ErrorInfo.WARNING,
+				msg,
+				s.getPosition()
+		);
+	}
+
+	public void warn(AdviceDecl ad, int total, int disabled) {
 		String msg = disabled + " out of " + total;
 		
 		Main.v().getAbcExtension().forceReportError(
@@ -157,7 +226,7 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
      * {@inheritDoc}
      */
 	@Override
-    public void defaultSootArgs(List sootArgs) {
+    public void defaultSootArgs(List<String> sootArgs) {
         //keep line numbers
         sootArgs.add("-keep-line-number");
     	//enable whole program mode
@@ -188,13 +257,12 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
         sootArgs.add("cg.spark");
         sootArgs.add("cs-demand:true");
         
+        //model singletons EMPTY_LIST etc. as distinct allocation sites
+        sootArgs.add("-p");
+        sootArgs.add("cg.spark");
+        sootArgs.add("empties-as-allocs:true");   
+        
         OptionsParser.v().set_tag_instructions(true);
     }
-	
-//	@Override
-//	public boolean isEnabled() {
-//		abc.da.AbcExtension abcExtension = (abc.da.AbcExtension) Main.v().getAbcExtension();
-//		return abcExtension.foundDependencyKeyword() || abcExtension.forceEnableFlowInsensitiveOptimizations();
-//	}
 
 }
