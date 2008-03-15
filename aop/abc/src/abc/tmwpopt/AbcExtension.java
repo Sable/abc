@@ -214,15 +214,13 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 	/**
 	 * Returns the quick check of abc.da.
 	 */
-	@Override
-    public DependentAdviceQuickCheck quickCheck() {
+    	public DependentAdviceQuickCheck quickCheck() {
 		return daExtension.quickCheck();
 	}
 
 	/**
 	 * Returns the flow-insensitive analysis of abc.da.
 	 */
-	@Override
 	public DependentAdviceFlowInsensitiveAnalysis flowInsensitiveAnalysis() {
 		return daExtension.flowInsensitiveAnalysis();
 	}
@@ -247,7 +245,6 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 	/**
 	 * @inheritDoc
 	 */
-	@Override
 	public void resetAnalysisDataStructures() {
 		Ranking.reset();
 		Statistics.reset();
