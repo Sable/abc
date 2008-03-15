@@ -350,4 +350,7 @@ public class RenameTypeTests extends RenameType {
         } catch(RefactoringException rfe) {
         }
 	}
+	public void test104() {
+		runTypeRenameTest("test104");
+	}
 }
