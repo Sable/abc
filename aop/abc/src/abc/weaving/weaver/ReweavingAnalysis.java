@@ -37,6 +37,10 @@ public interface ReweavingAnalysis {
     /**
      * Allows you to add default arguments to Soot, which can be overriden
      * by the user on the commandline.
+     * Note that this method does not necessarily to any packs or phases being invoked
+     * E.g. providing <code>-p cg enabled</code> does not automatically build a call graph
+     * because abc never invokes the <code>cg</code> phase on its own. You have to do so yourself,
+     * but can give phase options to the phase by using this method. 
      * @param sootArgs the current list of default arguments; add argument strings
      * as needed
      */
@@ -45,6 +49,10 @@ public interface ReweavingAnalysis {
     /**
      * Allows you to override arguments to Soot, which were
      * by the user on the commandline.
+     * Note that this method does not necessarily to any packs or phases being invoked
+     * E.g. providing <code>-p cg enabled</code> does not automatically build a call graph
+     * because abc never invokes the <code>cg</code> phase on its own. You have to do so yourself,
+     * but can give phase options to the phase by using this method. 
      * @param sootArgs the current list of default arguments; remove, replace or just add
      * arguments as needed
      */
@@ -78,7 +86,7 @@ public interface ReweavingAnalysis {
 
 	/**
 	 * This method is invoked after the last reweaving step. This allows the analysis
-	 * to perform cleanuo operations, e.g. free memory etc.
+	 * to perform cleanup operations, e.g. free memory etc.
 	 */
 	public void cleanup();
     
