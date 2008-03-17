@@ -1,0 +1,155 @@
+/*
+ * some utility methods
+ */
+
+aspect ASTUtil {
+	
+	public static boolean ASTNode.isSingletonOf(SimpleSet s, Object o) {
+		return s.size() == 1 && s.iterator().next() == o;
+	}
+	
+	// provide access to the program root
+	public Program ASTNode.programRoot() {
+		ASTNode p;
+		for(p=this; p!=null&&!(p instanceof Program); p=p.getParent());
+		if(p == null) return null;
+		return (Program)p;
+	}
+	
+	// provide access to the enclosing compilation unit
+	public CompilationUnit ASTNode.compilationUnit() {
+		ASTNode p;
+		for(p=this; p!=null&&!(p instanceof CompilationUnit); p=p.getParent());
+		if(p == null) return null;
+		return (CompilationUnit)p;
+	}
+	
+	public void TypeDecl.removeBodyDecl(BodyDecl bd) {
+		getBodyDeclList().removeChild(getBodyDeclList().getIndexOfChild(bd));
+	}
+
+    public void FieldDeclaration.makePrivate() throws RefactoringException {
+        if(isPrivate())
+            return;
+        Modifiers m = getModifiers();
+        for(int i=0;i<m.getNumModifier();++i) {
+            String id = m.getModifier(i).getID();
+            if(id.equals("protected") || id.equals("public")) {
+                m.setModifier(new Modifier("private"), i);
+                return;
+            }
+        }
+        m.addModifier(new Modifier("private"));
+    }
+    
+    protected void ASTNode.replaceWith(ASTNode newnode) throws RefactoringException {
+    	ASTNode parent = getParent();
+    	parent.setChild(newnode, parent.getIndexOfChild(this));
+    }
+    
+    // this method is not very well-behaved if start and end are not valid indices
+    protected void ASTNode.replaceRange(ASTNode node, int start, int end) {
+        if(children == null) {
+        	children = new ASTNode[1];
+            children[0] = node;
+        } else {
+            ASTNode c[] = new ASTNode[children.length - (end-start)];
+            System.arraycopy(children, 0, c, 0, start);
+            c[start] = node;
+            if(end+1 < children.length)
+              System.arraycopy(children, end+1, c, start+1, children.length-end-1);
+            children = c;
+        }
+        numChildren -= end-start;
+        if(node != null) { node.setParent(this); node.childIndex = start; }
+    }
+    
+    public void ASTNode.moveChild(int src, int trg) {
+    	ASTNode tmp = children[src];
+    	children[src] = children[trg];
+    	children[src].childIndex = src;
+    	children[trg] = tmp;
+    	children[trg].childIndex = trg;
+    }
+    
+    /*public void List.remove(ASTNode n) {
+    	for(int i=0;i<getNumChild();++i)
+    		if(getChild(i) == n) {
+    			removeChild(i);
+    			break;
+    		}
+    }*/
+    
+    public void Block.insertStmt(int idx, Stmt stmt) throws RefactoringException {
+    	getStmtList().insertChild(stmt, idx);
+    }
+    
+    public void Block.moveStmt(Stmt stmt, int new_idx) throws RefactoringException {
+    	int old_idx = getStmtList().getIndexOfChild(stmt);
+    	getStmtList().moveChild(old_idx, new_idx);
+    }
+    
+    public void Block.pullTogether(int start, int end) throws RefactoringException {
+    	List stmts = new List();
+    	for(int i=start;i<=end;++i)
+    		stmts.add(getStmt(i));
+    	getStmtList().replaceRange(new Block(stmts), start, end);
+    }
+
+	public Collection List.toCollection() {
+		Collection children = new ArrayList();
+		for(int i=0;i<getNumChild();++i)
+			children.add(getChild(i));
+		return children;
+	}
+	
+	public List.List(Collection c) {
+		super();
+		addAll(c);
+	}
+	
+	public List List.addAll(Collection<T> c) {
+		for(Iterator<T> i=c.iterator();i.hasNext();)
+			add(i.next());
+		return this;
+	}
+	
+	public int ASTNode.indexIn(ASTNode n) {
+		if(getParent() == n)
+			return getParent().getIndexOfChild(this);
+		if(getParent() == null)
+			return -1;
+		return getParent().indexIn(n);
+	}
+	
+	public boolean ASTNode.inside(ASTNode n) {
+		return indexIn(n) != -1;
+	}
+	
+	public boolean ASTNode.contains(ASTNode n) {
+		while(n!=null && n!=this)
+			n = n.getParent();
+		return n==this;
+	}
+	
+	public boolean Opt.isEmpty() {
+		return getNumChild() == 0;
+	}
+	
+	public String CompilationUnit.getID() {
+	    char pathsep = File.separatorChar;
+	    String path = pathName();
+	    int i = path.lastIndexOf(pathsep);
+		String relname_tail = i == -1 ? path : path.substring(i+1);
+	    int j = relname_tail.lastIndexOf(".");
+	    return relname_tail.substring(0, j);	 		
+	}
+		
+	public static String ASTNode.capitalize(String str) {
+		StringBuffer buf = new StringBuffer(str);
+		if(buf.length() > 0)
+			buf.setCharAt(0, Character.toUpperCase(buf.charAt(0)));
+		return buf.toString();
+	}
+	
+}

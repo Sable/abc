@@ -73,10 +73,13 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 			<exclude name="LocalDeclaration.jrag"/>
+			<exclude name="ASTUtil.jrag"/>
 		</fileset>
 		<fileset file="${Refactoring}/Methodoid.jadd"/>
 		<fileset file="${Refactoring}/Scope.jadd"/>
-		<fileset file="${Refactoring}/SymbolicTypeAccess.jrag"/>
+		<fileset file="${Refactoring}/TypeAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/VarAccessInfo.jrag"/>
+		<fileset file="${Refactoring}/MethodAccessInfo.jrag"/>
 		<fileset dir="${Refactoring}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jadd"/>
@@ -84,7 +87,9 @@
 			<exclude name="Methodoid.jadd"/>
 			<exclude name="Scope.jadd"/>
 			<exclude name="Uses.jrag"/>
-			<exclude name="SymbolicTypeAccess.jrag"/>
+			<exclude name="TypeAccessInfo.jrag"/>
+			<exclude name="VarAccessInfo.jrag"/>
+			<exclude name="MethodAccessInfo.jrag"/>
 			<exclude name="IntertypeDeclarations/*.jrag"/>
 		</fileset>
 		<fileset dir=".">
