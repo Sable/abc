@@ -46,8 +46,8 @@ public class RenameLocalVariable extends Frontend {
 		))
 			throw new RefactoringException("couldn't process input files");
 		System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
-		time = System.currentTimeMillis();
 		for(int cnt=0;cnt<RenameType.NUM_RUNS;cnt++) {
+			time = System.currentTimeMillis();
 			String path[] = classname.split("\\.");
 			Program program = c.program;
 			TypeDecl d = (TypeDecl)program.lookupType(pkgname, path[0]);

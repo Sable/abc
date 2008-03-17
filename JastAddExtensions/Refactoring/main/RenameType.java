@@ -51,8 +51,8 @@ public class RenameType {
 		};
 		if(f.process(files, br, jp)) {
 			System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
-			time = System.currentTimeMillis();
 			for(int cnt=0;cnt<NUM_RUNS;cnt++) {
+				time = System.currentTimeMillis();
 				Program prog = f.getProgram();
 				String path[] = tp.split("\\.");
 				TypeDecl d = (TypeDecl)prog.lookupType(pkg, path[0]);
