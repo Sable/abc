@@ -1,4 +1,4 @@
-// RenameMethod/test12/in/A.java p A m() n
+// RenameMethod/test25/in/A.java p A m() n
 package p;
 
 class Z {
