@@ -2,21 +2,6 @@
 
 aspect Uses {
 	
-	syn ASTNode Access.getDecl() { throw new UnsupportedOperationException(); }
-	
-	eq AbstractDot.getDecl() = getRight().getDecl();
-	eq PackageAccess.getDecl() = findPackageDecl(getPackage());
-	eq VarAccess.getDecl() = (ASTNode)decl();
-	eq MethodAccess.getDecl() = decl(); 
-	eq ConstructorAccess.getDecl() = decl(); 
-	eq TypeAccess.getDecl() = decl(); 
-	eq ThisAccess.getDecl() = decl(); 
-	eq SuperAccess.getDecl() = decl();
-	eq ClassInstanceExpr.getDecl() = decl();
-	eq ClassAccess.getDecl() {
-		return ((TypeAccess)qualifier()).decl();
-	}
-		
 	public Collection<VarAccess> Variable.collectedUses() {
 		return uses();
 	}

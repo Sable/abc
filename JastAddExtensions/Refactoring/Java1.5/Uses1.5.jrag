@@ -2,19 +2,6 @@
 
 aspect Uses {
 	
-	syn ASTNode Access.getDecl() = null;
-	
-	eq AbstractDot.getDecl() = getRight().getDecl();
-	eq PackageAccess.getDecl() = findPackageDecl(getPackage());
-	eq VarAccess.getDecl() = (ASTNode)decl().sourceVariableDecl();
-	eq MethodAccess.getDecl() = decl().sourceMethodDecl(); 
-	eq ConstructorAccess.getDecl() = decl().sourceConstructorDecl(); 
-	eq TypeAccess.getDecl() = decl().sourceTypeDecl(); 
-	eq ThisAccess.getDecl() = decl().sourceTypeDecl(); 
-	eq SuperAccess.getDecl() = decl().sourceTypeDecl();
-	eq ClassInstanceExpr.getDecl() = decl().sourceConstructorDecl();
-	eq ClassAccess.getDecl() = ((TypeAccess)qualifier()).decl().sourceTypeDecl();
-		
 	public Collection<VarAccess> Variable.collectedUses() {
 		return uses();
 	}

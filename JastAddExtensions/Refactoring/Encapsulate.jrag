@@ -28,9 +28,10 @@ aspect Encapsulate {
 	eq Program.getChild().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
 		try {
 			MethodDecl getter = accessors.accessor("ASTNode");
-			Access nacc = new MethodAccess(getter.getID(), new List());
+			MethodAccess nacc = new MethodAccess(getter.getID(), new List());
+			nacc.lockOn(getter);
 			acc.replaceWith(nacc);
-			table.add(nacc, getter);
+			table.add(nacc);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;
@@ -42,10 +43,11 @@ aspect Encapsulate {
 			MethodDecl setter = accessors.accessor(this.getClass().getSimpleName());
 			List args = new List();
 			args.add(getSource());
-			Access nacc = new MethodAccess(setter.getID(), args);
+			MethodAccess nacc = new MethodAccess(setter.getID(), args);
+			nacc.lockOn(setter);
 			acc.replaceWith(nacc);
 			replaceWithStripped(getDest());
-			table.add(nacc, setter);
+			table.add(nacc);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;
@@ -55,10 +57,11 @@ aspect Encapsulate {
 	eq PostfixExpr.getOperand().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
 		try {
 			MethodDecl setter = accessors.accessor(this.getClass().getSimpleName());
-			Access nacc = new MethodAccess(setter.getID(), new List());
+			MethodAccess nacc = new MethodAccess(setter.getID(), new List());
+			nacc.lockOn(setter);
 			acc.replaceWith(nacc);
 			replaceWithStripped(getOperand());
-			table.add(nacc, setter);
+			table.add(nacc);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;
@@ -68,10 +71,11 @@ aspect Encapsulate {
 	eq PreDecExpr.getOperand().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
 		try {
 			MethodDecl setter = accessors.accessor("PreDecExpr");
-			Access nacc = new MethodAccess(setter.getID(), new List());
+			MethodAccess nacc = new MethodAccess(setter.getID(), new List());
+			nacc.lockOn(setter);
 			acc.replaceWith(nacc);
 			replaceWithStripped(getOperand());
-			table.add(nacc, setter);
+			table.add(nacc);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;
@@ -81,10 +85,11 @@ aspect Encapsulate {
 	eq PreIncExpr.getOperand().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
 		try {
 			MethodDecl setter = accessors.accessor("PreIncExpr");
-			Access nacc = new MethodAccess(setter.getID(), new List());
+			MethodAccess nacc = new MethodAccess(setter.getID(), new List());
+			nacc.lockOn(setter);
 			acc.replaceWith(nacc);
 			replaceWithStripped(getOperand());
-			table.add(nacc, setter);
+			table.add(nacc);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;

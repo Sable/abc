@@ -66,9 +66,7 @@ aspect RenameMethod {
 	protected void MethodAccess.findEndangeredMethodAccesses(AdjustmentTable tbl,
 													String oldname, String newname) {
 		String name = name();
-		if(name.equals(oldname))
-			tbl.addFront(this);
-		else if(name.equals(newname))
+		if(name.equals(oldname) || name.equals(newname))
 			tbl.add(this);
 		// we also need to process the arguments
 		for(int i=0;i<getNumChild();++i)

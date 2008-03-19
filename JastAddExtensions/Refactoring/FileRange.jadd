@@ -27,5 +27,9 @@ aspect FileRange {
 		}
 
 	}
-
+	
+	public FileRange Access.getPos() {
+		return new FileRange(compilationUnit().relativeName(), getStart(), getEnd());
+	}
+	
 }

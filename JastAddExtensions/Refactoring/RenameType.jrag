@@ -53,14 +53,10 @@ aspect RenameType {
 	protected void TypeAccess.findEndangeredTypeAccesses(AdjustmentTable table, 
 												String oldname, String newname) {
 		String name = name();
-		if(name.equals(oldname))
-			table.addFront(this);
-		else if(name.equals(newname))
+		if(name.equals(oldname) || name.equals(newname))
 			table.add(this);
 		String pkg = getPackage();
-		if(pkgNameStartsWith(pkg, oldname))
-			table.addFront(this);
-		else if(pkgNameStartsWith(pkg, newname))
+		if(pkgNameStartsWith(pkg, oldname) || pkgNameStartsWith(pkg, newname))
 			table.add(this);
 	}
 	
@@ -78,9 +74,7 @@ aspect RenameType {
 	protected void PackageAccess.findEndangeredTypeAccesses(AdjustmentTable table,
 												String oldname, String newname) {
 		String pkg = name();
-		if(pkgNameStartsWith(pkg, oldname))
-			table.addFront(this);
-		else if(pkgNameStartsWith(pkg, newname))
+		if(pkgNameStartsWith(pkg, oldname) || pkgNameStartsWith(pkg, newname))
 			table.add(this);
 	}
 	

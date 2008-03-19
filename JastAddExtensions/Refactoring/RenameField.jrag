@@ -44,9 +44,7 @@ aspect RenameField {
 	protected void VarAccess.findEndangeredVarAccesses(AdjustmentTable tbl,
 													String oldname, String newname) {
 		String name = name();
-		if(name.equals(oldname))
-			tbl.addFront(this);
-		else if(name.equals(newname))
+		if(name.equals(oldname) || name.equals(newname))
 			tbl.add(this);
 	}
 	
@@ -58,14 +56,10 @@ aspect RenameField {
 	protected void TypeAccess.findEndangeredVarAccesses(AdjustmentTable table, 
 													String oldname, String newname) {
 		String name = name();
-		if(name.equals(oldname))
-			table.addFront(this);
-		else if(name.equals(newname))
+		if(name.equals(oldname) || name.equals(newname))
 			table.add(this);
 		String pkg = getPackage();
-		if(pkgNameStartsWith(pkg, oldname))
-			table.addFront(this);
-		else if(pkgNameStartsWith(pkg, newname))
+		if(pkgNameStartsWith(pkg, oldname) || pkgNameStartsWith(pkg, newname))
 			table.add(this);
 	}
 
@@ -83,9 +77,7 @@ aspect RenameField {
 	protected void PackageAccess.findEndangeredVarAccesses(AdjustmentTable table,
 													String oldname, String newname) {
 		String pkg = name();
-		if(pkgNameStartsWith(pkg, oldname))
-			table.addFront(this);
-		else if(pkgNameStartsWith(pkg, newname))
+		if(pkgNameStartsWith(pkg, oldname) || pkgNameStartsWith(pkg, newname))
 			table.add(this);
 	}
 

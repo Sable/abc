@@ -2,9 +2,12 @@ aspect MergeGenericDecls {
   
 	// a coarser form of equality that considers, for example, a method from a generic
 	// class and its counterpart from a parametrised instance of the class to be the same
-	syn boolean TypeDecl.sameSourceDeclAs(TypeDecl decl) = sourceTypeDecl() == decl.sourceTypeDecl();
-	syn boolean MethodDecl.sameSourceDeclAs(MethodDecl decl) = sourceMethodDecl() == decl.sourceMethodDecl();
-	syn boolean Variable.sameSourceDeclAs(Variable decl) = sourceVariableDecl() == decl.sourceVariableDecl();
+	syn boolean TypeDecl.sameSourceDeclAs(TypeDecl decl) 
+		= sourceTypeDecl() == decl.sourceTypeDecl();
+	syn boolean MethodDecl.sameSourceDeclAs(MethodDecl decl) 
+		= sourceMethodDecl() == decl.sourceMethodDecl();
+	syn boolean Variable.sameSourceDeclAs(Variable decl) 
+		= sourceVariableDecl() == decl.sourceVariableDecl();
 
 	// we need to refine a bunch of methods to use sameSourceDeclAs() instead of "=="
 	refine AccessMethod	public MethodAccessInfo TypeDecl.accessLocalMethod(MethodDecl md) {
@@ -90,57 +93,42 @@ aspect MergeGenericDecls {
 		return null;
 	}
 
-	refine AdjustAccess public void Variable.adjustAccess(Access acc) throws RefactoringException {
-		assert(acc instanceof VarAccess);
-		VarAccess va = (VarAccess)acc;
-		if(va.decl().sourceVariableDecl() != this) {
-			Access newacc = va.access(this);
-			if(newacc == null)
-				throw new RefactoringException("variable would become shadowed at "+acc.getPos());
-			acc.plugInNewAccess(newacc);
-		}
+	refine AdjustAccess public void VarAccess.unlockSafely() throws RefactoringException {
+		Variable v = target;
+		unlock();
+		if(v.sameSourceDeclAs(decl()))
+			return;
+		Access acc = access(v.sourceVariableDecl());
+		if(acc == null)
+			throw new RefactoringException("variable cannot be accessed");
+		plugInNewAccess(acc);
 	}
-
-	refine AdjustAccess public void MethodDecl.adjustAccess(Access acc) throws RefactoringException {
-		assert(acc instanceof MethodAccess);
-		MethodAccess ma = (MethodAccess)acc;
-		if(ma.decl().sourceMethodDecl() != this) {
-			Access newacc = ma.access(this, (List)ma.getArgList().fullCopy());
-			if(newacc == null)
-				throw new RefactoringException("couldn't consistently rename method access at "+acc.getPos());
-			acc.plugInNewAccess(newacc);
-		}
+	
+	refine AdjustAccess public void TypeAccess.unlockSafely() throws RefactoringException {
+		// TODO: check for obscuring
+		TypeDecl td = target;
+		unlock();
+		if(td.sameSourceDeclAs(decl()))
+			return;
+		Access acc = access(td.sourceTypeDecl(), nameType() == NameType.AMBIGUOUS_NAME);
+		if(acc == null)
+			throw new RefactoringException("type cannot be accessed");
+		plugInNewAccess(acc);
 	}
-
-	refine AdjustAccess public void TypeDecl.adjustAccess(Access acc) throws RefactoringException {
-		assert(acc instanceof TypeAccess);
-		FileRange pos = acc.getPos();
-		TypeAccess tacc = (TypeAccess)acc;
-		if(tacc.decl().sourceTypeDecl() != this) {
-			boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-			Access newacc = tacc.access(this, ambiguous);
-			if(newacc == null)
-				throw new RefactoringException("couldn't consistently rename type access at "+acc.getPos());
-			acc.plugInNewAccess(newacc);
-		} else {
-			ASTNode parent = tacc.getParent();
-			int idx = parent.getIndexOfChild(tacc);
-			ParseName pn = new ParseName(tacc.getID());
-			parent.setChild(pn, idx);
-			try {
-				Access tmp = (Access)parent.getChild(idx);
-				if(tmp instanceof VarAccess) {
-					parent.setChild(tacc, idx);
-					boolean ambiguous = tacc.nameType() == NameType.AMBIGUOUS_NAME;
-					Access newacc = tacc.access(this, ambiguous);
-					if(newacc == null)
-						throw new RefactoringException("couldn't consistently rename type access at "+acc.getPos());
-					acc.plugInNewAccess(newacc);
-				}
-			} finally {
-				parent.setChild(tacc, idx);
-			}
-		}
+	
+	refine AdjustAccess public void MethodAccess.unlockSafely() throws RefactoringException {
+		MethodDecl md = target;
+		unlock();
+		if(md.sameSourceDeclAs(decl()))
+			return;
+		Access acc = access(md.sourceMethodDecl(), (List<Expr>)getArgs().fullCopy());
+		if(acc == null)
+			throw new RefactoringException("method cannot be accessed");
+		plugInNewAccess(acc);
+	}
+	
+	refine AdjustAccess public void PackageAccess.unlockSafely() throws RefactoringException {
+		// TODO: check for obscuring
 	}
 
 	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
