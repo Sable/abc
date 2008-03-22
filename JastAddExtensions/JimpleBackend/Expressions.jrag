@@ -403,8 +403,7 @@ aspect Expressions {
   }
   
   public soot.Value SuperAccess.eval(Body b) {
-    TypeDecl targetDecl = isQualified() ? qualifier().type() : hostType();
-    return emitThis(b, targetDecl);
+    return emitThis(b, decl());
   }
 
   // load this where hostType is the target this instance 
