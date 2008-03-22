@@ -1,0 +1,157 @@
+aspect EnhancedForToBytecode {
+  // Code generation
+  syn lazy soot.jimple.Stmt EnhancedForStmt.cond_label() = newLabel();
+  syn lazy soot.jimple.Stmt EnhancedForStmt.update_label() = newLabel();
+  syn lazy soot.jimple.Stmt EnhancedForStmt.end_label() = newLabel();
+
+  syn lazy int EnhancedForStmt.extraLocalIndex() = localNum();
+  eq EnhancedForStmt.getVariableDeclaration().localNum() = localNum() + (getExpr().type().isArrayDecl() ? 2 : 1);
+  eq EnhancedForStmt.getStmt().localNum() = getVariableDeclaration().localNum() + getVariableDeclaration().type().size();
+
+   // EnhancedForStmt can be both break and continue target
+  eq EnhancedForStmt.break_label() = end_label();
+  eq EnhancedForStmt.continue_label() = update_label();
+
+  public void EnhancedForStmt.jimplify2(Body b) {
+    if(getExpr().type().isArrayDecl()) {
+      soot.Local array = asLocal(b, getExpr().eval(b));
+      soot.Local index = asLocal(b, soot.jimple.IntConstant.v(0));
+      soot.Local parameter = b.newLocal(getVariableDeclaration().name(), getVariableDeclaration().type().getSootType());
+      getVariableDeclaration().local = parameter;
+      b.addLabel(cond_label());
+      b.add(
+        Jimple.v().newIfStmt(
+          Jimple.v().newGeExpr(
+            asImmediate(b, index),
+            asImmediate(b, Jimple.v().newLengthExpr(asImmediate(b, array)))
+          ),
+          end_label()
+        )
+      );
+      b.add(
+        Jimple.v().newAssignStmt(
+          parameter,
+          asRValue(b,
+            getExpr().type().elementType().emitCastTo(b,
+              asLocal(b,
+                Jimple.v().newArrayRef(
+                  array,
+                  index
+                )
+              ),
+              getVariableDeclaration().type()
+            )
+          )
+        )
+      );
+      getStmt().jimplify2(b);
+      b.addLabel(update_label());
+      b.add(
+        Jimple.v().newAssignStmt(
+          index,
+          Jimple.v().newAddExpr(
+            index,
+            soot.jimple.IntConstant.v(1)
+          )
+        )
+      );
+      b.add(Jimple.v().newGotoStmt(cond_label()));
+      b.addLabel(end_label());
+    }
+    else {
+      soot.Local iterator = asLocal(b,
+        Jimple.v().newInterfaceInvokeExpr(
+          asLocal(b, getExpr().eval(b)),
+          iteratorMethod().sootRef(),
+          new ArrayList()
+        )
+      );
+      soot.Local parameter = b.newLocal(getVariableDeclaration().name(), getVariableDeclaration().type().getSootType());
+      getVariableDeclaration().local = parameter;
+      b.addLabel(cond_label());
+      b.add(
+        Jimple.v().newIfStmt(
+          Jimple.v().newEqExpr(
+            asImmediate(b, 
+              Jimple.v().newInterfaceInvokeExpr(
+                iterator,
+                hasNextMethod().sootRef(),
+                new ArrayList()
+              )
+            ),
+            BooleanType.emitConstant(false)
+          ),
+          end_label()
+        )
+      );
+      b.add(
+        Jimple.v().newAssignStmt(
+          parameter,
+          nextMethod().type().emitCastTo(b,
+            Jimple.v().newInterfaceInvokeExpr(
+              iterator,
+              nextMethod().sootRef(),
+              new ArrayList()
+            ),
+            getVariableDeclaration().type()
+          )
+        )
+      );
+      getStmt().jimplify2(b);
+      b.addLabel(update_label());
+      b.add(Jimple.v().newGotoStmt(cond_label()));
+      b.addLabel(end_label());
+
+
+
+      /*
+      getExpr().createBCode(gen);
+      iteratorMethod().emitInvokeMethod(gen, lookupType("java.lang", "Iterable"));
+      gen.emitStoreReference(extraLocalIndex());
+      gen.addLabel(cond_label());
+      gen.emitLoadReference(extraLocalIndex());
+      hasNextMethod().emitInvokeMethod(gen, lookupType("java.util", "Iterator"));
+      gen.emitCompare(Bytecode.IFEQ, end_label());
+      gen.emitLoadReference(extraLocalIndex());
+      nextMethod().emitInvokeMethod(gen, lookupType("java.util", "Iterator"));
+      gen.emitCheckCast(getVariableDeclaration().type());
+      gen.emitStoreReference(getVariableDeclaration().localNum());
+      getStmt().createBCode(gen);
+      gen.addLabel(update_label());	
+      gen.emitGoto(cond_label());
+      gen.addLabel(end_label());
+      */
+    }
+  }
+
+  private MethodDecl EnhancedForStmt.iteratorMethod() {
+    TypeDecl typeDecl = lookupType("java.lang", "Iterable");
+		for (Iterator iter = typeDecl.memberMethods("iterator").iterator(); iter.hasNext();) {
+			MethodDecl m = (MethodDecl)iter.next();
+			if (m.getNumParameter() == 0) {
+				return m;
+      }
+    }
+    throw new Error("Could not find java.lang.Iterable.iterator()");
+  }
+  private MethodDecl EnhancedForStmt.hasNextMethod() {
+    TypeDecl typeDecl = lookupType("java.util", "Iterator");
+		for (Iterator iter = typeDecl.memberMethods("hasNext").iterator(); iter.hasNext();) {
+			MethodDecl m = (MethodDecl)iter.next();
+			if (m.getNumParameter() == 0) {
+				return m;
+      }
+    }
+    throw new Error("Could not find java.util.Collection.hasNext()");
+  }
+  private MethodDecl EnhancedForStmt.nextMethod() {
+    TypeDecl typeDecl = lookupType("java.util", "Iterator");
+		for (Iterator iter = typeDecl.memberMethods("next").iterator(); iter.hasNext();) {
+			MethodDecl m = (MethodDecl)iter.next();
+			if (m.getNumParameter() == 0) {
+				return m;
+      }
+    }
+    throw new Error("Could not find java.util.Collection.next()");
+  }
+}

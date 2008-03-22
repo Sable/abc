@@ -1,0 +1,117 @@
+aspect AutoBoxingCodegen {
+  // Code generation for Boxing Conversion
+  public soot.Value BooleanType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+    if(type == this)
+      return v;
+    else if(type.unboxed() == this || type.isObject())
+      return boxed().emitBoxingOperation(b, v);
+    else
+      return v;
+  }
+  public soot.Value NumericType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+    if(type.isUnknown()) throw new Error("Trying to cast to Unknown");
+    if(type == this)
+      return v;
+    if((isLong() || this instanceof FloatingPointType) && type.isIntegralType()) {
+      v = soot.jimple.Jimple.v().newCastExpr(
+        asImmediate(b, v), typeInt().getSootType());
+      return typeInt().emitCastTo(b, v, type);
+    }
+    else if(type instanceof NumericType) {
+      return soot.jimple.Jimple.v().newCastExpr(
+        asImmediate(b, v),
+        type.getSootType()
+      );
+    }
+    else if(!type.isNumericType())
+      return emitCastTo(b, v, boxed());
+    else
+      return boxed().emitBoxingOperation(b, emitCastTo(b, v, type.unboxed()));
+  }
+
+  refine EmitJimple public soot.Value TypeDecl.emitCastTo(Body b, Expr expr, TypeDecl type) {
+    if(type instanceof LUBType || type instanceof GLBType || type instanceof AbstractWildcardType)
+      type = typeObject();
+    else if(expr.isConstant() && isPrimitive() && type.isReferenceType())
+    	  return boxed().emitBoxingOperation(b, emitConstant(cast(expr.constant())));
+    else if(expr.isConstant() && !expr.type().isEnumDecl()) {
+      if(type.isPrimitive())
+        return emitConstant(type.cast(expr.constant()));
+      else
+        return emitConstant(expr.constant());
+    }
+    return emitCastTo(b, expr.eval(b), type);
+  }
+
+
+  protected soot.Value TypeDecl.emitBoxingOperation(Body b, soot.Value v) {
+    // Box the value on the stack into this Reference type
+    ArrayList parameters = new ArrayList();
+    parameters.add(unboxed().getSootType());
+    SootMethodRef ref = Scene.v().makeMethodRef(
+      getSootClassDecl(),
+      "valueOf",
+      parameters,
+      getSootType(),
+      true
+    );
+    ArrayList args = new ArrayList();
+    args.add(asLocal(b, v));
+    return Jimple.v().newStaticInvokeExpr(ref, args);
+  }
+
+  // Code generation for Unboxing Conversion
+  public soot.Value ReferenceType.emitCastTo(Body b, soot.Value v, TypeDecl type) {
+    if(this == type)
+      return v;
+    else if(type instanceof PrimitiveType)
+      return type.boxed().emitUnboxingOperation(b, emitCastTo(b, v, type.boxed()));
+    else 
+      return super.emitCastTo(b, v, type);
+  }
+
+  protected soot.Value TypeDecl.emitUnboxingOperation(Body b, soot.Value v) {
+    // Unbox the value on the stack from this Reference type
+    SootMethodRef ref = Scene.v().makeMethodRef(
+      getSootClassDecl(),
+      unboxed().name() + "Value",
+      new ArrayList(),
+      unboxed().getSootType(),
+      false
+    );
+    return Jimple.v().newVirtualInvokeExpr(asLocal(b, v), ref, new ArrayList());
+  }
+
+  // Generate unboxing code for conditions
+  // 14.9 If, 14.12 While, 14.13 Do, 14.14 For
+  // 
+  // emitEvalBranch is used to emit the condition from these constructs
+  // refine behavior to include unboxing of the value when needed
+  refine BooleanExpressions public void Expr.emitEvalBranch(Body b) {
+    if(type().isReferenceType()) {
+      b.setLine(this);
+      b.add(
+        Jimple.v().newIfStmt(
+          Jimple.v().newEqExpr(
+            asImmediate(b, type().emitUnboxingOperation(b, eval(b))),
+            BooleanType.emitConstant(false)
+          ),
+          false_label()
+        )
+      );
+      b.add(Jimple.v().newGotoStmt(true_label()));
+
+    }
+    else
+      BooleanExpressions.Expr.emitEvalBranch(b);
+  }
+
+  // 14.11 Switch
+
+  // 15.12.2 Determine Method Signature
+
+ 
+  // 15.14.2 Postix Increment Operator ++
+  // 15.14.3 Postix Decrement Operator --
+
+}
