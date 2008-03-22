@@ -804,9 +804,9 @@ aspect Expressions {
   }
 
   public soot.Value AddExpr.eval(Body b) {
+    if(type().isString() && isConstant())
+      return soot.jimple.StringConstant.v(constant().stringValue());
     if(isStringAdd()) {
-      if(isConstant())
-        return soot.jimple.StringConstant.v(constant().stringValue());
       Local v;
       if(firstStringAddPart()) {
         // new StringBuffer
