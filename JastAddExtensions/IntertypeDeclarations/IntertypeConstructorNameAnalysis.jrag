@@ -47,7 +47,7 @@ aspect IntertypeMethodNameAnalysis {
 
   public void SuperAccess.typeCheck() {
     super.typeCheck();
-    TypeDecl typeDecl = isQualified() ? qualifier().type() : thisType();
+    TypeDecl typeDecl = decl();
     if(typeDecl.isInterfaceDecl()) {
       InterfaceDecl decl = (InterfaceDecl)typeDecl;
       int i = 0;
@@ -61,8 +61,11 @@ aspect IntertypeMethodNameAnalysis {
 
   refine LookupType eq ThisAccess.decl() =
     isQualified() ? qualifier().type() : thisType();
-  refine LookupType eq SuperAccess.decl() {
-    TypeDecl typeDecl = isQualified() ? qualifier().type() : thisType();
+  refine LookupType eq SuperAccess.decl() =
+    isQualified() ? qualifier().type() : thisType();
+
+  refine TypeAnalysis eq SuperAccess.type() {
+    TypeDecl typeDecl = decl();
     if(typeDecl.isInterfaceDecl()) {
       InterfaceDecl decl = (InterfaceDecl)typeDecl;
       TypeDecl superInterface = null;
