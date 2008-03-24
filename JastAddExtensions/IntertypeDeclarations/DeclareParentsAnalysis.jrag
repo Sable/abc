@@ -77,8 +77,11 @@ aspect DeclareParentsAnalysis {
            if(e.getPattern().matchesType(this)) {
              for(int i = 0; i < e.getNumTypeAccess(); i++) {
                TypeDecl typeDecl = e.getTypeAccess(i).type();
-               if(typeDecl instanceof ClassDecl)
-                 e.warning("does not alter the parent of " + typeName());
+               if(typeDecl instanceof ClassDecl) {
+                 // TODO: this gives unexpected errors in the test suite
+                 // why did I add this in the first place?
+                 // e.warning("does not alter the parent of " + typeName());
+               }
              }
            }
          }
