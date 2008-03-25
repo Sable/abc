@@ -87,7 +87,7 @@ aspect NonNullInferenceJava5Glue {
 
   refine NonNullInference public void ReturnStmt.updateRemoteAttributeCollectionsFrontend() {
     if(hasResult()) {
-      BodyDecl bodyDecl = hostBodyDecl();
+      BodyDecl bodyDecl = enclosingBodyDecl();
       if(bodyDecl instanceof MethodDecl) {
         MethodDecl m = (MethodDecl)bodyDecl;
         if(m.type() instanceof TypeVariable)

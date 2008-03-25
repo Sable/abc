@@ -8,28 +8,47 @@ aspect NonNullEmit {
       line = 1;
       column = 1;
     }
+
+    private void detectNextLine(int c, int previous) {
+      if(c == 0x0a) { // LF
+        if(previous != 0x0d)
+          this.line++;
+        this.column = 1;
+      }
+      else if(c == 0x0d) { // CR
+        this.line++;
+        this.column = 1;
+      }
+      else if(c == 0x85) { // NEL
+        this.line++;
+        this.column = 1;
+      }
+      else if(c == 0x0c) { // FF
+        this.line++;
+        this.column = 1;
+      }
+      else if(c == 0x2028) { // LS
+        this.line++;
+        this.column = 1;
+      }
+      else if(c == 0x2029) { // PS
+        this.line++;
+        this.column = 1;
+      }
+    }
+
     public void emitUntil(int line, int column, java.io.PrintWriter w) throws java.io.IOException {
       if(line == 0 || column == 0)
         return;
       l: while(this.line < line || this.column < column) {
-        boolean newLine = false;
+        int previous = 0;
         while(this.line < line) {
           int c = r.read();
           if(c == -1)
             break l;
           w.write((char)c);
-          if(!newLine && c == '\r') {
-            this.line++;
-            this.column = 1;
-          }
-          else if(c == '\n') {
-            this.line++;
-            this.column = 1;
-            newLine = true;
-          }
-          else {
-            newLine = false;
-          }
+          detectNextLine(c, previous);
+          previous = c;
         }
         while(this.column < column) {
           int c = r.read();
@@ -41,24 +60,14 @@ aspect NonNullEmit {
       }
     }
     public void emitUntil(char stop, java.io.PrintWriter w) throws java.io.IOException {
-      boolean newLine = false;
+      int previous = 0;
       while(true) {
         int c = r.read();
         if(c == -1)
           break;
         w.write((char)c);
-        if(!newLine && c == '\r') {
-          this.line++;
-          this.column = 1;
-        }
-        else if(c == '\n') {
-          this.line++;
-          this.column = 1;
-          newLine = true;
-        }
-        else {
-          newLine = false;
-        }
+        detectNextLine(c, previous);
+        previous = c;
         if(c == stop)
           return;
       }
@@ -72,7 +81,7 @@ aspect NonNullEmit {
     String destinationPath = Program.getValueForOption("-d");
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
       CompilationUnit unit = (CompilationUnit)iter.next();
-      if(unit.fromSource()) {
+      if(unit.canBeAnnotated()) {
         String fileName = unit.pathName();
         String destinationName = destinationPath + java.io.File.separator + unit.relativeName();
         System.out.println("Writing " + destinationName);
@@ -96,7 +105,7 @@ aspect NonNullEmit {
   public void Program.emitTest() {
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
       CompilationUnit unit = (CompilationUnit)iter.next();
-      if(unit.fromSource()) {
+      if(unit.canBeAnnotated()) {
         String fileName = unit.pathName();
         try {
           Input input = new Input(fileName);
@@ -173,17 +182,21 @@ aspect NonNullEmit {
   }
 
   public void VariableDeclaration.emitAnnotations(java.io.PrintWriter p) {
-    if(addNonNull())
-      p.write(Program.nonNullAnnotation());
-    if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write(Program.rawAnnotation());
+    if(firstVariable() == this) {
+      if(addNonNull())
+        p.write(Program.nonNullAnnotation());
+      if(inferedRaw() && !getModifiers().isRawObjectType())
+        p.write(Program.rawAnnotation());
+    }
   }
 
   public void FieldDeclaration.emitAnnotations(java.io.PrintWriter p) {
-    if(addNonNull())
-      p.write(Program.nonNullAnnotation());
-    if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write(Program.rawAnnotation());
+    if(firstVariable() == this) {
+      if(addNonNull())
+        p.write(Program.nonNullAnnotation());
+      if(inferedRaw() && !getModifiers().isRawObjectType())
+        p.write(Program.rawAnnotation());
+    }
   }
 
   public void MethodDecl.emitAnnotations(java.io.PrintWriter p) {

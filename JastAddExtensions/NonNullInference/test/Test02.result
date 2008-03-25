@@ -4,7 +4,7 @@ public class Test02 {
   // testing inference for various expressions
   void test(boolean condition) {
     // class instantiation
-    Test02 @NonNull l1 = new Test02(), @NonNull l2 = new Test02(); 
+    @NonNull Test02 l1 = new Test02(), l2 = new Test02(); 
     // conditional expr
     @NonNull Test02 l3 = condition ? l1 : l2; // @NonNull: both possible values are non-null
     // cast

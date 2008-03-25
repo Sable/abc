@@ -89,7 +89,7 @@ aspect NonNullInference {
   // collect returnValues for methods from return statements through the generic collecting phase in the front-end
   public void ReturnStmt.updateRemoteAttributeCollectionsFrontend() {
     if(hasResult()) {
-      BodyDecl bodyDecl = hostBodyDecl();
+      BodyDecl bodyDecl = enclosingBodyDecl();
       if(bodyDecl instanceof MethodDecl) {
         MethodDecl m = (MethodDecl)bodyDecl;
         if(m.type().isReferenceType())
@@ -173,34 +173,44 @@ aspect NonNullInference {
   syn lazy boolean FieldDeclaration.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
     if(isStatic()) return false;
-    if(getModifiers().isNotNull()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
-    if(hasInit() && !getInit().inferedNonNull())
-      return false;
-    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
-      Expr rhs = (Expr)iter.next();
-      if(!rhs.inferedNonNull())
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
+    FieldDeclaration first = firstVariable();
+    if(first != this) return first.inferedNonNull();
+    for(Iterator i2 = first.variableSet().iterator(); i2.hasNext(); ) {
+      FieldDeclaration v = (FieldDeclaration)i2.next();
+      if(v.getModifiers().isNotNull()) return true;
+      if(v.hasInit() && !v.getInit().inferedNonNull())
         return false;
-    }
-
-    for(int j = 0; j < hostType().getNumBodyDecl(); j++) {
-      if(hostType().getBodyDecl(j) instanceof ConstructorDecl) {
-        ConstructorDecl c = (ConstructorDecl)hostType().getBodyDecl(j);
-          if(!c.isDAafter(this))
-            return false;
+      for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(!rhs.inferedNonNull())
+          return false;
+      }
+ 
+      for(int j = 0; j < hostType().getNumBodyDecl(); j++) {
+        if(hostType().getBodyDecl(j) instanceof ConstructorDecl) {
+          ConstructorDecl c = (ConstructorDecl)hostType().getBodyDecl(j);
+            if(!c.isDAafter(v))
+              return false;
+        }
       }
     }
     return true;
   }
   syn lazy boolean VariableDeclaration.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
-    if(getModifiers().isNotNull()) return true;
-    if(hasInit() && !getInit().inferedNonNull())
-      return false;
-    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
-      Expr rhs = (Expr)iter.next();
-      if(!rhs.inferedNonNull())
+    VariableDeclaration first = firstVariable();
+    if(first != this) return first.inferedNonNull();
+    for(Iterator i2 = first.variableSet().iterator(); i2.hasNext(); ) {
+      VariableDeclaration v = (VariableDeclaration)i2.next();
+      if(v.getModifiers().isNotNull()) return true;
+      if(v.hasInit() && !v.getInit().inferedNonNull())
         return false;
+      for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(!rhs.inferedNonNull())
+          return false;
+      }
     }
     return true;
   }
@@ -222,7 +232,7 @@ aspect NonNullInference {
   syn lazy boolean ParameterDeclaration.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
     if(getModifiers().isNotNull()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
     if(getParent().getParent() instanceof MethodDecl) {
       int i = getParent().getIndexOfChild(this);
       MethodDecl hostMethod = (MethodDecl)getParent().getParent();
@@ -252,7 +262,7 @@ aspect NonNullInference {
   syn lazy boolean MethodDecl.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
     if(getModifiers().isNotNull()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
     MethodDecl firstMethod = firstMethod();
     if(this != firstMethod)
       return firstMethod.inferedNonNull();
@@ -321,27 +331,37 @@ aspect NonNullInference {
   syn lazy boolean FieldDeclaration.inferedRaw() circular [false] {
     if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
-    if(getModifiers().isRawObjectType()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
-    if(hasInit() && getInit().inferedRaw())
-      return true;
-    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
-      Expr rhs = (Expr)iter.next();
-      if(rhs.inferedRaw())
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
+    FieldDeclaration first = firstVariable();
+    if(first != this) return first.inferedRaw();
+    for(Iterator i2 = first.variableSet().iterator(); i2.hasNext(); ) {
+      FieldDeclaration f = (FieldDeclaration)i2.next();
+      if(f.getModifiers().isRawObjectType()) return true;
+      if(f.hasInit() && f.getInit().inferedRaw())
         return true;
+      for(Iterator iter = f.assignments().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(rhs.inferedRaw())
+          return true;
+      }
     }
     return false;
   }
   syn lazy boolean VariableDeclaration.inferedRaw() circular [false] {
     if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
-    if(getModifiers().isRawObjectType()) return true;
-    if(hasInit() && getInit().inferedRaw())
-      return true;
-    for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
-      Expr rhs = (Expr)iter.next();
-      if(rhs.inferedRaw())
+    VariableDeclaration first = firstVariable();
+    if(first != this) return first.inferedRaw();
+    for(Iterator i2 = first.variableSet().iterator(); i2.hasNext(); ) {
+      VariableDeclaration v = (VariableDeclaration)i2.next();
+      if(v.getModifiers().isRawObjectType()) return true;
+      if(v.hasInit() && v.getInit().inferedRaw())
         return true;
+      for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(rhs.inferedRaw())
+          return true;
+      }
     }
     return false;
   }
@@ -365,7 +385,7 @@ aspect NonNullInference {
     if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
     if(getModifiers().isRawObjectType()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
     if(getParent().getParent() instanceof MethodDecl) {
       int i = getParent().getIndexOfChild(this);
       MethodDecl hostMethod = (MethodDecl)getParent().getParent();
@@ -397,7 +417,7 @@ aspect NonNullInference {
     if(!Program.rawEnabled) return false;
     if(!type().isReferenceType()) return false;
     if(getModifiers().isRawObjectType()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
     MethodDecl firstMethod = firstMethod();
     if(this != firstMethod)
       return firstMethod.inferedRaw();
@@ -440,7 +460,7 @@ aspect NonNullInference {
     if(!Program.rawEnabled) return false;
     if(isStatic()) return false;
     if(getModifiers().isRawThisObjectType()) return true;
-    if(!hostType().compilationUnit().fromSource()) return false;
+    if(!hostType().compilationUnit().canBeAnnotated()) return false;
     MethodDecl firstMethod = firstMethod();
     if(this != firstMethod)
       return firstMethod.inferedRawThis();
@@ -600,4 +620,95 @@ aspect NonNullInference {
     return set;
   }
 
+  syn lazy boolean CompilationUnit.canBeAnnotated() = 
+    fromSource() && ((Program)getParent().getParent()).files().contains(relativeName());
+
+
+  syn lazy VariableDeclaration VariableDeclaration.firstVariable() {
+    if(!(getParent() instanceof List))
+      return this;
+    List list = (List)getParent();
+    int i = list.getIndexOfChild(this);
+    if(i == 0 || !(list.getChild(i-1) instanceof VariableDeclaration))
+      return this;
+    VariableDeclaration prev = (VariableDeclaration)list.getChild(i-1);
+    if(sameVariableSet(prev))
+      return prev.firstVariable();
+    else
+      return this;
+  }
+
+  syn SimpleSet VariableDeclaration.variableSet() {
+    if(firstVariable() != this) return SimpleSet.emptySet;
+    if(!(getParent() instanceof List))
+      return SimpleSet.emptySet.add(this);
+    List list = (List)getParent();
+    int i = list.getIndexOfChild(this) + 1;
+    SimpleSet set = SimpleSet.emptySet.add(this);
+    while(i < list.getNumChild()) {
+      ASTNode node = list.getChild(i++);
+      if(!(node instanceof VariableDeclaration))
+        break;
+      VariableDeclaration v = (VariableDeclaration)node;
+      if(!sameVariableSet(v))
+        break;
+      set = set.add(v);
+    }
+    return set;
+  }
+
+  syn boolean VariableDeclaration.sameVariableSet(VariableDeclaration v) {
+    // Two variable declarations belong to the same composite declaration
+    // if their element type access has the same start location
+    Access a1 = getTypeAccess();
+    while(a1 instanceof ArrayTypeAccess)
+      a1 = ((ArrayTypeAccess)a1).getAccess();
+    Access a2 = v.getTypeAccess();
+    while(a2 instanceof ArrayTypeAccess)
+      a2 = ((ArrayTypeAccess)a2).getAccess();
+    return a1.getStart() == a2.getStart();
+  }
+
+  syn lazy FieldDeclaration FieldDeclaration.firstVariable() {
+    if(!(getParent() instanceof List))
+      return this;
+    List list = (List)getParent();
+    int i = list.getIndexOfChild(this);
+    if(i == 0 || !(list.getChild(i-1) instanceof FieldDeclaration))
+      return this;
+    FieldDeclaration prev = (FieldDeclaration)list.getChild(i-1);
+    if(sameVariableSet(prev))
+      return prev.firstVariable();
+    else
+      return this;
+  }
+
+  syn SimpleSet FieldDeclaration.variableSet() {
+    if(firstVariable() != this) return SimpleSet.emptySet;
+    List list = (List)getParent();
+    int i = list.getIndexOfChild(this) + 1;
+    SimpleSet set = SimpleSet.emptySet.add(this);
+    while(i < list.getNumChild()) {
+      ASTNode node = list.getChild(i++);
+      if(!(node instanceof FieldDeclaration))
+        break;
+      FieldDeclaration v = (FieldDeclaration)node;
+      if(!sameVariableSet(v))
+        break;
+      set = set.add(v);
+    }
+    return set;
+  }
+
+  syn boolean FieldDeclaration.sameVariableSet(FieldDeclaration v) {
+    // Two variable declarations belong to the same composite declaration
+    // if their element type access has the same start location
+    Access a1 = getTypeAccess();
+    while(a1 instanceof ArrayTypeAccess)
+      a1 = ((ArrayTypeAccess)a1).getAccess();
+    Access a2 = v.getTypeAccess();
+    while(a2 instanceof ArrayTypeAccess)
+      a2 = ((ArrayTypeAccess)a2).getAccess();
+    return a1.getStart() == a2.getStart();
+  }
 }
