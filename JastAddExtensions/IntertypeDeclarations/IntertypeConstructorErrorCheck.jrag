@@ -133,7 +133,7 @@ aspect IntertypeConstructorErrorCheck {
 
   refine TypeHierarchyCheck public void SuperAccess.nameCheck() {
     if(isQualified()) {
-      if(!thisType().isInnerTypeOf(qualifier().type()) && thisType() != qualifier().type())
+      if(!thisType().isInnerTypeOf(decl()) && thisType() != decl())
         error("qualified super must name an enclosing type");
       if(inStaticContext()) {
         error("*** Qualified super may not occur in static context");
@@ -155,7 +155,7 @@ aspect IntertypeConstructorErrorCheck {
       // 15.8.4
       if(inStaticContext())
         error("qualified this may not occur in static context");
-      else if(!thisType().isInnerTypeOf(qualifier().type()) && thisType() != qualifier().type())
+      else if(!thisType().isInnerTypeOf(decl()) && thisType() != decl())
         error("qualified this must name an enclosing type: " + getParent());
     }
     // 8.4.3.2
