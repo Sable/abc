@@ -49,7 +49,8 @@ public class AbcExtension extends abc.main.AbcExtension {
      */
     public void initLexerKeywords(AbcLexer lexer) {
         lexer.addGlobalKeyword("abstract",      new LexerAction_c(new Integer(Terminals.ABSTRACT)));
-        lexer.addGlobalKeyword("assert",        new LexerAction_c(new Integer(Terminals.ASSERT)));
+        if(!abc.main.Debug.v().java13)
+        	lexer.addGlobalKeyword("assert",        new LexerAction_c(new Integer(Terminals.ASSERT)));
         lexer.addGlobalKeyword("boolean",       new LexerAction_c(new Integer(Terminals.BOOLEAN)));
         lexer.addGlobalKeyword("break",         new LexerAction_c(new Integer(Terminals.BREAK)));
         lexer.addGlobalKeyword("byte",          new LexerAction_c(new Integer(Terminals.BYTE)));
@@ -177,19 +178,21 @@ public class AbcExtension extends abc.main.AbcExtension {
         lexer.addAspectJKeyword("this", new LexerAction_c(new Integer(Terminals.THIS)));
         lexer.addPointcutIfExprKeyword("this", new LexerAction_c(new Integer(Terminals.THIS)));
         // keywords added to the Java part:
-        lexer.addJavaKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT),
-                                new Integer(lexer.aspectj_state())));
         lexer.addAspectJKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT),
                                 new Integer(lexer.aspectj_state())));
         lexer.addPointcutIfExprKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT),
                                 new Integer(lexer.aspectj_state())));
-        lexer.addJavaKeyword("pointcut", new LexerAction_c(new Integer(Terminals.POINTCUT),
-                                new Integer(lexer.pointcut_state())));
         lexer.addAspectJKeyword("pointcut", new LexerAction_c(new Integer(Terminals.POINTCUT),
                                 new Integer(lexer.pointcut_state())));
         lexer.addPointcutIfExprKeyword("pointcut", new LexerAction_c(new Integer(Terminals.POINTCUT),
                                 new Integer(lexer.pointcut_state())));
-
+        
+        if(!abc.main.Debug.v().pureJava) {
+            lexer.addJavaKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT),
+            					new Integer(lexer.aspectj_state())));
+            lexer.addJavaKeyword("pointcut", new LexerAction_c(new Integer(Terminals.POINTCUT),
+                                new Integer(lexer.pointcut_state())));
+        }
     }
 
 	
