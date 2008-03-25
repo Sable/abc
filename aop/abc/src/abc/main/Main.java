@@ -183,104 +183,12 @@ public class Main {
 
         while(!args.isEmpty())
         { 
-
-            if (args.top().equals("-noImportError"))
-                // don't report unresolved imports
-            { // nothing to do, because we don't do it anyway.
-            }
-
-            // -Xlint, -Xlint:ignore, -Xlint:warning, -Xlint:errror
-            else if (args.top().equals("-Xlint") ||
-                    args.top().equals("-Xlint:warning") ||
-                    args.top().equals("-Xlint:error") ||
-                    args.top().equals("-Xlint:ignore"))
-            { compilerOptionIgnored(args.top(),
-                    "abc does not support Xlint");
-                if (args.top().equals("Xlint") || args.top().equals("Xlint:warning"))
-                    abc.main.Options.v().Xlint = abc.main.Options.WARNING;
-                else if (args.top().equals("Xlint:error"))
-                    abc.main.Options.v().Xlint = abc.main.Options.ERROR;
-                else
-                    abc.main.Options.v().Xlint = abc.main.Options.IGNORE;
-            }
-
-            // -1.3, -1.4
-            else if (args.top().equals("-1.3"))
-                abc.main.Debug.v().java13=true;
-            else if (args.top().equals("-1.4"))
-                abc.main.Debug.v().java13=false;
-
-            // -target 1.1,  -target 1.2,  -target 1.3, -target 1.4
-            else if (args.top().equals("-target"))
-            {
-                String arg = args.argTo();
-                if (arg.equals("1.1") || arg.equals("1.2") ||
-                        arg.equals("1.3") || arg.equals("1.4"))
-                    compilerOptionIgnored("-target " + arg,
-                            "abc-generated code should run on any 1.1 - 1.4 VM.");
-                else
-                    compilerOptionIgnored("-target " + arg,
-                            arg + " is not a known target number.");
-            }
-
-            // -source 1.3,  -source 1.4
-            else if (args.top().equals("-source"))
-            {
-                String arg = args.argTo();
-                if (arg.equals("1.3"))
-                    compilerOptionIgnored("-source 1.3",
-                            "abc treats asserts as keywords as in 1.4");
-                else if (arg.equals("1.4"))
-                { // that's what we do ... so ok
-                }
-                else
-                    compilerOptionIgnored("-source " + arg,
-                            arg + " is not a known source number.");
-            }
-
-            // -nowarn, -warn:items  where items is a comma-delmited list
-            else if (args.top().equals("-nowarn"))
-            { // TODO: remove following line when compiler looks at flag
-                compilerOptionIgnored(args.top(), "warnings not disabled.");
-                abc.main.Options.v().warn = abc.main.Options.NOWARNINGS;
-            }
-            else if (args.top().startsWith("-warn:"))
-            { // TODO: remove following line when compiler looks at flag
-                compilerOptionIgnored(args.top(),
-                        " warning flags not implemented yet.");
-                // special case of -warn:none
-                if (args.top().equals("-warn:none"))
-                    abc.main.Options.v().warn = abc.main.Options.NOWARNINGS;
-                else
-                { String kindList = args.top().substring(6); // strip off "-warn:"
-                    StringTokenizer kinds = new StringTokenizer(kindList,",");
-                    // iterate through rest of list, adding them if they are allowed
-                    { while (kinds.hasMoreTokens())
-                        { String nextKind = kinds.nextToken();
-                            if (abc.main.Options.v().isValidWarningName(nextKind))
-                                abc.main.Options.v().addWarning(nextKind);
-                            else
-                                compilerOptionIgnored("-warn:" + nextKind,
-                                        "is not a valid warning kind.");
-                        }
-                    }
-                }
-            }
-
-            // -g, -g:none, -g:{items} where items can
-            //              contain lines,vars,source
-            else if (args.top().equals("-g"))
-                compilerOptionIgnored(args.top(),
-                        "abc does not yet support creating debug info.");
-            else if (args.top().startsWith("-g:"))
-                compilerOptionIgnored(args.top(),
-                        "abc does not yet support creating debug info");
-
             /* -------- ABC-SPECIFIC OPTIONS, NO AJC EQUIVALENTS ----------*/
             // abc-specific options which have no ajc equivalents
+        	// that are too specific for OptionsParser/options.xml
 
             // TODO: should actually list only soot options useful for abc
-            else if (args.top().equals("-help:soot"))
+            if (args.top().equals("-help:soot"))
             { G.v().out.println(soot.options.Options.v().getUsage());
                 throw new CompilerAbortedException("Acted on -help:soot option.");
             }
@@ -398,6 +306,14 @@ public class Main {
             abc.main.Debug.v().abcTimer=true;
             abc.main.Debug.v().polyglotTimer=true;
             abc.main.Debug.v().sootResolverTimer=true;
+        }
+        
+        if(OptionsParser.v().source().equals("1.3")) {
+        	Debug.v().java13 = true;
+        } else if(OptionsParser.v().source().equals("1.5")) {
+        	Debug.v().java15 = true;
+        } else if(!OptionsParser.v().source().equals("1.4")) {
+        	throw new IllegalArgumentException("Unknown source release " + OptionsParser.v().source());
         }
         
         // now we have parsed the arguments we know which AbcExtension

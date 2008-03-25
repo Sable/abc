@@ -253,6 +253,9 @@ public class Debug {
     // covariant return types (since the API uses them).
     public boolean allowCovariantReturn = false;
     
+    // Suppress AspectJ keywords
+    public boolean pureJava = false;
+    
     //verbose mode for static tracematch analysis
     public boolean debugTmAnalysis = false;
     //dump shadow statistics for static tracematch optimization 
