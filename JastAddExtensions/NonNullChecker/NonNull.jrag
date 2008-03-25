@@ -116,8 +116,8 @@ aspect NonNull {
   refine TypeAnalysis eq StringLiteral.type() = TypeAnalysis.StringLiteral.type().nonNullType();
   
   // applies to both this and super
-  refine LookupType eq ThisAccess.decl() {
-    TypeDecl typeDecl = LookupType.ThisAccess.decl();
+  refine Generics eq ThisAccess.decl() {
+    TypeDecl typeDecl = Generics.ThisAccess.decl();
     if(!typeDecl.isNonNull()) {
       return nonNullThisType();
     }
