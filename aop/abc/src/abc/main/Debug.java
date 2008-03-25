@@ -207,6 +207,7 @@ public class Debug {
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before
     public boolean java13=false; // java 1.3 semantics
+    public boolean java15=false; // java 1.5 semantics
 
     // temporary tracematch stuff
     public boolean noNegativeBindings = false;

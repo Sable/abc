@@ -203,6 +203,23 @@ any of their subdirectories.
       <long_desc>Use Java 1.4 compliance mode. This is the default.
       </long_desc>
     </boolopt>
+    <boolopt noparse="">
+      <alias>1.5</alias>
+      <ajc/>
+      <short_desc>Java 1.5 compliance mode.</short_desc>
+      <long_desc>Use Java 1.5 compliance mode. The default is 1.4.
+      </long_desc>
+    </boolopt>
+
+    <stringopt>
+       <alias>source</alias>
+       <default>1.4</default>
+       <set_arg_label>release</set_arg_label>
+       <short_desc>Provide source compatibility with specified release.</short_desc>
+       <long_desc>Provide source compatibility with specified release given by <use_arg_label/>. The default is 1.4.
+       </long_desc>
+    </stringopt>
+
     <boolopt>
       <alias>abc101runtime</alias>
       <short_desc>abc 1.0.1 runtime compliance mode.</short_desc>
