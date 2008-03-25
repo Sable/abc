@@ -6,6 +6,8 @@ jastadd.exts.loc=../JastAddExtensions
 
 # ---- shouldn't need to edit beneath this line ---- #
 frontend=${jastadd.loc}/Java1.4Frontend
+frontend1.5=${jastadd.loc}/Java1.5Frontend
 javabackend=${jastadd.loc}/Java1.4Backend
 itds=${jastadd.exts.loc}/IntertypeDeclarations
 backend=${jastadd.exts.loc}/JimpleBackend
+backend1.5=${jastadd.exts.loc}/Jimple1.5Backend
