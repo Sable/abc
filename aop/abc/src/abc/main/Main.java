@@ -283,6 +283,9 @@ public class Main {
             soot_args.add("-d");
             soot_args.add(".");
         }
+        
+        if(OptionsParser.v().g())
+        	compilerOptionIgnored("g", "abc currently does not support generating debug information.");
 
         if(OptionsParser.v().O()>0) {
             soot_args.add("-O");
