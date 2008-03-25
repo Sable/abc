@@ -193,6 +193,7 @@
       <pathelement location="${soot.loc}"/>
       <pathelement location="${jasmin.loc}"/>
       <pathelement location="${xact.loc}"/>
+      <pathelement location="../libs/ant.jar"/>
       <pathelement
           location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
     </classpath>

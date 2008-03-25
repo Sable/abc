@@ -76,6 +76,8 @@ public class CompileSequence extends abc.main.CompileSequence {
     try {
       Collection c = new ArrayList();
       c.addAll(aspect_sources);
+      if(abc.main.options.OptionsParser.v().verbose())
+        c.add("-verbose");
       c.add("-classpath");
       c.add(OptionsParser.v().classpath());
       String[] args = new String[c.size()];
