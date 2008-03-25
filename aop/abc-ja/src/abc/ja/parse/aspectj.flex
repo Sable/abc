@@ -371,6 +371,15 @@ SignedInteger = [-+]? [0-9]+
 OctalEscape = \\ [0-7]
             | \\ [0-7][0-7]
             | \\ [0-3][0-7][0-7]
+
+
+HexadecimalFloatingPointLiteral = {HexSignificand} {BinaryExponent}
+
+HexSignificand = {HexNumeral} [\.]?
+ | 0 [xX] [0-9a-fA-F]* \. [0-9a-fA-F]+
+
+BinaryExponent = [pP] [+-]? [0-9]+
+           
             
 /* string and character literals */
 //StringCharacter = [^\r\n\"\\]
@@ -533,6 +542,9 @@ OctalEscape = \\ [0-7]
     "<<="  { return op(Terminals.LSHIFTEQ);   }
     ">>="  { return op(Terminals.RSHIFTEQ);   }
     ">>>=" { return op(Terminals.URSHIFTEQ);  }
+    "@"    { return op(Terminals.AT); }
+    "..."  { return op(Terminals.ELLIPSIS); }
+
 
     /* 3.10.4 Character Literals */
     \'      { enterLexerState(CHARACTER); sb.setLength(0); }
@@ -556,6 +568,11 @@ OctalEscape = \\ [0-7]
   {FloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
   [0-9]+ {ExponentPart}? [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
   [0-9]+ {ExponentPart}? [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
+
+  {HexadecimalFloatingPointLiteral} [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
+  {HexadecimalFloatingPointLiteral} [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
+  {HexadecimalFloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
+
 }
 
 <POINTCUT> {

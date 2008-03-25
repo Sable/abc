@@ -468,6 +468,7 @@ aspect PatternsCodegen
     // default is to not match on subtype
     eq TypeDecl.getBodyDecl().matchSubtype() = false;
     eq AspectDecl.getPerClause().matchSubtype() = false;
+    eq Program.getChild().matchSubtype() = false;
 
     syn boolean Pattern.matchesType(SootClass c) = false;
     eq SimpleNamePattern.matchesType(SootClass c) {

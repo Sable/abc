@@ -1,0 +1,137 @@
+aspect IntertypeJimple15 {
+  refine IntertypeJimple public soot.Value VarAccess.eval(Body b)
+  to refine GenericsCodegen public soot.Value VarAccess.eval(Body b) {
+     if(decl() instanceof IntertypeFieldDeclaration) {
+      IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
+
+      if (f.hostType().isInterfaceDecl()) {
+        soot.Local base = base(b);
+        ArrayList list = new ArrayList();
+
+        if (fieldQualifierType().isInterfaceDecl()) {
+          return Jimple.v().newInterfaceInvokeExpr(
+            base,
+            f.createInterfaceGetter().sootRef(),
+            list);
+        }
+        return Jimple.v().newInstanceFieldRef(
+          base,
+          f.introducedSootRef(fieldQualifierType()));
+      }
+    }
+    return GenericsCodegen.VarAccess.eval(b);
+
+  }
+  refine IntertypeJimple public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue)
+  to refine GenericsCodegen public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
+    if(decl() instanceof IntertypeFieldDeclaration) {
+      IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)decl();
+
+      if (f.hostType().isInterfaceDecl()) {
+        soot.Local base = base(b);
+        ArrayList list = new ArrayList();
+        list.add(asLocal(b, rvalue, lvalue.getType()));
+
+        if (fieldQualifierType().isInterfaceDecl()) {
+          return asLocal(b,
+            Jimple.v().newInterfaceInvokeExpr(
+              base,
+              f.createInterfaceSetter().sootRef(),
+              list));
+        }
+      }
+    }
+    return GenericsCodegen.VarAccess.emitStore(b, lvalue, rvalue);
+  }
+
+  refine VariableArityParametersCodegen public void MethodAccess.transformation()
+  to refine IntertypeMethodCodegeneration public void MethodAccess.transformation() {
+    if(decl().isVariableArity() && !invokesVariableArityAsArray()) {
+      // arguments to normal parameters
+      List list = new List();
+      for(int i = 0; i < decl().getNumParameter() - 1; i++)
+        list.add(getArg(i).fullCopy());
+      // arguments to variable arity parameters
+      List last = new List();
+      for(int i = decl().getNumParameter() - 1; i < getNumArg(); i++)
+        last.add(getArg(i).fullCopy());
+      // build an array holding arguments
+      Access typeAccess = decl().lastParameter().type().elementType().createQualifiedAccess();
+      for(int i = 0; i < decl().lastParameter().type().dimension(); i++)
+        typeAccess = new ArrayTypeAccess(typeAccess);
+      list.add(new ArrayCreationExpr(typeAccess, new Opt(new ArrayInit(last))));
+      // replace argument list with augemented argument list
+      setArgList(list);
+    }
+    IntertypeMethodCodegeneration.MethodAccess.transformation();
+  }
+
+  refine IntertypeJimple private SootMethodRef MethodAccess.sootRef()
+  to refine GenericsCodegen private SootMethodRef MethodAccess.sootRef() {
+    if(decl() instanceof IntertypeMethodDecl) {
+      IntertypeMethodDecl decl = (IntertypeMethodDecl)decl();
+      ArrayList parameters = new ArrayList();
+      for(int i = 0; i < decl.getNumParameter(); i++)
+        parameters.add(decl.getParameter(i).type().getSootType());
+      SootMethodRef ref = Scene.v().makeMethodRef(
+        methodQualifierType().getSootClassDecl(),
+        decl.delegateName(),
+        parameters,
+        decl.type().getSootType(),
+        decl.isStatic()
+      );
+      return ref;
+    }
+    return GenericsCodegen.MethodAccess.sootRef();
+  }
+
+  refine IntertypeConstructorNameAnalysis eq SuperConstructorAccess.decls()
+  to refine MethodSignature eq SuperConstructorAccess.decls() {
+    Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?
+      thisType().lookupSuperConstructor() : lookupSuperConstructor();
+    return chooseConstructor(c, getArgList());
+  }
+
+  refine Generics public void TypeDecl.typeCheck()
+  to refine Pointcuts public void TypeDecl.typeCheck() {
+    Pointcuts.TypeDecl.typeCheck();
+    ArrayList list = new ArrayList();
+    list.addAll(implementedInterfaces());
+    for(int i = 0; i < list.size(); i++) {
+      InterfaceDecl decl = (InterfaceDecl)list.get(i);
+      if(decl instanceof ParInterfaceDecl) {
+        ParInterfaceDecl p = (ParInterfaceDecl)decl;
+        for(Iterator i2 = list.listIterator(i); i2.hasNext(); ) {
+          InterfaceDecl decl2 = (InterfaceDecl)i2.next();
+          if(decl2 instanceof ParInterfaceDecl) {
+            ParInterfaceDecl q = (ParInterfaceDecl)decl2;
+            if(p != q && p.genericDecl() == q.genericDecl() && !p.sameArgument(q))
+              error(p.genericDecl().name() + " cannot be inherited with different arguments: " +
+                p.typeName() + " and " + q.typeName());
+          }
+        }
+      }
+    }
+  }
+
+  refine Generics eq ThisAccess.decl()
+  to refine IntertypeConstructorNameAnalysis eq ThisAccess.decl() {
+   TypeDecl typeDecl = IntertypeConstructorNameAnalysis.ThisAccess.decl();
+    if(typeDecl instanceof ParTypeDecl)
+      typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
+    return typeDecl;
+  }
+
+  refine Generics eq SuperAccess.decl()
+  to refine IntertypeConstructorNameAnalysis eq SuperAccess.decl() {
+   TypeDecl typeDecl = IntertypeConstructorNameAnalysis.SuperAccess.decl();
+    if(typeDecl instanceof ParTypeDecl)
+      typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
+    return typeDecl;
+  }
+
+  refine GenericsCodegen eq TypeDecl.getSootClassDecl()
+  to refine AspectJCodegen eq TypeDecl.getSootClassDecl() = erasure() != this ? 
+    erasure().getSootClassDecl() : AspectJCodegen.TypeDecl.getSootClassDecl();
+
+}

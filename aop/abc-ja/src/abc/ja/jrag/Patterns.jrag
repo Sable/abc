@@ -28,6 +28,7 @@ aspect Patterns
     // Default: Try to interpret as non-member type pattern.
     eq TypeDecl.getBodyDecl().denotesMember() = false;
     eq AspectDecl.getPerClause().denotesMember() = false;
+    eq Program.getChild().denotesMember() = false;
     
     // Children of Dot[Dot]NamePattern are never member patterns.
     eq DotNamePattern.getLhs().denotesMember() = false;

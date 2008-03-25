@@ -112,6 +112,11 @@ public class AbcExtension extends abc.main.AbcExtension {
         lexer.addGlobalKeyword("volatile",      new LexerAction_c(new Integer(Terminals.VOLATILE)));
         lexer.addGlobalKeyword("while",         new LexerAction_c(new Integer(Terminals.WHILE)));
 
+        if(abc.main.Debug.v().java15) {
+          lexer.addJavaKeyword("enum", new LexerAction_c(new Integer(Terminals.ENUM)));
+          lexer.addAspectJKeyword("enum", new LexerAction_c(new Integer(Terminals.ENUM)));
+        }
+
         lexer.addPointcutKeyword("adviceexecution", new LexerAction_c(new Integer(Terminals.PC_ADVICEEXECUTION)));
         lexer.addPointcutKeyword("args", new LexerAction_c(new Integer(Terminals.PC_ARGS)));
         lexer.addPointcutKeyword("call", new LexerAction_c(new Integer(Terminals.PC_CALL)));
