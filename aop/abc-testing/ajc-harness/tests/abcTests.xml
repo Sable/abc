@@ -2658,6 +2658,10 @@
             <message kind="error" line="19"/>
             <ajcmessage kind="error" line="7"/>
             <ajcmessage kind="error" line="8"/>
+            <jamessage kind="error" line="7"/>
+            <jamessage kind="error" line="8"/>
+            <jamessage kind="error" line="12"/>
+            <jamessage kind="error" line="13"/>
         </compile>
     </ajc-test>
 
