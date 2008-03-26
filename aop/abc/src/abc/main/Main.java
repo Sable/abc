@@ -187,8 +187,22 @@ public class Main {
             // abc-specific options which have no ajc equivalents
         	// that are too specific for OptionsParser/options.xml
 
+            // -Xlint, -Xlint:ignore, -Xlint:warning, -Xlint:errror
+            if (args.top().equals("-Xlint") ||
+                    args.top().equals("-Xlint:warning") ||
+                    args.top().equals("-Xlint:error") ||
+                    args.top().equals("-Xlint:ignore"))
+            { compilerOptionIgnored(args.top(),
+                    "abc does not support Xlint");
+                if (args.top().equals("Xlint") || args.top().equals("Xlint:warning"))
+                    abc.main.Options.v().Xlint = abc.main.Options.WARNING;
+                else if (args.top().equals("Xlint:error"))
+                    abc.main.Options.v().Xlint = abc.main.Options.ERROR;
+                else
+                    abc.main.Options.v().Xlint = abc.main.Options.IGNORE;
+            }
             // TODO: should actually list only soot options useful for abc
-            if (args.top().equals("-help:soot"))
+            else if (args.top().equals("-help:soot"))
             { G.v().out.println(soot.options.Options.v().getUsage());
                 throw new CompilerAbortedException("Acted on -help:soot option.");
             }
