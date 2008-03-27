@@ -174,7 +174,7 @@ public class TestCase {
 					}
 					
 					// There are some options we need to ignore, as they are for the original ajc harness only.
-					final String[] optionsToRemove = new String[] { "\\!eclipse", "\\!Xlint", "-Xlint", "-Xlint:error", "-Xlint:warning", "-Xlint:ignore", "-1.3", "-1.4", "-nowarn", "-warn:constructorName", "-warn:none", "-warn:deprecation" };
+					final String[] optionsToRemove = new String[] { "\\!eclipse", "\\!Xlint", "-Xlint:error", "-Xlint:warning", "-Xlint:ignore", "-Xlint", "-1.3", "-1.4", "-nowarn", "-warn:constructorName", "-warn:none", "-warn:deprecation" };
 					for(int j = 0; j < optionsToRemove.length; j++) {
 					    options = options.replaceAll(optionsToRemove[j], "");
 					}
