@@ -27,115 +27,21 @@
         <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
         <run class="InterfaceAndInner"></run>
     </ajc-test>
-<ajc-test title="Binds the pointcut formals to member variables instead of pointcut formals." num="259" keywords="from-errors" dir="errors" abccomment="abc catches the errors, but it doesn't do warnings yet. ODM July 5, 2004">
-        <compile options="-Xlint:warning" files="PointcutFormals.java">
-            <ajcmessage line="14" kind="error"></ajcmessage>
-            <ajcmessage line="15" kind="error"></ajcmessage>
-            <ajcmessage line="16" kind="warning"></ajcmessage>
-            <ajcmessage line="17" kind="warning"></ajcmessage>
-            <message line="14" kind="error"></message>
-            <message line="15" kind="error"></message>    
-        </compile>
-    </ajc-test>
-<ajc-test title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public" pr="494" num="314" keywords="from-errors" dir="new" abccomment="abc bails out earlier, but ok. ODM 11/08/04">
-        <compile options="-Xlint:ignore" files="IntroduceInnerInterfaceCF.java">
-            <ajcmessage line="18" kind="error"></ajcmessage>
-            <ajcmessage line="19" kind="error"></ajcmessage>
-            <ajcmessage line="20" kind="error"></ajcmessage>
-            <ajcmessage line="24" kind="error"></ajcmessage>
-            <ajcmessage line="42" kind="error"></ajcmessage>
-            <ajcmessage line="45" kind="error"></ajcmessage>
-            <ajcmessage line="48" kind="error"></ajcmessage>
-            <ajcmessage line="50" kind="error"></ajcmessage>
-            <ajcmessage line="58" kind="error"></ajcmessage>
-            <message line="58" kind="error"></message>
-            <jamessage line="18" kind="error"></jamessage>
-            <jamessage line="19" kind="error"></jamessage>
-            <jamessage line="20" kind="error"></jamessage>
-            <jamessage line="24" kind="error"></jamessage>
-            <jamessage line="42" kind="error"></jamessage>
-            <jamessage line="45" kind="error"></jamessage>
-            <jamessage line="48" kind="error"></jamessage>
-            <jamessage line="50" kind="error"></jamessage>
-            <jamessage line="58" kind="error"></jamessage>
-        </compile>
-    </ajc-test>
-<ajc-test title="advice and package visibility 1" pr="106" num="345" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="packagevisibility/PackagesAndAdvice.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"></compile>
-        <run class="packagevisibility.PackagesAndAdvice"></run>
-    </ajc-test>
-<ajc-test title="advice and package visibility 2" pr="106" num="346" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:error" files="packagevisibility/PackagesAndAdviceCf.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java">
-        <message line="29" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="calls: calls(...)" num="366" keywords="from-resolved_10x" dir="design/calls">
-        <compile options="-Xlint:ignore" files="Simple.java"></compile>
-        <run class="Simple"></run>
-    </ajc-test>
-<ajc-test title="Introducing methods on classes that implements inner-interfaces with +implements." num="404" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="IntroducingMethodsOnPlusImplementedInterfaces.java"></compile>
-        <run class="IntroducingMethodsOnPlusImplementedInterfaces"></run>
-    </ajc-test>
 <ajc-test title="around advice on calls within inner classes (including protected method calls) 1" num="440" keywords="from-resolved_10x" dir="new">
         <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
         <run class="AroundInnerCalls13"></run>
-    </ajc-test>
-<ajc-test title="Does the matrix coverage thing for the new method signatures" num="473" keywords="from-resolved_10x" dir="new">
-        <compile options="-1.4,-Xlint:ignore" files="MethodSignatures.java"></compile>
-        <run vm="1.4" class="MethodSignatures"></run>
-    </ajc-test>
-<ajc-test title="correct types of parameters at call-sites" num="476" keywords="from-resolved_10x" dir="new">
-        <compile options="-1.4,-Xlint:ignore" files="CallTypes.java"></compile>
-        <run vm="1.4" class="CallTypes"></run>
     </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
     </ajc-test>
-<ajc-test title="target type matching with messy interface hierarchies" num="499" keywords="from-resolved_10x" dir="new">
-        <compile options="-1.4,-Xlint:ignore" files="CallTypesI.java"></compile>
-        <run vm="1.4" class="CallTypesI"></run>
-    </ajc-test>
-<ajc-test title="Exception planning advice" pr="519" num="515" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="PR519.java"></compile>
-        <run class="PR519"></run>
-    </ajc-test>
-<ajc-test title="validate (enclosing) join point and source locations" pr="525" num="518" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="NegativeSourceLocation.java"></compile>
-        <run class="NegativeSourceLocation"></run>
-    </ajc-test>
-<ajc-test title="after advice on static method with pcd if() using result through pointcut" pr="590" num="538" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="PR590a.java">
-            <message line="29" kind="error"></message>
-            <message line="31" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="Overriding method implementations using introduction on interfaces" pr="654" num="569" keywords="from-resolved_10x,fail-unimplemented" dir="new">
-        <compile options="-Xlint:ignore" files="IntroductionsOverriding.java"></compile>
-        <run class="IntroductionsOverriding"></run>
-    </ajc-test>
-<ajc-test title="more coverage for around and concrete methods on interfaces" pr="654" num="570" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="MultiAndAround.java"></compile>
-        <run class="MultiAndAround"></run>
-    </ajc-test>
-<ajc-test title="! and declaring types with callee-side call join points" pr="695" num="574" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="NotAndDeclaringTypes.java"></compile>
-        <run class="NotAndDeclaringTypes"></run>
-    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
-    </ajc-test>
-<ajc-test title="privileged access to code outside the control of the compiler" pr="906" num="739" dir="bugs">
-        <compile options="-Xlint:warning" files="PrivilegeBeyondScope.java">
-		  <ajcmessage line="23" kind="warning"></ajcmessage>
-		  <message line="23" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
@@ -166,53 +72,6 @@
             <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
-<ajc-test title="XLint:ignore suppresses XLint warnings" num="820" dir="harness">
-        <compile options="-Xlint:ignore" files="XLintWarningTest.java"></compile>
-    </ajc-test>
-<ajc-test title="alias getCause for getWrappedThrowable in SoftException" pr="49250" num="884" dir="bugs">
-        <compile options="-Xlint:warning" files="GetCauseOnSoftException.java">
-        </compile>
-        <run vm="1.3" class="GetCauseOnSoftException"></run>
-    </ajc-test>
-<ajc-test title="SUID: Before execution advice" pr="41181" num="928" dir="bugs/serialVersionUID">
-		<compile files="Test.java, Util.java"></compile>
-        <run class="Test"></run>
-		<compile options="-Xlint:warning" files="Test.java, Util.java, BeforeExecutionAdvice.aj"></compile>
-        <run class="Util"></run>
-	</ajc-test>
-<ajc-test title="SUID: Around closure execution advice (-Xlint:ignore)" pr="41181" num="930" dir="bugs/serialVersionUID" comment="OK because ignoring warnings">
-		<compile files="Test.java, Util.java">
-		</compile>
-        <run class="Test"></run>
-		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj">
-		<message kind="warning"></message>
-		</compile>
-        <run options="-fail" class="Util"></run>
-	</ajc-test>
-<ajc-test title="SUID: thisJoinPoint with clinit method" pr="41181" num="933" dir="bugs/serialVersionUID" comment="OK if tjp private and existing clinit">
-		<compile files="ClinitTest.java, Util.java"></compile>
-        <run class="ClinitTest"></run>
-		<compile options="-Xlint:warning" files="ClinitTest.java, Util.java, TJP.aj"></compile>
-        <run options="-read" class="Util"></run>
-	</ajc-test>
-<ajc-test title="SUID: After returning staticinitialization advice with serialVersionUID field" pr="41181" num="935" dir="bugs/serialVersionUID" comment="OK because of serialVersionUID field">
-		<compile files="SuidTest.java, Util.java"></compile>
-        <run class="SuidTest"></run>
-		<compile options="-Xlint:warning" files="SuidTest.java, Util.java, AfterReturningStaticinitializationAdvice.aj"></compile>
-        <run class="Util"></run>
-	</ajc-test>
-<ajc-test title="SUID: Declare extends" pr="41181" num="938" dir="bugs/serialVersionUID" comment="OK">
-		<compile files="Test.java, Util.java"></compile>
-        <run class="Test"></run>
-		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareExtends.aj"></compile>
-        <run class="Util"></run>
-	</ajc-test>
-<ajc-test title="SUID: Declare implements non-Serializable (compile)" pr="41181" num="940" dir="bugs/serialVersionUID" comment="OK because not Serializable">
-		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplements.aj"></compile>
-	</ajc-test>
-<ajc-test title="SUID: Declare implements Serializable (compile)" pr="41181" num="941" dir="bugs/serialVersionUID" comment="OK because adding Serializable">
-		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplementsSerializable.aj"></compile>
-	</ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
             <message line="5" kind="warning"></message>
