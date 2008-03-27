@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 892ms, memory usage: 7602736.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 916ms, memory usage: 7754264.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1640ms, memory usage: 11009472.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1677ms, memory usage: 10577688.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1098ms, memory usage: 14440752.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1150ms, memory usage: 14421736.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 868ms, memory usage: 10077176.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 884ms, memory usage: 10041328.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,22 +36,58 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1628ms, memory usage: 4681320.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1555ms, memory usage: 4696176.
+
+
+Running test 259: errors/Binds the pointcut formals to member variables instead of pointcut formals.
+Commandline: abc -d errors -warn-unused-advice:off -Xlint:warning errors/PointcutFormals.java 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 259: "errors/Binds the pointcut formals to member variables instead of pointcut formals." failed in 279ms, memory usage: 4598816.
+
+
+Running test 314: new/introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroduceInnerInterfaceCF.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 314: "new/introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public" failed in 326ms, memory usage: 4592368.
+
+
+Running test 345: new/advice and package visibility 1
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/packagevisibility/PackagesAndAdvice.java new/packagevisibility/testPackage/Class1.java new/packagevisibility/testPackage/Class2.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 345: "new/advice and package visibility 1" failed in 323ms, memory usage: 8961056.
+
+
+Running test 346: new/advice and package visibility 2
+Commandline: abc -d new -warn-unused-advice:off -Xlint:error new/packagevisibility/PackagesAndAdviceCf.java new/packagevisibility/testPackage/Class1.java new/packagevisibility/testPackage/Class2.java 
+Illegal arguments: Unknown option -Xlint:error
+FAIL: Test 346: "new/advice and package visibility 2" failed in 314ms, memory usage: 8994288.
+
+
+Running test 366: design/calls/calls: calls(...)
+Commandline: abc -d design/calls -warn-unused-advice:off -Xlint:ignore design/calls/Simple.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 366: "design/calls/calls: calls(...)" failed in 389ms, memory usage: 9210712.
+
+
+Running test 404: new/Introducing methods on classes that implements inner-interfaces with +implements.
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroducingMethodsOnPlusImplementedInterfaces.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 404: "new/Introducing methods on classes that implements inner-interfaces with +implements." failed in 325ms, memory usage: 9707896.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@947c2.foo calls Outer$Inner@1463fbc.mi
+Outer@1c52139.foo calls Outer$Inner@1082824.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1463fbc.mi calls java.io.PrintStream@1025b94.println
+Outer$Inner@1082824.mi calls java.io.PrintStream@837d0b.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@947c2.foo calls Outer$InnerRandom@586c06.nextHook
+Outer@1c52139.foo calls Outer$InnerRandom@1d89bb5.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@586c06.nextHook calls Outer$InnerRandom@586c06.next
+Outer$InnerRandom@1d89bb5.nextHook calls Outer$InnerRandom@1d89bb5.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@947c2.foo calls X.nextInt
+Outer@1c52139.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -62,7 +98,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$7$around$942(AroundInnerCalls13.java:41)
+	at A.inline$4$around$921(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -71,7 +107,19 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4466ms, memory usage: 9937344.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4425ms, memory usage: 9922888.
+
+
+Running test 473: new/Does the matrix coverage thing for the new method signatures
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/MethodSignatures.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 473: "new/Does the matrix coverage thing for the new method signatures" failed in 337ms, memory usage: 8980792.
+
+
+Running test 476: new/correct types of parameters at call-sites
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/CallTypes.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 476: "new/correct types of parameters at call-sites" failed in 340ms, memory usage: 9330152.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -85,7 +133,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$21$around$1600(AroundAll.java:199)
+	at A.inline$25$around$1547(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -94,7 +142,31 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6409ms, memory usage: 9588488.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6257ms, memory usage: 9588552.
+
+
+Running test 499: new/target type matching with messy interface hierarchies
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/CallTypesI.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 499: "new/target type matching with messy interface hierarchies" failed in 348ms, memory usage: 8974560.
+
+
+Running test 515: new/Exception planning advice
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/PR519.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 515: "new/Exception planning advice" failed in 356ms, memory usage: 9960440.
+
+
+Running test 518: new/validate (enclosing) join point and source locations
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/NegativeSourceLocation.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 518: "new/validate (enclosing) join point and source locations" failed in 350ms, memory usage: 9301496.
+
+
+Running test 538: new/after advice on static method with pcd if() using result through pointcut
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/PR590a.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 538: "new/after advice on static method with pcd if() using result through pointcut" failed in 367ms, memory usage: 10794536.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -112,7 +184,25 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 3135ms, memory usage: 8859384.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 3049ms, memory usage: 8919568.
+
+
+Running test 569: new/Overriding method implementations using introduction on interfaces
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroductionsOverriding.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 569: "new/Overriding method implementations using introduction on interfaces" failed in 356ms, memory usage: 9362688.
+
+
+Running test 570: new/more coverage for around and concrete methods on interfaces
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/MultiAndAround.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed in 354ms, memory usage: 9409024.
+
+
+Running test 574: new/! and declaring types with callee-side call join points
+Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/NotAndDeclaringTypes.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 574: "new/! and declaring types with callee-side call join points" failed in 367ms, memory usage: 9137784.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -136,86 +226,32 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3832ms, memory usage: 9523344.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3786ms, memory usage: 9516464.
 
 
-Running test 662: pureJava/assert flow
-Commandline: abc -d pureJava -warn-unused-advice:off -source pureJava/AssertsCF.java 
-Illegal arguments: Unknown source release pureJava/AssertsCF.java
-FAIL: Test 662: "pureJava/assert flow" failed in 352ms, memory usage: 5165880.
-
-
-Running test 663: pureJava/assert flow - 2
-Commandline: abc -d pureJava -warn-unused-advice:off -source pureJava/AssertsCF2.java 
-Illegal arguments: Unknown source release pureJava/AssertsCF2.java
-FAIL: Test 663: "pureJava/assert flow - 2" failed in 341ms, memory usage: 5199000.
-
-
-Running test 664: pureJava/assert typing
-Commandline: abc -d pureJava -warn-unused-advice:off -source pureJava/AssertsCF1.java 
-Illegal arguments: Unknown source release pureJava/AssertsCF1.java
-FAIL: Test 664: "pureJava/assert typing" failed in 341ms, memory usage: 4234584.
-
-
-Running test 665: pureJava/asserts
-Commandline: abc -d pureJava -warn-unused-advice:off -source pureJava/Asserts.java 
-Illegal arguments: Unknown source release pureJava/Asserts.java
-FAIL: Test 665: "pureJava/asserts" failed in 341ms, memory usage: 4268176.
-
-
-Running test 666: pureJava/assert coverage tests [requires 1.4]
-Commandline: abc -d pureJava -warn-unused-advice:off -source pureJava/AssertsCv.java 
-Illegal arguments: Unknown source release pureJava/AssertsCv.java
-FAIL: Test 666: "pureJava/assert coverage tests [requires 1.4]" failed in 342ms, memory usage: 4302208.
-
-
-Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
-Commandline: abc -d pureJava -warn-unused-advice:off -source pureJava/AssertInOnePackage.java 
-Illegal arguments: Unknown source release pureJava/AssertInOnePackage.java
-FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" failed in 342ms, memory usage: 4336632.
-
-
-Running test 668: new/assert tests in introduction [requires 1.4]
-Commandline: abc -d new -warn-unused-advice:off -source new/AssertInIntro.java 
-Illegal arguments: Unknown source release new/AssertInIntro.java
-FAIL: Test 668: "new/assert tests in introduction [requires 1.4]" failed in 343ms, memory usage: 4235896.
-
-
-Running test 682: new/assert statement in advice coverage [requires 1.4]
-Commandline: abc -d new -warn-unused-advice:off -source new/AssertInAdvice.java 
-Illegal arguments: Unknown source release new/AssertInAdvice.java
-FAIL: Test 682: "new/assert statement in advice coverage [requires 1.4]" failed in 350ms, memory usage: 4859216.
-
-
-Running test 683: new/assert statement in advice  [requires 1.4]
-Commandline: abc -d new -warn-unused-advice:off -source new/AssertInAdviceBug.java 
-Illegal arguments: Unknown source release new/AssertInAdviceBug.java
-FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed in 346ms, memory usage: 4894192.
-
-
-Running test 729: bugs/assert and pertarget crashes compiler
-Commandline: abc -d bugs -warn-unused-advice:off -source bugs/EnsureOverriding.java 
-Illegal arguments: Unknown source release bugs/EnsureOverriding.java
-FAIL: Test 729: "bugs/assert and pertarget crashes compiler" failed in 388ms, memory usage: 9026160.
+Running test 739: bugs/privileged access to code outside the control of the compiler
+Commandline: abc -d bugs -warn-unused-advice:off -Xlint:warning bugs/PrivilegeBeyondScope.java 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 739: "bugs/privileged access to code outside the control of the compiler" failed in 378ms, memory usage: 9304648.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1091ms, memory usage: 8305544.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1060ms, memory usage: 13394480.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1266ms, memory usage: 13479480.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1112ms, memory usage: 8540240.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1528ms, memory usage: 11660704.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1513ms, memory usage: 11014208.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -223,41 +259,96 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1391ms, memory usage: 9557208.
-
-
-Running test 779: bugs/interSpecials/testing that assert works like .class
-Commandline: abc -d bugs/interSpecials -warn-unused-advice:off -source bugs/interSpecials/p1/C.java bugs/interSpecials/p2/A2.java 
-Illegal arguments: Unknown source release bugs/interSpecials/p1/C.java
-FAIL: Test 779: "bugs/interSpecials/testing that assert works like .class" failed in 388ms, memory usage: 9458960.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1384ms, memory usage: 16416704.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:469)
+	at abc.main.Main.run(Main.java:454)
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:565)
-	at abc.main.Main.loadSourceRoots(Main.java:582)
-	at abc.main.Main.run(Main.java:413)
+	at abc.main.Main.findSourcesInDir(Main.java:550)
+	at abc.main.Main.loadSourceRoots(Main.java:567)
+	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 837ms, memory usage: 13368576.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 824ms, memory usage: 12948152.
 
 
-Running test 843: bugs/Class Literals as non final fields (also assert, and this$0)
-Commandline: abc -d bugs -warn-unused-advice:off -source bugs/ClassLiteralField.java 
-Illegal arguments: Unknown source release bugs/ClassLiteralField.java
-FAIL: Test 843: "bugs/Class Literals as non final fields (also assert, and this$0)" failed in 401ms, memory usage: 9364544.
+Running test 820: harness/XLint:ignore suppresses XLint warnings
+Commandline: abc -d harness -warn-unused-advice:off -Xlint:ignore harness/XLintWarningTest.java 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 820: "harness/XLint:ignore suppresses XLint warnings" failed in 393ms, memory usage: 9323208.
+
+
+Running test 884: bugs/alias getCause for getWrappedThrowable in SoftException
+Commandline: abc -d bugs -warn-unused-advice:off -Xlint:warning bugs/GetCauseOnSoftException.java 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 884: "bugs/alias getCause for getWrappedThrowable in SoftException" failed in 358ms, memory usage: 6403104.
+
+
+Running test 928: bugs/serialVersionUID/SUID: Before execution advice
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
+Test.run()
+? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" failed in 2467ms, memory usage: 11727240.
+
+
+Running test 930: bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
+Test.run()
+? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:ignore bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AroundClosureExecutionAdvice.aj 
+Illegal arguments: Unknown option -Xlint:ignore
+FAIL: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" failed in 2639ms, memory usage: 11667784.
+
+
+Running test 933: bugs/serialVersionUID/SUID: thisJoinPoint with clinit method
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java 
+? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" failed in 2586ms, memory usage: 19322048.
+
+
+Running test 935: bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java 
+? Util.write() suid=SuidTest: static final long serialVersionUID = 8904684881596717140L;
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" failed in 2597ms, memory usage: 11823064.
+
+
+Running test 938: bugs/serialVersionUID/SUID: Declare extends
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
+Test.run()
+? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/DeclareExtends.aj 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 938: "bugs/serialVersionUID/SUID: Declare extends" failed in 2571ms, memory usage: 11686152.
+
+
+Running test 940: bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/NonSerializableTest.java bugs/serialVersionUID/DeclareImplements.aj 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 940: "bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)" failed in 582ms, memory usage: 11763072.
+
+
+Running test 941: bugs/serialVersionUID/SUID: Declare implements Serializable (compile)
+Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/NonSerializableTest.java bugs/serialVersionUID/DeclareImplementsSerializable.aj 
+Illegal arguments: Unknown option -Xlint:warning
+FAIL: Test 941: "bugs/serialVersionUID/SUID: Declare implements Serializable (compile)" failed in 429ms, memory usage: 11803664.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 399ms, memory usage: 8681952.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 391ms, memory usage: 8713360.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -266,7 +357,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 946ms, memory usage: 5358864.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 922ms, memory usage: 13221184.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -291,7 +382,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4720ms, memory usage: 9309160.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4354ms, memory usage: 9285512.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -299,7 +390,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAno
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:89)
-	at abc.main.Main.run(Main.java:421)
+	at abc.main.Main.run(Main.java:406)
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
@@ -312,13 +403,13 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:317)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:79)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1146ms, memory usage: 7806064.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 981ms, memory usage: 16458648.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 769ms, memory usage: 8826584.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 737ms, memory usage: 18833328.
 
 
