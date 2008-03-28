@@ -29,4 +29,21 @@ aspect Java5ITDGlue {
     }
   }
 
+  refine Generics eq ThisAccess.decl()
+  to refine IntertypeConstructorNameAnalysis eq ThisAccess.decl() {
+    TypeDecl typeDecl = IntertypeConstructorNameAnalysis.ThisAccess.decl();
+    if(typeDecl instanceof ParTypeDecl)
+      typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
+    return typeDecl;
+  }
+
+  refine Generics eq SuperAccess.decl() 
+  to refine IntertypeConstructorNameAnalysis eq SuperAccess.decl() {
+    TypeDecl typeDecl = IntertypeConstructorNameAnalysis.ThisAccess.decl();
+    if(typeDecl instanceof ParTypeDecl)
+      typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
+    return typeDecl;
+  }
+
+
 }
