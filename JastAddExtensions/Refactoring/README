@@ -23,6 +23,19 @@ To get include support for inter-type declarations, use buildITD.xml instead
 and make sure that IntertypeDeclarations is unpacked into a sibling directory
 as well.
 
+Executing Refactorings from the Command Line:
+=============================================
+
+In subdirectory main/, there are driver programs RenameField, RenameType, RenameLocalVariable, RenameVariable, and EncapsulateField to run refactorings from the command line.
+
+For example, to rename type p.A in the first RenameType test to B, execute
+
+  java main.RenameType p A B tests/data/RenameType/test1/in/A.java
+
+and similar for the other drivers (see source files for details about argument syntax).
+
+Note, however, that these tools will only perform refactorings on the in-memory representation of the program; it will never touch the actual on-disk files.
+
 What is where:
 =============
 ./*.jrag ./*.jadd: implementation of the refactoring code; notably

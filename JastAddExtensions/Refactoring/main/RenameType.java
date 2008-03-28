@@ -15,7 +15,16 @@ import AST.TypeDecl;
 
 public class RenameType {
 	
-	public static final int NUM_RUNS = 5;
+	/*
+	 * Usage: RenameType <package> <type> <new name> <file>...
+	 * 
+	 *   <package> : the package containing <type>
+	 *   <type> : the type to be renamed
+	 *   <new name> : the new name to rename it to
+	 *   <file>... : the files containing the code to be refactored
+	 */
+
+	//public static final int NUM_RUNS = 5;
 	
 	public static void main(String[] args) {
 		if(args.length < 4) {
@@ -35,7 +44,7 @@ public class RenameType {
 	}
 	
 	static void rename(String pkg, String tp, String newname, String[] files) {
-		long time = System.currentTimeMillis();
+	    //long time = System.currentTimeMillis();
 		Frontend f = new Frontend() { 
 			protected void processErrors(Collection errors, CompilationUnit unit) { 
 				super.processErrors(errors, unit);
@@ -50,9 +59,9 @@ public class RenameType {
             }
 		};
 		if(f.process(files, br, jp)) {
-			System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
-			for(int cnt=0;cnt<NUM_RUNS;cnt++) {
-				time = System.currentTimeMillis();
+		    //System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
+		    //for(int cnt=0;cnt<NUM_RUNS;cnt++) {
+		    //time = System.currentTimeMillis();
 				Program prog = f.getProgram();
 				String path[] = tp.split("\\.");
 				TypeDecl d = (TypeDecl)prog.lookupType(pkg, path[0]);
@@ -64,18 +73,19 @@ public class RenameType {
 				}
 				try {
 					d.rename(newname);
-					System.out.println("total: "+(System.currentTimeMillis()-time));
-					if(cnt == 0 && hasErrors(prog))
-						System.err.println("Output program has errors!");
-					time = System.currentTimeMillis();
-					prog.undo();
-					System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
-					prog.flushCaches();
+					System.out.println(prog);
+					//System.out.println("total: "+(System.currentTimeMillis()-time));
+					//if(cnt == 0 && hasErrors(prog))
+					//System.err.println("Output program has errors!");
+					//time = System.currentTimeMillis();
+					//prog.undo();
+					//System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
+					//prog.flushCaches();
 				} catch(RefactoringException rfe) {
 					System.err.println("refactoring failed");
 					rfe.printStackTrace();
 				}
-			}
+				//}
 		} else {
 			System.err.println("There were compilation errors.");
 		}

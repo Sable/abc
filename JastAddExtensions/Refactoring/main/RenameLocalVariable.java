@@ -16,6 +16,17 @@ import AST.VariableDeclaration;
 
 public class RenameLocalVariable extends Frontend {
 
+	/*
+	 * Usage: RenameLocalVariable <package> <type> <method> <var> <new name> <file>...
+	 * 
+	 *   <package> : the package containing <type>
+	 *   <type> : the type containing <method>
+	 *   <field> : the method containing <var>
+	 *   <var> : the variable to be renamed
+	 *   <new name> : the new name to rename it to
+	 *   <file>... : the files containing the code to be refactored
+	 */
+
 	public static void main(String args[]) throws Throwable {
 		String pkgname = args[0];
 		String classname = args[1];
@@ -33,7 +44,7 @@ public class RenameLocalVariable extends Frontend {
 	
 	public static void rename(String pkgname, String classname, String methodname, String var, String newname, String[] filenames) 
 			throws RefactoringException {
-		long time = System.currentTimeMillis();
+	    //long time = System.currentTimeMillis();
 		RenameLocalVariable c = new RenameLocalVariable();
 		if(!c.process(
 				filenames,
@@ -45,9 +56,9 @@ public class RenameLocalVariable extends Frontend {
 				}
 		))
 			throw new RefactoringException("couldn't process input files");
-		System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
-		for(int cnt=0;cnt<RenameType.NUM_RUNS;cnt++) {
-			time = System.currentTimeMillis();
+		//System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
+		//for(int cnt=0;cnt<RenameType.NUM_RUNS;cnt++) {
+		//time = System.currentTimeMillis();
 			String path[] = classname.split("\\.");
 			Program program = c.program;
 			TypeDecl d = (TypeDecl)program.lookupType(pkgname, path[0]);
@@ -56,14 +67,15 @@ public class RenameLocalVariable extends Frontend {
 			MethodDecl m = (MethodDecl)d.memberMethods(methodname).iterator().next();
 			VariableDeclaration v = findLocalVariable(m, var);
 			v.rename(newname);
-			System.out.println("total: "+(System.currentTimeMillis()-time));
-			if(cnt == 0 && RenameType.hasErrors(program))
-				System.err.println("Output program has errors!");
-			time = System.currentTimeMillis();
-			program.undo();
-			System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
-			program.flushCaches();
-		}
+			System.out.println(program);
+			//System.out.println("total: "+(System.currentTimeMillis()-time));
+			//if(cnt == 0 && RenameType.hasErrors(program))
+			//System.err.println("Output program has errors!");
+			//time = System.currentTimeMillis();
+			//program.undo();
+			//System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
+			//program.flushCaches();
+			//}
 	}
 	
 	protected static VariableDeclaration findLocalVariable(ASTNode p, String n) {

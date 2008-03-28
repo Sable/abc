@@ -13,6 +13,16 @@ import AST.TypeDecl;
 
 public class RenameField extends Frontend {
 
+	/*
+	 * Usage: RenameField <package> <type> <field> <new name> <file>...
+	 * 
+	 *   <package> : the package containing <type>
+	 *   <type> : the type containing <field>
+	 *   <field> : the field to be renamed
+	 *   <new name> : the new name to rename it to
+	 *   <file>... : the files containing the code to be refactored
+	 */
+
 	public static void main(String args[]) throws Throwable {
 		String pkgname = args[0];
 		String classname = args[1];
@@ -29,7 +39,7 @@ public class RenameField extends Frontend {
 	
 	public static void rename(String pkgname, String classname, String fieldname, String newname, String[] filenames) 
 			throws RefactoringException {
-		long time = System.currentTimeMillis();
+	    //long time = System.currentTimeMillis();
 		RenameField c = new RenameField();
 		if(!c.process(
 				filenames,
@@ -41,9 +51,9 @@ public class RenameField extends Frontend {
 				}
 		))
 			throw new RefactoringException("couldn't process input files");
-		System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
-		time = System.currentTimeMillis();
-		for(int cnt=0;cnt<RenameType.NUM_RUNS;cnt++) {
+		//System.out.println("time to load: "+(System.currentTimeMillis()-time)+"\n");
+		//time = System.currentTimeMillis();
+		//for(int cnt=0;cnt<RenameType.NUM_RUNS;cnt++) {
 			String path[] = classname.split("\\.");
 			Program program = c.program;
 			TypeDecl d = (TypeDecl)program.lookupType(pkgname, path[0]);
@@ -51,14 +61,15 @@ public class RenameField extends Frontend {
 				d = (TypeDecl)d.memberTypes(path[i]).iterator().next();
 			FieldDeclaration f = (FieldDeclaration)d.memberFields(fieldname).iterator().next();
 			f.rename(newname);
-			System.out.println("total: "+(System.currentTimeMillis()-time));
-			if(cnt == 0 && RenameType.hasErrors(program))
-				System.err.println("Output program has errors!");
-			time = System.currentTimeMillis();
-			program.undo();
-			System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
-			program.flushCaches();
-		}
+			System.out.println(program);
+			//System.out.println("total: "+(System.currentTimeMillis()-time));
+			//if(cnt == 0 && RenameType.hasErrors(program))
+			//System.err.println("Output program has errors!");
+			//time = System.currentTimeMillis();
+			//program.undo();
+			//System.out.println("undo: "+(System.currentTimeMillis()-time)+"\n");
+			//program.flushCaches();
+			//}
 	}
 
 	protected void processWarnings(Collection errors, CompilationUnit unit) { }
