@@ -417,8 +417,8 @@ public class AdviceApplicationInfo {
 		HashMap localMap;
 		Stmt switchTarget;
 		Tag redirectExceptions = null;
-		if (! (Debug.v().removeDupAroundMethods && exitsShadowMethodObj.shadowMethodExists))  		
-		{ // copy shadow into proceed method when DupCheck disabled or not exists duplcated one.
+		if (!Debug.v().removeDupAroundMethods || !exitsShadowMethodObj.shadowMethodExists)  		
+		{ // copy shadow into proceed method when DupCheck disabled or not exists duplicated one.
 			ObjectBox result = new ObjectBox();
 			if (this.proceedMethod.getLookupStmt() == null)
 				throw new InternalAroundError();
