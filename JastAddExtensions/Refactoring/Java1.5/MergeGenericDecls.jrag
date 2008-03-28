@@ -93,35 +93,41 @@ aspect MergeGenericDecls {
 		return null;
 	}
 
+	refine AdjustAccess public void VarAccess.lock() { target = decl().sourceVariableDecl(); }
+
 	refine AdjustAccess public void VarAccess.unlockSafely() throws RefactoringException {
 		Variable v = target;
 		unlock();
-		if(v.sameSourceDeclAs(decl()))
+		if(decl().sourceVariableDecl() == v)
 			return;
-		Access acc = access(v.sourceVariableDecl());
+		Access acc = access(v);
 		if(acc == null)
 			throw new RefactoringException("variable cannot be accessed");
 		plugInNewAccess(acc);
 	}
 	
+	refine AdjustAccess public void TypeAccess.lock() { target = decl().sourceTypeDecl(); }
+
 	refine AdjustAccess public void TypeAccess.unlockSafely() throws RefactoringException {
 		// TODO: check for obscuring
 		TypeDecl td = target;
 		unlock();
-		if(td.sameSourceDeclAs(decl()))
+		if(decl().sourceTypeDecl() == td)
 			return;
-		Access acc = access(td.sourceTypeDecl(), nameType() == NameType.AMBIGUOUS_NAME);
+		Access acc = access(td, nameType() == NameType.AMBIGUOUS_NAME);
 		if(acc == null)
 			throw new RefactoringException("type cannot be accessed");
 		plugInNewAccess(acc);
 	}
 	
+	refine AdjustAccess public void MethodAccess.lock() { target = decl().sourceMethodDecl(); }
+
 	refine AdjustAccess public void MethodAccess.unlockSafely() throws RefactoringException {
 		MethodDecl md = target;
 		unlock();
-		if(md.sameSourceDeclAs(decl()))
+		if(decl().sourceMethodDecl() == md)
 			return;
-		Access acc = access(md.sourceMethodDecl(), (List<Expr>)getArgs().fullCopy());
+		Access acc = access(md, (List<Expr>)getArgs().fullCopy());
 		if(acc == null)
 			throw new RefactoringException("method cannot be accessed");
 		plugInNewAccess(acc);
