@@ -105,6 +105,13 @@ aspect Uses {
 				 pkg.charAt(strlength) == '.');
  	}
 	
+	public static String ASTNode.pkgNameFirstComponent(String pkg) {
+		int idx = pkg.indexOf('.');
+		if(idx == -1)
+			return pkg;
+		return pkg.substring(0, idx);
+	}
+	
 	syn nta PackageDecl Program.getPackageDecl(String name) {
 		// the following gives null-pointer exceptions in generated code
 		//return hasPackage(name) ? new PackageDecl(name) : null;

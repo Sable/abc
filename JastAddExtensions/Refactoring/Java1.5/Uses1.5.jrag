@@ -102,6 +102,13 @@ aspect Uses {
 				 pkg.charAt(strlength) == '.');
  	}
 	
+	public static String ASTNode.pkgNameFirstComponent(String pkg) {
+		int idx = pkg.indexOf('.');
+		if(idx == -1)
+			return pkg;
+		return pkg.substring(0, idx);
+	}
+	
 	eq Program.getChild().findPackageDecl(String name) = getPackageDecl(name);
 	inh PackageDecl Access.findPackageDecl(String name);
 	
