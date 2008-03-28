@@ -1,49 +1,27 @@
-// extending an AdviceDecl...
-// AdviceDecl : BodyDecl ::= Modifiers AdviceSpec PointcutExpr
-//                           Exception:Access* Block;
-//
-// To make it work, we interpret the Regex as a PointcutExpr
-TMDecl : AdviceDecl ::= <Name:String> SymbolDecl* Frequent:SymbolName*
-						/[BeforeSynchAdvice:AdviceDecl]/ /[AfterSynchAdvice:AdviceDecl]/
-						/[BeforeSomeAdvice:AdviceDecl]/ /[AfterSomeAdvice:AdviceDecl]/
-						/SymbolAdvice:AdviceDecl*/;
-
-// Advice decls for TM-generated pieces of advice (different precedence rules)
-abstract TMAdviceDecl : AdviceDecl;
-TMSomeAdviceDecl : TMAdviceDecl;
-TMSynchAdviceDecl : TMAdviceDecl;
-TMBodyAdviceDecl : TMAdviceDecl;
-TMSymbolAdviceDecl : TMAdviceDecl;
-
-// Will just generate on the fly...
-//abstract PerEventAdviceDecl : AdviceDecl ::= AfterAdviceSpec:AdviceSpec;
-//SynchAdviceDecl : PerEventAdviceDecl;
-//SomeAdviceDecl : PerEventAdviceDecl;
-
+TraceMatchDecl : AdviceDecl ::=
+    SymbolDecl* Frequent:SymbolAccess*;
 
 TMAdviceSpec : AdviceSpec;
-TMAroundAdviceSpec : AroundSpec;
+TMAroundAdviceSpec : TMAdviceSpec ::= TypeAccess:Access;
 
-SymbolDecl ::= SymbolName AbstractSymbol PointcutExpr;
+SymbolDecl ::= <ID:String> SymbolKind PointcutExpr;
 
-abstract AbstractSymbol;
-BeforeSymbol : AbstractSymbol;
-AfterSymbol : AbstractSymbol;
-AfterReturningSymbol : AbstractSymbol ::= [ReturnParameter:Access];
-AfterThrowingSymbol : AbstractSymbol ::= [ThrownException:Access];
-AroundSymbol : AbstractSymbol ::= ProceedArg:VarAccess*;
+abstract SymbolKind;
+BeforeSymbol : SymbolKind;
+AfterSymbol : SymbolKind;
+AfterReturningSymbol : SymbolKind ::= [VarAccess];
+AfterThrowingSymbol : SymbolKind ::= [VarAccess];
+AroundSymbol : SymbolKind ::= VarAccess*;
 
-SymbolName ::= <ID:String>;
+FrequentSymbols ::= SymbolAccess*;
+
+SymbolAccess : Access ::= <ID:String>;
 
 abstract Regex : PointcutExpr;
-abstract UnaryRegex : Regex ::= Regex;
-abstract BinaryRegex : Regex ::= Lhs:Regex Rhs:Regex;
-RegexSymbol : Regex ::= SymbolName;
-
-RegexAlternation : BinaryRegex;
-RegexConjunction : BinaryRegex;
-RegexSkipSeq : BinaryRegex ::= NegatedSymbol:SymbolName*;
-
-RegexStar : UnaryRegex;
-RegexPlus : UnaryRegex;
-RegexCount : UnaryRegex ::= <RepeatFrom:int> <RepeatTo:int>;
+RegexAlternation : Regex ::= Lhs:Regex Rhs:Regex;
+RegexSequence : Regex ::= Lhs:Regex Rhs:Regex;
+RegexSymbol : Regex ::= SymbolAccess;
+RegexStar : Regex ::= Regex;
+RegexPlus : Regex ::= Regex;
+RegexCount : Regex ::= Regex Min:IntegerLiteral Max:IntegerLiteral;
+RegexSkipSequence : Regex ::= Lhs:Regex Forbidden:SymbolAccess* Rhs:Regex;

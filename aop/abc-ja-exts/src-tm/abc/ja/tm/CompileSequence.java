@@ -189,6 +189,9 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
       AbcTimer.mark("Jimplification");
       Debug.phaseDebug("Jimplification");
 
+      //call hook for (optional) restructuring of methods
+      abcExt.doMethodRestructuring();
+
       // Fix up constructors in binary classes with newly declared parents
       new DeclareParentsConstructorFixup().weave();
       AbcTimer.mark("Fix up constructor calls");

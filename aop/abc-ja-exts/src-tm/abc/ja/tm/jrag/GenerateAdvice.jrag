@@ -1,0 +1,125 @@
+import abc.tm.weaving.aspectinfo.*;
+import abc.tm.weaving.matching.*;
+
+aspect PlaceHolder
+{
+    eq TMAdviceSpec.kind() = "beforeafter";
+
+    public abc.weaving.aspectinfo.AdviceSpec TMAdviceSpec.adviceSpec()
+    {
+        throw new RuntimeException("TODO");
+    }
+
+    syn Map TraceMatchDecl.symbolToAdviceName()
+    {
+        Map sym_to_advice = new HashMap();
+        for (int i = 0; i < getNumSymbolDecl(); i++) {
+            TMAdviceDecl advice = getSymbolDecl(i).perSymbolAdviceDecl();
+            globalAspectInfo().addAdviceDecl(advice);
+            sym_to_advice.put(getSymbolDecl(i).getID(), null);
+        }
+        return sym_to_advice;
+    }
+
+    inh Aspect SymbolDecl.aspectClass();
+    inh String SymbolDecl.tracematchName();
+    inh polyglot.util.Position SymbolDecl.tracematchPosition();
+    eq TraceMatchDecl.getSymbolDecl().tracematchName() = name();
+    eq TraceMatchDecl.getSymbolDecl().tracematchPosition() = pos();
+
+    syn TMAdviceDecl SymbolDecl.perSymbolAdviceDecl() =
+        new PerSymbolTMAdviceDecl(
+            getSymbolKind().adviceSpec(),
+            getPointcutExpr().pointcut(),
+            perSymbolMethodSig(), // methodSig
+            aspectClass(),
+            -1, -1, -1, // jp, jpsp, ejp
+            perSymbolMethods(), // methods
+            pos(), // symbol position
+            tracematchName(), // tm_id
+            tracematchPosition(), // tm_pos
+            getID(), // symbol name
+            abc.tm.ast.TMAdviceDecl.OTHER);
+
+    syn AbstractAdviceSpec SymbolKind.adviceSpec();
+
+    eq BeforeSymbol.adviceSpec() = new BeforeAdvice(pos());
+
+    eq AfterSymbol.adviceSpec() = new AfterAdvice(pos());
+
+    eq AfterReturningSymbol.adviceSpec()
+    {
+        if (!hasVarAccess())
+            return new AfterReturningAdvice(pos());
+        ParameterDeclaration v = (ParameterDeclaration) getVarAccess().decl();
+        return new AfterReturningArgAdvice(v.formal(), pos());
+    }
+
+    eq AfterThrowingSymbol.adviceSpec()
+    {
+        if (!hasVarAccess())
+            return new AfterThrowingAdvice(pos());
+        ParameterDeclaration v = (ParameterDeclaration) getVarAccess().decl();
+        return new AfterThrowingArgAdvice(v.formal(), pos());
+    }
+
+    eq AroundSymbol.adviceSpec()
+    {
+        return new AroundAdvice(null, null, pos());
+    }
+
+    syn MethodSig SymbolDecl.perSymbolMethodSig() =
+        AbcFactory.MethodSig(perSymbolSootMethod());
+
+    inh TypeDecl SymbolDecl.hostType();
+    inh int SymbolDecl.numParameter();
+    inh ParameterDeclaration SymbolDecl.parameter(int i);
+    eq TraceMatchDecl.getSymbolDecl().numParameter() =
+        getAdviceSpec().getNumParameter();
+    eq TraceMatchDecl.getSymbolDecl().parameter(int i) =
+        getAdviceSpec().getParameter(i);
+
+    syn lazy SootMethod SymbolDecl.perSymbolSootMethod()
+    {
+        String name = getSymbolKind().kind() + "$" + hostType().adviceCounter++;
+        ArrayList paramtypes = new ArrayList();
+        Type returntype = soot.VoidType.v();
+        int modifiers = soot.Modifier.PUBLIC;
+
+        for (int i = 0; i < numParameter(); i++) {
+            ParameterDeclaration param = parameter(i);
+            if (this.refersTo(param))
+                paramtypes.add(param.type().getSootType());
+        }
+
+        SootMethod method =
+            new SootMethod(name, paramtypes, returntype, modifiers);
+        hostType().getSootClassDecl().addMethod(method);
+
+        return method;
+    }
+
+    syn ArrayList SymbolDecl.perSymbolMethods()
+    {
+        ArrayList methods = new ArrayList();
+        methods.add(perSymbolSootMethod());
+        return methods;
+    }
+
+    syn String SymbolKind.kind();
+    eq BeforeSymbol.kind() = "before";
+    eq AfterSymbol.kind() = "after";
+    eq AfterReturningSymbol.kind() = "afterReturning";
+    eq AfterThrowingSymbol.kind() = "afterThrowing";
+    eq AroundSymbol.kind() = "around";
+
+    public void SymbolDecl.jimplify2()
+    {
+        System.out.println("JIMPLIFYING");
+        SootMethod method = perSymbolSootMethod();
+        JimpleBody body = Jimple.v().newBody(method);
+        method.setActiveBody(body);
+        Body b = new Body(hostType(), body, this);
+        b.add(Jimple.v().newReturnVoidStmt());
+    }
+}

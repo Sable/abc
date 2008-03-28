@@ -1,0 +1,8 @@
+aspect PerThread
+{
+    syn boolean TraceMatchDecl.isPerThread() = getModifiers().isPerThread();
+    syn lazy boolean Modifiers.isPerThread() = numModifier("perthread") != 0;
+
+    // TODO
+    // some checks about where perthread modifier is allowed
+}

@@ -1,0 +1,112 @@
+import abc.tm.weaving.aspectinfo.*;
+import abc.tm.weaving.matching.*;
+
+aspect MakeStateMachine
+{
+    syn StateMachine Regex.stateMachine()
+    {
+        StateMachine sm = new TMStateMachine();
+        SMNode start = (SMNode) sm.newState();
+        start.setInitial(true);
+        SMNode finish = (SMNode) sm.newState();
+        finish.setFinal(true);
+        makeSM(sm, start, finish, true);
+        return sm;
+    }
+
+    public abstract void Regex.makeSM(StateMachine sm, SMNode start,
+                                      SMNode finish, boolean own_start);
+
+    public void RegexAlternation.makeSM(StateMachine sm, SMNode start,
+                                        SMNode finish, boolean own_start)
+    {
+        getLhs().makeSM(sm, start, finish, false);
+        getRhs().makeSM(sm, start, finish, false);
+    }
+
+    public void RegexSequence.makeSM(StateMachine sm, SMNode start,
+                                     SMNode finish, boolean own_start)
+    {
+        SMNode middle = (SMNode) sm.newState();
+        getLhs().makeSM(sm, start, middle, own_start);
+        getRhs().makeSM(sm, middle, finish, true);
+    }
+
+    public void RegexSymbol.makeSM(StateMachine sm, SMNode start,
+                                   SMNode finish, boolean own_start)
+    {
+        sm.newTransition(start, finish, getSymbolAccess().getID());
+    }
+
+    public void RegexStar.makeSM(StateMachine sm, SMNode start,
+                                 SMNode finish, boolean own_start)
+    {
+        SMNode loop_node;
+        if (own_start) {
+            loop_node = start;
+        } else {
+            loop_node = (SMNode) sm.newState();
+            sm.newTransition(start, loop_node, null);
+        }
+        getRegex().makeSM(sm, loop_node, loop_node, false);
+        sm.newTransition(loop_node, finish, null);
+    }
+
+    public void RegexPlus.makeSM(StateMachine sm, SMNode start,
+                                 SMNode finish, boolean own_start)
+    {
+        SMNode loop_node;
+        if (own_start) {
+            loop_node = start;
+        } else {
+            loop_node = (SMNode) sm.newState();
+            sm.newTransition(start, loop_node, null);
+        }
+        getRegex().makeSM(sm, loop_node, loop_node, false);
+        sm.newTransition(loop_node, finish, null);
+    }
+
+    public void RegexCount.makeSM(StateMachine sm, SMNode start,
+                                  SMNode finish, boolean own_start)
+    {
+        int min = getMin().constant().intValue();
+        int max = getMax().constant().intValue();
+        if (min == 0)
+            sm.newTransition(start, finish, null);
+        SMNode middle = start;
+        // max is always >= 1
+        for (int i = 1; i < max; i++) {
+            SMNode s = (SMNode) sm.newState();
+            getRegex().makeSM(sm, middle, s, false);
+            if (i >= min)
+                sm.newTransition(s, finish, null);
+            middle = s;
+        }
+        getRegex().makeSM(sm, middle, finish, false);
+    }
+
+    public void RegexSkipSequence.makeSM(StateMachine sm, SMNode start,
+                                         SMNode finish, boolean own_start)
+    {
+        SMNode middle = (SMNode) sm.newState();
+        getLhs().makeSM(sm, start, middle, own_start);
+        getRhs().makeSM(sm, middle, finish, false);
+
+        for (int i = 0; i < numSymbols(); i++)
+            sm.newTransition(middle, middle, symbol(i).getID());
+    }
+
+    inh int RegexSkipSequence.numSymbols();
+    eq TraceMatchDecl.getPointcutExpr().numSymbols() = getNumSymbolDecl();
+    eq Program.getCompilationUnit().numSymbols()
+    {
+        throw new InternalCompilerError("regex outside of tracematch");
+    }
+
+    inh SymbolDecl RegexSkipSequence.symbol(int i);
+    eq TraceMatchDecl.getPointcutExpr().symbol(int i) = getSymbolDecl(i);
+    eq Program.getCompilationUnit().symbol(int i)
+    {
+        throw new InternalCompilerError("regex outside of tracematch");
+    }
+}

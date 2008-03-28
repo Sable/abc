@@ -1,0 +1,13 @@
+aspect GeneratePointcuts
+{
+    syn Regex PointcutExpr.regex()
+    {
+        throw new InternalCompilerError("called regex() on regular pointcut");
+    }
+    eq Regex.regex() = this;
+
+    public Pointcut Regex.pointcut()
+    {
+        throw new RuntimeException("TODO");
+    }
+}

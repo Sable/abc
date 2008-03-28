@@ -1,0 +1,10 @@
+aspect NameLookup
+{
+    eq TraceMatchDecl.getSymbolDecl().lookupVariable(String name)
+    {
+        SimpleSet result = getAdviceSpec().localLookupVariable(name);
+        if (!result.isEmpty())
+            return result;
+        return lookupVariable(name);
+    }
+}

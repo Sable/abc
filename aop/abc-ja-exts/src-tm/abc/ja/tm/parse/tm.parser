@@ -22,7 +22,7 @@
 BodyDecl aspect_body_declaration =
     tracematch.a
     {:
-    	ParserTrace.parserTrace("aspect_body_declaration is just a tracematch\n");
+        ParserTrace.parserTrace("aspect_body_declaration is just a tracematch\n");
         ParserTrace.parserTrace("LINE " + a.lineNumber());
         ParserTrace.parserTrace("-----------------------------------------------\n");
         return a;
@@ -30,7 +30,7 @@ BodyDecl aspect_body_declaration =
 ;
 
 
-TMDecl tracematch =
+TraceMatchDecl tracematch =
     modifiers.m? TRACEMATCH.t
     LPAREN formal_parameter_list.p? RPAREN throws.e?
     LBRACE
@@ -41,9 +41,9 @@ TMDecl tracematch =
     RBRACE.y
     {:
         ParserTrace.parserTrace("tracematch definition");
-        String name = TMDecl.getNextName();
-        TMDecl tcd = new TMDecl(new Modifiers(m), new TMAdviceSpec(p), r, e, b, name, s, f);
-		return tcd;
+        TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
+            new TMAdviceSpec(p), r, e, b, s, f);
+    	return tcd;
     :}
 |
     modifiers.m? type TRACEMATCH.t
@@ -56,9 +56,9 @@ TMDecl tracematch =
     RBRACE.y
     {:
         ParserTrace.parserTrace("tracematch definition");
-        String name = TMDecl.getNextName();
-        TMDecl tcd = new TMDecl(new Modifiers(m), new TMAroundAdviceSpec(p, type), r, e, b, name, s, f);
-		return tcd;
+        TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
+            new TMAroundAdviceSpec(p, type), r, e, b, s, f);
+    	return tcd;
     :}
 |
     modifiers.m? VOID TRACEMATCH.t
@@ -71,18 +71,19 @@ TMDecl tracematch =
     RBRACE.y
     {:
         ParserTrace.parserTrace("tracematch definition");
-        String name = TMDecl.getNextName();
-        TMDecl tcd = new TMDecl(new Modifiers(m), new TMAroundAdviceSpec(p, new PrimitiveTypeAccess("void")), r, e, b, name, s, f);
-		return tcd;
+        TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
+            new TMAroundAdviceSpec(p, new PrimitiveTypeAccess("void")),
+            r, e, b, s, f);
+    	return tcd;
     :}
 ;
 
 // tracematches can be perthread
 Modifier modifier =
-	PERTHREAD.x {:
-		ParserTrace.parserTrace("PerThread modifier");
-		return new Modifier("perthread");
-	:}
+    PERTHREAD.x {:
+    	ParserTrace.parserTrace("PerThread modifier");
+    	return new Modifier("perthread");
+    :}
 ;
 
 List symbol_declaration_list =
@@ -103,76 +104,76 @@ List symbol_declaration_list =
  
 
 SymbolDecl symbol_declaration =
-    SYM.x IDENTIFIER symbol_kind.c COLON pointcut_expr.d SEMICOLON.y
+    SYM.x IDENTIFIER.a symbol_kind.c COLON pointcut_expr.d SEMICOLON.y
     {:
-    	ParserTrace.parserTrace("Symbol declaration");
-        return new SymbolDecl(new SymbolName(IDENTIFIER), c, d);
+        ParserTrace.parserTrace("Symbol declaration");
+        return new SymbolDecl(a, c, d);
     :}
 ;
 
 
-AbstractSymbol symbol_kind =
+SymbolKind symbol_kind =
     BEFORE.x
     {:
-    	ParserTrace.parserTrace("Before symbol");
+        ParserTrace.parserTrace("Before symbol");
         return new BeforeSymbol();
     :}
 |
     AFTER.x
     {:
-    	ParserTrace.parserTrace("After symbol");
+        ParserTrace.parserTrace("After symbol");
         return new AfterSymbol();
     :}
 |
     AFTER.x PC_RETURNING.y
     {:
-    	ParserTrace.parserTrace("After returning symbol (no var)");
+        ParserTrace.parserTrace("After returning symbol (no var)");
         return new AfterReturningSymbol(new Opt());
     :}
 |
-    AFTER.x PC_RETURNING LPAREN IDENTIFIER RPAREN.y
+    AFTER.x PC_RETURNING LPAREN IDENTIFIER.a RPAREN.y
     {:
-    	ParserTrace.parserTrace("After returning symbol (with var)");
-        return new AfterReturningSymbol(new Opt(new VarAccess(IDENTIFIER)));
+        ParserTrace.parserTrace("After returning symbol (with var)");
+        return new AfterReturningSymbol(new Opt(new VarAccess(a)));
     :}
 |
     AFTER.x PC_THROWING.y
     {:
-    	ParserTrace.parserTrace("After throwing symbol (no var)");
+        ParserTrace.parserTrace("After throwing symbol (no var)");
         return new AfterThrowingSymbol(new Opt());
     :}
 |
-    AFTER.x PC_THROWING LPAREN IDENTIFIER RPAREN.y
+    AFTER.x PC_THROWING LPAREN IDENTIFIER.a RPAREN.y
     {:
-	    ParserTrace.parserTrace("After throwing symbol (with var)");
-        return new AfterThrowingSymbol(new Opt(new VarAccess(IDENTIFIER)));
+        ParserTrace.parserTrace("After throwing symbol (with var)");
+        return new AfterThrowingSymbol(new Opt(new VarAccess(a)));
     :}
 |
     AROUND.x
     {:
-    	ParserTrace.parserTrace("Around symbol (no args)");
+        ParserTrace.parserTrace("Around symbol (no args)");
         return new AroundSymbol(new List());
     :}
 |
     AROUND.x LPAREN name_list.a RPAREN.y
     {:
-    	ParserTrace.parserTrace("Around symbol (with args)");
+        ParserTrace.parserTrace("Around symbol (with args)");
         return new AroundSymbol(a);
     :}
 ;
 
 
 List name_list =
-    IDENTIFIER
+    IDENTIFIER.a
     {:
-    	ParserTrace.parserTrace("Name list (singleton)");
-        return new List<Access>().add(new VarAccess(IDENTIFIER));
+        ParserTrace.parserTrace("Name list (singleton)");
+        return new List<Access>().add(new VarAccess(a));
     :}
 |
-    name_list.a COMMA IDENTIFIER
+    name_list.a COMMA IDENTIFIER.b
     {:
-    	ParserTrace.parserTrace("Name list (comma)");
-        return a.add(new VarAccess(IDENTIFIER));
+        ParserTrace.parserTrace("Name list (comma)");
+        return a.add(new VarAccess(b));
     :}
 ;
 
@@ -180,41 +181,41 @@ List name_list =
 List frequent_symbols_declaration =
     FREQUENT.x symbol_list.a SEMICOLON.y
     {:
-    	ParserTrace.parserTrace("Frequent decl");
+        ParserTrace.parserTrace("Frequent decl");
         return a;
     :}
 ; 
 
 
 List symbol_list =
-    IDENTIFIER
+    IDENTIFIER.a
     {:
-	    ParserTrace.parserTrace("Symbol list (single)");
-        return new List<SymbolName>().add(new SymbolName(IDENTIFIER));
+        ParserTrace.parserTrace("Symbol list (single)");
+        return new List<SymbolAccess>().add(new SymbolAccess(a));
     :}
 |
-    symbol_list.a COMMA IDENTIFIER
+    symbol_list.a COMMA IDENTIFIER.b
     {:
-    	ParserTrace.parserTrace("Symbol list (multiple)");
-        return a.add(new SymbolName(IDENTIFIER));
+        ParserTrace.parserTrace("Symbol list (multiple)");
+        return a.add(new SymbolAccess(b));
     :}
 ;
 
 Regex tm_pattern =
-	regex_or.a
-	{:
-		return a;
-	:}
+    regex_or.a
+    {:
+    	return a;
+    :}
 |
-	FILTERMATCH COLON regex_or.a
-	{:
-		return a;
-	:}
+    FILTERMATCH COLON regex_or.a
+    {:
+    	return a;
+    :}
 |
-	SKIPMATCH COLON skip_or.a
-	{:
-		return a;
-	:}
+    SKIPMATCH COLON skip_or.a
+    {:
+    	return a;
+    :}
 ;
 
 Regex regex_or =
@@ -238,7 +239,7 @@ Regex regex_and =
 |   
     regex_count.a regex_and.b
     {:
-        return new RegexConjunction(a, b);
+        return new RegexSequence(a, b);
     :}
 ;
  
@@ -261,20 +262,20 @@ Regex regex_count =
 |
     regex_simple.a LBRACK INTEGER_LITERAL.n RBRACK.y
     {:
-        return new RegexCount(a, Integer.parseInt(n), Integer.parseInt(n));
+        return new RegexCount(a, new IntegerLiteral(n), new IntegerLiteral(n));
     :}
 |
     regex_simple.a LBRACK INTEGER_LITERAL.m COMMA INTEGER_LITERAL.n RBRACK.y
     {:
-        return new RegexCount(a, Integer.parseInt(m), Integer.parseInt(n));
+        return new RegexCount(a, new IntegerLiteral(m), new IntegerLiteral(n));
     :}
 ;
 
 
 Regex regex_simple =
-    IDENTIFIER
+    IDENTIFIER.a
     {:
-        return new RegexSymbol(new SymbolName(IDENTIFIER));
+        return new RegexSymbol(new SymbolAccess(a));
     :}
 |
     LPAREN regex_or.a RPAREN
@@ -284,15 +285,15 @@ Regex regex_simple =
 ;
 
 Regex skip_regex_simple =
-	IDENTIFIER
-	{:
-		return new RegexSymbol(new SymbolName(IDENTIFIER));
-	:}
+    IDENTIFIER.a
+    {:
+    	return new RegexSymbol(new SymbolAccess(a));
+    :}
 |
-	LPAREN skip_or.a RPAREN
-	{:
-		return a;
-	:}
+    LPAREN skip_or.a RPAREN
+    {:
+    	return a;
+    :}
 ;
 
 Regex skip_or =
@@ -314,31 +315,31 @@ Regex skip_seq =
         return a;
     :}
 |   
-	skip_regex_simple.a NOT IDENTIFIER skip_seq.c
-	{:
-		return new RegexSkipSeq(a, c, new List().add(new SymbolName(IDENTIFIER)));
-	:}
+    skip_regex_simple.a NOT IDENTIFIER.b skip_seq.c
+    {:
+    	return new RegexSkipSequence(a, new List().add(new SymbolAccess(b)), c);
+    :}
 |
     skip_regex_simple.a NOT LPAREN regex_symbol_disj.b RPAREN skip_seq.c
     {:
-        return new RegexSkipSeq(a, c, b);
+        return new RegexSkipSequence(a, b, c);
     :}
 |
-	skip_regex_simple.a skip_seq.b
-	{:
-		return new RegexSkipSeq(a, b, new List());
-	:}
+    skip_regex_simple.a skip_seq.b
+    {:
+    	return new RegexSkipSequence(a, new List(), b);
+    :}
 ;
  
 
 List regex_symbol_disj =
- 	IDENTIFIER
- 	{:
- 		return new List<SymbolName>().add(new SymbolName(IDENTIFIER));
- 	:}
+     IDENTIFIER.a
+     {:
+     	return new List<SymbolAccess>().add(new SymbolAccess(a));
+     :}
  |
- 	regex_symbol_disj.a IDENTIFIER
- 	{:
- 		return a.add(new SymbolName(IDENTIFIER));
- 	:}
+     regex_symbol_disj.a IDENTIFIER.b
+     {:
+     	return a.add(new SymbolAccess(b));
+     :}
  ;
