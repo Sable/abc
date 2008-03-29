@@ -29,6 +29,11 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+$abc now supports multiple whole-program optimizations for tracematches.
+;Those can be enabled by selecting the extension abc.tmwpopt instead of
+;abc.tm. The optimization level can be set using the command line option
+;-laststage. (see -help)
+
 $abc now supports additional pointcuts, in particular the arrayget/arrayset
 ;pointcuts and the lock/unlock pointcuts.
 ;see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=123759
