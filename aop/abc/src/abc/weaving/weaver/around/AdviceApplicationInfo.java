@@ -352,6 +352,12 @@ public class AdviceApplicationInfo {
 		}	
 		
 		/*
+		 * We only enable removal of duplicate around-methods if around-inlining is enabled as well.
+		 * This is due to a current limitation of the removeDupAroundMethods code.
+		 */
+		Debug.v().removeDupAroundMethods &= OptionsParser.v().around_inlining(); 
+		
+		/*
 		 * When inlining, it can be useful to have the shadow in a static method.
 		 * Otherwise, the shadow may be inlined twice, once for the failed-case
 		 * of the dynamic residue and once for the matched-case.
@@ -359,9 +365,8 @@ public class AdviceApplicationInfo {
 		 * regardless of this issue.  
 		 */
 		if (OptionsParser.v().around_inlining() && // If inlining is *enabled*
-			!OptionsParser.v().around_force_inlining()) { /* && // but not forced 
-				isShadowBig()){ // and the shadow is big, extract it into a static method.
-				*/
+			!OptionsParser.v().around_force_inlining()) {  // but not forced 
+			// extract it into a static method.				
 			if (Debug.v().removeDupAroundMethods){
 				exitsShadowMethodObj = extractShadowIntoStaticMethodNew(returnedLocal, context, shadowID); //if return != null, means shadow method exists.
 				if (exitsShadowMethodObj.shadowMethodExists)
