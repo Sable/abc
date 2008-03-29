@@ -293,7 +293,7 @@ any of their subdirectories.
     </boolopt>
   </section>
   <section>
-    <name>Static whole-program analysis for tracematches</name>
+    <name>Static whole-program analysis for dependent advice (abc.da) and tracematches (abc.tmwpopt)</name>
     <stringopt>
       <alias>laststage</alias>
       <default>quick</default>
@@ -301,9 +301,9 @@ any of their subdirectories.
       <short_desc>Specifies the last stage to be executed in the static
       whole program analysis for tracematches. (quick|flowins|flowsens)</short_desc>
       <long_desc>Specifies the last stage to be executed in the static
-      whole program analysis for tracematches. There are three stages:
+      whole program analysis for dependent advice and tracematches. There are three stages:
       (1) quick, (2) flowins (flow-insensitive analysis) and (3) flowsens
-      (flow-sensitive analysis). They are executed in this order.
+      (flow-sensitive analysis, tracematches only). They are executed in this order.
       Default is quick.
       </long_desc>
     </stringopt>
