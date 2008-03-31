@@ -35,6 +35,7 @@
 <target name="build" depends="gen">
         <ant dir="${abc.loc}" />
         <!-- compile sources compiler="jikes" nowarn="true" -->
+	<mkdir dir="classes"/>
         <javac debug="true"
                fork="true" memoryMaximumSize="128M" destdir="classes">
 	<classpath>
