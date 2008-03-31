@@ -111,8 +111,8 @@ for EXT in $BUNDLED_EXTS ; do
 	mkdir -p $TARGET/$ext
 	cp -a `cat srcs.list` $TARGET/$ext
 	cp -a `cat bins.list` $TARGET/$ext
-	BINS="$BINS `perl -p -e 's/^(.)/abc-$VERSION\/$ext\/\$1/;' srcs.list`"
-	SRCS="$SRCS `perl -p -e 's/^(.)/abc-$VERSION\/$ext\/\$1/;' bins.list`"
+	BINS="$BINS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" srcs.list`"
+	SRCS="$SRCS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" bins.list`"
 	cd $OLD_PWD
 done
 
