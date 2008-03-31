@@ -87,12 +87,12 @@ aspect Advice
     AroundSpec spec = aroundSpec();
     if (spec == null)
       error("Can only use proceed within around advice");
-    else if (spec.getNumExplicitParameter() != getNumArg()) {
+    else if (spec.getNumAroundParameter() != getNumArg()) {
       error("Proceed called with the wrong number of arguments");
     } else {
       for (int i = 0; i < getNumArg(); i++) {
         TypeDecl exprType = getArg(i).type();
-        TypeDecl parmType = spec.getExplicitParameter(i).type();
+        TypeDecl parmType = spec.getAroundParameter(i).type();
 
         if (!exprType.methodInvocationConversionTo(parmType)
             && !exprType.isUnknown() && !parmType.isUnknown())

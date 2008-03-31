@@ -254,18 +254,20 @@ aspect AdviceCodegen {
   protected java.util.List AroundSpec.proceedFormals()
   {
     ArrayList list = new ArrayList();
-    for(int i = 0; i < getNumExplicitParameter(); i++)
-      list.add(getExplicitParameter(i).formal());
+    for(int i = 0; i < getNumAroundParameter(); i++)
+      list.add(getAroundParameter(i).formal());
     return list;
   }
 
   protected java.util.List AroundSpec.proceedParamList()
   {
     ArrayList list = new ArrayList();
-    for(int i = 0; i < getNumExplicitParameter(); i++)
-        list.add(getExplicitParameter(i).type().getSootType());
+    for(int i = 0; i < getNumAroundParameter(); i++)
+        list.add(getAroundParameter(i).type().getSootType());
     return list;
   }
+
+  syn lazy String AdviceDecl.proceedName() = "proceed" + name().substring(6);
 
   inh lazy MethodSig AroundSpec.proceedSig();
   eq AdviceDecl.getAdviceSpec().proceedSig() {
@@ -273,7 +275,7 @@ aspect AdviceCodegen {
       soot.Modifier.PUBLIC | soot.Modifier.FINAL | soot.Modifier.STATIC,
       AbcFactory.AbcClass(hostType().getSootClassDecl()),
       AbcFactory.AbcType(returnType().getSootType()),
-      "proceed" + name().substring(6),
+      proceedName(),
       getAdviceSpec().aroundSpec().proceedFormals(),
       new ArrayList(),
       pos());
@@ -285,9 +287,9 @@ aspect AdviceCodegen {
     AroundSpec spec = aroundSpec();
     int arg = 0;
 
-    for(int i = 0; i < spec.getNumExplicitParameter(); i++)
+    for(int i = 0; i < spec.getNumAroundParameter(); i++)
     {
-      TypeDecl type = spec.getExplicitParameter(i).type();
+      TypeDecl type = spec.getAroundParameter(i).type();
       list.add(
         asImmediate(b, getArg(arg).type().emitCastTo(b, getArg(arg), type))
       );
