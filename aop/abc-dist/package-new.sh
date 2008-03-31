@@ -109,10 +109,10 @@ for EXT in $BUNDLED_EXTS ; do
 	ant clobber jars
 	rm -rf $TARGET/$ext
 	mkdir -p $TARGET/$ext
-	cp -a `cat srcs.list` $TARGET/$ext
-	cp -a `cat bins.list` $TARGET/$ext
-	BINS="$BINS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" srcs.list`"
-	SRCS="$SRCS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" bins.list`"
+	cp -a --parents `cat srcs.list` $TARGET/$ext
+	cp -a --parents `cat bins.list` $TARGET/$ext
+	BINS="$BINS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" bins.list`"
+	SRCS="$SRCS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" srcs.list`"
 	cd $OLD_PWD
 done
 
