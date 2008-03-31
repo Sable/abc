@@ -718,7 +718,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         List body_formals = weavingFormals(transformed_formals, false);
         
         // create TraceMatch
-		TraceMatch tm =
+        TraceMatch tm =
             new TraceMatch(tracematch_name, tm_formals, body_formals,
                            regex.makeSM(), 
                            isPerThread, orderedSymToVars(),
