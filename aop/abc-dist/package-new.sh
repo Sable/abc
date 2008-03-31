@@ -105,7 +105,7 @@ SRCS="\
 # === build bundled extensions === #
 for EXT in $BUNDLED_EXTS ; do
 	ext=`basename $EXT`
-	cd $OLD_PWD/$ext
+	cd $OLD_PWD/$EXT
 	ant clobber jars
 	rm -rf $TARGET/$ext
 	mkdir -p $TARGET/$ext
