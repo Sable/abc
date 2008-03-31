@@ -117,7 +117,7 @@ aspect ImplicitVariables
             InternalCompilerError("No such implicit advice variable: " + i);
     }
 
-    syn lazy int[] AdviceDecl.implicitParameters()
+    syn int[] AdviceDecl.implicitParameters()
     {
         int[] params = new int[3];
         AdviceSpec spec = getAdviceSpec();
@@ -164,18 +164,6 @@ aspect ImplicitVariables
         ArrayList result = new ArrayList();
         for (int i = 0; i < spec.getNumParameter(); i++)
             result.add(spec.getParameter(i));
-        return result;
-    }
-
-    syn java.util.List IfPointcutExpr.usedPointcutFormals()
-    {
-        ArrayList result = new ArrayList();
-        Iterator i = pointcutFormals().iterator();
-        while (i.hasNext()) {
-            ParameterDeclaration decl = (ParameterDeclaration) i.next();
-            if (this.refersTo(decl))
-                result.add(decl);
-        }
         return result;
     }
 }

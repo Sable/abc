@@ -140,6 +140,9 @@ aspect Advice
                 " multiple times.");
         }
       }
+    } else if(isPrivate()) {
+      error("Pointcut " + hostType().typeName() + "." + name() +
+            " cannot be both abstract and private.");
     }
     overrideParameterCheck();
   }
