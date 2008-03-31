@@ -261,6 +261,8 @@
       <fileset dir="lib" includes="*.jar"/>
     </delete>
 </target>
+
+<target name="clobber" depends="clean"/>
 	
 <target name="jars" depends="build">
   <mkdir dir="lib"/>
