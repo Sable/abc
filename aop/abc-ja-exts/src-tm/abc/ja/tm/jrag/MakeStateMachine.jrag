@@ -1,6 +1,3 @@
-import abc.tm.weaving.aspectinfo.*;
-import abc.tm.weaving.matching.*;
-
 aspect MakeStateMachine
 {
     syn StateMachine Regex.stateMachine()
@@ -35,7 +32,7 @@ aspect MakeStateMachine
     public void RegexSymbol.makeSM(StateMachine sm, SMNode start,
                                    SMNode finish, boolean own_start)
     {
-        sm.newTransition(start, finish, getSymbolAccess().getID());
+        sm.newTransition(start, finish, getSymbolAccess().name());
     }
 
     public void RegexStar.makeSM(StateMachine sm, SMNode start,
@@ -93,7 +90,7 @@ aspect MakeStateMachine
         getRhs().makeSM(sm, middle, finish, false);
 
         for (int i = 0; i < numSymbols(); i++)
-            sm.newTransition(middle, middle, symbol(i).getID());
+            sm.newTransition(middle, middle, symbol(i).name());
     }
 
     inh int RegexSkipSequence.numSymbols();

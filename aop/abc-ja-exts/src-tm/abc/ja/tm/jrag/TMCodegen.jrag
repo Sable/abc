@@ -1,0 +1,201 @@
+import abc.tm.weaving.aspectinfo.*;
+import abc.tm.weaving.matching.*;
+
+aspect TMCodegen
+{
+    //
+    // Names and kinds
+    //
+    eq TMAdviceSpec.kind() = "beforeafter";
+
+    syn lazy String TraceMatchDecl.traceMatchName() =
+        "tracematch$" + hostType().adviceCounter++;
+    
+    eq TraceMatchDecl.name() = traceMatchName() + "$body";
+
+    syn lazy String TraceMatchDecl.syncAdviceName() =
+        "beforeafter$" + hostType().adviceCounter++;
+
+    syn lazy String TraceMatchDecl.someAdviceName() =
+        "beforeafter$" + hostType().adviceCounter++;
+
+    syn String TraceMatchDecl.dummyProceedName() =
+        null;
+
+    public abc.weaving.aspectinfo.AdviceSpec TMAdviceSpec.adviceSpec()
+    {
+        throw new RuntimeException("TODO");
+    }
+
+    public void TraceMatchDecl.jimplify1phase2()
+    {
+        super.jimplify1phase2();
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            getSymbolDecl(i).jimplify1phase2();
+        hostType().getSootClassDecl().addMethod(syncSootMethod());
+        hostType().getSootClassDecl().addMethod(someSootMethod());
+    }
+
+    syn lazy SootMethod TraceMatchDecl.syncSootMethod() =
+        perEventSootMethod(syncAdviceName());
+    syn lazy SootMethod TraceMatchDecl.someSootMethod() =
+        perEventSootMethod(someAdviceName());
+
+    syn SootMethod TraceMatchDecl.perEventSootMethod(String name) =
+        new SootMethod(name, perEventFormalTypes(), soot.VoidType.v(),
+                        soot.Modifier.PUBLIC, new ArrayList());
+
+    syn java.util.List TraceMatchDecl.perEventFormalTypes()
+    {
+        ArrayList types = new ArrayList();
+        AdviceSpec spec = getAdviceSpec();
+        for (int i = 0; i < spec.getNumParameter(); i++)
+            if (spec.getParameter(i).isImplicit() &&
+                getSymbolDeclList().refersTo(spec.getParameter(i)))
+                    types.add(spec.getParameter(i).type().getSootType());
+        return types;
+    }
+
+    public void TraceMatchDecl.createAspectInfo()
+    {
+        // TODO: create AI for sync/some/body advice
+        int[] jp_params = implicitParameters();
+        LinkedList methods = new LinkedList();
+        getBlock().addAllEnclosedMethodSigs(methods);
+
+        if (beforeSymbolsPointcut() != null)
+            createAdviceDecl(new BeforeAdvice(pos()), beforeSymbolsPointcut(),
+                methodSig(), jp_params, methods, abc.tm.ast.TMAdviceDecl.BODY);
+        if (afterSymbolsPointcut() != null)
+            createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
+                methodSig(), jp_params, methods, abc.tm.ast.TMAdviceDecl.BODY);
+
+        jp_params = symbolsImplicitParameters();
+
+        if (beforeSymbolsPointcut() != null)
+            createAdviceDecl(new BeforeAdvice(pos()), beforeSymbolsPointcut(),
+                syncMethodSig(), jp_params, methods,
+                abc.tm.ast.TMAdviceDecl.SYNCH);
+        if (afterSymbolsPointcut() != null)
+            createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
+                syncMethodSig(), jp_params, methods,
+                abc.tm.ast.TMAdviceDecl.SYNCH);
+
+        if (beforeSymbolsPointcut() != null)
+            createAdviceDecl(new BeforeAdvice(pos()), beforeSymbolsPointcut(),
+                someMethodSig(), jp_params, methods,
+                abc.tm.ast.TMAdviceDecl.SOME);
+        if (afterSymbolsPointcut() != null)
+            createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
+                someMethodSig(), jp_params, methods,
+                abc.tm.ast.TMAdviceDecl.SOME);
+    }
+
+    public void TraceMatchDecl.createAdviceDecl(
+        abc.weaving.aspectinfo.AdviceSpec spec, Pointcut pc,
+        MethodSig sig, int[] jp_params, java.util.List methods, int kind)
+    {
+        polyglot.util.Position pos;
+        if (kind == abc.tm.ast.TMAdviceDecl.BODY)
+            pos = pos();
+        else
+            pos = polyglot.util.Position.COMPILER_GENERATED;
+
+        globalAspectInfo().addAdviceDecl(new TMAdviceDecl(
+            spec, pc, sig, aspectClass(), jp_params[0], jp_params[1],
+            jp_params[2], methods, pos(), traceMatchName(), pos, kind));
+    }
+
+    syn MethodSig TraceMatchDecl.syncMethodSig() =
+        perEventMethodSig(syncAdviceName());
+
+    syn MethodSig TraceMatchDecl.someMethodSig() = 
+        perEventMethodSig(someAdviceName());
+
+    syn MethodSig TraceMatchDecl.perEventMethodSig(String name)
+    {
+        return new MethodSig(soot.Modifier.PUBLIC,
+            AbcFactory.AbcClass(hostType().getSootClassDecl()),
+            AbcFactory.AbcType(getAdviceSpec().typeVoid().getSootType()),
+            name,
+            symbolsImplicitFormals(),
+            new ArrayList(),
+            pos()
+        );
+    }
+
+    eq TraceMatchDecl.implicitParameters()
+    {
+        int ignored =
+            getAdviceSpec().getNumParameter() - bodyAdviceFormals().size();
+        int[] jp_params = super.implicitParameters();
+        for (int i = 0; i < 3; i++)
+            if (jp_params[i] != -1)
+                jp_params[i] -= ignored;
+        return jp_params;
+    }
+
+    syn java.util.List TraceMatchDecl.symbolsImplicitFormals()
+    {
+        ArrayList<Formal> formals = new ArrayList<Formal>();
+        AdviceSpec spec = getAdviceSpec();
+        for (int i = 0; i < spec.getNumParameter(); i++)
+            if (spec.getParameter(i).isImplicit()
+                && getSymbolDeclList().refersTo(spec.getParameter(i)))
+                    formals.add(spec.getParameter(i).formal());
+        return formals;
+    }
+
+    syn int[] TraceMatchDecl.symbolsImplicitParameters()
+    {
+        int[] jp_params = new int[] { -1, -1, -1 };
+        AdviceSpec spec = getAdviceSpec();
+        for (int i = 0, pos = 0; i < spec.getNumParameter(); i++) {
+            ParameterDeclaration param = spec.getParameter(i);
+            if (!param.isImplicit())
+                continue;
+            if (!getSymbolDeclList().refersTo(spec.getParameter(i)))
+                continue;
+            for (int j = 0; j < 3; j++)
+                if (param.name().equals(implicitVarName(j)))
+                    jp_params[j] = pos++;
+        }
+        return jp_params;
+    }
+
+    public java.util.List TMAdviceSpec.methodFormals()
+    {
+        return ((TraceMatchDecl) getParent()).bodyAdviceFormals();
+    }
+
+    public void TraceMatchDecl.jimplify2()
+    {
+        super.jimplify2();
+
+        // jimplify children
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            getSymbolDecl(i).jimplify2();
+
+        jimplify2method(syncSootMethod());
+        jimplify2method(someSootMethod());
+
+        TraceMatch tm =
+            new TraceMatch(traceMatchName(), traceMatchFormals(),
+                           bodyAdviceFormals(),
+                           getPointcutExpr().regex().stateMachine(),
+                           isPerThread(), symbolToFormalNameList(),
+                           frequentSymbolNames(), symbolToAdviceName(),
+                           syncAdviceName(), someAdviceName(),
+                           dummyProceedName(), aspectClass(), pos());
+        ((TMGlobalAspectInfo) globalAspectInfo()).addTraceMatch(tm);
+    }
+
+    public void TraceMatchDecl.jimplify2method(SootMethod method)
+    {
+        JimpleBody body = Jimple.v().newBody(method);
+        method.setActiveBody(body);
+        Body b = new Body(hostType(), body, this);
+        b.add(Jimple.v().newReturnVoidStmt());
+        MethodCategory.register(method, MethodCategory.NO_EFFECTS_ON_BASE_CODE);
+    }
+}

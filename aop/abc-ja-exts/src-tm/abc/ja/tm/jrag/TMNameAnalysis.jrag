@@ -1,4 +1,4 @@
-aspect NameLookup
+aspect TMNameAnalysis
 {
     eq TraceMatchDecl.getSymbolDecl().lookupVariable(String name)
     {

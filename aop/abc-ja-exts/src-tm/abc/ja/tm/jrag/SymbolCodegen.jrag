@@ -1,0 +1,152 @@
+aspect SymbolCodegen
+{
+    inh Aspect SymbolDecl.aspectClass();
+
+    inh String SymbolDecl.traceMatchName();
+    eq TraceMatchDecl.getSymbolDecl().traceMatchName() = traceMatchName();
+
+    inh polyglot.util.Position SymbolDecl.traceMatchPosition();
+    eq TraceMatchDecl.getSymbolDecl().traceMatchPosition() = pos();
+
+    inh TypeDecl SymbolDecl.returnType();
+    eq TraceMatchDecl.getSymbolDecl().returnType() = returnType();
+
+    syn String SymbolKind.kind();
+    eq BeforeSymbol.kind() = "before";
+    eq AfterSymbol.kind() = "after";
+    eq AfterReturningSymbol.kind() = "afterReturning";
+    eq AfterThrowingSymbol.kind() = "afterThrowing";
+    eq AroundSymbol.kind() = "around";
+
+    syn lazy String SymbolDecl.perSymbolAdviceName() =
+        getSymbolKind().kind() + "$" + hostType().adviceCounter++;
+
+    syn TMAdviceDecl SymbolDecl.perSymbolAdviceDecl()
+    {
+        int[] implicit = implicitParameters();
+        return new PerSymbolTMAdviceDecl(
+            getSymbolKind().adviceSpec(),
+            getPointcutExpr().pointcut(),
+            perSymbolMethodSig(), // methodSig
+            aspectClass(),
+            implicit[0], implicit[1], implicit[2], // jp, jpsp, ejp
+            perSymbolMethods(), // methods
+            pos(), // symbol position
+            traceMatchName(), // tm_id
+            traceMatchPosition(), // tm_pos
+            name(), // symbol name
+            abc.tm.ast.TMAdviceDecl.OTHER);
+    }
+
+    inh int[] SymbolDecl.symbolsImplicitParameters();
+    eq TraceMatchDecl.getSymbolDecl().symbolsImplicitParameters() =
+        symbolsImplicitParameters();
+
+    // find those implicit parameters (thisJoinPoint etc) which
+    // are bound by _this_ symbol
+    syn int[] SymbolDecl.implicitParameters()
+    {
+        int[] implicit = symbolsImplicitParameters();
+        int diff = -1;
+        for (int i = 0; diff == -1 && i < getNumParameter(); i++)
+            if (getParameter(i).isImplicit())
+                diff = i;
+        for (int i = 0; i < 3; i++)
+            if (implicit[i] != -1)
+                implicit[i] += diff;
+        return implicit;
+    }
+
+    syn AbstractAdviceSpec SymbolKind.adviceSpec();
+    eq BeforeSymbol.adviceSpec() = new BeforeAdvice(pos());
+    eq AfterSymbol.adviceSpec() = new AfterAdvice(pos());
+    eq AfterReturningSymbol.adviceSpec()
+    {
+        if (!hasVarAccess())
+            return new AfterReturningAdvice(pos());
+        ParameterDeclaration v = (ParameterDeclaration) getVarAccess().decl();
+        return new AfterReturningArgAdvice(v.formal(), pos());
+    }
+    eq AfterThrowingSymbol.adviceSpec()
+    {
+        if (!hasVarAccess())
+            return new AfterThrowingAdvice(pos());
+        ParameterDeclaration v = (ParameterDeclaration) getVarAccess().decl();
+        return new AfterThrowingArgAdvice(v.formal(), pos());
+    }
+    eq AroundSymbol.adviceSpec()
+    {
+        return new AroundAdvice(null, null, pos());
+    }
+
+    syn MethodSig SymbolDecl.perSymbolMethodSig()
+    {
+        return new MethodSig(soot.Modifier.PUBLIC,
+            AbcFactory.AbcClass(hostType().getSootClassDecl()),
+            AbcFactory.AbcType(returnType().getSootType()),
+            perSymbolAdviceName(),
+            perSymbolMethodFormals(),
+            new ArrayList(),
+            pos()
+        );
+    }
+
+    syn java.util.List SymbolDecl.perSymbolMethodFormals() =
+        perSymbolFormals(true);
+
+    syn java.util.List SymbolDecl.perSymbolAdviceFormals() =
+        perSymbolFormals(false);
+
+    syn java.util.List SymbolDecl.perSymbolFormals(boolean implicit)
+    {
+        ArrayList formals = new ArrayList();
+        for (int i = 0; i < getNumParameter(); i++)
+            if (implicit || !getParameter(i).isImplicit())
+                formals.add(getParameter(i).formal());
+        return formals;
+    }
+
+    syn lazy SootMethod SymbolDecl.perSymbolSootMethod()
+    {
+        String name = perSymbolAdviceName();
+        ArrayList paramtypes = new ArrayList();
+        Type returntype = soot.VoidType.v();
+        int modifiers = soot.Modifier.PUBLIC;
+
+        for (int i = 0; i < getNumParameter(); i++)
+            paramtypes.add(getParameter(i).type().getSootType());
+
+        SootMethod method =
+            new SootMethod(name, paramtypes, returntype, modifiers);
+
+        return method;
+    }
+
+    syn ArrayList SymbolDecl.perSymbolMethods()
+    {
+        ArrayList methods = new ArrayList();
+        methods.add(perSymbolSootMethod());
+        return methods;
+    }
+
+    public void SymbolDecl.jimplify1phase2()
+    {
+        hostType().getSootClassDecl().addMethod(perSymbolSootMethod());
+        globalAspectInfo().addAdviceDecl(perSymbolAdviceDecl());
+    }
+
+    eq SymbolDecl.getParameter(int i).localNum() = i;
+
+    public void SymbolDecl.jimplify2()
+    {
+        getPointcutExpr().jimplify2();
+        SootMethod method = perSymbolSootMethod();
+        JimpleBody body = Jimple.v().newBody(method);
+        method.setActiveBody(body);
+        Body b = new Body(hostType(), body, this);
+        for (int i = 0; i < getNumParameter(); i++)
+            getParameter(i).jimplify2(b);
+        b.add(Jimple.v().newReturnVoidStmt());
+        MethodCategory.register(method, MethodCategory.NO_EFFECTS_ON_BASE_CODE);
+    }
+}

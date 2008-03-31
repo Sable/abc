@@ -1,0 +1,47 @@
+aspect TMPointcutCodegen
+{
+    syn Regex PointcutExpr.regex()
+    {
+        throw new InternalCompilerError("called regex() on regular pointcut");
+    }
+    eq Regex.regex() = this;
+
+    public Pointcut Regex.pointcut()
+    {
+        throw new InternalCompilerError("called pointcut() on regex()");
+    }
+
+    // Record which symbols match before a joinpoint, rather than after it.
+    syn boolean SymbolKind.matchesBefore() = false;
+    eq BeforeSymbol.matchesBefore() = true;
+    eq AroundSymbol.matchesBefore() = true;
+
+    // returns a pointcut that matches whenever one of the before
+    // or around symbol-pointcuts matches (if matchbefore == true)
+    // or whenever one of the after, after-returning, or after-throwing
+    // symbol-pointcuts matches (if matchbefore == false)
+    syn Pointcut TraceMatchDecl.symbolsPointcut(boolean matchbefore)
+    {
+        Pointcut result = null;
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            if (getSymbolDecl(i).getSymbolKind().matchesBefore() == matchbefore)
+                result = pcOr(result, getSymbolDecl(i).closedPointcut());
+        return result;
+    }
+
+    syn Pointcut TraceMatchDecl.beforeSymbolsPointcut() = symbolsPointcut(true);
+    syn Pointcut TraceMatchDecl.afterSymbolsPointcut() = symbolsPointcut(false);
+
+    protected Pointcut TraceMatchDecl.pcOr(Pointcut current, Pointcut next)
+    {
+        if (current == null)
+            return next;
+        return OrPointcut.construct(current, next, pos());
+    }
+
+    // returns an aspectinfo-representation of the pointcut for this
+    // symbol, with the variables it binds existentially quantified.
+    syn Pointcut SymbolDecl.closedPointcut() =
+        new LocalPointcutVars(
+            getPointcutExpr().pointcut(), perSymbolAdviceFormals(), pos());
+}

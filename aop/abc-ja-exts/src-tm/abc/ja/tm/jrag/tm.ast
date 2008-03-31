@@ -4,7 +4,8 @@ TraceMatchDecl : AdviceDecl ::=
 TMAdviceSpec : AdviceSpec;
 TMAroundAdviceSpec : TMAdviceSpec ::= TypeAccess:Access;
 
-SymbolDecl ::= <ID:String> SymbolKind PointcutExpr;
+SymbolDecl ::= <ID:String> /Parameter:ParameterDeclaration*/
+               SymbolKind PointcutExpr;
 
 abstract SymbolKind;
 BeforeSymbol : SymbolKind;

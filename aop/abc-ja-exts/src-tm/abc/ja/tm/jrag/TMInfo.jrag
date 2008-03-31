@@ -1,0 +1,94 @@
+aspect TMInfo
+{
+    //
+    // contains methods for creating all of the lists/mappings needed
+    // by the AspectInfo representation of a TraceMatch
+    //
+
+
+    // Make a list of abc-formals - one for each of the tracematch formals
+    syn ArrayList TraceMatchDecl.traceMatchFormals()
+    {
+        ArrayList formals = new ArrayList();
+        for (int i = 0; i < getAdviceSpec().getNumParameter(); i++)
+        {
+            ParameterDeclaration param = getAdviceSpec().getParameter(i);
+            if (!param.isImplicit())
+                formals.add(param.formal());
+        }
+        return formals;
+    }
+
+
+    // Make a list of abc-formals for the parameters to the tracematch
+    // body method - this only includes around parameters and the implicit
+    // family of variables thisJoinPoint etc.
+    syn ArrayList TraceMatchDecl.bodyAdviceFormals()
+    {
+        ArrayList formals = new ArrayList();
+        addAroundFormals(formals);
+        for (int i = 0; i < getAdviceSpec().getNumParameter(); i++)
+        {
+            ParameterDeclaration param = getAdviceSpec().getParameter(i);
+            if (param.isImplicit())
+                formals.add(param.formal());
+        }
+        return formals;
+    }
+
+    void TraceMatchDecl.addAroundFormals(ArrayList formals)
+    {
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            getSymbolDecl(i).getSymbolKind().addAroundFormals(formals);
+    }
+
+    void SymbolKind.addAroundFormals(ArrayList formals) { }
+    void AroundSymbol.addAroundFormals(ArrayList formals)
+    {
+        for (int i = 0; i < getNumVarAccess(); i++) {
+            ParameterDeclaration decl;
+            decl = (ParameterDeclaration) getVarAccess(i).decl();
+            formals.add(decl.formal());
+        }
+    }
+
+
+    syn ArrayList TraceMatchDecl.frequentSymbolNames()
+    {
+        ArrayList names = new ArrayList();
+        for (int i = 0; i < getNumFrequent(); i++)
+            names.add(getFrequent(i).name());
+        return names;
+    }
+
+
+    syn Map TraceMatchDecl.symbolToFormalNameList()
+    {
+        Map sym_to_vars = new HashMap();
+        for (int i = 0; i < getNumSymbolDecl(); i++) {
+            SymbolDecl symbol = getSymbolDecl(i);
+            sym_to_vars.put(symbol.name(), symbol.formalNameList());
+        }
+        return sym_to_vars;
+    }
+
+    syn java.util.List SymbolDecl.formalNameList()
+    {
+        ArrayList<String> vars = new ArrayList<String>();
+        for (int i = 0; i < getNumParameter(); i++)
+            if (!getParameter(i).isImplicit())
+                vars.add(getParameter(i).name());
+        return vars;
+    }
+
+
+    syn Map TraceMatchDecl.symbolToAdviceName()
+    {
+        Map sym_to_advice = new HashMap();
+        for (int i = 0; i < getNumSymbolDecl(); i++) {
+            sym_to_advice.put(getSymbolDecl(i).name(),
+                            getSymbolDecl(i).perSymbolAdviceName());
+        }
+        return sym_to_advice;
+    }
+}

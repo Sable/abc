@@ -1,0 +1,21 @@
+aspect TMErrorCheck
+{
+    public void TraceMatchDecl.typeCheck()
+    {
+        // TODO:
+        // -----
+
+        // check that the regex must bind all variables
+
+        // check that an around-TM returns a value
+    }
+
+    public void SymbolDecl.typeCheck()
+    {
+        // do standard binding checks on the pointcut this symbol
+        //   (delegate to symboldecl?)
+    }
+
+    eq SymbolDecl.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0;
+}
