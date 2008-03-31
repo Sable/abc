@@ -54,11 +54,11 @@ OLD_PWD=$PWD
 
 # === build abc proper === #
 cd $ABC_DIR
-ant clobber
+ant clobber || exit 3
 mkdir -p classes/abc/main
 echo "prerelease=$PREREL" > classes/abc/main/version.properties
 # FIXME : URL refs for javadoc
-ant jars javadoc runtime-javadoc options-doc copy-jars
+ant jars javadoc runtime-javadoc options-doc copy-jars || exit 4
 rm classes/abc/main/version.properties
 
 VERSION=`CLASSPATH=lib/abc-complete.jar java abc.aspectj.Version`
@@ -112,7 +112,7 @@ SRCS="\
 for EXT in $BUNDLED_EXTS ; do
 	ext=`basename $EXT`
 	cd $OLD_PWD/$EXT
-	ant clobber jars
+	ant clobber jars || exit 5
 	rm -rf $TARGET/$ext
 	mkdir -p $TARGET/$ext
 	cp -a --parents `cat srcs.list` $TARGET/$ext
