@@ -149,6 +149,24 @@
     <delete file="lib/abc-ja.jar"/>
 </target>
 	
+<target name="clean">
+    <delete>
+      <fileset dir="generated" includes="**/*"/>
+      <fileset dir="classes"   includes="**/*"/>
+    </delete>
+    <delete file="lib/abc-ja.jar"/>
+</target>
+	
+<target name="clobber" depends="clean"/>
+
+<target name="clean">
+    <delete>
+      <fileset dir="generated" includes="**/*"/>
+      <fileset dir="classes"   includes="**/*"/>
+    </delete>
+    <delete file="lib/abc-ja.jar"/>
+</target>
+	
 <target name="jars" depends="build">
   <jar destfile="${abc.loc}/lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
   <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
