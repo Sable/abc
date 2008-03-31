@@ -146,8 +146,8 @@
     <delete>
       <fileset dir="generated" includes="**/*"/>
       <fileset dir="classes"   includes="**/*"/>
+      <fileset fir="lib" includes="*.jar"/>
     </delete>
-    <delete file="lib/abc-ja.jar"/>
 </target>
 		
 <target name="clobber" depends="clean"/>
@@ -156,6 +156,8 @@
   <mkdir dir="lib"/>
   <jar destfile="${abc.loc}/lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
   <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
+  <copy file="${abc.loc}/lib/abc-complete.jar" tofile="lib/abc-ja-complete.jar"/>
+  <jar destfile="lib/abc-ja-complete.jar" update="true" basedir="classes" includes="**/*.class"/>
 </target>
 
 <target name="test" depends="build">
