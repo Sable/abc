@@ -113,8 +113,8 @@ for EXT in $BUNDLED_EXTS ; do
 	cp -a lib/ src/ *-src/ generated/ $TARGET/$ext
 	BINS="$BINS abc-$VERSION/$ext/lib"
 	SRCS="$SRCS `(cd $PACKAGE_DIR ; \
-			find abc-$VERSION/$ext -depth 1 -type f | tr '\n' ' ' ; \
-			find abc-$VERSION/$ext -depth 1 -name \*src | tr '\n' ' ')`"
+			find abc-$VERSION/$ext -maxdepth 1 -type f | tr '\n' ' ' ; \
+			find abc-$VERSION/$ext -maxdepth 1 -name \*src | tr '\n' ' ')`"
 	cd $OLD_PWD
 done
 
