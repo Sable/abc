@@ -271,7 +271,7 @@
   <mkdir dir="lib"/>
   <jar destfile="${abc.loc}/lib/abc-ja-exts.jar" basedir="classes" includes="**/*.class" />
   <jar destfile="lib/abc-ja-exts.jar" basedir="classes" includes="**/*.class" />
-  <copy file="${abc.loc}/lib/abc-complete.jar" tofile="lib/abc-ja-exts-complete.jar"/>
+  <copy file="${abc-ja.loc}/lib/abc-ja-complete.jar" tofile="lib/abc-ja-exts-complete.jar"/>
   <jar destfile="lib/abc-ja-exts-complete.jar" update="true" basedir="classes" includes="**/*.class"/>
 </target>
 
