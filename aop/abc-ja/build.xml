@@ -149,7 +149,7 @@
     <delete file="lib/abc-ja.jar"/>
 </target>
 	
-<target name="jar" depends="build">
+<target name="jars" depends="build">
   <jar destfile="${abc.loc}/lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
   <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
 </target>
