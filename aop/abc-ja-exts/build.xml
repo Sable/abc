@@ -70,6 +70,7 @@
 
 <target name="tm-jrag">
   <!-- create AST node types and weave aspect modules -->
+        <mkdir dir="${basedir}/generated"/>
 	<jastadd package="abc.ja.tm.jrag" rewrite="true"
                 beaver="true" noVisitCheck="true"
                 noCacheCycle="true" noComponentCheck="true"
@@ -132,6 +133,7 @@
 
 <target name="eaj-jrag">
   <!-- create AST node types and weave aspect modules -->
+        <mkdir dir="${basedir}/generated"/>
 	<jastadd package="abc.ja.eaj.jrag" rewrite="true"
                 beaver="true" noVisitCheck="true"
                 noCacheCycle="true" noComponentCheck="true"
