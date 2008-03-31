@@ -255,7 +255,7 @@
 </target>
 
 <target name="clean">
-    <delete>
+    <delete quiet="true">
       <fileset dir="generated" includes="**/*"/>
       <fileset dir="classes"   includes="**/*"/>
       <fileset dir="lib" includes="*.jar"/>
