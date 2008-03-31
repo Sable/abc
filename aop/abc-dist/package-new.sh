@@ -25,7 +25,7 @@ DISTS_DIR=$PWD/dists
 ABC_DIR='../abc'
 
 # extensions to bundle
-BUNDLED_EXTS='../abc-ja'
+BUNDLED_EXTS='../abc-ja ../abc-ja-exts'
 
 # these will potentially be out of sync slightly, but never mind
 UNIXTIME=`date +%s`
