@@ -146,7 +146,7 @@
     <delete>
       <fileset dir="generated" includes="**/*"/>
       <fileset dir="classes"   includes="**/*"/>
-      <fileset fir="lib" includes="*.jar"/>
+      <fileset dir="lib" includes="*.jar"/>
     </delete>
 </target>
 		
