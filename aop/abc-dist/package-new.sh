@@ -31,6 +31,12 @@ BUNDLED_EXTS='../abc-ja'
 UNIXTIME=`date +%s`
 DATE=`date +%Y%m%d%H%M%S`
 
+if ! realpath -h &> /dev/null ; then
+	echo "Please install 'realpath'..."
+	exit 2
+fi
+	
+
 case "$1" in
   release)
 	PREREL=
@@ -111,8 +117,8 @@ for EXT in $BUNDLED_EXTS ; do
 	mkdir -p $TARGET/$ext
 	cp -a --parents `cat srcs.list` $TARGET/$ext
 	cp -a --parents `cat bins.list` $TARGET/$ext
-	BINS="$BINS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" bins.list`"
-	SRCS="$SRCS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/;\" srcs.list`"
+	BINS="$BINS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/; s|[^/]+/\.\./||g;\" bins.list`"
+	SRCS="$SRCS `perl -p -e \"s/^(.)/abc-$VERSION\/$ext\/\$&/; s|[^/]+/\.\./||g;\" srcs.list`"
 	cd $OLD_PWD
 done
 
