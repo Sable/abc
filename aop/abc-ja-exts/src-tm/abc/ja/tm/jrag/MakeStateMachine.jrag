@@ -60,7 +60,7 @@ aspect MakeStateMachine
             sm.newTransition(start, loop_node, null);
         }
         getRegex().makeSM(sm, loop_node, loop_node, false);
-        sm.newTransition(loop_node, finish, null);
+        getRegex().makeSM(sm, loop_node, finish, false);
     }
 
     public void RegexCount.makeSM(StateMachine sm, SMNode start,

@@ -18,7 +18,7 @@ aspect SymbolNameAnalysis
         List<ParameterDeclaration> params = new List<ParameterDeclaration>();
         for (int i = 0; i < numTraceMatchParameter(); i++) {
             ParameterDeclaration param = traceMatchParameter(i);
-            if (getPointcutExpr().refersTo(param)) {
+            if (this.refersTo(param)) {
                 Modifiers mods = new Modifiers(new List());
                 Access type = param.type().createQualifiedAccess();
                 String name = param.name();

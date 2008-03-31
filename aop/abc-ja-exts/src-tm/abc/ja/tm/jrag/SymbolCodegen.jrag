@@ -149,4 +149,21 @@ aspect SymbolCodegen
         b.add(Jimple.v().newReturnVoidStmt());
         MethodCategory.register(method, MethodCategory.NO_EFFECTS_ON_BASE_CODE);
     }
+
+    eq SymbolDecl.getPointcutExpr().pointcutFormals()
+    {
+        ArrayList result = new ArrayList();
+        lookupAllChildren();
+        for (int i = 0; i < numTraceMatchParameter(); i++)
+            if (this.refersTo(traceMatchParameter(i)))
+                result.add(traceMatchParameter(i));
+        return result;
+    }
+
+    protected void ASTNode.lookupAllChildren()
+    {
+    for (int i = 0; i < getNumChild(); i++)
+        getChild(i).lookupAllChildren();
+    }
+    protected void VarAccess.lookupAllChildren() { decl(); }
 }
