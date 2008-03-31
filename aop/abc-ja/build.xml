@@ -57,6 +57,7 @@
 <!-- generate compiler source files -->
 <target name="gen">
   <!-- create AST node types and weave aspect modules -->
+        <mkdir dir="${basedir}/generated"/>
 	<jastadd package="${package}" rewrite="true"
                 beaver="true" noVisitCheck="true"
                 noCacheCycle="true" noComponentCheck="true"
