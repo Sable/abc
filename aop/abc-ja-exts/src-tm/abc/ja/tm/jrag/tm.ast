@@ -2,7 +2,7 @@ TraceMatchDecl : AdviceDecl ::=
     SymbolDecl* Frequent:SymbolAccess*;
 
 TMAdviceSpec : AdviceSpec;
-TMAroundAdviceSpec : TMAdviceSpec ::= TypeAccess:Access;
+TMAroundSpec : AroundSpec;
 
 SymbolDecl ::= <ID:String> /Parameter:ParameterDeclaration*/
                SymbolKind PointcutExpr;

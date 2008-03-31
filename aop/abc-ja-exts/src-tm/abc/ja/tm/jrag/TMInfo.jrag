@@ -7,9 +7,9 @@ aspect TMInfo
 
 
     // Make a list of abc-formals - one for each of the tracematch formals
-    syn ArrayList TraceMatchDecl.traceMatchFormals()
+    syn java.util.List<Formal> TraceMatchDecl.traceMatchFormals()
     {
-        ArrayList formals = new ArrayList();
+        ArrayList<Formal> formals = new ArrayList<Formal>();
         for (int i = 0; i < getAdviceSpec().getNumParameter(); i++)
         {
             ParameterDeclaration param = getAdviceSpec().getParameter(i);
@@ -23,9 +23,9 @@ aspect TMInfo
     // Make a list of abc-formals for the parameters to the tracematch
     // body method - this only includes around parameters and the implicit
     // family of variables thisJoinPoint etc.
-    syn ArrayList TraceMatchDecl.bodyAdviceFormals()
+    syn java.util.List<Formal> TraceMatchDecl.bodyAdviceFormals()
     {
-        ArrayList formals = new ArrayList();
+        ArrayList<Formal> formals = new ArrayList<Formal>();
         addAroundFormals(formals);
         for (int i = 0; i < getAdviceSpec().getNumParameter(); i++)
         {
@@ -36,14 +36,14 @@ aspect TMInfo
         return formals;
     }
 
-    void TraceMatchDecl.addAroundFormals(ArrayList formals)
+    void TraceMatchDecl.addAroundFormals(java.util.List<Formal> formals)
     {
         for (int i = 0; i < getNumSymbolDecl(); i++)
             getSymbolDecl(i).getSymbolKind().addAroundFormals(formals);
     }
 
-    void SymbolKind.addAroundFormals(ArrayList formals) { }
-    void AroundSymbol.addAroundFormals(ArrayList formals)
+    void SymbolKind.addAroundFormals(java.util.List<Formal> formals) { }
+    void AroundSymbol.addAroundFormals(java.util.List<Formal> formals)
     {
         for (int i = 0; i < getNumVarAccess(); i++) {
             ParameterDeclaration decl;
@@ -53,9 +53,9 @@ aspect TMInfo
     }
 
 
-    syn ArrayList TraceMatchDecl.frequentSymbolNames()
+    syn java.util.List<String> TraceMatchDecl.frequentSymbolNames()
     {
-        ArrayList names = new ArrayList();
+        ArrayList<String> names = new ArrayList<String>();
         for (int i = 0; i < getNumFrequent(); i++)
             names.add(getFrequent(i).name());
         return names;
@@ -72,7 +72,7 @@ aspect TMInfo
         return sym_to_vars;
     }
 
-    syn java.util.List SymbolDecl.formalNameList()
+    syn java.util.List<String> SymbolDecl.formalNameList()
     {
         ArrayList<String> vars = new ArrayList<String>();
         for (int i = 0; i < getNumParameter(); i++)

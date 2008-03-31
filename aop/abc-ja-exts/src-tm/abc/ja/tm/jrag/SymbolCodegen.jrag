@@ -59,6 +59,7 @@ aspect SymbolCodegen
 
     syn AbstractAdviceSpec SymbolKind.adviceSpec();
     eq BeforeSymbol.adviceSpec() = new BeforeAdvice(pos());
+    eq AroundSymbol.adviceSpec() = new BeforeAdvice(pos());
     eq AfterSymbol.adviceSpec() = new AfterAdvice(pos());
     eq AfterReturningSymbol.adviceSpec()
     {
@@ -73,10 +74,6 @@ aspect SymbolCodegen
             return new AfterThrowingAdvice(pos());
         ParameterDeclaration v = (ParameterDeclaration) getVarAccess().decl();
         return new AfterThrowingArgAdvice(v.formal(), pos());
-    }
-    eq AroundSymbol.adviceSpec()
-    {
-        return new AroundAdvice(null, null, pos());
     }
 
     syn MethodSig SymbolDecl.perSymbolMethodSig()

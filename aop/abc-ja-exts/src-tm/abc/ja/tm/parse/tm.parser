@@ -57,7 +57,7 @@ TraceMatchDecl tracematch =
     {:
         ParserTrace.parserTrace("tracematch definition");
         TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
-            new TMAroundAdviceSpec(p, type), r, e, b, s, f);
+            new TMAroundSpec(p, type), r, e, b, s, f);
     	return tcd;
     :}
 |
@@ -72,7 +72,7 @@ TraceMatchDecl tracematch =
     {:
         ParserTrace.parserTrace("tracematch definition");
         TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
-            new TMAroundAdviceSpec(p, new PrimitiveTypeAccess("void")),
+            new TMAroundSpec(p, new PrimitiveTypeAccess("void")),
             r, e, b, s, f);
     	return tcd;
     :}

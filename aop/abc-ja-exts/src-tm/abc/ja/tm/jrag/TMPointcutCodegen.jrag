@@ -30,7 +30,16 @@ aspect TMPointcutCodegen
     }
 
     syn Pointcut TraceMatchDecl.beforeSymbolsPointcut() = symbolsPointcut(true);
+
     syn Pointcut TraceMatchDecl.afterSymbolsPointcut() = symbolsPointcut(false);
+
+    syn Pointcut TraceMatchDecl.aroundSymbolPointcut()
+    {
+        for (int i = 0; i < getNumSymbolDecl(); i++)
+            if (getSymbolDecl(i).getSymbolKind().aroundSymbol() != null)
+                return getSymbolDecl(i).getPointcutExpr().pointcut();
+        return null;
+    }
 
     protected Pointcut TraceMatchDecl.pcOr(Pointcut current, Pointcut next)
     {

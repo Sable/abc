@@ -6,7 +6,7 @@ aspect TMCodegen
     //
     // Names and kinds
     //
-    eq TMAdviceSpec.kind() = "beforeafter";
+    eq TMAdviceSpec.kind() = "UNUSED";
 
     syn lazy String TraceMatchDecl.traceMatchName() =
         "tracematch$" + hostType().adviceCounter++;
@@ -19,12 +19,9 @@ aspect TMCodegen
     syn lazy String TraceMatchDecl.someAdviceName() =
         "beforeafter$" + hostType().adviceCounter++;
 
-    syn String TraceMatchDecl.dummyProceedName() =
-        null;
-
     public abc.weaving.aspectinfo.AdviceSpec TMAdviceSpec.adviceSpec()
     {
-        throw new RuntimeException("TODO");
+        throw new RuntimeException("should not be called");
     }
 
     public void TraceMatchDecl.jimplify1phase2()
@@ -63,12 +60,21 @@ aspect TMCodegen
         LinkedList methods = new LinkedList();
         getBlock().addAllEnclosedMethodSigs(methods);
 
-        if (beforeSymbolsPointcut() != null)
-            createAdviceDecl(new BeforeAdvice(pos()), beforeSymbolsPointcut(),
-                methodSig(), jp_params, methods, abc.tm.ast.TMAdviceDecl.BODY);
-        if (afterSymbolsPointcut() != null)
-            createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
-                methodSig(), jp_params, methods, abc.tm.ast.TMAdviceDecl.BODY);
+        if (aroundSymbol() != null) {
+            createAdviceDecl(getAdviceSpec().adviceSpec(),
+            aroundSymbolPointcut(), methodSig(), jp_params,
+            methods, abc.tm.ast.TMAdviceDecl.BODY);
+        } else {
+            if (beforeSymbolsPointcut() != null)
+                createAdviceDecl(new BeforeAdvice(pos()),
+                    beforeSymbolsPointcut(), methodSig(), jp_params,
+                    methods, abc.tm.ast.TMAdviceDecl.BODY);
+        
+            if (afterSymbolsPointcut() != null)
+                createAdviceDecl(new AfterAdvice(pos()),
+                afterSymbolsPointcut(), methodSig(), jp_params,
+                methods, abc.tm.ast.TMAdviceDecl.BODY);
+        }
 
         jp_params = symbolsImplicitParameters();
 
@@ -76,6 +82,7 @@ aspect TMCodegen
             createAdviceDecl(new BeforeAdvice(pos()), beforeSymbolsPointcut(),
                 syncMethodSig(), jp_params, methods,
                 abc.tm.ast.TMAdviceDecl.SYNCH);
+
         if (afterSymbolsPointcut() != null)
             createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
                 syncMethodSig(), jp_params, methods,
@@ -85,6 +92,7 @@ aspect TMCodegen
             createAdviceDecl(new BeforeAdvice(pos()), beforeSymbolsPointcut(),
                 someMethodSig(), jp_params, methods,
                 abc.tm.ast.TMAdviceDecl.SOME);
+
         if (afterSymbolsPointcut() != null)
             createAdviceDecl(new AfterAdvice(pos()), afterSymbolsPointcut(),
                 someMethodSig(), jp_params, methods,
@@ -168,6 +176,11 @@ aspect TMCodegen
         return ((TraceMatchDecl) getParent()).bodyAdviceFormals();
     }
 
+    public java.util.List TMAroundSpec.methodFormals()
+    {
+        return ((TraceMatchDecl) getParent()).bodyAdviceFormals();
+    }
+
     public void TraceMatchDecl.jimplify2()
     {
         super.jimplify2();
@@ -186,7 +199,7 @@ aspect TMCodegen
                            isPerThread(), symbolToFormalNameList(),
                            frequentSymbolNames(), symbolToAdviceName(),
                            syncAdviceName(), someAdviceName(),
-                           dummyProceedName(), aspectClass(), pos());
+                           proceedName(), aspectClass(), pos());
         ((TMGlobalAspectInfo) globalAspectInfo()).addTraceMatch(tm);
     }
 
@@ -198,4 +211,34 @@ aspect TMCodegen
         b.add(Jimple.v().newReturnVoidStmt());
         MethodCategory.register(method, MethodCategory.NO_EFFECTS_ON_BASE_CODE);
     }
+
+
+    // around support
+
+    eq TraceMatchDecl.proceedName()
+    {
+        if (aroundSymbol() == null)
+            return null;
+        return "proceed" + traceMatchName().substring(10);
+    }
+
+    syn AroundSymbol SymbolKind.aroundSymbol() = null;
+    eq AroundSymbol.aroundSymbol() = this;
+
+    syn AroundSymbol TraceMatchDecl.aroundSymbol()
+    {
+        AroundSymbol result = null;
+        for (int i = 0; i < getNumSymbolDecl() && result == null; i++)
+            result = getSymbolDecl(i).getSymbolKind().aroundSymbol();
+        return result;
+    }
+
+    inh AroundSymbol TMAroundSpec.aroundSymbol();
+    eq Program.getCompilationUnit().aroundSymbol() = null;
+    eq TraceMatchDecl.getAdviceSpec().aroundSymbol() = aroundSymbol();
+
+    eq TMAroundSpec.getNumAroundParameter() =
+        aroundSymbol().getNumVarAccess();
+    eq TMAroundSpec.getAroundParameter(int i) =
+        (ParameterDeclaration) aroundSymbol().getVarAccess(i).decl();
 }
