@@ -18,6 +18,9 @@ TESTSUITE=$PWD/../abc-testing/ajc-harness
 # directory to package into
 PACKAGE_DIR=$PWD/package
 
+# dists dir
+DISTS_DIR=$PWD/dists
+
 # abc directory relative to abc-dist
 ABC_DIR='../abc'
 
@@ -145,16 +148,16 @@ rm -rf tmp
 
 for d in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE polyglot-dev-$DATE \
          jasmin-dev-$DATE
- do mkdir tmp
-    cd tmp
+ do mkdir $PACKAGE_DIR/tmp
+    cd $PACKAGE_DIR/tmp
     tar -xzvf ../$d.tar.gz
     zip -r ../$d.zip *
-    cd ..
+    cd $PACKAGE_DIR
     rm -rf tmp
 done
 
-mkdir -p tmp/abc-$VERSION
-cd tmp/abc-$VERSION
+mkdir -p $PACKAGE_DIR/tmp/abc-$VERSION
+cd $PACKAGE_DIR/tmp/abc-$VERSION
 
 for root in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE \
             polyglot-dev-$DATE jasmin-dev-$DATE
@@ -194,73 +197,74 @@ $OLD_PWD/addchangelogrelease.pl $VERSION $UNIXTIME \
    | $OLD_PWD/makechangelogs.pl debian \
    > debian/changelog
 
-dpkg-buildpackage -rfakeroot -uc -us
+# doesn't work for now
+# dpkg-buildpackage -rfakeroot -uc -us
 
-cd ../..
+cd $PACKAGE_DIR
 for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
          abc_${VERSION}_i386.changes
    do mv tmp/$d .
 done
 rm -rf tmp
 
-mkdir -p ../dists
+mkdir -p $DISTS_DIR
 
-rm -rf ../dists/$VERSION
-mkdir -p ../dists/$VERSION/files
+rm -rf $DISTS_DIR/$VERSION
+mkdir -p $DISTS_DIR/$VERSION/files
 for root in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE \
             polyglot-dev-$DATE jasmin-dev-$DATE
- do cp $root.tar.gz $root.zip ../dists/$VERSION/files/
+ do cp $root.tar.gz $root.zip $DISTS_DIR/$VERSION/files/
 done
 
-mkdir ../dists/$VERSION/files/lib
-cp abc-$VERSION/lib/*.jar ../dists/$VERSION/files/lib/
+mkdir $DISTS_DIR/$VERSION/files/lib
+cp abc-$VERSION/lib/*.jar $DISTS_DIR/$VERSION/files/lib/
 cp /usr/local/src/xact/java/xact-complete.jar \
-    ../dists/$VERSION/files/lib/xact-complete-$XACT.jar
+    $DISTS_DIR/$VERSION/files/lib/xact-complete-$XACT.jar
 cp /usr/local/src/jedd-dev/runtime/lib/jedd-runtime.jar \
-    ../dists/$VERSION/files/lib/jedd-runtime-$JEDD.jar
+    $DISTS_DIR/$VERSION/files/lib/jedd-runtime-$JEDD.jar
 cp /usr/local/src/paddle-dev/lib/paddle-custom.jar \
-    ../dists/$VERSION/files/lib/paddle-$PADDLE.jar
+    $DISTS_DIR/$VERSION/files/lib/paddle-$PADDLE.jar
 cp /usr/local/src/resources/JavaBDD/javabdd_$JAVABDD.jar \
-    ../dists/$VERSION/files/lib/javabdd_$JAVABDD.jar
+    $DISTS_DIR/$VERSION/files/lib/javabdd_$JAVABDD.jar
 cp /usr/local/src/resources/javabdd_src_$JAVABDD.tar.gz \
-    ../dists/$VERSION/files/lib/javabdd_src_$JAVABDD.tar.gz
+    $DISTS_DIR/$VERSION/files/lib/javabdd_src_$JAVABDD.tar.gz
 
-mkdir ../dists/$VERSION/files/bin
-cp abc-$VERSION/bin/abc ../dists/$VERSION/files/bin
-cp abc-$VERSION/bin/abc.bat ../dists/$VERSION/files/bin
+mkdir $DISTS_DIR/$VERSION/files/bin
+cp abc-$VERSION/bin/abc $DISTS_DIR/$VERSION/files/bin
+cp abc-$VERSION/bin/abc.bat $DISTS_DIR/$VERSION/files/bin
 
-mkdir ../dists/$VERSION/files/doc
-cp abc-$VERSION/doc/usage.ps ../dists/$VERSION/files/doc
-cp abc-$VERSION/doc/usage.pdf ../dists/$VERSION/files/doc
+mkdir $DISTS_DIR/$VERSION/files/doc
+cp abc-$VERSION/doc/usage.ps $DISTS_DIR/$VERSION/files/doc
+cp abc-$VERSION/doc/usage.pdf $DISTS_DIR/$VERSION/files/doc
 
-mkdir ../dists/$VERSION/files/debian
+mkdir $DISTS_DIR/$VERSION/files/debian
 for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
          abc_${VERSION}_i386.changes
-   do cp $d ../dists/$VERSION/files/debian
+   do cp $d $DISTS_DIR/$VERSION/files/debian
 done
 
-cp -a abc-$VERSION/runtime-javadoc ../dists/$VERSION/files/
+cp -a abc-$VERSION/runtime-javadoc $DISTS_DIR/$VERSION/files/
 
 echo "<!--#set var=\"version\" value=\"$VERSION\"-->" \
-    > ../dists/$VERSION/package.shtml
+    > $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"sootversion\" value=\"dev-$DATE\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"jasminversion\" value=\"dev-$DATE\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"polyglotversion\" value=\"dev-$DATE\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"jeddversion\" value=\"$JEDD\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"paddleversion\" value=\"$PADDLE\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"javabddversion\" value=\"$JAVABDD\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#set var=\"xactversion\" value=\"$XACT\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 echo "<!--#include file=\"package-body-v$PACKAGE.shtml\"-->" \
-    >> ../dists/$VERSION/package.shtml
+    >> $DISTS_DIR/$VERSION/package.shtml
 
-cd ../dists/$VERSION/
+cd $DISTS_DIR/$VERSION/
 ln -sf ../../includes/package-body-v$PACKAGE.shtml
 ln -sf ../../includes/footer.shtml
 ln -sf ../../includes/header.shtml
