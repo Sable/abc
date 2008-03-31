@@ -24,6 +24,7 @@ public abstract class RenameMethod extends TestCase {
 	public void runMethodRenameTest(String name) {
         String infile = getTestBase()+"/"+name+"/in/A.java";
         String resfile = getTestBase()+"/"+name+"/out/A.java";
+        String alt_resfile = getTestBase()+"/"+name+"/out/A_alt.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();
@@ -32,12 +33,11 @@ public abstract class RenameMethod extends TestCase {
         	String[] files = fields[0].split(",");
         	Program prog = rename(files, fields[1], fields[2], fields[3], fields[4]);
         	try {
-        		File rf = new File(resfile);
-        		FileReader rfr = new FileReader(rf);
-        		long l = rf.length();
-        		char[] buf = new char[(int)l];
-        		rfr.read(buf);
-        		assertEquals(new String(buf), prog.toString()+"\n");
+        		String res = new String(TestHelper.wholeFile(resfile));
+        		if(!res.equals(prog.toString()+"\n")) {
+        			res = new String(TestHelper.wholeFile(alt_resfile));
+            		assertEquals(res, prog.toString()+"\n");
+        		}
         	} catch(FileNotFoundException fnfe) {
         		fail(name+" was supposed to fail but yielded result");
         	}
