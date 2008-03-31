@@ -265,6 +265,7 @@
 <target name="clobber" depends="clean"/>
 	
 <target name="jars" depends="build">
+  <ant dir="${abc-ja.loc}" target="jars"/>
   <mkdir dir="lib"/>
   <jar destfile="${abc.loc}/lib/abc-ja-exts.jar" basedir="classes" includes="**/*.class" />
   <jar destfile="lib/abc-ja-exts.jar" basedir="classes" includes="**/*.class" />
