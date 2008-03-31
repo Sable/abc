@@ -109,12 +109,10 @@ for EXT in $BUNDLED_EXTS ; do
 	ant clobber jars
 	rm -rf $TARGET/$ext
 	mkdir -p $TARGET/$ext
-	cp -a *PL CREDITS build.xml LICENSING ant.settings.template $TARGET/$ext
-	cp -a lib/ src/ *-src/ generated/ $TARGET/$ext
-	BINS="$BINS abc-$VERSION/$ext/lib"
-	SRCS="$SRCS `(cd $PACKAGE_DIR ; \
-			find abc-$VERSION/$ext -maxdepth 1 -type f | tr '\n' ' ' ; \
-			find abc-$VERSION/$ext -maxdepth 1 -name \*src | tr '\n' ' ')`"
+	cp -a `cat srcs.list` $TARGET/$ext
+	cp -a `cat bins.list` $TARGET/$ext
+	BINS="$BINS `perl -p -e 's/^(.)/abc-$VERSION\/$ext\/\$1/;' srcs.list`"
+	SRCS="$SRCS `perl -p -e 's/^(.)/abc-$VERSION\/$ext\/\$1/;' bins.list`"
 	cd $OLD_PWD
 done
 
