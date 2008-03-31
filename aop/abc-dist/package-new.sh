@@ -69,7 +69,6 @@ cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template $TARGET/a
 cp -a lib/ src/ runtime-src/ testing-src/ paddle-src/ generated/ \
       $TESTSUITE javadoc/ runtime-javadoc/ dist/ \
       $TARGET/abc
-find $TARGET -name .svn | xargs rm -rf
 cp $OLD_PWD/abc $TARGET/abc/bin/
 cp $OLD_PWD/abc.bat $TARGET/abc/bin/
 cp doc/options/usage.pdf $PACKAGE_DIR/abc-$VERSION/abc/doc/
@@ -104,7 +103,8 @@ SRCS="\
 "
 
 # === build bundled extensions === #
-for ext in $BUNDLED_EXTS ; do
+for EXT in $BUNDLED_EXTS ; do
+	ext=`basename $EXT`
 	cd $OLD_PWD/$ext
 	ant clobber jars
 	rm -rf $TARGET/$ext
