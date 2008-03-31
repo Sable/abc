@@ -264,7 +264,8 @@
 	
 <target name="jars" depends="build">
   <mkdir dir="lib"/>
-  <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
+  <jar destfile="${abc.loc}/lib/abc-ja-ext.jar" basedir="classes" includes="**/*.class" />
+  <jar destfile="lib/abc-ja-ext.jar" basedir="classes" includes="**/*.class" />
 </target>
 
 <target name="test" depends="build">
