@@ -5,3 +5,5 @@ CVS
 .cvsignore
 *.class
 aspectj_ppg.cup
+svn-commit*
+.svn
