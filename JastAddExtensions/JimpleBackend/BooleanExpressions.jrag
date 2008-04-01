@@ -1,3 +1,12 @@
+/*
+ * The JastAdd Extensible Java Compiler (http://jastadd.org) is covered
+ * by the modified BSD License. You should have received a copy of the
+ * modified BSD license with this compiler.
+ * 
+ * Copyright (c) 2005-2008, Torbjorn Ekman
+ * All rights reserved.
+ */
+
 aspect BooleanExpressions {
   // Evaluate boolean expressions by jumping to a target that indicates true or false
   // The true_label() and false_label() are either defined locally if it is the root of a boolean expression
