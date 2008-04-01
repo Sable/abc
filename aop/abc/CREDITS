@@ -5,6 +5,8 @@ Quebec.
 abc is built on a number of existing efforts:
  - AspectJ language design <http://www.aspectj.org>
  - ajc runtime library and testing harness <http://www.aspectj.org>
+ - JastAdd, an exttensible compiler construction framework
+   <http://jastadd.org>
  - Polyglot, an extensible compiler framework for Java 
    <http://www.cs.cornell.edu/Projects/polyglot/>
  - Soot, a Java optimisation framework <http://www.sable.mcgill.ca/soot/>
@@ -28,12 +30,16 @@ Pavel Avgustinov <pavel.avgustinov at magdalen.oxford.ac.uk>
  - Re-wrote the lexer to make an LGPL'd version
  - Improved Soot's handling of large methods
  - Co-implemented tracematches in abc
+ - Co-implemented JastAdd frontend for abc (abc-ja)
 
 Aske Simon Christensen <aske at brics.dk>
  - Designed the overall compiler structure, and the connection
    between the frontend and backend
  - Designed and implemented the pattern matcher
  - Implemented declare parents and declare precedence
+
+Torbjorn Ekman <torbjorn.ekman at comlab.ox.ac.uk>
+ - Co-implemented JastAdd frontend for abc (abc-ja)
 
 Christopher Goard <cgoard at cs.mcgill.ca>
  - prototype implementation of cflow counters in ajc
@@ -84,3 +90,4 @@ Ganesh Sittampalam <ganesh at earth.li>
 Julian Tibble <julian.tibble at worcester.oxford.ac.uk>
  - EAJ language
  - Co-implemented tracematches in abc
+ - Co-implemented JastAdd frontend for abc (abc-ja)
