@@ -33,14 +33,15 @@ $abc now supports multiple whole-program optimizations for tracematches.
 ;Those can be enabled by selecting the extension abc.tmwpopt instead of
 ;abc.tm. The optimization level can be set using the command line option
 ;-laststage. (see -help)
-
-$abc now supports additional pointcuts, in particular the arrayget/arrayset
-;pointcuts and the lock/unlock pointcuts.
+$abc.eaj now supports additional pointcuts, in particular the
+;arrayget/arrayset pointcuts and the lock/unlock pointcuts (enabled via
+;-debug enableLockPointcuts)
 ;see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=123759
-$We now support dynamic instrumentation residues (see RV'07 paper)
-;and residues for counting shadow execution.
-;For details see debug options dynaInstr and shadowCount as well as
-;org.aspectbench.tm.runtime.internal.ShadowSwitch
+$abc further supports the new pointcut maybeShared() that matches
+;field set and get events affecting fields which are potentially
+;shared between threads. In the default setting, this pointcut matches
+;*all* sets/gets; to enable whole-program optimizations, state
+;-debug optimizeMaybeSharedPointcut on the command line.
 
 %1.2.1 1154710255
 $abc now supports mutiple reweaving analyses. Those analyses are
