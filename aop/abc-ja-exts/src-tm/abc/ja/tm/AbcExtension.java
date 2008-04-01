@@ -54,7 +54,7 @@ import abc.weaving.weaver.ReweavingPass.ID;
  * @author Oege de Moor
  * @author Eric Bodden
  */
-public class AbcExtension extends abc.eaj.AbcExtension
+public class AbcExtension extends abc.ja.eaj.AbcExtension
 {
 
     protected static final ID PASS_ITD_ANALYSIS = new ID("itd-analysis");
@@ -63,7 +63,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
     {
         super.collectVersions(versions);
         versions.append(" with TraceMatching " +
-                        new abc.tm.Version().toString() +
+                        new abc.ja.tm.Version().toString() +
                         "\n");
     }
 
