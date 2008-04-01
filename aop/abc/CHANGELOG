@@ -31,14 +31,14 @@
 
 $abc now has a completely re-written frontend. It is no longer pure-Java,
 ;but is a modern form of attribute grammar - compiled with the JastAdd
-;meta-compiler. The new frontend builds extends the existing Java
+;meta-compiler. The new frontend extends the existing Java
 ;and Java 5 frontends written by the creator of JastAdd, Torbjorn Ekman.
 ;As a result, abc now supports Java 5 source code! (but not AspectJ 5)
-;To use the new frontend, invoke abc with the option: -ext abc.ja.tm
-!abc extenders wishing to write their extensions using JastAdd, should
+;To use the new frontend, invoke abc with the option: -ext abc.ja
+!abc extenders wishing to write their extensions using JastAdd should
 ;extend abc.ja.AbcExtension, abc.ja.CompileSequence, etc. rather than
 ;abc.AbcExtension as they normally would - see the new implementation
-;of EAJ for an example of how this is done.
+;of EAJ-ja for an example of how this is done.
 $abc now supports multiple whole-program optimizations for tracematches.
 ;Those can be enabled by selecting the extension abc.tmwpopt instead of
 ;abc.tm. The optimization level can be set using the command line option
