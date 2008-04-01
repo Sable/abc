@@ -10,7 +10,7 @@ rm -rf /srv/www/abc.comlab.ox.ac.uk/html/dists/$1
 cp -a dists/$1 /srv/www/abc.comlab.ox.ac.uk/html/dists/
 
 if [ "$2" = "release" ] ; then
-   credits.pl < package/abc-$1/abc/CREDITS > /srv/www/abc.comlab.ox.ac.uk/html/people.shtml
+   ./credits.pl < package/abc-$1/abc/CREDITS > /srv/www/abc.comlab.ox.ac.uk/html/people.shtml
 fi
 
 if [ "$3" = "deb" ] ; then
