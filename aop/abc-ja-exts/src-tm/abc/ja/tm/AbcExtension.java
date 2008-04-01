@@ -68,8 +68,8 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
     }
 
     public abc.aspectj.ExtensionInfo
-            makeExtensionInfo(Collection<String> jar_classes,
-                              Collection<String> aspect_sources)
+	makeExtensionInfo(Collection/*<String>*/ jar_classes,
+			  Collection/*<String>*/ aspect_sources)
     {
         return new abc.tm.ExtensionInfo(jar_classes, aspect_sources);
     }
