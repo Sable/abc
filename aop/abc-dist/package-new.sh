@@ -72,7 +72,7 @@ mkdir -p $TARGET/abc
 mkdir -p $TARGET/abc/bin
 mkdir -p $TARGET/abc/doc
 cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template $TARGET/abc
-cp -a lib/ src/ runtime-src/ testing-src/ paddle-src/ generated/ \
+cp -af lib/ src/ runtime-src/ testing-src/ paddle-src/ generated/ \
       ajc-harness/ $TESTSUITE javadoc/ runtime-javadoc/ dist/ \
       $TARGET/abc
 cp $OLD_PWD/abc $TARGET/abc/bin/
