@@ -32,7 +32,7 @@ public class Version extends polyglot.main.Version {
     public String name() { return "aspectj-ja"; }
 
     public int major() { return 0; }
-    public int minor() { return 1; }
+    public int minor() { return 2; }
     public int patch_level() { return 0; }
 
     protected String properties_file() {

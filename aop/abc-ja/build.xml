@@ -33,11 +33,12 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
+        <echo message="Compiling in ${basedir}..."/>
         <ant dir="${abc.loc}" />
         <!-- compile sources compiler="jikes" nowarn="true" -->
-	<mkdir dir="classes"/>
+	<mkdir dir="${basedir}/classes"/>
         <javac debug="true"
-               fork="true" memoryMaximumSize="128M" destdir="classes">
+               fork="true" memoryMaximumSize="128M" destdir="${basedir}/classes">
 	<classpath>
               <pathelement location="${polyglot.loc}"/>
               <pathelement location="${abc.loc}/classes"/>
@@ -47,16 +48,17 @@
               <pathelement location="${xact.loc}"/>
               <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
       <pathelement location="${abc.loc}/testing-classes"/>
-	      <pathelement location="."/>
+	      <pathelement location="${basedir}/"/>
             </classpath>
-                <src path="src"/>
-                <src path="generated"/>
+                <src path="${basedir}/src"/>
+                <src path="${basedir}/generated"/>
         </javac>
 </target>
 	
 <!-- generate compiler source files -->
 <target name="gen">
   <!-- create AST node types and weave aspect modules -->
+        <echo message="Creating ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
 	<jastadd package="${package}" rewrite="true"
                 beaver="true" noVisitCheck="true"
@@ -100,21 +102,21 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="src/abc/ja/jrag">
+		<fileset dir="${basedir}/src/abc/ja/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
   </jastadd>
-  <property name="parserdir" location="generated/abc/ja/parse"/>
+  <property name="parserdir" location="${basedir}/generated/abc/ja/parse"/>
 
   <!-- generate the scanner -->
-	<jflex file="src/abc/ja/parse/aspectj.flex"
+	<jflex file="${basedir}/src/abc/ja/parse/aspectj.flex"
                outdir="${parserdir}" nobak="yes"/>
   <!-- generate the parser phase 1, create a full .lalr
      - specification from fragments -->
   <concat destfile="${parserdir}/JavaParser.all" binary="true" force="no">
-    <filelist dir=".">
+    <filelist dir="${basedir}/">
       <file name="src/abc/ja/parse/header.parser"/>
     </filelist>
     <filelist dir="${frontend}">
@@ -123,7 +125,7 @@
     <fileset dir="${frontend1.5}">
       <include name="*.parser"/>
     </fileset>
-    <filelist dir=".">
+    <filelist dir="${basedir}/">
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
     </filelist>
@@ -137,7 +139,7 @@
   <beaver file="${parserdir}/JavaParser.beaver" terminalNames="yes"
           compress="no" useSwitch="yes"/>
   <!-- copy library files-->
-  <copy todir="generated/beaver" preservelastmodified="true">
+  <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
   </copy>
 
@@ -145,9 +147,9 @@
 
 <target name="clean">
     <delete quiet="true">
-      <fileset dir="generated" includes="**/*"/>
-      <fileset dir="classes"   includes="**/*"/>
-      <fileset dir="lib" includes="*.jar"/>
+      <fileset dir="${basedir}/generated" includes="**/*"/>
+      <fileset dir="${basedir}/classes"   includes="**/*"/>
+      <fileset dir="${basedir}/lib" includes="*.jar"/>
     </delete>
 </target>
 		
@@ -157,11 +159,11 @@
 	
 <target name="jars" depends="build">
   <ant dir="${abc.loc}" target="jars"/>
-  <mkdir dir="lib"/>
-  <jar destfile="${abc.loc}/lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
-  <jar destfile="lib/abc-ja.jar" basedir="classes" includes="**/*.class" />
+  <mkdir dir="${basedir}/lib"/>
+  <jar destfile="${abc.loc}/lib/abc-ja.jar" basedir="${basedir}/classes" includes="**/*.class" />
+  <jar destfile="${basedir}/lib/abc-ja.jar" basedir="${basedir}/classes" includes="**/*.class" />
   <copy file="${abc.loc}/lib/abc-complete.jar" tofile="lib/abc-ja-complete.jar"/>
-  <jar destfile="lib/abc-ja-complete.jar" update="true" basedir="classes" includes="**/*.class"/>
+  <jar destfile="${basedir}/lib/abc-ja-complete.jar" update="true" basedir="${basedir}/classes" includes="**/*.class"/>
 </target>
 
 <target name="test" depends="build">
