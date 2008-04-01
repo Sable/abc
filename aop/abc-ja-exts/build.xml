@@ -265,7 +265,7 @@
 </target>
 
 <target name="clobber" depends="clean">
-  <ant dir="${abt-ja.loc}" target="clobber"/>
+  <ant dir="${abc-ja.loc}" target="clobber"/>
 </target>
 	
 <target name="jars" depends="build">
