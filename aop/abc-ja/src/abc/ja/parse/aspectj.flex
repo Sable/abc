@@ -1,7 +1,7 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Polyglot project group
- * Copyright (C) 2004 Laurie Hendren
- * Copyright (C) 2004 Pavel Avgustinov
+ * Copyright (C) 2008 Pavel Avgustinov
+ * Copyright (C) 2008 Torbjörn Ekman
+ * Copyright (C) 2008 Julian Tibble
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,6 @@
  * License along with this compiler, in the file LESSER-GPL;
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
-
-/* Java 1.4 scanner for JFlex.
- * Based on JLS, 2ed, Chapter 3.
- * Adapted for abc Pavel Avgustinov <pavel.avgustinov@magd.ox.ac.uk>, August 2004.
  */
 
 package abc.ja.parse;
