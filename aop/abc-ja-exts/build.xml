@@ -37,7 +37,7 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-        <ant dir="${abc.loc}" />
+        <ant dir="${abc-ja.loc}" />
         <mkdir dir="classes"/>
         <!-- compile sources compiler="jikes" nowarn="true" -->
         <javac debug="true"
