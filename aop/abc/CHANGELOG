@@ -39,6 +39,7 @@ $abc now has a completely re-written frontend. It is no longer pure-Java,
 ;extend abc.ja.AbcExtension, abc.ja.CompileSequence, etc. rather than
 ;abc.AbcExtension as they normally would - see the new implementation
 ;of EAJ-ja for an example of how this is done.
+$abc.eaj now supports the arrayget()/arrayset() pointcut primitives.
 $abc now supports multiple whole-program optimizations for tracematches.
 ;Those can be enabled by selecting the extension abc.tmwpopt instead of
 ;abc.tm. The optimization level can be set using the command line option
