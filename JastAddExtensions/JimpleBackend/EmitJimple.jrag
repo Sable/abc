@@ -61,7 +61,7 @@ aspect EmitJimple {
     sc.setApplicationClass();
     if (!isObject())
       sc.setSuperclass(typeObject().getSootClassDecl());
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceFile()));
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
     return sc;
   }
   eq InterfaceDecl.sootClass() {
@@ -70,10 +70,15 @@ aspect EmitJimple {
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers());
     Scene.v().addClass(sc);
     sc.setApplicationClass();
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceFile()));
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
     return sc;
   }
   
+  syn String TypeDecl.sourceNameWithoutPath() {
+    String s = sourceFile();
+    return s.substring(s.lastIndexOf(java.io.File.separatorChar)+1);
+  }
+
   syn int TypeDecl.sootTypeModifiers() {
     int result = 0;
     if(isNestedType()) {
