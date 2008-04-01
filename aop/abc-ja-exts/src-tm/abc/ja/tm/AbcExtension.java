@@ -1,7 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2005 Oege de Moor
  * Copyright (C) 2008 Pavel Avgustinov
- * Copyright (C) 2008 Torbjörn Ekman
+ * Copyright (C) 2008 Torbjorn Ekman
  * Copyright (C) 2008 Julian Tibble
  *
  * This compiler is free software; you can redistribute it and/or
