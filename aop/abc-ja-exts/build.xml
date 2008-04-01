@@ -70,6 +70,7 @@
 
 <target name="tm-jrag">
   <!-- create AST node types and weave aspect modules -->
+        <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
 	<jastadd package="abc.ja.tm.jrag" rewrite="true"
                 beaver="true" noVisitCheck="true"
@@ -133,6 +134,7 @@
 
 <target name="eaj-jrag">
   <!-- create AST node types and weave aspect modules -->
+        <echo message="Generating to ${basedir}/generated..."/>
         <mkdir dir="${basedir}/generated"/>
 	<jastadd package="abc.ja.eaj.jrag" rewrite="true"
                 beaver="true" noVisitCheck="true"
@@ -181,7 +183,7 @@
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
 		</fileset>
-		<fileset dir="src-eaj/abc/ja/eaj/jrag">
+		<fileset dir="${basedir}/src-eaj/abc/ja/eaj/jrag">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -224,7 +226,7 @@
 </target>
 
 <target name="eaj-parser">
-  <property name="eaj-parserdir" location="generated/abc/ja/eaj/parse"/>
+  <property name="eaj-parserdir" location="${basedir}/generated/abc/ja/eaj/parse"/>
   <mkdir dir="${eaj-parserdir}"/>
   <!-- generate the parser phase 1, create a full .lalr
      - specification from fragments -->
@@ -242,7 +244,7 @@
       <file name="src/abc/ja/parse/errorproductions.parser"/>
       <file name="src/abc/ja/parse/aspectj.parser"/>
     </filelist>
-    <filelist dir=".">
+    <filelist dir="${basedir}">
       <file name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
     </filelist>
   </concat>
