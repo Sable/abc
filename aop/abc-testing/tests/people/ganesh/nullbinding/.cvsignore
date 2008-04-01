@@ -1,8 +1,0 @@
-*.class
-*.jimple
-*.jasmin
-dava
-test.tmp
-ajcOutput
-abcOutput
-sootOutput
