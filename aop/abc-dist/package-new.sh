@@ -221,7 +221,7 @@ for root in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE \
 done
 
 mkdir $DISTS_DIR/$VERSION/files/lib
-cp abc-$VERSION/lib/*.jar $DISTS_DIR/$VERSION/files/lib/
+cp abc-$VERSION/*/lib/*.jar $DISTS_DIR/$VERSION/files/lib/
 cp /usr/local/src/xact/java/xact-complete.jar \
     $DISTS_DIR/$VERSION/files/lib/xact-complete-$XACT.jar
 cp /usr/local/src/jedd-dev/runtime/lib/jedd-runtime.jar \
@@ -234,12 +234,12 @@ cp /usr/local/src/resources/javabdd_src_$JAVABDD.tar.gz \
     $DISTS_DIR/$VERSION/files/lib/javabdd_src_$JAVABDD.tar.gz
 
 mkdir $DISTS_DIR/$VERSION/files/bin
-cp abc-$VERSION/bin/abc $DISTS_DIR/$VERSION/files/bin
-cp abc-$VERSION/bin/abc.bat $DISTS_DIR/$VERSION/files/bin
+cp abc-$VERSION/abc/bin/abc $DISTS_DIR/$VERSION/files/bin
+cp abc-$VERSION/abc/bin/abc.bat $DISTS_DIR/$VERSION/files/bin
 
 mkdir $DISTS_DIR/$VERSION/files/doc
-cp abc-$VERSION/doc/usage.ps $DISTS_DIR/$VERSION/files/doc
-cp abc-$VERSION/doc/usage.pdf $DISTS_DIR/$VERSION/files/doc
+cp abc-$VERSION/abc/doc/usage.ps $DISTS_DIR/$VERSION/files/doc
+cp abc-$VERSION/abc/doc/usage.pdf $DISTS_DIR/$VERSION/files/doc
 
 mkdir $DISTS_DIR/$VERSION/files/debian
 for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
@@ -247,7 +247,7 @@ for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
    do cp $d $DISTS_DIR/$VERSION/files/debian
 done
 
-cp -a abc-$VERSION/runtime-javadoc $DISTS_DIR/$VERSION/files/
+cp -a abc-$VERSION/abc/runtime-javadoc $DISTS_DIR/$VERSION/files/
 
 echo "<!--#set var=\"version\" value=\"$VERSION\"-->" \
     > $DISTS_DIR/$VERSION/package.shtml
