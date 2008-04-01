@@ -112,7 +112,7 @@ SRCS="\
 for EXT in $BUNDLED_EXTS ; do
 	ext=`basename $EXT`
 	cd $OLD_PWD/$EXT
-	ant clobber jars || exit 5
+	ant clean jars || exit 5
 	rm -rf $TARGET/$ext
 	mkdir -p $TARGET/$ext
 	cp -a --parents `cat srcs.list` $TARGET/$ext
