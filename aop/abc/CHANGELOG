@@ -29,6 +29,10 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+!The structure of the AbcExtension class has been reworked; in particular,
+;the entire compilation process is now driven by a CompileSequence. This
+;allows greater flexibility in replacing parts of the compiler; in
+;particular, it is possible to replace the complete frontend or backend.
 $abc now has a completely re-written frontend. It is no longer pure-Java,
 ;but is a modern form of attribute grammar - compiled with the JastAdd
 ;meta-compiler. The new frontend extends the existing Java
