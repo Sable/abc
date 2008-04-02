@@ -29,6 +29,7 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.3.0 1207124346
 !The structure of the AbcExtension class has been reworked; in particular,
 ;the entire compilation process is now driven by a CompileSequence. This
 ;allows greater flexibility in replacing parts of the compiler; in
