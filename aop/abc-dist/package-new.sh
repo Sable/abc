@@ -219,7 +219,12 @@ mkdir -p $DISTS_DIR/$VERSION/files
 $OLD_PWD/addchangelogrelease.pl $VERSION $UNIXTIME \
    < $OLD_PWD/$ABC_DIR/CHANGELOG \
    | $OLD_PWD/makechangelogs.pl debian \
-   > debian/changelog
+   > $DISTS_DIR/$VERSION/files/CHANGELOG
+
+$OLD_PWD/addchangelogrelease.pl $VERSION $UNIXTIME \
+   < $OLD_PWD/$ABC_DIR/CHANGELOG \
+   | $OLD_PWD/makechangelogs.pl latest \
+   > $DISTS_DIR/$VERSION/files/CHANGELOG.latest
 
 for root in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE \
             polyglot-dev-$DATE jasmin-dev-$DATE
