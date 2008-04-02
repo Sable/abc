@@ -215,6 +215,12 @@ mkdir -p $DISTS_DIR
 
 rm -rf $DISTS_DIR/$VERSION
 mkdir -p $DISTS_DIR/$VERSION/files
+
+$OLD_PWD/addchangelogrelease.pl $VERSION $UNIXTIME \
+   < $OLD_PWD/$ABC_DIR/CHANGELOG \
+   | $OLD_PWD/makechangelogs.pl debian \
+   > debian/changelog
+
 for root in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE \
             polyglot-dev-$DATE jasmin-dev-$DATE
  do cp $root.tar.gz $root.zip $DISTS_DIR/$VERSION/files/
