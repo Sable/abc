@@ -1,5 +1,7 @@
 package org.jastadd.plugin.jastaddj.refactor.rename;
 
+import java.util.Stack;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -56,12 +58,13 @@ public class RenameRefactoring extends Refactoring {
 		ASTNode n = (ASTNode)selectedNode;
 		try {
 			n.rename(name);
+			Stack ch = n.programRoot().cloneUndoStack();
+			n.programRoot().undo();
 			ChangeAccumulator accu = new ChangeAccumulator("Rename");
-			accu.addAllEdits(model, n.programRoot().getUndoIterator());
+			accu.addAllEdits(model, ch.iterator());
 			changes = accu.getChange();
 		} catch (RefactoringException rfe) {
 			status.addFatalError(rfe.getMessage());
-		} finally {
 			n.programRoot().undo();
 		}
 		return status;
