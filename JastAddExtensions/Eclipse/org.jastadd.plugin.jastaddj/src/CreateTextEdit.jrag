@@ -19,6 +19,9 @@ import org.eclipse.ltk.core.refactoring.Change;
 
 aspect CreateTextEdit {
 	
+	// this doesn't really belong here...
+	public Stack Program.cloneUndoStack() { return (Stack)undoStack.clone(); }
+	
 	/* a change accumulator keeps track of changes happening to multiple files;
 	 * it creates one TextFileChange for every file affected and adds incoming
 	 * ReplaceEdits to them
