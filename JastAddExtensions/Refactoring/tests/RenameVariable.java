@@ -24,8 +24,8 @@ public abstract class RenameVariable extends TestCase {
 	}
 	
 	public void runFieldRenameTest(String name) {
-        String infile = getTestBase()+"/"+name+"/in/A.java";
-        String resfile = getTestBase()+"/"+name+"/out/A.java";
+        String infile = getTestBase()+File.separator+name+File.separator+"in"+File.separator+"A.java";
+        String resfile = getTestBase()+File.separator+name+File.separator+"out"+File.separator+"A.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();

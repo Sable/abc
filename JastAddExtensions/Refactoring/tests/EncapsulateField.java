@@ -22,9 +22,9 @@ public abstract class EncapsulateField extends TestCase {
 	}
 	
 	public void runEncapsulationTest(String name) {
-        String infile = TEST_BASE+"/"+name+"/in/A.java";
-        String resfile = TEST_BASE+"/"+name+"/out/A.java";
-        String altfile = TEST_BASE+"/"+name+"/out/A_alt.java";
+        String infile = TEST_BASE+File.separator+name+File.separator+"in"+File.separator+"A.java";
+        String resfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A.java";
+        String altfile = TEST_BASE+File.separator+name+File.separator+"out"+File.separator+"A_alt.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();
@@ -41,7 +41,7 @@ public abstract class EncapsulateField extends TestCase {
         		fail(name+" was supposed to fail but yielded result "+prog);
         	}
         } catch(IOException ioe) {
-        	fail("unable to read from file");
+        	fail("unable to read from file "+ioe);
         } catch(RefactoringException rfe) {
         	assertFalse(new File(resfile).exists());
         }

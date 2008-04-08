@@ -22,9 +22,9 @@ public abstract class RenameMethod extends TestCase {
 	protected abstract String getTestBase();
 	
 	public void runMethodRenameTest(String name) {
-        String infile = getTestBase()+"/"+name+"/in/A.java";
-        String resfile = getTestBase()+"/"+name+"/out/A.java";
-        String alt_resfile = getTestBase()+"/"+name+"/out/A_alt.java";
+        String infile = getTestBase()+File.separator+name+File.separator+"in"+File.separator+"A.java";
+        String resfile = getTestBase()+File.separator+name+File.separator+"out"+File.separator+"A.java";
+        String alt_resfile = getTestBase()+File.separator+name+File.separator+"out"+File.separator+"A_alt.java";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();

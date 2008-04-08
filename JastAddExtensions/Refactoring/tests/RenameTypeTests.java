@@ -331,7 +331,7 @@ public class RenameTypeTests extends RenameType {
 		runTypeRenameTest("test101");
 	}
 	public void test102() {
-        String infile = getTestBase()+"/test102/in/A.java";
+        String infile = getTestBase()+File.separator+"test102"+File.separator+"in"+File.separator+"A.java";
         try {
         	Program prog = TestHelper.compile(infile);
         	TypeDecl d = (TypeDecl)prog.lookupType("p", "A");
@@ -341,7 +341,7 @@ public class RenameTypeTests extends RenameType {
         }
 	}
 	public void test103() {
-        String infile = getTestBase()+"/test103/in/A.java";
+        String infile = getTestBase()+File.separator+"test103"+File.separator+"in"+File.separator+"A.java";
         try {
         	Program prog = TestHelper.compile(infile);
         	TypeDecl d = (TypeDecl)prog.lookupType("p", "A");

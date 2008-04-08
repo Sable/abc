@@ -24,8 +24,8 @@ public abstract class RenameType extends TestCase {
 	public abstract String getTestBase();
 	
 	public void runTypeRenameTest(String name) {
-        String infile = getTestBase()+"/"+name+"/in/A.java";
-        String outdir = getTestBase()+"/"+name+"/out";
+        String infile = getTestBase()+File.separator+name+File.separator+"in"+File.separator+"A.java";
+        String outdir = getTestBase()+File.separator+name+File.separator+"out";
         try {
         	BufferedReader br = new BufferedReader(new FileReader(infile));
         	String cmd = br.readLine();
@@ -53,7 +53,7 @@ public abstract class RenameType extends TestCase {
 	}
 
     private void check_cu(String testname, CompilationUnit cu) throws FileNotFoundException, IOException{
-        String filename = getTestBase()+"/"+testname+"/out/"+cu.getID()+".java";
+        String filename = getTestBase()+File.separator+testname+File.separator+"out"+File.separator+cu.getID()+".java";
         File rf = new File(filename);
         FileReader rfr = new FileReader(rf);
         long l = rf.length();
