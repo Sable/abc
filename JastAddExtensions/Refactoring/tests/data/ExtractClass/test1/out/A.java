@@ -11,7 +11,7 @@ public class A extends B {
     int data;
     this.getData().setX(0);
     this.getData().setY(new p.Data());
-    this.getData().setX(0);
+    this.getData().setX(2);
     this.getData().getY().z = 3;
   }
   public int init() {
