@@ -21,5 +21,9 @@ public class ExtractClassTests extends ExtractClass {
 	public void test2() {
 		runExtractClassTest("test2");
 	}
+	
+	public void test3() {
+		runExtractClassTest("test3");
+	}
 
 }
