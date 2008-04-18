@@ -595,8 +595,10 @@ public class JastAddJModel extends JastAddModel {
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		try {
 			Map<String, IFile> map = sourceMap(project, buildConfiguration);
-			for (String fileName : map.keySet())
-				program.addSourceFile(fileName);
+			if(map != null) {
+				for (String fileName : map.keySet())
+					program.addSourceFile(fileName);
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

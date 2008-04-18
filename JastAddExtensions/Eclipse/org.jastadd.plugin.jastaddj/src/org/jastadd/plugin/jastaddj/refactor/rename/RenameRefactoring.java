@@ -56,16 +56,18 @@ public class RenameRefactoring extends Refactoring {
 			return status;
 		status = new RefactoringStatus();
 		ASTNode n = (ASTNode)selectedNode;
-		try {
-			n.rename(name);
-			Stack ch = n.programRoot().cloneUndoStack();
-			n.programRoot().undo();
-			ChangeAccumulator accu = new ChangeAccumulator("Rename");
-			accu.addAllEdits(model, ch.iterator());
-			changes = accu.getChange();
-		} catch (RefactoringException rfe) {
-			status.addFatalError(rfe.getMessage());
-			n.programRoot().undo();
+		if(n != null) {
+			try {
+				n.rename(name);
+				Stack ch = n.programRoot().cloneUndoStack();
+				n.programRoot().undo();
+				ChangeAccumulator accu = new ChangeAccumulator("Rename");
+				accu.addAllEdits(model, ch.iterator());
+				changes = accu.getChange();
+			} catch (RefactoringException rfe) {
+				status.addFatalError(rfe.getMessage());
+				n.programRoot().undo();
+			}
 		}
 		return status;
 	}

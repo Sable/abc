@@ -213,8 +213,9 @@ aspect CreateTextEdit {
 		
 		protected IPath createNewPath() {
 			final IPath path = file.getFullPath();
-			if (path.getFileExtension() != null)
-				return path.removeFileExtension().removeLastSegments(1).append(getNewName());
+			if (path.getFileExtension() != null) {
+        String extension = path.getFileExtension();
+				return path.removeFileExtension().removeLastSegments(1).append(getNewName()).addFileExtension(extension);
 			else
 				return path.removeLastSegments(1).append(getNewName());
 		}
