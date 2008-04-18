@@ -1230,7 +1230,6 @@ public class AdviceApplicationInfo {
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@3");
 		//AroundWeaver.debug(Util.printMethod(method));
 		
-		shadowBody.validate();
 		return exitsShadowMethodObj;
 	}
 	
