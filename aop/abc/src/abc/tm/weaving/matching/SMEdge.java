@@ -139,13 +139,6 @@ public class SMEdge implements Cloneable {
     	return false;
     }
     
-    /** 
-     * {@inheritDoc}
-     */
-    protected Object clone() throws CloneNotSupportedException {
-    	return super.clone();
-    }
-    
     /**
      * {@inheritDoc}
      */
