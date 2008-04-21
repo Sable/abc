@@ -24,14 +24,21 @@ aspect Encapsulate {
 	}
 
 	inh RefactoringException VarAccess.encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table);
-
+	
+	// encapsulate a read access
+	public static void ASTNode.encapsulateRead(VarAccess acc, Accessors accessors, AdjustmentTable table) 
+			throws RefactoringException {
+		MethodDecl getter = accessors.accessor("ASTNode");
+		MethodAccess nacc = new MethodAccess(getter.getID(), new List());
+		nacc.lockOn(getter);
+		acc.replaceWith(nacc);
+		table.add(nacc);
+	}
+	
+	// wrapper for ASTNode.encapsulateRead
 	eq Program.getChild().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
 		try {
-			MethodDecl getter = accessors.accessor("ASTNode");
-			MethodAccess nacc = new MethodAccess(getter.getID(), new List());
-			nacc.lockOn(getter);
-			acc.replaceWith(nacc);
-			table.add(nacc);
+			encapsulateRead(acc, accessors, table);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;
@@ -90,6 +97,17 @@ aspect Encapsulate {
 			acc.replaceWith(nacc);
 			replaceWithStripped(getOperand());
 			table.add(nacc);
+			return null;
+		} catch(RefactoringException rfe) {
+			return rfe;
+		}
+	}
+
+	// inside a qualifier, we have to encapsulate a read access even on the lhs of an assignment
+	// (fixes bug uncovered by test case 24)
+	eq AbstractDot.getLeft().encapsulate(VarAccess acc, Accessors accessors, AdjustmentTable table) {
+		try {
+			encapsulateRead(acc, accessors, table);
 			return null;
 		} catch(RefactoringException rfe) {
 			return rfe;
