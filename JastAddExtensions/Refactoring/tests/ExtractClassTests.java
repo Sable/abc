@@ -26,4 +26,8 @@ public class ExtractClassTests extends ExtractClass {
 		runExtractClassTest("test3");
 	}
 
+	public void test4() {
+		runExtractClassTest("test4");
+	}
+
 }
