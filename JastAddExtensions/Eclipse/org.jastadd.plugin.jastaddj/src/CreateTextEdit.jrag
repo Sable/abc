@@ -216,7 +216,7 @@ aspect CreateTextEdit {
 			if (path.getFileExtension() != null) {
         String extension = path.getFileExtension();
 				return path.removeFileExtension().removeLastSegments(1).append(getNewName()).addFileExtension(extension);
-			else
+			} else
 				return path.removeLastSegments(1).append(getNewName());
 		}
 
