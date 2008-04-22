@@ -112,7 +112,7 @@ aspect Expressions {
           Scene.v().getMethod("<java.lang.StringBuffer: java.lang.String toString()>").makeRef()
         ));
   
-      getDest().emitStore(b, lvalue, result);
+      getDest().emitStore(b, (Value)lvalue.clone(), result);
       return result;
     }
     else {
