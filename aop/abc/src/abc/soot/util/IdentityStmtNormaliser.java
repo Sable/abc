@@ -33,6 +33,7 @@ import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.javaToJimple.LocalGenerator;
+import soot.jimple.CaughtExceptionRef;
 import soot.jimple.IdentityStmt;
 import soot.jimple.Jimple;
 import soot.jimple.ParameterRef;
@@ -61,7 +62,8 @@ public class IdentityStmtNormaliser extends BodyTransformer {
 		boolean initialIdentities = true;
 		for(Unit u : b.getUnits()) {
 			if(u instanceof IdentityStmt && !initialIdentities)
-				return false;
+				if(!(((IdentityStmt)u).getRightOp() instanceof CaughtExceptionRef))
+					return false;
 			if(!(u instanceof IdentityStmt))
 				initialIdentities = false;
 		}
