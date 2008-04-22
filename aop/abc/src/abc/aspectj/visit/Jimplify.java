@@ -27,6 +27,7 @@ import polyglot.util.InternalCompilerError;
 
 import soot.*;
 import soot.javaToJimple.*;
+import soot.javaToJimple.IInitialResolver.Dependencies;
 
 import java.util.*;
 
@@ -71,8 +72,8 @@ public class Jimplify extends OncePass {
         AbcClassSource( String className ) {
             super(className);
         }
-        public List resolve( SootClass sc ) {
-            List ret;
+        public IInitialResolver.Dependencies resolve( SootClass sc ) {
+        	Dependencies deps;
             try {
                 if (abc.main.Debug.v().classResolving)
                     System.err.println("resolving [from abc AST]: " + className );
@@ -83,7 +84,7 @@ public class Jimplify extends OncePass {
                 if(n==null) throw new InternalCompilerError("Couldn't find source AST for "+javaClassName);
                 InitialResolver.v().setAst(n);
                 InitialResolver.v().resolveAST();
-                ret = InitialResolver.v().resolveFromJavaFile(sc);
+                deps = InitialResolver.v().resolveFromJavaFile(sc);
             } catch(InternalCompilerError e) {
                 throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
                                                 e.position(),
@@ -91,7 +92,7 @@ public class Jimplify extends OncePass {
             } catch(Throwable e) {
                 throw new InternalCompilerError("exception while resolving "+sc.getName(),e);
             }
-            return ret;
+            return deps;
         }
     }
 }
