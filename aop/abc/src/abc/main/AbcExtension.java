@@ -285,13 +285,13 @@ public class AbcExtension
     public void addJimplePacks() {
     	 
     	 
-		//PackManager.v().getPack("jtp").add(new Transform("jtp.isn", IdentityStmtNormaliser.v()));
+		PackManager.v().getPack("jtp").add(new Transform("jtp.isn", IdentityStmtNormaliser.v()));
 		
-		PackManager.v().getPack("jtp").add(new Transform("jtp.lp", LocalPacker.v()));
+		//PackManager.v().getPack("jtp").add(new Transform("jtp.lp", LocalPacker.v()));
 
-		PackManager.v().getPack("jtp").add(new Transform("jtp.dae", DeadAssignmentEliminator.v()));
+		//PackManager.v().getPack("jtp").add(new Transform("jtp.dae", DeadAssignmentEliminator.v()));
 
-		PackManager.v().getPack("jtp").add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));
+		//PackManager.v().getPack("jtp").add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));
 
 		//PackManager.v().getPack("jtp").add(new Transform("jtp.sf", SwitchFolder.v()));
 		
