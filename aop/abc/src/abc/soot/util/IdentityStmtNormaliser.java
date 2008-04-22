@@ -22,6 +22,9 @@ package abc.soot.util;
 import java.util.Iterator;
 import java.util.Map;
 
+import polyglot.util.ErrorInfo;
+import polyglot.util.Position;
+
 import soot.Body;
 import soot.BodyTransformer;
 import soot.Local;
@@ -42,13 +45,40 @@ import soot.toolkits.scalar.LocalPacker;
  * May yield potential for the {@link LocalPacker} and {@link DeadAssignmentEliminator}.
  * 
  * @author Eric Bodden
+ * @author Pavel Avgustinov
+ * @author Torbjorn Ekman
  */
-public class IdentityStmtNormalizer extends BodyTransformer {
+public class IdentityStmtNormaliser extends BodyTransformer {
 
-	protected static IdentityStmtNormalizer instance;
+	protected static IdentityStmtNormaliser instance;
+	
+	/**
+	 * Check whether the given body already satisfies the invariant this class aims
+	 * to establish, namely that all identity statements are at the start of the unit
+	 * chain.
+	 */
+	protected boolean bodyIsCorrect(Body b) {
+		boolean initialIdentities = true;
+		for(Unit u : b.getUnits()) {
+			if(u instanceof IdentityStmt && !initialIdentities)
+				return false;
+			if(!(u instanceof IdentityStmt))
+				initialIdentities = false;
+		}
+		return true;
+	}
 	
 	@Override
 	protected void internalTransform(Body b, String phaseName, Map options) {
+		if(bodyIsCorrect(b))
+			return;
+		
+		abc.main.Main.v().getAbcExtension().reportError(ErrorInfo.WARNING, 
+				"Invalid Jimple body for " + b.getMethod().getSignature() + ":\n" +
+				" All identity statements should occur at the start of a Jimple method. abc\n" +
+				"will try to fix this, but really it's a bug in code generation.", 
+				Position.COMPILER_GENERATED);
+		
 		LocalGenerator localGen = new LocalGenerator(b);
 		
 		IdentityStmt thisStmt = null;
@@ -97,9 +127,9 @@ public class IdentityStmtNormalizer extends BodyTransformer {
 		}
 	}
 	
-	public static IdentityStmtNormalizer v() {
+	public static IdentityStmtNormaliser v() {
 		if(instance==null) {
-			instance = new IdentityStmtNormalizer();
+			instance = new IdentityStmtNormaliser();
 		}
 		return instance;
 	}

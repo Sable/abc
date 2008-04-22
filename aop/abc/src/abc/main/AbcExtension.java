@@ -51,7 +51,7 @@ import abc.aspectj.parse.sym;
 import abc.main.options.OptionsParser;
 import abc.soot.util.CastRemover;
 import abc.soot.util.FarJumpEliminator;
-import abc.soot.util.IdentityStmtNormalizer;
+import abc.soot.util.IdentityStmtNormaliser;
 import abc.soot.util.InstanceOfEliminator;
 import abc.soot.util.OptimizedNullCheckEliminator;
 import abc.soot.util.SwitchFolder;
@@ -285,7 +285,7 @@ public class AbcExtension
     public void addJimplePacks() {
     	 
     	 
-		PackManager.v().getPack("jtp").add(new Transform("jtp.isn", IdentityStmtNormalizer.v()));
+		//PackManager.v().getPack("jtp").add(new Transform("jtp.isn", IdentityStmtNormaliser.v()));
 		
 		PackManager.v().getPack("jtp").add(new Transform("jtp.lp", LocalPacker.v()));
 
