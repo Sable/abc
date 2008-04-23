@@ -85,7 +85,7 @@ aspect EmitJimple {
   
   syn String TypeDecl.sourceNameWithoutPath() {
     String s = sourceFile();
-    return s.substring(s.lastIndexOf(java.io.File.separatorChar)+1);
+    return s != null ? s.substring(s.lastIndexOf(java.io.File.separatorChar)+1) : "Unknown";
   }
 
   syn int TypeDecl.sootTypeModifiers() {
