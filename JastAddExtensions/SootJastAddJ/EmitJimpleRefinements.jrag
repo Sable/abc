@@ -1,0 +1,116 @@
+/*
+ * The JastAdd Extensible Java Compiler (http://jastadd.org) is covered
+ * by the modified BSD License. You should have received a copy of the
+ * modified BSD license with this compiler.
+ * 
+ * Copyright (c) 2005-2008, Eric Bodden, Torbjorn Ekman
+ * All rights reserved.
+ */
+
+import soot.*;
+import soot.util.*;
+import soot.jimple.*;
+import soot.coffi.ClassFile;
+import soot.coffi.CoffiMethodSource;
+import soot.coffi.method_info;
+import soot.coffi.CONSTANT_Utf8_info;
+
+aspect EmitJimpleRefinements {
+  refine EmitJimple eq ClassDecl.sootClass() {
+    boolean needAddclass = false;
+    SootClass sc = null;
+    if(Scene.v().containsClass(jvmName())) {
+        SootClass cl = Scene.v().getSootClass(jvmName());
+        //fix for test case 653: if there's a class java.lang.Object etc. on the command line
+        //prefer that class over the Coffi class that may already have been loaded from bytecode
+		try {
+			MethodSource source = cl.getMethodByName("<clinit>").getSource();
+			if(source instanceof CoffiMethodSource) {
+				Scene.v().removeClass(cl);
+				needAddclass = true;
+			}
+		} catch(RuntimeException e) {
+			//method not found
+		}    	
+    	sc = cl;       
+    }
+    else {
+    	needAddclass = true;
+    }
+    if(needAddclass) {
+        if(Program.verbose())
+      		System.out.println("Creating from source " + jvmName());        
+    	sc = new SootClass(jvmName(), sootTypeModifiers());
+    	Scene.v().addClass(sc);
+    } 
+    sc.setApplicationClass();
+    if (!isObject())
+      sc.setSuperclass(typeObject().getSootClassDecl());
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    return sc;
+  }  
+
+
+  refine EmitJimple public void MethodDecl.jimplify2() {
+    if(!generate() || sootMethod().hasActiveBody()  ||
+      (sootMethod().getSource() != null && (sootMethod().getSource() instanceof soot.coffi.CoffiMethodSource)) ) return;
+    try {
+      if(hasBlock() && !(hostType().isInterfaceDecl())) {
+        JimpleBody body = Jimple.v().newBody(sootMethod());
+        sootMethod().setActiveBody(body);
+        Body b = new Body(hostType(), body, this);
+        b.setLine(this);
+        for(int i = 0; i < getNumParameter(); i++)
+          getParameter(i).jimplify2(b);
+        getBlock().jimplify2(b);
+        if(type() instanceof VoidType)
+          b.add(Jimple.v().newReturnVoidStmt());
+      }
+    } catch (RuntimeException e) {
+      System.err.println("Error generating " + hostType().typeName() + ": " + this); 
+      throw e;
+    }
+  }
+  
+  public void ASTNode.collectTypesToHierarchy(Collection<Type> set) {
+	 for(int i = 0; i < getNumChild(); i++)
+	  getChild(i).collectTypesToHierarchy(set);
+  }
+  
+  public void Expr.collectTypesToHierarchy(Collection<Type> set) {
+	 super.collectTypesToHierarchy(set);
+	 // collect all expr types that are reference types
+	 // select the element type in case it is an array type
+	 if(type().isReferenceType() && !type().isUnknown())
+	  set.add(type().elementType().erasure().getSootClassDecl().getType());
+  }
+	
+  public void ASTNode.collectTypesToSignatures(Collection<Type> set) {
+	 for(int i = 0; i < getNumChild(); i++)
+	  getChild(i).collectTypesToSignatures(set);
+  }
+	
+  public void VarAccess.collectTypesToSignatures(Collection<Type> set) {
+	 super.collectTypesToSignatures(set);
+   // if we access a field declaration we load the qualifying type 
+   // the element type is used to cater for reading the field length in an array type
+	 if(decl() instanceof FieldDeclaration)
+	  set.add(fieldQualifierType().elementType().erasure().getSootClassDecl().getType());
+  }
+  public void MethodAccess.collectTypesToSignatures(Collection<Type> set) {
+	 super.collectTypesToSignatures(set);
+	 set.add(methodQualifierType().elementType().erasure().getSootClassDecl().getType());
+  }
+  public void ClassInstanceExpr.collectTypesToSignatures(Collection<Type> set) {
+	 super.collectTypesToSignatures(set);
+	 set.add(decl().erasedConstructor().hostType().erasure().getSootClassDecl().getType());
+  }
+  public void ConstructorAccess.collectTypesToSignatures(Collection<Type> set) {
+	 super.collectTypesToSignatures(set);
+	 set.add(decl().erasedConstructor().hostType().erasure().getSootClassDecl().getType());
+  }
+  public void SuperConstructorAccess.collectTypesToSignatures(Collection<Type> set) {
+	 super.collectTypesToSignatures(set);
+	 set.add(decl().erasedConstructor().hostType().erasure().getSootClassDecl().getType());
+  }
+}
