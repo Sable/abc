@@ -3,22 +3,22 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 963ms, memory usage: 8316576.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 914ms, memory usage: 7992744.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
 Commandline: abc -d new -warn-unused-advice:off new/OuterAbstract_PR408.java 
-Commandline: abc -cp new:/usr/local/src/abc-with-tests/JastAddExtensions/Jimple1.5Backend/JavaCompiler.jar:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:/usr/local/src/abc-with-tests/abc/lib/abc-testing.jar:/usr/local/src/abc-with-tests/abc/lib/abc-runtime.jar -d new -warn-unused-advice:off new/ExtendsOuterAbstract_PR408.java 
+Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:/usr/local/src/abc-with-tests/abc/lib/abc-testing.jar:/usr/local/src/abc-with-tests/abc/lib/abc-runtime.jar -d new -warn-unused-advice:off new/ExtendsOuterAbstract_PR408.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1720ms, memory usage: 11599984.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1629ms, memory usage: 11831904.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1184ms, memory usage: 9129192.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1118ms, memory usage: 14437448.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,17 +26,17 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 932ms, memory usage: 4338712.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 879ms, memory usage: 10058864.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndInnerHelper.java 
-Commandline: abc -cp pureJava:/usr/local/src/abc-with-tests/JastAddExtensions/Jimple1.5Backend/JavaCompiler.jar:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:/usr/local/src/abc-with-tests/abc/lib/abc-testing.jar:/usr/local/src/abc-with-tests/abc/lib/abc-runtime.jar -d pureJava -warn-unused-advice:off pureJava/InterfaceAndInner.java 
+Commandline: abc -cp pureJava:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:/usr/local/src/abc-with-tests/abc/lib/abc-testing.jar:/usr/local/src/abc-with-tests/abc/lib/abc-runtime.jar -d pureJava -warn-unused-advice:off pureJava/InterfaceAndInner.java 
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1648ms, memory usage: 10751592.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1540ms, memory usage: 4807096.
 
 
 Running test 419: new/privilegedAspects/privileged aspects
@@ -48,8 +48,8 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:88)
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
 	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
 	at soot.baf.BafBody.<init>(BafBody.java:66)
 	at soot.baf.Baf.newBody(Baf.java:555)
@@ -59,7 +59,7 @@ Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1406ms, memory usage: 16312520.
+FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1399ms, memory usage: 10769752.
 
 
 Running test 420: new/advice on field gets in privileged aspects
@@ -71,8 +71,8 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:88)
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
 	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
 	at soot.baf.BafBody.<init>(BafBody.java:66)
 	at soot.baf.Baf.newBody(Baf.java:555)
@@ -82,22 +82,22 @@ Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1169ms, memory usage: 22876624.
+FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1183ms, memory usage: 17324104.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@96109f.foo calls Outer$Inner@1d3a19.mi
+Outer@1b9e119.foo calls Outer$Inner@696fc4.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1d3a19.mi calls java.io.PrintStream@d173af.println
+Outer$Inner@696fc4.mi calls java.io.PrintStream@28e269.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@96109f.foo calls Outer$InnerRandom@d67e71.nextHook
+Outer@1b9e119.foo calls Outer$InnerRandom@7854b4.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@d67e71.nextHook calls Outer$InnerRandom@d67e71.next
+Outer$InnerRandom@7854b4.nextHook calls Outer$InnerRandom@7854b4.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@96109f.foo calls X.nextInt
+Outer@1b9e119.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -108,7 +108,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$7$around$942(AroundInnerCalls13.java:41)
+	at A.inline$5$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -117,7 +117,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4585ms, memory usage: 9936432.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4669ms, memory usage: 9901240.
 
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
@@ -129,8 +129,8 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:88)
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
 	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
 	at soot.baf.BafBody.<init>(BafBody.java:66)
 	at soot.baf.Baf.newBody(Baf.java:555)
@@ -140,7 +140,7 @@ Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1265ms, memory usage: 20369768.
+FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1405ms, memory usage: 15164048.
 
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
@@ -152,8 +152,8 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:88)
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
 	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
 	at soot.baf.BafBody.<init>(BafBody.java:66)
 	at soot.baf.Baf.newBody(Baf.java:555)
@@ -163,7 +163,7 @@ Caused by: java.lang.ClassCastException: soot.jimple.ParameterRef
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1828ms, memory usage: 16681152.
+FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1778ms, memory usage: 11615728.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -177,7 +177,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$28$around$1600(AroundAll.java:199)
+	at A.inline$29$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -186,7 +186,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 5679ms, memory usage: 9591784.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6756ms, memory usage: 9574160.
 
 
 Running test 525: new/privilegedAspects/access to all members of class and inner class from privileged aspect
@@ -198,8 +198,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1607ms, memory usage: 11874296.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1527ms, memory usage: 17536472.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -211,8 +221,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1227ms, memory usage: 15188744.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1210ms, memory usage: 14187224.
 
 
 Running test 579: new/privilegedAspects/access to private members from privileged aspect
@@ -224,8 +244,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1528ms, memory usage: 16211544.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1484ms, memory usage: 15368808.
 
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
@@ -237,8 +267,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1814ms, memory usage: 16142616.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1576ms, memory usage: 10944976.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -262,26 +302,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3956ms, memory usage: 9509040.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3980ms, memory usage: 9497560.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1073ms, memory usage: 14673232.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1037ms, memory usage: 14537352.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1142ms, memory usage: 8568736.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1128ms, memory usage: 13484776.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1528ms, memory usage: 11232720.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1535ms, memory usage: 10352232.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -289,7 +329,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1455ms, memory usage: 16656600.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1374ms, memory usage: 15753904.
 
 
 Running test 781: new/verifyError/privileged aspect main verify error
@@ -301,8 +341,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1207ms, memory usage: 11287776.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1178ms, memory usage: 10349176.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -318,7 +368,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:567)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 856ms, memory usage: 13319016.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 850ms, memory usage: 12949744.
 
 
 Running test 881: bugs/privilege/packageProtected/priviledged aspects calling methods from advice
@@ -330,8 +380,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1512ms, memory usage: 10508456.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1409ms, memory usage: 15891488.
 
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
@@ -343,14 +403,24 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1226ms, memory usage: 11606384.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1215ms, memory usage: 10593328.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 428ms, memory usage: 8437296.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 421ms, memory usage: 8683568.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -359,7 +429,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 962ms, memory usage: 12216376.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 951ms, memory usage: 9982168.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -384,7 +454,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4661ms, memory usage: 9589088.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4603ms, memory usage: 9330440.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -397,590 +467,691 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot-class-path set properly?)
-	at soot.SootResolver.bringToHierarchy(SootResolver.java:166)
-	at soot.SootResolver.bringToSignatures(SootResolver.java:201)
-	at soot.SootResolver.processResolveWorklist(SootResolver.java:131)
-	at soot.SootResolver.resolveClass(SootResolver.java:116)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:167)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:202)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:132)
+	at soot.SootResolver.resolveClass(SootResolver.java:117)
 	at soot.Scene.loadClass(Scene.java:390)
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1004ms, memory usage: 12477464.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 988ms, memory usage: 12147560.
 
 
 Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Basic.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 2636ms, memory usage: 17578168.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3043: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3043: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3043: Constraint$tracematch$3043 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3043: void propagateBindingsForSymbolf(int,Constraint$tracematch$3043)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3043: void propagateBindingsForSymbolg(int,Constraint$tracematch$3043)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 2606ms, memory usage: 19048712.
 
 
 Running test 1020: abctests/tracematches/Tracematches: Plus and Star
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PlusStar.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 1813ms, memory usage: 11719264.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3048: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3048: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3048: Constraint$tracematch$3048 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3048: void propagateBindingsForSymbolf(int,Constraint$tracematch$3048)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3048: void propagateBindingsForSymbolg(int,Constraint$tracematch$3048)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 2115ms, memory usage: 18726224.
 
 
 Running test 1021: abctests/tracematches/Tracematches: Alternation
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Alternation.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 1905ms, memory usage: 19265376.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3053: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3053: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3053: Constraint$tracematch$3053 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3053: void propagateBindingsForSymbolf(int,Constraint$tracematch$3053)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3053: void propagateBindingsForSymbolg(int,Constraint$tracematch$3053)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 2144ms, memory usage: 10815416.
 
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2326ms, memory usage: 19458216.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: Constraint$tracematch$3058 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void propagateBindingsForSymbolf(int,java.lang.Object,Constraint$tracematch$3058)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void propagateBindingsForSymbolg(int,java.lang.Object,Constraint$tracematch$3058)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void doNegativeBindingsForSymbolf(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void doNegativeBindingsForSymbolg(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2848ms, memory usage: 17105280.
 
 
 Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
 Commandline: abc -d abctests/tracematches/failsafe -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe/leaktest/LeakTest.java abctests/tracematches/failsafe/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 2423ms, memory usage: 19269752.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: tracematches.Constraint$tracematch$3063 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void propagateBindingsForSymbolcreate_enum(int,java.util.Vector,java.util.Enumeration,tracematches.Constraint$tracematch$3063)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void propagateBindingsForSymbolcall_next(int,java.util.Enumeration,tracematches.Constraint$tracematch$3063)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void propagateBindingsForSymbolupdate_source(int,java.util.Vector,tracematches.Constraint$tracematch$3063)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void doNegativeBindingsForSymbolcreate_enum(java.util.Vector,java.util.Enumeration)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void doNegativeBindingsForSymbolcall_next(java.util.Enumeration)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void doNegativeBindingsForSymbolupdate_source(java.util.Vector)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 2482ms, memory usage: 17044088.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
 Commandline: abc -d abctests/tracematches/failsafe3 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe3/leaktest/LeakTest.java abctests/tracematches/failsafe3/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 1930ms, memory usage: 12009032.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: tracematches.Constraint$tracematch$3070 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void propagateBindingsForSymbolcreate_enum(int,java.util.Vector,java.util.Enumeration,tracematches.Constraint$tracematch$3070)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void propagateBindingsForSymbolcall_next(int,java.util.Enumeration,tracematches.Constraint$tracematch$3070)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void propagateBindingsForSymbolupdate_source(int,java.util.Vector,tracematches.Constraint$tracematch$3070)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void doNegativeBindingsForSymbolcreate_enum(java.util.Vector,java.util.Enumeration)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void doNegativeBindingsForSymbolcall_next(java.util.Enumeration)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void doNegativeBindingsForSymbolupdate_source(java.util.Vector)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 2262ms, memory usage: 19067816.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
 Commandline: abc -d abctests/tracematches/failsafe4 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe4/leaktest/LeakTest.java abctests/tracematches/failsafe4/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 1885ms, memory usage: 16806736.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: tracematches.Constraint$tracematch$3077 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void propagateBindingsForSymbolcreate_enum(int,java.util.Vector,java.util.Enumeration,tracematches.Constraint$tracematch$3077)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void propagateBindingsForSymbolcall_next(int,java.util.Enumeration,tracematches.Constraint$tracematch$3077)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void propagateBindingsForSymbolupdate_source(int,java.util.Vector,tracematches.Constraint$tracematch$3077)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void doNegativeBindingsForSymbolcreate_enum(java.util.Vector,java.util.Enumeration)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void doNegativeBindingsForSymbolcall_next(java.util.Enumeration)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void doNegativeBindingsForSymbolupdate_source(java.util.Vector)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 2173ms, memory usage: 10635976.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Test.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 1664ms, memory usage: 18579304.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: Constraint$tracematch$3084 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void propagateBindingsForSymbolf(int,java.lang.Object,java.lang.Object,Constraint$tracematch$3084)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void propagateBindingsForSymbolg(int,java.lang.Object,Constraint$tracematch$3084)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void doNegativeBindingsForSymbolf(java.lang.Object,java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void doNegativeBindingsForSymbolg(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 2067ms, memory usage: 16685696.
 
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NegBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 1786ms, memory usage: 18606808.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: Constraint$tracematch$3089 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void propagateBindingsForSymbolf(int,java.lang.Object,Constraint$tracematch$3089)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void propagateBindingsForSymbolg(int,java.lang.Object,java.lang.String,Constraint$tracematch$3089)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void propagateBindingsForSymbolh(int,java.lang.String,Constraint$tracematch$3089)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void doNegativeBindingsForSymbolf(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void doNegativeBindingsForSymbolg(java.lang.Object,java.lang.String)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void doNegativeBindingsForSymbolh(java.lang.String)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 2394ms, memory usage: 16617464.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MoreBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 1832ms, memory usage: 12006232.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: Constraint$tracematch$3095 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void propagateBindingsForSymbolr(int,PQ,Constraint$tracematch$3095)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void propagateBindingsForSymbolq(int,PQ,Constraint$tracematch$3095)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void propagateBindingsForSymbolp(int,PQ,Constraint$tracematch$3095)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void doNegativeBindingsForSymbolr(PQ)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void doNegativeBindingsForSymbolq(PQ)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void doNegativeBindingsForSymbolp(PQ)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 2039ms, memory usage: 17797328.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/BasicAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1541ms, memory usage: 18975912.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3102: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3102: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3102: Constraint$tracematch$3102 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3102: void propagateBindingsForSymbolfoocall(int,java.lang.Integer,Constraint$tracematch$3102)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3102: void doNegativeBindingsForSymbolfoocall(java.lang.Integer)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1578ms, memory usage: 10599864.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MultipleBindingsForAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1613ms, memory usage: 19162160.
+Compilation produced an unexpected number of errors: 8, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: Constraint$tracematch$3107 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: void propagateBindingsForSymbolfoo(int,java.lang.Object,Constraint$tracematch$3107)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: void propagateBindingsForSymbolbar(int,java.lang.Integer,Constraint$tracematch$3107)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: void doNegativeBindingsForSymbolfoo(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3107: void doNegativeBindingsForSymbolbar(java.lang.Integer)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/MultipleBindingsForAround.java:24,9-34:5: Variable bindings may cause space leak
+FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1867ms, memory usage: 16498008.
 
 
 Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PerThread.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 1675ms, memory usage: 19748888.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: Constraint$tracematch$3113 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: void propagateBindingsForSymbolfoo(int,Constraint$tracematch$3113)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3113)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: void propagateBindingsForSymbolbaz(int,Constraint$tracematch$3113)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 1851ms, memory usage: 19788096.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/AdviseSelf.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1665ms, memory usage: 12244408.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: Constraint$tracematch$3119 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void propagateBindingsForSymbolfoo(int,AdviseSelf,java.lang.Object,Constraint$tracematch$3119)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void propagateBindingsForSymbolbar(int,AdviseSelf,java.lang.Integer,Constraint$tracematch$3119)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void doNegativeBindingsForSymbolfoo(AdviseSelf,java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void doNegativeBindingsForSymbolbar(AdviseSelf,java.lang.Integer)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2007ms, memory usage: 19028360.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IfTest.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1626ms, memory usage: 18706640.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: Constraint$tracematch$3129 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void propagateBindingsForSymbola1(int,IfTest,java.lang.Integer,Constraint$tracematch$3129)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void propagateBindingsForSymbolb1(int,IfTest,java.lang.Integer,Constraint$tracematch$3129)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void doNegativeBindingsForSymbola1(IfTest,java.lang.Integer)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void doNegativeBindingsForSymbolb1(IfTest,java.lang.Integer)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1941ms, memory usage: 10562024.
 
 
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NoUpdates.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 1595ms, memory usage: 18639768.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3138: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3138: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3138: Constraint$tracematch$3138 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3138: void propagateBindingsForSymbolfoo(int,Constraint$tracematch$3138)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3138: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3138)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 1538ms, memory usage: 16471032.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimitiveVariables.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 1863ms, memory usage: 19242616.
+Compilation produced an unexpected number of errors: 8, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: Constraint$tracematch$3143 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: void propagateBindingsForSymbolf(int,int,Constraint$tracematch$3143)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: void propagateBindingsForSymbolg(int,int,Constraint$tracematch$3143)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: void doNegativeBindingsForSymbolf(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3143: void doNegativeBindingsForSymbolg(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/PrimitiveVariables.java:21,4-31:5: Variable bindings may cause space leak
+FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 2128ms, memory usage: 17791400.
 
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IntVariable.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1369ms, memory usage: 11312384.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3148: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3148: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3148: Constraint$tracematch$3148 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3148: void propagateBindingsForSymbolf(int,int,Constraint$tracematch$3148)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3148: void doNegativeBindingsForSymbolf(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1467ms, memory usage: 17660336.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimNegBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1513ms, memory usage: 18819984.
+Compilation produced an unexpected number of errors: 10, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: Constraint$tracematch$3152 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void propagateBindingsForSymbolf(int,long,Constraint$tracematch$3152)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void propagateBindingsForSymbolg(int,long,float,Constraint$tracematch$3152)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void propagateBindingsForSymbolh(int,float,Constraint$tracematch$3152)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void doNegativeBindingsForSymbolf(long)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void doNegativeBindingsForSymbolg(long,float)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3152: void doNegativeBindingsForSymbolh(float)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/PrimNegBindings.java:22,4-31:5: Variable bindings may cause space leak
+FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1983ms, memory usage: 10557184.
 
 
 Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1493ms, memory usage: 18565856.
+Compilation produced an unexpected number of errors: 7, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3158: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3158: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3158: Constraint$tracematch$3158 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3158: void propagateBindingsForSymbolfoo(int,java.lang.String,Constraint$tracematch$3158)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3158: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3158)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3158: void doNegativeBindingsForSymbolfoo(java.lang.String)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/NCWeakRefs.java:22,4-29:5: Variable bindings may cause space leak
+FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1618ms, memory usage: 16329864.
 
 
 Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs2.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 1584ms, memory usage: 18457240.
+Compilation produced an unexpected number of errors: 7, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3163: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3163: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3163: Constraint$tracematch$3163 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3163: void propagateBindingsForSymbolfoo(int,java.lang.Object,Constraint$tracematch$3163)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3163: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3163)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3163: void doNegativeBindingsForSymbolfoo(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/NCWeakRefs2.java:23,4-30:5: Variable bindings may cause space leak
+FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 1629ms, memory usage: 17242200.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/CollWeakRefs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1671ms, memory usage: 12092864.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: Constraint$tracematch$3168 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void propagateBindingsForSymbolfoo(int,java.lang.Object,Constraint$tracematch$3168)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void propagateBindingsForSymbolbar(int,java.lang.Object,Constraint$tracematch$3168)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void doNegativeBindingsForSymbolfoo(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void doNegativeBindingsForSymbolbar(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1823ms, memory usage: 17758024.
 
 
 Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs3.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1656ms, memory usage: 19324984.
+Compilation produced an unexpected number of errors: 7, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3173: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3173: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3173: Constraint$tracematch$3173 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3173: void propagateBindingsForSymbolfoo(int,java.lang.Object,Constraint$tracematch$3173)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3173: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3173)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3173: void doNegativeBindingsForSymbolfoo(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/NCWeakRefs3.java:29,4-36:5: Variable bindings may cause space leak
+FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1934ms, memory usage: 10772704.
 
 
 Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs4.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1585ms, memory usage: 19335128.
+Compilation produced an unexpected number of errors: 7, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3178: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3178: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3178: Constraint$tracematch$3178 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3178: void propagateBindingsForSymbolfoo(int,java.lang.Object,Constraint$tracematch$3178)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3178: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3178)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3178: void doNegativeBindingsForSymbolfoo(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/NCWeakRefs4.java:28,4-35:5: Variable bindings may cause space leak
+FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1787ms, memory usage: 16833728.
 
 
 Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs5.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException: soot.jimple.internal.JReturnVoidStmt
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:86)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1656ms, memory usage: 19411552.
+Compilation produced an unexpected number of errors: 7, should be 1
+Actual errors found: 
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3183: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3183: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3183: Constraint$tracematch$3183 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3183: void propagateBindingsForSymbolfoo(int,java.lang.Object,Constraint$tracematch$3183)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3183: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3183)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3183: void doNegativeBindingsForSymbolfoo(java.lang.Object)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at abctests/tracematches/NCWeakRefs5.java:28,4-35:5: Variable bindings may cause space leak
+FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1865ms, memory usage: 16865792.
 
 
 Running test 1127: om/omantstest/omants test
@@ -992,8 +1163,18 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 1127: "om/omantstest/omants test" failed in 16292ms, memory usage: 43989688.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 1127: "om/omantstest/omants test" failed in 15797ms, memory usage: 44321080.
 
 
 Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
@@ -1005,27 +1186,42 @@ polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisa
 	at abc.testing.TestCase.runTest(TestCase.java:289)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1215ms, memory usage: 19461472.
+Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
+	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.baf.BafBody.<init>(BafBody.java:66)
+	at soot.baf.Baf.newBody(Baf.java:555)
+	at soot.PackManager.runBodyPacks(PackManager.java:790)
+	at soot.PackManager.runBodyPacks(PackManager.java:452)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
+	... 4 more
+FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1204ms, memory usage: 14368288.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 784ms, memory usage: 19881376.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 754ms, memory usage: 14720568.
 
 
 Running test 1209: abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/TracematchAndIfAndPPVs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.ClassCastException
-FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed in 1312ms, memory usage: 26305904.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3460: void <init>(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3460: void <init>(int,java.util.LinkedHashSet)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3460: Constraint$tracematch$3460 getTrue(int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3460: void propagateBindingsForSymbolfoo(int,Constraint$tracematch$3460)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed in 1370ms, memory usage: 20083272.
 
 
