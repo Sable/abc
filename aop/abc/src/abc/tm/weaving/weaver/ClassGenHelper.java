@@ -346,7 +346,7 @@ public class ClassGenHelper {
      */
     protected Local getThisLocal() {
         Local thisLocal = curLGen.generateLocal(curClass.getType(), "thisLocal");
-        curUnits.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(curClass.getType())));
+        curUnits.addFirst(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(curClass.getType())));
         return thisLocal;
     }
     
@@ -359,7 +359,7 @@ public class ClassGenHelper {
      */
     protected Local getParamLocal(int index, Type type) {
         Local paramLocal = curLGen.generateLocal(type, "paramLocal" + index);
-        curUnits.addLast(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(type, index)));
+        curUnits.addFirst(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(type, index)));
         return paramLocal;
     }
     
