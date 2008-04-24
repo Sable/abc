@@ -40,6 +40,7 @@ import abc.weaving.aspectinfo.AbcClass;
 
 /** Saves all method bodies so that they can be unwoven after weaving.
  * @author Ondrej Lhotak
+ * @author Eric Bodden
  * @date August 3, 2004
  */
 
@@ -177,7 +178,7 @@ public class Unweaver {
 	/**
 	 * Returns the set of methods of class c before advice weaving.
 	 */
-	public Collection<SootMethod> getOldMethodsForClass(SootClass c) {
+	public Collection<SootMethod> getOldMethodsOfClass(SootClass c) {
 		if(classToMethods.containsKey(c))
 			return new HashSet<SootMethod>(classToMethods.get(c));
 		else
@@ -187,7 +188,7 @@ public class Unweaver {
 	/**
 	 * Returns the set of fields of class c before advice weaving.
 	 */
-	public Collection<SootField> getOldFieldsForClass(SootClass c) {
+	public Collection<SootField> getOldFieldsOfClass(SootClass c) {
 		if(classToFields.containsKey(c))
 			return new HashSet<SootField>(classToFields.get(c));
 		else
@@ -197,7 +198,7 @@ public class Unweaver {
 	/**
 	 * Returns the parameter list for method m before advice weaving. 
 	 */
-	public List<Type> getOldParameterListForMethod(SootMethod m) {
+	public List<Type> getOldParameterListOfMethod(SootMethod m) {
 		if(savedParameters.containsKey(m))
 			return new LinkedList<Type>(savedParameters.get(m));
 		else
@@ -209,7 +210,7 @@ public class Unweaver {
 	 * <b>Note that this is not a copy of the body but the original body itself.
 	 * Don't tamper with it!</b> 
 	 */
-	public Body getOldBodyForMethod(SootMethod m) {
+	public Body getOldBodyOfMethod(SootMethod m) {
 		if(savedBodies.containsKey(m))
 			return savedBodies.get(m);
 		else
