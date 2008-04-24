@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.jimple.Jimple;
 import abc.weaving.aspectinfo.AbcClass;
 
@@ -47,45 +49,43 @@ public class Unweaver {
             System.err.println("UNWEAVER ***** " + message);
     }	
 
-    Map/*SootMethod->Body*/ savedBodies;
-    Map/*SootMethod->List/Type/*/ savedParameters;
-    Map/*SootClass->Collection/SootMethod/*/ classToMethods;
-    Map/*SootClass->Collection/SootField/*/ classToFields;
-
-    Set/*SootClass*/ applicationClasses;
-    
-    Map/*SootClass->Set/SootClass/*/ classToInterfaces;
+    protected Map<SootMethod, Body> savedBodies;
+    protected Map<SootMethod, List<Type>> savedParameters;
+    protected Map<SootClass, Collection<SootMethod>> classToMethods;
+    protected Map<SootClass, Collection<SootField>> classToFields;
+    protected Set<SootClass> applicationClasses;
+    protected Map<SootClass, HashSet<SootClass>> classToInterfaces;
     
     /** Save Jimple bodies of all weavable classes to be restored later. */
     public void save() {
-        savedBodies = new HashMap();
-        classToMethods = new HashMap();
-        classToFields = new HashMap();
-        savedParameters = new HashMap();
-        classToInterfaces = new HashMap();
+        savedBodies = new HashMap<SootMethod, Body>();
+        classToMethods = new HashMap<SootClass, Collection<SootMethod>>();
+        classToFields = new HashMap<SootClass, Collection<SootField>>();
+        savedParameters = new HashMap<SootMethod, List<Type>>();
+        classToInterfaces = new HashMap<SootClass, HashSet<SootClass>>();
         
         applicationClasses=
-        	new HashSet(Scene.v().getApplicationClasses());
+        	new HashSet<SootClass>(Scene.v().getApplicationClasses());
         
-        for( Iterator abcClassIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
-            final AbcClass abcClass = (AbcClass) abcClassIt.next();
+        for( Iterator<AbcClass> abcClassIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
+            final AbcClass abcClass = abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
-            classToMethods.put( cl, new HashSet() );
-            classToFields.put( cl, new HashSet() );
-            classToInterfaces.put(cl, new HashSet(cl.getInterfaces()) );
+            classToMethods.put( cl, new HashSet<SootMethod>() );
+            classToFields.put( cl, new HashSet<SootField>() );
+            classToInterfaces.put(cl, new HashSet<SootClass>(cl.getInterfaces()) );
             
             debug( "saving "+cl );
-            for( Iterator mIt = cl.getMethods().iterator(); mIt.hasNext(); ) {
-                final SootMethod m = (SootMethod) mIt.next();
+            for( Iterator<SootMethod> mIt = cl.getMethods().iterator(); mIt.hasNext(); ) {
+                final SootMethod m = mIt.next();
                 if( m.hasActiveBody() ) {
                     savedBodies.put( m, m.getActiveBody() );
                 }
                 savedParameters.put(m, m.getParameterTypes());
-                ((Collection)classToMethods.get(cl)).add(m);
+                classToMethods.get(cl).add(m);
             }
-            for( Iterator fIt = cl.getFields().iterator(); fIt.hasNext(); ) {
-                final SootField f = (SootField) fIt.next();
-                ((Collection)classToFields.get(cl)).add(f);
+            for( Iterator<SootField> fIt = cl.getFields().iterator(); fIt.hasNext(); ) {
+                final SootField f = fIt.next();
+                classToFields.get(cl).add(f);
             }
             
         }
@@ -93,21 +93,21 @@ public class Unweaver {
 
     /** Restore saved bodies to their original methods. */
     public Map<Object,Object> restore() {
-        Map ret = new HashMap();
-        for( Iterator mIt = savedBodies.keySet().iterator(); mIt.hasNext(); ) {
-            final SootMethod m = (SootMethod) mIt.next();
+        Map<Object, Object> ret = new HashMap<Object, Object>();
+        for( Iterator<SootMethod> mIt = savedBodies.keySet().iterator(); mIt.hasNext(); ) {
+            final SootMethod m = mIt.next();
             debug( "restoring body of "+m );
             Body newBody = Jimple.v().newBody(m);
             Map<Object,Object> newBindings = 
-                newBody.importBodyContentsFrom((Body)savedBodies.get(m));
+                newBody.importBodyContentsFrom(savedBodies.get(m));
             m.setActiveBody(newBody);
-            m.setParameterTypes((List)savedParameters.get(m));
+            m.setParameterTypes(savedParameters.get(m));
             ret.putAll( newBindings );
         }
         for( Iterator abcClassIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
             final AbcClass abcClass = (AbcClass) abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
-            Collection methods = (Collection) classToMethods.get(cl);
+            Collection methods = classToMethods.get(cl);
             for( Iterator mIt = new ArrayList(cl.getMethods()).iterator(); mIt.hasNext(); ) {
                 final SootMethod m = (SootMethod) mIt.next();
                 if( !methods.contains(m) ) {
@@ -115,7 +115,7 @@ public class Unweaver {
                     cl.removeMethod(m);
                 }
             }
-            Collection fields = (Collection) classToFields.get(cl);
+            Collection fields = classToFields.get(cl);
             for( Iterator fIt = new ArrayList(cl.getFields()).iterator(); fIt.hasNext(); ) {
                 final SootField f = (SootField) fIt.next();
                 if( !fields.contains(f) ) {
@@ -125,10 +125,10 @@ public class Unweaver {
             }
             // remove added interfaces
             {
-            	Set intfs=new HashSet(cl.getInterfaces());
-            	intfs.removeAll((HashSet)classToInterfaces.get(cl));
-            	for (Iterator iIt=intfs.iterator(); iIt.hasNext();) {
-            		SootClass intf=(SootClass)iIt.next();
+            	Set<SootClass> intfs=new HashSet<SootClass>(cl.getInterfaces());
+            	intfs.removeAll(classToInterfaces.get(cl));
+            	for (Iterator<SootClass> iIt=intfs.iterator(); iIt.hasNext();) {
+            		SootClass intf=iIt.next();
             		debug( "removing "+ intf +" from cl " + cl );
             		cl.removeInterface(intf);
             	}
@@ -154,5 +154,65 @@ public class Unweaver {
 	 */
 	public void retainAddedClass(SootClass c) {
 		applicationClasses.add(c);
+	}
+	
+	/**
+	 * Returns the interfaces of class c prior to weaving advice.
+	 */
+	public Collection<SootClass> getOldInterfacesOfClass(SootClass c) {
+		if(classToInterfaces.containsKey(c))
+			return new HashSet<SootClass>(classToInterfaces.get(c));
+		else
+			throw new IllegalArgumentException("Class "+c+" not known.");
+	}
+	
+	/**
+	 * Returns the set of application classes prior to advice weaving.
+	 * (Additional classes may be added during weaving, e.g. for tracematches.)
+	 */
+	public Collection<SootClass> getOldApplicationClasses() {
+		return new HashSet<SootClass>(applicationClasses);
+	}
+	
+	/**
+	 * Returns the set of methods of class c before advice weaving.
+	 */
+	public Collection<SootMethod> getOldMethodsForClass(SootClass c) {
+		if(classToMethods.containsKey(c))
+			return new HashSet<SootMethod>(classToMethods.get(c));
+		else
+			throw new IllegalArgumentException("Class "+c+" not known.");
+	}
+
+	/**
+	 * Returns the set of fields of class c before advice weaving.
+	 */
+	public Collection<SootField> getOldFieldsForClass(SootClass c) {
+		if(classToFields.containsKey(c))
+			return new HashSet<SootField>(classToFields.get(c));
+		else
+			throw new IllegalArgumentException("Class "+c+" not known.");
+	}
+
+	/**
+	 * Returns the parameter list for method m before advice weaving. 
+	 */
+	public List<Type> getOldParameterListForMethod(SootMethod m) {
+		if(savedParameters.containsKey(m))
+			return new LinkedList<Type>(savedParameters.get(m));
+		else
+			throw new IllegalArgumentException("Method "+m+" not known.");
+	}
+	
+	/**
+	 * Returns the body that method m had before advice weaving.
+	 * <b>Note that this is not a copy of the body but the original body itself.
+	 * Don't tamper with it!</b> 
+	 */
+	public Body getOldBodyForMethod(SootMethod m) {
+		if(savedBodies.containsKey(m))
+			return savedBodies.get(m);
+		else
+			throw new IllegalArgumentException("Method "+m+" not known.");
 	}
 }
