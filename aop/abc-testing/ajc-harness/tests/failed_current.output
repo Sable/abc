@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 914ms, memory usage: 7992744.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 915ms, memory usage: 8150152.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1629ms, memory usage: 11831904.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1595ms, memory usage: 12905768.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1118ms, memory usage: 14437448.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1099ms, memory usage: 14466664.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 879ms, memory usage: 10058864.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 942ms, memory usage: 10731152.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,7 +36,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1540ms, memory usage: 4807096.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1550ms, memory usage: 4815816.
 
 
 Running test 419: new/privilegedAspects/privileged aspects
@@ -59,7 +59,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1399ms, memory usage: 10769752.
+FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1331ms, memory usage: 10816752.
 
 
 Running test 420: new/advice on field gets in privileged aspects
@@ -82,22 +82,22 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1183ms, memory usage: 17324104.
+FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1142ms, memory usage: 17344976.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1b9e119.foo calls Outer$Inner@696fc4.mi
+Outer@28e269.foo calls Outer$Inner@288dd7.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@696fc4.mi calls java.io.PrintStream@28e269.println
+Outer$Inner@288dd7.mi calls java.io.PrintStream@7854b4.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1b9e119.foo calls Outer$InnerRandom@7854b4.nextHook
+Outer@28e269.foo calls Outer$InnerRandom@946ef6.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@7854b4.nextHook calls Outer$InnerRandom@7854b4.next
+Outer$InnerRandom@946ef6.nextHook calls Outer$InnerRandom@946ef6.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1b9e119.foo calls X.nextInt
+Outer@28e269.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -108,7 +108,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$5$around$942(AroundInnerCalls13.java:41)
+	at A.inline$6$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -117,7 +117,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4669ms, memory usage: 9901240.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4661ms, memory usage: 9908912.
 
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
@@ -140,7 +140,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1405ms, memory usage: 15164048.
+FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1209ms, memory usage: 15219888.
 
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
@@ -163,7 +163,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1778ms, memory usage: 11615728.
+FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1937ms, memory usage: 11520888.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -177,7 +177,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1600(AroundAll.java:199)
+	at A.inline$21$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -186,7 +186,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6756ms, memory usage: 9574160.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 5396ms, memory usage: 9564344.
 
 
 Running test 525: new/privilegedAspects/access to all members of class and inner class from privileged aspect
@@ -209,7 +209,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1527ms, memory usage: 17536472.
+FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1525ms, memory usage: 17549352.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -232,7 +232,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1210ms, memory usage: 14187224.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1203ms, memory usage: 15136816.
 
 
 Running test 579: new/privilegedAspects/access to private members from privileged aspect
@@ -255,7 +255,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1484ms, memory usage: 15368808.
+FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1464ms, memory usage: 11084128.
 
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
@@ -278,7 +278,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1576ms, memory usage: 10944976.
+FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1589ms, memory usage: 14539000.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -302,26 +302,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3980ms, memory usage: 9497560.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3888ms, memory usage: 9495232.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1037ms, memory usage: 14537352.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1037ms, memory usage: 14518776.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1128ms, memory usage: 13484776.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1122ms, memory usage: 13483760.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1535ms, memory usage: 10352232.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1531ms, memory usage: 10366256.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -329,7 +329,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1374ms, memory usage: 15753904.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1393ms, memory usage: 15754592.
 
 
 Running test 781: new/verifyError/privileged aspect main verify error
@@ -352,7 +352,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1178ms, memory usage: 10349176.
+FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1171ms, memory usage: 10372320.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -368,7 +368,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:567)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 850ms, memory usage: 12949744.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 841ms, memory usage: 12940616.
 
 
 Running test 881: bugs/privilege/packageProtected/priviledged aspects calling methods from advice
@@ -391,7 +391,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1409ms, memory usage: 15891488.
+FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1403ms, memory usage: 15867808.
 
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
@@ -414,13 +414,13 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1215ms, memory usage: 10593328.
+FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1219ms, memory usage: 10583776.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 421ms, memory usage: 8683568.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 419ms, memory usage: 8656096.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -429,7 +429,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 951ms, memory usage: 9982168.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 939ms, memory usage: 9991824.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -454,7 +454,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4603ms, memory usage: 9330440.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4853ms, memory usage: 9335944.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -475,7 +475,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 988ms, memory usage: 12147560.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1139ms, memory usage: 12220768.
 
 
 Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
@@ -496,7 +496,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3043: void propagateBindingsForSymbolg(int,Constraint$tracematch$3043)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 2606ms, memory usage: 19048712.
+FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 2537ms, memory usage: 19987432.
 
 
 Running test 1020: abctests/tracematches/Tracematches: Plus and Star
@@ -517,7 +517,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3048: void propagateBindingsForSymbolg(int,Constraint$tracematch$3048)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 2115ms, memory usage: 18726224.
+FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 2140ms, memory usage: 20287912.
 
 
 Running test 1021: abctests/tracematches/Tracematches: Alternation
@@ -538,7 +538,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3053: void propagateBindingsForSymbolg(int,Constraint$tracematch$3053)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 2144ms, memory usage: 10815416.
+FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 2474ms, memory usage: 10822528.
 
 
 Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
@@ -565,7 +565,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3058: void doNegativeBindingsForSymbolg(java.lang.Object)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2848ms, memory usage: 17105280.
+FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2710ms, memory usage: 17113704.
 
 
 Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
@@ -598,7 +598,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3063: void doNegativeBindingsForSymbolupdate_source(java.util.Vector)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 2482ms, memory usage: 17044088.
+FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 2746ms, memory usage: 17087128.
 
 
 Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
@@ -631,7 +631,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3070: void doNegativeBindingsForSymbolupdate_source(java.util.Vector)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 2262ms, memory usage: 19067816.
+FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 2296ms, memory usage: 18198536.
 
 
 Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
@@ -664,7 +664,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <tracematches.Constraint$tracematch$3077: void doNegativeBindingsForSymbolupdate_source(java.util.Vector)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 2173ms, memory usage: 10635976.
+FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 2326ms, memory usage: 10643576.
 
 
 Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
@@ -691,7 +691,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3084: void doNegativeBindingsForSymbolg(java.lang.Object)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 2067ms, memory usage: 16685696.
+FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 2125ms, memory usage: 16693288.
 
 
 Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
@@ -724,7 +724,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3089: void doNegativeBindingsForSymbolh(java.lang.String)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 2394ms, memory usage: 16617464.
+FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 2482ms, memory usage: 19724520.
 
 
 Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
@@ -757,7 +757,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3095: void doNegativeBindingsForSymbolp(PQ)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 2039ms, memory usage: 17797328.
+FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 2044ms, memory usage: 20407296.
 
 
 Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
@@ -778,7 +778,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3102: void doNegativeBindingsForSymbolfoocall(java.lang.Integer)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1578ms, memory usage: 10599864.
+FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1579ms, memory usage: 10607464.
 
 
 Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
@@ -807,7 +807,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/MultipleBindingsForAround.java:24,9-34:5: Variable bindings may cause space leak
-FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1867ms, memory usage: 16498008.
+FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1852ms, memory usage: 16505608.
 
 
 Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
@@ -831,7 +831,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3113: void propagateBindingsForSymbolbaz(int,Constraint$tracematch$3113)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 1851ms, memory usage: 19788096.
+FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 1868ms, memory usage: 19753208.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -861,7 +861,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3119: void doNegativeBindingsForSymbolbar(AdviseSelf,java.lang.Integer)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2007ms, memory usage: 19028360.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2025ms, memory usage: 20339008.
 
 
 Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
@@ -888,7 +888,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3129: void doNegativeBindingsForSymbolb1(IfTest,java.lang.Integer)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1941ms, memory usage: 10562024.
+FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1948ms, memory usage: 10562216.
 
 
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
@@ -909,7 +909,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3138: void propagateBindingsForSymbolbar(int,Constraint$tracematch$3138)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 1538ms, memory usage: 16471032.
+FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 1537ms, memory usage: 16478968.
 
 
 Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
@@ -938,7 +938,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/PrimitiveVariables.java:21,4-31:5: Variable bindings may cause space leak
-FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 2128ms, memory usage: 17791400.
+FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 2158ms, memory usage: 19794640.
 
 
 Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
@@ -959,7 +959,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3148: void doNegativeBindingsForSymbolf(int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1467ms, memory usage: 17660336.
+FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1468ms, memory usage: 19570616.
 
 
 Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
@@ -994,7 +994,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/PrimNegBindings.java:22,4-31:5: Variable bindings may cause space leak
-FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1983ms, memory usage: 10557184.
+FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1989ms, memory usage: 10558808.
 
 
 Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
@@ -1020,7 +1020,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/NCWeakRefs.java:22,4-29:5: Variable bindings may cause space leak
-FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1618ms, memory usage: 16329864.
+FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1637ms, memory usage: 16329976.
 
 
 Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
@@ -1046,7 +1046,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/NCWeakRefs2.java:23,4-30:5: Variable bindings may cause space leak
-FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 1629ms, memory usage: 17242200.
+FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 1638ms, memory usage: 16993752.
 
 
 Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
@@ -1073,7 +1073,7 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3168: void doNegativeBindingsForSymbolbar(java.lang.Object)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1823ms, memory usage: 17758024.
+FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1879ms, memory usage: 17553664.
 
 
 Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
@@ -1099,7 +1099,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/NCWeakRefs3.java:29,4-36:5: Variable bindings may cause space leak
-FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1934ms, memory usage: 10772704.
+FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1783ms, memory usage: 10777224.
 
 
 Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
@@ -1125,7 +1125,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/NCWeakRefs4.java:28,4-35:5: Variable bindings may cause space leak
-FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1787ms, memory usage: 16833728.
+FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1784ms, memory usage: 16838256.
 
 
 Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
@@ -1151,7 +1151,7 @@ Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$31
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
 Warning at abctests/tracematches/NCWeakRefs5.java:28,4-35:5: Variable bindings may cause space leak
-FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1865ms, memory usage: 16865792.
+FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1863ms, memory usage: 17813872.
 
 
 Running test 1127: om/omantstest/omants test
@@ -1174,7 +1174,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1127: "om/omantstest/omants test" failed in 15797ms, memory usage: 44321080.
+FAIL: Test 1127: "om/omantstest/omants test" failed in 13977ms, memory usage: 44287808.
 
 
 Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
@@ -1197,14 +1197,14 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1204ms, memory usage: 14368288.
+FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1197ms, memory usage: 14371312.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 754ms, memory usage: 14720568.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 760ms, memory usage: 14723416.
 
 
 Running test 1209: abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol
@@ -1222,6 +1222,6 @@ will try to fix this, but really it's a bug in code generation.
 Warning at Compiler Generated: Invalid Jimple body for <Constraint$tracematch$3460: void propagateBindingsForSymbolfoo(int,Constraint$tracematch$3460)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed in 1370ms, memory usage: 20083272.
+FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed in 1387ms, memory usage: 20092168.
 
 
