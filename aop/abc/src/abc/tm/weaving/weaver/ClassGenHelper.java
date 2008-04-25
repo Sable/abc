@@ -42,6 +42,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
+import soot.jimple.IdentityStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.NullConstant;
@@ -353,13 +354,23 @@ public class ClassGenHelper {
     /**
      * This should be called only once per startMethod() call and parameter. It returns a local of the given
      * type, holding the parameter with the given index.
+     * 
+     * Given the strict enforcement of the 'thisIdentityStmts first' invariant in Soot,
+     * the new statement is put first if and only if the first statement in the chain
+     * is not an IdentityStmt already and second otherwise; thisIdentityStmts are always 
+     * put first.
      * @param index Index of the required parameter
      * @param type the type of the parameter and the resulting local -- should match the method declaration
      * @return
      */
     protected Local getParamLocal(int index, Type type) {
         Local paramLocal = curLGen.generateLocal(type, "paramLocal" + index);
-        curUnits.addFirst(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(type, index)));
+        Stmt newStmt = Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(type, index));
+        if(curUnits.size() > 0 &&
+        		curUnits.getFirst() instanceof IdentityStmt)
+        	curUnits.insertAfter(newStmt, curUnits.getFirst());
+        else
+        	curUnits.addFirst(newStmt);
         return paramLocal;
     }
     
