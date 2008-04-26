@@ -1,5 +1,6 @@
 Modifier modifier =
   NOTNULL {: return new NotNullModifier("@NonNull"); :}
+  | NULLABLE {: return new NullableModifier("@Nullable"); :}
   | RAW {: return new RawModifier("@Raw"); :}
   | RAWTHIS {: return new RawModifier("@RawThis"); :}
   | RAW LPAREN type.t RPAREN {: return new RawUptoModifier("@RawUpto", t); :}

@@ -34,11 +34,17 @@ aspect NonNullJava5Glue {
   eq NonNullClassDecl.supertypeWildcardSuper(WildcardSuperType type) = false;
 
   inh SimpleSet Modifiers.lookupType(String name);
-  refine NonNull eq Modifiers.isNotNull() {
+  refine NonNull eq Modifiers.explicitNotNull() {
     SimpleSet set = lookupType("NonNull");
     if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
       return true;
-    return NonNull.Modifiers.isNotNull();
+    return NonNull.Modifiers.explicitNotNull();
+  }
+  refine NonNull eq Modifiers.explicitNullable() {
+    SimpleSet set = lookupType("Nullable");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNull.Modifiers.explicitNullable();
   }
   refine NonNull eq Modifiers.isRawObjectType() {
     SimpleSet set = lookupType("Raw");
@@ -52,5 +58,34 @@ aspect NonNullJava5Glue {
       return true;
     return NonNull.Modifiers.isRawThisObjectType();
   }
+
+  eq Program.getCompilationUnit(int index).nonNullDefault() =
+    isPackageNonNull(getCompilationUnit(index).packageName());
+
+  syn lazy boolean Program.isPackageNonNull(String name) {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit unit = (CompilationUnit)iter.next();
+      if(unit instanceof AnnotatedCompilationUnit) {
+        AnnotatedCompilationUnit aunit = (AnnotatedCompilationUnit)unit;
+        if(aunit.packageName().equals(name))
+          return aunit.getModifiers().explicitNotNull();
+      }
+    }
+    try {
+      CompilationUnit unit = getCompilationUnit(name + ".package-info");
+      if(unit != null) {
+        addCompilationUnit(unit);
+        if(unit instanceof AnnotatedCompilationUnit) {
+          AnnotatedCompilationUnit aunit = (AnnotatedCompilationUnit)unit;
+          if(aunit.packageName().equals(name))
+            return aunit.getModifiers().explicitNotNull();
+        }
+      }
+    } catch (Exception e) {
+    }
+    return false;
+  }
+
+
     
 }

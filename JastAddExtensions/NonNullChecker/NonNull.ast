@@ -10,6 +10,7 @@ RawUptoObjectDecl : TaggedClassDecl ::= <Upto:ClassDecl>;
 
 // additional modifiers
 NotNullModifier : Modifier;
+NullableModifier : Modifier;
 RawModifier : Modifier;
 RawUptoModifier : Modifier ::= Access;
 

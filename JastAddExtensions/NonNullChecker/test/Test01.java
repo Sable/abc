@@ -1,6 +1,6 @@
 package test;
 
-@NonNull public class Test01 {
+public class Test01 {
   
   public static void main(String[] args) {
     // Test syntax for @NonNull annotations

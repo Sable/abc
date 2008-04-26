@@ -39,7 +39,16 @@ aspect NonNull {
   eq RawUptoObjectDecl.isRawUpto() = true;
   
   // detect the [NotNull] modifier
-  syn lazy boolean Modifiers.isNotNull() = numModifier("@NonNull") != 0;
+  inh boolean Modifiers.nonNullDefault();
+  syn boolean TypeDecl.nonNullDefault() =
+    getModifiers().numModifier("@NonNull") != 0
+    || getModifiers().nonNullDefault();
+  eq TypeDecl.getBodyDecl().nonNullDefault() = nonNullDefault();
+  eq Program.getChild().nonNullDefault() = false;
+
+  syn lazy boolean Modifiers.isNotNull() = explicitNotNull() || (mayBeNotNull() && nonNullDefault() && !explicitNullable());
+  syn boolean Modifiers.explicitNotNull() = numModifier("@NonNull") != 0;
+  syn boolean Modifiers.explicitNullable() = numModifier("@Nullable") != 0;
   
   // only allow [NotNull] for reference types
   inh boolean Modifiers.mayBeNotNull();
@@ -48,6 +57,7 @@ aspect NonNull {
   eq FieldDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
   eq ParameterDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
   eq MethodDecl.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq TypeDecl.getModifiers().mayBeNotNull() = true;
 
   // detect the [Raw] modifier
   syn lazy boolean Modifiers.isRawObjectType() = numModifier("@Raw") != 0;

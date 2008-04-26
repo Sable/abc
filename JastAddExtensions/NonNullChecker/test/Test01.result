@@ -1,6 +1,4 @@
 Errors:
-test/Test01.java:3:
-  Semantic Error: only reference typed values may be non null
 test/Test01.java:10:
   Semantic Error: only reference typed values may be non null
 test/Test01.java:13:

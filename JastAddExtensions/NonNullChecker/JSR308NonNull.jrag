@@ -2,7 +2,7 @@ aspect JSR308NonNull {
   eq TypeAccess.getChild().mayBeNotNull() = type().isReferenceType();
   refine TypeAnalysis eq TypeAccess.type() {
     TypeDecl type = TypeAnalysis.TypeAccess.type();
-    if(type.isNonNull() || !hasAnnotations() || !getAnnotations().isNotNull())
+    if(type.isNonNull() || !hasAnnotations() || !getAnnotations().explicitNotNull())
       return type;
     return type.nonNullType();
   }
