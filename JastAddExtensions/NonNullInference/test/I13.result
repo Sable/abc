@@ -2,7 +2,7 @@ package test;
 
 public class I13 {
   public static void main(@NonNull String[] args) {
-    System.out.println("overriding, merge return values, rawness, and parameters");
+    System.out.println("overriding: covariant return types, merge rawness and parameters");
   }
 }
 
@@ -18,7 +18,7 @@ interface B {
 }
 
 class C extends A implements B {
-  public Object m(Object p) {
+  @NonNull public Object m(Object p) {
     return new Object();
   }
 }

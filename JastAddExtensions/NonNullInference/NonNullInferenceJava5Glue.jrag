@@ -111,7 +111,9 @@ aspect NonNullInferenceJava5Glue {
     Variable v = decl();
     if(v instanceof FieldDeclarationSubstituted) {
       FieldDeclaration f = ((FieldDeclarationSubstituted)v).erasedField();
-      if(isQualified())
+      if(!Program.rawEnabled)
+        return f.inferedNonNull();
+      else if(isQualified())
         return (f.inferedNonNull() && !qualifier().inferedRaw()) || inferedGuardedByNullCheck(f);
       else
         return (f.inferedNonNull() && !inferedRawThisType()) || inferedGuardedByNullCheck(f);
@@ -152,34 +154,47 @@ aspect NonNullInferenceJava5Glue {
     return assignments != null ? assignments : Collections.EMPTY_LIST;
   }
 
-  /*
-  refine GenericsPrettyPrint public void TypeVariable.toString(StringBuffer s) {
-    if(inferedNonNull())
-      s.append(Program.nonNullAnnotation());
-    GenericsPrettyPrint.TypeVariable.toString(s);
-  }
-  */
-
-  // the non-null annotation is on the type variable declaration not individual uses
-  /*
-  refine NonNullInference eq ParameterDeclaration.addNonNull() =
-    !(type() instanceof TypeVariable) && NonNullInference.ParameterDeclaration.addNonNull();
-  refine NonNullInference eq VariableDeclaration.addNonNull() =
-    !(type() instanceof TypeVariable) && NonNullInference.VariableDeclaration.addNonNull();
-  refine NonNullInference eq FieldDeclaration.addNonNull() =
-    !(type() instanceof TypeVariable) && NonNullInference.FieldDeclaration.addNonNull();
-  refine NonNullInference eq MethodDecl.addNonNull() =
-    !(type() instanceof TypeVariable) && NonNullInference.MethodDecl.addNonNull();
-  */
-
-
   inh SimpleSet Modifiers.lookupType(String name);
-  refine NonNullInference eq Modifiers.isNotNull() {
+  refine NonNullInference eq Modifiers.explicitNotNull() {
     SimpleSet set = lookupType("NonNull");
     if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
       return true;
-    return NonNullInference.Modifiers.isNotNull();
+    return NonNullInference.Modifiers.explicitNotNull();
   }
+  refine NonNullInference eq Modifiers.explicitNullable() {
+    SimpleSet set = lookupType("Nullable");
+    if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)
+      return true;
+    return NonNullInference.Modifiers.explicitNullable();
+  }
+
+  eq Program.getCompilationUnit(int index).nonNullDefault() =
+    isPackageNonNull(getCompilationUnit(index).packageName());
+
+  syn lazy CompilationUnit Program.getPackageInfo(String packageName) {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit unit = (CompilationUnit)iter.next();
+      if(unit.relativeName() != null && unit.relativeName().endsWith("package-info.java") && unit.packageName().equals(packageName))
+        return unit;
+    }
+    try {
+      CompilationUnit unit = getCompilationUnit(packageName + ".package-info");
+      if(unit != null) {
+        addCompilationUnit(unit);
+        return unit;
+      }
+    } catch (Exception e) {
+    }
+    return null;
+  }
+
+  syn boolean Program.isPackageNonNull(String name) {
+    CompilationUnit unit = getPackageInfo(name);
+    return unit != null && unit instanceof AnnotatedCompilationUnit && 
+      ((AnnotatedCompilationUnit)unit).getModifiers().explicitNotNull();
+  }
+
+
   refine NonNullInference eq Modifiers.isRawObjectType() {
     SimpleSet set = lookupType("Raw");
     if(set.size() == 1 && annotation((TypeDecl)set.iterator().next()) != null)

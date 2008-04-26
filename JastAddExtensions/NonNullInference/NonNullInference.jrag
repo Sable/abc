@@ -1,46 +1,5 @@
 aspect NonNullInference {
 
-  syn boolean ParameterDeclaration.addNonNull() =
-    inferedNonNull() && !getModifiers().isNotNull();
-  syn boolean VariableDeclaration.addNonNull() =
-    inferedNonNull() && !getModifiers().isNotNull();
-  syn boolean FieldDeclaration.addNonNull() =
-    inferedNonNull() && !getModifiers().isNotNull();
-  syn boolean MethodDecl.addNonNull() =
-    inferedNonNull() && !getModifiers().isNotNull();
-
-  // refine pretty printer to include infered annotations
-  refine PrettyPrint public void ParameterDeclaration.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    PrettyPrint.ParameterDeclaration.toString(s);
-  }
-  refine PrettyPrint public void VariableDeclaration.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    PrettyPrint.VariableDeclaration.toString(s);
-  }
-  refine PrettyPrint public void FieldDeclaration.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    PrettyPrint.FieldDeclaration.toString(s);
-  }
-  refine PrettyPrint public void MethodDecl.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    if(inferedRawThis())
-      s.append(Program.rawThisAnnotation());
-    PrettyPrint.MethodDecl.toString(s);
-  }
-
   // collect assignment sites through the generic collecting phase in the front-end
   public void VarAccess.updateRemoteAttributeCollectionsFrontend() {
     if(isDest()) {
@@ -164,21 +123,40 @@ aspect NonNullInference {
     return overriddenBy != null ? overriddenBy : Collections.EMPTY_LIST;
   }  
 
+  inh boolean Modifiers.nonNullDefault();
+  syn boolean TypeDecl.nonNullDefault() =
+    getModifiers().numModifier("@NonNull") != 0
+    || getModifiers().nonNullDefault();
+  eq TypeDecl.getBodyDecl().nonNullDefault() = nonNullDefault();
+  eq Program.getChild().nonNullDefault() = false;
 
-  syn lazy boolean Modifiers.isNotNull() = numModifier("@NonNull") != 0;
+  syn lazy boolean Modifiers.isNotNull() = explicitNotNull() || (mayBeNotNull() && nonNullDefault() && !explicitNullable());
+  syn boolean Modifiers.explicitNotNull() = numModifier("@NonNull") != 0;
+  syn boolean Modifiers.explicitNullable() = numModifier("@Nullable") != 0;
+
+  // only allow [NotNull] for reference types
+  inh boolean Modifiers.mayBeNotNull();
+  eq Program.getCompilationUnit().mayBeNotNull() = false;
+  eq VariableDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq FieldDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq ParameterDeclaration.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq MethodDecl.getModifiers().mayBeNotNull() = getTypeAccess().type().isReferenceType();
+  eq TypeDecl.getModifiers().mayBeNotNull() = true;
+  eq AnnotatedCompilationUnit.getModifiers().mayBeNotNull() = true;
+
   syn lazy boolean Modifiers.isRawObjectType() = numModifier("@Raw") != 0;
   syn lazy boolean Modifiers.isRawThisObjectType() = numModifier("@RawThis") != 0;
 
   // infere types
   syn lazy boolean FieldDeclaration.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
-    if(isStatic()) return false;
-    if(!hostType().compilationUnit().canBeAnnotated()) return false;
+    if(isStatic() && Program.rawEnabled) return false;
+    if(!hostType().compilationUnit().canBeAnnotated()) return getModifiers().isNotNull();
     FieldDeclaration first = firstVariable();
     if(first != this) return first.inferedNonNull();
     for(Iterator i2 = first.variableSet().iterator(); i2.hasNext(); ) {
       FieldDeclaration v = (FieldDeclaration)i2.next();
-      if(v.getModifiers().isNotNull()) return true;
+      //if(v.getModifiers().isNotNull()) return true;
       if(v.hasInit() && !v.getInit().inferedNonNull())
         return false;
       for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
@@ -187,11 +165,17 @@ aspect NonNullInference {
           return false;
       }
  
-      for(int j = 0; j < hostType().getNumBodyDecl(); j++) {
-        if(hostType().getBodyDecl(j) instanceof ConstructorDecl) {
-          ConstructorDecl c = (ConstructorDecl)hostType().getBodyDecl(j);
-            if(!c.isDAafter(v))
-              return false;
+      if(isStatic()) {
+        if(!hasInit())
+          return false;
+      }
+      else {
+        for(int j = 0; j < hostType().getNumBodyDecl(); j++) {
+          if(hostType().getBodyDecl(j) instanceof ConstructorDecl) {
+            ConstructorDecl c = (ConstructorDecl)hostType().getBodyDecl(j);
+              if(!c.isDAafter(v))
+                return false;
+          }
         }
       }
     }
@@ -203,7 +187,7 @@ aspect NonNullInference {
     if(first != this) return first.inferedNonNull();
     for(Iterator i2 = first.variableSet().iterator(); i2.hasNext(); ) {
       VariableDeclaration v = (VariableDeclaration)i2.next();
-      if(v.getModifiers().isNotNull()) return true;
+      //if(v.getModifiers().isNotNull()) return true;
       if(v.hasInit() && !v.getInit().inferedNonNull())
         return false;
       for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
@@ -231,8 +215,8 @@ aspect NonNullInference {
     
   syn lazy boolean ParameterDeclaration.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
-    if(getModifiers().isNotNull()) return true;
-    if(!hostType().compilationUnit().canBeAnnotated()) return false;
+    //if(getModifiers().isNotNull()) return true;
+    if(!hostType().compilationUnit().canBeAnnotated()) return getModifiers().isNotNull();
     if(getParent().getParent() instanceof MethodDecl) {
       int i = getParent().getIndexOfChild(this);
       MethodDecl hostMethod = (MethodDecl)getParent().getParent();
@@ -261,8 +245,20 @@ aspect NonNullInference {
   
   syn lazy boolean MethodDecl.inferedNonNull() circular [true] {
     if(!type().isReferenceType()) return false;
-    if(getModifiers().isNotNull()) return true;
-    if(!hostType().compilationUnit().canBeAnnotated()) return false;
+    //if(getModifiers().isNotNull()) return true;
+    if(!hostType().compilationUnit().canBeAnnotated()) return getModifiers().isNotNull();
+
+    // Covariant return types
+    if(!inferedNonNullLocally())
+      return false;
+    for(Iterator iter = overriddenBy().iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(!m.inferedNonNull())
+        return false;
+    }
+    
+    /*
+    // Invariant return types
     MethodDecl firstMethod = firstMethod();
     if(this != firstMethod)
       return firstMethod.inferedNonNull();
@@ -271,6 +267,7 @@ aspect NonNullInference {
       if(!m.inferedNonNullLocally())
         return false;
     }
+    */
     return true;
   }
   
@@ -280,8 +277,9 @@ aspect NonNullInference {
       return false;
     if(v instanceof FieldDeclaration) {
       FieldDeclaration f = (FieldDeclaration)v;
-      if(!Program.rawEnabled) return false;
-      if(isQualified())
+      if(!Program.rawEnabled)
+        return f.inferedNonNull();
+      else if(isQualified())
         return f.inferedNonNull() && !qualifier().inferedRaw();
       else
         return f.inferedNonNull() && !inferedRawThisType();

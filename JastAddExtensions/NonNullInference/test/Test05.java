@@ -37,7 +37,8 @@ public class Test05 {
     Object test5() { // @Null: method returns null value
       return null;
     }
-    Object test6() { // @Null: overridden method returns null value
+    Object test6() { // @NonNull: overridden method returns null value
+                     // but using covariant return types
       return new Test05();
     }
   }
@@ -59,7 +60,8 @@ public class Test05 {
     public Object test8() { // @Null: returns null locally
       return null;
     }
-    public Object test9() { // @Null: implementation in Y return null value
+    public Object test9() { // @NonNull: implementation in Y return null value
+                            // but uses covariant return types
       return new Test05();
     }
   }
@@ -67,7 +69,8 @@ public class Test05 {
     public Object test7() { // @NonNull: both implementations return non-null value
       return new Test05();
     }
-    public Object test8() { // @Null: implementation in X return null value
+    public Object test8() { // @NonNull: implementation in X return null value
+                            // but uses covariant return types
       return new Test05();
     }
     public Object test9() { // @Null: returns null locally

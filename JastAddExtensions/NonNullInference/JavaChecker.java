@@ -32,6 +32,21 @@ class JavaChecker extends Frontend {
       program.emitTest();
     else
       program.emit();
+    if(program.hasValueForOption("-debug")) {
+      String value = program.getValueForOption("-debug");
+      try {
+        String fileName = new File(value).getCanonicalPath();
+        for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+          CompilationUnit unit = (CompilationUnit)iter.next();
+          if(unit.relativeName() != null && fileName.equals(new File(unit.relativeName()).getCanonicalPath())) {
+            unit.printDebugInfo();
+            return true;
+          }
+        }
+      } catch (IOException e) {
+      }
+      System.err.println("Warning: could not find compilation unit to debug: " + value);
+    }
     return true;
   }
 
@@ -41,6 +56,8 @@ class JavaChecker extends Frontend {
     program.addKeyValueOption("-import");
     program.addKeyOption("-legacysyntax");
     program.addKeyOption("-disableraw");
+    program.addKeyOption("-defaultnonnull");
+    program.addKeyValueOption("-debug");
   }
   
   protected void processArgs(String[] args) {

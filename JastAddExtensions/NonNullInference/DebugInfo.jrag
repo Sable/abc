@@ -1,0 +1,169 @@
+aspect DebugInfo {
+  public void ASTNode.printDebugInfo() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).printDebugInfo();
+  }
+
+  public void FieldDeclaration.printDebugInfo() {
+    if(!inferedNonNull() && getModifiers().mayBeNotNull()) {
+      System.out.println("Field " + name() + " on line " + lineNumber() + " is nullable:");
+      if(isStatic() && Program.rawEnabled) {
+        System.out.println("  field is static an raw objects are enabled");
+      }
+      for(Iterator i2 = firstVariable().variableSet().iterator(); i2.hasNext(); ) {
+        FieldDeclaration v = (FieldDeclaration)i2.next();
+        if(v.hasInit() && !v.getInit().inferedNonNull()) {
+          if(v != this) {
+            System.out.println("  initialization of " + v.name() + " on line " + v.getInit().lineNumber() + " which belongs to the same field declaration as " + name() + " is nullable");
+          }
+          else {
+            System.out.println("  initialization on line " + v.getInit().lineNumber() + " is nullable");
+          }
+        }
+        for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
+          Expr rhs = (Expr)iter.next();
+          if(!rhs.inferedNonNull()) {
+            if(v != this) {
+              System.out.println("  assignment to " + v.name() + " on line " + rhs.lineNumber() + " which belongs to the same field declaration as " + name() + " is nullable");
+            }
+            else {
+              System.out.println("  assignment on line " + rhs.lineNumber() + " is nullable");
+            }
+          }
+        }
+
+        if(isStatic()) {
+          if(!hasInit()) {
+            System.out.println("  field is static and not initialized at the declaration site");
+          }
+        }
+        else {
+          for(int j = 0; j < hostType().getNumBodyDecl(); j++) {
+            if(hostType().getBodyDecl(j) instanceof ConstructorDecl) {
+              ConstructorDecl c = (ConstructorDecl)hostType().getBodyDecl(j);
+              if(!c.isDAafter(v)) {
+                System.out.println(" instance field is not definitely assigned after the constructor declaration on line " + c.lineNumber());
+              }
+            }
+          }
+        }
+      }
+    }
+    super.printDebugInfo();
+  }
+
+  public void VariableDeclaration.printDebugInfo() {
+    if(!inferedNonNull() && getModifiers().mayBeNotNull()) {
+      System.out.println("Local variable " + name() + " on line " + lineNumber() + " is nullable:");
+      for(Iterator i2 = firstVariable().variableSet().iterator(); i2.hasNext(); ) {
+        VariableDeclaration v = (VariableDeclaration)i2.next();
+        if(v.hasInit() && !v.getInit().inferedNonNull()) {
+          if(v != this) {
+            System.out.println("  initialization of " + v.name() + " on line " + v.getInit().lineNumber() + " which belongs to the same variable declaration statement as " + name() + " is nullable");
+          }
+          else {
+            System.out.println("  initialization on line " + v.getInit().lineNumber() + " is nullable");
+          }
+        }
+        for(Iterator iter = v.assignments().iterator(); iter.hasNext(); ) {
+          Expr rhs = (Expr)iter.next();
+          if(!rhs.inferedNonNull()) {
+            if(v != this) {
+              System.out.println("  assignment to " + v.name() + " on line " + rhs.lineNumber() + " which belongs to the same variable declaration statement as " + name() + " is nullable");
+            }
+            else {
+              System.out.println("  assignment on line " + rhs.lineNumber() + " is nullable");
+            }
+          }
+        }
+      }
+    }
+    super.printDebugInfo();
+  }
+
+  public void ParameterDeclaration.printDebugInfo() {
+    if(!inferedNonNull() && getModifiers().mayBeNotNull()) {
+      System.out.println("Parameter " + name() + " on line " + lineNumber() + " is nullable:");
+
+      for(Iterator iter = assignments().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(!rhs.inferedNonNull()) {
+          System.out.println("  nullable assignment on line " + rhs.lineNumber());
+        } 
+      }
+      for(Iterator iter = argumentValues().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(!rhs.inferedNonNull()) {
+          System.out.println("  nullable argument when being called on line " + rhs.lineNumber() + " in " + sourceFile());
+        }
+      }
+      if(getParent().getParent() instanceof MethodDecl) {
+        int i = getParent().getIndexOfChild(this);
+        MethodDecl hostMethod = (MethodDecl)getParent().getParent();
+        MethodDecl firstMethod = hostMethod.firstMethod();
+        for(Iterator iter = firstMethod.methodSet().iterator(); iter.hasNext(); ) {
+          MethodDecl m = (MethodDecl)iter.next();
+          ParameterDeclaration p = m.getParameter(i);
+          if(m != hostMethod && !p.inferedNonNullLocally()) {
+            System.out.println("  inferred parameter types are invariant and " + p.name() + " at line " + p.lineNumber() + " in " + p.sourceFile() + " is nullable");
+          }
+        }
+      }
+    }
+    super.printDebugInfo();
+  }
+
+  public void MethodDecl.printDebugInfo() {
+    if(!inferedNonNull() && getModifiers().mayBeNotNull()) {
+      System.out.println("Method " + name() + " on line " + lineNumber() + " is nullable:");
+
+      for(Iterator iter = returnValues().iterator(); iter.hasNext(); ) {
+        Expr rhs = (Expr)iter.next();
+        if(!rhs.inferedNonNull()) {
+          System.out.println("  returns nullable value on line " + rhs.lineNumber());
+        }
+      }
+
+      HashSet set = new HashSet();
+      for(Iterator iter = overriddenBy().iterator(); iter.hasNext(); ) {
+        MethodDecl m = (MethodDecl)iter.next();
+        m.collectNullableOverriding(set);
+      }
+      if(!set.isEmpty()) {
+        System.out.println("  covariant return type requires all overriding methods to be non-null which the following are not: ");
+        for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+          MethodDecl m = (MethodDecl)iter.next();
+          System.out.println("    " + m.signature() + " at line " + m.lineNumber() + " in " + m.sourceFile());
+
+        }
+      }
+    }
+    super.printDebugInfo();
+  }
+
+  private void MethodDecl.collectNullableOverriding(HashSet set) {
+    if(!inferedNonNullLocally())
+      set.add(this);
+    else {
+      for(Iterator iter = overriddenBy().iterator(); iter.hasNext(); ) {
+        MethodDecl m = (MethodDecl)iter.next();
+        m.collectNullableOverriding(set);
+      }
+    }
+  }
+  
+  public void VarAccess.printDebugInfo() {
+    Variable v = decl();
+    if(v instanceof FieldDeclaration && v.type().isReferenceType()) {
+      FieldDeclaration f = (FieldDeclaration)v;
+      if(!inferedNonNull() && f.inferedNonNull()) {
+        System.out.println("Access to non-null field " + f.name() + " on line " + lineNumber() + " is nullable:");
+        if(isQualified())
+          System.out.println("  the qualifier is raw");
+        else
+          System.out.println("  the implicit receiver is raw");
+      }
+    }
+    super.printDebugInfo();
+  }
+}

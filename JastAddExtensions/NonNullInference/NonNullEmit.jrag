@@ -3,6 +3,24 @@ aspect NonNullEmit {
     java.io.FileReader r;
     int line;
     int column;
+
+    private boolean ready = false;
+    private int value;
+    private int read() throws java.io.IOException {
+      if(ready) {
+        ready = false;
+        return value;
+      }
+      return r.read();
+    }
+    public int peek() throws java.io.IOException {
+      if(ready)
+        return value;
+      value = r.read();
+      ready = true;
+      return value;
+    }
+
     public Input(String fileName) throws java.io.IOException {
       r = new java.io.FileReader(fileName);
       line = 1;
@@ -43,7 +61,7 @@ aspect NonNullEmit {
       l: while(this.line < line || this.column < column) {
         int previous = 0;
         while(this.line < line) {
-          int c = r.read();
+          int c = read();
           if(c == -1)
             break l;
           w.write((char)c);
@@ -51,7 +69,7 @@ aspect NonNullEmit {
           previous = c;
         }
         while(this.column < column) {
-          int c = r.read();
+          int c = read();
           if(c == -1)
             break l;
           w.write(c);
@@ -59,10 +77,30 @@ aspect NonNullEmit {
         }
       }
     }
+    public void skipUntil(int line, int column, java.io.PrintWriter w) throws java.io.IOException {
+      if(line == 0 || column == 0)
+        return;
+      l: while(this.line < line || this.column < column) {
+        int previous = 0;
+        while(this.line < line) {
+          int c = read();
+          if(c == -1)
+            break l;
+          detectNextLine(c, previous);
+          previous = c;
+        }
+        while(this.column < column) {
+          int c = read();
+          if(c == -1)
+            break l;
+          this.column++;
+        }
+      }
+    }
     public void emitUntil(char stop, java.io.PrintWriter w) throws java.io.IOException {
       int previous = 0;
       while(true) {
-        int c = r.read();
+        int c = read();
         if(c == -1)
           break;
         w.write((char)c);
@@ -174,17 +212,46 @@ aspect NonNullEmit {
   FieldDeclaration implements NonNullAnnotated;
   MethodDecl implements NonNullAnnotated;
 
-  public void ParameterDeclaration.emitAnnotations(java.io.PrintWriter p) {
-    if(inferedNonNull() && !getModifiers().isNotNull())
+  ClassDecl implements NonNullAnnotated;
+  InterfaceDecl implements NonNullAnnotated;
+
+  CompilationUnit implements NonNullAnnotated;
+
+  public void CompilationUnit.emitAnnotations(java.io.PrintWriter p) {
+    if(Program.defaultNonNull() && relativeName().endsWith("package-info.java"))
       p.write(Program.nonNullAnnotation());
+  }
+  public void AnnotatedCompilationUnit.emitAnnotations(java.io.PrintWriter p) {
+    if(Program.defaultNonNull() && !getModifiers().explicitNotNull())
+      p.write(Program.nonNullAnnotation());
+  }
+
+  public void ClassDecl.emitAnnotations(java.io.PrintWriter p) {
+    if(isTopLevelType() && Program.defaultNonNull() && !getModifiers().explicitNotNull() && 
+      ((Program)compilationUnit().getParent().getParent()).getPackageInfo(packageName()) == null)
+      p.write(Program.nonNullAnnotation());
+  }
+  public void InterfaceDecl.emitAnnotations(java.io.PrintWriter p) {
+    if(isTopLevelType() && Program.defaultNonNull() && !getModifiers().explicitNotNull() &&
+      ((Program)compilationUnit().getParent().getParent()).getPackageInfo(packageName()) == null)
+      p.write(Program.nonNullAnnotation());
+  }
+
+  public void ParameterDeclaration.emitAnnotations(java.io.PrintWriter p) {
+    if(addNonNull() && !getModifiers().explicitNotNull())
+      p.write(Program.nonNullAnnotation());
+    if(addNullable() && !getModifiers().explicitNullable())
+      p.write(Program.nullableAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
       p.write(Program.rawAnnotation());
   }
 
   public void VariableDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(firstVariable() == this) {
-      if(addNonNull())
+      if(addNonNull() && !getModifiers().explicitNotNull())
         p.write(Program.nonNullAnnotation());
+      if(addNullable() && !getModifiers().explicitNullable())
+        p.write(Program.nullableAnnotation());
       if(inferedRaw() && !getModifiers().isRawObjectType())
         p.write(Program.rawAnnotation());
     }
@@ -192,27 +259,88 @@ aspect NonNullEmit {
 
   public void FieldDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(firstVariable() == this) {
-      if(addNonNull())
+      if(addNonNull() && !getModifiers().explicitNotNull())
         p.write(Program.nonNullAnnotation());
+      if(addNullable() && !getModifiers().explicitNullable())
+        p.write(Program.nullableAnnotation());
       if(inferedRaw() && !getModifiers().isRawObjectType())
         p.write(Program.rawAnnotation());
     }
   }
 
   public void MethodDecl.emitAnnotations(java.io.PrintWriter p) {
-    if(addNonNull())
+    if(addNonNull() && !getModifiers().explicitNotNull())
       p.write(Program.nonNullAnnotation());
+    if(addNullable() && !getModifiers().explicitNullable())
+      p.write(Program.nullableAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
       p.write(Program.rawAnnotation());
     if(inferedRawThis() && !getModifiers().isRawThisObjectType())
       p.write(Program.rawThisAnnotation());
   }
 
+  inh boolean Modifier.removeNullable();
+  inh boolean Modifier.removeNotNull();
+  eq ParameterDeclaration.getModifiers().removeNullable() = inferedNonNull();
+  eq ParameterDeclaration.getModifiers().removeNotNull() = !inferedNonNull();
+  eq VariableDeclaration.getModifiers().removeNullable() = inferedNonNull();
+  eq VariableDeclaration.getModifiers().removeNotNull() = !inferedNonNull();
+  eq FieldDeclaration.getModifiers().removeNullable() = inferedNonNull();
+  eq FieldDeclaration.getModifiers().removeNotNull() = !inferedNonNull();
+  eq MethodDecl.getModifiers().removeNullable() = inferedNonNull();
+  eq MethodDecl.getModifiers().removeNotNull() = !inferedNonNull();
+  eq TypeDecl.getModifiers().removeNotNull() = !Program.defaultNonNull();
+  eq AnnotatedCompilationUnit.getModifiers().removeNotNull() = !Program.defaultNonNull();
+  eq Program.getCompilationUnit().removeNullable() = false;
+  eq Program.getCompilationUnit().removeNotNull() =  false;
+
+  protected void Modifier.skipModifier(PrintWriter p, Input input) throws java.io.IOException {
+    int line = getLine(getStart());
+    int column = getColumn(getStart());
+    if(line != 0 && column != 0)
+      input.emitUntil(line, column, p);
+    int end = getEnd() + 1;
+    do {
+      line = getLine(end);
+      column = getColumn(end);
+      if(line != 0 && column != 0)
+        input.skipUntil(line, column, p);
+      end++;
+    } while(input.peek() == ' ');
+  }
+  public void Annotation.emit(PrintWriter p, Input input) throws java.io.IOException {
+    if(decl().name().equals("NonNull") && removeNotNull())
+      skipModifier(p, input);
+    else if(decl().name().equals("Nullable") && (removeNullable() || !Program.defaultNonNull()))
+      skipModifier(p, input);
+    else
+      super.emit(p, input);
+  }
+  public void NotNullModifier.emit(PrintWriter p, Input input) throws java.io.IOException {
+    if(removeNotNull())
+      skipModifier(p, input);
+    else
+      super.emit(p, input);
+  }
+  public void NullableModifier.emit(PrintWriter p, Input input) throws java.io.IOException {
+    if(removeNullable() || !Program.defaultNonNull())
+      skipModifier(p, input);
+    else
+      super.emit(p, input);
+  }
+
+
   public static String Program.nonNullAnnotation() {
     if(Program.hasOption("-legacysyntax"))
       return "/*@NonNull*/ ";
     else
       return "@NonNull ";
+  }
+  public static String Program.nullableAnnotation() {
+    if(Program.hasOption("-legacysyntax"))
+      return "/*@Nullable*/ ";
+    else
+      return "@Nullable ";
   }
   public static String Program.rawAnnotation() {
     if(Program.hasOption("-legacysyntax"))
@@ -226,6 +354,63 @@ aspect NonNullEmit {
     else
       return "@RawThis ";
   }
+
+  public static boolean Program.defaultNonNull() {
+    return Program.hasOption("-defaultnonnull");
+  }
+
+  syn boolean ParameterDeclaration.addNonNull() =
+    !Program.defaultNonNull() && inferedNonNull();
+  syn boolean VariableDeclaration.addNonNull() =
+    !Program.defaultNonNull() && inferedNonNull();
+  syn boolean FieldDeclaration.addNonNull() =
+    !Program.defaultNonNull() && inferedNonNull();
+  syn boolean MethodDecl.addNonNull() =
+    !Program.defaultNonNull() && inferedNonNull();
+
+  syn boolean ParameterDeclaration.addNullable() =
+    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+  syn boolean VariableDeclaration.addNullable() =
+    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+  syn boolean FieldDeclaration.addNullable() =
+    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+  syn boolean MethodDecl.addNullable() =
+    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+  
+  /*
+  // refine pretty printer to include infered annotations
+  refine PrettyPrint public void ParameterDeclaration.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append(Program.nonNullAnnotation());
+    if(inferedRaw())
+      s.append(Program.rawAnnotation());
+    PrettyPrint.ParameterDeclaration.toString(s);
+  }
+  refine PrettyPrint public void VariableDeclaration.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append(Program.nonNullAnnotation());
+    if(inferedRaw())
+      s.append(Program.rawAnnotation());
+    PrettyPrint.VariableDeclaration.toString(s);
+  }
+  refine PrettyPrint public void FieldDeclaration.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append(Program.nonNullAnnotation());
+    if(inferedRaw())
+      s.append(Program.rawAnnotation());
+    PrettyPrint.FieldDeclaration.toString(s);
+  }
+  refine PrettyPrint public void MethodDecl.toString(StringBuffer s) {
+    if(addNonNull())
+      s.append(Program.nonNullAnnotation());
+    if(inferedRaw())
+      s.append(Program.rawAnnotation());
+    if(inferedRawThis())
+      s.append(Program.rawThisAnnotation());
+    PrettyPrint.MethodDecl.toString(s);
+  }
+  */
+
 
 }
 

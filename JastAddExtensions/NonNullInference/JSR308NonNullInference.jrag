@@ -14,6 +14,8 @@ aspect JSR308NonNullInference {
       // emit annotations 
       if(addNonNull())
         p.write(Program.nonNullAnnotation());
+      if(addNullable())
+        p.write(Program.nullableAnnotation());
       if(inferedRaw() && !getModifiers().isRawObjectType())
         p.write(Program.rawAnnotation());
 

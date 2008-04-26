@@ -2,7 +2,7 @@ package test;
 
 public class I13 {
   public static void main(String[] args) {
-    System.out.println("overriding, merge return values, rawness, and parameters");
+    System.out.println("overriding: covariant return types, merge rawness and parameters");
   }
 }
 
