@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 996ms, memory usage: 8078928.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1022ms, memory usage: 8308552.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1615ms, memory usage: 14040264.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1638ms, memory usage: 11028528.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1106ms, memory usage: 14356080.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1126ms, memory usage: 14475912.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 856ms, memory usage: 5244104.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 864ms, memory usage: 10738592.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,7 +36,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1523ms, memory usage: 10168208.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1569ms, memory usage: 4829640.
 
 
 Running test 419: new/privilegedAspects/privileged aspects
@@ -59,7 +59,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1380ms, memory usage: 16279032.
+FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1399ms, memory usage: 10816728.
 
 
 Running test 420: new/advice on field gets in privileged aspects
@@ -82,22 +82,22 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1179ms, memory usage: 22807288.
+FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1164ms, memory usage: 17344952.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1c1796a.foo calls Outer$Inner@10a535d.mi
+Outer@17cd6fc.foo calls Outer$Inner@10659ed.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@10a535d.mi calls java.io.PrintStream@e72735.println
+Outer$Inner@10659ed.mi calls java.io.PrintStream@1f9ff23.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1c1796a.foo calls Outer$InnerRandom@f74fda.nextHook
+Outer@17cd6fc.foo calls Outer$InnerRandom@ee9f22.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@f74fda.nextHook calls Outer$InnerRandom@f74fda.next
+Outer$InnerRandom@ee9f22.nextHook calls Outer$InnerRandom@ee9f22.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1c1796a.foo calls X.nextInt
+Outer@17cd6fc.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -108,7 +108,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$7$around$942(AroundInnerCalls13.java:41)
+	at A.inline$3$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -117,7 +117,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4679ms, memory usage: 9931696.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4625ms, memory usage: 9912928.
 
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
@@ -140,7 +140,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1335ms, memory usage: 10238432.
+FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1274ms, memory usage: 15223720.
 
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
@@ -163,7 +163,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 2052ms, memory usage: 16624944.
+FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1854ms, memory usage: 11603960.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -186,7 +186,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6516ms, memory usage: 9593920.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 5879ms, memory usage: 9575936.
 
 
 Running test 525: new/privilegedAspects/access to all members of class and inner class from privileged aspect
@@ -209,7 +209,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1603ms, memory usage: 12620944.
+FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1588ms, memory usage: 17542616.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -232,7 +232,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1229ms, memory usage: 10268984.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1214ms, memory usage: 13228696.
 
 
 Running test 579: new/privilegedAspects/access to private members from privileged aspect
@@ -255,7 +255,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1524ms, memory usage: 11682216.
+FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1506ms, memory usage: 11083232.
 
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
@@ -278,7 +278,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1818ms, memory usage: 14474192.
+FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1623ms, memory usage: 13695632.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -302,26 +302,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 4001ms, memory usage: 9495184.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3911ms, memory usage: 9499360.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1047ms, memory usage: 9387632.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1065ms, memory usage: 14522840.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1125ms, memory usage: 13484528.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1142ms, memory usage: 8539800.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1569ms, memory usage: 9372320.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1595ms, memory usage: 11037144.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -329,7 +329,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1432ms, memory usage: 14762464.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1436ms, memory usage: 16429768.
 
 
 Running test 781: new/verifyError/privileged aspect main verify error
@@ -352,7 +352,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1211ms, memory usage: 15707744.
+FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1210ms, memory usage: 11178984.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -368,7 +368,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:567)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 865ms, memory usage: 12520336.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 783ms, memory usage: 13170920.
 
 
 Running test 881: bugs/privilege/packageProtected/priviledged aspects calling methods from advice
@@ -391,7 +391,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1466ms, memory usage: 15687040.
+FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1428ms, memory usage: 10462704.
 
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
@@ -414,13 +414,13 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1211ms, memory usage: 16851488.
+FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1219ms, memory usage: 11459360.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 431ms, memory usage: 8660024.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 422ms, memory usage: 8396976.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -429,7 +429,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 953ms, memory usage: 5373856.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 958ms, memory usage: 12673328.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -454,7 +454,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4938ms, memory usage: 9335568.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4858ms, memory usage: 9346640.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -475,582 +475,16 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1173ms, memory usage: 7827760.
-
-
-Running test 1019: abctests/tracematches/Tracematches: Basic tracematch
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Basic.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1019: "abctests/tracematches/Tracematches: Basic tracematch" failed in 2441ms, memory usage: 16702872.
-
-
-Running test 1020: abctests/tracematches/Tracematches: Plus and Star
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PlusStar.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1020: "abctests/tracematches/Tracematches: Plus and Star" failed in 1876ms, memory usage: 17391896.
-
-
-Running test 1021: abctests/tracematches/Tracematches: Alternation
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Alternation.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1021: "abctests/tracematches/Tracematches: Alternation" failed in 1913ms, memory usage: 17801344.
-
-
-Running test 1022: abctests/tracematches/Tracematches: Basic variable bindings
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Variables.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1022: "abctests/tracematches/Tracematches: Basic variable bindings" failed in 2309ms, memory usage: 12314496.
-
-
-Running test 1023: abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1
-Commandline: abc -d abctests/tracematches/failsafe -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe/leaktest/LeakTest.java abctests/tracematches/failsafe/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1023: "abctests/tracematches/failsafe/Failsafe enumerations: tracematch version 1" failed in 2086ms, memory usage: 19285920.
-
-
-Running test 1024: abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2
-Commandline: abc -d abctests/tracematches/failsafe3 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe3/leaktest/LeakTest.java abctests/tracematches/failsafe3/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1024: "abctests/tracematches/failsafe3/Failsafe enumerations: tracematch version 2" failed in 1771ms, memory usage: 19316768.
-
-
-Running test 1025: abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3
-Commandline: abc -d abctests/tracematches/failsafe4 -warn-unused-advice:off -ext abc.tm abctests/tracematches/failsafe4/leaktest/LeakTest.java abctests/tracematches/failsafe4/tracematches/FailSafeEnum.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1025: "abctests/tracematches/failsafe4/Failsafe enumerations: tracematch version 3" failed in 1895ms, memory usage: 19225272.
-
-
-Running test 1026: abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/Test.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1026: "abctests/tracematches/Tracematches: NoSuchMethodError (shouldn't occur..)" failed in 1596ms, memory usage: 11979952.
-
-
-Running test 1027: abctests/tracematches/Tracematches: Negative bindings should be checked correctly...
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NegBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1027: "abctests/tracematches/Tracematches: Negative bindings should be checked correctly..." failed in 1815ms, memory usage: 19156648.
-
-
-Running test 1028: abctests/tracematches/Tracematches: states where x may be bound or unbound
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MoreBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1028: "abctests/tracematches/Tracematches: states where x may be bound or unbound" failed in 1796ms, memory usage: 19130688.
-
-
-Running test 1029: abctests/tracematches/Tracematches: Basic around tracematch
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/BasicAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1029: "abctests/tracematches/Tracematches: Basic around tracematch" failed in 1596ms, memory usage: 19078312.
-
-
-Running test 1030: abctests/tracematches/Tracematches: Around match with multiple bindings.
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/MultipleBindingsForAround.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1030: "abctests/tracematches/Tracematches: Around match with multiple bindings." failed in 1560ms, memory usage: 12008792.
-
-
-Running test 1031: abctests/tracematches/Tracematches: Testing the `perthread' modifier
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PerThread.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1031: "abctests/tracematches/Tracematches: Testing the `perthread' modifier" failed in 1719ms, memory usage: 19965936.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1210ms, memory usage: 14398920.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/AdviseSelf.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 1577ms, memory usage: 19440416.
-
-
-Running test 1033: abctests/tracematches/Tracematches: Testing if pointcuts in symbols
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IfTest.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in symbols" failed in 1526ms, memory usage: 19270568.
-
-
-Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NoUpdates.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" failed in 1401ms, memory usage: 11742448.
-
-
-Running test 1035: abctests/tracematches/Tracematches: Basic primitive variable bindings
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimitiveVariables.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1035: "abctests/tracematches/Tracematches: Basic primitive variable bindings" failed in 1846ms, memory usage: 19466560.
-
-
-Running test 1036: abctests/tracematches/Tracematches: Primitive bindings don't cause errors.
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/IntVariable.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1036: "abctests/tracematches/Tracematches: Primitive bindings don't cause errors." failed in 1310ms, memory usage: 18447368.
-
-
-Running test 1037: abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly...
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/PrimNegBindings.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1037: "abctests/tracematches/Tracematches: Primitive negative bindings should be checked correctly..." failed in 1471ms, memory usage: 19232848.
-
-
-Running test 1038: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1038: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Strings)" failed in 1376ms, memory usage: 11579328.
-
-
-Running test 1039: abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs2.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1039: "abctests/tracematches/Tracematches: Non-collectable weak bindings work correctly (Objects)" failed in 1342ms, memory usage: 18428328.
-
-
-Running test 1040: abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/CollWeakRefs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1040: "abctests/tracematches/Tracematches: Collectable weak bindings work correctly (Strings)" failed in 1443ms, memory usage: 19203976.
-
-
-Running test 1041: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs3.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1041: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v1)" failed in 1409ms, memory usage: 19219728.
-
-
-Running test 1042: abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs4.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1042: "abctests/tracematches/Tracematches: Non-collectable weak bindings are propagated correctly (Objects - v2)" failed in 1427ms, memory usage: 12067744.
-
-
-Running test 1043: abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm -debug clashHashCodes abctests/tracematches/NCWeakRefs5.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1043: "abctests/tracematches/Tracematches: Non-collectable weak bindings from collectable bindings" failed in 1430ms, memory usage: 19203032.
+Compilation produced unexpected warnings:
+Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
+ All identity statements should occur at the start of a Jimple method. abc
+will try to fix this, but really it's a bug in code generation.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2369ms, memory usage: 10535128.
 
 
 Running test 1127: om/omantstest/omants test
@@ -1073,7 +507,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1127: "om/omantstest/omants test" failed in 14944ms, memory usage: 44383728.
+FAIL: Test 1127: "om/omantstest/omants test" failed in 14784ms, memory usage: 44050560.
 
 
 Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
@@ -1096,36 +530,13 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1206ms, memory usage: 19417848.
+FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1212ms, memory usage: 14318000.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 771ms, memory usage: 8812160.
-
-
-Running test 1209: abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol
-Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/TracematchAndIfAndPPVs.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
-	at abc.main.Main.run(Main.java:406)
-	at abc.testing.TestCase.runTest(TestCase.java:289)
-	at abc.testing.Main.doCase(Main.java:288)
-	at abc.testing.Main.main(Main.java:122)
-Caused by: java.lang.RuntimeException: @this-assignment statement should precede all other statements
-	at soot.jimple.JimpleBody.validateIdentityStatements(JimpleBody.java:97)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.baf.BafBody.<init>(BafBody.java:66)
-	at soot.baf.Baf.newBody(Baf.java:555)
-	at soot.PackManager.runBodyPacks(PackManager.java:790)
-	at soot.PackManager.runBodyPacks(PackManager.java:452)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
-	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
-	... 4 more
-FAIL: Test 1209: "abctests/tracematches/Using private pointcut variables in an if(..) in a TM symbol" failed in 1285ms, memory usage: 15213848.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 777ms, memory usage: 14659064.
 
 
