@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1022ms, memory usage: 8308552.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1076ms, memory usage: 8269400.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,13 @@ Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1638ms, memory usage: 11028528.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 1668ms, memory usage: 4876952.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1126ms, memory usage: 14475912.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1110ms, memory usage: 14344088.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +26,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 864ms, memory usage: 10738592.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 853ms, memory usage: 5867128.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,7 +36,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1569ms, memory usage: 4829640.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 1559ms, memory usage: 9881016.
 
 
 Running test 419: new/privilegedAspects/privileged aspects
@@ -59,7 +59,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1399ms, memory usage: 10816728.
+FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed in 1411ms, memory usage: 16325880.
 
 
 Running test 420: new/advice on field gets in privileged aspects
@@ -82,22 +82,22 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1164ms, memory usage: 17344952.
+FAIL: Test 420: "new/advice on field gets in privileged aspects" failed in 1156ms, memory usage: 10595672.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@17cd6fc.foo calls Outer$Inner@10659ed.mi
+Outer@7854b4.foo calls Outer$Inner@fbd1.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@10659ed.mi calls java.io.PrintStream@1f9ff23.println
+Outer$Inner@fbd1.mi calls java.io.PrintStream@946ef6.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@17cd6fc.foo calls Outer$InnerRandom@ee9f22.nextHook
+Outer@7854b4.foo calls Outer$InnerRandom@b27f40.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@ee9f22.nextHook calls Outer$InnerRandom@ee9f22.next
+Outer$InnerRandom@b27f40.nextHook calls Outer$InnerRandom@b27f40.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@17cd6fc.foo calls X.nextInt
+Outer@7854b4.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -108,7 +108,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at org.aspectj.testing.Tester.check(Tester.java:145)
 	at org.aspectj.testing.Tester.check(Tester.java:133)
 	at AroundInnerCalls13.shadow$7(AroundInnerCalls13.java:7)
-	at A.inline$3$around$942(AroundInnerCalls13.java:41)
+	at A.inline$7$around$942(AroundInnerCalls13.java:41)
 	at AroundInnerCalls13.main(AroundInnerCalls13.java:5)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -117,7 +117,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4625ms, memory usage: 9912928.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 4588ms, memory usage: 9921816.
 
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
@@ -140,7 +140,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1274ms, memory usage: 15223720.
+FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" failed in 1309ms, memory usage: 15077192.
 
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
@@ -163,7 +163,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1854ms, memory usage: 11603960.
+FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" failed in 1793ms, memory usage: 16628288.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -177,7 +177,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$31$around$1600(AroundAll.java:199)
+	at A.inline$28$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -186,7 +186,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 5879ms, memory usage: 9575936.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6019ms, memory usage: 9587720.
 
 
 Running test 525: new/privilegedAspects/access to all members of class and inner class from privileged aspect
@@ -209,7 +209,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1588ms, memory usage: 17542616.
+FAIL: Test 525: "new/privilegedAspects/access to all members of class and inner class from privileged aspect" failed in 1541ms, memory usage: 17547704.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -232,7 +232,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1214ms, memory usage: 13228696.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 1230ms, memory usage: 11904640.
 
 
 Running test 579: new/privilegedAspects/access to private members from privileged aspect
@@ -255,7 +255,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1506ms, memory usage: 11083232.
+FAIL: Test 579: "new/privilegedAspects/access to private members from privileged aspect" failed in 1491ms, memory usage: 11562272.
 
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
@@ -278,7 +278,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1623ms, memory usage: 13695632.
+FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed in 1569ms, memory usage: 10974656.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -302,26 +302,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3911ms, memory usage: 9499360.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 3962ms, memory usage: 9510800.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1065ms, memory usage: 14522840.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1044ms, memory usage: 14538176.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1142ms, memory usage: 8539800.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1274ms, memory usage: 13482432.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1595ms, memory usage: 11037144.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 1545ms, memory usage: 10357008.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -329,7 +329,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1436ms, memory usage: 16429768.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 1407ms, memory usage: 15759992.
 
 
 Running test 781: new/verifyError/privileged aspect main verify error
@@ -352,7 +352,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1210ms, memory usage: 11178984.
+FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed in 1186ms, memory usage: 10346752.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -368,7 +368,7 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:567)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 783ms, memory usage: 13170920.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 837ms, memory usage: 12947240.
 
 
 Running test 881: bugs/privilege/packageProtected/priviledged aspects calling methods from advice
@@ -391,7 +391,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1428ms, memory usage: 10462704.
+FAIL: Test 881: "bugs/privilege/packageProtected/priviledged aspects calling methods from advice" failed in 1453ms, memory usage: 15895552.
 
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
@@ -414,13 +414,13 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1219ms, memory usage: 11459360.
+FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" failed in 1205ms, memory usage: 10593992.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 422ms, memory usage: 8396976.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 416ms, memory usage: 8691632.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -429,7 +429,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 958ms, memory usage: 12673328.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 943ms, memory usage: 9994208.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -454,7 +454,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at abc.testing.TestCase.runTest(TestCase.java:405)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4858ms, memory usage: 9346640.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 4529ms, memory usage: 9357600.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -475,7 +475,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1210ms, memory usage: 14398920.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1001ms, memory usage: 12504464.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -484,7 +484,7 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2369ms, memory usage: 10535128.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2079ms, memory usage: 17436816.
 
 
 Running test 1127: om/omantstest/omants test
@@ -507,7 +507,7 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1127: "om/omantstest/omants test" failed in 14784ms, memory usage: 44050560.
+FAIL: Test 1127: "om/omantstest/omants test" failed in 14968ms, memory usage: 36569440.
 
 
 Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
@@ -530,13 +530,13 @@ Caused by: java.lang.RuntimeException: @this-assignment statement should precede
 	at abc.main.CompileSequence.optimize(CompileSequence.java:263)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:129)
 	... 4 more
-FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1212ms, memory usage: 14318000.
+FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed in 1191ms, memory usage: 19397624.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 777ms, memory usage: 14659064.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 748ms, memory usage: 19739304.
 
 
