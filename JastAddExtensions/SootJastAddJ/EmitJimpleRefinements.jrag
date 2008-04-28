@@ -20,35 +20,85 @@ aspect EmitJimpleRefinements {
     boolean needAddclass = false;
     SootClass sc = null;
     if(Scene.v().containsClass(jvmName())) {
-        SootClass cl = Scene.v().getSootClass(jvmName());
-        //fix for test case 653: if there's a class java.lang.Object etc. on the command line
-        //prefer that class over the Coffi class that may already have been loaded from bytecode
-		try {
-			MethodSource source = cl.getMethodByName("<clinit>").getSource();
-			if(source instanceof CoffiMethodSource) {
-				Scene.v().removeClass(cl);
-				needAddclass = true;
-			}
-		} catch(RuntimeException e) {
-			//method not found
-		}    	
-    	sc = cl;       
+      SootClass cl = Scene.v().getSootClass(jvmName());
+      //fix for test case 653: if there's a class java.lang.Object etc. on the command line
+      //prefer that class over the Coffi class that may already have been loaded from bytecode
+      try {
+        MethodSource source = cl.getMethodByName("<clinit>").getSource();
+        if(source instanceof CoffiMethodSource) {
+          Scene.v().removeClass(cl);
+          needAddclass = true;
+        }
+      } catch(RuntimeException e) {
+        //method not found
+      }    	
+      sc = cl;       
     }
     else {
-    	needAddclass = true;
+      needAddclass = true;
     }
     if(needAddclass) {
-        if(Program.verbose())
-      		System.out.println("Creating from source " + jvmName());        
-    	sc = new SootClass(jvmName(), sootTypeModifiers());
-    	Scene.v().addClass(sc);
+      if(Program.verbose())
+        System.out.println("Creating from source " + jvmName());        
+      sc = new SootClass(jvmName(), sootTypeModifiers());
+      sc.setResolvingLevel(SootClass.DANGLING);
+      Scene.v().addClass(sc);
     } 
     sc.setApplicationClass();
     if (!isObject())
       sc.setSuperclass(typeObject().getSootClassDecl());
     sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
     return sc;
-  }  
+  }
+
+  refine EmitJimple eq InterfaceDecl.sootClass() {
+    if(Program.verbose())
+      System.out.println("Creating from source " + jvmName());
+    SootClass sc;
+    if(Scene.v().containsClass(jvmName()))
+      sc = Scene.v().getSootClass(jvmName());
+    else {
+      sc = new SootClass(jvmName(), sootTypeModifiers());
+      sc.setResolvingLevel(SootClass.DANGLING);
+      Scene.v().addClass(sc);
+    }
+    sc.setApplicationClass();
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    return sc;
+  }
+
+  refine GenericsCodegen eq TypeDecl.getSootClassDecl() {
+    if(erasure() != this)
+      return erasure().getSootClassDecl();
+    if(compilationUnit().fromSource()) {
+      return sootClass();
+    }
+    else {
+      if(Program.verbose())
+        System.out.println("Loading .class file " + jvmName());
+
+      RefType type = (RefType) Scene.v().getRefType(jvmName());
+      SootClass toReturn = null;
+      if( type != null ) toReturn = type.getSootClass();
+      if(toReturn != null) {
+        return toReturn;
+      } 
+      SootClass c = new SootClass(jvmName());
+      c.setPhantom(true);
+      Scene.v().addClass(c);
+      return c;
+
+
+      //  return Scene.v().getSootClass(jvmName());
+      /*
+         SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
+         sc.setLibraryClass();
+         return sc;
+       */
+    }
+
+  }
+
 
 
   refine EmitJimple public void MethodDecl.jimplify2() {
@@ -146,7 +196,11 @@ aspect EmitJimpleRefinements {
     getBlock().jimplify2(b);
     b.add(Jimple.v().newReturnVoidStmt());
   }
-  
+
+  public void ClassDecl.jimplify1phase1() {
+    constructors();
+    super.jimplify1phase1();
+  }
   
   public void ASTNode.collectTypesToHierarchy(Collection<Type> set) {
 	 for(int i = 0; i < getNumChild(); i++)
@@ -154,39 +208,44 @@ aspect EmitJimpleRefinements {
   }
   
   public void Expr.collectTypesToHierarchy(Collection<Type> set) {
-	 super.collectTypesToHierarchy(set);
-	 // collect all expr types that are reference types
-	 // select the element type in case it is an array type
-	 if(type().elementType().isReferenceType() && !type().isUnknown())
-	  set.add(type().elementType().erasure().getSootClassDecl().getType());
+	  super.collectTypesToHierarchy(set);
+	  // collect all expr types that are reference types
+	  // select the element type in case it is an array type
+    addDependencyIfNeeded(set, type());
+  }
+
+  protected void Expr.addDependencyIfNeeded(Collection<Type> set, TypeDecl type) {
+    type = type.elementType().erasure();
+    if(type.isReferenceType() && !type.isUnknown())
+      set.add(type.getSootClassDecl().getType());
   }
 	
   public void ASTNode.collectTypesToSignatures(Collection<Type> set) {
 	 for(int i = 0; i < getNumChild(); i++)
 	  getChild(i).collectTypesToSignatures(set);
   }
-	
+
   public void VarAccess.collectTypesToSignatures(Collection<Type> set) {
 	 super.collectTypesToSignatures(set);
    // if we access a field declaration we load the qualifying type 
    // the element type is used to cater for reading the field length in an array type
 	 if(decl() instanceof FieldDeclaration)
-	  set.add(fieldQualifierType().elementType().erasure().getSootClassDecl().getType());
+     addDependencyIfNeeded(set, fieldQualifierType());
   }
   public void MethodAccess.collectTypesToSignatures(Collection<Type> set) {
 	 super.collectTypesToSignatures(set);
-	 set.add(methodQualifierType().elementType().erasure().getSootClassDecl().getType());
+   addDependencyIfNeeded(set, methodQualifierType());
   }
   public void ClassInstanceExpr.collectTypesToSignatures(Collection<Type> set) {
 	 super.collectTypesToSignatures(set);
-	 set.add(decl().erasedConstructor().hostType().erasure().getSootClassDecl().getType());
+   addDependencyIfNeeded(set, decl().erasedConstructor().hostType());
   }
   public void ConstructorAccess.collectTypesToSignatures(Collection<Type> set) {
 	 super.collectTypesToSignatures(set);
-	 set.add(decl().erasedConstructor().hostType().erasure().getSootClassDecl().getType());
+   addDependencyIfNeeded(set, decl().erasedConstructor().hostType());
   }
   public void SuperConstructorAccess.collectTypesToSignatures(Collection<Type> set) {
 	 super.collectTypesToSignatures(set);
-	 set.add(decl().erasedConstructor().hostType().erasure().getSootClassDecl().getType());
+   addDependencyIfNeeded(set, decl().erasedConstructor().hostType());
   }
 }
