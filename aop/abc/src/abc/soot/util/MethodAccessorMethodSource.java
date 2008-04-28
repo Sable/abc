@@ -102,7 +102,7 @@ public class MethodAccessorMethodSource implements soot.MethodSource {
         else {
             base = generateLocal(receiver.getType());
             body.getLocals().add(base);
-            body.getUnits().add(soot.jimple.Jimple.v().newIdentityStmt(base, Jimple.v().newThisRef(receiver.getType())));
+            body.getUnits().addFirst(soot.jimple.Jimple.v().newIdentityStmt(base, Jimple.v().newThisRef(receiver.getType())));
             invoke = soot.jimple.Jimple.v().newSpecialInvokeExpr(base, meth, methParams);
         }
 

@@ -92,7 +92,7 @@ public class FieldSetAccessorMethodSource implements soot.MethodSource {
         }
         else {
             fieldRef = soot.jimple.Jimple.v().newInstanceFieldRef(fieldBase, field);
-            body.getUnits().add(soot.jimple.Jimple.v().newIdentityStmt(fieldBase, Jimple.v().newThisRef(receiver.getType())));
+            body.getUnits().addFirst(soot.jimple.Jimple.v().newIdentityStmt(fieldBase, Jimple.v().newThisRef(receiver.getType())));
         }
         //System.out.println("fieldRef: "+fieldRef+" assignLocal: "+assignLocal);
         soot.jimple.AssignStmt assign = soot.jimple.Jimple.v().newAssignStmt(fieldRef, assignLocal);
