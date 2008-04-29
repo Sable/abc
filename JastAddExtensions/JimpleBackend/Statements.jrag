@@ -113,19 +113,27 @@ aspect Statements {
   syn lazy soot.jimple.Stmt IfStmt.else_branch_label() = newLabel();
   syn lazy soot.jimple.Stmt IfStmt.then_branch_label() = newLabel();
   public void IfStmt.jimplify2(Body b) {
-    soot.jimple.Stmt elseBranch = else_branch_label();
-    soot.jimple.Stmt thenBranch = then_branch_label();
     soot.jimple.Stmt endBranch = newLabel();
-    getCondition().emitEvalBranch(b);
-    b.addLabel(thenBranch);
-    getThen().jimplify2(b);
-    if(getThen().canCompleteNormally() && hasElse()) {
-      b.setLine(this);
-      b.add(Jimple.v().newGotoStmt(endBranch));
+    if(getCondition().isConstant()) {
+      if(getCondition().isTrue())
+        getThen().jimplify2(b);
+      else if(getCondition().isFalse() && hasElse())
+        getElse().jimplify2(b);
     }
-    b.addLabel(elseBranch);
-    if(hasElse())
-      getElse().jimplify2(b);
+    else {
+      soot.jimple.Stmt elseBranch = else_branch_label();
+      soot.jimple.Stmt thenBranch = then_branch_label();
+      getCondition().emitEvalBranch(b);
+      b.addLabel(thenBranch);
+      getThen().jimplify2(b);
+      if(getThen().canCompleteNormally() && hasElse()) {
+        b.setLine(this);
+        b.add(Jimple.v().newGotoStmt(endBranch));
+      }
+      b.addLabel(elseBranch);
+      if(hasElse())
+        getElse().jimplify2(b);
+    }
     b.addLabel(endBranch);
   }
 
@@ -297,32 +305,46 @@ aspect Statements {
   public void TryStmt.jimplify2(Body b) {
     b.addLabel(label_begin());
     getBlock().jimplify2(b);
-    b.addLabel(label_block_end());
-    emitFinallyCode(b);
-    b.setLine(this);
-    b.add(Jimple.v().newGotoStmt(label_end()));
-
-    soot.jimple.Stmt catches = newLabel();
-    b.addLabel(catches);
-    for(int i = 0; i < getNumCatchClause(); i++) {
-      getCatchClause(i).jimplify2(b);
+    soot.jimple.Stmt label_block_end = null;
+    soot.jimple.Stmt label_end = null;
+    if(getBlock().canCompleteNormally()) {
+      if(hasFinally() && getNumCatchClause() != 0) {
+        label_block_end = label_block_end();
+        b.addLabel(label_block_end);
+      }
       emitFinallyCode(b);
-      b.setLine(getCatchClause(i));
-      b.add(Jimple.v().newGotoStmt(label_end()));
+      b.setLine(this);
+      if((!hasFinally() || getFinally().canCompleteNormally()) && (getNumCatchClause() != 0 || needsFinallyTrap()))
+        b.add(Jimple.v().newGotoStmt(label_end = label_end()));
+    }
+    if(getNumCatchClause() != 0) {
+      if(label_block_end == null)
+        label_block_end = getCatchClause(0).label();
+      for(int i = 0; i < getNumCatchClause(); i++) {
+        getCatchClause(i).jimplify2(b);
+        if(getCatchClause(i).getBlock().canCompleteNormally()) {
+          emitFinallyCode(b);
+          b.setLine(getCatchClause(i));
+          if(!hasFinally() || getFinally().canCompleteNormally())
+            b.add(Jimple.v().newGotoStmt(label_end = label_end()));
+        }
+      }
     }
     if(hasFinally() && needsFinallyTrap()) {
       b.addLabel(label_exception_handler());
       emitExceptionHandler(b);
       b.setLine(getFinally());
-      b.add(Jimple.v().newGotoStmt(label_end()));
+      //if(getFinally().canCompleteNormally())
+      //  b.add(Jimple.v().newGotoStmt(label_end()));
     }
-    b.addLabel(label_end());
+    if(label_end != null)
+      b.addLabel(label_end);
     // createExceptionTable
     for(int i = 0; i < getNumCatchClause(); i++) {
       b.addTrap(
         getCatchClause(i).getParameter().type(),
         label_begin(),
-        label_block_end(),
+        label_block_end,
         getCatchClause(i).label()
       );
     }
@@ -330,15 +352,24 @@ aspect Statements {
       b.addTrap(
         typeThrowable(),
         label_begin(),
+        label_exception_handler(),
+        label_exception_handler()
+      );
+      /*
+      b.addTrap(
+        typeThrowable(),
+        label_begin(),
         label_block_end(),
         label_exception_handler()
       );
+      if(getNumCatchClause() > 0)
       b.addTrap(
         typeThrowable(),
         catches,
         label_exception_handler(),
         label_exception_handler()
       );
+      */
     }
   }
 
@@ -360,11 +391,11 @@ aspect Statements {
     b.setLine(this);
     b.add(Jimple.v().newIdentityStmt(l, Jimple.v().newCaughtExceptionRef()));
     emitFinallyCode(b);
-    if(hasFinally() && getFinally().canCompleteNormally()) {
+    //if(hasFinally() && getFinally().canCompleteNormally()) {
       soot.jimple.Stmt throwStmt = Jimple.v().newThrowStmt(l);
       throwStmt.addTag(new soot.tagkit.ThrowCreatedByCompilerTag());
       b.add(throwStmt);
-    }
+    //}
   }
 
   syn lazy soot.jimple.Stmt SynchronizedStmt.label_begin() = newLabel();

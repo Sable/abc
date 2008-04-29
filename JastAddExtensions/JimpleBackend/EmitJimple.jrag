@@ -140,7 +140,15 @@ aspect EmitJimple {
       getChild(i).jimplify1phase2();
   }
 
+
+  public SootMethod TypeDecl.clinit = null;
+
   public void TypeDecl.jimplify1phase2() {
+    if(hasClinit()) {
+      clinit = new SootMethod("<clinit>", new ArrayList(), soot.VoidType.v(), soot.Modifier.STATIC, new ArrayList());
+      getSootClassDecl().addMethod(clinit);
+    }
+
     for(Iterator iter = nestedTypes().iterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
       typeDecl.jimplify1phase2();
@@ -154,6 +162,10 @@ aspect EmitJimple {
 
   public void ClassDecl.jimplify1phase2() {
     SootClass sc = getSootClassDecl();
+    sc.setResolvingLevel(SootClass.DANGLING);
+    sc.setModifiers(sootTypeModifiers());
+    sc.setApplicationClass();
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
     if(hasSuperclass()) {
       sc.setSuperclass(superclass().getSootClassDecl());
     }
@@ -164,11 +176,17 @@ aspect EmitJimple {
     }
     if(isNestedType())
       sc.setOuterClass(enclosingType().getSootClassDecl());
+    sc.setResolvingLevel(SootClass.HIERARCHY);
     super.jimplify1phase2();
+    sc.setResolvingLevel(SootClass.SIGNATURES);
   }
 
   public void InterfaceDecl.jimplify1phase2() {
     SootClass sc = getSootClassDecl();
+    sc.setResolvingLevel(SootClass.DANGLING);
+    sc.setModifiers(sootTypeModifiers());
+    sc.setApplicationClass();
+    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
     sc.setSuperclass(typeObject().getSootClassDecl());
     for(Iterator iter = superinterfacesIterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
@@ -177,7 +195,9 @@ aspect EmitJimple {
     }
     if(isNestedType())
       sc.setOuterClass(enclosingType().getSootClassDecl());
+    sc.setResolvingLevel(SootClass.HIERARCHY);
     super.jimplify1phase2();
+    sc.setResolvingLevel(SootClass.SIGNATURES);
   }
   
   public void BodyDecl.jimplify1phase2() {
@@ -277,7 +297,23 @@ aspect EmitJimple {
       list.add(getParameter(i).type().getSootType());
     return hostType().getSootClassDecl().getMethod("<init>", list, soot.VoidType.v());
   }
-  syn lazy SootMethodRef ConstructorDecl.sootRef() = sootMethod().makeRef();
+  syn lazy SootMethodRef ConstructorDecl.sootRef() {
+    ArrayList parameters = new ArrayList();
+    TypeDecl typeDecl = hostType();
+    if(typeDecl.needsEnclosing())
+      parameters.add(typeDecl.enclosingType().getSootType());
+    if(typeDecl.needsSuperEnclosing()) {
+      TypeDecl superClass = ((ClassDecl)typeDecl).superclass();
+      parameters.add(superClass.enclosingType().getSootType());
+    }
+    for(int i = 0; i < getNumParameter(); i++)
+      parameters.add(getParameter(i).type().getSootType());
+    SootMethodRef ref = Scene.v().makeConstructorRef(
+      hostType().getSootClassDecl(),
+      parameters
+    );
+    return ref;
+  }
   
 
   public void FieldDeclaration.jimplify1phase2() {
@@ -304,7 +340,8 @@ aspect EmitJimple {
   }
   public SootField FieldDeclaration.sootField;
   syn lazy SootFieldRef FieldDeclaration.sootRef() =
-    hostType().getSootClassDecl().getField(name(), type().getSootType()).makeRef();
+    Scene.v().makeFieldRef(hostType().getSootClassDecl(), name(), type().getSootType(), isStatic());
+   // hostType().getSootClassDecl().getField(name(), type().getSootType()).makeRef();
   
   public void Program.jimplify2() {
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
@@ -528,11 +565,8 @@ aspect EmitJimple {
     return false;
   }
 
-  public void TypeDecl.jimplify2() {
-    super.jimplify2();
-    if(hasClinit()) {
-      SootMethod m = new SootMethod("<clinit>", new ArrayList(), soot.VoidType.v(), soot.Modifier.STATIC, new ArrayList());
-      getSootClassDecl().addMethod(m);
+  public void TypeDecl.jimplify2clinit() {
+      SootMethod m = clinit;
       JimpleBody body = Jimple.v().newBody(m);
       m.setActiveBody(body);
       Body b = new Body(this, body, this);
@@ -557,7 +591,12 @@ aspect EmitJimple {
         }
       }
       b.add(Jimple.v().newReturnVoidStmt());
-    }
+  }
+
+  public void TypeDecl.jimplify2() {
+    super.jimplify2();
+    if(clinit != null)
+      jimplify2clinit();
     for(Iterator iter = nestedTypes().iterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
       typeDecl.jimplify2();
@@ -577,6 +616,7 @@ aspect EmitJimple {
     }
     if(!tags.isEmpty())
       getSootClassDecl().addTag(new soot.tagkit.InnerClassAttribute(tags));
+    getSootClassDecl().setResolvingLevel(SootClass.BODIES);
   }
 
   syn lazy Collection TypeDecl.innerClassesAttributeEntries() {
