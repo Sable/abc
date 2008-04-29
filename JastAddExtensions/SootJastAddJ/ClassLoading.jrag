@@ -9,8 +9,13 @@ aspect ClassLoading {
     srcPrec = i;
   }
 
+  public boolean CompilationUnit.isResolved = false;
+
   private HashMap Program.loadedCompilationUnit = new HashMap();
-  public CompilationUnit Program.findCachedOrLoadCompilationUnit(String fileName) {
+  public boolean Program.hasLoadedCompilationUnit(String fileName) {
+    return loadedCompilationUnit.containsKey(fileName);
+  }
+  public CompilationUnit Program.getCachedOrLoadCompilationUnit(String fileName) {
     if(loadedCompilationUnit.containsKey(fileName))
       return (CompilationUnit)loadedCompilationUnit.get(fileName);
     addSourceFile(fileName);

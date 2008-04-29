@@ -16,6 +16,10 @@ import soot.coffi.method_info;
 import soot.coffi.CONSTANT_Utf8_info;
 
 aspect EmitJimpleRefinements {
+
+  refine GenericsCodegen eq TypeDecl.getSootType() =
+    RefType.v(erasure().jvmName());
+
   refine EmitJimple eq ClassDecl.sootClass() {
     boolean needAddclass = false;
     SootClass sc = null;
@@ -40,30 +44,18 @@ aspect EmitJimpleRefinements {
     if(needAddclass) {
       if(Program.verbose())
         System.out.println("Creating from source " + jvmName());        
-      sc = new SootClass(jvmName(), sootTypeModifiers());
+      sc = new SootClass(jvmName());
       sc.setResolvingLevel(SootClass.DANGLING);
       Scene.v().addClass(sc);
     } 
-    sc.setApplicationClass();
-    if (!isObject())
-      sc.setSuperclass(typeObject().getSootClassDecl());
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
     return sc;
   }
 
   refine EmitJimple eq InterfaceDecl.sootClass() {
     if(Program.verbose())
       System.out.println("Creating from source " + jvmName());
-    SootClass sc;
-    if(Scene.v().containsClass(jvmName()))
-      sc = Scene.v().getSootClass(jvmName());
-    else {
-      sc = new SootClass(jvmName(), sootTypeModifiers());
-      sc.setResolvingLevel(SootClass.DANGLING);
-      Scene.v().addClass(sc);
-    }
-    sc.setApplicationClass();
-    sc.addTag(new soot.tagkit.SourceFileTag(sourceNameWithoutPath()));
+    SootClass sc = SootResolver.v().makeClassRef(jvmName());
+    sc.setModifiers(sootTypeModifiers()); // turn it into an interface
     return sc;
   }
 
@@ -76,6 +68,8 @@ aspect EmitJimpleRefinements {
     else {
       if(Program.verbose())
         System.out.println("Loading .class file " + jvmName());
+      return SootResolver.v().makeClassRef(jvmName());
+      /*
 
       RefType type = (RefType) Scene.v().getRefType(jvmName());
       SootClass toReturn = null;
@@ -87,6 +81,7 @@ aspect EmitJimpleRefinements {
       c.setPhantom(true);
       Scene.v().addClass(c);
       return c;
+      */
 
 
       //  return Scene.v().getSootClass(jvmName());
@@ -163,7 +158,8 @@ aspect EmitJimpleRefinements {
       b.add(Jimple.v().newAssignStmt(
         Jimple.v().newInstanceFieldRef(
           b.emitThis(hostType()),
-          hostType().getSootClassDecl().getField("val$" + v.name(), v.type().getSootType()).makeRef()
+          Scene.v().makeFieldRef(hostType().getSootClassDecl(), "val$" + v.name(), v.type().getSootType(), false)
+          //hostType().getSootClassDecl().getField("val$" + v.name(), v.type().getSootType()).makeRef()
         ),
         p.local
       ));
@@ -197,11 +193,6 @@ aspect EmitJimpleRefinements {
     b.add(Jimple.v().newReturnVoidStmt());
   }
 
-  public void ClassDecl.jimplify1phase1() {
-    constructors();
-    super.jimplify1phase1();
-  }
-  
   public void ASTNode.collectTypesToHierarchy(Collection<Type> set) {
 	 for(int i = 0; i < getNumChild(); i++)
 	  getChild(i).collectTypesToHierarchy(set);
@@ -217,7 +208,7 @@ aspect EmitJimpleRefinements {
   protected void Expr.addDependencyIfNeeded(Collection<Type> set, TypeDecl type) {
     type = type.elementType().erasure();
     if(type.isReferenceType() && !type.isUnknown())
-      set.add(type.getSootClassDecl().getType());
+      set.add(type.getSootType());
   }
 	
   public void ASTNode.collectTypesToSignatures(Collection<Type> set) {
