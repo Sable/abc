@@ -27,46 +27,17 @@
         <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
         <run class="InterfaceAndInner"></run>
     </ajc-test>
-<ajc-test title="privileged aspects" num="419" keywords="from-resolved_10x" dir="new/privilegedAspects">
-        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
-        <run class="main.Main"></run>
-    </ajc-test>
-<ajc-test title="advice on field gets in privileged aspects" num="420" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOnPrivileged.java"></compile>
-        <run class="AdviceOnPrivileged"></run>
-    </ajc-test>
 <ajc-test title="around advice on calls within inner classes (including protected method calls) 1" num="440" keywords="from-resolved_10x" dir="new">
         <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
         <run class="AroundInnerCalls13"></run>
-    </ajc-test>
-<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" num="464" keywords="from-resolved_10x" dir="new">
-        <compile files="Fixes.java"></compile>
-        <run class="Fixes"></run>
-    </ajc-test>
-<ajc-test title="Priviledged aspect methods are missing for privates. [eachobject]" num="482" keywords="from-resolved_10x" dir="new/foemmel">
-        <compile files="TheAspect.java,TheObject.java">
-        </compile>
-        <run class="TheObject"></run>
     </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
     </ajc-test>
-<ajc-test title="access to all members of class and inner class from privileged aspect" pr="35593" num="525" keywords="from-resolved_10x" dir="new/privilegedAspects">
-        <compile files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"></compile>
-        <run class="driver.PrivilegedAspect"></run>
-    </ajc-test>
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
-    </ajc-test>
-<ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
-        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
-        <run class="driver.PR555"></run>
-    </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
-        <compile files="InnerClassInPrivilegedAspect.java"></compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
@@ -94,23 +65,12 @@
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
-<ajc-test title="privileged aspect main verify error" pr="36673" num="781" dir="new/verifyError">
-        <compile files="Privilege.java"></compile>
-        <run class="Privilege"></run>
-    </ajc-test>
 <ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
         <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
             <message text="no sources specified" kind="error"></message>
             <message text="bad sourceroot" kind="error"></message>
             <message text="Usage" kind="abort"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="priviledged aspects calling methods from advice" pr="42711" num="881" dir="bugs/privilege/packageProtected"> 
-        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
-    </ajc-test>
-<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
-        <compile files="PrivilegedParsing.java"></compile>
-        <run class="PrivilegedParsing"></run>
     </ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
@@ -132,14 +92,6 @@
 <ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
         <run class="AdviseSelf"></run>
-    </ajc-test>
-<ajc-test title="omants test" num="1127" keywords="openmod" dir="om/omantstest">
-        <compile options="-ext,abc.om" files="automaton/Automaton.java,       benchmark/Main.java,       command/Command.java,       command/Comment.java,       command/Condition.java,       command/Drop.java,       command/Flip.java,       command/Foe.java,       command/FoeHome.java,       command/FoeMarker.java,       command/FoeWithFood.java,       command/Food.java,       command/Friend.java,       command/FriendWithFood.java,       command/Home.java,       command/Mark.java,       command/Marker.java,       command/Move.java,       command/PickUp.java,       command/Rock.java,       command/Sense.java,       command/Turn.java,       command/Unmark.java,       debug/CheckScores.java,       debug/CommandTracer.java,       debug/LiveAnts.java,       debug/WorldDumper.java,       main/Main.java,       model/Ant.java,       model/Cell.java,       model/Color.java,       model/Combat.java,       model/Resting.java,       model/World.java,       modules/Modules.java,       parser/CommandParser.java,       profile/NoNewInCmd.java,       profile/NoNewInRound.java,       style/PublicAccessFields.java,       viewer/Board.java,       viewer/Bug.java,       viewer/Hexagon.java,       viewer/Update.java,       viewer/Viewer.java">
-        </compile>
-    </ajc-test>
-<ajc-test title="Problem with privileged ITD access to private fields" num="1207" dir="abctests/bugs">
-        <compile files="ITDPrivate.java"></compile>
-        <run class="ITDPrivate"></run>
     </ajc-test>
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>

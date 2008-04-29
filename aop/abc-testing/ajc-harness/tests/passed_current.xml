@@ -2472,6 +2472,14 @@
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
     </ajc-test>
+<ajc-test title="privileged aspects" num="419" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="advice on field gets in privileged aspects" num="420" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnPrivileged.java"></compile>
+        <run class="AdviceOnPrivileged"></run>
+    </ajc-test>
 <ajc-test title="Two anonymous classes in the same scope" num="421" keywords="from-resolved_10x" dir="new">
         <compile files="TwoAnonymous.java"></compile>
         <run class="TwoAnonymous"></run>
@@ -2645,6 +2653,10 @@
         <compile files="ArrayCasts.java"></compile>
         <run class="ArrayCasts"></run>
     </ajc-test>
+<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" num="464" keywords="from-resolved_10x" dir="new">
+        <compile files="Fixes.java"></compile>
+        <run class="Fixes"></run>
+    </ajc-test>
 <ajc-test title="Dave Binkley's problem with eachcflowroot. [eachcflow]" num="465" keywords="from-resolved_10x" dir="new">
         <compile files="Binkley2.java"></compile>
         <run class="Binkley2"></run>
@@ -2712,6 +2724,11 @@
 <ajc-test title="inheritance, around advice and abstract pointcuts [eachobject] (still)" pr="317" num="481" keywords="from-resolved_10x" dir="new">
         <compile files="OverridingPointcuts.java"></compile>
         <run class="OverridingPointcuts"></run>
+    </ajc-test>
+<ajc-test title="Priviledged aspect methods are missing for privates. [eachobject]" num="482" keywords="from-resolved_10x" dir="new/foemmel">
+        <compile files="TheAspect.java,TheObject.java">
+        </compile>
+        <run class="TheObject"></run>
     </ajc-test>
 <ajc-test title="exceptions thrown and caught in advice, particularly try+proceed" num="483" keywords="from-resolved_10x" dir="new">
         <compile files="TryAndProceed.java"></compile>
@@ -2876,6 +2893,10 @@
             <jamessage line="20" kind="error"></jamessage>
             <jamessage line="28" kind="error"></jamessage>
         </compile>
+    </ajc-test>
+<ajc-test title="access to all members of class and inner class from privileged aspect" pr="35593" num="525" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"></compile>
+        <run class="driver.PrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="cflow alone with around produces compiler bcg StackOverflowError" num="526" keywords="from-resolved_10x" dir="new">
         <compile files="CflowAlone.java"></compile>
@@ -3148,6 +3169,14 @@
 <ajc-test title="second arg in formal on shared joinpoint with pcd if() causes verify error ??" pr="554" num="578" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR554.java"></compile>
         <run class="PR554"></run>
+    </ajc-test>
+<ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
+        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
+        <run class="driver.PR555"></run>
+    </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
@@ -4074,6 +4103,10 @@
             <message line="14" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="privileged aspect main verify error" pr="36673" num="781" dir="new/verifyError">
+        <compile files="Privilege.java"></compile>
+        <run class="Privilege"></run>
+    </ajc-test>
 <ajc-test title="Internal compiler error with thisJoinPoint.getStaticPart()" pr="36564" num="782" dir="bugs">
         <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"></compile>
         <run class="tjpStaticPart.Test"></run>
@@ -4505,6 +4538,9 @@
         <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
         <run class="de.test.MyMain"></run>
     </ajc-test>
+<ajc-test title="priviledged aspects calling methods from advice" pr="42711" num="881" dir="bugs/privilege/packageProtected"> 
+        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
+    </ajc-test>
 <ajc-test title="No error on overloaded pointcuts in class" pr="49457" num="882" dir="bugs" abccomment="abc messages differ but ok. ODM 19/07/04">
         <compile files="OverloadedPointcutsInClass.java">
         	<ajcmessage text="duplicate pointcut name: pc1" line="3" kind="error"></ajcmessage>
@@ -4587,6 +4623,10 @@
 		  <message line="6" kind="error"></message>
 		  <message line="8" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
+        <compile files="PrivilegedParsing.java"></compile>
+        <run class="PrivilegedParsing"></run>
     </ajc-test>
 <ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" num="898" dir="bugs" abccomment="ITD field initialisers should not appear in the exec jps of host constructors, but                     they do appear in initialisation jps of the same. Need to discuss with Ganesh.                     ODM 19/07/04">
         <compile files="AfterThrowingCtor.java">
@@ -5677,6 +5717,10 @@
         </compile>
         <run class="ToTestMain"></run>
     </ajc-test>
+<ajc-test title="omants test" num="1127" keywords="openmod" dir="om/omantstest">
+        <compile options="-ext,abc.om" files="automaton/Automaton.java,       benchmark/Main.java,       command/Command.java,       command/Comment.java,       command/Condition.java,       command/Drop.java,       command/Flip.java,       command/Foe.java,       command/FoeHome.java,       command/FoeMarker.java,       command/FoeWithFood.java,       command/Food.java,       command/Friend.java,       command/FriendWithFood.java,       command/Home.java,       command/Mark.java,       command/Marker.java,       command/Move.java,       command/PickUp.java,       command/Rock.java,       command/Sense.java,       command/Turn.java,       command/Unmark.java,       debug/CheckScores.java,       debug/CommandTracer.java,       debug/LiveAnts.java,       debug/WorldDumper.java,       main/Main.java,       model/Ant.java,       model/Cell.java,       model/Color.java,       model/Combat.java,       model/Resting.java,       model/World.java,       modules/Modules.java,       parser/CommandParser.java,       profile/NoNewInCmd.java,       profile/NoNewInRound.java,       style/PublicAccessFields.java,       viewer/Board.java,       viewer/Bug.java,       viewer/Hexagon.java,       viewer/Update.java,       viewer/Viewer.java">
+        </compile>
+    </ajc-test>
 <ajc-test title="Second inherit precedence test (checks for precedence of aspects of included modules)" num="1128" keywords="openmod" dir="om/inheritprectest2">
         <compile options="-ext,abc.om" files="Modules.java,             InheritPrecTestMain2.java">
         </compile>
@@ -5789,6 +5833,10 @@
 <ajc-test title="Preinit weaving problem (test 2)" num="1206" dir="abctests/bugs">
         <compile files="Preinit2.java"></compile>
         <run class="Preinit2"></run>
+    </ajc-test>
+<ajc-test title="Problem with privileged ITD access to private fields" num="1207" dir="abctests/bugs">
+        <compile files="ITDPrivate.java"></compile>
+        <run class="ITDPrivate"></run>
     </ajc-test>
 <ajc-test title="Using private pointcut variables in an if(..) in a TM symbol" num="1209" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="TracematchAndIfAndPPVs.java"></compile>
