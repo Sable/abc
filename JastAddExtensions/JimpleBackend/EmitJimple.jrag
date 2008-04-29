@@ -156,6 +156,7 @@ aspect EmitJimple {
     for(int i = 0; i < getNumBodyDecl(); i++)
       if(getBodyDecl(i).generate())
         getBodyDecl(i).jimplify1phase2();
+    addAttributes();
   }
 
   syn boolean BodyDecl.generate() = true;
@@ -223,6 +224,7 @@ aspect EmitJimple {
       m.addTag(new soot.tagkit.ParamNamesTag(paramnames));
       sootMethod = m;
     }
+    addAttributes();
   }
   public void ConstructorDecl.jimplify1phase2() {
     String name = "<init>";
@@ -253,6 +255,7 @@ aspect EmitJimple {
       m.addTag(new soot.tagkit.ParamNamesTag(paramnames));
       sootMethod = m;
     }
+    addAttributes();
   }
 
   public SootMethod MethodDecl.sootMethod;
@@ -337,6 +340,7 @@ aspect EmitJimple {
       }
       sootField = f;
     }
+    addAttributes();
   }
   public SootField FieldDeclaration.sootField;
   syn lazy SootFieldRef FieldDeclaration.sootRef() =
@@ -616,7 +620,11 @@ aspect EmitJimple {
     }
     if(!tags.isEmpty())
       getSootClassDecl().addTag(new soot.tagkit.InnerClassAttribute(tags));
+    addAttributes();
     getSootClassDecl().setResolvingLevel(SootClass.BODIES);
+  }
+
+  public void ASTNode.addAttributes() {
   }
 
   syn lazy Collection TypeDecl.innerClassesAttributeEntries() {
