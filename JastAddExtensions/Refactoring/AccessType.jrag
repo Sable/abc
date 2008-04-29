@@ -278,7 +278,7 @@ aspect AccessType {
 		TypeAccessInfo acc = accessType(td);
 		if(acc == null) return null;
 		if(isQualified())
-			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),
+			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(), qualifier().type(),
 										      ambiguous, getCompleteQualifier());
 		else
 			return acc.computeAccess(getNamingContext(), ambiguous);

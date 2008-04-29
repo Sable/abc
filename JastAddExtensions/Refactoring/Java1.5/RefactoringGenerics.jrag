@@ -37,9 +37,9 @@ aspect RefactoringGenerics {
 		return new ParTypeAccess(source_acc, arg_accs);
 	}
 
-	public Access ParTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
+	public Access ParTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
 			boolean ambiguous, Expr qualifier) {
-		Access source_acc = sourceAccess.computeQualifiedAccess(ctxt, ambiguous, qualifier);
+		Access source_acc = sourceAccess.computeQualifiedAccess(ctxt, qual_type, ambiguous, qualifier);
 		if(source_acc == null) return null;
 		List<Access> arg_accs = new List<Access>();
 		for(TypeDecl td : target.getArgumentTypes()) {

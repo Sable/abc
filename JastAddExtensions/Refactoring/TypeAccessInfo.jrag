@@ -95,15 +95,15 @@ aspect TypeAccessInfo {
 		}
 	}
 	
-	public abstract Access TypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
+	public abstract Access TypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
 			boolean ambiguous, Expr qualifier);
 	
-	public Access LocalTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
+	public Access LocalTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
 			boolean ambiguous, Expr qualifier) {
 		return null;
 	}
 
-	public Access TopLevelTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
+	public Access TopLevelTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
 			boolean ambiguous, Expr qualifier) {
 		String pkg = target.packageName();
 		if(qualifier instanceof PackageAccess) {
@@ -115,10 +115,10 @@ aspect TypeAccessInfo {
 		return null;
 	}
 	
-	public Access MemberTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, 
+	public Access MemberTypeAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type,
 			boolean ambiguous, Expr qualifier) {
 		if(qualifier.isTypeAccess()) {
-			TypeDecl td = qualifier.type();
+			TypeDecl td = qual_type;
 			// TODO: check that td is something we want to qualify with
 			//       (i.e., td == source, or maybe an ancestor class)
 			if(ambiguous && !source.memberFields(target.name()).isEmpty())
