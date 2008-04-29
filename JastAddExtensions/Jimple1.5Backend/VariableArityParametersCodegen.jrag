@@ -75,14 +75,12 @@ aspect VariableArityParametersCodegen {
     Transformations.ConstructorAccess.transformation();
   }
 
-  /*
   public static final int Modifiers.ACC_VARARGS = 0x0080;
-
-  refine Flags eq MethodDecl.flags() {
-    int res = Flags.MethodDecl.flags();
+  
+  refine EmitJimple eq MethodDecl.sootTypeModifiers() {
+    int res = EmitJimple.MethodDecl.sootTypeModifiers();
     if(isVariableArity())
       res |= Modifiers.ACC_VARARGS;
     return res;
   }
-  */
 }

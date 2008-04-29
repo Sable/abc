@@ -318,16 +318,14 @@ aspect GenericsCodegen {
   public void ParMethodDecl.transformation() { }
 
 
-  /*
   public static final int Modifiers.ACC_BRIDGE = 0x0040;
-
-  eq BridgeMethodDecl.flags() {
-    int res = super.flags();
+  eq BridgeMethodDecl.sootTypeModifiers() {
+    int res = super.sootTypeModifiers();
     res |= Modifiers.ACC_BRIDGE;
-    res |= Modifiers.ACC_SYNTHETIC;
+    res |= Flags.ACC_SYNTHETIC;
     return res;
   }
-  */
+  
   syn SimpleSet TypeDecl.bridgeCandidates(String signature) = SimpleSet.emptySet;
   eq InterfaceDecl.bridgeCandidates(String signature) = ancestorMethods(signature);
   eq ClassDecl.bridgeCandidates(String signature) {
