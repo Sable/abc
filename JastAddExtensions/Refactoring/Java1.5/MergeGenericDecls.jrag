@@ -142,11 +142,11 @@ aspect MergeGenericDecls {
 					return qualifier.qualifiesAccess(ma);
 				else
 					return null;
-			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
+			if(source == bend && source.sameSourceDeclAs(qual_type))
 				return qualifier.qualifiesAccess(ma);
 			else if(!qualifier.isTypeAccess()) {
-				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-				if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()))
+				Access upper = ctxt.accessType(source, false);
+				if(upper != null && bend.sameSourceDeclAs(qual_type))
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(ma);
 			}
 			return null;
