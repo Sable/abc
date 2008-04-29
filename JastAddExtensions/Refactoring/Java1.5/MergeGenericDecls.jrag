@@ -155,14 +155,14 @@ aspect MergeGenericDecls {
 		}
 	}
 	
-	refine VarAccessInfo public Access VarAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier) {
+	refine VarAccessInfo public Access VarAccessInfo.computeQualifiedAccess(NamingContext outer, TypeDecl qual_type, Expr qualifier) {
 		VarAccess va = new VarAccess(target.name());
 		if(needsQualifier) {
-			if(source == bend && source.sameSourceDeclAs(ctxt.enclosingType()))
+			if(source == bend && source.sameSourceDeclAs(qual_type))
 				return qualifier.qualifiesAccess(va);
 			else if(!qualifier.isTypeAccess()) {
-				Access upper = ctxt.unqualifiedCtxt().accessType(source, false);
-				if(upper != null && bend.sameSourceDeclAs(ctxt.enclosingType()))
+				Access upper = outer.accessType(source, false);
+				if(upper != null && bend.sameSourceDeclAs(qual_type))
 					return new ParExpr(new CastExpr(upper, qualifier)).qualifiesAccess(va);
 			}
 			return null;

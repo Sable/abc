@@ -273,8 +273,8 @@ aspect AccessVariable {
 		VarAccessInfo acc = accessVariable(v);
 		if(acc == null) return null;
 		if(isQualified())
-			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),
-										  	  getCompleteQualifier());
+			return acc.computeQualifiedAccess(unqualifiedScope().getNamingContext(),
+			       qualifier().type(), getCompleteQualifier());
 		else
 			return acc.computeAccess(getNamingContext());
 	}
