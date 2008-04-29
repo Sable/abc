@@ -114,7 +114,7 @@ aspect AccessMethod {
 		MethodAccessInfo acc = accessMethod(md);
 		if(acc == null) return null;
 		if(isQualified())
-			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(),
+			return acc.computeQualifiedAccess(qualifier().type().getMemberNamingContext(), qualifier().type(),
 										      getCompleteQualifier(), args);
 		else
 			return acc.computeAccess(getNamingContext(), args);

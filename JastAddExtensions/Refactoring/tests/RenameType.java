@@ -47,7 +47,7 @@ public abstract class RenameType extends TestCase {
         } catch(IOException ioe) {
         	fail("unable to read from file: "+ioe);
         } catch(RefactoringException rfe) {
-        	rfe.printStackTrace();
+        	//rfe.printStackTrace();
         	assertFalse(new File(outdir).exists());
         }
 	}

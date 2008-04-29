@@ -107,6 +107,7 @@ aspect TypeAccessInfo {
 			boolean ambiguous, Expr qualifier) {
 		String pkg = target.packageName();
 		if(qualifier instanceof PackageAccess) {
+			// this probably never happens, since package accesses are merged into type accesses anyway
 			PackageAccess pkgacc = (PackageAccess)qualifier;
 			if(pkgacc.packageName().equals(pkg) &&
 					!ctxt.isShadowed(pkgacc, ambiguous))

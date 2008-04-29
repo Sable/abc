@@ -132,13 +132,13 @@ aspect MergeGenericDecls {
 		plugInNewAccess(acc);
 	}
 	
-	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, Expr qualifier, List args) {
+	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type, Expr qualifier, List args) {
 		MethodAccess ma = new MethodAccess(target.name(), args);
 		if(needsQualifier) {
 			if(!target.isStatic())
 				return null;
 			if(ctxt.isStatic())
-				if(qualifier.isTypeAccess() && qualifier.type().sameSourceDeclAs(source))
+				if(qualifier.isTypeAccess() && qual_type.sameSourceDeclAs(source))
 					return qualifier.qualifiesAccess(ma);
 				else
 					return null;

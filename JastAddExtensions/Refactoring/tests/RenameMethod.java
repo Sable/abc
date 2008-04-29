@@ -35,10 +35,15 @@ public abstract class RenameMethod extends TestCase {
         	try {
         		String res = new String(TestHelper.wholeFile(resfile));
         		if(!res.equals(prog.toString()+"\n")) {
-        			res = new String(TestHelper.wholeFile(alt_resfile));
-            		assertEquals(res, prog.toString()+"\n");
+        			if(new File(alt_resfile).exists()) {
+        				res = new String(TestHelper.wholeFile(alt_resfile));
+        				assertEquals(res, prog.toString()+"\n");
+        			} else {
+        				assertEquals(res, prog.toString()+"\n");
+        			}
         		}
         	} catch(FileNotFoundException fnfe) {
+        		//fnfe.printStackTrace();
         		fail(name+" was supposed to fail but yielded result");
         	}
         } catch(IOException ioe) {
