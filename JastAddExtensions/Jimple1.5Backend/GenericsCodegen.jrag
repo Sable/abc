@@ -298,8 +298,10 @@ aspect GenericsCodegen {
     if(typeDecl == null)
       return null;
     typeDecl = typeDecl.erasure();
-    if(!typeDecl.memberMethods(decl().name()).contains(decl()))
-      return decl().hostType();
+    MethodDecl m = decl().sourceMethodDecl();
+    Collection methods = typeDecl.memberMethods(m.name());
+    if(!methods.contains(decl()) && !methods.contains(m))
+      return m.hostType();
     return typeDecl.erasure();
   }
 
@@ -373,8 +375,15 @@ aspect GenericsCodegen {
                     )
                   );
             }
+            List modifiersList = new List();
+            if(isPublic())
+              modifiersList.add(new Modifier("public"));
+            else if(isProtected())
+              modifiersList.add(new Modifier("protected"));
+            else if(isPrivate())
+              modifiersList.add(new Modifier("private"));
             MethodDecl bridge = new BridgeMethodDecl(
-                (Modifiers)getModifiers().fullCopy(),
+                new Modifiers(modifiersList),
                 erased.type().erasure().createBoundAccess(),
                 erased.name(),
                 parameters,
@@ -399,6 +408,9 @@ aspect GenericsCodegen {
     erasure().getSootClassDecl() : EmitJimple.TypeDecl.getSootClassDecl();
   refine EmitJimple eq TypeDecl.sootClass() = erasure() != this ?
     erasure().sootClass() : EmitJimple.TypeDecl.sootClass();
+
+  refine EmitJimple eq TypeDecl.getSootType() = erasure() != this ?
+    erasure().getSootType() : EmitJimple.TypeDecl.getSootType();
 
   eq LUBType.getSootClassDecl() = typeObject().getSootClassDecl();
   eq GLBType.getSootClassDecl() = typeObject().getSootClassDecl();
