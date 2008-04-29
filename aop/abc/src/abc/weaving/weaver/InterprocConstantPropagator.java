@@ -220,14 +220,12 @@ public class InterprocConstantPropagator {
 					usedLocals.add(b.getValue());
 			}
 			
-			int index=0;
 			for (Iterator itSt=statements.iterator(); itSt.hasNext();) {
 				Stmt s=(Stmt)itSt.next();
 				if (s instanceof IdentityStmt) {
 					IdentityStmt ids=(IdentityStmt)s;
 					if (ids.getRightOp() instanceof ParameterRef) {
-						result[index]=usedLocals.contains(ids.getLeftOp());
-						index++;
+						result[((ParameterRef)ids.getRightOp()).getIndex()]=usedLocals.contains(ids.getLeftOp());
 					}
 				} else
 					break;
