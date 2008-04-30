@@ -47,6 +47,7 @@ aspect AnnotationsCodegen {
     getModifiers().addRuntimeInvisibleAnnotationsAttribute(c);
     addRuntimeVisibleParameterAnnotationsAttribute(c);
     addRuntimeInvisibleParameterAnnotationsAttribute(c);
+    addSourceLevelParameterAnnotationsAttribute(c);
     getModifiers().addSourceOnlyAnnotations(c);
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
@@ -60,6 +61,7 @@ aspect AnnotationsCodegen {
     getModifiers().addRuntimeInvisibleAnnotationsAttribute(c);
     addRuntimeVisibleParameterAnnotationsAttribute(c);
     addRuntimeInvisibleParameterAnnotationsAttribute(c);
+    addSourceLevelParameterAnnotationsAttribute(c);
     getModifiers().addSourceOnlyAnnotations(c);
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
@@ -78,7 +80,7 @@ aspect AnnotationsCodegen {
   }
   */
 
-  public void Modifiers.addSourceOnlyAnnotations(ArrayList c) {
+  public void Modifiers.addSourceOnlyAnnotations(Collection c) {
     for(int i = 0; i < getNumModifier(); i++) {
       if(getModifier(i) instanceof Annotation) {
         Annotation a = (Annotation)getModifier(i);
@@ -88,7 +90,7 @@ aspect AnnotationsCodegen {
       }
     }
   }
-  public void Modifiers.addAllAnnotations(ArrayList c) {
+  public void Modifiers.addAllAnnotations(Collection c) {
     for(int i = 0; i < getNumModifier(); i++) {
       if(getModifier(i) instanceof Annotation) {
         Annotation a = (Annotation)getModifier(i);
@@ -260,6 +262,21 @@ aspect AnnotationsCodegen {
     return annotations;
   }
 
+  public void MethodDecl.addSourceLevelParameterAnnotationsAttribute(Collection c) {
+    boolean foundVisibleAnnotations = false;
+    Collection annotations = new ArrayList(getNumParameter());
+    for(int i = 0; i < getNumParameter(); i++) {
+      getParameter(i).getModifiers().addSourceOnlyAnnotations(c);
+    }
+  }
+  public void ConstructorDecl.addSourceLevelParameterAnnotationsAttribute(Collection c) {
+    boolean foundVisibleAnnotations = false;
+    Collection annotations = new ArrayList(getNumParameter());
+    for(int i = 0; i < getNumParameter(); i++) {
+      getParameter(i).getModifiers().addSourceOnlyAnnotations(c);
+    }
+  }
+
   // Add ACC_ANNOTATION flag to generated class file
   public static final int Modifiers.ACC_ANNOTATION = 0x2000;
   eq AnnotationDecl.sootTypeModifiers() = super.sootTypeModifiers() | Modifiers.ACC_ANNOTATION;
@@ -276,7 +293,7 @@ aspect AnnotationsCodegen {
   }
 
   // 4.8.15
-  public void Annotation.appendAsAttributeTo(ArrayList list) {
+  public void Annotation.appendAsAttributeTo(Collection list) {
       soot.tagkit.AnnotationTag tag = new soot.tagkit.AnnotationTag(decl().typeDescriptor(), getNumElementValuePair());
       ArrayList elements = new ArrayList(getNumElementValuePair());
       for(int i = 0; i < getNumElementValuePair(); i++) {
@@ -289,7 +306,7 @@ aspect AnnotationsCodegen {
   }
 
   // 4.8.15.1
-  public void ElementValue.appendAsAttributeTo(ArrayList list, String name) {
+  public void ElementValue.appendAsAttributeTo(Collection list, String name) {
     throw new Error(getClass().getName() + " does not support appendAsAttributeTo(Attribute buf)");
   }
 
@@ -297,7 +314,7 @@ aspect AnnotationsCodegen {
   eq ClassDecl.typeDescriptor() = "L" + jvmName().replace('.', '/') + ";";
   eq InterfaceDecl.typeDescriptor() = "L" + jvmName().replace('.', '/') + ";";
 
-  public void ElementConstantValue.appendAsAttributeTo(ArrayList list, String name) {
+  public void ElementConstantValue.appendAsAttributeTo(Collection list, String name) {
     if(getExpr().isConstant() && !getExpr().type().isEnumDecl()) {
       char kind = getExpr().type().isString() ? 's' : getExpr().type().typeDescriptor().charAt(0);
       TypeDecl type = getExpr().type();
@@ -323,12 +340,12 @@ aspect AnnotationsCodegen {
       list.add(new soot.tagkit.AnnotationEnumElem(v.type().typeDescriptor(), v.name(), 'e', name));
     }
   }
-  public void ElementAnnotationValue.appendAsAttributeTo(ArrayList list, String name) {
+  public void ElementAnnotationValue.appendAsAttributeTo(Collection list, String name) {
     ArrayList elemVals = new ArrayList();
     getAnnotation().appendAsAttributeTo(elemVals);
     list.add(new soot.tagkit.AnnotationAnnotationElem((soot.tagkit.AnnotationTag)elemVals.get(0), '@', name));
   }
-  public void ElementArrayValue.appendAsAttributeTo(ArrayList list, String name) {
+  public void ElementArrayValue.appendAsAttributeTo(Collection list, String name) {
     ArrayList elemVals = new ArrayList();
     for(int i = 0; i < getNumElementValue(); i++)
       getElementValue(i).appendAsAttributeTo(elemVals, "default");
