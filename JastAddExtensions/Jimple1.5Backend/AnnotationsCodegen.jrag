@@ -81,15 +81,23 @@ aspect AnnotationsCodegen {
   */
 
   public void Modifiers.addSourceOnlyAnnotations(Collection c) {
-    for(int i = 0; i < getNumModifier(); i++) {
-      if(getModifier(i) instanceof Annotation) {
-        Annotation a = (Annotation)getModifier(i);
-        if(!a.isRuntimeVisible() && !a.isRuntimeInvisible()) {
-          a.appendAsAttributeTo(c);
-        }
-      }
+    if(new soot.options.JBOptions(soot.PhaseOptions.v().getPhaseOptions("jb")).
+       preserve_source_annotations()) {
+	    for(int i = 0; i < getNumModifier(); i++) {
+	      if(getModifier(i) instanceof Annotation) {
+	        Annotation a = (Annotation)getModifier(i);
+	        if(!a.isRuntimeVisible() && !a.isRuntimeInvisible()) {
+      		    soot.tagkit.VisibilityAnnotationTag tag = new soot.tagkit.VisibilityAnnotationTag(soot.tagkit.AnnotationConstants.SOURCE_VISIBLE);
+        		ArrayList elements = new ArrayList(1);
+        		a.appendAsAttributeTo(elements);
+        		tag.addAnnotation((soot.tagkit.AnnotationTag)elements.get(0));
+        		c.add(tag);
+	        }
+	      }
+	    }
     }
   }
+  
   public void Modifiers.addAllAnnotations(Collection c) {
     for(int i = 0; i < getNumModifier(); i++) {
       if(getModifier(i) instanceof Annotation) {
