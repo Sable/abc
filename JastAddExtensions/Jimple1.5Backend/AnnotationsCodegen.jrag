@@ -8,11 +8,21 @@
  */
 
 aspect AnnotationsCodegen {
+  public void AnnotatedCompilationUnit.jimplify1phase2() {
+    super.jimplify1phase2();
+    ArrayList c = new ArrayList();
+    getModifiers().addAllAnnotations(c);
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
+      //host.addTag(tag);
+    }
+  }
   public void TypeDecl.addAttributes() {
     super.addAttributes();
-    Collection c = new ArrayList();
+    ArrayList c = new ArrayList();
     getModifiers().addRuntimeVisibleAnnotationsAttribute(c);
     getModifiers().addRuntimeInvisibleAnnotationsAttribute(c);
+    getModifiers().addSourceOnlyAnnotations(c);
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
       getSootClassDecl().addTag(tag);
@@ -21,9 +31,10 @@ aspect AnnotationsCodegen {
   
   public void FieldDeclaration.addAttributes() {
     super.addAttributes();
-    Collection c = new ArrayList();
+    ArrayList c = new ArrayList();
     getModifiers().addRuntimeVisibleAnnotationsAttribute(c);
     getModifiers().addRuntimeInvisibleAnnotationsAttribute(c);
+    getModifiers().addSourceOnlyAnnotations(c);
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
       sootField.addTag(tag);
@@ -31,11 +42,12 @@ aspect AnnotationsCodegen {
   }
   public void MethodDecl.addAttributes() {
     super.addAttributes();
-    Collection c = new ArrayList();
+    ArrayList c = new ArrayList();
     getModifiers().addRuntimeVisibleAnnotationsAttribute(c);
     getModifiers().addRuntimeInvisibleAnnotationsAttribute(c);
     addRuntimeVisibleParameterAnnotationsAttribute(c);
     addRuntimeInvisibleParameterAnnotationsAttribute(c);
+    getModifiers().addSourceOnlyAnnotations(c);
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
       sootMethod.addTag(tag);
@@ -43,14 +55,45 @@ aspect AnnotationsCodegen {
   }
   public void ConstructorDecl.addAttributes() {
     super.addAttributes();
-    Collection c = new ArrayList();
+    ArrayList c = new ArrayList();
     getModifiers().addRuntimeVisibleAnnotationsAttribute(c);
     getModifiers().addRuntimeInvisibleAnnotationsAttribute(c);
     addRuntimeVisibleParameterAnnotationsAttribute(c);
     addRuntimeInvisibleParameterAnnotationsAttribute(c);
+    getModifiers().addSourceOnlyAnnotations(c);
     for(Iterator iter = c.iterator(); iter.hasNext(); ) {
       soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
       sootMethod.addTag(tag);
+    }
+  }
+  /*
+  refine EmitJimple public void VariableDeclaration.jimplify2(Body b) {
+    EmitJimple.VariableDeclaration.jimplify2(b);
+    ArrayList c = new ArrayList();
+    getModifiers().addAllAnnotations(c);
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      soot.tagkit.Tag tag = (soot.tagkit.Tag)iter.next();
+      local.addTag(tag);
+    }
+  }
+  */
+
+  public void Modifiers.addSourceOnlyAnnotations(ArrayList c) {
+    for(int i = 0; i < getNumModifier(); i++) {
+      if(getModifier(i) instanceof Annotation) {
+        Annotation a = (Annotation)getModifier(i);
+        if(!a.isRuntimeVisible() && !a.isRuntimeInvisible()) {
+          a.appendAsAttributeTo(c);
+        }
+      }
+    }
+  }
+  public void Modifiers.addAllAnnotations(ArrayList c) {
+    for(int i = 0; i < getNumModifier(); i++) {
+      if(getModifier(i) instanceof Annotation) {
+        Annotation a = (Annotation)getModifier(i);
+        a.appendAsAttributeTo(c);
+      }
     }
   }
 
@@ -251,8 +294,8 @@ aspect AnnotationsCodegen {
   }
 
   syn String TypeDecl.typeDescriptor() = jvmName();
-  eq ClassDecl.typeDescriptor() = "L" + jvmName() + ";";
-  eq InterfaceDecl.typeDescriptor() = "L" + jvmName() + ";";
+  eq ClassDecl.typeDescriptor() = "L" + jvmName().replace('.', '/') + ";";
+  eq InterfaceDecl.typeDescriptor() = "L" + jvmName().replace('.', '/') + ";";
 
   public void ElementConstantValue.appendAsAttributeTo(ArrayList list, String name) {
     if(getExpr().isConstant() && !getExpr().type().isEnumDecl()) {
