@@ -797,7 +797,7 @@ public class Restructure {
 			// #8
 			if (rTo.getSootClass().isInterface())  {
 				if (Modifier.isFinal(rFrom.getSootClass().getModifiers()) &&
-					implementsInterfaceRecursive(rFrom.getSootClass(), rTo.getSootClass().getName()))
+					!implementsInterfaceRecursive(rFrom.getSootClass(), rTo.getSootClass().getName()))
 					return true;
 				else
 					return false; // from could implement this interface
@@ -805,7 +805,7 @@ public class Restructure {
 			// #10
 			if (rFrom.getSootClass().isInterface()) {  
 				if (Modifier.isFinal(rTo.getSootClass().getModifiers()) &&
-						implementsInterfaceRecursive(rTo.getSootClass(), rFrom.getSootClass().getName()))
+						!implementsInterfaceRecursive(rTo.getSootClass(), rFrom.getSootClass().getName()))
 					return true;
 				else						// from can implement other interfaces and
 					return false;			// a non-interface type, so cast could be possible
