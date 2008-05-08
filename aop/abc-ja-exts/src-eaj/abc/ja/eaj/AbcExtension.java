@@ -301,6 +301,9 @@ public class AbcExtension extends abc.ja.AbcExtension
 	        lexer.addPointcutKeyword("unlock", new LexerAction_c(new Integer(Terminals.PC_UNLOCK)));
         }
 
+        // keyword for the maybeShared pointcut
+        lexer.addPointcutKeyword("maybeShared", new LexerAction_c(new Integer(Terminals.PC_MAYBESHARED)));
+        
         if(!Debug.v().noContainsPointcut) {
         	//keyword for the "contains" pointcut extension
         	lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(Terminals.PC_CONTAINS)));
