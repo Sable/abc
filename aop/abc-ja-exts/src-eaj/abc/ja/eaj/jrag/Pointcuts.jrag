@@ -97,6 +97,10 @@ aspect Pointcuts {
     return new UnlockPointcut(pos());
   }
 
+  public Pointcut MaybeSharedPointcutExpr.pointcut() {
+    return new MaybeShared(pos());
+  }
+
   public Pointcut ArrayGetPointcutExpr.pointcut() {
     return new ArrayGet(pos());
   }

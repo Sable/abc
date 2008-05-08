@@ -111,6 +111,12 @@ PointcutExpr basic_pointcut_expr =
             ParserTrace.parserTrace("UNLOCK pointcut");
             return new UnlockPointcutExpr();
         :}
+	|
+        PC_MAYBESHARED LPAREN RPAREN
+        {:
+            ParserTrace.parserTrace("MAYBESHARED pointcut");
+            return new MaybeSharedPointcutExpr();
+        :}
     ;
 
 BodyDecl class_member_declaration =

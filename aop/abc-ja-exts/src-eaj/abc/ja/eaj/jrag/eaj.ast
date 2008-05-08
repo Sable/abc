@@ -21,3 +21,4 @@ ArraySetPointcutExpr : PointcutExpr;
 
 GlobalPointcutDecl : BodyDecl ::= Pattern PointcutExpr;
 
+MaybeSharedPointcutExpr: PointcutExpr; 
