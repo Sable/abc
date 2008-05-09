@@ -136,7 +136,9 @@
     <!-- the following test currently fails (and is therefore skipped), because double association is not
          yet handled correctly; an implementation to handle this case correctly exists, in branch
          svn+ssh://musketeer.comlab.ox.ac.uk/srv/svn/projects/branches/aop/abc/relAspectsNoDuplicateAssociation
-         however this implementation generates exponentially many disjuncts at the moment -->
+         however this implementation generates exponentially many disjuncts at the moment
+         see bug 95 for details
+         -->
     <ajc-test num="1404" dir="abctests/ra/doubleassociate"
         title="Double association">
         <abckeywords><skip/></abckeywords>
