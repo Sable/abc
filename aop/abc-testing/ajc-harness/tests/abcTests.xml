@@ -10678,5 +10678,120 @@
 	    title="Pointcut predecence, bug 81">
         <compile files="PointcutPrecedence.java"/>
     </ajc-test>
- 
+    
+        <ajc-test num="1219" dir="abctests/eaj/lock_unlock" 
+	    title="lock/unlock pointcuts">
+        <compile files="LockUnlock.java" options="-ext,abc.eaj,-debug,enableLockPointcuts"/>
+        <run class="LockUnlock"/>
+    </ajc-test>
+    
+     <ajc-test num="1220" dir="abctests/eaj/lock_unlock" 
+	    title="warning on restructuring for sync. methods and lock/unlock pointcuts">
+        <compile files="SyncMethods.java" options="-ext,abc.eaj,-debug,doValidate,-debug,enableLockPointcuts">
+	        <message kind="warning" line="15"/>
+	        <message kind="warning" line="15"/>
+        </compile>
+        <run class="SyncMethods"/>
+    </ajc-test>
+    
+    <ajc-test num="1301" dir="abctests/tracematches/wp-opt"
+        title="Tracematches (wp-tmopt): QuickCheck">
+        <compile files="QuickCheck.java" options="-ext,abc.tmwpopt,-laststage,quick,-warn-about-individual-shadows">
+	    	<message kind="warning" line="12"/>
+		</compile>
+		<run class="QuickCheck"/>
+    </ajc-test>		
+    
+        <ajc-test num="1401" dir="abctests/ra/typechecks"
+        title="Typechecks for relational aspects (1 of 2)">
+        <compile files="T1.java" options="-ext,abc.ra">
+	    	<message kind="error" line="7"/>
+	    	<message kind="error" line="14"/>
+	    	<message kind="error" line="37"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1402" dir="abctests/ra/typechecks"
+        title="Typechecks for relational aspects (2 of 2)">
+        <compile files="T8.java" options="-ext,abc.ra">
+	    	<message kind="error" line="8"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1403" dir="abctests/ra/equality"
+        title="Equality-example for relational aspects">
+        <compile files="Bit.java,Equality.java,Example.java" options="-ext,abc.ra,-warn-unused-advice:on">
+	    	<message kind="warning" line="18"/>
+		</compile>
+		<run class="Example"/>
+    </ajc-test>
+    
+    <!-- the following test currently fails (and is therefore skipped), because double association is not
+         yet handled correctly; an implementation to handle this case correctly exists, in branch
+         svn+ssh://musketeer.comlab.ox.ac.uk/srv/svn/projects/branches/aop/abc/relAspectsNoDuplicateAssociation
+         however this implementation generates exponentially many disjuncts at the moment
+         see bug 95 for details
+         -->
+    <ajc-test num="1404" dir="abctests/ra/doubleassociate"
+        title="Double association">
+        <abckeywords><skip/></abckeywords>
+        <compile files="DoubleAssociate.java" options="-ext,abc.ra,-warn-unused-advice:on"/>
+		<run class="DoubleAssociate"/>
+    </ajc-test>
+    
+    <ajc-test num="1420" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice ">
+        <compile files="DATypeChecks.java" options="-ext,abc.da">
+	    	<message kind="warning" line="12"/>
+	    	<message kind="warning" line="49"/>
+	    	<message kind="error" line="59"/>
+	    	<message kind="error" line="70"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1421" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (2)">
+        <compile files="DATypeChecks2.java" options="-ext,abc.da">
+	    	<message kind="error" line="9"/>
+	    	<message kind="error" line="17"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1422" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (3)">
+        <compile files="DATypeChecks3.java" options="-ext,abc.da">
+	    	<message kind="error" line="11"/>
+	    	<message kind="error" line="19"/>
+		</compile>
+    </ajc-test>
+    
+    <ajc-test num="1423" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (4)">
+        <compile files="DATypeChecks4.java" options="-ext,abc.da">
+	    	<message kind="error" line="4"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1424" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (5)">
+        <compile files="DATypeChecks5.java" options="-ext,abc.da">
+	    	<message kind="error" line="4"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1425" dir="abctests/da/typechecks"
+        title="Typechecks for dependent advice (6)">
+        <compile files="DATypeChecks6.java" options="-ext,abc.da">
+	    	<message kind="error" line="7"/>
+		</compile>
+    </ajc-test>
+
+    <ajc-test num="1430" dir="abctests/da/optimizations"
+        title="Quick check for dependent advice">
+        <compile files="QuickCheck.java" options="-ext,abc.da,-laststage,quick">
+	    	<message kind="warning" line="6"/>
+	    	<message kind="warning" line="9"/>
+		</compile>
+    </ajc-test>
+    
 </suite>
