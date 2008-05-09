@@ -20,10 +20,8 @@
 package abc.ra.ast;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import polyglot.ast.Block;
 import polyglot.ast.Formal;
@@ -36,13 +34,9 @@ import polyglot.util.Position;
 import polyglot.util.TypedList;
 import abc.aspectj.ast.Around;
 import abc.ra.ExtensionInfo;
-import abc.ra.visit.AroundReplacer;
-import abc.ra.visit.RegexShuffle;
-import abc.ra.visit.SymbolCollector;
 import abc.ra.weaving.aspectinfo.RATraceMatch;
 import abc.tm.ast.Regex;
 import abc.tm.ast.SymbolDecl;
-import abc.tm.ast.SymbolKind;
 import abc.tm.ast.TMAdviceDecl;
 import abc.tm.ast.TMDecl;
 import abc.tm.ast.TMDecl_c;
@@ -82,7 +76,7 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 			throwTypes,
 			newSymbols(symbols,tracematch_name,container,nf),
 			frequent_symbols,
-			newRegex(regex,symbols,nf),
+			newRegex(regex,nf),
 			body);
 	}
 	
@@ -100,127 +94,18 @@ public class TMFromRelTMDecl_c extends TMDecl_c implements TMDecl {
 	private static List<SymbolDecl> newSymbols(List symbols, String tracematch_name, RelAspectDecl container, RANodeFactory nf) {
 		List<SymbolDecl> newSymbols = new ArrayList<SymbolDecl>(symbols);
 		
-		for (SymbolDecl symbolDecl : (List<SymbolDecl>)symbols) {
-			if(symbolDecl.kind().equals(SymbolKind.AROUND)) {
-				SymbolDecl beforeSym = nf.SymbolDecl(
-					symbolDecl.position(),
-					symbolDecl.name()+AroundReplacer.BEFORE_SYMBOL_SUFFIX,
-					nf.BeforeSymbol(symbolDecl.position()),
-					symbolDecl.getPointcut()
-				);
-				newSymbols.add(beforeSym);
-			}
-		}
-		
-		newSymbols.add(nf.StartSymbolDecl(container.position(), "start"));
-		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associate", tracematch_name, true, container));
-		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associateAgain", tracematch_name, false, container));
+		newSymbols.add(nf.AssociateSymbolDecl(container.position(), "associate", tracematch_name, container));
 		newSymbols.add(nf.ReleaseSymbolDecl(container.position(), "release", tracematch_name, container));
 		
 		return newSymbols;
 	}
 
-	/**
-	 * (start | release) associate (associateAgain* ~ r)+
-	 * ... where ~ is the shuffle operator
-	 */
-	private static Regex newRegex(Regex originalRegex, List symbols, TMNodeFactory nf) {
-		//find all around-symbols
-		
-		Set<String> aroundSymbols = new HashSet<String>();
-		for (SymbolDecl symbolDecl : (List<SymbolDecl>)symbols) {
-			if(symbolDecl.kind().equals(SymbolKind.AROUND)) {
-				aroundSymbols.add(symbolDecl.name());
-			}
-		}
-
-		//construct a disjunction of all symbols occuring in the original regular expression,
-		//replacing around-symbol names by their before-symbol names
-		Regex noAroundOriginalRegex = (Regex) originalRegex.visit(new AroundReplacer(aroundSymbols,nf));		
-		SymbolCollector symbolCollector = new SymbolCollector();
-		noAroundOriginalRegex.visit(symbolCollector);
-		Set<String> noAroundOriginalRegexSymbolNames = symbolCollector.getSymbolNames();
-		Regex posDisjunction = disjunctionOf(noAroundOriginalRegexSymbolNames,nf);	
-
-		//construct a disjunction of all symbols of the original tracematch not occuring in that tracematch's regex,
-		//(i.e. all its skip-symbols)
-		Set<String> symbolNames = new HashSet<String>();
-		for (SymbolDecl symbol : (List<SymbolDecl>)symbols) {
-			symbolNames.add(symbol.name());
-		}
-		symbolCollector = new SymbolCollector();
-		originalRegex.visit(symbolCollector);
-		Set<String> originalRegexSymbolNames = symbolCollector.getSymbolNames();
-		Set<String> skipSymbols = new HashSet<String>(symbolNames);
-		skipSymbols.removeAll(originalRegexSymbolNames);
-		Regex negDisjunction = null;
-		if(!skipSymbols.isEmpty()) {
-			negDisjunction = disjunctionOf(skipSymbols,nf);	
-		}
-
-		//create copy of original regex with asssociateAgain* shuffled into it
-		Regex aaStar = nf.RegexStar(
+	private static Regex newRegex(Regex originalRegex, TMNodeFactory nf) {
+		return nf.RegexConjunction(
 				POS,
-				nf.RegexSymbol(POS, "associateAgain")
-		);		
-		Regex shuffeledRegex = (Regex) originalRegex.visit(new RegexShuffle(aaStar,nf));
-
-		//create a copy of that regex with around-symbols replaced
-		Regex noAroundShuffledRegex = (Regex) shuffeledRegex.visit(new AroundReplacer(aroundSymbols,nf));
-		
-		//if there is a negDisjunct (i.e. we had skip-symbols) then fit it in...
-		Regex disj = null;
-		if(negDisjunction==null) {
-			disj = nf.RegexSymbol(POS, "release");
-		} else {
-			disj = nf.RegexAlternation(
-					POS,
-					nf.RegexSymbol(POS, "release"),
-					negDisjunction
-			);
-		}
-		
-		Regex newRegex = nf.RegexConjunction(
-			POS,
-			nf.RegexAlternation(
-				POS,
-				nf.RegexSymbol(POS, "start"),
-				disj
-			),
-			nf.RegexConjunction(
-				POS,
-				nf.RegexStar(
-					POS,
-					posDisjunction
-				),
-				nf.RegexConjunction(
-					POS,
-					nf.RegexSymbol(POS, "associate"),
-					nf.RegexConjunction(
-						POS,
-						nf.RegexStar(
-							POS,
-							noAroundShuffledRegex
-						),
-						shuffeledRegex
-					)
-				)
-			)
+				nf.RegexSymbol(POS, "associate"),                
+                originalRegex
 		);
-		return newRegex;
-	}
-
-	private static Regex disjunctionOf(Set<String> symbolNames, TMNodeFactory nf) {
-		Set<String> copy = new HashSet<String>(symbolNames);
-		Iterator<String> iterator = copy.iterator();
-		String first = iterator.next();
-		iterator.remove();
-		Regex regexSymbol = nf.RegexSymbol(Position.COMPILER_GENERATED, first);
-		if(copy.isEmpty()) {
-			return regexSymbol;
-		} else {
-			return nf.RegexAlternation(Position.COMPILER_GENERATED, regexSymbol, disjunctionOf(copy, nf));
-		}
 	}
 
 	private static List newFormals(List formals, String tracematch_name, RelAspectDecl container, TMNodeFactory nf) {

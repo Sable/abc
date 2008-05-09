@@ -53,8 +53,8 @@ public class AssociateSymbolDecl_c extends SymbolDecl_c implements AssociateSymb
 
 	private static final Position POS = Position.compilerGenerated();
 
-	public AssociateSymbolDecl_c(Position pos, String name, String tracematch_name, boolean bindAspectInstanceInReturn, RelAspectDecl container, TMNodeFactory nf) {
-		super(pos, name, createKind(nf,tracematch_name,bindAspectInstanceInReturn), createPointcut(container,nf));
+	public AssociateSymbolDecl_c(Position pos, String name, String tracematch_name, RelAspectDecl container, TMNodeFactory nf) {
+		super(pos, name, createKind(nf,tracematch_name), createPointcut(container,nf));
 	}
 	
 	/**
@@ -112,17 +112,13 @@ public class AssociateSymbolDecl_c extends SymbolDecl_c implements AssociateSymb
 	}
 	
 	/**
-	 * Creates an <code>after returning($tmName$stateVarName)</code> or <code>after returning</code> advice kind
+	 * Creates an <code>after returning($tmName$stateVarName)</code> advice kind
 	 * @param nf node factory
 	 * @param tracematch_name name of the owning tracematch
-	 * @param bindAspectInstanceInReturn whether <code>$tmName$stateVarName</code> should be bound
 	 * @return
 	 */
-	private static SymbolKind createKind(TMNodeFactory nf, String tracematch_name, boolean bindAspectInstanceInReturn) {
-		if(bindAspectInstanceInReturn)
-			return nf.AfterReturningSymbol(POS, nf.Local(POS, stateVariableName(tracematch_name)));
-		else 
-			return nf.AfterReturningSymbol(POS);
+	private static SymbolKind createKind(TMNodeFactory nf, String tracematch_name) {
+		return nf.AfterReturningSymbol(POS, nf.Local(POS, stateVariableName(tracematch_name)));
 	}
 
 	private static String stateVariableName(String tracematch_name) {

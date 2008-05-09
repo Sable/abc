@@ -23,7 +23,6 @@ import java.util.List;
 
 import polyglot.ast.Formal;
 import polyglot.ast.NodeFactory;
-import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
 import abc.aspectj.ast.AspectDecl;
 

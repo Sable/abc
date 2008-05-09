@@ -36,7 +36,6 @@ import polyglot.visit.TypeChecker;
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.AdviceSpec;
 import abc.aspectj.ast.Pointcut;
-import abc.ra.types.RelAspectType;
 
 /**
  * Custom advice declaration with enhanced type check.

@@ -22,10 +22,8 @@ package abc.ra.visit;
 import java.util.Stack;
 
 import polyglot.ast.Node;
-import polyglot.types.SemanticException;
 import polyglot.types.TypeSystem;
 import polyglot.visit.NodeVisitor;
-import soot.CompilationDeathException;
 import abc.ra.ast.RANodeFactory;
 import abc.ra.ast.RelAdviceDecl;
 import abc.ra.ast.RelAspectDecl;

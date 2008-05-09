@@ -21,22 +21,18 @@ package abc.ra.ast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import polyglot.ast.AmbExpr;
 import polyglot.ast.Block;
 import polyglot.ast.ClassMember;
-import polyglot.ast.FieldDecl;
 import polyglot.ast.Formal;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Node;
 import polyglot.ast.NodeFactory;
 import polyglot.ast.TypeNode;
-import polyglot.ext.jl.ast.FieldDecl_c;
 import polyglot.types.Flags;
 import polyglot.types.SemanticException;
 import polyglot.types.Type;
