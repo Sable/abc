@@ -129,7 +129,7 @@ public class SynchronizedMethodRestructurer {
 		//in static methods, we synchronize on the class, else on "this"
 		if(method.isStatic()) {
 			ClassConstant classConstant = ClassConstant.v(method.getDeclaringClass().getName());
-			units.addFirst(Jimple.v().newAssignStmt(syncLocal, classConstant)); //add "thisLocal = @this" before
+			units.insertBefore(Jimple.v().newAssignStmt(syncLocal, classConstant),monitorEnterStmt); //add "thisLocal = @this" before
 		} 
 		
 		//make sure we only have a single return statement
