@@ -5881,5 +5881,81 @@
 <ajc-test title="Pointcut predecence, bug 81" num="1218" dir="abctests/bugs">
         <compile files="PointcutPrecedence.java"></compile>
     </ajc-test>
+<ajc-test title="lock/unlock pointcuts" num="1219" dir="abctests/eaj/lock_unlock">
+        <compile options="-ext,abc.eaj,-debug,enableLockPointcuts" files="LockUnlock.java"></compile>
+        <run class="LockUnlock"></run>
+    </ajc-test>
+<ajc-test title="warning on restructuring for sync. methods and lock/unlock pointcuts" num="1220" dir="abctests/eaj/lock_unlock">
+        <compile options="-ext,abc.eaj,-debug,doValidate,-debug,enableLockPointcuts" files="SyncMethods.java">
+	        <message line="15" kind="warning"></message>
+	        <message line="15" kind="warning"></message>
+        </compile>
+        <run class="SyncMethods"></run>
+    </ajc-test>
+<ajc-test title="Tracematches (wp-tmopt): QuickCheck" num="1301" dir="abctests/tracematches/wp-opt">
+        <compile options="-ext,abc.tmwpopt,-laststage,quick,-warn-about-individual-shadows" files="QuickCheck.java">
+	    	<message line="12" kind="warning"></message>
+		</compile>
+		<run class="QuickCheck"></run>
+    </ajc-test>
+<ajc-test title="Typechecks for relational aspects (1 of 2)" num="1401" dir="abctests/ra/typechecks">
+        <compile options="-ext,abc.ra" files="T1.java">
+	    	<message line="7" kind="error"></message>
+	    	<message line="14" kind="error"></message>
+	    	<message line="37" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for relational aspects (2 of 2)" num="1402" dir="abctests/ra/typechecks">
+        <compile options="-ext,abc.ra" files="T8.java">
+	    	<message line="8" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Equality-example for relational aspects" num="1403" dir="abctests/ra/equality">
+        <compile options="-ext,abc.ra,-warn-unused-advice:on" files="Bit.java,Equality.java,Example.java">
+	    	<message line="18" kind="warning"></message>
+		</compile>
+		<run class="Example"></run>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice " num="1420" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.da" files="DATypeChecks.java">
+	    	<message line="12" kind="warning"></message>
+	    	<message line="49" kind="warning"></message>
+	    	<message line="59" kind="error"></message>
+	    	<message line="70" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (2)" num="1421" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.da" files="DATypeChecks2.java">
+	    	<message line="9" kind="error"></message>
+	    	<message line="17" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (3)" num="1422" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.da" files="DATypeChecks3.java">
+	    	<message line="11" kind="error"></message>
+	    	<message line="19" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (4)" num="1423" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.da" files="DATypeChecks4.java">
+	    	<message line="4" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (5)" num="1424" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.da" files="DATypeChecks5.java">
+	    	<message line="4" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (6)" num="1425" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.da" files="DATypeChecks6.java">
+	    	<message line="7" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Quick check for dependent advice" num="1430" dir="abctests/da/optimizations">
+        <compile options="-ext,abc.da,-laststage,quick" files="QuickCheck.java">
+	    	<message line="6" kind="warning"></message>
+	    	<message line="9" kind="warning"></message>
+		</compile>
+    </ajc-test>
  
 </suite>
