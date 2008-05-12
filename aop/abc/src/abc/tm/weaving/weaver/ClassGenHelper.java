@@ -246,13 +246,13 @@ public class ClassGenHelper {
      */
     public void generateClasses() {
         // the SootClasses for the constraint and the main disjunct class for the tracematch
-        constraint = new SootClass(curTraceMatch.getPackage() + "Constraint$" + curTraceMatch.getName(), classModifiers);
+        constraint = new SootClass(curTraceMatch.getPackage() + "Constraint$" + curTraceMatch.getContainer().getName() + "$" + curTraceMatch.getName(), classModifiers);
         curTraceMatch.setConstraintClass(constraint);
 
-        disjunct = new SootClass(curTraceMatch.getPackage() + "Disjunct$" + curTraceMatch.getName(), classModifiers);
+        disjunct = new SootClass(curTraceMatch.getPackage() + "Disjunct$" + curTraceMatch.getContainer().getName() + "$" + curTraceMatch.getName(), classModifiers);
         curTraceMatch.setDisjunctClass(disjunct);
 
-        event = new SootClass(curTraceMatch.getPackage() + "Event$" + curTraceMatch.getName(), classModifiers);
+        event = new SootClass(curTraceMatch.getPackage() + "Event$" + curTraceMatch.getContainer().getName() + "$" + curTraceMatch.getName(), classModifiers);
         curTraceMatch.setEventClass(event);
 
         fillInConstraintClass();
