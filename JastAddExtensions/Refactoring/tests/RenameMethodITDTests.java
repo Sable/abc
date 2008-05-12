@@ -33,4 +33,7 @@ public class RenameMethodITDTests extends RenameMethod {
 	public void test5() {
 		runMethodRenameTest("test5");
 	}
+	public void test6() {
+		runMethodRenameTest("test6");
+	}
 }
