@@ -39,7 +39,7 @@ public class TMGlobalAspectInfo extends GlobalAspectInfo
     {
     	assert !tmNameToTracematch.containsKey(tm.getName());
     	assert !tmNameToTracematch.containsValue(tm);
-        tmNameToTracematch.put(tm.getName(), tm);
+        tmNameToTracematch.put(tm.getContainer().getName()+"."+tm.getName(), tm);
     }
 
     public void computeAdviceLists() throws SemanticException
@@ -63,10 +63,14 @@ public class TMGlobalAspectInfo extends GlobalAspectInfo
         return new ArrayList<TraceMatch>(tmNameToTracematch.values());
     }
     
+    /**
+     * @param tmName the fully qualified name of a tracematch, e.g. MyAspect.tracematch$0
+     */
     public TraceMatch traceMatchByName(String tmName) {
     	assert tmNameToTracematch.containsKey(tmName);
     	return tmNameToTracematch.get(tmName);
-}
+    }
+
     public boolean removeTraceMatch(TraceMatch tm) {
     	return tmNameToTracematch.values().remove(tm);
     }
