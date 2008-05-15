@@ -10,9 +10,12 @@ public class Example {
     System.out.println("Hello");
     Example t = new Example();
     JavaType b = `A(t);
-    JavaType c = `C();
+    Example c = `C();
     %match(b) {
-      A(c,c) -> { System.out.println(c + ", " + `B(c)); }
+      A(c) -> {
+        System.out.println(c); 
+        System.out.println(`c); 
+      }
     }
   }
 
