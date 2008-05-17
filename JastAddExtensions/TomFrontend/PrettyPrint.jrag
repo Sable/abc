@@ -23,4 +23,8 @@ aspect PrettyPrint {
     getStmt().toString(s);
   }
 
+  public void OperatorMapping.toString(StringBuffer s) {
+    
+  }
+
 }

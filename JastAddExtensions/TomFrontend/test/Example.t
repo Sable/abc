@@ -2,7 +2,9 @@ package test;
 
 public class Example {
 
-  static abstract class JavaType {}
+  static abstract class JavaType {
+    JavaType2 getName() { throw new UnsupportedOperationException(); }
+  }
   
   static abstract class JavaType2 {}
 
@@ -44,6 +46,7 @@ public class Example {
   %typeterm TomType { 
     implement { JavaType }
     is_sort(t) { (t instanceof JavaType) }
+    equals(t1,t2) { t2 == t2 }
   }
 
   %typeterm TomType2 { 
@@ -52,10 +55,13 @@ public class Example {
   }
 
   %op TomType A(name : TomType2) {
-    make(x) { new A(x) }
     is_fsym(t) { t instanceof A }
     get_slot(name,t) { t.getName() }
+    make(x) { new A(x) }
   }
+  // for make: order of parameters, same number of parameters, return type is op type
+  // is fsym: one parameter of type Object, return type is boolean
+  // get_slot_n: one parameter of type op type, return type is same as lookup for the same name
 
   %op TomType B() {
     make() { new B() }
