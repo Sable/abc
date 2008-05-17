@@ -1,93 +1,70 @@
 package test;
 
 public class Example {
-  public String toString() {
-    return "Example";
-  }
-  static class JavaType { 
-    JavaType(Example e) {
-      child = e;
+
+  static abstract class JavaType {}
+  
+  static abstract class JavaType2 {}
+
+  static class A extends JavaType {
+    
+    JavaType2 name;
+
+    A(JavaType2 name) {
+    this.name = name;
     }
-    Example child;
-    Example getChild() { return child; };
-    public String toString() {
-      return "JavaType(" + getChild() + ")";
+
+    JavaType2 getName() {
+      return name;
     }
+  
   }
 
+  static class B extends JavaType {
+    B() {}
+  }
+
+  static class C extends JavaType2 {
+    C() {}
+  }
 
   public static void main(String[] args) {
     System.out.println("Hello");
-    Example t = new Example();
-    JavaType b = `A(t);
-    Example c = `C();
-    %match(TomType b) {
-      c -> {
-        System.out.println(c); 
-        System.out.println(`c); 
+    JavaType2 c = `C();
+    JavaType a = `A(c);
+    JavaType x = `B();
+    %match(a) {
+      A(x) -> {
+         JavaType tmp1 = x;
+         JavaType2 tmp2 = `x;
       }
     }
   }
 
   %typeterm TomType { 
-    implement { JavaType } 
-    is_sort(t) { t instanceof JavaType }
+    implement { JavaType }
+    is_sort(t) { (t instanceof JavaType) }
   }
+
   %typeterm TomType2 { 
-    implement { Example } 
-    is_sort(t) { t instanceof Example }
+    implement { JavaType2 } 
+    is_sort(t) { (t instanceof JavaType) }
   }
-<F21>
+
   %op TomType A(name : TomType2) {
-    make(x) { new JavaType(x) }
-    is_fsym(t) { t instanceof JavaType }
-    get_slot(name, t) { t.getChild() } 
+    make(x) { new A(x) }
+    is_fsym(t) { t instanceof A }
+    get_slot(name,t) { t.getName() }
   }
+
+  %op TomType B() {
+    make() { new B() }
+    is_fsym(t) { t instanceof B }
+  }
+
   %op TomType2 C() {
-    make() { new Example() }
-    is_fsym(t) { t instanceof Example }
+    make() { new C() }
+    is_fsym(t) { t instanceof C }
   }
 
-  // ClassDecl ::= Modifiers <Name:String> BodyDeclList
-  // BodyDeclList ::= BodyDecl*;
-
-  typeterm TomASTNode {
-    implement { ASTNode }
-    is_sort(t) { t instanceof ASTNode }
-  }
-  typeterm TomList {
-    implement { List }
-    is_sort(t) { t instanceof List }
-  }
-  typeterm TomOpt {
-    implement { Opt }
-    is_sort(t) { t instanceof Opt }
-  }
-
-  %op TomASTNode newClassDecl(m : ASTNode, name : String, superOpt : TomOpt, bodyDeclList : TomList) {
-    make(m, name, superOpt, bodyDeclList) { new ClassDecl(m, name, superOpt, bodyDeclList) }
-    is_fsym(t) { t instanceof ClassDecl }
-    get_slot(m, t) { t.getModifiers() }
-    get_slot(name, t) { t.getName() }
-    get_slot(superOpt, t) { t.getSuperAccessOpt() }
-    get_slot(bodyDeclList, t) { t.getBodyDeclList() }
-  }
-
-  %oplist TomList newList(ASTNode*) {
-  }
-
-  syn boolean ClassDecl.hasConstructor() {
-
-    %match(this) {
-
-      newClassDecl[bodyDeclList=newList(_*,C@newConstructorDecl[],_*)] -> { return true; }
-  }
-
-  syn Access ClassDecl.getSuperAccessInPublic() {
-    %match(this) {
-      newClassDecl(newModifiers(newList(_*,newModifier("public"),_*)),_,newOpt(v),_) { return v; }
-    }
-    return null;
-  }
-
-
+}
