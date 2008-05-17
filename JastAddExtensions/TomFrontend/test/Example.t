@@ -46,12 +46,13 @@ public class Example {
   %typeterm TomType { 
     implement { JavaType }
     is_sort(t) { (t instanceof JavaType) }
-    equals(t1,t2) { t2 == t2 }
+    equals(t1,t2) { t1.equals(t2) }
   }
 
   %typeterm TomType2 { 
     implement { JavaType2 } 
     is_sort(t) { (t instanceof JavaType) }
+    equals(t1,t2) { t1.equals(t2) }
   }
 
   %op TomType A(name : TomType2) {
