@@ -6,7 +6,7 @@ aspect DATypeChecks {
 	/*
 	 * T1:
 	 * Variable name "i" is orphan, i.e. only exists in one advice name, therefore
-	 * no data low dependency is imposed. A warning should be given to use the wildcard instead.
+	 * no dataflow dependency is imposed. A warning should be given to use the wildcard instead.
 	 */	
 	dependency {
 		strong a1(i,j);
