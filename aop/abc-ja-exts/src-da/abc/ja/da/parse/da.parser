@@ -1,0 +1,150 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Eric Bodden
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+BodyDecl aspect_body_declaration =
+        advice_dependency.a
+        {:
+            return a;
+        :}
+    ;
+
+
+AdviceDependency advice_dependency =
+        DEPENDENCY LBRACE STRONG advice_name.s+ SEMICOLON RBRACE
+        {:
+			return new AdviceDependency(s,new List<AdviceNameAccess>());
+		:}
+	|   DEPENDENCY LBRACE STRONG advice_name.s+ SEMICOLON WEAK advice_name.w* SEMICOLON RBRACE
+        {:
+			return new AdviceDependency(s,w);
+		:}
+	;
+	
+AdviceNameAccess advice_name = 
+		IDENTIFIER.i
+		{:
+			return new AdviceNameAccess(i,new List<ArgVarRef>());
+		:}
+	|
+		IDENTIFIER.i LPAREN identifier_star_list.ids RPAREN
+		{:
+			return new AdviceNameAccess(i,ids);
+		:}
+	;
+
+List identifier_star_list =
+    identifier_star.i                                  {: return new List<ArgVarRef>().add(i); :}
+  | identifier_star_list.l COMMA identifier_star.i    {: return l.add(i); :}
+  ;
+	
+ArgVarRef identifier_star = 
+		IDENTIFIER.i
+		{:
+			return new ArgVarRef(i);
+        :}
+    |  	
+        PC_MULT.p
+		{:
+            return new ArgVarRef(WILDCARD+(wildcard_count++)); //generate fresh variable name for wildcard
+        :}    
+	;
+
+	
+	
+AdviceSpec advice_spec =
+     BEFORE.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN.y
+       {: ParserTrace.parserTrace("before(formals)");
+          AdviceSpec s = new BeforeSpec(a);
+          s.setName(name);
+          return s;
+       :}
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN.y
+       {: ParserTrace.parserTrace("after(formals)");
+          AdviceSpec s = new AfterSpec(a);
+          s.setName(name);
+          return s;
+       :}
+
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN PC_RETURNING.y
+       {: ParserTrace.parserTrace("after(formals)returning");
+          AdviceSpec s = new AfterReturningSpec(a, new Opt());
+          s.setName(name);
+          return s;
+       :}
+
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN PC_RETURNING LPAREN RPAREN.y // just to pass ajc tests
+       {: ParserTrace.parserTrace("after(formals)returning()");
+          AdviceSpec s = new AfterReturningSpec(a, new Opt());
+          s.setName(name);
+          return s;
+       :}
+
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN PC_RETURNING 
+                                               LPAREN formal_parameter.b RPAREN.y
+       {: ParserTrace.parserTrace("after(formals) returning(p)");
+          AdviceSpec s = new AfterReturningSpec(a, new Opt(b));
+          s.setName(name);
+          return s;
+       :}
+
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN PC_THROWING.y
+       {: ParserTrace.parserTrace("after(formals)throwing");
+          AdviceSpec s = new AfterThrowingSpec(a, new Opt());
+          s.setName(name);
+          return s;
+       :}
+
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN PC_THROWING LPAREN RPAREN.y // ajc compatibility again
+       {: ParserTrace.parserTrace("after(formals)throwing");
+          AdviceSpec s = new AfterThrowingSpec(a, new Opt());
+          s.setName(name);
+          return s;
+       :}
+
+  |  AFTER.x IDENTIFIER.name LPAREN formal_parameter_list.a? RPAREN PC_THROWING
+                                               LPAREN formal_parameter.b RPAREN.y
+       {: ParserTrace.parserTrace("after(formals)throwing(p)");
+          AdviceSpec s = new AfterThrowingSpec(a, new Opt(b));
+          s.setName(name);
+          return s;
+       :}
+
+  |  type.a AROUND IDENTIFIER.name LPAREN formal_parameter_list.b? RPAREN.y
+       {: ParserTrace.parserTrace("non-void-type around (formals)");
+          AdviceSpec s = new AroundSpec(b, a);
+          s.setName(name);
+          return s;
+       :}
+
+  |  VOID.a AROUND IDENTIFIER.name LPAREN formal_parameter_list.b? RPAREN.y
+       {: ParserTrace.parserTrace("VOID around (formals)");
+          AdviceSpec s = new AroundSpec(b, new PrimitiveTypeAccess("void"));
+          s.setName(name);
+          return s;
+       :}
+  ;
+  
+  
+Modifier modifier =
+    DEPENDENT.x {:
+    	ParserTrace.parserTrace("dependent modifier");
+    	return new Modifier("dependent");
+    :}
+;
+  
