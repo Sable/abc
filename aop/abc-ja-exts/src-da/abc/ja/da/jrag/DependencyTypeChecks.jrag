@@ -54,21 +54,28 @@ aspect DependencyTypeChecks {
 	}
 
 	public void AdviceNameAccess.typeCheck() {
-		for(int i=0; i<getNumArgVarRef(); i++) {
-			ArgVarRef ref = getArgVarRef(i);
-			if(!ref.isWildcard()) {
-				String var = ref.getAdviceVar();
-				if(allVarCount().countOf(var)<2) {
-				 	//variable exists apparently at least one time
-					assert allVarCount().countOf(var)>0;
-					warning("Variable "+var+" only referenced once. Consider using wildcard '*' instead."); 
+		if(!hasDefaultVariables()) {
+			for(int i=0; i<getNumArgVarRef(); i++) {
+				ArgVarRef ref = getArgVarRef(i);
+				if(!ref.isWildcard()) {
+					String var = ref.getAdviceVar();
+					if(allVarCount().countOf(var)<2) {
+					 	//variable exists apparently at least one time
+						assert allVarCount().countOf(var)>0;
+						warning("Variable "+var+" only referenced once. Consider using wildcard '*' instead."); 
+					}
 				}
 			}
+			
+			if(adviceVars().size()!=getNumArgVarRef()) {
+				error("Advice with name '"+getAdviceNameRef()+"' has "+adviceVars().size()+
+				      " arguments but here "+getNumArgVarRef()+" arguments were given.");
+			}			
 		}
 	}
 	
 	public boolean ArgVarRef.isWildcard() {
 		return getAdviceVar().startsWith(abc.ja.da.parse.JavaParser.WILDCARD);
 	}
-
+	
 }
