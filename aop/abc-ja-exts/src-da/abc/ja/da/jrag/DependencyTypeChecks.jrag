@@ -19,6 +19,7 @@
 
 import abc.da.weaving.weaver.depadviceopt.ds.Bag;
 import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
+import java.util.ArrayList;
 
 aspect DependencyTypeChecks {
 
@@ -49,10 +50,6 @@ aspect DependencyTypeChecks {
 	eq AdviceDependency.getStrongName(int i).allVarCount() = varCount(); 
 	eq AdviceDependency.getWeakName(int i).allVarCount() = varCount();
 
-	public void AdviceDependency.typeCheck() {
-		//TODO
-	}
-
 	public void AdviceNameAccess.typeCheck() {
 		if(!hasDefaultVariables()) {
 			for(int i=0; i<getNumArgVarRef(); i++) {
@@ -76,6 +73,32 @@ aspect DependencyTypeChecks {
 	
 	public boolean ArgVarRef.isWildcard() {
 		return getAdviceVar().startsWith(abc.ja.da.parse.JavaParser.WILDCARD);
+	}
+	
+	syn lazy java.util.List<AdviceDecl> AspectDecl.namedAdvice() {
+		java.util.List<AdviceDecl> res = new ArrayList<AdviceDecl>(); 
+		for(BodyDecl b: getBodyDecls()) {
+			if(b instanceof AdviceDecl) {
+				AdviceDecl a = (AdviceDecl) b;
+				if(a.hasName()) {
+					res.add(a);									
+				}
+			}
+		}	
+		return res;
+	}
+
+	//TODO causes infinite recursion	
+	refine AspectErrorCheck public void AspectDecl.typeCheck() {
+		AspectErrorCheck.AspectDecl.typeCheck();
+		for(AdviceDecl a: namedAdvice()) {
+			for(AdviceDecl b: namedAdvice()) {
+				if(a==b) continue;
+				if(a.getName().equals(b.getName())) {
+					error("Two advice declarations with the same name '"+a.getName()+"'!");
+				}
+			}			
+		}
 	}
 	
 }
