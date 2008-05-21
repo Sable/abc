@@ -295,6 +295,10 @@ public class TestCase {
 						if(xChildren[i].has("//abc:message[@kind != \"warning\"]")
 								|| xChildren[i].has("//abc:" + messageOverride + "[@kind != \"warning\"]")) {
 						    System.err.println("Compilation succeeded but was expected to fail.");
+						    if(warnings != null && warnings.size() > 0) {
+							    System.err.println("Compilation produced the following warnings:");
+							    printErrors(warnings);
+						    }
 						    failTest();
 						    return;
 						} else if(xChildren[i].has("//abc:message")
