@@ -67,7 +67,7 @@ aspect DATypeChecks {
 	 */	
 	dependency {
 		strong a1;
-		weak a2(*,i);		
+		weak a2(*,*);		
 	}
 	
 }
