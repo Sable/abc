@@ -144,13 +144,14 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
       ArrayList errors = new ArrayList();
       ArrayList warnings = new ArrayList();
       program.errorCheck(errors, warnings);
+      boolean hasErrors = false;
       if(!errors.isEmpty()) {
         Collections.sort(errors);
         for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
           Problem p = (Problem)iter2.next();
           addError(p);
         }
-        throw new CompilerFailedException("There were errors.");
+        hasErrors = true;
       }
       if(!warnings.isEmpty()) {
           Collections.sort(warnings);
@@ -159,6 +160,8 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
             addWarning(p);
           }
       }
+      if(hasErrors)
+    	  throw new CompilerFailedException("There were errors.");
 
       program.generateIntertypeDecls();
       program.transformation();
