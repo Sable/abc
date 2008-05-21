@@ -1,5 +1,5 @@
 AdviceDependency: BodyDecl ::= StrongName:AdviceNameAccess* WeakName:AdviceNameAccess*;
 
-AdviceNameAccess : Access ::= <AdviceNameRef:String> ArgVarRef*;
+AdviceNameAccess ::= <AdviceNameRef:String> ArgVarRef*;
 
 ArgVarRef ::= <AdviceVar:String>;
