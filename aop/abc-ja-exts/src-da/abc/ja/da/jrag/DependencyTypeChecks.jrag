@@ -50,14 +50,7 @@ aspect DependencyTypeChecks {
 	eq AdviceDependency.getWeakName(int i).allVarCount() = varCount();
 
 	public void AdviceDependency.typeCheck() {
-		for(int i=0; i<getNumStrongName(); i++) {
-			AdviceNameAccess access = getStrongName(i);
-			access.typeCheck();
-		}
-		for(int i=0; i<getNumStrongName(); i++) {
-			AdviceNameAccess access = getWeakName(i);
-			access.typeCheck();
-		}
+		//TODO
 	}
 
 	public void AdviceNameAccess.typeCheck() {
