@@ -1,0 +1,50 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Eric Bodden
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+ 
+aspect DependentAdviceCodegen {
+
+	inh AspectDecl AdviceDependency.getAspect();
+	eq AspectDecl.getBodyDecl(int i).getAspect() = this;
+	//TODO why are these at all necessary?
+	eq BodyDecl.getChild(int i).getAspect() { throw new Error("Missing equation for allAdviceNameToVars()"); }
+	eq TypeDecl.getChild(int i).getAspect() { throw new Error("Missing equation for allAdviceNameToVars()"); }
+
+	public void AdviceDependency.jimplify2() {
+		createAspectInfo();	
+	}
+
+	public void AdviceDependency.createAspectInfo() {
+		abc.da.weaving.aspectinfo.DAInfo dai =
+			((abc.da.HasDAInfo) abc.main.Main.v().getAbcExtension()).getDependentAdviceInfo();
+			
+	    abc.weaving.aspectinfo.GlobalAspectInfo gai =
+	    	abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
+		
+		abc.da.weaving.aspectinfo.AdviceDependency ad =
+			new abc.da.weaving.aspectinfo.AdviceDependency(
+					stongAdviceToVars(),
+					weakAdviceToVars(),
+					gai.getAspect(getAspect().abcClass()),
+					pos()
+		);
+		
+		dai.addAdviceDependency(ad);
+	}
+
+}
