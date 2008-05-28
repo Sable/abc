@@ -134,7 +134,8 @@ aspect Statements {
       if(hasElse())
         getElse().jimplify2(b);
     }
-    b.addLabel(endBranch);
+    if(getThen().canCompleteNormally() && hasElse())
+      b.addLabel(endBranch);
   }
 
 
@@ -153,7 +154,8 @@ aspect Statements {
         b.add(Jimple.v().newGotoStmt(cond_label()));
       }
     }
-    b.addLabel(end_label());
+    if(canCompleteNormally())
+      b.addLabel(end_label());
   }
 
   syn lazy soot.jimple.Stmt DoStmt.begin_label() = newLabel();
@@ -165,7 +167,8 @@ aspect Statements {
     getStmt().jimplify2(b);
     b.addLabel(cond_label());
     getCondition().emitEvalBranch(b);
-    b.addLabel(end_label());
+    if(canCompleteNormally())
+      b.addLabel(end_label());
   }
 
   syn lazy soot.jimple.Stmt ForStmt.cond_label() = newLabel();
@@ -204,12 +207,18 @@ aspect Statements {
   eq TryStmt.break_label() =  label_finally();
 
   public void BreakStmt.jimplify2(Body b) {
+    ArrayList list = exceptionRanges();
+    if(!inSynchronizedBlock())
+      endExceptionRange(b, list);
     for(Iterator iter = finallyList().iterator(); iter.hasNext(); ) {
       FinallyHost stmt = (FinallyHost)iter.next();
       stmt.emitFinallyCode(b);
     }
+    if(inSynchronizedBlock())
+      endExceptionRange(b, list);
     b.setLine(this);
     b.add(Jimple.v().newGotoStmt(targetStmt().break_label()));
+    beginExceptionRange(b, list);
   }
 
   syn soot.jimple.Stmt Stmt.continue_label() {
@@ -222,12 +231,38 @@ aspect Statements {
   eq TryStmt.continue_label() = label_finally();
 
   public void ContinueStmt.jimplify2(Body b) {
+    ArrayList list = exceptionRanges();
+    if(!inSynchronizedBlock())
+      endExceptionRange(b, list);
     for(Iterator iter = finallyList().iterator(); iter.hasNext(); ) {
       FinallyHost stmt = (FinallyHost)iter.next();
       stmt.emitFinallyCode(b);
     }
+    if(inSynchronizedBlock())
+      endExceptionRange(b, list);
     b.setLine(this);
     b.add(Jimple.v().newGotoStmt(targetStmt().continue_label()));
+    beginExceptionRange(b, list);
+  }
+
+  syn lazy boolean ReturnStmt.inSynchronizedBlock() =
+    !finallyList().isEmpty() && finallyList().iterator().next() instanceof SynchronizedStmt;
+  syn lazy boolean BreakStmt.inSynchronizedBlock() =
+    !finallyList().isEmpty() && finallyList().iterator().next() instanceof SynchronizedStmt;
+  syn lazy boolean ContinueStmt.inSynchronizedBlock() =
+    !finallyList().isEmpty() && finallyList().iterator().next() instanceof SynchronizedStmt;
+
+  public void ASTNode.endExceptionRange(Body b, ArrayList list) {
+    if(list != null) {
+      soot.jimple.Stmt label = newLabel();
+      b.addLabel(label);
+      list.add(label);
+      //list.add(b.previousStmt());
+    }
+  }
+  public void ASTNode.beginExceptionRange(Body b, ArrayList list) {
+    if(list != null)
+      b.addNextStmt(list);
   }
 
   public void ReturnStmt.jimplify2(Body b) {
@@ -243,20 +278,32 @@ aspect Statements {
         ),
         type.getSootType()
       );
+      ArrayList list = exceptionRanges();
+      if(!inSynchronizedBlock())
+        endExceptionRange(b, list);
       for(Iterator iter = finallyList().iterator(); iter.hasNext(); ) {
         FinallyHost stmt = (FinallyHost)iter.next();
         stmt.emitFinallyCode(b);
       }
       b.setLine(this);
+      if(inSynchronizedBlock())
+        endExceptionRange(b, list);
       b.add(Jimple.v().newReturnStmt(local));
+      beginExceptionRange(b, list);
     }
     else {
+      ArrayList list = exceptionRanges();
+      if(!inSynchronizedBlock())
+        endExceptionRange(b, list);
       for(Iterator iter = finallyList().iterator(); iter.hasNext(); ) {
         FinallyHost stmt = (FinallyHost)iter.next();
         stmt.emitFinallyCode(b);
       }
       b.setLine(this);
+      if(inSynchronizedBlock())
+        endExceptionRange(b, list);
       b.add(Jimple.v().newReturnVoidStmt());
+      beginExceptionRange(b, list);
     }
   }
 
@@ -301,9 +348,14 @@ aspect Statements {
   eq MethodDecl.getBlock().enclosedByExceptionHandler() = getNumException() != 0;
   eq ConstructorDecl.getBlock().enclosedByExceptionHandler() = getNumException() != 0;
   eq TryStmt.getBlock().enclosedByExceptionHandler() = true;
+  eq SynchronizedStmt.getBlock().enclosedByExceptionHandler() = true;
+  syn boolean SynchronizedStmt.needsFinallyTrap() = enclosedByExceptionHandler();
+  inh boolean SynchronizedStmt.enclosedByExceptionHandler();
 
   public void TryStmt.jimplify2(Body b) {
+    ArrayList ranges = exceptionRanges();
     b.addLabel(label_begin());
+    ranges.add(label_begin());
     getBlock().jimplify2(b);
     soot.jimple.Stmt label_block_end = null;
     soot.jimple.Stmt label_end = null;
@@ -314,23 +366,30 @@ aspect Statements {
       }
       emitFinallyCode(b);
       b.setLine(this);
-      if((!hasFinally() || getFinally().canCompleteNormally()) && (getNumCatchClause() != 0 || needsFinallyTrap()))
+      if((!hasFinally() || getFinally().canCompleteNormally()) && (getNumCatchClause() != 0 || hasFinally()/*needsFinallyTrap()*/))
         b.add(Jimple.v().newGotoStmt(label_end = label_end()));
     }
     if(getNumCatchClause() != 0) {
       if(label_block_end == null)
         label_block_end = getCatchClause(0).label();
+      ranges.add(label_block_end);
+      ranges.add(label_block_end);
       for(int i = 0; i < getNumCatchClause(); i++) {
+        //beginExceptionRange(b, ranges);
         getCatchClause(i).jimplify2(b);
         if(getCatchClause(i).getBlock().canCompleteNormally()) {
-          emitFinallyCode(b);
           b.setLine(getCatchClause(i));
+          endExceptionRange(b, ranges);
+          emitFinallyCode(b);
           if(!hasFinally() || getFinally().canCompleteNormally())
             b.add(Jimple.v().newGotoStmt(label_end = label_end()));
+          beginExceptionRange(b, ranges);
         }
+        b.setLine(getCatchClause(i));
+        //endExceptionRange(b, ranges);
       }
     }
-    if(hasFinally() && needsFinallyTrap()) {
+    if(hasFinally() /*&& needsFinallyTrap()*/) {
       b.addLabel(label_exception_handler());
       emitExceptionHandler(b);
       b.setLine(getFinally());
@@ -341,37 +400,53 @@ aspect Statements {
       b.addLabel(label_end);
     // createExceptionTable
     for(int i = 0; i < getNumCatchClause(); i++) {
-      b.addTrap(
-        getCatchClause(i).getParameter().type(),
-        label_begin(),
-        label_block_end,
-        getCatchClause(i).label()
-      );
+      for(Iterator iter = ranges.iterator(); iter.hasNext(); ) {
+        soot.jimple.Stmt stmtBegin = (soot.jimple.Stmt)iter.next();
+        soot.jimple.Stmt stmtEnd = (soot.jimple.Stmt)iter.next();
+        if(stmtBegin != stmtEnd) {
+          b.addTrap(
+              getCatchClause(i).getParameter().type(),
+              stmtBegin,
+              stmtEnd,
+              getCatchClause(i).label()
+          );
+        }
+        if(stmtEnd == label_block_end)
+          break;
+      }
     }
-    if(hasFinally() && needsFinallyTrap()) {
-      b.addTrap(
-        typeThrowable(),
-        label_begin(),
-        label_exception_handler(),
-        label_exception_handler()
-      );
+    if(hasFinally() /*&& needsFinallyTrap()*/) {
+      for(Iterator iter = ranges.iterator(); iter.hasNext(); ) {
+        soot.jimple.Stmt stmtBegin = (soot.jimple.Stmt)iter.next();
+        soot.jimple.Stmt stmtEnd;
+        if(iter.hasNext())
+          stmtEnd = (soot.jimple.Stmt)iter.next();
+        else
+          stmtEnd = label_exception_handler();
+        if(stmtBegin != stmtEnd)
+          b.addTrap(typeThrowable(), stmtBegin, stmtEnd, label_exception_handler());
+      }
       /*
       b.addTrap(
         typeThrowable(),
         label_begin(),
-        label_block_end(),
-        label_exception_handler()
-      );
-      if(getNumCatchClause() > 0)
-      b.addTrap(
-        typeThrowable(),
-        catches,
         label_exception_handler(),
         label_exception_handler()
       );
       */
     }
   }
+
+  inh ArrayList ReturnStmt.exceptionRanges();
+  inh ArrayList ContinueStmt.exceptionRanges();
+  inh ArrayList BreakStmt.exceptionRanges();
+  eq TryStmt.getBlock().exceptionRanges() = exceptionRanges();
+  eq TryStmt.getCatchClause().exceptionRanges() = exceptionRanges();
+  eq SynchronizedStmt.getBlock().exceptionRanges() = exceptionRanges();
+  eq BodyDecl.getChild().exceptionRanges() = null;
+  eq Program.getChild().exceptionRanges() = null;
+  syn lazy ArrayList TryStmt.exceptionRanges() = new ArrayList();
+  syn lazy ArrayList SynchronizedStmt.exceptionRanges() = new ArrayList();
 
   syn lazy soot.jimple.Stmt CatchClause.label() = newLabel();
   public void CatchClause.jimplify2(Body b) {
@@ -404,26 +479,19 @@ aspect Statements {
   eq SynchronizedStmt.label_finally_block() = newLabel();
   syn lazy soot.jimple.Stmt SynchronizedStmt.label_exception_handler() = newLabel();
 
-  // TODO: SynchronizedStmt
   public void SynchronizedStmt.jimplify2(Body b) {
     b.setLine(this);
     b.add(Jimple.v().newEnterMonitorStmt(monitor(b)));
     b.addLabel(label_begin());
+    exceptionRanges().add(label_begin());
     getBlock().jimplify2(b);
     if(getBlock().canCompleteNormally()) {
       emitFinallyCode(b);
       b.add(Jimple.v().newGotoStmt(label_end()));
     }
-    
-    b.addLabel(label_finally());
-    b.add(Jimple.v().newGotoStmt(label_end()));
-    /*
-    if(getBlock().canCompleteNormally()) {
-      emitFinallyCode(b);
-      b.add(Jimple.v().newGotoStmt(label_end()));
-    }
-    */
     b.addLabel(label_exception_handler());
+
+    // emitExceptionHandler
     Local l = b.newTemp(typeThrowable().getSootType());
     b.add(Jimple.v().newIdentityStmt(l, Jimple.v().newCaughtExceptionRef()));
     emitFinallyCode(b);
@@ -431,8 +499,18 @@ aspect Statements {
     throwStmt.addTag(new soot.tagkit.ThrowCreatedByCompilerTag());
     b.add(throwStmt);
     b.addLabel(label_end());
+
     // createExceptionTable
-    b.addTrap(typeThrowable(), label_begin(), label_finally(), label_exception_handler());
+    for(Iterator iter = exceptionRanges().iterator(); iter.hasNext(); ) {
+      soot.jimple.Stmt stmtBegin = (soot.jimple.Stmt)iter.next();
+      soot.jimple.Stmt stmtEnd;
+      if(iter.hasNext())
+        stmtEnd = (soot.jimple.Stmt)iter.next();
+      else
+        stmtEnd = label_end();
+      if(stmtBegin != stmtEnd)
+        b.addTrap(typeThrowable(), stmtBegin, stmtEnd, label_exception_handler());
+    }
   }
 
   public void LocalClassDeclStmt.jimplify2(Body b) {

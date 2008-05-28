@@ -495,6 +495,10 @@ aspect EmitJimple {
     }
 
     public Body add(soot.jimple.Stmt stmt) {
+      if(list != null) {
+        list.add(stmt);
+        list = null;
+      }
       stmt.addTag(currentSourceRangeTag());
       soot.PatchingChain chain = (soot.PatchingChain)chains.peek();
       if(stmt instanceof IdentityStmt && chain.size() != 0) {
@@ -543,6 +547,15 @@ aspect EmitJimple {
       body.getTraps().add(Jimple.v().newTrap(type.getSootClassDecl(), firstStmt, lastStmt, handler));
       return this;
     }
+
+    public soot.jimple.Stmt previousStmt() {
+      PatchingChain<Unit> o = (PatchingChain<Unit>)chains.lastElement();
+      return (soot.jimple.Stmt)o.getLast();
+    }
+    public void addNextStmt(java.util.ArrayList list) {
+      this.list = list;
+    }
+    java.util.ArrayList list = null;
   }
 
   protected soot.jimple.Stmt ASTNode.newLabel() {
