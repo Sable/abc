@@ -20,6 +20,10 @@
 package abc.ja.da;
 
 
+import static abc.da.AbcExtension.AFTER_ANALYSIS_CLEANUP;
+import static abc.da.AbcExtension.DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS;
+import static abc.da.AbcExtension.DEPENDENT_ADVICE_QUICK_CHECK;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -32,24 +36,18 @@ import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
 import abc.da.weaving.weaver.depadviceopt.ds.WeavableMethods;
-import abc.ja.da.CompileSequence;
 import abc.ja.da.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
 import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
-import abc.weaving.weaver.ReweavingPass.ID;
 
 /**
  * @author Eric Bodden
  */
 public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 {
-    protected static final ID DEPENDENT_ADVICE_QUICK_CHECK = new ReweavingPass.ID("quick-check for dependent-advice");
-	protected static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
-    protected static final ID AFTER_ANALYSIS_CLEANUP = new ID("cleanup stage");
-    
 	/** The dependent advice info for this extension. This encapsulates all information about advice dependencies in the backend. */
 	protected DAInfo daInfo;
 	
@@ -321,7 +319,7 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
             }
 
         };
-        passes.add( new ReweavingPass( AFTER_ANALYSIS_CLEANUP , cleanup ) );
+        passes.add( new ReweavingPass(AFTER_ANALYSIS_CLEANUP , cleanup ) );
     }
     
 	/**

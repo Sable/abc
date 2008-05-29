@@ -108,6 +108,11 @@ aspect AdviceNames
  		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
  		return all.get(getAdviceNameRef());
  	}
+ 	
+ 	syn java.util.Collection<String> AdviceNameAccess.allAdviceNames() {
+ 		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
+ 		return all.keySet();
+ 	}
 
 	//TODO why are these at all necessary?
 	eq BodyDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }

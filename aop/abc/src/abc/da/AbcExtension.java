@@ -41,9 +41,9 @@ import abc.weaving.weaver.ReweavingPass.ID;
  */
 public class AbcExtension extends abc.eaj.AbcExtension implements HasDAInfo
 {
-    protected static final ID DEPENDENT_ADVICE_QUICK_CHECK = new ReweavingPass.ID("quick-check for dependent-advice");
-	protected static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
-    protected static final ID AFTER_ANALYSIS_CLEANUP = new ID("cleanup stage");
+    public static final ID DEPENDENT_ADVICE_QUICK_CHECK = new ReweavingPass.ID("quick-check for dependent-advice");
+	public static final ID DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS = new ReweavingPass.ID("flow-insensitive analysis for dependent-advice");
+    public static final ID AFTER_ANALYSIS_CLEANUP = new ID("cleanup stage");
 
 	/** The dependent advice info for this extension. This encapsulates all information about advice dependencies in the backend. */
 	protected DAInfo daInfo;

@@ -26,15 +26,27 @@ BodyDecl aspect_body_declaration =
 
 
 AdviceDependency advice_dependency =
-        DEPENDENCY LBRACE STRONG advice_name.s+ SEMICOLON RBRACE
+        DEPENDENCY LBRACE STRONG advice_name_list.s SEMICOLON RBRACE
         {:
 			return new AdviceDependency(s,new List<AdviceNameAccess>());
 		:}
-	|   DEPENDENCY LBRACE STRONG advice_name.s+ SEMICOLON WEAK advice_name.w* SEMICOLON RBRACE
+	|   DEPENDENCY LBRACE STRONG advice_name_list.s SEMICOLON WEAK advice_name_list.w SEMICOLON RBRACE
         {:
 			return new AdviceDependency(s,w);
 		:}
 	;
+	
+List advice_name_list =
+		advice_name.n
+		{:
+			return new List<AdviceNameAccess>().add(n);
+		:}
+	|
+		advice_name_list.l COMMA advice_name.n
+		{:
+			return l.add(n);
+		:}
+;	
 	
 AdviceNameAccess advice_name = 
 		IDENTIFIER.i

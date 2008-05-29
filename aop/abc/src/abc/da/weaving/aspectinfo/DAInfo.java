@@ -136,7 +136,7 @@ public class DAInfo {
 				if(!qualifiedDependentAdviceNamesDeclared.contains(qualifiedAdviceName)) {
 					Main.v().getAbcExtension().forceReportError(ErrorInfo.SEMANTIC_ERROR,
 					"Advice with name '"+qualifiedAdviceName+
-							"' mentioned in dependency is not found in aspect "+dep.getContainer()+"!", dep.getPosition());
+							"' mentioned in dependency is not found in aspect "+dep.getContainer().getName()+"!", dep.getPosition());
 					foundError = true;
 				}
 				qualifiedDependentAdviceNamesFound.add(qualifiedAdviceName);

@@ -51,6 +51,10 @@ aspect DependencyTypeChecks {
 	eq AdviceDependency.getWeakName(int i).allVarCount() = varCount();
 
 	public void AdviceNameAccess.typeCheck() {
+		if(!allAdviceNames().contains(getAdviceNameRef())) {
+			error("There is no advice with name '"+getAdviceNameRef()+"' defined.");
+		}
+			
 		if(!hasDefaultVariables()) {
 			for(int i=0; i<getNumArgVarRef(); i++) {
 				ArgVarRef ref = getArgVarRef(i);
@@ -64,12 +68,27 @@ aspect DependencyTypeChecks {
 				}
 			}
 			
-			if(adviceVars().size()!=getNumArgVarRef()) {
+			if(adviceVars()!=null && adviceVars().size()!=getNumArgVarRef()) {
 				error("Advice with name '"+getAdviceNameRef()+"' has "+adviceVars().size()+
 				      " arguments but here "+getNumArgVarRef()+" arguments were given.");
 			}			
 		}
 	}
+	
+	public void AdviceDependency.typeCheck() {
+		Bag<String> nameCount = new HashBag<String>();
+		for(AdviceNameAccess a: getStrongNames()) {
+			nameCount.add(a.getAdviceNameRef());
+		}
+		for(AdviceNameAccess a: getWeakNames()) {
+			nameCount.add(a.getAdviceNameRef());
+		}
+		for(String adviceName: new HashSet<String>(nameCount)) {
+			if(nameCount.countOf(adviceName)>1) {
+				error("Advice name '"+adviceName+"' referenced multiple times.");
+			}
+		}
+	}	
 	
 	public boolean ArgVarRef.isWildcard() {
 		return getAdviceVar().startsWith(abc.ja.da.parse.JavaParser.WILDCARD);
@@ -88,17 +107,22 @@ aspect DependencyTypeChecks {
 		return res;
 	}
 
-	//TODO causes infinite recursion	
 	refine AspectErrorCheck public void AspectDecl.typeCheck() {
 		AspectErrorCheck.AspectDecl.typeCheck();
+		
+		java.util.Map<String,AdviceDecl> sameNames = new java.util.HashMap<String,AdviceDecl>();
 		for(AdviceDecl a: namedAdvice()) {
 			for(AdviceDecl b: namedAdvice()) {
 				if(a==b) continue;
 				if(a.getName().equals(b.getName())) {
-					error("Two advice declarations with the same name '"+a.getName()+"'!");
+					sameNames.put(a.getName(),a);
 				}
 			}			
 		}
+		for(String s: sameNames.keySet()) {
+			sameNames.get(s).error("Two advice declarations with the same name '"+s+"'!");
+		}
 	}
+	
 	
 }
