@@ -173,6 +173,8 @@ public class CompileSequence extends abc.ja.CompileSequence {
     // Output the aspect info
     if (abc.main.Debug.v().aspectInfo)
       abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
+    
+    Scene.v().loadDynamicClasses();
   }
 	
   public void weave() throws CompilerFailedException {
