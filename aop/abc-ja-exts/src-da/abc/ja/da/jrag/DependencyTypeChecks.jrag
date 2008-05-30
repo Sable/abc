@@ -78,26 +78,6 @@ aspect DependencyTypeChecks {
 		}
 	}	
 	
-    /* Performs the following type check:
-     * There should be no two named advice with the same advice name.
-     */
-	refine AspectErrorCheck public void AspectDecl.typeCheck() {
-		AspectErrorCheck.AspectDecl.typeCheck();
-		
-		java.util.Map<String,AdviceDecl> sameNames = new java.util.HashMap<String,AdviceDecl>();
-		for(AdviceDecl a: namedAdvice()) {
-			for(AdviceDecl b: namedAdvice()) {
-				if(a==b) continue;
-				if(a.getGivenName().equals(b.getGivenName())) {
-					sameNames.put(a.getGivenName(),a);
-				}
-			}			
-		}
-		for(String s: sameNames.keySet()) {
-			sameNames.get(s).error("Two advice declarations with the same name '"+s+"'!");
-		}
-	}
-	
  	syn lazy java.util.List<String> AdviceNameAccess.adviceVars() {
  		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
  		return all.get(getAdviceNameRef());

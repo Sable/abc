@@ -1,0 +1,42 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Eric Bodden
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+ 
+aspect DependentModifierTypeChecks { 
+
+	// add a property to query a modifier if it is the dependent modifier
+	syn lazy boolean Modifiers.hasDependent() = numModifier("dependent") != 0;
+	
+	// add a property determining if the dependent modifier is valid in this context
+	inh boolean Modifiers.mayHaveDependent();
+	
+	// the default is that no elements may have the dependent modifier
+	eq Program.getChild().mayHaveDependent()  = false;
+	
+	// except for advice declarations
+	eq AdviceDecl.getModifiers().mayHaveDependent() = true;
+	
+	// refine checkModifiers to include the check for dependent
+	refine Privileged
+	public void Modifiers.checkModifiers() {
+	 	Privileged.Modifiers.checkModifiers();
+	 	if(hasDependent() && !mayHaveDependent())
+	    	error("modifier dependent not allowed in this context");
+	}
+	
+}

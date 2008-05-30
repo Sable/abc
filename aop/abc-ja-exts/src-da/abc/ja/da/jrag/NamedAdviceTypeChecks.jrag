@@ -1,0 +1,57 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Eric Bodden
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+ 
+aspect NamedAdviceTypeChecks {
+
+    /* Performs the following type checks:
+     * A named advice should be dependent. A dependent advice should have a name. 
+     */
+    refine Advice
+    public void AdviceDecl.typeCheck() {
+    	Advice.AdviceDecl.typeCheck();
+    	
+    	if(hasGivenName() && !getModifiers().hasDependent()) {
+    		error("Advice with name '"+getGivenName()+"' not flagged as dependent.");    		
+    	} else if(!hasGivenName() && getModifiers().hasDependent()) {
+    		error("Dependent advice must be named, e.g.: after foo() returning: pc() {..");    		
+    	}        	    
+    }
+
+
+    /* Performs the following type check:
+     * There should be no two named advice with the same advice name.
+     */
+	refine AspectErrorCheck public void AspectDecl.typeCheck() {
+		AspectErrorCheck.AspectDecl.typeCheck();
+		
+		java.util.Map<String,AdviceDecl> sameNames = new java.util.HashMap<String,AdviceDecl>();
+		for(AdviceDecl a: namedAdvice()) {
+			for(AdviceDecl b: namedAdvice()) {
+				if(a==b) continue;
+				if(a.getGivenName().equals(b.getGivenName())) {
+					sameNames.put(a.getGivenName(),a);
+				}
+			}			
+		}
+		for(String s: sameNames.keySet()) {
+			sameNames.get(s).error("Two advice declarations with the same name '"+s+"'!");
+		}
+	}
+
+}
