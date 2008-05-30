@@ -35,7 +35,7 @@ import abc.weaving.weaver.ReweavingPass;
 import abc.weaving.weaver.ReweavingPass.ID;
 
 /**
- * Abc extension for dependent advice. Exposes a quick check anda flow-insensitive analysis to resolve advice
+ * Abc extension for dependent advice. Exposes a quick check and a flow-insensitive analysis to resolve advice
  * dependencies at compile time.
  * @author Eric Bodden
  */
