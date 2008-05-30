@@ -22,6 +22,12 @@
  import abc.ja.da.jrag.*;
 :};
 %embed {:
+  /*
+   * WILDCARD will be the prefix of all variables names for which the user used
+   * a wildcard in the input. E.g. "strong a1(x,*)" becomes: "strong a1(x,*i)"
+   * if i is the current wildcard_count. wildcard_count is incremented every time
+   * it is assigned.
+   */
   public int wildcard_count = 0;
   public static final String WILDCARD = "*";  
 

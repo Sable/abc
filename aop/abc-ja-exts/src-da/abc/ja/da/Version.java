@@ -27,8 +27,5 @@ package abc.ja.da;
 public class Version extends abc.aspectj.Version {
     public String name() { return "abc+ja+eaj+da"; }
 
-    public int major() { return 0; }
-    public int minor() { return 1; }
-    public int patch_level() { return 1; }
-  
+    //same version as main abc
 }

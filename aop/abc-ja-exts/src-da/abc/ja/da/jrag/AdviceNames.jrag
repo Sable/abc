@@ -22,100 +22,37 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+/*
+ * Advice specs can now hold an additional advice name.
+ */
 aspect AdviceNames
 {
-	/*
-	 * Advice specs can now hold an additional advice name.
-	 */
-	 
- 	protected String AdviceSpec.name = null;
+ 	protected String AdviceSpec.givenName = null;
  	
- 	syn lazy boolean AdviceSpec.hasName() {
- 		return name!=null;
+ 	//called within the grammar to attach given name; to be called only once
+ 	public void AdviceSpec.setGivenName(String n) {
+ 	    if(givenName!=null) throw new IllegalStateException("Name already set to:" +givenName);
+ 		givenName = n;
  	}
 
- 	syn lazy String AdviceSpec.getName() {
- 		return name;
+ 	syn lazy boolean AdviceSpec.hasGivenName() {
+ 		return givenName!=null;
  	}
 
- 	public void AdviceSpec.setName(String n) {
- 	    if(name!=null) throw new IllegalStateException("Name already set to:" +name);
- 		name = n;
+ 	syn lazy String AdviceSpec.getGivenName() {
+ 		return givenName;
  	}
  	
- 	syn lazy boolean AdviceDecl.hasName() { 	
- 		return getAdviceSpec().hasName();
+ 	//propagate upwards, from AdviceSpec to AdviceDecl
+ 	
+ 	syn lazy boolean AdviceDecl.hasGivenName() { 	
+ 		return getAdviceSpec().hasGivenName();
  	} 
 
- 	syn lazy String AdviceDecl.getName() { 	
- 		return getAdviceSpec().getName();
+ 	syn lazy String AdviceDecl.getGivenName() { 	
+ 		return getAdviceSpec().getGivenName();
  	} 
  	
- 	syn lazy Map<String,java.util.List<String>> AdviceSpec.adviceNameToVars() {
- 		if(!hasName()) return Collections.emptyMap();
-		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
-		java.util.List<String> vars = new ArrayList<String>();
-		for(ParameterDeclaration param: getParameters()) {
-			vars.add(param.getID());
-		}
-		res.put(getName(),vars);
-		return res;
-	} 
-	
-	syn lazy Map<String,java.util.List<String>> AfterReturningSpec.adviceNameToVars() {
-		Map<String,java.util.List<String>> res = super.adviceNameToVars();
-		if(hasReturnParameter()) {
-			java.util.List<String> vars = res.values().iterator().next();
-			vars.add(getReturnParameter().getID());
-		}
-		return res;
-	}
-	
-	syn lazy Map<String,java.util.List<String>> AfterThrowingSpec.adviceNameToVars() {
-		Map<String,java.util.List<String>> res = super.adviceNameToVars();
-		if(hasExceptionParameter()) {
-			java.util.List<String> vars = res.values().iterator().next();
-			vars.add(getExceptionParameter().getID());
-		}
-		return res;
-	}
-
-	syn lazy Map<String,java.util.List<String>> AdviceDecl.adviceNameToVars() {
- 		return getAdviceSpec().adviceNameToVars();
- 	}
- 	
- 	syn lazy Map<String,java.util.List<String>> AspectDecl.adviceNameToVars() {
- 		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
- 		for(BodyDecl b: getBodyDecls()) {
- 			if(b instanceof AdviceDecl) {
- 				AdviceDecl a = (AdviceDecl) b;
-//TODO what if there are multiple advice with the same name? 				
- 				res.putAll(a.adviceNameToVars());
- 			}		
- 		}
- 		return res;
- 	}
- 	
-	inh Map AdviceDependency.allAdviceNameToVars();
- 	eq AspectDecl.getBodyDecl(int i).allAdviceNameToVars() = adviceNameToVars();  
-
-
- 	inh Map AdviceNameAccess.allAdviceNameToVars(); 	 	
- 	eq AdviceDependency.getStrongName(int j).allAdviceNameToVars() = allAdviceNameToVars(); 
- 	eq AdviceDependency.getWeakName(int j).allAdviceNameToVars() = allAdviceNameToVars();
- 	
- 	syn java.util.List<String> AdviceNameAccess.adviceVars() {
- 		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
- 		return all.get(getAdviceNameRef());
- 	}
- 	
- 	syn java.util.Collection<String> AdviceNameAccess.allAdviceNames() {
- 		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
- 		return all.keySet();
- 	}
-
-	//TODO why are these at all necessary?
-	eq BodyDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }
-	eq TypeDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }
+ 
 
 }

@@ -19,6 +19,11 @@
 
 aspect DefaultVariables {
 
+	//this rewrite actually sets the default variable names if none are given:
+	//if no variables are given but the respective named advice exists and 
+	//has at least one variable then we apply the rewrite, adding the advice's
+	//variables the AdviceNameAccess
+	//also we register that default variables were set (to alter warning behaviour)
 	rewrite AdviceNameAccess {
 		when(getNumArgVarRef()==0 && allAdviceNameToVars().get(getAdviceNameRef())!=null
 		     && ((java.util.List)allAdviceNameToVars().get(getAdviceNameRef())).size()>0)
@@ -31,10 +36,71 @@ aspect DefaultVariables {
 		} 
 	}
 	
+	//computes a mapping that maps from the advice names to the respective advice's
+	//variable names; the mapping is empty if there are no named advice  
+ 	syn lazy Map<String,java.util.List<String>> AspectDecl.adviceNameToVars() {
+ 		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
+ 		for(BodyDecl b: getBodyDecls()) {
+ 			if(b instanceof AdviceDecl) {
+ 				AdviceDecl a = (AdviceDecl) b;
+ 				res.putAll(a.adviceNameToVars());
+ 			}		
+ 		}
+ 		return res;
+ 	}
+
+	//forward from AdviceSpec to AdviceDecl
+	syn lazy Map<String,java.util.List<String>> AdviceDecl.adviceNameToVars() {
+ 		return getAdviceSpec().adviceNameToVars();
+ 	}
+ 	
+ 	//computes a mapping that maps from the advice name to its
+	//variable names; the mapping is empty if the advice has no given name  
+	syn lazy Map<String,java.util.List<String>> AdviceSpec.adviceNameToVars() {
+ 		if(!hasGivenName()) return Collections.emptyMap();
+		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
+		java.util.List<String> vars = new ArrayList<String>();
+		for(ParameterDeclaration param: getParameters()) {
+			vars.add(param.getID());
+		}
+		res.put(getGivenName(),vars);
+		return res;
+	} 
+	
+	//same as above but adds the returning-variable to the variable list (if present)  
+	syn lazy Map<String,java.util.List<String>> AfterReturningSpec.adviceNameToVars() {
+		Map<String,java.util.List<String>> res = super.adviceNameToVars();
+		if(hasReturnParameter()) {
+			java.util.List<String> vars = res.values().iterator().next();
+			vars.add(getReturnParameter().getID());
+		}
+		return res;
+	}
+	
+	//same as above but adds the throwing-variable to the variable list (if present)  
+	syn lazy Map<String,java.util.List<String>> AfterThrowingSpec.adviceNameToVars() {
+		Map<String,java.util.List<String>> res = super.adviceNameToVars();
+		if(hasExceptionParameter()) {
+			java.util.List<String> vars = res.values().iterator().next();
+			vars.add(getExceptionParameter().getID());
+		}
+		return res;
+	}
+
+ 	//inherited attribute to make mapping available in an AdviceDependency
+	inh Map AdviceDependency.allAdviceNameToVars();
+ 	eq AspectDecl.getBodyDecl(int i).allAdviceNameToVars() = adviceNameToVars();  
+	eq BodyDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }
+	eq TypeDecl.getChild(int i).allAdviceNameToVars() { throw new Error("Missing equation for allAdviceNameToVars()"); }
+
+ 	//inherited attribute to make mapping available in an AdviceNameAccess
+ 	inh Map AdviceNameAccess.allAdviceNameToVars(); 	 	
+ 	eq AdviceDependency.getStrongName(int j).allAdviceNameToVars() = allAdviceNameToVars(); 
+ 	eq AdviceDependency.getWeakName(int j).allAdviceNameToVars() = allAdviceNameToVars();
+	
 	protected boolean AdviceNameAccess.hasDefaultVariables = false;
 	
 	public boolean AdviceNameAccess.hasDefaultVariables() {
 		return hasDefaultVariables;
 	} 
-
 }

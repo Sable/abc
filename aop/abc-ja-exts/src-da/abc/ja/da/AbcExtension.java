@@ -44,6 +44,8 @@ import abc.weaving.weaver.ReweavingAnalysis;
 import abc.weaving.weaver.ReweavingPass;
 
 /**
+ * Abc extension for dependent advice. Exposes a quick check and a flow-insensitive analysis to resolve advice
+ * dependencies at compile time.
  * @author Eric Bodden
  */
 public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo

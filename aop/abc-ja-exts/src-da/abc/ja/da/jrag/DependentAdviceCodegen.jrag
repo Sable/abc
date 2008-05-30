@@ -16,15 +16,16 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
+import java.util.HashMap;
+
+/*
+ * Registers all information necessary to resolve advice dependencies with the backend.
+ */
 aspect DependentAdviceCodegen {
 
-	inh AspectDecl AdviceDependency.getAspect();
-	inh AspectDecl AdviceDecl.getAspect();
-	eq AspectDecl.getBodyDecl(int i).getAspect() = this;
-	eq BodyDecl.getChild(int i).getAspect() { throw new Error("Missing equation"); }
-	eq TypeDecl.getChild(int i).getAspect() { throw new Error("Missing equation"); }
 
+	//registers an advice dependency
 	public void AdviceDependency.jimplify2() {
 		createAspectInfo();	
 	}
@@ -48,17 +49,48 @@ aspect DependentAdviceCodegen {
 	}
 	
 	
+	//registers a dependent advice
 	refine AdviceCodegen
 	protected void AdviceDecl.createAspectInfo() {
 		AdviceCodegen.AdviceDecl.createAspectInfo();
 		
 		String qualifiedLowLevelAdviceName = getAspect().jvmName() + "." + name();
-		String qualifiedUserGivenAdviceName = getAspect().jvmName() + "." + getName();
+		String qualifiedUserGivenAdviceName = getAspect().jvmName() + "." + getGivenName();
 				
 		abc.da.weaving.aspectinfo.DAInfo dai =
 			((abc.da.HasDAInfo) abc.main.Main.v().getAbcExtension()).getDependentAdviceInfo();
 
 		dai.registerDependentAdvice(qualifiedLowLevelAdviceName,qualifiedUserGivenAdviceName);
 	}
+	
+	syn Map<String,java.util.List<String>> AdviceDependency.stongAdviceToVars() {
+		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
+		for(AdviceNameAccess access: getStrongNames()) {
+			java.util.List<String> l = new ArrayList<String>();
+			for(ArgVarRef a: access.getArgVarRefs()) {
+				l.add(a.getAdviceVar());
+			}
+			res.put(access.getAdviceNameRef(),l);
+		}	
+		return res;
+	}
+
+	syn Map<String,java.util.List<String>> AdviceDependency.weakAdviceToVars() {
+		Map<String,java.util.List<String>> res = new HashMap<String,java.util.List<String>>();
+		for(AdviceNameAccess access: getWeakNames()) {
+			java.util.List<String> l = new ArrayList<String>();
+			for(ArgVarRef a: access.getArgVarRefs()) {
+				l.add(a.getAdviceVar());
+			}
+			res.put(access.getAdviceNameRef(),l);
+		}	
+		return res;
+	}
+
+	inh AspectDecl AdviceDependency.getAspect();
+	inh AspectDecl AdviceDecl.getAspect();
+	eq AspectDecl.getBodyDecl(int i).getAspect() = this;
+	eq BodyDecl.getChild(int i).getAspect() { throw new Error("Missing equation"); }
+	eq TypeDecl.getChild(int i).getAspect() { throw new Error("Missing equation"); }
 
 }

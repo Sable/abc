@@ -21,36 +21,21 @@ import abc.da.weaving.weaver.depadviceopt.ds.Bag;
 import abc.da.weaving.weaver.depadviceopt.ds.HashBag;
 import java.util.ArrayList;
 
+/*
+ * Implements type checks for dependent advice. Since dependent advice can also be generated
+ * directly in the backend (e.g. by a tracematch) some type checks are performed there:
+ * abc.da.weaving.aspectinfo.DAInfo.consistencyCheckForDependentAdvice()
+ */
 aspect DependencyTypeChecks {
 
-	syn Bag<String> AdviceDependency.varCount() {
-		Bag<String> res = new HashBag<String>();
-		for(int i=0; i<getNumStrongName(); i++) {
-			AdviceNameAccess access = getStrongName(i);
-			res.addAll(access.varCount());
-		}
-		for(int i=0; i<getNumStrongName(); i++) {
-			AdviceNameAccess access = getWeakName(i);
-			res.addAll(access.varCount());
-		}
-		return res;
-	}
-	
-	syn Bag<String> AdviceNameAccess.varCount() {
-		Bag<String> res = new HashBag<String>();
-		for(int i=0; i<getNumArgVarRef(); i++) {
-			ArgVarRef ref = getArgVarRef(i);
-			res.add(ref.getAdviceVar());						
-		} 
-		return res;
-	}
-	
-
-	inh Bag<String> AdviceNameAccess.allVarCount();
-	eq AdviceDependency.getStrongName(int i).allVarCount() = varCount(); 
-	eq AdviceDependency.getWeakName(int i).allVarCount() = varCount();
-
-	public void AdviceNameAccess.typeCheck() {
+    /* Performs the following type checks:
+     * (1) an advice referred to in the dependency declaration does not exist (under the given name)
+     * (2) if the variables were not set to the default variables
+     *     a) a variable only occurs once in the entire dependency declaration and it's not a wildcard
+     *        then we give a warning that it should be a wildcard.
+     *     b) the number of variables stated is not the same as the number of actual advice variables
+     */
+ 	public void AdviceNameAccess.typeCheck() {
 		if(!allAdviceNames().contains(getAdviceNameRef())) {
 			error("There is no advice with name '"+getAdviceNameRef()+"' defined.");
 		}
@@ -70,11 +55,14 @@ aspect DependencyTypeChecks {
 			
 			if(adviceVars()!=null && adviceVars().size()!=getNumArgVarRef()) {
 				error("Advice with name '"+getAdviceNameRef()+"' has "+adviceVars().size()+
-				      " arguments but here "+getNumArgVarRef()+" arguments were given.");
+				      " arguments but here "+getNumArgVarRef()+" arguments were given. Did you forget about the returning/throwing variable?");
 			}			
 		}
 	}
 	
+    /* Performs the following type check:
+     * In each dependency declaration each advice name should occur at most once.
+     */
 	public void AdviceDependency.typeCheck() {
 		Bag<String> nameCount = new HashBag<String>();
 		for(AdviceNameAccess a: getStrongNames()) {
@@ -90,6 +78,64 @@ aspect DependencyTypeChecks {
 		}
 	}	
 	
+    /* Performs the following type check:
+     * There should be no two named advice with the same advice name.
+     */
+	refine AspectErrorCheck public void AspectDecl.typeCheck() {
+		AspectErrorCheck.AspectDecl.typeCheck();
+		
+		java.util.Map<String,AdviceDecl> sameNames = new java.util.HashMap<String,AdviceDecl>();
+		for(AdviceDecl a: namedAdvice()) {
+			for(AdviceDecl b: namedAdvice()) {
+				if(a==b) continue;
+				if(a.getGivenName().equals(b.getGivenName())) {
+					sameNames.put(a.getGivenName(),a);
+				}
+			}			
+		}
+		for(String s: sameNames.keySet()) {
+			sameNames.get(s).error("Two advice declarations with the same name '"+s+"'!");
+		}
+	}
+	
+ 	syn lazy java.util.List<String> AdviceNameAccess.adviceVars() {
+ 		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
+ 		return all.get(getAdviceNameRef());
+ 	}
+
+	syn lazy Bag<String> AdviceDependency.varCount() {
+		Bag<String> res = new HashBag<String>();
+		for(int i=0; i<getNumStrongName(); i++) {
+			AdviceNameAccess access = getStrongName(i);
+			res.addAll(access.varCount());
+		}
+		for(int i=0; i<getNumStrongName(); i++) {
+			AdviceNameAccess access = getWeakName(i);
+			res.addAll(access.varCount());
+		}
+		return res;
+	}
+	
+	syn lazy Bag<String> AdviceNameAccess.varCount() {
+		Bag<String> res = new HashBag<String>();
+		for(int i=0; i<getNumArgVarRef(); i++) {
+			ArgVarRef ref = getArgVarRef(i);
+			res.add(ref.getAdviceVar());						
+		} 
+		return res;
+	}
+	
+
+	inh Bag<String> AdviceNameAccess.allVarCount();
+	eq AdviceDependency.getStrongName(int i).allVarCount() = varCount(); 
+	eq AdviceDependency.getWeakName(int i).allVarCount() = varCount();
+
+ 	
+ 	syn lazy java.util.Collection<String> AdviceNameAccess.allAdviceNames() {
+ 		Map<String,java.util.List<String>> all = (Map<String,java.util.List<String>>)allAdviceNameToVars();
+ 		return all.keySet();
+ 	}
+ 	
 	public boolean ArgVarRef.isWildcard() {
 		return getAdviceVar().startsWith(abc.ja.da.parse.JavaParser.WILDCARD);
 	}
@@ -99,29 +145,12 @@ aspect DependencyTypeChecks {
 		for(BodyDecl b: getBodyDecls()) {
 			if(b instanceof AdviceDecl) {
 				AdviceDecl a = (AdviceDecl) b;
-				if(a.hasName()) {
+				if(a.hasGivenName()) {
 					res.add(a);									
 				}
 			}
 		}	
 		return res;
-	}
-
-	refine AspectErrorCheck public void AspectDecl.typeCheck() {
-		AspectErrorCheck.AspectDecl.typeCheck();
-		
-		java.util.Map<String,AdviceDecl> sameNames = new java.util.HashMap<String,AdviceDecl>();
-		for(AdviceDecl a: namedAdvice()) {
-			for(AdviceDecl b: namedAdvice()) {
-				if(a==b) continue;
-				if(a.getName().equals(b.getName())) {
-					sameNames.put(a.getName(),a);
-				}
-			}			
-		}
-		for(String s: sameNames.keySet()) {
-			sameNames.get(s).error("Two advice declarations with the same name '"+s+"'!");
-		}
 	}
 	
 	
