@@ -9,7 +9,7 @@
 <project name="CFG" default="build">
 
 <!-- location of Java1.4Frontend -->
-<property name="Java1.4Frontend" value="../../JastAddJ/Java1.4Frontend"/>
+<property name="Java1.4Frontend" value="../Java1.4Frontend"/>
 
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="AST"/>
