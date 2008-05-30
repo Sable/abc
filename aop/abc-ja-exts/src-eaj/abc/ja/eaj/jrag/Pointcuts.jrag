@@ -109,6 +109,8 @@ aspect Pointcuts {
     return new abc.eaj.weaving.aspectinfo.ArraySet(pos());
   }
 
+  eq LetPointcutExpr.getExpr().nameType() = NameType.EXPRESSION_NAME;
+
   public Pointcut LetPointcutExpr.pointcut() {
     java.util.List vars = methodVars();
 
