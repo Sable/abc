@@ -155,6 +155,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 				return jastAddContentProvider.getChildren(element);
 
 			IResource resource = (IResource) element;
+			if(resource != null) {
 			IContainer sourceRoot = findSourceRoot(resource);
 			if (sourceRoot != null) {
 				if (resource instanceof IContainer) {
@@ -167,6 +168,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 						return jastAddContentProvider.getChildren(node);
 					}
 				}
+			}
 			}
 
 			return resourceContentProvider.getChildren(element);

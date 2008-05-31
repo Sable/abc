@@ -18,7 +18,7 @@ import java.util.HashMap;
 %yylexthrow Scanner.Exception
 
 %unicode
-%line %column
+%line %column %char
 
 %{
   StringBuffer strbuf = new StringBuffer(128);
@@ -56,11 +56,9 @@ import java.util.HashMap;
 
   private HashMap offsets = new java.util.LinkedHashMap();
   public HashMap offsets() { return offsets; }
-  private int registerOffset = 0;
   private void registerOffset() {
-    registerOffset += yycolumn + len();
     Integer key = new Integer(yyline + 2);
-    Integer value = new Integer(registerOffset);
+    Integer value = new Integer(yychar + len());
     offsets.put(key, value);
   }
   

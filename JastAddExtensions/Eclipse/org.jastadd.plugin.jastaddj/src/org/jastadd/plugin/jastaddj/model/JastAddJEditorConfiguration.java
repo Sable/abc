@@ -138,9 +138,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				"Quick Outline", "JastAddJ Quick Outline", "Ctrl+O",
 				new QuickContentOutlineHandler());
 		
+		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				"Insert Crap", "JastAddJ Insert Crap Refactoring", "Ctrl+F9",
 				new InsertCrapRefactoringHandler());
+		*/
 		
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
 				"Rename", "JastAddJ Rename", "Shift+Alt+R",
@@ -182,11 +184,13 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
 	protected void populateRefactorTopMenuItems(IMenuManager refactorMenu,
 			ITopMenuActionBuilder actionBuilder) {
+		/*
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrapTopMenuItem",
 				"Insert &Crap",
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				new InsertCrapRefactoringHandler());
+		*/
 
 		addOrEnhanceTopMenuItem(refactorMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.refactor.RenameTopMenuItem",
@@ -239,9 +243,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
 	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu,
 			JastAddEditor editor) {
+		/*
 		addContextMenuItem(refactorMenu, "Insert &Crap",
 				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
 				new InsertCrapRefactoringHandler());
+		*/
 		
 		addContextMenuItem(refactorMenu, "Re&name",
 				"org.jastadd.plugin.jastaddj.refactor.Rename",

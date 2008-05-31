@@ -589,11 +589,11 @@ public class JastAddJModel extends JastAddModel {
 			}
 		});
 		program.initOptions();
+		try {
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
-		try {
 			Map<String, IFile> map = sourceMap(project, buildConfiguration);
 			if(map != null) {
 				for (String fileName : map.keySet())

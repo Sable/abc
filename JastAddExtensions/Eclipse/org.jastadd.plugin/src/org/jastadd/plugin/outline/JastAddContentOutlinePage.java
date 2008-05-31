@@ -102,6 +102,8 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	}
 	
 	public void update() {
+		if(fInput != fTextEditor.getEditorInput())
+			setInput(fTextEditor.getEditorInput());
 		TreeViewer viewer= getTreeViewer();
 		if (viewer != null) {
 			Control control= viewer.getControl();

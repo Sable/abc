@@ -21,10 +21,10 @@ Require-Bundle: org.jastadd.plugin;visibility:=reexport,
  org.eclipse.jdt.ui;visibility:=reexport,
  org.eclipse.search;visibility:=reexport,
  org.eclipse.ui.editors;visibility:=reexport,
- org.eclipse.ltk.core.refactoring,
- org.eclipse.ltk.ui.refactoring,
- org.eclipse.core.expressions,
- org.eclipse.jdt.core
+ org.eclipse.ltk.core.refactoring;visibility:=reexport,
+ org.eclipse.ltk.ui.refactoring;visibility:=reexport,
+ org.eclipse.core.expressions;visibility:=reexport,
+ org.eclipse.jdt.core;visibility:=reexport
 Eclipse-LazyStart: true
 Export-Package: org.jastadd.plugin.jastaddj,
  org.jastadd.plugin.jastaddj.AST,

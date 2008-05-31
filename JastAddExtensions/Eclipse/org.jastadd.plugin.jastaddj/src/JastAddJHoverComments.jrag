@@ -63,11 +63,6 @@ aspect JastAddJHoverComments {
   eq ParameterDeclaration.hoverComment() {
      StringBuffer res = new StringBuffer(type().typeName());
      res.append(" " + name());
-     /*
-     String javaDoc = javaDocComment();
-     if (javaDoc != null) 
-       res.append("\n\n" + javaDoc);
-     */
      return res.toString();
   } 
   eq ClassDecl.hoverComment() {

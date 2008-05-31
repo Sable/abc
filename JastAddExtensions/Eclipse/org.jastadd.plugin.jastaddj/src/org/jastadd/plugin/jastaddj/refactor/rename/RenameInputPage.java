@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class RenameInputPage extends UserInputWizardPage {
@@ -21,9 +22,11 @@ public class RenameInputPage extends UserInputWizardPage {
 		Composite result = new Composite(parent, SWT.NONE);
 		setControl(result);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
+		layout.numColumns = 2;
 		result.setLayout(layout);
 
+		Label label = new Label(result, SWT.NONE);
+		label.setText("Name:");
 		final Text name = new Text(result, SWT.SINGLE);
 		name.addModifyListener(new ModifyListener() {
 

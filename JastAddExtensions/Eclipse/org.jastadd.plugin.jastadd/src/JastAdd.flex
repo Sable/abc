@@ -18,7 +18,7 @@ import java.util.HashMap;
 %yylexthrow Scanner.Exception
 
 %unicode
-%line %column
+%line %column %char
 
 %{
   StringBuffer strbuf = new StringBuffer(128);
@@ -45,32 +45,20 @@ import java.util.HashMap;
   private void registerComment() {
     String comment = str();
     int line = yyline;
+    // the extra loop accounts from yyline starting at 0
     int pos = 0;
     do {
-      int newPos = comment.indexOf('\n', pos);
-      if (newPos != -1) {
-      	  line++;
-	      if (pos == 0)
-		      	registerOffset += yycolumn;      	  
-	      registerOffset += newPos + 1 - pos;
-    	  Integer key = new Integer(line + 1);
-    	  Integer value = new Integer(registerOffset);
-    	  offsets.put(key, value);
-    	  pos = newPos + 1;
-	  }  
-      else
-    	  break;
-    } while (true);
+      line++;
+      pos = comment.indexOf('\n', pos + 1);
+    } while(pos != -1);
     comments.put(new Integer(line), str());
   }
-  
+
   private HashMap offsets = new java.util.LinkedHashMap();
   public HashMap offsets() { return offsets; }
-  private int registerOffset = 0;
   private void registerOffset() {
-    registerOffset += yycolumn + len();
     Integer key = new Integer(yyline + 2);
-    Integer value = new Integer(registerOffset);
+    Integer value = new Integer(yychar + len());
     offsets.put(key, value);
   }
     

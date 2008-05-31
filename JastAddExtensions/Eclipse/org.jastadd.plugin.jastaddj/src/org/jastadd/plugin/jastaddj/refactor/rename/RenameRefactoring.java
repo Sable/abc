@@ -12,11 +12,8 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IEditorPart;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.jastaddj.AST.IJastAddJRenameConditionNode;
 import org.jastadd.plugin.model.JastAddModel;
-
-import AST.ASTNode;
-import AST.ChangeAccumulator;
-import AST.RefactoringException;
 
 public class RenameRefactoring extends Refactoring {
 
@@ -55,20 +52,8 @@ public class RenameRefactoring extends Refactoring {
 		if(status != null)
 			return status;
 		status = new RefactoringStatus();
-		ASTNode n = (ASTNode)selectedNode;
-		if(n != null) {
-			try {
-				n.rename(name);
-				Stack ch = n.programRoot().cloneUndoStack();
-				n.programRoot().undo();
-				ChangeAccumulator accu = new ChangeAccumulator("Rename");
-				accu.addAllEdits(model, ch.iterator());
-				changes = accu.getChange();
-			} catch (RefactoringException rfe) {
-				status.addFatalError(rfe.getMessage());
-				n.programRoot().undo();
-			}
-		}
+		if(selectedNode instanceof IJastAddJRenameConditionNode)
+			changes = ((IJastAddJRenameConditionNode)selectedNode).checkRenameConditions(name, status, model);
 		return status;
 	}
 
