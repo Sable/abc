@@ -134,7 +134,6 @@ aspect JastAdd {
   eq InhEq.getParameter().isConstructorParameter() = false;
   eq InhEq.getParameter().isExceptionHandlerParameter() = false;
   eq InhEq.getBlock().reachable() = true;
-  eq InhEq.getBlock().hostBodyDecl() = this;
   eq InhEq.getChildParameter().isMethodParameter() = true;
   eq InhEq.getChildParameter().isConstructorParameter() = false;
   eq InhEq.getChildParameter().isExceptionHandlerParameter() = false;

@@ -12,9 +12,6 @@ aspect Rewrite {
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
 
-  // Equation to bind expr to this hostbody declaration
-  eq RewriteDecl.getRewrite().hostBodyDecl() = this;
-  
   // Maps TypeDecl -> RewriteDecl
   syn lazy Map Program.rewritesMap() {
     Map map = new HashMap();

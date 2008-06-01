@@ -90,19 +90,6 @@ aspect JastAddPrettyPrint {
     s.append(";\n");
   }
 
-  public void AspectDecl.toString(StringBuffer s) {
-    getModifiers().toString(s);
-    s.append("aspect " + getID());
-    s.append(" {\n");
-    indent++;
-    for(int i=0; i < getNumBodyDecl(); i++) {
-      getBodyDecl(i).toString(s);
-    }
-    indent--;
-    s.append(indent() + "}\n");
-  }
-
-
   public void ASTDecl.toString(StringBuffer s) {
     getModifiers().toString(s);
     s.append("ast " + getID());

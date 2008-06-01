@@ -5,15 +5,26 @@ aspect ASTGrammar {
   syn lazy final List ASTDecl.getImplementsList() = new List();
 
   inh TypeDecl CompilationUnit.unknownType();
-  eq CompilationUnit.getChild().astNode() { 
-    SimpleSet set = localLookupType("ASTNode");
-    if(set.size() == 1)
-      return (TypeDecl)set.iterator().next();
-    else
-      return unknownType();
-  }
-  eq CompilationUnit.getChild().listNode() {
-    SimpleSet set = localLookupType("List");
+  eq CompilationUnit.getChild().astNode() =
+    lookupFrameworkType("ASTNode");
+  eq CompilationUnit.getChild().listNode() =
+    lookupFrameworkType("List");
+  eq CompilationUnit.getChild().optNode() =
+    lookupFrameworkType("Opt");
+
+  syn TypeDecl CompilationUnit.lookupFrameworkType(String name) {
+    // imported types
+    SimpleSet set = set = importedTypes(name);
+    if(set.isEmpty()) {
+      // types in the same package
+      TypeDecl result = lookupType(packageName(), name);
+      if(result != null && result.accessibleFromPackage(packageName())) 
+        set = set.add(result);
+    }
+    if(set.isEmpty()) {
+      // types imported on demand
+      set = importedTypesOnDemand(name);
+    }
     if(set.size() == 1)
       return (TypeDecl)set.iterator().next();
     else
@@ -27,15 +38,10 @@ aspect ASTGrammar {
   }
   inh TypeDecl AspectDecl.astNode();
 
-  //eq CompilationUnit.getChild().astNode() = (TypeDecl)localLookupType("ASTNode").iterator().next();
-  //eq CompilationUnit.getChild().listNode() = (TypeDecl)localLookupType("List").iterator().next();
-  // Change the packageName() to a specific jastadd package??
-  //eq CompilationUnit.getTypeDecl(int i).astNode() = lookupType(packageName(), "ASTNode");
   inh lazy TypeDecl ASTDecl.astNode();
   inh lazy TypeDecl AttributeDecl.astNode();
   inh lazy TypeDecl ClassDecl.astNode();
   inh lazy TypeDecl Rewrite.astNode();
-  //eq CompilationUnit.getTypeDecl(int i).listNode() = lookupType(packageName(), "List");
   inh lazy TypeDecl Rewrite.listNode();
   
   refine ClassPath public void Program.addSourceFile(String name) {
@@ -87,8 +93,11 @@ aspect ASTGrammar {
   eq NTATokenChild.isNTA() = true;
 
   syn TypeDecl ASTChild.parameterType() = type();
-  eq ASTListChild.parameterType() = extractSingleType(lookupType("List"));
-  eq ASTOptionalChild.parameterType() = extractSingleType(lookupType("Opt"));
+  inh TypeDecl ASTListChild.listNode();
+  eq ASTListChild.parameterType() = listNode();
+
+  inh TypeDecl ASTOptionalChild.optNode();
+  eq ASTOptionalChild.parameterType() = optNode();
 
   syn ASTChild InhEq.child() {
     if(introducedType() instanceof ASTDecl) {
@@ -114,13 +123,13 @@ aspect ASTGrammar {
   }
   public Expr ASTListChild.createDefaultInit() {
     return new ClassInstanceExpr(
-      extractSingleType(lookupType("List")).createQualifiedAccess(),
+      listNode().createQualifiedAccess(),
       new List()
     );
   }
   public Expr ASTOptionalChild.createDefaultInit() {
     return new ClassInstanceExpr(
-      extractSingleType(lookupType("Opt")).createQualifiedAccess(),
+      optNode().createQualifiedAccess(),
       new List()
     );
   }
