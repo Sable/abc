@@ -58,5 +58,9 @@ public abstract class LexicalNode {
 		return "(" + s + ") " + interval;
 	}
 
+	public boolean includeInPrettyPrint() {
+		return true;
+	}
+
 	public abstract LexicalNode clone(LexicalNode previous);
 }

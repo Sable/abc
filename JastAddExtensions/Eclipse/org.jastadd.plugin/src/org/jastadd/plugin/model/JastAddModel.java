@@ -30,6 +30,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.model.repair.RecoveryLexer;
 import org.jastadd.plugin.util.JastAddPair;
 
 public abstract class JastAddModel {
@@ -358,6 +359,8 @@ public abstract class JastAddModel {
 	protected abstract void completeBuild(IProject project);
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
 	protected abstract void discardTree(IProject project);
+	
+	protected abstract RecoveryLexer getRecoveryLexer();
 
 	public abstract void logStatus(IStatus status);
 	

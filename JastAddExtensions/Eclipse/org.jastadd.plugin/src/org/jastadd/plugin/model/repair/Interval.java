@@ -3,10 +3,12 @@ package org.jastadd.plugin.model.repair;
 public class Interval {
 	private int start;
 	private int end;
+	private int pushOffset;
 
 	public Interval(int start, int end) {
 		this.start = start;
 		this.end = end;
+		pushOffset = 0;
 	}
 
 	public int getStart() {
@@ -15,6 +17,10 @@ public class Interval {
 
 	public int getEnd() {
 		return end;
+	}
+	
+	public int getPushOffset() {
+		return pushOffset;
 	}
 
 	public static Interval merge(Interval intervalA, Interval intervalB) {
@@ -44,5 +50,6 @@ public class Interval {
 	public void pushRight(int offset) {
 		start += offset;
 		end += offset;
+		pushOffset += offset;
 	}
 }

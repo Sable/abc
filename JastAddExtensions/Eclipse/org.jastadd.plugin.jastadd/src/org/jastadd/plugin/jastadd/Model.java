@@ -31,6 +31,9 @@ import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.Recovery;
+import org.jastadd.plugin.model.repair.SOF;
 import org.jastadd.plugin.resources.JastAddNature;
 
 import beaver.Parser.Exception;
@@ -189,7 +192,15 @@ public class Model extends JastAddJModel {
 	public Collection recoverCompletion(int documentOffset, String[] linePart, StringBuffer buf, IProject project, String fileName, IJastAddNode node) throws IOException, Exception {
 		if(node == null) {
 			// Try a structural recovery
-			documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
+			/* Old recovery 
+			 documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
+			 */
+			/* New recovery */
+			SOF sof = getRecoveryLexer().parse(buf);
+			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			documentOffset += recoveryNode.getInterval().getPushOffset();
 	
 			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 			if (node == null) {
@@ -265,7 +276,14 @@ public class Model extends JastAddJModel {
 			}
 			// recover the current document
 			StringBuffer buf = new StringBuffer(document.get());
+			
+			/* Old recovery
 			new JastAddStructureModel(buf).doRecovery(0);
+			*/
+			/* New recovery */
+			SOF sof = getRecoveryLexer().parse(buf);
+			Recovery.doRecovery(sof);
+			
 			// build the current document
 			program.addSourceFile(fileName, buf.toString());
 		} catch (Throwable e) {

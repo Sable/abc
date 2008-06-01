@@ -62,9 +62,14 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathE
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.jastaddj.model.repair.JavaLexer;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.Recovery;
+import org.jastadd.plugin.model.repair.RecoveryLexer;
+import org.jastadd.plugin.model.repair.SOF;
 
 import AST.ASTNode;
 import AST.Access;
@@ -401,7 +406,15 @@ public class JastAddJModel extends JastAddModel {
 			}
 			// recover the current document
 			StringBuffer buf = new StringBuffer(document.get());
+			
+			/* Old recovery
 			new JastAddStructureModel(buf).doRecovery(0);
+			*/
+			/* New recovery */
+			SOF sof = getRecoveryLexer().parse(buf);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			
 			// build the current document
 			program.addSourceFile(fileName, buf.toString());
 		} catch (Throwable e) {
@@ -769,6 +782,14 @@ public class JastAddJModel extends JastAddModel {
 		return result;
 	}
 	
+	protected RecoveryLexer lexer;
+	protected RecoveryLexer getRecoveryLexer() {
+		if (lexer == null) {
+			lexer = new JavaLexer();
+		}
+		return lexer;
+	}
+	
 	
 	/**
 	 * Opens the file corresponding to the given compilation unit with a
@@ -938,13 +959,23 @@ public class JastAddJModel extends JastAddModel {
 			StringBuffer buf, IProject project, String fileName,
 			IJastAddNode node) throws IOException, Exception {
 		if (node == null) {
-			// Try a structural recovery
+			// Try recovery
+			
+			/* Old recovery 
 			documentOffset += (new JastAddStructureModel(buf))
 					.doRecovery(documentOffset); // Return recovery offset
 													// change
-
 			node = findNodeInDocument(project, fileName, new Document(buf
 					.toString()), documentOffset - 1);
+			*/
+			/* New recovery */
+			SOF sof = getRecoveryLexer().parse(buf);
+			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			documentOffset += recoveryNode.getInterval().getPushOffset();
+			
+			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 			if (node == null) {
 				System.out.println("Structural recovery failed");
 				return new ArrayList();

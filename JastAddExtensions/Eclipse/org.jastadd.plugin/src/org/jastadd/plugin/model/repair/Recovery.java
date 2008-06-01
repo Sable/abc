@@ -1,8 +1,12 @@
 package org.jastadd.plugin.model.repair;
 
-import java.util.*;
-
 public class Recovery {
+	
+	public static void doRecovery(SOF sof) {
+		buildBridges(sof);
+		recover(sof);
+		System.out.println("Recovered file");
+	}
 
 	public static void buildBridges(SOF sof) {
 		int startDist = 0;
@@ -216,7 +220,7 @@ public class Recovery {
 		LexicalNode node = sof.getNext();
 		int offset = 0;
 		while (!(node instanceof EOF)) {
-			buf.append(node.getValue());
+			buf.append(node.includeInPrettyPrint() ? node.getValue() : whiteSpaceOfLength(node.getValue().length()));
 			node.getInterval().pushRight(offset);
 			if (node instanceof Island && ((Island)node).isFake()) {
 				offset += node.getValue().length();
@@ -224,5 +228,23 @@ public class Recovery {
 			node = node.getNext();
 		}
 		return buf;
+	}
+	
+	private static String whiteSpaceOfLength(int length) {
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < length; i++) {
+			buf.append(" ");
+		}
+		return buf.toString();
+	}
+
+	public static LexicalNode findNodeForOffset(SOF sof, int offset) {
+		LexicalNode node = sof.getNext();
+		while (!(node instanceof EOF)) {
+			if (node.getInterval().inside(offset)) {
+				return node;
+			}
+		}
+		return node;
 	}
 }
