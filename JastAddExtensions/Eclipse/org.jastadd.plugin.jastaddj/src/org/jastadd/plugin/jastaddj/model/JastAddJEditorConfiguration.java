@@ -23,8 +23,16 @@ import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
+import org.jastadd.plugin.jastaddj.model.repair.Indent;
+import org.jastadd.plugin.jastaddj.model.repair.LeftBrace;
+import org.jastadd.plugin.jastaddj.model.repair.LeftParen;
+import org.jastadd.plugin.jastaddj.model.repair.RightBrace;
+import org.jastadd.plugin.jastaddj.model.repair.RightParen;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.Recovery;
+import org.jastadd.plugin.model.repair.SOF;
 
 public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
@@ -53,16 +61,16 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		if (content.length() > 0 && previousKeypressOffset > 0) {
 			previousKeypress = content.charAt(previousKeypressOffset);
 		}
-		if (JastAddStructureModel.OPEN_PARAN == c) {
+		if (LeftParen.TOKEN[0] == c) { //JastAddStructureModel.OPEN_PARAN == c) {
 			cmd.caretOffset = cmd.offset + 1;
 			cmd.shiftsCaret = false;
-			cmd.text += String.valueOf(JastAddStructureModel.CLOSE_PARAN);
+			cmd.text += String.valueOf(RightParen.TOKEN[0]); //JastAddStructureModel.CLOSE_PARAN);
 		} else if ('[' == c) {
 			cmd.caretOffset = cmd.offset + 1;
 			cmd.shiftsCaret = false;
 			cmd.text += "]";
-		} else if (JastAddStructureModel.CLOSE_PARAN == c
-				&& previousKeypress == JastAddStructureModel.OPEN_PARAN) {
+		} else if (RightParen.TOKEN[0] == c //JastAddStructureModel.CLOSE_PARAN == c
+				&& previousKeypress == LeftParen.TOKEN[0]) { //JastAddStructureModel.OPEN_PARAN) {
 			cmd.text = "";
 			cmd.caretOffset = cmd.offset + 1;
 		} else if (']' == c && previousKeypress == '[') {
@@ -77,14 +85,33 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				cmd.text = "";
 				cmd.caretOffset = cmd.offset + 1;
 			}
-		} else if (JastAddStructureModel.CLOSE_BRACE == c) {
+		} else if (RightBrace.TOKEN[0] == c) { //JastAddStructureModel.CLOSE_BRACE == c) {
 
 			StringBuffer buf = new StringBuffer(doc.get());
 			try {
+				/* Old insertion close brace
 				JastAddStructureModel structModel = new JastAddStructureModel(
 						buf);
 				int change = structModel.doRecovery(cmd.offset);
 				structModel.insertionCloseBrace(doc, cmd, change);
+				*/
+				/* New insertion right brace */
+				/* Not sure this should be here because insertionOnNewline adds
+				 * a right brace after a left brace on newline
+				SOF sof = model.getRecoveryLexer().parse(buf);
+				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, cmd.offset);
+				Indent nodeIndent = (Indent)recoveryNode.getPreviousOfType(Indent.class);
+				while (recoveryNode != sof) {
+					if (recoveryNode instanceof LeftBrace) {
+						LeftBrace lBrace = (LeftBrace)recoveryNode;
+						Indent indent = lBrace.indent();
+						if (indent.equals(nodeIndent))
+						
+					}
+					recoveryNode = recoveryNode.getPrevious();
+				}
+				*/
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

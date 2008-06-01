@@ -783,7 +783,7 @@ public class JastAddJModel extends JastAddModel {
 	}
 	
 	protected RecoveryLexer lexer;
-	protected RecoveryLexer getRecoveryLexer() {
+	public RecoveryLexer getRecoveryLexer() {
 		if (lexer == null) {
 			lexer = new JavaLexer();
 		}

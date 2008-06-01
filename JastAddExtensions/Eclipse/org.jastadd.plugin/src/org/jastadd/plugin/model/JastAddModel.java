@@ -360,7 +360,7 @@ public abstract class JastAddModel {
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
 	protected abstract void discardTree(IProject project);
 	
-	protected abstract RecoveryLexer getRecoveryLexer();
+	public abstract RecoveryLexer getRecoveryLexer();
 
 	public abstract void logStatus(IStatus status);
 	
