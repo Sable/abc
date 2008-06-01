@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Yield Plug-in
+Bundle-SymbolicName: org.jastadd.plugin.yield;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: yieldide.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.jastadd.plugin.jastaddj
+Eclipse-LazyStart: true

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+	<!-- New Project Wizard -->
+	
+	<extension point = "org.eclipse.ui.newWizards">
+	<wizard id = "yieldide.YieldNewProjectWizard"
+		name = "New Yield Project"
+		preferredPerspectives = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
+		project = "true"
+		finalPerspective = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
+		class = "yieldide.YieldNewProjectWizard">
+ 		<description>Create a New Yield Project</description>
+		<selection class = "org.eclipse.core.resources.IResource"/>
+	</wizard>
+	</extension>
+
+	<!-- Nature -->
+	
+	<extension point = "org.eclipse.core.resources.natures"
+		id = "yieldide.YieldNature"
+		name = "Yield Nature">
+	<runtime>
+		<run class = "yieldide.YieldNature"/>
+	</runtime>
+	<builder id = "org.jastadd.plugin.builder.JastAddBuilder"/>
+	</extension>
+
+	<!-- Register the Yield model -->
+	
+	<extension point="org.jastadd.plugin.model.JastAddModelProvider"
+        id="yieldide.YieldModel"
+        name="YieldModel">
+		<provider class="yieldide.YieldModel"/>
+ 	</extension>
+</plugin>
