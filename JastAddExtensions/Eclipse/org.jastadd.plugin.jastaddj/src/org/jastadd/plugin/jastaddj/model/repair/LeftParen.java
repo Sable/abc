@@ -2,52 +2,52 @@ package org.jastadd.plugin.jastaddj.model.repair;
 
 import org.jastadd.plugin.model.repair.*;
 
-public class RightParan extends Island {
-	public RightParan(LexicalNode previous, Interval interval) {
-		super(previous, interval, ")");
+public class LeftParen extends Island {
+	public LeftParen(LexicalNode previous, Interval interval) {
+		super(previous, interval, "(");
 	}
 
 	public boolean bridgeMatch(Island island) {
-		return island instanceof LeftParan &&
-			((LeftParan)island).indent().equalTo(indent());
+		return island instanceof RightParen &&
+			((RightParen)island).indent().equalTo(indent());
 	}	
 	public Bridge buildBridge(Island target) {
 		if (!hasBridge()) {
-			bridge = new ParanBridge((LeftParan)target, this);
+			bridge = new ParanBridge(this, (RightParen)target);
 			target.setBridge(bridge);
 		}
 		return bridge;
 	}
 	public String toString() {
-		return "RParan\t" + super.toString();
+		return "LParen\t" + super.toString();
 	}
 	public LexicalNode clone(LexicalNode previous) {
-		return new RightParan(previous, getInterval().clone());
+		return new LeftParen(previous, getInterval().clone());
 	}
 	public boolean possibleConstructionSite(LexicalNode node) {
-		return true;
+		return node instanceof Water;
 	}
 	public Bridge constructIslandAndBridge(LexicalNode node) {
 		if (!hasBridge()) {
 			Interval nodeInterval = node.getInterval();
-			Interval interval = new Interval(nodeInterval.getStart(), nodeInterval.getEnd());
-			Island island = new LeftParan(null, interval);
+			Interval interval = new Interval(nodeInterval.getEnd(), nodeInterval.getEnd());
+			Island island = new RightParen(null, interval);
 			island.setFake(true);
 			if (node instanceof Water) {
-				Recovery.insertBefore(island, node);
-			} else {
 				Recovery.insertAfter(island, node);
+			} else { 
+				Recovery.insertBefore(island, node);
 			}
 			return buildBridge(island);
 		}
 		return bridge;
 	}
 	public boolean startOfBridge() {
-		return false;
+		return true;
 	}
 
 
-	public static final char[] TOKEN = {')'};
+	public static final char[] TOKEN = {'('};
 	private Indent indent;
 
 	public Indent indent() {

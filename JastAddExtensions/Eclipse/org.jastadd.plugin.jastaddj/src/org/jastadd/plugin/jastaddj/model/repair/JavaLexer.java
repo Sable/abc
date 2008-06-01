@@ -210,20 +210,20 @@ public class JavaLexer implements RecoveryLexer {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchLeftParan, start = " + start + ", lastMatch = " + lastMatch); */
 
-		for (int i = 0; i < LeftParan.TOKEN.length; i++) {
+		for (int i = 0; i < LeftParen.TOKEN.length; i++) {
 			if (start+i >= content.length || 
-				LeftParan.TOKEN[i] != content[start+i]) {
+				LeftParen.TOKEN[i] != content[start+i]) {
 				return 0;
 			}
 		}
 	
 		createWater(buf, lastMatch, start, nodeList);
 
-		Interval interval = new Interval(start, start + LeftParan.TOKEN.length);
-		String value = new String(LeftParan.TOKEN);
+		Interval interval = new Interval(start, start + LeftParen.TOKEN.length);
+		String value = new String(LeftParen.TOKEN);
 		/* DEBUG System.out.println("-- match LeftParan = " + value); */
-		nodeList.add(new LeftParan(nodeList.get(nodeList.size()-1), interval));
-		return LeftParan.TOKEN.length;
+		nodeList.add(new LeftParen(nodeList.get(nodeList.size()-1), interval));
+		return LeftParen.TOKEN.length;
 	}
 
 	private int matchRightParan(char[] content, int start, StringBuffer buf, 
@@ -231,19 +231,19 @@ public class JavaLexer implements RecoveryLexer {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchRightParan, start = " + start + ", lastMatch = " + lastMatch); */
 
-		for (int i = 0; i < RightParan.TOKEN.length; i++) {
+		for (int i = 0; i < RightParen.TOKEN.length; i++) {
 			if (start+i >= content.length || 
-				RightParan.TOKEN[i] != content[start+i]) {
+				RightParen.TOKEN[i] != content[start+i]) {
 				return 0;
 			}
 		}
 	
 		createWater(buf, lastMatch, start, nodeList);
 
-		Interval interval = new Interval(start, start + RightParan.TOKEN.length);
-		String value = new String(RightParan.TOKEN);
+		Interval interval = new Interval(start, start + RightParen.TOKEN.length);
+		String value = new String(RightParen.TOKEN);
 		/* DEBUG System.out.println("-- match RightParan = " + value); */
-		nodeList.add(new RightParan(nodeList.get(nodeList.size()-1), interval));
-		return RightParan.TOKEN.length;
+		nodeList.add(new RightParen(nodeList.get(nodeList.size()-1), interval));
+		return RightParen.TOKEN.length;
 	}
 }

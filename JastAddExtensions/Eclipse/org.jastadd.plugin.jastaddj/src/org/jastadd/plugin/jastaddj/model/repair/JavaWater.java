@@ -14,6 +14,10 @@ public class JavaWater extends Water {
 	public LexicalNode clone(LexicalNode previous) {
 		return new JavaWater(previous, getInterval().clone(), getValue());
 	}
+	
+	public boolean includeInPrettyPrint() {
+		return false;
+	}
 
 	public static final char[] COMMENT = {'/', '*'};
 	public static final char STRING = '"';
