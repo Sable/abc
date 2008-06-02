@@ -9,16 +9,15 @@ public class Recovery {
 	}
 
 	public static void buildBridges(SOF sof) {
-		int startDist = 0;
-		int maxDist = nbrOfIslands(sof);
-		int distance = startDist;
-		while (!sof.hasBridge() && distance < maxDist) {
+		int startTol = 0;
+		int tol = startTol;
+		while (!sof.hasBridge()){
 			Island start = sof;
 			boolean change = false;
-			/* DEBUG System.out.println("Starting new iteration with distance: " + distance); */
+			/* DEBUG System.out.println("Starting new iteration with tolerance: " + tol); */
 			while (start != null) {
-				Island end = nextUnmatchedIsland(start, distance);
-				/* DEBUG System.out.println("\tTesting with start: " + start + " with end: " + end + " and distance: " + distance); */
+				Island end = nextUnmatchedIsland(start, tol);
+				/* DEBUG System.out.println("\tTesting with start: " + start + " with end: " + end + " and tolerance: " + tol); */
 				if (start.bridgeMatch(end)) {
 					/* DEBUG System.out.println("\t\tMatch found"); */
 					start.buildBridge(end);
@@ -29,9 +28,9 @@ public class Recovery {
 				}
 			}
 			if (!change) {
-				distance++;
-			} else if (distance > startDist) {
-				distance = startDist;
+				tol++;
+			} else if (tol > startTol) {
+				tol = startTol;
 			}
 		}
 	}
@@ -51,15 +50,15 @@ public class Recovery {
 		return null;
 	}
 	
-	public static Island nextUnmatchedIsland(Island island, int distance) {
-		int dist = 0;
+	public static Island nextUnmatchedIsland(Island island, int tolerance) {
+		int tol = 0;
 		island = nextIsland(island);
-		while (dist <= distance && island != null) {
+		while (tol <= tolerance && island != null) {
 			if (!island.hasBridge()) {
-				if (dist == distance) {
+				if (tol == tolerance) {
 					return island;
 				}
-				dist++;
+				tol++;
 			}
 			if (island.startOfBridge() && island.hasBridge()) {
 				Bridge bridge = island.getBridge();
