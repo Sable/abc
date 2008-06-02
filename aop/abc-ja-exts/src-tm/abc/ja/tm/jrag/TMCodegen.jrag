@@ -125,14 +125,10 @@ aspect TMCodegen
         MethodSig sig, int[] jp_params, java.util.List methods, int kind)
     {
         polyglot.util.Position pos;
-        if (kind == abc.tm.ast.TMAdviceDecl.BODY)
-            pos = pos();
-        else
-            pos = polyglot.util.Position.COMPILER_GENERATED;
 
         globalAspectInfo().addAdviceDecl(new TMAdviceDecl(
             spec, pc, sig, aspectClass(), jp_params[0], jp_params[1],
-            jp_params[2], methods, pos(), traceMatchName(), pos, kind));
+            jp_params[2], methods, pos(), traceMatchName(), pos(), kind));
     }
 
     syn MethodSig TraceMatchDecl.syncMethodSig() =
