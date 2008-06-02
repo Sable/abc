@@ -220,7 +220,7 @@ public class Recovery {
 		LexicalNode node = sof.getNext();
 		int offset = 0;
 		while (!(node instanceof EOF)) {
-			buf.append(node.includeInPrettyPrint() ? node.getValue() : whiteSpaceOfLength(node.getValue().length()));
+			buf.append(node.includeInPrettyPrint() ? node.getValue() : whiteSpaceOfLength(node.getValue()));
 			node.getInterval().pushRight(offset);
 			if (node instanceof Island && ((Island)node).isFake()) {
 				offset += node.getValue().length();
@@ -230,10 +230,14 @@ public class Recovery {
 		return buf;
 	}
 	
-	private static String whiteSpaceOfLength(int length) {
+	private static String whiteSpaceOfLength(String value) {
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < length; i++) {
-			buf.append(" ");
+		for (int i = 0; i < value.length(); i++) {
+			if (value.charAt(i) == '\n') {
+				buf.append("\n");
+			} else {
+				buf.append(" ");
+			}
 		}
 		return buf.toString();
 	}
