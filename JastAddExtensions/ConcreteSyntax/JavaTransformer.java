@@ -9,14 +9,14 @@
 
 import AST.*;
 
-class JavaChecker extends Frontend {
+class JavaTransformer extends Frontend {
 
   public static void main(String args[]) {
     compile(args);
   }
 
   public static boolean compile(String args[]) {
-    return new JavaChecker().process(
+    return new JavaTransformer().process(
         args,
         new BytecodeParser(),
         new JavaParser() {
