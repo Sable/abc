@@ -238,19 +238,70 @@ aspect ConcreteSyntax {
   }
 
   private void List.appendLayoutInParent(String s) {
-    int childIndex = getParent().getIndexOfChild(this);
+    int childIndex = getParent().getConcreteIndexOfChild(this);
     if(childIndex == -1)
       throw new RuntimeException("Orphaned list detected during layout");
     getParent().appendLayout(s, childIndex);
   }
   private void List.prependLayoutInParent(String s) {
-    int childIndex = getParent().getIndexOfChild(this);
+    int childIndex = getParent().getConcreteIndexOfChild(this);
     if(childIndex == -1)
       throw new RuntimeException("Orphaned list detected during layout");
     getParent().appendLayout(s, childIndex + 1);
   }
 
+  public void ArrayInit.adjustLayout(String[] strings, ASTNode[] children) {
+    if(strings[1].equals("")) {
+      String s = removeComments(strings[0]);
+      int index = s.lastIndexOf('}');
+      if(index != -1) {
+        s = strings[0];
+        String lhs = s.substring(0, index);
+        String rhs = s.substring(index);
+        strings[0] = lhs;
+        strings[1] = rhs;
+      }
+    }
+  }
+
+  public void StringLiteral.adjustLayout(String[] strings, ASTNode[] children) {
+    String[] parentStrings;
+    int childIndex;
+    ASTNode node = this;
+    do {
+      childIndex = node.getParent().getConcreteIndexOfChild(node);
+      parentStrings = node.getParent().concreteSyntax();
+      node = node.getParent();
+    } while(childIndex != -1 && parentStrings[childIndex].equals(""));
+    if(childIndex != -1) {
+      String s = parentStrings[childIndex];
+      int index = s.length() - 1;
+      while(index >= 0 && (s.charAt(index) != '\"'))// || (index != 0 && s.charAt(index-1) != '\\')))
+        index--;
+      String lhs;
+      if(index == 0)
+    	  lhs = "";
+      else
+    	  lhs = s.substring(0, index);
+      String rhs = s.substring(index);
+      parentStrings[childIndex] = lhs;
+      strings[0] = rhs + strings[0];
+    }
+  }
+
   public void List.adjustLayout(String[] strings, ASTNode[] children) {
+    if(strings[0] != null && !strings[0].equals("")) {
+      String prefix = strings[0].substring(0, 1);
+      if(prefix.equals("(") || prefix.equals(")") || 
+         prefix.equals("{") || prefix.equals("}")) {
+        int childIndex = getParent().getConcreteIndexOfChild(this);
+        String[] parentStrings = getParent().concreteSyntax();
+        if(childIndex != -1) {
+          parentStrings[childIndex] += prefix;
+          strings[0] = strings[0].substring(1);
+        }
+      }
+    }
 
     if(isBodyDeclList() || isStmtList()) {
       if(noChildrenWithLayout()) {
@@ -277,6 +328,32 @@ aspect ConcreteSyntax {
       }
     }
     else {
+      if(noChildrenWithLayout()) {
+      }
+      else {
+        keepCommasOnly(strings, children);
+      }
+    }
+  }
+  private void List.keepCommasOnly(String[] strings, ASTNode[] children) {
+    for(int i = 1; i < strings.length - 1; i++) {
+      String str = removeComments(strings[i]);
+      int index = str.indexOf(',');
+      if(index != -1) {
+        str = strings[i];
+        int leftIndex = index - 1;
+        while(leftIndex >= 0 && Character.isWhitespace(str.charAt(leftIndex)))
+          leftIndex--;
+        String lhs = str.substring(0, leftIndex + 1);
+        int rightIndex = index + 1;
+        while(rightIndex < str.length() && Character.isWhitespace(str.charAt(rightIndex)))
+          rightIndex++;
+        String rhs = str.substring(rightIndex);
+        String mid = str.substring(leftIndex + 1, rightIndex);
+        children[i-1].appendLayout(lhs, children[i-1].getNumChild());
+        children[i].prependLayout(rhs, 0);
+        strings[i] = mid;
+      }
     }
   }
   private void List.splitBeginOpenBrace(String[] strings, ASTNode[] children) {
@@ -297,7 +374,7 @@ aspect ConcreteSyntax {
     }
   }
   private void List.splitBetween(String[] strings, ASTNode[] children) {
-    for(int i = 1; i < strings.length - 2; i++) {
+    for(int i = 1; i < strings.length - 1; i++) {
       String str = strings[i];
       ASTNode child = children[i-1];
       String childPrefix = child.concreteSyntax()[child.getNumChild()];
@@ -344,6 +421,17 @@ aspect ConcreteSyntax {
   syn ASTNode[] ASTNode.concreteChildren() = children;
   eq GenericClassDecl.concreteChildren() =
     new ASTNode[] { getChild(0), getChild(4), getChild(1), getChild(2), getChild(3) };
+
+  public int ASTNode.getConcreteIndexOfChild(ASTNode child) {
+    int index = getIndexOfChild(child);
+    ASTNode[] concreteChildren = concreteChildren();
+    if(concreteChildren[index] == child)
+      return index;
+    for(int i = 0; i < concreteChildren.length; i++)
+      if(concreteChildren[i] == child)
+        return i;
+    return -1;
+  }
 
 
   // generate default concrete syntax for an AST node
@@ -420,7 +508,7 @@ aspect ConcreteSyntax {
     }
     if(getParent() == null)
       return "";
-    int index = getParent().getIndexOfChild(this);
+    int index = getParent().getConcreteIndexOfChild(this);
     if(index == -1)
       return "";
     if(index == 0) {
@@ -433,16 +521,34 @@ aspect ConcreteSyntax {
     getParent() instanceof List && getParent().getParent() instanceof Block;
 
   // character ranges for AST nodes
-  public int ASTNode.startLine() { return getLine(start()); }
-  public int ASTNode.startColumn() { return getColumn(start()); }
-  public int ASTNode.endLine() { return getLine(end()); }
-  public int ASTNode.endColumn() { return getColumn(end()); }
-
-  public int Modifiers.startLine() { return getModifierList().startLine(); }
-  public int Modifiers.startColumn() { return getModifierList().startColumn(); }
-  public int Modifiers.endLine() { return getModifierList().endLine(); }
-  public int Modifiers.endColumn() { return getModifierList().endColumn(); }
-
+  public int ASTNode.startLine() {
+    int startLine = getLine(start());
+    for(int i = 0; startLine == 0 && i < getNumChild(); i++)
+      if(getChild(i).hasLayout())
+        startLine = getChild(i).startLine();
+    return startLine;
+  }
+  public int ASTNode.startColumn() {
+    int startColumn = getColumn(start());
+    for(int i = 0; startColumn == 0 && i < getNumChild(); i++)
+      if(getChild(i).hasLayout())
+        startColumn = getChild(i).startColumn();
+    return startColumn;
+  }
+  public int ASTNode.endLine() {
+    int endLine = getLine(end());
+    for(int i = getNumChild()-1; endLine == 0 && i >= 0; i--)
+      if(getChild(i).hasLayout())
+        endLine = getChild(i).endLine();
+    return endLine;
+  }
+  public int ASTNode.endColumn() {
+    int endColumn = getColumn(end());
+    for(int i = getNumChild()-1; endColumn == 0 && i >= 0; i--)
+      if(getChild(i).hasLayout())
+        endColumn = getChild(i).endColumn();
+    return endColumn;
+  }
   public int Dot.startLine() { return getLeft().startLine(); }
   public int Dot.startColumn() { return getLeft().startColumn(); }
   public int Dot.endLine() { return getRight().endLine(); }
@@ -450,32 +556,10 @@ aspect ConcreteSyntax {
 
   public int ArrayTypeAccess.startLine() { return getAccess().startLine(); }
   public int ArrayTypeAccess.startColumn() { return getAccess().startColumn(); }
+  
+  public int CompilationUnit.startLine() { return 1; }
+  public int CompilationUnit.startColumn() { return 1; }
 
-
-  public int Opt.startLine() {
-    int startLine = super.startLine();
-    if(startLine == 0 && getNumChild() == 1)
-      startLine = getChild(0).startLine();
-    return startLine;
-  }
-  public int Opt.startColumn() {
-    int startColumn = super.startColumn();
-    if(startColumn == 0 && getNumChild() == 1)
-      startColumn = getChild(0).startColumn();
-    return startColumn;
-  }
-  public int Opt.endLine() {
-    int endLine = super.endLine();
-    if(endLine == 0 && getNumChild() == 1)
-      endLine = getChild(0).endLine();
-    return endLine;
-  }
-  public int Opt.endColumn() {
-    int endColumn = super.endColumn();
-    if(endColumn == 0 && getNumChild() == 1)
-      endColumn = getChild(0).endColumn();
-    return endColumn;
-  }
 
   syn boolean ASTNode.hasLayout() = startLine() != 0;
 
@@ -526,5 +610,31 @@ aspect ConcreteSyntax {
     }
     return strings;
   }
+
+  public String ASTNode.debugLayout() {
+    StringBuffer s = new StringBuffer();
+    debugLayout(s, 0);
+    return s.toString();
+  }
+
+  public void ASTNode.debugLayout(StringBuffer s, int j) {
+    for(int i = 0; i < j; i++) {
+      s.append("  ");
+    }
+    s.append(debugString() + "\n");
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).debugLayout(s, j + 1);
+  }
+ syn String ASTNode.debugString() {
+   StringBuilder res = new StringBuilder();
+   res.append(getClass().getName());
+   res.append("[");
+   if(concreteSyntax != null) 
+     for(String s : concreteSyntax())
+       res.append(s + ", ");
+   res.append("]");
+   return res.toString();
+ }
+
 
 }
