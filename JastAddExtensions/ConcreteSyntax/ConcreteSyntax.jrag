@@ -1,0 +1,446 @@
+aspect ConcreteSyntax {
+    
+    /*
+    public ASTNode ASTNode.transformation() {
+        ASTNode res = (ASTNode)copy();
+        for(int i = 0; i < getNumChildNoTransform(); i++) {
+          ASTNode node = getChildNoTransform(i);
+          if(node != null) node = node.transformation();
+          res.setChild(node, i);
+        }
+        return res;
+    }
+    */
+  
+    /*
+    public ASTNode Block.transformation() {
+      Block block = (Block)copy();
+      List list = new List();
+      for(int i = 0; i < getNumStmt(); i++)
+        if(!(getStmt(i) instanceof EmptyStmt))
+          list.add((Stmt)getStmt(i).transformation());
+      block.setStmtList(list);
+      return block;
+    }
+    */
+  
+  /*
+    public ASTNode WhileStmt.transformation() {
+      return new ForStmt(
+        new List(),
+        new Opt(getCondition().transformation()),
+        new List(),
+        (Stmt)getStmt().transformation()
+      );
+    }*/
+
+    /*
+    public ASTNode WhileStmt.transformation() {
+      return new IfStmt(
+        (Expr)getCondition().transformation(),
+        (Stmt)getStmt().transformation(),
+        new Opt()
+      );
+    }*/
+
+  // generate a string for a subtree where layout information is preserved
+  // unless the nodes lack concrete syntax in which case a default printing strategy is used
+  syn String ASTNode.layout() {
+    if(concreteSyntax == null)
+      concreteSyntax = createConcreteSyntax();
+    String[] strings = concreteSyntax();
+    ASTNode[] children = concreteChildren();
+    StringBuilder buf = new StringBuilder();
+    if(children != null) {
+      for(int i = 0; i < getNumChild(); i++) {
+        buf.append(strings[i]);
+        if(children[i] != null)
+          buf.append(children[i].layout());
+      }
+    }
+    else if(strings != null) {
+        buf.append(strings[0]);
+    }
+    if(strings != null)
+      buf.append(strings[strings.length-1]);
+    return buf.toString();
+  }
+
+  protected String[] ASTNode.concreteSyntax;
+  protected String[] ASTNode.concreteSyntax() {
+    if(concreteSyntax == null) {
+      ASTNode[] nodes = concreteChildren();
+      concreteSyntax = new String[getNumChild() == 0 ? 2 : (getNumChild() + 1)];
+    }
+    return concreteSyntax;
+  }
+
+  public void CompilationUnit.addLayout() {
+    addLayout(layoutBuffer());
+  }
+  // populate layout information in the nodes from ranges given by the parser
+  public void ASTNode.addLayout(ArrayList<String> layoutBuffer) {
+    String[] strings = concreteSyntax();
+    for(int i = 0; i < strings.length; i++)
+      if(strings[i] == null)
+        strings[i] = "";
+    if(hasLayout()) {
+      ASTNode[] children = concreteChildren();
+      int first = -1;
+      int last = -1;
+      if(children != null) {
+        for(int i = 0; i < getNumChild(); i++) {
+          if(children[i] != null && children[i].hasLayout()) {
+            if(first == -1)
+              first = i;
+            last = i;
+          }
+        }
+      }
+      if(first == -1) {
+        int startLine = startLine();
+        int startColumn = startColumn();
+        int endLine = endLine();
+        int endColumn = endColumn();
+        String str = extractLayout(startLine, startColumn, endLine, endColumn, layoutBuffer);
+        appendLayout(str, 0);
+      }
+      else {
+        int startLine = startLine();
+        int startColumn = startColumn();
+        int endLine = children[first].startLine();
+        int endColumn = children[first].startColumn();
+        String str = extractLayout(startLine, startColumn, endLine, endColumn, layoutBuffer);
+        appendLayout(str.substring(0, str.length()-1), 0);
+
+        startLine = children[last].endLine();
+        startColumn = children[last].endColumn();
+        endLine = endLine();
+        endColumn = endColumn();
+        str = extractLayout(startLine, startColumn, endLine, endColumn, layoutBuffer);
+        int pos = children == null ? 1 : getNumChild();
+        prependLayout(str.substring(1), pos);
+
+        for(int i = first + 1; i <= last; i++) {
+          ASTNode child = children[i];
+          if(child != null && child.hasLayout()) {
+            startLine = children[first].endLine();
+            startColumn = children[first].endColumn();
+            endLine = child.startLine();
+            endColumn = child.startColumn();
+            str = extractLayout(startLine, startColumn, endLine, endColumn, layoutBuffer);
+            appendLayout(str.substring(1, str.length()-1), first + 1);
+            first = i;
+          }
+        }
+      }
+    }
+    adjustLayout(strings, children);
+    if(children != null) {
+      for(int i = 0; i < getNumChild(); i++)
+    	if(children[i] != null)
+    	  children[i].addLayout(layoutBuffer);
+    }
+  }
+
+  public void ASTNode.appendLayout(String s, int index) {
+    String[] strings = concreteSyntax();
+    if(strings[index] == null)
+      strings[index] = s;
+    else
+      strings[index] += s;
+  }
+  public void ASTNode.prependLayout(String s, int index) {
+    String[] strings = concreteSyntax();
+    if(strings[index] == null)
+      strings[index] = s;
+    else
+      strings[index] = s + strings[index];
+  }
+
+  // The default layout may need to be adjusted
+  // this is a hook that can be overridden for particular langauge constructs
+  public void ASTNode.adjustLayout(String[] strings, ASTNode[] children) {
+  }
+  public void WhileStmt.adjustLayout(String[] strings, ASTNode[] children) {
+    // move whitespace and comments after '(' into the condition node
+	  String s = strings[0];
+	  int index = s.indexOf('(');
+	  String lhs = s.substring(0, index+1);
+	  String rhs = s.substring(index+1);
+	  strings[0] = lhs;
+	  children[0].prependLayout(rhs, 0);
+  }
+  public void Block.adjustLayout(String[] strings, ASTNode[] children) {
+    // move whitespace and comments that occur on another line than '{' into
+    // the first statement in the block
+	  String s = strings[0];
+	  int index = s.indexOf('{');
+	  while(index != -1 && index < s.length() && s.charAt(index) != '\n')
+		  index++;
+	  if(index < s.length()) {
+		  String lhs = s.substring(0, index+1);
+		  String rhs = s.substring(index+1);
+		  strings[0] = lhs;
+		  children[0].prependLayout(rhs, 0);
+	  }
+  }
+
+  syn boolean List.noChildrenWithLayout() {
+    for(int i = 0; i < getNumChild(); i++)
+      if(getChild(i).hasLayout())
+        return false;
+    return true;
+  }
+
+
+
+  public static String ASTNode.removeComments(String s) {
+    StringBuilder result = new StringBuilder();
+    for(int i = 0; i < s.length(); i++) {
+      if(s.charAt(i) == '/') {
+        if(i < s.length() - 1) {
+          if(s.charAt(i+1) ==  '/') {
+            // eat until eol
+            while(i < s.length() && s.charAt(i) != '\n') {
+              result.append('#');
+              i++;
+            }
+            if(i < s.length())
+              result.append(s.charAt(i));
+          }
+          else if(s.charAt(i+1) == '*') {
+            // eat until */
+            i++;
+            result.append("##");
+            while(i < s.length() - 1 && (s.charAt(i) != '*' || s.charAt(i+1) != '/' )) {
+              result.append('#');
+              i++;
+            }
+            if(i < s.length() - 1) {
+              result.append("#");
+              i++;
+            }
+          }
+          else
+            result.append('/');
+        }
+        else {
+          result.append('/');
+        }
+      }
+      else {
+        result.append(s.charAt(i));
+      }
+    }
+    return result.toString();
+  }
+
+
+  public void List.adjustLayout(String[] strings, ASTNode[] children) {
+    if(noChildrenWithLayout()) {
+
+    }
+    if(isBodyDeclList()) {
+      // move whitespace and comments that occur on another line than '{' into
+      // the first statement in the block
+      String s = strings[0];
+      int index = s.indexOf('{');
+      while(index != -1 && index < s.length() && s.charAt(index) != '\n')
+        index++;
+      if(index < s.length()) {
+        String lhs = s.substring(0, index+1);
+        String rhs = s.substring(index+1);
+        strings[0] = lhs;
+        children[0].prependLayout(rhs, 0);
+      }
+      for(int i = 1; i < strings.length - 2; i++) {
+        String str = strings[i];
+        strings[i] = "";
+        ASTNode child = children[i-1];
+        String childPrefix = child.concreteSyntax()[child.getNumChild()];
+        if(childPrefix == null || !childPrefix.endsWith("\n")) {
+        	index = str.indexOf('\n');
+        	String lhs = str.substring(0, index + 1);
+        	String rhs = str.substring(index + 1, str.length());
+        	child.appendLayout(lhs, child.getNumChild());
+        	children[i].prependLayout(rhs, 0);
+        }
+        else
+        	children[i].prependLayout(str, 0);
+      }
+      s = strings[strings.length-1];
+      index = s.indexOf('}');
+      if(index > 0) {
+        String lhs = s.substring(0, index);
+        String rhs = s.substring(index);
+        int i = getNumChild() - 1;
+        while(i > 0 && !children[i].hasLayout())
+        	i--;
+        ASTNode child = children[i];
+        if(child.hasLayout()) {
+            strings[strings.length-1] = rhs;
+        	child.appendLayout(lhs, child.getNumChild());
+        }
+      }
+    }
+  }
+
+  // The AST may have another structure than the parse tree.
+  // This attribute should return an array with the children
+  // in lexical order.
+
+  syn ASTNode[] ASTNode.concreteChildren() = children;
+  eq GenericClassDecl.concreteChildren() =
+    new ASTNode[] { getChild(0), getChild(4), getChild(1), getChild(2), getChild(3) };
+
+
+  // generate default concrete syntax for an AST node
+  syn String[] ASTNode.createConcreteSyntax() {
+    String[] strs = concreteSyntax();
+    for(int i = 0; i < strs.length; i++) {
+      if(strs[i] == null)
+        strs[i] = "";
+    }
+    return strs;
+  }
+  eq List.createConcreteSyntax() {
+    if(isBodyDeclList())
+      return createBodyDeclListConcreteSyntax();
+    return super.createConcreteSyntax();
+  }
+  syn boolean List.isBodyDeclList() = 
+    getParent() instanceof ClassDecl && 
+    ((ClassDecl)getParent()).getBodyDeclList() == this;
+
+  syn String[] List.createBodyDeclListConcreteSyntax() {
+    String[] strs = new String[getNumChild() + 1];
+    strs[0] = "{\n";
+    for(int i = 1; i < strs.length - 1; i++)
+      strs[i] = "";
+    strs[strs.length - 1] = createIndent() + "}\n";
+    return strs;
+  }
+  
+  eq MethodDecl.createConcreteSyntax() {
+    String[] strs = new String[6];
+    strs[0] = createIndent();
+    strs[1] = "";
+    strs[2] = " " + name() + "(";
+    strs[3] = ") ";
+    strs[4] = hasBlock() ? "" : ";\n";
+    strs[5] = "";
+    return strs;
+  }
+  eq Block.createConcreteSyntax() = shouldHaveIndent() ? new String[] { createIndent() + "{\n", createIndent() + "}\n" }
+    : new String[] { "{\n" , createIndent() + "}\n" };
+  eq ReturnStmt.createConcreteSyntax() = hasResult() ?
+    new String[] { createIndent() + "return ", ";\n" } : new String[] { createIndent() + "return", ";\n" };
+  eq VarAccess.createConcreteSyntax() = new String[] { name(), "" };
+  eq TypeAccess.createConcreteSyntax() = new String[] { nameWithPackage(), "" };
+  eq PrimitiveTypeAccess.createConcreteSyntax() = new String[] { name(), "" };
+  eq Dot.createConcreteSyntax() = new String[] { "", ".", "" };
+  eq ForStmt.createConcreteSyntax() = new String[] { createIndent() + "for(", ";", ";", ") ", "" };
+  eq IfStmt.createConcreteSyntax() = hasElse() ? new String[] { createIndent() + "if(", ") ", " else ", "" }
+    : new String[] { createIndent() + "if(", ") ", "", "" };
+
+
+  syn String ASTNode.createIndent() = "";
+  eq List.createIndent() = getParent().createIndent();
+  eq Opt.createIndent() = getParent().createIndent();
+
+  eq BodyDecl.createIndent() = extractIndent();
+  eq Stmt.createIndent() = extractIndent();
+  eq Block.createIndent() = shouldHaveIndent() ? extractIndent() : getParent().createIndent();
+
+  syn String ASTNode.extractIndent() {
+    if(concreteSyntax != null && concreteSyntax[0] != null) {
+      String s = concreteSyntax[0];
+      int index = s.lastIndexOf('\n');
+      s = s.substring(index+1);
+      int i = 0;
+      while(i < s.length() && Character.isWhitespace(s.charAt(i)))
+        i++;
+      return s.substring(0, i);
+    }
+    if(getParent() == null)
+      return "";
+    int index = getParent().getIndexOfChild(this);
+    if(index == -1)
+      return "";
+    if(index == 0) {
+      return getParent().createIndent() + "  ";
+    }
+    return getParent().getChild(index - 1).createIndent();
+  }
+
+  syn boolean Block.shouldHaveIndent() = 
+    getParent() instanceof List && getParent().getParent() instanceof Block;
+
+  // character ranges for AST nodes
+  public int ASTNode.startLine() { return getLine(start()); }
+  public int ASTNode.startColumn() { return getColumn(start()); }
+  public int ASTNode.endLine() { return getLine(end()); }
+  public int ASTNode.endColumn() { return getColumn(end()); }
+
+  public int Modifiers.startLine() { return getModifierList().startLine(); }
+  public int Modifiers.startColumn() { return getModifierList().startColumn(); }
+  public int Modifiers.endLine() { return getModifierList().endLine(); }
+  public int Modifiers.endColumn() { return getModifierList().endColumn(); }
+
+  public int Dot.startLine() { return getLeft().startLine(); }
+  public int Dot.startColumn() { return getLeft().startColumn(); }
+  public int Dot.endLine() { return getRight().endLine(); }
+  public int Dot.endColumn() { return getRight().endColumn(); }
+
+  syn boolean ASTNode.hasLayout() = startLine() != 0;
+
+  protected String ASTNode.extractLayout(int startLine, int startColumn, int endLine, int endColumn, ArrayList<String> layoutBuffer) {
+    try {
+      if(startLine == endLine)
+        return layoutBuffer.get(startLine-1).substring(startColumn-1, endColumn);
+      StringBuilder buf = new StringBuilder();
+      buf.append(layoutBuffer.get(startLine-1).substring(startColumn-1));
+      for(int i = startLine + 1; i < endLine; i++)
+        buf.append(layoutBuffer.get(i-1));
+      buf.append(layoutBuffer.get(endLine-1).substring(0, endColumn));
+      return buf.toString();
+
+    } catch(Exception e) {
+      return "";
+    }
+  }
+
+  private ArrayList<String> CompilationUnit.layoutBuffer() {
+    String fileName = pathName();
+    if(fileName == null)
+      throw new UnsupportedOperationException("Can only extract layout from compilation units with source attached");
+    ArrayList<String> strings = new ArrayList<String>();
+    try {
+      java.io.FileReader r = new java.io.FileReader(fileName);
+      int previous = 0;
+      int current = r.read();
+      StringBuilder buf = new StringBuilder();
+      while(current != -1) {
+        buf.append((char)current);
+        if(current == 0x0a && previous != 0x0d // LF
+            || current == 0x0d // CR
+            || current == 0x85 // NEL
+            || current == 0x0c // FF
+            || current == 0x2028 // LS
+            || current == 0x2029 // ps
+          ) {
+          strings.add(buf.toString());
+          buf = new StringBuilder();
+        }
+        previous = current;
+        current = r.read();
+      }
+      strings.add(buf.toString());
+      r.close();
+    } catch(IOException e) {
+    }
+    return strings;
+  }
+
+}

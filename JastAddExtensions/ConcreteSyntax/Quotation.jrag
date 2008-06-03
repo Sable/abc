@@ -1,0 +1,61 @@
+aspect Quotation {
+  eq ExprQuote.type() = extractSingleType(lookupType("Expr"));
+  eq AntiQuote.type() = getExpr().type();
+
+  public void ExprQuote.toString(StringBuffer s) {
+    s.append("\n");
+    getExpr().quote(s, "  ");
+  }
+
+  public void ASTNode.quote(StringBuffer s, String indent) {
+    s.append(indent);
+    s.append("new " + getClass().getName());
+    s.append("(");
+    if(getNumChild() != 0)
+      s.append("\n");
+    for(int i = 0; i < getNumChild(); i++) {
+      getChild(i).quote(s, indent + "  ");
+      if(i != getNumChild() - 1)
+        s.append(",");
+      s.append("\n");
+    }
+    if(getNumChild() != 0)
+      s.append(indent);
+    s.append(")");
+  }
+
+  public void List.quote(StringBuffer s, String indent) {
+    s.append(indent);
+    s.append("new " + getClass().getName());
+    s.append("()");
+    for(int i = 0; i < getNumChild(); i++) {
+      s.append(".add(");
+      s.append("\n");
+      getChild(i).quote(s, indent + "  ");
+      s.append("\n" + indent + ")");
+    }
+  }
+
+  public void TypeAccess.quote(StringBuffer s, String indent) {
+    s.append(indent);
+    s.append("new " + getClass().getName());
+    s.append("(\"" + name() + "\")");
+  }
+
+  public void StringLiteral.quote(StringBuffer s, String indent) {
+    s.append(indent);
+    s.append("new " + getClass().getName());
+    s.append("(\"" + getLITERAL() + "\")");
+  }
+
+  public void VarAccess.quote(StringBuffer s, String indent) {
+    s.append(indent);
+    s.append("new " + getClass().getName());
+    s.append("(\"" + name() + "\")");
+  }
+
+  public void AntiQuote.quote(StringBuffer s, String indent) {
+    getExpr().toString(s);
+  }
+
+}

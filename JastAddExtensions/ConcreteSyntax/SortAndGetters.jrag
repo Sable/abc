@@ -1,0 +1,61 @@
+aspect SortAndGetters {
+  public void ASTNode.transformation() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).transformation();
+  }
+
+  public void ClassDecl.transformation() {
+    ArrayList<BodyDecl> decls = new ArrayList<BodyDecl>();
+    for(BodyDecl d : getBodyDecls()) {
+      // add body declaration to array list
+      decls.add(d);
+      // create a getter if the body declaration is a field
+      if(d instanceof FieldDeclaration) {
+        FieldDeclaration f = (FieldDeclaration)d;
+        // unless there is already a method with that name
+        if(memberMethods("get_" + f.name()).isEmpty())
+          decls.add(
+            // create a new public method with the same
+            // type as the field
+            new MethodDecl(
+              new Modifiers(new List().add(new Modifier("public"))),
+              f.type().createQualifiedAccess(),
+              "get_" + f.name(),
+              new List(),
+              new List(),
+              new Opt(
+                new Block(
+                  new List().add(
+                    new ReturnStmt(
+                      new VarAccess(f.name())
+                    )
+                  )
+                )
+              )
+            )
+          );
+      }
+    }
+    // sort elements
+    Collections.sort(decls, new Comparator<BodyDecl>() {
+        public boolean equals(Object obj) {
+          return this == obj;
+        }
+        public int compare(BodyDecl b1, BodyDecl b2) {
+          return b1.sortingKey().compareTo(b2.sortingKey());
+        }
+    });
+    // and store in a new list
+    List<BodyDecl> list = new List<BodyDecl>();
+    for(BodyDecl d : decls) {
+      list.add(d);
+    }
+    // replace body decl list
+    setBodyDeclList(list);
+  }
+
+  syn String BodyDecl.sortingKey() = "X_" + (getParent() != null ? getParent().getIndexOfChild(this) : 0);
+  eq FieldDeclaration.sortingKey() = "A_" + name() + (getParent() != null ? getParent().getIndexOfChild(this) : 0);
+  eq MethodDecl.sortingKey() = name().startsWith("get_") ? "A_" + name().substring(4) + (getParent() != null ? getParent().getIndexOfChild(this) : 0) : super.sortingKey();
+
+}
