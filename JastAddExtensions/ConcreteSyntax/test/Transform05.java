@@ -2,7 +2,7 @@ package test;
 
 public class Transform05 {
 
-  int v(String[] args) {
+  <T> int v(String[] args) {
     v(/*hello*/args);
     w/*hello*/();
     return 5;

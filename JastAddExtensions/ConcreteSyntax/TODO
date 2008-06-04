@@ -1,0 +1,11 @@
+- string literals with backslash escapes (maybe in lexer?)
+- adjustment for methods, classes, and interfaces:
+    methods:
+      optional modifiers, void type
+    classes, interfaces:
+      optional modifiers, optional extends/implements...
+    generic interfaces, methods:
+      order of concrete children
+- compilation unit: push down comments into first type
+    (careful: optional package decl and imports)
+- pretty printing of all node types
