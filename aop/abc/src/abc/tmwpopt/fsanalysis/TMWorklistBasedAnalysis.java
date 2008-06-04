@@ -29,7 +29,9 @@ import soot.Local;
 import soot.RefLikeType;
 import soot.Unit;
 import soot.jimple.Stmt;
+import soot.jimple.toolkits.annotation.logic.LoopFinder;
 import soot.jimple.toolkits.pointer.InstanceKey;
+import abc.main.Debug;
 import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.matching.State;
 import abc.tmwpopt.fsanalysis.ds.Configuration;
@@ -66,7 +68,17 @@ public class TMWorklistBasedAnalysis extends WorklistAnalysis<Unit, Abstraction>
 		initialDisjunct.setFlowAnalysis(this);
 		Constraint.initialize(initialDisjunct);
 		
-		doAnalysis();
+		try {
+			doAnalysis();
+		} finally {
+			if(Debug.v().debugTmAnalysis) {
+				System.out.println("Number of statements: "+job.method().getActiveBody().getUnits().size());
+				LoopFinder loopFinder = new LoopFinder();
+				loopFinder.transform(job.method().getActiveBody());
+				System.out.println("Number of loops: "+loopFinder.loops().size());
+				System.out.println("Number of jobs (MAX is "+MAX_JOB_COUNT+"): "+jobCount);
+			}
+		}
 	}
 
 	/**
