@@ -421,6 +421,12 @@ aspect ConcreteSyntax {
   syn ASTNode[] ASTNode.concreteChildren() = children;
   eq GenericClassDecl.concreteChildren() =
     new ASTNode[] { getChild(0), getChild(4), getChild(1), getChild(2), getChild(3) };
+  eq GenericInterfaceDecl.concreteChildren() =
+    new ASTNode[] { getChild(0), getChild(4), getChild(1), getChild(2), getChild(3) };
+  eq GenericConstructorDecl.concreteChildren() =
+	new ASTNode[] { getChild(5), getChild(0), getChild(1), getChild(2), getChild(3), getChild(4) };
+  eq GenericMethodDecl.concreteChildren() =
+    new ASTNode[] { getChild(5), getChild(0), getChild(1), getChild(2), getChild(3), getChild(4) };
 
   public int ASTNode.getConcreteIndexOfChild(ASTNode child) {
     int index = getIndexOfChild(child);
