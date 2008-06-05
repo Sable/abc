@@ -100,13 +100,17 @@ aspect ControlFlowGraph {
 	eq InstanceOfExpr.first() = getExpr().first();
 	eq InstanceOfExpr.getExpr().following() = SmallSet.empty().union(this);
 	
+	eq InstanceOfExpr.getTypeAccess().following() = SmallSet.empty();
+	
 	// CastExpr
 	eq CastExpr.first() = getExpr().first();
 	eq CastExpr.getExpr().following() = SmallSet.empty().union(this);
 	
+	eq CastExpr.getTypeAccess().following() = SmallSet.empty();
+	
 	// ParExpr 
 	eq ParExpr.first() = getExpr().first();
-	eq ParExpr.getExpr().following() = following();
+	eq ParExpr.getExpr().following() = SmallSet.empty().union(this);//following();
 	
 	
 	// MethodAccess
@@ -126,15 +130,17 @@ aspect ControlFlowGraph {
 		this : getArg(0).first();
 	eq ClassInstanceExpr.getArg(int i).following() = i < getNumArg()-1 ?
 		SmallSet.empty().union(getArg(i+1).first()) : SmallSet.empty().union(this);	
+	
+	eq ClassInstanceExpr.getAccess().following() = SmallSet.empty();	
 		
 	// Dot
 	eq Dot.first() = getLeft().first();
 	eq Dot.getLeft().following() = SmallSet.empty().union(getRight().first());
-	eq Dot.getRight().following() = following();
+	eq Dot.getRight().following() = SmallSet.empty().union(this);//following();
 	
 	// ArrayAccess
 	eq ArrayAccess.first() = getExpr().first();
-	eq ArrayAccess.getExpr().following() = following();
+	eq ArrayAccess.getExpr().following() = SmallSet.empty().union(this);//following();
 	
 	
 	// ArrayCreationExpr
@@ -155,9 +161,9 @@ aspect ControlFlowGraph {
 	// PrimitiveTypeAccess - default
 	// ArrayTypeAccess/ArrayTypeWithSizeAccess
 	eq ArrayTypeAccess.first() = getAccess().first();
-	eq ArrayTypeAccess.getAccess().following() = following();
+	eq ArrayTypeAccess.getAccess().following() = SmallSet.empty().union(this);//following();
 	eq ArrayTypeWithSizeAccess.getAccess().following() = SmallSet.empty().union(getExpr().first());
-	eq ArrayTypeWithSizeAccess.getExpr().following() = following();
+	eq ArrayTypeWithSizeAccess.getExpr().following() = SmallSet.empty().union(this);//following();
 	
 	
 	// ** Special case for Binary: LogicalExpr (&&, ||) **	
@@ -174,7 +180,7 @@ aspect ControlFlowGraph {
     	SmallSet.empty().union(getRightOperand().first());
     eq AndLogicalExpr.getLeftOperand().following() =
     	getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
-    eq AndLogicalExpr.getRightOperand().following() = following(); // not needed (same as in superclass and automatically propagated)
+    eq AndLogicalExpr.getRightOperand().following() = SmallSet.empty().union(this);//following(); // not needed (same as in superclass and automatically propagated)
       
     // OrLogicalExpr
     // OrLogicalExpr.first() is not needed (same equation as in superclass)
@@ -183,7 +189,7 @@ aspect ControlFlowGraph {
     	SmallSet.empty().union(getRightOperand().first());     
     eq OrLogicalExpr.getLeftOperand().following() =
     	getLeftOperand().followingWhenFalse().union(getLeftOperand().followingWhenTrue());
-    eq OrLogicalExpr.getRightOperand().following() = following(); // not needed (same as in superclass and automatically propagated)
+    eq OrLogicalExpr.getRightOperand().following() = SmallSet.empty().union(this);//following(); // not needed (same as in superclass and automatically propagated)
 
     // ** followingWhenTrue()/followingWhenFalse() **
     
@@ -204,8 +210,8 @@ aspect ControlFlowGraph {
 	eq CastExpr.getExpr().followingWhenFalse() = SmallSet.empty().union(this);
 	
 	// ParExpr 
-	eq ParExpr.getExpr().followingWhenTrue() = following();
-	eq ParExpr.getExpr().followingWhenFalse() = following();
+	eq ParExpr.getExpr().followingWhenTrue() = SmallSet.empty().union(this);//following();
+	eq ParExpr.getExpr().followingWhenFalse() = SmallSet.empty().union(this);//following();
 	
 	// MethodAccess
 	eq MethodAccess.getArg(int i).followingWhenTrue() = getArg(i).following();
@@ -229,13 +235,13 @@ aspect ControlFlowGraph {
 	eq ConditionalExpr.getCondition().followingWhenTrue() = SmallSet.empty().union(getTrueExpr().first());
 	eq ConditionalExpr.getCondition().followingWhenFalse() = SmallSet.empty().union(getFalseExpr().first());		
 	eq ConditionalExpr.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse());	
-	eq ConditionalExpr.getTrueExpr().following() = following();
-	eq ConditionalExpr.getFalseExpr().following() = following();
+	eq ConditionalExpr.getTrueExpr().following() = SmallSet.empty().union(this);//following();
+	eq ConditionalExpr.getFalseExpr().following() = SmallSet.empty().union(this);//following();
 	
-	eq ConditionalExpr.getTrueExpr().followingWhenTrue() = following();
-	eq ConditionalExpr.getTrueExpr().followingWhenFalse() = following();
-	eq ConditionalExpr.getFalseExpr().followingWhenTrue() = following();
-	eq ConditionalExpr.getFalseExpr().followingWhenFalse() = following();
+	eq ConditionalExpr.getTrueExpr().followingWhenTrue() = SmallSet.empty().union(this);//following();
+	eq ConditionalExpr.getTrueExpr().followingWhenFalse() = SmallSet.empty().union(this);//following();
+	eq ConditionalExpr.getFalseExpr().followingWhenTrue() = SmallSet.empty().union(this);//following();
+	eq ConditionalExpr.getFalseExpr().followingWhenFalse() = SmallSet.empty().union(this);//following();
 	
 	
 	
@@ -263,7 +269,7 @@ aspect ControlFlowGraph {
 	// ConstCase & DefaultCase are handled in Block.getStmt(int i).following()	
     eq SwitchStmt.getExpr().following() {
     	Block b = getBlock();
-    	SmallSet set = SmallSet.empty(); //.union(b); //???
+    	SmallSet set = SmallSet.empty().union(b); //???
     	boolean hasDefault = false;
         for(int i = 0; i < b.getNumStmt(); i++)
         	if(b.getStmt(i) instanceof ConstCase)
@@ -300,6 +306,7 @@ aspect ControlFlowGraph {
 
 	
 	//ForStmt
+/*	//consider [Condition:Expr]
 	eq ForStmt.succ() = getNumInitStmt() > 0 ?
 		SmallSet.empty().union(getInitStmt(0)) : (hasCondition() ?
 		SmallSet.empty().union(getCondition().first()) : SmallSet.empty().union(getStmt()));// InitStmt:Stmt* 
@@ -316,8 +323,25 @@ aspect ControlFlowGraph {
 	eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
 		SmallSet.empty().union(getUpdateStmt(i + 1)) : (hasCondition() ? 
 		SmallSet.empty().union(getCondition().first()) : SmallSet.empty().union(getStmt()));	
-		
-	
+*/
+	//for(;;); -> for(;true;);
+	eq ForStmt.succ() = getNumInitStmt() > 0 ?
+		SmallSet.empty().union(getInitStmt(0)) : 
+		SmallSet.empty().union(getCondition().first()); // InitStmt:Stmt* 		
+	eq ForStmt.getInitStmt(int i).following() = i < getNumInitStmt() - 1 ?
+		SmallSet.empty().union(getInitStmt(i + 1)) : 
+		SmallSet.empty().union(getCondition().first());			
+	eq ForStmt.getCondition().followingWhenTrue() = SmallSet.empty().union(getStmt());
+	eq ForStmt.getCondition().followingWhenFalse() = following();
+	eq ForStmt.getCondition().following() = getCondition().followingWhenTrue().union(getCondition().followingWhenFalse()); 
+	eq ForStmt.getStmt().following() = getNumUpdateStmt() > 0 ?
+		SmallSet.empty().union(getUpdateStmt(0)) : 
+		SmallSet.empty().union(getCondition().first()); // UpdateStmt:Stmt* 		
+	eq ForStmt.getUpdateStmt(int i).following() = i < getNumUpdateStmt() - 1 ?
+		SmallSet.empty().union(getUpdateStmt(i + 1)) :  
+		SmallSet.empty().union(getCondition().first());	
+
+
 	// ExprStmt
 	eq ExprStmt.succ() = SmallSet.empty().union(getExpr().first());
 	eq ExprStmt.getExpr().following() = following();
@@ -333,14 +357,14 @@ aspect ControlFlowGraph {
     
     // AssertStmt ???
     eq AssertStmt.succ() = SmallSet.empty().union(getfirst().first()); //first:Expr???
-    eq AssertStmt.getfirst().following() = hasExpr() ? 
-    	SmallSet.empty().union(getExpr().first()) : following();
-    eq AssertStmt.getExpr().following() = following();
+    eq AssertStmt.getfirst().followingWhenTrue() = following();
+    eq AssertStmt.getfirst().followingWhenFalse() = 
+    	SmallSet.empty().union(hasExpr() ? getExpr().first() : exit());
+    eq AssertStmt.getfirst().following() = getfirst().followingWhenTrue().union(getfirst().followingWhenFalse());
+    eq AssertStmt.getExpr().following() = SmallSet.empty().union(exit());
     
-    eq AssertStmt.getfirst().followingWhenTrue() = getfirst().following();
-    eq AssertStmt.getfirst().followingWhenFalse() = getfirst().following();
-    eq AssertStmt.getExpr().followingWhenTrue() = following();
-    eq AssertStmt.getExpr().followingWhenFalse() = following();
+    eq AssertStmt.getExpr().followingWhenTrue() = SmallSet.empty().union(exit());
+    eq AssertStmt.getExpr().followingWhenFalse() = SmallSet.empty().union(exit());
     
     
 	// EmptyStmt -- no need handling
@@ -357,6 +381,7 @@ aspect ControlFlowGraph {
     eq VariableDeclaration.getInit().followingWhenTrue() = following();
     eq VariableDeclaration.getInit().followingWhenFalse() = following();
   
+    eq VariableDeclaration.getTypeAccess().following() = SmallSet.empty();//
     
     // *** Implementation helper attribute following() ***
     
@@ -553,6 +578,8 @@ aspect ControlFlowGraph {
     	SmallSet.empty().union(getResult().first()) : followingTarget(this, this);  	    
     eq ReturnStmt.getResult().following() = followingTarget(this, this);
 
+    eq ReturnStmt.getResult().followingWhenTrue() = followingTarget(this, this);
+    eq ReturnStmt.getResult().followingWhenFalse() = followingTarget(this, this);
         
     // Search for catch-finally .. catch-finally. 
     // When no enclosing try-catch-finally take the exit block
