@@ -119,6 +119,8 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 		//if this extension is enabled, we want to warn the user about each individual shadow being removed
 		//by abc.da, and not just summary information
 		OptionsParser.v().set_warn_about_individual_shadows(true);
+		
+		if(Debug.v().printTMAdviceDeps) Debug.v().printIndices = true;
 	}
 
     protected void collectVersions(StringBuffer versions)
@@ -158,12 +160,19 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
     	DAInfo dai = getDependentAdviceInfo();
     	
 		if(Debug.v().printTMAdviceDeps) {
-			System.err.println("=====================================================");
-			System.err.println("Advice Methods for tracematch "+tm.getName()+":");
+			System.out.println("=====================================================");
+			System.out.println("Symbol advice methods for tracematch "+tm.getName()+":");
 			for (String s : tm.getSymbols()) {
-				System.err.println(tm.getSymbolAdviceMethod(s).getName() + "\t"+ s);
+				System.out.println(tm.getSymbolAdviceMethod(s).getName() + "\t"+ s);
 			}
-			System.err.println("Advice Dependencies for tracematch "+tm.getName()+":");
+			System.out.println("Sync advice method for tracematch "+tm.getName()+":");
+			System.out.println(tm.getSynchAdviceMethod().getName());
+			System.out.println("Some advice method for tracematch "+tm.getName()+":");
+			System.out.println(tm.getSomeAdviceMethod().getName());
+			System.out.println("Body advice method for tracematch "+tm.getName()+":");
+			System.out.println(tm.getBodyMethod().getName());
+			System.out.println("Advice Dependencies for tracematch "+tm.getName()+":");
+			System.out.println();
 		}
 
 		Set<PathInfo> pathInfos = new PathInfoFinder(tm).getPathInfos();
@@ -203,12 +212,12 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 			);
 			dai.addAdviceDependency(adviceDependency);		
 			if(Debug.v().printTMAdviceDeps) {
-				System.err.println(adviceDependency);
-				System.err.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
+				System.out.println(adviceDependency);
+				System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
 			}
 		}
 		if(Debug.v().printTMAdviceDeps) {
-			System.err.println("====================================================");
+			System.out.println("====================================================");
 		}
     }
 
