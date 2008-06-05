@@ -98,37 +98,22 @@ public class SMEdge implements Cloneable {
     		this.target.addIncomingEdge(this);
     }
     
-	public int hashCode() {
-		final int PRIME = 31;
-		int result = 1;
-		result = PRIME * result + ((source == null) ? 0 : source.hashCode());
-		result = PRIME * result + ((target == null) ? 0 : target.hashCode());
-		result = PRIME * result + ((label == null) ? 0 : label.hashCode());
-		return result;
+	/*
+	 * IMPORTANT: Do NOT implement hashCode/equals for this type unless you
+	 * change the way flip() etc. currently work. Right now at least the method flip()
+	 * assumes reference equality. 
+	 */
+    public int hashCode() {
+		return super.hashCode();
 	}
 
+	/*
+	 * IMPORTANT: Do NOT implement hashCode/equals for this type unless you
+	 * change the way flip() etc. currently work. Right now at least the method flip()
+	 * assumes reference equality. 
+	 */
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		final SMEdge other = (SMEdge) obj;
-		if (source == null) {
-			if (other.source != null)
-				return false;
-		} else if (!source.equals(other.source))
-			return false;
-		if (target == null) {
-			if (other.target != null)
-				return false;
-		} else if (!target.equals(other.target))
-			return false;
-		if (label == null) {
-			if (other.label != null)
-				return false;
-		} else if (!label.equals(other.label))
-			return false;
-		return true;
+		return super.equals(obj);
 	}
     
     /**
