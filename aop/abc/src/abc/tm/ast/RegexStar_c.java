@@ -49,6 +49,7 @@ public class RegexStar_c extends Regex_c
 
     public Collection mustBind(Map sym_to_vars) throws SemanticException
     {
+    	a.mustBind(sym_to_vars);
         return new HashSet();
     }
 
