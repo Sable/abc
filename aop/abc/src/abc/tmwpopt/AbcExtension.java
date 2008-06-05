@@ -33,6 +33,7 @@ import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import abc.da.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
+import abc.main.Debug;
 import abc.main.options.OptionsParser;
 import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
@@ -156,7 +157,16 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
     protected void registerAdviceDependencies(TraceMatch tm) {
     	DAInfo dai = getDependentAdviceInfo();
     	
-    	Set<PathInfo> pathInfos = new PathInfoFinder(tm).getPathInfos();
+		if(Debug.v().printTMAdviceDeps) {
+			System.err.println("=====================================================");
+			System.err.println("Advice Methods for tracematch "+tm.getName()+":");
+			for (String s : tm.getSymbols()) {
+				System.err.println(tm.getSymbolAdviceMethod(s).getName() + "\t"+ s);
+			}
+			System.err.println("Advice Dependencies for tracematch "+tm.getName()+":");
+		}
+
+		Set<PathInfo> pathInfos = new PathInfoFinder(tm).getPathInfos();
     	for (PathInfo pathInfo : pathInfos) {
 			Map<String,List<String>> strongAdviceNameToVars = new HashMap<String, List<String>>();
 			Set<String> strongSymbols = new HashSet<String>(pathInfo.getDominatingLabels());
@@ -191,7 +201,14 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 					tm.getContainer(),
 					Position.compilerGenerated()
 			);
-			dai.addAdviceDependency(adviceDependency);			
+			dai.addAdviceDependency(adviceDependency);		
+			if(Debug.v().printTMAdviceDeps) {
+				System.err.println(adviceDependency);
+				System.err.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -");
+			}
+		}
+		if(Debug.v().printTMAdviceDeps) {
+			System.err.println("====================================================");
 		}
     }
 

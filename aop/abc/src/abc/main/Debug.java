@@ -274,6 +274,9 @@ public class Debug {
     //output clickable HTML graphs
     public boolean outputHTML = false;
     
+    //print advice dependencies generated for tracematches
+    public boolean printTMAdviceDeps = false;
+    
 
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
