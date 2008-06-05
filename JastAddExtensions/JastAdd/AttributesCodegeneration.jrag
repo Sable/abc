@@ -946,6 +946,9 @@ aspect GenerateSynCode {
       else
         c.add(0, inhEq);
     }
+    
+    Map methodMap = new HashMap();
+    
     // Foreach class that has an introduced equation for this inh declaration
     for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
@@ -956,6 +959,25 @@ aspect GenerateSynCode {
           // Add implements tag
           classDecl.addImplementedInterface(definingInterfaceName());
         }
+
+        MethodDecl m = classDecl.addMethod(definingInterfaceName(),
+          new MethodDecl(
+            new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+            type().createQualifiedAccess(),
+            definingInterfaceName(),
+            createDefiningInterfaceParameterList(),
+            new List(),
+            new Opt(
+            )
+          )
+        );
+        methodMap.put(classDecl, m);
+      }
+    }
+    for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      if(typeDecl instanceof ClassDecl) {
+        ClassDecl classDecl = (ClassDecl)typeDecl;
 
         // statements in delegation method
         List statements = new List(); 
@@ -1000,22 +1022,6 @@ aspect GenerateSynCode {
           
         }
 
-
-        MethodDecl m = classDecl.addMethod(definingInterfaceName(),
-          new MethodDecl(
-            new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
-            type().createQualifiedAccess(),
-            definingInterfaceName(),
-            createDefiningInterfaceParameterList(),
-            new List(),
-            new Opt(
-              new Block(
-                statements
-              )
-            )
-          )
-        );
-
         // Add last statement
         // use the previously built MethodDecl as a template for the super method access
         // since it may not have been built yet
@@ -1036,18 +1042,14 @@ aspect GenerateSynCode {
           for(int i = 0; i < getNumParameter(); i++)
             args.add(getParameter(i).createAccess());
 
+          MethodDecl superM = (MethodDecl)methodMap.get(searchType);
+
           statements.add(
             new ReturnStmt(
               new SuperAccess(
                 "super"
               ).qualifiesAccess(
-                m.createBoundAccess(args)
-                /*
-                new MethodAccess(
-                  definingInterfaceName(),
-                  args
-                )
-                */
+                superM.createBoundAccess(args)
               )
             )
           );
@@ -1056,6 +1058,12 @@ aspect GenerateSynCode {
           addDelegateToAncestorDefinition(statements);
         }
 
+        MethodDecl m = (MethodDecl)methodMap.get(classDecl);
+        m.setBlock(
+              new Block(
+                statements
+              )
+        );
 
       }
     }

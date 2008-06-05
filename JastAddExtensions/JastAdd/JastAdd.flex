@@ -99,9 +99,6 @@ Comment = {TraditionalComment}
 TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/" | "/*" "*"+ [^/*] ~"*/"
 EndOfLineComment = "//" {InputCharacter}* {LineTerminator}?
 
-// 3.8 Identifiers
-Identifier = [:jletter:][:jletterdigit:]*
-
 // 3.10.1 Integer Literals
 DecimalNumeral = 0 | {NonZeroDigit} {Digits}? 
 HexNumeral = 0 [xX] [0-9a-fA-F]+
@@ -129,6 +126,13 @@ OctalEscape = \\ {OctalDigit}
             | \\  {ZeroToThree} {OctalDigit} {OctalDigit}
 OctalDigit = [0-7]
 ZeroToThree = [0-3]
+
+HexadecimalFloatingPointLiteral = {HexSignificand} {BinaryExponent}
+
+HexSignificand = {HexNumeral} [\.]?
+ | 0 [xX] [0-9a-fA-F]* \. [0-9a-fA-F]+
+
+BinaryExponent = [pP] [+-]? {Digits}
 
 %state STRING, JASTADD
 
@@ -214,6 +218,8 @@ ZeroToThree = [0-3]
   "volatile"                     { return sym(Terminals.VOLATILE); }
   "while"                        { return sym(Terminals.WHILE); }
 
+  "enum" { return sym(Terminals.ENUM); }
+
   // 3.10 Literals
   
   // 3.10.1 Integer Literals
@@ -232,7 +238,10 @@ ZeroToThree = [0-3]
   {FloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
   [0-9]+ {ExponentPart}? [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
   [0-9]+ {ExponentPart}? [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
-  
+  {HexadecimalFloatingPointLiteral} [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
+  {HexadecimalFloatingPointLiteral} [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
+  {HexadecimalFloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
+
   // 3.10.3 Boolean Literals
   "true"                         { return sym(Terminals.BOOLEAN_LITERAL); }
   "false"                        { return sym(Terminals.BOOLEAN_LITERAL); }
@@ -309,9 +318,11 @@ ZeroToThree = [0-3]
   "<<="                          { return sym(Terminals.LSHIFTEQ); }
   ">>="                          { return sym(Terminals.RSHIFTEQ); }
   ">>>="                         { return sym(Terminals.URSHIFTEQ); }
+  "@"                            { return sym(Terminals.AT); }
+  "..."                          { return sym(Terminals.ELLIPSIS); }
   
   // 3.8 Identifiers
-  {Identifier}                   { return sym(Terminals.IDENTIFIER); }
+  ([:jletter:]|[\ud800-\udfff])([:jletterdigit:]|[\ud800-\udfff])* { return sym(Terminals.IDENTIFIER); }
 }
 
 // 3.10.5 String Literals

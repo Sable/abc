@@ -12,6 +12,10 @@
 <property name="Java1.4Frontend" value="../Java1.4Frontend"/>
 <!-- location of Java1.4Backend -->
 <property name="Java1.4Backend" value="../Java1.4Backend"/>
+<!-- location of Java1.5Frontend -->
+<property name="Java1.5Frontend" value="../Java1.5Frontend"/>
+<!-- location of Java1.5Backend -->
+<property name="Java1.5Backend" value="../Java1.5Backend"/>
 <!-- location of IntertypeDeclarations -->
 <property name="IntertypeDeclarations" value="../IntertypeDeclarations"/>
 
@@ -42,8 +46,21 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/> 
+      <exclude name="BytecodeAttributes.jrag"/>
+			<exclude name="BytecodeDescriptor.jrag"/>
+			<exclude name="BytecodeReader.jrag"/>
 		</fileset>
 		<fileset dir="${Java1.4Backend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/>
+		</fileset>
+		<fileset dir="${Java1.5Frontend}">
+			<include name="**/*.ast"/>
+			<include name="**/*.jrag"/>
+			<include name="**/*.jadd"/> 
+		</fileset>
+		<fileset dir="${Java1.5Backend}">
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
@@ -83,6 +100,9 @@
 	      <file name="parser/java14.parser"/>
 	      <file name="parser/errorrecovery.parser"/>
 	    </filelist>
+      <fileset dir="${Java1.5Frontend}">
+        <include name="*.parser"/>
+      </fileset>
       <fileset dir="${IntertypeDeclarations}">
         <include name="*.parser"/>
       </fileset>
