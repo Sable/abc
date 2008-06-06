@@ -2,6 +2,16 @@ import abc.ja.om.jrag.*;
 
 aspect OMPrettyPrint {
 	
+	public void ASTNode.toStringPrintModule() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).toStringPrintModule();
+		}
+	}
+	public void OMModuleDecl.toStringPrintModule() {
+		System.out.println(toString());
+		super.toStringPrintModule();
+	}
+	/*
 	public void ASTNode.printModule() {
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).printModule();
@@ -44,5 +54,89 @@ aspect OMPrettyPrint {
 		}
 		System.out.println();
 	}
+	*/
 	
+	public void OMModuleDecl.toString(StringBuffer s) {
+		if (isRoot()) {
+			s.append("root ");
+		}
+		s.append("module ");
+		s.append(getID());
+		s.append(" {\n");
+		for (OMModuleMember member : getOMModuleMemberList()) {
+			s.append("\t");
+			member.toString(s);
+			s.append("\n");
+		}
+		s.append("}\n");
+	}
+	public void OMClassMember.toString(StringBuffer s) {
+		s.append("class ");
+		boolean first = true;
+		for (Pattern pat : getPatternList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			
+			pat.toString(s);
+			
+			if (first) {
+				first = false;
+			}
+		}
+		s.append(";");
+	}
+	public void OMPointcutMember.toString(StringBuffer s) {
+		for (Modifier m : getModifiers().getModifiers()) {
+			m.toString(s);
+			s.append(" ");
+		}
+		getOMPointcutMemberType().toString(s);
+		s.append(" ");
+		getOMToClause().toString(s);
+		s.append(" : ");
+		getPointcutExpr().toString(s);
+		s.append(";");
+	}
+	public void OMPointcutMemberType.toString(StringBuffer s) {
+		s.append(getID());
+	}
+	public void OMToClause.toString(StringBuffer s) {
+		s.append("to ");
+		getPattern().toString(s);
+	}
+	public void OMIncludeMember.toString(StringBuffer s) {
+		getOMIncludeMemberType().toString(s);
+		s.append(" ");
+		boolean first = true;
+		for (OMIncludeMemberID id : getOMIncludeMemberIDList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			id.toString(s);
+			if (first) {
+				first = false;
+			}
+		}
+		s.append(";");
+	}
+	public void OMIncludeMemberType.toString(StringBuffer s) {
+		s.append(getID());
+	}
+	public void OMIncludeMemberID.toString(StringBuffer s) {
+		s.append(getID());
+	}
+	public void OMFriendMember.toString(StringBuffer s) {
+		s.append("friend ");
+		boolean first = true;
+		for (NamePattern pat : getNamePatternList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			pat.toString(s);
+			if (first) {
+				first = false;
+			}
+		}
+	}
 }

@@ -1,6 +1,6 @@
 OMCompilationUnit : CompilationUnit ::= OMModuleDecl*;
 
-OMModuleDecl ::= <ID:String> OMModuleMember* ;
+OMModuleDecl ::= Modifiers <ID:String> OMModuleMember* ;
 
 abstract OMModuleMember ;
 
@@ -19,3 +19,5 @@ OMIncludeMember : OMModuleMember ::=
 								OMIncludeMemberID*;
 OMIncludeMemberType ::= <ID:String>;
 OMIncludeMemberID ::= <ID:String>;
+
+OMFriendMember : OMModuleMember ::=	NamePattern*;

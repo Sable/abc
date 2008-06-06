@@ -1,4 +1,15 @@
 
 aspect OMModifiers {
+	//pointcut modifiers
 	eq OMPointcutMember.getModifiers().mayBePrivate() = true;
+	
+	//module root modifier
+	inh boolean Modifiers.mayBeRoot();
+
+	eq Program.getChild().mayBeRoot() = false;
+	eq OMModuleDecl.getModifiers().mayBeRoot() = true;
+	
+	syn lazy boolean Modifiers.isRoot() = numModifier("root") != 0;
+	
+	syn lazy boolean OMModuleDecl.isRoot() = getModifiers().isRoot();
 }

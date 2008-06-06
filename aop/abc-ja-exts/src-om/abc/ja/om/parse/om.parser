@@ -21,11 +21,19 @@ List module_decl_list =
 	;
 
 OMModuleDecl module_decl = 
-	MODULE.m IDENTIFIER LBRACE module_member_list.mml RBRACE 
+	modifiers.ml? MODULE.m IDENTIFIER LBRACE module_member_list.mml RBRACE 
 	{:
-		return new OMModuleDecl(IDENTIFIER, mml);
+		return new OMModuleDecl(new Modifiers(ml), IDENTIFIER, mml);
 	:}
 	;
+
+Modifier modifier =
+	ROOT
+	{:
+		return new Modifier("root");
+	:}
+	;
+	
 
 List module_member_list =
 	module_member_list.mml module_member.mm
@@ -57,6 +65,11 @@ OMModuleMember module_member =
 	include_member.im
 	{:
 		return im;
+	:}
+	|
+	friend_member.fm
+	{:
+		return fm;
 	:}
 	;
 
@@ -100,6 +113,7 @@ OMIncludeMember include_member =
 		return new OMIncludeMember(type, idlist);
 	:}
 	;
+	
 OMIncludeMemberType include_member_type =
 	OPEN.o
 	{:
@@ -111,6 +125,7 @@ OMIncludeMemberType include_member_type =
 		return new OMIncludeMemberType("constrain");
 	:}
 	;
+	
 List include_member_id_list = 
 	include_member_id.imd
 	{:
@@ -122,9 +137,54 @@ List include_member_id_list =
 		return idl.add(imd);
 	:}
 	;
+	
 OMIncludeMemberID include_member_id =
 	IDENTIFIER
 	{:
 		return new OMIncludeMemberID(IDENTIFIER); 
+	:}
+	;
+
+OMFriendMember friend_member =
+	FRIEND.f aspect_name_pattern_list.anpl SEMICOLON.sc
+	{:
+		return new OMFriendMember(anpl);
+	:}
+	;
+	
+List aspect_name_pattern_list =
+	aspect_name_pattern.anp
+	{:
+		return new List().add(anp);
+	:}
+	|
+	aspect_name_pattern_list.anpl COMMA.c aspect_name_pattern.anp
+	{:
+		return anpl.add(anp);
+	:}
+	;
+
+//Name pattern with no stars
+NamePattern aspect_name_pattern =
+	aspect_simple_name_pattern.a
+    {: 
+    	return a;
+	:}
+	| 
+	aspect_name_pattern.a DOT aspect_simple_name_pattern.b
+    {: 
+    	return new DotNamePattern(a, b);
+    :}
+	|
+	aspect_name_pattern.a PC_DOTDOT.d aspect_simple_name_pattern.b
+	{: 
+	   return new DotDotNamePattern(a, b);
+	:}
+	;
+
+SimpleNamePattern aspect_simple_name_pattern =
+	IDENTIFIER
+	{: 
+        return new SimpleNamePattern(IDENTIFIER);
 	:}
 	;

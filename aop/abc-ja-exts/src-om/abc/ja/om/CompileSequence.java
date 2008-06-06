@@ -128,7 +128,8 @@ public class CompileSequence extends abc.ja.CompileSequence {
       }
 
       //module print test
-      program.printModule();
+      program.toStringPrintModule();
+      //program.printModule();
       
       for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
         CompilationUnit unit = (CompilationUnit)iter.next();
