@@ -1,0 +1,130 @@
+CompilationUnit goal =
+	om_compilation_unit.ocu;
+
+OMCompilationUnit om_compilation_unit =
+	module_decl_list.ml 
+	{:
+		return new OMCompilationUnit("", new List(), new List(), ml);
+	:}
+	;
+
+List module_decl_list =
+	module_decl.m
+	{:
+		return new List().add(m);
+	:}
+	|
+	module_decl_list.l module_decl.m
+	{:
+		return l.add(m);
+	:}
+	;
+
+OMModuleDecl module_decl = 
+	MODULE.m IDENTIFIER LBRACE module_member_list.mml RBRACE 
+	{:
+		return new OMModuleDecl(IDENTIFIER, mml);
+	:}
+	;
+
+List module_member_list =
+	module_member_list.mml module_member.mm
+	{:
+		return mml.add(mm);
+	:}
+	|
+	module_member.mm
+	{:
+		return new List().add(mm);
+	:}
+	|
+	{:
+		return new List();
+	:}
+	;
+
+OMModuleMember module_member = 
+	class_member.cm 
+	{:
+		return cm;
+	:}
+	|
+	pc_member.pcm
+	{:
+		return pcm;
+	:}
+	|
+	include_member.im
+	{:
+		return im;
+	:}
+	;
+
+OMClassMember class_member =
+	CLASS.c classname_pattern_expr_list.cpe SEMICOLON.sc
+	{:
+		return new OMClassMember(cpe);
+	:}
+	;
+	
+OMPointcutMember pc_member =
+	modifiers.ml? pc_member_type.type COLON pointcut_expr.pc SEMICOLON.sc
+	{:
+		return new OMPointcutMember(new Modifiers(ml), type, new OMToClause(new SimpleNamePattern("*")), pc);
+	:}
+	| 
+	modifiers.ml? pc_member_type.type to_clause.tc COLON pointcut_expr.pc SEMICOLON.sc
+	{:
+		return new OMPointcutMember(new Modifiers(ml), type, tc, pc);
+	:} 
+	;
+
+OMPointcutMemberType pc_member_type =
+	EXPOSE.s 
+	{: return new OMPointcutMemberType("expose"); :}
+	|
+	ADVERTISE.s 
+	{: return new OMPointcutMemberType("advertise"); :}
+	;
+
+OMToClause to_clause =
+	TO.t classname_pattern_expr.cpe
+	{:
+		return new OMToClause(cpe);
+	:}
+	;
+	
+OMIncludeMember include_member =
+	include_member_type.type include_member_id_list.idlist SEMICOLON.sc
+	{:
+		return new OMIncludeMember(type, idlist);
+	:}
+	;
+OMIncludeMemberType include_member_type =
+	OPEN.o
+	{:
+		return new OMIncludeMemberType("open");
+	:}
+	|
+	CONSTRAIN.c
+	{:
+		return new OMIncludeMemberType("constrain");
+	:}
+	;
+List include_member_id_list = 
+	include_member_id.imd
+	{:
+		return new List().add(imd);
+	:}
+	|
+	include_member_id_list.idl COMMA.c include_member_id.imd
+	{:
+		return idl.add(imd);
+	:}
+	;
+OMIncludeMemberID include_member_id =
+	IDENTIFIER
+	{:
+		return new OMIncludeMemberID(IDENTIFIER); 
+	:}
+	;

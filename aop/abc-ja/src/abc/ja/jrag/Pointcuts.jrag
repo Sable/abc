@@ -632,4 +632,29 @@ aspect Pointcuts
     eq AndPointcutExpr.isStaticallyFalse() = getLhs().isStaticallyFalse() || getRhs().isStaticallyFalse();
     eq OrPointcutExpr.isStaticallyFalse() = getLhs().isStaticallyFalse() && getRhs().isStaticallyFalse();
     eq NamedPointcutExpr.isStaticallyFalse() = decl().getPointcutExpr().isStaticallyFalse();
+    
+    public void OrPointcutExpr.toString(StringBuffer s) {
+    	getLhs().toString(s);
+    	s.append(" || ");
+    	getRhs().toString(s);
+    }
+    public void AndPointcutExpr.toString(StringBuffer s) {
+    	getLhs().toString(s);
+    	s.append(" || ");
+    	getRhs().toString(s);
+    }
+    public void NegPointcutExpr.toString(StringBuffer s) {
+    	s.append("!");
+    	getPointcutExpr().toString(s);
+    }
+    public void CallPointcutExpr.toString(StringBuffer s) {
+    	s.append("call(");
+    	getPattern().toString(s);
+    	s.append(")");
+    } 
+    public void ExecutionPointcutExpr.toString(StringBuffer s) {
+    	s.append("execution(");
+    	getPattern().toString(s);
+    	s.append(")");
+    } 
 }

@@ -86,7 +86,7 @@
     errors = new ArrayList();
     try {
       this.fileName = fileName;
-      abc.ja.parse.JavaScanner scanner = new abc.ja.parse.JavaScanner(new abc.ja.parse.Unicode(is), fileName, error_queue);
+      abc.ja.om.parse.JavaScanner scanner = new abc.ja.om.parse.JavaScanner(new abc.ja.parse.Unicode(is), fileName, error_queue);
       cu = (CompilationUnit)parse(scanner);
     } catch(Parser.Exception e) {
       // build empty compilation unit for failed error recovery

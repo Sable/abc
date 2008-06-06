@@ -417,6 +417,7 @@
           compress="no" useSwitch="yes"/>
 </target>	
 
+	
 <target name="om-parser">
   <property name="om-parserdir" location="${basedir}/generated/abc/ja/om/parse"/>
   <mkdir dir="${om-parserdir}"/>
@@ -448,6 +449,8 @@
   <!-- generate the parser phase 3, translating .beaver to .java -->
   <beaver file="${om-parserdir}/JavaParser.beaver" terminalNames="yes"
           compress="no" useSwitch="yes"/>
+	<jflex file="${basedir}/src-om/abc/ja/om/parse/omaspectj.flex"
+           outdir="${om-parserdir}" nobak="yes"/>
 </target>
 
 <target name="clean">

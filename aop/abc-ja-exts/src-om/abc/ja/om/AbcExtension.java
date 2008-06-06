@@ -32,6 +32,7 @@ import soot.tagkit.Host;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
+import abc.ja.om.parse.OMAbcLexer;
 import abc.ja.om.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -48,34 +49,30 @@ import abc.weaving.weaver.Weaver;
  * @author Pavel Avgustinov
  * @author Eric Bodden
  */
-public class AbcExtension extends abc.ja.AbcExtension
-{
-    protected void collectVersions(StringBuffer versions)
-    {
-        super.collectVersions(versions);
-        versions.append(" with OpenModules (JastAdd version) " +
-                        new abc.ja.om.Version().toString() +
-                        "\n");
-    }
+public class AbcExtension extends abc.ja.AbcExtension {
+	protected void collectVersions(StringBuffer versions) {
+		super.collectVersions(versions);
+		versions.append(" with OpenModules (JastAdd version) "
+				+ new abc.ja.om.Version().toString() + "\n");
+	}
 
-    public abc.aspectj.ExtensionInfo
-            makeExtensionInfo(Collection jar_classes,
-                              Collection aspect_sources)
-    {
-        return new abc.eaj.ExtensionInfo(jar_classes, aspect_sources);
-    }
+	public abc.aspectj.ExtensionInfo makeExtensionInfo(Collection jar_classes,
+			Collection aspect_sources) {
+		return new abc.eaj.ExtensionInfo(jar_classes, aspect_sources);
+	}
 
-    /*
-    public abc.weaving.weaver.AdviceInliner makeAdviceInliner()
-    {
-	return new abc.om.weaving.weaver.AdviceInliner();
-    }
-    */
+	/*
+	 * public abc.weaving.weaver.AdviceInliner makeAdviceInliner() { return new
+	 * abc.om.weaving.weaver.AdviceInliner(); }
+	 */
 
-    /* (non-Javadoc)
-     * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
-     */
-    public void initLexerKeywords(AbcLexer lexer) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
+	 */
+	public void initLexerKeywords(AbcLexer abclexer) {
+		OMAbcLexer lexer = (OMAbcLexer) abclexer;
         // Cannot call super to add the base keywords unfortunately.
 
         lexer.addGlobalKeyword("abstract",      new LexerAction_c(new Integer(Terminals.ABSTRACT)));
@@ -87,16 +84,9 @@ public class AbcExtension extends abc.ja.AbcExtension
         lexer.addGlobalKeyword("case",          new LexerAction_c(new Integer(Terminals.CASE)));
         lexer.addGlobalKeyword("catch",         new LexerAction_c(new Integer(Terminals.CATCH)));
         lexer.addGlobalKeyword("char",          new LexerAction_c(new Integer(Terminals.CHAR)));
-        lexer.addGlobalKeyword("class",         new LexerAction_c(new Integer(Terminals.CLASS)) {
-                            public int getToken(AbcLexer lexer) {
-                                if(!lexer.getLastTokenWasDot()) {
-                                    lexer.enterLexerState(lexer.currentState() == lexer.aspectj_state() ?
-                                            lexer.aspectj_state() : lexer.java_state());
-                                }
-                                return token.intValue();
-                            }
-                        });
-        lexer.addGlobalKeyword("const",         new LexerAction_c(new Integer(Terminals.EOF))); // Disallow 'const' keyword
+        lexer.addGlobalKeyword("const",         new LexerAction_c(new Integer(Terminals.EOF))); // Disallow
+																								// 'const'
+																								// keyword
         lexer.addGlobalKeyword("continue",      new LexerAction_c(new Integer(Terminals.CONTINUE)));
         lexer.addGlobalKeyword("default",       new LexerAction_c(new Integer(Terminals.DEFAULT)));
         lexer.addGlobalKeyword("do",            new LexerAction_c(new Integer(Terminals.DO)));
@@ -107,9 +97,13 @@ public class AbcExtension extends abc.ja.AbcExtension
         lexer.addGlobalKeyword("finally",       new LexerAction_c(new Integer(Terminals.FINALLY)));
         lexer.addGlobalKeyword("float",         new LexerAction_c(new Integer(Terminals.FLOAT)));
         lexer.addGlobalKeyword("for",           new LexerAction_c(new Integer(Terminals.FOR)));
-        lexer.addGlobalKeyword("goto",          new LexerAction_c(new Integer(Terminals.EOF))); // disallow 'goto' keyword
-        // if is handled specifically, as it differs in pointcuts and non-pointcuts.
-        //lexer.addGlobalKeyword("if",            new LexerAction_c(new Integer(Terminals.IF)));
+        lexer.addGlobalKeyword("goto",          new LexerAction_c(new Integer(Terminals.EOF))); // disallow
+																								// 'goto'
+																								// keyword
+        // if is handled specifically, as it differs in pointcuts and
+		// non-pointcuts.
+        // lexer.addGlobalKeyword("if", new LexerAction_c(new
+		// Integer(Terminals.IF)));
         lexer.addGlobalKeyword("implements",    new LexerAction_c(new Integer(Terminals.IMPLEMENTS)));
         lexer.addGlobalKeyword("import",        new LexerAction_c(new Integer(Terminals.IMPORT)));
         lexer.addGlobalKeyword("instanceof",    new LexerAction_c(new Integer(Terminals.INSTANCEOF)));
@@ -121,9 +115,9 @@ public class AbcExtension extends abc.ja.AbcExtension
         lexer.addGlobalKeyword("new",           new LexerAction_c(new Integer(Terminals.NEW)));
         lexer.addGlobalKeyword("package",       new LexerAction_c(new Integer(Terminals.PACKAGE)));
         lexer.addGlobalKeyword("private",       new LexerAction_c(new Integer(Terminals.PRIVATE)));
-        /* ------------  keyword added to the Java part ------------------ */
+        /* ------------ keyword added to the Java part ------------------ */
         lexer.addGlobalKeyword("privileged",    new LexerAction_c(new Integer(Terminals.PRIVILEGED)));
-        /* ------------  keyword added to the Java part ------------------ */
+        /* ------------ keyword added to the Java part ------------------ */
         lexer.addGlobalKeyword("protected",     new LexerAction_c(new Integer(Terminals.PROTECTED)));
         lexer.addGlobalKeyword("public",        new LexerAction_c(new Integer(Terminals.PUBLIC)));
         lexer.addGlobalKeyword("return",        new LexerAction_c(new Integer(Terminals.RETURN)));
@@ -133,8 +127,10 @@ public class AbcExtension extends abc.ja.AbcExtension
         lexer.addGlobalKeyword("super",         new LexerAction_c(new Integer(Terminals.SUPER)));
         lexer.addGlobalKeyword("switch",        new LexerAction_c(new Integer(Terminals.SWITCH)));
         lexer.addGlobalKeyword("synchronized",  new LexerAction_c(new Integer(Terminals.SYNCHRONIZED)));
-        // this is handled explicitly, as it differs in pointcuts and non-pointcuts.
-        //lexer.addGlobalKeyword("this",          new LexerAction_c(new Integer(Terminals.THIS)));
+        // this is handled explicitly, as it differs in pointcuts and
+		// non-pointcuts.
+        // lexer.addGlobalKeyword("this", new LexerAction_c(new
+		// Integer(Terminals.THIS)));
         lexer.addGlobalKeyword("throw",         new LexerAction_c(new Integer(Terminals.THROW)));
         lexer.addGlobalKeyword("throws",        new LexerAction_c(new Integer(Terminals.THROWS)));
         lexer.addGlobalKeyword("transient",     new LexerAction_c(new Integer(Terminals.TRANSIENT)));
@@ -174,12 +170,16 @@ public class AbcExtension extends abc.ja.AbcExtension
         lexer.addPointcutKeyword("within", new LexerAction_c(new Integer(Terminals.PC_WITHIN)));
         lexer.addPointcutKeyword("withincode", new LexerAction_c(new Integer(Terminals.PC_WITHINCODE)));
 
-        /* Special redefinition of aspect keyword so that we don't go out of ASPECTJ state
-            and remain in POINTCUT state */
+        /*
+		 * Special redefinition of aspect keyword so that we don't go out of
+		 * ASPECTJ state and remain in POINTCUT state
+		 */
         lexer.addPointcutKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT)));
 
-        /* ASPECTJ reserved words - these cannot be used as the names of any identifiers within
-           aspect code. */
+        /*
+		 * ASPECTJ reserved words - these cannot be used as the names of any
+		 * identifiers within aspect code.
+		 */
         lexer.addAspectJContextKeyword("after", new LexerAction_c(new Integer(Terminals.AFTER),
                                     new Integer(lexer.pointcut_state())));
         lexer.addAspectJContextKeyword("around", new LexerAction_c(new Integer(Terminals.AROUND),
@@ -199,7 +199,8 @@ public class AbcExtension extends abc.ja.AbcExtension
                                     new Integer(lexer.pointcut_state())));
         lexer.addAspectJContextKeyword("proceed", new LexerAction_c(new Integer(Terminals.PROCEED)));
 
-        // Overloaded keywords - they mean different things in pointcuts, hence have to be
+        // Overloaded keywords - they mean different things in pointcuts, hence
+		// have to be
         // declared separately.
         lexer.addJavaKeyword("if", new LexerAction_c(new Integer(Terminals.IF)));
         lexer.addAspectJKeyword("if", new LexerAction_c(new Integer(Terminals.IF)));
@@ -217,6 +218,57 @@ public class AbcExtension extends abc.ja.AbcExtension
         lexer.addPointcutIfExprKeyword("pointcut", new LexerAction_c(new Integer(Terminals.POINTCUT),
                                 new Integer(lexer.pointcut_state())));
         
+        
+        //open module keywords
+        
+        lexer.addJavaKeyword("module", 
+        		new LexerAction_c(
+        				new Integer(Terminals.MODULE), 
+        				new Integer(lexer.module_state())
+        				)
+        );
+        lexer.addModuleKeyword("module", new LexerAction_c(new Integer(Terminals.MODULE)));
+        // replace class to include class keyword in module state
+        lexer.addGlobalKeyword("class",new LexerAction_c(new Integer(Terminals.CLASS)) {
+            public int getToken(AbcLexer abclexer) {
+            	OMAbcLexer lexer = (OMAbcLexer) abclexer;
+                if(!lexer.getLastTokenWasDot()) {
+                	int next_state;
+                	if (lexer.currentState()==lexer.aspectj_state()){
+                		next_state = lexer.aspectj_state();
+                	} else if (lexer.currentState() == lexer.module_state()) {
+                		next_state = lexer.pointcut_state();
+                	} else {
+                		next_state = lexer.java_state();
+                	}
+                    lexer.enterLexerState(next_state);
+                }
+                return token.intValue();
+            }
+        });
+        lexer.addModuleKeyword("expose", 
+        		new LexerAction_c(
+        				new Integer(Terminals.EXPOSE), 
+        				new Integer(lexer.pointcut_state())
+        				)
+        );
+        lexer.addModuleKeyword("advertise", 
+        		new LexerAction_c(
+        				new Integer(Terminals.ADVERTISE), 
+        				new Integer(lexer.pointcut_state())
+        				)
+        );
+        lexer.addPointcutKeyword("to", 
+        		new LexerAction_c(new Integer(Terminals.TO))
+        );
+        lexer.addModuleKeyword("open", 
+        		new LexerAction_c(new Integer(Terminals.OPEN))
+        );
+        lexer.addModuleKeyword("constrain", 
+        		new LexerAction_c(new Integer(Terminals.CONSTRAIN))
+        );
+        
+        
         if(!abc.main.Debug.v().pureJava) {
             lexer.addJavaKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT),
             					new Integer(lexer.aspectj_state())));
@@ -224,9 +276,9 @@ public class AbcExtension extends abc.ja.AbcExtension
                                 new Integer(lexer.pointcut_state())));
         }
     }
-    
-   public abc.ja.om.CompileSequence createCompileSequence() {
-    	return new CompileSequence(this);
-	 }
+
+	public abc.ja.om.CompileSequence createCompileSequence() {
+		return new CompileSequence(this);
+	}
 
 }
