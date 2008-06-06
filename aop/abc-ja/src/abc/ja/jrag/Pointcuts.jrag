@@ -640,7 +640,7 @@ aspect Pointcuts
     }
     public void AndPointcutExpr.toString(StringBuffer s) {
     	getLhs().toString(s);
-    	s.append(" || ");
+    	s.append(" && ");
     	getRhs().toString(s);
     }
     public void NegPointcutExpr.toString(StringBuffer s) {
