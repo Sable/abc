@@ -6,6 +6,19 @@ aspect SortAndGetters {
 
   public void ClassDecl.transformation() {
     ArrayList<BodyDecl> decls = new ArrayList<BodyDecl>();
+    decls.add(new ConstructorDecl(
+    		new Modifiers(new List<Modifier>().add(new Modifier("public"))),
+    		name(),
+    		new List(),
+    		new List<Access>().add(new TypeAccess("Throwable")),
+    		new Opt<Stmt>(new ExprStmt(new SuperConstructorAccess("super", new List()))),
+    		new Block()
+    ));
+    decls.add(new FieldDeclaration(
+    		new Modifiers(new List<Modifier>().add(new Modifier("private")).add(new Modifier("static"))),
+    		new TypeAccess("java.lang", "String"),
+    		"f",
+    		new Opt<Expr>(new StringLiteral("\"f\n\""))));
     for(BodyDecl d : getBodyDecls()) {
       // add body declaration to array list
       decls.add(d);

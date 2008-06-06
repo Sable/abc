@@ -1,3 +1,3 @@
 import java.io.Serializable;
 
-/* */ class Test02 { }
+/* */ class Test02 { int x; }

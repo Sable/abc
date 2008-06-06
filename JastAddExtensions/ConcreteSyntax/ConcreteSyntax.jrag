@@ -475,11 +475,17 @@ aspect ConcreteSyntax {
     strs[0] = createIndent();
     strs[1] = "";
     strs[2] = " " + name() + "(";
-    strs[3] = ") ";
-    strs[4] = hasBlock() ? "" : ";\n";
+    strs[3] = ") " + (getNumException() > 0 ? "throws " : "");
+    strs[4] = (getNumException() > 0 ? " " : "") + (hasBlock() ? "" : ";\n");
     strs[5] = "";
     return strs;
   }
+  eq ConstructorDecl.createConcreteSyntax() = new String[]
+    { createIndent(), " "+name()+"(", 
+	  ") " + (getNumException() > 0 ? "throws " : ""), 
+	  getNumException() > 0 ? " " : "", "", "" };
+  eq FieldDeclaration.createConcreteSyntax() = new String[]
+    { createIndent(), "", " "+name()+(hasInit() ? " = " : ""), ";\n" };                                                      
   eq Block.createConcreteSyntax() = shouldHaveIndent() ? new String[] { createIndent() + "{\n", createIndent() + "}\n" }
     : new String[] { "{\n" , createIndent() + "}\n" };
   eq ReturnStmt.createConcreteSyntax() = hasResult() ?
@@ -492,7 +498,7 @@ aspect ConcreteSyntax {
   eq ForStmt.createConcreteSyntax() = new String[] { createIndent() + "for(", ";", ";", ") ", "" };
   eq IfStmt.createConcreteSyntax() = hasElse() ? new String[] { createIndent() + "if(", ") ", " else ", "" }
     : new String[] { createIndent() + "if(", ") ", "", "" };
-
+  eq StringLiteral.createConcreteSyntax() = new String[] { "\"" + escape(getLITERAL()) + "\"", "" };
 
   syn String ASTNode.createIndent() = "";
   eq List.createIndent() = getParent().createIndent();

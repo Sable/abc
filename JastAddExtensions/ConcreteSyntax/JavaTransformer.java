@@ -30,7 +30,7 @@ class JavaTransformer extends Frontend {
 
   protected void processNoErrors(CompilationUnit unit) {
     unit.addLayout();
-    //unit.transformation();
+    unit.transformation();
     System.out.println(unit.layout());
     //CompilationUnit u = (CompilationUnit)unit.transformation();
     //System.out.println(u.layout());

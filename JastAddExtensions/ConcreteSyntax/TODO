@@ -5,7 +5,7 @@
     classes, interfaces:
       optional modifiers, optional extends/implements...
     generic interfaces, methods:
-      order of concrete children
+      order of concrete children (DONE)
 - compilation unit: push down comments into first type
     (careful: optional package decl and imports)
 - pretty printing of all node types
