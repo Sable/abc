@@ -1,0 +1,21 @@
+OMCompilationUnit : CompilationUnit ::= OMModuleDecl*;
+
+OMModuleDecl ::= <ID:String> OMModuleMember* ;
+
+abstract OMModuleMember ;
+
+OMClassMember : OMModuleMember ::= Pattern* ;
+
+OMPointcutMember : OMModuleMember ::= 
+								Modifiers
+								OMPointcutMemberType
+								OMToClause
+								PointcutExpr;
+OMPointcutMemberType ::= <ID:String>;
+OMToClause ::= Pattern;
+
+OMIncludeMember : OMModuleMember ::= 
+								OMIncludeMemberType
+								OMIncludeMemberID*;
+OMIncludeMemberType ::= <ID:String>;
+OMIncludeMemberID ::= <ID:String>;

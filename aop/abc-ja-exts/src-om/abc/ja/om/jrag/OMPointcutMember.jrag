@@ -1,0 +1,6 @@
+aspect OMPointcutMember {
+
+	//guessing, not really sure what bindsIncurrentCflow does yet
+	eq OMPointcutMember.getPointcutExpr().bindsInCurrentCflow(String name) =
+        getPointcutExpr().binds(name) > 0; 
+}

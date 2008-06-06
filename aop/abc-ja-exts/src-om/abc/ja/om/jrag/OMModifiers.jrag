@@ -1,0 +1,4 @@
+
+aspect OMModifiers {
+	eq OMPointcutMember.getModifiers().mayBePrivate() = true;
+}
