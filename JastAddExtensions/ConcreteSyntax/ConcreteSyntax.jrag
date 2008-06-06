@@ -52,7 +52,7 @@ aspect ConcreteSyntax {
     ASTNode[] children = concreteChildren();
     StringBuilder buf = new StringBuilder();
     if(children != null) {
-      for(int i = 0; i < getNumChild(); i++) {
+      for(int i = 0; i < getNumConcreteChild(); i++) {
         buf.append(strings[i]);
         if(children[i] != null)
           buf.append(children[i].layout());
@@ -69,8 +69,7 @@ aspect ConcreteSyntax {
   protected String[] ASTNode.concreteSyntax;
   protected String[] ASTNode.concreteSyntax() {
     if(concreteSyntax == null) {
-      ASTNode[] nodes = concreteChildren();
-      concreteSyntax = new String[getNumChild() == 0 ? 2 : (getNumChild() + 1)];
+      concreteSyntax = new String[getNumConcreteChild() == 0 ? 2 : (getNumConcreteChild() + 1)];
     }
     return concreteSyntax;
   }
@@ -89,7 +88,7 @@ aspect ConcreteSyntax {
       int first = -1;
       int last = -1;
       if(children != null) {
-        for(int i = 0; i < getNumChild(); i++) {
+        for(int i = 0; i < getNumConcreteChild(); i++) {
           if(children[i] != null && children[i].hasLayout()) {
             if(first == -1)
               first = i;
@@ -118,7 +117,7 @@ aspect ConcreteSyntax {
         endLine = endLine();
         endColumn = endColumn();
         str = extractLayout(startLine, startColumn, endLine, endColumn, layoutBuffer);
-        int pos = children == null ? 1 : getNumChild();
+        int pos = children == null ? 1 : getNumConcreteChild();
         prependLayout(str.substring(1), pos);
 
         for(int i = first + 1; i <= last; i++) {
@@ -187,9 +186,10 @@ aspect ConcreteSyntax {
   }
 
   syn boolean List.noChildrenWithLayout() {
-    for(int i = 0; i < getNumChild(); i++)
-      if(getChild(i).hasLayout())
-        return false;
+	ASTNode[] children = concreteChildren();
+	for(int i=0; i<getNumConcreteChild(); ++i)
+  	  if(children[i].hasLayout())
+		return false;
     return true;
   }
 
@@ -377,14 +377,14 @@ aspect ConcreteSyntax {
     for(int i = 1; i < strings.length - 1; i++) {
       String str = strings[i];
       ASTNode child = children[i-1];
-      String childPrefix = child.concreteSyntax()[child.getNumChild()];
+      String childPrefix = child.concreteSyntax()[child.getNumConcreteChild()];
       if(childPrefix == null || !childPrefix.endsWith("\n")) {
         str = removeComments(str);
         int index = str.indexOf('\n');
         str = strings[i];
         String lhs = str.substring(0, index + 1);
         String rhs = str.substring(index + 1, str.length());
-        child.appendLayout(lhs, child.getNumChild());
+        child.appendLayout(lhs, child.getNumConcreteChild());
         children[i].prependLayout(rhs, 0);
       }
       else
@@ -419,6 +419,7 @@ aspect ConcreteSyntax {
   // in lexical order.
 
   syn ASTNode[] ASTNode.concreteChildren() = children;
+  // put type parameters into the right place
   eq GenericClassDecl.concreteChildren() =
     new ASTNode[] { getChild(0), getChild(4), getChild(1), getChild(2), getChild(3) };
   eq GenericInterfaceDecl.concreteChildren() =
@@ -427,6 +428,39 @@ aspect ConcreteSyntax {
 	new ASTNode[] { getChild(5), getChild(0), getChild(1), getChild(2), getChild(3), getChild(4) };
   eq GenericMethodDecl.concreteChildren() =
     new ASTNode[] { getChild(5), getChild(0), getChild(1), getChild(2), getChild(3), getChild(4) };
+  // omit explicit constructor invocation
+  eq ConstructorDecl.concreteChildren() =
+	new ASTNode[] { getChild(0), getChild(1), getChild(2), getChild(4) };
+  // pull in explicit constructor invocation from grandparent
+  eq List.concreteChildren() {
+	ASTNode body[] = super.concreteChildren();
+    if(isConstructorBodyStmtList()) {
+    	ConstructorDecl gramps = (ConstructorDecl)(getParent().getParent());
+		if(gramps.hasConstructorInvocation()) {
+			if(body == null) {
+				body = new ASTNode[] { gramps.getConstructorInvocation() };
+			} else {
+				ASTNode[] oldbody = body;
+				body = new ASTNode[body.length+1];
+				body[0] = gramps.getConstructorInvocation();
+				System.arraycopy(oldbody, 0, body, 1, oldbody.length);
+			}
+		}
+	}
+    return body;
+  }
+  
+  // the number of concrete children might not be the same as that of abstract children
+  syn int ASTNode.getNumConcreteChild() = getNumChild();
+  // no explicit constructor invocation
+  eq ConstructorDecl.getNumConcreteChild() = super.getNumConcreteChild()-1;
+  // might have additional constructor invocation
+  eq List.getNumConcreteChild() {
+	  if(isConstructorBodyStmtList() && 
+		    ((ConstructorDecl)(getParent().getParent())).hasConstructorInvocation())
+		  return super.getNumConcreteChild()+1;
+	  return super.getNumConcreteChild();
+  }
 
   public int ASTNode.getConcreteIndexOfChild(ASTNode child) {
     int index = getIndexOfChild(child);
@@ -460,9 +494,14 @@ aspect ConcreteSyntax {
   syn boolean List.isStmtList() = 
     getParent() instanceof Block && 
     ((Block)getParent()).getStmtList() == this;
+  syn boolean List.isConstructorBodyStmtList() =
+	isStmtList() && ((Block)getParent()).isConstructorBody();
+  syn boolean Block.isConstructorBody() =
+	getParent() instanceof ConstructorDecl &&
+	((ConstructorDecl)getParent()).getBlock() == this;
 
   syn String[] List.createBodyDeclListConcreteSyntax() {
-    String[] strs = new String[getNumChild() + 1];
+    String[] strs = new String[getNumConcreteChild() + 1];
     strs[0] = "{\n";
     for(int i = 1; i < strs.length - 1; i++)
       strs[i] = "";
@@ -488,9 +527,13 @@ aspect ConcreteSyntax {
     { createIndent(), "", " "+name()+(hasInit() ? " = " : ""), ";\n" };                                                      
   eq Block.createConcreteSyntax() = shouldHaveIndent() ? new String[] { createIndent() + "{\n", createIndent() + "}\n" }
     : new String[] { "{\n" , createIndent() + "}\n" };
+  eq ExprStmt.createConcreteSyntax() = new String[] { createIndent(), ";\n" };
   eq ReturnStmt.createConcreteSyntax() = hasResult() ?
     new String[] { createIndent() + "return ", ";\n" } : new String[] { createIndent() + "return", ";\n" };
   eq VarAccess.createConcreteSyntax() = new String[] { name(), "" };
+  eq ConstructorAccess.createConcreteSyntax() = new String[] { name()+"(", ")" };
+  eq ParConstructorAccess.createConcreteSyntax() = new String[] { "<", ">"+name()+"(", ")" };
+  eq ParSuperConstructorAccess.createConcreteSyntax() = new String[] { "<", ">"+name()+"(", ")" };
   eq TypeAccess.createConcreteSyntax() = new String[] { decl().isPrimitive()? name() : nameWithPackage(), "" };
   eq PrimitiveTypeAccess.createConcreteSyntax() = new String[] { name(), "" };
   eq ArrayTypeAccess.createConcreteSyntax() = new String[] { "", "[]" };
