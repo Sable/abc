@@ -224,9 +224,6 @@ public class AbcExtension extends abc.ja.AbcExtension {
         lexer.addJavaKeyword("root", 
         		new LexerAction_c(new Integer(Terminals.ROOT))
         );
-        lexer.addModuleKeyword("root", 
-        		new LexerAction_c(new Integer(Terminals.ROOT))
-        );
         lexer.addJavaKeyword("module", 
         		new LexerAction_c(
         				new Integer(Terminals.MODULE), 

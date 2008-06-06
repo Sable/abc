@@ -7,9 +7,19 @@ aspect OMModifiers {
 	inh boolean Modifiers.mayBeRoot();
 
 	eq Program.getChild().mayBeRoot() = false;
+	eq TypeDecl.getBodyDecl().mayBeRoot() = false;
 	eq OMModuleDecl.getModifiers().mayBeRoot() = true;
 	
 	syn lazy boolean Modifiers.isRoot() = numModifier("root") != 0;
 	
 	syn lazy boolean OMModuleDecl.isRoot() = getModifiers().isRoot();
+	
+	refine Privileged public void Modifiers.checkModifiers() {
+		Privileged.Modifiers.checkModifiers();
+	    if(numModifier("root") > 1)
+      		error("only one root allowed");
+		if (isRoot() && !mayBeRoot()) {
+			error("modifier root not allowed in this context");
+		}
+	}
 }
