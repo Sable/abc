@@ -148,7 +148,7 @@ public class PathInfoFinder {
 		
 		Set<List<SMEdge>> completePaths = new HashSet<List<SMEdge>>(); 		
 		boolean changed = false;
-		//no do a fixed point iteration...
+		//now do a fixed point iteration...
 		do {
 			Set<List<SMEdge>> newWorklist = new HashSet<List<SMEdge>>();
 			//for each partial path currently in the list, see if we can make it longer
