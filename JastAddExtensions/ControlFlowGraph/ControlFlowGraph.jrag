@@ -16,13 +16,18 @@ aspect ControlFlowGraph {
     // the exit node does not have a successor
     eq BodyDecl.exit().following() = SmallSet.empty();
     // set exit node as the defult successor
-    eq BodyDecl.getChild().following() = SmallSet.empty().union(exit());
+    eq BodyDecl.getChild().following() = SmallSet.empty();
     // propagate the exit node downwards
     eq BodyDecl.getChild().exit() = exit();
     inh CFGNode Stmt.exit();
     // propagate the entry node downwards
     eq BodyDecl.getChild().entry() = entry();
     inh CFGNode Stmt.entry();
+
+    eq MethodDecl.getBlock().following() = SmallSet.empty().union(exit());
+    eq ConstructorDecl.getBlock().following() = SmallSet.empty().union(exit());
+    eq InstanceInitializer.getBlock().following() = SmallSet.empty().union(exit());
+    eq StaticInitializer.getBlock().following() = SmallSet.empty().union(exit());
 
     // insert block between entry and exit nodes
     eq MethodDecl.entry().following() = SmallSet.empty().union(hasBlock() ? getBlock() : exit());
@@ -33,18 +38,12 @@ aspect ControlFlowGraph {
 
 	// *** API predecessors ***
 
-    syn lazy SmallSet Stmt.pred() = SmallSet.empty();
-    syn lazy SmallSet Expr.pred() = SmallSet.empty();
-
-/*
     coll SmallSet CFGNode.pred() [SmallSet.mutable()] with add root BodyDecl;
 
 	// *** Implementation predecessors ***
 
     Stmt contributes this to CFGNode.pred() for each succ();
-*/
-
-    
+    Expr contributes this to CFGNode.pred() for each succ();
 
  	// *** API: successors ***
 
