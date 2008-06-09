@@ -4,8 +4,10 @@ OMModuleDecl ::= Modifiers <ID:String> OMModuleMember* ;
 
 abstract OMModuleMember ;
 
+//class member
 OMClassMember : OMModuleMember ::= Pattern* ;
 
+//pointcut member
 OMPointcutMember : OMModuleMember ::= 
 								Modifiers
 								OMPointcutMemberType
@@ -14,10 +16,25 @@ OMPointcutMember : OMModuleMember ::=
 OMPointcutMemberType ::= <ID:String>;
 OMToClause ::= Pattern;
 
+//module include member
 OMIncludeMember : OMModuleMember ::= 
 								OMIncludeMemberType
 								OMIncludeMemberID*;
 OMIncludeMemberType ::= <ID:String>;
 OMIncludeMemberID ::= <ID:String>;
 
+//friend aspect member
 OMFriendMember : OMModuleMember ::=	NamePattern*;
+
+//open class member
+OMOpenClassMember : OMModuleMember ::=
+									OMOpenClassFlagList
+									OMToClause
+									Pattern;
+
+abstract OMOpenClassFlag;
+OMOpenClassFlagList ::= OMOpenClassFlag*; 
+
+OMOpenClassField : OMOpenClassFlag ::= ;
+OMOpenClassParent : OMOpenClassFlag ::= ParentAspects : Pattern;
+OMOpenClassMethod : OMOpenClassFlag ::= ;

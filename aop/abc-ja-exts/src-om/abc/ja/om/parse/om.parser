@@ -25,6 +25,11 @@ OMModuleDecl module_decl =
 	{:
 		return new OMModuleDecl(new Modifiers(ml), IDENTIFIER, mml);
 	:}
+	|
+	modifiers.ml? MODULE.m IDENTIFIER LBRACE RBRACE 
+	{:
+		return new OMModuleDecl(new Modifiers(ml), IDENTIFIER, new List());
+	:}
 	;
 
 Modifier modifier =
@@ -44,10 +49,6 @@ List module_member_list =
 	module_member.mm
 	{:
 		return new List().add(mm);
-	:}
-	|
-	{:
-		return new List();
 	:}
 	;
 
@@ -71,6 +72,11 @@ OMModuleMember module_member =
 	{:
 		return fm;
 	:}
+	|
+	open_class_member.oc
+	{:
+		return oc;
+	:}
 	;
 
 OMClassMember class_member =
@@ -81,11 +87,6 @@ OMClassMember class_member =
 	;
 	
 OMPointcutMember pc_member =
-	modifiers.ml? pc_member_type.type COLON pointcut_expr.pc SEMICOLON.sc
-	{:
-		return new OMPointcutMember(new Modifiers(ml), type, new OMToClause(new SimpleNamePattern("*")), pc);
-	:}
-	| 
 	modifiers.ml? pc_member_type.type to_clause.tc COLON pointcut_expr.pc SEMICOLON.sc
 	{:
 		return new OMPointcutMember(new Modifiers(ml), type, tc, pc);
@@ -101,6 +102,10 @@ OMPointcutMemberType pc_member_type =
 	;
 
 OMToClause to_clause =
+	{:
+		return new OMToClause(new SimpleNamePattern("*"));
+	:}
+	|
 	TO.t classname_pattern_expr.cpe
 	{:
 		return new OMToClause(cpe);
@@ -164,7 +169,7 @@ List aspect_name_pattern_list =
 	:}
 	;
 
-//Name pattern with no stars
+//Name pattern with no stars for aspect name patterns
 NamePattern aspect_name_pattern =
 	aspect_simple_name_pattern.a
     {: 
@@ -186,5 +191,56 @@ SimpleNamePattern aspect_simple_name_pattern =
 	IDENTIFIER
 	{: 
         return new SimpleNamePattern(IDENTIFIER);
+	:}
+	;
+	
+//open class members
+OMOpenClassMember open_class_member =
+	OPENCLASS open_class_flag_list.ocfl to_clause.tc COLON classname_pattern_expr.cpe SEMICOLON
+	{:
+		return new OMOpenClassMember(ocfl, tc, cpe);
+	:}
+	;
+	
+OMOpenClassFlagList open_class_flag_list =
+	//default allows all
+	{:
+		List defaultList = new List();
+		defaultList.add(new OMOpenClassField());
+		defaultList.add(new OMOpenClassParent(new SimpleNamePattern("*")));
+		defaultList.add(new OMOpenClassMethod());
+		return new OMOpenClassFlagList(defaultList);
+	:}
+	|
+	open_class_flag.ocf
+	{:
+		return new OMOpenClassFlagList(new List().add(ocf));
+	:}
+	|
+	open_class_flag_list.ocfl COMMA open_class_flag.ocf  
+	{:
+		return ocfl.getOMOpenClassFlagList().add(ocf);
+	:}
+	;
+	
+OMOpenClassFlag open_class_flag =
+	FIELD
+	{:
+		return new OMOpenClassField();
+	:}
+	|
+	PARENT 
+	{:
+		return new OMOpenClassParent(new SimpleNamePattern("*"));
+	:}
+	|
+	PARENT LPAREN classname_pattern_expr.cpe RPAREN
+	{:
+		return new OMOpenClassParent(cpe);
+	:}
+	|
+	METHOD
+	{:
+		return new OMOpenClassMethod();
 	:}
 	;

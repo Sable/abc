@@ -273,7 +273,23 @@ public class AbcExtension extends abc.ja.AbcExtension {
         lexer.addModuleKeyword("friend", 
         		new LexerAction_c(new Integer(Terminals.FRIEND))
         );
-        
+
+        lexer.addModuleKeyword("openclass", 
+        		new LexerAction_c(
+        				new Integer(Terminals.OPENCLASS), 
+        				new Integer(lexer.pointcut_state())
+        				)
+        );
+        lexer.addPointcutKeyword("field", 
+        		new LexerAction_c(new Integer(Terminals.FIELD))
+        );
+        lexer.addPointcutKeyword("parent", 
+        		new LexerAction_c(new Integer(Terminals.PARENT))
+        );
+        lexer.addPointcutKeyword("method", 
+        		new LexerAction_c(new Integer(Terminals.METHOD))
+        );
+
         
         if(!abc.main.Debug.v().pureJava) {
             lexer.addJavaKeyword("aspect", new LexerAction_c(new Integer(Terminals.ASPECT),

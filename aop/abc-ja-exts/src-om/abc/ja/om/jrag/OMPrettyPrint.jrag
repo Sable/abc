@@ -2,14 +2,14 @@ import abc.ja.om.jrag.*;
 
 aspect OMPrettyPrint {
 	
-	public void ASTNode.toStringPrintModule() {
+	public void ASTNode.printModule() {
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).toStringPrintModule();
+			getChild(i).printModule();
 		}
 	}
-	public void OMModuleDecl.toStringPrintModule() {
+	public void OMModuleDecl.printModule() {
 		System.out.println(toString());
-		super.toStringPrintModule();
+		super.printModule();
 	}
 	
 	public void OMModuleDecl.toString(StringBuffer s) {
@@ -95,5 +95,41 @@ aspect OMPrettyPrint {
 			}
 		}
 		s.append(";");
+	}
+	
+	public void OMOpenClassMember.toString(StringBuffer s) {
+		s.append("openclass ");
+		boolean first = true;
+		for (OMOpenClassFlag omFlag : 
+				getOMOpenClassFlagList().getOMOpenClassFlagList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			
+			omFlag.toString(s);
+			
+			if (first) {
+				first = false;
+			}
+		}
+		s.append(" ");
+		getOMToClause().toString(s);
+		s.append(" : ");
+		getPattern().toString(s);
+		s.append(";");
+	}
+	
+	public abstract void OMOpenClassFlag.toString(StringBuffer s);
+	
+	public void OMOpenClassField.toString(StringBuffer s) {
+		s.append("field");
+	}
+	public void OMOpenClassParent.toString(StringBuffer s) {
+		s.append("parent(");
+		getParentAspects().toString(s);
+		s.append(")");
+	}
+	public void OMOpenClassMethod.toString(StringBuffer s) {
+		s.append("method");
 	}
 }
