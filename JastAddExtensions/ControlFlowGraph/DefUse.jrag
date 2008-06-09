@@ -1,0 +1,52 @@
+aspect DefUse {	
+
+	// create a locally scoped empty bit set for each body decl
+	syn lazy BitSet BodyDecl.empty() = new BitSet();
+	eq BodyDecl.getChild().empty() = empty();
+	eq Program.getChild().empty() {
+		throw new UnsupportedOperationException(); 
+	}
+	// make scoped bit set visible from statements and expressions
+	inh BitSet Stmt.empty();
+	inh BitSet Expr.empty();
+
+  /*
+  // Let each Stmt collect defs from descenfing LocalVarAccess nodes
+  coll BitSet Stmt.def() [empty().mutable()] with add root Stmt;
+  VarAccess contributes decl() when isDest() && decl().isLocalVariable() to Stmt.def() for enclosingStmt(); 
+
+  // Let each Stmt collect uses from descending LocalVarAccess nodes
+  coll BitSet Stmt.use() [empty().mutable()] with add root Stmt;
+  VarAccess contributes decl() when isSource() && decl().isLocalVariable() to Stmt.use() for enclosingStmt();
+
+*/
+  	// My implementation
+  	// def()
+  	syn BitSet CFGNode.def();
+  	eq Expr.def() = empty();
+  	eq Stmt.def() = empty();
+  
+  	eq VarAccess.def() {
+  		if(isDest() && decl().isLocalVariable())
+  			return empty().union(decl());
+  	}
+  
+  	eq VariableDeclaration.def() {
+  		if(hasInit()) 
+  			return empty().union(this);
+  	}
+  
+  
+  	//use()
+  	syn BitSet CFGNode.use();
+  	eq Expr.use() = empty();
+  	eq Stmt.use() = empty();
+  	
+  	eq VarAccess.use() {
+  		if(isSource() && decl().isLocalVariable())
+  			return empty().union(decl());	  
+  	}
+
+ 
+  
+}

@@ -1,0 +1,17 @@
+aspect DeadCode {	
+
+	// Add dead code check
+
+	syn lazy boolean Stmt.isDead();
+	eq Stmt.isDead() = !def().compl(out()).isEmpty();
+	eq VariableDeclaration.isDead() = false; // Lets keep all declarations dead or alive ... 
+	
+	// Collect dead code in each compilation unit
+	coll HashSet CompilationUnit.deadCode() [new HashSet()] with add root CompilationUnit;
+	Stmt contributes this when isDead() to CompilationUnit.deadCode() for enclosingCompilationUnit();
+
+	// Make sure each statement knows its enclosing compilation unit
+	inh CompilationUnit Stmt.enclosingCompilationUnit();
+	eq CompilationUnit.getTypeDecl(int i).enclosingCompilationUnit() = this;
+
+}	
