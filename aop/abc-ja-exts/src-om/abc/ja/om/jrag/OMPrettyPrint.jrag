@@ -17,7 +17,7 @@ aspect OMPrettyPrint {
 			s.append("root ");
 		}
 		s.append("module ");
-		s.append(getID());
+		s.append(getModuleName());
 		s.append(" {\n");
 		for (OMModuleMember member : getOMModuleMemberList()) {
 			s.append("\t");

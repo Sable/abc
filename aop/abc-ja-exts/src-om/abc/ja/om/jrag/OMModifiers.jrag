@@ -22,4 +22,6 @@ aspect OMModifiers {
 			error("modifier root not allowed in this context");
 		}
 	}
+	
+	eq OMModuleDecl.getOMModuleMember(int index).hostType() = this;
 }

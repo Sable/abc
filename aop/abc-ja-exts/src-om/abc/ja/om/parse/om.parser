@@ -4,7 +4,7 @@ CompilationUnit goal =
 OMCompilationUnit om_compilation_unit =
 	module_decl_list.ml 
 	{:
-		return new OMCompilationUnit("", new List(), new List(), ml);
+		return new OMCompilationUnit("", new List(), ml);
 	:}
 	;
 
@@ -23,12 +23,28 @@ List module_decl_list =
 OMModuleDecl module_decl = 
 	modifiers.ml? MODULE.m IDENTIFIER LBRACE module_member_list.mml RBRACE 
 	{:
-		return new OMModuleDecl(new Modifiers(ml), IDENTIFIER, mml);
+		return new OMModuleDecl(
+			(String)(IDENTIFIER.value) + "$DummyAspect", //classname
+			new List(), //body decls
+			new Opt(), //superclass
+			new List(), //interfaces
+			new Opt(), //perclause
+			new Modifiers(ml), 
+			(String)(IDENTIFIER.value), 
+			mml);
 	:}
 	|
 	modifiers.ml? MODULE.m IDENTIFIER LBRACE RBRACE 
 	{:
-		return new OMModuleDecl(new Modifiers(ml), IDENTIFIER, new List());
+		return new OMModuleDecl(
+			(String)(IDENTIFIER.value) + "$DummyAspect", //classname
+			new List(), //body decls
+			new Opt(), //superclass
+			new List(), //interfaces
+			new Opt(), //perclause
+			new Modifiers(ml), 
+			(String)(IDENTIFIER.value), 
+			new List());
 	:}
 	;
 

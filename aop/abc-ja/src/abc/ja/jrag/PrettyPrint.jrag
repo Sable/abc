@@ -178,5 +178,32 @@ aspect PrettyPrint {
     	getPattern().toString(s);
     	s.append(")");
     } 
-
+    public void NamedPointcutExpr.toString(StringBuffer s) {
+    	getName().toString(s);
+    	s.append(" (");
+    	boolean first = true;
+    	for (BindingPattern pat : getPatternList()) {
+    		if (!first) {
+    			s.append(", ");
+    		}
+    		pat.toString(s);
+    		if (first) {
+    			first = false;
+    		}
+    	}
+    	s.append(")");
+    }
+    public abstract void BindingPattern.toString(StringBuffer s);
+    public void StarBindingPattern.toString(StringBuffer s) {
+    	s.append("*");
+    }
+    public void DotDotBindingPattern.toString(StringBuffer s) {
+    	s.append("..");
+    }
+    public void NameBindingPattern.toString(StringBuffer s) {
+    	getPattern().toString(s);
+    }
+    public void PointcutAccess.toString(StringBuffer s) {
+    	s.append(getID());
+    }
 }

@@ -1,6 +1,6 @@
-OMCompilationUnit : CompilationUnit ::= OMModuleDecl*;
+OMCompilationUnit : CompilationUnit ::= ;
 
-OMModuleDecl ::= Modifiers <ID:String> OMModuleMember* ;
+OMModuleDecl : AspectDecl ::= Modifiers <ModuleName:String> OMModuleMember* ;
 
 abstract OMModuleMember ;
 
