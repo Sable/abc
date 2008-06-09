@@ -83,8 +83,8 @@ aspect ConcreteSyntax {
     for(int i = 0; i < strings.length; i++)
       if(strings[i] == null)
         strings[i] = "";
+    ASTNode[] children = concreteChildren();
     if(hasLayout()) {
-      ASTNode[] children = concreteChildren();
       int first = -1;
       int last = -1;
       if(children != null) {
@@ -136,7 +136,7 @@ aspect ConcreteSyntax {
     }
     adjustLayout(strings, children);
     if(children != null) {
-      for(int i = 0; i < getNumChild(); i++)
+      for(int i = 0; i < getNumConcreteChild(); i++)
     	if(children[i] != null)
     	  children[i].addLayout(layoutBuffer);
     }
@@ -372,6 +372,10 @@ aspect ConcreteSyntax {
       children[0].prependLayout(rhs, 0);
       strings[0] = "";
     }
+    else {
+      children[0].prependLayout(strings[0], 0);
+    	strings[0] = "";
+    }
   }
   private void List.splitBetween(String[] strings, ASTNode[] children) {
     for(int i = 1; i < strings.length - 1; i++) {
@@ -408,7 +412,7 @@ aspect ConcreteSyntax {
       ASTNode child = children[i];
       if(child.hasLayout()) {
         prependLayoutInParent(rhs);
-        child.appendLayout(lhs, child.getNumChild());
+        child.appendLayout(lhs, child.getNumConcreteChild());
         strings[strings.length-1] = "";
       }
     }
@@ -578,30 +582,42 @@ aspect ConcreteSyntax {
   // character ranges for AST nodes
   public int ASTNode.startLine() {
     int startLine = getLine(start());
-    for(int i = 0; startLine == 0 && i < getNumChild(); i++)
-      if(getChild(i).hasLayout())
-        startLine = getChild(i).startLine();
+    if(startLine == 0) {
+      ASTNode[] children = concreteChildren();
+      for(int i = 0; startLine == 0 && i < getNumConcreteChild(); i++)
+        if(children[i].hasLayout())
+          startLine = children[i].startLine();
+    }
     return startLine;
   }
   public int ASTNode.startColumn() {
     int startColumn = getColumn(start());
-    for(int i = 0; startColumn == 0 && i < getNumChild(); i++)
-      if(getChild(i).hasLayout())
-        startColumn = getChild(i).startColumn();
+    if(startColumn == 0) {
+      ASTNode[] children = concreteChildren();
+      for(int i = 0; startColumn == 0 && i < getNumConcreteChild(); i++)
+        if(children[i].hasLayout())
+          startColumn = children[i].startColumn();
+    }
     return startColumn;
   }
   public int ASTNode.endLine() {
     int endLine = getLine(end());
-    for(int i = getNumChild()-1; endLine == 0 && i >= 0; i--)
-      if(getChild(i).hasLayout())
-        endLine = getChild(i).endLine();
+    if(endLine == 0) {
+      ASTNode[] children = concreteChildren();
+      for(int i = getNumConcreteChild()-1; endLine == 0 && i >= 0; i--)
+        if(children[i].hasLayout())
+        endLine = children[i].endLine();
+    }
     return endLine;
   }
   public int ASTNode.endColumn() {
     int endColumn = getColumn(end());
-    for(int i = getNumChild()-1; endColumn == 0 && i >= 0; i--)
-      if(getChild(i).hasLayout())
-        endColumn = getChild(i).endColumn();
+    if(endColumn == 0) {
+      ASTNode[] children = concreteChildren();
+      for(int i = getNumConcreteChild()-1; endColumn == 0 && i >= 0; i--)
+        if(children[i].hasLayout())
+          endColumn = children[i].endColumn();
+    }
     return endColumn;
   }
   public int Dot.startLine() { return getLeft().startLine(); }
