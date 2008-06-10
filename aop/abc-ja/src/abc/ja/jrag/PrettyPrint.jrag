@@ -95,10 +95,6 @@ aspect PrettyPrint {
     }
     
     // FIXME: more advanced pretty-printing for patterns?
-    public void FieldPattern.toString(StringBuffer sb)
-    {
-        sb.append("<field pattern>");
-    }
     public void MethodPattern.toString(StringBuffer sb)
     {
     	for (ModifierPattern pat : getModifierPatterns()) {
@@ -205,5 +201,44 @@ aspect PrettyPrint {
     }
     public void PointcutAccess.toString(StringBuffer s) {
     	s.append(getID());
+    }
+    public void ArgsPointcutExpr.toString(StringBuffer s){
+    	boolean first = false;
+    	for (BindingPattern pat : getPatternList()) {
+    		if (!first) {
+    			s.append(", ");
+    		}
+    		pat.toString(s);
+    		first = false;
+    	} 
+    }
+    public void CflowPointcutExpr.toString(StringBuffer s) {
+    	s.append("cflow(");
+    	getPointcut().toString(s);
+    	s.append(")");
+    }
+    public void GetPointcutExpr.toString(StringBuffer s) {
+    	s.append("get(");
+    	getPattern().toString(s);
+    	s.append(")");
+    }
+    public void SetPointcutExpr.toString(StringBuffer s) {
+    	s.append("set(");
+    	getPattern().toString(s);
+    	s.append(")");
+    }
+    public void FieldPattern.toString(StringBuffer s) {
+    	for (ModifierPattern pat : getModifierPatternList()) {
+    		pat.toString(s);
+    		s.append(" ");
+    	}
+    	getTypePattern().toString(s);
+    	s.append(" ");
+    	getMemberNamePattern().toString(s);
+    }
+    public void IfPointcutExpr.toString(StringBuffer s) {
+    	s.append("if(");
+    	getExpr().toString(s);
+    	s.append(")");
     }
 }

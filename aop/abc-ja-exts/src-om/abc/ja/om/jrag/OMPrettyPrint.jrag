@@ -132,4 +132,12 @@ aspect OMPrettyPrint {
 	public void OMOpenClassMethod.toString(StringBuffer s) {
 		s.append("method");
 	}
+	
+	public void ModPattern.toString(StringBuffer s) {
+		for (ModifierPattern pat : getModifierPatternList()) {
+			pat.toString(s);
+			s.append(" ");
+		}
+		getPattern().toString(s);
+	}
 }

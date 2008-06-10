@@ -38,3 +38,8 @@ OMOpenClassFlagList ::= OMOpenClassFlag*;
 OMOpenClassField : OMOpenClassFlag ::= ;
 OMOpenClassParent : OMOpenClassFlag ::= ParentAspects : Pattern;
 OMOpenClassMethod : OMOpenClassFlag ::= ;
+
+//attempt to put in modifier patterns for cpes
+ModPattern : Pattern ::= 
+					ModifierPattern*
+					Pattern;

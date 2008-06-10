@@ -235,7 +235,8 @@ OMOpenClassFlagList open_class_flag_list =
 	|
 	open_class_flag_list.ocfl COMMA open_class_flag.ocf  
 	{:
-		return ocfl.getOMOpenClassFlagList().add(ocf);
+		ocfl.getOMOpenClassFlagList().add(ocf);
+		return ocfl;
 	:}
 	;
 	
