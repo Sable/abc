@@ -24,7 +24,7 @@ BodyDecl class_body_declaration =
   | error LBRACE {: return new InstanceInitializer(new Block()); :}
   ;
 Block block =
-  error RBRACE {: return new Block(new List()); :}
+  LBRACE error RBRACE {: return new Block(new List()); :}
   ;
 Stmt statement =
   error SEMICOLON {: return new EmptyStmt(); :}

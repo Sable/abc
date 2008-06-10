@@ -285,17 +285,13 @@ BodyDecl intertype_member_declaration =
            return new IntertypeMethodDecl(new Modifiers(a), b, IDENTIFIER, e, f, g, c);
        :}
   | modifiers.a? name.b DOT NEW 
-         LPAREN formal_parameter_list.c? RPAREN throws.d? constructor_body.e
+         LPAREN formal_parameter_list.c? RPAREN throws.d?
+         LBRACE explicit_constructor_invocation.i? block_statements.l? RBRACE
      /* must check that body is not null */
        {: ParserTrace.parserTrace("Intertype CONSTRUCTOR declaration");
-          IntertypeConstructorDecl icd = new IntertypeConstructorDecl();
-          icd.setModifiers(new Modifiers(a));
-          icd.setTargetType(b);
-          icd.setParameterList(c);
-          icd.setExceptionList(d);
-          icd.setConstructorInvocationOpt(e.getConstructorInvocationOpt());
-          icd.setBlock(e.getBlock());
-          return icd;
+          return new IntertypeConstructorDecl(
+            new Modifiers(a), "", c, d, i, new Block(l), b
+          );
        :}
   | modifiers.a? type.b name.c DOT IDENTIFIER SEMICOLON 
        {: ParserTrace.parserTrace("Intertype FIELD without initializer");
