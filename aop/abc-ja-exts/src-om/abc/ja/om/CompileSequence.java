@@ -127,9 +127,6 @@ public class CompileSequence extends abc.ja.CompileSequence {
     	  program.addCompilationUnit(u);
       }
 
-      //module print test
-      program.printModule();
-      
       for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
         CompilationUnit unit = (CompilationUnit)iter.next();
         if(unit.fromSource()) {
@@ -158,6 +155,9 @@ public class CompileSequence extends abc.ja.CompileSequence {
             addWarning(p);
           }
       }
+
+      //module print test
+      program.printModule();
 
       program.generateIntertypeDecls();
       program.transformation();
