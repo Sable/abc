@@ -101,12 +101,14 @@ aspect ImplicitVariables
     {
         super.nameCheck();
         for (int i = 0; i < getNumParameter(); i++)
+          if(!getParameter(i).isImplicit())
             getParameter(i).errorIfImplicitName("advice bodies");
     }
     public void PointcutDecl.implicitNameCheck()
     {
         super.nameCheck();
         for (int i = 0; i < getNumParameter(); i++)
+          if(!getParameter(i).isImplicit())
             getParameter(i).errorIfImplicitName("pointcut declarations");
     }
     public void ParameterDeclaration.errorIfImplicitName(String context)
