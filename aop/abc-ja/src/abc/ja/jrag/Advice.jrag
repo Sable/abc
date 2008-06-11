@@ -130,15 +130,17 @@ aspect Advice
   public void AdviceDecl.typeCheck() {
     AdviceSpec spec = getAdviceSpec();
     for(int i = 0; i < spec.getNumParameter(); i++) {
-      int bindings = getPointcutExpr().binds(spec.getParameter(i).name());
-
-      if(bindings > 1) {
-        error("Advice formal " + spec.getParameter(i).name() + " is bound " +
+      ParameterDeclaration p = spec.getParameter(i);
+      if(!p.isImplicit()) {
+        int bindings = getPointcutExpr().binds(p.name());
+        if(bindings > 1) {
+          error("Advice formal " + p.name() + " is bound " +
               "multiple times in pointcut.");
-      } else if(bindings == 0) {
-        error("Advice formal " + spec.getParameter(i).name() +
+        } else if(bindings == 0) {
+          error("Advice formal " + p.name() +
               " is not bound " + "in pointcut.");
-      }		
+        }		
+      }
     }
     AroundSpec aroundspec = spec.aroundSpec();
     if (aroundspec != null && !aroundspec.getTypeAccess().type().isVoid()
