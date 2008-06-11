@@ -598,7 +598,7 @@ aspect PatternsCodegen
         && getPattern().matchesType(t.elementType());
 
     eq AndPattern.matchesType(TypeDecl t) {
-      System.out.print(dumpTree());
+      //System.out.print(dumpTree());
       return getLhs().matchesType(t) && getRhs().matchesType(t);
     }
     eq OrPattern.matchesType(TypeDecl t) =
