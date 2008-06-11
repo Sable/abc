@@ -23,7 +23,7 @@ package abc.ja.om.parse;
 
 import beaver.Symbol;
 import beaver.Scanner;
-import abc.ja.parse.JavaParser.Terminals;
+import abc.ja.om.parse.JavaParser.Terminals;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction;
 
