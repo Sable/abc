@@ -23,5 +23,4 @@ aspect OMModifiers {
 		}
 	}
 	
-	eq OMModuleDecl.getOMModuleMember(int index).hostType() = this;
 }

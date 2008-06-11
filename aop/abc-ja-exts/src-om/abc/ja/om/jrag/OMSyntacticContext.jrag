@@ -1,0 +1,25 @@
+
+aspect OMSyntacticContext {
+
+	syn boolean TypeDecl.isModuleDecl() = false;
+	syn boolean OMModuleDecl.isModuleDecl() = true;
+
+	//host type (for named pointcuts, cflow)
+	eq OMModuleDecl.getOMModuleMember(int index).hostType() = this;
+	
+	//nameType for patterns without wildcards
+	eq OMFriendMember.getNamePattern(int index).nameType() = NameType.TYPE_NAME;
+	eq OMClassMember.getPattern(int index).nameType() = NameType.TYPE_NAME;
+	eq OMToClause.getPattern().nameType() = NameType.TYPE_NAME;
+	eq OMOpenClassMember.getPattern().nameType() = NameType.TYPE_NAME;
+	eq OMOpenClassParent.getParentAspects().nameType() = NameType.TYPE_NAME;
+
+	//force privileged access from modules
+	refine Privileged eq TypeDecl.accessibleFrom(TypeDecl type) {
+		if (type.isModuleDecl()) {
+			return true;
+		}
+		return Privileged.TypeDecl.accessibleFrom(type);
+	}
+	
+}
