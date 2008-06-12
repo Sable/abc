@@ -69,10 +69,12 @@ public class AbcExtension extends abc.eaj.AbcExtension {
     
 
     public static Position generated = new Position("openmod_generated:0");
+	public ModuleStructure moduleStruct;
     
     public AbcExtension() { 
         super();
         
+        moduleStruct = new ModuleStructure();
         debugSet = new HashSet<OMDebug>();
         if (Debug.v().omASTPrintDebug) {
             debugSet.add(AST_PRINT_DEBUG);

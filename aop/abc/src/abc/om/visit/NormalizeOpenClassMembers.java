@@ -40,15 +40,17 @@ public class NormalizeOpenClassMembers extends OncePass {
     }
 
     protected void once() {
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         // traverse modules, normalize the open class members
-        Collection modules = ext.moduleStruct.getModules();
+        Collection modules = abcExt.moduleStruct.getModules();
         
         for (Iterator i = modules.iterator(); i.hasNext();) {
             ModuleNodeModule module = (ModuleNodeModule) i.next();
             
             MSOpenClassMember normOCM = new MSOpenClassMemberBase();
             boolean prevIsContained = false;
-            List ancestorList = ext.moduleStruct.getModuleAncestorList(module); 
+            List ancestorList = abcExt.moduleStruct.getModuleAncestorList(module); 
             for (Iterator j = ancestorList.iterator(); j.hasNext();) {
                 ModuleNodeModule currModule = (ModuleNodeModule) j.next();
                 if (prevIsContained == false) {

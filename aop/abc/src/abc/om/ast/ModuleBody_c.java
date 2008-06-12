@@ -146,12 +146,14 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
     public void checkMemberModule(ModuleDecl module, ModMemberModule member,
             ExtensionInfo ext) throws SemanticException {
         // Check if the module exists
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         ModuleNodeModule parentn = 
-            	(ModuleNodeModule)ext.moduleStruct.getNode(module.name(),
+            	(ModuleNodeModule)abcExt.moduleStruct.getNode(module.name(),
             	        	ModuleNode.TYPE_MODULE);
         assert(parentn != null);
         ModuleNodeModule n = 
-            	(ModuleNodeModule)ext.moduleStruct.getNode(member.name(),
+            	(ModuleNodeModule)abcExt.moduleStruct.getNode(member.name(),
             	        ModuleNode.TYPE_MODULE);
         if (n == null) {
             throw new SemanticException("Module does not exist", member
@@ -171,7 +173,7 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
         }
 
         //set the members parent to this module and add the node the parent
-        ext.moduleStruct.addMember(parentn.name(), n);
+        abcExt.moduleStruct.addMember(parentn.name(), n);
         
         //set the constrained flag
         n.setIsConstrained(member.isConstrained());
@@ -180,9 +182,11 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
     public void checkMemberClass(ModuleDecl module, ModMemberClass member,
             ExtensionInfo ext) throws SemanticException {
         // add the ModuleNodes that represent the expression
-        ModuleNode n = ext.moduleStruct.addClassNode(module.name(), member.getCPE(), member.position());
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
+        ModuleNode n = abcExt.moduleStruct.addClassNode(module.name(), member.getCPE(), member.position());
         assert(n != null);
-        ext.moduleStruct.addMember(module.name(), n);
+        abcExt.moduleStruct.addMember(module.name(), n);
     }
 
     public void checkMemberAspect(ModuleDecl module, ModMemberAspect member,
@@ -192,18 +196,19 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
             throw new SemanticException("Aspect does not exist", member
                     .position());
         }
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
         //check if the aspect already belongs to another module
-        ModuleNode owner = ext.moduleStruct.getOwner(member.name(),
+        ModuleNode owner = abcExt.moduleStruct.getOwner(member.name(),
                 ModuleNode.TYPE_ASPECT);
         if (owner != null) {
             throw new SemanticException("Aspect already included in module "
                     + owner.name(), member.position());
         }
         //add a ModuleNode that represents the aspect
-        ModuleNode aspectNode = ext.moduleStruct.addAspectNode(
+        ModuleNode aspectNode = abcExt.moduleStruct.addAspectNode(
                 member.name(), (CPEName)member.getCPE(), member.position());
         assert(aspectNode != null);
-        aspectNode = ext.moduleStruct.addMember(module.name(), aspectNode);
+        aspectNode = abcExt.moduleStruct.addMember(module.name(), aspectNode);
         //should always add properly, since we already checked if there is an
         // existing aspect
         assert(aspectNode != null);
@@ -213,14 +218,16 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
             ExtensionInfo ext) {
         //TODO: Check signature member (typecheck?)
         //add signature member
-        ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(module.name(),
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+        ModuleNodeModule n = (ModuleNodeModule)abcExt.moduleStruct.getNode(module.name(),
                 ModuleNode.TYPE_MODULE);
         assert(n != null);
         n.addSigMember(sigMember);
     }
     
     public void checkOpenClassMembers(ModuleDecl module, ExtensionInfo ext) {
-        ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(module.name(),
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+        ModuleNodeModule n = (ModuleNodeModule)abcExt.moduleStruct.getNode(module.name(),
                 ModuleNode.TYPE_MODULE);
         assert(n != null);
         for (Iterator i = openClassMembers.iterator(); i.hasNext();) {

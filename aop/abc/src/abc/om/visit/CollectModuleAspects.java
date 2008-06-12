@@ -53,6 +53,8 @@ public class CollectModuleAspects extends ContextVisitor {
             throws SemanticException {
         //attaches an Aspect to a moduleNode, which is used in generating the
         //cflow counter initializations
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         if (n instanceof ModuleDecl) {
             ModuleDecl decl = (ModuleDecl) n;
             DummyAspectDecl_c dummyAspectDecl = (DummyAspectDecl_c) parent;
@@ -61,7 +63,7 @@ public class CollectModuleAspects extends ContextVisitor {
                     				);
             AbcExtension.debPrintln(AbcExtension.COLLECT_MODULE_ASPECTS_DEBUG,
                     dummyAspect.toString());
-            ModuleNodeModule module = (ModuleNodeModule)ext.moduleStruct.getNode(decl.name(), 
+            ModuleNodeModule module = (ModuleNodeModule)abcExt.moduleStruct.getNode(decl.name(), 
                     				ModuleNode.TYPE_MODULE);
             module.setDummyAspect(dummyAspect);
         }

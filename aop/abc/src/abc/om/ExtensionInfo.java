@@ -149,12 +149,8 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     public static final Pass.ID NORMALIZE_OPEN_CLASS_MEMBERS =
         new Pass.ID("normalize_open_class_members");
     
-    /* Module globals */
-    public ModuleStructure moduleStruct;
-
     public ExtensionInfo(Collection jar_classes, Collection source_files, abc.main.AbcExtension extension) {
         super(jar_classes, source_files);
-        moduleStruct = new ModuleStructure();
         this.extension = extension;
     }
 

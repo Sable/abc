@@ -55,7 +55,7 @@ public class CheckITDs extends ContextVisitor {
     
     protected NodeVisitor enterCall(Node parent, Node n)
             throws SemanticException {
-        
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
         //adapted from MangleNames
         //check classes for InterTypeMemberInstances, and compare with permissions
         //in its owning module
@@ -68,7 +68,7 @@ public class CheckITDs extends ContextVisitor {
 			
 			ModuleNodeModule ownerModule = 
 			    (ModuleNodeModule) 
-			    	ext.moduleStruct.getOwner(classNode);
+			    	abcExt.moduleStruct.getOwner(classNode);
 			//if no owner, proceed to other classes
 			if (ownerModule == null) {
 			    return super.enterCall(parent, n);
@@ -193,11 +193,13 @@ public class CheckITDs extends ContextVisitor {
     }
     
     private boolean isInSameModuleSet(ClassType aspectType, PCNode classNode) {
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         ModuleNodeAspect aspectNode = 
-            (ModuleNodeAspect) ext.moduleStruct.getNode(
+            (ModuleNodeAspect) abcExt.moduleStruct.getNode(
                     aspectType.fullName(), 
                     ModuleNode.TYPE_ASPECT);
-        return ext.moduleStruct.isInSameModuleSet(aspectNode, classNode);
+        return abcExt.moduleStruct.isInSameModuleSet(aspectNode, classNode);
     }
     
 }

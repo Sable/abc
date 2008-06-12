@@ -55,6 +55,8 @@ public class CheckDeclareParents extends ContextVisitor {
     protected NodeVisitor enterCall(Node parent, Node n)
             throws SemanticException {
         // TODO Auto-generated method stub
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         if (n instanceof AspectDecl) {
             this.currAspect = (AspectDecl) n;
         }
@@ -83,15 +85,15 @@ public class CheckDeclareParents extends ContextVisitor {
                 //apply constraints
                 ModuleNodeAspect aspectNode = 
                     (ModuleNodeAspect) 
-                    	ext.moduleStruct.getNode(aspectName, 
+                    	abcExt.moduleStruct.getNode(aspectName, 
                     	        				ModuleNode.TYPE_ASPECT);
-                if (ext.moduleStruct.isInSameModuleSet(aspectNode, classNode)) {
+                if (abcExt.moduleStruct.isInSameModuleSet(aspectNode, classNode)) {
                     continue;
                 }
                 
             //	get class' owner module
                 ModuleNodeModule module = 
-                    (ModuleNodeModule) ext.moduleStruct.getOwner(classNode);
+                    (ModuleNodeModule) abcExt.moduleStruct.getOwner(classNode);
             //	if none, continue
                 if (module == null) {
                     continue;

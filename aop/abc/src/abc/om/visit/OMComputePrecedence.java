@@ -63,7 +63,9 @@ public class OMComputePrecedence extends OncePass {
                 "prec_rel before openmod");
         printPrecRel();
         
-        Collection modules = ext.moduleStruct.getModules();
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
+        Collection modules = abcExt.moduleStruct.getModules();
         
         for (Iterator iter = modules.iterator(); iter.hasNext(); ) {
             ModuleNode item = (ModuleNode) iter.next();

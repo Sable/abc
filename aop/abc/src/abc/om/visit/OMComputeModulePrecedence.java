@@ -129,8 +129,9 @@ public class OMComputeModulePrecedence extends OncePass {
     protected void once() {
         AbcExtension.debPrintln(AbcExtension.PRECEDENCE_DEBUG,
                 "---OMComputeModulePrecedence");
-        
-        Collection modules = ext.moduleStruct.getModules();
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
+        Collection modules = abcExt.moduleStruct.getModules();
         
         //first, put in the module order implied by declare precedence
         // statements and module inclusion foreach top level module
@@ -155,7 +156,7 @@ public class OMComputeModulePrecedence extends OncePass {
                     String currLaterAspectName = (String) laspectIter.next();
                     ModuleNodeAspect currLaterAspect = 
                         (ModuleNodeAspect)
-                        	ext.moduleStruct.getNode(currLaterAspectName, 
+                        	abcExt.moduleStruct.getNode(currLaterAspectName, 
                                 		ModuleNode.TYPE_ASPECT);
                     
         //			if external aspect add extaspect to module relation, and continue
@@ -173,7 +174,7 @@ public class OMComputeModulePrecedence extends OncePass {
         //			get laterAspectRoot = top level module of the later aspect
                     ModuleNodeModule laterAspectRoot = 
                         (ModuleNodeModule) 
-                        	ext.moduleStruct.getTopAncestor(currLaterAspect);
+                        	abcExt.moduleStruct.getTopAncestor(currLaterAspect);
                     
         //			if laterAspectRoot == top level module, continue to next
                     if (laterAspectRoot == currModule) {continue lateraspect;}
@@ -200,7 +201,7 @@ public class OMComputeModulePrecedence extends OncePass {
         for (Iterator iter = ext.aspect_names.iterator(); iter.hasNext();) {
             String extAspectName = (String) iter.next();
             //if not an external aspect, continue
-            if (ext.moduleStruct.getNode(extAspectName, ModuleNode.TYPE_ASPECT) != null) {
+            if (abcExt.moduleStruct.getNode(extAspectName, ModuleNode.TYPE_ASPECT) != null) {
                 continue extaspects;
             }
             //Add the entries implied by the aspect prec_rel into the 
@@ -215,10 +216,10 @@ public class OMComputeModulePrecedence extends OncePass {
             for (Iterator iter2 = laterAspectNames.iterator(); iter2.hasNext();) {
                 String currLAspect = (String) iter2.next();
                 //if internal aspect, add topancestor to extaspect's laterset
-                ModuleNode node = ext.moduleStruct.getNode(currLAspect, ModuleNode.TYPE_ASPECT); 
+                ModuleNode node = abcExt.moduleStruct.getNode(currLAspect, ModuleNode.TYPE_ASPECT); 
                 if ( node != null) {
                     Set extAspLSet = getLaterSet(mod_prec_rel, getExtAspect(extAspectName));
-                    extAspLSet.add(ext.moduleStruct.getTopAncestor(node));
+                    extAspLSet.add(abcExt.moduleStruct.getTopAncestor(node));
                     continue extaspectlater;
                 }
                 //if external aspect, just add to the later set

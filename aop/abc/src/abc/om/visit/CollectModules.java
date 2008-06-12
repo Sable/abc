@@ -50,11 +50,13 @@ public class CollectModules extends ContextVisitor {
 
     protected NodeVisitor enterCall(Node parent, Node n)
             throws SemanticException {
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         //adds module to ModuleStruct, throws an error if there is a duplicate.
         if (n instanceof ModuleDecl) {
             ModuleDecl decl = (ModuleDecl) n;
             ModuleNode node = 
-                ext.moduleStruct.addModuleNode(decl.name(), decl.isRoot(), decl.position());
+                abcExt.moduleStruct.addModuleNode(decl.name(), decl.isRoot(), decl.position());
             if (node == null) {
                 throw new SemanticException("Duplicate module name", decl.namePos());
             }

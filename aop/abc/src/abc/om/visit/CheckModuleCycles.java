@@ -52,9 +52,11 @@ public class CheckModuleCycles extends ContextVisitor {
 
     protected NodeVisitor enterCall(Node parent, Node n)
             throws SemanticException {
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
         if (n instanceof ModuleDecl) {
             ModuleDecl decl = (ModuleDecl) n;
-            ModuleNode module = ext.moduleStruct.getNode(decl.name(),
+            ModuleNode module = abcExt.moduleStruct.getNode(decl.name(),
                     ModuleNode.TYPE_MODULE);
             assert(module != null) : "Node is null"; //should have already been caught in
                                     // previous passes

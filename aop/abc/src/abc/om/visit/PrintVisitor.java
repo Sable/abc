@@ -101,7 +101,9 @@ public class PrintVisitor extends ContextVisitor {
     }
 
     private void printFromModuleStructure(ModuleDecl decl, CodeWriter w, PrettyPrinter pp) {
-        ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(decl.name(),
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
+        ModuleNodeModule n = (ModuleNodeModule)abcExt.moduleStruct.getNode(decl.name(),
                 ModuleNode.TYPE_MODULE);
         assert(n != null) : "Node is null";
         //print the module name
@@ -166,9 +168,11 @@ public class PrintVisitor extends ContextVisitor {
     }
 
     private void printOtherModules(String name, CodeWriter w) {
-        ModuleNode node = ext.moduleStruct
+		abc.om.AbcExtension abcExt = (abc.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+
+        ModuleNode node = abcExt.moduleStruct
                 .getNode(name, ModuleNode.TYPE_MODULE);
-        Collection otherModules = ext.moduleStruct.getOtherModules(node);
+        Collection otherModules = abcExt.moduleStruct.getOtherModules(node);
         w.write("Other modules (" + name + "): ");
         for (Iterator iter = otherModules.iterator(); iter.hasNext();) {
             ModuleNode currNode = (ModuleNode) iter.next();
