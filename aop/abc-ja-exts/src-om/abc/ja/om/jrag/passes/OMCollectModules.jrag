@@ -1,0 +1,21 @@
+//Aspect for collecting ModuleStructs from the module ast nodes
+
+aspect OMCollectModules {
+	public void ASTNode.collectModules() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectModules();
+		}
+	}
+	public void CompilationUnit.collectModules() {
+	}
+	public void OMCompilationUnit.collectModules() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectModules();
+		}
+	}
+	
+	public void OMModuleDecl.collectModules() {
+		System.out.println("OMCollectModules");
+	}
+	
+}

@@ -158,6 +158,7 @@ public class CompileSequence extends abc.ja.CompileSequence {
 
       //module print test
       program.printModule();
+      program.collectModules();
 
       program.generateIntertypeDecls();
       program.transformation();
