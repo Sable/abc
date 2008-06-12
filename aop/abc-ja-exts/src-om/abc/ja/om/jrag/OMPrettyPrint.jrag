@@ -7,6 +7,14 @@ aspect OMPrettyPrint {
 			getChild(i).printModule();
 		}
 	}
+	public void CompilationUnit.printModule() {
+	}
+	public void OMCompilationUnit.printModule() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printModule();
+		}
+	}
+	
 	public void OMModuleDecl.printModule() {
 		System.out.println(toString());
 		super.printModule();
@@ -134,10 +142,17 @@ aspect OMPrettyPrint {
 	}
 	
 	public void ModPattern.toString(StringBuffer s) {
+		s.append("[");
+		boolean first = true;
 		for (ModifierPattern pat : getModifierPatternList()) {
+			if (!first) {
+				s.append(" ");
+			}
 			pat.toString(s);
-			s.append(" ");
+			first = false;
 		}
+		s.append("] ");
+		
 		getPattern().toString(s);
 	}
 }

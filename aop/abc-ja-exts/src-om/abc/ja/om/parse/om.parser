@@ -261,3 +261,47 @@ OMOpenClassFlag open_class_flag =
 		return new OMOpenClassMethod();
 	:}
 	;
+	
+//replace unary classname patterns to add modifier patterns
+Pattern unary_classname_pattern_expr :=
+      mod_classname_pattern_expr.a
+        {: ParserTrace.parserTrace("unary_classname_pattern_expr is a  mod_classname_pattern");
+           return a;
+        :}
+   |  PC_NOT.x mod_classname_pattern_expr.a 
+        {: ParserTrace.parserTrace("! unary_classname_pattern_expr");
+           return new NegPattern(a);
+        :}
+   ;
+
+Pattern mod_classname_pattern_expr =
+	basic_classname_pattern.a
+	{: 
+		ParserTrace.parserTrace("unary_classname_pattern_expr is a  basic_classname_pattern");
+   		return a;
+	:}
+   	|
+   	//just add l/rbrack for now, fix later (not really part of openmod as published)
+   	LBRACK modifier_pattern_expr.modlist RBRACK mod_classname_pattern_expr.a
+	{:
+		ParserTrace.parserTrace("[modifier list] mod_classname_pattern_expr");
+		return new ModPattern(modlist, a);
+	:}
+	;
+    
+//disallow aspectj reserved keywords in class patterns
+SimpleNamePattern simple_name_pattern := 
+     PC_MULT.m
+        {: ParserTrace.parserTrace("name_pattern is a star: ");
+           return new SimpleNamePattern("*");
+        :}
+   | IDENTIFIERPATTERN.a
+        {: ParserTrace.parserTrace("name_pattern is simple name pattern: " + a);
+           return new SimpleNamePattern(a);
+        :}
+   | IDENTIFIER
+        {: ParserTrace.parserTrace("name_pattern is identifer: " + IDENTIFIER.value);
+           return new SimpleNamePattern(IDENTIFIER);
+        :}
+   ;
+	
