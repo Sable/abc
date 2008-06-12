@@ -81,7 +81,6 @@ public class ModuleStructure {
     // without knowing ext.
     private static ModuleStructure instance;
     
-    protected ExtensionInfo ext;
 
     //caches
     // Caching seems to make openmod run a bit slower (at least for ants)
@@ -91,7 +90,7 @@ public class ModuleStructure {
     private Map /* <ModuleNode,List> */moduleListCache;
     private Map /* <PCNode,Pointcut> */sigCache;
 
-    public ModuleStructure(ExtensionInfo ext) {
+    public ModuleStructure() {
         moduleNodes = new HashMap();
         aspectNodes = new HashMap();
         classNodes = new HashMap();
@@ -102,7 +101,6 @@ public class ModuleStructure {
         sigCache = new HashMap();
         
         ModuleStructure.instance = this;
-        this.ext = ext;
     }
 
     private Map getMap(int type) {
@@ -427,10 +425,6 @@ public class ModuleStructure {
         Residue ret = pc.matchesAt(new MatchingContext(weaveEnv, cls, method,
                 sm));
 
-        //if openmod is not loaded, just return ret
-        if (!AbcExtension.isLoaded()) {
-            return ret;
-        }
         //if it doesn't match, return immediately
         if (ret == NeverMatch.v()) {
             return ret;

@@ -67,13 +67,11 @@ public class AbcExtension extends abc.eaj.AbcExtension {
     public static final OMDebug NORMALIZE_DEBUG = new OMDebug();
     protected static Set<OMDebug> debugSet = null; 
     
-    private static boolean isLoaded = false;
 
     public static Position generated = new Position("openmod_generated:0");
     
     public AbcExtension() { 
         super();
-        isLoaded = true;
         
         debugSet = new HashSet<OMDebug>();
         if (Debug.v().omASTPrintDebug) {
@@ -99,9 +97,6 @@ public class AbcExtension extends abc.eaj.AbcExtension {
         }
     }
     
-    public static boolean isLoaded() {
-        return isLoaded;
-    }
 
     public abc.aspectj.ExtensionInfo makeExtensionInfo(Collection jar_classes,
             Collection aspect_sources) {

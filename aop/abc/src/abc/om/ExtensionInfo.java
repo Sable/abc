@@ -71,7 +71,7 @@ import abc.om.visit.PrintVisitor;
  */
 public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     private AJTypeSystem ts = null;
-    private AbcExtension extension = null;
+    private abc.main.AbcExtension extension = null;
     
     public static final Pass.ID PRINT_OPENMOD_NODES = new Pass.ID(
             "print-openmod-nodes");
@@ -152,13 +152,13 @@ public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     /* Module globals */
     public ModuleStructure moduleStruct;
 
-    public ExtensionInfo(Collection jar_classes, Collection source_files, AbcExtension extension) {
+    public ExtensionInfo(Collection jar_classes, Collection source_files, abc.main.AbcExtension extension) {
         super(jar_classes, source_files);
-        moduleStruct = new ModuleStructure(this);
+        moduleStruct = new ModuleStructure();
         this.extension = extension;
     }
 
-    public AbcExtension getAbcExtension() {
+    public abc.main.AbcExtension getAbcExtension() {
         return extension;
     }
     
