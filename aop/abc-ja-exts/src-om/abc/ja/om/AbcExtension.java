@@ -20,29 +20,12 @@
 package abc.ja.om;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
-import polyglot.types.SemanticException;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootMethod;
-import soot.tagkit.Host;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.ja.om.parse.OMAbcLexer;
 import abc.ja.om.parse.JavaParser.Terminals;
-import abc.main.Debug;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.ClassnamePattern;
-import abc.weaving.aspectinfo.Pointcut;
-import abc.weaving.matching.AdviceApplication.ResidueConjunct;
-import abc.weaving.matching.MatchingContext;
-import abc.weaving.matching.SJPInfo;
-import abc.weaving.residues.Residue;
-import abc.weaving.weaver.Weaver;
 
 /**
  * @author Julian Tibble
