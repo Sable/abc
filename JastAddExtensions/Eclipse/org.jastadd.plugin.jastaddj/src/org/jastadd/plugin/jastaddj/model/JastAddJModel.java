@@ -114,8 +114,10 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	public boolean isModelFor(IFile file) {
+		if(file == null)
+			return false;
 		for (String str : getFileExtensions()) {
-			if (file.getFileExtension().equals(str)) {
+			if (file.getFileExtension() != null && file.getFileExtension().equals(str)) {
 				return isModelFor(file.getProject());
 			}
 		}

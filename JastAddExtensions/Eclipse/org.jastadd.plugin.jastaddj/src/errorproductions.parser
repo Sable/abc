@@ -68,10 +68,6 @@ BodyDecl class_body_declaration =
   error LBRACE {: return new InstanceInitializer(new Block()); :}
   ;
 
-ConstructorDecl constructor_body =
-  error RBRACE {: return new ConstructorDecl(new Modifiers(), (String)null, new List(), new List(), new Opt(), new Block(new List())); :}
-  ;
-
 BodyDecl interface_member_declaration =
   error RBRACE {: return new StaticInitializer(new Block()); :}
   ;
