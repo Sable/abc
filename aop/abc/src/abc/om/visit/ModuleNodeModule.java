@@ -55,9 +55,6 @@ import abc.weaving.aspectinfo.Within;
 public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
     private List /* ModuleNode */members = null;
 
-    private List /* SigMember */sigMembers = null; //TODO: Seems to be unused, check if removal possible
-    
-
     //pointcut which is the disjuction of the sigMembers;
     private abc.weaving.aspectinfo.Pointcut sigAIPointcut = null;
     private abc.weaving.aspectinfo.Pointcut privateSigAIPointcut = null;
@@ -166,10 +163,6 @@ public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
     }
 
     public void addSigMember(SigMember sigMember) {
-        if (sigMembers == null) {
-            sigMembers = new LinkedList();
-        }
-        sigMembers.add(sigMember);
         
         //update the AIPointcuts
         abc.weaving.aspectinfo.Pointcut newPointcut = sigMember.getAIPointcut();
@@ -215,10 +208,6 @@ public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
         return members;
     }
 
-    public List getSigMembers() {
-        return sigMembers;
-    }
-    
     //only for finding modules and aspects
     public boolean containsMember(String name, int type) {
         if (members == null)
