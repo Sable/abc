@@ -1,0 +1,14 @@
+//declaration of global functions over the openmod AST nodes
+
+aspect OMGlobals {
+
+	//convenience method for abcextension
+	eq Program.getChild(int i).getOMAbcExtension() = ((abc.ja.om.AbcExtension)abc.main.Main.v().getAbcExtension()); 
+	inh abc.ja.om.AbcExtension OMModuleDecl.getOMAbcExtension();
+	inh abc.ja.om.AbcExtension OMModuleMember.getOMAbcExtension();
+	
+	eq Program.getChild(int i).getHostModule() = null;
+	eq OMModuleDecl.getChild(int i).getHostModule() = this;
+	inh OMModuleDecl OMModuleDecl.getHostModule();
+	inh OMModuleDecl OMModuleMember.getHostModule();
+}

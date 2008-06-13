@@ -46,6 +46,7 @@ import polyglot.util.InternalCompilerError;
 import soot.Scene;
 import soot.SootMethod;
 import abc.aspectj.visit.PatternMatcher;
+import abc.ja.om.AbcExtension.OMDebug;
 import abc.ja.om.jrag.*;
 
 import java.io.*;
@@ -157,9 +158,18 @@ public class CompileSequence extends abc.ja.CompileSequence {
       }
 
       //module print test
-      program.printModule();
+      if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {
+    	  program.printModule();
+      }
+      //make ModuleStructures
       program.collectModules();
-
+      
+      //debug, print out module structure contents
+      if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {
+    	  program.printModuleStructure();
+      }
+      
+      
       program.generateIntertypeDecls();
       program.transformation();
 

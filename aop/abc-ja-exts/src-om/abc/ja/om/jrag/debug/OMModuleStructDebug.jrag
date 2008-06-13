@@ -1,0 +1,45 @@
+import abc.om.visit.ModuleStructure;
+import abc.om.visit.ModuleNodeModule; 
+import abc.om.visit.ModuleNode; 
+
+aspect OMModuleStructDebug {
+	public void ASTNode.printModuleStructure() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printModuleStructure();
+		}
+	}
+	public void CompilationUnit.printModuleStructure() {}
+	public void OMCompilationUnit.printModuleStructure() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printModuleStructure();
+		}
+	}
+	
+	public void OMModuleDecl.printModuleStructure() {
+		System.out.println("Printing ModuleStructure");
+        ModuleNodeModule n = (ModuleNodeModule) getOMAbcExtension().moduleStruct.getNode(getModuleName(),
+                ModuleNode.TYPE_MODULE);
+        assert(n != null) : "Node is null";
+        //print the module name
+        System.out.println("module " + n.name());
+        System.out.println();
+        System.out.println("isConstrained = " + n.isConstrained());
+        System.out.println();
+        for (Object objMember : n.getMembers()) {
+        	ModuleNode member = (ModuleNode) objMember;
+            switch (member.type()) {
+	            case ModuleNode.TYPE_CLASS:
+	            	System.out.print("class " + member.name() + " cpe = ");
+	            	System.out.println(((JAModuleNodeClass)member).getCPEPattern().toString() + ";");
+	                break;
+	            case ModuleNode.TYPE_ASPECT:
+	                System.out.println("aspect " + member.name() + " cpe = ");
+	                System.out.println(((JAModuleNodeAspect)member).getCPEPattern().toString() + ";");
+	                break;
+	            case ModuleNode.TYPE_MODULE:
+	                System.out.println("module " + member.name());
+	                break;
+            }
+	    }
+	}
+}
