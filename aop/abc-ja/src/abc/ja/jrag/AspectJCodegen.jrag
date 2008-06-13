@@ -223,11 +223,16 @@ aspect AspectJCodegen {
       globalAspectInfo().getExtendedClasses().add(getSootClassDecl());
   }
 
+  //moved to allow access to AspectDecl aspectInfo
+  syn lazy abc.weaving.aspectinfo.Aspect AspectDecl.aspectInfo() {
+  	Per perclause = hasPerClause() ? getPerClause().aspectInfo() : null;
+  	return new Aspect(abcClass(), perclause, pos()); 
+  }
+
   public void AspectDecl.jimplify1phase1() {
     super.jimplify1phase1();
-    Per perclause = hasPerClause() ? getPerClause().aspectInfo() : null;
     globalAspectInfo().addAspect(
-      new Aspect(abcClass(), perclause, pos())
+      aspectInfo()
     );
   }
 

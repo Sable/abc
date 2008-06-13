@@ -283,8 +283,8 @@ aspect PatternsCodegen
 
     //
     // Matching name patterns
-    //
-    syn ClassnamePattern Pattern.classnamePattern() =
+    // made lazy to allow multiple calls
+    syn lazy ClassnamePattern Pattern.classnamePattern() =
         new ClassnamePattern() {
             public boolean matchesClass(SootClass cl)
             {
