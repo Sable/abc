@@ -32,7 +32,7 @@ import polyglot.util.Position;
  *
  */
 public class ModuleNodeClass extends ModuleNode {
-    private ClassnamePatternExpr cpe;//for TYPE_CLASS nodes
+    protected ClassnamePatternExpr cpe;//for TYPE_CLASS nodes
 
     public ModuleNodeClass(String parentName, ClassnamePatternExpr cpe, Position pos) {
         this.cpe = cpe;

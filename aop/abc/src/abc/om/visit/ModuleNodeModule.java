@@ -53,17 +53,17 @@ import abc.weaving.aspectinfo.Within;
  *
  */
 public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
-    private List /* ModuleNode */members = null;
+    protected List /* ModuleNode */members = null;
 
     //pointcut which is the disjuction of the sigMembers;
-    private abc.weaving.aspectinfo.Pointcut sigAIPointcut = null;
-    private abc.weaving.aspectinfo.Pointcut privateSigAIPointcut = null;
+    protected abc.weaving.aspectinfo.Pointcut sigAIPointcut = null;
+    protected abc.weaving.aspectinfo.Pointcut privateSigAIPointcut = null;
     
-    private MSOpenClassMember openClassMember = null;
+    protected MSOpenClassMember openClassMember = null;
     
     //true if the module is included as a constrained module
     //only valid for modules
-    private boolean isConstrained = false;
+    protected boolean isConstrained = false;
 
     //pointcut which is a conjunction of !within(A) where A is a member of the
     // module. Initially, this pointcut contains only the immediate members
@@ -73,13 +73,13 @@ public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
     // by traversing the subtree rooted at the module.
     // Note: This is initialized to BoolPointcut(false) in the constructor. This
     // assumes that the extpointcut is a conjunction of !within() terms
-    private abc.weaving.aspectinfo.Pointcut extPointcut = null;
+    protected abc.weaving.aspectinfo.Pointcut extPointcut = null;
 
-    private boolean extPointcutBuilt = false;
+    protected boolean extPointcutBuilt = false;
     
-    private Aspect dummyAspect = null;
+    protected Aspect dummyAspect = null;
     
-    private boolean isRoot = false;
+    protected boolean isRoot = false;
     
     public ModuleNodeModule(String name, boolean isRoot, Position pos) {
         this.name = name;
@@ -122,7 +122,7 @@ public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
         }
     }
 
-    private Pointcut makeExtPointcut(ModuleNode node) {
+    protected Pointcut makeExtPointcut(ModuleNode node) {
         assert (node.isClass()) : "Parameter is not a class node";
 
         //create !within(node.name) pointcut
