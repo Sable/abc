@@ -34,7 +34,8 @@ import polyglot.types.SemanticException;
 public class OMGlobalAspectInfo extends GlobalAspectInfo {
 
     public void computeAdviceLists() throws SemanticException {
-        ModuleStructure.v().normalizeSigPointcuts();
+    	ModuleStructure moduleStrct = ((abc.om.AbcExtension) abc.main.Main.v().getAbcExtension()).moduleStruct;
+    	moduleStrct.normalizeSigPointcuts();
         super.computeAdviceLists();
     }
 }

@@ -71,24 +71,19 @@ import abc.weaving.residues.Residue;
  */
 public class ModuleStructure {
 
-    private Map /* <String, ModuleNodeModule> */moduleNodes;
+    protected Map /* <String, ModuleNodeModule> */moduleNodes;
 
-    private Map /* <String, ModuleNodeAspect> */aspectNodes;
+    protected Map /* <String, ModuleNodeAspect> */aspectNodes;
 
-    private Map /* <String, ModuleNodeClass> */classNodes;
-
-    //pseudo-singleton, just so that OMMethodCall can access ModuleStructure
-    // without knowing ext.
-    private static ModuleStructure instance;
-    
+    protected Map /* <String, ModuleNodeClass> */classNodes;
 
     //caches
     // Caching seems to make openmod run a bit slower (at least for ants)
     // I'm leaving the code in (but commented) until I get a larger test case
     // to see it's worth implementing
-    private Map /* <PCNode,ModuleNode> */ownerCache;
-    private Map /* <ModuleNode,List> */moduleListCache;
-    private Map /* <PCNode,Pointcut> */sigCache;
+    protected Map /* <PCNode,ModuleNode> */ownerCache;
+    protected Map /* <ModuleNode,List> */moduleListCache;
+    protected Map /* <PCNode,Pointcut> */sigCache;
 
     public ModuleStructure() {
         moduleNodes = new HashMap();
@@ -100,10 +95,9 @@ public class ModuleStructure {
         moduleListCache = new HashMap(); 
         sigCache = new HashMap();
         
-        ModuleStructure.instance = this;
     }
 
-    private Map getMap(int type) {
+    protected Map getMap(int type) {
         switch (type) {
         case ModuleNode.TYPE_ASPECT:
             return aspectNodes;
@@ -113,10 +107,6 @@ public class ModuleStructure {
             return moduleNodes;
         }
         return null;
-    }
-
-    public static ModuleStructure v() {
-        return ModuleStructure.instance;
     }
 
     //only for modules
@@ -168,21 +158,6 @@ public class ModuleStructure {
         member.setParent(n);
         ((ModuleNodeModule) n).addMember(member);
         return member;
-    }
-
-    /**
-     * Adds a signature member to a module node. Returns the module on success,
-     * null on error
-     */
-    public ModuleNode addSigMember(String name, SigMember sigMember) {
-        Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
-        ModuleNode n = (ModuleNode) nodeMap.get(name);
-        if (n == null) {
-            return null;
-        }
-
-        ((ModuleNodeModule) n).addSigMember(sigMember);
-        return n;
     }
 
     /**
@@ -468,7 +443,7 @@ public class ModuleStructure {
         //i.e. it is matching in with an internal class/aspect, so signatures
         // are
         //not applied
-        ModuleStructure ms = ModuleStructure.v();
+        ModuleStructure ms = ((abc.om.AbcExtension) abc.main.Main.v().getAbcExtension()).moduleStruct;
         ModuleNode aspectNode = ms.getNode(currAspect.getName(),
                 ModuleNode.TYPE_ASPECT);
         if (ms.isInSameModuleSet(aspectNode, owningClass)) {
@@ -542,7 +517,7 @@ public class ModuleStructure {
         return ret;
     }
     
-    private static void addWarning(String msg, ShadowMatch sm) {
+    protected static void addWarning(String msg, ShadowMatch sm) {
         abc.main.Main.v().getAbcExtension().reportError(ErrorInfoFactory.newErrorInfo(
                 ErrorInfo.WARNING, msg, sm.getContainer(), sm.getHost()));
     }

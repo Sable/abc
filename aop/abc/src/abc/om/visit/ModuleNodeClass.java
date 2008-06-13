@@ -34,6 +34,8 @@ import polyglot.util.Position;
 public class ModuleNodeClass extends ModuleNode {
     protected ClassnamePatternExpr cpe;//for TYPE_CLASS nodes
 
+    public ModuleNodeClass() {}
+    
     public ModuleNodeClass(String parentName, ClassnamePatternExpr cpe, Position pos) {
         this.cpe = cpe;
         this.pos = pos;
