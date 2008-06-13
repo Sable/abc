@@ -135,7 +135,7 @@ aspect Privileged {
   }
 
   refine IntertypeFieldNameAnalysis private boolean Expr.mayAccess(FieldDeclaration f) {
-    if(enclosingBodyDecl() != null && enclosingBodyDecl().hostType().isAspectDecl() && enclosingBodyDecl().hostType().isPrivileged())
+    if(visibilityContext() != null && visibilityContext().isPrivileged())
       return true;
     return IntertypeFieldNameAnalysis.Expr.mayAccess(f);
   }
