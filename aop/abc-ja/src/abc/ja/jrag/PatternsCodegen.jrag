@@ -53,7 +53,7 @@ aspect PatternsCodegen
         }
         public String toString()
         {
-          return "<type pattern>";
+          return Pattern.this.toString();
         }
       };
     }
@@ -308,7 +308,7 @@ aspect PatternsCodegen
 
             public String toString()
             {
-                return "<classname pattern>";
+                return Pattern.this.toString();
             }
         };
 
