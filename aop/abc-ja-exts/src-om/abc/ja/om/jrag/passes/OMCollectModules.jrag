@@ -42,5 +42,4 @@ aspect OMCollectModules {
 		}
 		super.collectModules();
 	}
-	//TODO OMIncludeMemeber.collectModules()
 }

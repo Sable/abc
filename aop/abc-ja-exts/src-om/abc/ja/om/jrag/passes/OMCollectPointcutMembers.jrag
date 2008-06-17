@@ -1,0 +1,29 @@
+import abc.ja.om.AbcExtension;
+
+aspect OMCollectPointcutMembers {
+	public void ASTNode.collectPointcutMembers() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectPointcutMembers();
+		}
+	}
+	public void CompilationUnit.collectPointcutMembers() {
+	}
+	public void OMCompilationUnit.collectPointcutMembers() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectPointcutMembers();
+		}
+	}
+
+	public void OMPointcutMember.collectPointcutMembers() {
+		JAModuleNodeModule module = 
+			(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
+					getHostModule().getModuleName(), 
+					ModuleNode.TYPE_MODULE);
+		
+		AbcExtension.debPrintln(
+			AbcExtension.OMDebug.COLLECT_MODULE_ASPECTS_DEBUG,
+			"Collecting OMPointcutMember : " + this.toString());			
+		
+		module.addSigMember(this);			
+	}
+}

@@ -20,7 +20,7 @@ OMToClause ::= Pattern;
 OMIncludeMember : OMModuleMember ::= 
 								OMIncludeMemberType
 								OMIncludeMemberID*;
-OMIncludeMemberType ::= <ID:String>;
+OMIncludeMemberType ::= <ID:String>; //open or constrain
 OMIncludeMemberID ::= <ID:String>;
 
 //friend aspect member

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import polyglot.types.SemanticException;
+import polyglot.util.Position;
 import soot.SootClass;
 import soot.SootMethod;
 
@@ -54,6 +55,8 @@ public class AbcExtension extends abc.ja.AbcExtension {
 	
 	public abc.om.ExtensionInfo ext = null;
 	public JAModuleStructure moduleStruct;
+	
+    public static Position generated = new Position("openmod_generated:0");
 	
     public static enum OMDebug {
     	PRECEDENCE_DEBUG,

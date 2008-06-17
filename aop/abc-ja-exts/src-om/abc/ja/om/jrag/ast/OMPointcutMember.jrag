@@ -1,6 +1,32 @@
+import abc.weaving.aspectinfo.*;
+import abc.om.weaving.aspectinfo.*;
+
 aspect OMPointcutMember {
 
 	//guessing, not really sure what bindsIncurrentCflow does yet
 	eq OMPointcutMember.getPointcutExpr().bindsInCurrentCflow(String name) =
         getPointcutExpr().binds(name) > 0; 
+        
+    public boolean OMPointcutMember.isPrivate() {
+    	return getModifiers().isPrivate();
+    }
+    
+    public boolean OMPointcutMember.isAdvertise() {
+    	return getOMPointcutMemberType().getID().matches("advertise");
+    }
+    public boolean OMPointcutMember.isExpose() {
+    	return getOMPointcutMemberType().getID().matches("expose");
+    }
+    //Do I need to syn lazy every PointcutExpr?
+    syn lazy Pointcut OMPointcutMember.pointcut() {
+    	 ClassnamePattern toClausePat = new JAOMClassnamePattern(getOMToClause().getPattern());
+    	 //I could have changed all the PointcutExpr+.pointcut to be lazy, but I'm going to try
+    	 //doing this first
+         return AndPointcut.construct(
+		        getPointcutExpr().pointcut(), //this may make duplicate copies unless I override the aspect info gatherer 
+		        ThisAspectPointcut.construct(toClausePat, 
+		                getOMAbcExtension().generated), 
+		        getOMAbcExtension().generated);
+    	 
+    } 
 }

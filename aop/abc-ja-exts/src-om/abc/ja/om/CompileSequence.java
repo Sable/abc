@@ -163,6 +163,10 @@ public class CompileSequence extends abc.ja.CompileSequence {
       }
       //make ModuleStructures
       program.collectModules();
+      //get ModuleStructure includes
+      program.collectIncludedModules();
+      //get signature members
+      program.collectPointcutMembers();
       
       //debug, print out module structure contents
       if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {

@@ -1,0 +1,45 @@
+import abc.ja.om.aspectinfo.*;
+
+aspect OMCollectIncludedModules {
+	public void ASTNode.collectIncludedModules() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectIncludedModules();
+		}
+	}
+	public void CompilationUnit.collectIncludedModules() {
+	}
+	public void OMCompilationUnit.collectIncludedModules() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectIncludedModules();
+		}
+	}
+	
+	public void OMIncludeMember.collectIncludedModules() {
+		JAModuleNodeModule parent_node = 
+				(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
+					getHostModule().getModuleName(), 
+					ModuleNode.TYPE_MODULE);
+		for (OMIncludeMemberID incMemID : getOMIncludeMemberIDList()) {
+			String includeID = incMemID.getID();
+			JAModuleNodeModule node = 
+				(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
+					includeID, 
+					ModuleNode.TYPE_MODULE);
+			//TODO: Add to error queue
+			if (node == null) {
+				System.out.println("Included module " + includeID + " not found");
+				return;
+			}
+			//TODO: Add to error queue
+			if (node.isRoot()) {
+				System.out.println("Included module " + includeID + " is root");
+			}
+			if (getOMIncludeMemberType().getID().matches("constrain")) {
+				node.setIsConstrained(true);
+			}
+			getOMAbcExtension().moduleStruct.addMember(
+				parent_node.name(), 
+				node);
+		}
+	}
+}

@@ -6,6 +6,7 @@ import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.visit.PCNode;
+import abc.ja.om.jrag.OMPointcutMember;
 import abc.ja.om.jrag.Pattern;
 import abc.om.AbcExtension;
 import abc.om.ast.SigMember;
@@ -16,6 +17,7 @@ import abc.om.visit.ModuleNodeModule;
 import abc.om.weaving.aspectinfo.BoolPointcut;
 import abc.om.weaving.aspectinfo.OMClassnamePattern;
 import abc.om.weaving.aspectinfo.ThisAspectPointcut;
+import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.ClassnamePattern;
 import abc.weaving.aspectinfo.NotPointcut;
 import abc.weaving.aspectinfo.OrPointcut;
@@ -47,6 +49,23 @@ public class JAModuleNodeModule extends ModuleNodeModule {
 	@Override
 	public void addSigMember(SigMember sigMember) {
 		throw new InternalCompilerError("Attempt to add Polyglot SigMember to JAModuleNodeModule");
+	}
+	
+	public void addSigMember(OMPointcutMember pointcutMember) {
+		Pointcut newPointcut = pointcutMember.pointcut();
+		if (pointcutMember.isAdvertise()) {
+			newPointcut = AndPointcut.construct(
+                    newPointcut, 
+                    this.getExtPointcut(), 
+                    abc.ja.om.AbcExtension.generated);
+		}
+		if (pointcutMember.isPrivate()) {
+			privateSigAIPointcut = OrPointcut.construct(privateSigAIPointcut, 
+                    newPointcut, AbcExtension.generated);
+		} else {
+			sigAIPointcut = OrPointcut.construct(sigAIPointcut, 
+                    newPointcut, AbcExtension.generated);
+		}
 	}
 
 	public boolean containsMember(PCNode node) {
