@@ -28,6 +28,7 @@ import abc.da.HasDAInfo;
 import abc.da.weaving.aspectinfo.AdviceDependency;
 import abc.da.weaving.aspectinfo.DAInfo;
 import abc.da.weaving.weaver.depadviceopt.ds.Shadow;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -48,6 +49,9 @@ import abc.weaving.weaver.AdviceApplicationVisitor;
  */
 public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 
+	protected int numEnabledDependentAdviceShadowsBefore = -1;
+	protected int numEnabledDependentAdviceShadowsAfter = 0;
+
 	/**
 	 * Conducts the analysis, disabling shadows for tracematches that do not fulfill the quick check.
 	 */
@@ -64,12 +68,31 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		Set<AdviceDependency> adviceDependencies = dai.getAdviceDependencies();
 		if(adviceDependencies.isEmpty()) return false;		
 		
+		if(Debug.v().debugDA)
+			System.err.println("da: Starting QuickCheck");
+		long timeBefore = System.currentTimeMillis(); 
+		
 		//find all fulfilled dependencies
 		Set<AdviceDependency> fulfilledAdviceDependencies = new HashSet<AdviceDependency>(); 
 		for (AdviceDependency dep : adviceDependencies) {
 			if(dep.fulfillsQuickCheck()) {
 				fulfilledAdviceDependencies.add(dep);
 			}
+		}
+		
+		if(Debug.v().debugDA) {
+			numEnabledDependentAdviceShadowsBefore = 0;
+			//disable all advice applications that belong to "other" dependent advice
+			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
+
+				public void adviceApplication(AdviceApplication aa, SootMethod m) {
+					boolean isDependent = dai.isDependentAdvice(aa.advice);
+					if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
+						numEnabledDependentAdviceShadowsBefore++;
+					}
+				}			
+			});
+			numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
 		}
 
 		//if we have optimization potential
@@ -93,7 +116,8 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 
 				public void adviceApplication(AdviceApplication aa, SootMethod m) {
 					boolean isDependent = dai.isDependentAdvice(aa.advice);
-					if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+					if (isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+						numEnabledDependentAdviceShadowsAfter--;
 						aa.setResidue(NeverMatch.v());
 					}
 				}			
@@ -131,6 +155,13 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			
 		}
 				
+		
+		if(Debug.v().debugDA) {
+			System.err.println("da:    QuickCheck took:                      "+(System.currentTimeMillis()-timeBefore));
+			System.err.println("da:    DA-Shadows enabled before QuickCheck: "+numEnabledDependentAdviceShadowsBefore);  
+			System.err.println("da:    DA-Shadows enabled after  QuickCheck: "+numEnabledDependentAdviceShadowsAfter);  
+		}
+
 		return false;
 	}
 

@@ -296,32 +296,37 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
     public void createReweavingPasses(List<ReweavingPass> passes) {
     	super.createReweavingPasses(passes);
     	
-    	//quick check
-   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,quickCheck()));
-   		
-   		//flow-insensitive analysis, if enabled
-    	if(!OptionsParser.v().laststage().equals("quick")) {
-    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,flowInsensitiveAnalysis()));
+    	if(Debug.v().dontOptimizeDA) {
+    		if(Debug.v().debugDA) 
+    			System.err.println("da: DISABLED ALL OPTIMIZATIONS FOR DEPENDENT ADVICE");
+    	} else {
+	    	//quick check
+	   		passes.add(new ReweavingPass(DEPENDENT_ADVICE_QUICK_CHECK,quickCheck()));
+	   		
+	   		//flow-insensitive analysis, if enabled
+	    	if(!OptionsParser.v().laststage().equals("quick")) {
+	    		passes.add(new ReweavingPass(DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS,flowInsensitiveAnalysis()));
+	    	}
+	    	
+	        //add a pass which just cleans up resources;
+	        //this is necessary in order to reset static fields for the test harness        
+	        ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
+	
+	            @Override
+	            public boolean analyze() {
+	            	//do nothing
+	                return false;
+	            }
+	            
+	            @Override
+	            public void cleanup() {
+	                //reset state
+	                resetAnalysisDataStructures();
+	            }
+	
+	        };
+	        passes.add( new ReweavingPass(AFTER_ANALYSIS_CLEANUP , cleanup ) );
     	}
-    	
-        //add a pass which just cleans up resources;
-        //this is necessary in order to reset static fields for the test harness        
-        ReweavingAnalysis cleanup = new AbstractReweavingAnalysis() {
-
-            @Override
-            public boolean analyze() {
-            	//do nothing
-                return false;
-            }
-            
-            @Override
-            public void cleanup() {
-                //reset state
-                resetAnalysisDataStructures();
-            }
-
-        };
-        passes.add( new ReweavingPass(AFTER_ANALYSIS_CLEANUP , cleanup ) );
     }
     
 	/**

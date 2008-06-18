@@ -277,6 +277,12 @@ public class Debug {
     //print advice dependencies generated for tracematches
     public boolean printTMAdviceDeps = false;
     
+    //if enabled, dependent advice will not be optimized, not even with a quick-check
+    public boolean dontOptimizeDA = false;
+    
+    //print debug information for analysis for dependent advice
+    public boolean debugDA = false;
+    
 
     public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) { 
