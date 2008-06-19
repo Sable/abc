@@ -161,28 +161,28 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 			}			
 		}
 		
-		if(!OptionsParser.v().warn_about_individual_shadows()) {
-			//generate summary warning
-			
-			final Map<AdviceDecl,Integer> adviceToNumTotal = new HashMap<AdviceDecl, Integer>();
-			for (Shadow shadow : allActiveShadows) {						
-				//count total number
-				Integer num = adviceToNumTotal.get(shadow.getAdviceDecl());
-				if(num==null) num = 0;
-				num++;
-				adviceToNumTotal.put(shadow.getAdviceDecl(),num);			
-			}
-			
-			//give warnings
-			for (AdviceDecl ad : adviceToNumTotal.keySet()) {
-				Integer disabled = shadowsDisabledPerAdviceDecl.countOf(ad);
-				if(disabled>0) {
-					Integer total = adviceToNumTotal.get(ad);
+		final Map<AdviceDecl,Integer> adviceToNumTotal = new HashMap<AdviceDecl, Integer>();
+		for (Shadow shadow : allActiveShadows) {						
+			//count total number
+			Integer num = adviceToNumTotal.get(shadow.getAdviceDecl());
+			if(num==null) num = 0;
+			num++;
+			adviceToNumTotal.put(shadow.getAdviceDecl(),num);			
+		}
+		
+		//give warnings
+		for (AdviceDecl ad : adviceToNumTotal.keySet()) {
+			Integer disabled = shadowsDisabledPerAdviceDecl.countOf(ad);
+			if(disabled>0) {
+				Integer total = adviceToNumTotal.get(ad);
+				
+				if(!OptionsParser.v().warn_about_individual_shadows()) {
+					//generate summary warning
 					
 					warn(ad, total, disabled);
-					
-					numEnabledDependentAdviceShadowsAfter -= disabled;
 				}
+				
+				numEnabledDependentAdviceShadowsAfter -= disabled;
 			}
 		}
 		
