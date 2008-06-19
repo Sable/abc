@@ -25,14 +25,19 @@ aspect OMCollectIncludedModules {
 				(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
 					includeID, 
 					ModuleNode.TYPE_MODULE);
-			//TODO: Add to error queue
+			//Module not found
 			if (node == null) {
-				System.out.println("Included module " + includeID + " not found");
+				error("Included module " + includeID + " not found");
 				return;
 			}
-			//TODO: Add to error queue
+			//Root module included
 			if (node.isRoot()) {
-				System.out.println("Included module " + includeID + " is root");
+				error("Included module " + includeID + " is root");
+				return;
+			}
+			//Multiple module include
+			if (node.getParent() != null) {
+				error("Module " + node.name() + " already included in module " + node.getParent().name());
 			}
 			if (getOMIncludeMemberType().getID().matches("constrain")) {
 				node.setIsConstrained(true);

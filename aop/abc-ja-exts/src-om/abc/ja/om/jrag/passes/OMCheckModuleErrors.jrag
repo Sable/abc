@@ -1,0 +1,62 @@
+import abc.ja.om.aspectinfo.*;
+import abc.om.visit.ModuleNode;
+import java.util.*;
+
+aspect OMCheckModuleErrors {
+	
+	//methods called from here must do their own traversal
+	public void Program.barrierCheckModuleErrors() {
+	}
+	
+	//methods called from here must not traverse, the traversal is done
+	//by singleCheckModuleErrors 
+	public void ASTNode.singleCheckModuleErrors() {
+		//add error checks here
+		checkModuleCycles();
+		checkDuplicateClassInclude();
+		checkDuplicateFriendInclude();
+		
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).singleCheckModuleErrors();
+		}
+	}
+	
+	//check module cycles
+	public void ASTNode.checkModuleCycles() {}
+	public void OMModuleDecl.checkModuleCycles() {
+		JAModuleNodeModule moduleNode = 
+			(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(getModuleName(), ModuleNode.TYPE_MODULE);
+		assert moduleNode != null : "null JAModuleNodeModule in OMModuleDecl.checkModuleCycles()";
+		
+		HashSet parents = new HashSet();
+		while (moduleNode.getParent() != null) {
+			moduleNode = (JAModuleNodeModule)moduleNode.getParent();
+			if (parents.contains(moduleNode)) {
+				error("module " + getModuleName() + " involved in circular inclusion.");
+				break;
+			}
+			parents.add(moduleNode);
+		}
+	}
+	
+	//duplicate class include
+	public void ASTNode.checkDuplicateClassInclude() {}
+	public void TypeDecl.checkDuplicateClassInclude() {
+		JAModuleStructure moduleStruct = getOMAbcExtension().moduleStruct;
+		if (moduleStruct.hasMultipleOwners(this)) {
+			error("class " + this.getID() + " included in more than one module.");
+		}
+	}
+	
+	//duplicate aspect friend (aspect is a friend in more than one module
+	public void ASTNode.checkDuplicateFriendInclude() {}
+	public void AspectDecl.checkDuplicateFriendInclude() {
+		JAModuleStructure moduleStruct = getOMAbcExtension().moduleStruct;
+		if (moduleStruct.hasMultipleFriendOwners(this)) {
+			error("aspect " + this.getID() + " included in more than one module.");
+		}
+	}
+	//TODO: Add check for non-existent aspect (change Pattern in friend member to a TypeAccess)
+	
+	
+}

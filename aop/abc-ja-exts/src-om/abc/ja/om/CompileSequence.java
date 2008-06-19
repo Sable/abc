@@ -157,6 +157,30 @@ public class CompileSequence extends abc.ja.CompileSequence {
           }
       }
 
+      program.initErrHandling(errors, warnings);
+      program.processModules();
+      //bad archi match, since you cant interweave barriers and single passes anymore
+      program.barrierCheckModuleErrors();
+      program.singleCheckModuleErrors();
+      program.collectModuleErrors(errors, warnings);
+      //duplicate code
+      if(!errors.isEmpty()) {
+        Collections.sort(errors);
+        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
+          Problem p = (Problem)iter2.next();
+          addError(p);
+        }
+        throw new CompilerFailedException("There were errors.");
+      }
+      if(!warnings.isEmpty()) {
+          Collections.sort(warnings);
+          for(Iterator iter2 = warnings.iterator(); iter2.hasNext(); ) {
+            Problem p = (Problem)iter2.next();
+            addWarning(p);
+          }
+      }
+      
+      /*
       //module print test
       if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {
     	  program.printModule();
@@ -171,7 +195,7 @@ public class CompileSequence extends abc.ja.CompileSequence {
       //debug, print out module structure contents
       if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {
     	  program.printModuleStructure();
-      }
+      }*/
       
       
       program.generateIntertypeDecls();

@@ -21,6 +21,7 @@ aspect OMModuleStructDebug {
         assert(n != null) : "Node is null";
         //print the module name
         System.out.println("module " + n.name() + "{");
+        System.out.println("\tparent : " + n.getParent());
         System.out.println("\tisConstrained = " + n.isConstrained());
         for (Object objMember : n.getMembers()) {
         	ModuleNode member = (ModuleNode) objMember;

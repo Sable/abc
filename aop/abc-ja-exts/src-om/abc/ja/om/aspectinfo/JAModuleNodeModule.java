@@ -6,8 +6,10 @@ import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.visit.PCNode;
+import abc.ja.om.jrag.AspectDecl;
 import abc.ja.om.jrag.OMPointcutMember;
 import abc.ja.om.jrag.Pattern;
+import abc.ja.om.jrag.TypeDecl;
 import abc.om.AbcExtension;
 import abc.om.ast.SigMember;
 import abc.om.visit.ModuleNode;
@@ -87,5 +89,38 @@ public class JAModuleNodeModule extends ModuleNodeModule {
         }
         return ret;
     }
+    
+    public boolean containsClassMember(TypeDecl t) {
+    	if (members == null) {
+    		return false;
+    	}
+    	for (Iterator iter = members.iterator(); iter.hasNext();) {
+            ModuleNode member = (ModuleNode) iter.next();
+            //check if the CPE matches the node
+            if (member.isClass()) {
+            	if (((JAModuleNodeClass)member).getCPEPattern().matchesType(t)) {
+            		return true;
+            	}
+            }
+        }
+    	return false;
+    }
+    
+    public boolean containsFriendMember(AspectDecl t) {
+    	if (members == null) {
+    		return false;
+    	}
+    	for (Iterator iter = members.iterator(); iter.hasNext();) {
+            ModuleNode member = (ModuleNode) iter.next();
+            //check if the CPE matches the node
+            if (member.isAspect()) {
+            	if (((JAModuleNodeAspect)member).getCPEPattern().matchesType(t)) {
+            		return true;
+            	}
+            }
+        }
+    	return false;
+    }
+    
 
 }

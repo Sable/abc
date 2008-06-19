@@ -1,5 +1,6 @@
 package abc.ja.om.aspectinfo;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import polyglot.types.SemanticException;
@@ -10,9 +11,10 @@ import soot.SootMethod;
 import abc.aspectj.ast.CPEName;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.visit.PCNode;
+import abc.ja.om.jrag.AspectDecl;
 import abc.ja.om.jrag.Pattern;
+import abc.ja.om.jrag.TypeDecl;
 import abc.om.visit.ModuleNode;
-import abc.om.visit.ModuleNodeClass;
 import abc.om.visit.ModuleNodeModule;
 import abc.om.visit.ModuleStructure;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -95,6 +97,40 @@ public class JAModuleStructure extends ModuleStructure {
         member.setParent(n);
         ((JAModuleNodeModule) n).addMember(member);
         return member;
+    }
+    
+    
+    
+    public boolean hasMultipleOwners(TypeDecl type) {
+    	Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
+    	boolean foundOnce = false;
+        for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
+            ModuleNode n = (ModuleNode) iter.next();
+            if (n.isModule() && ((JAModuleNodeModule) n).containsClassMember(type)) {
+                if (foundOnce == false) {
+                    foundOnce = true;
+                } else {
+                    return true;
+                }
+            }
+        }
+    	return false;
+    }
+    
+    public boolean hasMultipleFriendOwners(AspectDecl aspect) {
+    	Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
+    	boolean foundOnce = false;
+        for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
+            ModuleNode n = (ModuleNode) iter.next();
+            if (n.isModule() && ((JAModuleNodeModule) n).containsFriendMember(aspect)) {
+                if (foundOnce == false) {
+                    foundOnce = true;
+                } else {
+                    return true;
+                }
+            }
+        }
+    	return false;
     }
 
 }

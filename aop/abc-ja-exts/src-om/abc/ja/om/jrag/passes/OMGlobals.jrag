@@ -6,6 +6,7 @@ aspect OMGlobals {
 	eq Program.getChild(int i).getOMAbcExtension() = ((abc.ja.om.AbcExtension)abc.main.Main.v().getAbcExtension()); 
 	inh abc.ja.om.AbcExtension OMModuleDecl.getOMAbcExtension();
 	inh abc.ja.om.AbcExtension OMModuleMember.getOMAbcExtension();
+	inh abc.ja.om.AbcExtension TypeDecl.getOMAbcExtension();
 	
 	eq Program.getChild(int i).getHostModule() = null;
 	eq OMModuleDecl.getChild(int i).getHostModule() = this;

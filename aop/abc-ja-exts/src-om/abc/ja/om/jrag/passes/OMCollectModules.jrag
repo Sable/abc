@@ -28,8 +28,13 @@ aspect OMCollectModules {
 	}
 	public void OMFriendMember.collectModules() {
 		for (Pattern pat : getNamePatternList()) {
-			String name = getHostModule().getModuleName() + "." + pat.toString();
+			String name = pat.toString();
 			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addAspectNode(name, pat, pos());
+			//TODO: check if node is null, if so generate an error (This is terrible, find a way to fix this)
+			if (node == null) {
+				error("Aspect " + pat.toString() + " is already a friend in another module");
+				continue;
+			}
 			getOMAbcExtension().moduleStruct.addMember(getHostModule().getModuleName(), node);
 		}
 		super.collectModules();
