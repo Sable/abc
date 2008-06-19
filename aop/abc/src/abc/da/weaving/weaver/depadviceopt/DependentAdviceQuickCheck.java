@@ -155,11 +155,12 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			
 		}
 				
-		
 		if(Debug.v().debugDA) {
-			System.err.println("da:    QuickCheck took:                      "+(System.currentTimeMillis()-timeBefore));
-			System.err.println("da:    DA-Shadows enabled before QuickCheck: "+numEnabledDependentAdviceShadowsBefore);  
-			System.err.println("da:    DA-Shadows enabled after  QuickCheck: "+numEnabledDependentAdviceShadowsAfter);  
+			System.err.println("da:    QuickCheck took:                         "+(System.currentTimeMillis()-timeBefore));
+			System.err.println("da:    Active dependencies before QuickCheck:   "+adviceDependencies.size());  
+			System.err.println("da:    Active dependencies after by QuickCheck: "+(adviceDependencies.size()-fulfilledAdviceDependencies.size()));  
+			System.err.println("da:    DA-Shadows enabled before QuickCheck:    "+numEnabledDependentAdviceShadowsBefore);  
+			System.err.println("da:    DA-Shadows enabled after QuickCheck:     "+numEnabledDependentAdviceShadowsAfter);  
 		}
 
 		return false;
