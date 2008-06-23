@@ -168,6 +168,7 @@ public class Model extends JastAddJModel {
 
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
 
+				/*
 				// Generate scanner
 				String jFlexFileName = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramScanner.flex";
 				File jFlexFile = new File(jFlexFileName);
@@ -182,9 +183,10 @@ public class Model extends JastAddJModel {
 				String beaverSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.beaver";
 				convertToBeaverSpec(parserSpec, beaverSpec);
 				
+				
 				// Generate parser
 				beaver.comp.run.Make.main(new String[] {beaverSpec});
-				
+				*/
 				Program program = (Program) initProgram(project,
 						buildConfiguration);
 				if (program == null)

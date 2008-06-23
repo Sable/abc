@@ -31,7 +31,7 @@
 	<extension point = "org.eclipse.ui.propertyPages">
 	<page
 		objectClass = "org.eclipse.core.resources.IProject"
-		name = "JastAdd Build Configuration"
+		name = "JastAddJ Build Configuration"
 		class = "org.jastadd.plugin.jastaddj.builder.ui.JastAddJBuildConfigurationPropertyPage"		
 		id = "org.jastadd.plugin.jastadd.JastAddBuildConfigurationPropertyPage">
 		<filter
@@ -39,6 +39,16 @@
 			value = "org.jastadd.plugin.jastadd.Nature">
 		</filter>
 	</page>
+ <page
+       class="org.jastadd.plugin.jastadd.properties.JastAddBuildConfigurationPropertyPage"
+       id="org.jastadd.plugin.jastadd.JastAddFlexBuildConfigurationPropertyPage"
+       name="JastAdd Build Configuration"
+       objectClass="org.eclipse.core.resources.IProject">
+    <filter
+          name="nature"
+          value="org.jastadd.plugin.jastadd.Nature">
+    </filter>
+ </page>
 	</extension>
 
 	<!-- Register the JastAdd model -->

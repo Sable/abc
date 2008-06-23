@@ -26,7 +26,7 @@ public abstract class AddEditRemoveField {
 		this.labels = labels;
 	}
 	
-	Control getControl(Composite parent) {
+	public Control getControl(Composite parent) {
 		Composite buttonComposite = new Composite(parent, SWT.NONE);
 		buttonComposite.setFont(parent.getFont());
 		GridLayout buttonCompositeLayout = new GridLayout(1, false);
