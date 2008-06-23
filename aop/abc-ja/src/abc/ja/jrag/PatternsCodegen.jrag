@@ -606,23 +606,74 @@ aspect PatternsCodegen
     eq NegPattern.matchesType(TypeDecl t) =
       !getPattern().matchesType(t);
     eq UniversalNegPattern.matchesType(TypeDecl t) {
-        throw new RuntimeException("?");
-    }
-    eq DotDotNamePattern.matchesType(TypeDecl t) {
-        if (!getRhs().matchesType(t))
-            return false;
-        String fullname = t.fullName();
-
-        int i = fullname.lastIndexOf(".");
-        while (i >= 0) {
-            if (getLhs().matchesName(fullname.substring(0,i)))
-                return true;
-            i = fullname.lastIndexOf(".", i);
-        }
         return false;
     }
+    
+    //NEIL: Temporary implementation of name pattern matching. Pure regex, no subtypes
+    //TODO: See how this interacts with subtypes
+    syn NamePattern NamePattern.namePatternRoot() {
+    	NamePattern root = this;
+    	//special case for subtype name pattern, handled by inh attr 
+    	while (root.getParent() instanceof NamePattern && 
+    			!(root.getParent() instanceof SubtypeNamePattern)) {
+    		root = (NamePattern)root.getParent();
+    	}
+    	return root;
+    }
+    syn String NamePattern.makeNamePatternRegex() {
+    	String p = this.toString();
+    	String ret = "";
+    	
+    	//crude but effective
+    	for (int i = 0; i < p.length(); i++) {
+    		//replace ..
+    		if (i + 1 < p.length() && p.charAt(i) == '.' && p.charAt(i+1) == '.') {
+    			ret += "\\..*";
+    			i++;
+    		}
+    		//replace .
+    		else if (p.charAt(i) == '.') {
+    			ret += "\\.";
+    		}
+    		else if (p.charAt(i) == '*') {
+    			ret += ".*";
+    		}
+    		else if (p.charAt(i) == '$') {
+    			ret += "\\$";
+    		} 
+    		else if (p.charAt(i) == '+') {
+    			//ignore +, assume SubtypeNamePattern catches it
+    		}
+    		else {
+    			ret += p.charAt(i);
+    		}
+    	}
+        
+        ret = "^" + ret + "$";
+        return ret;
+    }
+    
+    eq DotDotNamePattern.matchesType(TypeDecl t) {
+    	if (namePatternRoot() != this) {
+    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
+    	}
+    	String regex = this.makeNamePatternRegex();
+        boolean ret = t.fullName().matches(regex);
+        if (abc.main.Debug.v().namePatternMatches) {
+    		System.out.println("Matching type fullname: " + t.fullName() + " with regex: " + regex + " result = " + ret);
+    	}
+        return ret;
+    }
     eq DotNamePattern.matchesType(TypeDecl t) {
-        throw new RuntimeException("?");
+    	if (namePatternRoot() != this) {
+    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
+    	}
+    	String regex = this.makeNamePatternRegex();
+        boolean ret = t.fullName().matches(regex);
+        if (abc.main.Debug.v().namePatternMatches) {
+    		System.out.println("Matching type fullname: " + t.fullName() + " with regex: " + regex + " result = " + ret);
+    	}
+        return ret;
     }
     eq TypeDotNamePattern.matchesType(TypeDecl t) {
         throw new RuntimeException("?");
