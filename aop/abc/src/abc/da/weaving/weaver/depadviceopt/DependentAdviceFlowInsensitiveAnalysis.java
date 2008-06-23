@@ -59,7 +59,6 @@ import abc.weaving.weaver.AdviceApplicationVisitor;
 public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAnalysis {
 
 	protected int numEnabledDependentAdviceShadowsBefore = -1;
-	protected int numEnabledDependentAdviceShadowsAfter = 0;
 	
 	protected Set<Shadow> stillActiveDependentAdviceShadows = new HashSet<Shadow>();
 
@@ -84,7 +83,6 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 					}
 				}			
 			});
-			numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
 		}
 		
 		final Set<AdviceDependency> adviceDependencies = new HashSet<AdviceDependency>(dai.getAdviceDependencies());
@@ -181,8 +179,6 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 					
 					warn(ad, total, disabled);
 				}
-				
-				numEnabledDependentAdviceShadowsAfter -= disabled;
 			}
 		}
 		
@@ -195,6 +191,13 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 		}
 		
 		if(Debug.v().debugDA) {
+			int numEnabledDependentAdviceShadowsAfter = 0;
+			for (Shadow s : reachableActiveShadows) {
+				if(s.isEnabled()) {
+					numEnabledDependentAdviceShadowsAfter++;
+				}
+			}			
+			
 			System.err.println("da:    Disabling shadows took:            "+(System.currentTimeMillis()-before));
 			System.err.println("da:    DA-Shadows enabled before FlowIns: "+numEnabledDependentAdviceShadowsBefore);  
 			System.err.println("da:    DA-Shadows enabled after  FlowIns: "+numEnabledDependentAdviceShadowsAfter);  
