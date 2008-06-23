@@ -9,3 +9,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jastadd.plugin.jastaddj,
  org.eclipse.jdt.core
 Eclipse-LazyStart: true
+Bundle-ClassPath: libs/beaver.jar,
+ libs/JFlex.jar,
+ .,
+ libs/beaver-rt.jar,
+ libs/JastAddParser.jar

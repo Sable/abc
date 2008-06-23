@@ -1,6 +1,7 @@
 aspect JastAddContentOutline {
   eq SynEq.showInContentOutline() = true;
   eq InhEq.showInContentOutline() = true;
+  eq ASTDecl.showInContentOutline() = true;
 
   eq IntertypeMethodDecl.contentOutlineLabel() {
      StringBuffer res = new StringBuffer(type().typeName());

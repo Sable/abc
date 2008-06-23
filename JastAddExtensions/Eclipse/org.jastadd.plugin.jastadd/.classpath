@@ -3,5 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="libs/beaver.jar" sourcepath="/home/emma/Install/beaver-0.9.6.1/src"/>
+	<classpathentry kind="lib" path="libs/JFlex.jar" sourcepath="/home/emma/Install/jflex-1.4.2/src"/>
+	<classpathentry kind="lib" path="libs/beaver-rt.jar"/>
+	<classpathentry kind="lib" path="libs/JastAddParser.jar" sourcepath="/home/emma/Install/JastAddParser-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
