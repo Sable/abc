@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
 import org.jastadd.plugin.jastadd.generated.AST.Access;
 import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
@@ -64,8 +65,6 @@ public class Model extends JastAddJModel {
 		return list;
 	}
 	
-	
-	
 	@Override
 	public String getNatureID() {
 		return JastAddNature.NATURE_ID;
@@ -75,7 +74,16 @@ public class Model extends JastAddJModel {
 	
 	@Override
 	protected void initModel() {
+		super.initModel();
 		editorConfig = new EditorConfiguration(this);
+		String[] fileType = {"jrag", "jadd", "ast"};
+ 		registerFileType(fileType[0]);
+ 		registerFileType(fileType[1]);
+ 		registerFileType(fileType[2]);
+		JastAddScanner scanner = new  JastAddScanner(new JastAddColors());
+		registerScanner(scanner, fileType[0]);
+		registerScanner(scanner, fileType[1]);
+		registerScanner(new ASTScanner(new JastAddColors()), fileType[2]);
 	}	
 
 	@Override

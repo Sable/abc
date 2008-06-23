@@ -73,11 +73,11 @@
 
     <!-- JastAdd Grammar Editor -->
  	<editor
-		class = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor"
+		class = "org.jastadd.plugin.jastadd.ASTEditor"
 		extensions = "ast"
 		icon = "icons/obj16/ast.gif"
 		id = "org.jastadd.plugin.jastadd.JastAddGrammarEditor"
-		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.ASTEditorContributor"  
 		name = "JastAdd Grammar Editor">
 	</editor>
 	</extension>

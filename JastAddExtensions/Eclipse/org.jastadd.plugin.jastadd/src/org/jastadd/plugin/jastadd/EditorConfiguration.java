@@ -4,9 +4,7 @@ import java.io.IOException;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.bindings.keys.ParseException;
-import org.eclipse.jface.text.rules.ITokenScanner;
 import org.jastadd.plugin.editor.JastAddEditor;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.model.JastAddJEditorConfiguration;
 
 public class EditorConfiguration extends JastAddJEditorConfiguration {
@@ -49,8 +47,10 @@ public class EditorConfiguration extends JastAddJEditorConfiguration {
 				new FindEquationsHandler());
 	}
 	
+	/*
 	@Override
 	public ITokenScanner getScanner() {
 		return new JastAddScanner(new JastAddColors());
 	}
+	*/
 }
