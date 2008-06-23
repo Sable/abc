@@ -91,6 +91,7 @@
       <exclude name="DeclarePrecedence.ast"/>
       <exclude name="DeclareParents.ast"/>
       <exclude name="Glue.jrag"/>
+      <exclude name="GlueCodegen.jrag"/>
 		</fileset>
 		<fileset dir="${backend}">
 			<include name="**/*.ast"/>
