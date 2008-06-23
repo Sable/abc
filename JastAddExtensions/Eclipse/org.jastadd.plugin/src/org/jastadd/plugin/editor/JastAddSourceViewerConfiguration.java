@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -23,6 +24,7 @@ import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -42,9 +44,16 @@ import org.jastadd.plugin.model.JastAddModel;
 public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration {
 	
 	private JastAddModel model;
+	private ITokenScanner scanner;
 	
 	public JastAddSourceViewerConfiguration(JastAddModel model) {
+		this(model, null);
+	}
+	
+	public JastAddSourceViewerConfiguration(JastAddModel model, IFile file) {
 		this.model = model;
+		if (file != null)
+			this.scanner = model.getScanner(file);
 	}
 	
 	/**
@@ -73,7 +82,6 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		if(model != null) {
 			PresentationReconciler reconciler = new PresentationReconciler();
-			ITokenScanner scanner = model.getEditorConfiguration().getScanner();
 			if (scanner != null) {
 				DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 				reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);

@@ -65,9 +65,11 @@ public abstract class JastAddEditorConfiguration {
 	
 
 	// No default syntax highlighting is provided
+	/*
 	public ITokenScanner getScanner() {
 		return null;
 	}
+	*/
 
 		// No default is provided
 	public IContentAssistProcessor getCompletionProcessor() {

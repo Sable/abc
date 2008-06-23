@@ -40,7 +40,6 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 	private Label fSeparator;
 	private Font fStatusTextFont;
 	private static final int BORDER = 1;
-
 	private JastAddModel model;
 	
 	public JastAddSourceInformationControl(Shell parent, JastAddModel model) {
@@ -96,7 +95,7 @@ public class JastAddSourceInformationControl implements IInformationControl, IIn
 	private class SourceInformationControlConfiguration extends SourceViewerConfiguration {
 	    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 			PresentationReconciler reconciler= new PresentationReconciler();
-			DefaultDamagerRepairer dr= new DefaultDamagerRepairer(model.getEditorConfiguration().getScanner());
+			DefaultDamagerRepairer dr= new DefaultDamagerRepairer(null); // TODO change to something better than null
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			return reconciler;

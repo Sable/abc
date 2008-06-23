@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
@@ -53,6 +55,9 @@ public abstract class JastAddModel {
 	private Map<FileInfo, IDocument> mapFileInfoToDoc = new HashMap<FileInfo, IDocument>();
 	private Set<JastAddModelListener> modelListeners = new HashSet<JastAddModelListener>();
 	
+	private Map<String,RuleBasedScanner> mapFileTypeToScanner = new HashMap<String,RuleBasedScanner>();
+	protected ArrayList<String> fileTypeList = new ArrayList<String>();
+	
 	protected JastAddEditorConfiguration editorConfig;
 	protected final String ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ErrorMarker";
 	protected final String PARSE_ERROR_MARKER_TYPE = "org.jastadd.plugin.marker.ParseErrorMarker";
@@ -63,6 +68,18 @@ public abstract class JastAddModel {
 	
 	public JastAddEditorConfiguration getEditorConfiguration() {
 		return editorConfig;
+	}
+	
+	protected void registerScanner(RuleBasedScanner scanner, String fileType) {
+		mapFileTypeToScanner.put(fileType, scanner);
+	}
+	
+	protected void registerFileType(String fileType) {
+		fileTypeList.add(fileType);
+	}
+	
+	public RuleBasedScanner getScanner(IFile file) {
+		return mapFileTypeToScanner.get(file.getFileExtension());
 	}
 
 	public FileInfo buildFileInfo(IEditorInput input) {
