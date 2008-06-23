@@ -1,7 +1,12 @@
 package org.jastadd.plugin.jastadd;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,7 +60,7 @@ public class Model extends JastAddJModel {
 		java.util.List<String> list = super.getFileExtensions();
 		list.add("jrag");
 		list.add("jadd");
-		//list.add("ast");
+		list.add("ast");
 		return list;
 	}
 	
@@ -113,6 +118,47 @@ public class Model extends JastAddJModel {
 		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
 	}
 	
+	private boolean convertToBeaverSpec(String parserSpec, String beaverSpec) {
+		try {
+			String source = parserSpec;
+			String dest = beaverSpec;
+			File sourceFile = new File(source);
+			File destFile = new File(dest);
+			if(sourceFile.exists() && destFile.exists()
+			   && sourceFile.lastModified() < destFile.lastModified()) {
+				System.out.println("Parser specification " + dest + " need not be regenerated");
+			} else {
+				AST.ASTNode.sourceName = source;
+				parser.GrammarScanner scanner = new parser.GrammarScanner(new FileReader(source));
+				parser.GrammarParser parser = new parser.GrammarParser();
+				Object o = parser.parse(scanner);
+				AST.Grammar root = (AST.Grammar)o;
+				Collection c = root.errorCheck();
+				if(!c.isEmpty()) {
+					for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+						logError(new Throwable(), "There were errors in " + source + ", " + iter.next());
+						return false;
+					}
+				}
+				FileOutputStream os = new FileOutputStream(dest);
+				PrintStream out = new PrintStream(os);
+				root.pp(out);
+				out.close();
+				//System.out.println("Parser specification " + dest + " generated from " + source);
+			}
+		} catch (FileNotFoundException e) {
+			logError(e, "Convertion to beaver specification failed");
+			return false;
+		} catch (IOException e) {
+			logError(e, "Convertion to beaver specification failed");
+			return false;
+		} catch (Exception e) {
+			logError(e, "Convertion to beaver specification failed");
+			return false;
+		}
+		return true;
+	}
+	
 	protected void completeBuild(IProject project) {
 		// Build a new project from saved files only.
 		try {
@@ -122,6 +168,23 @@ public class Model extends JastAddJModel {
 
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
 
+				// Generate scanner
+				String jFlexFileName = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramScanner.flex";
+				File jFlexFile = new File(jFlexFileName);
+				if (jFlexFile.exists()) {
+					JFlex.Main.generate(jFlexFile);
+				} else {
+					System.out.println("Cannot find jflex file: " + jFlexFileName);
+				}
+				
+				// Convert parser specification to beaver specification
+				String parserSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.parser";
+				String beaverSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.beaver";
+				convertToBeaverSpec(parserSpec, beaverSpec);
+				
+				// Generate parser
+				beaver.comp.run.Make.main(new String[] {beaverSpec});
+				
 				Program program = (Program) initProgram(project,
 						buildConfiguration);
 				if (program == null)
