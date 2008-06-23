@@ -520,25 +520,35 @@ public class AdviceDependency {
 		
 		Bag<AdviceDecl> disabledShadowsPerAdvice = new HashBag<AdviceDecl>();
 		
-		for (Shadow shadow : dependentAdviceShadows) {
-			if(dai.isDependentAdvice(shadow.getAdviceDecl())) {
-				boolean isAlive = false;
-				for (AdviceDependency dependency : dependencies) {
-					if(dependency.keepsShadowAlive(shadow)) {
-						isAlive = true;
-						break;
+		/* Have to do a fixed point iteration here:
+		 * We disable a shadow if it is not "supported" by any advice dependency.
+		 * The notion of "support" depends however on which shadows are still enabled.
+		 * We therefore iterate until no shadow is enabled any more.
+		 */		
+		boolean changed = true;
+		while(changed) {
+			changed = false;
+			for (Shadow shadow : dependentAdviceShadows) {
+				if(dai.isDependentAdvice(shadow.getAdviceDecl())) {
+					boolean isAlive = false;
+					for (AdviceDependency dependency : dependencies) {
+						if(dependency.keepsShadowAlive(shadow)) {
+							isAlive = true;
+							break;
+						}
 					}
-				}
-				if(!isAlive && shadow.isEnabled()) {					
-					shadow.disable();
-					disabledShadowsPerAdvice.add(shadow.getAdviceDecl());
-					
-					if(OptionsParser.v().warn_about_individual_shadows()) {
-						((HasDAInfo)Main.v().getAbcExtension()).flowInsensitiveAnalysis().warn(
-								shadow,
-								"Orphan shadow disabled by flow-insensitive analysis."
-						);
-					}
+					if(!isAlive && shadow.isEnabled()) {
+						shadow.disable();
+						disabledShadowsPerAdvice.add(shadow.getAdviceDecl());
+						changed = true;
+						
+						if(OptionsParser.v().warn_about_individual_shadows()) {
+							((HasDAInfo)Main.v().getAbcExtension()).flowInsensitiveAnalysis().warn(
+									shadow,
+									"Orphan shadow disabled by flow-insensitive analysis."
+							);
+						}
+					} 	
 				}
 			}
 		}
