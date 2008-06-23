@@ -7,9 +7,11 @@ aspect OMGlobals {
 	inh abc.ja.om.AbcExtension OMModuleDecl.getOMAbcExtension();
 	inh abc.ja.om.AbcExtension OMModuleMember.getOMAbcExtension();
 	inh abc.ja.om.AbcExtension TypeDecl.getOMAbcExtension();
+	inh abc.ja.om.AbcExtension NamePattern.getOMAbcExtension();
 	
 	eq Program.getChild(int i).getHostModule() = null;
 	eq OMModuleDecl.getChild(int i).getHostModule() = this;
 	inh OMModuleDecl OMModuleDecl.getHostModule();
 	inh OMModuleDecl OMModuleMember.getHostModule();
+	inh OMModuleDecl NamePattern.getHostModule();
 }

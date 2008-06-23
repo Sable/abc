@@ -4,8 +4,8 @@ import java.util.*;
 
 aspect OMCheckModuleErrors {
 	
-	//methods called from here must do their own traversal
-	public void Program.barrierCheckModuleErrors() {
+	//methods called from here must do their own traversal. This is run before the single checks
+	public void Program.barrierCheckModuleErrors1() {
 	}
 	
 	//methods called from here must not traverse, the traversal is done
@@ -15,10 +15,16 @@ aspect OMCheckModuleErrors {
 		checkModuleCycles();
 		checkDuplicateClassInclude();
 		checkDuplicateFriendInclude();
+		markFriendMemberExistence();
 		
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).singleCheckModuleErrors();
 		}
+	}
+	
+	//methods called from here must do their own traversal. This is run after the single checks
+	public void Program.barrierCheckModuleErrors2() {
+		collectNonexistentFriendAspects();
 	}
 	
 	//check module cycles
@@ -56,7 +62,62 @@ aspect OMCheckModuleErrors {
 			error("aspect " + this.getID() + " included in more than one module.");
 		}
 	}
-	//TODO: Add check for non-existent aspect (change Pattern in friend member to a TypeAccess)
+	//check for wildcards in friend member patterns
+	public void ASTNode.checkFriendAspectWildcard() {}
+	public void NamePattern.checkFriendAspectWildcard() {
+		if (getHostModule() == null) { //if not in module, continue to next
+			return;
+		}
+		if (containsWildcard()) {
+			error("Wildcards are not allowed in friend aspects.");
+		}
+	}
 	
+	//TODO: Add check for non-existent aspect (traverse AspectDecls, marking off 
+	//OMFriendMembers as they match. Then do another pass to check if the friend aspects
+	//were found)
+	public void ASTNode.markFriendMemberExistence() {}
+	public void AspectDecl.markFriendMemberExistence() {
+		Collection aspectNodes = getOMAbcExtension().moduleStruct.getAspectNodes();
+		for (Iterator i = aspectNodes.iterator(); i.hasNext();) {
+			JAModuleNodeAspect aspectNode = (JAModuleNodeAspect)i.next();
+			if (aspectNode.getCPEPattern().matchesType(this)) {
+				aspectNode.setFound(true);
+			}
+		}
+	}
+
+	//pass to collect all the friend members that don't match an aspect	
+	public void ASTNode.collectNonexistentFriendAspects() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectNonexistentFriendAspects();
+		}
+	}
+	public void CompilationUnit.collectNonexistentFriendAspects() {
+	}
+	public void OMCompilationUnit.collectNonexistentFriendAspects() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).collectNonexistentFriendAspects();
+		}
+	}
+	public void NamePattern.collectNonexistentFriendAspects() {
+		//if not in a module
+		if (getHostModule() == null) {
+			return;
+		}
+		//if not the root name pattern
+		if (namePatternRoot() != this) {
+			return;
+		}
+		JAModuleNodeAspect aspectNode = (JAModuleNodeAspect)getOMAbcExtension().moduleStruct.getNode(
+					this.toString(), 
+					ModuleNode.TYPE_ASPECT);
+		if (!aspectNode.isFound()) {
+			error("Friend aspect " + this.toString() + " does not exist.");
+		}
+		
+		//arguable if this is needed at all
+		super.collectNonexistentFriendAspects();
+	}
 	
 }

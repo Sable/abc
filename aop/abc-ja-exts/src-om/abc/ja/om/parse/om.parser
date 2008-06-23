@@ -167,46 +167,21 @@ OMIncludeMemberID include_member_id =
 	;
 
 OMFriendMember friend_member =
-	FRIEND.f aspect_name_pattern_list.anpl SEMICOLON.sc
+	FRIEND.f name_pattern_list.pl SEMICOLON.sc
 	{:
-		return new OMFriendMember(anpl);
+		return new OMFriendMember(pl);
 	:}
 	;
 	
-List aspect_name_pattern_list =
-	aspect_name_pattern.anp
+List name_pattern_list =
+	name_pattern.pat
 	{:
-		return new List().add(anp);
+		return new List().add(pat);
 	:}
 	|
-	aspect_name_pattern_list.anpl COMMA.c aspect_name_pattern.anp
+	name_pattern_list.pl COMMA name_pattern.pat
 	{:
-		return anpl.add(anp);
-	:}
-	;
-
-//Name pattern with no stars for aspect name patterns
-NamePattern aspect_name_pattern =
-	aspect_simple_name_pattern.a
-    {: 
-    	return a;
-	:}
-	| 
-	aspect_name_pattern.a DOT aspect_simple_name_pattern.b
-    {: 
-    	return new DotNamePattern(a, b);
-    :}
-	|
-	aspect_name_pattern.a PC_DOTDOT.d aspect_simple_name_pattern.b
-	{: 
-	   return new DotDotNamePattern(a, b);
-	:}
-	;
-
-SimpleNamePattern aspect_simple_name_pattern =
-	IDENTIFIER
-	{: 
-        return new SimpleNamePattern(IDENTIFIER);
+		return pl.add(pat);
 	:}
 	;
 	

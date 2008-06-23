@@ -160,8 +160,9 @@ public class CompileSequence extends abc.ja.CompileSequence {
       program.initErrHandling(errors, warnings);
       program.processModules();
       //bad archi match, since you cant interweave barriers and single passes anymore
-      program.barrierCheckModuleErrors();
+      program.barrierCheckModuleErrors1();
       program.singleCheckModuleErrors();
+      program.barrierCheckModuleErrors2();
       program.collectModuleErrors(errors, warnings);
       //duplicate code
       if(!errors.isEmpty()) {

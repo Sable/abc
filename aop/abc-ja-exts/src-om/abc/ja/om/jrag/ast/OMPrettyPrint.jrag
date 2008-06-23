@@ -155,4 +155,5 @@ aspect OMPrettyPrint {
 		
 		getPattern().toString(s);
 	}
+	
 }

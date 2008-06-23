@@ -11,6 +11,7 @@ import abc.om.visit.ModuleNodeAspect;
 public class JAModuleNodeAspect extends ModuleNodeAspect {
 	
 	protected Pattern pat;
+	protected boolean found = false; //true if an aspect matching the pattern has been found
 	
 	public JAModuleNodeAspect(String name, Pattern pat, Position pos) {
 		this.aspectNode = null;
@@ -31,4 +32,13 @@ public class JAModuleNodeAspect extends ModuleNodeAspect {
 	public PCNode getAspectNode() {
         throw new InternalCompilerError("Attempt to use Polyglot version JAModuleNodeAspect.getAspectNode()");
     }
+
+	public boolean isFound() {
+		return found;
+	}
+
+	public void setFound(boolean found) {
+		this.found = found;
+	}
+	
 }

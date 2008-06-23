@@ -28,11 +28,13 @@ aspect OMModuleStructDebug {
             switch (member.type()) {
 	            case ModuleNode.TYPE_CLASS:
 	            	System.out.print("\tclass " + member.name() + " cpe = ");
-	            	System.out.println(((JAModuleNodeClass)member).getCPEPattern().toString() + ";");
+	            	System.out.print(((JAModuleNodeClass)member).getCPEPattern().toString());
+	            	System.out.println(" class: " + ((JAModuleNodeClass)member).getCPEPattern().getClass().toString() + ";");
 	                break;
 	            case ModuleNode.TYPE_ASPECT:
 	                System.out.print("\taspect " + member.name() + " cpe = ");
-	                System.out.println(((JAModuleNodeAspect)member).getCPEPattern().toString() + ";");
+	                System.out.print(((JAModuleNodeAspect)member).getCPEPattern().toString());
+	                System.out.println(" class: " + ((JAModuleNodeAspect)member).getCPEPattern().getClass() + ";");
 	                break;
 	            case ModuleNode.TYPE_MODULE:
 	                if (((JAModuleNodeModule)member).isConstrained()) {
