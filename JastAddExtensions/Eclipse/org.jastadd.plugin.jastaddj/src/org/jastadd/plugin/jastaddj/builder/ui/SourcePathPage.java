@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeSelection;
@@ -25,18 +25,22 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
-import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 
 class SourcePathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
 	private Shell shell;
 	private JastAddJBuildConfiguration buildConfiguration;
 	private boolean hasChanges;
+	/**
+	 * To allow the source adding/editing to discover the folders in the current project.
+	 */
+	private IProject project;
 	
-	SourcePathPage(Shell shell, JastAddJBuildConfiguration buildConfiguration) {
+	SourcePathPage(Shell shell, IProject project, JastAddJBuildConfiguration buildConfiguration) {
 		this.shell = shell;
 		this.buildConfiguration = buildConfiguration;
 		this.hasChanges = false;
+		this.project = project;
 	}
 	
 	public String getTitle() {
@@ -238,8 +242,7 @@ class SourcePathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
 	}
 
 	protected void sourceEntryAddCommand(TreeViewer viewer) {
-		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(shell, null,
-				true);
+		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(shell, project, null, true);
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			SourcePathEntry sourcePathEntry = new SourcePathEntry();
 			dialog.update(sourcePathEntry);
@@ -252,8 +255,7 @@ class SourcePathPage implements JastAddJBuildConfigurationPropertyPage.IPage {
 	protected void sourceEntryEditCommand(TreeViewer viewer,
 			JastAddJBuildConfiguration.SourcePathEntry sourceEntry) {
 		JastAddJBuildConfiguration.SourcePathEntry sourcePathEntry = getSelectedSourceEntry(viewer);
-		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(shell, 
-				sourcePathEntry, false);
+		EditSourcePathEntryDialog dialog = new EditSourcePathEntryDialog(shell, project, sourcePathEntry.copy(), false);
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			dialog.update(sourcePathEntry);
 			viewer.refresh(sourcePathEntry);

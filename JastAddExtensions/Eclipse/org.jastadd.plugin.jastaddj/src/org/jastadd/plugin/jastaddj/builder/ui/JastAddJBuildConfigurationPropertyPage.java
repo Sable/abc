@@ -45,7 +45,7 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 		
 	protected List<IPage> buildPages() {
 		List<IPage> list = new ArrayList<IPage>();
-		list.add(new SourcePathPage(getShell(), buildConfiguration));
+		list.add(new SourcePathPage(getShell(), project, buildConfiguration));
 		list.add(new ClassPathPage(getShell(), buildConfiguration));
 		return list;
 	}

@@ -6,15 +6,15 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Control;
 
-class UIUtil {
+public class UIUtil {
 
-	static GridData stretchControlHorizontal(GridData gridData) {
+	public static GridData stretchControlHorizontal(GridData gridData) {
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.horizontalAlignment = SWT.FILL;
 		return gridData;
 	}
 	
-	static GridData stretchControl(GridData gridData) {
+	public static GridData stretchControl(GridData gridData) {
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.verticalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -22,7 +22,7 @@ class UIUtil {
 		return gridData;
 	}
 
-	static GridData suggestCharWidth(GridData gridData, Control control, int charWidth) {
+	public static GridData suggestCharWidth(GridData gridData, Control control, int charWidth) {
 		GC gc = new GC(control);
 		gc.setFont(control.getFont());
 		FontMetrics fontMetrics = gc.getFontMetrics();
@@ -31,7 +31,7 @@ class UIUtil {
 		return gridData;
 	}
 	
-	static GridData suggestCharSize(GridData gridData, Control control, int charWidth, int charHeight) {
+	public static GridData suggestCharSize(GridData gridData, Control control, int charWidth, int charHeight) {
 		GC gc = new GC(control);
 		gc.setFont(control.getFont());
 		FontMetrics fontMetrics = gc.getFontMetrics();

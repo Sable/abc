@@ -3,8 +3,11 @@ package org.jastadd.plugin.jastaddj.builder.ui;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -14,11 +17,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-abstract class AddEditRemoveField {
+public abstract class AddEditRemoveField {
 	private StructuredViewer viewer;
 	private String[] labels;
 	
-	AddEditRemoveField(StructuredViewer viewer, String[] labels) {
+	public AddEditRemoveField(StructuredViewer viewer, String[] labels) {
 		this.viewer = viewer;
 		this.labels = labels;
 	}
@@ -33,6 +36,8 @@ abstract class AddEditRemoveField {
 		
 		GridData buttonGridData = new GridData();
 		buttonGridData.horizontalAlignment = SWT.FILL;
+		buttonGridData.grabExcessHorizontalSpace = true;
+		buttonGridData.minimumWidth = 140;
 
 		Button addButton = new Button(buttonComposite, SWT.PUSH);
 		addButton.setText(labels[0]);
@@ -86,6 +91,20 @@ abstract class AddEditRemoveField {
 					editCommand();
 			}
 		});
+		
+		if (viewer instanceof TreeViewer) {
+			((TreeViewer) viewer).addTreeListener(new ITreeViewerListener() {
+	
+				public void treeCollapsed(TreeExpansionEvent event) {
+					updateButtonsEnabled(editButton, removeButton);
+				}
+	
+				public void treeExpanded(TreeExpansionEvent event) {
+					updateButtonsEnabled(editButton, removeButton);
+				}
+				
+			});
+		}
 		
 		return buttonComposite;
 	}

@@ -12,22 +12,21 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 
 
-abstract class ListEditField<T> {
+public abstract class ListEditField<T> {
 	private final List<T> data;
 	
 	private int charWidth;
 	private int charHeight;
 	
-	ListEditField(List<T> data, int charWidth, int charHeight) {
+	public ListEditField(List<T> data, int charWidth, int charHeight) {
 		this.data = data;
 		this.charWidth = charWidth;
 		this.charHeight = charHeight;
 	}
 	
-	Control getControl(Composite parent) {
+	public Control getControl(Composite parent) {
 		Composite dataComposite = new Composite(parent, SWT.NONE);
 		dataComposite.setFont(parent.getFont());
 		GridLayout dataCompositeLayout = new GridLayout(2, false);
@@ -38,7 +37,7 @@ abstract class ListEditField<T> {
 		dataComposite.setLayoutData(UIUtil.stretchControl(new GridData()));
 
 		org.eclipse.swt.widgets.List dataList = new org.eclipse.swt.widgets.List(dataComposite, SWT.BORDER | SWT.H_SCROLL
-				| SWT.V_SCROLL);
+				| SWT.V_SCROLL | SWT.MULTI);
 		dataList.setFont(parent.getFont());
 		dataList.setLayoutData(UIUtil.suggestCharSize(UIUtil.stretchControl(new GridData()), parent, charWidth, charHeight));
 		final ListViewer dataViewer = new ListViewer(dataList);
@@ -71,7 +70,7 @@ abstract class ListEditField<T> {
 		return dataComposite;
 	}
 	
-	List<T> getData() {
+	public List<T> getData() {
 		return data;
 	}
 	
