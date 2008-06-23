@@ -99,9 +99,6 @@ Comment = {TraditionalComment}
 TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/" | "/*" "*"+ [^/*] ~"*/"
 EndOfLineComment = "//" {InputCharacter}* {LineTerminator}?
 
-// 3.8 Identifiers
-Identifier = [:jletter:][:jletterdigit:]*
-
 // 3.10.1 Integer Literals
 DecimalNumeral = 0 | {NonZeroDigit} {Digits}? 
 HexNumeral = 0 [xX] [0-9a-fA-F]+
@@ -130,6 +127,13 @@ OctalEscape = \\ {OctalDigit}
 OctalDigit = [0-7]
 ZeroToThree = [0-3]
 
+HexadecimalFloatingPointLiteral = {HexSignificand} {BinaryExponent}
+
+HexSignificand = {HexNumeral} [\.]?
+ | 0 [xX] [0-9a-fA-F]* \. [0-9a-fA-F]+
+
+BinaryExponent = [pP] [+-]? {Digits}
+
 %state STRING, JASTADD
 
 %%
@@ -138,8 +142,8 @@ ZeroToThree = [0-3]
   "declare"                       { return sym(Terminals.DECLARE); }
   "precedence"                    { return sym(Terminals.PRECEDENCE); }
   "parents"                       { return sym(Terminals.PARENTS); }
-
 }
+
 <YYINITIAL,JASTADD> {
   // 3.6 White Space
   {WhiteSpace}                   { }
@@ -151,7 +155,6 @@ ZeroToThree = [0-3]
 
   // 3.9 Keywords
     "aspect"                       { enterJastAdd(); return sym(Terminals.ASPECT); }
-
 
   "assert"                       { return sym(Terminals.ASSERT); }
   "abstract"                     { return sym(Terminals.ABSTRACT); }
@@ -203,6 +206,8 @@ ZeroToThree = [0-3]
   "volatile"                     { return sym(Terminals.VOLATILE); }
   "while"                        { return sym(Terminals.WHILE); }
 
+  "enum" { return sym(Terminals.ENUM); }
+
   // 3.10 Literals
   
   // 3.10.1 Integer Literals
@@ -221,7 +226,10 @@ ZeroToThree = [0-3]
   {FloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
   [0-9]+ {ExponentPart}? [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
   [0-9]+ {ExponentPart}? [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
-  
+  {HexadecimalFloatingPointLiteral} [fF]    { return sym(Terminals.FLOATING_POINT_LITERAL, str().substring(0,len()-1)); }
+  {HexadecimalFloatingPointLiteral} [dD]    { return sym(Terminals.DOUBLE_LITERAL, str().substring(0,len()-1)); }
+  {HexadecimalFloatingPointLiteral}         { return sym(Terminals.DOUBLE_LITERAL); }
+
   // 3.10.3 Boolean Literals
   "true"                         { return sym(Terminals.BOOLEAN_LITERAL); }
   "false"                        { return sym(Terminals.BOOLEAN_LITERAL); }
@@ -240,8 +248,8 @@ ZeroToThree = [0-3]
   \'{OctalEscape}\'              { int val = Integer.parseInt(str().substring(2,len()-1),8);
 			                             return sym(Terminals.CHARACTER_LITERAL, new Character((char)val).toString()); }
   // Character Literal errors
-  \'\\.                          { error("Illegal escape sequence \""+str()+"\""); }
-  \'{LineTerminator}             { error("Unterminated character literal at end of line"); }
+  \'\\.                          { error("illegal escape sequence \""+str()+"\""); }
+  \'{LineTerminator}             { error("unterminated character literal at end of line"); }
 
   // 3.10.5 String Literals
   \"                             { enterTempState(STRING); strbuf.setLength(0); }
@@ -298,9 +306,11 @@ ZeroToThree = [0-3]
   "<<="                          { return sym(Terminals.LSHIFTEQ); }
   ">>="                          { return sym(Terminals.RSHIFTEQ); }
   ">>>="                         { return sym(Terminals.URSHIFTEQ); }
+  "@"                            { return sym(Terminals.AT); }
+  "..."                          { return sym(Terminals.ELLIPSIS); }
   
   // 3.8 Identifiers
-  {Identifier}                   { return sym(Terminals.IDENTIFIER); }
+  ([:jletter:]|[\ud800-\udfff])([:jletterdigit:]|[\ud800-\udfff])* { return sym(Terminals.IDENTIFIER); }
 }
 
 // 3.10.5 String Literals
@@ -321,8 +331,8 @@ ZeroToThree = [0-3]
   {OctalEscape}                  { strbuf.append((char)Integer.parseInt(str().substring(1),8)); }
 
   // String Literal errors
-  \\.                            { error("Illegal escape sequence \""+str()+"\""); }
-  {LineTerminator}               { error("Unterminated string at end of line"); }
+  \\.                            { error("illegal escape sequence \""+str()+"\""); }
+  {LineTerminator}               { error("unterminated string at end of line"); }
 }
 
 // hack to detect the SUB character as the last input character
@@ -331,9 +341,14 @@ ZeroToThree = [0-3]
                                    } 
                                  }
 // fall through errors
-.|\n                             { error("Illegal character \""+str()+ "\" at line "+yyline+", column "+yycolumn); }
+.|\n                             { error("illegal character \""+str()+ "\""); }
 <<EOF>>                          { // detect position of first SUB character
-                                   if(!(sub_line == 0 && sub_column == 0) && (sub_line != yyline || sub_column != yycolumn-1))
-                                     error("Error");
+                                     if(!(sub_line == 0 && sub_column == 0) && (sub_line != yyline || sub_column != yycolumn-1)) {
+                                     // reset to only return error once
+                                     sub_line = 0;
+                                     sub_column = 0;
+                                     // return error
+                                     error("error");
+                                   }
                                    return sym(Terminals.EOF);
                                  }

@@ -22,67 +22,43 @@ public class JavaCompiler extends Frontend {
   }
 
   public static boolean compile(String args[]) {
-    return new JavaCompiler().process(
+    JavaCompiler c = new JavaCompiler();
+    boolean result = c.process(
        args,
        new BytecodeParser(),
        new JavaParser() {
-          parser.JavaParser parser = new parser.JavaParser();
           public CompilationUnit parse(java.io.InputStream is, String fileName) throws java.io.IOException, beaver.Parser.Exception {
-            return parser.parse(is, fileName);
+            return new parser.JavaParser().parse(is, fileName);
           }
        }
     );
-  }
-
-  public boolean process(String[] args, BytecodeReader reader, JavaParser parser) {
-    program.initBytecodeReader(reader);
-    program.initJavaParser(parser);
-
-    initOptions();
-    processArgs(args);
-
-    Collection files = program.files();
-
-    try {
-      for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-        String name = (String)iter.next();
-        program.addSourceFile(name);
-      }
-
-      for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-        CompilationUnit unit = (CompilationUnit)iter.next();
-        if(unit.fromSource()) {
-          Collection errors = unit.parseErrors();
-          if(!errors.isEmpty()) {
-            processErrors(errors, unit);
-            return false;
-          }
-        }
-      }
-      ArrayList errors = new ArrayList();
-      Collection warnings = new ArrayList();
-      program.errorCheck(errors, warnings);
-      if(!errors.isEmpty()) {
-        Collections.sort(errors);
-        System.out.println("Errors:");
-        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
-          System.out.println(iter2.next());
-        }
-        return false;
-      }
-    } catch (Exception e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
-    }
-    program.generateIntertypeDecls();
-    program.transformation();
-  
-    System.out.println(program.toString());
+    if(!result) return false;
+    c.generate();
     return true;
   }
 
-  protected String name() {
-    return "Java1.4 + ITDs";
+  public void generate() {
+    program.generateIntertypeDecls();
+    program.transformation();
+    if(Program.verbose())
+      System.out.println(program.toString());
+
+    for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit cu = (CompilationUnit)iter.next();
+      if(cu.fromSource()) {
+        for(int i = 0; i < cu.getNumTypeDecl(); i++) {
+          cu.getTypeDecl(i).generateClassfile();
+        }
+      }
+    }
   }
 
+  protected String name() {
+    return "Java5 + ITDs";
+  }
+
+  protected void initOptions() {
+    super.initOptions();
+    program.addKeyOption("-weave_inline");
+  }
 }
