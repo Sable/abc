@@ -52,6 +52,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
@@ -62,6 +63,7 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathE
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.jastaddj.model.repair.JavaLexer;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
@@ -97,6 +99,9 @@ public class JastAddJModel extends JastAddModel {
 	@Override
 	protected void initModel() {
 		editorConfig = new JastAddJEditorConfiguration(this);
+		String javaType = "java";
+		registerFileType(javaType);
+		registerScanner(new JastAddJScanner(new JastAddColors()), javaType);
 	}
 
 	// ************** Implementations of abstract methods

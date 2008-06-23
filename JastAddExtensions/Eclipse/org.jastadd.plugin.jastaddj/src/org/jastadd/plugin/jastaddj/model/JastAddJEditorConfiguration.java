@@ -8,31 +8,22 @@ import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
-import org.eclipse.jface.text.rules.ITokenScanner;
 import org.jastadd.plugin.editor.JastAddEditor;
-import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.completion.JastAddJCompletionProcessor;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
-import org.jastadd.plugin.jastaddj.editor.actions.InsertCrapRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
-import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
-import org.jastadd.plugin.jastaddj.model.repair.Indent;
-import org.jastadd.plugin.jastaddj.model.repair.LeftBrace;
 import org.jastadd.plugin.jastaddj.model.repair.LeftParen;
 import org.jastadd.plugin.jastaddj.model.repair.RightBrace;
 import org.jastadd.plugin.jastaddj.model.repair.RightParen;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
-import org.jastadd.plugin.model.repair.LexicalNode;
-import org.jastadd.plugin.model.repair.Recovery;
-import org.jastadd.plugin.model.repair.SOF;
 
 public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
@@ -119,10 +110,12 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		previousKeypress = c;
 	}
 
+	/*
 	@Override
 	public ITokenScanner getScanner() {
 		return new JastAddJScanner(new JastAddColors());
 	}
+	*/
 
 	@Override
 	public IContentAssistProcessor getCompletionProcessor() {
