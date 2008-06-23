@@ -262,6 +262,8 @@ aspect ASTGrammar {
       )
     );
 
+    addBeaverConstructor(bodyDeclList);
+
     // add constructor with a single int argument for backward compability with jjtree
 
     //if(list.getNumChild() > 0) {
@@ -911,6 +913,7 @@ aspect ASTGrammar {
         name() + "$value"
       )
     );
+    addCacheDeclBeaverToken(bodyDeclList, index);
   }
   public void ASTTokenChild.addGetter(List bodyDeclList, int index) {
     // public type getName() { return name$value; }
@@ -935,6 +938,177 @@ aspect ASTGrammar {
             new VarAccess(name() + "$value"),
             new VarAccess("value")
           ).setLocation(this)
+        )
+      )
+    );
+    addSetterBeaverToken(bodyDeclList, index);
+  }
+  public void ASTTokenChild.addCacheDeclBeaverToken(List bodyDeclList, int index) {
+    // public int namestart;
+    // public int nameend;
+    bodyDeclList.add(
+      new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("int"),
+        name() + "start"
+      )
+    );
+    bodyDeclList.add(
+      new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("int"),
+        name() + "end"
+      )
+    );
+  }
+
+  public void ASTTokenChild.addSetterBeaverToken(List bodyDeclList, int index) {
+    TypeDecl stringType = lookupType("java.lang", "String");
+    if(type() != stringType)
+      return;
+    // public void setName(beaver.Symbol value) {
+    //   if(symbol.value != null && !(symbol.value instanceof String))
+    //     throw new UnsupportedOperationException("setID is only valid for String lexemes");
+    //   tokenString_ID = (String)symbol.value;
+    //   IDstart = symbol.getStart();
+    //   IDend = symbol.getEnd();
+
+    Expr ifCondition = 
+          new AndLogicalExpr(
+            new NEExpr(
+              new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
+              new NullLiteral("null")
+            ),
+            new LogNotExpr(
+              new InstanceOfExpr(
+                new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
+                stringType.createQualifiedAccess()
+              )
+            )
+          );
+    Expr thrownException =
+      new ClassInstanceExpr(
+        new TypeAccess("java.lang", "UnsupportedOperationException"),
+        new List().add(new StringLiteral("set" + name() + " is only valid for String lexemes")),
+        new Opt()
+      );
+
+    bodyDeclList.add(
+      createMethodDecl("void", "set" + name(),
+        new List().add(new ParameterDeclaration(lookupType("beaver", "Symbol").createQualifiedAccess(), "symbol")),
+        new List().add(
+          new IfStmt(
+            ifCondition,
+            new ThrowStmt(thrownException),
+            new Opt()
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "$value"),
+            new CastExpr(new TypeAccess("java.lang", "String"), new VarAccess("symbol").qualifiesAccess(new VarAccess("value")))
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "start"),
+            new VarAccess("symbol").qualifiesAccess(new MethodAccess("getStart", new List()))
+          )
+        ).add(
+          AssignExpr.asStmt(
+            new VarAccess(name() + "end"),
+            new VarAccess("symbol").qualifiesAccess(new MethodAccess("getEnd", new List()))
+          )
+        )
+      )
+    );
+
+  }
+
+  public void ASTDecl.addBeaverConstructor(List bodyDeclList) {
+    boolean hasString = false;
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA() && child instanceof ASTTokenChild) {
+        ASTTokenChild c = (ASTTokenChild)child;
+        if(c.type().isString())
+          hasString = true;
+      }
+    }
+    if(!hasString)
+      return;
+    // add constructor with children as arguments
+    List list = new List();
+    int index = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        TypeDecl parameterType;
+        if(child instanceof ASTTokenChild && ((ASTTokenChild)child).type().isString())
+          parameterType = lookupType("beaver", "Symbol");
+        else
+          parameterType = child.parameterType();
+        list.add(
+          new ParameterDeclaration(
+            parameterType.createQualifiedAccess(),
+            "p" + index
+          )
+        );
+      }
+    }
+    List statements = new List();
+    index = 0;
+    int nextChildIndex = 0;
+    for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!child.isNTA()) {
+        if(child instanceof ASTTokenChild) {
+          statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "set" + child.name(),
+                new List().add(
+                  new VarAccess("p" + index)
+                )
+              )
+            )
+          );
+        }
+        else {
+          statements.add(
+            new ExprStmt(
+              new MethodAccess(
+                "setChild",
+                new List().add(
+                  new VarAccess("p" + index)
+                ).add(
+                  new IntegerLiteral(nextChildIndex)
+                )
+              )
+            )
+          );
+        }
+      }
+      if(!(child instanceof ASTTokenChild))
+        nextChildIndex++;
+    }
+    /*
+    if(isRootNode()) {
+      statements.add(
+        AssignExpr.asStmt(
+          new VarAccess("isFinal"),
+          new BooleanLiteral("true")
+        )
+      );
+    }
+    */
+    bodyDeclList.add(
+      new ConstructorDecl(
+        new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+        name(),
+        list,
+        new List(),
+        new Opt(),
+        new Block(
+          statements
         )
       )
     );

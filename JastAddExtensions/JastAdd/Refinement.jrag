@@ -123,7 +123,7 @@ aspect Refinement {
     if(!hasBlock() && !(isNative() || isAbstract()))
       error("only abstract and native methods may have an empty semicolon body");
     if(hasBlock() && !introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
-      error("Host of an intertype declaration must be a weavable class");
+      error("Host of an intertype method declaration must be a weavable class, and " + introducedType().typeName() + " is not weavable");
 
     if(isRefinement() && refinedMethod() == null && !refined().type().isUnknown())
       error("Could not find method with signature " + signature() + " in " + refined().type().typeName() + " to refine");

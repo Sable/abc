@@ -52,6 +52,9 @@ public class JastAddTask extends Task {
 
   private boolean inhInASTNode = false;
   public void setInhInASTNode(boolean b) { inhInASTNode = b; }
+
+  private String packageName = null;
+  public void setPackage(String packageName) { this.packageName = packageName; }
   
   public void execute() throws BuildException {
     if(files.size() == 0)
@@ -72,7 +75,10 @@ public class JastAddTask extends Task {
     }
     */
     ArrayList args = new ArrayList();
-    if(outdir != null)      args.add("-o=" + outdir);
+    if(outdir != null) {
+      args.add("-d");
+      args.add(outdir);
+    }
     if(classpath != null) {
       args.add("-classpath");
       args.add(classpath);
@@ -83,6 +89,10 @@ public class JastAddTask extends Task {
     if(!cacheCycle) args.add("-no_cache_cycle");
     if(weaveInline) args.add("-weave_inline");
     if(inhInASTNode) args.add("-inh_in_astnode");
+    if(packageName != null) {
+      args.add("-package");
+      args.add(packageName);
+    }
     args.addAll(files);
 
     int i = 0;

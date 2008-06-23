@@ -333,7 +333,11 @@ aspect Rewrite {
     Access returnType = (isListRewrite() ? listNode() : astNode()).createQualifiedAccess();
     // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
     MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new Opt(getBlock().fullCopy()), introducedType(), enclosingBodyDecl());
-    return enclosingBodyDecl().hostType().addMemberMethod(decl);
+
+    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+      return introducedType().addMemberMethod(decl);
+    else
+      return enclosingBodyDecl().hostType().addMemberMethod(decl);
   }
   public int TypeDecl.rewriteCounter;
   inh TypeDecl Rewrite.hostType();
