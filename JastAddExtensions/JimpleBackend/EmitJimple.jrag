@@ -484,12 +484,23 @@ aspect EmitJimple {
       return local;
     }
 
-    private soot.tagkit.LineNumberTag lineTag;
+    private soot.tagkit.Tag lineTag;
     public void setLine(ASTNode node)
     {
-      lineTag = new soot.tagkit.LineNumberTag(node.lineNumber());
+      if(node.getStart() != 0 && node.getEnd() != 0) { 
+        int line = node.getLine(node.getStart());
+        int column = node.getColumn(node.getStart());
+        int endLine = node.getLine(node.getEnd());
+        int endColumn = node.getColumn(node.getEnd());
+        String s = node.sourceFile();
+        s = s != null ? s.substring(s.lastIndexOf(java.io.File.separatorChar)+1) : "Unknown";
+        lineTag = new soot.tagkit.SourceLnNamePosTag(s, line, endLine, column, endColumn);
+      }
+      else {
+        lineTag = new soot.tagkit.LineNumberTag(node.lineNumber());
+      }
     }
-    private soot.tagkit.LineNumberTag currentSourceRangeTag()
+    private soot.tagkit.Tag currentSourceRangeTag()
     {
       return lineTag;
     }
