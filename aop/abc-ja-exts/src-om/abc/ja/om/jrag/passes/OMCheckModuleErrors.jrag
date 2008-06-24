@@ -73,7 +73,7 @@ aspect OMCheckModuleErrors {
 		}
 	}
 	
-	//TODO: Add check for non-existent aspect (traverse AspectDecls, marking off 
+	//Check for non-existent aspect (traverse AspectDecls, marking off 
 	//OMFriendMembers as they match. Then do another pass to check if the friend aspects
 	//were found)
 	public void ASTNode.markFriendMemberExistence() {}
