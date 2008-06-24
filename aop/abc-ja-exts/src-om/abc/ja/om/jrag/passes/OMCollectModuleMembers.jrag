@@ -1,20 +1,20 @@
 import abc.ja.om.aspectinfo.*;
 
-aspect OMCollectIncludedModules {
-	public void ASTNode.collectIncludedModules() {
+aspect OMCollectModuleMembers {
+	public void ASTNode.collectModuleMembers() {
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).collectIncludedModules();
+			getChild(i).collectModuleMembers();
 		}
 	}
-	public void CompilationUnit.collectIncludedModules() {
+	public void CompilationUnit.collectModuleMembers() {
 	}
-	public void OMCompilationUnit.collectIncludedModules() {
+	public void OMCompilationUnit.collectModuleMembers() {
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).collectIncludedModules();
+			getChild(i).collectModuleMembers();
 		}
 	}
 	
-	public void OMIncludeMember.collectIncludedModules() {
+	public void OMIncludeMember.collectModuleMembers() {
 		JAModuleNodeModule parent_node = 
 				(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
 					getHostModule().getModuleName(), 
@@ -46,5 +46,26 @@ aspect OMCollectIncludedModules {
 				parent_node.name(), 
 				node);
 		}
+	}
+	
+	public void OMFriendMember.collectModuleMembers() {
+		for (Pattern pat : getNamePatternList()) {
+			String name = pat.toString();
+			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addAspectNode(name, pat, pos());
+			if (node == null) {
+				error("Aspect " + pat.toString() + " is already a friend in another module");
+				continue;
+			}
+			getOMAbcExtension().moduleStruct.addMember(getHostModule().getModuleName(), node);
+		}
+		super.collectModuleMembers();
+	}
+	public void OMClassMember.collectModuleMembers() {
+		for (Pattern pat : getPatternList()) {
+			String name = getHostModule().getModuleName();
+			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addClassNode(name, pat, pos());
+			getOMAbcExtension().moduleStruct.addMember(getHostModule().getModuleName(), node);
+		}
+		super.collectModuleMembers();
 	}
 }

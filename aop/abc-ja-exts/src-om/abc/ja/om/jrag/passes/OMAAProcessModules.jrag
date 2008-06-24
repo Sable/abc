@@ -9,7 +9,7 @@ aspect OMAAProcessModules {
 	    }
 	    
 	    collectModules();
-	    collectIncludedModules();
+	    collectModuleMembers();
 	    collectPointcutMembers();
 	    
 	    if (abc.main.Debug.v().omASTPrintDebug) {

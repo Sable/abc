@@ -1,7 +1,12 @@
 package abc.ja.om.aspectinfo;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
@@ -11,17 +16,32 @@ import soot.SootMethod;
 import abc.aspectj.ast.CPEName;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.visit.PCNode;
+import abc.aspectj.visit.PCStructure;
 import abc.ja.om.jrag.AspectDecl;
 import abc.ja.om.jrag.Pattern;
 import abc.ja.om.jrag.TypeDecl;
+import abc.ja.om.AbcExtension;
 import abc.om.visit.ModuleNode;
 import abc.om.visit.ModuleNodeModule;
 import abc.om.visit.ModuleStructure;
+import abc.om.weaving.matching.OMMatchingContext;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.CflowSetup;
+import abc.weaving.aspectinfo.DeclareMessage;
+import abc.weaving.aspectinfo.DeclareSoft;
+import abc.weaving.aspectinfo.OrPointcut;
 import abc.weaving.aspectinfo.Pointcut;
+import abc.weaving.matching.ConstructorCallShadowMatch;
+import abc.weaving.matching.GetFieldShadowMatch;
+import abc.weaving.matching.MatchingContext;
+import abc.weaving.matching.MethodCallShadowMatch;
+import abc.weaving.matching.SetFieldShadowMatch;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.AndResidue;
+import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.Residue;
 
 public class JAModuleStructure extends ModuleStructure {
@@ -78,11 +98,6 @@ public class JAModuleStructure extends ModuleStructure {
     public Pointcut getApplicableSignature(PCNode classNode) {
     	throw new InternalCompilerError("Attempt to use polyglot version JAModuleStructure.getApplicableSignature(PCNode)");
     }
-    public Residue openModMatchesAt(Pointcut pc, ShadowMatch sm,
-            Aspect currAspect, WeavingEnv weaveEnv, SootClass cls,
-            SootMethod method, AbstractAdviceDecl ad) throws SemanticException {
-    	return super.openModMatchesAt(pc, sm, currAspect, weaveEnv, cls, method, ad);
-    }
     
     public ModuleNode addMember(String name, ModuleNode member) {
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
@@ -133,4 +148,312 @@ public class JAModuleStructure extends ModuleStructure {
     	return false;
     }
 
+    public ModuleNode getOwner(SootClass sc) {
+    	ModuleNode ret = null;
+    	for (Iterator i = getMap(ModuleNode.TYPE_CLASS).values().iterator();
+    		i.hasNext(); ) {
+    		JAModuleNodeClass classNode = (JAModuleNodeClass) i.next();
+    		if (classNode.getCPEPattern().matchesType(sc)) {
+    			return classNode.getParent();
+    		}
+    	}
+    	return ret;
+    }
+    
+    
+    
+    //reimplementation
+    public boolean isInSameModuleSet(ModuleNode aspectNode, SootClass sc) {
+        if (aspectNode != null && !aspectNode.isAspect()) {
+            throw new InternalCompilerError(
+                    "Expecting a ModuleNode of type TYPE_ASPECT");
+        }
+        ModuleNode classOwner = getOwner(sc);
+
+        //if the aspect is not in a module, and so is the class, then return
+        // true
+        if (aspectNode == null && classOwner == null) {
+            return true;
+        }
+        //if the aspect is not in a module but the class is, return false
+        if (aspectNode == null && classOwner != null) {
+            return false;
+        }
+
+        ModuleNode aspectOwner = aspectNode.getParent();
+        //if both unconstrained by modules, return true
+        if (classOwner == null && aspectOwner == null) {
+            return true;
+        }
+        //if the class is not in a module, but the aspect is, return true
+        //TODO: This decision means that aspects in modules _can_ access
+        // classes that are not in modules
+        if (classOwner == null && aspectOwner != null) {
+            return true;
+        }
+        //if the class is in a module an the aspect is not, return false\
+        //this should already be handled by another case above
+        if (classOwner != null && aspectOwner == null) {
+            assert(false) : "ERROR: Unable to determine isInSameModuleSet. Possible ModuleStructure corruption.";
+            return false;
+        }
+        //if both are in a module, see if the aspect belongs to a module that
+        //is the same as the owner of the class or an ancestor thereof
+        //also checks if the inclusion was not constrained
+        ModuleNode prev = null;
+        while (classOwner != null) {
+            if (classOwner == aspectOwner && 
+                    (prev == null || !((ModuleNodeModule)prev).isConstrained())) {
+                return true;
+            }
+            prev = classOwner;
+            classOwner = classOwner.getParent();
+        }
+
+        return false;
+    }
+    
+    public Residue openModMatchesAt(Pointcut pc, ShadowMatch sm,
+            Aspect currAspect, WeavingEnv weaveEnv, SootClass cls,
+            SootMethod method, AbstractAdviceDecl ad) throws SemanticException {
+
+        Residue ret = pc.matchesAt(new MatchingContext(weaveEnv, cls, method,
+                sm));
+
+        //if it doesn't match, return immediately
+        if (ret == NeverMatch.v()) {
+            return ret;
+        }
+        //if it is a declare advice decl, then return original match
+        //NOTE: This means that declare warning, error messages ignore module
+        //pointcuts. Think about this later.
+        if (ad instanceof DeclareMessage || 
+        	ad instanceof DeclareSoft) {
+        	return ret;
+        }
+        //get the class the method belongs to
+        //note: Used to be a method getOwningClass() of ShadowMatch+,
+        //but moved here to avoid contamination of the base code. And yes, it
+        // is ugly.
+        SootClass sootOwningClass = null;
+        if (sm instanceof MethodCallShadowMatch) {
+            sootOwningClass = ((MethodCallShadowMatch) sm).getMethodRef()
+                    .declaringClass();
+        } else if (sm instanceof ConstructorCallShadowMatch) {
+            sootOwningClass = ((ConstructorCallShadowMatch) sm).getMethodRef()
+                    .declaringClass();
+        } else if (sm instanceof GetFieldShadowMatch) {
+            sootOwningClass = ((GetFieldShadowMatch) sm).getFieldRef()
+                    .declaringClass();
+        } else if (sm instanceof SetFieldShadowMatch) {
+            sootOwningClass = ((SetFieldShadowMatch) sm).getFieldRef()
+                    .declaringClass();
+        } else {
+            sootOwningClass = sm.getContainer().getDeclaringClass();
+        }
+
+        //get the class that contains this statement
+        SootClass sootContainingClass = sm.getContainer().getDeclaringClass();
+
+        //debug
+        AbcExtension.debPrintln(
+                AbcExtension.OMDebug.MATCHING_DEBUG,
+                "\n-------------------------\nModuleStructure.matchesAt: aspect "
+                + currAspect.getName() + "; shadowmatch " + sm.toString() + "; owning class "
+                + sootOwningClass.getName() + "; pc " + pc.toString());
+
+        //if the aspect and the class belong to the same moduleset, return ret
+        //i.e. it is matching in with an internal class/aspect, so signatures
+        // are
+        //not applied
+        JAModuleStructure ms = ((abc.ja.om.AbcExtension) abc.main.Main.v().getAbcExtension()).moduleStruct;
+        ModuleNode aspectNode = ms.getNode(currAspect.getName(),
+                ModuleNode.TYPE_ASPECT);
+        if (ms.isInSameModuleSet(aspectNode, sootOwningClass)) {
+            return ret;
+        }
+        //check if any of the signatures match this shadow
+        Pointcut sigPointcut = ms.getApplicableSignature(sootOwningClass);
+        Residue sigMatch;
+
+        //if there are no matching signatures, return nevermatch (that is,
+        //the owning module did not expose any point in the class)
+        if (sigPointcut == null) {
+            return NeverMatch.v();
+        }
+
+        //match the signature with the current shadow
+        try {
+            sigMatch = sigPointcut.matchesAt(new OMMatchingContext(weaveEnv, sm
+                    .getContainer().getDeclaringClass(), sm.getContainer(), sm,
+                    currAspect));
+        } catch (SemanticException e) {
+            throw new InternalCompilerError("Error matching signature pc", e);
+        }
+
+        //if the signature matches, conjoin the residue with the existing
+        // residue
+        if (sigMatch != NeverMatch.v()) {
+            Residue retResidue;
+            //special case for cflowsetup, as cflow pointcuts should not
+            //apply to the cflowsetups, otherwise the counter
+            // increment/decrement
+            //would never be called
+            if (ad instanceof CflowSetup) {
+                retResidue = ret;
+            } else {
+                retResidue = AndResidue.construct(sigMatch, ret);
+            }
+            //debug
+            AbcExtension.debPrintln(AbcExtension.OMDebug.MATCHING_DEBUG,
+                    "sigMatch = " + sigMatch);
+            AbcExtension.debPrintln(AbcExtension.OMDebug.MATCHING_DEBUG,
+                    "ret = " + ret);
+            AbcExtension.debPrintln(AbcExtension.OMDebug.MATCHING_DEBUG,
+                    "retResidue = " + retResidue);
+
+            return retResidue;
+        } else {
+            //else throw a no signature match warning
+            AbcExtension.debPrintln(AbcExtension.OMDebug.MATCHING_DEBUG,
+                    "No matching signature in class "
+                    + " of advice in aspect "
+                    + currAspect.getName());
+
+            ModuleNode ownerModule = ms.getOwner(sootOwningClass);
+            String msg = "An advice in aspect " + currAspect.getName()
+                    + " would normally apply here, "
+                    + "but does not match any of the signatures of module "
+                    + ownerModule.name();
+
+            addWarning(msg, sm);
+
+            return NeverMatch.v();
+        }
+    }
+    
+    public Pointcut getApplicableSignature(SootClass sc) {
+        Pointcut ret = null;
+
+
+        ModuleNodeModule owner = (ModuleNodeModule) getOwner(sc);
+        if (owner == null) {
+            return ret;
+        }
+
+        //get the private signature for the owning module
+        ret = owner.getPrivateSigAIPointcut();
+
+        boolean prevIsConstrained = false;
+        //get the non-private signatures from the modules in the modulelist
+        List /* ModuleNode */moduleList = getModuleAncestorList(owner);
+        for (Iterator iter = moduleList.iterator(); iter.hasNext();) {
+            ModuleNodeModule module = (ModuleNodeModule) iter.next();
+            if (prevIsConstrained) {
+                //  (currPC && (childPC)) || (childPC &&
+                // thisAspect(currModule.aspects))
+                ret = OrPointcut
+                        .construct(AndPointcut.construct(ret, module
+                                .getSigAIPointcut(), AbcExtension.generated),
+                                AndPointcut.construct(ret, module
+                                        .getThisAspectPointcut(),
+                                        AbcExtension.generated),
+                                AbcExtension.generated);
+            } else {
+                ret = OrPointcut.construct(ret, module.getSigAIPointcut(),
+                        AbcExtension.generated);
+            }
+            prevIsConstrained = module.isConstrained();
+        }
+
+        return ret;
+    }
+
+    //taken from abc/om/ast/visit/OMComputePrecedence.java
+    //TODO: Move this to OMPrecedence.jrag
+    public void omComputePrecedence() {
+        AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+        "openmod compute precedence");
+
+		AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+		        "prec_rel before openmod");
+		printPrecRel();
+		AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+        		"-----------------");
+		
+		AbcExtension abcExt = (abc.ja.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+		Map<String,Set<String>> prec_rel = abcExt.getGlobalAspectInfo().getPrecedenceRelation();
+		
+		Collection modules = abcExt.moduleStruct.getModules();
+		
+		for (Iterator iter = modules.iterator(); iter.hasNext(); ) {
+		    ModuleNode item = (ModuleNode) iter.next();
+		    //if has no members, continue
+		    if (!item.isModule()) {
+		        continue;
+		    }
+		    ModuleNodeModule module = (ModuleNodeModule) item;
+		    Set /*String*/ prevAspects = new HashSet();
+		   
+		    LinkedList reversedMembers = new LinkedList();
+		    for (Iterator i = module.getMembers().iterator(); i.hasNext();) {
+		        reversedMembers.addFirst(i.next());
+		    }
+		    for (Iterator iter2 = reversedMembers.iterator();
+		    	iter2.hasNext(); ) {
+		        ModuleNode member = (ModuleNode) iter2.next();
+		        
+		        if (member.isModule()) {
+		            Set moduleAspectNames = ((ModuleNodeModule)member).getAspectNames();
+		            for (Iterator iter3 = moduleAspectNames.iterator(); iter3.hasNext(); ) {
+		                String name = (String) iter3.next();
+		                if (prec_rel.get(name) == null) {
+		                    prec_rel.put(name, new HashSet());
+		                }
+		                Set lowerAspectNames = (Set) prec_rel.get(name);
+		                lowerAspectNames.addAll(prevAspects);
+		            }
+		            prevAspects.addAll(moduleAspectNames);
+		        } else if (member.isAspect()) {
+		            AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+		                    "Adding ("+member.name() + "," + prevAspects + ")");
+		            if (prec_rel.get(member.name()) == null) {
+		                prec_rel.put(member.name(), new HashSet());
+		            }
+		            Set laterAspects = (Set)prec_rel.get(member.name());
+		            laterAspects.addAll(prevAspects);
+		            prevAspects.add(member.name()); 
+		        }
+		    }
+		}
+		
+		AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+		        "prec_rel after openmod");
+		printPrecRel();
+    }
+    
+    private void printPrecRel() {
+        //debug: print out precedence relation
+		AbcExtension abcExt = (abc.ja.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+    	Map<String,Set<String>> prec_rel = abcExt.getGlobalAspectInfo().getPrecedenceRelation();
+        for (Iterator iter = prec_rel.keySet().iterator();
+        	iter.hasNext();) {
+            String aspectName = (String) iter.next();
+            AbcExtension.debPrint(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+                    aspectName + " : ");
+            Set laterAspects = (Set)prec_rel.get(aspectName);
+            
+            for (Iterator iter2 = laterAspects.iterator(); iter2.hasNext(); ) {
+                String laterAspectName = (String) iter2.next();
+                AbcExtension.debPrint(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+                        laterAspectName + "; ");
+            }
+            
+            AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG, "");
+        }
+    }
+
+    public void omComputeModulePrecedence() {
+    	
+    }
 }

@@ -3,6 +3,7 @@
 aspect OMGlobals {
 
 	//convenience method for abcextension
+	syn abc.ja.om.AbcExtension Program.getOMAbcExtension() = ((abc.ja.om.AbcExtension)abc.main.Main.v().getAbcExtension());
 	eq Program.getChild(int i).getOMAbcExtension() = ((abc.ja.om.AbcExtension)abc.main.Main.v().getAbcExtension()); 
 	inh abc.ja.om.AbcExtension OMModuleDecl.getOMAbcExtension();
 	inh abc.ja.om.AbcExtension OMModuleMember.getOMAbcExtension();
@@ -14,4 +15,17 @@ aspect OMGlobals {
 	inh OMModuleDecl OMModuleDecl.getHostModule();
 	inh OMModuleDecl OMModuleMember.getHostModule();
 	inh OMModuleDecl NamePattern.getHostModule();
+	
+	eq Program.getChild(int i).getHostOMModuleMember() = null;
+	eq OMModuleMember.getChild(int i).getHostOMModuleMember() = this;
+	inh OMModuleMember NamePattern.getHostOMModuleMember();
+	
+	syn boolean OMModuleMember.isFriendMember() = false;
+	syn boolean OMModuleMember.isClassMember() = false;
+	syn boolean OMModuleMember.isOpenClassMember() = false;
+	syn boolean OMModuleMember.isIncludeMember() = false;
+	syn boolean OMFriendMember.isFriendMember() = true;
+	syn boolean OMClassMember.isClassMember() = true;
+	syn boolean OMOpenClassMember.isOpenClassMember() = true;
+	syn boolean OMIncludeMember.isIncludeMember() = true;
 }

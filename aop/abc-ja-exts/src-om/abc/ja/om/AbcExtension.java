@@ -39,7 +39,9 @@ import abc.ja.om.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.om.AbcExtension.OMDebug;
 import abc.om.visit.ModuleStructure;
+import abc.ja.om.aspectinfo.OMGlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Pointcut;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
@@ -366,7 +368,7 @@ public class AbcExtension extends abc.ja.AbcExtension {
 		//add creation of extension info. as extension info is in 
 		return new CompileSequence(this);
 	}
-	/*
+	
     public List residueConjuncts(final AbstractAdviceDecl ad, 
             final Pointcut pc,
             final ShadowMatch sm, 
@@ -383,7 +385,7 @@ public class AbcExtension extends abc.ja.AbcExtension {
         //replace matchesAt with openModMatchesAt
         result.add(new ResidueConjunct() {
         	             public Residue run() throws SemanticException {
-							return ModuleStructure.v().openModMatchesAt(
+							return moduleStruct.openModMatchesAt(
 							        ad.getPointcut(),
 							        sm,
 							        ad.getAspect(),
@@ -406,5 +408,9 @@ public class AbcExtension extends abc.ja.AbcExtension {
                        });
         return result;
     }
-	*/
+    
+    protected GlobalAspectInfo createGlobalAspectInfo() {
+        return new OMGlobalAspectInfo();
+    }
+
 }

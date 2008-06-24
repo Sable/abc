@@ -1,0 +1,10 @@
+aspect OMPrecedence {
+
+	//TODO: Move JAModuleStructure.omComputePrecedence here
+	public void Program.omComputePrecedence() {
+		getOMAbcExtension().moduleStruct.omComputePrecedence();
+	}
+	
+	//TODO: Implement omComputeModulePrecedence
+
+}

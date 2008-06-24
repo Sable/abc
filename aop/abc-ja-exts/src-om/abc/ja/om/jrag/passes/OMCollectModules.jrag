@@ -24,26 +24,7 @@ aspect OMCollectModules {
 	//create the JAModuleNodeModule entries in the ModuleStructure
 	public void OMModuleDecl.collectModules() {
         moduleNode = (ModuleNodeModule) getOMAbcExtension().moduleStruct.addModuleNode(getModuleName(), isRoot(), pos());
+        moduleNode.setDummyAspect(this.aspectInfo());
         super.collectModules();
-	}
-	public void OMFriendMember.collectModules() {
-		for (Pattern pat : getNamePatternList()) {
-			String name = pat.toString();
-			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addAspectNode(name, pat, pos());
-			if (node == null) {
-				error("Aspect " + pat.toString() + " is already a friend in another module");
-				continue;
-			}
-			getOMAbcExtension().moduleStruct.addMember(getHostModule().getModuleName(), node);
-		}
-		super.collectModules();
-	}
-	public void OMClassMember.collectModules() {
-		for (Pattern pat : getPatternList()) {
-			String name = getHostModule().getModuleName();
-			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addClassNode(name, pat, pos());
-			getOMAbcExtension().moduleStruct.addMember(getHostModule().getModuleName(), node);
-		}
-		super.collectModules();
 	}
 }

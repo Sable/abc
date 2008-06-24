@@ -494,13 +494,13 @@
 
 <target name="om-libs">
   <unzip dest="${basedir}/classes" overwrite="false">
-     <file file="${polyglot.loc}"/>
-     <file file="${polyglot.cupclasses.loc}"/>
-     <file file="${soot.loc}"/>
-     <file file="${jasmin.loc}"/>
-     <file file="${paddle.loc}"/>
-     <file file="${jedd.runtime.jar}"/>
-     <file file="${javabdd.jar}"/>
+     <fileset file="${polyglot.loc}"/>
+     <fileset file="${polyglot.cupclasses.loc}"/>
+     <fileset file="${soot.loc}"/>
+     <fileset file="${jasmin.loc}"/>
+     <fileset file="${paddle.loc}"/>
+     <fileset file="${jedd.runtime.jar}"/>
+     <fileset file="${javabdd.jar}"/>
   </unzip>
 </target>
 

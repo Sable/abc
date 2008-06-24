@@ -101,8 +101,9 @@ aspect OMCheckModuleErrors {
 		}
 	}
 	public void NamePattern.collectNonexistentFriendAspects() {
-		//if not in a module
-		if (getHostModule() == null) {
+		//if not in a module member or not a friend aspect
+		if (getHostOMModuleMember() == null ||
+			!(getHostOMModuleMember().isFriendMember())) {
 			return;
 		}
 		//if not the root name pattern
