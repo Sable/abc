@@ -534,4 +534,7 @@ public class ModuleStructure {
             }
         }
     }
+    public Collection getAspectNodes() {
+    	return aspectNodes.values();
+    }
 }

@@ -71,7 +71,7 @@ public class CheckModuleCycles extends ContextVisitor {
                             .namePos());
 
                 }
-                nodeParents.add(decl);
+                nodeParents.add(module);
             }
         }
         return super.enterCall(parent, n);
