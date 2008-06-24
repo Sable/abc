@@ -1,7 +1,6 @@
 package org.jastadd.plugin.outline;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -118,7 +117,7 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 
 	public void modelChangedEvent() {
 		Control control = this.getControl();
-		if (!control.isDisposed()) {
+		if (control != null && !control.isDisposed()) {
 			// run update in the SWT UI thread
 			Display display = control.getDisplay();
 			display.asyncExec(new Runnable() {
