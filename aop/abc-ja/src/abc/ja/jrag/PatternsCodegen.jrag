@@ -492,6 +492,18 @@ aspect PatternsCodegen
     eq Program.getChild().matchSubtype() = false;
 
     syn boolean Pattern.matchesType(SootClass c) = false;
+    eq AndPattern.matchesType(SootClass c) {
+      //System.out.print(dumpTree());
+      return getLhs().matchesType(c) && getRhs().matchesType(c);
+    }
+    eq OrPattern.matchesType(SootClass c) =
+      getLhs().matchesType(c) || getRhs().matchesType(c);
+    eq NegPattern.matchesType(SootClass c) =
+      !getPattern().matchesType(c);
+    eq UniversalNegPattern.matchesType(SootClass c) {
+        return false;
+    }
+    
     eq SimpleNamePattern.matchesType(SootClass c) {
         Set set = matchSubtype() ? superTypes(c) : new HashSet();
         set.add(c);
@@ -523,7 +535,32 @@ aspect PatternsCodegen
     eq SubtypeNamePattern.matchesType(SootClass c) =
         getPattern().matchesType(c);
     eq ArraytypeNamePattern.matchesType(SootClass c) = false;
-
+    
+    //NEIL: Temporary regex matching for patterns. 
+    //TODO: Probably broken for inner/anon classes, depending on what name() returns
+    eq DotDotNamePattern.matchesType(SootClass c) {
+    	if (namePatternRoot() != this) {
+    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
+    	}
+    	String regex = this.makeNamePatternRegex();
+        boolean ret = c.getName().matches(regex);
+        if (abc.main.Debug.v().namePatternMatches) {
+    		System.out.println("Matching type fullname: " + c.getName() + " with regex: " + regex + " result = " + ret);
+    	}
+        return ret;
+    }
+    eq DotNamePattern.matchesType(SootClass c) {
+    	if (namePatternRoot() != this) {
+    		throw new InternalCompilerError("matchesType should only be called on the root name pattern");
+    	}
+    	String regex = this.makeNamePatternRegex();
+        boolean ret = c.getName().matches(regex);
+        if (abc.main.Debug.v().namePatternMatches) {
+    		System.out.println("Matching type fullname: " + c.getName() + " with regex: " + regex + " result = " + ret);
+    	}
+        return ret;
+    }
+    
     syn boolean Pattern.matchesType(Type t) = false;
     eq SimpleNamePattern.matchesType(Type t) {
         if(! (t instanceof RefType)) {
@@ -562,16 +599,23 @@ aspect PatternsCodegen
 
     syn lazy boolean Pattern.matchesType(TypeDecl t) = false;
     eq SimpleNamePattern.matchesType(TypeDecl t) {
-      if(matchesName(t.name()))
-        return true;
-      if(matchSubtype()) {
+      boolean ret = false;
+      if(matchesName(t.name())) {
+        ret = true;
+      } 
+      else if(matchSubtype()) {
         for(Iterator iter = t.superTypes().iterator(); iter.hasNext(); ) {
           String name = t.name();
-          if(matchesName(name))
-            return true;
+          if(matchesName(name)) {
+            ret = true;
+            break;
+          }
         }
       }
-      return false;
+      if (abc.main.Debug.v().namePatternMatches) {
+    	System.out.println("SimpleNamePattern " + this.toString() + " matchesType fullname: " + t.fullName() + " result = " + ret);
+      }
+      return ret;
     }
     eq ExplicitTypeNamePattern.matchesType(TypeDecl t)
     {
@@ -610,6 +654,7 @@ aspect PatternsCodegen
     }
     
     //NEIL: Temporary implementation of name pattern matching. Pure regex, no subtypes
+    //TODO: Probably broken for inner/anon classes, depending on what fullName returns
     //TODO: See how this interacts with subtypes
     syn NamePattern NamePattern.namePatternRoot() {
     	NamePattern root = this;
