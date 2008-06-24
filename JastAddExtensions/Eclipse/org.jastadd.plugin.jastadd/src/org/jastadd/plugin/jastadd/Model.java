@@ -177,6 +177,7 @@ public class Model extends JastAddJModel {
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
 
 				// Generate scanner
+				// TODO Change ...
 				String jFlexFileName = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramScanner.flex";
 				File jFlexFile = new File(jFlexFileName);
 				if (jFlexFile.exists()) {
@@ -186,6 +187,7 @@ public class Model extends JastAddJModel {
 				}
 				
 				// Convert parser specification to beaver specification
+				// TODO Change ...
 				String parserSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.parser";
 				String beaverSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.beaver";
 				convertToBeaverSpec(parserSpec, beaverSpec);
@@ -193,8 +195,7 @@ public class Model extends JastAddJModel {
 				// Generate parser
 				beaver.comp.run.Make.main(new String[] {beaverSpec});
 				
-				Program program = (Program) initProgram(project,
-						buildConfiguration);
+				Program program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
 
@@ -360,10 +361,41 @@ public class Model extends JastAddJModel {
 		} catch (Throwable e) {
 			logError(e, "Updating model failed!");
 		}
-	
-		
-		
 	}
-
-
+	
+	
+	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
+		if(filePath == null)
+			return null;
+		if (filePath.endsWith("ast")) {
+			//System.out.println("Looking for tree root for: " + filePath);
+			JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+			if (buildConfiguration == null)
+				return null;
+			IProgram program = getProgram(project);
+			if (program == null)
+				return null;
+			
+			int i = 0;
+			ArrayList<ICompilationUnit> cuList = new ArrayList<ICompilationUnit>();
+			for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+				ICompilationUnit cu = (ICompilationUnit) iter.next();
+				if (cu.fromSource()) {
+					String name = cu.relativeName();
+					if (name == null)
+						System.out.println(cu);
+					//System.out.println("CU: " + cu.relativeName());
+					//System.out.println("\tpathName=" + cu.pathName());
+					if (name.equals(filePath)) {
+						//System.out.println("Looking for tree root in compilation unit: " + cu + ", i="+ i++);
+						cuList.add(cu);
+					}
+				}
+			}
+			return cuList.get(cuList.size()-1);
+		} else {
+			return super.getTreeRootNode(project, filePath);
+		}
+	}
+	
 }

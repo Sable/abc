@@ -17,13 +17,33 @@ aspect ASTParsing {
             );
         unit.setFromSource(true);
         unit.setRelativeName(name);
-        unit.setPathName(".");
+        unit.setPathName(name);
         addCompilationUnit(unit);
       }
     } catch (Exception e) {
       throw new Error(e.getMessage());
     }
   }
+  
+  
+  syn boolean CompilationUnit.isFromASTFile() = relativeName().endsWith("ast");
+    
+  inh ArrayList CompilationUnit.collectRelatedASTDecls(String relativeName);
+  eq Program.getCompilationUnit(int i).collectRelatedASTDecls(String relativeName) {
+  	ArrayList list = new ArrayList();
+  	for (Iterator iter = getCompilationUnits().iterator(); iter.hasNext();) {
+  		CompilationUnit unit = (CompilationUnit)iter.next();
+  		String name = unit.relativeName();
+  		//System.out.println("CU name: " + name);
+  		if (name != null && name.equals(relativeName)) {
+  			for (Iterator iter2 = unit.getTypeDecls().iterator(); iter2.hasNext();) {
+  				list.add(iter2.next());
+  			}
+  		}
+  	}
+  	return list;
+  }
+
 
 }
 

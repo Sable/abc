@@ -1,8 +1,8 @@
 aspect JastAddContentOutline {
   eq SynEq.showInContentOutline() = true;
   eq InhEq.showInContentOutline() = true;
-  eq ASTDecl.showInContentOutline() = true;
-
+  
+  
   eq IntertypeMethodDecl.contentOutlineLabel() {
      StringBuffer res = new StringBuffer(type().typeName());
      res.append(" " + introducedType().name() + "." + name() + "(");
@@ -47,5 +47,33 @@ aspect JastAddContentOutline {
      res.append(")");
      return res.toString();
    }
-	  
+	
+	eq ASTDecl.showInContentOutline() = true;
+	eq ASTDecl.contentOutlineLabel() = getID();
+	
+	eq ASTChild.showInContentOutline() = true;
+	eq ASTChild.contentOutlineLabel() {
+		StringBuffer res = new StringBuffer();
+		res.append(getName());
+		if (hasType()) {
+			res.append(":" + getType());
+		}
+		return res.toString();
+	}
+	/*
+	eq ASTListChild.contentOutlineLabel() = super.contentOutlineLabel() + "*";
+	eq ASTOptionalChild.contentOutlineLabel() = "[" + super.contentOutlineLabel() + "]";
+	eq ASTTokenChild.contentOutlineLabel() = "<" + super.contentOutlineLabel() + ">";
+	*/
+	
+  	refine JastAddJContentOutline eq CompilationUnit.outlineChildren() {
+  		if (isFromASTFile()) {
+  			ArrayList list = collectRelatedASTDecls(relativeName());
+  			//System.out.println("ASTDecl List: " + list);
+  			return list;
+  		} else {
+  			return JastAddJContentOutline.CompilationUnit.outlineChildren();
+  		}
+  	}
+  		  
 }

@@ -77,7 +77,7 @@
 		extensions = "ast"
 		icon = "icons/obj16/ast.gif"
 		id = "org.jastadd.plugin.jastadd.JastAddGrammarEditor"
-		contributorClass="org.jastadd.plugin.jastadd.ASTEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
 		name = "JastAdd Grammar Editor">
 	</editor>
 	</extension>
