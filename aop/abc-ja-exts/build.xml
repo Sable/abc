@@ -478,6 +478,60 @@
   <jar destfile="${basedir}/lib/abc-ja-exts-complete.jar" update="true" basedir="${basedir}/classes" includes="**/*.class"/>
 </target>
 
+<target name="om-jars" depends="om-build,om-libs">
+  <mkdir dir="${basedir}/lib"/>
+  <jar destfile="${basedir}/lib/abc-ja-exts-complete.jar">
+     <fileset dir="classes"/>
+     <fileset dir="${abc-ja.loc}/classes"/>
+     <fileset dir="${abc.loc}/classes"/>
+     <fileset dir="${abc.loc}/runtime-classes"/>
+     <fileset dir="${abc.loc}/paddle-classes"/>
+     <manifest>
+        <attribute name="Main-Class" value="abc.main.Main" />
+     </manifest>
+  </jar>
+</target>
+
+<target name="om-libs">
+  <unzip dest="${basedir}/classes" overwrite="false">
+     <file file="${polyglot.loc}"/>
+     <file file="${polyglot.cupclasses.loc}"/>
+     <file file="${soot.loc}"/>
+     <file file="${jasmin.loc}"/>
+     <file file="${paddle.loc}"/>
+     <file file="${jedd.runtime.jar}"/>
+     <file file="${javabdd.jar}"/>
+  </unzip>
+</target>
+
+<!-- compile om sources -->
+<target name="om-build" depends="om-parser,om-jrag">
+  <!-- copy library files-->
+  <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
+    <fileset dir="${frontend}/beaver"/>
+  </copy>
+        <ant dir="${abc-ja.loc}" />
+        <mkdir dir="${basedir}/classes"/>
+        <!-- compile sources compiler="jikes" nowarn="true" -->
+        <javac debug="true"
+               fork="true" memoryMaximumSize="256M" destdir="classes">
+	<classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="${abc.loc}/classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+              <pathelement location="${abc.loc}/testing-classes"/>
+              <pathelement location="${abc-ja.loc}/classes"/>
+	      <pathelement location="${basedir}"/>
+            </classpath>
+                <src path="${basedir}/src-om"/>
+                <src path="${basedir}/generated"/>
+        </javac>
+</target>
+	
 <target name="test" depends="build">
   <java classname="abc.testing.Main" fork="true"
         dir="${abc.testing.loc}/ajc-harness/tests">
