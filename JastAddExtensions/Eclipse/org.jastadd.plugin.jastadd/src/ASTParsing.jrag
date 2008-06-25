@@ -68,7 +68,6 @@ aspect ASTParsing {
   	for (Iterator iter = getCompilationUnits().iterator(); iter.hasNext();) {
   		CompilationUnit unit = (CompilationUnit)iter.next();
   		String name = unit.relativeName();
-  		//System.out.println("CU name: " + name);
   		if (name != null && name.equals(relativeName)) {
   			for (Iterator iter2 = unit.getTypeDecls().iterator(); iter2.hasNext();) {
   				list.add(iter2.next());

@@ -179,6 +179,7 @@ public class Model extends JastAddJModel {
 
 				// Generate scanner
 				// TODO Change ...
+				/*
 				String jFlexFileName = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramScanner.flex";
 				File jFlexFile = new File(jFlexFileName);
 				if (jFlexFile.exists()) {
@@ -195,7 +196,7 @@ public class Model extends JastAddJModel {
 				
 				// Generate parser
 				beaver.comp.run.Make.main(new String[] {beaverSpec});
-				
+				*/
 				Program program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
@@ -318,8 +319,8 @@ public class Model extends JastAddJModel {
 	}	
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		if (fileName.endsWith(".flex"))
-			return;
+		//if (fileName.endsWith(".flex"))
+		//	return;
 		
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
