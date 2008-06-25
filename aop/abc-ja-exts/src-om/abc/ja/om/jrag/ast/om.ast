@@ -1,5 +1,7 @@
 OMCompilationUnit : CompilationUnit ::= ;
 
+//Note: Don't change ModuleName to ID. ID is used for the ClassDecl's 
+//ID (which is the dummy aspect name)
 OMModuleDecl : AspectDecl ::= Modifiers <ModuleName:String> OMModuleMember* ;
 
 abstract OMModuleMember ;
