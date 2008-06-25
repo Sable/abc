@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.model.repair.RecoveryLexer;
 import org.jastadd.plugin.util.JastAddPair;
