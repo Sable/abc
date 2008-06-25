@@ -201,24 +201,6 @@ public class CompileSequence extends abc.ja.CompileSequence {
           }
       }
       
-      /*
-      //module print test
-      if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {
-    	  program.printModule();
-      }
-      //make ModuleStructures
-      program.collectModules();
-      //get ModuleStructure includes
-      program.collectIncludedModules();
-      //get signature members
-      program.collectPointcutMembers();
-      
-      //debug, print out module structure contents
-      if (((abc.ja.om.AbcExtension)abcExt).isDebugSet(OMDebug.AST_PRINT_DEBUG)) {
-    	  program.printModuleStructure();
-      }*/
-      
-      
       program.generateIntertypeDecls();
       program.transformation();
 
