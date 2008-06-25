@@ -1,4 +1,5 @@
 import abc.ja.om.aspectinfo.*;
+import abc.ja.om.*;
 
 aspect OMCollectModuleMembers {
 	public void ASTNode.collectModuleMembers() {

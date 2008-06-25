@@ -1,8 +1,40 @@
 import abc.ja.om.aspectinfo.*;
+import abc.ja.om.*;
 import abc.om.visit.ModuleNode;
 import java.util.*;
 
 aspect OMCheckModuleErrors {
+	
+	//dependent on ErrorCheck.CompilationUnit.errors/warnings
+  	public void Program.initErrHandling(Collection err, Collection warn) {
+  		err.clear();
+  		warn.clear();
+  		
+  		for (CompilationUnit cu : getCompilationUnitList()) {
+  			if(cu.fromSource()) {
+  				cu.initErrHandling();
+  			}
+  		}
+  	}
+  	
+  	public void CompilationUnit.initErrHandling() {
+  		errors.clear();
+  		warnings.clear();
+  	}
+  
+  	public void Program.collectModuleErrors(Collection err, Collection warn) {
+  		for (Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+  			CompilationUnit cu = (CompilationUnit)iter.next();
+  			if(cu.fromSource()) {
+  				cu.collectModuleErrors(err, warn);
+  			}
+  		}
+  	}
+  	
+  	public void CompilationUnit.collectModuleErrors(Collection err, Collection warn) {
+  		err.addAll(errors);
+  		warn.addAll(warnings);
+  	}	
 	
 	//methods called from here must do their own traversal. This is run before the single checks
 	public void Program.barrierCheckModuleErrors1() {
@@ -25,6 +57,18 @@ aspect OMCheckModuleErrors {
 	//methods called from here must do their own traversal. This is run after the single checks
 	public void Program.barrierCheckModuleErrors2() {
 		collectNonexistentFriendAspects();
+	}
+	
+	//throws an exception if any errors are queued up. Add more things later if needed
+	public void ASTNode.checkUnrecoverableErrors() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).checkUnrecoverableErrors();
+		}
+	}
+	public void CompilationUnit.checkUnrecoverableErrors() {
+		if (this.errors.size() > 0) {
+			throw new OMUnrecoverableSemanticError("Unrecoverable errors found");
+		}
 	}
 	
 	//check module cycles
@@ -120,5 +164,6 @@ aspect OMCheckModuleErrors {
 		//arguable if this is needed at all
 		super.collectNonexistentFriendAspects();
 	}
+	
 	
 }

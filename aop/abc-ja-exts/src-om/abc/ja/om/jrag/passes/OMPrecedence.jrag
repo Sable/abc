@@ -1,10 +1,93 @@
 aspect OMPrecedence {
 
-	//TODO: Move JAModuleStructure.omComputePrecedence here
-	public void Program.omComputePrecedence() {
-		getOMAbcExtension().moduleStruct.omComputePrecedence();
-	}
-	
 	//TODO: Implement omComputeModulePrecedence
+	//taken from abc/om/ast/visit/OMComputePrecedence.java
+    public void Program.omComputePrecedence() {
+        AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+        "openmod compute precedence");
 
+		AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+		        "prec_rel before openmod");
+		printPrecRel();
+		AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+        		"-----------------");
+		
+		AbcExtension abcExt = (abc.ja.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+		Map<String,Set<String>> prec_rel = abcExt.getGlobalAspectInfo().getPrecedenceRelation();
+		
+		Collection modules = abcExt.moduleStruct.getModules();
+		
+		for (Iterator iter = modules.iterator(); iter.hasNext(); ) {
+		    ModuleNode item = (ModuleNode) iter.next();
+		    //if has no members, continue
+		    if (!item.isModule()) {
+		        continue;
+		    }
+		    ModuleNodeModule module = (ModuleNodeModule) item;
+		    Set /*String*/ prevAspects = new HashSet();
+		   
+		    LinkedList reversedMembers = new LinkedList();
+		    for (Iterator i = module.getMembers().iterator(); i.hasNext();) {
+		        reversedMembers.addFirst(i.next());
+		    }
+		    for (Iterator iter2 = reversedMembers.iterator();
+		    	iter2.hasNext(); ) {
+		        ModuleNode member = (ModuleNode) iter2.next();
+		        
+		        if (member.isModule()) {
+		            Set moduleAspectNames = ((ModuleNodeModule)member).getAspectNames();
+		            for (Iterator iter3 = moduleAspectNames.iterator(); iter3.hasNext(); ) {
+		                String name = (String) iter3.next();
+		                if (prec_rel.get(name) == null) {
+		                    prec_rel.put(name, new HashSet());
+		                }
+		                Set lowerAspectNames = (Set) prec_rel.get(name);
+			            AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+			                    "Adding (" + name + "," + prevAspects + ")");
+		                lowerAspectNames.addAll(prevAspects);
+		            }
+		            prevAspects.addAll(moduleAspectNames);
+		        } else if (member.isAspect()) {
+		            AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+		                    "Adding ("+member.name() + "," + prevAspects + ")");
+		            if (prec_rel.get(member.name()) == null) {
+		                prec_rel.put(member.name(), new HashSet());
+		            }
+		            Set laterAspects = (Set)prec_rel.get(member.name());
+		            laterAspects.addAll(prevAspects);
+		            prevAspects.add(member.name()); 
+		        }
+		    }
+		}
+		
+		AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG,
+		        "prec_rel after openmod");
+		printPrecRel();
+    }
+    
+    public void Program.omComputeModulePrecedence() {
+    	getOMAbcExtension().moduleStruct.omComputeModulePrecedence();
+    }
+
+    private void Program.printPrecRel() {
+        //debug: print out precedence relation
+		AbcExtension abcExt = (abc.ja.om.AbcExtension) abc.main.Main.v().getAbcExtension();
+    	Map<String,Set<String>> prec_rel = abcExt.getGlobalAspectInfo().getPrecedenceRelation();
+        for (Iterator iter = prec_rel.keySet().iterator();
+        	iter.hasNext();) {
+            String aspectName = (String) iter.next();
+            AbcExtension.debPrint(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+                    aspectName + " : ");
+            Set laterAspects = (Set)prec_rel.get(aspectName);
+            
+            for (Iterator iter2 = laterAspects.iterator(); iter2.hasNext(); ) {
+                String laterAspectName = (String) iter2.next();
+                AbcExtension.debPrint(AbcExtension.OMDebug.PRECEDENCE_DEBUG, 
+                        laterAspectName + "; ");
+            }
+            
+            AbcExtension.debPrintln(AbcExtension.OMDebug.PRECEDENCE_DEBUG, "");
+        }
+    }
+    
 }

@@ -12,40 +12,13 @@ aspect OMAAProcessModules {
 	    collectModuleMembers();
 	    collectPointcutMembers();
 	    
+	    //TODO: Find a way to remove this
+	    collectAspectNames();
+	    
 	    if (abc.main.Debug.v().omASTPrintDebug) {
     		printModuleStructure();
       	}
 	}
   
-	//dependent on ErrorCheck.CompilationUnit.errors/warnings
-  	public void Program.initErrHandling(Collection err, Collection warn) {
-  		err.clear();
-  		warn.clear();
-  		
-  		for (CompilationUnit cu : getCompilationUnitList()) {
-  			if(cu.fromSource()) {
-  				cu.initErrHandling();
-  			}
-  		}
-  	}
-  	
-  	public void CompilationUnit.initErrHandling() {
-  		errors.clear();
-  		warnings.clear();
-  	}
-  
-  	public void Program.collectModuleErrors(Collection err, Collection warn) {
-  		for (Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
-  			CompilationUnit cu = (CompilationUnit)iter.next();
-  			if(cu.fromSource()) {
-  				cu.collectModuleErrors(err, warn);
-  			}
-  		}
-  	}
-  	
-  	public void CompilationUnit.collectModuleErrors(Collection err, Collection warn) {
-  		err.addAll(errors);
-  		warn.addAll(warnings);
-  	}	
 
 }

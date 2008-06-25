@@ -67,11 +67,15 @@ public class AbcExtension extends abc.ja.AbcExtension {
     	AST_PRINT_DEBUG,
     	PARENT_DEBUG,
     	ITD_DEBUG,
-    	NORMALIZE_DEBUG
+    	NORMALIZE_DEBUG,
+    	ANY_DEBUG
     };
     protected static Set<OMDebug> debugSet = null;
     
     public static boolean isDebugSet(OMDebug debug) {
+    	if (debug == OMDebug.ANY_DEBUG) {
+    		return true;
+    	}
         return debugSet.contains(debug);
     }
     

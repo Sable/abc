@@ -158,14 +158,32 @@ public class CompileSequence extends abc.ja.CompileSequence {
       }
 
       program.initErrHandling(errors, warnings);
-      program.processModules();
-      //bad archi match, since you cant interweave barriers and single passes anymore
-      //find a way to generalize single and barrier passes
-      program.barrierCheckModuleErrors1();
-      program.singleCheckModuleErrors();
-      program.barrierCheckModuleErrors2();
-      program.omComputePrecedence();
-      program.collectModuleErrors(errors, warnings);
+      try {
+    	  program.processModules();
+    	  
+    	  //check if the module components have been gathered properly before proceeding
+    	  //to other checks
+    	  program.checkUnrecoverableErrors();
+    	  
+    	  //bad archi match, since you cant interweave barriers and single passes anymore
+    	  //find a way to generalize single and barrier passes
+    	  program.barrierCheckModuleErrors1();
+    	  program.singleCheckModuleErrors();
+    	  program.barrierCheckModuleErrors2();
+    	  
+    	  //check for any errors before proceeding to compute precedence.
+    	  program.checkUnrecoverableErrors();
+    	  
+    	  program.omComputePrecedence();
+    	  program.omComputeModulePrecedence();
+      } catch (OMUnrecoverableSemanticError e) {
+    	  abc.ja.om.AbcExtension abcExt = 
+    		  (abc.ja.om.AbcExtension)(abc.main.Main.v().getAbcExtension());
+    	  abcExt.debPrintln(
+    			  abc.ja.om.AbcExtension.OMDebug.ANY_DEBUG, 
+    			  "Unrecoverable semantic error: " + e.toString());
+      };
+	  program.collectModuleErrors(errors, warnings);
       //duplicate code
       if(!errors.isEmpty()) {
         Collections.sort(errors);
