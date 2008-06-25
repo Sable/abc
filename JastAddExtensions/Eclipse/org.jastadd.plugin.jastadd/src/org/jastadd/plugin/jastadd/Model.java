@@ -62,6 +62,7 @@ public class Model extends JastAddJModel {
 		list.add("jadd");
 		list.add("ast");
 		list.add("flex");
+		list.add("parser");
 		return list;
 	}
 	
@@ -76,16 +77,18 @@ public class Model extends JastAddJModel {
 	protected void initModel() {
 		super.initModel();
 		editorConfig = new EditorConfiguration(this);
-		String[] fileType = {"jrag", "jadd", "ast", "flex"};
+		String[] fileType = {"jrag", "jadd", "ast", "flex", "parser"};
  		registerFileType(fileType[0]);
  		registerFileType(fileType[1]);
  		registerFileType(fileType[2]);
  		registerFileType(fileType[3]);
+ 		registerFileType(fileType[4]);
 		JastAddScanner scanner = new  JastAddScanner(new JastAddColors());
 		registerScanner(scanner, fileType[0]);
 		registerScanner(scanner, fileType[1]);
 		registerScanner(new ASTScanner(new JastAddColors()), fileType[2]);
 		registerScanner(new JFlexScanner(new JastAddColors()), fileType[3]);
+		registerScanner(new ParserScanner(new JastAddColors()), fileType[4]);
 	}	
 
 	@Override

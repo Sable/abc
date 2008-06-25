@@ -17,14 +17,6 @@ public class JFlexScanner extends JastAddJScanner {
 	protected Token codeToken;
 	protected Token flexKeyword;
 	
-	/*
-	protected void addRules() {
-		super.addRules();
-		rules.add(new MultiLineRule("%{", "%}", codeToken));
-	}
-	*/
-	
-	
 	protected void createTokens() {
 		super.createTokens();
 		this.flexKeyword = new Token(new TextAttribute(colors.get(new RGB(0xfd, 0x96, 0x04)),

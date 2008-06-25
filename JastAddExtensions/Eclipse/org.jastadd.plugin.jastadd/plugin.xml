@@ -90,6 +90,16 @@
 		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
 		name = "JFlex Editor">
 	</editor>
+	
+	<!-- Parser Editor -->
+ 	<editor
+		class = "org.jastadd.plugin.jastadd.ParserEditor"
+		extensions = "parser"
+		icon = "icons/obj16/parser.gif"
+		id = "org.jastadd.plugin.jastadd.ParserEditor"
+		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		name = "Parser Editor">
+	</editor>
 	</extension>
 	
  	
