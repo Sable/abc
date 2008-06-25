@@ -362,6 +362,7 @@ public class JastAddJModel extends JastAddModel {
 	}
 	
 	protected void updateModel(Collection<IFile> changedFiles, IProject project) {
+
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
@@ -371,11 +372,11 @@ public class JastAddJModel extends JastAddModel {
 		program.files().clear();
 		Map<String,IFile> map = sourceMap(project, buildConfiguration);
 		program.files().addAll(map.keySet());
-		
+
 		Collection changedFileNames = new ArrayList();
-		for(IFile file : changedFiles)
+		for(IFile file : changedFiles) 	
 			changedFileNames.add(file.getRawLocation().toOSString());
-		
+
 		// remove files already built unless they have changed		
 		program.flushSourceFiles(changedFileNames);
 		// build new files
@@ -411,9 +412,9 @@ public class JastAddJModel extends JastAddModel {
 				String name = (String)iter.next();
 				program.addSourceFile(name);
 			}
+			
 			// recover the current document
 			StringBuffer buf = new StringBuffer(document.get());
-			
 			/* Old recovery
 			new JastAddStructureModel(buf).doRecovery(0);
 			*/

@@ -48,23 +48,18 @@ public class JastAddJScanner extends RuleBasedScanner {
 	protected Token commentToken;
 
 	protected WordRule words;
+	protected List<IRule> rules;
 
 	protected void registerRules() {
 
 		createTokens();
 		
-		List<IRule> rules = new ArrayList<IRule>();
+		rules = new ArrayList<IRule>();
 		words = new WordRule(new JastAddWordDetector(), defaultToken);
 		
-		rules.add(new MultiLineRule("/*", "*/", commentToken));
-		rules.add(new EndOfLineRule("//", commentToken));
-		rules.add(new WhitespaceRule(new JastAddWhitespaceDetector()));
-
-		rules.add(new SingleLineRule("'", "'", stringToken, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
-		rules.add(new SingleLineRule("\"", "\"", stringToken, '\\'));
-
+		addRules();
 		registerWords();
-
+		
 		rules.add(words);
 
 		IRule[] result= new IRule[rules.size()];
@@ -79,6 +74,14 @@ public class JastAddJScanner extends RuleBasedScanner {
 		this.stringToken = new Token(new TextAttribute(colors.get(new RGB(0x2a, 0x00, 0xff))));
 		this.commentToken = new Token(new TextAttribute(colors.get(new RGB(0x3f, 0x7f, 0x5f))));
 		this.defaultToken = new Token(new TextAttribute(colors.get(new RGB(0,0,0))));		
+	}
+	
+	protected void addRules() {
+		rules.add(new MultiLineRule("/*", "*/", commentToken));
+		rules.add(new EndOfLineRule("//", commentToken));
+		rules.add(new WhitespaceRule(new JastAddWhitespaceDetector()));
+		rules.add(new SingleLineRule("'", "'", stringToken, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
+		rules.add(new SingleLineRule("\"", "\"", stringToken, '\\'));		
 	}
 
 	protected void registerWords() {

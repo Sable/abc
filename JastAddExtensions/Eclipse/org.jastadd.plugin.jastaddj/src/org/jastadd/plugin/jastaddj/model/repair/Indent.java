@@ -24,19 +24,23 @@ public class Indent extends Reef {
 	public static final char TAB = '\t';
 
 	public boolean equalTo(Indent indent) {
+		/*
 		int nbr = nbrWS + nbrTabs*4;
 		int indentNbr = indent.nbrWS + indent.nbrTabs*4;
 		int diff = Math.abs(nbr-indentNbr);
 		return diff <= 2;
-		//return indent.nbrWS == nbrWS && indent.nbrTabs == nbrTabs;
+		*/
+		return indent.nbrWS == nbrWS && indent.nbrTabs == nbrTabs;
 	}
 
 	public boolean lessThan(Indent indent) {
+		/*
 		int nbr = nbrWS + nbrTabs*4;
 		int indentNbr = indent.nbrWS + indent.nbrTabs*4;
 		int diff = nbr - indentNbr;
 		return diff < -2;
-		//return nbrTabs < indent.nbrTabs || nbrWS < indent.nbrWS;
+		*/
+		return nbrTabs < indent.nbrTabs || nbrWS < indent.nbrWS;
 	}
 
 	public LexicalNode clone(LexicalNode previous) {
