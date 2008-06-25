@@ -1,6 +1,7 @@
 import java.util.*;
 
-
+//TODO: Find a way to remove this. This is just so the module precedence pass
+//can traverse all aspects 
 aspect OMCollectAspectNames {
 
 	public void ASTNode.collectAspectNames() {
