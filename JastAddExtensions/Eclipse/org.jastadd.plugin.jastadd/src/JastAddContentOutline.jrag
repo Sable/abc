@@ -60,11 +60,9 @@ aspect JastAddContentOutline {
 		}
 		return res.toString();
 	}
-	/*
 	eq ASTListChild.contentOutlineLabel() = super.contentOutlineLabel() + "*";
 	eq ASTOptionalChild.contentOutlineLabel() = "[" + super.contentOutlineLabel() + "]";
 	eq ASTTokenChild.contentOutlineLabel() = "<" + super.contentOutlineLabel() + ">";
-	*/
 	
   	refine JastAddJContentOutline eq CompilationUnit.outlineChildren() {
   		if (isFromASTFile()) {

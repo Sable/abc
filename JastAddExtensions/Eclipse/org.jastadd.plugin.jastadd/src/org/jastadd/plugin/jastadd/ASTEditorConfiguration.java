@@ -10,10 +10,4 @@ public class ASTEditorConfiguration extends JastAddEditorConfiguration {
 	public String getEditorContextID() {
 		return ASTEditor.EDITOR_CONTEXT_ID;
 	}
-	/*
-	@Override
-	public ITokenScanner getScanner() {
-		return new ASTScanner(new JastAddColors());
-	}
-	*/
 }

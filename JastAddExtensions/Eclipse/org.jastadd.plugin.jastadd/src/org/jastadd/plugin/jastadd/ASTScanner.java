@@ -47,6 +47,7 @@ public class ASTScanner extends RuleBasedScanner implements ITokenScanner {
 	protected Token keywordToken;
 	protected Token commentToken;
 	private Token stringToken;
+	private Token terminalToken;
 	
 	protected WordRule words;
 
@@ -61,6 +62,7 @@ public class ASTScanner extends RuleBasedScanner implements ITokenScanner {
 		rules.add(new WhitespaceRule(new JastAddWhitespaceDetector()));
 		rules.add(new SingleLineRule("'", "'", stringToken, '\\'));
 		rules.add(new SingleLineRule("\"", "\"", stringToken, '\\'));
+		rules.add(new SingleLineRule("<", ">", terminalToken, '\\'));
 
 		registerWords();
 		
@@ -73,12 +75,14 @@ public class ASTScanner extends RuleBasedScanner implements ITokenScanner {
 
 	protected void createTokens() {
 		this.keywordToken= new Token(new TextAttribute(
-				colors.get(new RGB(0xff, 0xff, 0xff)),
 				colors.get(new RGB(0x7f, 0x00, 0x55)),
+				colors.get(new RGB(0xff, 0xff, 0xff)),
 				SWT.BOLD));
 		this.stringToken = new Token(new TextAttribute(colors.get(new RGB(0x2a, 0x00, 0xff))));
 		this.commentToken = new Token(new TextAttribute(colors.get(new RGB(0x3f, 0x7f, 0x5f))));
-		this.defaultToken = new Token(new TextAttribute(colors.get(new RGB(0,0,0))));
+		this.defaultToken = new Token(new TextAttribute(colors.get(new RGB(0x49,0x1d,0x64))));
+		this.terminalToken = new Token(new TextAttribute(colors.get(new RGB(0xff,0xff,0xff)),
+				colors.get(new RGB(0xcb,0xbb,0xd5)), SWT.NORMAL));
 	}
 
 	protected void registerWords() {

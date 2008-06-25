@@ -80,6 +80,16 @@
 		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
 		name = "JastAdd Grammar Editor">
 	</editor>
+	
+	<!-- JFlex Editor -->
+ 	<editor
+		class = "org.jastadd.plugin.jastadd.JFlexEditor"
+		extensions = "flex"
+		icon = "icons/obj16/flex.gif"
+		id = "org.jastadd.plugin.jastadd.JFlexEditor"
+		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		name = "JFlex Editor">
+	</editor>
 	</extension>
 	
  	

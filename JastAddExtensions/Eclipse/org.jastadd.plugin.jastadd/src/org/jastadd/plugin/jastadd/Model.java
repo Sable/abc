@@ -36,7 +36,6 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.model.repair.JastAddStructureModel;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -62,6 +61,7 @@ public class Model extends JastAddJModel {
 		list.add("jrag");
 		list.add("jadd");
 		list.add("ast");
+		list.add("flex");
 		return list;
 	}
 	
@@ -76,14 +76,16 @@ public class Model extends JastAddJModel {
 	protected void initModel() {
 		super.initModel();
 		editorConfig = new EditorConfiguration(this);
-		String[] fileType = {"jrag", "jadd", "ast"};
+		String[] fileType = {"jrag", "jadd", "ast", "flex"};
  		registerFileType(fileType[0]);
  		registerFileType(fileType[1]);
  		registerFileType(fileType[2]);
+ 		registerFileType(fileType[3]);
 		JastAddScanner scanner = new  JastAddScanner(new JastAddColors());
 		registerScanner(scanner, fileType[0]);
 		registerScanner(scanner, fileType[1]);
 		registerScanner(new ASTScanner(new JastAddColors()), fileType[2]);
+		registerScanner(new JFlexScanner(new JastAddColors()), fileType[3]);
 	}	
 
 	@Override
@@ -117,7 +119,6 @@ public class Model extends JastAddJModel {
 	@Override
 	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program)program;
-
 		// Init
 		Program.initOptions();
 		program.addKeyValueOption("-classpath");
@@ -201,8 +202,7 @@ public class Model extends JastAddJModel {
 
 				Map<String, IFile> map = sourceMap(project, buildConfiguration);
 				boolean build = true;
-				for (Iterator iter = program.compilationUnitIterator(); iter
-						.hasNext();) {
+				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 					ICompilationUnit unit = (ICompilationUnit) iter.next();
 
 					if (unit.fromSource()) {
@@ -318,6 +318,9 @@ public class Model extends JastAddJModel {
 	}	
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
+		if (fileName.endsWith(".flex"))
+			return;
+		
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
@@ -346,15 +349,12 @@ public class Model extends JastAddJModel {
 				String name = (String)iter.next();
 				program.addSourceFile(name);
 			}
-			// recover the current document
 			StringBuffer buf = new StringBuffer(document.get());
 			
-			/* Old recovery
-			new JastAddStructureModel(buf).doRecovery(0);
-			*/
-			/* New recovery */
-			SOF sof = getRecoveryLexer().parse(buf);
-			Recovery.doRecovery(sof);
+			// recover the current document if needed
+			//SOF sof = getRecoveryLexer().parse(buf);
+			//Recovery.doRecovery(sof);
+			//buf = Recovery.prettyPrint(sof);
 			
 			// build the current document
 			program.addSourceFile(fileName, buf.toString());
@@ -363,7 +363,7 @@ public class Model extends JastAddJModel {
 		}
 	}
 	
-	
+	/*
 	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
 			return null;
@@ -397,5 +397,6 @@ public class Model extends JastAddJModel {
 			return super.getTreeRootNode(project, filePath);
 		}
 	}
+	*/
 	
 }

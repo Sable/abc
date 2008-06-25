@@ -25,6 +25,40 @@ aspect ASTParsing {
     }
   }
   
+  private void Program.loadASTFile(String name, String contents) {
+    try {
+      java.io.InputStream is = new java.io.ByteArrayInputStream(contents.getBytes());
+      org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
+      scanner.enterJastAdd();
+      CompilationUnit cu = (CompilationUnit)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.ast_file);
+      scanner.previousState();
+      is.close();
+      List importList = cu.getImportDeclList();
+      for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+        TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
+        CompilationUnit unit = new CompilationUnit(
+            cu.getPackageDecl(),
+            (List)importList.fullCopy(),
+            new List().add(typeDecl)
+            );
+        unit.setFromSource(true);
+        unit.setRelativeName(name);
+        unit.setPathName(name);
+        addCompilationUnit(unit);
+      }
+    } catch (Exception e) {
+      throw new Error(e.getMessage());
+    }
+  }
+  
+  refine JastAddJCompile public void Program.addSourceFile(String name, String contents) {
+  	if (name.endsWith("ast")) {
+  		loadASTFile(name, contents);
+  	} else {
+  		JastAddJCompile.Program.addSourceFile(name, contents);
+  	}
+  }
+  
   
   syn boolean CompilationUnit.isFromASTFile() = relativeName().endsWith("ast");
     
