@@ -1,9 +1,9 @@
 import abc.ja.om.jrag.passes.ExtAspect;
 import abc.om.visit.ModulePrecedence;
-import abc.om.visit.ModuleNodeAspect;
-import abc.om.visit.ModuleNode;
-import abc.om.visit.ModuleNodeModule;
-import abc.om.visit.ModuleNodeClass;
+import abc.om.modulestruct.ModuleNodeAspect;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeModule;
+import abc.om.modulestruct.ModuleNodeClass;
 import polyglot.util.ErrorInfo;
 
 aspect OMPrecedence {

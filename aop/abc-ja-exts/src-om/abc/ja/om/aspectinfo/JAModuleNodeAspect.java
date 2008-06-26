@@ -6,7 +6,7 @@ import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.visit.PCNode;
 import abc.ja.om.jrag.Pattern;
 import abc.main.CompilerFailedException;
-import abc.om.visit.ModuleNodeAspect;
+import abc.om.modulestruct.ModuleNodeAspect;
 
 public class JAModuleNodeAspect extends ModuleNodeAspect {
 	

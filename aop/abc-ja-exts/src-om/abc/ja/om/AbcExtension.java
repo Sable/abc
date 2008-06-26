@@ -38,7 +38,7 @@ import abc.ja.om.parse.OMAbcLexer;
 import abc.ja.om.parse.JavaParser.Terminals;
 import abc.main.Debug;
 import abc.om.AbcExtension.OMDebug;
-import abc.om.visit.ModuleStructure;
+import abc.om.modulestruct.ModuleStructure;
 import abc.ja.om.aspectinfo.OMGlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;

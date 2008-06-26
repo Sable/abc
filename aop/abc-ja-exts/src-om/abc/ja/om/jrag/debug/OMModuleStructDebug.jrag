@@ -1,6 +1,6 @@
-import abc.om.visit.ModuleStructure;
-import abc.om.visit.ModuleNodeModule; 
-import abc.om.visit.ModuleNode; 
+import abc.om.modulestruct.ModuleStructure;
+import abc.om.modulestruct.ModuleNodeModule; 
+import abc.om.modulestruct.ModuleNode; 
 
 aspect OMModuleStructDebug {
 	public void ASTNode.printModuleStructure() {

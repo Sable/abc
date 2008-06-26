@@ -52,7 +52,7 @@ aspect OMCollectModuleMembers {
 	public void OMFriendMember.collectModuleMembers() {
 		for (Pattern pat : getNamePatternList()) {
 			String name = pat.toString();
-			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addAspectNode(name, pat, pos());
+			abc.om.modulestruct.ModuleNode node = getOMAbcExtension().moduleStruct.addAspectNode(name, pat, pos());
 			if (node == null) {
 				error("Aspect " + pat.toString() + " is already a friend in another module");
 				continue;
@@ -64,7 +64,7 @@ aspect OMCollectModuleMembers {
 	public void OMClassMember.collectModuleMembers() {
 		for (Pattern pat : getPatternList()) {
 			String name = getHostModule().getModuleName();
-			abc.om.visit.ModuleNode node = getOMAbcExtension().moduleStruct.addClassNode(name, pat, pos());
+			abc.om.modulestruct.ModuleNode node = getOMAbcExtension().moduleStruct.addClassNode(name, pat, pos());
 			getOMAbcExtension().moduleStruct.addMember(getHostModule().getModuleName(), node);
 		}
 		super.collectModuleMembers();

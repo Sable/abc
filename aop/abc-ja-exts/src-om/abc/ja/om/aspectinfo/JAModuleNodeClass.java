@@ -5,7 +5,7 @@ import polyglot.util.Position;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.ClassnamePatternExpr_c;
 import abc.ja.om.jrag.Pattern;
-import abc.om.visit.ModuleNodeClass;
+import abc.om.modulestruct.ModuleNodeClass;
 
 public class JAModuleNodeClass extends ModuleNodeClass {
 

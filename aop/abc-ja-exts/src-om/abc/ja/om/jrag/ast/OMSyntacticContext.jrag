@@ -25,4 +25,17 @@ aspect OMSyntacticContext {
 	//denotesMember for conversion of friend members to explicit type patterns see (abc-ja Patterns.jrag)
 	eq OMFriendMember.getNamePattern(int index).denotesMember() = true;
 	eq OMClassMember.getPattern(int index).denotesMember() = true;
+	
+	//Manually set IDstart and IDend so line numbers on OMModuleDecls work
+	//properly. Is needed since the ID passed is a String "ModuleName>$DummyAspect"
+	//instead of a symbol.
+	public ASTNode OMModuleDecl.setModuleIDStart(int idstart) {
+		this.IDstart = idstart;
+		return this;
+	}
+	
+	public ASTNode OMModuleDecl.setModuleIDEnd(int idend) {
+		this.IDend = idend;
+		return this;
+	}
 }

@@ -23,7 +23,7 @@ List module_decl_list =
 OMModuleDecl module_decl = 
 	modifiers.ml? MODULE.m IDENTIFIER LBRACE module_member_list.mml RBRACE 
 	{:
-		return new OMModuleDecl(
+		OMModuleDecl ret = new OMModuleDecl(
 			(String)(IDENTIFIER.value) + "$DummyAspect", //classname
 			new List(), //body decls
 			new Opt(), //superclass
@@ -32,11 +32,14 @@ OMModuleDecl module_decl =
 			new Modifiers(ml), 
 			(String)(IDENTIFIER.value), 
 			mml);
+		ret.setModuleIDStart(IDENTIFIER.getStart());
+		ret.setModuleIDEnd(IDENTIFIER.getEnd());
+		return ret;
 	:}
 	|
 	modifiers.ml? MODULE.m IDENTIFIER LBRACE RBRACE 
 	{:
-		return new OMModuleDecl(
+		OMModuleDecl ret = new OMModuleDecl(
 			(String)(IDENTIFIER.value) + "$DummyAspect", //classname
 			new List(), //body decls
 			new Opt(), //superclass
@@ -45,6 +48,9 @@ OMModuleDecl module_decl =
 			new Modifiers(ml), 
 			(String)(IDENTIFIER.value), 
 			new List());
+		ret.setModuleIDStart(IDENTIFIER.getStart());
+		ret.setModuleIDEnd(IDENTIFIER.getEnd());
+		return ret;
 	:}
 	;
 

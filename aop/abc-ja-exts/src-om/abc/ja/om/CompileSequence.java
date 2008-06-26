@@ -156,6 +156,7 @@ public class CompileSequence extends abc.ja.CompileSequence {
             addWarning(p);
           }
       }
+      program.generateIntertypeDecls();
 
       program.initErrHandling(errors, warnings);
       try {
@@ -201,7 +202,6 @@ public class CompileSequence extends abc.ja.CompileSequence {
           }
       }
       
-      program.generateIntertypeDecls();
       program.transformation();
 
       program.jimplify1();
