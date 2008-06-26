@@ -1,85 +1,16 @@
 aspect ScannerParserSupport {
 	refine ASTParsing public void Program.addSourceFile(String name, String contents) {
-  		if (name.endsWith("flex")) {
-  			loadJFlexFile(name, contents);
-  		} else if (name.endsWith("parser")) {
-  			loadParserFile(name, contents);
+  		if (name.endsWith("flex") || name.endsWith("parser")) {
+  			// Nothing to do here because all flex/parser files are built together
   		} else {
   			ASTParsing.Program.addSourceFile(name, contents);
   		}
   	}
   	refine ASTGrammar public void Program.addSourceFile(String name) {
-  		if (name.endsWith("flex")) {
-  			loadJFlexFile(name);
-  		} else if (name.endsWith("parser")) {
-  			loadParserFile(name);
+  		if (name.endsWith("flex") || name.endsWith("parser")) {
+  			// Nothing to do here because all flex/parser files are built together
   		} else {
   			ASTGrammar.Program.addSourceFile(name);
   		}
   	}
-  	
-  	private void Program.loadJFlexFile(String name, String contents) {
-    	File jFlexFile = new File(name);
-		if (jFlexFile.exists()) {
-			JFlex.Main.generate(jFlexFile);
-		} else {
-			System.out.println("Cannot find jflex file: " + name);
-		}
-  	}
-  	private void Program.loadJFlexFile(String name) {
-  		loadJFlexFile(name, "");
-  	}
-  	
-  	private void Program.loadParserFile(String name, String contents) {
-		String beaverSpec = name.replace(".parser", ".beaver");
-		convertToBeaverSpec(name, beaverSpec);
-		try {
-  			beaver.comp.run.Make.main(new String[] {beaverSpec});
-  		} catch(Exception e) {
-  			e.printStackTrace();
-  		}
-  	}
-  	private void Program.loadParserFile(String name) {
-  		loadParserFile(name, "");
-  	}
-  	private boolean Program.convertToBeaverSpec(String parserSpec, String beaverSpec) {
-		try {
-			String source = parserSpec;
-			String dest = beaverSpec;
-			File sourceFile = new File(source);
-			File destFile = new File(dest);
-			if(sourceFile.exists() && destFile.exists()
-			   && sourceFile.lastModified() < destFile.lastModified()) {
-				System.out.println("Parser specification " + dest + " need not be regenerated");
-			} else {
-				AST.ASTNode.sourceName = source;
-				parser.GrammarScanner scanner = new parser.GrammarScanner(new FileReader(source));
-				parser.GrammarParser parser = new parser.GrammarParser();
-				Object o = parser.parse(scanner);
-				AST.Grammar root = (AST.Grammar)o;
-				Collection c = root.errorCheck();
-				if(!c.isEmpty()) {
-					for(Iterator iter = c.iterator(); iter.hasNext(); ) {
-						new Throwable("There were errors in " + source + ", " + iter.next());
-						return false;
-					}
-				}
-				FileOutputStream os = new FileOutputStream(dest);
-				PrintStream out = new PrintStream(os);
-				root.pp(out);
-				out.close();
-				//System.out.println("Parser specification " + dest + " generated from " + source);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
 }

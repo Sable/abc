@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,6 +21,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
@@ -37,6 +41,10 @@ import org.jastadd.plugin.jastadd.generated.AST.Problem;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
+import org.jastadd.plugin.jastadd.properties.FolderList;
+import org.jastadd.plugin.jastadd.properties.JastAddBuildConfiguration;
+import org.jastadd.plugin.jastadd.properties.FolderList.FolderEntry;
+import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
@@ -133,48 +141,7 @@ public class Model extends JastAddJModel {
 		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
-	}
-	
-	private boolean convertToBeaverSpec(String parserSpec, String beaverSpec) {
-		try {
-			String source = parserSpec;
-			String dest = beaverSpec;
-			File sourceFile = new File(source);
-			File destFile = new File(dest);
-			if(sourceFile.exists() && destFile.exists()
-			   && sourceFile.lastModified() < destFile.lastModified()) {
-				System.out.println("Parser specification " + dest + " need not be regenerated");
-			} else {
-				AST.ASTNode.sourceName = source;
-				parser.GrammarScanner scanner = new parser.GrammarScanner(new FileReader(source));
-				parser.GrammarParser parser = new parser.GrammarParser();
-				Object o = parser.parse(scanner);
-				AST.Grammar root = (AST.Grammar)o;
-				Collection c = root.errorCheck();
-				if(!c.isEmpty()) {
-					for(Iterator iter = c.iterator(); iter.hasNext(); ) {
-						logError(new Throwable(), "There were errors in " + source + ", " + iter.next());
-						return false;
-					}
-				}
-				FileOutputStream os = new FileOutputStream(dest);
-				PrintStream out = new PrintStream(os);
-				root.pp(out);
-				out.close();
-				//System.out.println("Parser specification " + dest + " generated from " + source);
-			}
-		} catch (FileNotFoundException e) {
-			logError(e, "Convertion to beaver specification failed");
-			return false;
-		} catch (IOException e) {
-			logError(e, "Convertion to beaver specification failed");
-			return false;
-		} catch (Exception e) {
-			logError(e, "Convertion to beaver specification failed");
-			return false;
-		}
-		return true;
-	}
+	}	
 	
 	public ArrayList<String> lookupJVMName(IProject project, String packageName) {
 		ArrayList<String> nameList = new ArrayList<String>();
@@ -250,7 +217,6 @@ public class Model extends JastAddJModel {
 				}	
 			}
 		}
-
 		// Find attribute declaration
 		AttributeDecl aDecl = null;
 		for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
@@ -260,7 +226,6 @@ public class Model extends JastAddJModel {
 				nameList.add(aDecl.name());
 			}
 		}
-		
 		return nameList;
 	}
 	
@@ -272,27 +237,12 @@ public class Model extends JastAddJModel {
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
 
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
+				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
 
-				// Generate scanner
-				// TODO Change ...
-				/*
-				String jFlexFileName = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramScanner.flex";
-				File jFlexFile = new File(jFlexFileName);
-				if (jFlexFile.exists()) {
-					JFlex.Main.generate(jFlexFile);
-				} else {
-					System.out.println("Cannot find jflex file: " + jFlexFileName);
-				}
-				
-				// Convert parser specification to beaver specification
-				// TODO Change ...
-				String parserSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.parser";
-				String beaverSpec = "/home/emma/runtime-New_configuration/JastAddExample/src/AST/DiagramParser.beaver";
-				convertToBeaverSpec(parserSpec, beaverSpec);
-				
-				// Generate parser
-				beaver.comp.run.Make.main(new String[] {beaverSpec});
-				*/
+				// Generate scanner and parser
+				buildJFlexScanner(project, jastAddBuildConfig.flex.entries());
+				buildBeaverParser(project, jastAddBuildConfig.parser.entries());
+
 				Program program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
@@ -415,12 +365,17 @@ public class Model extends JastAddJModel {
 	}	
 	
 	protected void updateModel(IDocument document, String fileName, IProject project) {
-		//if (fileName.endsWith(".flex"))
-		//	return;
-		
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
+		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
+		
+		// Regenerate scanner or parser if there was a change in a flex or parser file
+		if (fileName.endsWith(".flex")) {
+			buildJFlexScanner(project, jastAddBuildConfig.flex.entries());
+		} else if (fileName.endsWith(".parser")) {
+			buildBeaverParser(project, jastAddBuildConfig.parser.entries());
+		}
 		
 		IProgram program = getProgram(project);
 		if(program instanceof Program) {
@@ -459,41 +414,94 @@ public class Model extends JastAddJModel {
 			logError(e, "Updating model failed!");
 		}
 	}
+
 	
-	/*
-	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
-		if(filePath == null)
-			return null;
-		if (filePath.endsWith("ast")) {
-			//System.out.println("Looking for tree root for: " + filePath);
-			JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
-			if (buildConfiguration == null)
-				return null;
-			IProgram program = getProgram(project);
-			if (program == null)
-				return null;
-			
-			int i = 0;
-			ArrayList<ICompilationUnit> cuList = new ArrayList<ICompilationUnit>();
-			for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
-				ICompilationUnit cu = (ICompilationUnit) iter.next();
-				if (cu.fromSource()) {
-					String name = cu.relativeName();
-					if (name == null)
-						System.out.println(cu);
-					//System.out.println("CU: " + cu.relativeName());
-					//System.out.println("\tpathName=" + cu.pathName());
-					if (name.equals(filePath)) {
-						//System.out.println("Looking for tree root in compilation unit: " + cu + ", i="+ i++);
-						cuList.add(cu);
-					}
-				}
+	private void buildJFlexScanner(IProject project, java.util.List<PathEntry> entries) {
+		try {
+			String flexFileName = "Scanner.flex";
+			concatFiles(project, entries, flexFileName);
+			IFile file = project.getFile(flexFileName);
+			flexFileName = file.getFullPath().toOSString();
+			File jFlexFile = new File(flexFileName);
+			if (jFlexFile.exists()) {
+				JFlex.Main.generate(jFlexFile);
+			} else {
+				logError(new Throwable("Cannot find jflex file: " + flexFileName), 
+				"Problem generating scanner");
 			}
-			return cuList.get(cuList.size()-1);
-		} else {
-			return super.getTreeRootNode(project, filePath);
+		} catch (IOException e) {
+			logError(e, "Problem generating scanner");
+		} catch (CoreException e) {
+			logError(e, "Problem generating scanner");
 		}
 	}
-	*/
+
+	private void buildBeaverParser(IProject project, java.util.List<PathEntry> entries) {
+		String parserFileName = "Parser.parser";
+		String beaverFileName = "Parser.beaver";
+		try {
+			concatFiles(project, entries, parserFileName);
+			convertToBeaverSpec(project, parserFileName, beaverFileName);
+			beaver.comp.run.Make.main(new String[] {beaverFileName});
+		} catch (IOException e) {
+			logError(e, "Problem generating parser");
+		} catch (CoreException e) {
+			logError(e, "Problem generating parser");
+		} catch (beaver.Parser.Exception e) {
+			logError(e, "Problem generating parser");
+		}
+	}
 	
+	private void concatFiles(IProject project, java.util.List<PathEntry> entries, String targetFileName) throws IOException, CoreException {
+		IFile targetFile = project.getFile(targetFileName);
+		boolean firstFile = true;
+		for (PathEntry entry : entries) {
+			IFile srcFile = project.getFile(entry.getPath());
+			InputStream stream = srcFile.getContents(true);
+			try {
+				if (firstFile) {
+					if (!targetFile.exists()) {
+						targetFile.create(stream, true, null);
+					} else {
+						targetFile.setContents(stream, true, false, null);
+					}
+					firstFile = false;
+				} else {
+					targetFile.appendContents(stream, true, false, null);
+				}
+			} finally {
+				stream.close();
+			}
+		}
+	}
+
+  	private boolean convertToBeaverSpec(IProject project, String parserSpec, String beaverSpec) throws CoreException, IOException, Exception {
+  		IFile parserFile = project.getFile(parserSpec);
+  		IFile beaverFile = project.getFile(beaverSpec);
+
+  		AST.ASTNode.sourceName = parserSpec;
+  		InputStream stream = parserFile.getContents(true);
+  		parser.GrammarScanner scanner = new parser.GrammarScanner(stream);
+  		stream.close();
+  		parser.GrammarParser parser = new parser.GrammarParser();
+
+  		Object o = parser.parse(scanner);
+  		AST.Grammar root = (AST.Grammar)o;
+  		Collection c = root.errorCheck();
+  		if(!c.isEmpty()) {
+  			for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+  				logError(new Throwable("There were errors in " + parserFile + ", " + iter.next()), 
+  				"Problem converting to beaver format");
+  				return false;
+  			}
+  		}
+  		
+  		// Done the old way because root.pp takes a PrintStream
+  		java.io.File bFile = new File(beaverFile.getFullPath().toOSString());
+  		PrintStream out = new PrintStream(new FileOutputStream(bFile));
+  		root.pp(out);
+  		out.close();
+
+  		return true;
+  	}	
 }
