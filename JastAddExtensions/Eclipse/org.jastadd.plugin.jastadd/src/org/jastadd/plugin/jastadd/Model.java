@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -23,15 +24,19 @@ import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
 import org.jastadd.plugin.jastadd.generated.AST.Access;
+import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
 import org.jastadd.plugin.jastadd.generated.AST.CompilationUnit;
 import org.jastadd.plugin.jastadd.generated.AST.Expr;
 import org.jastadd.plugin.jastadd.generated.AST.JavaParser;
 import org.jastadd.plugin.jastadd.generated.AST.List;
 import org.jastadd.plugin.jastadd.generated.AST.MethodAccess;
+import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ParExpr;
 import org.jastadd.plugin.jastadd.generated.AST.Problem;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
+import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
+import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
@@ -169,6 +174,94 @@ public class Model extends JastAddJModel {
 			return false;
 		}
 		return true;
+	}
+	
+	public ArrayList<String> lookupJVMName(IProject project, String packageName) {
+		ArrayList<String> nameList = new ArrayList<String>();
+		
+		IProgram p = getProgram(project);
+		if (!(p instanceof Program))
+			return nameList;
+		Program program = (Program)p;
+		
+		int packageEndIndex = packageName.lastIndexOf('.');
+		String tName = packageName.substring(packageEndIndex+1, packageName.length());
+		String innerName = "";
+		int index = tName.indexOf('$');
+		if (index > 0) {
+			innerName = tName.substring(index + 1, tName.length());
+			tName = tName.substring(0, index);
+		}
+		
+		// Find outermost class
+		TypeDecl decl = null;
+		boolean keepOnLooking = true;
+		while (keepOnLooking) {
+			decl = program.lookupType(packageName, tName);
+			if (decl != null) {
+				keepOnLooking = false;
+			} else {
+				index = innerName.indexOf('$');
+				if (index < 0) {
+					// Search failed -- Cannot find a type declaration and 
+					// there are no $ left in the type name
+					return nameList;
+				} else {
+					tName += "$" + innerName.substring(0, index);
+					innerName = innerName.substring(index + 1);
+				}
+			}
+		}
+		
+		// Find innermost class
+		if (innerName.length() > 0) {
+			keepOnLooking = true;
+			String nextInnerName = innerName;
+			innerName = "";
+			while (keepOnLooking) {
+				// Try another name if possible
+				if (nextInnerName.length() > 0) {
+					index = nextInnerName.indexOf('$');
+					if (index > 0) {
+						innerName += "$" + nextInnerName.substring(0, index);
+						nextInnerName = nextInnerName.substring(index + 1);
+					} else {
+						innerName = nextInnerName;
+						nextInnerName = "";
+					}
+				} else {
+					// No more names to test and we haven't found a match
+					return nameList;
+				}
+				SimpleSet typeSet = decl.memberTypes(innerName);
+				if (!typeSet.isEmpty()) {
+					if (typeSet.size() > 1) {
+						// TODO This should not happen ... Report this?
+					}
+					for (Iterator itr = typeSet.iterator(); itr.hasNext();) {
+						decl = (TypeDecl)itr.next();
+					}
+					// No more inner classes to find
+					if (nextInnerName.length() == 0) {
+						keepOnLooking = false;
+					} else {
+						innerName = "";
+					}
+				}	
+			}
+		}
+
+		// Find attribute declaration
+		AttributeDecl aDecl = null;
+		for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
+			MethodDecl mDecl = (MethodDecl)itr.next();
+			if (mDecl instanceof AttributeDecl) {
+				aDecl = (AttributeDecl)mDecl;
+				nameList.add(aDecl.name());
+			}
+		}
+		
+		return nameList;
 	}
 	
 	protected void completeBuild(IProject project) {

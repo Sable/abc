@@ -81,7 +81,7 @@ public class ASTScanner extends RuleBasedScanner implements ITokenScanner {
 		this.stringToken = new Token(new TextAttribute(colors.get(new RGB(0x2a, 0x00, 0xff))));
 		this.commentToken = new Token(new TextAttribute(colors.get(new RGB(0x3f, 0x7f, 0x5f))));
 		this.defaultToken = new Token(new TextAttribute(colors.get(new RGB(0x49,0x1d,0x64))));
-		this.terminalToken = new Token(new TextAttribute(colors.get(new RGB(0xff,0xff,0xff)),
+		this.terminalToken = new Token(new TextAttribute(colors.get(new RGB(0x49,0x1d,0x64)),
 				colors.get(new RGB(0xcb,0xbb,0xd5)), SWT.NORMAL));
 	}
 
