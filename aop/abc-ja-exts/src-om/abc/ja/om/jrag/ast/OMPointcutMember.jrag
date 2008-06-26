@@ -17,7 +17,7 @@ aspect OMPointcutMember {
     public boolean OMPointcutMember.isExpose() {
     	return getOMPointcutMemberType().getID().matches("expose");
     }
-    //Do I need to syn lazy every PointcutExpr?
+    //NOTE: Do I need to syn lazy every PointcutExpr?
     syn lazy Pointcut OMPointcutMember.pointcut() {
     	 ClassnamePattern toClausePat = new JAOMClassnamePattern(getOMToClause().getPattern());
     	 //I could have changed all the PointcutExpr+.pointcut to be lazy, but I'm going to try

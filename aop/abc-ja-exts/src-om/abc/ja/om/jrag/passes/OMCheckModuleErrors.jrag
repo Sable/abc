@@ -1,4 +1,4 @@
-import abc.ja.om.aspectinfo.*;
+import abc.ja.om.modulestruct.*;
 import abc.ja.om.*;
 import abc.om.modulestruct.ModuleNode;
 import java.util.*;

@@ -27,7 +27,7 @@ aspect OMSyntacticContext {
 	eq OMClassMember.getPattern(int index).denotesMember() = true;
 	
 	//Manually set IDstart and IDend so line numbers on OMModuleDecls work
-	//properly. Is needed since the ID passed is a String "ModuleName>$DummyAspect"
+	//properly. Is needed since the ID passed is a String "<ModuleName>$DummyAspect"
 	//instead of a symbol.
 	public ASTNode OMModuleDecl.setModuleIDStart(int idstart) {
 		this.IDstart = idstart;

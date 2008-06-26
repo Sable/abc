@@ -1,4 +1,4 @@
-package abc.ja.om.aspectinfo;
+package abc.ja.om.modulestruct;
 
 import polyglot.types.SemanticException;
 import abc.weaving.aspectinfo.GlobalAspectInfo;

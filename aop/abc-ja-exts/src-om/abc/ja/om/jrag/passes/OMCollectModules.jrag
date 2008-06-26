@@ -1,6 +1,6 @@
 //Aspect for collecting ModuleStructs from the module ast nodes
 
-import abc.ja.om.aspectinfo.*;
+import abc.ja.om.modulestruct.*;
 
 aspect OMCollectModules {
 	public void ASTNode.collectModules() {

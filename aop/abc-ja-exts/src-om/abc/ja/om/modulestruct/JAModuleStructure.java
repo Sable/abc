@@ -1,4 +1,4 @@
-package abc.ja.om.aspectinfo;
+package abc.ja.om.modulestruct;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-import abc.ja.om.aspectinfo.*;
+import abc.ja.om.modulestruct.*;
 import abc.ja.om.*;
 
 aspect OMCollectModuleMembers {
