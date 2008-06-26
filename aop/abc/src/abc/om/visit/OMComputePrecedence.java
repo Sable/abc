@@ -34,6 +34,8 @@ import polyglot.frontend.Pass;
 import abc.aspectj.visit.OncePass;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeModule;
 
 /**
  * Modifies the aspect precedence relation according to the

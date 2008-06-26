@@ -16,31 +16,31 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
-import abc.om.visit.OpenClassFlagSet.OCFType;
+import abc.om.modulestruct.OpenClassFlagSet.OCFType;
 
 /**
  * @author Neil Ongkingco
  *
  */
-public class MSOpenClassMemberAnd extends MSOpenClassMemberBinary {
-    public MSOpenClassMemberAnd(
+public class MSOpenClassMemberOr extends MSOpenClassMemberBinary {
+    public MSOpenClassMemberOr(
             MSOpenClassMember left, 
             MSOpenClassMember right) {
         super(left,right);
     }
 
+    
     public boolean isAllowed(OCFType type, MSOpenClassContext context) {
-        return left.isAllowed(type,context) && right.isAllowed(type,context);
+        return left.isAllowed(type, context) || right.isAllowed(type, context);
     }
     
     public String toString() {
-        return "(" + left.toString() + ")" + " && " + "(" + right.toString() + ")";
+        return "(" + left.toString() + ")" + " || " + "(" + right.toString() + ")";
     }
-    
     
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
         w.write("(");
@@ -48,11 +48,12 @@ public class MSOpenClassMemberAnd extends MSOpenClassMemberBinary {
         w.newline();
         left.prettyPrint(w, pp);
         w.newline();
-        w.write("&&");
+        w.write("||");
         w.newline();
         right.prettyPrint(w, pp);
         w.end();
         w.newline();
         w.write(")");
     }
+    
 }

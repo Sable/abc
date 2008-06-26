@@ -16,22 +16,27 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import abc.aspectj.visit.PCNode;
 
 /**
  * @author Neil Ongkingco
- *
+ * Context used to check if permission is allowed for a given open class feature 
  */
-public class MSOpenClassContextParent extends MSOpenClassContext {
-    protected PCNode parentNode;
-    public MSOpenClassContextParent(PCNode classNode, PCNode aspectNode, PCNode parentNode) {
-        super(classNode, aspectNode);
-        this.parentNode = parentNode;
+public abstract class MSOpenClassContext {
+    protected PCNode classNode = null; //PCNode of class being applied to
+    protected PCNode aspectNode = null; //PCNode of the aspect applying the feature
+    
+    public MSOpenClassContext(PCNode classNode, PCNode aspectNode) {
+        this.classNode = classNode;
+        this.aspectNode = aspectNode;
     }
     
-    public PCNode getParentNode() {
-        return this.parentNode;
+    public PCNode getClassNode() {
+        return classNode;
+    }
+    public PCNode getAspectNode() {
+        return aspectNode;
     }
 }

@@ -29,6 +29,8 @@ import java.util.List;
 
 import abc.aspectj.ast.CPEName;
 import abc.om.ExtensionInfo;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeModule;
 import abc.om.visit.*;
 
 import polyglot.ast.Node;

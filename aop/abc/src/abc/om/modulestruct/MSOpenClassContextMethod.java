@@ -16,16 +16,17 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
-import polyglot.util.CodeWriter;
-import polyglot.visit.PrettyPrinter;
+import abc.aspectj.visit.PCNode;
 
 /**
  * @author Neil Ongkingco
  *
  */
-public abstract class MSOpenClassFlag {
-    public abstract void prettyPrint(CodeWriter w, PrettyPrinter pp);
-    public abstract boolean isAllowed(MSOpenClassContext context);
+public class MSOpenClassContextMethod extends MSOpenClassContext {
+    public MSOpenClassContextMethod(PCNode classNode, PCNode aspectNode) {
+        super(classNode, aspectNode);
+    }
+
 }

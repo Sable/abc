@@ -31,7 +31,7 @@ import polyglot.util.Position;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import abc.aspectj.ast.*;
-import abc.om.visit.OpenClassFlagSet;
+import abc.om.modulestruct.OpenClassFlagSet;
 
 public class OpenClassMember_c extends Node_c implements OpenClassMember {
 	protected ClassnamePatternExpr cpe;

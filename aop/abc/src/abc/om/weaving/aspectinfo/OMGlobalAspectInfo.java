@@ -23,7 +23,7 @@
  */
 package abc.om.weaving.aspectinfo;
 
-import abc.om.visit.ModuleStructure;
+import abc.om.modulestruct.ModuleStructure;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import polyglot.types.SemanticException;
 

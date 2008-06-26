@@ -16,43 +16,43 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
-import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.om.ast.OpenClassMemberFlag;
-import abc.om.ast.OpenClassMemberFlagParent;
+import abc.om.modulestruct.OpenClassFlagSet.OCFType;
 
 /**
  * @author Neil Ongkingco
  *
  */
-public class MSOpenClassFlagParent extends MSOpenClassFlag {
-    
-    ClassnamePatternExpr allowedParents;
-    
-    public MSOpenClassFlagParent(OpenClassMemberFlag member) {
-        super();
-        OpenClassMemberFlagParent parentMember = (OpenClassMemberFlagParent) member;
-        this.allowedParents = parentMember.getAllowedParents();
+public class MSOpenClassMemberAnd extends MSOpenClassMemberBinary {
+    public MSOpenClassMemberAnd(
+            MSOpenClassMember left, 
+            MSOpenClassMember right) {
+        super(left,right);
     }
-    
-    public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
-        w.write("parent(");
-        allowedParents.prettyPrint(w, pp);
-        w.write(")");
+
+    public boolean isAllowed(OCFType type, MSOpenClassContext context) {
+        return left.isAllowed(type,context) && right.isAllowed(type,context);
     }
     
     public String toString() {
-        return "parent(" + allowedParents.toString() + ")";
+        return "(" + left.toString() + ")" + " && " + "(" + right.toString() + ")";
     }
     
-    public boolean isAllowed(MSOpenClassContext context) {
-        //check if parent allowed
-        MSOpenClassContextParent parentContext = 
-            (MSOpenClassContextParent) context;
-        boolean result = allowedParents.matches(parentContext.getParentNode());
-        return result;
+    
+    public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
+        w.write("(");
+        w.begin(4);
+        w.newline();
+        left.prettyPrint(w, pp);
+        w.newline();
+        w.write("&&");
+        w.newline();
+        right.prettyPrint(w, pp);
+        w.end();
+        w.newline();
+        w.write(")");
     }
 }

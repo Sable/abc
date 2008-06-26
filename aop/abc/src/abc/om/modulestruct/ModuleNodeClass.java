@@ -21,7 +21,7 @@
  * Created on Jul 29, 2005
  *
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import abc.aspectj.ast.ClassnamePatternExpr;
 import polyglot.util.Position;

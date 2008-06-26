@@ -37,6 +37,12 @@ import abc.aspectj.visit.PCStructure;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
 import abc.om.ast.OpenModNodeFactory;
+import abc.om.modulestruct.MSOpenClassContextParent;
+import abc.om.modulestruct.MSOpenClassMember;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeAspect;
+import abc.om.modulestruct.ModuleNodeModule;
+import abc.om.modulestruct.OpenClassFlagSet;
 
 /**
  * @author Neil Ongkingco

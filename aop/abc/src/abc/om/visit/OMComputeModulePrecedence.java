@@ -33,6 +33,9 @@ import polyglot.util.ErrorInfo;
 import abc.aspectj.visit.OncePass;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeAspect;
+import abc.om.modulestruct.ModuleNodeModule;
 
 
 /**

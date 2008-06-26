@@ -32,6 +32,7 @@ import polyglot.visit.NodeVisitor;
 import abc.om.ExtensionInfo;
 import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
+import abc.om.modulestruct.ModuleNode;
 
 /**
  * Adds all module names to ExtensionInfo.modules. Throws an error if a duplicate

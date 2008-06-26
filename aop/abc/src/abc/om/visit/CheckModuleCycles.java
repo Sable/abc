@@ -34,6 +34,7 @@ import polyglot.visit.NodeVisitor;
 import abc.om.ExtensionInfo;
 import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
+import abc.om.modulestruct.ModuleNode;
 
 /**
  * Checks for any cycles in the module hierarchy. Rather inefficient.

@@ -34,6 +34,8 @@ import abc.om.ExtensionInfo;
 import abc.om.ast.DummyAspectDecl_c;
 import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeModule;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
 

@@ -21,7 +21,7 @@
  * Created on May 15, 2005
  *
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import java.util.ArrayList;
 import java.util.Collection;

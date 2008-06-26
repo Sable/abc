@@ -21,7 +21,7 @@
  * Created on Jul 29, 2005
  *
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +36,7 @@ import abc.om.AbcExtension;
 import abc.om.ast.OpenClassMember;
 import abc.om.ast.SigMember;
 import abc.om.ast.SigMemberAdvertiseDecl;
+import abc.om.visit.ModulePrecedence;
 import abc.om.weaving.aspectinfo.BoolPointcut;
 import abc.om.weaving.aspectinfo.OMClassnamePattern;
 import abc.om.weaving.aspectinfo.ThisAspectPointcut;

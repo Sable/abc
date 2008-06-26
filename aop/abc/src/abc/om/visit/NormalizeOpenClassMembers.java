@@ -26,6 +26,11 @@ import polyglot.frontend.Job;
 import polyglot.frontend.Pass;
 import abc.aspectj.visit.OncePass;
 import abc.om.ExtensionInfo;
+import abc.om.modulestruct.MSOpenClassMember;
+import abc.om.modulestruct.MSOpenClassMemberAnd;
+import abc.om.modulestruct.MSOpenClassMemberBase;
+import abc.om.modulestruct.MSOpenClassMemberOr;
+import abc.om.modulestruct.ModuleNodeModule;
 
 /**
  * @author Neil Ongkingco

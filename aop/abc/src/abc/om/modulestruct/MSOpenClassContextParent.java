@@ -16,7 +16,7 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import abc.aspectj.visit.PCNode;
 
@@ -24,9 +24,14 @@ import abc.aspectj.visit.PCNode;
  * @author Neil Ongkingco
  *
  */
-public class MSOpenClassContextField extends MSOpenClassContext {
-    public MSOpenClassContextField(PCNode classNode, PCNode aspectNode) {
+public class MSOpenClassContextParent extends MSOpenClassContext {
+    protected PCNode parentNode;
+    public MSOpenClassContextParent(PCNode classNode, PCNode aspectNode, PCNode parentNode) {
         super(classNode, aspectNode);
+        this.parentNode = parentNode;
     }
     
+    public PCNode getParentNode() {
+        return this.parentNode;
+    }
 }

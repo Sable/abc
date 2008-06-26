@@ -39,6 +39,9 @@ import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
 import abc.om.ast.ModuleDecl;
 import abc.om.ast.OpenModNodeFactory;
+import abc.om.modulestruct.ModuleNode;
+import abc.om.modulestruct.ModuleNodeClass;
+import abc.om.modulestruct.ModuleNodeModule;
 import abc.weaving.aspectinfo.Pointcut;
 
 /**

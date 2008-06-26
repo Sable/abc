@@ -20,7 +20,7 @@
 package abc.om.ast;
 
 import abc.aspectj.ast.ClassnamePatternExpr;
-import abc.om.visit.OpenClassFlagSet;
+import abc.om.modulestruct.OpenClassFlagSet;
 import polyglot.ast.Node;
 
 public interface OpenClassMember extends Node {

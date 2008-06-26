@@ -16,44 +16,43 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package abc.om.visit;
+package abc.om.modulestruct;
 
 import polyglot.util.CodeWriter;
 import polyglot.visit.PrettyPrinter;
+import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.om.ast.OpenClassMemberFlag;
-import abc.om.ast.OpenClassMemberFlagField;
+import abc.om.ast.OpenClassMemberFlagParent;
 
 /**
  * @author Neil Ongkingco
  *
  */
-public class MSOpenClassFlagField extends MSOpenClassFlag {
+public class MSOpenClassFlagParent extends MSOpenClassFlag {
     
-    public MSOpenClassFlagField(OpenClassMemberFlag member) {
+    ClassnamePatternExpr allowedParents;
+    
+    public MSOpenClassFlagParent(OpenClassMemberFlag member) {
         super();
-        assert (member instanceof OpenClassMemberFlagField) : "Incorrect parameter type";
-    }
-    
-    public MSOpenClassFlag conjoin(MSOpenClassFlag other) {
-        if (other == null) {
-            return null;
-        }
-        return this;
-    }
-    public MSOpenClassFlag disjoin(MSOpenClassFlag other) {
-        return this;
+        OpenClassMemberFlagParent parentMember = (OpenClassMemberFlagParent) member;
+        this.allowedParents = parentMember.getAllowedParents();
     }
     
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
-        w.write("field");
+        w.write("parent(");
+        allowedParents.prettyPrint(w, pp);
+        w.write(")");
     }
     
     public String toString() {
-        return "field";
+        return "parent(" + allowedParents.toString() + ")";
     }
+    
     public boolean isAllowed(MSOpenClassContext context) {
-        MSOpenClassContextField fieldContext =
-            (MSOpenClassContextField) context;
-        return true;
+        //check if parent allowed
+        MSOpenClassContextParent parentContext = 
+            (MSOpenClassContextParent) context;
+        boolean result = allowedParents.matches(parentContext.getParentNode());
+        return result;
     }
 }
