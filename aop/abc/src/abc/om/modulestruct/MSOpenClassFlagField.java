@@ -34,16 +34,6 @@ public class MSOpenClassFlagField extends MSOpenClassFlag {
         assert (member instanceof OpenClassMemberFlagField) : "Incorrect parameter type";
     }
     
-    public MSOpenClassFlag conjoin(MSOpenClassFlag other) {
-        if (other == null) {
-            return null;
-        }
-        return this;
-    }
-    public MSOpenClassFlag disjoin(MSOpenClassFlag other) {
-        return this;
-    }
-    
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
         w.write("field");
     }

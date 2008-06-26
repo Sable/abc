@@ -34,17 +34,6 @@ public class MSOpenClassFlagMethod extends MSOpenClassFlag {
         assert (member instanceof OpenClassMemberFlagMethod) : "Incorrect parameter type";
     }
     
-    public MSOpenClassFlag conjoin(MSOpenClassFlag other) {
-        // TODO Auto-generated method stub
-        if (other == null) {
-            return null; //let go of this
-        }
-        return this;
-    }
-    public MSOpenClassFlag disjoin(MSOpenClassFlag other) {
-        return this;
-    }
-    
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
         w.write("method");
     }
