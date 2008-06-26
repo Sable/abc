@@ -75,7 +75,7 @@ aspect OMCheckModuleErrors {
 	public void ASTNode.checkModuleCycles() {}
 	public void OMModuleDecl.checkModuleCycles() {
 		JAModuleNodeModule moduleNode = 
-			(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(getModuleName(), ModuleNode.TYPE_MODULE);
+			(JAModuleNodeModule) this.getModuleStructNode();
 		assert moduleNode != null : "null JAModuleNodeModule in OMModuleDecl.checkModuleCycles()";
 		
 		HashSet parents = new HashSet();

@@ -17,9 +17,7 @@ aspect OMCollectModuleMembers {
 	
 	public void OMIncludeMember.collectModuleMembers() {
 		JAModuleNodeModule parent_node = 
-				(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
-					getHostModule().getModuleName(), 
-					ModuleNode.TYPE_MODULE);
+				(JAModuleNodeModule) getHostModule().getModuleStructNode();
 		for (OMIncludeMemberID incMemID : getOMIncludeMemberIDList()) {
 			String includeID = incMemID.getID();
 			JAModuleNodeModule node = 

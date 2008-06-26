@@ -1,4 +1,5 @@
 //declaration of global functions over the openmod AST nodes
+import abc.ja.om.modulestruct.*;
 
 aspect OMGlobals {
 
@@ -28,4 +29,19 @@ aspect OMGlobals {
 	syn boolean OMClassMember.isClassMember() = true;
 	syn boolean OMOpenClassMember.isOpenClassMember() = true;
 	syn boolean OMIncludeMember.isIncludeMember() = true;
+	
+	syn abc.om.modulestruct.ModuleNode OMModuleDecl.getModuleStructNode() {
+		JAModuleNodeModule moduleNode = 
+			(JAModuleNodeModule)getOMAbcExtension()
+				.moduleStruct
+				.getNode(getModuleName(), ModuleNode.TYPE_MODULE);
+		return moduleNode;
+	}
+	syn abc.om.modulestruct.ModuleNode AspectDecl.getModuleStructNode() {
+		JAModuleNodeAspect aspectNode = (JAModuleNodeAspect)getOMAbcExtension().moduleStruct.getNode(
+					this.toString(), 
+					ModuleNode.TYPE_ASPECT);
+		return aspectNode;
+	}
+	//TODO implement modulenodeclass getter when needed
 }

@@ -16,8 +16,7 @@ aspect OMModuleStructDebug {
 	}
 	
 	public void OMModuleDecl.printModuleStructure() {
-        ModuleNodeModule n = (ModuleNodeModule) getOMAbcExtension().moduleStruct.getNode(getModuleName(),
-                ModuleNode.TYPE_MODULE);
+        ModuleNodeModule n = (ModuleNodeModule) this.getModuleStructNode();
         assert(n != null) : "Node is null";
         //print the module name
         System.out.println("module " + n.name() + "{");

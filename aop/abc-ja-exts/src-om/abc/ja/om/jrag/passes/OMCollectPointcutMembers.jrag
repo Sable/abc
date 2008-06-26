@@ -16,9 +16,7 @@ aspect OMCollectPointcutMembers {
 
 	public void OMPointcutMember.collectPointcutMembers() {
 		JAModuleNodeModule module = 
-			(JAModuleNodeModule)getOMAbcExtension().moduleStruct.getNode(
-					getHostModule().getModuleName(), 
-					ModuleNode.TYPE_MODULE);
+			(JAModuleNodeModule) getHostModule().getModuleStructNode(); 
 		
 		AbcExtension.debPrintln(
 			AbcExtension.OMDebug.COLLECT_MODULE_ASPECTS_DEBUG,
