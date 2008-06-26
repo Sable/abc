@@ -14,7 +14,6 @@ aspect OMModuleStructDebug {
 			getChild(i).printModuleStructure();
 		}
 	}
-	
 	public void OMModuleDecl.printModuleStructure() {
         ModuleNodeModule n = (ModuleNodeModule) this.getModuleStructNode();
         assert(n != null) : "Node is null";
@@ -48,6 +47,19 @@ aspect OMModuleStructDebug {
 	    System.out.println("\textPointcut = " + n.getExtPointcut().toString());
 	    System.out.println("\tsigPointcut = " + n.getSigAIPointcut().toString());
 	    System.out.println("\tprivateSigPointcut = " + n.getPrivateSigAIPointcut().toString());
+	    //Print out the open class member expressions
+	    super.printModuleStructure();
+	    //Print out the parent
+	    System.out.println("\tParent:");
+	    System.out.println("\t\t" + getHostProgram().getModuleParent(this));
+	    //Print out get module decl from name
+	    System.out.println("\tgetModuleFromName:");
+	    System.out.println("\t\t" + getHostProgram().getModuleFromName(getModuleName()).getModuleName());
+	    System.out.println("\tOMModuleDecl.getOpenClassExpr()");
+	    System.out.println("\t\t" + getOpenClassExpr());
 	    System.out.println("}");
+	}
+	public void OMOpenClassMember.printModuleStructure() {
+		System.out.println("\t" + getOpenClassExpr());
 	}
 }

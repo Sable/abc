@@ -1,5 +1,6 @@
 //declaration of global functions over the openmod AST nodes
 import abc.ja.om.modulestruct.*;
+import abc.ja.om.OMParentModule;
 
 aspect OMGlobals {
 
@@ -16,10 +17,17 @@ aspect OMGlobals {
 	inh OMModuleDecl OMModuleDecl.getHostModule();
 	inh OMModuleDecl OMModuleMember.getHostModule();
 	inh OMModuleDecl NamePattern.getHostModule();
+	inh OMModuleDecl OMIncludeMemberID.getHostModule();
 	
 	eq Program.getChild(int i).getHostOMModuleMember() = null;
 	eq OMModuleMember.getChild(int i).getHostOMModuleMember() = this;
 	inh OMModuleMember NamePattern.getHostOMModuleMember();
+	
+	eq Program.getChild(int i).getHostProgram() = this;
+	inh Program OMModuleDecl.getHostProgram();
+	inh Program OMModuleMember.getHostProgram();
+	inh Program OMOpenClassFlag.getHostProgram();
+	inh Program OMToClause.getHostProgram();
 	
 	syn boolean OMModuleMember.isFriendMember() = false;
 	syn boolean OMModuleMember.isClassMember() = false;
@@ -43,5 +51,71 @@ aspect OMGlobals {
 					ModuleNode.TYPE_ASPECT);
 		return aspectNode;
 	}
-	//TODO implement modulenodeclass getter when needed
+	
+	//get a moduledecl given its name
+	syn lazy OMModuleDecl ASTNode.getModuleFromName(String moduleName) {
+		OMModuleDecl ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleFromName(moduleName);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	syn lazy OMModuleDecl CompilationUnit.getModuleFromName(String moduleName) {
+		return null;
+	}
+	syn lazy OMModuleDecl OMCompilationUnit.getModuleFromName(String moduleName) {
+		OMModuleDecl ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleFromName(moduleName);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	syn lazy OMModuleDecl OMModuleDecl.getModuleFromName(String moduleName) {
+		if (getModuleName().matches(moduleName)) {
+			return this;
+		} else {
+			//no nested modules
+			return null;
+		}
+	}
+	
+	//get a module's parent and type of inclusion. Null if no parent
+	syn lazy OMParentModule ASTNode.getModuleParent(OMModuleDecl module) {
+		OMParentModule ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleParent(module);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	syn lazy OMParentModule CompilationUnit.getModuleParent(OMModuleDecl module) {
+		return null;
+	}
+	syn lazy OMParentModule OMCompilationUnit.getModuleParent(OMModuleDecl module) {
+		OMParentModule ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleParent(module);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	syn lazy OMParentModule OMIncludeMember.getModuleParent(OMModuleDecl module) {
+		for (OMIncludeMemberID moduleID : getOMIncludeMemberIDList()) {
+			if (moduleID.getID().matches(module.getModuleName())) {
+				return new OMParentModule(getOMIncludeMemberType(), getHostModule());
+			}
+		}
+		return null;
+		//don't call super anymore
+	}
 }

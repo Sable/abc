@@ -1,0 +1,77 @@
+import abc.ja.om.modulestruct.*;
+import abc.ja.om.OMParentModule;
+import java.util.LinkedList;
+
+
+//this is an experiment to make open class constraints use
+//JastAdd's on-demand idiom
+aspect OMOpenClass {
+	
+	syn lazy JAOpenClassFlag OMOpenClassFlag.getOpenClassFlag() {
+		assert (false) : "getOpenClassFlag() has been called on the abstract OMOpenClassFlag";
+		return null;
+	}
+	syn lazy JAOpenClassFlag OMOpenClassField.getOpenClassFlag() {
+		return new JAOpenClassFlagField(this);
+	}
+	syn lazy JAOpenClassFlag OMOpenClassParent.getOpenClassFlag() {
+		return new JAOpenClassFlagParent(this); 
+	}
+	syn lazy JAOpenClassFlag OMOpenClassMethod.getOpenClassFlag() {
+		return new JAOpenClassFlagMethod(this);
+	}
+	
+	syn lazy JAOpenClassExpr OMOpenClassMember.getOpenClassExpr() {
+		JAOpenClassFlagSet ocFlags = new JAOpenClassFlagSet();
+		//create the open class flag set
+		for (OMOpenClassFlag flag : getOMOpenClassFlagList().getOMOpenClassFlagList()) {
+			ocFlags.addFlag(flag.getOpenClassFlag());
+		}
+		return new JAOpenClassExprBase(ocFlags, 
+				getPattern(), 
+				getOMToClause().getPattern());
+	}
+
+	syn lazy JAOpenClassExpr OMModuleDecl.getOpenClassExpr() {
+		JAOpenClassExpr ret = getShallowOpenClassExpr();
+		//ancestors ordered from nearest to farthest
+		LinkedList<OMParentModule> ancestors = new LinkedList();
+		//get ancestor list
+		for (OMModuleDecl currModule = this; 
+			currModule.getHostProgram().getModuleParent(currModule) != null;) {
+			OMParentModule parent = currModule.getHostProgram().getModuleParent(currModule);
+			currModule = parent.getParent();
+			ancestors.addLast(parent);
+		} 
+		//foreach ancestormodule
+		for (OMParentModule currParent : ancestors) {
+		//	if (open) ret = ret || ancestor.getShallowOpenClassExpr()
+			if (currParent.getType().getID().matches("open")) {
+				ret = new JAOpenClassExprOr(ret, currParent.getParent().getShallowOpenClassExpr());
+			}
+		//	else if (constrain) ret = ret && ancestor.getShallowOpenClassExpr()
+			else if (currParent.getType().getID().matches("constrain")) {
+				ret = new JAOpenClassExprAnd(ret, currParent.getParent().getShallowOpenClassExpr());
+			}
+			else {
+				assert (false) : "Invalid include type : " + currParent.getType().getID();
+			}
+		}
+		return ret;
+	}
+	
+	//just gets the expr from the immediate open class members
+	syn lazy JAOpenClassExpr OMModuleDecl.getShallowOpenClassExpr() {
+		JAOpenClassExpr ret = new JAOpenClassExprBool(true);
+		//foreach openclassmember
+		for (OMModuleMember member : getOMModuleMemberList()) {
+		//	ret = ret && openclassmember
+			if (member.isOpenClassMember()) {
+				OMOpenClassMember ocMember = (OMOpenClassMember) member;
+				ret = new JAOpenClassExprAnd(ret, ocMember.getOpenClassExpr());
+			}
+		}
+		return ret;
+	}
+	
+}
