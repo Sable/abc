@@ -28,6 +28,7 @@ aspect OMGlobals {
 	inh Program OMModuleMember.getHostProgram();
 	inh Program OMOpenClassFlag.getHostProgram();
 	inh Program OMToClause.getHostProgram();
+	inh Program TypeDecl.getHostProgram();
 	
 	syn boolean OMModuleMember.isFriendMember() = false;
 	syn boolean OMModuleMember.isClassMember() = false;
@@ -47,7 +48,7 @@ aspect OMGlobals {
 	}
 	syn abc.om.modulestruct.ModuleNode AspectDecl.getModuleStructNode() {
 		JAModuleNodeAspect aspectNode = (JAModuleNodeAspect)getOMAbcExtension().moduleStruct.getNode(
-					this.toString(), 
+					this.fullName(), 
 					ModuleNode.TYPE_ASPECT);
 		return aspectNode;
 	}
@@ -117,5 +118,36 @@ aspect OMGlobals {
 		}
 		return null;
 		//don't call super anymore
+	}
+	
+	syn lazy OMModuleDecl ASTNode.getModuleFromModuleNode(ModuleNode moduleNode) {
+		OMModuleDecl ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleFromModuleNode(moduleNode);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	syn lazy OMModuleDecl CompilationUnit.getModuleFromModuleNode(ModuleNode moduleNode) {
+		return null;
+	}
+	syn lazy OMModuleDecl OMCompilationUnit.getModuleFromModuleNode(ModuleNode moduleNode) {
+		OMModuleDecl ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleFromModuleNode(moduleNode);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	syn lazy OMModuleDecl OMModuleDecl.getModuleFromModuleNode(ModuleNode moduleNode) {
+		if (getModuleStructNode() == moduleNode) {
+			return this;
+		} else {
+			return null;
+		}
 	}
 }

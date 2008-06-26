@@ -5,20 +5,19 @@ import abc.ja.om.jrag.Pattern;
 
 public class JAOpenClassFlagParent extends JAOpenClassFlag {
 	
-	Pattern parents;
+	Pattern allowedParents;
 	public JAOpenClassFlagParent(OMOpenClassParent parent) {
-		//TODO
-		this.parents = parent.getParentAspects();
+		this.allowedParents = parent.getParentAspects();
 	}
 
 	@Override
 	public boolean isAllowed(JAOpenClassContext context) {
-		// TODO Auto-generated method stub
-		return false;
+		JAOpenClassContextParent parentContext = (JAOpenClassContextParent) context;
+		return allowedParents.matchesType(parentContext.getDeclaredParent()) ;
 	}
 	
 	public String toString() {
-		return "parents(" + parents.toString() + ")"; 
+		return "parents(" + allowedParents.toString() + ")"; 
 	}
 	
 }

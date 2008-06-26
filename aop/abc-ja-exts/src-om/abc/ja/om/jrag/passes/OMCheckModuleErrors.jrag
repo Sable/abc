@@ -1,6 +1,7 @@
 import abc.ja.om.modulestruct.*;
 import abc.ja.om.*;
 import abc.om.modulestruct.ModuleNode;
+import abc.ja.om.modulestruct.JAOpenClassFlagSet.OCFType;
 import java.util.*;
 
 aspect OMCheckModuleErrors {
@@ -48,6 +49,7 @@ aspect OMCheckModuleErrors {
 		checkDuplicateClassInclude();
 		checkDuplicateFriendInclude();
 		markFriendMemberExistence();
+		checkModuleITDErrors();
 		
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).singleCheckModuleErrors();
@@ -165,5 +167,95 @@ aspect OMCheckModuleErrors {
 		super.collectNonexistentFriendAspects();
 	}
 	
+	//TODO: MAtching is fucked. Fix tomorrow.
+	//Single pass
+	public void ASTNode.checkModuleITDErrors() {}
+	public void TypeDecl.checkModuleITDErrors() {
+		ModuleNode owner = getOMAbcExtension().moduleStruct.getOwner(this);
+		if (owner == null) {
+			return;
+		}
+		//check individual itds
+		for (Iterator iter = intertypeDecls().iterator(); iter.hasNext();) {
+			ASTNode node = (ASTNode)iter.next();
+			if (node instanceof IntertypeFieldDeclaration) {
+				checkITDField((IntertypeFieldDeclaration)node, owner);
+			} else if (node instanceof IntertypeMethodDecl) {
+				checkITDMethod((IntertypeMethodDecl)node, owner);
+			} else if (node instanceof IntertypeConstructorDecl) {
+				checkITDConstructor((IntertypeConstructorDecl) node, owner);
+			} else {
+				assert (false) : "Unexpected node type: " + node.getClass();
+			} 
+		}
+	}
 	
+	private void TypeDecl.checkITDField(IntertypeFieldDeclaration field, ModuleNode owner) {
+		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
+		//check for friendship
+		if (getOMAbcExtension()
+				.moduleStruct
+				.isInSameModuleSet(
+					((AspectDecl)(field.hostAspect())).getModuleStructNode(),
+					ownerDecl.getModuleStructNode()
+				)
+			) {
+			return;
+		}
+		
+		JAOpenClassContext context = 
+			new JAOpenClassContextField(this, (AspectDecl)(field.hostAspect()));
+		if (!ownerDecl.getOpenClassExpr().isAllowed(OCFType.FIELD, context)) {
+			error("Inter-type field introduced by aspect " + 
+                            field.hostAspect().fullName() +
+                            " to class " + this.fullName() +
+                            " not allowed by class' owning module " +
+                            ownerDecl.getModuleName());
+		}
+		
+	}
+	private void TypeDecl.checkITDMethod( IntertypeMethodDecl method, ModuleNode owner) {
+		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
+		//check for friendship
+		if (getOMAbcExtension()
+				.moduleStruct
+				.isInSameModuleSet(
+					((AspectDecl)(method.hostAspect())).getModuleStructNode(),
+					ownerDecl.getModuleStructNode()
+				)
+			) {
+			return;
+		}
+		JAOpenClassContext context = 
+			new JAOpenClassContextMethod(this, ((AspectDecl)(method.hostAspect())));
+		if (!ownerDecl.getOpenClassExpr().isAllowed(OCFType.METHOD, context)) {
+			error("Inter-type method introduced by aspect " +
+        	                method.hostAspect().fullName() +
+        	                " to class " + this.fullName() +
+        	                " not allowed by class' owning module " +
+        	                ownerDecl.getModuleName());
+		}
+	}
+	private void TypeDecl.checkITDConstructor( IntertypeConstructorDecl cons, ModuleNode owner) {
+		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
+		//check for friendship
+		if (getOMAbcExtension()
+				.moduleStruct
+				.isInSameModuleSet(
+					((AspectDecl)(cons.hostAspect())).getModuleStructNode(),
+					ownerDecl.getModuleStructNode()
+				)
+			) {
+			return;
+		}
+		JAOpenClassContext context = 
+			new JAOpenClassContextMethod(this, ((AspectDecl)(cons.hostAspect())));
+		if (!ownerDecl.getOpenClassExpr().isAllowed(OCFType.METHOD, context)) {
+			error("Inter-type constructor introduced by aspect " +
+        	                cons.hostAspect().fullName() +
+        	                " to class " + this.fullName() +
+        	                " not allowed by class' owning module " +
+        	                ownerDecl.getModuleName());
+		}
+	}
 }

@@ -1,37 +1,45 @@
 package abc.ja.om.modulestruct;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class JAOpenClassFlagSet {
 	
-	Collection<JAOpenClassFlag> flags;
-	
-	public JAOpenClassFlagSet(Collection<JAOpenClassFlag> flags) {
-		this.flags = flags;
-	}
+	HashMap<OCFType, JAOpenClassFlag> flags;
 	
 	public JAOpenClassFlagSet() {
-		this.flags = new HashSet<JAOpenClassFlag>();
+		this.flags = new HashMap<OCFType, JAOpenClassFlag>();
 	}
 	
 	public void addFlag(JAOpenClassFlag flag) {
-		flags.add(flag);
+		if (flag instanceof JAOpenClassFlagField) {
+			flags.put(OCFType.FIELD, flag);
+		} else if (flag instanceof JAOpenClassFlagMethod) {
+			flags.put(OCFType.METHOD, flag);
+		} else if (flag instanceof JAOpenClassFlagParent) {
+			flags.put(OCFType.PARENT, flag);
+		}
 	}
 	
 	public boolean isAllowed(OCFType type, JAOpenClassContext context) {
-		//TODO
-		return false;
+		JAOpenClassFlag flag = flags.get(type);
+		if (flag == null) {
+			return false;
+		}
+		return flag.isAllowed(context);
 	}
 	
-	public static class OCFType {
-        public OCFType(){};
-    }
+	public static enum OCFType {
+		FIELD,
+		METHOD,
+		PARENT
+    };
 	
 	public String toString() {
 		String ret = "";
 		boolean first = true;
-		for (JAOpenClassFlag flag : flags) {
+		for (JAOpenClassFlag flag : flags.values()) {
 			if (!first) {
 				ret += ", ";
 			}
@@ -40,4 +48,5 @@ public class JAOpenClassFlagSet {
 		}
 		return ret;
 	}
+	
 }

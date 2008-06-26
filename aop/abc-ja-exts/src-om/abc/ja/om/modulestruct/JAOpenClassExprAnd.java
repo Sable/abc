@@ -9,8 +9,7 @@ public class JAOpenClassExprAnd extends JAOpenClassExprBinary {
 
 	@Override
 	public boolean isAllowed(OCFType type, JAOpenClassContext context) {
-		// TODO Auto-generated method stub
-		return false;
+		return left.isAllowed(type, context) && right.isAllowed(type, context);
 	}
 	
 	public String toString() {

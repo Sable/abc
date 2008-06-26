@@ -169,15 +169,26 @@ public class JAModuleStructure extends ModuleStructure {
     	return ret;
     }
     
+    public ModuleNode getOwner(TypeDecl t) {
+    	ModuleNode ret = null;
+    	for (Iterator i = getMap(ModuleNode.TYPE_CLASS).values().iterator();
+    		i.hasNext(); ) {
+    		JAModuleNodeClass classNode = (JAModuleNodeClass) i.next();
+    		if (classNode.getCPEPattern().matchesType(t)) {
+    			return classNode.getParent();
+    		}
+    	}
+    	return ret;
+    }
+    
     
     
     //reimplementation
-    public boolean isInSameModuleSet(ModuleNode aspectNode, SootClass sc) {
+    public boolean isInSameModuleSet(ModuleNode aspectNode, ModuleNode classOwner) {
         if (aspectNode != null && !aspectNode.isAspect()) {
             throw new InternalCompilerError(
                     "Expecting a ModuleNode of type TYPE_ASPECT");
         }
-        ModuleNode classOwner = getOwner(sc);
 
         //if the aspect is not in a module, and so is the class, then return
         // true
@@ -220,6 +231,10 @@ public class JAModuleStructure extends ModuleStructure {
         }
 
         return false;
+    }
+    
+    public boolean isInSameModuleSet(ModuleNode aspectNode, SootClass sc) {
+    	return isInSameModuleSet(aspectNode, getOwner(sc));
     }
     
     public Residue openModMatchesAt(Pointcut pc, ShadowMatch sm,

@@ -4,12 +4,12 @@ import abc.ja.om.jrag.AspectDecl;
 import abc.ja.om.jrag.TypeDecl;
 
 public class JAOpenClassContextParent extends JAOpenClassContext {
-	TypeDecl classParent;
-	public JAOpenClassContextParent(TypeDecl classDecl, AspectDecl aspectDecl, TypeDecl classParent) {
+	TypeDecl declaredParent;
+	public JAOpenClassContextParent(TypeDecl classDecl, AspectDecl aspectDecl, TypeDecl declaredParent) {
 		super(classDecl, aspectDecl);
-		this.classParent = classParent;
+		this.declaredParent = declaredParent;
 	}
-	public TypeDecl getClassParent() {
-		return classParent;
+	public TypeDecl getDeclaredParent() {
+		return declaredParent;
 	}
 }

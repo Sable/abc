@@ -12,7 +12,6 @@ public class JAOpenClassExprBool extends JAOpenClassExpr {
 	
 	@Override
 	public boolean isAllowed(OCFType type, JAOpenClassContext context) {
-		// TODO Auto-generated method stub
 		return val;
 	}
 	

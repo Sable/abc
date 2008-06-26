@@ -12,7 +12,7 @@ public class JAOpenClassExprBase extends JAOpenClassExpr {
 	public JAOpenClassExprBase(JAOpenClassFlagSet flags, 
 								Pattern cpe,
 								Pattern toCpe) {
-		//TODO
+		assert (cpe != null && toCpe != null) : "Unexpected null values for cpe and toCpe";
 		this.flags = flags;
 		this.cpe = cpe;
 		this.toCpe = toCpe;
@@ -20,8 +20,13 @@ public class JAOpenClassExprBase extends JAOpenClassExpr {
 	
 	@Override
 	public boolean isAllowed(OCFType type, JAOpenClassContext context) {
-		// TODO Auto-generated method stub
-		return false;
+		if (!cpe.matchesType(context.getClassDecl())) {
+			return false;
+		}
+		if (!toCpe.matchesType(context.getAspectDecl())) {
+			return false;
+		}
+		return flags.isAllowed(type, context);
 	}
 	
 	public String toString() {
