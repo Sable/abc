@@ -150,4 +150,77 @@ aspect OMGlobals {
 			return null;
 		}
 	}
+	
+	//Abandon for now, try simpler fieldDecl first to see if it matches
+	//current behavior
+	/*
+	syn Collection<TypeDecl> TypeDecl.superTypeStar() {}
+	syn Collection<TypeDecl> ClassDecl.superTypeStar() {
+		TypeDecl superCls = null;
+		if (hasSuperClass()) {
+			superCls = superClass();
+		}
+		LinkedList<InterfaceDecl> interfaces = new LinkedList<InterfaceDecl>();
+		for (Iterator i = interfacesIterator(); i.hasNext(); ) {
+			interfaces.add((InterfaceDecl)i.next());
+		}
+		
+		return superTypeStarThrough(superCls, interfaces);
+	}
+	syn Collection<TypeDecl> InterfaceDecl.superTypeStar() {
+		LinkedList<InterfaceDecl> interfaces = new LinkedList<InterfaceDecl>();
+		for (Iterator i = superinterfacesIterator(); i.hasNext();) {
+			interfaces.add((InterfaceDecl)i.next());
+		}
+		return supertypeStarThrough(interfaces);
+	}
+	
+	//gets the supertype transitive closure of a typeDecl with a specified superclass
+	//and a collection of interfaces as a starting point
+	syn Collection<TypeDecl> TypeDecl.superTypeStarThrough(TypeDecl superClass, Collection<TypeDecl> interfaces) {
+		throw new InternalCompilerError("TypeDecl.superTypeStarThrough should only be called on ClassDecl and InterfaceDecl and their subtypes");
+	}
+	syn Collection<TypeDecl> ClassDecl.supertypeStarThrough(
+			TypeDecl superCls, 
+			Collection<TypeDecl> interfaces){
+		Collection<TypeDecl> ret = new HashSet<TypeDecl>();
+		Collection<TypeDecl> interfacesStar = new HashSet<TypeDecl>();
+		
+		//collect paths through superclass
+		if (superCls != null) {
+			ClassDecl currClass = superCls;
+			do {
+				ret.add(currClass);
+				//add every interface implemented by the superclass
+				for (Iterator i = currClass.interfacesIterator(); i.hasNext(); ) {
+					interfacesStar.add((InterfaceDecl)i.next());
+				}
+				currClass = currClass.superClass;
+			} while (currClass != null);
+		}
+		for (Iterator i = interfacesIterator(); i.hasNext(); ) {
+			interfaces.add((InterfaceDecl)i.next);
+		}
+		ret.addAll(supertypeStarThrough(interfaces));
+		return ret;
+	}
+	
+	syn Collection<TypeDecl> InterfaceDecl.supertypeStarThrough(
+			Collection<TypeDecl> interfaces) {
+		Collection<TypeDecl> interfacesStar = new HashSet<TypeDecl>();
+		
+		//add implemented interfaces and do fixpoint in interfacesStar
+		interfacesStar.addAll(interfaces);
+		do {
+			int prevSize = interfacesStar.size(); 
+			for (Iterator i = interfacesStar.iterator(); i.hasNext();) {
+				InterfaceDecl ifDecl =  (InterfaceDecl) i.next();
+				for (Iterator j = ifDecl.superinterfacesIterator(); j.hasNext();) {
+					interfacesStar.add((InterfaceDecl)j.next());
+				}
+			}
+		} while(interfacesStar.size() != prevSize);
+		return interfacesStar;
+	}
+	*/
 }

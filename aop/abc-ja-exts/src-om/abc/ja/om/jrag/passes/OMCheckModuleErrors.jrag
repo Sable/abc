@@ -174,46 +174,99 @@ aspect OMCheckModuleErrors {
 		if (owner == null) {
 			return;
 		}
-		//check individual itds
-		for (Iterator iter = intertypeDecls().iterator(); iter.hasNext();) {
-			ASTNode node = (ASTNode)iter.next();
-			if (node instanceof IntertypeFieldDeclaration) {
-				checkITDField((IntertypeFieldDeclaration)node, owner);
-			} else if (node instanceof IntertypeMethodDecl) {
-				checkITDMethod((IntertypeMethodDecl)node, owner);
-			} else if (node instanceof IntertypeConstructorDecl) {
-				checkITDConstructor((IntertypeConstructorDecl) node, owner);
-			} else {
-				assert (false) : "Unexpected node type: " + node.getClass();
-			} 
+		//Check fields
+		for (Iterator i = fieldsIterator(); i.hasNext(); ){
+			ASTNode node = (ASTNode) i.next();
+			if (node instanceof IntroducedFieldDeclaration) {
+				checkITDField((IntroducedFieldDeclaration) node ,owner);
+			}
 		}
+		
+		//Check methods
+		for (Iterator i = methodsIterator(); i.hasNext(); ){
+			ASTNode node = (ASTNode) i.next();
+			if (node instanceof IntertypeMethodDecl) {
+				checkITDMethod((IntertypeMethodDecl) node ,owner);
+			}
+		}
+		
+		//Check constructors
+		for (Iterator i = constructors().iterator(); i.hasNext(); ){
+			ASTNode node = (ASTNode) i.next();
+			if (node instanceof IntertypeConstructorDecl) {
+				checkITDConstructor((IntertypeConstructorDecl) node ,owner);
+			}
+		}
+		
+		//check parents
+		checkITDParents(owner);
 	}
-	
-	private void TypeDecl.checkITDField(IntertypeFieldDeclaration field, ModuleNode owner) {
+
+	protected void TypeDecl.checkITDField(IntroducedFieldDeclaration field, ModuleNode owner) {
 		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
 		//check for friendship
 		if (getOMAbcExtension()
 				.moduleStruct
 				.isInSameModuleSet(
-					((AspectDecl)(field.hostAspect())).getModuleStructNode(),
+					((AspectDecl)(field.aspectType())).getModuleStructNode(),
 					ownerDecl.getModuleStructNode()
 				)
 			) {
 			return;
 		}
 		
+		IntertypeFieldDeclaration origField = null; 
+		dance: 
+		for (Iterator i = field.aspectType().memberFields(field.getOriginalName()).iterator(); i.hasNext();) {
+			IntertypeFieldDeclaration itfd = (IntertypeFieldDeclaration) i.next();
+			
+			//TODO: Divide this method into InterfaceDecl and ClassDecl
+			//check superclass
+			if (this instanceof ClassDecl) {
+				ClassDecl thisClass = (ClassDecl) this;
+				if (thisClass.hasSuperclass()) {
+					if (((TypeAccess)(itfd.getTargetType())).type() == thisClass.superclass()) {
+						origField = (IntertypeFieldDeclaration) itfd;
+						break dance;
+					}
+				}
+				//check interfaces
+				for (Iterator outerIter = thisClass.interfacesIterator(); outerIter.hasNext(); ) {
+					TypeDecl type = (TypeDecl)outerIter.next();
+					if (((TypeAccess)(itfd.getTargetType())).type() == type) {
+						origField = (IntertypeFieldDeclaration) itfd;
+						break dance;
+					}
+				}
+			} else if (this instanceof InterfaceDecl) {
+				InterfaceDecl thisClass = (InterfaceDecl) this;
+				//check interfaces
+				for (Iterator outerIter = thisClass.superinterfacesIterator(); outerIter.hasNext(); ) {
+					TypeDecl type = (TypeDecl)outerIter.next();
+					if (((TypeAccess)(itfd.getTargetType())).type() == type) {
+						origField = (IntertypeFieldDeclaration) itfd;
+						break dance;
+					}
+				}
+			}
+			if (((TypeAccess)(itfd.getTargetType())).type() == this) {
+				origField = (IntertypeFieldDeclaration) itfd;
+			}
+		}
+		assert (origField != null) : "Cannot find original IntertypeFieldDecl for an IntroducedFieldDeclaration";
+		
 		JAOpenClassContext context = 
-			new JAOpenClassContextField(this, (AspectDecl)(field.hostAspect()));
+			new JAOpenClassContextField(this, (AspectDecl)(field.aspectType()));
 		if (!ownerDecl.getOpenClassExpr().isAllowed(OCFType.FIELD, context)) {
-			field.error("Inter-type field introduced by aspect " + 
-                            field.hostAspect().fullName() +
+			origField.error("Inter-type field introduced by aspect " + 
+                            field.aspectType().fullName() +
                             " to class " + this.fullName() +
                             " not allowed by class' owning module " +
                             ownerDecl.getModuleName());
 		}
 		
 	}
-	private void TypeDecl.checkITDMethod( IntertypeMethodDecl method, ModuleNode owner) {
+	protected void TypeDecl.checkITDMethod( IntertypeMethodDecl method, ModuleNode owner) {
 		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
 		//check for friendship
 		if (getOMAbcExtension()
@@ -235,7 +288,7 @@ aspect OMCheckModuleErrors {
         	                ownerDecl.getModuleName());
 		}
 	}
-	private void TypeDecl.checkITDConstructor( IntertypeConstructorDecl cons, ModuleNode owner) {
+	protected void TypeDecl.checkITDConstructor(IntertypeConstructorDecl cons, ModuleNode owner) {
 		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
 		//check for friendship
 		if (getOMAbcExtension()
@@ -256,5 +309,91 @@ aspect OMCheckModuleErrors {
         	                " not allowed by class' owning module " +
         	                ownerDecl.getModuleName());
 		}
+	}
+	
+	protected void TypeDecl.checkITDParents(ModuleNode owner) {}
+	protected void ClassDecl.checkITDParents(ModuleNode owner) {
+		TypeDecl intSuper = introducedSuperclass();
+		if (intSuper != null) {
+			for (DeclareParentsExtends dp : getDeclareParentsExtendsDecls(this, intSuper)) {
+				for (Access a : dp.getTypeAccessList()) {
+					TypeAccess t = (TypeAccess) a;
+					checkDeclareParentVsModule(owner, (AspectDecl)dp.hostType(),t.type(), dp); 
+				}
+			}
+		}
+		checkITDParentsInterfaces(owner);
+	}
+	protected void InterfaceDecl.checkITDParents(ModuleNode owner) {
+		checkITDParentsInterfaces(owner);
+	}
+	protected void TypeDecl.checkITDParentsInterfaces(ModuleNode owner) {
+		for (Iterator i = introducedInterfaces().iterator(); i.hasNext(); ){
+			InterfaceDecl idecl = (InterfaceDecl)i.next();
+			for (DeclareParentsImplements dp : getDeclareParentsImplementsDecls(this, idecl)) {
+				for (Access a : dp.getTypeAccessList()) {
+					TypeAccess t = (TypeAccess) a;
+					checkDeclareParentVsModule(owner, (AspectDecl)dp.hostType(), t.type(), dp); 
+				}
+			}
+		}
+	}
+	
+	protected void TypeDecl.checkDeclareParentVsModule(ModuleNode owner, AspectDecl hostAspect, TypeDecl declaredParent, BodyDecl dpDecl) {
+		OMModuleDecl ownerDecl = getHostProgram().getModuleFromModuleNode(owner);
+		//check for friendship
+		if (getOMAbcExtension()
+				.moduleStruct
+				.isInSameModuleSet(
+					hostAspect.getModuleStructNode(),
+					ownerDecl.getModuleStructNode()
+				)
+			) {
+			return;
+		}
+		
+		JAOpenClassContextParent context = new JAOpenClassContextParent(this, hostAspect, declaredParent);
+		if (!ownerDecl.getOpenClassExpr().isAllowed(OCFType.PARENT, context)) {
+			dpDecl.error("declare parents not allowed by the parent module " + 
+	                            ownerDecl.getModuleName() +
+	                            " of class " + this.fullName());
+		}
+	}
+	
+	//really should only return one, just kept it for consistency
+	protected Collection<DeclareParentsExtends> TypeDecl.getDeclareParentsExtendsDecls(TypeDecl child, TypeDecl parent) {
+		Collection<DeclareParentsExtends> ret = new HashSet<DeclareParentsExtends>();
+		//extends
+		for (Iterator i = declareParentsExtends().iterator(); i.hasNext(); ) {
+			DeclareParentsExtends dp = (DeclareParentsExtends) i.next();
+			if (!dp.getPattern().matchesType(child)) {
+				continue;
+			}
+			for (Access a : dp.getTypeAccessList()) {
+				TypeAccess t = (TypeAccess)a;
+				if (t.type() == parent) {
+					ret.add(dp);
+				}
+			}
+		}
+		return ret;
+	}
+	
+	protected Collection<DeclareParentsImplements> TypeDecl.getDeclareParentsImplementsDecls(TypeDecl child, TypeDecl parent) {
+		Collection<DeclareParentsImplements> ret = new HashSet<DeclareParentsImplements>();
+		//implements
+		for (Iterator i = declareParentsImplements().iterator(); i.hasNext(); ) {
+			DeclareParentsImplements dp = (DeclareParentsImplements) i.next();
+			if (!dp.getPattern().matchesType(child)) {
+				continue;
+			}
+			for (Access a : dp.getTypeAccessList()) {
+				TypeAccess t = (TypeAccess)a;
+				if (t.type() == parent) {
+					ret.add(dp);
+				}
+			}
+		}
+		return ret;
 	}
 }

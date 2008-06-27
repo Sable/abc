@@ -1,0 +1,20 @@
+import java.util.HashSet;
+
+aspect OMModPattern {
+	eq ModPattern.matchesType(SootClass c) {
+		throw new InternalCompilerError("ModPattern.matchesType is not yet implemented");
+	}
+	
+	eq ModPattern.matchesType(TypeDecl t) {
+		HashSet<String> typeMods = new HashSet();
+		for (Modifier m : t.getModifiers().getModifierList()) {
+			typeMods.add(m.getID());
+		}
+		for (ModifierPattern m : this.getModifierPatternList()) {
+			if (!typeMods.contains(m.getModifier().getID())) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
