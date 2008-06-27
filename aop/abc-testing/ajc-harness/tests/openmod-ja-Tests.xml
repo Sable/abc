@@ -1,0 +1,784 @@
+
+<!-- <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> -->
+
+<!--
+
+***** ABC Boys and Girls .... Rules for editing this file. ******
+
+1)  you may add an abccomment to an ajc-test entry,  here is an
+    example I have added to the first entry of abcTests.xml.
+
+    Note that this is INSIDE that <ajc-test num="1" ajc-test ....> tag.
+
+<ajc-test num="2" dir="base/test100"
+      abccomment="I have put this comment in as a test, and this is a very
+         long one over multiple lines too. LJH"
+      title="static and non-static before methods -  one file"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+2)  if you want to change any of the <message ... /> items because they don't
+    correspond to the errors/warnings that we expect from abc,  you
+    should.
+
+      (a) RENAME ALL existing <message ... /> items to
+                              <ajcmessage ... />.
+
+      (b) INSERT new <message .../> items corresponding to what you
+               expect from abc.  (note that the testHarness seems to
+               only handle one message per line number)
+
+      (c) INSERT an abccomment into the <ajc-test num="3" ... /> tag to describe
+             what you changed and why
+
+3) if you want to change an entry from one that was supposed to run, to
+     one that should exit with compile-time errors ...
+
+      (a) REPLACE the <compile files="foo.java"/>  
+          with an entry as follows.  Note that the <compile .../> entry
+          is replaced with <compile>  .... </compile>, where the first
+          entry is an ajcmessage with kind="ignore" and then your
+          real messages.
+ 
+                      <compile files="foo.java">
+                         <ajcmessage kind="ignore"/>
+                         <message kind="error" line="xx"/>
+                         <message kind="warning" line="yy"/>
+                       </compile>
+
+       (b) CHANGE  the <run .... > to <ajcrun ....>
+
+       (c) INSERT an abccomment to say what you changed and why
+           
+     Here is an example:
+
+     original entry:
+
+     <ajc-test num="4" dir="pureJava" title="Using 'aspect' as identifier is legal"
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java"/>
+        <crun class="KeywordAspect" />
+     </ajc-test>
+
+
+     new entry:
+
+     <ajc-test num="5" dir="pureJava" title="Using 'aspect' as identifier is legal"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <ajcmessage kind="ignore" />
+          <message kind="error" line="7"/> 
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+
+4) A new set/style of keywords is available for <ajctest/> tags. The
+     attribute "keywords" is still valid, in addition each <ajctest>
+     can contain a <abckeywords> element, which in turn contains 
+     keywords *in the form of further elements*. This allows keywords
+     to be taken from a pre-defined list and easily verified.
+
+     An example to make it clear - 
+     
+         <ajc-test num="6" dir="base/test100"
+	        abccomment="I have put this comment in as a test, and this is a very
+	       long one over multiple lines too. LJH"
+	         title="static and non-static before methods - one file"
+		 keywords="from-base">
+		<compile files="Driver.java"/>
+		<run class="Driver"/>
+		<abckeywords>
+		     <laurie/>
+		     <pavel/>
+		</abckeywords>
+         </ajc-test>
+	 
+
+     For now, the keywords available as elements in the DTD are:
+     ganesh, aske, oege, laurie, sascha, pavel, julian, jennifer,
+     abclimitations, introductions, polyglot, soot.
+
+     To extend the DTD with additional keywords as the need arises,
+     (a) EDIT the line starting with <!ELEMENT abckeywords ...> so that
+         the enumeration of possible child elements includes the new
+	 keyword
+     (b) INSERT a line declaring the new element below. It should have
+         the form <!ELEMENT new_keyword EMPTY>.
+
+-->
+
+<!--
+  known keywords:
+ 
+  knownLimitation     Accepted limitation of current implementation (fails)
+  purejava            Sources compile under javac as well
+  broken-test         ??
+  messages-vary       one of many (usually two) test specs that differ only in 
+                      messages expected by the different compilers.
+                      Currently ajc 1.0 tests are in ajcTests10.xml,
+                      so there may only be one copy marked "messages-vary" here.
+  new-messages-vary   like messages-vary, except need to make ajcTest10 variant
+
+  fail-{...}          test fails in some configuration
+  fail-unimplmented   eajc throwing "unimplemented" exception
+  fail-commandLine    fails in ajc on command line (move to ajcTestsBroken.xml)
+  fail-in-eclipse     fail when harness in run from inside eclipse
+  fail-publicType     now fixed - no longer presenting error for public type in wrong file
+
+  from-{file}         from original {file}.txt for file in
+                      java, bigjava, resolved_1*, 14tests, errors, design, base... 
+
+  incremental-test    uses inc-compile step
+  command-error       command-line error test
+
+  knownLimitation-ajctaskCompiler
+                      Accepted limitation of the AjcTaskCompilerCommand wrapper
+  knownLimitation-ajdeCompiler
+                      Accepted limitation of the AJDE CompileCommand wrapper
+                      
+  poorErrorMessages   test case passes but errors produced by compiler could do with
+                      improvement                      
+                      
+  Test titles:
+  
+  Titles should be unique and not change, and related tests should have the 
+  same title prefix.  This permits us to automatically compare the test results 
+  from different versions (and suites), and to see related differences together.
+  
+  -->
+
+<suite>
+	<!-- start openmodTests.xml (generated comment, please don't delete) -->
+    <ajc-test num="1101" dir="om/simple"
+      title="Simple module compile"
+      keywords="openmod">
+        <compile files="ModuleTest.java,
+        	ModuleTest2.java,
+        	ModuleTest3.java,
+        	A.java,
+        	Another.java,
+        	AnotherChild.java,
+        	AspectA.aj,
+        	AspectB.aj"
+        options="-ext,abc.ja.om"/>
+    </ajc-test>
+
+    <ajc-test num="1102" dir="om/duplicatemodule"
+      title="Duplicate module name"
+      keywords="openmod,negative">
+        <compile files="DuplicateModule1.java,
+        				DuplicateModule2.java,
+        				A.java,
+        				Another.java,
+        				AnotherChild.java,
+        				AspectA.aj,
+        				AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="1" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="1103" dir="om/nonexistentaspect"
+      title="Non-existent aspect"
+      keywords="openmod,negative">
+        <compile files="NonExistentAspect.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="1104" dir="om/nonexistentmodule"
+      title="Non-existent module"
+      keywords="openmod,negative">
+        <compile files="NonExistentModule.java,
+        				A.java,
+        				Another.java,
+        				AnotherChild.java,
+        				AspectA.aj,
+        				AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="1105" dir="om/duplicatemoduleinclude"
+      title="Duplicate module include"
+      keywords="openmod,negative">
+        <compile files="DuplicateModuleInclude.java,
+        		DuplicateModuleInclude1.java,
+        		DuplicateModuleInclude2.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1106" dir="om/duplicateaspectinclude"
+      title="Duplicate aspect include"
+      keywords="openmod,negative">
+        <compile files="DuplicateAspectInclude1.java,
+        		DuplicateAspectInclude2.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="1107" dir="om/circularmoduleinclude"
+      title="Circular module include"
+      abccomment="Errors point to the module name, and not the offending include"
+      keywords="openmod,negative">
+        <compile files="Circular1.java,
+        		Circular2.java,
+        		Circular3.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="1" />
+          <message kind="error" line="1" />
+          <message kind="error" line="1" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1108" dir="om/duplicateclassinclude"
+      title="Class included in multiple modules"
+      keywords="openmod,negative">
+        <compile files="DuplicateClassInclude1.java,
+        				DuplicateClassInclude2.java,
+        				A.java,
+        				Another.java,
+        				AnotherChild.java,
+        				AspectA.aj,
+        				AspectB.aj"
+        options="-ext,abc.ja.om">
+          <message kind="error" line="9-20" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="1109" dir="om/matchtest"
+      title="Basic matching test"
+      keywords="openmod">
+        <compile files="Module1.java,
+        				Module2.java,
+        				MatchTestA.java,
+        				MatchTestB.java,
+        				MatchTestMain.java,
+        				AspectA.aj,
+        				AspectB.aj,
+        				AspectC.aj"
+        options="-ext,abc.ja.om">
+		<!--TODO: Should also check for an unused advice warning -->
+		<message kind="warning" line="15" />
+		<message kind="warning" line="15" />
+		<message kind="warning" line="18" />
+        </compile>
+        <run class="MatchTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="1110" dir="om/extcalltest"
+      title="External call only test"
+      keywords="openmod">
+        <compile files="FibMod.java,
+        				A.java,
+        				ExtCallTestMain.java,
+        				FibAspect.aj,
+        				FibExtAspect.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="12" />
+			<message kind="warning" line="12" />
+        </compile>
+        <run class="ExtCallTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="1111" dir="om/prectest"
+      title="Fib (Aldrich) precedence test"
+      keywords="openmod">
+        <compile files="Module1.java,
+        				A.java,
+        				PrecTestMain.java,
+        				Fib.aj,
+        				ACache.aj,
+        				PrecFibExtAspect.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="9" />
+			<message kind="warning" line="9" />
+        </compile>
+        <run class="PrecTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="1112" dir="om/prectest"
+      title="Fib (Aldrich) reverse precedence test"
+      keywords="openmod">
+        <compile files="Module2.java,
+        				A.java,
+        				PrecTestMain2.java,
+        				Fib.aj,
+        				ACache.aj,
+        				PrecFibExtAspect.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="9" />
+			<message kind="warning" line="9" />
+        </compile>
+        <run class="PrecTestMain2"/>
+    </ajc-test>
+
+    <ajc-test num="1113" dir="om/emptysigtest"
+      title="Empty signature test"
+      keywords="openmod">
+        <compile files="Module.java,
+        				A.java,
+        				EmptySigTestMain.java,
+        				AspectA.aj"
+        options="-ext,abc.ja.om">
+	        <message kind="warning" line="15" />
+        </compile>
+        <run class="EmptySigTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="1114" dir="om/inheritsigtest"
+      title="Signature inheritance test"
+      keywords="openmod">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				InheritSigTest.java,
+        				ExtAspectA.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="25" />
+        </compile>
+        <run class="InheritSigTest"/>
+    </ajc-test>
+
+    <ajc-test num="1115" dir="om/cflowsigtest"
+      title="CFlow signature test"
+      keywords="openmod">
+        <compile files="Module.java,
+        				A.java,
+        				CflowSigTestMain.java,
+        				CFlowAspect.aj"
+        options="-ext,abc.ja.om">
+        </compile>
+        <run class="CflowSigTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="1116" dir="om/argstest"
+      title="Args matching test"
+      keywords="openmod">
+        <compile files="Module.java,
+        				A.java,
+        				ArgsTestMain.java,
+        				ArgsAspect.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="16" />
+        </compile>
+        <run class="ArgsTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="1117" dir="om/emptymoduletest"
+      title="Empty module test"
+      keywords="openmod">
+        <compile files="Module.java,
+        				A.java,
+        				EmptyModuleTestMain.java,
+        				AspectA.aj"
+        options="-ext,abc.ja.om">
+        </compile>
+        <run class="EmptyModuleTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="1118" dir="om/privatesigtest"
+      title="Private signature test"
+      keywords="openmod">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				PrivateSigTest.java,
+        				ExtAspectA.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="20" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="24" />
+        </compile>
+        <run class="PrivateSigTest"/>
+    </ajc-test>
+
+    <ajc-test num="1119" dir="om/constraintest"
+      title="Constrained module inclusion test"
+      keywords="openmod">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				AspectA.java,
+        				AspectB.java,
+        				AspectC.java,
+        				ConstrainTestMain.java,
+        				ExtAspectA.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="17" />
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="26" />
+        </compile>
+        <run class="ConstrainTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="1120" dir="om/inheritprectest"
+      title="Precedence inheritance test"
+      keywords="openmod">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				AspectA.aj,
+        				AspectB.aj,
+        				AspectC.aj,
+        				InheritPrecTestMain.java"
+        options="-ext,abc.ja.om">
+        </compile>
+        <run class="InheritPrecTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="1121" dir="om/multimodtest"
+      title="Multiple modules in a single file"
+      keywords="openmod">
+        <compile files="Modules.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				MultiModTest.java,
+        				ExtAspectA.aj"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="25" />
+        </compile>
+        <run class="MultiModTest"/>
+    </ajc-test>
+
+    <ajc-test num="1122" dir="om/iftest"
+      title="If pointcut signatures"
+      keywords="openmod">
+        <compile files="Module.java,
+        				AspectA.java,
+        				AspectB.java,
+        				IfTest.java"
+        options="-ext,abc.ja.om">
+        </compile>
+        <run class="IfTest"/>
+    </ajc-test>
+
+    <ajc-test num="1123" dir="om/emptysiginctest"
+      title="Inclusion with empty signatures"
+      keywords="openmod">
+        <compile files="Module.java,
+        				AspectA.aj,
+        				A.java,
+        				B.java,
+        				C.java,
+        				EmptySigIncTestMain.java"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="15" />
+			<message kind="warning" line="16" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="19" />
+			<message kind="warning" line="21" />
+			<message kind="warning" line="22" />
+        </compile>
+        <run class="EmptySigIncTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="1124" dir="om/packagetest"
+      title="Aspects in packages"
+      keywords="openmod">
+        <compile files="Module.java,
+        				PackageTestMain.java,
+        				pack1/A.java,
+        				pack1/AspectA.java,
+        				pack2/A.java,
+        				pack2/AspectA.java"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="6" />
+        </compile>
+        <run class="PackageTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="1125" dir="om/roottest"
+      title="Root module test"
+      keywords="openmod">
+        <compile files="Module.java,
+        				RootTestMain.java,
+        				A.java,
+        				AspectA.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="16" />
+        </compile>
+    </ajc-test>   
+    
+    <ajc-test num="1126" dir="om/totest"
+      title="To test"
+      keywords="openmod">
+        <compile files="Module.java,
+        				ToTestMain.java,
+        				A.java,
+        				ExtAspectA.java,
+        				ExtAspectB.java"
+        options="-ext,abc.ja.om">
+			<message kind="warning" line="5" />
+			<message kind="warning" line="7" />
+        </compile>
+        <run class="ToTestMain"/>
+    </ajc-test>       
+	
+    <ajc-test num="1127" dir="om/omantstest"
+      title="omants test"
+      keywords="openmod">
+        <compile files="automaton/Automaton.java,
+						benchmark/Main.java,
+						command/Command.java,
+						command/Comment.java,
+						command/Condition.java,
+						command/Drop.java,
+						command/Flip.java,
+						command/Foe.java,
+						command/FoeHome.java,
+						command/FoeMarker.java,
+						command/FoeWithFood.java,
+						command/Food.java,
+						command/Friend.java,
+						command/FriendWithFood.java,
+						command/Home.java,
+						command/Mark.java,
+						command/Marker.java,
+						command/Move.java,
+						command/PickUp.java,
+						command/Rock.java,
+						command/Sense.java,
+						command/Turn.java,
+						command/Unmark.java,
+						debug/CheckScores.java,
+						debug/CommandTracer.java,
+						debug/LiveAnts.java,
+						debug/WorldDumper.java,
+						main/Main.java,
+						model/Ant.java,
+						model/Cell.java,
+						model/Color.java,
+						model/Combat.java,
+						model/Resting.java,
+						model/World.java,
+						modules/Modules.java,
+						parser/CommandParser.java,
+						profile/NoNewInCmd.java,
+						profile/NoNewInRound.java,
+						style/PublicAccessFields.java,
+						viewer/Board.java,
+						viewer/Bug.java,
+						viewer/Hexagon.java,
+						viewer/Update.java,
+						viewer/Viewer.java"
+        options="-ext,abc.ja.om">
+        </compile>
+    </ajc-test>       
+    
+    <ajc-test num="1128" dir="om/inheritprectest2"
+      title="Second inherit precedence test (checks for precedence of aspects of included modules)"
+      keywords="openmod">
+        <compile files="Modules.java,
+        				InheritPrecTestMain2.java"
+        options="-ext,abc.ja.om">
+        </compile>
+        <run class="InheritPrecTestMain2"/>
+    </ajc-test>
+    
+    <ajc-test num="1129" dir="om/modprectest"
+      title="Module precedence test"
+      keywords="openmod">
+        <compile files="Modules.java,
+        				ModPrecTestMain.java"
+        options="-ext,abc.ja.om">
+        </compile>
+        <run class="ModPrecTestMain"/>
+    </ajc-test>    
+    
+    <ajc-test num="1130" dir="om/modprecaspectcycletest"
+      title="Module-Aspect cycle detection test"
+      keywords="openmod,negative">
+        <compile files="Modules.java,
+        				ModPrecAspectCycleTest.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="0" />
+        </compile>
+    </ajc-test>    
+    
+    <ajc-test num="1131" dir="om/modprecmodcycletest"
+      title="Module-Module cycle detection test"
+      keywords="openmod,negative">
+        <compile files="Modules.java,
+        				ModPrecModCycleTest.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="1-5" />
+        </compile>
+    </ajc-test>        
+    <ajc-test num="1132" dir="om/openclassbasic"
+      title="Simple open class compile"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.ja.om"/>
+    </ajc-test>
+    <ajc-test num="1133" dir="om/openclassbasicparents"
+      title="Simple open class parents"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="19" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1134" dir="om/openclassbasicitd"
+      title="Simple open class ITD"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="27" />
+			<message kind="error" line="28" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1135" dir="om/openclassbasicinclusion"
+      title="Simple open class inclusion"
+      keywords="openmod">
+        <compile files="Main.java,
+        	Modules.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="23" />
+			<message kind="error" line="25" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1136" dir="om/openclassfriendparenttest"
+      title="Friend aspect parent test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			pack/A.java,
+			pack/B.java,
+			pack/I.java,
+			pack/Y.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="20" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1137" dir="om/openclassfrienditdtest"
+      title="Friend aspect ITD test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			pack/A.java,
+			pack/B.java,
+			pack/I.java,
+			pack/Y.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="20" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1138" dir="om/openclassrefinedparents"
+      title="Refined parents positive test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			XPos.java"
+        options="-ext,abc.ja.om">
+		</compile>
+    </ajc-test>
+    <ajc-test num="1139" dir="om/openclassrefinedparents"
+      title="Refined parents negative test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			XNeg.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="2" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1140" dir="om/openclasstoclause"
+      title="To clause positive test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Pos.java"
+        options="-ext,abc.ja.om">
+		</compile>
+    </ajc-test>
+    <ajc-test num="1141" dir="om/openclasstoclause"
+      title="To clause negative test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Neg.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="3" />
+			<message kind="error" line="7" />
+		</compile>
+    </ajc-test>
+    <ajc-test num="1142" dir="om/openclasscpeflag"
+      title="To clause cpe flag positive test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Pos.java"
+        options="-ext,abc.ja.om">
+		</compile>
+    </ajc-test>
+    <ajc-test num="1143" dir="om/openclasscpeflag"
+      title="To clause cpe flag negative test"
+      keywords="openmod">
+        <compile files="Main.java,
+			Modules.java,
+			Neg.java"
+        options="-ext,abc.ja.om">
+			<message kind="error" line="2" />
+		</compile>
+    </ajc-test>
+	<!-- end openmodTests.xml (generated comment, please don't delete) -->
+	
+</suite>
