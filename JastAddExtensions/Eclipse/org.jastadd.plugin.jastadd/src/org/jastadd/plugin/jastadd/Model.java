@@ -3,6 +3,7 @@ package org.jastadd.plugin.jastadd;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -334,7 +335,7 @@ public class Model extends JastAddJModel {
 				String nameWithParan = "(" + linePart[0] + ")";
 				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
 				org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
-				newNode = ((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
+				newNode = (Expr)((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
 						scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression)
 				).getExprNoTransform();
 				newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
@@ -410,22 +411,16 @@ public class Model extends JastAddJModel {
 
 	
 	private void buildJFlexScanner(IProject project, java.util.List<PathEntry> entries) {
-		try {
-			String flexFileName = "Scanner.flex";
-			concatFiles(project, entries, flexFileName);
-			IFile file = project.getFile(flexFileName);
-			flexFileName = file.getFullPath().toOSString();
-			File jFlexFile = new File(flexFileName);
-			if (jFlexFile.exists()) {
-				JFlex.Main.generate(jFlexFile);
-			} else {
-				logError(new Throwable("Cannot find jflex file: " + flexFileName), 
-				"Problem generating scanner");
-			}
-		} catch (IOException e) {
-			logError(e, "Problem generating scanner");
-		} catch (CoreException e) {
-			logError(e, "Problem generating scanner");
+		String flexFileName = "Scanner.flex";
+		concatFiles(project, entries, flexFileName);
+		IFile file = project.getFile(flexFileName); 
+		flexFileName = file.getLocation().toOSString();
+		File jFlexFile = new File(flexFileName);
+		if (jFlexFile.exists()) {
+			JFlex.Main.generate(jFlexFile);
+		} else {
+			logError(new Throwable("Cannot find jflex file: " + flexFileName), 
+			"Problem generating scanner");
 		}
 	}
 
@@ -434,8 +429,10 @@ public class Model extends JastAddJModel {
 		String beaverFileName = "Parser.beaver";
 		try {
 			concatFiles(project, entries, parserFileName);
-			convertToBeaverSpec(project, parserFileName, beaverFileName);
-			beaver.comp.run.Make.main(new String[] {beaverFileName});
+			if (convertToBeaverSpec(project, parserFileName, beaverFileName)) {
+				IFile file = project.getFile(beaverFileName);
+				beaver.comp.run.Make.main(new String[] {file.getLocation().toOSString()});
+			}
 		} catch (IOException e) {
 			logError(e, "Problem generating parser");
 		} catch (CoreException e) {
@@ -445,40 +442,38 @@ public class Model extends JastAddJModel {
 		}
 	}
 	
-	private void concatFiles(IProject project, java.util.List<PathEntry> entries, String targetFileName) throws IOException, CoreException {
-		IFile targetFile = project.getFile(targetFileName);
-		boolean firstFile = true;
-		for (PathEntry entry : entries) {
-			IFile srcFile = project.getFile(entry.getPath());
-			InputStream stream = srcFile.getContents(true);
-			try {
+	private void concatFiles(IProject project, java.util.List<PathEntry> entries, String targetFileName) {
+		try {
+			IFile targetFile = project.getFile(targetFileName);
+			targetFile.delete(true, null);
+			boolean firstFile = true;
+			for (PathEntry entry : entries) {
+				IFile srcFile = project.getFile(entry.getPath());
+				InputStream stream = srcFile.getContents(true);
 				if (firstFile) {
-					if (!targetFile.exists()) {
-						targetFile.create(stream, true, null);
-					} else {
-						targetFile.setContents(stream, true, false, null);
-					}
+					targetFile.create(stream, true, null);
 					firstFile = false;
 				} else {
 					targetFile.appendContents(stream, true, false, null);
 				}
-			} finally {
 				stream.close();
 			}
+		} catch (IOException e) {
+			logError(e, "Problem concatenating files");
+		} catch (CoreException e) {
+			logError(e, "Problem concatenating files");
 		}
 	}
 
   	private boolean convertToBeaverSpec(IProject project, String parserSpec, String beaverSpec) throws CoreException, IOException, Exception {
   		IFile parserFile = project.getFile(parserSpec);
   		IFile beaverFile = project.getFile(beaverSpec);
-
-  		AST.ASTNode.sourceName = parserSpec;
-  		InputStream stream = parserFile.getContents(true);
+  		AST.ASTNode.sourceName = parserFile.getLocation().toOSString();
+  		FileReader stream = new FileReader(parserFile.getLocation().toOSString());
   		parser.GrammarScanner scanner = new parser.GrammarScanner(stream);
-  		stream.close();
   		parser.GrammarParser parser = new parser.GrammarParser();
-
   		Object o = parser.parse(scanner);
+  		stream.close();
   		AST.Grammar root = (AST.Grammar)o;
   		Collection c = root.errorCheck();
   		if(!c.isEmpty()) {
@@ -490,7 +485,7 @@ public class Model extends JastAddJModel {
   		}
   		
   		// Done the old way because root.pp takes a PrintStream
-  		java.io.File bFile = new File(beaverFile.getFullPath().toOSString());
+  		java.io.File bFile = new File(beaverFile.getLocation().toOSString());
   		PrintStream out = new PrintStream(new FileOutputStream(bFile));
   		root.pp(out);
   		out.close();
