@@ -101,6 +101,29 @@
 		name = "Parser Editor">
 	</editor>
 	</extension>
+ <extension
+       point="org.eclipse.ui.views">
+    <view
+          allowMultiple="false"
+          class="org.jastadd.plugin.jastadd.debugger.attributes.AttributeView"
+          id="org.jastadd.plugin.jastadd.debugger.attributes.AttributeView"
+          name="Attribute View">
+    </view>
+ </extension>
+ <extension
+       point="org.eclipse.ui.popupMenus">
+    <viewerContribution
+          id="org.jastadd.plugin.jastadd.debug.contextmenu"
+          targetID="org.eclipse.debug.ui.VariableView">
+       <action
+             class="org.jastadd.plugin.jastadd.debugger.attributes.ShowAttributeAction"
+             id="org.jastadd.plugin.jastadd.debugger.attributes.ShowAttributeAction"
+             label="Show Attributes"
+             menubarPath="additions"
+             tooltip="Show the attributes for this particular variable.">
+       </action>
+    </viewerContribution>
+ </extension>
 	
  	
 </plugin>
