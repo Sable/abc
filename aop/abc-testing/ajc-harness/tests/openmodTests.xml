@@ -700,12 +700,12 @@
       keywords="openmod">
         <compile files="Main.java,
 			Modules.java,
-			A.java,
-			B.java,
-			I.java,
+			pack/A.java,
+			pack/B.java,
+			pack/I.java,
 			pack/Y.java"
         options="-ext,abc.om">
-			<message kind="error" line="20" />
+			<message kind="error" line="21" />
 		</compile>
     </ajc-test>
     <ajc-test num="1137" dir="om/openclassfrienditdtest"
@@ -713,12 +713,12 @@
       keywords="openmod">
         <compile files="Main.java,
 			Modules.java,
-			A.java,
-			B.java,
-			I.java,
+			pack/A.java,
+			pack/B.java,
+			pack/I.java,
 			pack/Y.java"
         options="-ext,abc.om">
-			<message kind="error" line="20" />
+			<message kind="error" line="21" />
 		</compile>
     </ajc-test>
     <ajc-test num="1138" dir="om/openclassrefinedparents"
