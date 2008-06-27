@@ -415,12 +415,12 @@ simple_name_pattern ::= aspectj_reserved_identifier:a;
 }
 
 extend unary_classname_pattern_expr ::= //add CPEFlags. Privileged for now...
-	PRIVILEGED:p unary_classname_pattern_expr:cpe
+	LBRACK:lb PRIVILEGED:p RBRACK unary_classname_pattern_expr:cpe
 		{:
 			RESULT = 
 			parser.nf.CPEFlags(
 				AJFlags.aspectclass(AJFlags.privilegedaspect(Flags.NONE)),
 				cpe,
-				parser.pos(p,cpe));
+				parser.pos(lb,cpe));
 		:}
 	;
