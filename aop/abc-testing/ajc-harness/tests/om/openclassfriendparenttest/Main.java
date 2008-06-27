@@ -1,3 +1,4 @@
+import pack.*;
 
 public class Main {
 
