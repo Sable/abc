@@ -731,6 +731,8 @@ aspect PatternsCodegen
     // called for matching declare-parents patterns, so we manually
     // look at the SuperClassAccess / Implements / SuperInterfaceId
     // attributes, in order to ignore declare-parents.
+    // TODO: This is, however, used in front-end CPE matching (e.g. ExplicitTypePattern.matchesType())
+    // which will be used by other extensions. Try to fix.
     syn Set TypeDecl.superTypes()
     {
         Set set = new HashSet();
@@ -747,7 +749,7 @@ aspect PatternsCodegen
                 superclass.addSuperTypes(set);
             }
         }
-        for (int i = 0; i < getNumImplements; i++) {
+        for (int i = 0; i < getNumImplements(); i++) {
             TypeDecl iface = getImplements(i).type();
             if (!iface.isUnknown() && !set.contains(iface)) {
                 set.add(iface);
