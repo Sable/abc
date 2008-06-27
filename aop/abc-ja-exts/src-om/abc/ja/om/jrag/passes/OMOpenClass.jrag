@@ -62,13 +62,13 @@ aspect OMOpenClass {
 	
 	//just gets the expr from the immediate open class members
 	syn lazy JAOpenClassExpr OMModuleDecl.getShallowOpenClassExpr() {
-		JAOpenClassExpr ret = new JAOpenClassExprBool(true);
+		JAOpenClassExpr ret = new JAOpenClassExprBool(false);
 		//foreach openclassmember
 		for (OMModuleMember member : getOMModuleMemberList()) {
 		//	ret = ret && openclassmember
 			if (member.isOpenClassMember()) {
 				OMOpenClassMember ocMember = (OMOpenClassMember) member;
-				ret = new JAOpenClassExprAnd(ret, ocMember.getOpenClassExpr());
+				ret = new JAOpenClassExprOr(ret, ocMember.getOpenClassExpr());
 			}
 		}
 		return ret;

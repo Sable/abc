@@ -74,7 +74,7 @@ public class AbcExtension extends abc.ja.AbcExtension {
     
     public static boolean isDebugSet(OMDebug debug) {
     	if (debug == OMDebug.ANY_DEBUG) {
-    		return true;
+    		return debugSet.size() > 0;
     	}
         return debugSet.contains(debug);
     }
