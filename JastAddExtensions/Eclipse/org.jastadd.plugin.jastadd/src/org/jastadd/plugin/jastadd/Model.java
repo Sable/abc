@@ -2,26 +2,20 @@ package org.jastadd.plugin.jastadd;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
@@ -41,9 +35,7 @@ import org.jastadd.plugin.jastadd.generated.AST.Problem;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
-import org.jastadd.plugin.jastadd.properties.FolderList;
 import org.jastadd.plugin.jastadd.properties.JastAddBuildConfiguration;
-import org.jastadd.plugin.jastadd.properties.FolderList.FolderEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
@@ -153,6 +145,7 @@ public class Model extends JastAddJModel {
 		
 		int packageEndIndex = packageName.lastIndexOf('.');
 		String tName = packageName.substring(packageEndIndex+1, packageName.length());
+		packageName = packageName.substring(0, packageEndIndex);
 		String innerName = "";
 		int index = tName.indexOf('$');
 		if (index > 0) {
@@ -341,7 +334,7 @@ public class Model extends JastAddJModel {
 				String nameWithParan = "(" + linePart[0] + ")";
 				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
 				org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
-				newNode = (Expr)((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
+				newNode = ((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
 						scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression)
 				).getExprNoTransform();
 				newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
