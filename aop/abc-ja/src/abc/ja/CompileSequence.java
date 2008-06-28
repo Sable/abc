@@ -108,7 +108,7 @@ public class CompileSequence extends abc.main.CompileSequence {
         args[index] = s;
       }
       Program program = new Program();
-      ASTNode.reset();
+      program.state().reset();
 
       program.initBytecodeReader(new BytecodeParser());
       program.initJavaParser(
