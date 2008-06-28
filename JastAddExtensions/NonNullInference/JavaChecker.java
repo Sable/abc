@@ -28,12 +28,13 @@ class JavaChecker extends Frontend {
       return false;
 
     program.updateRemoteAttributeCollectionsFrontend();
-    if(program.hasOption("-test"))
+    Options options = program.options();
+    if(options.hasOption("-test"))
       program.emitTest();
     else
       program.emit();
-    if(program.hasValueForOption("-debug")) {
-      String value = program.getValueForOption("-debug");
+    if(options.hasValueForOption("-debug")) {
+      String value = options.getValueForOption("-debug");
       try {
         String fileName = new File(value).getCanonicalPath();
         for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
@@ -52,19 +53,21 @@ class JavaChecker extends Frontend {
 
   protected void initOptions() {
     super.initOptions();
-    program.addKeyOption("-test");
-    program.addKeyValueOption("-import");
-    program.addKeyOption("-legacysyntax");
-    program.addKeyOption("-disableraw");
-    program.addKeyOption("-defaultnonnull");
-    program.addKeyValueOption("-debug");
+    Options options = program.options();
+    options.addKeyOption("-test");
+    options.addKeyValueOption("-import");
+    options.addKeyOption("-legacysyntax");
+    options.addKeyOption("-disableraw");
+    options.addKeyOption("-defaultnonnull");
+    options.addKeyValueOption("-debug");
   }
   
   protected void processArgs(String[] args) {
-    program.addOptions(args);
-    if(!program.hasOption("-d"))
-      program.addOptions(new String[] { "-d", "inferred" });
-    program.rawEnabled = !program.hasOption("-disableraw");
+    Options options = program.options();
+    options.addOptions(args);
+    if(!options.hasOption("-d"))
+      options.addOptions(new String[] { "-d", "inferred" });
+    program.rawEnabled = !options.hasOption("-disableraw");
   }
 
   protected String name() { return "NonNullInferencer"; }

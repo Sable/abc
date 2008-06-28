@@ -13,11 +13,11 @@ aspect JSR308NonNullInference {
       input.emitUntil(line, column, p);
       // emit annotations 
       if(addNonNull())
-        p.write(Program.nonNullAnnotation());
+        p.write(options().nonNullAnnotation());
       if(addNullable())
-        p.write(Program.nullableAnnotation());
+        p.write(options().nullableAnnotation());
       if(inferedRaw() && !getModifiers().isRawObjectType())
-        p.write(Program.rawAnnotation());
+        p.write(options().rawAnnotation());
 
       // emit upto parameter list inclusive
       for(int i = 0; i <= 2; i++) {
@@ -29,7 +29,7 @@ aspect JSR308NonNullInference {
 
       input.emitUntil(')', p);
       if(inferedRawThis() && !getReceiverModifiers().isRawObjectType() && !getModifiers().isRawThisObjectType())
-        p.write(" " + Program.rawAnnotation());
+        p.write(" " + options().rawAnnotation());
     }
 
     for(int i = 3; i < getNumChild(); i++) {

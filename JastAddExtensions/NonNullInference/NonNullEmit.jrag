@@ -116,7 +116,7 @@ aspect NonNullEmit {
   }
 
   public void Program.emit() {
-    String destinationPath = Program.getValueForOption("-d");
+    String destinationPath = options().getValueForOption("-d");
     for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
       CompilationUnit unit = (CompilationUnit)iter.next();
       if(unit.canBeAnnotated()) {
@@ -177,8 +177,8 @@ aspect NonNullEmit {
   }
 
   public void CompilationUnit.emit(PrintWriter p, Input input) throws java.io.IOException {
-    if(Program.hasValueForOption("-import") && getNumTypeDecl() > 0) {
-      String importString = "import " + Program.getValueForOption("-import") + ";";
+    if(options().hasValueForOption("-import") && getNumTypeDecl() > 0) {
+      String importString = "import " + options().getValueForOption("-import") + ";";
       boolean found = false;
       for(int i = 0; i < getNumImportDecl() && !found; i++)
         if(getImportDecl(i).toString().equals(importString))
@@ -218,65 +218,65 @@ aspect NonNullEmit {
   CompilationUnit implements NonNullAnnotated;
 
   public void CompilationUnit.emitAnnotations(java.io.PrintWriter p) {
-    if(Program.defaultNonNull() && relativeName().endsWith("package-info.java"))
-      p.write(Program.nonNullAnnotation());
+    if(options().defaultNonNull() && relativeName().endsWith("package-info.java"))
+      p.write(options().nonNullAnnotation());
   }
   public void AnnotatedCompilationUnit.emitAnnotations(java.io.PrintWriter p) {
-    if(Program.defaultNonNull() && !getModifiers().explicitNotNull())
-      p.write(Program.nonNullAnnotation());
+    if(options().defaultNonNull() && !getModifiers().explicitNotNull())
+      p.write(options().nonNullAnnotation());
   }
 
   public void ClassDecl.emitAnnotations(java.io.PrintWriter p) {
-    if(isTopLevelType() && Program.defaultNonNull() && !getModifiers().explicitNotNull() && 
+    if(isTopLevelType() && options().defaultNonNull() && !getModifiers().explicitNotNull() && 
       ((Program)compilationUnit().getParent().getParent()).getPackageInfo(packageName()) == null)
-      p.write(Program.nonNullAnnotation());
+      p.write(options().nonNullAnnotation());
   }
   public void InterfaceDecl.emitAnnotations(java.io.PrintWriter p) {
-    if(isTopLevelType() && Program.defaultNonNull() && !getModifiers().explicitNotNull() &&
+    if(isTopLevelType() && options().defaultNonNull() && !getModifiers().explicitNotNull() &&
       ((Program)compilationUnit().getParent().getParent()).getPackageInfo(packageName()) == null)
-      p.write(Program.nonNullAnnotation());
+      p.write(options().nonNullAnnotation());
   }
 
   public void ParameterDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(addNonNull() && !getModifiers().explicitNotNull())
-      p.write(Program.nonNullAnnotation());
+      p.write(options().nonNullAnnotation());
     if(addNullable() && !getModifiers().explicitNullable())
-      p.write(Program.nullableAnnotation());
+      p.write(options().nullableAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write(Program.rawAnnotation());
+      p.write(options().rawAnnotation());
   }
 
   public void VariableDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(firstVariable() == this) {
       if(addNonNull() && !getModifiers().explicitNotNull())
-        p.write(Program.nonNullAnnotation());
+        p.write(options().nonNullAnnotation());
       if(addNullable() && !getModifiers().explicitNullable())
-        p.write(Program.nullableAnnotation());
+        p.write(options().nullableAnnotation());
       if(inferedRaw() && !getModifiers().isRawObjectType())
-        p.write(Program.rawAnnotation());
+        p.write(options().rawAnnotation());
     }
   }
 
   public void FieldDeclaration.emitAnnotations(java.io.PrintWriter p) {
     if(firstVariable() == this) {
       if(addNonNull() && !getModifiers().explicitNotNull())
-        p.write(Program.nonNullAnnotation());
+        p.write(options().nonNullAnnotation());
       if(addNullable() && !getModifiers().explicitNullable())
-        p.write(Program.nullableAnnotation());
+        p.write(options().nullableAnnotation());
       if(inferedRaw() && !getModifiers().isRawObjectType())
-        p.write(Program.rawAnnotation());
+        p.write(options().rawAnnotation());
     }
   }
 
   public void MethodDecl.emitAnnotations(java.io.PrintWriter p) {
     if(addNonNull() && !getModifiers().explicitNotNull())
-      p.write(Program.nonNullAnnotation());
+      p.write(options().nonNullAnnotation());
     if(addNullable() && !getModifiers().explicitNullable())
-      p.write(Program.nullableAnnotation());
+      p.write(options().nullableAnnotation());
     if(inferedRaw() && !getModifiers().isRawObjectType())
-      p.write(Program.rawAnnotation());
+      p.write(options().rawAnnotation());
     if(inferedRawThis() && !getModifiers().isRawThisObjectType())
-      p.write(Program.rawThisAnnotation());
+      p.write(options().rawThisAnnotation());
   }
 
   inh boolean Modifier.removeNullable();
@@ -289,8 +289,8 @@ aspect NonNullEmit {
   eq FieldDeclaration.getModifiers().removeNotNull() = !inferedNonNull();
   eq MethodDecl.getModifiers().removeNullable() = inferedNonNull();
   eq MethodDecl.getModifiers().removeNotNull() = !inferedNonNull();
-  eq TypeDecl.getModifiers().removeNotNull() = !Program.defaultNonNull();
-  eq AnnotatedCompilationUnit.getModifiers().removeNotNull() = !Program.defaultNonNull();
+  eq TypeDecl.getModifiers().removeNotNull() = !options().defaultNonNull();
+  eq AnnotatedCompilationUnit.getModifiers().removeNotNull() = !options().defaultNonNull();
   eq Program.getCompilationUnit().removeNullable() = false;
   eq Program.getCompilationUnit().removeNotNull() =  false;
 
@@ -311,7 +311,7 @@ aspect NonNullEmit {
   public void Annotation.emit(PrintWriter p, Input input) throws java.io.IOException {
     if(decl().name().equals("NonNull") && removeNotNull())
       skipModifier(p, input);
-    else if(decl().name().equals("Nullable") && (removeNullable() || !Program.defaultNonNull()))
+    else if(decl().name().equals("Nullable") && (removeNullable() || !options().defaultNonNull()))
       skipModifier(p, input);
     else
       super.emit(p, input);
@@ -323,94 +323,59 @@ aspect NonNullEmit {
       super.emit(p, input);
   }
   public void NullableModifier.emit(PrintWriter p, Input input) throws java.io.IOException {
-    if(removeNullable() || !Program.defaultNonNull())
+    if(removeNullable() || !options().defaultNonNull())
       skipModifier(p, input);
     else
       super.emit(p, input);
   }
 
 
-  public static String Program.nonNullAnnotation() {
-    if(Program.hasOption("-legacysyntax"))
+  public String Options.nonNullAnnotation() {
+    if(hasOption("-legacysyntax"))
       return "/*@NonNull*/ ";
     else
       return "@NonNull ";
   }
-  public static String Program.nullableAnnotation() {
-    if(Program.hasOption("-legacysyntax"))
+  public String Options.nullableAnnotation() {
+    if(hasOption("-legacysyntax"))
       return "/*@Nullable*/ ";
     else
       return "@Nullable ";
   }
-  public static String Program.rawAnnotation() {
-    if(Program.hasOption("-legacysyntax"))
+  public String Options.rawAnnotation() {
+    if(hasOption("-legacysyntax"))
       return "/*@Raw*/ ";
     else
       return "@Raw ";
   }
-  public static String Program.rawThisAnnotation() {
-    if(Program.hasOption("-legacysyntax"))
+  public String Options.rawThisAnnotation() {
+    if(hasOption("-legacysyntax"))
       return "/*@RawThis*/ ";
     else
       return "@RawThis ";
   }
 
-  public static boolean Program.defaultNonNull() {
-    return Program.hasOption("-defaultnonnull");
+  public boolean Options.defaultNonNull() {
+    return hasOption("-defaultnonnull");
   }
 
   syn boolean ParameterDeclaration.addNonNull() =
-    !Program.defaultNonNull() && inferedNonNull();
+    !options().defaultNonNull() && inferedNonNull();
   syn boolean VariableDeclaration.addNonNull() =
-    !Program.defaultNonNull() && inferedNonNull();
+    !options().defaultNonNull() && inferedNonNull();
   syn boolean FieldDeclaration.addNonNull() =
-    !Program.defaultNonNull() && inferedNonNull();
+    !options().defaultNonNull() && inferedNonNull();
   syn boolean MethodDecl.addNonNull() =
-    !Program.defaultNonNull() && inferedNonNull();
+    !options().defaultNonNull() && inferedNonNull();
 
   syn boolean ParameterDeclaration.addNullable() =
-    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+    options().defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
   syn boolean VariableDeclaration.addNullable() =
-    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+    options().defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
   syn boolean FieldDeclaration.addNullable() =
-    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+    options().defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
   syn boolean MethodDecl.addNullable() =
-    Program.defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
+    options().defaultNonNull() && getModifiers().mayBeNotNull() && !inferedNonNull();
   
-  /*
-  // refine pretty printer to include infered annotations
-  refine PrettyPrint public void ParameterDeclaration.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    PrettyPrint.ParameterDeclaration.toString(s);
-  }
-  refine PrettyPrint public void VariableDeclaration.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    PrettyPrint.VariableDeclaration.toString(s);
-  }
-  refine PrettyPrint public void FieldDeclaration.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    PrettyPrint.FieldDeclaration.toString(s);
-  }
-  refine PrettyPrint public void MethodDecl.toString(StringBuffer s) {
-    if(addNonNull())
-      s.append(Program.nonNullAnnotation());
-    if(inferedRaw())
-      s.append(Program.rawAnnotation());
-    if(inferedRawThis())
-      s.append(Program.rawThisAnnotation());
-    PrettyPrint.MethodDecl.toString(s);
-  }
-  */
-
-
 }
 

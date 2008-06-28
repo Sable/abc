@@ -619,7 +619,7 @@ aspect NonNullInference {
   }
 
   syn lazy boolean CompilationUnit.canBeAnnotated() = 
-    fromSource() && ((Program)getParent().getParent()).files().contains(relativeName());
+    fromSource() && options().files().contains(relativeName());
 
 
   syn lazy VariableDeclaration VariableDeclaration.firstVariable() {
