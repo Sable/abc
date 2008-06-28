@@ -42,7 +42,7 @@ aspect EmitJimpleRefinements {
       needAddclass = true;
     }
     if(needAddclass) {
-      if(Program.verbose())
+      if(options().verbose())
         System.out.println("Creating from source " + jvmName());        
       sc = new SootClass(jvmName());
       sc.setResolvingLevel(SootClass.DANGLING);
@@ -52,7 +52,7 @@ aspect EmitJimpleRefinements {
   }
 
   refine EmitJimple eq InterfaceDecl.sootClass() {
-    if(Program.verbose())
+    if(options().verbose())
       System.out.println("Creating from source " + jvmName());
     SootClass sc = SootResolver.v().makeClassRef(jvmName());
     sc.setModifiers(sootTypeModifiers()); // turn it into an interface
@@ -66,7 +66,7 @@ aspect EmitJimpleRefinements {
       return sootClass();
     }
     else {
-      if(Program.verbose())
+      if(options().verbose())
         System.out.println("Loading .class file " + jvmName());
       return SootResolver.v().makeClassRef(jvmName());
       /*
