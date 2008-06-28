@@ -29,19 +29,15 @@ aspect IntertypeConstructorPrettyPrint {
         getException(i).toString(s);
       }
     }
-    s.append(" {\n");
-    indent++;
+    s.append(" {");
     if(hasConstructorInvocation()) {
-      s.append(indent());
       getConstructorInvocation().toString(s);
     }
     for(int i = 0; i < getBlock().getNumStmt(); i++) {
-      s.append(indent());
       getBlock().getStmt(i).toString(s);
     }
-    indent--;
     s.append(indent());
-    s.append("}\n");
+    s.append("}");
   }
 
 }

@@ -40,7 +40,7 @@ public class JavaCompiler extends Frontend {
   public void generate() {
     program.generateIntertypeDecls();
     program.transformation();
-    if(Program.verbose())
+    if(program.options().verbose())
       System.out.println(program.toString());
 
     for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
@@ -59,6 +59,6 @@ public class JavaCompiler extends Frontend {
 
   protected void initOptions() {
     super.initOptions();
-    program.addKeyOption("-weave_inline");
+    program.options().addKeyOption("-weave_inline");
   }
 }
