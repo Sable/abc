@@ -42,6 +42,7 @@ import abc.ja.da.jrag.CompilationUnit;
 import abc.ja.da.jrag.JavaParser;
 import abc.ja.da.jrag.Problem;
 import abc.ja.da.jrag.Program;
+import abc.ja.da.jrag.Options;
 import abc.main.AbcExtension;
 import abc.main.AbcTimer;
 import abc.main.CompilerFailedException;
@@ -113,11 +114,12 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
         }
       );
 
-      program.initOptions();
-      program.addKeyValueOption("-classpath");
-      program.addKeyOption("-verbose");
-      program.addOptions(args);
-      Collection files = program.files();
+      Options options = program.options();
+      options.initOptions();
+      options.addKeyValueOption("-classpath");
+      options.addKeyOption("-verbose");
+      options.addOptions(args);
+      Collection files = options.files();
 
       for(Iterator iter = files.iterator(); iter.hasNext(); ) {
         String name = (String)iter.next();
@@ -139,7 +141,7 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
             throw new CompilerFailedException("There were errors.");
         }
       }
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println("Error checking");
       ArrayList errors = new ArrayList();
       ArrayList warnings = new ArrayList();
