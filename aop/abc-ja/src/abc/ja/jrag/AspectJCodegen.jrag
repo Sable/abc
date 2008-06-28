@@ -188,7 +188,7 @@ aspect AspectJCodegen {
       return sootClass();
     }
     else {
-      if(Program.verbose())
+      if(options().verbose())
         System.out.println("Loading .class file " + jvmName());
       if(compilationUnit().weavable()) {
         SootClass sc = Scene.v().loadClass(jvmName(), SootClass.BODIES);

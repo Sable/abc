@@ -119,13 +119,14 @@ public class CompileSequence extends abc.main.CompileSequence {
         }
       );
 
-      program.initOptions();
-      program.addKeyValueOption("-classpath");
-      program.addKeyOption("-verbose");
-      program.addOptions(args);
-      Collection files = program.files();
+      Options options = program.options();
+      options.initOptions();
+      options.addKeyValueOption("-classpath");
+      options.addKeyOption("-verbose");
+      options.addOptions(args);
+      Collection files = options.files();
 
-      //program.addOptions(new String[] { "-verbose" });
+      //options.addOptions(new String[] { "-verbose" });
 
       for(Iterator iter = files.iterator(); iter.hasNext(); ) {
         String name = (String)iter.next();
@@ -156,7 +157,7 @@ public class CompileSequence extends abc.main.CompileSequence {
             throw new CompilerFailedException("There were errors.");
         }
       }
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println("Error checking");
       ArrayList errors = new ArrayList();
       ArrayList warnings = new ArrayList();
@@ -177,17 +178,17 @@ public class CompileSequence extends abc.main.CompileSequence {
           }
       }
 
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println("Weaving inter-type declarations");
       program.generateIntertypeDecls();
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println("Flattening Nested Classes");
       program.transformation();
 
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println("Jimplify1");
       program.jimplify1();
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println("Jimplify2");
       program.jimplify2();
 
