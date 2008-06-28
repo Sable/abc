@@ -33,7 +33,7 @@ aspect EmitJimple {
       return sootClass();
     }
     else {
-      if(Program.verbose())
+      if(options().verbose())
         System.out.println("Loading .class file " + jvmName());
       SootClass sc = Scene.v().loadClass(jvmName(), SootClass.SIGNATURES);
       sc.setLibraryClass();
@@ -63,7 +63,7 @@ aspect EmitJimple {
   
   syn lazy SootClass TypeDecl.sootClass() = null;
   eq ClassDecl.sootClass() {
-    if(Program.verbose())
+    if(options().verbose())
       System.out.println("Creating from source " + jvmName());
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers()); 
     Scene.v().addClass(sc);
@@ -74,7 +74,7 @@ aspect EmitJimple {
     return sc;
   }
   eq InterfaceDecl.sootClass() {
-    if(Program.verbose())
+    if(options().verbose())
       System.out.println("Creating from source " + jvmName());
     SootClass sc = new SootClass(jvmName(), sootTypeModifiers());
     Scene.v().addClass(sc);

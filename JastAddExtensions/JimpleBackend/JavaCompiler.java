@@ -15,6 +15,7 @@ import beaver.Symbol;
 
 import soot.*;
 import soot.options.*;
+import soot.options.Options;
 
 class JavaCompiler extends Frontend {
 
@@ -44,15 +45,15 @@ class JavaCompiler extends Frontend {
     soot.Main main = soot.Main.v();
     ArrayList list = new ArrayList();
     list.add("-d");
-    if(Program.hasValueForOption("-d"))
-      list.add(Program.getValueForOption("-d"));
+    if(program.options().hasValueForOption("-d"))
+      list.add(program.options().getValueForOption("-d"));
     else
       list.add(".");
-    if(Program.hasValueForOption("-classpath")) {
+    if(program.options().hasValueForOption("-classpath")) {
       list.add("-soot-class-path");
-      list.add(Program.getValueForOption("-classpath"));
+      list.add(program.options().getValueForOption("-classpath"));
     }
-    /*if(Program.hasOption("-verbose"))
+    /*if(program.options().hasOption("-verbose"))
       list.add("-verbose");*/
 
     String[] argList = new String[list.size()];
@@ -73,7 +74,7 @@ class JavaCompiler extends Frontend {
     Scene.v().loadBasicClasses();
     Scene.v().loadDynamicClasses();
 
-    if(Program.hasOption("-jimple"))
+    if(program.options().hasOption("-jimple"))
       Options.v().set_output_format(Options.output_format_jimple);
 
     PhaseOptions.v().setPhaseOption("jop", "enabled");
@@ -84,7 +85,7 @@ class JavaCompiler extends Frontend {
 
   protected void initOptions() {
     super.initOptions();
-    program.addKeyOption("-jimple");
+    program.options().addKeyOption("-jimple");
   }
 
   protected void processNoErrors(CompilationUnit unit) {
