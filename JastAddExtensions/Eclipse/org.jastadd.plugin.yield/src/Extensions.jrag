@@ -1,0 +1,23 @@
+aspect Extensions {
+  // Content Outline
+  eq IntertypeMethodDecl.contentOutlineLabel() {
+     StringBuffer res = new StringBuffer(type().typeName());
+     res.append(" " + introducedType().name() + "." + name() + "(");
+     for (int i = 0; i < getNumParameter(); i++) {
+       res.append(getParameter(i).type().typeName());
+       if (i != 0) {
+         res.append(",");
+       }
+     } 
+     res.append(")");
+     return res.toString();
+  }
+  
+  // Folding
+  eq IntertypeMethodDecl.hasFolding() = getEndLine() - getBeginLine() > 4;
+  
+  // Hovering
+  eq IntertypeMethodDecl.hoverComment() = "IntertypeMethodDecl: " + super.hoverComment();
+  
+ 
+}
