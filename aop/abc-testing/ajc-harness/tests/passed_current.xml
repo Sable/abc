@@ -5762,13 +5762,13 @@
 		</compile>
     </ajc-test>
 <ajc-test title="Friend aspect parent test" num="1136" keywords="openmod" dir="om/openclassfriendparenttest">
-        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    A.java,    B.java,    I.java,    pack/Y.java">
-			<message line="20" kind="error"></message>
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    pack/A.java,    pack/B.java,    pack/I.java,    pack/Y.java">
+			<message line="21" kind="error"></message>
 		</compile>
     </ajc-test>
 <ajc-test title="Friend aspect ITD test" num="1137" keywords="openmod" dir="om/openclassfrienditdtest">
-        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    A.java,    B.java,    I.java,    pack/Y.java">
-			<message line="20" kind="error"></message>
+        <compile options="-ext,abc.om" files="Main.java,    Modules.java,    pack/A.java,    pack/B.java,    pack/I.java,    pack/Y.java">
+			<message line="21" kind="error"></message>
 		</compile>
     </ajc-test>
 <ajc-test title="Refined parents positive test" num="1138" keywords="openmod" dir="om/openclassrefinedparents">
