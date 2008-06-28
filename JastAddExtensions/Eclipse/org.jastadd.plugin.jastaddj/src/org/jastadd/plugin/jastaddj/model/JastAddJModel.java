@@ -609,7 +609,7 @@ public class JastAddJModel extends JastAddModel {
 				return new parser.JavaParser().parse(is, fileName);
 			}
 		});
-		program.initOptions();
+		program.options().initOptions();
 		try {
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-bootclasspath");
@@ -631,7 +631,7 @@ public class JastAddJModel extends JastAddModel {
 		Program realProgram = (Program) program;
 
 		// Init
-		Program.initOptions();
+		program.initOptions();
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");

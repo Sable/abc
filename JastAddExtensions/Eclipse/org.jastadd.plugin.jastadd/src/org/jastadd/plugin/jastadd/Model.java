@@ -110,10 +110,10 @@ public class Model extends JastAddJModel {
 					}
 				}
 		);
-		Program.initOptions();
-		program.addKeyValueOption("-classpath");
-		program.addKeyValueOption("-bootclasspath");
-		program.addKeyValueOption("-d");
+		program.options().initOptions();
+		program.options().addKeyValueOption("-classpath");
+		program.options().addKeyValueOption("-bootclasspath");
+		program.options().addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		try {
 			Map<String,IFile> map = sourceMap(project, buildConfiguration);
@@ -129,10 +129,10 @@ public class Model extends JastAddJModel {
 	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program)program;
 		// Init
-		Program.initOptions();
-		program.addKeyValueOption("-classpath");
-		program.addKeyValueOption("-bootclasspath");
-		program.addKeyValueOption("-d");
+		realProgram.options().initOptions();
+		realProgram.options().addKeyValueOption("-classpath");
+		realProgram.options().addKeyValueOption("-bootclasspath");
+		realProgram.options().addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
 	}	
 	
@@ -213,13 +213,19 @@ public class Model extends JastAddJModel {
 		}
 		// Find attribute declaration
 		AttributeDecl aDecl = null;
+		//if(decl.name().equals("Block") && decl.memberMethods("b").isEmpty())
+		//	System.out.println("Strange");
 		for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
 			MethodDecl mDecl = (MethodDecl)itr.next();
+		//	System.out.println(mDecl.signature());
 			if (mDecl instanceof AttributeDecl) {
 				aDecl = (AttributeDecl)mDecl;
 				nameList.add(aDecl.name());
 			}
 		}
+		/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+		}*/
 		return nameList;
 	}
 	

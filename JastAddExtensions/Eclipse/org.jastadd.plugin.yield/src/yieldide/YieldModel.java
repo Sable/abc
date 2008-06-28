@@ -73,7 +73,7 @@ public class YieldModel extends JastAddJModel {
 					}
 				}
 		);
-		Program.initOptions();
+		program.initOptions();
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");
@@ -93,7 +93,7 @@ public class YieldModel extends JastAddJModel {
 		Program realProgram = (Program)program;
 
 		// Init
-		Program.initOptions();
+		program.initOptions();
 		program.addKeyValueOption("-classpath");
 		program.addKeyValueOption("-bootclasspath");
 		program.addKeyValueOption("-d");

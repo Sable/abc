@@ -2,6 +2,23 @@ aspect Compile {
   Program implements org.jastadd.plugin.jastaddj.AST.IProgram;
   TypeDecl implements org.jastadd.plugin.jastaddj.AST.ITypeDecl;
   ClassDecl implements org.jastadd.plugin.jastaddj.AST.IClassDecl;
+  
+  
+  public Collection Program.files() {
+    return options().files();
+  }
+  public void Program.addKeyValueOption(String name) {
+    options().addKeyValueOption(name);
+  }	
+	
+  public void Program.addOptions(String[] options) {
+    options().addOptions(options);
+  }
+
+  public void Program.initOptions() {
+    options().initOptions();
+  }
+  
 
   // flush 
   public void Program.flushSourceFiles(java.util.Collection fileNames) {
@@ -11,7 +28,7 @@ aspect Compile {
     	String pathName = cu.pathName();
     	if(!cu.fromSource() || !fileNames.contains(pathName)) {
     		list.add(cu);
-    		files.remove(pathName);
+    		files().remove(pathName);
     	}
     }
     setCompilationUnitList(list);
