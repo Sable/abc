@@ -8,18 +8,19 @@ public class PrettyPrintTest56 {
 
   public static void main(String args[]) {
     Program program = new Program();
-    program.initOptions();
-    program.addKeyValueOption("-classpath");
-    program.addKeyValueOption("-sourcepath");
-    program.addKeyValueOption("-bootclasspath");
-    program.addKeyValueOption("-extdirs");
-    program.addKeyValueOption("-d");
-    program.addKeyOption("-verbose");
-    program.addKeyOption("-no_cache_cycle");
-    program.addKeyOption("-no_visit_check");
-    program.addKeyOption("-no_component_check");
+    Options options = program.options();
+    options.initOptions();
+    options.addKeyValueOption("-classpath");
+    options.addKeyValueOption("-sourcepath");
+    options.addKeyValueOption("-bootclasspath");
+    options.addKeyValueOption("-extdirs");
+    options.addKeyValueOption("-d");
+    options.addKeyOption("-verbose");
+    options.addKeyOption("-no_cache_cycle");
+    options.addKeyOption("-no_visit_check");
+    options.addKeyOption("-no_component_check");
     
-    program.addOptions(args);
+    options.addOptions(args);
     Collection files = new ArrayList();
     files.add("test/ASTNode.java");
     files.add("test/Opt.java");
@@ -40,7 +41,7 @@ public class PrettyPrintTest56 {
     }
 
     if(program.errorCheck()) {
-      if(Program.verbose())
+      if(options.verbose())
         System.out.println(program);
     }
     else {

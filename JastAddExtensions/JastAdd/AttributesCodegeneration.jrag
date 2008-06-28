@@ -46,7 +46,7 @@ aspect GenerateSynCode {
     else {
       if(hasEqBody()) {
         /* TODO:
-           if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+           if(options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
            aspectMethod = introducedType().addMemberMethod(aspectMethod);
            else
            aspectMethod = hostAspect().addMemberMethod(aspectMethod);
@@ -71,7 +71,7 @@ aspect GenerateSynCode {
   // code gen inherited attributes
 
   public void InhDecl.createIntertypeMethod(TypeDecl introducedType) {
-    if(!Program.hasOption("-inh_in_astnode")) {
+    if(!options().hasOption("-inh_in_astnode")) {
       addDefiningInterface();
     }
     addInterfaceTagging();
@@ -148,20 +148,20 @@ aspect GenerateSynCode {
     
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
-    if(isLazy || !Program.hasOption("-no_visit_check"))
+    if(isLazy || !options().hasOption("-no_visit_check"))
       addParameterStructure(statements);
     if(isLazy)
       addComputedCheck(statements, typeDecl);
       
-    if (!Program.hasOption("-no_component_check")) 
+    if (!options().hasOption("-no_component_check")) 
       addInterruptedCircleDeclaration(statements);
     
-    if(!Program.hasOption("-no_visit_check")) {
+    if(!options().hasOption("-no_visit_check")) {
       addCheckVisited(statements, typeDecl);
       addSetVisited(statements, typeDecl);
     }
     
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
       addCheckInterruptCircle(statements);
     
     if(isLazy)
@@ -173,11 +173,11 @@ aspect GenerateSynCode {
       addStoreNTAValue(statements, typeDecl);
     }
     
-    if(!Program.hasOption("-no_visit_check")) {
+    if(!options().hasOption("-no_visit_check")) {
       addClearVisited(statements, typeDecl);
     }
     
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
     	  addClearInterruptedCircle(statements);
     
     addReturnStmt(statements, typeDecl, isLazy);
@@ -317,22 +317,22 @@ aspect GenerateSynCode {
     
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
-    if(isLazy() || !Program.hasOption("-no_visit_check"))
+    if(isLazy() || !options().hasOption("-no_visit_check"))
       addParameterStructure(statements);
     if(isLazy())
       addComputedCheck(statements, typeDecl);
       
-    if (!Program.hasOption("-no_component_check")) 
+    if (!options().hasOption("-no_component_check")) 
       addInterruptedCircleDeclaration(statements);
     
-    if(!Program.hasOption("-no_visit_check")) {
+    if(!options().hasOption("-no_visit_check")) {
       // if(visited) throw new RuntimeException("Circular definition...");
       addCheckVisited(statements, typeDecl);
       // visited = true;
       addSetVisited(statements, typeDecl);
     }
       
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
       addCheckInterruptCircle(statements);
     
     if(isLazy())
@@ -344,11 +344,11 @@ aspect GenerateSynCode {
       addStoreNTAValue(statements, typeDecl);
     }
     
-    if(!Program.hasOption("-no_visit_check"))
+    if(!options().hasOption("-no_visit_check"))
       // visited = false;
       addClearVisited(statements, typeDecl);
       
-     if (!Program.hasOption("-no_component_check"))
+     if (!options().hasOption("-no_component_check"))
     	  addClearInterruptedCircle(statements);
     
     addReturnStmt(statements, typeDecl, isLazy());
@@ -955,7 +955,7 @@ aspect GenerateSynCode {
       if(typeDecl instanceof ClassDecl) {
         ClassDecl classDecl = (ClassDecl)typeDecl;
 
-        if(!Program.hasOption("-inh_in_astnode")) {
+        if(!options().hasOption("-inh_in_astnode")) {
           // Add implements tag
           classDecl.addImplementedInterface(definingInterfaceName());
         }
@@ -1083,7 +1083,7 @@ aspect GenerateSynCode {
               introducedType(),
               this
             );
-          if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+          if(options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
             return introducedType().addMemberMethod(methodDecl);
           else
             return hostType().addMemberMethod(methodDecl);
@@ -1194,7 +1194,7 @@ aspect GenerateSynCode {
   }
     
   protected void InhDecl.addSearchAncestorForEquation(List list) {
-    if(Program.hasOption("-inh_in_astnode")) {
+    if(options().hasOption("-inh_in_astnode")) {
       return;
     }
     // TODO: make this only call getParent() when other policy for inherited attributes
@@ -1275,7 +1275,7 @@ aspect GenerateSynCode {
   }
   
   protected Expr InhDecl.createComputeCall() {
-    if(Program.hasOption("-inh_in_astnode")) {
+    if(options().hasOption("-inh_in_astnode")) {
       List args = new List();
       args.add(new ThisAccess("this"));
       args.add(new NullLiteral("null"));

@@ -103,11 +103,9 @@ aspect JastAddPrettyPrint {
       getASTChild(i).toString(s);
     }
     s.append(" ;\n");
-    indent++;
     for(int i=0; i < getNumBodyDecl(); i++) {
       getBodyDecl(i).toString(s);
     }
-    indent--;
   }
 
   public void ASTChild.toString(StringBuffer s) {

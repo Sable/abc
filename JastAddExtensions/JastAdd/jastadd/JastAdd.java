@@ -44,12 +44,13 @@ public class JastAdd extends Frontend {
   
   protected void initOptions() {
     super.initOptions();
-    program.addKeyOption("-no_cache_cycle");
-    program.addKeyOption("-no_visit_check");
-    program.addKeyOption("-no_component_check");
-    program.addKeyValueOption("-package");
+    Options options = program.options();
+    options.addKeyOption("-no_cache_cycle");
+    options.addKeyOption("-no_visit_check");
+    options.addKeyOption("-no_component_check");
+    options.addKeyValueOption("-package");
 
-    program.addKeyOption("-weave_inline");
-    program.addKeyOption("-inh_in_astnode");
+    options.addKeyOption("-weave_inline");
+    options.addKeyOption("-inh_in_astnode");
   }
 }

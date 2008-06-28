@@ -334,7 +334,7 @@ aspect Rewrite {
     // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
     MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new Opt(getBlock().fullCopy()), introducedType(), enclosingBodyDecl());
 
-    if(Program.hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+    if(options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
       return introducedType().addMemberMethod(decl);
     else
       return enclosingBodyDecl().hostType().addMemberMethod(decl);
@@ -523,12 +523,10 @@ aspect Rewrite {
   public void RewriteDecl.toString(StringBuffer s) {
     s.append(indent() + "rewrite ");
     getAccess().toString(s);
-    s.append(" {\n");
-    indent++;
+    s.append(" {");
     for(int i = 0; i < getNumRewrite(); i++)
       getRewrite(i).toString(s);
-    indent--;
-    s.append(indent() + "}\n");
+    s.append(indent() + "}");
   }
 
   public void UnconditionalRewrite.toString(StringBuffer s) {

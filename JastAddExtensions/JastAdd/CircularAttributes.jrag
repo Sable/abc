@@ -19,7 +19,7 @@ aspect CircularAttributes {
       addComputedCheck(statements, typeDecl);
     }
     
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
       addComponentCheck(statements,typeDecl);
     
     // lazily add bottom value initialization (may depend on other lazy attributes)
@@ -63,7 +63,7 @@ aspect CircularAttributes {
       addComputedCheck(statements, typeDecl);
     }
     
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
       addComponentCheck(statements,typeDecl);
       
     // lazily add bottom value initialization (may depend on other lazy attributes)
@@ -168,7 +168,7 @@ aspect CircularAttributes {
     // visited = true;
     addSetVisited(list, typeDecl);
     
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
       addAddToComponent(list,typeDecl);
     
     // do { DO_BLOCK } while(CHANGE);
@@ -184,7 +184,7 @@ aspect CircularAttributes {
     addClearVisited(list, typeDecl);
     // computed = true;
     addSetComputed(list, typeDecl);
-    if(!Program.hasOption("-no_cache_cycle"))
+    if(!options().hasOption("-no_cache_cycle"))
       // LAST_CYCLE = true; compute(...); LAST_CYCLE = false; 
       addInitCacheCycle(list, targetMethod);
     // IN_CIRCLE = false;
@@ -263,12 +263,12 @@ aspect CircularAttributes {
 
     // BLOCK - compute next iteration of value
     
-    if(!Program.hasOption("-no_cache_cycle"))
+    if(!options().hasOption("-no_cache_cycle"))
       // if(LAST_CYCLE) { computed = true; return compute( ... ); }
       addCheckCacheCycle(list, typeDecl, targetMethod);
     // visited = true;
     
-    if (!Program.hasOption("-no_component_check"))
+    if (!options().hasOption("-no_component_check"))
       addAddToComponent(list,typeDecl);
     
     addSetVisited(list, typeDecl);

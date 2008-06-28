@@ -300,7 +300,7 @@ aspect ASTGrammar {
          );
          }
        */
-    if(Program.hasOption("-jjtree")) {
+    if(options().hasOption("-jjtree")) {
       bodyDeclList.add(
           new ConstructorDecl(
             new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
