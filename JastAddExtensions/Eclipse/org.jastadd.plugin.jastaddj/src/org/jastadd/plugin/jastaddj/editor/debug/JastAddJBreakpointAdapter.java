@@ -86,14 +86,12 @@ public class JastAddJBreakpointAdapter implements
 					}
 				}
 
-				Map attributes = new HashMap();
+				Map<String, IPath> attributes = new HashMap<String, IPath>();
 				if (storagePath != null)
 					attributes.put(JastAddStorageAnnotationModel.STORAGE_PATH, storagePath);
 				IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource,
-						typeName, lineNumber + 1, -1, -1, 0, true,
-						attributes);
-				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(
-						lineBreakpoint);
+						typeName, lineNumber + 1, -1, -1, 0, true, attributes);
+				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
 			}
 		}
 

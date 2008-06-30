@@ -125,5 +125,32 @@
     </viewerContribution>
  </extension>
 	
+	<!-- Breakpoint management -->
+	<extension point = "org.eclipse.ui.editorActions">
+	<editorContribution
+		targetID = "org.jastadd.plugin.jastadd.JastAddAspectEditor"
+		id = "org.jastadd.plugin.jastadd.JastAddBreakpointRulerActions">
+		<action
+			label = "Add Breakpoint"
+			class = "org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+			actionID = "RulerDoubleClick"
+			id = "org.jastadd.plugin.jastaddj.ManageBreakpointRulerAction">
+		</action>
+	</editorContribution>
+	</extension>
+
+	<extension point = "org.eclipse.debug.core.breakpoints">
+	<breakpoint
+		class = "org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint"
+		id = "org.jastadd.plugin.jastadd.JastAddBreakpoint"
+		markerType = "org.jastadd.plugin.jastadd.JastAddBreakpointMarker"
+		name = "JastAdd Breakpoint"/>
+	</extension>
+	
+	<extension point = "org.eclipse.core.resources.markers"
+		id = "org.jastadd.plugin.jastadd.JastAddBreakpointMarker" 
+		name = "JastAdd Breakpoint Marker">
+	<super type = "org.eclipse.debug.core.breakpointMarker"/>
+	</extension>
  	
 </plugin>
