@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -240,8 +241,8 @@ public class Model extends JastAddJModel {
 				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
 
 				// Generate scanner and parser
-				buildJFlexScanner(project, jastAddBuildConfig.flex.entries());
-				buildBeaverParser(project, jastAddBuildConfig.parser.entries());
+				buildJFlexScanner(project, jastAddBuildConfig);
+				buildBeaverParser(project, jastAddBuildConfig);
 
 				Program program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
@@ -371,11 +372,13 @@ public class Model extends JastAddJModel {
 		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
 		
 		// Regenerate scanner or parser if there was a change in a flex or parser file
+		/*
 		if (fileName.endsWith(".flex")) {
-			buildJFlexScanner(project, jastAddBuildConfig.flex.entries());
+			buildJFlexScanner(project, jastAddBuildConfig);
 		} else if (fileName.endsWith(".parser")) {
-			buildBeaverParser(project, jastAddBuildConfig.parser.entries());
+			buildBeaverParser(project, jastAddBuildConfig);
 		}
+		*/
 		
 		IProgram program = getProgram(project);
 		if(program instanceof Program) {
@@ -416,9 +419,9 @@ public class Model extends JastAddJModel {
 	}
 
 	
-	private void buildJFlexScanner(IProject project, java.util.List<PathEntry> entries) {
-		String flexFileName = "Scanner.flex";
-		concatFiles(project, entries, flexFileName);
+	private void buildJFlexScanner(IProject project, JastAddBuildConfiguration buildConfig) {
+		String flexFileName = buildConfig.flex.getOutputFolder() + File.separator + "Scanner.flex";
+		concatFiles(project, buildConfig.flex.entries(), flexFileName);
 		IFile file = project.getFile(flexFileName); 
 		flexFileName = file.getLocation().toOSString();
 		File jFlexFile = new File(flexFileName);
@@ -430,11 +433,11 @@ public class Model extends JastAddJModel {
 		}
 	}
 
-	private void buildBeaverParser(IProject project, java.util.List<PathEntry> entries) {
-		String parserFileName = "Parser.parser";
-		String beaverFileName = "Parser.beaver";
+	private void buildBeaverParser(IProject project, JastAddBuildConfiguration buildConfig) {
+		String parserFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.parser";
+		String beaverFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.beaver";
 		try {
-			concatFiles(project, entries, parserFileName);
+			concatFiles(project, buildConfig.parser.entries(), parserFileName);
 			if (convertToBeaverSpec(project, parserFileName, beaverFileName)) {
 				IFile file = project.getFile(beaverFileName);
 				beaver.comp.run.Make.main(new String[] {file.getLocation().toOSString()});
