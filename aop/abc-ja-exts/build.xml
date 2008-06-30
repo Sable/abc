@@ -37,7 +37,7 @@
 
 <!-- compile sources -->
 <target name="build" depends="gen">
-        <ant dir="${abc-ja.loc}" />
+        <antcall target="build-ja"/>
         <mkdir dir="${basedir}/classes"/>
         <!-- compile sources compiler="jikes" nowarn="true" -->
         <javac debug="true"
@@ -466,11 +466,15 @@
 </target>
 
 <target name="clobber" depends="clean">
-  <ant dir="${abc-ja.loc}" target="clobber"/>
+  <antcall target="build-ja">
+    <param name="target" value="clobber"/>
+  </antcall>
 </target>
 	
 <target name="jars" depends="build">
-  <ant dir="${abc-ja.loc}" target="jars"/>
+  <antcall target="build-ja">
+    <param name="target" value="jars"/>
+  </ant>
   <mkdir dir="${basedir}/lib"/>
   <jar destfile="${abc.loc}/lib/abc-ja-exts.jar" basedir="${basedir}/classes" includes="**/*.class" />
   <jar destfile="${basedir}/lib/abc-ja-exts.jar" basedir="${basedir}/classes" includes="**/*.class" />
@@ -510,7 +514,7 @@
   <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
   </copy>
-        <ant dir="${abc-ja.loc}" />
+        <antcall target="build-ja" />
         <mkdir dir="${basedir}/classes"/>
         <!-- compile sources compiler="jikes" nowarn="true" -->
         <javac debug="true"
@@ -575,6 +579,13 @@
           location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
     </classpath>
   </java>
+</target>
+
+<target name="build-ja" depends="settings">
+  <property name="target" value="build"/>
+  <ant dir="${abc-ja.loc}" target="${target}">
+    <property name="package" value="abc.ja.jrag"/>
+  </ant>
 </target>
 </project>
 
