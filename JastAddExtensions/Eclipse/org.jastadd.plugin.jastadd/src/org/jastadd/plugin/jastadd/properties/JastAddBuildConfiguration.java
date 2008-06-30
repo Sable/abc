@@ -21,6 +21,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.jastadd.plugin.jastadd.properties.FolderList.FileEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.FolderEntry;
+import org.jastadd.plugin.jastadd.properties.FolderList.ParserFolderList;
 import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.Pattern;
 import org.w3c.dom.Attr;
@@ -59,15 +60,14 @@ public class JastAddBuildConfiguration {
 
 
 	public FolderList flex = new FolderList(FLEX_RESOURCE, FLEX_FILTER);
-	public FolderList parser = new FolderList(PARSER_RESOURCE, PARSER_FILTER);
+	public FolderList parser = new ParserFolderList(PARSER_RESOURCE, PARSER_FILTER);
 
 	public JastAddBuildConfiguration(IProject project) {
-		flex = readBuildConfiguration(project, FLEX_RESOURCE, FLEX_FILTER);
-		parser = readBuildConfiguration(project, PARSER_RESOURCE, PARSER_FILTER);
-
+		flex = readBuildConfiguration(project, FLEX_RESOURCE, FLEX_FILTER, false);
+		parser = readBuildConfiguration(project, PARSER_RESOURCE, PARSER_FILTER, true);
 	}
 
-	public static FolderList readBuildConfiguration(IProject project, String resource, String filter) {
+	public static FolderList readBuildConfiguration(IProject project, String resource, String filter, boolean parser) {
 		IFile rscFile = project.getFile(resource);
 		try {
 			if (rscFile.exists()) {
@@ -75,13 +75,18 @@ public class JastAddBuildConfiguration {
 
 				Element cpElement;
 				try {
-					DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-					cpElement = parser.parse(new InputSource(stream)).getDocumentElement();
+					DocumentBuilder dparser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					cpElement = dparser.parse(new InputSource(stream)).getDocumentElement();
 				} finally {
 					stream.close();
 				}
-
-				FolderList folderList = new FolderList(resource, filter);
+				
+				FolderList folderList;
+				if (parser) {
+					 folderList = new ParserFolderList(resource, filter);
+				} else {
+					folderList = new FolderList(resource, filter);
+				}
 
 				// Get the output folder directory
 				{
@@ -97,14 +102,14 @@ public class JastAddBuildConfiguration {
 				}
 
 				// Get the parser name.
-				{
+				if (parser) {
 					NodeList list = cpElement.getElementsByTagName(PARSER_TAG);
 					if (list.getLength() > 0) {
 						Node node = list.item(0);
 						NamedNodeMap attributes = node.getAttributes();
 						String name = readAttribute(attributes, NAME_ATTR);
 						if (name != null) {
-							folderList.setParserName(name);
+							((ParserFolderList) folderList).setParserName(name);
 						}
 					}
 				}
@@ -202,11 +207,15 @@ public class JastAddBuildConfiguration {
 			xmlWriter.endTag(OUTPUT_FOLDER_TAG);
 		}
 
-		if (folderList.getParserName() != null) {
-			HashMap<String, String> parserNameMap = new HashMap<String, String>();
-			parserNameMap.put(NAME_ATTR, folderList.getParserName());
-			xmlWriter.startTag(PARSER_TAG, parserNameMap, true);
-			xmlWriter.endTag(PARSER_TAG);
+		
+		if (folderList instanceof ParserFolderList) {
+			ParserFolderList parserList = (ParserFolderList) folderList;
+			if (parserList.getParserName() != null) {
+				HashMap<String, String> parserNameMap = new HashMap<String, String>();
+				parserNameMap.put(NAME_ATTR, parserList.getParserName());
+				xmlWriter.startTag(PARSER_TAG, parserNameMap, true);
+				xmlWriter.endTag(PARSER_TAG);
+			}
 		}
 
 		// Write folder entries
