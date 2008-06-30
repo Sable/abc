@@ -474,7 +474,7 @@
 <target name="jars" depends="build">
   <antcall target="build-ja">
     <param name="target" value="jars"/>
-  </ant>
+  </antcall>
   <mkdir dir="${basedir}/lib"/>
   <jar destfile="${abc.loc}/lib/abc-ja-exts.jar" basedir="${basedir}/classes" includes="**/*.class" />
   <jar destfile="${basedir}/lib/abc-ja-exts.jar" basedir="${basedir}/classes" includes="**/*.class" />
