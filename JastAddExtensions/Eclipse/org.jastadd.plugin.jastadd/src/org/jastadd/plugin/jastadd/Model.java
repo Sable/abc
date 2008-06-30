@@ -372,13 +372,11 @@ public class Model extends JastAddJModel {
 		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
 		
 		// Regenerate scanner or parser if there was a change in a flex or parser file
-		/*
 		if (fileName.endsWith(".flex")) {
 			buildJFlexScanner(project, jastAddBuildConfig);
 		} else if (fileName.endsWith(".parser")) {
 			buildBeaverParser(project, jastAddBuildConfig);
 		}
-		*/
 		
 		IProgram program = getProgram(project);
 		if(program instanceof Program) {
@@ -434,13 +432,16 @@ public class Model extends JastAddJModel {
 	}
 
 	private void buildBeaverParser(IProject project, JastAddBuildConfiguration buildConfig) {
+		String parserName = buildConfig.parser.getParserName();
+		if (parserName == null)
+			parserName = "Parser";
 		String parserFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.parser";
-		String beaverFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.beaver";
+		String beaverFileName = buildConfig.parser.getOutputFolder() + File.separator + parserName + ".beaver";
 		try {
 			concatFiles(project, buildConfig.parser.entries(), parserFileName);
 			if (convertToBeaverSpec(project, parserFileName, beaverFileName)) {
 				IFile file = project.getFile(beaverFileName);
-				beaver.comp.run.Make.main(new String[] {file.getLocation().toOSString()});
+				beaver.comp.run.Make.main(new String[] {file.getLocation().toOSString()});		
 			}
 		} catch (IOException e) {
 			logError(e, "Problem generating parser");
@@ -449,18 +450,22 @@ public class Model extends JastAddJModel {
 		} catch (beaver.Parser.Exception e) {
 			logError(e, "Problem generating parser");
 		}
+		
 	}
 	
 	private void concatFiles(IProject project, java.util.List<PathEntry> entries, String targetFileName) {
 		try {
 			IFile targetFile = project.getFile(targetFileName);
-			targetFile.delete(true, null);
 			boolean firstFile = true;
 			for (PathEntry entry : entries) {
 				IFile srcFile = project.getFile(entry.getPath());
 				InputStream stream = srcFile.getContents(true);
 				if (firstFile) {
-					targetFile.create(stream, true, null);
+					if (!targetFile.exists()) {
+						targetFile.create(stream, true, null);
+					} else {
+						targetFile.setContents(stream, true, false, null);
+					}
 					firstFile = false;
 				} else {
 					targetFile.appendContents(stream, true, false, null);

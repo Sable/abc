@@ -164,8 +164,11 @@ public abstract class JastAddModel {
 		if(fileInfo != null) {
 			return getTreeRoot(fileInfo);
 		}
+		return null;
+		/*
 		throw new UnsupportedOperationException("Can only get the current " +
 			"compilation unit for a document that belongs to a JastAdd project");
+		*/
 	}
 	
 	public IJastAddNode getTreeRoot(FileInfo fileInfo) {
@@ -189,7 +192,10 @@ public abstract class JastAddModel {
 	}
 	
 	public IJastAddNode findNodeInDocument(IDocument document, int line, int column) {
-		return findNodeInDocument(documentToFileInfo(document), line, column);
+		FileInfo info = documentToFileInfo(document);
+		if (info == null) 
+			return null;
+		return findNodeInDocument(info, line, column);
 	}
 	
 	public IJastAddNode findNodeInDocument(FileInfo fileInfo, int offset) {
