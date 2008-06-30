@@ -3,18 +3,14 @@
        build (default) - generates java files and compiles them
        clean           - removes all generated files and class files
 -->
-<project name="AspectJ JastAdd Frontend" default="build">
+<project name="AspectJ JastAdd Frontend Extensions" default="build">
 
-<property file="ant.settings"/>
-<fail message="Please fix ant.settings" unless="abc-ja.loc"/>
-
-<property file="${abc-ja.loc}/ant.settings"/>
-<fail message="Please fix ${abc-ja.loc}/ant.settings" unless="abc.loc"/>
-
-<property file="${abc.loc}/ant.settings"/>
-<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
-            unless="polyglot.loc"/>
-
+    <target name="defaultsettings" if="use.default.settings">
+      <copy file="ant.settings.template" tofile="ant.settings"/>
+      <property file="ant.settings"/>
+      <ant dir="${abc-ja.loc}" target="defaultsettings"/>
+    </target>
+    
 <!-- "package" is the directory where generated files will be stored -->
 <property name="package" value="abc.ja.tm.jrag"/>
 
@@ -22,21 +18,35 @@
 <property name="test.args" value=""/>
 <property name="test.pat" value=""/>
 
-<!-- "tools" is the directory where generators and libraries are located. -->
-<property name="tools" value="${frontend}/tools"/>
+<!-- check settings -->
+<target name="settings" depends="defaultsettings">
+  <property file="ant.settings"/>
+  <fail message="Please fix ant.settings" unless="abc-ja.loc"/>
+  
+  <property file="${abc-ja.loc}/ant.settings"/>
+  <fail message="Please fix ${abc-ja.loc}/ant.settings" unless="abc.loc"/>
+  
+  <property file="${abc.loc}/ant.settings"/>
+  <fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+        unless="polyglot.loc"/>
 
-<!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
-<taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
-                      classpath="${tools}/JFlex.jar"/>
-<!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
-<taskdef name="beaver" classname="beaver.comp.run.AntTask"
-                       classpath="${abc-ja.loc}/tools/beaver.jar"/>
-<!-- "jastadd" is an ant task class in jastadd2.jar -->
-<taskdef name="jastadd" classname="jastadd.JastAddTask"
-                        classpath="${tools}/jastadd2.jar"/>
+  <!-- "tools" is the directory where generators and libraries are located. -->
+  <property name="tools" value="${frontend}/tools"/>
+  
+  <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+  <taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
+           classpath="${tools}/JFlex.jar"/>
+  <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+  <taskdef name="beaver" classname="beaver.comp.run.AntTask"
+           classpath="${abc-ja.loc}/tools/beaver.jar"/>
+  <!-- "jastadd" is an ant task class in jastadd2.jar -->
+  <taskdef name="jastadd" classname="jastadd.JastAddTask"
+           classpath="${tools}/jastadd2.jar"/>
+</target>
+
 
 <!-- compile sources -->
-<target name="build" depends="gen">
+<target name="build" depends="settings,gen">
         <antcall target="build-ja"/>
         <mkdir dir="${basedir}/classes"/>
         <!-- compile sources compiler="jikes" nowarn="true" -->
@@ -63,7 +73,7 @@
 </target>
 	
 <!-- generate compiler source files -->
-<target name="gen" depends="tm-parser,eaj-parser,da-parser,om-parser,tm-jrag,eaj-jrag,da-jrag,om-jrag">
+<target name="gen" depends="settings,tm-parser,eaj-parser,da-parser,om-parser,tm-jrag,eaj-jrag,da-jrag,om-jrag">
   <!-- copy library files-->
   <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
