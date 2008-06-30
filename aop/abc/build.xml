@@ -5,7 +5,11 @@
     <target name="default"
             depends="abc-jar,runtime-jar,testing-jar" />
 
-    <target name="settings">
+    <target name="defaultsettings" if="use.default.settings">
+      <copy file="ant.settings.template" tofile="ant.settings"/>
+    </target>
+    
+    <target name="settings" depends="defaultsettings">
         <property file="ant.settings"/>
         <fail
             message="Please copy ant.settings.template to ant.settings, and set the variables in it."
