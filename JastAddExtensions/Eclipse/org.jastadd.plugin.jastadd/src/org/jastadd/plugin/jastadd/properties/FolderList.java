@@ -125,6 +125,7 @@ public class FolderList {
 	private String resource;
 	private String filter;
 	private String outputFolder;
+	private String parserName;
 	
 	public FolderList(String resource, String filter) {
 		this.resource = resource;
@@ -173,5 +174,13 @@ public class FolderList {
 
 	public void setOutputFolder(String outputFolder) {
 		this.outputFolder = outputFolder;
+	}
+
+	public String getParserName() {
+		return parserName;
+	}
+
+	public void setParserName(String parserName) {
+		this.parserName = parserName;
 	}
 }

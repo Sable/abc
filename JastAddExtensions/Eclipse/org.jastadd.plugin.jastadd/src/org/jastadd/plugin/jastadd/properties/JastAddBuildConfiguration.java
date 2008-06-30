@@ -39,20 +39,22 @@ import org.xml.sax.SAXException;
  */
 public class JastAddBuildConfiguration {
 
-	private static final String FOLDER_TAG = "folder";
-	private static final String NAME_ATTR = "name";
+
 	public final static String FLEX_RESOURCE = "flex.xml";
 	public final static String PARSER_RESOURCE = "parser.xml";
 	public final static String FLEX_FILTER = "*.flex";
 	public final static String PARSER_FILTER = "*.parser";
 
 	private static final String OUTPUT_FOLDER_TAG = "output";
+	private static final String PARSER_TAG = "parser";
 	private static final String FILESET_ENTRY_TAG = "fileset";
 	private static final String EXCLUDING_TAG = "exclude";
 	private static final String INCLUDING_TAG = "include";
 	private static final String FILE_TAG = "file";
+	private static final String FOLDER_TAG = "folder";
 
 	private static final String DIR_ATTR = "dir";
+	private static final String NAME_ATTR = "name";
 	private static final String FILE_ATTR = "file";
 
 
@@ -81,6 +83,7 @@ public class JastAddBuildConfiguration {
 
 				FolderList folderList = new FolderList(resource, filter);
 
+				// Get the output folder directory
 				{
 					NodeList list = cpElement.getElementsByTagName(OUTPUT_FOLDER_TAG);
 					if (list.getLength() > 0) {
@@ -92,7 +95,20 @@ public class JastAddBuildConfiguration {
 						}
 					}
 				}
-				
+
+				// Get the parser name.
+				{
+					NodeList list = cpElement.getElementsByTagName(PARSER_TAG);
+					if (list.getLength() > 0) {
+						Node node = list.item(0);
+						NamedNodeMap attributes = node.getAttributes();
+						String name = readAttribute(attributes, NAME_ATTR);
+						if (name != null) {
+							folderList.setParserName(name);
+						}
+					}
+				}
+
 				NodeList list = cpElement.getElementsByTagName(FILESET_ENTRY_TAG);
 				for (int i = 0; i < list.getLength(); ++i) {
 					Node node = list.item(i);
@@ -180,12 +196,19 @@ public class JastAddBuildConfiguration {
 		xmlWriter.startTag(FOLDER_TAG, new HashMap<String, String>(), true);
 
 		if (folderList.getOutputFolder() != null) {
-				HashMap<String, String> outputFolderMap = new HashMap<String, String>();
-				outputFolderMap.put(DIR_ATTR, folderList.getOutputFolder());
-				xmlWriter.startTag(OUTPUT_FOLDER_TAG, outputFolderMap, true);
-				xmlWriter.endTag(OUTPUT_FOLDER_TAG);
+			HashMap<String, String> outputFolderMap = new HashMap<String, String>();
+			outputFolderMap.put(DIR_ATTR, folderList.getOutputFolder());
+			xmlWriter.startTag(OUTPUT_FOLDER_TAG, outputFolderMap, true);
+			xmlWriter.endTag(OUTPUT_FOLDER_TAG);
 		}
-		
+
+		if (folderList.getParserName() != null) {
+			HashMap<String, String> parserNameMap = new HashMap<String, String>();
+			parserNameMap.put(NAME_ATTR, folderList.getParserName());
+			xmlWriter.startTag(PARSER_TAG, parserNameMap, true);
+			xmlWriter.endTag(PARSER_TAG);
+		}
+
 		// Write folder entries
 		for (PathEntry pathEntry : folderList.entries()) {
 			if (pathEntry instanceof FolderEntry) {

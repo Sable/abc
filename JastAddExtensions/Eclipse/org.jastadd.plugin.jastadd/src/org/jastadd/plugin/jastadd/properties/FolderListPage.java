@@ -148,6 +148,27 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 			}
 		});
 		
+		Label parserNameLabel = new Label(composite, SWT.LEFT);
+		parserNameLabel.setText("&ParserName:");
+
+		final Text parserNameControl = new Text(composite, SWT.BORDER);
+		parserNameControl.setFont(parent.getFont());
+		if (folderList.getParserName() != null)
+			parserNameControl.setText(folderList.getParserName());
+		
+		parserNameControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));		
+		
+		parserNameControl.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				String text = parserNameControl.getText();
+				if (text.length() > 0)
+					folderList.setParserName(text);
+				else
+					folderList.setParserName(null);
+				hasChanges = true;
+			}
+		});
+		
 		return composite;
 	}
 	
