@@ -2,6 +2,7 @@
  * Copyright (C) 2008 Pavel Avgustinov
  * Copyright (C) 2008 Torbjörn Ekman
  * Copyright (C) 2008 Julian Tibble
+ * Copyright (C) 2008 Neil Ongkingco
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
