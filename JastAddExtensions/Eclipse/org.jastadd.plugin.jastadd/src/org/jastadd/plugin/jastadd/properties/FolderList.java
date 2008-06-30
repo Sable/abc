@@ -124,6 +124,7 @@ public class FolderList {
 	private List<PathEntry> folderList = new ArrayList<PathEntry>();
 	private String resource;
 	private String filter;
+	private String outputFolder;
 	
 	public FolderList(String resource, String filter) {
 		this.resource = resource;
@@ -164,5 +165,13 @@ public class FolderList {
 
 	public String getFilter() {
 		return filter;
+	}
+
+	public String getOutputFolder() {
+		return outputFolder;
+	}
+
+	public void setOutputFolder(String outputFolder) {
+		this.outputFolder = outputFolder;
 	}
 }

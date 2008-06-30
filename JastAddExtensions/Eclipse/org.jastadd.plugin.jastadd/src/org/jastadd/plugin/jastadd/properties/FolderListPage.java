@@ -17,6 +17,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -24,6 +26,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.jastadd.plugin.jastadd.properties.FolderList.FileEntry;
 import org.jastadd.plugin.jastadd.properties.FolderList.FolderEntry;
@@ -124,6 +127,27 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 		buttonControlGridData.verticalSpan = 2;
 		buttonControl.setLayoutData(buttonControlGridData);
 
+		Label outputFolderLabel = new Label(composite, SWT.LEFT);
+		outputFolderLabel.setText("&Output folder:");
+
+		final Text outputFolderControl = new Text(composite, SWT.BORDER);
+		outputFolderControl.setFont(parent.getFont());
+		if (folderList.getOutputFolder() != null)
+			outputFolderControl.setText(folderList.getOutputFolder());
+		
+		outputFolderControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));		
+		
+		outputFolderControl.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				String text = outputFolderControl.getText();
+				if (text.length() > 0)
+					folderList.setOutputFolder(text);
+				else
+					folderList.setOutputFolder(null);
+				hasChanges = true;
+			}
+		});
+		
 		return composite;
 	}
 	

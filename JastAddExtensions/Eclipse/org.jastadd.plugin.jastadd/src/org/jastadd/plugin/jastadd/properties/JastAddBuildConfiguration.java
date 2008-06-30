@@ -46,7 +46,7 @@ public class JastAddBuildConfiguration {
 	public final static String FLEX_FILTER = "*.flex";
 	public final static String PARSER_FILTER = "*.parser";
 
-
+	private static final String OUTPUT_FOLDER_TAG = "output";
 	private static final String FILESET_ENTRY_TAG = "fileset";
 	private static final String EXCLUDING_TAG = "exclude";
 	private static final String INCLUDING_TAG = "include";
@@ -81,6 +81,18 @@ public class JastAddBuildConfiguration {
 
 				FolderList folderList = new FolderList(resource, filter);
 
+				{
+					NodeList list = cpElement.getElementsByTagName(OUTPUT_FOLDER_TAG);
+					if (list.getLength() > 0) {
+						Node node = list.item(0);
+						NamedNodeMap attributes = node.getAttributes();
+						String dir = readAttribute(attributes, DIR_ATTR);
+						if (dir != null) {
+							folderList.setOutputFolder(dir);
+						}
+					}
+				}
+				
 				NodeList list = cpElement.getElementsByTagName(FILESET_ENTRY_TAG);
 				for (int i = 0; i < list.getLength(); ++i) {
 					Node node = list.item(i);
@@ -167,6 +179,13 @@ public class JastAddBuildConfiguration {
 
 		xmlWriter.startTag(FOLDER_TAG, new HashMap<String, String>(), true);
 
+		if (folderList.getOutputFolder() != null) {
+				HashMap<String, String> outputFolderMap = new HashMap<String, String>();
+				outputFolderMap.put(DIR_ATTR, folderList.getOutputFolder());
+				xmlWriter.startTag(OUTPUT_FOLDER_TAG, outputFolderMap, true);
+				xmlWriter.endTag(OUTPUT_FOLDER_TAG);
+		}
+		
 		// Write folder entries
 		for (PathEntry pathEntry : folderList.entries()) {
 			if (pathEntry instanceof FolderEntry) {
