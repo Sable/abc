@@ -63,10 +63,10 @@
  
 	<extension point = "org.eclipse.ui.editors">
 	<editor
-		class = "org.jastadd.plugin.jastaddj.editor.JastAddJEditor"
+		class = "org.jastadd.plugin.jastadd.AspectEditor"
 		extensions = "jrag,jadd"
 		icon = "icons/obj16/jrag.gif"
-		id = "org.jastadd.plugin.jastadd.JastAddAspectEditor"
+		id = "org.jastadd.plugin.jastadd.AspectEditor"
 		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
 		name = "JastAdd Aspect Editor">
 	</editor>
@@ -128,7 +128,7 @@
 	<!-- Breakpoint management -->
 	<extension point = "org.eclipse.ui.editorActions">
 	<editorContribution
-		targetID = "org.jastadd.plugin.jastadd.JastAddAspectEditor"
+		targetID = "org.jastadd.plugin.jastadd.AspectEditor"
 		id = "org.jastadd.plugin.jastadd.JastAddBreakpointRulerActions">
 		<action
 			label = "Add Breakpoint"
@@ -141,7 +141,7 @@
 
 	<extension point = "org.eclipse.debug.core.breakpoints">
 	<breakpoint
-		class = "org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint"
+		class = "org.jastadd.plugin.jastadd.JastAddBreakpoint"
 		id = "org.jastadd.plugin.jastadd.JastAddBreakpoint"
 		markerType = "org.jastadd.plugin.jastadd.JastAddBreakpointMarker"
 		name = "JastAdd Breakpoint"/>
@@ -152,5 +152,15 @@
 		name = "JastAdd Breakpoint Marker">
 	<super type = "org.eclipse.debug.core.breakpointMarker"/>
 	</extension>
+	
+	<!-- Marker updater -->
+	
+	<extension point= "org.eclipse.ui.editors.markerUpdaters"> 
+    <updater 
+        id="org.eclipse.ui.texteditor.BasicMarkerUpdater" 
+        class="org.eclipse.ui.texteditor.BasicMarkerUpdater"
+    	markerType="org.jastadd.plugin.jastadd.JastAddBreakpointMarker">
+    </updater>
+</extension>
  	
 </plugin>
