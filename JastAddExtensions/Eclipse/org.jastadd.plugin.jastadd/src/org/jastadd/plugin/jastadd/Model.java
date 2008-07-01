@@ -16,7 +16,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -138,8 +137,8 @@ public class Model extends JastAddJModel {
 		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
 	}	
 	
-	public ArrayList<String> lookupJVMName(IProject project, String packageName) {
-		ArrayList<String> nameList = new ArrayList<String>();
+	public ArrayList<AttributeDecl> lookupJVMName(IProject project, String packageName) {
+		ArrayList<AttributeDecl> nameList = new ArrayList<AttributeDecl>();
 		
 		IProgram p = getProgram(project);
 		if (!(p instanceof Program))
@@ -222,7 +221,7 @@ public class Model extends JastAddJModel {
 		//	System.out.println(mDecl.signature());
 			if (mDecl instanceof AttributeDecl) {
 				aDecl = (AttributeDecl)mDecl;
-				nameList.add(aDecl.name());
+				nameList.add(aDecl);
 			}
 		}
 		/*if(nameList.isEmpty()) {
@@ -343,7 +342,7 @@ public class Model extends JastAddJModel {
 				String nameWithParan = "(" + linePart[0] + ")";
 				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
 				org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
-				newNode = (Expr)((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
+				newNode = ((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
 						scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression)
 				).getExprNoTransform();
 				newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
