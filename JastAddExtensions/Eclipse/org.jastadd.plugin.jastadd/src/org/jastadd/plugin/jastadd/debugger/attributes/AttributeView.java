@@ -15,14 +15,23 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.ui.AbstractDebugView;
 import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.debug.ui.contexts.DebugContextEvent;
 import org.eclipse.debug.ui.contexts.IDebugContextListener;
+import org.eclipse.jdt.debug.core.IJavaThread;
+import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -34,6 +43,8 @@ import org.eclipse.ui.PartInitException;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.AttributeEvaluationNested;
+import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.AttributeState;
+import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.builder.ui.UIUtil;
 import org.jastadd.plugin.model.JastAddModel;
@@ -43,7 +54,7 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 	
 	private TreeViewer attributeViewer;
 	private IJavaVariable root = null;
-	
+	private IJavaThread thread;
 	
 	@Override
 	public void init(IViewSite site) throws PartInitException {
@@ -53,24 +64,30 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 	
 	@Override
 	protected void configureToolBar(IToolBarManager tbm) {
-		
+		tbm.add(new Separator(this.getClass().getName()));
+		tbm.add(new Separator(IDebugUIConstants.RENDER_GROUP));
+		tbm.add(getAction("RefreshView"));
 	}
 
 	@Override
 	protected void createActions() {
-		// TODO Auto-generated method stub
-		
+		IAction action = new RefreshAttributeViewAction(this);
+		setAction("RefreshView",action);
 	}
 
-	public void setInput(IJavaVariable root) {
+	public void setInput(IJavaVariable root, IJavaThread thread) {
 		Object current = attributeViewer.getInput();
 		
-		if ((current == null && root == null) ||
-				(current != null && current.equals(root))) {
+		if (current == null && root == null) {
 			setContentDescription("No element selected.");
 			return;
 		}
+		if (current != null && current.equals(root)) {
+			attributeViewer.refresh();
+			return;
+		}
 
+		this.thread = thread;
 		this.root = root;
 		attributeViewer.setInput(root);
 		if (root != null) {
@@ -94,7 +111,21 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 		attributeViewer = new TreeViewer(attributeTree);
 		attributeViewer.setContentProvider(new AttributeContentProvider());
 		attributeViewer.setLabelProvider(new AttributeLabelProvider());
-		setInput(root);
+		
+		attributeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				ISelection selection = event.getSelection();
+				if (!selection.isEmpty()) {
+					AttributeEvaluationNode node = (AttributeEvaluationNode) ((TreeSelection) selection).getFirstElement();
+					node.eval();
+					attributeViewer.refresh(node);
+				}
+			}
+			
+		});
+		
+		setInput(root, thread);
 		
 		return attributeViewer;
 	}
@@ -104,15 +135,16 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 			if (element instanceof AttributeEvaluationNode) {
 				AttributeEvaluationNode evaluation = (AttributeEvaluationNode) element;
 				String value = evaluation.getAttributeName();
-				if (evaluation.hasBeenCalculated()) {
-					try {
-						value += " = " + evaluation.getValue().getValue();
-					} catch (DebugException e) {
-						ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
-						log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
-					}
-				} else {
+				switch (evaluation.getState()) {
+				case CALCULATED:
+					value += " = " + evaluation.getResult();
+					break;
+				case EMPTY:
 					value += " = null";
+					break;
+				case BEING_CALCULATED:
+					value += " = currently executing";
+					break;
 				}
 				return value;
 			} else {
@@ -129,12 +161,12 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 				AttributeEvaluationNode evaluationNode = (AttributeEvaluationNode) parentElement;
 				
 				// We only display the children once we've evaluated the variable
-				if (evaluationNode.hasBeenCalculated()) {
+				if (evaluationNode.getState().equals(AttributeState.CALCULATED)) {
 
-					// Calculate variables attributes
-					List<String> atts = new ArrayList<String>();
+					// Calculate the variables attributes
+					List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
 					try {
-						atts = getAttributes(evaluationNode.getParentVariable());
+						atts = getAttributes(evaluationNode.getResult());
 						
 					} catch (CoreException e) {
 						ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
@@ -143,8 +175,8 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 					}
 					
 					List<AttributeEvaluationNode> children = new LinkedList<AttributeEvaluationNode>();
-					for (String attribute : atts) {
-						children.add(new AttributeEvaluationNode.AttributeEvaluationNested(evaluationNode, attribute));
+					for (AttributeDecl attribute : atts) {
+						children.add(new AttributeEvaluationNode.AttributeEvaluationNested(evaluationNode, attribute, thread));
 					}
 					return children.toArray();
 					
@@ -157,10 +189,12 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 			if (parentElement instanceof IJavaVariable) {
 				IJavaVariable parentVariable = (IJavaVariable) parentElement;
 
-				// Calculate variables attributes
-				List<String> atts;
+				IJavaValue javaValue;
+				// Calculate the variables attributes
+				List<AttributeDecl> atts;
 				try {
-					atts = getAttributes(parentVariable);
+					javaValue = (IJavaValue) parentVariable.getValue();
+					atts = getAttributes(javaValue);
 					
 				} catch (CoreException e) {
 					ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
@@ -169,8 +203,9 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 				}
 				
 				List<AttributeEvaluationNode> children = new LinkedList<AttributeEvaluationNode>();;
-				for (String attribute : atts) {
-					children.add(new AttributeEvaluationNode(parentVariable, attribute));
+				for (AttributeDecl attribute : atts) {
+
+					children.add(new AttributeEvaluationNode(javaValue, attribute, thread));
 				}
 				return children.toArray();
 				
@@ -178,26 +213,45 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 			return new Object[0];
 		}
 
-		private List<String> getAttributes(IJavaVariable parentVariable) throws CoreException {
-			List<String> atts;
+		private List<AttributeDecl> getAttributes(IJavaValue parentValue) throws CoreException {
 			// Get the launch attributes of the launch associated with this variable
-			Map launchAttributes = parentVariable.getDebugTarget().getLaunch().getLaunchConfiguration().getAttributes();
-			String projectName = (String) launchAttributes.get(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME);
-			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			IProject project = getProject(parentValue);
 			
-			// project.exists() && project.isOpen() ??
+			List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
 			
-			List<JastAddModel> models = JastAddModelProvider.getModels(project);
-			
-			atts = new ArrayList<String>();
-			for (JastAddModel jastAddModel : models) {
-				if (jastAddModel instanceof Model) {
-					Model model = (Model) jastAddModel;
-					System.out.println("Getting Attributes for: " + parentVariable.getJavaType().getName());
-					atts = model.lookupJVMName(project, parentVariable.getJavaType().getName());
+			if (project.exists()) {
+				List<JastAddModel> models = JastAddModelProvider.getModels(project);
+
+
+				for (JastAddModel jastAddModel : models) {
+					if (jastAddModel instanceof Model) {
+						Model model = (Model) jastAddModel;
+						atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
+					}
 				}
 			}
-			atts.add("value2");
+			
+			/**
+			 * Dummy attribute for testing purposes.
+			 * @author luke
+			 *
+			 */
+			final class DummyAttributeDecl extends AttributeDecl {
+				public DummyAttributeDecl() {
+				}
+				
+				@Override
+				public String name() {
+					return "value2";
+				}
+				
+				@Override
+				public String descName() {
+					return "()Ljava/lang/String;";
+				}
+			}
+			
+			atts.add(new DummyAttributeDecl());
 			return atts;
 		}
 
@@ -208,7 +262,7 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 				return evaluationNode.getParent();
 			} else if (element instanceof AttributeEvaluationNode) {
 				AttributeEvaluationNode evaluationNode = (AttributeEvaluationNode) element;
-				return evaluationNode.getParentVariable();
+				return evaluationNode.getParentValue();
 			}
 			return null;
 		}
@@ -239,7 +293,7 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 	 * @return SWT style
 	 */
 	protected int getViewerStyle() {
-		return SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.VIRTUAL | SWT.FULL_SELECTION;
+		return SWT.V_SCROLL | SWT.H_SCROLL | SWT.VIRTUAL | SWT.FULL_SELECTION;
 	}
 	
 
@@ -268,8 +322,16 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 	public void debugContextChanged(DebugContextEvent event) {
 		if ((event.getFlags() & DebugContextEvent.ACTIVATED) > 0) {
 			// TODO Update actions here
-			setInput(null);
+			setInput(null, null);
 		}
+	}
+	
+	// TODO move to a utils class?
+	public static IProject getProject(IJavaValue value) throws CoreException {
+		Map<String, String> launchAttributes = value.getDebugTarget().getLaunch().getLaunchConfiguration().getAttributes();
+		String projectName = launchAttributes.get(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME);
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		return project;
 	}
 
 }
