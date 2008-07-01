@@ -38,6 +38,7 @@ import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
 import org.jastadd.plugin.jastadd.properties.JastAddBuildConfiguration;
+import org.jastadd.plugin.jastadd.properties.FolderList.ParserFolderList;
 import org.jastadd.plugin.jastadd.properties.FolderList.PathEntry;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
@@ -432,7 +433,7 @@ public class Model extends JastAddJModel {
 	}
 
 	private void buildBeaverParser(IProject project, JastAddBuildConfiguration buildConfig) {
-		String parserName = buildConfig.parser.getParserName();
+		String parserName = ((ParserFolderList)buildConfig.parser).getParserName();
 		if (parserName == null)
 			parserName = "Parser";
 		String parserFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.parser";
