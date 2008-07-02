@@ -11,25 +11,21 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTargetExtension;
-import org.eclipse.jdt.debug.core.IJavaLineBreakpoint;
-import org.eclipse.jdt.internal.debug.core.breakpoints.JavaLineBreakpoint;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
-import org.jastadd.plugin.jastaddj.AST.ITypeDecl;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.model.JastAddModel.FileInfo;
 import org.jastadd.plugin.resources.JastAddStorageAnnotationModel;
 
 public class JastAddJBreakpointAdapter implements
 		IToggleBreakpointsTargetExtension {
 
-	private static final String BREAKPOINT_TYPE_NAME = "org.jastadd.plugin.jastaddj.breakpoint.typeName";
 	private ITextEditor editor;
 
 	public JastAddJBreakpointAdapter(ITextEditor editor) {
@@ -60,6 +56,8 @@ public class JastAddJBreakpointAdapter implements
 			}
 
 			if (model != null) {
+				
+				/*
 				IJastAddNode node = model.findNodeInDocument(model
 						.buildFileInfo(editorInput), lineNumber + 1, 1);
 
@@ -70,9 +68,7 @@ public class JastAddJBreakpointAdapter implements
 
 				ITypeDecl typeDecl = (ITypeDecl) node;
 				String typeName = typeDecl.constantPoolName().replace('/', '.');
-
-				IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-						.getBreakpointManager().getBreakpoints();
+				IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
 				for (int i = 0; i < breakpoints.length; i++) {
 					IBreakpoint breakpoint = breakpoints[i];
 					if (!(breakpoint instanceof IJavaLineBreakpoint))
@@ -85,12 +81,27 @@ public class JastAddJBreakpointAdapter implements
 						return;
 					}
 				}
+				*/
 
-				Map<String, IPath> attributes = new HashMap<String, IPath>();
+				// Remove if exists
+				FileInfo info = model.buildFileInfo(editorInput);
+				IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
+				for (int i = 0; i < breakpoints.length; i++) {
+					IBreakpoint breakpoint = breakpoints[i];
+					if (!(breakpoint instanceof JastAddJBreakpoint))
+						continue;
+					JastAddJBreakpoint jastAddJBreakpoint = (JastAddJBreakpoint) breakpoint;
+					if (jastAddJBreakpoint.sameAs(info, lineNumber + 1)) {
+						breakpoint.delete();
+						return;
+					}
+				}
+
+				// Add 
+				Map<String, Object> attributes = new HashMap<String, Object>();
 				if (storagePath != null)
 					attributes.put(JastAddStorageAnnotationModel.STORAGE_PATH, storagePath);
-				IBreakpoint lineBreakpoint = new JavaLineBreakpoint(resource,
-						typeName, lineNumber + 1, -1, -1, 0, true, attributes);
+				IBreakpoint lineBreakpoint = new JastAddJBreakpoint(resource, info, lineNumber + 1, attributes); 
 				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
 			}
 		}

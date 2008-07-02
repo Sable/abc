@@ -25,6 +25,29 @@
 		value = "true">
 	</persistent>
 	</extension>   
+	
+	<extension point = "org.eclipse.core.resources.markers"
+		id = "org.jastadd.plugin.marker.BreakpointMarker" 
+		name = "JastAddJ Breakpoint">
+	<super type="org.eclipse.debug.core.breakpointMarker"/>
+	<persistent
+		value = "true">
+	</persistent>
+	</extension>
+	
+	
+   <extension point="org.eclipse.ui.editors.annotationTypes">
+      <type
+         name="org.jastadd.plugin.jastaddj.breakpointAnnotation"
+         super="org.eclipse.ui.workbench.texteditor.warning"
+         markerType="org.jastadd.plugin.jastaddj.BreakpointMarker"/>
+  </extension>
+  <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+         annotationType="org.jastadd.plugin.jastaddj.breakpointAnnotation"
+         icon="icons/obj16/brkpi_obj.gif"/>
+   </extension> 
+	
 
 	<!-- Core Resource View -->   
   
@@ -210,15 +233,20 @@
 	<breakpoint
 		class = "org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint"
 		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpoint"
-		markerType = "org.jastadd.plugin.jastaddj.JastAddJBreakpointMarker"
+		markerType = "org.jastadd.plugin.marker.BreakpointMarker"
 		name = "JastAddJ Breakpoint"/>
 	</extension>
+
+	<!-- Marker updater -->
 	
-	<extension point = "org.eclipse.core.resources.markers"
-		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpointMarker" 
-		name = "JastAddJ Breakpoint Marker">
-	<super type = "org.eclipse.debug.core.breakpointMarker"/>
-	</extension>
+	<extension point= "org.eclipse.ui.editors.markerUpdaters"> 
+    <updater 
+        id="org.eclipse.ui.texteditor.BasicMarkerUpdater" 
+        class="org.eclipse.ui.texteditor.BasicMarkerUpdater"
+    	markerType="org.jastadd.plugin.jastaddj.BreakpointMarker">
+    </updater>
+    </extension>
+	
 	
 	<!-- JastAddJ Resource Filter -->
    
