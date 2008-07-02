@@ -36,14 +36,18 @@
 
 	<!-- compile sources -->
 	<target name="build" depends="gen">
-		<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" excludes="test/**" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"/>
-		<javac debug="true" nowarn="true" srcdir="${JastAdd}" destdir="." includes="jastadd/*.java" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar"/>
+		<mkdir dir="classes" />
+		<javac debug="true" nowarn="true" destdir="classes" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar">
+			<src path="${basedir}/src" />
+			<src path="${basedir}/generated" />
+		</javac>
+		<javac debug="true" nowarn="true" srcdir="${JastAdd}" destdir="classes" includes="jastadd/*.java" classpath="./classes/:${tools}/beaver-rt.jar:${tools}/junit.jar" />
 	</target>
 
 	<!-- generate compiler source files and compile sources -->
 	<target name="gen" depends="scanner,parser">
 		<!-- create AST node types and weave aspect modules -->
-		<jastadd package="${package}" rewrite="true" beaver="true" novisitcheck="true" noCacheCycle="true" outdir="${basedir}">
+		<jastadd package="${package}" rewrite="true" beaver="true" novisitcheck="true" noCacheCycle="true" outdir="${basedir}/generated">
 			<fileset dir="${Java1.4Frontend}">
 				<include name="**/*.ast" />
 				<include name="**/*.jrag" />
@@ -78,13 +82,13 @@
 				<include name="**/*.jadd" />
 			</fileset>
 			<fileset dir=".">
-				<include name="**/*.ast" />
-				<include name="**/*.jrag" />
-				<include name="**/*.jadd" />
+				<include name="src/**/*.ast" />
+				<include name="src/**/*.jrag" />
+				<include name="src/**/*.jadd" />
 			</fileset>
 		</jastadd>
 		<!-- copy library files-->
-		<copy todir="beaver" preservelastmodified="true">
+		<copy todir="generated/beaver" preservelastmodified="true">
 			<fileset dir="${Java1.4Frontend}/beaver">
 				<include name="**/*.java" />
 			</fileset>
@@ -92,16 +96,16 @@
 	</target>
 
 	<target name="scanner">
-		<mkdir dir="scanner" />
+		<mkdir dir="generated/scanner" />
 		<!-- generate the scanner -->
-		<jflex file="JastAdd.flex" outdir="scanner" nobak="yes" />
-		<copy todir="scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true" />
+		<jflex file="JastAdd.flex" outdir="generated/scanner" nobak="yes" />
+		<copy todir="generated/scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true" />
 	</target>
 
 	<target name="parser">
-		<mkdir dir="parser" />
+		<mkdir dir="generated/parser" />
 		<!-- generate the parser phase 1, create a full .lalr specification from fragments-->
-		<concat destfile="parser/JavaParser.all" binary="true" force="false">
+		<concat destfile="generated/parser/JavaParser.all" binary="true" force="false">
 			<filelist dir="${Java1.4Frontend}">
 				<file name="parser/preamble.parser" />
 				<file name="parser/java14.parser" />
@@ -119,19 +123,19 @@
 		</concat>
 		<!-- generate the parser phase 2, translating .lalr to .beaver -->
 		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
-			<arg line="parser/JavaParser.all parser/JavaParser.beaver" />
+			<arg line="generated/parser/JavaParser.all generated/parser/JavaParser.beaver" />
 		</java>
 		<!-- generate the parser phase 3, translating .beaver to .java -->
-		<beaver file="parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="no" />
+		<beaver file="generated/parser/JavaParser.beaver" terminalNames="yes" compress="yes" useSwitch="no" />
 	</target>
 
 	<!-- remove generated source files and .class files -->
 	<target name="clean" depends="cleanGen">
 		<!-- delete all .class files recursively -->
 		<delete>
-			<fileset dir="." includes="beaver/**/*.class" />
-			<fileset dir="." includes="parser/**/*.class" />
-			<fileset dir="." includes="scanner/**/*.class" />
+			<fileset dir="." includes="generated/beaver/**/*.class" />
+			<fileset dir="." includes="generated/parser/**/*.class" />
+			<fileset dir="." includes="generated/scanner/**/*.class" />
 			<fileset dir="." includes="*.class" />
 		</delete>
 	</target>
@@ -140,37 +144,36 @@
 	<target name="cleanGen">
 		<delete dir="${package}" />
 		<delete>
-			<fileset dir="beaver" includes="**/*.java" />
-			<fileset dir="parser" includes="*.java" />
-			<fileset dir="parser" includes="JavaParser.beaver" />
-			<fileset dir="parser" includes="JavaParser.all" />
-			<fileset dir="." includes="scanner/*.java" />
+			<fileset dir="generated/beaver" includes="**/*.java" />
+			<fileset dir="generated/parser" includes="*.java" />
+			<fileset dir="generated/parser" includes="JavaParser.beaver" />
+			<fileset dir="generated/parser" includes="JavaParser.all" />
+			<fileset dir="." includes="generated/scanner/*.java" />
 			<fileset dir="." includes="test/*.class" />
 		</delete>
 	</target>
 
 	<target name="jar" depends="build">
-		<jar destfile="JavaCompiler.jar" basedir="." includes="**/*.class" excludes="test/**">
+		<jar destfile="JastAdd-modules.jar" basedir="." includes="**/*.class" excludes="test/**">
 			<manifest>
-				<attribute name="Main-Class" value="JavaCompiler" />
+				<attribute name="Main-Class" value="jastadd.JastAdd" />
 			</manifest>
 		</jar>
 	</target>
 
 	<!-- build a source distribution -->
 	<target name="source">
-		<jar destfile="IntertypeDeclarations-src.jar">
+		<jar destfile="JastAddModules-src.jar">
 			<!-- the IntertypeDeclarations language extension -->
 			<fileset dir="..">
 				<!-- include source file -->
-				<include name="IntertypeDeclarations/JavaCompiler.java" />
-				<include name="IntertypeDeclarations/**/*.ast" />
-				<include name="IntertypeDeclarations/**/*.jrag" />
-				<include name="IntertypeDeclarations/**/*.jadd" />
-				<include name="IntertypeDeclarations/*.parser" />
-				<include name="IntertypeDeclarations/*.flex" />
+				<include name="JastAddModules/**/*.ast" />
+				<include name="JastAddModules/**/*.jrag" />
+				<include name="JastAddModules/**/*.jadd" />
+				<include name="JastAddModules/*.parser" />
+				<include name="JastAddModules/*.flex" />
 				<!-- include buildfile -->
-				<include name="IntertypeDeclarations/build.xml" />
+				<include name="JastAddModules/build.xml" />
 			</fileset>
 			<manifest>
 			</manifest>
