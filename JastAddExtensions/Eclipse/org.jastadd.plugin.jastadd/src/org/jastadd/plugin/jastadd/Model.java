@@ -147,7 +147,11 @@ public class Model extends JastAddJModel {
 		
 		int packageEndIndex = packageName.lastIndexOf('.');
 		String tName = packageName.substring(packageEndIndex+1, packageName.length());
-		packageName = packageName.substring(0, packageEndIndex);
+		if (packageEndIndex > 1) {
+			packageName = packageName.substring(0, packageEndIndex);
+		} else {
+			packageName = "";
+		}
 		String innerName = "";
 		int index = tName.indexOf('$');
 		if (index > 0) {
