@@ -17,7 +17,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.jastaddj.AST.ITypeDecl;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.model.JastAddModel.FileInfo;
@@ -57,7 +59,6 @@ public class JastAddJBreakpointAdapter implements
 
 			if (model != null) {
 				
-				/*
 				IJastAddNode node = model.findNodeInDocument(model
 						.buildFileInfo(editorInput), lineNumber + 1, 1);
 
@@ -68,6 +69,7 @@ public class JastAddJBreakpointAdapter implements
 
 				ITypeDecl typeDecl = (ITypeDecl) node;
 				String typeName = typeDecl.constantPoolName().replace('/', '.');
+				/*
 				IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
 				for (int i = 0; i < breakpoints.length; i++) {
 					IBreakpoint breakpoint = breakpoints[i];
@@ -91,7 +93,7 @@ public class JastAddJBreakpointAdapter implements
 					if (!(breakpoint instanceof JastAddJBreakpoint))
 						continue;
 					JastAddJBreakpoint jastAddJBreakpoint = (JastAddJBreakpoint) breakpoint;
-					if (jastAddJBreakpoint.sameAs(info, lineNumber + 1)) {
+					if (jastAddJBreakpoint.sameAs(typeName, info, lineNumber + 1)) {
 						breakpoint.delete();
 						return;
 					}
@@ -101,7 +103,7 @@ public class JastAddJBreakpointAdapter implements
 				Map<String, Object> attributes = new HashMap<String, Object>();
 				if (storagePath != null)
 					attributes.put(JastAddStorageAnnotationModel.STORAGE_PATH, storagePath);
-				IBreakpoint lineBreakpoint = new JastAddJBreakpoint(resource, info, lineNumber + 1, attributes); 
+				IBreakpoint lineBreakpoint = new JastAddJBreakpoint(resource, typeName, info, lineNumber + 1, attributes); 
 				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
 			}
 		}

@@ -27,9 +27,9 @@
 	</extension>   
 	
 	<extension point = "org.eclipse.core.resources.markers"
-		id = "org.jastadd.plugin.marker.BreakpointMarker" 
+		id = "BreakpointMarker" 
 		name = "JastAddJ Breakpoint">
-	<super type="org.eclipse.debug.core.breakpointMarker"/>
+	<super type="org.eclipse.debug.core.lineBreakpoint"/>
 	<persistent
 		value = "true">
 	</persistent>
@@ -233,7 +233,7 @@
 	<breakpoint
 		class = "org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint"
 		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpoint"
-		markerType = "org.jastadd.plugin.marker.BreakpointMarker"
+		markerType = "org.jastadd.plugin.jastaddj.BreakpointMarker"
 		name = "JastAddJ Breakpoint"/>
 	</extension>
 

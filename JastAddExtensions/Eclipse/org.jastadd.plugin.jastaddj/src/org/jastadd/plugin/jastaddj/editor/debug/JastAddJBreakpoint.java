@@ -9,23 +9,24 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.model.Breakpoint;
 import org.eclipse.debug.core.model.IBreakpoint;
+import org.eclipse.debug.core.model.LineBreakpoint;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.model.JastAddModel.FileInfo;
 
-public class JastAddJBreakpoint extends Breakpoint {
+public class JastAddJBreakpoint extends LineBreakpoint {
 
 	public static final String MARKER_ID = "org.jastadd.plugin.jastaddj.BreakpointMarker";
 	//public static final String MARKER_ID = "org.eclipse.jdt.debug.javaLineBreakpointMarker";
 	protected FileInfo fileInfo;
+	protected String typeName;
 	protected int lineNumber;
 	
-	public JastAddJBreakpoint(final IResource resource, FileInfo fileInfo, 
+	public JastAddJBreakpoint(final IResource resource, String typeName, FileInfo fileInfo, 
 			final int lineNumber, final Map<String,Object> attributes) throws DebugException {
 		this.fileInfo = fileInfo;
 		this.lineNumber = lineNumber;
-		
+		this.typeName = typeName;
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 	
@@ -60,7 +61,9 @@ public class JastAddJBreakpoint extends Breakpoint {
 		return JastAddJActivator.JASTADDJ_PLUGIN_ID;
 	}
 
-	public boolean sameAs(FileInfo info, int line) {
-		return fileInfo.second.equals(info.second) && lineNumber == line;
+	public boolean sameAs(String name, FileInfo info, int line) {
+		return typeName.equals(name) &&
+			fileInfo.second.equals(info.second) && 
+			lineNumber == line;
 	}
 }
