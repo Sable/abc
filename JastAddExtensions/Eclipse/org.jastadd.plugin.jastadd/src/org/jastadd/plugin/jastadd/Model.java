@@ -379,9 +379,6 @@ public class Model extends JastAddJModel {
 		}
 		
 		IProgram program = getProgram(project);
-		if(program instanceof Program) {
-			((Program)program).flushIntertypeDecls();
-		}
 		//super.updateModel(document, fileName, project);
 
 		try {
@@ -411,6 +408,10 @@ public class Model extends JastAddJModel {
 			
 			// build the current document
 			program.addSourceFile(fileName, buf.toString());
+			
+			if(program instanceof Program) {
+				((Program)program).flushIntertypeDecls();
+			}
 		} catch (Throwable e) {
 			logError(e, "Updating model failed!");
 		}

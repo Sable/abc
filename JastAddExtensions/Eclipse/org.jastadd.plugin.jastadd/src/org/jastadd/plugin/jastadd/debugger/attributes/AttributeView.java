@@ -226,7 +226,9 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 				for (JastAddModel jastAddModel : models) {
 					if (jastAddModel instanceof Model) {
 						Model model = (Model) jastAddModel;
-						atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
+						synchronized(model) {
+							atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
+						}
 					}
 				}
 			}

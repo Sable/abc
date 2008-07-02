@@ -1,0 +1,6 @@
+aspect JastAddBuild {
+  public void Program.flushAttributes() {
+    super.flushAttributes();
+    flushIntertypeDecls();
+  }
+}
