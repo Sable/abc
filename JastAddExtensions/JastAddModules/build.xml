@@ -121,6 +121,9 @@
 			<fileset dir="${JastAdd}">
 				<include name="*.parser" />
 			</fileset>
+			<fileset dir = "src/parser">
+				<include name="*.parser"/>
+			</fileset>
 		</concat>
 		<!-- generate the parser phase 2, translating .lalr to .beaver -->
 		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar" classname="Main" fork="true">
