@@ -30,7 +30,7 @@ import org.jastadd.plugin.jastadd.generated.AST.ParameterDeclaration;
  * @author luke
  *
  */
-public class AttributeEvaluationNode implements AttributeNode {
+public class AttributeEvaluationNode extends AttributeNode {
 
 	public enum AttributeState {
 		/**
@@ -59,24 +59,26 @@ public class AttributeEvaluationNode implements AttributeNode {
 	}
 	
 	private AttributeDecl attribute;
-	private IJavaValue parent;
+	private AttributeNode parent;
 	private AttributeState state = AttributeState.EMPTY;
 	private IJavaValue result;
 	private IJavaThread thread;
 	private Shell shell;
 
-	public AttributeEvaluationNode(IJavaValue parentValue, AttributeDecl attribute, IJavaThread thread, Shell shell) {
+	public AttributeEvaluationNode(AttributeNode parent, AttributeDecl attribute, IJavaThread thread, Shell shell) {
 		this.attribute = attribute;
-		this.parent = parentValue;
+		this.parent = parent;
 		this.thread = thread;
+		
+		IJavaValue parentValue = parent.getCurrent();
 
 		// We want to discover the initial state of the attribute
 		try {
-			if (alreadyRunning(parent)) {
+			if (alreadyRunning(parentValue)) {
 				state = AttributeState.BEING_CALCULATED;
 			} else {
 				// Scan the local variables of the parent, to see if this attribute has been pre-calculated
-				for (IVariable child : parent.getVariables()) {
+				for (IVariable child : parentValue.getVariables()) {
 					if (child.getName().startsWith(attribute.name() + "$computed")) {
 						state = child.getValue().getValueString().equals("true") ? AttributeState.CALCULATED : AttributeState.EMPTY;
 					}
@@ -117,18 +119,14 @@ public class AttributeEvaluationNode implements AttributeNode {
 		}
 		return false;
 	}
-	
-	public AttributeState getState() {
-		return state;
-	}
 
 	/**
 	 * Returns the result of the evaluation.
 	 * @return variable, iff getState().equals(AttributeState.CALCULATED) || getState().equals(AttributeState.PRE_CALCULATED)
 	 */
-	public IJavaValue getResult() {
+	public IJavaValue getCurrent() {
 		// If it's already been computed, we want to return the computed value
-		if (getState().equals(AttributeState.CALCULATED) || getState().equals(AttributeState.PRE_CALCULATED)) {
+		if (state.equals(AttributeState.CALCULATED) || state.equals(AttributeState.PRE_CALCULATED)) {
 			return result;
 		} else {
 			// Return nothing if we've not got a calculated result
@@ -147,8 +145,9 @@ public class AttributeEvaluationNode implements AttributeNode {
 		try {
 			// Ensure we're not trying to invoke an already running method
 			if (state.equals(AttributeState.EMPTY) || state.equals(AttributeState.CALCULATED)) {
-				if (parent instanceof IJavaObject) {
-					IJavaObject object = (IJavaObject) parent;
+				IJavaValue current = parent.getCurrent();
+				if (current != null && current instanceof IJavaObject) {
+					IJavaObject object = (IJavaObject) current;
 					
 					ArrayList<IJavaValue> args = new ArrayList<IJavaValue>();
 					
@@ -234,37 +233,31 @@ public class AttributeEvaluationNode implements AttributeNode {
 		}
 		
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.jastadd.plugin.jastadd.debugger.attributes.AttributeNode#getParentValue()
-	 */
-	public IJavaValue getParentValue() {
+
+	@Override
+	public AttributeNode getParent() {
 		return parent;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jastadd.plugin.jastadd.debugger.attributes.AttributeNode#getAttributeName()
-	 */
-	public String getAttributeName() {
-		return attribute.name();
+	@Override
+	public String getValueString() {
+		switch (state) {
+		case CALCULATED:
+			return super.getValueString();
+		case PRE_CALCULATED:
+			return super.getValueString();
+		case EMPTY:
+			return "Unevaluated, double click to calculate";
+		case BEING_CALCULATED:
+			return "Currently executing";
+		case NOT_CALCULABLE:
+			return "Cannot calculate";
+		}
+		return "Invalid state";
 	}
-
-	public static class AttributeEvaluationNested extends AttributeEvaluationNode {
-		private AttributeNode parent;
-
-		/**
-		 * 
-		 * @param parent - must have been calculated
-		 * @param attribute
-		 * @param viewer
-		 */
-		public AttributeEvaluationNested(AttributeNode parent, AttributeDecl attribute, IJavaThread thread, Shell shell) {
-			super(parent.getResult(), attribute, thread, shell);
-			this.parent = parent;
-		}
-
-		public AttributeNode getParent() {
-			return parent;
-		}
+	
+	@Override
+	public String getNameString() {
+		return attribute.name();
 	}
 }

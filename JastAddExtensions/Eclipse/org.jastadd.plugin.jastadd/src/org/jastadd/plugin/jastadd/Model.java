@@ -208,25 +208,7 @@ public class Model extends JastAddJModel {
 			ASTDecl astDecl = (ASTDecl)decl;
 			for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
 				ASTChild c = (ASTChild)iter.next();
-				childList.add(c);
-				
-				if(c instanceof ASTElementChild) {
-					// A ::= B;
-					
-				}
-				else if(c instanceof ASTListChild) {
-					// A ::= B*
-					
-				}
-				else if(c instanceof ASTOptionalChild) {
-					// A ::= [B]
-					
-				}
-				else if(c instanceof ASTTokenChild) {
-					// A ::= <ID:String>
-					
-				}
-				
+				childList.add(c);				
 			}
 		}
 		/*if(nameList.isEmpty()) {
