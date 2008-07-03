@@ -47,13 +47,5 @@ public class JastAddModules extends JastAdd  {
 
 	protected void initOptions() {
 		super.initOptions();
-		Options options = program.options();
-		options.addKeyOption("-no_cache_cycle");
-		options.addKeyOption("-no_visit_check");
-		options.addKeyOption("-no_component_check");
-		options.addKeyValueOption("-package");
-
-		options.addKeyOption("-weave_inline");
-		options.addKeyOption("-inh_in_astnode");
 	}
 }
