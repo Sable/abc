@@ -9,11 +9,11 @@ import AST.List;
 
 public class JastAdd extends Frontend {
   public static void main(String args[]) {
-    if(!compile(args))
+    if(!new JastAdd().compile(args))
       System.exit(1);
   }
-  public static boolean compile(String[] args) {
-    JastAdd jastAdd = new JastAdd();
+  public boolean compile(String[] args) {
+    JastAdd jastAdd = this;
     boolean result = jastAdd.process(
         args,
         new BytecodeParser(),
