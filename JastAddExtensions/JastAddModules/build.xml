@@ -40,8 +40,9 @@
 		<javac debug="true" nowarn="true" destdir="classes" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar">
 			<src path="${basedir}/src" />
 			<src path="${basedir}/generated" />
+			<src path="${JastAdd}"/>
+			<include name="jastadd/*.java"/>
 		</javac>
-		<javac debug="true" nowarn="true" srcdir="${JastAdd}" destdir="classes" includes="jastadd/*.java" classpath="./classes/:${tools}/beaver-rt.jar:${tools}/junit.jar" />
 	</target>
 
 	<!-- generate compiler source files and compile sources -->
@@ -160,7 +161,7 @@
 	<target name="jar" depends="build">
 		<jar destfile="lib/JastAdd-modules.jar" basedir="classes" includes="**/*.class" excludes="test/**">
 			<manifest>
-				<attribute name="Main-Class" value="jastadd.JastAdd" />
+				<attribute name="Main-Class" value="jastadd.JastAddModules" />
 			</manifest>
 		</jar>
 	</target>
