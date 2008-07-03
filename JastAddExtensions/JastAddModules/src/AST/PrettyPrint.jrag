@@ -1,0 +1,93 @@
+
+aspect PrettyPrint {
+
+	public void ASTNode.printJAModules() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printJAModules();
+		}
+	}
+	public void ModuleCompilationUnit.printJAModules() {
+		System.out.println("------" + this.pathName() + "------");
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printJAModules();
+		}
+		System.out.println("------------------------");
+	}
+	public void ModuleDecl.printJAModules() {
+		System.out.println(this.toString());
+	}
+	public void ModuleImportDecl.printJAModules() {
+		System.out.println(this.toString());
+	}
+	public void ModuleMergeDecl.printJAModules() {
+		System.out.println(this.toString());
+	}
+	public void CompilationUnit.printJAModules() {
+		if (!fromSource()) {
+			return; 
+		}
+		System.out.println("------" + this.pathName() + "------");
+		System.out.println("module: " + getModuleDecl() + ";");
+		ModuleCompilationUnit moduleCU = getModuleCU();
+		String moduleCUPath = null;
+		if (getModuleCU() != null) {
+			moduleCUPath = moduleCU.pathName();
+		}
+		System.out.println("module CU : " + moduleCUPath);
+		System.out.println("------------------------");
+	}
+	
+	public void ModuleDecl.toString(StringBuffer s) {
+		s.append("module ");
+		getModuleAccess().toString(s);
+		s.append(";");
+	}
+	
+	public void ModuleAccess.toString(StringBuffer s) {
+		s.append(getID());
+	}
+	public void NullModuleAccess.toString(StringBuffer s) {
+		s.append("null");
+	}
+	
+	public void ModuleImportDecl.toString(StringBuffer s) {
+		s.append("import ");
+		getModuleImportType().toString(s);
+		s.append(" ");
+		getImportModule().toString(s);
+		
+		s.append(" export as ");
+		getExportModule().toString(s);
+		s.append(";");
+	}
+	
+	public void ModuleImportTypeNorm.toString(StringBuffer s) {
+	}
+	
+	public void ModuleImportTypeOwn.toString(StringBuffer s) {
+		s.append("own");
+	}
+	
+	public void ModuleMergeDecl.toString(StringBuffer s) {
+		s.append("merge ");
+		boolean first = true;
+		for (ModuleAccess ma : getMergeModuleList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			ma.toString(s);
+			first = false;
+		}
+		s.append(" ");
+		getMergeAsType().toString(s);
+		s.append(" ");
+		getAsModule().toString(s);
+		s.append(";");
+	}
+	public void MergeAsTypeOwn.toString(StringBuffer s) {
+		s.append("as");
+	}
+	public void MergeAsTypeExport.toString(StringBuffer s) {
+		s.append("export as");
+	}
+}

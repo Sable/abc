@@ -1,0 +1,4 @@
+aspect Y {
+	public void Type.g() {
+	}
+}

@@ -1,0 +1,23 @@
+ModuleCompilationUnit : CompilationUnit ::= 
+	ModuleDecl ModuleMemberDecl*;
+
+ModuleAccess : Access ::= <ID:String>;
+NullModuleAccess : ModuleAccess; //sentinel value, matches no module
+ModuleDecl ::= ModuleAccess;
+
+abstract ModuleMemberDecl;
+ModuleImportDecl : ModuleMemberDecl ::= 
+	ModuleImportType //this is own, or the empty string for a normal import
+	ImportModule:ModuleAccess
+	ExportModule:ModuleAccess; //if no export, then set to the false access
+abstract ModuleImportType; //just a type to distinguish the method of import
+ModuleImportTypeNorm : ModuleImportType;
+ModuleImportTypeOwn : ModuleImportType;
+
+ModuleMergeDecl : ModuleMemberDecl ::= 
+	MergeModule:ModuleAccess* 
+	MergeAsType 
+	AsModule:ModuleAccess;
+abstract MergeAsType; //same here, determines the type of the merge as
+MergeAsTypeOwn : MergeAsType;
+MergeAsTypeExport : MergeAsType; 

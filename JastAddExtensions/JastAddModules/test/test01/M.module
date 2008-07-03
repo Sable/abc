@@ -1,0 +1,6 @@
+module M;
+import M2;
+import own M3;
+import own M4 export as PublicM4;
+merge M2, M3, M4 as MyMs;
+merge M2, M3, M4 export as MyMs;

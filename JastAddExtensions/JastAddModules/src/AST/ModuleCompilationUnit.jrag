@@ -1,0 +1,124 @@
+
+aspect ModuleCompilationUnit {
+
+	//adapted from ASTGrammar.jrag
+	refine ASTGrammar public void Program.addSourceFile(String name) {
+		if(name.endsWith(".module")) {
+			loadModuleFile(name);
+		}
+		else {
+			ASTGrammar.Program.addSourceFile(name);
+		}
+	}
+
+	public void Program.loadModuleFile(String name) {
+		try {
+			File inFile = new File(name);
+			FileInputStream is = new FileInputStream(inFile);
+			scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+			scanner.enterJastAdd();
+			CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.jamodule_compilation_unit);
+			scanner.previousState();
+			is.close();
+			cu.setPathName(inFile.getAbsolutePath());
+			addCompilationUnit(cu);
+		} catch (Exception e) {
+			throw new Error(e.getMessage());
+		}
+	}
+	
+	refine ASTGrammar private void Program.loadASTFile(String name) {
+		try {
+			FileInputStream is = new FileInputStream(name);
+			scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+			scanner.enterJastAdd();
+			CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.ast_file);
+			scanner.previousState();
+			is.close();
+			List importList = cu.getImportDeclList();
+			for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+				TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
+				CompilationUnit unit = new CompilationUnit(
+					cu.getPackageDecl(),
+					(List)importList.fullCopy(),
+					new List().add(typeDecl)
+				);
+				unit.setFromSource(true);
+				unit.setRelativeName(name);
+				//NEIL: Added modules for generated AST files
+				unit.setPathName(typeDecl.getID());
+				if (cu.getModuleDecl() != null) {
+					unit.setModuleDecl(cu.getModuleDecl());
+					unit.addChild(cu.getModuleDecl());
+				}
+				addCompilationUnit(unit);
+			}
+		} catch (Exception e) {
+			throw new Error(e.getMessage());
+		}
+	}
+	
+
+	//Todo: Add a lookup to the ModuleCompilationUnit
+	ModuleDecl CompilationUnit.moduleDecl;
+	
+	public ModuleDecl CompilationUnit.getModuleDecl() {
+		return this.moduleDecl;
+	} 
+	public void CompilationUnit.setModuleDecl(ModuleDecl decl) {
+		this.moduleDecl = decl;
+	}
+	
+	//may be too expensive to cache 
+	syn lazy ModuleCompilationUnit ASTNode.getModuleCU(ModuleAccess access) {
+		if (access == null) {
+			return null;
+		}
+		ModuleCompilationUnit ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleCU(access);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return ret;
+	}
+	syn lazy ModuleCompilationUnit CompilationUnit.getModuleCU(ModuleAccess access) {
+		return null;
+	}
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.getModuleCU(ModuleAccess access) {
+		if (access == null) {
+			return null;
+		}
+		ModuleCompilationUnit ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).getModuleCU(access);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return ret;
+	}
+	syn lazy ModuleCompilationUnit ModuleDecl.getModuleCU(ModuleAccess access) {
+		if (getModuleAccess().getID().compareTo(access.getID()) == 0) {
+			return getModuleCompilationUnit();
+		} else {
+			return null;
+		}
+	}
+	
+	public ModuleCompilationUnit CompilationUnit.getModuleCU() {
+		if (this.getModuleDecl() == null) {
+			return null;
+		}
+		return getHostProgram().getModuleCU(this.getModuleDecl().getModuleAccess());
+	}
+	
+	eq Program.getChild(int index).getHostProgram() = this;
+	inh Program CompilationUnit.getHostProgram();
+	
+	eq Program.getChild(int index).getModuleCompilationUnit() = null;
+	eq ModuleCompilationUnit.getChild(int index).getModuleCompilationUnit() = this;
+	inh ModuleCompilationUnit ModuleDecl.getModuleCompilationUnit();
+	inh ModuleCompilationUnit ModuleAccess.getModuleCompilationUnit();
+}

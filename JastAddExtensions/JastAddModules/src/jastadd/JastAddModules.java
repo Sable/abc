@@ -25,6 +25,7 @@ public class JastAddModules extends JastAdd  {
 						return new parser.JavaParser().parse(is, fileName);
 					}
 				});
+		program.printJAModules();
 		if (!result)
 			return false;
 		jastAdd.generate();

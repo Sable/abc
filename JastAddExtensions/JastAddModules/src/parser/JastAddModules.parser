@@ -1,0 +1,130 @@
+%goal goal;
+%goal jamodule_compilation_unit;
+
+//add moduleaccess. is null if no
+//module_decl won't be in order, but I have no choice
+CompilationUnit compilation_unit =
+	ja_module_decl.md modifiers.a package_declaration.p import_declarations.i? type_declarations.t?
+    {: 
+    	AnnotatedCompilationUnit ret = new AnnotatedCompilationUnit(p.getID(), i, t, new Modifiers(a));
+    	ret.setModuleDecl(md); 
+    	ret.addChild(md);
+    	return ret;
+    :}
+    |
+    ja_module_decl.md package_declaration.p import_declarations.i? type_declarations.t? 
+    {: 
+    	CompilationUnit ret = new CompilationUnit(p.getID(), i, t);
+    	ret.setModuleDecl(md); 
+    	ret.addChild(md);
+    	return ret;
+    :}
+	|
+	ja_module_decl.md import_declarations.i? type_declarations.t? 
+	{: 
+		CompilationUnit ret = new CompilationUnit("", i, t);
+    	ret.setModuleDecl(md); 
+    	ret.addChild(md);
+		return ret;
+	:}
+	;
+
+//add moduleaccess
+CompilationUnit ast_file =
+	ja_module_decl.md package_declaration.p import_declarations.i? ast_declarations.t? 
+	{:
+		CompilationUnit ret = new CompilationUnit(p.getID(), i, t);
+		ret.setModuleDecl(md);
+		ret.addChild(md);
+		return ret; 
+	:}
+	|
+	ja_module_decl.md import_declarations.i? ast_declarations.t? 
+	{: 
+		CompilationUnit ret = new CompilationUnit("", i, t);
+		ret.setModuleDecl(md);
+		ret.addChild(md);
+		return ret; 
+	:};
+
+ModuleCompilationUnit jamodule_compilation_unit = 
+	ja_module_decl.md ja_module_member_list.jml? 
+	{:
+		return new ModuleCompilationUnit("", new List(), new List(), md, jml);
+	:};
+
+ModuleAccess ja_module_access =
+	IDENTIFIER //TODO: Change to dotted name once you figure
+	{:
+		//TODO: Add start/stop locations
+		return new ModuleAccess(IDENTIFIER);
+	:};
+	
+ModuleDecl ja_module_decl =
+	MODULE ja_module_access.ma SEMICOLON
+	{:
+		return new ModuleDecl(ma);
+	:};
+
+List ja_module_member_list =
+	ja_module_member.mm
+	{:
+		return new List().add(mm);
+	:}
+	|
+	ja_module_member_list.mml ja_module_member.mm 
+	{:
+		return mml.add(mm);
+	:};
+
+ModuleMemberDecl ja_module_member =
+	ja_module_import_decl.mid
+	{:
+		return mid; 
+	:}
+	|
+	ja_module_merge_decl.mmd
+	{:
+		return mmd;
+	:};
+
+ModuleImportDecl ja_module_import_decl =
+	IMPORT ja_module_access.ma SEMICOLON
+	{:
+		return new ModuleImportDecl(new ModuleImportTypeNorm(), ma, new NullModuleAccess());
+	:}
+	|
+	IMPORT OWN ja_module_access.ma SEMICOLON 
+	{:
+		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, new NullModuleAccess());
+	:}
+	|
+	IMPORT OWN ja_module_access.ma EXPORT AS ja_module_access.mb SEMICOLON 
+	{:
+		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, mb);
+	:};
+
+ModuleMergeDecl ja_module_merge_decl =
+	MERGE module_access_list.mal AS ja_module_access.ma SEMICOLON
+	{:
+		return new ModuleMergeDecl(mal, new MergeAsTypeOwn(), ma);
+	:}
+	|
+	MERGE module_access_list.mal EXPORT AS ja_module_access.ma SEMICOLON
+	{:
+		return new ModuleMergeDecl(mal, new MergeAsTypeExport(), ma);
+	:};
+
+List module_access_list =
+	ja_module_access.ma COMMA ja_module_access.ma2 
+	{:
+		List ret = new List();
+		ret.add(ma);
+		ret.add(ma2);
+		return ret;
+	:}
+	|
+	module_access_list.mal COMMA ja_module_access.ma
+	{:
+		return mal.add(ma);
+	:};
