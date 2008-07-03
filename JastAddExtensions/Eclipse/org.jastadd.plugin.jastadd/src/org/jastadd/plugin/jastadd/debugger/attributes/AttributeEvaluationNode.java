@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ParameterDeclaration;
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
 
 /**
  * Represents an attribute with its value, if computed.
@@ -98,7 +97,7 @@ public class AttributeEvaluationNode implements AttributeNode {
 			
 			
 		} catch (DebugException e) {
-			ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+			ILog log = Platform.getLog(Activator.getInstance().getBundle());
 			log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 		}
 	}
@@ -186,10 +185,10 @@ public class AttributeEvaluationNode implements AttributeNode {
 				// We're not in a state to calculate the value
 			}
 		} catch (CoreException e) {
-			ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+			ILog log = Platform.getLog(Activator.getInstance().getBundle());
 			log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 		} catch (NonPrimitiveTypeException e) {
-			ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+			ILog log = Platform.getLog(Activator.getInstance().getBundle());
 			log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 		}		
 	}

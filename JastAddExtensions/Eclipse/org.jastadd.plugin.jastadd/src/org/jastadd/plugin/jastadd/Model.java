@@ -21,7 +21,13 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
+import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
+import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
+import org.jastadd.plugin.jastadd.generated.AST.ASTOptionalChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
 import org.jastadd.plugin.jastadd.generated.AST.Access;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
@@ -140,9 +146,99 @@ public class Model extends JastAddJModel {
 	public ArrayList<AttributeDecl> lookupJVMName(IProject project, String packageName) {
 		ArrayList<AttributeDecl> nameList = new ArrayList<AttributeDecl>();
 		
+		TypeDecl decl = getTypeDecl(project, packageName);
+		
+		if (decl == null) {
+			// We didn't find a match, so we return an empty list
+			return nameList;
+		}
+		
+		// Find attribute declaration
+		AttributeDecl aDecl = null;
+		//if(decl.name().equals("Block") && decl.memberMethods("b").isEmpty())
+		//	System.out.println("Strange");
+		for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
+			MethodDecl mDecl = (MethodDecl)itr.next();
+		//	System.out.println(mDecl.signature());
+			if (mDecl instanceof AttributeDecl) {
+				aDecl = (AttributeDecl)mDecl;
+				nameList.add(aDecl);
+			}
+		}
+		if(decl instanceof ASTDecl) {
+			ASTDecl astDecl = (ASTDecl)decl;
+			for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
+				ASTChild c = (ASTChild)iter.next();
+				if(c instanceof ASTElementChild) {
+					// A ::= B;
+					
+				}
+				else if(c instanceof ASTListChild) {
+					// A ::= B*
+					
+				}
+				else if(c instanceof ASTOptionalChild) {
+					// A ::= [B]
+					
+				}
+				else if(c instanceof ASTTokenChild) {
+					// A ::= <ID:String>
+					
+				}
+				
+			}
+		}
+		/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+		}*/
+		return nameList;
+	}
+	
+	public LinkedList<ASTChild> lookupASTChildren(IProject project, String packageName) {
+		LinkedList<ASTChild> childList = new LinkedList<ASTChild>();
+		
+		TypeDecl decl = getTypeDecl(project, packageName);
+		
+		if (decl == null) {
+			// We didn't find a match, so we return an empty list
+			return childList;
+		}
+
+		if(decl instanceof ASTDecl) {
+			ASTDecl astDecl = (ASTDecl)decl;
+			for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
+				ASTChild c = (ASTChild)iter.next();
+				childList.add(c);
+				
+				if(c instanceof ASTElementChild) {
+					// A ::= B;
+					
+				}
+				else if(c instanceof ASTListChild) {
+					// A ::= B*
+					
+				}
+				else if(c instanceof ASTOptionalChild) {
+					// A ::= [B]
+					
+				}
+				else if(c instanceof ASTTokenChild) {
+					// A ::= <ID:String>
+					
+				}
+				
+			}
+		}
+		/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+		}*/
+		return childList;
+	}
+
+	private TypeDecl getTypeDecl(IProject project, String packageName) {
 		IProgram p = getProgram(project);
 		if (!(p instanceof Program))
-			return nameList;
+			return null;
 		Program program = (Program)p;
 		
 		int packageEndIndex = packageName.lastIndexOf('.');
@@ -171,7 +267,7 @@ public class Model extends JastAddJModel {
 				if (index < 0) {
 					// Search failed -- Cannot find a type declaration and 
 					// there are no $ left in the type name
-					return nameList;
+					return null;
 				} else {
 					tName += "$" + innerName.substring(0, index);
 					innerName = innerName.substring(index + 1);
@@ -197,7 +293,7 @@ public class Model extends JastAddJModel {
 					}
 				} else {
 					// No more names to test and we haven't found a match
-					return nameList;
+					return null;
 				}
 				SimpleSet typeSet = decl.memberTypes(innerName);
 				if (!typeSet.isEmpty()) {
@@ -216,22 +312,7 @@ public class Model extends JastAddJModel {
 				}	
 			}
 		}
-		// Find attribute declaration
-		AttributeDecl aDecl = null;
-		//if(decl.name().equals("Block") && decl.memberMethods("b").isEmpty())
-		//	System.out.println("Strange");
-		for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
-			MethodDecl mDecl = (MethodDecl)itr.next();
-		//	System.out.println(mDecl.signature());
-			if (mDecl instanceof AttributeDecl) {
-				aDecl = (AttributeDecl)mDecl;
-				nameList.add(aDecl);
-			}
-		}
-		/*if(nameList.isEmpty()) {
-			System.out.println("Strange");
-		}*/
-		return nameList;
+		return decl;
 	}
 	
 	protected void completeBuild(IProject project) {

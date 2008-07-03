@@ -105,10 +105,15 @@
        point="org.eclipse.ui.views">
     <view
           allowMultiple="false"
+          category="org.jastadd.plugin.jastadd.debug"
           class="org.jastadd.plugin.jastadd.debugger.attributes.AttributeView"
           id="org.jastadd.plugin.jastadd.debugger.attributes.AttributeView"
           name="Attribute View">
     </view>
+    <category
+          id="org.jastadd.plugin.jastadd.debug"
+          name="JastAdd Debug">
+    </category>
  </extension>
  <extension
        point="org.eclipse.ui.popupMenus">

@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.debug.ui.AbstractDebugView;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugUIConstants;
@@ -19,10 +20,10 @@ import org.eclipse.debug.ui.contexts.IDebugContextListener;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -33,18 +34,21 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.Model;
+import org.jastadd.plugin.jastadd.debugger.attributes.AttributeChildNode.AttributeChildNested;
 import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.AttributeEvaluationNested;
 import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.AttributeState;
+import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.builder.ui.UIUtil;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -73,13 +77,13 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 	protected void configureToolBar(IToolBarManager tbm) {
 		tbm.add(new Separator(this.getClass().getName()));
 		tbm.add(new Separator(IDebugUIConstants.RENDER_GROUP));
-		tbm.add(getAction("RefreshView"));
+//		tbm.add(getAction("RefreshView"));
 	}
 
 	@Override
 	protected void createActions() {
-		IAction action = new RefreshAttributeViewAction(this);
-		setAction("RefreshView",action);
+//		IAction action = new RefreshAttributeViewAction(this);
+//		setAction("RefreshView",action);
 	}
 
 	public void setInput(IJavaVariable root, IJavaThread thread) {
@@ -101,7 +105,7 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 			try {
 				setContentDescription("Evaluating variable \"" + root.getName() + "\" (" + root.getValue().getReferenceTypeName() + ")");
 			} catch (DebugException e) {
-				ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+				ILog log = Platform.getLog(Activator.getInstance().getBundle());
 				log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 				setContentDescription("No element selected.");
 			}
@@ -131,11 +135,22 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 		name.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				if (element instanceof AttributeEvaluationNode) {
+				if (element instanceof AttributeNode) {
 					AttributeNode evaluation = (AttributeNode) element;
 					return evaluation.getAttributeName();
 				} else {
 					return "Invalid node";
+				}
+			}
+			
+			@Override
+			public Image getImage(Object element) {
+				if (element instanceof AttributeChildNode) {
+					ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
+					return imgDesc.createImage();					
+				} else {
+					ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/genericvariable_obj.gif");
+					return imgDesc.createImage();
 				}
 			}
 		});
@@ -146,8 +161,8 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 		value.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				if (element instanceof AttributeEvaluationNode) {
-					AttributeEvaluationNode evaluation = (AttributeEvaluationNode) element;
+				if (element instanceof AttributeNode) {
+					AttributeNode evaluation = (AttributeNode) element;
 
 					switch (evaluation.getState()) {
 					case CALCULATED:
@@ -191,28 +206,37 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if (parentElement instanceof AttributeEvaluationNode) {
-				AttributeEvaluationNode evaluationNode = (AttributeEvaluationNode) parentElement;
+			if (parentElement instanceof AttributeNode) {
+				AttributeNode evaluationNode = (AttributeNode) parentElement;
 
 				// We only display the children once we've evaluated the variable
-				if (evaluationNode.getState().equals(AttributeState.CALCULATED)) {
+				if (evaluationNode.getState().equals(AttributeState.CALCULATED) || evaluationNode.getState().equals(AttributeState.PRE_CALCULATED)) {
 
 					// Calculate the variables attributes
 					List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
+					IVariable[] children;
+					IJavaValue javaValue = evaluationNode.getResult();
 					try {
-						atts = getAttributes(evaluationNode.getResult());
-
+						atts = getAttributes(javaValue);
+						//children = getChildren(javaValue);
 					} catch (CoreException e) {
-						ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+						ILog log = Platform.getLog(Activator.getInstance().getBundle());
 						log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 						return new Object[0];
 					}
 
-					List<AttributeEvaluationNode> children = new LinkedList<AttributeEvaluationNode>();
+					List<AttributeNode> nodeChildren = new LinkedList<AttributeNode>();
+					
+//					// Add the children to the tree
+//					for (IVariable child : children) {
+//						IJavaVariable childVariable = (IJavaVariable) child;
+//						nodeChildren.add(new AttributeChildNested(childVariable, evaluationNode));
+//					}
+					
 					for (AttributeDecl attribute : atts) {
-						children.add(new AttributeEvaluationNode.AttributeEvaluationNested(evaluationNode, attribute, thread, getSite().getShell()));
+						nodeChildren.add(new AttributeEvaluationNode.AttributeEvaluationNested(evaluationNode, attribute, thread, getSite().getShell()));
 					}
-					return children.toArray();
+					return nodeChildren.toArray();
 
 				} else {
 					// We have no attributes yet
@@ -226,55 +250,114 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 				IJavaValue javaValue;
 				// Calculate the variables attributes
 				List<AttributeDecl> atts;
+				List<AttributeNode> children;
 				try {
 					javaValue = (IJavaValue) parentVariable.getValue();
 					atts = getAttributes(javaValue);
+					children = getChildren(javaValue);
 
 				} catch (CoreException e) {
-					ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+					ILog log = Platform.getLog(Activator.getInstance().getBundle());
 					log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 					return new Object[0];
 				}
 
-				List<AttributeEvaluationNode> children = new LinkedList<AttributeEvaluationNode>();;
+				// Add the attributes to the tree
+				List<AttributeNode> nodeChildren = new LinkedList<AttributeNode>();;
+				
+				
+				nodeChildren.addAll(children);
+				
+//				// Add the children to the tree
+//				for (IVariable child : children) {
+//					IJavaVariable childVariable = (IJavaVariable) child;
+//					nodeChildren.add(new AttributeChildNode(childVariable, javaValue));
+//				}
+				
+				
 				for (AttributeDecl attribute : atts) {
-
-					children.add(new AttributeEvaluationNode(javaValue, attribute, thread, getSite().getShell()));
+					nodeChildren.add(new AttributeEvaluationNode(javaValue, attribute, thread, getSite().getShell()));
 				}
-				return children.toArray();
+				
+				return nodeChildren.toArray();
 
 			}
 			return new Object[0];
 		}
 
 		private List<AttributeDecl> getAttributes(IJavaValue parentValue) throws CoreException {
+			List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
+			
 			// Get the launch attributes of the launch associated with this variable
 			IProject project = AttributeUtils.getProject(parentValue);
 
-			List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
+			Model model = getModel(project);
+			
+			if (model != null) {
+				synchronized(model) {
+					atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
+				}
+			}
+			
+			return atts;
+		}
 
+		private Model getModel(IProject project) {
+			Model model = null;
+			
 			if (project.exists()) {
 				List<JastAddModel> models = JastAddModelProvider.getModels(project);
 
 
 				for (JastAddModel jastAddModel : models) {
 					if (jastAddModel instanceof Model) {
-						Model model = (Model) jastAddModel;
+						model = (Model) jastAddModel;
+					}
+				}
+			}
+			return model;
+		}
+
+		public List<AttributeNode> getChildren(IJavaValue parent) throws CoreException {
+			List<AttributeNode> children = new LinkedList<AttributeNode>();
+			
+			for (IVariable variable : parent.getVariables()) {
+				if (variable.getName().equals("children")) {
+					
+					// Get the children
+					IVariable[] listVariables = variable.getValue().getVariables();
+					
+					// Get the launch attributes of the launch associated with this variable
+					IProject project = AttributeUtils.getProject(parent);
+
+					Model model = getModel(project);
+					
+					if (model != null) {
 						synchronized(model) {
-							atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
+							List<ASTChild> astChildren = model.lookupASTChildren(project, parent.getReferenceTypeName());
+							if (astChildren.size() == listVariables.length) {
+								for (int i = 0; i < listVariables.length; i++) {
+									//children.add(new AttributeChildNode());
+								}
+							} else {
+								// Throw error, the model is inconsistent with the debugging data
+							}
 						}
 					}
 				}
 			}
-			return atts;
+			return children;
 		}
-
+		
 		@Override
 		public Object getParent(Object element) {
-			if (element instanceof AttributeEvaluationNested) {
+			if (element instanceof AttributeChildNested) {
+				AttributeChildNested evaluationNode = (AttributeChildNested) element;
+				return evaluationNode.getParent();
+			} else if (element instanceof AttributeEvaluationNested) {
 				AttributeEvaluationNested evaluationNode = (AttributeEvaluationNested) element;
 				return evaluationNode.getParent();
-			} else if (element instanceof AttributeEvaluationNode) {
+			} else if (element instanceof AttributeNode) {
 				AttributeNode evaluationNode = (AttributeNode) element;
 				return evaluationNode.getParentValue();
 			}

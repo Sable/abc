@@ -1,7 +1,5 @@
 package org.jastadd.plugin.jastadd;
 
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
-import org.osgi.framework.BundleContext;
 
 public class Activator extends org.jastadd.plugin.BaseJastAddActivator {
 	public static String JASTADD_PLUGIN_ID = "org.jastadd.plugin.jastadd";
@@ -11,7 +9,7 @@ public class Activator extends org.jastadd.plugin.BaseJastAddActivator {
 		INSTANCE = this;
 	}
 	
-	public static Activator getInstnace() {
+	public static Activator getInstance() {
 		return INSTANCE;
 	}
 	

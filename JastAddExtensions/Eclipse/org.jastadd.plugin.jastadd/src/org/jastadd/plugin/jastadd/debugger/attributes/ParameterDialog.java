@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.NonPrimitiveTypeException;
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
 
 /**
  * Displays a list of parameters that are required for a particular method,
@@ -119,7 +118,7 @@ public class ParameterDialog extends Dialog {
 				} catch (NumberFormatException ex) {
 					return false;
 				} catch (NonPrimitiveTypeException e) {
-					ILog log = Platform.getLog(JastAddJActivator.getInstance().getBundle());
+					ILog log = Platform.getLog(Activator.getInstance().getBundle());
 					log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 					return false;
 				}
