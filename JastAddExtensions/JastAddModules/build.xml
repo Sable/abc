@@ -98,7 +98,7 @@
 	<target name="scanner">
 		<mkdir dir="generated/scanner" />
 		<!-- generate the scanner -->
-		<jflex file="JastAdd.flex" outdir="generated/scanner" nobak="yes" />
+		<jflex file="src/scanner/JastAdd.flex" outdir="generated/scanner" nobak="yes" />
 		<copy todir="generated/scanner" file="${Java1.4Frontend}/scanner/Unicode.java" preservelastmodified="true" />
 	</target>
 
@@ -136,25 +136,29 @@
 			<fileset dir="." includes="generated/beaver/**/*.class" />
 			<fileset dir="." includes="generated/parser/**/*.class" />
 			<fileset dir="." includes="generated/scanner/**/*.class" />
-			<fileset dir="." includes="*.class" />
+			<fileset dir="." includes="classes/*.class" />
 		</delete>
+		<delete dir="classes/${package}" />
+		<delete dir="classes/beaver"/>
+		<delete dir="classes/parser"/>
+		<delete dir="classes/scanner"/>
+		<delete dir="classes/jastadd"/>
+		<delete file="lib/*.jar"/>
 	</target>
 
 	<!-- remove generated source files -->
 	<target name="cleanGen">
-		<delete dir="${package}" />
+		<delete dir="generated/${package}" />
 		<delete>
-			<fileset dir="generated/beaver" includes="**/*.java" />
-			<fileset dir="generated/parser" includes="*.java" />
-			<fileset dir="generated/parser" includes="JavaParser.beaver" />
-			<fileset dir="generated/parser" includes="JavaParser.all" />
-			<fileset dir="." includes="generated/scanner/*.java" />
 			<fileset dir="." includes="test/*.class" />
 		</delete>
+		<delete dir="generated/beaver"/>
+		<delete dir="generated/parser"/>
+		<delete dir="generated/scanner"/>
 	</target>
 
 	<target name="jar" depends="build">
-		<jar destfile="JastAdd-modules.jar" basedir="." includes="**/*.class" excludes="test/**">
+		<jar destfile="lib/JastAdd-modules.jar" basedir="classes" includes="**/*.class" excludes="test/**">
 			<manifest>
 				<attribute name="Main-Class" value="jastadd.JastAdd" />
 			</manifest>
