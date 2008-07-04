@@ -16,7 +16,6 @@ import org.eclipse.jdt.debug.core.IJavaVariable;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -34,7 +33,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastaddj.builder.ui.UIUtil;
 
@@ -96,6 +94,7 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 				setContentDescription("No element selected.");
 			}
 		} else {
+			attributeViewer.setInput(null);
 			setContentDescription("No element selected.");
 		}
 	}
@@ -131,13 +130,10 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 			
 			@Override
 			public Image getImage(Object element) {
-				if (element instanceof AttributeChildNode) {
-					ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
-					return imgDesc.createImage();					
-				} else {
-					ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/genericvariable_obj.gif");
-					return imgDesc.createImage();
+				if (element instanceof AttributeNode) {
+					return ((AttributeNode) element).getImage();	
 				}
+				return null;
 			}
 		});
 

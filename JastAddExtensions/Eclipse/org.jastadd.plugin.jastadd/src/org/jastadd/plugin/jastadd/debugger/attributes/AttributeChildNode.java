@@ -13,7 +13,10 @@ import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
@@ -48,7 +51,7 @@ public class AttributeChildNode extends AttributeNode {
 
 	@Override
 	public String getNameString() {
-		return child.getName();
+		return child.toString();
 	}
 
 
@@ -68,43 +71,46 @@ public class AttributeChildNode extends AttributeNode {
 			LinkedList<AttributeNode> children = new LinkedList<AttributeNode>();
 			try {
 				ASTListChild childList = (ASTListChild) child;
-				
+
 				IVariable listVariable = getVariable("children", getCurrent().getVariables());
 				if (listVariable != null) {
 					final IVariable[] listVariableChildren = listVariable.getValue().getVariables();
-	
+
 					final AttributeNode parent = this;
-					
-					//if (listVariableChildren.length == childList.getNumChild()) {
-						for (int i = 0; i < listVariableChildren.length; i++) {
-							final int j = i;
-							children.add(new AttributeNode() {
 
-								@Override
-								public IJavaValue getCurrent() {
-									try {
-										return (IJavaValue) listVariableChildren[j].getValue();
-									} catch (DebugException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-										return null;
-									}
-								}
+					for (int i = 0; i < listVariableChildren.length; i++) {
+						final int j = i;
+						children.add(new AttributeNode() {
 
-								@Override
-								public String getNameString() {
-									return child.name();
+							@Override
+							public IJavaValue getCurrent() {
+								try {
+									return (IJavaValue) listVariableChildren[j].getValue();
+								} catch (DebugException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+									return null;
 								}
+							}
 
-								@Override
-								public AttributeNode getParent() {
-									return parent;
-								}
-								
-							});
-							//children.add(new AttributeChildNode((IJavaVariable) listVariableChildren[i], (ASTChild) childList.getChild(i), this));
-						}
-					//}
+							@Override
+							public String getNameString() {
+								return child.name();
+							}
+
+							@Override
+							public AttributeNode getParent() {
+								return parent;
+							}
+							
+							@Override
+							public Image getImage() {
+								ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
+								return imgDesc.createImage();		
+							}
+
+						});
+					}
 				}
 			} catch (DebugException e) {
 				// TODO Auto-generated catch block
@@ -128,6 +134,12 @@ public class AttributeChildNode extends AttributeNode {
 		return super.getChildren(thread, shell);
 	}
 
+	@Override
+	public Image getImage() {
+		ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
+		return imgDesc.createImage();
+	}
+	
 	private static IVariable getVariable(String name, IVariable[] variables) throws DebugException {
 		for (IVariable variable : variables) {
 			if (variable.getName().equals(name)) {
@@ -136,7 +148,7 @@ public class AttributeChildNode extends AttributeNode {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public AttributeNode getParent() {
 		return parent;

@@ -14,7 +14,10 @@ import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
@@ -127,6 +130,11 @@ public abstract class AttributeNode {
 		return model;
 	}
 
+	public Image getImage() {
+		ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/genericvariable_obj.gif");
+		return imgDesc.createImage();
+	}
+	
 	public abstract AttributeNode getParent();
 	
 	/**
