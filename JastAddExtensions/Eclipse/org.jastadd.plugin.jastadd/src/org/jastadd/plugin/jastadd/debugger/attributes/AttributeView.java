@@ -60,11 +60,13 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 	protected void configureToolBar(IToolBarManager tbm) {
 		tbm.add(new Separator(this.getClass().getName()));
 		tbm.add(new Separator(IDebugUIConstants.RENDER_GROUP));
+		// Actions can be added like so:
 //		tbm.add(getAction("RefreshView"));
 	}
 
 	@Override
 	protected void createActions() {
+		// Actions can be added like so:
 //		IAction action = new RefreshAttributeViewAction(this);
 //		setAction("RefreshView",action);
 	}
@@ -85,8 +87,9 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 			try {
 				this.thread = thread;
 				this.root = root;
-				
+
 				attributeViewer.setInput(new AttributeNode.AttributeRoot((IJavaValue) root.getValue()));
+
 				setContentDescription("Evaluating variable \"" + root.getName() + "\" (" + root.getValue().getReferenceTypeName() + ")");
 			} catch (DebugException e) {
 				ILog log = Platform.getLog(Activator.getInstance().getBundle());
@@ -234,20 +237,18 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 
 	@Override
 	protected void fillContextMenu(IMenuManager menu) {
-		// TODO Auto-generated method stub
-
+		// No context menu
 	}
 
 	@Override
 	protected String getHelpContextId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void debugContextChanged(DebugContextEvent event) {
 		if ((event.getFlags() & DebugContextEvent.ACTIVATED) > 0) {
-			// TODO Update actions here
+			// Update actions here
 			setInput(null, null);
 		}
 	}

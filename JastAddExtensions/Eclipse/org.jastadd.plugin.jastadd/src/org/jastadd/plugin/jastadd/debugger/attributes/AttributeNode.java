@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
@@ -21,6 +22,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -43,6 +45,7 @@ public abstract class AttributeNode {
 	 * @return
 	 */
 	public List<AttributeNode> getChildren(IJavaThread thread, Shell shell) {
+		// Store current variable to ensure consistency when getting children.
 		IJavaValue current = getCurrent();
 		
 		List<AttributeNode> children = new LinkedList<AttributeNode>();
@@ -67,7 +70,13 @@ public abstract class AttributeNode {
 		return children;
 	}
 	
-	protected static List<AttributeDecl> getAttributes(IJavaValue parentValue) throws CoreException {
+	/**
+	 * Gets the attributes associated with this node
+	 * @param parentValue
+	 * @return
+	 * @throws CoreException
+	 */
+	protected List<AttributeDecl> getAttributes(IJavaValue parentValue) throws CoreException {
 		List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
 		
 		// Get the launch attributes of the launch associated with this variable
@@ -75,7 +84,7 @@ public abstract class AttributeNode {
 
 		Model model = getModel(project);
 		
-		if (model != null) {
+		if (model != null && parentValue.getJavaType() != null) {
 			synchronized(model) {
 				atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
 			}
@@ -84,6 +93,12 @@ public abstract class AttributeNode {
 		return atts;
 	}
 
+	/**
+	 * Gets the attribute children of this node.
+	 * @param parent
+	 * @return
+	 * @throws CoreException
+	 */
 	protected List<AttributeNode> getAttributeChildren(IJavaValue parent) throws CoreException {
 		List<AttributeNode> children = new LinkedList<AttributeNode>();
 		
@@ -101,33 +116,53 @@ public abstract class AttributeNode {
 				if (model != null) {
 					synchronized(model) {
 						List<ASTChild> astChildren = model.lookupASTChildren(project, parent.getReferenceTypeName());
-						if (astChildren.size() == listVariables.length) {
-							for (int i = 0; i < listVariables.length; i++) {								
-								children.add(new AttributeChildNode((IJavaVariable) listVariables[i], astChildren.get(i), this));
+						
+						
+						// This is to deal with the fact "ASTTokenChild" objects don't appear in the children
+						// list. Thus, we need to keep a count of where we are in both the ASTChildren and the variable children
+						int variablePos = 0;
+						for (int astPos = 0; astPos < astChildren.size(); astPos++) {
+							ASTChild child = astChildren.get(astPos);
+							if (child instanceof ASTTokenChild) {
+
+								// If this is a token, the value is stored in memory at token$value
+								IVariable childVariable = getVariable(child.name() + "$value", parent.getVariables());
+								if (childVariable != null) {
+									children.add(new AttributeChildNode((IJavaVariable) childVariable, child, this));
+								}
+								
+							} else {
+								children.add(new AttributeChildNode((IJavaVariable) listVariables[variablePos], child, this));
+								variablePos++;
 							}
-						} else {
-							// Throw error, the model is inconsistent with the debugging data
 						}
 					}
 				}
+				break;
 			}
 		}
 		return children;
 	}
 	
+	
+	/**
+	 * Utility method for getting the model based on the project.
+	 * 
+	 * Returns the first model found, or null if no model is found.
+	 * @param project
+	 * @return
+	 */
 	private static Model getModel(IProject project) {
-		Model model = null;
-		
 		if (project.exists()) {
 			List<JastAddModel> models = JastAddModelProvider.getModels(project);
 
 			for (JastAddModel jastAddModel : models) {
 				if (jastAddModel instanceof Model) {
-					model = (Model) jastAddModel;
+					return(Model) jastAddModel;
 				}
 			}
 		}
-		return model;
+		return null;
 	}
 
 	public Image getImage() {
@@ -144,6 +179,23 @@ public abstract class AttributeNode {
 		return getCurrent().toString();
 	}
 
+	/**
+	 * Utility method for extracting a particular variable from an array of variables,
+	 * based upon the variables name. Returns null if no such variable is found.
+	 * @param name
+	 * @param variables
+	 * @return
+	 * @throws DebugException
+	 */
+	protected static IVariable getVariable(String name, IVariable[] variables) throws DebugException {
+		for (IVariable variable : variables) {
+			if (variable.getName().equals(name)) {
+				return variable;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * @return the name string to display to the user
 	 */
