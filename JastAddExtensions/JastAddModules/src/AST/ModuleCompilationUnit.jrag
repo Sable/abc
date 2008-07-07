@@ -29,12 +29,18 @@ aspect ModuleCompilationUnit {
 	
 	refine ASTGrammar private void Program.loadASTFile(String name) {
 		try {
-			FileInputStream is = new FileInputStream(name);
+			File inFile = new File(name);
+			FileInputStream is = new FileInputStream(inFile);
+			
+			//parse AST file
 			scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
 			scanner.enterJastAdd();
 			CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.ast_file);
 			scanner.previousState();
 			is.close();
+			cu.setPathName(inFile.getAbsolutePath());
+			
+			//generate ASTNode CUs
 			List importList = cu.getImportDeclList();
 			for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
 				TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
@@ -45,8 +51,10 @@ aspect ModuleCompilationUnit {
 				);
 				unit.setFromSource(true);
 				unit.setRelativeName(name);
+				
 				//NEIL: Added modules for generated AST files
-				unit.setPathName(typeDecl.getID());
+				unit.setPathName(typeDecl.getID()); //possibly temporary, just to make it easier to read cu debug prints. Original value was "."
+				unit.setOrigASTCompilationUnit(cu);
 				if (cu.getModuleDecl() != null) {
 					unit.setModuleDecl(cu.getModuleDecl());
 					unit.addChild(cu.getModuleDecl());
@@ -59,7 +67,6 @@ aspect ModuleCompilationUnit {
 	}
 	
 
-	//Todo: Add a lookup to the ModuleCompilationUnit
 	ModuleDecl CompilationUnit.moduleDecl;
 	
 	public ModuleDecl CompilationUnit.getModuleDecl() {
@@ -70,36 +77,36 @@ aspect ModuleCompilationUnit {
 	}
 	
 	//may be too expensive to cache 
-	syn lazy ModuleCompilationUnit ASTNode.getModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit ASTNode.lookupModuleCU(ModuleAccess access) {
 		if (access == null) {
 			return null;
 		}
 		ModuleCompilationUnit ret = null;
 		for (int i = 0 ; i < getNumChild(); i++) {
-			ret = getChild(i).getModuleCU(access);
+			ret = getChild(i).lookupModuleCU(access);
 			if (ret != null) {
 				return ret;
 			}
 		}
 		return ret;
 	}
-	syn lazy ModuleCompilationUnit CompilationUnit.getModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit CompilationUnit.lookupModuleCU(ModuleAccess access) {
 		return null;
 	}
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.getModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.lookupModuleCU(ModuleAccess access) {
 		if (access == null) {
 			return null;
 		}
 		ModuleCompilationUnit ret = null;
 		for (int i = 0 ; i < getNumChild(); i++) {
-			ret = getChild(i).getModuleCU(access);
+			ret = getChild(i).lookupModuleCU(access);
 			if (ret != null) {
 				return ret;
 			}
 		}
 		return ret;
 	}
-	syn lazy ModuleCompilationUnit ModuleDecl.getModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit ModuleDecl.lookupModuleCU(ModuleAccess access) {
 		if (getModuleAccess().getID().compareTo(access.getID()) == 0) {
 			return getModuleCompilationUnit();
 		} else {
@@ -107,11 +114,11 @@ aspect ModuleCompilationUnit {
 		}
 	}
 	
-	public ModuleCompilationUnit CompilationUnit.getModuleCU() {
+	public ModuleCompilationUnit CompilationUnit.lookupModuleCU() {
 		if (this.getModuleDecl() == null) {
 			return null;
 		}
-		return getHostProgram().getModuleCU(this.getModuleDecl().getModuleAccess());
+		return getHostProgram().lookupModuleCU(this.getModuleDecl().getModuleAccess());
 	}
 	
 	eq Program.getChild(int index).getHostProgram() = this;
@@ -121,4 +128,15 @@ aspect ModuleCompilationUnit {
 	eq ModuleCompilationUnit.getChild(int index).getModuleCompilationUnit() = this;
 	inh ModuleCompilationUnit ModuleDecl.getModuleCompilationUnit();
 	inh ModuleCompilationUnit ModuleAccess.getModuleCompilationUnit();
+	
+	protected CompilationUnit CompilationUnit.origASTCompilationUnit = null;
+	public CompilationUnit CompilationUnit.getOrigASTCompilationUnit() {
+		return this.origASTCompilationUnit;
+	}
+	public void CompilationUnit.setOrigASTCompilationUnit(CompilationUnit astCU) {
+		this.origASTCompilationUnit = astCU;
+	}
+	public boolean CompilationUnit.isGeneratedFromAST() {
+		return (this.origASTCompilationUnit != null);
+	}
 }

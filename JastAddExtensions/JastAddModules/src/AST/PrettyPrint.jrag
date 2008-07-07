@@ -28,10 +28,13 @@ aspect PrettyPrint {
 		}
 		System.out.println("------" + this.pathName() + "------");
 		System.out.println("module: " + getModuleDecl() + ";");
-		ModuleCompilationUnit moduleCU = getModuleCU();
+		ModuleCompilationUnit moduleCU = lookupModuleCU();
 		String moduleCUPath = null;
-		if (getModuleCU() != null) {
+		if (lookupModuleCU() != null) {
 			moduleCUPath = moduleCU.pathName();
+		}
+		if (isGeneratedFromAST()) {
+			System.out.println("Original AST file: " + getOrigASTCompilationUnit().pathName());
 		}
 		System.out.println("module CU : " + moduleCUPath);
 		System.out.println("------------------------");
