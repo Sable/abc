@@ -20,6 +20,8 @@ aspect ModuleCompilationUnit {
 			CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.jamodule_compilation_unit);
 			scanner.previousState();
 			is.close();
+			cu.setFromSource(true);
+			cu.setRelativeName(name);
 			cu.setPathName(inFile.getAbsolutePath());
 			addCompilationUnit(cu);
 		} catch (Exception e) {
@@ -39,6 +41,7 @@ aspect ModuleCompilationUnit {
 			scanner.previousState();
 			is.close();
 			cu.setPathName(inFile.getAbsolutePath());
+			cu.setRelativeName(name);
 			
 			//generate ASTNode CUs
 			List importList = cu.getImportDeclList();
@@ -51,14 +54,15 @@ aspect ModuleCompilationUnit {
 				);
 				unit.setFromSource(true);
 				unit.setRelativeName(name);
-				
+				unit.setPathName(".");
+				 
 				//NEIL: Added modules for generated AST files
-				unit.setPathName(typeDecl.getID()); //possibly temporary, just to make it easier to read cu debug prints. Original value was "."
 				unit.setOrigASTCompilationUnit(cu);
 				if (cu.getModuleDecl() != null) {
 					unit.setModuleDecl(cu.getModuleDecl());
 					unit.addChild(cu.getModuleDecl());
 				}
+				
 				addCompilationUnit(unit);
 			}
 		} catch (Exception e) {
@@ -76,6 +80,7 @@ aspect ModuleCompilationUnit {
 		this.moduleDecl = decl;
 	}
 	
+	//TODO: Change when moduleCU is inserted above the normal CUs
 	//may be too expensive to cache 
 	syn lazy ModuleCompilationUnit ASTNode.lookupModuleCU(ModuleAccess access) {
 		if (access == null) {
@@ -113,12 +118,14 @@ aspect ModuleCompilationUnit {
 			return null;
 		}
 	}
-	
 	public ModuleCompilationUnit CompilationUnit.lookupModuleCU() {
 		if (this.getModuleDecl() == null) {
 			return null;
 		}
 		return getHostProgram().lookupModuleCU(this.getModuleDecl().getModuleAccess());
+	}
+	public boolean CompilationUnit.isInJAModule() {
+		return (this.lookupModuleCU() != null);
 	}
 	
 	eq Program.getChild(int index).getHostProgram() = this;

@@ -1,5 +1,9 @@
 ModuleCompilationUnit : CompilationUnit ::= 
-	ModuleDecl ModuleMemberDecl*;
+	ModuleDecl 
+	ModuleMemberDecl* 
+	CompilationUnit*; //CompilationUnit is the list of compilation units that are members of 
+					//this module. These are not filled in at parse time, they are added at 
+					//InsertModuleCUs 
 
 ModuleAccess : Access ::= <ID:String>;
 NullModuleAccess : ModuleAccess; //sentinel value, matches no module

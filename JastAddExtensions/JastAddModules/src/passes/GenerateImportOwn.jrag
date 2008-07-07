@@ -1,0 +1,6 @@
+
+//generates module CUs and clones subtrees as necessary
+//for import owns. Is done after InsertModuleCUs
+aspect GenerateImportOwn {
+
+}

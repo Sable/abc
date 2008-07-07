@@ -1,6 +1,7 @@
 
 aspect PrettyPrint {
 
+	//print JAModule contents
 	public void ASTNode.printJAModules() {
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).printJAModules();
@@ -40,6 +41,45 @@ aspect PrettyPrint {
 		System.out.println("------------------------");
 	}
 	
+	//print AST consisting of Compilation units
+	public void ASTNode.printJAModuleCUAST(int level) {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printJAModuleCUAST(level);
+		}
+	}
+	//TODO: implement remaining parts of traversal
+	public void CompilationUnit.printJAModuleCUAST(int level) {
+		if (!fromSource()) {
+			return;
+		}
+		for (int i = 0; i < level; i++) {
+			System.out.print("\t");
+		}
+		System.out.println(this.relativeName());
+		
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printJAModuleCUAST(level);
+		}
+	}
+	public void ModuleCompilationUnit.printJAModuleCUAST(int level) {
+		for (int i = 0; i < level; i++) {
+			System.out.print("\t");
+		}
+		System.out.println(this.relativeName());
+		
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).printJAModuleCUAST(level + 1);
+		}
+	}
+	
+	public void ModuleCompilationUnit.toString(StringBuffer s) {
+		getModuleDecl().toString(s);
+		s.append("\n");
+		for (ModuleMemberDecl decl : getModuleMemberDeclList()) {
+			decl.toString(s);
+			s.append("\n");
+		}
+	}
 	public void ModuleDecl.toString(StringBuffer s) {
 		s.append("module ");
 		getModuleAccess().toString(s);

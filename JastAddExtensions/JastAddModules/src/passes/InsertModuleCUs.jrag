@@ -1,0 +1,36 @@
+
+//a "rewrite" pass done once all the module CUs are collected. 
+//Module CUs are inserted above the CUs that belong to it
+//Package name mangling from import owns are not taken into 
+//consideration yet, cloning parts of the tree will be done 
+//in a later pass.
+aspect InsertModuleCUs {
+	
+	public void Program.insertModuleCUs() {
+		List childList = (List)getChild(0); //bad, relies on the program child to be the CU list
+		int i = 0;
+		while (i < childList.getNumChild()) {
+			ASTNode child = childList.getChild(i);
+			//if a module cu, proceed to next
+			if (child instanceof ModuleCompilationUnit) {
+				i++;
+				continue;
+			//if a CU but not in a module, continue
+			} else if (child instanceof CompilationUnit && 
+						!(((CompilationUnit)child).isInJAModule())) {
+				i++;
+				continue;//useless case, keep for debugging purposes
+			//if a CU in a module, detach and add to its moduleCU
+			} else if (child instanceof CompilationUnit && 
+						((CompilationUnit)child).isInJAModule()) {
+				CompilationUnit childCU = (CompilationUnit) child;
+				ModuleCompilationUnit moduleCU = childCU.lookupModuleCU(); 
+				childList.removeChild(i); //remove must be here, since the parent node of childCU must not be overwritten
+				moduleCU.getCompilationUnitList().addChild(childCU);
+			} else {
+				i++;
+				System.out.println("Unexpected program child type: " + child.getClass());
+			}
+		}
+	}
+}
