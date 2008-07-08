@@ -41,8 +41,8 @@ BodyDecl syn_eq =
   ;
   
 BodyDecl inh_eq =
-    EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
-    {: return new InhEq(type, child, p1, attribute, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
-  | EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list.p? RPAREN block
-    {: return new InhEq(type, child, p1, attribute, p, block); :}
+    EQUATION name.type DOT IDENTIFIER.CHILD LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.ATTRIBUTE LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
+    {: return new InhEq(type, CHILD, p1, ATTRIBUTE, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
+  | EQUATION name.type DOT IDENTIFIER.CHILD LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.ATTRIBUTE LPAREN formal_parameter_list.p? RPAREN block
+    {: return new InhEq(type, CHILD, p1, ATTRIBUTE, p, block); :}
   ;
