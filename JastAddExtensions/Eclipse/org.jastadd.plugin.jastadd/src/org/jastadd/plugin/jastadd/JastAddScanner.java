@@ -33,7 +33,10 @@ public class JastAddScanner extends JastAddJScanner implements ITokenScanner {
 				"rewrite",
 				"when",
 				"to",
-				"col",
+				"coll",
+				"contributes",
+				"refine",
+				"refined"
 			};
 		for(int i = 0; i < aspect.length; i++) {
 			words.addWord(aspect[i], aspectToken);

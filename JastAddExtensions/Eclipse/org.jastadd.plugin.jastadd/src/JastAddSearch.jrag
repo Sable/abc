@@ -1,3 +1,14 @@
 aspect JastAddSearch {
   eq SynEq.declaration() = decl();
+  eq InhEq.declaration() = decl();
+  eq ContributionDecl.declaration() = decl();
+  
+  eq ContributionDecl.selectionLine() = getTargetType().selectionLine();
+  eq ContributionDecl.selectionColumn() = getTargetType().selectionColumn();
+  eq ContributionDecl.selectionLength() = getTargetType().selectionLength();
+  
+  eq InhEq.selectionLine() = ASTNode.getLine(AttributeNamestart);
+  eq InhEq.selectionColumn() = ASTNode.getColumn(AttributeNamestart);
+  eq InhEq.selectionLength() = ASTNode.getColumn(AttributeNameend) - selectionColumn() + 1;
+  
 }

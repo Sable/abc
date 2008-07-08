@@ -169,6 +169,11 @@ ZeroToThree = [0-3]
   "to" { return sym(Terminals.TO); }
   "circular" { return sym(Terminals.CIRCULAR); }
   "sons" { return sym(Terminals.PUBLIC); }
+  "nta" { return sym(Terminals.NTA); }
+  "refine" { return sym(Terminals.REFINE); }
+  "refined" { return sym(Terminals.REFINED); }
+  "coll" { return sym(Terminals.COLL); }
+  "contributes" { return sym(Terminals.CONTRIBUTES); }
 }
 
 
@@ -235,6 +240,8 @@ ZeroToThree = [0-3]
   "volatile"                     { return sym(Terminals.VOLATILE); }
   "while"                        { return sym(Terminals.WHILE); }
 
+  "enum" { return sym(Terminals.ENUM); }
+ 
   // 3.10 Literals
   
   // 3.10.1 Integer Literals

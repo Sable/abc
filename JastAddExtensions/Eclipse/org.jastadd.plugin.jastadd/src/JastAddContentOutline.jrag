@@ -1,7 +1,7 @@
 aspect JastAddContentOutline {
   eq SynEq.showInContentOutline() = true;
   eq InhEq.showInContentOutline() = true;
-  
+  eq ContributionDecl.showInContentOutline() = true;
   
   eq IntertypeMethodDecl.contentOutlineLabel() {
      StringBuffer res = new StringBuffer(type().typeName());
@@ -47,6 +47,13 @@ aspect JastAddContentOutline {
      res.append(")");
      return res.toString();
    }
+
+   eq ContributionDecl.contentOutlineLabel() {
+     StringBuffer res = new StringBuffer();
+     res.append("contribution to " + getCollType().type().typeName() + "." + getID());
+     return res.toString();
+   }
+
 	
 	eq ASTDecl.showInContentOutline() = true;
 	eq ASTDecl.contentOutlineLabel() = getID();
