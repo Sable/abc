@@ -46,7 +46,7 @@ aspect IntertypeFieldErrorCheck {
       }
     }
     if(!introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
-      error("Host of an intertype declaration must be a weavable class");
+      error("Host of an intertype field declaration must be a weavable class");
 
   }
 

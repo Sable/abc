@@ -11,7 +11,7 @@ aspect IntertypeConstructorErrorCheck {
 
   public void IntertypeConstructorDecl.nameCheck() {
     if(!introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
-      error("Host of an intertype declaration must be a weavable class");
+      error("Host of an intertype constructor declaration must be a weavable class");
   }
 
   refine TypeCheck public void ClassInstanceExpr.typeCheck() {

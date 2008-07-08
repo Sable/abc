@@ -126,8 +126,9 @@ aspect IntertypeMethodCodegeneration {
   }
 
   public ASTNode VarAccess.boundCopy() {
-    if(decl() instanceof FieldDeclaration)
-      return new BoundFieldAccess((FieldDeclaration)decl());
+    Variable v = decl();
+    if(v instanceof FieldDeclaration && !v.type().isUnknown())
+      return new BoundFieldAccess((FieldDeclaration)v);
     else
       return super.boundCopy();
   }
@@ -365,6 +366,14 @@ aspect IntertypeMethodCodegeneration {
           e = imd.createAspectMethod().createBoundAccess(args);
         }
       }
+    }
+    if(e == null && qualifierType instanceof ClassDecl) {
+      TypeDecl superType = ((ClassDecl)qualifierType).superclass();
+      MethodDecl superMethod = (MethodDecl)superType.methodsSignature(signature()).iterator().next();
+      List args = new List();
+      for(int i = 0; i < getNumParameter(); i++)
+        args.add(getParameter(i).createAccess());
+      e = new SuperAccess("super").qualifiesAccess(superMethod.createBoundAccess(args));
     }
     if(e == null) {
       List args = new List();
