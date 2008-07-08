@@ -15,7 +15,7 @@ BodyDecl contribution_decl =
 
 List contribution_list =
   contribution {: return new List().add(contribution); :}
-  | contribution_list contribution {: return contribution_list.add(contribution); :}
+  | contribution_list COMMA contribution {: return contribution_list.add(contribution); :}
   ;
 
 Contribution contribution =

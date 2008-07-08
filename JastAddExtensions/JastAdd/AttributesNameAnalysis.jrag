@@ -122,7 +122,7 @@ aspect JastAdd {
 
   public void AttributeDecl.typeCheck() {
     super.typeCheck();
-    if(!(introducedType() instanceof ASTDecl))
+    if(!(introducedType().subtype(astNode())))
       error("attributes can only be introduced in AST nodes");
   }
   
