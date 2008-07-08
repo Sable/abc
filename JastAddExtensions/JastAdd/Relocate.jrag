@@ -1,0 +1,79 @@
+aspect Relocate {
+  refine java public String CompilationUnit.getPackageDecl() {
+    String s = java.CompilationUnit.getPackageDecl();
+    if(s == null || s.equals("")) {
+      String n = relativeName();
+      if(n != null && (n.endsWith(".ast") || n.endsWith(".jrag") || n.endsWith(".jadd"))
+         && options().hasValueForOption("-package")) {
+        s = options().getValueForOption("-package");
+      }
+    }
+    return s;
+  }
+
+  syn boolean IntertypeMethodDecl.weaveInline() =
+    options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl();
+
+  refine IntertypeMethodCodegeneration eq IntertypeMethodDecl.createAspectMethod() {
+    if(!is$Final) throw new Error("IntertypeMethodDecl must be final when aspectMethod is created");
+    // make aspect method static
+    Modifiers modifiers = getModifiers().makePublic();
+    if(!isStatic())
+      modifiers.addModifier(new Modifier("static"));
+    
+    // add that for instance methods
+    List parameterList = new List();
+    if(!isStatic())
+    	parameterList.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      parameterList.add(getParameter(i).qualifiedCopy());
+      
+    MethodDecl aspectMethod = new IntroducedMethodDecl(
+      modifiers,
+      type().createQualifiedAccess(),
+      implBodyName(),
+      parameterList,
+      copyTypeList(getExceptionList()),
+      (Opt)getBlockOpt().boundCopy(),
+      introducedType(),
+      this
+    );
+    if(weaveInline()) 
+      aspectMethod = introducedType().addMemberMethod(aspectMethod);
+    else
+      aspectMethod = hostAspect().addMemberMethod(aspectMethod);
+    return aspectMethod;
+  }
+
+  syn boolean IntertypeConstructorDecl.weaveInline() =
+    options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl();
+
+  refine IntertypeConstructorCodegeneration public MethodDecl IntertypeConstructorDecl.createBodyDelegate() {
+    String name = "constructor_body";
+    TypeDecl typeDecl;
+    if(weaveInline()) 
+      typeDecl = introducedType();
+    else
+      typeDecl = hostAspect();
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(this, name);
+    if(m != null) return m;
+
+    List list = copyParameterList(getParameterList());
+    list.insertChild(new ParameterDeclaration(hostType(), "this"), 0);
+    Modifiers modifiers = createAccessorModifiers(true);
+    m = new IntroducedMethodDecl(
+      modifiers,
+      hostType().typeVoid().createQualifiedAccess(),
+      constructorBodyName(),
+      list,
+      new List(),
+      new Opt(getBlock().boundCopy()),
+      introducedType(),
+      this
+    );
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(this, name, m);
+    return m;
+  }
+
+}

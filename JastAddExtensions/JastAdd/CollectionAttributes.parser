@@ -1,0 +1,25 @@
+BodyDecl intertype_member_declaration =
+  coll_decl
+  | contribution_decl
+  ;
+
+BodyDecl coll_decl =
+  modifiers.mod? COLL type name.hostType DOT IDENTIFIER LPAREN RPAREN LBRACK expression.init RBRACK IDENTIFIER.WITH IDENTIFIER.COMBINEOPERATOR IDENTIFIER.ROOT name.rootType SEMICOLON
+  {: return new CollDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, new List(), init, WITH, COMBINEOPERATOR, ROOT, new Opt(rootType), new Opt()); :}
+  ;
+
+BodyDecl contribution_decl =
+  name.contributorType CONTRIBUTES contribution_list TO name.collType DOT IDENTIFIER LPAREN RPAREN FOR expression SEMICOLON
+  {: return new ContributionDecl(contributorType, contribution_list, collType, IDENTIFIER, expression); :}
+  ;
+
+List contribution_list =
+  contribution {: return new List().add(contribution); :}
+  | contribution_list contribution {: return contribution_list.add(contribution); :}
+  ;
+
+Contribution contribution =
+    expression {: return new Contribution(expression, new Opt()); :}
+  | expression WHEN expression.cond {: return new Contribution(expression, new Opt(cond)); :}
+  ;
+

@@ -67,6 +67,12 @@ aspect JastAdd {
     Collection c = (Collection)map.get(name());
     c.add(this);
   }
+  protected void InhDecl.collectInhEquations(Map map) {
+    if(!map.containsKey(name()))
+      map.put(name(), new ArrayList(1));
+    Collection c = (Collection)map.get(name());
+    c.add(this);
+  }
   inh Collection AttributeDecl.lookupInhEq(String name);
   eq Program.getCompilationUnit(int i).lookupInhEq(String name) =
     inhEquationsMap().containsKey(name) ? (Collection)inhEquationsMap().get(name) : new ArrayList(0);
@@ -74,11 +80,24 @@ aspect JastAdd {
   syn Collection InhDecl.decls() {
     Collection c = new ArrayList(1);
     for(Iterator iter = lookupInhEq(name()).iterator(); iter.hasNext(); ) {
-      InhEq inhEq = (InhEq)iter.next();
-      if(inhEq.matches(this))
-        c.add(inhEq);
+      Object o = iter.next();
+      if(o instanceof InhEq) {
+        if(((InhEq)o).matches(this))
+          c.add(o);
+      }
     }
     return c;
+  }
+
+  syn InhDecl InhEq.decl() {
+    for(Iterator iter = lookupInhEq(name()).iterator(); iter.hasNext(); ) {
+      Object o = iter.next();
+      if(o instanceof InhDecl) {
+        if(matches((InhDecl)o))
+          return (InhDecl)o;
+      }
+    }
+    return null;
   }
 
   public boolean InhEq.matches(InhDecl decl) {
@@ -100,12 +119,21 @@ aspect JastAdd {
     if(decl() == null)
       error("Can not find declaration for attribute");
   }
+
+  public void AttributeDecl.typeCheck() {
+    super.typeCheck();
+    if(!(introducedType() instanceof ASTDecl))
+      error("attributes can only be introduced in AST nodes");
+  }
   
   syn SynDecl SynEq.decl() {
     TypeDecl typeDecl = introducedType();
-    MethodDecl m = (MethodDecl)typeDecl.methodsSignatureMap().get(signature().substring(3)); // strip "eq "
-    if(m instanceof SynDecl)
-      return (SynDecl)m;
+    SimpleSet set = (SimpleSet)typeDecl.methodsSignatureMap().get(signature().substring(3)); // strip "eq "
+    if(set != null && set.size() == 1) {
+      MethodDecl m = (MethodDecl)set.iterator().next();
+      if(m instanceof SynDecl)
+        return (SynDecl)m;
+    }
     return null;
   }
   

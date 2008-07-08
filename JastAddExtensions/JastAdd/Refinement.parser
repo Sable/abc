@@ -23,6 +23,11 @@ BodyDecl syn_eq =
   ;
 */
 
+BodyDecl inh_eq =
+   REFINE type.r EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list.p1? RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list.p? RPAREN block
+    {: return new InhEq(type, child, p1, attribute, p, block).setRefined(new Opt(r)); :}
+  ;
+
 Access method_invocation =
   REFINED LPAREN argument_list.l? RPAREN {: return  new RefinedMethodAccess("refined", l); :}
   ;

@@ -13,10 +13,12 @@ aspect Refinement {
   private boolean IntertypeMethodDecl.isRefinement;
   syn boolean IntertypeMethodDecl.isRefinement() = isRefinement;
 
+  eq InhEq.refinedOpt().nameType() = NameType.TYPE_NAME;
+
   syn boolean IntertypeMethodDecl.refinesAspect(TypeDecl typeDecl) {
     if(!isRefinement())
       return false;
-    MethodDecl m = refinedMethod();
+    BodyDecl m = refinedEntity();
     if(m == null || !(m instanceof IntertypeMethodDecl))
       return false;
     IntertypeMethodDecl decl = (IntertypeMethodDecl)m;
@@ -42,7 +44,7 @@ aspect Refinement {
     (m instanceof IntertypeMethodDecl && refinesAspect(((IntertypeMethodDecl)m).hostAspect())
      || isRefinement() && !(m instanceof IntertypeMethodDecl) && !hasRefined());
 
-  private boolean MethodDecl.discard;
+  protected boolean MethodDecl.discard;
   eq MethodDecl.generate() = !discard;
   eq IntroducedMethodDecl.generate() = true;
 
@@ -50,10 +52,39 @@ aspect Refinement {
     BodyDecl b = enclosingBodyDecl();
     if(b instanceof MethodDecl)
       return ((MethodDecl)b).getID();
+    if(b instanceof InhEq)
+      return ((InhEq)b).getAttributeName();
     return "refined";
   }
 
-  syn MethodDecl IntertypeMethodDecl.refinedMethod() {
+  eq RefinedMethodAccess.decls() {
+    BodyDecl b = refinedEntity();
+    if(b instanceof InhEq) {
+      InhEq inhEq = (InhEq)b;
+      SimpleSet maxSpecific = SimpleSet.emptySet;
+      for(Iterator iter = inhEq.lookupInhEq(inhEq.name()).iterator(); iter.hasNext(); ) {
+        Object o = iter.next();
+        if(o instanceof InhDecl) {
+          MethodDecl decl = (MethodDecl)o;
+          if(applicable(decl) && accessible(decl)) {
+            if(maxSpecific.isEmpty())
+              maxSpecific = maxSpecific.add(decl);
+            else {
+              if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
+                maxSpecific = SimpleSet.emptySet.add(decl);
+              else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
+                maxSpecific = maxSpecific.add(decl);
+            }
+          }
+        }
+      }
+      return maxSpecific;
+    }
+    else
+      return super.decls();
+  }
+
+  syn BodyDecl IntertypeMethodDecl.refinedEntity() {
     if(!isRefinement())
       return null;
     if(!hasRefined()) {
@@ -78,13 +109,37 @@ aspect Refinement {
     }
   }
 
-  syn MethodDecl RefinedMethodAccess.refinedMethod() {
-    BodyDecl b = enclosingBodyDecl();
-    if(!(b instanceof IntertypeMethodDecl))
+  eq SynEq.refinedEntity() {
+    if(!isRefinement())
       return null;
-    IntertypeMethodDecl r = (IntertypeMethodDecl)b;
-    return r.refinedMethod();
+    if(!hasRefined()) {
+      TypeDecl typeDecl = introducedType();
+      for(int i = 0; i < typeDecl.getNumBodyDecl(); i++) {
+        if(typeDecl.getBodyDecl(i) instanceof MethodDecl) {
+          MethodDecl decl = (MethodDecl)typeDecl.getBodyDecl(i);
+          if(decl.sameSignature(this))
+            return decl;
+        }
+      }
+      return null;
+    }
+    else {
+      TypeDecl typeDecl = refined().type();
+      if(!(typeDecl instanceof AspectDecl))
+        return null;
+      AspectDecl refinedAspect = (AspectDecl)typeDecl;
+      String key = introducedType().fullName() + "." + signature();
+      IntertypeMethodDecl m = (IntertypeMethodDecl)refinedAspect.localIntertypeMethodsSignatureMap().get(key);
+      if(m != null)
+        return m;
+      else {
+        key = introducedType().fullName() + "." + signature().substring(3); // remove "eq "
+        m = (IntertypeMethodDecl)refinedAspect.localIntertypeMethodsSignatureMap().get(key);
+      }
+      return m;
+    }
   }
+
 
   // Error checking
 
@@ -125,47 +180,72 @@ aspect Refinement {
     if(hasBlock() && !introducedType().isUnknown() && !introducedType().compilationUnit().weavable())
       error("Host of an intertype method declaration must be a weavable class, and " + introducedType().typeName() + " is not weavable");
 
-    if(isRefinement() && refinedMethod() == null && !refined().type().isUnknown())
-      error("Could not find method with signature " + signature() + " in " + refined().type().typeName() + " to refine");
+    if(isRefinement()) {
+      if(hasRefined() && refined().type().isUnknown())
+        error("could not find aspect " + refined());
+      else if(refinedEntity() == null)
+        error("could not find method with signature " + signature() + " in " + refined().type().typeName() + " to refine");
+    }
   }
 
   public void RefinedMethodAccess.nameCheck() {
-    if(!(enclosingBodyDecl() instanceof IntertypeMethodDecl) || !((IntertypeMethodDecl)enclosingBodyDecl()).isRefinement())
+    if(!inRefinement())
       error("refined() only valid within refine declarations");
+    //else if(refinedEntity() == null)
+    //  error("could not find entity to refine");
     else
       super.nameCheck();
   }
+  inh boolean RefinedMethodAccess.inRefinement();
+  eq IntertypeMethodDecl.getBlock().inRefinement() = isRefinement();
+  eq InhEq.getBlock().inRefinement() = isRefinement();
+  eq Program.getChild().inRefinement() = false;
 
+  inh BodyDecl RefinedMethodAccess.refinedEntity();
+  eq IntertypeMethodDecl.getBlock().refinedEntity() = refinedEntity();
+  eq InhEq.getBlock().refinedEntity() = refinedEntity();
+  eq Program.getChild().refinedEntity() = null;
 
   // Codegeneration
 
   public void RefinedMethodAccess.generateIntertypeDecls() {
-    MethodDecl method = refinedMethod();
-    String name = method instanceof IntertypeMethodDecl ?
-        ("refined$interMethod$" + ((IntertypeMethodDecl)method).hostAspect().abcMangledName() + "$" + name())
-      : ("refined$method$" + name());
-    MethodDecl m = method.createRefinedMethod(name);
+    BodyDecl b = refinedEntity();
+    MethodDecl m = b.createRefinedMethod();
     List args = new List();
     args.add(new ThisAccess());
     for(int i = 0; i < getNumArg(); i++)
       args.add(getArg(i).boundCopy());
+    if(b instanceof InhEq && ((InhEq)b).hasChildParameter()) {
+      InhEq inhEq = (InhEq)enclosingBodyDecl();
+      args.add(
+        new VarAccess(inhEq.childParameterName())
+      );
+    }
     replace(this).with(m.createBoundAccess(args));
   }
 
+  public MethodDecl BodyDecl.createRefinedMethod() {
+    throw new UnsupportedOperationException("Can not create refined method for " + getClass().getName());
+  }
+
+
   public ASTNode RefinedMethodAccess.boundCopy() {
-    MethodDecl method = refinedMethod();
-    String name = method instanceof IntertypeMethodDecl ?
-        ("refined$interMethod$" + ((IntertypeMethodDecl)method).hostAspect().abcMangledName() + "$" + name())
-      : ("refined$method$" + name());
-    MethodDecl m = method.createRefinedMethod(name);
+    BodyDecl b = refinedEntity();
+    MethodDecl m = b.createRefinedMethod();
     List args = new List();
     args.add(new ThisAccess());
     for(int i = 0; i < getNumArg(); i++)
       args.add(getArg(i).boundCopy());
+    if((getNumArg() + 1) != m.getNumParameter()) {
+      InhEq inhEq = (InhEq)enclosingBodyDecl();
+      args.add(new VarAccess(inhEq.childParameterName()));
+    }
     return m.createBoundAccess(args);
   }
 
-  syn lazy MethodDecl MethodDecl.createRefinedMethod(String name) {
+  syn lazy MethodDecl MethodDecl.createRefinedMethod() {
+    String name = "refined$method$" + getID();
+
     Modifiers modifiers = getModifiers().makePublic();
     if(!isStatic())
       modifiers.addModifier(new Modifier("static"));
@@ -192,7 +272,9 @@ aspect Refinement {
     return aspectMethod;
   }
 
-  syn lazy MethodDecl IntertypeMethodDecl.createRefinedMethod(String name) {
+  syn lazy MethodDecl IntertypeMethodDecl.createRefinedMethod() {
+    String name = "refined$interMethod$" + hostAspect().abcMangledName() + "$" + getID();
+
     Modifiers modifiers = getModifiers().makePublic();
     if(!isStatic())
       modifiers.addModifier(new Modifier("static"));
@@ -217,4 +299,95 @@ aspect Refinement {
     aspectMethod = hostAspect().addMemberMethod(aspectMethod);
     return aspectMethod;
   }
+  
+  refine AttributesCodegeneration public void SynDecl.createIntertypeMethod(TypeDecl introducedType) {
+    for(Iterator iter = introducedType.localMethodsSignature("eq " + signature()).iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof SynEq) {
+        SynEq synEq = (SynEq)m;
+        if(synEq.isRefinement() && synEq.hasRefined()) {
+          discard = true;
+          return;
+        }
+      }
+    }
+    AttributesCodegeneration.SynDecl.createIntertypeMethod(introducedType);
+  }
+
+  syn nta Opt InhEq.refinedOpt() = refined;
+  syn Access InhEq.refined() = refinedOpt() != null ? (Access)refinedOpt().getChild(0) : null;
+
+  syn boolean InhEq.hasRefined() = refined != null && refined.getNumChild() != 0;
+  public InhEq InhEq.setRefined(Opt o) {
+    refined = o;
+    isRefinement = true;
+    return this;
+  }
+  private Opt InhEq.refined;
+  private boolean InhEq.isRefinement;
+  syn boolean InhEq.isRefinement() = isRefinement;
+
+  public void InhEq.nameCheck() {
+    if(isRefinement() && hasRefined()) {
+      if(refinedEntity() == null && !refined().type().isUnknown())
+          error("could not find equtation to refine in " + refined().type().typeName());
+    }
+    super.nameCheck();
+  }
+
+  syn BodyDecl InhEq.refinedEntity() {
+    if(!isRefinement())
+      return null;
+    TypeDecl typeDecl = refined().type();
+    if(!(typeDecl instanceof AspectDecl))
+      return null;
+    AspectDecl refinedAspect = (AspectDecl)typeDecl;
+    for(Iterator iter = lookupInhEq(name()).iterator(); iter.hasNext(); ) {
+      Object o = iter.next();
+      if(o instanceof InhEq) {
+        InhEq inhEq = (InhEq)o;
+        if(inhEq.matches(this) && inhEq.hostType() == refinedAspect && 
+           inhEq.childName().equals(childName()) && inhEq.introducedType() == introducedType())
+          return inhEq;
+      }
+    }
+    return null;
+  }
+
+
+  inh Collection InhEq.lookupInhEq(String name);
+  syn boolean InhEq.matches(InhEq decl) {
+    if(!name().equals(decl.name()))
+      return false;
+    if(getNumParameter() != decl.getNumParameter())
+      return false;
+    for(int i = 0; i < getNumParameter(); i++)
+      if(getParameter(i).type() != decl.getParameter(i).type())
+        return false;
+    return true;
+
+  }
+
+  syn lazy MethodDecl InhEq.createRefinedMethod() {
+    String name = "refined$inheq$" + name() + "$" + childName();
+    TypeDecl returnType = decl().type();
+    MethodDecl methodDecl =
+      new IntroducedMethodDecl(
+          new Modifiers(new List().add(new Modifier("static"))),
+          returnType.createQualifiedAccess(),
+          "refined$inheq$" + name() + "$" + childName(),
+          createParameterList(),
+          new List(),
+          new Opt(
+            getBlock().boundCopy()
+            ),
+          introducedType(),
+          this
+          );
+    if(weaveInline())
+      return introducedType().addMemberMethod(methodDecl);
+    else
+      return hostType().addMemberMethod(methodDecl);
+  }
+
 }

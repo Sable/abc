@@ -1,0 +1,351 @@
+aspect CollectionAttributes {
+  eq CollDecl.getChild().nameType() = NameType.TYPE_NAME;
+
+  eq ContributionDecl.getTargetType().nameType() = NameType.TYPE_NAME;
+  eq ContributionDecl.getCollType().nameType() = NameType.TYPE_NAME;
+  eq ContributionDecl.getExpr().nameType() = NameType.EXPRESSION_NAME;
+  eq ContributionDecl.getExpr().thisType() = getTargetType().type();
+  eq ContributionDecl.getContribution().thisType() = getTargetType().type();
+
+  syn TypeDecl ContributionDecl.hostAspect() = (TypeDecl)getParent().getParent();
+  syn TypeDecl ContributionDecl.introducedType() = getTargetType().type();
+  syn TypeDecl ContributionDecl.hostType() = introducedType();
+  eq ContributionDecl.getExpr().hostType() = hostAspect();
+
+  eq ContributionDecl.getChild().lookupVariable(String name) = 
+    introducedType().memberFields(name);
+  eq ContributionDecl.getChild().lookupMethod(String name) = 
+    introducedType().memberMethods(name);
+  eq ContributionDecl.getExpr().lookupType(String name) {
+   SimpleSet set = introducedType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = introducedType().lookupType(name);
+    if(!set.isEmpty()) return set;
+    return lookupType(name);
+  }
+  eq ContributionDecl.getContribution().lookupType(String name) {
+   SimpleSet set = introducedType().memberTypes(name);
+    if(!set.isEmpty()) return set;
+    set = introducedType().lookupType(name);
+    if(!set.isEmpty()) return set;
+    return lookupType(name);
+  }
+
+  eq CollDecl.shouldBeCached() = true;
+  eq CollDecl.weaveInline() = true;
+
+  public void CollDecl.typeCheck() {
+    super.typeCheck();
+    if(!getInitValue().type().assignConversionTo(type(), getInitValue()))
+      error("Initial value of type " + getInitValue().type().typeName() + 
+            " is not assign convertible to " + type().typeName());
+  }
+  public void CollDecl.nameCheck() {
+    super.nameCheck();
+    if(getWith() != null && !getWith().equals("with"))
+      error("keyword with expected rather than " + getWith());
+    if(getRoot() != null && !getRoot().equals("root"))
+      error("keyword root expected rather than " + getRoot());
+    if(combineMethods().isEmpty())
+      error("could not find method " + getCombineOperator() + " taking a single argument in " + type().typeName());
+    else if(combineMethods().size() > 1)
+      error("method " + getCombineOperator() + " taking a single argument is ambiguous in " + type().typeName());
+    if(hasRootNodeAccess() && !(getRootNodeAccess().type() instanceof ASTDecl) && !getRootNodeAccess().type().isUnknown())
+      error("root node must be an AST node");
+  }
+
+  syn TypeDecl CollDecl.rootNodeType() = getRootNodeAccess().type();
+
+  public void ContributionDecl.nameCheck() {
+    super.nameCheck();
+    if(decl() == null)
+      error("could not find collection attribute " + getID() + " in " + getCollType().type().typeName());
+  }
+  public void ContributionDecl.typeCheck() {
+    super.typeCheck();
+    if(getExpr().type() != getCollType().type())
+      error("reference must bind to a node of type " + getCollType().type().typeName());
+  }
+  public void Contribution.typeCheck() {
+    super.typeCheck();
+    if(hasCondition() && !getCondition().type().isBoolean())
+      error("boolean condition expected rather than " + getCondition().type().typeName());
+    if(!getExpr().type().subtype(componentType()))
+      error("contribution must be subtype of " + componentType().typeName() + " which " + getExpr().type().typeName() + " is not");
+  }
+
+  syn lazy CollDecl ContributionDecl.decl() {
+    for(Iterator iter = getCollType().type().memberMethods(getID()).iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof CollDecl)
+        return (CollDecl)m;
+    }
+    return null;
+  }
+  syn lazy SimpleSet CollDecl.combineMethods() {
+    SimpleSet set = SimpleSet.emptySet;
+    for(Iterator iter = type().memberMethods(getCombineOperator()).iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.getNumParameter() == 1)
+        set = set.add(m);
+    }
+    return set;
+  }
+  syn lazy TypeDecl CollDecl.componentType() =
+    combineMethods().size() == 1 ? ((MethodDecl)combineMethods().iterator().next()).getParameter(0).type() : unknownType();
+  inh TypeDecl CollDecl.unknownType();
+
+  inh TypeDecl Contribution.componentType();
+  eq ContributionDecl.getContribution().componentType() =
+    decl() != null ? decl().componentType() : unknownType();
+  inh TypeDecl ContributionDecl.unknownType();
+
+  inh TypeDecl Contribution.introducedType();
+  eq ContributionDecl.getContribution().introducedType() = introducedType();
+  inh CollDecl Contribution.collDecl();
+  eq ContributionDecl.getContribution().collDecl() = decl();
+
+  inh ContributionDecl Contribution.decl();
+  eq ContributionDecl.getContribution().decl() = this;
+
+  // Add dummy body to please compiler
+  rewrite CollDecl {
+    when(!hasBlock())
+    to CollDecl {
+      setBlock(
+        new Block(
+          new List().add(
+            new ThrowStmt(
+              new ClassInstanceExpr(
+                lookupType("java.lang", "Error").createQualifiedAccess(),
+                new List(),
+                new Opt()
+              )
+            )
+          )
+        )
+      );
+      return this;
+    }
+  }
+
+  public void ContributionDecl.toString(StringBuffer s) {
+  }
+
+  /*
+    java.util.HashSet Stmt_col_contributors = new java.util.HashSet();
+    public java.util.HashSet Stmt_col_contributors() { return Stmt_col_contributors; }
+    private HashSet<Stmt> col_compute() {
+        ASTNode node = this;
+        while(node.getParent() != null && !(node instanceof Program))
+            node = node.getParent();
+        Program root = (Program)node;
+        root.collect_contributors_Stmt_col();
+        Stmt_col_value = new HashSet();
+        for(java.util.Iterator iter = Stmt_col_contributors.iterator(); iter.hasNext(); ) {
+            ASTNode contributor = (ASTNode)iter.next();
+            contributor.contributeTo_Stmt_Stmt_col(Stmt_col_value);
+        }
+        return Stmt_col_value;
+    }
+  */
+
+  public void CollDecl.generateIntertypeDecls() {
+    List statements = new List();
+    statements.add(new VariableDeclaration(astNode().createQualifiedAccess(), "node", new ThisAccess()));
+    statements.add(
+      new WhileStmt(
+        new AndLogicalExpr(
+          new NEExpr(new VarAccess("node").qualifiesAccess(new MethodAccess("getParent", new List())), new NullLiteral("null")),
+          new LogNotExpr(new InstanceOfExpr(new VarAccess("node"), rootNodeType().createQualifiedAccess()))
+        ),
+        AssignExpr.asStmt(new VarAccess("node"), new VarAccess("node").qualifiesAccess(new MethodAccess("getParent", new List())))
+      )
+    );
+    statements.add(
+      new VariableDeclaration(rootNodeType().createQualifiedAccess(), "root", new CastExpr(rootNodeType().createQualifiedAccess(), new VarAccess("node")))
+    );
+    statements.add(
+      new ExprStmt(new VarAccess("root").qualifiesAccess(createCollectContributorsMethod().createBoundAccess(new List())))
+    );
+    statements.add(
+      AssignExpr.asStmt(new ThisAccess("this").qualifiesAccess(new BoundFieldAccess(fieldComputedValue(introducedType()))), new ClassInstanceExpr(new TypeAccess("java.util", "HashSet"), new List(), new Opt()))
+    );
+    statements.add(
+      new ForStmt(
+        new List().add(new VariableDeclaration(new TypeAccess("java.util", "Iterator"), "iter", new ThisAccess("this").qualifiesAccess(new BoundFieldAccess(createContributorsField())).qualifiesAccess(new MethodAccess("iterator", new List())))),
+        new Opt(new VarAccess("iter").qualifiesAccess(new MethodAccess("hasNext", new List()))),
+        new List(),
+        new Block(
+          new List().add(
+            new VariableDeclaration(astNode().createQualifiedAccess(), "contributor", new CastExpr(astNode().createQualifiedAccess(), new VarAccess("iter").qualifiesAccess(new MethodAccess("next", new List()))))
+          ).add(
+            new ExprStmt(new VarAccess("contributor").qualifiesAccess(createContributeToMethod().createBoundAccess(new List().add(new ThisAccess("this").qualifiesAccess(new BoundFieldAccess(fieldComputedValue(introducedType())))))))
+          )
+        )
+      )
+    );
+    statements.add(
+      new ReturnStmt(new ThisAccess("this").qualifiesAccess(new BoundFieldAccess(fieldComputedValue(introducedType()))))
+    );
+
+    setBlock(new Block(statements));
+    super.generateIntertypeDecls();
+  }
+
+  public void Contribution.generateIntertypeDecls() {
+    MethodDecl m = createCollectContributorsMethod();
+    List list = m.getBlock().getStmtList();
+    list.add(new Block(new List().add(
+      new VariableDeclaration(decl().getExpr().type().createQualifiedAccess(), "ref", (Expr)decl().getExpr().fullCopy())
+    ).add(
+      new IfStmt(
+        new NEExpr(new VarAccess("ref"), new NullLiteral("null")),
+        new ExprStmt(new VarAccess("ref").qualifiesAccess(collDecl().createContributorsMethod().createBoundAccess(new List()).qualifiesAccess(new MethodAccess("add", new List().add(new ThisAccess("this")))))),
+        new Opt()
+      )
+    )
+    ));
+
+    m = createContributeToMethod();
+    list = m.getBlock().getStmtList();
+    list.add(
+      new IfStmt(
+        hasCondition() ? (Expr)getCondition().fullCopy() : (Expr)new BooleanLiteral("true"),
+        new ExprStmt(new VarAccess("collection").qualifiesAccess(new MethodAccess(collDecl().getCombineOperator(), new List().add((Expr)getExpr().fullCopy())))),
+        new Opt()
+      )
+    );
+  }
+  public MethodDecl Contribution.createCollectContributorsMethod() {
+    TypeDecl typeDecl = introducedType();
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(collDecl(), "collect_contributors_method");
+    if(m != null) return m;
+
+    List list = new List();
+    m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      new PrimitiveTypeAccess("void"),
+      collDecl().collectContributorsName(),
+      new List(),
+      new List(),
+      new Opt(new Block(list))
+    );
+    list.add(
+      new ExprStmt(new SuperAccess("super").qualifiesAccess(collDecl().createCollectContributorsMethod().createBoundAccess(new List())))
+    );
+
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(collDecl(), "collect_contributors_method", m);
+    return m;
+  }
+  public MethodDecl Contribution.createContributeToMethod() {
+    TypeDecl typeDecl = introducedType();
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(collDecl(), "contribute_to_method");
+    if(m != null) return m;
+
+    List list = new List();
+    m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      new PrimitiveTypeAccess("void"),
+      collDecl().contributeToName(),
+      new List().add(new ParameterDeclaration(collDecl().type().createQualifiedAccess(), "collection")),
+      new List(),
+      new Opt(new Block(list))
+    );
+    list.add(
+      new ExprStmt(new SuperAccess("super").qualifiesAccess(collDecl().createContributeToMethod().createBoundAccess(new List().add(new VarAccess("collection")))))
+    );
+
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(collDecl(), "contribute_to_method", m);
+    return m;
+  }
+
+  syn String CollDecl.contributorsName() = uniqueSignatureName() + "$contributors";
+  syn String CollDecl.collectContributorsName() = uniqueSignatureName() + "$collect$contributors";
+  syn String CollDecl.contributeToName() = uniqueSignatureName() + "$contribute$to";
+
+  public MethodDecl CollDecl.createContributeToMethod() {
+    MethodDecl m = (MethodDecl)astNode().getAccessor(this, "contribute_to_method");
+    if(m != null) return m;
+
+    m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      new PrimitiveTypeAccess("void"),
+      contributeToName(),
+      new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "collection")),
+      new List(),
+      new Opt(new Block(new List()))
+    );
+
+    m = astNode().addMemberMethod(m);
+    astNode().addAccessor(this, "contribute_to_method", m);
+    return m;
+  }
+
+  public MethodDecl CollDecl.createCollectContributorsMethod() {
+    TypeDecl typeDecl = astNode();
+    MethodDecl m = (MethodDecl)typeDecl.getAccessor(this, "collect_contributors_method");
+    if(m != null) return m;
+
+    List list = new List();
+    m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("protected"))),
+      new PrimitiveTypeAccess("void"),
+      collectContributorsName(),
+      new List(),
+      new List(),
+      new Opt(new Block(list))
+    );
+    list.add(
+      new ForStmt(
+        new List().add(new VariableDeclaration(new PrimitiveTypeAccess("int"), "i", new IntegerLiteral("0"))),
+        new Opt(new LTExpr(new VarAccess("i"), new MethodAccess("getNumChild", new List()))),
+        new List().add(new ExprStmt(new PostIncExpr(new VarAccess("i")))),
+        new ExprStmt(
+          new MethodAccess("getChild", new List().add(new VarAccess("i"))).qualifiesAccess(
+          m.createBoundAccess(new List()))
+        )
+      )
+    );
+
+    m = typeDecl.addMemberMethod(m);
+    typeDecl.addAccessor(this, "collect_contributors_method", m);
+    return m;
+  }
+  public FieldDeclaration CollDecl.createContributorsField() {
+    FieldDeclaration f = (FieldDeclaration)introducedType().getAccessor(this, "contributors_field");
+    if(f != null) return f;
+
+    f = new FieldDeclaration(
+      new Modifiers(new List()),
+      new TypeAccess("java.util", "HashSet"),
+      contributorsName(),
+      new Opt(new ClassInstanceExpr(new TypeAccess("java.util", "HashSet"), new List(), new Opt()))
+    );
+
+    f = introducedType().addMemberField(f);
+    introducedType().addAccessor(this, "contributors_field", f);
+    return f;
+  }
+  public MethodDecl CollDecl.createContributorsMethod() {
+    MethodDecl m = (MethodDecl)introducedType().getAccessor(this, "contributors_method");
+    if(m != null) return m;
+
+    m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("public"))),
+      new TypeAccess("java.util", "HashSet"),
+      contributorsName(),
+      new List(),
+      new List(),
+      new Opt(new Block(new List().add(new ReturnStmt(new Opt(createContributorsField().createQualifiedBoundAccess())))))
+    );
+
+    m = introducedType().addMemberMethod(m);
+    introducedType().addAccessor(this, "contributors_method", m);
+    return m;
+  }
+
+
+}

@@ -35,6 +35,8 @@ public class JastAdd extends Frontend {
       CompilationUnit cu = (CompilationUnit)iter.next();
       if(cu.fromSource()) {
         for(int i = 0; i < cu.getNumTypeDecl(); i++) {
+          if(program.options().hasOption("-print")) 
+            System.out.println(cu);
           cu.getTypeDecl(i).generateClassfile();
         }
       }

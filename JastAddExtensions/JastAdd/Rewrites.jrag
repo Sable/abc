@@ -12,6 +12,12 @@ aspect Rewrite {
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
 
+  public void RewriteDecl.typeCheck() {
+    super.typeCheck();
+    if(!(getAccess().type() instanceof ASTDecl))
+      error("only AST nodes can be rewritten");
+  }
+
   // Maps TypeDecl -> RewriteDecl
   syn lazy Map Program.rewritesMap() {
     Map map = new HashMap();
@@ -200,14 +206,15 @@ aspect Rewrite {
     addRewriteMethodDecl(statements);
 
     addCloneNodeInit("inCircle", new BooleanLiteral(false));
-    addCloneNodeInit("isFinal", new BooleanLiteral(false));
+    addCloneNodeInit("is$Final", new BooleanLiteral(false));
 
-    addGetNumChild();
+    if(localMethodsSignature("getNumChild()").isEmpty())
+      addGetNumChild();
     addMayHaveRewrite();
 
     addFinalRootNode();
-
-    addNTAGetChildNoTransform();
+    if(localMethodsSignature("getChild(int)").isEmpty())
+      addNTAGetChildNoTransform();
   }
 
   syn lazy boolean TypeDecl.mayHaveRewriteRule() = false;
@@ -240,7 +247,7 @@ aspect Rewrite {
           new Block(
             new List().add(
               AssignExpr.asStmt(
-                new VarAccess("isFinal"),
+                new VarAccess("is$Final"),
                 new BooleanLiteral(true)
               )
             )

@@ -1,0 +1,5 @@
+CollDecl : SynDecl ::= Modifiers <Lazy:boolean> TypeAccess:Access TargetType:Access <ID:String> Parameter:ParameterDeclaration* InitValue:Expr <With:String> <CombineOperator:String> <Root:String> [RootNodeAccess:Access] [Block] /Exception:Access*/;
+
+ContributionDecl : BodyDecl ::= TargetType:Access Contribution* CollType:Access <ID:String> Expr;
+Contribution ::= Expr [Condition:Expr];
+

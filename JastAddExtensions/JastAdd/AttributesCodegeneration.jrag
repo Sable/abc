@@ -13,15 +13,8 @@ aspect GenerateSynCode {
 
   // code gen synthesized attributes
 
-  eq SynEq.implBodyName() = "impl$body$" + getID();
-  eq SynEq.delegateName() {
-    if(isPrivate())
-      return "abc$interMethod$" + hostAspect().topLevelType().abcMangledName() + "$" + getID();
-    else if(isPublic())
-      return getID();
-    else
-      return "abc$interMethod$" + hostAspect().packageName().replace('.', '_') + "$" + getID();
-  }
+  eq SynEq.implBodyName() = decl().implBodyName();
+  eq SynEq.delegateName() = decl().delegateName();
 
   public void SynEq.createIntertypeMethod(TypeDecl introducedType) {
     if(introducedType.isInterfaceDecl()) {
@@ -92,9 +85,16 @@ aspect GenerateSynCode {
   syn boolean InhEq.hasChildParameter() {
     if(getNumChildParameter() == 1) return true;
     if(!getChildName().startsWith("get")) return false;
-    if(getChildName().equals("getChild")) return false;
+    if(getChildName().equals("getChild")) return true;
     ASTChild child = child();
     return child != null && child instanceof ASTListChild;
+  }
+
+  syn String InhEq.childParameterName() {
+    if(getNumChildParameter() == 1)
+      return getChildParameter(0).name();
+    else
+      return "childIndex";
   }
 
   public ParameterDeclaration InhEq.createChildParameter() {
@@ -103,12 +103,14 @@ aspect GenerateSynCode {
     return new ParameterDeclaration(new PrimitiveTypeAccess("int"), "childIndex");
   }
 
-  public List InhEq.createArgumentList() {
+  public List InhDecl.createArgumentList(InhEq inhEq) {
     List args = new List();
     args.add(new ThisAccess("this"));
-    for(int i = 0; i < getNumParameter(); i++)
-      args.add(getParameter(i).createAccess());
-    if(hasChildParameter()) {
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(new VarAccess("arg" + i));
+      //args.add(getParameter(i).createAccess());
+    }
+    if(inhEq.hasChildParameter()) {
       args.add(
         new VarAccess("caller").qualifiesAccess(
           new MethodAccess(
@@ -375,27 +377,49 @@ aspect GenerateSynCode {
   protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
     // setNNN(computedValueName());
     if(declaredNTA())
-    list.add(
-      new ExprStmt(
-        fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
-          new MethodAccess(
-            "setParent",
-            new List().add(new ThisAccess("this"))
+      if(getNumParameter() == 0) {
+        list.add(
+          new ExprStmt(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess(
+                "setParent",
+                new List().add(new ThisAccess("this"))
+              )
+            )
           )
-        )
-      )
-    );
+        );
+      }
+      else {
+        list.add(
+          new ExprStmt(
+            new CastExpr(
+              type().createQualifiedAccess(),
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
+                new MethodAccess(
+                  "get",
+                  new List().add(new VarAccess("parameters$"))
+                )
+              )
+            ).qualifiesAccess(
+              new MethodAccess(
+                "setParent",
+                new List().add(new ThisAccess("this"))
+              )
+            )
+          )
+        );
+      }
     else
-    list.add(
-      new ExprStmt(
-        new MethodAccess(
-          "set" + name().substring(3), // replace initial get with set
-          new List().add(
-            fieldComputedValue(typeDecl).createQualifiedBoundAccess()
+      list.add(
+        new ExprStmt(
+          new MethodAccess(
+            "set" + name().substring(3), // replace initial get with set
+            new List().add(
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess()
+            )
           )
         )
-      )
-    );
+      );
   }
     
   protected void AttributeDecl.nodeCopyClearCache(TypeDecl type) {
@@ -821,12 +845,12 @@ aspect GenerateSynCode {
         new VarAccess("boundariesCrossed")
       )
     );
-    // boolean localFinal$ = this.isFinal
+    // boolean localFinal$ = this.is$Final
     list.add(
       new VariableDeclaration(
         new TypeAccess("boolean"),
         "localFinal$",
-        new VarAccess("isFinal")
+        new VarAccess("is$Final")
       )
     );
     // localFinal$ && num$ == boundariesCrossed
@@ -936,6 +960,7 @@ aspect GenerateSynCode {
     addInterfaceTagging = true;
     
     Map map = new HashMap();
+    HashSet set = new HashSet();
     for(Iterator iter = decls().iterator(); iter.hasNext(); ) {
       InhEq inhEq = (InhEq)iter.next();
       if(!map.containsKey(inhEq.introducedType()))
@@ -945,6 +970,13 @@ aspect GenerateSynCode {
         c.add(inhEq);
       else
         c.add(0, inhEq);
+      if(inhEq.isRefinement())
+        set.add(inhEq);
+    }
+    for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+      InhEq inhEq = (InhEq)iter.next();
+      ArrayList c = (ArrayList)map.get(inhEq.introducedType());
+      c.remove(inhEq.refinedEntity());
     }
     
     Map methodMap = new HashMap();
@@ -994,7 +1026,7 @@ aspect GenerateSynCode {
           if(inhEq.getChildName().equals("getChild")) 
           statements.add(
             new ReturnStmt(
-              methodDecl.createBoundAccess(inhEq.createArgumentList())
+              methodDecl.createBoundAccess(createArgumentList(inhEq))
             )
           );
           else if(!inhEq.getChildName().startsWith("get"))
@@ -1005,7 +1037,7 @@ aspect GenerateSynCode {
                 new MethodAccess(inhEq.getChildName(), new List())
               ),
               new ReturnStmt(
-                methodDecl.createBoundAccess(inhEq.createArgumentList())
+                methodDecl.createBoundAccess(createArgumentList(inhEq))
               )
             )
           );
@@ -1015,7 +1047,7 @@ aspect GenerateSynCode {
             new IfStmt(
               inhEq.child().createFromCorrectChildCheck(),
               new ReturnStmt(
-                methodDecl.createBoundAccess(inhEq.createArgumentList())
+                methodDecl.createBoundAccess(createArgumentList(inhEq))
               )
             )
           );
@@ -1039,8 +1071,10 @@ aspect GenerateSynCode {
           List args = new List();
           args.add(new VarAccess("caller"));
           args.add(new VarAccess("child"));
-          for(int i = 0; i < getNumParameter(); i++)
-            args.add(getParameter(i).createAccess());
+          for(int i = 0; i < getNumParameter(); i++) {
+            args.add(new VarAccess("arg" + i));
+            //args.add(getParameter(i).createAccess());
+          }
 
           MethodDecl superM = (MethodDecl)methodMap.get(searchType);
 
@@ -1069,6 +1103,9 @@ aspect GenerateSynCode {
     }
   }
 
+  syn boolean InhEq.weaveInline() =
+    options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl();
+
   syn lazy MethodDecl InhEq.addEqToAspect(TypeDecl returnType) {
           MethodDecl methodDecl =
             new IntroducedMethodDecl(
@@ -1083,7 +1120,7 @@ aspect GenerateSynCode {
               introducedType(),
               this
             );
-          if(options().hasOption("-weave_inline") && !introducedType().isInterfaceDecl())
+          if(weaveInline())
             return introducedType().addMemberMethod(methodDecl);
           else
             return hostType().addMemberMethod(methodDecl);
@@ -1113,8 +1150,10 @@ aspect GenerateSynCode {
     List list = new List();
     list.add(new ParameterDeclaration(astNode().createQualifiedAccess(), "caller"));
     list.add(new ParameterDeclaration(astNode().createQualifiedAccess(), "child"));
-    for(int i = 0; i < getNumParameter(); i++)
-      list.add(getParameter(i).qualifiedCopy());
+    for(int i = 0; i < getNumParameter(); i++) {
+      //list.add(getParameter(i).qualifiedCopy());
+      list.add(new ParameterDeclaration(getParameter(i).type().createQualifiedAccess(), "arg" + i));
+    }
     return list;
   }
   
@@ -1143,8 +1182,10 @@ aspect GenerateSynCode {
       List args = new List();
       args.add(new ThisAccess("this"));
       args.add(new VarAccess("caller"));
-      for(int i = 0; i < getNumParameter(); i++)
-        args.add(new VarAccess(getParameter(i).name()));
+      for(int i = 0; i < getNumParameter(); i++) {
+        //args.add(new VarAccess(getParameter(i).name()));
+        args.add(new VarAccess("arg" + i));
+      }
       statements.add(
         new ReturnStmt(
           new MethodAccess("getParent", new List()).qualifiesAccess(
@@ -1279,8 +1320,10 @@ aspect GenerateSynCode {
       List args = new List();
       args.add(new ThisAccess("this"));
       args.add(new NullLiteral("null"));
-      for(int i = 0; i < getNumParameter(); i++)
-       args.add(getParameter(i).createAccess());
+      for(int i = 0; i < getNumParameter(); i++) {
+        //args.add(new VarAccess("arg" + i));
+        args.add(getParameter(i).createAccess());
+      }
       return
         new MethodAccess("getParent", new List()).qualifiesAccess(
           new BoundMethodAccess(definingInterfaceName(), args, inhEqDelegate())
@@ -1291,8 +1334,45 @@ aspect GenerateSynCode {
     List args = new List();
     args.add(new VarAccess("caller"));
     args.add(new VarAccess("child"));
-    for(int i = 0; i < getNumParameter(); i++)
-     args.add(getParameter(i).createAccess());
+    for(int i = 0; i < getNumParameter(); i++) {
+      //args.add(new VarAccess("arg" + i));
+      args.add(getParameter(i).createAccess());
+    }
+    return 
+      new ParExpr(
+        new CastExpr(
+          astNode().createQualifiedAccess().qualifiesAccess(
+            new TypeAccess(definingInterfaceName())
+          ),
+          new VarAccess("n")
+        )
+      ).qualifiesAccess(
+        new MethodAccess(definingInterfaceName(), args)
+      );
+  }
+  protected Expr InhDecl.createComputeCallInDelegate() {
+    if(options().hasOption("-inh_in_astnode")) {
+      List args = new List();
+      args.add(new ThisAccess("this"));
+      args.add(new NullLiteral("null"));
+      for(int i = 0; i < getNumParameter(); i++) {
+        args.add(new VarAccess("arg" + i));
+        //args.add(getParameter(i).createAccess());
+      }
+      return
+        new MethodAccess("getParent", new List()).qualifiesAccess(
+          new BoundMethodAccess(definingInterfaceName(), args, inhEqDelegate())
+        );
+    }
+    
+    // ((hostType.definingInterfaceName)n).definingInterfaceName(caller, child, arg0, ... argN-1)
+    List args = new List();
+    args.add(new VarAccess("caller"));
+    args.add(new VarAccess("child"));
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(new VarAccess("arg" + i));
+      //args.add(getParameter(i).createAccess());
+    }
     return 
       new ParExpr(
         new CastExpr(
@@ -1308,7 +1388,7 @@ aspect GenerateSynCode {
 
   protected void InhDecl.addDelegateToAncestorDefinition(List list) {
     addSearchAncestorForEquation(list);
-    list.add(new ReturnStmt(createComputeCall()));
+    list.add(new ReturnStmt(createComputeCallInDelegate()));
   }
   
   protected void InhDecl.addComputeCall(List list) {

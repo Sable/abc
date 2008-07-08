@@ -153,6 +153,8 @@ BinaryExponent = [pP] [+-]? {Digits}
   "nta" { return sym(Terminals.NTA); }
   "refine" { return sym(Terminals.REFINE); }
   "refined" { return sym(Terminals.REFINED); }
+  "coll" { return sym(Terminals.COLL); }
+  "contributes" { return sym(Terminals.CONTRIBUTES); }
 }
 
 

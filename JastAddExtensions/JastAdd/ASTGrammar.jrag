@@ -243,7 +243,7 @@ aspect ASTGrammar {
     if(isRootNode()) {
       statements.add(
         AssignExpr.asStmt(
-          new VarAccess("isFinal"),
+          new VarAccess("is$Final"),
           new BooleanLiteral("true")
         )
       );
@@ -294,7 +294,7 @@ aspect ASTGrammar {
          if(isRootNode()) {
          statements.add(
          AssignExpr.asStmt(
-         new VarAccess("isFinal"),
+         new VarAccess("is$Final"),
          new BooleanLiteral("true")
          )
          );
@@ -1094,7 +1094,7 @@ aspect ASTGrammar {
     if(isRootNode()) {
       statements.add(
         AssignExpr.asStmt(
-          new VarAccess("isFinal"),
+          new VarAccess("is$Final"),
           new BooleanLiteral("true")
         )
       );
