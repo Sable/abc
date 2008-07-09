@@ -1,3 +1,4 @@
+module M.N.O;
 aspect Y {
 	public void Type.g() {
 	}

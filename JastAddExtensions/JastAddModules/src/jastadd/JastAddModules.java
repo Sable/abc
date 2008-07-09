@@ -10,6 +10,9 @@ import AST.Options;
 
 //primitive extension archi, change to something polyglot-like if needed
 public class JastAddModules extends JastAdd  {
+	
+	public static final String INSTANCE_MODULES_OPTION = "-instance-modules";
+	
 	public static void main(String args[]) {
 		if (!new JastAddModules().compile(args)) {
 			System.exit(1);
@@ -88,6 +91,6 @@ public class JastAddModules extends JastAdd  {
 	protected void initOptions() {
 		super.initOptions();
 		Options options = program.options();
-		options.addKeyValueOption("-instance-module"); //specifies the module that is going to be used to instantiate the generated package names
+		options.addKeyValueOption(INSTANCE_MODULES_OPTION); //specifies the module that is going to be used to instantiate the generated package names
 	}
 }

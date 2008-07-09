@@ -54,10 +54,10 @@ ModuleCompilationUnit jamodule_compilation_unit =
 	:};
 
 ModuleAccess ja_module_access =
-	IDENTIFIER //TODO: Change to dotted name once you figure
+	name_decl.n //TODO: Change to dotted name once you figure
 	{:
 		//TODO: Add start/stop locations
-		return new ModuleAccess(IDENTIFIER);
+		return new ModuleAccess(n.getID());
 	:};
 	
 ModuleDecl ja_module_decl =
