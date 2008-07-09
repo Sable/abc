@@ -1,3 +1,4 @@
+import java.util.*;
 
 //generates module CUs and clones subtrees as necessary
 //for import owns. Is done after InsertModuleCUs
@@ -24,12 +25,102 @@ aspect GenerateImportOwn {
 		}
 		
 		String instanceModuleName = options().getValueForOption(jastadd.JastAddModules.INSTANCE_MODULES_OPTION);
-		this.setInstanceModuleCU(lookupModuleCU(instanceModuleName));
+		this.setInstanceModuleCU(lookupModuleCUNoTransform(instanceModuleName));
 		if (this.instanceModule == null) {
 			System.out.println("Instance module " + instanceModuleName + " not found.");
 			return false;
 		}
 		
+		//generate import owns starting from the instance module
+		getInstanceModuleCU().generateImportOwn(null);
+		
 		return true;
 	}
+
+	//context is non-null if the import is an own. If not, it creates a new module	
+	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
+		if (context == null) {
+			return generateImportOwn(context, "");
+		} else {
+			return generateImportOwn(context, this.getModuleName() + "from" + context.getModuleName());
+		}
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
+		ModuleCompilationUnit ret = null;
+		//if instance module, don't reinstantiate
+		if (context == null) {
+			ret = this;
+		} else {
+			ret = instantiateModuleAs(context, alias); 
+		}
+		
+		//process imports
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			if (!(member instanceof ModuleImportDecl)) {
+				continue;
+			}
+			ModuleImportDecl importDecl = (ModuleImportDecl) member;
+			
+			ModuleCompilationUnit currImport = null; 
+			currImport = getHostProgram().lookupModuleCUNoTransform(importDecl.getImportModule());
+			assert (currImport != null) : "Imported module not found";
+			
+			boolean instantiated = false;
+			if (importDecl.isOwnImport()) {
+				ModuleCompilationUnit instanceCU = null;
+				instantiated = true;
+				//if no export name, generate MfromM' name
+				if (importDecl.getExportModule() instanceof NullModuleAccess) {
+					instanceCU = currImport.generateImportOwn(ret);
+				} else {
+					//export names have an implicit qualifier
+					instanceCU = currImport.generateImportOwn(ret, getModuleName() + "." + importDecl.getExportModule().getID());
+				} 
+				instanceCU.setBaseCU(currImport.getBaseCU());
+				currImport = instanceCU;
+			}
+			assert (currImport != null) : "Imported module not instantiated";
+			
+			addImportedModule(currImport);
+			if (instantiated) {
+				getHostProgram().getCompilationUnitList().addChild(currImport);			
+			}
+		}
+		
+		//TODO: process merges
+		
+		
+		return ret;
+	}
+	
+	protected HashSet<ModuleCompilationUnit> ModuleCompilationUnit.importedModules = new HashSet<ModuleCompilationUnit>();
+	public void ModuleCompilationUnit.addImportedModule(ModuleCompilationUnit cu) {
+		importedModules.add(cu);
+	}
+	public Collection<ModuleCompilationUnit> ModuleCompilationUnit.getImportedModules() {
+		return importedModules;
+	}
+	
+	//create a new ModuleCompilationUnit from the current one, using the given alias.
+	//Context will be for generating links in the accessibility graph
+	public ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
+		ModuleCompilationUnit ret = null;
+		
+		//TODO: Make more efficient later (shallow copy first, then fill in with a fullcopy after full instantiation
+		ret = this.fullCopy();
+		ret.setModuleName(alias);
+		
+		//TODO: Change the import references in the context to point to the newly created module 
+		
+		return ret;
+	}
+	
+	protected ModuleCompilationUnit ModuleCompilationUnit.baseCU = null;
+	public void ModuleCompilationUnit.setBaseCU(ModuleCompilationUnit baseCU) {
+		this.baseCU = baseCU;
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.getBaseCU() {
+		return this.baseCU;
+	}
+	
 }

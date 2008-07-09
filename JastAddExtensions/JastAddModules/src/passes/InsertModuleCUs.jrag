@@ -24,7 +24,7 @@ aspect InsertModuleCUs {
 			} else if (child instanceof CompilationUnit && 
 						((CompilationUnit)child).isInJAModule()) {
 				CompilationUnit childCU = (CompilationUnit) child;
-				ModuleCompilationUnit moduleCU = childCU.lookupModuleCU(); 
+				ModuleCompilationUnit moduleCU = childCU.lookupModuleCUNoTransform(); 
 				childList.removeChild(i); //remove must be here, since the parent node of childCU must not be overwritten
 				moduleCU.getCompilationUnitList().addChild(childCU);
 			} else {

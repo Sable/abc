@@ -1,0 +1,6 @@
+
+aspect ModuleImportDecl {
+	public boolean ModuleImportDecl.isOwnImport() {
+		return (getModuleImportType() instanceof ModuleImportTypeOwn);
+	}
+}

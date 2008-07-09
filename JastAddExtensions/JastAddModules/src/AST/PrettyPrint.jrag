@@ -29,15 +29,18 @@ aspect PrettyPrint {
 		}
 		System.out.println("------" + this.pathName() + "------");
 		System.out.println("module: " + getModuleDecl() + ";");
-		ModuleCompilationUnit moduleCU = lookupModuleCU();
+		ModuleCompilationUnit moduleCU = lookupModuleCUNoTransform();
 		String moduleCUPath = null;
-		if (lookupModuleCU() != null) {
+		String moduleName = null;
+		if (lookupModuleCUNoTransform() != null) {
 			moduleCUPath = moduleCU.pathName();
+			moduleName = moduleCU.getModuleName();
 		}
 		if (isGeneratedFromAST()) {
 			System.out.println("Original AST file: " + getOrigASTCompilationUnit().pathName());
 		}
 		System.out.println("module CU : " + moduleCUPath);
+		System.out.println("module name : " + moduleName);
 		System.out.println("------------------------");
 	}
 	
@@ -65,7 +68,9 @@ aspect PrettyPrint {
 		for (int i = 0; i < level; i++) {
 			System.out.print("\t");
 		}
-		System.out.println(this.relativeName());
+		System.out.println("module: " + getModuleName() + 
+			", file: " + this.relativeName() + 
+			", base module: " + this.getBaseCU().getModuleName());
 		
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).printJAModuleCUAST(level + 1);

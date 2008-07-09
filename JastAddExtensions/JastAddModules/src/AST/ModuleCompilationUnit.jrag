@@ -83,54 +83,54 @@ aspect ModuleCompilationUnit {
 	
 	//TODO: Change when moduleCU is inserted above the normal CUs
 	//may be too expensive to cache 
-	syn lazy ModuleCompilationUnit ASTNode.lookupModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit ASTNode.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (access == null) {
 			return null;
 		}
 		ModuleCompilationUnit ret = null;
 		for (int i = 0 ; i < getNumChild(); i++) {
-			ret = getChild(i).lookupModuleCU(access);
+			ret = getChild(i).lookupModuleCUNoTransform(access);
 			if (ret != null) {
 				return ret;
 			}
 		}
 		return ret;
 	}
-	syn lazy ModuleCompilationUnit CompilationUnit.lookupModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit CompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
 		return null;
 	}
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.lookupModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (access == null) {
 			return null;
 		}
 		ModuleCompilationUnit ret = null;
 		for (int i = 0 ; i < getNumChild(); i++) {
-			ret = getChild(i).lookupModuleCU(access);
+			ret = getChild(i).lookupModuleCUNoTransform(access);
 			if (ret != null) {
 				return ret;
 			}
 		}
 		return ret;
 	}
-	syn lazy ModuleCompilationUnit ModuleDecl.lookupModuleCU(ModuleAccess access) {
+	syn lazy ModuleCompilationUnit ModuleDecl.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (getModuleAccess().getID().compareTo(access.getID()) == 0) {
 			return getModuleCompilationUnit();
 		} else {
 			return null;
 		}
 	}
-	public ModuleCompilationUnit CompilationUnit.lookupModuleCU() {
+	public ModuleCompilationUnit CompilationUnit.lookupModuleCUNoTransform() {
 		if (this.getModuleDecl() == null) {
 			return null;
 		}
-		return getHostProgram().lookupModuleCU(this.getModuleDecl().getModuleAccess());
+		return getHostProgram().lookupModuleCUNoTransform(this.getModuleDecl().getModuleAccess());
 	}
 	//TODO: Fix this hack when the modulename stabilizes
-	public ModuleCompilationUnit Program.lookupModuleCU(String moduleName) {
-		return this.lookupModuleCU(new ModuleAccess(moduleName));
+	public ModuleCompilationUnit Program.lookupModuleCUNoTransform(String moduleName) {
+		return this.lookupModuleCUNoTransform(new ModuleAccess(moduleName));
 	}
 	public boolean CompilationUnit.isInJAModule() {
-		return (this.lookupModuleCU() != null);
+		return (this.lookupModuleCUNoTransform() != null);
 	}
 	
 	eq Program.getChild(int index).getHostProgram() = this;
@@ -161,4 +161,12 @@ aspect ModuleCompilationUnit {
 		}
 		return false;
 	}
+	
+	public void ModuleCompilationUnit.setModuleName(String name) {
+		getModuleDecl().getModuleAccess().setID(name);
+	}
+	public String ModuleCompilationUnit.getModuleName() {
+		return getModuleDecl().getModuleAccess().getID();
+	}
+	
 }
