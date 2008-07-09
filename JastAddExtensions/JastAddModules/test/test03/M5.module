@@ -1,0 +1,2 @@
+module M5;
+import own M6;
