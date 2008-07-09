@@ -70,7 +70,8 @@ aspect ModuleCompilationUnit {
 		}
 	}
 	
-
+	//TODO: Would be better if ModuleDecl was a subtype of a PackageDecl 
+	//(except PackageDecl has not AST type). See if worth changing.
 	ModuleDecl CompilationUnit.moduleDecl;
 	
 	public ModuleDecl CompilationUnit.getModuleDecl() {
@@ -124,6 +125,10 @@ aspect ModuleCompilationUnit {
 		}
 		return getHostProgram().lookupModuleCU(this.getModuleDecl().getModuleAccess());
 	}
+	//TODO: Fix this hack when the modulename stabilizes
+	public ModuleCompilationUnit Program.lookupModuleCU(String moduleName) {
+		return this.lookupModuleCU(new ModuleAccess(moduleName));
+	}
 	public boolean CompilationUnit.isInJAModule() {
 		return (this.lookupModuleCU() != null);
 	}
@@ -145,5 +150,15 @@ aspect ModuleCompilationUnit {
 	}
 	public boolean CompilationUnit.isGeneratedFromAST() {
 		return (this.origASTCompilationUnit != null);
+	}
+	
+	//TODO: check if cached result remains consistent (don't call before all CUs have been parsed
+	syn lazy boolean Program.hasJAModules() {
+		for (Iterator iter = compilationUnitIterator(); iter.hasNext();) {
+			if (iter.next() instanceof ModuleCompilationUnit) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

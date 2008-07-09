@@ -6,7 +6,7 @@
 //in a later pass.
 aspect InsertModuleCUs {
 	
-	public void Program.insertModuleCUs() {
+	public boolean Program.insertModuleCUs() {
 		List childList = (List)getChild(0); //bad, relies on the program child to be the CU list
 		int i = 0;
 		while (i < childList.getNumChild()) {
@@ -32,5 +32,11 @@ aspect InsertModuleCUs {
 				System.out.println("Unexpected program child type: " + child.getClass());
 			}
 		}
+		return true;
+	}
+	
+	//run transformation on each member CU
+	public void ModuleCompilationUnit.transformation() {
+		getCompilationUnitList().transformation();
 	}
 }

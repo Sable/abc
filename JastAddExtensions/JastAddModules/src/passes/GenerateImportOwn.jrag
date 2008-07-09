@@ -3,4 +3,32 @@
 //for import owns. Is done after InsertModuleCUs
 aspect GenerateImportOwn {
 
+	ModuleCompilationUnit Program.instanceModule = null;
+	
+	public ModuleCompilationUnit Program.getInstanceModuleCU() {
+		return this.instanceModule;
+	}
+	public void Program.setInstanceModuleCU(ModuleCompilationUnit instanceModule) {
+		this.instanceModule = instanceModule;
+	}
+
+	public boolean Program.generateImportOwn() {
+		if (!hasJAModules()) {
+			return true;
+		}
+		if (!options().hasOption("-instance-module") || 
+			!options().hasValueForOption("-instance-module")) {
+			System.out.println("-instance-module option is required when there are JA modules in the set of compilation units");
+			return false; 
+		}
+		
+		String instanceModuleName = options().getValueForOption("-instance-module");
+		this.setInstanceModuleCU(lookupModuleCU(instanceModuleName));
+		if (this.instanceModule == null) {
+			System.out.println("Instance module " + instanceModuleName + " not found.");
+			return false;
+		}
+		
+		return true;
+	}
 }

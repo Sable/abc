@@ -28,26 +28,39 @@ public class JastAddModules extends JastAdd  {
 				});
 		if (!result)
 			return false;
+		
+		
+		System.out.println("----------Module contents----------");
+		program.printJAModules();
+		System.out.println("----------CU AST before insert----------");
+		program.printJAModuleCUAST(0);
+		result = program.insertModuleCUs();
+		System.out.println("----------CU AST after insert----------");
+		program.printJAModuleCUAST(0);
+		if (!result) {
+			return false;
+		}
+		
+		result = program.generateImportOwn();
+		if (!result) {
+			return false;
+		}
+		
+		System.out.println("-------------Instance ModuleCompilationUnit------------");
+		System.out.println(program.getInstanceModuleCU());
+		System.out.println("-----------End Instance ModuleCompilationUnit----------");
+		
 		jastAdd.generate();
 		return true;
 	}
 
 	public void generate() {
-		System.out.println("----------Module contents----------");
-		program.printJAModules();
-		System.out.println("----------Module AST before insert----------");
-		program.printJAModuleCUAST(0);
-		program.insertModuleCUs();
-		System.out.println("----------Module AST after insert----------");
-		program.printJAModuleCUAST(0);
-		program.dumpTree();
-		
 		
 		program.generateIntertypeDecls();
 		program.transformation();
 		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 			CompilationUnit cu = (CompilationUnit) iter.next();
-			System.out.println("outer loop cu: " + cu.relativeName());
+			System.out.println("-----outer loop cu: " + cu.relativeName());
 			if (cu.fromSource()) {System.out.println(cu);}
 			System.out.println("------------------------------");
 			if (cu.fromSource()) {
@@ -55,11 +68,10 @@ public class JastAddModules extends JastAdd  {
 					cu.getTypeDecl(i).generateClassfile();
 				}
 			}
-			//bad hack, fix by refining compilationUnitIterator() in ClassPath.jrag
-			//does not work completely, innertypes for ASTNode not generated properly
+			//TODO: bad hack, fix by refining compilationUnitIterator() in ClassPath.jrag
 			if (cu instanceof ModuleCompilationUnit) {
 				for (CompilationUnit childCU : ((ModuleCompilationUnit)cu).getCompilationUnitList()) {
-					System.out.println("inner loop cu: " + childCU.relativeName());
+					System.out.println("-----inner loop cu: " + childCU.relativeName());
 					if (childCU.fromSource()) {System.out.println(childCU);}
 					System.out.println("------------------------------");
 					if (childCU.fromSource()) {
@@ -75,5 +87,7 @@ public class JastAddModules extends JastAdd  {
 
 	protected void initOptions() {
 		super.initOptions();
+		Options options = program.options();
+		options.addKeyValueOption("-instance-module"); //specifies the module that is going to be used to instantiate the generated package names
 	}
 }

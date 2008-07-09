@@ -8,7 +8,7 @@ CompilationUnit compilation_unit =
     {: 
     	AnnotatedCompilationUnit ret = new AnnotatedCompilationUnit(p.getID(), i, t, new Modifiers(a));
     	ret.setModuleDecl(md); 
-    	ret.addChild(md);
+    	ret.addChild(md); //TODO: this is broken due to hardcoded numChildren for astnodes, find a way to make a moduledecl a packagedecl
     	return ret;
     :}
     |
@@ -16,7 +16,7 @@ CompilationUnit compilation_unit =
     {: 
     	CompilationUnit ret = new CompilationUnit(p.getID(), i, t);
     	ret.setModuleDecl(md); 
-    	ret.addChild(md);
+    	ret.addChild(md); //TODO: this is broken due to hardcoded numChildren for astnodes, find a way to make a moduledecl a packagedecl
     	return ret;
     :}
 	|
@@ -24,7 +24,7 @@ CompilationUnit compilation_unit =
 	{: 
 		CompilationUnit ret = new CompilationUnit("", i, t);
     	ret.setModuleDecl(md); 
-    	ret.addChild(md);
+    	ret.addChild(md); //TODO: this is broken due to hardcoded numChildren for astnodes, find a way to make a moduledecl a packagedecl
 		return ret;
 	:}
 	;
@@ -35,7 +35,7 @@ CompilationUnit ast_file =
 	{:
 		CompilationUnit ret = new CompilationUnit(p.getID(), i, t);
 		ret.setModuleDecl(md);
-		ret.addChild(md);
+		ret.addChild(md); //TODO: this is broken due to hardcoded numChildren for astnodes, find a way to make a moduledecl a packagedecl
 		return ret; 
 	:}
 	|
@@ -43,7 +43,7 @@ CompilationUnit ast_file =
 	{: 
 		CompilationUnit ret = new CompilationUnit("", i, t);
 		ret.setModuleDecl(md);
-		ret.addChild(md);
+		ret.addChild(md); //TODO: this is broken due to hardcoded numChildren for astnodes, find a way to make a moduledecl a packagedecl
 		return ret; 
 	:};
 
