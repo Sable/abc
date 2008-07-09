@@ -44,6 +44,9 @@ public class JastAddModules extends JastAdd  {
 			return false;
 		}
 		
+		System.out.println("----------Module CU imports before import own----------");
+		System.out.println(program.toStringJAModuleCUImports());
+		
 		result = program.generateImportOwn();
 		if (!result) {
 			return false;
@@ -55,6 +58,8 @@ public class JastAddModules extends JastAdd  {
 		System.out.println("----------CU AST after generateImportOwn----------");
 		program.printJAModuleCUAST(0);
 		
+		System.out.println("----------Module CU imports after import own----------");
+		System.out.println(program.toStringJAModuleCUImports());
 		
 		jastAdd.generate();
 		return true;

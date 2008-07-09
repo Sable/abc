@@ -77,6 +77,30 @@ aspect PrettyPrint {
 		}
 	}
 	
+	public void ASTNode.toStringJAModuleCUImports(StringBuffer s) {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).toStringJAModuleCUImports(s);
+		}
+	}
+	public void ModuleCompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
+		s.append("module " + getModuleName() + "\n");
+		s.append("\t");
+		
+		boolean first = true;
+		for (ModuleCompilationUnit importedCU : getImportedModules()) {
+			if (!first) {s.append(", ");}
+			s.append(importedCU.getModuleName());
+			first = false;
+		} 
+		s.append("\n");
+	}
+	public String ASTNode.toStringJAModuleCUImports() {
+		StringBuffer s = new StringBuffer();
+		toStringJAModuleCUImports(s);
+		return s.toString();
+	}
+
+	
 	public void ModuleCompilationUnit.toString(StringBuffer s) {
 		getModuleDecl().toString(s);
 		s.append("\n");

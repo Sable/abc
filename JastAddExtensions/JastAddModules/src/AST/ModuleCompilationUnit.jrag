@@ -162,11 +162,31 @@ aspect ModuleCompilationUnit {
 		return false;
 	}
 	
+	protected ModuleCompilationUnit ModuleCompilationUnit.baseCU = null;
+	public void ModuleCompilationUnit.setBaseCU(ModuleCompilationUnit baseCU) {
+		this.baseCU = baseCU;
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.getBaseCU() {
+		return this.baseCU;
+	}
+	
+	
 	public void ModuleCompilationUnit.setModuleName(String name) {
 		getModuleDecl().getModuleAccess().setID(name);
 	}
 	public String ModuleCompilationUnit.getModuleName() {
 		return getModuleDecl().getModuleAccess().getID();
 	}
-	
+
+	protected HashSet<ModuleCompilationUnit> ModuleCompilationUnit.importedModules = new HashSet<ModuleCompilationUnit>();
+	public void ModuleCompilationUnit.setImportedModules(HashSet<ModuleCompilationUnit> modules) {
+		this.importedModules = modules;
+	}
+	public void ModuleCompilationUnit.addImportedModule(ModuleCompilationUnit cu) {
+		importedModules.add(cu);
+	}
+	public Collection<ModuleCompilationUnit> ModuleCompilationUnit.getImportedModules() {
+		return importedModules;
+	}
+
 }

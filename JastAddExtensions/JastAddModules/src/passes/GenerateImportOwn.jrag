@@ -81,7 +81,7 @@ aspect GenerateImportOwn {
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
-			addImportedModule(currImport);
+			ret.addImportedModule(currImport);
 			if (instantiated) {
 				getHostProgram().getCompilationUnitList().addChild(currImport);			
 			}
@@ -93,14 +93,6 @@ aspect GenerateImportOwn {
 		return ret;
 	}
 	
-	protected HashSet<ModuleCompilationUnit> ModuleCompilationUnit.importedModules = new HashSet<ModuleCompilationUnit>();
-	public void ModuleCompilationUnit.addImportedModule(ModuleCompilationUnit cu) {
-		importedModules.add(cu);
-	}
-	public Collection<ModuleCompilationUnit> ModuleCompilationUnit.getImportedModules() {
-		return importedModules;
-	}
-	
 	//create a new ModuleCompilationUnit from the current one, using the given alias.
 	//Context will be for generating links in the accessibility graph
 	public ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
@@ -108,19 +100,18 @@ aspect GenerateImportOwn {
 		
 		//TODO: Make more efficient later (shallow copy first, then fill in with a fullcopy after full instantiation
 		ret = this.fullCopy();
+		
+		//deep copy ITDs
+		ret.setImportedModules(new HashSet<ModuleCompilationUnit>());
+		for (ModuleCompilationUnit cu : this.getImportedModules()) {
+			ret.addImportedModule(cu);
+		}
+		
 		ret.setModuleName(alias);
 		
 		//TODO: Change the import references in the context to point to the newly created module 
 		
 		return ret;
-	}
-	
-	protected ModuleCompilationUnit ModuleCompilationUnit.baseCU = null;
-	public void ModuleCompilationUnit.setBaseCU(ModuleCompilationUnit baseCU) {
-		this.baseCU = baseCU;
-	}
-	public ModuleCompilationUnit ModuleCompilationUnit.getBaseCU() {
-		return this.baseCU;
 	}
 	
 }
