@@ -10702,6 +10702,12 @@
 		<run class="QuickCheck"/>
     </ajc-test>		
     
+    <ajc-test num="1310" dir="abctests/tracematches/wp-opt"
+        title="Path-infos are not established completely (Feng Chen)">
+        <compile files="IncompletePathInfoConstruction.java" options="-ext,abc.tmwpopt,-laststage,quick"/>
+        <run class="IncompletePathInfoConstruction"/>
+    </ajc-test>       
+    
         <ajc-test num="1401" dir="abctests/ra/typechecks"
         title="Typechecks for relational aspects (1 of 2)">
         <compile files="T1.java" options="-ext,abc.ra">
@@ -10741,7 +10747,7 @@
     
     <ajc-test num="1420" dir="abctests/da/typechecks"
         title="Typechecks for dependent advice ">
-        <compile files="DATypeChecks.java" options="-ext,abc.da">
+        <compile files="DATypeChecks.java" options="-ext,abc.ja.da">
 	    	<message kind="warning" line="12"/>
 	    	<message kind="warning" line="49"/>
 	    	<message kind="error" line="59"/>
@@ -10751,7 +10757,7 @@
     
     <ajc-test num="1421" dir="abctests/da/typechecks"
         title="Typechecks for dependent advice (2)">
-        <compile files="DATypeChecks2.java" options="-ext,abc.da">
+        <compile files="DATypeChecks2.java" options="-ext,abc.ja.da">
 	    	<message kind="error" line="9"/>
 	    	<message kind="error" line="17"/>
 		</compile>
@@ -10759,7 +10765,7 @@
 
     <ajc-test num="1422" dir="abctests/da/typechecks"
         title="Typechecks for dependent advice (3)">
-        <compile files="DATypeChecks3.java" options="-ext,abc.da">
+        <compile files="DATypeChecks3.java" options="-ext,abc.ja.da">
 	    	<message kind="error" line="11"/>
 	    	<message kind="error" line="19"/>
 		</compile>
@@ -10767,31 +10773,30 @@
     
     <ajc-test num="1423" dir="abctests/da/typechecks"
         title="Typechecks for dependent advice (4)">
-        <compile files="DATypeChecks4.java" options="-ext,abc.da">
+        <compile files="DATypeChecks4.java" options="-ext,abc.ja.da">
 	    	<message kind="error" line="4"/>
 		</compile>
     </ajc-test>
 
     <ajc-test num="1424" dir="abctests/da/typechecks"
         title="Typechecks for dependent advice (5)">
-        <compile files="DATypeChecks5.java" options="-ext,abc.da">
+        <compile files="DATypeChecks5.java" options="-ext,abc.ja.da">
 	    	<message kind="error" line="4"/>
 		</compile>
     </ajc-test>
 
     <ajc-test num="1425" dir="abctests/da/typechecks"
         title="Typechecks for dependent advice (6)">
-        <compile files="DATypeChecks6.java" options="-ext,abc.da">
+        <compile files="DATypeChecks6.java" options="-ext,abc.ja.da">
 	    	<message kind="error" line="7"/>
 		</compile>
     </ajc-test>
 
     <ajc-test num="1430" dir="abctests/da/optimizations"
         title="Quick check for dependent advice">
-        <compile files="QuickCheck.java" options="-ext,abc.da,-laststage,quick">
+        <compile files="QuickCheck.java" options="-ext,abc.da,-laststage,quick,-debug,debugDA">
 	    	<message kind="warning" line="6"/>
 	    	<message kind="warning" line="9"/>
 		</compile>
-    </ajc-test>
-    
+    </ajc-test> 
 </suite>
