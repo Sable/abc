@@ -127,8 +127,8 @@ public class PathInfoFinder {
 
 	/**
 	 * Computes all paths through the given state machine that end in a node
-	 * matched by the given predicate and start at initialStates. Loops are not taken into account, i.e.
-	 * back-jumps are not followed.
+	 * matched by the given predicate and start at initialStates. We only consider paths that
+	 * contain no state more than twice and contain no self-loops. (see abc-2008-2)
 	 * @param sm any tracematch state machine
 	 * @param pred any state predicate
 	 * @param initialStates the set of states to assume as initial states for the path info
@@ -169,12 +169,15 @@ public class PathInfoFinder {
 					for (Iterator<SMEdge> iterator = s.getOutEdgeIterator(); iterator.hasNext();) {
 						SMEdge outEdge = iterator.next();
 						SMNode target = outEdge.getTarget();
-						//if the target node is not yet part of the path (i.e. no cycle),
-						//add the edge to the path and then add the new path to the new worklist 
-						if(!containsState(path, target)) {
-							List<SMEdge> newPath = new LinkedList<SMEdge>(path);
-							newPath.add(outEdge);
-							newWorklist.add(newPath);
+						//we do not consider self-loops
+						if(!target.equals(s)) {
+							//if the target node is not yet part of the path (i.e. no cycle),
+							//add the edge to the path and then add the new path to the new worklist 
+							if(!containsStateMoreThanOnce(path, target)) {
+								List<SMEdge> newPath = new LinkedList<SMEdge>(path);
+								newPath.add(outEdge);
+								newWorklist.add(newPath);
+							}
 						}
 					}
 				}
@@ -188,16 +191,19 @@ public class PathInfoFinder {
 	}
 	
 	/**
-	 * Returns true if the given path contains the given state.
+	 * Returns true if the given path contains the given state more than once.
 	 * @param path any list of edges
 	 * @param s any state
-	 * @return <code>true</code> if s is source or target state of any edge in path 
+	 * @return <code>true</code> if s is source of any edge in path more than once 
 	 */
-	protected boolean containsState(List<SMEdge> path, State s) {
+	protected boolean containsStateMoreThanOnce(List<SMEdge> path, State s) {
+		int found = 0;
 		for (SMEdge edge : path) {
-			if((edge.getSource()!=null && edge.getSource().equals(s))
-			|| (edge.getTarget()!=null && edge.getTarget().equals(s))) {
-				return true;
+			if((edge.getSource()!=null && edge.getSource().equals(s))) {
+				found++;
+				if(found==2){
+					return true;
+				}
 			}
 		} 
 		return false;
