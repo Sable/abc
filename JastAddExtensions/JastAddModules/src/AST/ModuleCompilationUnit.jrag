@@ -186,6 +186,9 @@ aspect ModuleCompilationUnit {
 	public void ModuleCompilationUnit.addImportedModule(ModuleCompilationUnit cu) {
 		importedModules.add(cu);
 	}
+	public boolean ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
+		return importedModules.remove(cu);
+	}
 	public Collection<ModuleCompilationUnit> ModuleCompilationUnit.getImportedModules() {
 		return importedModules;
 	}
@@ -203,6 +206,9 @@ aspect ModuleCompilationUnit {
 	} 
 	public void ModuleCompilationUnit.addInstanceContext(ModuleCompilationUnit context) {
 		this.instanceContext.add(context);
+	}
+	public boolean ModuleCompilationUnit.removeInstanceContext(ModuleCompilationUnit context) {
+		return this.instanceContext.remove(context);
 	}
 	public void ModuleCompilationUnit.isInInstanceContext(ModuleCompilationUnit context) {
 		this.instanceContext.contains(context);
