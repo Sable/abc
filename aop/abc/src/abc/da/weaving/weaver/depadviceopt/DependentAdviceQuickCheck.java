@@ -75,6 +75,21 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 		Set<AdviceDependency> fulfilledAdviceDependencies = new HashSet<AdviceDependency>(); 
 		int currNumFulfilledDependencies = Integer.MAX_VALUE;
 		
+		if(Debug.v().debugDA) {
+			numEnabledDependentAdviceShadowsBefore = 0;
+			//disable all advice applications that belong to "other" dependent advice
+			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
+
+				public void adviceApplication(AdviceApplication aa, SootMethod m) {
+					boolean isDependent = dai.isDependentAdvice(aa.advice);
+					if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
+						numEnabledDependentAdviceShadowsBefore++;
+					}
+				}			
+			});
+			numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
+		}
+
 		/*
 		 * we have to make a fixed-point iteration here (see abc-2008-2):
 		 * assume the trivial NFA for "a b | b c", and assume a program where "a" does not match;
@@ -90,21 +105,6 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 				}
 			}
 			
-			if(Debug.v().debugDA) {
-				numEnabledDependentAdviceShadowsBefore = 0;
-				//disable all advice applications that belong to "other" dependent advice
-				AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
-	
-					public void adviceApplication(AdviceApplication aa, SootMethod m) {
-						boolean isDependent = dai.isDependentAdvice(aa.advice);
-						if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
-							numEnabledDependentAdviceShadowsBefore++;
-						}
-					}			
-				});
-				numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
-			}
-	
 			//if we have no more optimization potential any more then break the while(true) loop
 			if(fulfilledAdviceDependencies.size()==currNumFulfilledDependencies) {
 				break;
