@@ -82,10 +82,23 @@ aspect PrettyPrint {
 		}
 	}
 	public void ModuleCompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
-		s.append("module " + getModuleName() + "\n");
+		String contextString = "[";
+		boolean first = true;
+		for (ModuleCompilationUnit cu : getInstanceContext()) {
+			if (!first) {
+				contextString += ", ";
+			}
+			contextString += cu.getModuleName();
+			first = false;
+		}
+		contextString += "]";
+		
+		s.append("module " + getModuleName() + 
+			", base:" + getBaseCU().getModuleName() + 
+			", context:" + contextString + "\n");
 		s.append("\t");
 		
-		boolean first = true;
+		first = true;
 		for (ModuleCompilationUnit importedCU : getImportedModules()) {
 			if (!first) {s.append(", ");}
 			s.append(importedCU.getModuleName());

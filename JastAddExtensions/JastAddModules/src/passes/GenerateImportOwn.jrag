@@ -52,6 +52,7 @@ aspect GenerateImportOwn {
 			ret = this;
 		} else {
 			ret = instantiateModuleAs(context, alias); 
+			ret.addInstanceContext(context);
 		}
 		
 		//process imports
@@ -95,6 +96,7 @@ aspect GenerateImportOwn {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
 			}
+			
 		}
 		
 		return ret;
@@ -112,6 +114,10 @@ aspect GenerateImportOwn {
 		ret.setImportedModules(new HashSet<ModuleCompilationUnit>());
 		for (ModuleCompilationUnit cu : this.getImportedModules()) {
 			ret.addImportedModule(cu);
+		}
+		ret.setInstanceContext(new HashSet<ModuleCompilationUnit>());
+		for (ModuleCompilationUnit cu : this.getInstanceContext()) {
+			ret.addInstanceContext(cu);
 		}
 		
 		ret.setModuleName(alias);
