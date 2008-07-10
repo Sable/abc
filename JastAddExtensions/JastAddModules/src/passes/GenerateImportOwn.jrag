@@ -116,6 +116,7 @@ aspect GenerateImportOwn {
 			ret.addImportedModule(cu);
 		}
 		ret.setInstanceContext(new HashSet<ModuleCompilationUnit>());
+		//TODO check if copy is a correct action instead of an empty context
 		for (ModuleCompilationUnit cu : this.getInstanceContext()) {
 			ret.addInstanceContext(cu);
 		}
