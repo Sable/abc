@@ -175,6 +175,16 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 			System.out.println();
 		}
 
+		//register advice names
+		for(String sym: tm.getSymbols()) {
+			String adviceName = tm.getSymbolAdviceMethod(sym).getName();
+			dai.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName);
+		}
+		dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getSynchAdviceMethod().getName());
+		dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getSomeAdviceMethod().getName());
+		dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getName()+"$body");
+		
+		//construct path infos and register dependencies
 		Set<PathInfo> pathInfos = new PathInfoFinder(tm).getPathInfos();
     	for (PathInfo pathInfo : pathInfos) {
 			Map<String,List<String>> strongAdviceNameToVars = new HashMap<String, List<String>>();
@@ -183,26 +193,21 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 				List<String> variableOrder = tm.getVariableOrder(strongSymbol);
 				String adviceName = tm.getSymbolAdviceMethod(strongSymbol).getName();
 				strongAdviceNameToVars.put(adviceName, variableOrder);
-				dai.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName);
 			}
 			
 			Map<String,List<String>> weakAdviceNameToVars = new HashMap<String, List<String>>();
 			Set<String> weakSymbols = new HashSet<String>(pathInfo.getSkipLoopLabels());
-			weakSymbols.removeAll(strongSymbols);	//symbols that are strong, don't need to be declared weak as well
+			weakSymbols.removeAll(strongSymbols);	//symbols that are strong, may not be declared weak as well
 			for (String weakSymbol : weakSymbols) {
 				List<String> variableOrder = tm.getVariableOrder(weakSymbol);
 				String adviceName = tm.getSymbolAdviceMethod(weakSymbol).getName();
 				weakAdviceNameToVars.put(adviceName, variableOrder);
-				dai.registerDependentAdvice(tm.getContainer().getName()+"."+adviceName);
 			}
 			
 			//synch, some and body advice are also weak; they take no parameters
 			weakAdviceNameToVars.put(tm.getSynchAdviceMethod().getName(),Collections.<String>emptyList());
 			weakAdviceNameToVars.put(tm.getSomeAdviceMethod().getName(),Collections.<String>emptyList());
 			weakAdviceNameToVars.put(tm.getName()+"$body",Collections.<String>emptyList());
-			dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getSynchAdviceMethod().getName());
-			dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getSomeAdviceMethod().getName());
-			dai.registerDependentAdvice(tm.getContainer().getName()+"."+tm.getName()+"$body");
 			
 			AdviceDependency adviceDependency = new AdviceDependency(
 					strongAdviceNameToVars,
