@@ -72,87 +72,103 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 			System.err.println("da: Starting QuickCheck");
 		long timeBefore = System.currentTimeMillis(); 
 		
-		//find all fulfilled dependencies
 		Set<AdviceDependency> fulfilledAdviceDependencies = new HashSet<AdviceDependency>(); 
-		for (AdviceDependency dep : adviceDependencies) {
-			if(dep.fulfillsQuickCheck()) {
-				fulfilledAdviceDependencies.add(dep);
-			}
-		}
+		int currNumFulfilledDependencies = Integer.MAX_VALUE;
 		
-		if(Debug.v().debugDA) {
-			numEnabledDependentAdviceShadowsBefore = 0;
-			//disable all advice applications that belong to "other" dependent advice
-			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
-
-				public void adviceApplication(AdviceApplication aa, SootMethod m) {
-					boolean isDependent = dai.isDependentAdvice(aa.advice);
-					if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
-						numEnabledDependentAdviceShadowsBefore++;
-					}
-				}			
-			});
-			numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
-		}
-
-		//if we have optimization potential
-		if(fulfilledAdviceDependencies.size()<adviceDependencies.size()) {
-			//determine all dependent advice that belong to dependencies that are fulfilled
-			final Set<AbstractAdviceDecl> dependentAdviceToKeepAlive = new HashSet<AbstractAdviceDecl>();
-			for (AbstractAdviceDecl ad : (List<AbstractAdviceDecl>)gai.getAdviceDecls()) {
-				boolean isDependent = dai.isDependentAdvice(ad);
-				if(isDependent) {
-					String adviceName = dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice((AdviceDecl) ad));
-					for (AdviceDependency dep : fulfilledAdviceDependencies) {
-						if(ad.getAspect().equals(dep.getContainer()) && dep.containsAdviceNamed(adviceName)) {
-							dependentAdviceToKeepAlive.add(ad);
-						}
-					}
+		/*
+		 * we have to make a fixed-point iteration here (see abc-2008-2):
+		 * assume the trivial NFA for "a b | b c", and assume a program where "a" does not match;
+		 * if we do not iterate to the fixed point then the result depend on the order in which we
+		 * process the dependencies for "a b" and "b c"
+		 */
+		while(true) {
+		
+			//find all fulfilled dependencies
+			for (AdviceDependency dep : adviceDependencies) {
+				if(dep.fulfillsQuickCheck()) {
+					fulfilledAdviceDependencies.add(dep);
 				}
 			}
 			
-			//disable all advice applications that belong to "other" dependent advice
-			AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
-
-				public void adviceApplication(AdviceApplication aa, SootMethod m) {
-					boolean isDependent = dai.isDependentAdvice(aa.advice);
-					if (isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
-						numEnabledDependentAdviceShadowsAfter--;
-						aa.setResidue(NeverMatch.v());
-					}
-				}			
-			});
-			
-			if(!OptionsParser.v().warn_about_individual_shadows()) {
-				//warn the user about each dependent advice that will not be executed
-				final Set<AbstractAdviceDecl> warned = new HashSet<AbstractAdviceDecl>();			
+			if(Debug.v().debugDA) {
+				numEnabledDependentAdviceShadowsBefore = 0;
+				//disable all advice applications that belong to "other" dependent advice
 				AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
 	
 					public void adviceApplication(AdviceApplication aa, SootMethod m) {
 						boolean isDependent = dai.isDependentAdvice(aa.advice);
-						if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
-							//enough to warn one time, even if the same advice has many shadows
-							if(!warned.contains(aa.advice)) {
-								warnAdvice(aa.advice);
-								warned.add(aa.advice);
+						if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
+							numEnabledDependentAdviceShadowsBefore++;
+						}
+					}			
+				});
+				numEnabledDependentAdviceShadowsAfter = numEnabledDependentAdviceShadowsBefore;
+			}
+	
+			//if we have no more optimization potential any more then break the while(true) loop
+			if(fulfilledAdviceDependencies.size()==currNumFulfilledDependencies) {
+				break;
+			} 
+			currNumFulfilledDependencies = fulfilledAdviceDependencies.size();
+			
+			//do we have optimization potential?
+			if(fulfilledAdviceDependencies.size()<adviceDependencies.size()) {
+				//determine all dependent advice that belong to dependencies that are fulfilled
+				final Set<AbstractAdviceDecl> dependentAdviceToKeepAlive = new HashSet<AbstractAdviceDecl>();
+				for (AbstractAdviceDecl ad : (List<AbstractAdviceDecl>)gai.getAdviceDecls()) {
+					boolean isDependent = dai.isDependentAdvice(ad);
+					if(isDependent) {
+						String adviceName = dai.replaceForHumanReadableName(dai.qualifiedNameOfAdvice((AdviceDecl) ad));
+						for (AdviceDependency dep : fulfilledAdviceDependencies) {
+							if(ad.getAspect().equals(dep.getContainer()) && dep.containsAdviceNamed(adviceName)) {
+								dependentAdviceToKeepAlive.add(ad);
 							}
 						}
 					}
-				});
-			} else {			
-				//warn the user about each shadow that was removed
+				}
+				
+				//disable all advice applications that belong to "other" dependent advice
 				AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
 	
 					public void adviceApplication(AdviceApplication aa, SootMethod m) {
 						boolean isDependent = dai.isDependentAdvice(aa.advice);
-						if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
-							//enough to warn one time, even if the same advice has many shadows
-							warnShadow(aa);
+						if (isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+							numEnabledDependentAdviceShadowsAfter--;
+							aa.setResidue(NeverMatch.v());
 						}
-					}
+					}			
 				});
+				
+				if(!OptionsParser.v().warn_about_individual_shadows()) {
+					//warn the user about each dependent advice that will not be executed
+					final Set<AbstractAdviceDecl> warned = new HashSet<AbstractAdviceDecl>();			
+					AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
+		
+						public void adviceApplication(AdviceApplication aa, SootMethod m) {
+							boolean isDependent = dai.isDependentAdvice(aa.advice);
+							if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+								//enough to warn one time, even if the same advice has many shadows
+								if(!warned.contains(aa.advice)) {
+									warnAdvice(aa.advice);
+									warned.add(aa.advice);
+								}
+							}
+						}
+					});
+				} else {			
+					//warn the user about each shadow that was removed
+					AdviceApplicationVisitor.v().traverse(new AdviceApplicationVisitor.AdviceApplicationHandler() {
+		
+						public void adviceApplication(AdviceApplication aa, SootMethod m) {
+							boolean isDependent = dai.isDependentAdvice(aa.advice);
+							if(isDependent && !dependentAdviceToKeepAlive.contains(aa.advice)) {
+								//enough to warn one time, even if the same advice has many shadows
+								warnShadow(aa);
+							}
+						}
+					});
+				}
 			}
-			
 		}
 				
 		if(Debug.v().debugDA) {
