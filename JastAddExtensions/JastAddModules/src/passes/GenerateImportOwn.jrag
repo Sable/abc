@@ -74,7 +74,7 @@ aspect GenerateImportOwn {
 					instanceCU = currImport.generateImportOwn(ret);
 				} else {
 					//export names have an implicit qualifier
-					instanceCU = currImport.generateImportOwn(ret, getModuleName() + "." + importDecl.getExportModule().getID());
+					instanceCU = currImport.generateImportOwn(ret, ret.getModuleName() + "." + importDecl.getExportModule().getID());
 				} 
 				instanceCU.setBaseCU(currImport.getBaseCU());
 				currImport = instanceCU;
@@ -91,7 +91,11 @@ aspect GenerateImportOwn {
 		}
 		
 		//TODO: process merges
-		
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			if (!(member instanceof ModuleMergeDecl)) {
+				continue;
+			}
+		}
 		
 		return ret;
 	}

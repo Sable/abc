@@ -1,0 +1,5 @@
+
+aspect JAModuleErrorCheck {
+	//TODO : Cyclic imports
+	//TODO : Visibility checks
+}

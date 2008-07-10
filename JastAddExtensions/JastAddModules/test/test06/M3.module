@@ -1,0 +1,2 @@
+module M3;
+import own M4 export as M4alias;

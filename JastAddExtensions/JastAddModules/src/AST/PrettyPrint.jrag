@@ -50,7 +50,6 @@ aspect PrettyPrint {
 			getChild(i).printJAModuleCUAST(level);
 		}
 	}
-	//TODO: implement remaining parts of traversal
 	public void CompilationUnit.printJAModuleCUAST(int level) {
 		if (!fromSource()) {
 			return;
