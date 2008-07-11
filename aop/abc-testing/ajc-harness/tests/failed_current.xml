@@ -1,4 +1,4 @@
-<suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
  <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
@@ -43,10 +43,6 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
-	    <compile files="java/lang/Object.java,java/lang/String.java">
-	    </compile>
-	</ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
@@ -68,6 +64,37 @@
 <ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 772, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
+    </ajc-test>
+<ajc-test title="declare warnings on binary ajc 1.1 classes" pr="37023" num="795" dir="new/binaryWarnings/src" abccomment="we fail because of an off-by one error on the handler line number info">
+        <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
+        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
+        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
+        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
+        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
+        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
+        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
+        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+	</ajc-test>
+<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" num="796" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start" abccomment="ideally we'd get the message at line 6, but 12 is about the best we can do.                      6 isn't reported in the bytecode anywhere, so there's no hope of that.                      ajc does the same as us.">
+        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
+        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
+        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
+        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
+        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
+        </compile>
     </ajc-test>
 <ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
         <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
@@ -100,6 +127,41 @@
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice " num="1420" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.ja.da" files="DATypeChecks.java">
+	    	<message line="12" kind="warning"></message>
+	    	<message line="49" kind="warning"></message>
+	    	<message line="59" kind="error"></message>
+	    	<message line="70" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (2)" num="1421" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.ja.da" files="DATypeChecks2.java">
+	    	<message line="9" kind="error"></message>
+	    	<message line="17" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (3)" num="1422" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.ja.da" files="DATypeChecks3.java">
+	    	<message line="11" kind="error"></message>
+	    	<message line="19" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (4)" num="1423" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.ja.da" files="DATypeChecks4.java">
+	    	<message line="4" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (5)" num="1424" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.ja.da" files="DATypeChecks5.java">
+	    	<message line="4" kind="error"></message>
+		</compile>
+    </ajc-test>
+<ajc-test title="Typechecks for dependent advice (6)" num="1425" dir="abctests/da/typechecks">
+        <compile options="-ext,abc.ja.da" files="DATypeChecks6.java">
+	    	<message line="7" kind="error"></message>
+		</compile>
     </ajc-test>
  
 </suite>
