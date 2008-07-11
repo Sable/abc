@@ -16,7 +16,7 @@ module M2;
 module M1;
 import own M2 export as null;
 import own M3 export as null;
-merge M2, M4 as MergedM2M3;
+merge M2, NonExistentModule as MergedM2M3;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test09\C.java------
 module: module M3;;
@@ -50,4 +50,4 @@ module M3, base:M3, context:[]
 
 Unrecoverable semantic error(s) found.
 M1.module:4,10:
-  Semantic Error: Unable to find module: M4
+  Semantic Error: Unable to find module: NonExistentModule
