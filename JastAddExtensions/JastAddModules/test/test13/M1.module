@@ -1,0 +1,5 @@
+module M1;
+import own M2;
+import own M4 as M2.Alias;
+import own M3;
+merge M2.Alias, M3.M4Alias as NewAlias;
