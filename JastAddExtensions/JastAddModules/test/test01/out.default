@@ -1,0 +1,129 @@
+----------Module contents----------
+------.------
+module: module M3;;
+Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test01\AST3.ast
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M3.module
+module name : M3
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\X.jrag------
+module: module M;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
+module name : M
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module------
+module M;
+import  M2 as none null;
+import own M3 as none null;
+import own M4 export as PublicM4;
+import own M.N.O export as MNOPublic;
+merge M2, M3, M4 as MyMs;
+merge M2, M3, M4 export as MyMs;
+------------------------
+------.------
+module: module M;;
+Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test01\AST.ast
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
+module name : M
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\ASTNode.java------
+module: module M;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
+module name : M
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\C.java------
+module: module M3;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M3.module
+module name : M3
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\M4.module------
+module M4;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\B.java------
+module: module M2;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M2.module
+module name : M2
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\Y.jrag------
+module: module M.N.O;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.N.O.module
+module name : M.N.O
+------------------------
+------.------
+module: module M2;;
+Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test01\AST2.ast
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M2.module
+module name : M2
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\A.java------
+module: module M;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
+module name : M
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\Opt.java------
+module: module M;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
+module name : M
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\M.N.O.module------
+module M.N.O;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\M2.module------
+module M2;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\M3.module------
+module M3;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test01\List.java------
+module: module M;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
+module name : M
+------------------------
+----------CU AST before insert----------
+AST3.ast
+X.jrag
+module: M, file: M.module, base module: M
+AST.ast
+ASTNode.java
+C.java
+module: M4, file: M4.module, base module: M4
+B.java
+Y.jrag
+AST2.ast
+A.java
+Opt.java
+module: M.N.O, file: M.N.O.module, base module: M.N.O
+module: M2, file: M2.module, base module: M2
+module: M3, file: M3.module, base module: M3
+List.java
+----------CU AST after insert----------
+module: M, file: M.module, base module: M
+	X.jrag
+	AST.ast
+	ASTNode.java
+	A.java
+	Opt.java
+	List.java
+module: M4, file: M4.module, base module: M4
+module: M.N.O, file: M.N.O.module, base module: M.N.O
+	Y.jrag
+module: M2, file: M2.module, base module: M2
+	B.java
+	AST2.ast
+module: M3, file: M3.module, base module: M3
+	AST3.ast
+	C.java
+----------Module CU imports before import own----------
+module M, base:M, context:[], exported:true
+	
+module M4, base:M4, context:[], exported:true
+	
+module M.N.O, base:M.N.O, context:[], exported:true
+	
+module M2, base:M2, context:[], exported:true
+	
+module M3, base:M3, context:[], exported:true
+	
+
+Unrecoverable semantic error(s) found.
+M.module:6,11:
+  Semantic Error: Incompatible modules in merge list: M2, M$M3
