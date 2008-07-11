@@ -65,7 +65,7 @@ module: M1, file: M1.module, base module: M1
 	ASTNode.java
 	List.java
 ----------Module CU imports before import own----------
-module M1, base:M1, context:[]
+module M1, base:M1, context:[], exported:true
 	
 
 -------------Instance ModuleCompilationUnit------------
@@ -82,7 +82,7 @@ module: M1, file: M1.module, base module: M1
 	ASTNode.java
 	List.java
 ----------Module CU imports after import own----------
-module M1, base:M1, context:[]
+module M1, base:M1, context:[], exported:true
 	
 
 Y.jrag:1,8:

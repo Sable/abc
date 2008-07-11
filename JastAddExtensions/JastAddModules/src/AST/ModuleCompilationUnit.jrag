@@ -220,4 +220,12 @@ aspect ModuleCompilationUnit {
 	public HashSet<ModuleCompilationUnit> ModuleCompilationUnit.getInstanceContext() {
 		return this.instanceContext;
 	}
+	
+	protected boolean ModuleCompilationUnit.isExported = true;
+	public boolean ModuleCompilationUnit.isExported() {
+		return isExported;
+	}
+	public void ModuleCompilationUnit.setIsExported(boolean b) {
+		this.isExported = b;
+	}
 }

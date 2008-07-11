@@ -37,15 +37,18 @@ aspect GenerateImportOwn {
 		return true;
 	}
 
-	//context is non-null if the import is an own. If non-null, it creates a new module cu	
+	//context is non-null if the import is an own. If non-null, it creates a new module cu
+	//if context is null, it is implicitly exported (i.e. it is one of the base modules
+	//and is visible). If not, then it is not exported (i.e. it was generated from an import own
+	//statement with no export)	
 	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
 		if (context == null) {
-			return generateImportOwn(context, "");
+			return generateImportOwn(context, "", true);
 		} else {
-			return generateImportOwn(context, createOwnName(context, this.getModuleName()));
+			return generateImportOwn(context, createOwnName(context, this.getModuleName()), false);
 		}
 	}
-	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
+	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias, boolean isExported) {
 		ModuleCompilationUnit ret = null;
 		//if instance module, don't reinstantiate
 		if (context == null) {
@@ -54,6 +57,7 @@ aspect GenerateImportOwn {
 			ret = instantiateModuleAs(context, alias); 
 			ret.addInstanceContext(context);
 		}
+		ret.setIsExported(isExported);
 		
 		//process imports
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
@@ -79,7 +83,7 @@ aspect GenerateImportOwn {
 					instanceCU = currImport.generateImportOwn(ret);
 				} else {
 					//export names have an implicit qualifier
-					instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getExportModule().getID()));
+					instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getExportModule().getID()), true);
 				} 
 				instanceCU.setBaseCU(currImport.getBaseCU());
 				currImport = instanceCU;
@@ -123,9 +127,9 @@ aspect GenerateImportOwn {
 			//create result copy (instantiate from the base types of the merge targets with ret as a context)
 			ModuleCompilationUnit mergedCU = null;
 			if (mergeMember.getMergeAsType() instanceof MergeAsTypeOwn) {
-				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeMember.getAsModule().getID()));
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeMember.getAsModule().getID()), false);
 			} else if (mergeMember.getMergeAsType() instanceof MergeAsTypeExport) {
-				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeMember.getAsModule().getID()));
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeMember.getAsModule().getID()), true);
 			}
 			//foreach merge target
 			//	foreach context member of the merge target

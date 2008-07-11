@@ -40,11 +40,11 @@ module: M1, file: M1.module, base module: M1
 module: M3, file: M3.module, base module: M3
 	C.java
 ----------Module CU imports before import own----------
-module M2, base:M2, context:[]
+module M2, base:M2, context:[], exported:true
 	
-module M1, base:M1, context:[]
+module M1, base:M1, context:[], exported:true
 	
-module M3, base:M3, context:[]
+module M3, base:M3, context:[], exported:true
 	
 
 Unrecoverable semantic error(s) found.

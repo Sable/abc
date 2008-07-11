@@ -95,7 +95,7 @@ aspect Debug {
 		
 		s.append("module " + getModuleName() + 
 			", base:" + getBaseCU().getModuleName() + 
-			", context:" + contextString + "\n");
+			", context:" + contextString + ", exported:" + isExported + "\n");
 		s.append("\t");
 		
 		first = true;
