@@ -72,6 +72,7 @@ aspect ModuleCompilationUnit {
 	
 	//TODO: Would be better if ModuleDecl was a subtype of a PackageDecl 
 	//(except PackageDecl has not AST type). See if worth changing.
+	//TODO: This is broken, since non-list ast nodes don't do addChild as expected
 	ModuleDecl CompilationUnit.moduleDecl;
 	
 	public ModuleDecl CompilationUnit.getModuleDecl() {
@@ -189,7 +190,7 @@ aspect ModuleCompilationUnit {
 	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(String alias) {
 		return importedModules.remove(alias);
 	}
-	public HashMap<String, ModuleCompilationUnit> ModuleCompilationUnit.getImportedModuleSet() {
+	public Map<String, ModuleCompilationUnit> ModuleCompilationUnit.getImportedModuleMap() {
 		return importedModules;
 	}
 	public ModuleCompilationUnit ModuleCompilationUnit.getImportedModule(String name) {

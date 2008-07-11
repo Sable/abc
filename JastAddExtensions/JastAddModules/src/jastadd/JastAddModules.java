@@ -40,6 +40,10 @@ public class JastAddModules extends JastAdd  {
 		Collection warnings = new LinkedList();
 		program.initErrHandling(errors, warnings);
 		try {
+			//primitive error checking, add later
+			program.checkModuleDecls();
+			//TODO: Check if any errors are unrecoverable
+			
 			System.out.println("----------Module contents----------");
 			program.printJAModules();
 			System.out.println("----------CU AST before insert----------");

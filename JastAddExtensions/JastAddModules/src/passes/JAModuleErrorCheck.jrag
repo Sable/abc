@@ -44,6 +44,18 @@ aspect JAModuleErrorCheck {
 		}  		
   	}
   	
+  	//CU module access lookup checks 
+  	public void ASTNode.checkModuleDecls() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).checkModuleDecls();
+		}
+  	}
+  	//This must be called before the CUs are rearranged by InsertModuleCUs
+  	public void CompilationUnit.checkModuleDecls() {
+  		if (getModuleDecl() != null && lookupModuleCUNoTransform() == null) {
+  			getModuleDecl().getModuleAccess().error("Module not found: " + getModuleDecl().getModuleAccess().getID()); 
+  		} 
+  	}
 	//TODO : Cyclic imports
 	//TODO : Visibility checks
 }

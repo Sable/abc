@@ -99,7 +99,7 @@ aspect Debug {
 		s.append("\t");
 		
 		first = true;
-		for (String localAlias : getImportedModuleSet().keySet()) {
+		for (String localAlias : getImportedModuleMap().keySet()) {
 			ModuleCompilationUnit importedCU = getImportedModule(localAlias);
 			if (!first) {s.append(", ");}
 			s.append(localAlias + ":" + importedCU.getModuleName());
