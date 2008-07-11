@@ -14,8 +14,8 @@ module M2;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test09\M1.module------
 module M1;
-import own M2 export as null;
-import own M3 export as null;
+import own M2 as none null;
+import own M3 as none null;
 merge M2, NonExistentModule as MergedM2M3;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test09\C.java------

@@ -93,28 +93,33 @@ ModuleMemberDecl ja_module_member =
 ModuleImportDecl ja_module_import_decl =
 	IMPORT ja_module_access.ma SEMICOLON
 	{:
-		return new ModuleImportDecl(new ModuleImportTypeNorm(), ma, new NullModuleAccess());
+		return new ModuleImportDecl(new ModuleImportTypeNorm(), ma, new AsTypeNone(), new NullModuleAccess());
 	:}
 	|
 	IMPORT OWN ja_module_access.ma SEMICOLON 
 	{:
-		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, new NullModuleAccess());
+		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, new AsTypeNone(), new NullModuleAccess());
 	:}
+	|
+	IMPORT OWN ja_module_access.ma AS ja_module_access.mb SEMICOLON 
+	{:
+		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, new AsTypeOwn(), mb);
+	:}	
 	|
 	IMPORT OWN ja_module_access.ma EXPORT AS ja_module_access.mb SEMICOLON 
 	{:
-		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, mb);
+		return new ModuleImportDecl(new ModuleImportTypeOwn(), ma, new AsTypeExport(), mb);
 	:};
 
 ModuleMergeDecl ja_module_merge_decl =
 	MERGE module_access_list.mal AS ja_module_access.ma SEMICOLON
 	{:
-		return new ModuleMergeDecl(mal, new MergeAsTypeOwn(), ma);
+		return new ModuleMergeDecl(mal, new AsTypeOwn(), ma);
 	:}
 	|
 	MERGE module_access_list.mal EXPORT AS ja_module_access.ma SEMICOLON
 	{:
-		return new ModuleMergeDecl(mal, new MergeAsTypeExport(), ma);
+		return new ModuleMergeDecl(mal, new AsTypeExport(), ma);
 	:};
 
 List module_access_list =

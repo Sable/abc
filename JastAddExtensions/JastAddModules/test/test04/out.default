@@ -1,7 +1,7 @@
 ----------Module contents----------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\M4.module------
 module M4;
-import own M5 export as null;
+import own M5 as none null;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\B.java------
 module: module M2;;
@@ -20,7 +20,7 @@ module name : M1
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\M5.module------
 module M5;
-import  M6 export as null;
+import  M6 as none null;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\D.java------
 module: module M4;;
@@ -37,12 +37,12 @@ module M6;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\M2.module------
 module M2;
-import  M4 export as null;
+import  M4 as none null;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\M1.module------
 module M1;
-import own M2 export as null;
-import own M3 export as null;
+import own M2 as none null;
+import own M3 as none null;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\C.java------
 module: module M3;;
@@ -51,7 +51,7 @@ module name : M3
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test04\M3.module------
 module M3;
-import  M4 export as null;
+import  M4 as none null;
 ------------------------
 ----------CU AST before insert----------
 module: M4, file: M4.module, base module: M4
@@ -95,8 +95,8 @@ module M3, base:M3, context:[], exported:true
 
 -------------Instance ModuleCompilationUnit------------
 module M1;
-import own M2 export as null;
-import own M3 export as null;
+import own M2 as none null;
+import own M3 as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: M4, file: M4.module, base module: M4

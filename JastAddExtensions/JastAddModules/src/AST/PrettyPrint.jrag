@@ -30,8 +30,10 @@ aspect PrettyPrint {
 		s.append(" ");
 		getImportModule().toString(s);
 		
-		s.append(" export as ");
-		getExportModule().toString(s);
+		s.append(" ");
+		getAsType().toString(s);
+		s.append(" ");
+		getAsModule().toString(s);
 		s.append(";");
 	}
 	
@@ -53,15 +55,18 @@ aspect PrettyPrint {
 			first = false;
 		}
 		s.append(" ");
-		getMergeAsType().toString(s);
+		getAsType().toString(s);
 		s.append(" ");
 		getAsModule().toString(s);
 		s.append(";");
 	}
-	public void MergeAsTypeOwn.toString(StringBuffer s) {
+	public void AsTypeOwn.toString(StringBuffer s) {
 		s.append("as");
 	}
-	public void MergeAsTypeExport.toString(StringBuffer s) {
+	public void AsTypeExport.toString(StringBuffer s) {
 		s.append("export as");
+	}
+	public void AsTypeNone.toString(StringBuffer s) {
+		s.append("as none");
 	}
 }

@@ -32,8 +32,8 @@ import own M4 export as M4alias;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test06\M1.module------
 module M1;
-import own M2 export as null;
-import own M3 export as null;
+import own M2 as none null;
+import own M3 as none null;
 ------------------------
 ------d:\user\neil\jaworkspace\JastAddModules\test\test06\C.java------
 module: module M3;;
@@ -80,8 +80,8 @@ module M3, base:M3, context:[], exported:true
 
 -------------Instance ModuleCompilationUnit------------
 module M1;
-import own M2 export as null;
-import own M3 export as null;
+import own M2 as none null;
+import own M3 as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: M4, file: M4.module, base module: M4
@@ -120,13 +120,13 @@ module M3, base:M3, context:[], exported:true
 module M1$M2.M4alias.M5alias, base:M5, context:[M1$M2.M4alias], exported:true
 	
 module M1$M2.M4alias, base:M4, context:[M1$M2], exported:true
-	M5:M1$M2.M4alias.M5alias
+	M5alias:M1$M2.M4alias.M5alias
 module M1$M2, base:M2, context:[M1], exported:false
-	M4:M1$M2.M4alias
+	M4alias:M1$M2.M4alias
 module M1$M3.M4alias.M5alias, base:M5, context:[M1$M3.M4alias], exported:true
 	
 module M1$M3.M4alias, base:M4, context:[M1$M3], exported:true
-	M5:M1$M3.M4alias.M5alias
+	M5alias:M1$M3.M4alias.M5alias
 module M1$M3, base:M3, context:[M1], exported:false
-	M4:M1$M3.M4alias
+	M4alias:M1$M3.M4alias
 

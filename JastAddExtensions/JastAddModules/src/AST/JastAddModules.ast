@@ -13,15 +13,18 @@ abstract ModuleMemberDecl;
 ModuleImportDecl : ModuleMemberDecl ::= 
 	ModuleImportType //this is own, or the empty string for a normal import
 	ImportModule:ModuleAccess
-	ExportModule:ModuleAccess; //if no export, then set to the false access
+	AsType
+	AsModule:ModuleAccess; //if no export, then set to the false access //TODO: Change ExportModule to AsModule, and add export marker similar to merge
+	
 abstract ModuleImportType; //just a type to distinguish the method of import
 ModuleImportTypeNorm : ModuleImportType;
 ModuleImportTypeOwn : ModuleImportType;
+abstract AsType; //same here, determines the type of the merge as
+AsTypeOwn : AsType;
+AsTypeExport : AsType; 
+AsTypeNone : AsType;
 
 ModuleMergeDecl : ModuleMemberDecl ::= 
 	MergeModule:ModuleAccess* 
-	MergeAsType 
+	AsType 
 	AsModule:ModuleAccess;
-abstract MergeAsType; //same here, determines the type of the merge as
-MergeAsTypeOwn : MergeAsType;
-MergeAsTypeExport : MergeAsType; 

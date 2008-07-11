@@ -78,13 +78,17 @@ aspect GenerateImportOwn {
 			if (importDecl.isOwnImport()) {
 				ModuleCompilationUnit instanceCU = null;
 				instantiated = true;
-				//if no export name, generate MfromM' name
-				if (importDecl.getExportModule() instanceof NullModuleAccess) {
+				//if no export name, generate M$M' name
+				if (importDecl.getAsType() instanceof AsTypeNone) {
 					instanceCU = currImport.generateImportOwn(ret);
 				} else {
-					//export names have an implicit qualifier
-					instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getExportModule().getID()), true);
-				} 
+					localAccessName = importDecl.getAsModule().getID();
+					if (importDecl.getAsType() instanceof AsTypeOwn) {
+						instanceCU = currImport.generateImportOwn(ret, createOwnName(ret, importDecl.getAsModule().getID()), false);
+					} else if (importDecl.getAsType() instanceof AsTypeExport) {
+						instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getAsModule().getID()), true);
+					}
+				}
 				instanceCU.setBaseCU(currImport.getBaseCU());
 				currImport = instanceCU;
 			} else {
@@ -109,7 +113,7 @@ aspect GenerateImportOwn {
 			Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
 			ModuleCompilationUnit mergeBaseCU = null; //used in check for base cu compatibility
 			for (ModuleAccess access : mergeMember.getMergeModuleList()) {
-				ModuleCompilationUnit cu = ret.getImportedModule(access.getID());
+				ModuleCompilationUnit cu = access.lookupModule(); //TODO: Check if it is correct to make lookupModule() lazy
 				
 				if (cu == null) {
 					access.error("Unable to find module: " + access.getID()); 
@@ -126,11 +130,12 @@ aspect GenerateImportOwn {
 			}
 			//create result copy (instantiate from the base types of the merge targets with ret as a context)
 			ModuleCompilationUnit mergedCU = null;
-			if (mergeMember.getMergeAsType() instanceof MergeAsTypeOwn) {
+			if (mergeMember.getAsType() instanceof AsTypeOwn) {
 				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeMember.getAsModule().getID()), false);
-			} else if (mergeMember.getMergeAsType() instanceof MergeAsTypeExport) {
+			} else if (mergeMember.getAsType() instanceof AsTypeExport) {
 				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeMember.getAsModule().getID()), true);
 			}
+			getHostProgram().getCompilationUnitList().addChild(mergedCU);
 			//foreach merge target
 			//	foreach context member of the merge target
 			//		detach the merge target from the context member's import list
