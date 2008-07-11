@@ -191,6 +191,17 @@ aspect ModuleCompilationUnit {
 	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(String alias) {
 		return importedModules.remove(alias);
 	}
+	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
+		return importedModules.remove(getImportedModuleAlias(cu));
+	}
+	public String ModuleCompilationUnit.getImportedModuleAlias(ModuleCompilationUnit cu) {
+		for (String key : importedModules.keySet()) {
+			if (cu == importedModules.get(key)) {
+				return key;
+			}
+		}
+		return null;
+	}
 	public Map<String, ModuleCompilationUnit> ModuleCompilationUnit.getImportedModuleMap() {
 		return importedModules;
 	}

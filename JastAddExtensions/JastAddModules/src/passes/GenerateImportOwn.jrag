@@ -130,20 +130,36 @@ aspect GenerateImportOwn {
 			}
 			//create result copy (instantiate from the base types of the merge targets with ret as a context)
 			ModuleCompilationUnit mergedCU = null;
+			String mergeAlias = mergeMember.getAsModule().getID();
 			if (mergeMember.getAsType() instanceof AsTypeOwn) {
-				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeMember.getAsModule().getID()), false);
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeAlias), false);
 			} else if (mergeMember.getAsType() instanceof AsTypeExport) {
-				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeMember.getAsModule().getID()), true);
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias), true);
 			}
 			getHostProgram().getCompilationUnitList().addChild(mergedCU);
+			
 			//foreach merge target
+			for (ModuleCompilationUnit mergeTargetCU : mergeTargets) {
 			//	foreach context member of the merge target
+				for (ModuleCompilationUnit instanceContextCU: mergeTargetCU.getInstanceContext()) {
 			//		detach the merge target from the context member's import list
-			//		attach the result copy to the context member's import list
+					String oldAlias = instanceContextCU.getImportedModuleAlias(mergeTargetCU);
+					assert (oldAlias != null) : "Unable to find old alias";
+					instanceContextCU.removeImportedModule(oldAlias);
+			//		attach the result copy to the context member's import list (use the old alias)
+					instanceContextCU.addImportedModule(oldAlias, mergedCU);
 			//		add the context member to the result copy's instance context
+					mergedCU.addInstanceContext(instanceContextCU);
+				}
 			//	detach the merge target from ret's import list
+				if (ret.getImportedModuleMap().values().contains(mergeTargetCU)) {
+					ret.removeImportedModule(mergeTargetCU);
+				}
+			//	detach the mergeTargetCU from the compilationUnit list if it's instance context is empty
+				
+			}
 			//attach the result copy to ret's import list
-			//add this instance to the result copy's instance context
+			ret.addImportedModule(mergeAlias, mergedCU);
 		}
 		
 		return ret;
