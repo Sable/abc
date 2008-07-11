@@ -1,0 +1,3 @@
+module NonExistentModule;
+
+Type : ASTNode ::= ;

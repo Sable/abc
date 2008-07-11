@@ -1,0 +1,7 @@
+module M1;
+
+aspect X {
+	public void Type.f() {
+		System.out.println("f");
+	}
+}
