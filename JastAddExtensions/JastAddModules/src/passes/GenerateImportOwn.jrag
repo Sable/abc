@@ -19,7 +19,7 @@ aspect GenerateImportOwn {
 		}
 		if (!options().hasOption(jastadd.JastAddModules.INSTANCE_MODULES_OPTION) || 
 			!options().hasValueForOption(jastadd.JastAddModules.INSTANCE_MODULES_OPTION)) {
-			error(jastadd.JastAddModules.INSTANCE_MODULES_OPTION + 
+			System.out.println(jastadd.JastAddModules.INSTANCE_MODULES_OPTION + 
 				" option is required when there are JA modules in the set of compilation units");
 			return false; 
 		}
@@ -27,7 +27,7 @@ aspect GenerateImportOwn {
 		String instanceModuleName = options().getValueForOption(jastadd.JastAddModules.INSTANCE_MODULES_OPTION);
 		this.setInstanceModuleCU(lookupModuleCUNoTransform(instanceModuleName));
 		if (this.instanceModule == null) {
-			error("Instance module " + instanceModuleName + " not found.");
+			System.out.println("Instance module " + instanceModuleName + " not found.");
 			return false;
 		}
 		
