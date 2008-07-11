@@ -42,7 +42,7 @@ aspect GenerateImportOwn {
 		if (context == null) {
 			return generateImportOwn(context, "");
 		} else {
-			return generateImportOwn(context, context.getModuleName() + "$" + this.getModuleName());
+			return generateImportOwn(context, createOwnName(context, this.getModuleName()));
 		}
 	}
 	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
@@ -79,7 +79,7 @@ aspect GenerateImportOwn {
 					instanceCU = currImport.generateImportOwn(ret);
 				} else {
 					//export names have an implicit qualifier
-					instanceCU = currImport.generateImportOwn(ret, ret.getModuleName() + "." + importDecl.getExportModule().getID());
+					instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getExportModule().getID()));
 				} 
 				instanceCU.setBaseCU(currImport.getBaseCU());
 				currImport = instanceCU;
@@ -120,7 +120,13 @@ aspect GenerateImportOwn {
 				mergeTargets.add(cu);
 				mergeBaseCU = cu.getBaseCU();
 			}
-			//create result copy (instantiate from the base types of the merge targets with ret as a context) 
+			//create result copy (instantiate from the base types of the merge targets with ret as a context)
+			ModuleCompilationUnit mergedCU = null;
+			if (mergeMember.getMergeAsType() instanceof MergeAsTypeOwn) {
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeMember.getAsModule().getID()));
+			} else if (mergeMember.getMergeAsType() instanceof MergeAsTypeExport) {
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeMember.getAsModule().getID()));
+			}
 			//foreach merge target
 			//	foreach context member of the merge target
 			//		detach the merge target from the context member's import list
@@ -153,5 +159,12 @@ aspect GenerateImportOwn {
 		//TODO: Change the import references in the context to point to the newly created module 
 		
 		return ret;
+	}
+	
+	public String ModuleCompilationUnit.createExportName(ModuleCompilationUnit context, String alias) {
+		return context.getModuleName() + "." + alias;
+	}
+	public String ModuleCompilationUnit.createOwnName(ModuleCompilationUnit context, String alias) {
+		return context.getModuleName() + "$" + alias;
 	}
 }
