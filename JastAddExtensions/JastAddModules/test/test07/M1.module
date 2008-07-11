@@ -1,0 +1,3 @@
+module M1;
+import own M2;
+import own M3 export as M3Alias;
