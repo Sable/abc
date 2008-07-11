@@ -42,7 +42,7 @@ aspect GenerateImportOwn {
 		if (context == null) {
 			return generateImportOwn(context, "");
 		} else {
-			return generateImportOwn(context, this.getModuleName() + "from" + context.getModuleName());
+			return generateImportOwn(context, context.getModuleName() + "$" + this.getModuleName());
 		}
 	}
 	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
@@ -67,6 +67,7 @@ aspect GenerateImportOwn {
 			assert (currImport != null) : "Imported module not found";
 			
 			boolean instantiated = false;
+			String localAccessName = currImport.getModuleName();
 			if (importDecl.isOwnImport()) {
 				ModuleCompilationUnit instanceCU = null;
 				instantiated = true;
@@ -85,7 +86,7 @@ aspect GenerateImportOwn {
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
-			ret.addImportedModule(currImport);
+			ret.addImportedModule(localAccessName, currImport);
 			if (instantiated) {
 				getHostProgram().getCompilationUnitList().addChild(currImport);			
 			}
@@ -96,7 +97,22 @@ aspect GenerateImportOwn {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
 			}
-			
+			ModuleMergeDecl mergeMember = (ModuleMergeDecl)member; 
+			//lookup merge targets
+			Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
+			for (ModuleAccess access : mergeMember.getMergeModuleList()) {
+				//deal with local names later, just do a simple lookup now
+				//ModuleCompilationUnit cu = ret.getImportedModule(ret.getModuleName() + "." + access.
+			}
+			//create result copy (instantiate from the base types of the merge targets with ret as a context) 
+			//foreach merge target
+			//	foreach context member of the merge target
+			//		detach the merge target from the context member's import list
+			//		attach the result copy to the context member's import list
+			//		add the context member to the result copy's instance context
+			//	detach the merge target from ret's import list
+			//attach the result copy to ret's import list
+			//add this instance to the result copy's instance context
 		}
 		
 		return ret;
@@ -110,16 +126,9 @@ aspect GenerateImportOwn {
 		//TODO: Make more efficient later (shallow copy first, then fill in with a fullcopy after full instantiation
 		ret = this.fullCopy();
 		
-		//deep copy ITDs
-		ret.setImportedModules(new HashSet<ModuleCompilationUnit>());
-		for (ModuleCompilationUnit cu : this.getImportedModules()) {
-			ret.addImportedModule(cu);
-		}
+		//clear ITDs
+		ret.setImportedModules(new HashMap<String, ModuleCompilationUnit>());
 		ret.setInstanceContext(new HashSet<ModuleCompilationUnit>());
-		//TODO check if copy is a correct action instead of an empty context
-		for (ModuleCompilationUnit cu : this.getInstanceContext()) {
-			ret.addInstanceContext(cu);
-		}
 		
 		ret.setModuleName(alias);
 		
@@ -127,5 +136,4 @@ aspect GenerateImportOwn {
 		
 		return ret;
 	}
-	
 }

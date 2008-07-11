@@ -179,18 +179,21 @@ aspect ModuleCompilationUnit {
 		return getModuleDecl().getModuleAccess().getID();
 	}
 
-	protected HashSet<ModuleCompilationUnit> ModuleCompilationUnit.importedModules = new HashSet<ModuleCompilationUnit>();
-	public void ModuleCompilationUnit.setImportedModules(HashSet<ModuleCompilationUnit> modules) {
+	protected HashMap<String, ModuleCompilationUnit> ModuleCompilationUnit.importedModules = new HashMap<String, ModuleCompilationUnit>();
+	public void ModuleCompilationUnit.setImportedModules(HashMap<String, ModuleCompilationUnit> modules) {
 		this.importedModules = modules;
 	}
-	public void ModuleCompilationUnit.addImportedModule(ModuleCompilationUnit cu) {
-		importedModules.add(cu);
+	public void ModuleCompilationUnit.addImportedModule(String alias, ModuleCompilationUnit cu) {
+		importedModules.put(alias, cu);
 	}
-	public boolean ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
-		return importedModules.remove(cu);
+	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(String alias) {
+		return importedModules.remove(alias);
 	}
-	public Collection<ModuleCompilationUnit> ModuleCompilationUnit.getImportedModules() {
+	public HashMap<String, ModuleCompilationUnit> ModuleCompilationUnit.getImportedModuleSet() {
 		return importedModules;
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.getImportedModule(String name) {
+		return importedModules.get(name);
 	}
 
 	//a module is an instance module if it was creted from a base module
