@@ -256,7 +256,7 @@ aspect ModuleCompilationUnit {
 		SortedSet<String> localAliases = new TreeSet<String>(new Comparator<String>() {
 			public int compare(String x, String y) {
 				if (x.length() != y.length()) {
-					return x.length() - y.length();
+					return y.length() - x.length();
 				}
 				return x.compareTo(y);
 			}
