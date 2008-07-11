@@ -1,5 +1,5 @@
 
-aspect JAModuleDebug {
+aspect Debug {
 
 	//print JAModule contents
 	public void ASTNode.printJAModules() {

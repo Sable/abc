@@ -1,0 +1,143 @@
+----------Module contents----------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\M4.module------
+module M4;
+import own M5 export as null;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\B.java------
+module: module M2;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M2.module
+module name : M2
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\E.java------
+module: module M5;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M5.module
+module name : M5
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\A.java------
+module: module M1;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M1.module
+module name : M1
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\M5.module------
+module M5;
+import  M6 export as null;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\D.java------
+module: module M4;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M4.module
+module name : M4
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\F.java------
+module: module M6;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M6.module
+module name : M6
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\M6.module------
+module M6;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\M2.module------
+module M2;
+import  M4 export as null;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\M1.module------
+module M1;
+import own M2 export as null;
+import own M3 export as null;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\C.java------
+module: module M3;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M3.module
+module name : M3
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test04\M3.module------
+module M3;
+import  M4 export as null;
+------------------------
+----------CU AST before insert----------
+module: M4, file: M4.module, base module: M4
+B.java
+E.java
+A.java
+module: M5, file: M5.module, base module: M5
+D.java
+F.java
+module: M6, file: M6.module, base module: M6
+module: M2, file: M2.module, base module: M2
+module: M1, file: M1.module, base module: M1
+C.java
+module: M3, file: M3.module, base module: M3
+----------CU AST after insert----------
+module: M4, file: M4.module, base module: M4
+	D.java
+module: M5, file: M5.module, base module: M5
+	E.java
+module: M6, file: M6.module, base module: M6
+	F.java
+module: M2, file: M2.module, base module: M2
+	B.java
+module: M1, file: M1.module, base module: M1
+	A.java
+module: M3, file: M3.module, base module: M3
+	C.java
+----------Module CU imports before import own----------
+module M4, base:M4, context:[]
+	
+module M5, base:M5, context:[]
+	
+module M6, base:M6, context:[]
+	
+module M2, base:M2, context:[]
+	
+module M1, base:M1, context:[]
+	
+module M3, base:M3, context:[]
+	
+
+-------------Instance ModuleCompilationUnit------------
+module M1;
+import own M2 export as null;
+import own M3 export as null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: M4, file: M4.module, base module: M4
+	D.java
+module: M5, file: M5.module, base module: M5
+	E.java
+module: M6, file: M6.module, base module: M6
+	F.java
+module: M2, file: M2.module, base module: M2
+	B.java
+module: M1, file: M1.module, base module: M1
+	A.java
+module: M3, file: M3.module, base module: M3
+	C.java
+module: M4$M5, file: M5.module, base module: M5
+	E.java
+module: M1$M2, file: M2.module, base module: M2
+	B.java
+module: M4$M5, file: M5.module, base module: M5
+	E.java
+module: M1$M3, file: M3.module, base module: M3
+	C.java
+----------Module CU imports after import own----------
+module M4, base:M4, context:[]
+	M5:M4$M5
+module M5, base:M5, context:[]
+	
+module M6, base:M6, context:[]
+	
+module M2, base:M2, context:[]
+	
+module M1, base:M1, context:[]
+	M3:M1$M3, M2:M1$M2
+module M3, base:M3, context:[]
+	
+module M4$M5, base:M5, context:[M4]
+	M6:M6
+module M1$M2, base:M2, context:[M1]
+	M4:M4
+module M4$M5, base:M5, context:[M4]
+	M6:M6
+module M1$M3, base:M3, context:[M1]
+	M4:M4
+

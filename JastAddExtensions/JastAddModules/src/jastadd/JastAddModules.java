@@ -12,6 +12,7 @@ import AST.Options;
 public class JastAddModules extends JastAdd  {
 	
 	public static final String INSTANCE_MODULES_OPTION = "-instance-modules";
+	public static final String DEBUG_OPTION = "-debug";
 	
 	public static void main(String args[]) {
 		if (!new JastAddModules().compile(args)) {
@@ -100,5 +101,6 @@ public class JastAddModules extends JastAdd  {
 		super.initOptions();
 		Options options = program.options();
 		options.addKeyValueOption(INSTANCE_MODULES_OPTION); //specifies the module that is going to be used to instantiate the generated package names
+		options.addKeyValueOption(DEBUG_OPTION);
 	}
 }
