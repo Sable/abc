@@ -1,6 +1,8 @@
 package jastadd;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import AST.BytecodeParser;
 import AST.CompilationUnit;
@@ -34,33 +36,53 @@ public class JastAddModules extends JastAdd  {
 			return false;
 		
 		
-		System.out.println("----------Module contents----------");
-		program.printJAModules();
-		System.out.println("----------CU AST before insert----------");
-		program.printJAModuleCUAST(0);
-		result = program.insertModuleCUs();
-		System.out.println("----------CU AST after insert----------");
-		program.printJAModuleCUAST(0);
-		if (!result) {
+		Collection errors = new LinkedList();
+		Collection warnings = new LinkedList();
+		program.initErrHandling(errors, warnings);
+		try {
+			System.out.println("----------Module contents----------");
+			program.printJAModules();
+			System.out.println("----------CU AST before insert----------");
+			program.printJAModuleCUAST(0);
+			result = program.insertModuleCUs();
+			System.out.println("----------CU AST after insert----------");
+			program.printJAModuleCUAST(0);
+			if (!result) {
+				return false;
+			}
+			
+			System.out.println("----------Module CU imports before import own----------");
+			System.out.println(program.toStringJAModuleCUImports());
+			
+			result = program.generateImportOwn();
+			if (!result) {
+				return false;
+			}
+			
+			System.out.println("-------------Instance ModuleCompilationUnit------------");
+			System.out.println(program.getInstanceModuleCU());
+			System.out.println("-----------End Instance ModuleCompilationUnit----------");
+			
+			System.out.println("----------CU AST after generateImportOwn----------");
+			program.printJAModuleCUAST(0);
+			
+			System.out.println("----------Module CU imports after import own----------");
+			System.out.println(program.toStringJAModuleCUImports());
+		} catch (UnrecoverableSemanticError e) {
+			System.out.println("Unrecoverable semantic error(s) found.");
+		}
+		
+		program.collectModuleErrors(errors, warnings);
+		for (Iterator i = errors.iterator(); i.hasNext(); ) {
+			System.out.println(i.next());
+		}
+		for (Iterator i = warnings.iterator(); i.hasNext(); ) {
+			System.out.println(i.next());
+		}
+		if (errors.size() > 0) {
 			return false;
 		}
 		
-		System.out.println("----------Module CU imports before import own----------");
-		System.out.println(program.toStringJAModuleCUImports());
-		
-		result = program.generateImportOwn();
-		if (!result) {
-			return false;
-		}
-		System.out.println("-------------Instance ModuleCompilationUnit------------");
-		System.out.println(program.getInstanceModuleCU());
-		System.out.println("-----------End Instance ModuleCompilationUnit----------");
-		
-		System.out.println("----------CU AST after generateImportOwn----------");
-		program.printJAModuleCUAST(0);
-		
-		System.out.println("----------Module CU imports after import own----------");
-		System.out.println(program.toStringJAModuleCUImports());
 		
 		jastAdd.generate();
 		return true;

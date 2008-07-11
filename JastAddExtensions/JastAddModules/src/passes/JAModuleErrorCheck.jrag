@@ -1,5 +1,49 @@
 
 aspect JAModuleErrorCheck {
+	//dependent on ErrorCheck.CompilationUnit.errors/warnings
+	//adapted from abc-ja-exts/CheckModuleErrors.jrag
+  	public void Program.initErrHandling(Collection err, Collection warn) {
+  		err.clear();
+  		warn.clear();
+  		
+  		for (CompilationUnit cu : getCompilationUnitList()) {
+  			if(cu.fromSource()) {
+  				cu.initErrHandling();
+  			}
+  		}
+  	}
+  	public void CompilationUnit.initErrHandling() {
+  		errors.clear();
+  		warnings.clear();
+  	}
+  	public void ModuleCompilationUnit.initErrHandling() {
+  		errors.clear();
+  		warnings.clear();
+		for (CompilationUnit cu : getCompilationUnitList()) {
+			cu.initErrHandling();
+		}  		
+  	}
+  
+  	public void Program.collectModuleErrors(Collection err, Collection warn) {
+  		for (Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+  			CompilationUnit cu = (CompilationUnit)iter.next();
+  			if(cu.fromSource()) {
+  				cu.collectModuleErrors(err, warn);
+  			}
+  		}
+  	}
+  	public void CompilationUnit.collectModuleErrors(Collection err, Collection warn) {
+  		err.addAll(errors);
+  		warn.addAll(warnings);
+  	}	
+  	public void ModuleCompilationUnit.collectModuleErrors(Collection err, Collection warn) {
+  		err.addAll(errors);
+  		warn.addAll(warnings);
+		for (CompilationUnit cu : getCompilationUnitList()) {
+			cu.collectModuleErrors(err, warn);
+		}  		
+  	}
+  	
 	//TODO : Cyclic imports
 	//TODO : Visibility checks
 }

@@ -1,0 +1,4 @@
+module M1;
+import own M2;
+import own M3;
+merge M2,M3 as MergedM2M3;
