@@ -33,6 +33,7 @@ import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AfterAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.NeverMatch;
@@ -84,6 +85,11 @@ public class DependentAdviceQuickCheck extends AbstractReweavingAnalysis {
 					boolean isDependent = dai.isDependentAdvice(aa.advice);
 					if (isDependent && !NeverMatch.neverMatches(aa.getResidue())) {
 						numEnabledDependentAdviceShadowsBefore++;
+						if(aa.advice.getAdviceSpec() instanceof AfterAdvice) {
+							//after advice generate two shadows, one for after-returning and
+							//one for after-throwing
+							numEnabledDependentAdviceShadowsBefore++;
+						}
 					}
 				}			
 			});
