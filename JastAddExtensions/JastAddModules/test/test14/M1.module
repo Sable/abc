@@ -1,0 +1,7 @@
+module M1;
+import M2;
+import M2;
+import own M2 as M2alias1;
+import own M2 as M2alias1;
+import own M2 as M23alias;
+import own M3 as M23alias;

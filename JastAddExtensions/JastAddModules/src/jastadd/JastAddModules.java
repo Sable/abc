@@ -44,34 +44,40 @@ public class JastAddModules extends JastAdd  {
 			program.checkModuleDecls();
 			//TODO: Check if any errors are unrecoverable
 			
-			System.out.println("----------Module contents----------");
-			program.printJAModules();
-			System.out.println("----------CU AST before insert----------");
-			program.printJAModuleCUAST(0);
+			if (program.options().hasOption(DEBUG_OPTION)) {
+				System.out.println("----------Module contents----------");
+				program.printJAModules();
+				System.out.println("----------CU AST before insert----------");
+				program.printJAModuleCUAST(0);
+			}
+			
 			result = program.insertModuleCUs();
-			System.out.println("----------CU AST after insert----------");
-			program.printJAModuleCUAST(0);
 			if (!result) {
 				return false;
 			}
-			
-			System.out.println("----------Module CU imports before import own----------");
-			System.out.println(program.toStringJAModuleCUImports());
-			
+
+			if (program.options().hasOption(DEBUG_OPTION)) {
+				System.out.println("----------CU AST after insert----------");
+				program.printJAModuleCUAST(0);
+				System.out.println("----------Module CU imports before import own----------");
+				System.out.println(program.toStringJAModuleCUImports());
+			}
+				
 			result = program.generateImportOwn();
 			if (!result) {
 				return false;
 			}
 			
-			System.out.println("-------------Instance ModuleCompilationUnit------------");
-			System.out.println(program.getInstanceModuleCU());
-			System.out.println("-----------End Instance ModuleCompilationUnit----------");
+			if (program.options().hasOption(DEBUG_OPTION)) {
+				System.out.println("-------------Instance ModuleCompilationUnit------------");
+				System.out.println(program.getInstanceModuleCU());
+				System.out.println("-----------End Instance ModuleCompilationUnit----------");
+				System.out.println("----------CU AST after generateImportOwn----------");
+				program.printJAModuleCUAST(0);
+				System.out.println("----------Module CU imports after import own----------");
+				System.out.println(program.toStringJAModuleCUImports());
+			}
 			
-			System.out.println("----------CU AST after generateImportOwn----------");
-			program.printJAModuleCUAST(0);
-			
-			System.out.println("----------Module CU imports after import own----------");
-			System.out.println(program.toStringJAModuleCUImports());
 		} catch (UnrecoverableSemanticError e) {
 			System.out.println("Unrecoverable semantic error(s) found.");
 		}
@@ -127,6 +133,6 @@ public class JastAddModules extends JastAdd  {
 		super.initOptions();
 		Options options = program.options();
 		options.addKeyValueOption(INSTANCE_MODULES_OPTION); //specifies the module that is going to be used to instantiate the generated package names
-		options.addKeyValueOption(DEBUG_OPTION);
+		options.addKeyOption(DEBUG_OPTION);
 	}
 }

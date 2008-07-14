@@ -82,8 +82,6 @@ aspect ModuleCompilationUnit {
 		this.moduleDecl = decl;
 	}
 	
-	//TODO: implement another version to be used when the module CUs are already inserted above 
-	//the CUs
 	//may be too expensive to cache 
 	syn lazy ModuleCompilationUnit ASTNode.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (access == null) {

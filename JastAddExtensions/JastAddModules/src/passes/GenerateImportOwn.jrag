@@ -41,14 +41,14 @@ aspect GenerateImportOwn {
 	//if context is null, it is implicitly exported (i.e. it is one of the base modules
 	//and is visible). If not, then it is not exported (i.e. it was generated from an import own
 	//statement with no export)	
-	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
 		if (context == null) {
 			return generateImportOwn(context, "", true);
 		} else {
 			return generateImportOwn(context, createOwnName(context, this.getModuleName()), false);
 		}
 	}
-	public ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias, boolean isExported) {
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias, boolean isExported) {
 		ModuleCompilationUnit ret = null;
 		//if instance module, don't reinstantiate
 		if (context == null) {
@@ -97,13 +97,13 @@ aspect GenerateImportOwn {
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
-			ret.addImportedModule(localAccessName, currImport);
+			ret.checkedAddImportedModule(localAccessName, currImport);
 			if (instantiated) {
 				getHostProgram().getCompilationUnitList().addChild(currImport);			
 			}
 		}
 		
-		//TODO: process merges
+		//process merges
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
@@ -151,7 +151,7 @@ aspect GenerateImportOwn {
 					getHostProgram().getCompilationUnitList().removeChild(mergeTargetCUIndex);
 			//		attach the result copy to the context member's import list (use the old alias)
 					if (ret != instanceContextCU) {
-						instanceContextCU.addImportedModule(oldAlias, mergedCU);
+						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU);
 					}
 			//		add the context member to the result copy's instance context
 					mergedCU.addInstanceContext(instanceContextCU);
@@ -162,7 +162,7 @@ aspect GenerateImportOwn {
 				}
 			}
 			//attach the result copy to ret's import list
-			ret.addImportedModule(mergeAlias, mergedCU);
+			ret.checkedAddImportedModule(mergeAlias, mergedCU);
 		}
 		
 		return ret;
@@ -172,7 +172,7 @@ aspect GenerateImportOwn {
 	
 	//create a new ModuleCompilationUnit from the current one, using the given alias.
 	//Context will be for generating links in the accessibility graph
-	public ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
 		ModuleCompilationUnit ret = null;
 		
 		//TODO: Make more efficient later (shallow copy first, then fill in with a fullcopy after full instantiation
@@ -184,8 +184,6 @@ aspect GenerateImportOwn {
 		
 		ret.setModuleName(alias);
 		
-		//TODO: Change the import references in the context to point to the newly created module 
-		
 		return ret;
 	}
 	
@@ -194,5 +192,13 @@ aspect GenerateImportOwn {
 	}
 	public String ModuleCompilationUnit.createOwnName(ModuleCompilationUnit context, String alias) {
 		return context.getModuleName() + "$" + alias;
+	}
+	
+	public void ModuleCompilationUnit.checkedAddImportedModule(String alias, ModuleCompilationUnit cu) {
+		if (getImportedModule(alias) != null) {
+			this.error("Ambiguous module name " + alias + " in module " + this.getModuleName());
+			//throw new jastadd.UnrecoverableSemanticError("Ambiguous alias " + alias + " in module " + this.getModuleName());
+		}
+		addImportedModule(alias, cu);
 	}
 }
