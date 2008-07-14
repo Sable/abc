@@ -45,25 +45,25 @@ module CU : d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module
 module name : M1
 ------------------------
 ----------CU AST before insert----------
-Y.jrag
-AST2.ast
-A.java
-X.jrag
-Opt.java
-AST.ast
+Y.jrag package:
+AST2.ast package:
+A.java package:
+X.jrag package:
+Opt.java package:
+AST.ast package:
 module: M1, file: M1.module, base module: M1
-ASTNode.java
-List.java
+ASTNode.java package:
+List.java package:
 ----------CU AST after insert----------
-Y.jrag
-A.java
-AST.ast
+Y.jrag package:
+A.java package:
+AST.ast package:
 module: M1, file: M1.module, base module: M1
-	AST2.ast
-	X.jrag
-	Opt.java
-	ASTNode.java
-	List.java
+	AST2.ast package:M1
+	X.jrag package:M1
+	Opt.java package:M1
+	ASTNode.java package:M1
+	List.java package:M1
 ----------Module CU imports before import own----------
 module M1, base:M1, context:[], exported:true
 	
@@ -72,15 +72,15 @@ module M1, base:M1, context:[], exported:true
 module M1;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-Y.jrag
-A.java
-AST.ast
+Y.jrag package:
+A.java package:
+AST.ast package:
 module: M1, file: M1.module, base module: M1
-	AST2.ast
-	X.jrag
-	Opt.java
-	ASTNode.java
-	List.java
+	AST2.ast package:M1
+	X.jrag package:M1
+	Opt.java package:M1
+	ASTNode.java package:M1
+	List.java package:M1
 ----------Module CU imports after import own----------
 module M1, base:M1, context:[], exported:true
 	

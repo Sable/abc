@@ -79,39 +79,39 @@ module CU : d:\user\neil\jaworkspace\JastAddModules\test\test01\M.module
 module name : M
 ------------------------
 ----------CU AST before insert----------
-AST3.ast
-X.jrag
+AST3.ast package:
+X.jrag package:
 module: M, file: M.module, base module: M
-AST.ast
-ASTNode.java
-C.java
+AST.ast package:
+ASTNode.java package:
+C.java package:
 module: M4, file: M4.module, base module: M4
-B.java
-Y.jrag
-AST2.ast
-A.java
-Opt.java
+B.java package:
+Y.jrag package:
+AST2.ast package:
+A.java package:
+Opt.java package:
 module: M.N.O, file: M.N.O.module, base module: M.N.O
 module: M2, file: M2.module, base module: M2
 module: M3, file: M3.module, base module: M3
-List.java
+List.java package:
 ----------CU AST after insert----------
 module: M, file: M.module, base module: M
-	X.jrag
-	AST.ast
-	ASTNode.java
-	A.java
-	Opt.java
-	List.java
+	X.jrag package:M
+	AST.ast package:M
+	ASTNode.java package:M
+	A.java package:M
+	Opt.java package:M
+	List.java package:M
 module: M4, file: M4.module, base module: M4
 module: M.N.O, file: M.N.O.module, base module: M.N.O
-	Y.jrag
+	Y.jrag package:M.N.O
 module: M2, file: M2.module, base module: M2
-	B.java
-	AST2.ast
+	B.java package:M2
+	AST2.ast package:M2
 module: M3, file: M3.module, base module: M3
-	AST3.ast
-	C.java
+	AST3.ast package:M3
+	C.java package:M3
 ----------Module CU imports before import own----------
 module M, base:M, context:[], exported:true
 	

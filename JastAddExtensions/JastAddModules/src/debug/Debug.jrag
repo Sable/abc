@@ -57,7 +57,7 @@ aspect Debug {
 		for (int i = 0; i < level; i++) {
 			System.out.print("\t");
 		}
-		System.out.println(this.relativeName());
+		System.out.println(this.relativeName() + " package:" + packageName());
 		
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).printJAModuleCUAST(level);

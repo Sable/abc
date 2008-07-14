@@ -42,22 +42,22 @@ import own M4 export as M4Alias3;
 ------------------------
 ----------CU AST before insert----------
 module: M4, file: M4.module, base module: M4
-B.java
-A.java
-D.java
+B.java package:
+A.java package:
+D.java package:
 module: M2, file: M2.module, base module: M2
 module: M1, file: M1.module, base module: M1
-C.java
+C.java package:
 module: M3, file: M3.module, base module: M3
 ----------CU AST after insert----------
 module: M4, file: M4.module, base module: M4
-	D.java
+	D.java package:M4
 module: M2, file: M2.module, base module: M2
-	B.java
+	B.java package:M2
 module: M1, file: M1.module, base module: M1
-	A.java
+	A.java package:M1
 module: M3, file: M3.module, base module: M3
-	C.java
+	C.java package:M3
 ----------Module CU imports before import own----------
 module M4, base:M4, context:[], exported:true
 	
@@ -80,21 +80,21 @@ merge M4AliasX, M4AliasY as M4AliasZ;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: M4, file: M4.module, base module: M4
-	D.java
+	D.java package:M4
 module: M2, file: M2.module, base module: M2
-	B.java
+	B.java package:M2
 module: M1, file: M1.module, base module: M1
-	A.java
+	A.java package:M1
 module: M3, file: M3.module, base module: M3
-	C.java
+	C.java package:M3
 module: M1$M2, file: M2.module, base module: M2
-	B.java
+	B.java package:M1$M2
 module: M1$M3, file: M3.module, base module: M3
-	C.java
+	C.java package:M1$M3
 module: M1$M4Alias1, file: M4.module, base module: M4
-	D.java
+	D.java package:M1$M4Alias1
 module: M1$M4AliasZ, file: M4.module, base module: M4
-	D.java
+	D.java package:M1$M4AliasZ
 ----------Module CU imports after import own----------
 module M4, base:M4, context:[], exported:true
 	

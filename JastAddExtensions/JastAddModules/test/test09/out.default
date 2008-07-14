@@ -27,19 +27,19 @@ module name : M3
 module M3;
 ------------------------
 ----------CU AST before insert----------
-B.java
-A.java
+B.java package:
+A.java package:
 module: M2, file: M2.module, base module: M2
 module: M1, file: M1.module, base module: M1
-C.java
+C.java package:
 module: M3, file: M3.module, base module: M3
 ----------CU AST after insert----------
 module: M2, file: M2.module, base module: M2
-	B.java
+	B.java package:M2
 module: M1, file: M1.module, base module: M1
-	A.java
+	A.java package:M1
 module: M3, file: M3.module, base module: M3
-	C.java
+	C.java package:M3
 ----------Module CU imports before import own----------
 module M2, base:M2, context:[], exported:true
 	

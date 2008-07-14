@@ -140,6 +140,7 @@ aspect ModuleCompilationUnit {
 	eq ModuleCompilationUnit.getChild(int index).getModuleCompilationUnit() = this;
 	inh ModuleCompilationUnit ModuleDecl.getModuleCompilationUnit();
 	inh ModuleCompilationUnit ModuleAccess.getModuleCompilationUnit();
+	inh ModuleCompilationUnit CompilationUnit.getModuleCompilationUnit();
 	
 	protected CompilationUnit CompilationUnit.origASTCompilationUnit = null;
 	public CompilationUnit CompilationUnit.getOrigASTCompilationUnit() {

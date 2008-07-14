@@ -8,11 +8,11 @@ module name : m1
 module m1;
 ------------------------
 ----------CU AST before insert----------
-A.java
+A.java package:p
 module: m1, file: m1.module, base module: m1
 ----------CU AST after insert----------
 module: m1, file: m1.module, base module: m1
-	A.java
+	A.java package:m1
 ----------Module CU imports before import own----------
 module m1, base:m1, context:[], exported:true
 	
@@ -22,7 +22,7 @@ module m1;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: m1, file: m1.module, base module: m1
-	A.java
+	A.java package:m1
 ----------Module CU imports after import own----------
 module m1, base:m1, context:[], exported:true
 	
