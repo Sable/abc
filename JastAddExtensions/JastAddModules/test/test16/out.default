@@ -1,0 +1,93 @@
+----------Module contents----------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\B.java------
+module: module m2;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test16\m2.module
+module name : m2
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\m3.module------
+module m3;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\E.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\A.java------
+module: module m1;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test16\m1.module
+module name : m1
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\D.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\m1.module------
+module m1;
+import own m2 export as alias2;
+import own m3 export as alias3;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\C.java------
+module: module m3;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test16\m3.module
+module name : m3
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test16\m2.module------
+module m2;
+------------------------
+----------CU AST before insert----------
+B.java package:
+module: m3, file: m3.module, base module: m3
+E.java package:a.b
+A.java package:
+D.java package:a
+module: m1, file: m1.module, base module: m1
+C.java package:
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+E.java package:a.b
+D.java package:a
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+----------Module CU imports before import own----------
+module m3, base:m3, context:[], exported:true
+	
+module m1, base:m1, context:[], exported:true
+	
+module m2, base:m2, context:[], exported:true
+	
+
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import own m2 export as alias2;
+import own m3 export as alias3;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+E.java package:a.b
+D.java package:a
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+module: m1.alias2, file: m2.module, base module: m2
+	B.java package:m1.alias2
+module: m1.alias3, file: m3.module, base module: m3
+	C.java package:m1.alias3
+----------Module CU imports after import own----------
+module m3, base:m3, context:[], exported:true
+	
+module m1, base:m1, context:[], exported:true
+	alias2:m1.alias2, alias3:m1.alias3
+module m2, base:m2, context:[], exported:true
+	
+module m1.alias2, base:m2, context:[m1], exported:true
+	
+module m1.alias3, base:m3, context:[m1], exported:true
+	
+
