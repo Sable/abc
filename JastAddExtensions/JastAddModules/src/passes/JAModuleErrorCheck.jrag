@@ -56,6 +56,21 @@ aspect JAModuleErrorCheck {
   			getModuleDecl().getModuleAccess().error("Module not found: " + getModuleDecl().getModuleAccess().getID()); 
   		} 
   	}
-	//TODO : Cyclic imports
-	//TODO : Visibility checks
+	//TODO: Duplicate module name
+	//should never happen, but check anyway
+	public HashSet<String> Program.moduleNames = new HashSet<String>();
+	public void ASTNode.checkDuplicateModuleName() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).checkDuplicateModuleName();
+		}
+	}
+	public void ModuleCompilationUnit.checkDuplicateModuleName() {
+		if (getHostProgram().moduleNames.contains(this.getModuleName())) {
+			getModuleDecl().error("Duplicate module name: " + this.getModuleName());
+		}
+		super.checkDuplicateModuleName();
+	}
+	
+	//TODO: Cyclic imports
+	//TODO: Visibility checks
 }

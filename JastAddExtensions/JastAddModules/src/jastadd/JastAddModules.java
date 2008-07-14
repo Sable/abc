@@ -40,9 +40,8 @@ public class JastAddModules extends JastAdd  {
 		Collection warnings = new LinkedList();
 		program.initErrHandling(errors, warnings);
 		try {
-			//primitive error checking, add later
+			//check if moduleDecls on non-ModuleCompilationUnit CUs point to a valid module
 			program.checkModuleDecls();
-			//TODO: Check if any errors are unrecoverable
 			
 			if (program.options().hasOption(DEBUG_OPTION)) {
 				System.out.println("----------Module contents----------");
@@ -51,6 +50,7 @@ public class JastAddModules extends JastAdd  {
 				program.printJAModuleCUAST(0);
 			}
 			
+			//insert the ModuleCompilationUnits above the CUs that are a member
 			result = program.insertModuleCUs();
 			if (!result) {
 				return false;
@@ -63,6 +63,7 @@ public class JastAddModules extends JastAdd  {
 				System.out.println(program.toStringJAModuleCUImports());
 			}
 				
+			//generate the ModuleCompilationUnits created by import own/merges
 			result = program.generateImportOwn();
 			if (!result) {
 				return false;
@@ -77,6 +78,9 @@ public class JastAddModules extends JastAdd  {
 				System.out.println("----------Module CU imports after import own----------");
 				System.out.println(program.toStringJAModuleCUImports());
 			}
+
+			//check if there are any duplicate module names (should never happen, mainly for debug)
+			program.checkDuplicateModuleName();
 			
 		} catch (UnrecoverableSemanticError e) {
 			System.out.println("Unrecoverable semantic error(s) found.");

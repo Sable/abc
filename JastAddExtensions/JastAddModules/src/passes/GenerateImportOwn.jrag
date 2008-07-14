@@ -175,7 +175,6 @@ aspect GenerateImportOwn {
 	syn lazy ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
 		ModuleCompilationUnit ret = null;
 		
-		//TODO: Make more efficient later (shallow copy first, then fill in with a fullcopy after full instantiation
 		ret = this.fullCopy();
 		
 		//clear ITDs
@@ -196,7 +195,7 @@ aspect GenerateImportOwn {
 	
 	public void ModuleCompilationUnit.checkedAddImportedModule(String alias, ModuleCompilationUnit cu) {
 		if (getImportedModule(alias) != null) {
-			this.error("Ambiguous module name " + alias + " in module " + this.getModuleName());
+			getModuleDecl().error("Ambiguous module name " + alias + " in module " + this.getModuleName());
 			//throw new jastadd.UnrecoverableSemanticError("Ambiguous alias " + alias + " in module " + this.getModuleName());
 		}
 		addImportedModule(alias, cu);

@@ -91,9 +91,9 @@ module M1$M23alias, base:M2, context:[M1], exported:false
 module M1$M23alias, base:M3, context:[M1], exported:false
 	
 
-M1.module:0:
+M1.module:1:
   Semantic Error: Ambiguous module name M2 in module M1
-M1.module:0:
+M1.module:1:
   Semantic Error: Ambiguous module name M2alias1 in module M1
-M1.module:0:
+M1.module:1:
   Semantic Error: Ambiguous module name M23alias in module M1
