@@ -1,0 +1,31 @@
+----------Module contents----------
+------d:\user\neil\jaworkspace\JastAddModules\test\test15\A.java------
+module: module m1;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\test\test15\m1.module
+module name : m1
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\test\test15\m1.module------
+module m1;
+------------------------
+----------CU AST before insert----------
+A.java
+module: m1, file: m1.module, base module: m1
+----------CU AST after insert----------
+module: m1, file: m1.module, base module: m1
+	A.java
+----------Module CU imports before import own----------
+module m1, base:m1, context:[], exported:true
+	
+
+-------------Instance ModuleCompilationUnit------------
+module m1;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: m1, file: m1.module, base module: m1
+	A.java
+----------Module CU imports after import own----------
+module m1, base:m1, context:[], exported:true
+	
+
+A.java:1:
+  Semantic Error: A module declaration cannot be used if there is a package declaration on the compilation unit.

@@ -41,7 +41,7 @@ public class JastAddModules extends JastAdd  {
 		program.initErrHandling(errors, warnings);
 		try {
 			//check if moduleDecls on non-ModuleCompilationUnit CUs point to a valid module
-			program.checkModuleDecls();
+			program.checkModuleErrorsPass1();
 			
 			if (program.options().hasOption(DEBUG_OPTION)) {
 				System.out.println("----------Module contents----------");

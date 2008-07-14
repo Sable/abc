@@ -44,19 +44,36 @@ aspect JAModuleErrorCheck {
 		}  		
   	}
   	
-  	//CU module access lookup checks 
-  	public void ASTNode.checkModuleDecls() {
+  	//Single error checks, done before CU insertions/generatOwn
+  	public void ASTNode.checkModuleErrorsPass1() {
+  		checkModuleDecls();
+  		checkModulePackageDecls();
+  	
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).checkModuleDecls();
+			getChild(i).checkModuleErrorsPass1();
 		}
   	}
+  	
+  	//CU module access lookup checks 
+  	public void ASTNode.checkModuleDecls() {}
   	//This must be called before the CUs are rearranged by InsertModuleCUs
   	public void CompilationUnit.checkModuleDecls() {
   		if (getModuleDecl() != null && lookupModuleCUNoTransform() == null) {
   			getModuleDecl().getModuleAccess().error("Module not found: " + getModuleDecl().getModuleAccess().getID()); 
   		} 
   	}
-	//TODO: Duplicate module name
+  	
+  	//CU package decl (if a module is defined, then a package shouldn't be defined (and vice versa)
+  	public void ASTNode.checkModulePackageDecls() {}
+  	public void CompilationUnit.checkModulePackageDecls() {
+  		if (getPackageDecl().compareTo("") != 0 && getModuleDecl() != null) {
+  			getModuleDecl().error("A module declaration cannot be used if there is a package declaration on the compilation unit.");
+  		}
+  	}
+  	
+  	
+  	
+	//Duplicate module name
 	//should never happen, but check anyway
 	public HashSet<String> Program.moduleNames = new HashSet<String>();
 	public void ASTNode.checkDuplicateModuleName() {
