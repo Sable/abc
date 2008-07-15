@@ -116,6 +116,7 @@ aspect GenerateImportOwn {
 		return ret;
 	}
 	
+	//This should only be called _after_ the import CUs have been generated.
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleMergeDecl)) {
@@ -180,8 +181,6 @@ aspect GenerateImportOwn {
 		return ret;
 	}
 	
-	
-	
 	//create a new ModuleCompilationUnit from the current one, using the given alias.
 	//Context will be for generating links in the accessibility graph
 	syn lazy ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
@@ -212,4 +211,6 @@ aspect GenerateImportOwn {
 		}
 		addImportedModule(alias, cu);
 	}
+	
+	
 }
