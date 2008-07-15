@@ -122,6 +122,8 @@ public class Model extends JastAddJModel {
 		program.options().addKeyValueOption("-bootclasspath");
 		program.options().addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
+		program.options().setOption("-verbose");
+
 		try {
 			Map<String,IFile> map = sourceMap(project, buildConfiguration);
 			for(String fileName : map.keySet())
@@ -140,7 +142,8 @@ public class Model extends JastAddJModel {
 		realProgram.options().addKeyValueOption("-classpath");
 		realProgram.options().addKeyValueOption("-bootclasspath");
 		realProgram.options().addKeyValueOption("-d");
-		addBuildConfigurationOptions(project, realProgram, buildConfiguration);   
+		addBuildConfigurationOptions(project, realProgram, buildConfiguration);
+		realProgram.options().setOption("-verbose");
 	}	
 	
 	public ArrayList<AttributeDecl> lookupJVMName(IProject project, String packageName) {
@@ -314,7 +317,7 @@ public class Model extends JastAddJModel {
 				Program program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
-
+				synchronized(program) {
 				Map<String, IFile> map = sourceMap(project, buildConfiguration);
 				boolean build = true;
 				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
@@ -364,7 +367,15 @@ public class Model extends JastAddJModel {
 				if (build) {
 					program.generateIntertypeDecls();
 					program.transformation();
-					program.generateClassfile();
+					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+						CompilationUnit cu = (CompilationUnit)iter.next();
+						if(cu.fromSource()) {
+							for(int i = 0; i < cu.getNumTypeDecl(); i++) {
+								cu.getTypeDecl(i).generateClassfile();
+							}
+						}
+					}
+				}
 				}
 			} catch (CoreException e) {
 				addErrorMarker(project, "Build failed because: "
@@ -372,12 +383,13 @@ public class Model extends JastAddJModel {
 				logCoreException(e);
 			}
 		} catch (Throwable e) {
+			e.printStackTrace();
 			logError(e, "Build failed!");
 		}
 	}
 	
 	public Collection recoverCompletion(int documentOffset, String[] linePart, StringBuffer buf, IProject project, String fileName, IJastAddNode node) throws IOException, Exception {
-		if(node == null) {
+		if(node == null) { 
 			// Try a structural recovery
 			/* Old recovery 
 			 documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
@@ -480,19 +492,41 @@ public class Model extends JastAddJModel {
 				((Program)program).flushIntertypeDecls();
 			}
 		} catch (Throwable e) {
+			e.printStackTrace();
 			logError(e, "Updating model failed!");
 		}
 	}
 
+	private long getTimeStamp(String name, IProject project) {
+		IFile oldFile = project.getFile(name);
+		if(oldFile.exists())
+			name = oldFile.getLocation().toOSString();
+		File file = new File(name);
+		if(file.exists())
+			return file.lastModified();
+		return Long.MAX_VALUE;
+	}
 	
 	private void buildJFlexScanner(IProject project, JastAddBuildConfiguration buildConfig) {
 		String flexFileName = buildConfig.flex.getOutputFolder() + File.separator + "Scanner.flex";
+		
+		long lastModified = getTimeStamp(flexFileName, project);
+		boolean needsUpdate = false;
+		for(PathEntry p : buildConfig.flex.entries())
+			if(getTimeStamp(p.getPath(), project) > lastModified)
+				needsUpdate = true;
+		if(!needsUpdate)
+			return;
+		
 		concatFiles(project, buildConfig.flex.entries(), flexFileName);
 		IFile file = project.getFile(flexFileName); 
 		flexFileName = file.getLocation().toOSString();
 		File jFlexFile = new File(flexFileName);
 		if (jFlexFile.exists()) {
-			JFlex.Main.generate(jFlexFile);
+			ArrayList<String> args = new ArrayList<String>();
+			args.add(flexFileName);
+			args.add("--nobak");
+			JFlex.Main.main(args.toArray(new String[] { })); //.generate(jFlexFile);
 		} else {
 			logError(new Throwable("Cannot find jflex file: " + flexFileName), 
 			"Problem generating scanner");
@@ -505,11 +539,25 @@ public class Model extends JastAddJModel {
 			parserName = "Parser";
 		String parserFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.parser";
 		String beaverFileName = buildConfig.parser.getOutputFolder() + File.separator + parserName + ".beaver";
+		
+		long lastModified = getTimeStamp(parserFileName, project);
+		boolean needsUpdate = false;
+		for(PathEntry p : buildConfig.parser.entries())
+			if(getTimeStamp(p.getPath(), project) > lastModified)
+				needsUpdate = true;
+		if(!needsUpdate)
+			return;
+		
 		try {
 			concatFiles(project, buildConfig.parser.entries(), parserFileName);
 			if (convertToBeaverSpec(project, parserFileName, beaverFileName)) {
 				IFile file = project.getFile(beaverFileName);
-				beaver.comp.run.Make.main(new String[] {file.getLocation().toOSString()});		
+				ArrayList<String> args = new ArrayList<String>();
+				args.add("-c");
+				args.add("-t");
+				args.add("-w");
+				args.add(file.getLocation().toOSString());
+				beaver.comp.run.Make.main(args.toArray(new String[] { }));		
 			}
 		} catch (IOException e) {
 			logError(e, "Problem generating parser");

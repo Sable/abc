@@ -254,7 +254,7 @@ public class JastAddJModel extends JastAddModel {
 
 
 	public void updateBuildConfiguration(IProject project) {
-		synchronized (this) {
+		//synchronized (this) {
 			if (!hasProgramInfo(project))
 				return;
 
@@ -266,7 +266,7 @@ public class JastAddJModel extends JastAddModel {
 			} catch (CoreException e) {
 				logCoreException(e);
 			}
-		}
+		//}
 		notifyModelListeners();
 	}
 
