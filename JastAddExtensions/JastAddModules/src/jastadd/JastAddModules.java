@@ -69,6 +69,9 @@ public class JastAddModules extends JastAdd  {
 				return false;
 			}
 			
+			//DEBUG: Errorccheck the modified program again
+			program.errorCheck(errors, warnings);
+			
 			if (program.options().hasOption(DEBUG_OPTION)) {
 				System.out.println("-------------Instance ModuleCompilationUnit------------");
 				System.out.println(program.getInstanceModuleCU());
@@ -108,25 +111,9 @@ public class JastAddModules extends JastAdd  {
 		program.transformation();
 		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 			CompilationUnit cu = (CompilationUnit) iter.next();
-			//System.out.println("-----outer loop cu: " + cu.relativeName());
-			//if (cu.fromSource()) {System.out.println(cu);}
-			//System.out.println("------------------------------");
 			if (cu.fromSource()) {
 				for (int i = 0; i < cu.getNumTypeDecl(); i++) {
 					cu.getTypeDecl(i).generateClassfile();
-				}
-			}
-			//TODO: bad hack, fix by refining compilationUnitIterator() in ClassPath.jrag
-			if (cu instanceof ModuleCompilationUnit) {
-				for (CompilationUnit childCU : ((ModuleCompilationUnit)cu).getCompilationUnitList()) {
-					//System.out.println("-----inner loop cu: " + childCU.relativeName());
-					//if (childCU.fromSource()) {System.out.println(childCU);}
-					//System.out.println("------------------------------");
-					if (childCU.fromSource()) {
-						for (int i = 0; i < childCU.getNumTypeDecl(); i++) {
-							childCU.getTypeDecl(i).generateClassfile();
-						}
-					}
 				}
 			}
 		}

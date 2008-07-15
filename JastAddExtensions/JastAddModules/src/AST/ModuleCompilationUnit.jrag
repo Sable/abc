@@ -354,7 +354,7 @@ aspect ModuleCompilationUnit {
 			int index = 0;
 			boolean selfReturned = false;
 			public boolean hasNext() {
-				return index < getCompilationUnitList().getNumChild() && selfReturned == false;
+				return index < getCompilationUnitList().getNumChild() || selfReturned == false;
 			}
 			public Object next() {
 				if (!hasNext()) {
