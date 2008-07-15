@@ -60,6 +60,17 @@ aspect GenerateImportOwn {
 		ret.setIsExported(isExported);
 		
 		//process imports
+		ret = generateImportCUs(ret);
+		
+		//process merges
+		ret = generateMergeCUs(ret);
+		
+		return ret;
+	}
+	
+	protected ModuleCompilationUnit ModuleCompilationUnit.generateImportCUs(ModuleCompilationUnit ret) {
+		assert (ret != null) : "ModuleCompilationUnit parameter should not be null";
+		
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleImportDecl)) {
 				continue;
@@ -102,8 +113,10 @@ aspect GenerateImportOwn {
 				getHostProgram().getCompilationUnitList().addChild(currImport);			
 			}
 		}
-		
-		//process merges
+		return ret;
+	}
+	
+	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
@@ -164,7 +177,6 @@ aspect GenerateImportOwn {
 			//attach the result copy to ret's import list
 			ret.checkedAddImportedModule(mergeAlias, mergedCU);
 		}
-		
 		return ret;
 	}
 	
