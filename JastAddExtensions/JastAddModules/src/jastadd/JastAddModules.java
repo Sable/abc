@@ -34,6 +34,7 @@ public class JastAddModules extends JastAdd {
 				});
 		if (!result)
 			return false;
+		
 
 		Collection errors = new LinkedList();
 		Collection warnings = new LinkedList();
@@ -101,7 +102,11 @@ public class JastAddModules extends JastAdd {
 		if (errors.size() > 0) {
 			return false;
 		}
-
+		
+		//flush program cache to get rid of old bindings
+		//TODO: Check if this is enough or if flushCaches is needed
+		program.flushCache();
+		
 		// DEBUG: Errorccheck the modified program again
 		program.initErrHandling(errors, warnings);
 		program.errorCheck(errors, warnings);

@@ -1,4 +1,4 @@
-module M1;
+module m1;
 public class Opt extends ASTNode implements Cloneable {
   public Opt() {
     super();

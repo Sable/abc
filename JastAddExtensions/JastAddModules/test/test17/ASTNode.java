@@ -1,4 +1,4 @@
-module M1;
+module m1;
 
 import java.util.Stack;
 import java.util.*;
