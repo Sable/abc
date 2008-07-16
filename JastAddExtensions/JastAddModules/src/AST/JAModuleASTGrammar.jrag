@@ -53,5 +53,7 @@ aspect JAModuleASTGrammar {
 		return (this.origASTCompilationUnit != null);
 	}
 	
+	//TODO: Check how to modify astNode(), listNode() and optNode() in ASTGrammar.jrag
+	
 	
 }
