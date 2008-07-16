@@ -1,4 +1,4 @@
-aspect JAClasspath {
+aspect JAModuleClasspath {
 	//refined from Java1.4Frontend/Classpath.jrag
 	refine ClassPath public Iterator Program.compilationUnitIterator() {
 		initPaths();

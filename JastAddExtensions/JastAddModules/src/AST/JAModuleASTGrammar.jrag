@@ -1,4 +1,4 @@
-aspect JAASTGrammar {
+aspect JAModuleASTGrammar {
 	//refined from JastAdd/ASTGrammer.jrag
 	refine ASTGrammar private void Program.loadASTFile(String name) {
 		try {
