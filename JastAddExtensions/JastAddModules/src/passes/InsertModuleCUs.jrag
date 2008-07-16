@@ -35,8 +35,4 @@ aspect InsertModuleCUs {
 		return true;
 	}
 	
-	//run transformation on each member CU
-	public void ModuleCompilationUnit.transformation() {
-		getCompilationUnitList().transformation();
-	}
 }

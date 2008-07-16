@@ -35,14 +35,15 @@ aspect JAModuleErrorCheck {
   	public void CompilationUnit.collectModuleErrors(Collection err, Collection warn) {
   		err.addAll(errors);
   		warn.addAll(warnings);
-  	}	
+  	}
+  	/*	
   	public void ModuleCompilationUnit.collectModuleErrors(Collection err, Collection warn) {
   		err.addAll(errors);
   		warn.addAll(warnings);
 		for (CompilationUnit cu : getCompilationUnitList()) {
 			cu.collectModuleErrors(err, warn);
 		}  		
-  	}
+  	}*/
   	
   	//Single error checks, done before CU insertions/generatOwn
   	public void ASTNode.checkModuleErrorsPass1() {

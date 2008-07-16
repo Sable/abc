@@ -69,9 +69,6 @@ public class JastAddModules extends JastAdd  {
 				return false;
 			}
 			
-			//DEBUG: Errorccheck the modified program again
-			program.errorCheck(errors, warnings);
-			
 			if (program.options().hasOption(DEBUG_OPTION)) {
 				System.out.println("-------------Instance ModuleCompilationUnit------------");
 				System.out.println(program.getInstanceModuleCU());
@@ -99,6 +96,11 @@ public class JastAddModules extends JastAdd  {
 		if (errors.size() > 0) {
 			return false;
 		}
+		
+		//DEBUG: Errorccheck the modified program again
+		program.initErrHandling(errors, warnings);
+		program.errorCheck(errors, warnings);
+
 		
 		
 		jastAdd.generate();

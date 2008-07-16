@@ -1,0 +1,7 @@
+
+aspect JATransformations {
+	//run transformation on each member CU (from Java1.4Backend/Transformations.jrag)
+	public void ModuleCompilationUnit.transformation() {
+		getCompilationUnitList().transformation();
+	}
+}
