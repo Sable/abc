@@ -1,4 +1,4 @@
-module m1;
+module M1;
 
 import java.util.Stack;
 import java.util.*;
@@ -110,7 +110,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   }
   protected static State state = new State();
   public boolean inCircle = false;
-  public boolean isFinal = false;
+  public boolean is$Final = false;
   protected static final int REWRITE_CHANGE = 1;
   protected static final int REWRITE_NOCHANGE = 2;
   protected static final int REWRITE_INTERRUPT = 3;
@@ -119,9 +119,9 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   }
   public static ASTNode getChild(ASTNode that, int i) {
     ASTNode node = that.getChildNoTransform(i);
-    if(node.isFinal) return node;
+    if(node.is$Final) return node;
     if(!node.mayHaveRewrite()) {
-      node.isFinal = that.isFinal;
+      node.is$Final = that.is$Final;
       return node;
     }
     if(!node.inCircle) {
@@ -136,12 +136,12 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
         that.setChild(node, i);
         rewriteState = state.pop();
       } while(rewriteState == ASTNode.REWRITE_CHANGE);
-      if(rewriteState == ASTNode.REWRITE_NOCHANGE && that.isFinal) {
-        node.isFinal = true;
+      if(rewriteState == ASTNode.REWRITE_NOCHANGE && that.is$Final) {
+        node.is$Final = true;
         ASTNode.boundariesCrossed = num;
       }
     }
-    else if(that.isFinal != node.isFinal) boundariesCrossed++;
+    else if(that.is$Final != node.is$Final) boundariesCrossed++;
     return node;
   }
 
@@ -208,7 +208,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   }
   
   public ASTNode getParent() {
-    if(parent != null && parent.isFinal != isFinal) {
+    if(parent != null && parent.is$Final != is$Final) {
       boundariesCrossed++;
     }
     return parent;

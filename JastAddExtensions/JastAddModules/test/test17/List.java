@@ -1,5 +1,4 @@
-module m1;
-
+module M1;
 public class List extends ASTNode implements Cloneable {
   public List() {
     super();

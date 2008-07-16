@@ -1,6 +1,6 @@
 
 aspect JAModuleLookupType {
-	syn lazy TypeDecl Program.lookupType(String packageName, String typeName) {
+	refine LookupType eq Program.lookupType(String packageName, String typeName) {
 		addPrimitiveTypes();
 		String fullName = packageName.equals("") ? typeName : packageName + "." + typeName;
 		//temporary hack

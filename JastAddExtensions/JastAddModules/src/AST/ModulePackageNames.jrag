@@ -1,6 +1,6 @@
 
 aspect ModulePackageNames {
-	refine QualifiedNames public String CompilationUnit.packageName() {
+	refine QualifiedNames eq CompilationUnit.packageName() {
 		if (getModuleCompilationUnit() == null) {
 			return QualifiedNames.CompilationUnit.packageName();
 		} else {
