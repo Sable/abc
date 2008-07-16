@@ -105,7 +105,7 @@ public class JastAddModules extends JastAdd {
 		
 		//flush program cache to get rid of old bindings
 		//TODO: Check if this is enough or if flushCaches is needed
-		program.flushCache();
+		program.flushCaches();
 		
 		// DEBUG: Errorccheck the modified program again
 		program.initErrHandling(errors, warnings);

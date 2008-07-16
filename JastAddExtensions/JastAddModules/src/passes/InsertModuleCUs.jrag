@@ -26,7 +26,8 @@ aspect InsertModuleCUs {
 				CompilationUnit childCU = (CompilationUnit) child;
 				ModuleCompilationUnit moduleCU = childCU.lookupModuleCUNoTransform(); 
 				childList.removeChild(i); //remove must be here, since the parent node of childCU must not be overwritten
-				moduleCU.getCompilationUnitList().addChild(childCU.fullCopy());
+				childCU.flushCaches(); //flush to remove old cached info
+				moduleCU.getCompilationUnitList().addChild(childCU); 
 			} else {
 				i++;
 				System.out.println("Unexpected program child type: " + child.getClass());

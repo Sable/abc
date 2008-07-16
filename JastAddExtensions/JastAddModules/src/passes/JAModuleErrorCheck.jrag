@@ -84,4 +84,18 @@ aspect JAModuleErrorCheck {
 	
 	//TODO: Cyclic imports
 	//TODO: Visibility checks
+	
+	//refines/implements
+	//from Java1.4Frontend/ErrorCheck.jrag
+	public void ModuleCompilationUnit.collectErrors() {
+		nameCheck();
+		typeCheck();
+		accessControl();
+		exceptionHandling();
+		checkUnreachableStmt();
+		definiteAssignment();
+		checkModifiers();
+		//Don't go down into child CUs, compilationUnitIterator will go through them anyway
+	}
+	
 }

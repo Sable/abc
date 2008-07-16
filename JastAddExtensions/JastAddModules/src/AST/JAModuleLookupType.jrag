@@ -27,8 +27,9 @@ aspect JAModuleLookupType {
 			}
 		}
 
+		//TODO: This is a patch. Find out how getCompilationUnit really works
 		CompilationUnit u = getCompilationUnit(fullName);
-		if(u != null) {
+		if(u != null && !u.fromSource()) { //TODO: if u was fromSource, it should have been found in the loops above. Find out how to remove the fullname from the set
 			addCompilationUnit(u);
 			getCompilationUnit(getNumCompilationUnit()-1);
 			for(int j = 0; j < u.getNumTypeDecl(); j++) {
