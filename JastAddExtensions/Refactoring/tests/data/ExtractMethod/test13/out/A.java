@@ -1,4 +1,5 @@
 class A {
+  
   class MyExn extends Throwable {
     MyExn() {
       super();
@@ -15,7 +16,8 @@ class A {
   }
   private int n(int i) throws MyExn {
     for(int j = 0; j < i; ++j) {
-      if(j == 4) throw new MyExn();
+      if(j == 4) 
+        throw new MyExn();
       ++i;
     }
     return i;

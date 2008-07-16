@@ -1,5 +1,6 @@
 package p;
 import static java.lang.String.*;
+
 public class A {
   static String valueOf(int i) {
     return "42";

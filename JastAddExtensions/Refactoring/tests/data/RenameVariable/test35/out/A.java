@@ -1,6 +1,8 @@
 package p;
+
 class A {
   int y;
+  
   class B {
     int y;
     public B() {

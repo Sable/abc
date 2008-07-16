@@ -1,5 +1,7 @@
 package p;
+
 class D {
+  
   static class C {
     static int x = 42;
     C() {
@@ -12,6 +14,7 @@ class D {
 }
 
 public class A {
+  
   static class C extends D {
     static int x = 23;
     static int m() {

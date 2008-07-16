@@ -1,5 +1,7 @@
 package p;
+
 public class A {
+  
   class XYZ {
     XYZ(XYZ X) {
       super();

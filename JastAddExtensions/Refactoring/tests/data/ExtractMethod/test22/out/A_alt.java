@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+
 class A {
   int m() throws FileNotFoundException {
     int i;
@@ -10,10 +11,11 @@ class A {
     super();
   }
   private int n() throws FileNotFoundException {
-    int j;
     int i;
+    int j;
     i = 2;
-    if(i == 2) throw new FileNotFoundException("");
+    if(i == 2) 
+      throw new FileNotFoundException("");
     j = ++i;
     return j;
   }

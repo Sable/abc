@@ -1,4 +1,5 @@
 package p;
+
 public class A {
   boolean[] n() {
     return null;

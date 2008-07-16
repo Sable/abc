@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,10 +40,25 @@ public abstract class ExtractMethod extends TestCase {
  				   			       fields.length > 6 ? fields[6] : "private");
         	try {
         		char[] buf = TestHelper.wholeFile(resfile);
-        		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n"))
-        			assertEquals(new String(TestHelper.wholeFile(altfile)), prog+"\n");
-        		else
-        			assertEquals(new String(buf), prog+"\n");
+        		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n")) {
+        			String res = new String(TestHelper.wholeFile(altfile));
+        			/*if(!res.equals(prog+"\n")) {
+        				System.out.println("fixing test "+name);
+        				FileWriter rfw = new FileWriter(new File(altfile));
+        				rfw.write(prog+"\n");
+        				rfw.close();
+        			}*/
+        			assertEquals(res, prog+"\n");
+        		} else {
+        			String res = new String(buf);
+        			/*if(!res.equals(prog+"\n")) {
+        				System.out.println("fixing test "+name);
+        				FileWriter rfw = new FileWriter(new File(resfile));
+        				rfw.write(prog+"\n");
+        				rfw.close();
+        			}*/
+        			assertEquals(res, prog+"\n");
+        		}
         	} catch(FileNotFoundException fnfe) {
         		fail(name+" was supposed to fail but yielded result");
         	}

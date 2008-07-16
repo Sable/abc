@@ -1,9 +1,10 @@
 package p;
+
 public class A {
   private int i;
   public void m() {
     Object o = new Object() {
-      int k = getI();
+        int k = getI();
     };
   }
   public A() {

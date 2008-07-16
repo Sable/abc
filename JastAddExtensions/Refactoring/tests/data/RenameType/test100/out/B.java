@@ -1,7 +1,10 @@
 package p;
+
 public class B {
+  
   class C {
     public  <T extends java.lang.Object> C() {
+    
       super();
     }
   }

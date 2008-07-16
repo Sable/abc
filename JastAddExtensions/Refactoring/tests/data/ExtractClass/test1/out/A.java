@@ -1,4 +1,5 @@
 package p;
+
 class B {
   int data = 0;
   B() {
@@ -23,6 +24,7 @@ public class A extends B {
   public A() {
     super();
   }
+  
   static class Data {
     A(int x, p.Data y) {
       super();

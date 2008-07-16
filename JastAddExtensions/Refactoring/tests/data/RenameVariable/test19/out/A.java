@@ -1,4 +1,5 @@
 package p;
+
 class A {
   static void main(String[] arguments) {
     int x;

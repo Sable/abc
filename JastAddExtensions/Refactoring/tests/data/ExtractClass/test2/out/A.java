@@ -1,4 +1,5 @@
 package p;
+
 class B {
   int d = 0;
   B() {
@@ -13,6 +14,7 @@ public class A extends B {
   public A() {
     super();
   }
+  
   static class Data {
     A(int x) {
       super();

@@ -4,14 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import AST.MethodDecl;
 import AST.Program;
-import AST.TypeDecl;
 import AST.RefactoringException;
+import AST.TypeDecl;
 
 public abstract class RenameMethod extends TestCase {
 	
@@ -37,8 +38,20 @@ public abstract class RenameMethod extends TestCase {
         		if(!res.equals(prog.toString()+"\n")) {
         			if(new File(alt_resfile).exists()) {
         				res = new String(TestHelper.wholeFile(alt_resfile));
+        				/*if(!res.equals(prog.toString()+"\n")) {
+        					System.out.println("fixing test "+name);
+        					FileWriter rfw = new FileWriter(new File(alt_resfile));
+        					rfw.write(prog.toString()+"\n");
+        					rfw.close();
+        				}*/
         				assertEquals(res, prog.toString()+"\n");
         			} else {
+        				/*if(!res.equals(prog.toString()+"\n")) {
+        					System.out.println("fixing test "+name);
+        					FileWriter rfw = new FileWriter(new File(resfile));
+        					rfw.write(prog.toString()+"\n");
+        					rfw.close();
+        				}*/
         				assertEquals(res, prog.toString()+"\n");
         			}
         		}

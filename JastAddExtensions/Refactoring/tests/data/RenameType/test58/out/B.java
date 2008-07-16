@@ -1,4 +1,5 @@
 package p;
+
 class Sup {
   static int CONSTANT = 0;
   Sup() {

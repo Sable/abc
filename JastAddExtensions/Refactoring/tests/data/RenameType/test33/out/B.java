@@ -1,4 +1,5 @@
 package p;
+
 class B extends Exception {
   B() {
     super();

@@ -1,5 +1,6 @@
 package p;
 aspect X {
+  
   static class B {
     B() {
       super();
@@ -14,6 +15,7 @@ aspect X {
 }
 
 class C {
+  
   class B {
     B() {
       super();

@@ -1,6 +1,7 @@
 package p;
 aspect X {
   int A.g;
+
   X() {
     super();
   }

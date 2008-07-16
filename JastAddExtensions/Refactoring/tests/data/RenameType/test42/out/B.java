@@ -1,4 +1,5 @@
 package p;
+
 class B {
   B(B A) {
     super();

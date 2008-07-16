@@ -1,4 +1,5 @@
 package p;
+
 public class B {
   public B() {
     super();
@@ -7,11 +8,11 @@ public class B {
 
 class C {
   void m() {
-    class A {
-      A() {
-        super();
+      class A {
+        A() {
+          super();
+        }
       }
-    }
     new A();
   }
   C() {

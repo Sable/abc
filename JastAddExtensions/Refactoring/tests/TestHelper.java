@@ -93,6 +93,7 @@ public class TestHelper {
 		long l = rf.length();
 		char[] buf = new char[(int)l];
 		rfr.read(buf);
+		rfr.close();
 		return buf;
 	}
 

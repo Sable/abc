@@ -1,8 +1,11 @@
 package p;
+
 class A {
   void getI(String s) {
   }
+  
   class C {
+    
     class B {
       void m() {
         A.this.getI("");

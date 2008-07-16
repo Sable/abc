@@ -1,4 +1,5 @@
 package p;
+
 public class A {
   void n() {
   }
@@ -10,6 +11,7 @@ public class A {
 class B extends A {
   void n() {
   }
+  
   class C {
     void p() {
       B.super.n();

@@ -1,4 +1,5 @@
 package p;
+
 public class B {
   public B() {
     super();
@@ -6,8 +7,10 @@ public class B {
 }
 
 class X {
+  
   class Y {
      <T extends java.lang.Object> Y() {
+    
       super();
     }
   }

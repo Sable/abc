@@ -1,12 +1,13 @@
 package p;
+
 public class A {
   private int i;
   public void m() {
     Object o = new Object() {
-      int k = A.this.getI();
-      int getI() {
-        return 42;
-      }
+        int k = A.this.getI();
+        int getI() {
+          return 42;
+        }
     };
   }
   public A() {

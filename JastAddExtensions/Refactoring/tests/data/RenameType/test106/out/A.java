@@ -1,7 +1,11 @@
 package p;
+
 public class A {
+  
   static class B {
+    
     static class F {
+      
       static class D {
         D() {
           super();

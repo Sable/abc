@@ -2,6 +2,7 @@ package p;
 aspect X {
   static int a;
   int A.x = X.a;
+
   X() {
     super();
   }

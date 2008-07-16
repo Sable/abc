@@ -1,6 +1,8 @@
 package p;
+
 class A {
   B f;
+  
   class B extends A {
     int f;
     {

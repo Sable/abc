@@ -1,4 +1,5 @@
 package p;
+
 public class A {
   private char c;
   void m() {

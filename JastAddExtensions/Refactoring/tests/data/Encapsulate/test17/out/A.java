@@ -1,4 +1,5 @@
 package p;
+
 class A {
   private final int i = 23;
   A() {

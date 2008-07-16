@@ -1,4 +1,5 @@
 package p;
+
 class A {
   public A g;
   public int k;

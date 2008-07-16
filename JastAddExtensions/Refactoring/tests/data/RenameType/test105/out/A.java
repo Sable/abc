@@ -1,5 +1,7 @@
 package p;
+
 public class A {
+  
   class java {
     java() {
       super();

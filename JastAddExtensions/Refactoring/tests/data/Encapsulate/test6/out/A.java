@@ -1,4 +1,5 @@
 package p;
+
 public class A {
   private String s;
   public A() {

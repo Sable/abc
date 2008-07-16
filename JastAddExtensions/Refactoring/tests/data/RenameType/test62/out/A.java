@@ -1,5 +1,7 @@
 package p;
+
 class A {
+  
   class C {
     C() {
       super();
@@ -11,6 +13,7 @@ class A {
 }
 
 class C {
+  
   static class D extends A {
     int D;
     static int m() {

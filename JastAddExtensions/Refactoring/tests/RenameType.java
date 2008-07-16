@@ -4,16 +4,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
 import AST.ASTNode;
 import AST.CompilationUnit;
-import AST.LocalDeclaration;
 import AST.Program;
-import AST.TypeDecl;
 import AST.RefactoringException;
+import AST.TypeDecl;
 
 public abstract class RenameType extends TestCase {
 	
@@ -59,6 +59,14 @@ public abstract class RenameType extends TestCase {
         long l = rf.length();
         char[] buf = new char[(int)l];
         rfr.read(buf);
+    	rfr.close();
+        /*if(!new String(buf).equals(cu+"\n")) {
+        	System.out.println("fixing compilation unit "+cu.getID()+
+        						" of test "+testname);
+        	FileWriter rfw = new FileWriter(rf);
+        	rfw.write(cu+"\n");
+        	rfw.close();
+        }*/
         assertEquals(new String(buf), cu+"\n");
     }
     

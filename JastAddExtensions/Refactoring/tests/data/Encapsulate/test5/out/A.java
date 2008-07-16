@@ -1,6 +1,8 @@
 package p;
+
 public class A {
   private String s;
+  
   class B {
     void m() {
       setS("foo");

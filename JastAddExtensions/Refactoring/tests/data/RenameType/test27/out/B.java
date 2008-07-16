@@ -1,4 +1,5 @@
 package p;
+
 class Super {
   int x;
   Super() {
@@ -8,6 +9,7 @@ class Super {
 
 class B extends Super {
   String x;
+  
   class Inner {
     void m() {
       B.super.x++;

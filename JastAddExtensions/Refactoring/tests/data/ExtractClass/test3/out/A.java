@@ -1,8 +1,10 @@
 package p;
+
 public class A {
   public A() {
     super();
   }
+  
   static class Data {
     A() {
       super();

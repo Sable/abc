@@ -1,4 +1,5 @@
 package p;
+
 class Z {
   static int n() {
     return 72;
@@ -18,6 +19,7 @@ public class A extends Z {
 }
 
 class B extends A {
+  
   class C {
     int k = Z.n();
     C() {

@@ -11,8 +11,10 @@ class A {
     int y;
     int z;
     try {
-      if(3 == 3) y = 1;
-      else throw new Exception("boo");
+      if(3 == 3) 
+        y = 1;
+      else 
+        throw new Exception("boo");
     }
     catch (Throwable t) {
       y = 2;

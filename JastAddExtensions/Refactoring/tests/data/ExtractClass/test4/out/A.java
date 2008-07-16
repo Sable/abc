@@ -1,4 +1,5 @@
 package p;
+
 class A {
   {
     System.out.println();
@@ -6,6 +7,7 @@ class A {
   A() {
     super();
   }
+  
   static class Data {
     A() {
       super();

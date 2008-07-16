@@ -1,6 +1,8 @@
 package p;
+
 class A {
   int a;
+  
   class B {
     void v() {
       int x = A.this.a;
@@ -13,9 +15,9 @@ class A {
     super();
   }
 }
-
 aspect X {
   int A.B.a;
+
   X() {
     super();
   }

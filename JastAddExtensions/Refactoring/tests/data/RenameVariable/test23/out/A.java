@@ -1,4 +1,5 @@
 package p;
+
 class B {
   int y;
   B() {
@@ -8,6 +9,7 @@ class B {
 
 public class A {
   int y;
+  
   class C extends B {
     int m() {
       return A.this.y;

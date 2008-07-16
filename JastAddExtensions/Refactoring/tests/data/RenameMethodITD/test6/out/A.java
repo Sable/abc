@@ -1,5 +1,6 @@
 package p;
 import java.util.*;
+
 class HelloYield {
   HelloYield h;
   public static void main(String[] args) {
@@ -12,7 +13,6 @@ class HelloYield {
     super();
   }
 }
-
 aspect A {
   public void HelloYield.itdTest() {
     System.out.println("Hello");

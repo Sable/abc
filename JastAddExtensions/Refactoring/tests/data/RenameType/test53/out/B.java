@@ -1,4 +1,5 @@
 package p;
+
 public class B {
   B() {
     super();

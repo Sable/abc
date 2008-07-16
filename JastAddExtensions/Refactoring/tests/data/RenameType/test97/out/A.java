@@ -1,4 +1,5 @@
 package p;
+
 public class A {
    <T extends java.lang.Object> int m() {
     return 23;

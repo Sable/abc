@@ -4,6 +4,7 @@ aspect X {
     return 23;
   }
   int A.x = X.n();
+
   X() {
     super();
   }

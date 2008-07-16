@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -44,6 +45,13 @@ public abstract class RenameVariable extends TestCase {
         		long l = rf.length();
         		char[] buf = new char[(int)l];
         		rfr.read(buf);
+            	rfr.close();
+                /*if(!new String(buf).equals(prog.toString()+"\n")) {
+                	System.out.println("fixing compilation test "+name);
+                	FileWriter rfw = new FileWriter(rf);
+                	rfw.write(prog.toString()+"\n");
+                	rfw.close();
+                }*/
         		assertEquals(new String(buf), prog.toString()+"\n");
         	} catch(FileNotFoundException fnfe) {
         		fail(name+" was supposed to fail but yielded result "+prog);

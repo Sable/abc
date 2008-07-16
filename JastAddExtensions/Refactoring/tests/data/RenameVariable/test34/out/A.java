@@ -1,4 +1,5 @@
 package p;
+
 class A {
   static int g = 23;
   public A(int g) {

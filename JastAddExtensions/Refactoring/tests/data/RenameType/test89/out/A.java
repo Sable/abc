@@ -1,5 +1,6 @@
 package p;
 import static java.util.Map.*;
+
 class Entry {
   Entry() {
     super();

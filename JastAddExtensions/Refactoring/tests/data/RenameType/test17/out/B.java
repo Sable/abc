@@ -1,4 +1,5 @@
 package p;
+
 interface I {
   int A = 0;
 }

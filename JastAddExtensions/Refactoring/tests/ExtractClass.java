@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -11,8 +12,8 @@ import junit.framework.TestCase;
 import AST.ClassDecl;
 import AST.FieldDeclaration;
 import AST.Program;
-import AST.TypeDecl;
 import AST.RefactoringException;
+import AST.TypeDecl;
 
 public abstract class ExtractClass extends TestCase {
 	
@@ -36,10 +37,25 @@ public abstract class ExtractClass extends TestCase {
     		Program prog = extractClass(args[0], args[1], args[2], fields, args[3], args[4]);
         	try {
         		char[] buf = TestHelper.wholeFile(resfile);
-        		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n"))
-        			assertEquals(new String(TestHelper.wholeFile(altfile)), prog+"\n");
-        		else
-        			assertEquals(new String(buf), prog+"\n");
+        		if(new File(altfile).exists() && !new String(buf).equals(prog+"\n")) {
+        			String res = new String(TestHelper.wholeFile(altfile));
+        			/*if(!res.equals(prog+"\n")) {
+        				System.out.println("fixing test "+name);
+        				FileWriter rfw = new FileWriter(new File(altfile));
+        				rfw.write(prog+"\n");
+        				rfw.close();
+        			}*/
+        			assertEquals(res, prog+"\n");
+        		} else {
+        			String res = new String(buf);
+        			/*if(!res.equals(prog+"\n")) {
+        				System.out.println("fixing test "+name);
+        				FileWriter rfw = new FileWriter(new File(resfile));
+        				rfw.write(prog+"\n");
+        				rfw.close();
+        			}*/
+        			assertEquals(res, prog+"\n");
+        		}
         	} catch(FileNotFoundException fnfe) {
         		fail(name+" was supposed to fail but yielded result "+prog);
         	}
