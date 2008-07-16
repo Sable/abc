@@ -108,7 +108,7 @@ module M1$M2, base:M2, context:[M1], exported:false
 	M4Alias2:M1$M4Alias1
 module M1$M3, base:M3, context:[M1], exported:false
 	M4Alias3:M1$M4Alias1
-module M1$M4Alias1, base:M4, context:[M1, M1$M3, M1$M2], exported:false
+module M1$M4Alias1, base:M4, context:[M1$M2, M1$M3, M1], exported:false
 	
 module M1$M4AliasZ, base:M4, context:[M1], exported:false
 	

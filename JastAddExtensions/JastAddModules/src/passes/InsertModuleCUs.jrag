@@ -7,7 +7,7 @@
 aspect InsertModuleCUs {
 	
 	public boolean Program.insertModuleCUs() {
-		List childList = (List)getChild(0); //bad, relies on the program child to be the CU list
+		List<CompilationUnit> childList = getCompilationUnitList(); //bad, relies on the program child to be the CU list
 		int i = 0;
 		while (i < childList.getNumChild()) {
 			ASTNode child = childList.getChild(i);
@@ -15,7 +15,7 @@ aspect InsertModuleCUs {
 			if (child instanceof ModuleCompilationUnit) {
 				i++;
 				continue;
-			//if a CU but not in a module, continue
+			//if a CU but not in a module, proceed to next
 			} else if (child instanceof CompilationUnit && 
 						!(((CompilationUnit)child).isInJAModule())) {
 				i++;
@@ -26,7 +26,7 @@ aspect InsertModuleCUs {
 				CompilationUnit childCU = (CompilationUnit) child;
 				ModuleCompilationUnit moduleCU = childCU.lookupModuleCUNoTransform(); 
 				childList.removeChild(i); //remove must be here, since the parent node of childCU must not be overwritten
-				moduleCU.getCompilationUnitList().addChild(childCU);
+				moduleCU.getCompilationUnitList().addChild(childCU.fullCopy());
 			} else {
 				i++;
 				System.out.println("Unexpected program child type: " + child.getClass());
