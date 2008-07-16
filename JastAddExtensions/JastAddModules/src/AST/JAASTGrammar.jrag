@@ -1,0 +1,57 @@
+aspect JAASTGrammar {
+	//refined from JastAdd/ASTGrammer.jrag
+	refine ASTGrammar private void Program.loadASTFile(String name) {
+		try {
+			File inFile = new File(name);
+			FileInputStream is = new FileInputStream(inFile);
+			
+			//parse AST file
+			scanner.JavaScanner scanner = new scanner.JavaScanner(new scanner.Unicode(is));
+			scanner.enterJastAdd();
+			CompilationUnit cu = (CompilationUnit)new parser.JavaParser().parse(scanner, parser.JavaParser.AltGoals.ast_file);
+			scanner.previousState();
+			is.close();
+			cu.setPathName(inFile.getAbsolutePath());
+			cu.setRelativeName(name);
+			
+			//generate ASTNode CUs
+			List importList = cu.getImportDeclList();
+			for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+				TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
+				CompilationUnit unit = new CompilationUnit(
+					cu.getPackageDecl(),
+					(List)importList.fullCopy(),
+					new List().add(typeDecl)
+				);
+				unit.setFromSource(true);
+				unit.setRelativeName(name);
+				unit.setPathName(".");
+				 
+				//NEIL: Added modules for generated AST files
+				unit.setOrigASTCompilationUnit(cu);
+				if (cu.getModuleDecl() != null) {
+					unit.setModuleDecl(cu.getModuleDecl());
+					unit.addChild(cu.getModuleDecl());
+				}
+				
+				addCompilationUnit(unit);
+			}
+		} catch (Exception e) {
+			throw new Error(e.getMessage());
+		}
+	}
+	
+	//store the original AST cu in the generated CUs for AST types
+	protected CompilationUnit CompilationUnit.origASTCompilationUnit = null;
+	public CompilationUnit CompilationUnit.getOrigASTCompilationUnit() {
+		return this.origASTCompilationUnit;
+	}
+	public void CompilationUnit.setOrigASTCompilationUnit(CompilationUnit astCU) {
+		this.origASTCompilationUnit = astCU;
+	}
+	public boolean CompilationUnit.isGeneratedFromAST() {
+		return (this.origASTCompilationUnit != null);
+	}
+	
+	
+}

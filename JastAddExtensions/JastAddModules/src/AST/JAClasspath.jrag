@@ -1,0 +1,81 @@
+aspect JAClasspath {
+	//refined from Java1.4Frontend/Classpath.jrag
+	refine ClassPath public Iterator Program.compilationUnitIterator() {
+		initPaths();
+		return new Iterator() {
+			Iterator cuListIterator = getCompilationUnitList().iterator();
+			Iterator currCUIterator = cuListIterator.hasNext() ? 
+				((CompilationUnit)cuListIterator.next()).compilationUnitIterator() : 
+				null;
+			
+			public boolean hasNext() {
+				return cuListIterator.hasNext() ||
+						(currCUIterator != null && currCUIterator.hasNext());
+			}
+			public Object next() {
+				//if none to start with, throw an exception
+				if (currCUIterator == null) {
+					throw new NoSuchElementException();
+				}
+				//if no more on curr iterator, proceed to next
+				while (!currCUIterator.hasNext() && cuListIterator.hasNext()) {
+					currCUIterator = ((CompilationUnit)(cuListIterator.next())).compilationUnitIterator();
+				}
+				//if none left
+				if (!currCUIterator.hasNext()) {
+					throw new NoSuchElementException();
+				}
+				
+				return currCUIterator.next();
+				
+				//TODO: This ignores the sourceFiles set in ClassPath.jrag. Check if correct
+			}
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+	
+	//more expensive due to iterators, but more flexible for nested CUs 
+	public Iterator CompilationUnit.compilationUnitIterator() {
+		return new Iterator() {
+			boolean hasNext = true;
+			public boolean hasNext() {
+				return hasNext;
+			}
+			public Object next() {
+				if (!hasNext) {
+					throw new NoSuchElementException();
+				}
+				hasNext = false;
+				return CompilationUnit.this;
+			}
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+	public Iterator ModuleCompilationUnit.compilationUnitIterator() {
+		return new Iterator() {
+			int index = 0;
+			boolean selfReturned = false;
+			public boolean hasNext() {
+				return index < getCompilationUnitList().getNumChild() || selfReturned == false;
+			}
+			public Object next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				if (selfReturned == false) {
+					selfReturned = true;
+					return ModuleCompilationUnit.this;
+				} else {
+					return getCompilationUnitList().getChild(index++);
+				}
+			}
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+}

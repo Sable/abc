@@ -20,7 +20,7 @@ aspect InsertModuleCUs {
 						!(((CompilationUnit)child).isInJAModule())) {
 				i++;
 				continue;//useless case, keep for debugging purposes
-			//if a CU in a module, detach and add to its moduleCU
+			//if a CU in a module, detach and add its copy to its moduleCU
 			} else if (child instanceof CompilationUnit && 
 						((CompilationUnit)child).isInJAModule()) {
 				CompilationUnit childCU = (CompilationUnit) child;
