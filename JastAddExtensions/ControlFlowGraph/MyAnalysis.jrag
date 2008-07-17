@@ -34,8 +34,8 @@ aspect MyAnalysis {
     //Nullness
     buf.append(" IN{");
     for(Iterator iter = in_null().iterator(); iter.hasNext(); ) {
-      CFGNode in = (CFGNode)iter.next();
-      buf.append(in + ", ");
+      Variable in = (Variable)iter.next();
+      buf.append(in.name() + ", ");
     }
     buf.append("} ");
     
