@@ -1,6 +1,6 @@
 
 aspect JAModuleErrorCheck {
-	//dependent on ErrorCheck.CompilationUnit.errors/warnings
+	//dependent on Java1.4Frontend/ErrorCheck.CompilationUnit.errors/warnings
 	//adapted from abc-ja-exts/CheckModuleErrors.jrag
   	public void Program.initErrHandling(Collection err, Collection warn) {
   		err.clear();
