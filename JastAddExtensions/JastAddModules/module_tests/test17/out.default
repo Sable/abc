@@ -1,62 +1,97 @@
 ----------Module contents----------
-------.------
-module: module m2;;
-Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test17\AST2.ast
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test17\m2.module
-module name : m2
-------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test17\A.java------
+------X.jrag------
 module: module m1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test17\m1.module
+module CU : m1.module
 module name : m1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test17\Opt.java------
-module: module m1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test17\m1.module
-module name : m1
-------------------------
-------.------
-module: module m1;;
-Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test17\AST.ast
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test17\m1.module
-module name : m1
-------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test17\m1.module------
+------m1.module------
 module m1;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test17\ASTNode.java------
+------AST.ast------
 module: module m1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test17\m1.module
+Original AST file: AST.ast
+module CU : m1.module
 module name : m1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test17\List.java------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------ASTNode.java------
+module: module jastadd$framework;;
+module CU : jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------m3.module------
+module m3;
+------------------------
+------AST2.ast------
+module: module m2;;
+Original AST file: AST2.ast
+module CU : m2.module
+module name : m2
+------------------------
+------A.java------
 module: module m1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test17\m1.module
+module CU : m1.module
 module name : m1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test17\m2.module------
+------Opt.java------
+module: module jastadd$framework;;
+module CU : jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------m2.module------
 module m2;
 ------------------------
+------List.java------
+module: module jastadd$framework;;
+module CU : jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ----------CU AST before insert----------
+X.jrag package:
+module: m1, file: m1.module, base module: m1
+AST.ast package:
+C.java package:
+ASTNode.java package:
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+B.java package:
+module: m3, file: m3.module, base module: m3
 AST2.ast package:
 A.java package:
 Opt.java package:
-AST.ast package:
-module: m1, file: m1.module, base module: m1
-ASTNode.java package:
-List.java package:
 module: m2, file: m2.module, base module: m2
+List.java package:
 ----------CU AST after insert----------
 module: m1, file: m1.module, base module: m1
-	A.java package:m1
-	Opt.java package:m1
+	X.jrag package:m1
 	AST.ast package:m1
-	ASTNode.java package:m1
-	List.java package:m1
+	A.java package:m1
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+	ASTNode.java package:jastadd$framework
+	Opt.java package:jastadd$framework
+	List.java package:jastadd$framework
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
 module: m2, file: m2.module, base module: m2
+	B.java package:m2
 	AST2.ast package:m2
 ----------Module CU imports before import own----------
 module m1, base:m1, context:[], exported:true
+	
+module jastadd$framework, base:jastadd$framework, context:[], exported:true
+	
+module m3, base:m3, context:[], exported:true
 	
 module m2, base:m2, context:[], exported:true
 	
@@ -66,18 +101,32 @@ module m1;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: m1, file: m1.module, base module: m1
-	A.java package:m1
-	Opt.java package:m1
+	X.jrag package:m1
 	AST.ast package:m1
-	ASTNode.java package:m1
-	List.java package:m1
+	A.java package:m1
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+	ASTNode.java package:jastadd$framework
+	Opt.java package:jastadd$framework
+	List.java package:jastadd$framework
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
 module: m2, file: m2.module, base module: m2
+	B.java package:m2
 	AST2.ast package:m2
 ----------Module CU imports after import own----------
 module m1, base:m1, context:[], exported:true
 	
+module jastadd$framework, base:jastadd$framework, context:[], exported:true
+	
+module m3, base:m3, context:[], exported:true
+	
 module m2, base:m2, context:[], exported:true
 	
 
-AST.TypeAccess [@primitive, Unknown]
-
+Errors:
+X.jrag:3:
+  Semantic Error: type ASTNode is not visible
+X.jrag:3:
+  Semantic Error: no method named pop() in jastadd$framework.ASTNode.State matches. However, there is a method pop()
+X.jrag:3:
+  Semantic Error: no method named push(int) in jastadd$framework.ASTNode.State matches. However, there is a method push(int)

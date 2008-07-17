@@ -1,50 +1,50 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module------
+------jastadd$framework.module------
 module jastadd$framework;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\Y.jrag------
+------Y.jrag------
 module: module NonExistentModule;;
 module CU : null
 module name : null
 ------------------------
-------.------
+------AST2.ast------
 module: module M1;;
-Original AST file: d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\AST2.ast
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\M1.module
+Original AST file: AST2.ast
+module CU : M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\A.java------
+------A.java------
 module: module NonExistentModule;;
 module CU : null
 module name : null
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\X.jrag------
+------X.jrag------
 module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\M1.module
+module CU : M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\Opt.java------
+------Opt.java------
 module: module jastadd$framework;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module
+module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
-------.------
+------AST.ast------
 module: module NonExistentModule;;
-Original AST file: d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\AST.ast
+Original AST file: AST.ast
 module CU : null
 module name : null
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\M1.module------
+------M1.module------
 module M1;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\ASTNode.java------
+------ASTNode.java------
 module: module jastadd$framework;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module
+module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\List.java------
+------List.java------
 module: module jastadd$framework;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module
+module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
 ----------CU AST before insert----------

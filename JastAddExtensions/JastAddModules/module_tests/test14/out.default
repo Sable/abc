@@ -1,18 +1,18 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\B.java------
+------B.java------
 module: module M2;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\M2.module
+module CU : M2.module
 module name : M2
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\A.java------
+------A.java------
 module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\M1.module
+module CU : M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\M2.module------
+------M2.module------
 module M2;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\M1.module------
+------M1.module------
 module M1;
 import  M2 as none null;
 import  M2 as none null;
@@ -21,12 +21,12 @@ import own M2 as M2alias1;
 import own M2 as M23alias;
 import own M3 as M23alias;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\C.java------
+------C.java------
 module: module M3;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\M3.module
+module CU : M3.module
 module name : M3
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\module_tests\test14\M3.module------
+------M3.module------
 module M3;
 ------------------------
 ----------CU AST before insert----------
