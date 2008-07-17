@@ -1,4 +1,4 @@
-module m1;
+module jastadd$framework;
 
 import java.util.Stack;
 import java.util.*;

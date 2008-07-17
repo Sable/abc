@@ -1,4 +1,4 @@
-module M1;
+module jastadd$framework;
 public class List extends ASTNode implements Cloneable {
   public List() {
     super();

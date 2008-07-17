@@ -1,4 +1,4 @@
-module m1;
+module jastadd$framework;
 public class Opt extends ASTNode implements Cloneable {
   public Opt() {
     super();
