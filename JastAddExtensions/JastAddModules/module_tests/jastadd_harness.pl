@@ -54,5 +54,5 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 	#diff results
 	system "dos2unix $result_file";
 	system "dos2unix $correct_file";
-	system "diff $result_file $correct_file";
+	system "diff --ignore-space-change $result_file $correct_file";
 }
