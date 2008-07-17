@@ -33,9 +33,9 @@ aspect InlineVariable {
 			if(va.isMutatee())
 				throw new RefactoringException("variable to be inlined "+
 						"is assigned more than once");
-		// check for side effects
-		if(init.mayHaveSideEffects())
-			throw new RefactoringException("initializer may have side effects");
+		// we can only inline constants (at the moment)
+		if(!init.isConstant())
+			throw new RefactoringException("initializer is not constant");
 		// replace uses
 		for(VarAccess va : uses) {
 			AdjustmentTable table = new AdjustmentTable();
@@ -47,9 +47,6 @@ aspect InlineVariable {
 		if(isLocalVariable())
 			getParent().removeChild(getParent().getIndexOfChild(this));
 	}
-	
-	// this is a very rough approximation, but it seems good enough for now
-	syn boolean Expr.mayHaveSideEffects() = !isConstant();
 	
 	// an expression is a mutatee if it is either an access that is itself being
 	// assigned, or an access designating an object one of whose members is being assigned
