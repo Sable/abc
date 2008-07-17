@@ -1,5 +1,14 @@
 aspect DefUse {	
 
+  eq EntryStmt.def() {
+    BodyDecl b = enclosingBodyDecl();
+    if(b instanceof MethodDecl) {
+    }
+    else if(b instanceof ConstructorDecl) {
+    }
+    return empty();
+  }
+
 	// create a locally scoped empty bit set for each body decl
 	syn lazy BitSet BodyDecl.empty() = new BitSet();
 	eq BodyDecl.getChild().empty() = empty();

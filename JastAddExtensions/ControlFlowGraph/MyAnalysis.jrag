@@ -18,7 +18,6 @@ aspect MyAnalysis {
     }
     buf.append("} **>");
     
-/*    //Liveness
     buf.append(" IN{");
     for(Iterator iter = in().iterator(); iter.hasNext(); ) {
       CFGNode in = (CFGNode)iter.next();
@@ -32,8 +31,6 @@ aspect MyAnalysis {
       buf.append(out + ", ");
     }
     buf.append("} ");
-*/    
- /*   
     //Nullness
     buf.append(" IN{");
     for(Iterator iter = in_null().iterator(); iter.hasNext(); ) {
@@ -48,7 +45,6 @@ aspect MyAnalysis {
       buf.append(out + ", ");
     }
     buf.append("} ");
-  */  
     
     
     return buf.toString();

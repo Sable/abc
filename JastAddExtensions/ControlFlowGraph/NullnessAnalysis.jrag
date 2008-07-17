@@ -1,10 +1,5 @@
 aspect NullnessAnalysis {	
 
-/*	
-
-
-	
-	
 	syn BitSet CFGNode.out_null() circular [empty()];
 	eq Stmt.out_null() = gen_null().union(in_null().compl(kill_null()));
 	eq Expr.out_null() = gen_null().union(in_null().compl(kill_null()));
@@ -13,14 +8,14 @@ aspect NullnessAnalysis {
 	eq Stmt.in_null() {
 		BitSet set = empty();
 		for(Iterator iter = pred().iterator(); iter.hasNext();)
-			set = set.intersect(iter.next().out_null());
+			set = set.intersect(((CFGNode)iter.next()).out_null());
 		return set;
 	}
 	
 	eq Expr.in_null() {
 		BitSet set = empty();
 		for(Iterator iter = pred().iterator(); iter.hasNext();)
-			set = set.intersect(iter.next().out_null());
+			set = set.intersect(((CFGNode)iter.next()).out_null());
 		return set;
 	}
  	
@@ -64,5 +59,4 @@ aspect NullnessAnalysis {
   			return empty();
   	}
   	
-  	*/	
 }

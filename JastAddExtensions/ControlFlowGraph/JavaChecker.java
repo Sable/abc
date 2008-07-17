@@ -32,10 +32,16 @@ class JavaChecker extends Frontend {
     );
     return result;
   }
+  protected void initOptions() {
+    super.initOptions();
+    program.options().addKeyOption("-dot");
+  }
 
   protected void processNoErrors(CompilationUnit unit) {
     System.out.println(unit);
     System.out.println(unit.dumpTree());
+    if(program.options().hasOption("-dot"))
+      unit.emitDotDescription();
   }
   
   

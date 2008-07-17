@@ -8,8 +8,8 @@ aspect ControlFlowGraph {
 	// *** API: entry and exit ***
 
     // artificial entry and exit statements using NTAs
-    syn nta Stmt BodyDecl.entry() = new EmptyStmt();
-    syn nta Stmt BodyDecl.exit() = new EmptyStmt();
+    syn nta Stmt BodyDecl.entry() = new EntryStmt();
+    syn nta Stmt BodyDecl.exit() = new ExitStmt();
   
     // *** Implementation: entry and exit ***
 
