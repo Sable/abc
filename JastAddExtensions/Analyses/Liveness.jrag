@@ -53,7 +53,7 @@ aspect Liveness {
 			Stmt before = (Stmt)i.next();
 			if(!before.between(getBlock(), -1, Integer.MAX_VALUE))
 				continue;
-			if(before.mayAccess(this))
+			if(before.mayTouch(this))
 				return true;
 			if(accessedBefore(before))
 				return true;
@@ -66,7 +66,7 @@ aspect Liveness {
 			Stmt next = (Stmt)i.next();
 			if(!next.between(getBlock(), -1, Integer.MAX_VALUE))
 				continue;
-			if(next.mayAccess(this))
+			if(next.mayTouch(this))
 				return true;
 			if(accessedAfter(next))
 				return true;

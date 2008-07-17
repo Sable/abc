@@ -20,7 +20,7 @@ aspect VarDefUse {
 	
 	eq VarAccess.mayUse(Variable v) = decl() == v && isSource();
 	
-	syn lazy boolean ASTNode.mayAccess(Variable v) = mayDef(v) || mayUse(v);
+	syn lazy boolean ASTNode.mayTouch(Variable v) = mayDef(v) || mayUse(v);
 	
 	syn boolean Stmt.mustDef(Variable v);
 	
