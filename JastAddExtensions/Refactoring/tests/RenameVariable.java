@@ -87,7 +87,7 @@ public abstract class RenameVariable extends TestCase {
 			throws RefactoringException {
 		Program prog = TestHelper.compile(file);
 		assertNotNull(prog);
-		LocalDeclaration v = findVariable(prog, varname);
+		LocalDeclaration v = TestHelper.findLocalVariable(prog, varname);
 		assertNotNull(v);
 		if(v instanceof VariableDeclaration) {
 			((VariableDeclaration)v).rename(newname);
@@ -98,18 +98,6 @@ public abstract class RenameVariable extends TestCase {
 		return prog;
 	}
 	
-	private LocalDeclaration findVariable(ASTNode n, String name) {
-		if(n == null) return null;
-		if(n instanceof LocalDeclaration &&
-				((LocalDeclaration)n).getID().equals(name))
-			return (LocalDeclaration)n;
-		for(int i=0;i<n.getNumChild();++i) {
-			LocalDeclaration v = findVariable(n.getChild(i), name);
-			if(v != null) return v;
-		}
-		return null;
-	}
-
 	protected abstract String getTestBase();
 
 }

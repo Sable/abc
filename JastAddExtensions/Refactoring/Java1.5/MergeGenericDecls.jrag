@@ -97,13 +97,16 @@ aspect MergeGenericDecls {
 
 	refine AdjustAccess public void VarAccess.unlockSafely() throws RefactoringException {
 		Variable v = target;
+		// check that target is visible and can be accessed
+		if(!v.accessibleFrom(this))
+			throw new RefactoringException("variable is not accessible");
 		unlock();
 		if(decl().sourceVariableDecl() == v)
 			return;
 		Access acc = access(v);
 		if(acc == null)
 			throw new RefactoringException("variable cannot be accessed");
-		plugInNewAccess(acc);
+		plugIn(acc);
 	}
 	
 	refine AdjustAccess public void TypeAccess.lock() { target = decl().sourceTypeDecl(); }
@@ -115,7 +118,7 @@ aspect MergeGenericDecls {
 			Access acc = access(td, nameType() == NameType.AMBIGUOUS_NAME);
 			if(acc == null)
 				throw new RefactoringException("type cannot be accessed");
-			plugInNewAccess(acc);
+			plugIn(acc);
 		}
 	}
 	
@@ -129,7 +132,7 @@ aspect MergeGenericDecls {
 		Access acc = access(md, (List<Expr>)getArgs().fullCopy());
 		if(acc == null)
 			throw new RefactoringException("method cannot be accessed");
-		plugInNewAccess(acc);
+		plugIn(acc);
 	}
 	
 	refine MethodAccessInfo public Access MethodAccessInfo.computeQualifiedAccess(NamingContext ctxt, TypeDecl qual_type, Expr qualifier, List args) {

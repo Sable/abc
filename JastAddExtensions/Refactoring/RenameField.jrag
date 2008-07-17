@@ -18,15 +18,10 @@ aspect RenameField {
 			throw new RefactoringException("not a valid name: "+new_name);
 		if(!hostType().localFields(new_name).isEmpty())
 			throw new RefactoringException("couldn't rename: field name clash");
-//TIME long time = System.currentTimeMillis();
 		AdjustmentTable table = findEndangeredVarAccesses(new_name);
-//TIME System.out.println("endangered accesses: "+table.size());
-//TIME System.out.println("time to find: "+(System.currentTimeMillis()-time));
 		changeID(new_name);
 		programRoot().flushCaches();
-//TIME time = System.currentTimeMillis();
 		table.adjust();
-//TIME System.out.println("adjustment: "+(System.currentTimeMillis()-time));
 	}
 
 	private AdjustmentTable FieldDeclaration.findEndangeredVarAccesses(String new_name) {

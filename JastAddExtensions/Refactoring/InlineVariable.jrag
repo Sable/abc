@@ -1,0 +1,76 @@
+aspect InlineVariable {
+	
+	// clone an ASTNode like fullCopy(), but lock any lockable accesses
+	// and enter them into the table
+	public ASTNode ASTNode.cloneAndLock(AdjustmentTable table) {
+        ASTNode res = (ASTNode)copy();
+        for(int i = 0; i < getNumChildNoTransform(); i++) {
+          ASTNode node = getChildNoTransform(i);
+          if(node != null) node = node.cloneAndLock(table);
+          res.setChild(node, i);
+        }
+        return res;
+	}
+	
+	public ASTNode LockableAccess.cloneAndLock(AdjustmentTable table) {
+		lock();
+		ASTNode res = super.cloneAndLock(table);
+		table.add((LockableAccess)res);
+		unlock();
+		return res;
+	}
+	
+	public void Variable.inline() throws RefactoringException {
+		if(!(isLocalVariable() || isStatic() && isFinal()))
+			throw new RefactoringException("only local variables "+
+						"and static final fields can be inlined");
+		if(!hasInit())
+			throw new RefactoringException("variable to be inlined has no initializer");
+		Expr init = getInit();
+		Collection<VarAccess> uses = collectedUses();
+		// check that the variable is not assigned or mutated more than once
+		for(VarAccess va : uses)
+			if(va.isMutatee())
+				throw new RefactoringException("variable to be inlined "+
+						"is assigned more than once");
+		// check for side effects
+		if(init.mayHaveSideEffects())
+			throw new RefactoringException("initializer may have side effects");
+		// replace uses
+		for(VarAccess va : uses) {
+			AdjustmentTable table = new AdjustmentTable();
+			Expr initcp = (Expr)init.cloneAndLock(table);
+			va.plugIn(initcp);
+			table.adjust();
+		}
+		// remove variable if it is a local
+		if(isLocalVariable())
+			getParent().removeChild(getParent().getIndexOfChild(this));
+	}
+	
+	// this is a very rough approximation, but it seems good enough for now
+	syn boolean Expr.mayHaveSideEffects() = !isConstant();
+	
+	// an expression is a mutatee if it is either an access that is itself being
+	// assigned, or an access designating an object one of whose members is being assigned
+	syn boolean Expr.isMutatee() = 
+		isDest() || isLeftChildOfDot() && ((AbstractDot)getParent()).isMutatee();
+	
+	/* we want variable access to try harder: if normal access computation
+	 * fails for a static variable, we try to build an access qualified with its
+	 * host type
+	 */
+	refine AccessVariable public Access Access.access(Variable v) {
+		Access res = AccessVariable.Access.access(v);
+		if(res != null)
+			return res;
+		if(v.isStatic()) {
+			Access tacc = access(v.hostType(), nameType() == NameType.AMBIGUOUS_NAME);
+			if(tacc == null)
+				return null;
+			return tacc.qualifiesAccess(new VarAccess(v.name()));
+		}
+		return null;
+	}
+	
+}

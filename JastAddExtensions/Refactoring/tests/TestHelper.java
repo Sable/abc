@@ -15,7 +15,9 @@ import AST.CompilationUnit;
 import AST.FileRange;
 import AST.Frontend;
 import AST.JavaParser;
+import AST.LocalDeclaration;
 import AST.Program;
+import AST.Variable;
 
 public class TestHelper {
 	
@@ -97,5 +99,27 @@ public class TestHelper {
 		return buf;
 	}
 
+	public static LocalDeclaration findLocalVariable(ASTNode n, String name) {
+		if(n == null) return null;
+		if(n instanceof LocalDeclaration &&
+				((LocalDeclaration)n).getID().equals(name))
+			return (LocalDeclaration)n;
+		for(int i=0;i<n.getNumChild();++i) {
+			LocalDeclaration v = findLocalVariable(n.getChild(i), name);
+			if(v != null) return v;
+		}
+		return null;
+	}
+
+	public static Variable findVariable(ASTNode n, String name) {
+		if(n == null) return null;
+		if(n instanceof Variable && ((Variable)n).name().equals(name))
+			return (Variable)n;
+		for(int i=0;i<n.getNumChild();++i) {
+			Variable v = findVariable(n.getChild(i), name);
+			if(v != null) return v;
+		}
+		return null;
+	}
 
 }

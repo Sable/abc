@@ -13,6 +13,7 @@ public class AllTests {
 		suite.addTest(RenameTests.suite());
 		suite.addTest(RenameTestsITD.suite());
 		suite.addTest(ExtractClassTests.suite());
+		suite.addTest(InlineVariableTests.suite());
 		return suite;
 	}
 }
