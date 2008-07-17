@@ -27,11 +27,10 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 	open JAVAFILE, "$test_file" or next;
 
 	#compile with jastadd
-	open OPTIONS , "< $JASTADD_BASEDIR/test/$test_name.options";
+	open OPTIONS , "$JASTADD_BASEDIR/test/$test_name.options";
 	my $options = "";
 	while (my $line = <OPTIONS>) {
-		$line =~ trim($line);
-		$options .= " " . $1;
+		$options .= " " . trim($line);
 	}
 
 	my $files = "$test_file ";
