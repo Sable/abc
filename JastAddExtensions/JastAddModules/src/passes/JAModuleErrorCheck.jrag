@@ -42,6 +42,7 @@ aspect JAModuleErrorCheck {
   	public void ASTNode.checkModuleErrorsPass1() {
   		checkModuleDecls();
   		checkModulePackageDecls();
+  		checkModuleCycles();
   	
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).checkModuleErrorsPass1();
@@ -83,6 +84,44 @@ aspect JAModuleErrorCheck {
 	}
 	
 	//TODO: Cyclic imports
+	public void ASTNode.checkModuleCycles() {}
+	public void ModuleCompilationUnit.checkModuleCycles() {
+		checkModuleCycles(new LinkedList<ModuleCompilationUnit>());
+	}
+	public boolean ModuleCompilationUnit.checkModuleCycles(Collection<ModuleCompilationUnit> visited) {
+		boolean noCycles = true;
+		
+		if (visited.contains(this)) {
+			noCycles = false;
+			String cycleStr = "";
+			boolean first = true;
+			for (ModuleCompilationUnit cycleMember : visited) {
+				if (!first) {
+					cycleStr += ", ";
+				}
+				cycleStr += cycleMember.getModuleName();
+				first = false;
+			}
+			getModuleDecl().error("Module " + getModuleName() + " involved in an import cycle with these other modules: " + cycleStr);
+			throw new jastadd.UnrecoverableSemanticError("Module " + getModuleName() + " involved in an import cycle with these other modules: " + cycleStr);
+		}
+		
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			if (member instanceof ModuleImportDecl) {
+				ModuleImportDecl importDecl = (ModuleImportDecl) member;
+				ModuleCompilationUnit importedCU = getHostProgram().lookupModuleCUNoTransform(importDecl.getImportModule());
+				Collection newVisited = new LinkedList<ModuleCompilationUnit>(visited);
+				newVisited.add(this);
+				noCycles = importedCU.checkModuleCycles(newVisited);
+				if (noCycles == false) {
+					return noCycles;
+				}
+			}
+		}
+		
+		return noCycles;
+	}
+	
 	//TODO: Visibility checks
 	
 	//refines/implements

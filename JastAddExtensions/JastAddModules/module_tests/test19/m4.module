@@ -1,0 +1,2 @@
+module m4;
+import own m1 as m1;

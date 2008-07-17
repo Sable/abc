@@ -1,0 +1,3 @@
+Unrecoverable semantic error(s) found.
+m1.module:1:
+  Semantic Error: Module m1 involved in an import cycle with these other modules: m1

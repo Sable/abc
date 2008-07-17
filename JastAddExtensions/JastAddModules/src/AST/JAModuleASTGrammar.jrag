@@ -58,14 +58,18 @@ aspect JAModuleASTGrammar {
 	/*
 	//TODO: Check how to modify lookupFrameworkType astNode(), listNode() and optNode() in ASTGrammar.jrag
 	refine ASTGrammar eq CompilationUnit.lookupFrameworkType(String name) {
-		//get from framework module
-		TypeDecl result = lookupType(Program.JASTADD_FRAMEWORK_MODULE, name);
-		if (result != null) {
-			return result;
-		} else if (getHostProgram().hasASTCompilationUnit() && getHostProgram().hasJAModules()) {
-			//if result is null and .ast and .module files are present, return an error
-			error("Unable to find AST framework type " + name);
-			return null;
+		TypeDecl result = null;
+		
+		//if is a module member, get from framework module
+		if (isInJAModule()) {
+			result = lookupType(Program.JASTADD_FRAMEWORK_MODULE, name);
+			if (result != null) {
+				return result;
+			} else if (getHostProgram().hasASTCompilationUnit() && getHostProgram().hasJAModules()) {
+				//if result is null and .ast and .module files are present, return an error
+				error("Unable to find AST framework type " + name);
+				return null;
+			}
 		}
 		
 		//TODO: Check if the following are needed
