@@ -17,8 +17,43 @@ aspect MyAnalysis {
       buf.append(node.uniqueIndex() + " ");
     }
     buf.append("} **>");
+    
+/*    //Liveness
+    buf.append(" IN{");
+    for(Iterator iter = in().iterator(); iter.hasNext(); ) {
+      CFGNode in = (CFGNode)iter.next();
+      buf.append(in + ", ");
+    }
+    buf.append("} ");
+    
+    buf.append(" OUT{");
+    for(Iterator iter = out().iterator(); iter.hasNext(); ) {
+      CFGNode out = (CFGNode)iter.next();
+      buf.append(out + ", ");
+    }
+    buf.append("} ");
+*/    
+ /*   
+    //Nullness
+    buf.append(" IN{");
+    for(Iterator iter = in_null().iterator(); iter.hasNext(); ) {
+      CFGNode in = (CFGNode)iter.next();
+      buf.append(in + ", ");
+    }
+    buf.append("} ");
+    
+    buf.append(" OUT{");
+    for(Iterator iter = out_null().iterator(); iter.hasNext(); ) {
+      CFGNode out = (CFGNode)iter.next();
+      buf.append(out + ", ");
+    }
+    buf.append("} ");
+  */  
+    
+    
     return buf.toString();
   }
+  
   eq Expr.dumpString() {
     StringBuffer buf = new StringBuffer();
     buf.append(super.dumpString());
@@ -28,6 +63,25 @@ aspect MyAnalysis {
       buf.append(node.uniqueIndex() + " ");
     }
     buf.append("} *>");
+    
+ /*   //Liveness
+    buf.append(" IN{");
+    for(Iterator iter = in().iterator(); iter.hasNext(); ) {
+      CFGNode in = (CFGNode)iter.next();
+      buf.append(in + ", ");
+    }
+    buf.append("} ");
+    
+    buf.append(" OUT{");
+    for(Iterator iter = out().iterator(); iter.hasNext(); ) {
+      CFGNode out = (CFGNode)iter.next();
+      buf.append(out + ", ");
+    }
+    buf.append("} ");
+   */ 
+    
+    
+    
     return buf.toString();
   }
 

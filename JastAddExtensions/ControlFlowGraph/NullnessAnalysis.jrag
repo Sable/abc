@@ -1,0 +1,68 @@
+aspect NullnessAnalysis {	
+
+/*	
+
+
+	
+	
+	syn BitSet CFGNode.out_null() circular [empty()];
+	eq Stmt.out_null() = gen_null().union(in_null().compl(kill_null()));
+	eq Expr.out_null() = gen_null().union(in_null().compl(kill_null()));
+	
+	syn BitSet CFGNode.in_null() circular [empty()];
+	eq Stmt.in_null() {
+		BitSet set = empty();
+		for(Iterator iter = pred().iterator(); iter.hasNext();)
+			set = set.intersect(iter.next().out_null());
+		return set;
+	}
+	
+	eq Expr.in_null() {
+		BitSet set = empty();
+		for(Iterator iter = pred().iterator(); iter.hasNext();)
+			set = set.intersect(iter.next().out_null());
+		return set;
+	}
+ 	
+	
+  	syn BitSet CFGNode.gen_null();
+  	eq Expr.gen_null() = empty();
+  	eq Stmt.gen_null() = empty();
+  	
+  	eq VariableDeclaration.gen_null() {
+  		if(!(getTypeAccess() instanceof PrimitiveTypeAccess) && 
+  			(!hasInit() || hasInit() && getInit() == null))
+  			return empty().union(this);
+  		else
+  			return empty();
+  	}
+  	
+  	eq AssignExpr.gen_null() {
+  		if(getSource() == null)
+  			return empty().union(getDest());
+  		else 
+  			return empty();
+  	}
+  	
+  	 
+  	syn BitSet CFGNode.kill_null();
+  	eq Expr.kill_null() = empty();
+  	eq Stmt.kill_null() = empty();
+  	
+  	eq VariableDeclaration.kill_null() {
+  		if(!(getTypeAccess() instanceof PrimitiveTypeAccess) && 
+  			hasInit() && getInit() != null)
+  			return empty().union(this);
+  		else
+  			return empty();
+  	}
+  	
+  	eq AssignExpr.kill_null() {
+  		if(getSource() != null)
+  			return empty().union(getDest());
+  		else
+  			return empty();
+  	}
+  	
+  	*/	
+}

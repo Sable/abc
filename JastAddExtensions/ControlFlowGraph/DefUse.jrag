@@ -29,15 +29,15 @@ aspect DefUse {
   	eq VarAccess.def() {
   		if(isDest() && decl().isLocalVariable())
   			return empty().union(decl());
-      else
-        return super.def();
+  		else
+  			return super.def();
   	}
   
   	eq VariableDeclaration.def() {
   		if(hasInit()) 
   			return empty().union(this);
-      else
-        return super.def();
+  		else
+  			return super.def();
   	}
   
   
@@ -49,8 +49,8 @@ aspect DefUse {
   	eq VarAccess.use() {
   		if(isSource() && decl().isLocalVariable())
   			return empty().union(decl());	  
-      else
-        return super.use();
+  		else
+  			return super.use();
   	}
 
  
