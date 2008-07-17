@@ -8,7 +8,7 @@ aspect Debug {
 		}
 	}
 	public void ModuleCompilationUnit.printJAModules() {
-		System.out.println("------" + this.pathName() + "------");
+		System.out.println("------" + this.relativeName() + "------");
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).printJAModules();
 		}
@@ -27,17 +27,17 @@ aspect Debug {
 		if (!fromSource()) {
 			return; 
 		}
-		System.out.println("------" + this.pathName() + "------");
+		System.out.println("------" + this.relativeName() + "------");
 		System.out.println("module: " + getModuleDecl() + ";");
 		ModuleCompilationUnit moduleCU = lookupModuleCUNoTransform();
 		String moduleCUPath = null;
 		String moduleName = null;
 		if (lookupModuleCUNoTransform() != null) {
-			moduleCUPath = moduleCU.pathName();
+			moduleCUPath = moduleCU.relativeName();
 			moduleName = moduleCU.getModuleName();
 		}
 		if (isGeneratedFromAST()) {
-			System.out.println("Original AST file: " + getOrigASTCompilationUnit().pathName());
+			System.out.println("Original AST file: " + getOrigASTCompilationUnit().relativeName());
 		}
 		System.out.println("module CU : " + moduleCUPath);
 		System.out.println("module name : " + moduleName);

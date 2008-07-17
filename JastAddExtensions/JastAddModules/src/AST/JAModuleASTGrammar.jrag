@@ -52,8 +52,50 @@ aspect JAModuleASTGrammar {
 	public boolean CompilationUnit.isGeneratedFromAST() {
 		return (this.origASTCompilationUnit != null);
 	}
+	/*
+	public final String Program.JASTADD_FRAMEWORK_MODULE = "jastadd$framework";	
+	//TODO: Check how to modify lookupFrameworkType astNode(), listNode() and optNode() in ASTGrammar.jrag
+	refine ASTGrammar eq CompilationUnit.lookupFrameworkType(String name) {
+		//get from framework module
+		TypeDecl result = lookupType(getHostProgram().JASTADD_FRAMEWORK_MODULE, name);
+		if (result != null) {
+			return result;
+		} else if (getHostProgram().hasASTCompilationUnit() && getHostProgram().hasJAModules()) {
+			//if result is null and .ast and .module files are present, return an error
+			error("Unable to find AST framework type " + name);
+			return null;
+		}
+		
+		//TODO: Check if the following are needed
+		//Keep these for backward compatibility (so JastAddModules can compile module-less jastadd)
+		// imported types
+		SimpleSet set = set = importedTypes(name);
+		if(set.isEmpty()) {
+		// types in the same package
+			result = lookupType(packageName(), name);
+			if(result != null && result.accessibleFromPackage(packageName())) 
+				set = set.add(result);
+		}
+		if(set.isEmpty()) {
+		// types imported on demand
+			set = importedTypesOnDemand(name);
+		}
+		if(set.size() == 1) {
+			return (TypeDecl)set.iterator().next();
+		}
+		else { 
+			return unknownType();
+		}
+	}
 	
-	//TODO: Check how to modify astNode(), listNode() and optNode() in ASTGrammar.jrag
-	
-	
+	syn lazy boolean Program.hasASTCompilationUnit() {
+		for (Iterator i = compilationUnitIterator(); i.hasNext() ; ) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			if (cu.isGeneratedFromAST()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	*/
 }

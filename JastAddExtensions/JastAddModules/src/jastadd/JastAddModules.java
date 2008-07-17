@@ -3,8 +3,10 @@ package jastadd;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.io.File;
 
 import AST.BytecodeParser;
+import AST.BytecodeReader;
 import AST.CompilationUnit;
 import AST.JavaParser;
 import AST.ModuleCompilationUnit;
@@ -22,6 +24,141 @@ public class JastAddModules extends JastAdd {
 		}
 	}
 
+	// needed to change this, since module CU insertion has to be done before
+	// the initial errorcheck
+	// due to module qualified names (e.g. m1.Type)
+	@Override
+	public boolean process(String[] args, BytecodeReader reader,
+			JavaParser parser) {
+		program.initBytecodeReader(reader);
+		program.initJavaParser(parser);
+
+		initOptions();
+		processArgs(args);
+
+		Collection files = program.options().files();
+
+		if (program.options().hasOption("-version")) {
+			printVersion();
+			return false;
+		}
+		if (program.options().hasOption("-help") || files.isEmpty()) {
+			printUsage();
+			return false;
+		}
+
+		try {
+			for (Iterator iter = files.iterator(); iter.hasNext();) {
+				String name = (String) iter.next();
+				if (!new File(name).exists())
+					System.out.println("WARNING: file \"" + name
+							+ "\" does not exist");
+				program.addSourceFile(name);
+			}
+
+			boolean result = true;
+			Collection errors = new LinkedList();
+			Collection warnings = new LinkedList();
+			program.initErrHandling(errors, warnings);
+			try {
+				// check if moduleDecls on non-ModuleCompilationUnit CUs point
+				// to a
+				// valid module
+				program.checkModuleErrorsPass1();
+
+				if (program.options().hasOption(DEBUG_OPTION)) {
+					System.out.println("----------Module contents----------");
+					program.printJAModules();
+					System.out
+							.println("----------CU AST before insert----------");
+					program.printJAModuleCUAST(0);
+				}
+
+				// insert the ModuleCompilationUnits above the CUs that are a
+				// member
+				result = program.insertModuleCUs();
+				if (!result) {
+					return false;
+				}
+
+				if (program.options().hasOption(DEBUG_OPTION)) {
+					System.out
+							.println("----------CU AST after insert----------");
+					program.printJAModuleCUAST(0);
+					System.out
+							.println("----------Module CU imports before import own----------");
+					System.out.println(program.toStringJAModuleCUImports());
+				}
+
+				// generate the ModuleCompilationUnits created by import
+				// own/merges
+				result = program.generateImportOwn();
+				if (!result) {
+					return false;
+				}
+
+				if (program.options().hasOption(DEBUG_OPTION)) {
+					System.out
+							.println("-------------Instance ModuleCompilationUnit------------");
+					System.out.println(program.getInstanceModuleCU());
+					System.out
+							.println("-----------End Instance ModuleCompilationUnit----------");
+					System.out
+							.println("----------CU AST after generateImportOwn----------");
+					program.printJAModuleCUAST(0);
+					System.out
+							.println("----------Module CU imports after import own----------");
+					System.out.println(program.toStringJAModuleCUImports());
+				}
+
+				// check if there are any duplicate module names (should never
+				// happen, mainly for debug)
+				program.checkDuplicateModuleName();
+
+			} catch (UnrecoverableSemanticError e) {
+				System.out.println("Unrecoverable semantic error(s) found.");
+			}
+
+			program.collectModuleErrors(errors, warnings);
+			for (Iterator i = errors.iterator(); i.hasNext();) {
+				System.out.println(i.next());
+			}
+			for (Iterator i = warnings.iterator(); i.hasNext();) {
+				System.out.println(i.next());
+			}
+			if (errors.size() > 0) {
+				return false;
+			}
+
+			// Error check
+			for (Iterator iter = program.compilationUnitIterator(); iter
+					.hasNext();) {
+				CompilationUnit unit = (CompilationUnit) iter.next();
+				if (unit.fromSource()) {
+					errors = unit.parseErrors();
+					// warnings = new LinkedList();
+					// compute static semantic errors when there are no parse
+					// errors or
+					// the recover from parse errors option is specified
+					if (errors.isEmpty()
+							|| program.options().hasOption("-recover"))
+						unit.errorCheck(errors, warnings);
+					if (!errors.isEmpty()) {
+						processErrors(errors, unit);
+						return false;
+					} else {
+						processWarnings(warnings, unit);
+						processNoErrors(unit);
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return true;
+	}
+
 	public boolean compile(String[] args) {
 		JastAdd jastAdd = this;
 		boolean result = jastAdd.process(args, new BytecodeParser(),
@@ -34,92 +171,10 @@ public class JastAddModules extends JastAdd {
 				});
 		if (!result)
 			return false;
-		
 
-		Collection errors = new LinkedList();
-		Collection warnings = new LinkedList();
-		program.initErrHandling(errors, warnings);
-		try {
-			// check if moduleDecls on non-ModuleCompilationUnit CUs point to a
-			// valid module
-			program.checkModuleErrorsPass1();
-
-			if (program.options().hasOption(DEBUG_OPTION)) {
-				System.out.println("----------Module contents----------");
-				program.printJAModules();
-				System.out.println("----------CU AST before insert----------");
-				program.printJAModuleCUAST(0);
-			}
-
-			// insert the ModuleCompilationUnits above the CUs that are a member
-			result = program.insertModuleCUs();
-			if (!result) {
-				return false;
-			}
-
-			if (program.options().hasOption(DEBUG_OPTION)) {
-				System.out.println("----------CU AST after insert----------");
-				program.printJAModuleCUAST(0);
-				System.out
-						.println("----------Module CU imports before import own----------");
-				System.out.println(program.toStringJAModuleCUImports());
-			}
-
-			// generate the ModuleCompilationUnits created by import own/merges
-			result = program.generateImportOwn();
-			if (!result) {
-				return false;
-			}
-
-			if (program.options().hasOption(DEBUG_OPTION)) {
-				System.out.println("-------------Instance ModuleCompilationUnit------------");
-				System.out.println(program.getInstanceModuleCU());
-				System.out
-						.println("-----------End Instance ModuleCompilationUnit----------");
-				System.out
-						.println("----------CU AST after generateImportOwn----------");
-				program.printJAModuleCUAST(0);
-				System.out
-						.println("----------Module CU imports after import own----------");
-				System.out.println(program.toStringJAModuleCUImports());
-			}
-
-			// check if there are any duplicate module names (should never
-			// happen, mainly for debug)
-			program.checkDuplicateModuleName();
-
-		} catch (UnrecoverableSemanticError e) {
-			System.out.println("Unrecoverable semantic error(s) found.");
-		}
-
-		program.collectModuleErrors(errors, warnings);
-		for (Iterator i = errors.iterator(); i.hasNext();) {
-			System.out.println(i.next());
-		}
-		for (Iterator i = warnings.iterator(); i.hasNext();) {
-			System.out.println(i.next());
-		}
-		if (errors.size() > 0) {
-			return false;
-		}
-		
-		//flush program cache to get rid of old bindings
-		//TODO: Check if this is enough or if flushCaches is needed
-		program.flushCaches();
-		
-		// DEBUG: Errorccheck the modified program again
-		program.initErrHandling(errors, warnings);
-		program.errorCheck(errors, warnings);
-		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
-			CompilationUnit unit = (CompilationUnit)iter.next();
-			if (!errors.isEmpty()) {
-				processErrors(errors, unit);
-				return false;
-			} else {
-				processWarnings(warnings, unit);
-				processNoErrors(unit);
-			}
-		}
+		// flush program cache to get rid of old bindings
+		// TODO: Check if this is enough or if flushCaches is needed
+		// program.flushCaches();
 
 		jastAdd.generate();
 		return true;
@@ -143,12 +198,10 @@ public class JastAddModules extends JastAdd {
 	protected void initOptions() {
 		super.initOptions();
 		Options options = program.options();
-		options.addKeyValueOption(INSTANCE_MODULES_OPTION); // specifies the
-															// module that is
-															// going to be used
-															// to instantiate
-															// the generated
-															// package names
+		// specifies the module that is going to be used to instantiate the
+		// generated
+		// package names
+		options.addKeyValueOption(INSTANCE_MODULES_OPTION);
 		options.addKeyOption(DEBUG_OPTION);
 	}
 }
