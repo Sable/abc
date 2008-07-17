@@ -1,4 +1,7 @@
 ----------Module contents----------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
 ------B.java------
 module: module M2;;
 module CU : M2.module
@@ -26,6 +29,7 @@ module name : M3
 module M3;
 ------------------------
 ----------CU AST before insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 B.java package:
 A.java package:
 module: M2, file: M2.module, base module: M2
@@ -33,6 +37,7 @@ module: M1, file: M1.module, base module: M1
 C.java package:
 module: M3, file: M3.module, base module: M3
 ----------CU AST after insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M1, file: M1.module, base module: M1
@@ -40,11 +45,13 @@ module: M1, file: M1.module, base module: M1
 module: M3, file: M3.module, base module: M3
 	C.java package:M3
 ----------Module CU imports before import own----------
-module M2, base:M2, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
 	
-module M1, base:M1, context:[], exported:true
+module M2, base:M2, context:[], exported:true, instantiated:false
 	
-module M3, base:M3, context:[], exported:true
+module M1, base:M1, context:[], exported:true, instantiated:false
+	
+module M3, base:M3, context:[], exported:true, instantiated:false
 	
 
 Unrecoverable semantic error(s) found.

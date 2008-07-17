@@ -188,9 +188,5 @@
 		</jar>
 	</target>
 
-	<target name="test" depends="build">
-		<java classname="RunTests" classpath="classes;." fork="true" />
-	</target>
-
 </project>
 

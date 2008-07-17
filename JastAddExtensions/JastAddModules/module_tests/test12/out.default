@@ -2,6 +2,9 @@
 ------M4.module------
 module M4;
 ------------------------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
 ------B.java------
 module: module M2;;
 module CU : M2.module
@@ -42,6 +45,7 @@ import own M4 export as M4Alias3;
 ------------------------
 ----------CU AST before insert----------
 module: M4, file: M4.module, base module: M4
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 B.java package:
 A.java package:
 D.java package:
@@ -52,6 +56,7 @@ module: M3, file: M3.module, base module: M3
 ----------CU AST after insert----------
 module: M4, file: M4.module, base module: M4
 	D.java package:M4
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M1, file: M1.module, base module: M1
@@ -59,13 +64,15 @@ module: M1, file: M1.module, base module: M1
 module: M3, file: M3.module, base module: M3
 	C.java package:M3
 ----------Module CU imports before import own----------
-module M4, base:M4, context:[], exported:true
+module M4, base:M4, context:[], exported:true, instantiated:false
 	
-module M2, base:M2, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
 	
-module M1, base:M1, context:[], exported:true
+module M2, base:M2, context:[], exported:true, instantiated:false
 	
-module M3, base:M3, context:[], exported:true
+module M1, base:M1, context:[], exported:true, instantiated:false
+	
+module M3, base:M3, context:[], exported:true, instantiated:false
 	
 
 -------------Instance ModuleCompilationUnit------------
@@ -77,10 +84,12 @@ import own M4 as M4AliasX;
 import own M4 as M4AliasY;
 merge M2.M4Alias2, M3.M4Alias3, M4 as M4Alias1;
 merge M4AliasX, M4AliasY as M4AliasZ;
+import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: M4, file: M4.module, base module: M4
 	D.java package:M4
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M1, file: M1.module, base module: M1
@@ -96,20 +105,24 @@ module: M1$M4Alias1, file: M4.module, base module: M4
 module: M1$M4AliasZ, file: M4.module, base module: M4
 	D.java package:M1$M4AliasZ
 ----------Module CU imports after import own----------
-module M4, base:M4, context:[], exported:true
+module M4, base:M4, context:[], exported:true, instantiated:false
 	
-module M2, base:M2, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
 	
-module M1, base:M1, context:[], exported:true
-	M3:M1$M3, M4AliasZ:M1$M4AliasZ, M2:M1$M2, M4Alias1:M1$M4Alias1
-module M3, base:M3, context:[], exported:true
+module M2, base:M2, context:[], exported:true, instantiated:false
 	
-module M1$M2, base:M2, context:[M1], exported:false
-	M4Alias2:M1$M4Alias1
-module M1$M3, base:M3, context:[M1], exported:false
-	M4Alias3:M1$M4Alias1
-module M1$M4Alias1, base:M4, context:[M1$M3, M1$M2, M1], exported:false
+module M1, base:M1, context:[], exported:true, instantiated:true
+	M3:M1$M3, M4AliasZ:M1$M4AliasZ, M2:M1$M2, M4Alias1:M1$M4Alias1, jastadd$framework:jastadd$framework
+module M3, base:M3, context:[], exported:true, instantiated:false
 	
-module M1$M4AliasZ, base:M4, context:[M1], exported:false
-	
+module M1$M2, base:M2, context:[M1], exported:false, instantiated:true
+	M4Alias2:M1$M4Alias1, jastadd$framework:jastadd$framework
+module M1$M3, base:M3, context:[M1], exported:false, instantiated:true
+	M4Alias3:M1$M4Alias1, jastadd$framework:jastadd$framework
+module M1$M4Alias1, base:M4, context:[M1$M2, M1, M1$M3], exported:false, instantiated:true
+	jastadd$framework:jastadd$framework
+module M1$M4AliasZ, base:M4, context:[M1], exported:false, instantiated:true
+	jastadd$framework:jastadd$framework
 
+----------CU iterator----------
+M4.module, jastadd$framework.module, M2.module, M1.module, A.java, M3.module, M2.module, B.java, M3.module, C.java, M4.module, D.java, M4.module, D.java

@@ -70,13 +70,14 @@ module: M1, file: M1.module, base module: M1
 	AST2.ast package:M1
 	X.jrag package:M1
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
 	
-module M1, base:M1, context:[], exported:true
+module M1, base:M1, context:[], exported:true, instantiated:false
 	
 
 -------------Instance ModuleCompilationUnit------------
 module M1;
+import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
@@ -90,11 +91,13 @@ module: M1, file: M1.module, base module: M1
 	AST2.ast package:M1
 	X.jrag package:M1
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
 	
-module M1, base:M1, context:[], exported:true
-	
+module M1, base:M1, context:[], exported:true, instantiated:true
+	jastadd$framework:jastadd$framework
 
+----------CU iterator----------
+jastadd$framework.module, Opt.java, ASTNode.java, List.java, Y.jrag, A.java, AST.ast, M1.module, AST2.ast, X.jrag
 Y.jrag:1,8:
   Semantic Error: Module not found: NonExistentModule
 A.java:1,8:

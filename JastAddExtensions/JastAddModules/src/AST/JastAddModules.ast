@@ -14,7 +14,7 @@ ModuleImportDecl : ModuleMemberDecl ::=
 	ModuleImportType //this is own, or the empty string for a normal import
 	ImportModule:ModuleAccess
 	AsType
-	AsModule:ModuleAccess; //if no export, then set to the false access //TODO: Change ExportModule to AsModule, and add export marker similar to merge
+	AsModule:ModuleAccess; //if no export, then set to NullModuleAccess 
 	
 abstract ModuleImportType; //just a type to distinguish the method of import
 ModuleImportTypeNorm : ModuleImportType;

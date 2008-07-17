@@ -243,5 +243,5 @@ aspect ModuleCompilationUnit {
 		return null;
 	}
 	
-	
+
 }

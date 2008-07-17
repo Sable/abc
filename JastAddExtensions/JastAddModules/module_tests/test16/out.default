@@ -1,4 +1,7 @@
 ----------Module contents----------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
 ------B.java------
 module: module m2;;
 module CU : m2.module
@@ -36,6 +39,7 @@ module name : m3
 module m2;
 ------------------------
 ----------CU AST before insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 B.java package:
 module: m3, file: m3.module, base module: m3
 E.java package:a.b
@@ -45,6 +49,7 @@ module: m1, file: m1.module, base module: m1
 C.java package:
 module: m2, file: m2.module, base module: m2
 ----------CU AST after insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: m3, file: m3.module, base module: m3
 	C.java package:m3
 E.java package:a.b
@@ -54,19 +59,23 @@ module: m1, file: m1.module, base module: m1
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
-module m3, base:m3, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
 	
-module m1, base:m1, context:[], exported:true
+module m3, base:m3, context:[], exported:true, instantiated:false
 	
-module m2, base:m2, context:[], exported:true
+module m1, base:m1, context:[], exported:true, instantiated:false
+	
+module m2, base:m2, context:[], exported:true, instantiated:false
 	
 
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 export as alias2;
 import own m3 export as alias3;
+import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: m3, file: m3.module, base module: m3
 	C.java package:m3
 E.java package:a.b
@@ -80,14 +89,18 @@ module: m1.alias2, file: m2.module, base module: m2
 module: m1.alias3, file: m3.module, base module: m3
 	C.java package:m1.alias3
 ----------Module CU imports after import own----------
-module m3, base:m3, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
 	
-module m1, base:m1, context:[], exported:true
-	alias2:m1.alias2, alias3:m1.alias3
-module m2, base:m2, context:[], exported:true
+module m3, base:m3, context:[], exported:true, instantiated:false
 	
-module m1.alias2, base:m2, context:[m1], exported:true
+module m1, base:m1, context:[], exported:true, instantiated:true
+	alias2:m1.alias2, jastadd$framework:jastadd$framework, alias3:m1.alias3
+module m2, base:m2, context:[], exported:true, instantiated:false
 	
-module m1.alias3, base:m3, context:[m1], exported:true
-	
+module m1.alias2, base:m2, context:[m1], exported:true, instantiated:true
+	jastadd$framework:jastadd$framework
+module m1.alias3, base:m3, context:[m1], exported:true, instantiated:true
+	jastadd$framework:jastadd$framework
 
+----------CU iterator----------
+jastadd$framework.module, m3.module, E.java, D.java, m1.module, A.java, m2.module, m2.module, B.java, m3.module, C.java

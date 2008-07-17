@@ -80,6 +80,10 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
+				result = program.insertImplicitModuleImports();
+				if (!result) {
+					return false;
+				}
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					System.out
@@ -109,6 +113,10 @@ public class JastAddModules extends JastAdd {
 					System.out
 							.println("----------Module CU imports after import own----------");
 					System.out.println(program.toStringJAModuleCUImports());
+					
+					
+					System.out.println("----------CU iterator----------");
+					System.out.println(program.toStringCompilationUnitIterator());
 				}
 
 				// check if there are any duplicate module names (should never

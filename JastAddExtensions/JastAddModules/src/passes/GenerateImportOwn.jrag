@@ -58,6 +58,7 @@ aspect GenerateImportOwn {
 			ret.addInstanceContext(context);
 		}
 		ret.setIsExported(isExported);
+		ret.setModuleInstantiated(true);
 		
 		//process imports
 		ret = generateImportCUs(ret);
@@ -212,5 +213,14 @@ aspect GenerateImportOwn {
 		addImportedModule(alias, cu);
 	}
 	
+	//Is true if the module was used as an instance in the ModuleCompilationUnit
+	//If the module wasn't instantiated, it won't be returned by the compilationUnitIterator()
+	protected boolean ModuleCompilationUnit.moduleInstantiated = false;
+	public void ModuleCompilationUnit.setModuleInstantiated(boolean b) {
+		moduleInstantiated = b;
+	}
+	public boolean ModuleCompilationUnit.isModuleInstantiated() {
+		return moduleInstantiated;
+	}
 	
 }

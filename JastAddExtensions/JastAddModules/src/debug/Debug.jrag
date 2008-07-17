@@ -95,7 +95,8 @@ aspect Debug {
 		
 		s.append("module " + getModuleName() + 
 			", base:" + getBaseCU().getModuleName() + 
-			", context:" + contextString + ", exported:" + isExported + "\n");
+			", context:" + contextString + ", exported:" + isExported + 
+			", instantiated:" + moduleInstantiated + "\n");
 		s.append("\t");
 		
 		first = true;
@@ -111,6 +112,22 @@ aspect Debug {
 		StringBuffer s = new StringBuffer();
 		toStringJAModuleCUImports(s);
 		return s.toString();
+	}
+	
+	public String Program.toStringCompilationUnitIterator() {
+		String result = "";
+		boolean first = true;
+		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			if (cu.fromSource()) {
+				if (!first) {
+					result += ", ";
+				}
+				result += cu.relativeName();
+				first = false;
+			}
+		}
+		return result;
 	}
 
 }

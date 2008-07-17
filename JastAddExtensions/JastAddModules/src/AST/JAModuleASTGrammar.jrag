@@ -52,12 +52,14 @@ aspect JAModuleASTGrammar {
 	public boolean CompilationUnit.isGeneratedFromAST() {
 		return (this.origASTCompilationUnit != null);
 	}
+	
+	
+	public static final String Program.JASTADD_FRAMEWORK_MODULE = "jastadd$framework";	
 	/*
-	public final String Program.JASTADD_FRAMEWORK_MODULE = "jastadd$framework";	
 	//TODO: Check how to modify lookupFrameworkType astNode(), listNode() and optNode() in ASTGrammar.jrag
 	refine ASTGrammar eq CompilationUnit.lookupFrameworkType(String name) {
 		//get from framework module
-		TypeDecl result = lookupType(getHostProgram().JASTADD_FRAMEWORK_MODULE, name);
+		TypeDecl result = lookupType(Program.JASTADD_FRAMEWORK_MODULE, name);
 		if (result != null) {
 			return result;
 		} else if (getHostProgram().hasASTCompilationUnit() && getHostProgram().hasJAModules()) {

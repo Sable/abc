@@ -56,26 +56,46 @@ aspect JAModuleClasspath {
 		};
 	}
 	public Iterator ModuleCompilationUnit.compilationUnitIterator() {
-		return new Iterator() {
-			int index = 0;
-			boolean selfReturned = false;
-			public boolean hasNext() {
-				return index < getCompilationUnitList().getNumChild() || selfReturned == false;
-			}
-			public Object next() {
-				if (!hasNext()) {
-					throw new NoSuchElementException();
+		if (moduleInstantiated) {
+			return new Iterator() {
+				int index = 0;
+				boolean selfReturned = false;
+				public boolean hasNext() {
+					return index < getCompilationUnitList().getNumChild() || selfReturned == false;
 				}
-				if (selfReturned == false) {
-					selfReturned = true;
-					return ModuleCompilationUnit.this;
-				} else {
-					return getCompilationUnitList().getChild(index++);
+				public Object next() {
+					if (!hasNext()) {
+						throw new NoSuchElementException();
+					}
+					if (selfReturned == false) {
+						selfReturned = true;
+						return ModuleCompilationUnit.this;
+					} else {
+						return getCompilationUnitList().getChild(index++);
+					}
 				}
-			}
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+			};
+		} else { //if not instantiated, return module CU only but not the children
+			return new Iterator() {
+				boolean hasNext = true;
+				public boolean hasNext() {
+					return hasNext;
+				}
+				public Object next() {
+					if (hasNext) {
+						hasNext = false;
+						return ModuleCompilationUnit.this;
+					} else {
+						throw new NoSuchElementException();
+					}
+				}
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+			};
+		}
 	}
 }

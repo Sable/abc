@@ -1,4 +1,7 @@
 ----------Module contents----------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
 ------B.java------
 module: module M2;;
 module CU : M2.module
@@ -30,6 +33,7 @@ module name : M3
 module M3;
 ------------------------
 ----------CU AST before insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 B.java package:
 A.java package:
 module: M2, file: M2.module, base module: M2
@@ -37,6 +41,7 @@ module: M1, file: M1.module, base module: M1
 C.java package:
 module: M3, file: M3.module, base module: M3
 ----------CU AST after insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M1, file: M1.module, base module: M1
@@ -44,11 +49,13 @@ module: M1, file: M1.module, base module: M1
 module: M3, file: M3.module, base module: M3
 	C.java package:M3
 ----------Module CU imports before import own----------
-module M2, base:M2, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
 	
-module M1, base:M1, context:[], exported:true
+module M2, base:M2, context:[], exported:true, instantiated:false
 	
-module M3, base:M3, context:[], exported:true
+module M1, base:M1, context:[], exported:true, instantiated:false
+	
+module M3, base:M3, context:[], exported:true, instantiated:false
 	
 
 -------------Instance ModuleCompilationUnit------------
@@ -59,8 +66,10 @@ import own M2 as M2alias1;
 import own M2 as M2alias1;
 import own M2 as M23alias;
 import own M3 as M23alias;
+import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M1, file: M1.module, base module: M1
@@ -76,21 +85,25 @@ module: M1$M23alias, file: M2.module, base module: M2
 module: M1$M23alias, file: M3.module, base module: M3
 	C.java package:M1$M23alias
 ----------Module CU imports after import own----------
-module M2, base:M2, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
 	
-module M1, base:M1, context:[], exported:true
-	M2alias1:M1$M2alias1, M2:M2, M23alias:M1$M23alias
-module M3, base:M3, context:[], exported:true
+module M2, base:M2, context:[], exported:true, instantiated:true
+	jastadd$framework:jastadd$framework
+module M1, base:M1, context:[], exported:true, instantiated:true
+	M2alias1:M1$M2alias1, M2:M2, jastadd$framework:jastadd$framework, M23alias:M1$M23alias
+module M3, base:M3, context:[], exported:true, instantiated:false
 	
-module M1$M2alias1, base:M2, context:[M1], exported:false
-	
-module M1$M2alias1, base:M2, context:[M1], exported:false
-	
-module M1$M23alias, base:M2, context:[M1], exported:false
-	
-module M1$M23alias, base:M3, context:[M1], exported:false
-	
+module M1$M2alias1, base:M2, context:[M1], exported:false, instantiated:true
+	jastadd$framework:jastadd$framework
+module M1$M2alias1, base:M2, context:[M1], exported:false, instantiated:true
+	jastadd$framework:jastadd$framework
+module M1$M23alias, base:M2, context:[M1], exported:false, instantiated:true
+	jastadd$framework:jastadd$framework
+module M1$M23alias, base:M3, context:[M1], exported:false, instantiated:true
+	jastadd$framework:jastadd$framework
 
+----------CU iterator----------
+jastadd$framework.module, M2.module, B.java, M1.module, A.java, M3.module, M2.module, B.java, M2.module, B.java, M2.module, B.java, M3.module, C.java
 M1.module:1:
   Semantic Error: Ambiguous module name M2 in module M1
 M1.module:1:

@@ -1,0 +1,25 @@
+
+//Inserts implicit module imports to modules
+aspect InsertImplicit {
+
+	public boolean ASTNode.insertImplicitModuleImports() {
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).insertImplicitModuleImports();
+		}
+		return true;
+	}
+	public boolean CompilationUnit.insertImplicitModuleImports() {
+		return true;
+	}
+	public boolean ModuleCompilationUnit.insertImplicitModuleImports() {
+		if (getModuleName().compareTo(Program.JASTADD_FRAMEWORK_MODULE) != 0) {
+			ModuleImportDecl frameworkImport = new ModuleImportDecl(
+				new ModuleImportTypeNorm(),
+				new ModuleAccess(Program.JASTADD_FRAMEWORK_MODULE),
+				new AsTypeNone(),
+				new NullModuleAccess());
+			getModuleMemberDeclList().add(frameworkImport);
+		}
+		return true;
+	}
+}
