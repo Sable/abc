@@ -1,29 +1,29 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\test\test09\B.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\B.java------
 module: module M2;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test09\M2.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\M2.module
 module name : M2
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test09\A.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\A.java------
 module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test09\M1.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test09\M2.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\M2.module------
 module M2;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test09\M1.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\M1.module------
 module M1;
 import own M2 as none null;
 import own M3 as none null;
 merge M2, NonExistentModule as MergedM2M3;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test09\C.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\C.java------
 module: module M3;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test09\M3.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\M3.module
 module name : M3
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test09\M3.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test09\M3.module------
 module M3;
 ------------------------
 ----------CU AST before insert----------

@@ -1,50 +1,54 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\Y.jrag------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\Y.jrag------
 module: module NonExistentModule;;
 module CU : null
 module name : null
 ------------------------
 ------.------
 module: module M1;;
-Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test11\AST2.ast
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module
+Original AST file: d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\AST2.ast
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\A.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\A.java------
 module: module NonExistentModule;;
 module CU : null
 module name : null
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\X.jrag------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\X.jrag------
 module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\Opt.java------
-module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module
-module name : M1
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\Opt.java------
+module: module jastadd$framework;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module
+module name : jastadd$framework
 ------------------------
 ------.------
 module: module NonExistentModule;;
-Original AST file: d:\user\neil\jaworkspace\JastAddModules\test\test11\AST.ast
+Original AST file: d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\AST.ast
 module CU : null
 module name : null
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\M1.module------
 module M1;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\ASTNode.java------
-module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module
-module name : M1
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\ASTNode.java------
+module: module jastadd$framework;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module
+module name : jastadd$framework
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test11\List.java------
-module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test11\M1.module
-module name : M1
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\List.java------
+module: module jastadd$framework;;
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test11\jastadd$framework.module
+module name : jastadd$framework
 ------------------------
 ----------CU AST before insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 Y.jrag package:
 AST2.ast package:
 A.java package:
@@ -55,16 +59,19 @@ module: M1, file: M1.module, base module: M1
 ASTNode.java package:
 List.java package:
 ----------CU AST after insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+	Opt.java package:jastadd$framework
+	ASTNode.java package:jastadd$framework
+	List.java package:jastadd$framework
 Y.jrag package:
 A.java package:
 AST.ast package:
 module: M1, file: M1.module, base module: M1
 	AST2.ast package:M1
 	X.jrag package:M1
-	Opt.java package:M1
-	ASTNode.java package:M1
-	List.java package:M1
 ----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], exported:true
+	
 module M1, base:M1, context:[], exported:true
 	
 
@@ -72,16 +79,19 @@ module M1, base:M1, context:[], exported:true
 module M1;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+	Opt.java package:jastadd$framework
+	ASTNode.java package:jastadd$framework
+	List.java package:jastadd$framework
 Y.jrag package:
 A.java package:
 AST.ast package:
 module: M1, file: M1.module, base module: M1
 	AST2.ast package:M1
 	X.jrag package:M1
-	Opt.java package:M1
-	ASTNode.java package:M1
-	List.java package:M1
 ----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], exported:true
+	
 module M1, base:M1, context:[], exported:true
 	
 

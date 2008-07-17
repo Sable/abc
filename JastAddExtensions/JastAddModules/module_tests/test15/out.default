@@ -1,10 +1,10 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\test\test15\A.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test15\A.java------
 module: module m1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test15\m1.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test15\m1.module
 module name : m1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test15\m1.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test15\m1.module------
 module m1;
 ------------------------
 ----------CU AST before insert----------

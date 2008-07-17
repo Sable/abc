@@ -1,38 +1,38 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\B.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\B.java------
 module: module m2;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test16\m2.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\m2.module
 module name : m2
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\m3.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\m3.module------
 module m3;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\E.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\E.java------
 module: null;
 module CU : null
 module name : null
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\A.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\A.java------
 module: module m1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test16\m1.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\m1.module
 module name : m1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\D.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\D.java------
 module: null;
 module CU : null
 module name : null
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\m1.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\m1.module------
 module m1;
 import own m2 export as alias2;
 import own m3 export as alias3;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\C.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\C.java------
 module: module m3;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test16\m3.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\m3.module
 module name : m3
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test16\m2.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test16\m2.module------
 module m2;
 ------------------------
 ----------CU AST before insert----------

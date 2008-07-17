@@ -1,55 +1,55 @@
 ----------Module contents----------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\M4.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M4.module------
 module M4;
 import own M5 as none null;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\B.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\B.java------
 module: module M2;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M2.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M2.module
 module name : M2
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\E.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\E.java------
 module: module M5;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M5.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M5.module
 module name : M5
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\A.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\A.java------
 module: module M1;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M1.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M1.module
 module name : M1
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\M5.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M5.module------
 module M5;
 import  M6 as none null;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\D.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\D.java------
 module: module M4;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M4.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M4.module
 module name : M4
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\F.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\F.java------
 module: module M6;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M6.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M6.module
 module name : M6
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\M6.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M6.module------
 module M6;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\M2.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M2.module------
 module M2;
 import  M4 as none null;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\M1.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M1.module------
 module M1;
 import own M2 as none null;
 import own M3 as none null;
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\C.java------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\C.java------
 module: module M3;;
-module CU : d:\user\neil\jaworkspace\JastAddModules\test\test04\M3.module
+module CU : d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M3.module
 module name : M3
 ------------------------
-------d:\user\neil\jaworkspace\JastAddModules\test\test04\M3.module------
+------d:\user\neil\jaworkspace\JastAddModules\module_tests\test04\M3.module------
 module M3;
 import  M4 as none null;
 ------------------------
