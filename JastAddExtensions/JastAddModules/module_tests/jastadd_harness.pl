@@ -5,9 +5,18 @@ my $JASTADD_BASEDIR = "../";
 my $JASTADD_MODULES_BASEDIR = "../";
 my $TESTDIR = $JASTADD_MODULES_BASEDIR . "/test";
 
+sub trim($)
+{
+	my $string = shift;
+	$string =~ s/^\s+//;
+	$string =~ s/\s+$//;
+	return $string;
+}
+
+
 #clean class, out files
-system "rm $JASTADD_BASEDIR/test/*.class";
-system "rm $JASTADD_BASEDIR/test/*.out";
+system "rm $JASTADD_BASEDIR/test/*.class -f";
+system "rm $JASTADD_BASEDIR/test/*.out -f";
 
 #run tests
 for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
@@ -21,7 +30,7 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 	open OPTIONS , "< $JASTADD_BASEDIR/test/$test_name.options";
 	my $options = "";
 	while (my $line = <OPTIONS>) {
-		$line =~ /\s*(\S*)\s*/;
+		$line =~ trim($line);
 		$options .= " " . $1;
 	}
 
