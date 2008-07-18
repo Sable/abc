@@ -14,6 +14,10 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.ui.contexts.DebugContextEvent;
+import org.eclipse.debug.ui.contexts.IDebugContextListener;
+import org.eclipse.debug.ui.contexts.IDebugContextService;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaObject;
 import org.eclipse.jdt.debug.core.IJavaStackFrame;
@@ -24,6 +28,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ParameterDeclaration;
 
@@ -139,6 +144,8 @@ public class AttributeEvaluation {
 		return state;
 	}
 
+	private Exception contextSwitchException = null;
+	
 	/**
 	 * Evaluates the attribute.
 	 * 
@@ -179,9 +186,21 @@ public class AttributeEvaluation {
 						}
 
 					}
-					
+
+
 					try {
-						IRunnableWithProgress op = new IRunnableWithProgress() {
+
+						class RunMethodEvaluation implements IRunnableWithProgress, IDebugContextListener {
+							private IDebugContextService contextService;
+							RunMethodEvaluation() {
+								contextService = DebugUITools.getDebugContextManager().getContextService(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+								contextService.addDebugContextListener(this);
+								
+								shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+							}
+
+							private Boolean cancelDueToContextSwitch = false;
+
 							@Override
 							public void run(final IProgressMonitor monitor)	throws InvocationTargetException, InterruptedException {
 
@@ -190,14 +209,15 @@ public class AttributeEvaluation {
 									public void run() {
 										try {
 											IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
-											
+
 											// store the breakpoint state
 											Map<IBreakpoint, Boolean> stateRestore = new HashMap<IBreakpoint, Boolean>();
 											for (IBreakpoint breakpoint : breakpoints) {
 												stateRestore.put(breakpoint, breakpoint.isEnabled());
 												breakpoint.setEnabled(false);
 											}
-											
+
+											cancelDueToContextSwitch = false;
 											result = object.sendMessage(attribute.name(), attribute.descName(), args.toArray(new IJavaValue[0]), thread, null);
 
 											// restore the breakpoint state
@@ -216,19 +236,35 @@ public class AttributeEvaluation {
 
 								while (childThread.getState() != State.TERMINATED) {
 									Thread.sleep(100);
-									if (monitor.isCanceled()) {
-										childThread.stop();
+									if (monitor.isCanceled() || cancelDueToContextSwitch) {
+										if (cancelDueToContextSwitch) {
+											contextSwitchException = new Exception("Evaluation of attribute failed due to change of debugging context");
+										} else {
+											childThread.stop();
+										}
 										throw new InterruptedException();
 									}
-								}									
+								}
+								contextService.removeDebugContextListener(this);
 							}
 
-						};
+							@Override
+							public void debugContextChanged(DebugContextEvent event) {
+								cancelDueToContextSwitch = true;
+							}
+						}
+
+						IRunnableWithProgress op = new RunMethodEvaluation();
+
 						new ProgressMonitorDialog(shell).run(true, true, op);
 					} catch (InvocationTargetException e) {
-						AttributeUtils.recordError(e);
+						AttributeUtils.recordError(e, shell);
 						return false;
 					} catch (InterruptedException e) {
+						if (contextSwitchException != null) {
+							AttributeUtils.recordError(contextSwitchException, shell, "Evaluation could not complete");
+							contextSwitchException = null;
+						}
 						// User cancelled the progress.
 						return false;
 					}

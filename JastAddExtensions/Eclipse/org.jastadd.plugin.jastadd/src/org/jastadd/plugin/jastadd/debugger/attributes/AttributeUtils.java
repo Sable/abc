@@ -19,6 +19,7 @@ import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.zest.core.viewers.GraphViewer;
 import org.eclipse.zest.core.widgets.GraphItem;
@@ -170,17 +171,32 @@ public class AttributeUtils {
 	 * @param e
 	 */
 	public static void recordError(Exception e) {
-		recordError(e, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		if (activeWorkbenchWindow == null) {
+			recordError(e, null);
+		} else {
+			recordError(e, activeWorkbenchWindow.getShell());
+		}
+	}
+
+	/**
+	 * Records the exception to the eclipse log, and displays a message box.
+	 * @param e
+	 */
+	public static void recordError(Exception e, Shell shell) {
+		recordError(e, shell, "Error");
 	}
 	
 	/**
 	 * Records the exception to the eclipse log, and displays a message box.
 	 * @param e
 	 */
-	public static void recordError(Exception e, Shell shell) {
+	public static void recordError(Exception e, Shell shell, String title) {
 		ILog log = Platform.getLog(Activator.getInstance().getBundle());
-		Status status = new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e);
+		Status status = new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getMessage(), e);
 		log.log(status);
-		ErrorDialog.openError(shell, "Error", e.getLocalizedMessage(), status);
+		if (shell != null) {
+			ErrorDialog.openError(shell, title, e.getLocalizedMessage(), status);
+		}
 	}
 }
