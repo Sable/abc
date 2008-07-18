@@ -22,6 +22,9 @@ public interface Edge {
 	public class AttributeEdge implements Edge {
 
 		private ASTGraphNode parent;
+		/**
+		 * This class performs the evaluation of the attribute represented by this edge.
+		 */
 		private AttributeEvaluation eval;
 		private AttributeDecl decl;
 		
@@ -76,6 +79,7 @@ public interface Edge {
 		private IJavaValue child;
 		private ASTGraphNode parent;
 		private ASTChild astChild;
+		// Represents an array index
 		private String index = "";
 		
 		public ChildEdge(IJavaValue child, ASTGraphNode parent, ASTChild astChild) {

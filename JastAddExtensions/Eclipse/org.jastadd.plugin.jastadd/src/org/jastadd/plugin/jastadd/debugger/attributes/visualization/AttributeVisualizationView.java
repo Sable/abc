@@ -150,8 +150,11 @@ public class AttributeVisualizationView extends AbstractDebugView  implements ID
 		});
 	}
 
-
-
+	/**
+	 * The input for the viewer should _only_ be set through this method
+	 * @param root
+	 * @param thread
+	 */
 	public void setInput(IJavaVariable root, IJavaThread thread) {
 		Object current = graphViewer.getInput();
 
@@ -207,6 +210,7 @@ public class AttributeVisualizationView extends AbstractDebugView  implements ID
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				StructuredSelection selection = (StructuredSelection) event.getSelection();
+
 				if (selection.getFirstElement() instanceof ASTGraphNode) {
 					ASTGraphNode rootNode = (ASTGraphNode) selection.getFirstElement();
 
@@ -449,6 +453,7 @@ public class AttributeVisualizationView extends AbstractDebugView  implements ID
 
 		@Override
 		public IFigure getTooltip(Object entity) {
+			// We want a tooltip even if the node has no text
 			if (entity instanceof Edge) {
 				Edge edge = (Edge) entity;
 				Label toolTip = new Label();

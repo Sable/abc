@@ -20,7 +20,8 @@ import org.jastadd.plugin.jastadd.debugger.attributes.visualization.structure.Ed
 /**
  * An algorithm for laying out a forest of trees linked by attributes.
  * 
- * Currently only implements the methods required of it.
+ * Currently only implements the applyLayout method.
+ * 
  * In particular, does not implement methods dealing with adding
  * individual entities or relationships.
  * @author luke
@@ -55,7 +56,7 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 		// Calculate roots
 		Set<LayoutEntity> entitiesNotRoot = new HashSet<LayoutEntity>();
 
-		// Put rels into a sensible container
+		// Put the relationships into a sensible container
 		EntityRelationshipMap rels = new EntityRelationshipMap();
 		
 		for (LayoutRelationship rel : relationshipsToConsider) {
@@ -67,17 +68,20 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 			}
 		}
 		
+		// roots are defined as nodes with no child edges to them
 		List<LayoutEntity> roots = new LinkedList<LayoutEntity>(Arrays.asList(entitiesToLayout));
 		roots.removeAll(entitiesNotRoot);
 		
-		// Calculate width
+		// Calculate width in nodes
 		int totalNodeWidth = 0;
 		for (LayoutEntity root : roots) {
 			totalNodeWidth += getNodeWidth(root, rels, new HashSet<LayoutEntity>()).getWidth();
 		}
 		
+		// Calculate the width (in pixels) of a node
 		double nodeWidth = max(width / totalNodeWidth, 75);
 		
+		// Layout each tree rooted at root
 		double currentX = x;
 		for (LayoutEntity root : roots) {
 			// Calculate both the width and depth of the tree rooted at this node
@@ -101,6 +105,17 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 		return (x < y) ? y : x;
 	}
 	
+	/**
+	 * Lays out a single tree rooted at root, starting at x,y and in bounds nodeWidth/nodeHeight.
+	 * @param x
+	 * @param y
+	 * @param nodeWidth
+	 * @param nodeHeight
+	 * @param node
+	 * @param rels
+	 * @param seen
+	 * @param root
+	 */
 	private void layout(double x, double y, double nodeWidth, double nodeHeight, LayoutEntity node, EntityRelationshipMap rels, HashSet<LayoutEntity> seen, boolean root) {
 		if (seen.contains(node)) {
 			return;
@@ -125,8 +140,7 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 		
 		double newWidth = nodeWidth / numberOfChildren;
 		
-
-		
+		// Now recurse to layout each child
 		int i = 0;
 		for (LayoutRelationship child : children) {
 			double newX = x + i*newWidth;
@@ -178,6 +192,11 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 		
 	}
 	
+	/**
+	 * Container to ease the use of the entity-relationship mapping.
+	 * @author luke
+	 *
+	 */
 	public class EntityRelationshipMap extends HashMap<LayoutEntity, List<LayoutRelationship>> {
 		public LayoutRelationship put(LayoutEntity key, LayoutRelationship value) {
 			if (containsKey(key)) {

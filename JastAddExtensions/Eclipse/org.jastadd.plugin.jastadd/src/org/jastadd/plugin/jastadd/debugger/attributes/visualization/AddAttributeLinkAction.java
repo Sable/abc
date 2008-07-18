@@ -36,13 +36,16 @@ public class AddAttributeLinkAction extends Action {
 			if (view.autoLayout()) {
 				viewer.applyLayout();
 			} else {
+				// If we haven't applied the layout, we want to move these children from their default position
+				// to just under the current node
 				Set<ASTGraphNode> nodes = new LinkedHashSet<ASTGraphNode>();
 				Map<IJavaValue, ASTGraphNode> graph = view.getGraph();
 				IJavaValue value = edge.getValue();
+				// if the node actually exists on the graph
 				if (graph.containsKey(value)) {
 
 					nodes.add(graph.get(value));
-
+					
 					AttributeUtils.relayoutNewChildren(nodes, viewer, node);
 				}
 			}
