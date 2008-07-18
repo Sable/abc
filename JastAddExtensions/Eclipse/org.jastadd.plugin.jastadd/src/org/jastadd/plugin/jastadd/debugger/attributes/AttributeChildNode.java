@@ -3,10 +3,7 @@ package org.jastadd.plugin.jastadd.debugger.attributes;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.jdt.debug.core.IJavaThread;
@@ -16,7 +13,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
@@ -35,6 +31,14 @@ public class AttributeChildNode extends AttributeNode {
 		this.child = child;
 	}
 
+	public ASTChild getChild() {
+		return child;
+	}
+	
+	public IJavaVariable getVariable() {
+		return variable;
+	}
+	
 	@Override
 	public IJavaValue getCurrent() {
 		try {
@@ -52,16 +56,14 @@ public class AttributeChildNode extends AttributeNode {
 					} else {
 						// We were told optional had a value, but in memory it does not, throw an exception
 						Exception e = new Exception("Variables in memory do not match model.");
-						ILog log = Platform.getLog(Activator.getInstance().getBundle());
-						log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+						AttributeUtils.recordError(e);
 						return  (IJavaValue) variable.getValue();	
 					}
 				}				
 			}
 			return (IJavaValue) variable.getValue();
 		} catch (DebugException e) {
-			ILog log = Platform.getLog(Activator.getInstance().getBundle());
-			log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+			AttributeUtils.recordError(e);
 			return null;
 		}
 	}
@@ -77,8 +79,7 @@ public class AttributeChildNode extends AttributeNode {
 					return "Optional has no value";
 				}
 			} catch (DebugException e) {
-				ILog log = Platform.getLog(Activator.getInstance().getBundle());
-				log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+				AttributeUtils.recordError(e);
 			}
 		}
 		return super.getValueString();
@@ -86,24 +87,35 @@ public class AttributeChildNode extends AttributeNode {
 
 	@Override
 	public String getNameString() {
-		return child.toString();
+		if (child != null) {
+			return child.toString();
+		} else {
+			return getTypeName(); 
+		}
 	}
 
 	@Override
-	public List<AttributeNode> getChildren(IJavaThread thread, Shell shell) { 
+	public List<AttributeNode> getChildren(IJavaThread thread, Shell shell) {
+		return getChildren(getCurrent(), thread, shell, true);
+	}
+
+	@Override
+	public List<AttributeNode> getAttributeChildren(IJavaValue current, IJavaThread thread, Shell shell) {
+		return getChildren(current, thread, shell, false);
+	}
+	
+	private List<AttributeNode> getChildren(IJavaValue current, IJavaThread thread, Shell shell, boolean getAtts) { 
 		if(child instanceof ASTElementChild) {
 			// A ::= B;
 
 			// then we treat this as a normal "value"
-			return super.getChildren(thread, shell);
-
 		}
 		else if(child instanceof ASTListChild) {
 			// A ::= B*
 
 			LinkedList<AttributeNode> children = new LinkedList<AttributeNode>();
 			try {
-				IVariable listVariable = getVariable("children", getCurrent().getVariables());
+				IVariable listVariable = getVariable("children", current.getVariables());
 				if (listVariable != null) {
 					final IVariable[] listVariableChildren = listVariable.getValue().getVariables();
 
@@ -121,8 +133,7 @@ public class AttributeChildNode extends AttributeNode {
 								try {
 									return (IJavaValue) listVariableChildren[j].getValue();
 								} catch (DebugException e) {
-									ILog log = Platform.getLog(Activator.getInstance().getBundle());
-									log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+									AttributeUtils.recordError(e);
 									return null;
 								}
 							}
@@ -147,8 +158,7 @@ public class AttributeChildNode extends AttributeNode {
 					}
 				}
 			} catch (DebugException e) {
-				ILog log = Platform.getLog(Activator.getInstance().getBundle());
-				log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+				AttributeUtils.recordError(e);
 			}			
 			return children;
 		}
@@ -156,19 +166,25 @@ public class AttributeChildNode extends AttributeNode {
 			// A ::= [B]
 
 			// An optional node only has the children of the value of the node
-			return super.getChildren(thread, shell);
 		}
 		else if(child instanceof ASTTokenChild) {
 			// A ::= <ID:String>
 			
 			// token might be a value, in which case we need to check for children of the _value_
-			return super.getChildren(thread, shell);
 		}
 
-		// Fall through to the default method
-		return super.getChildren(thread, shell);
+		if (getAtts) {
+			return super.getChildren(thread, shell);
+		} else {
+			try {
+				return super.getAttributeChildren(current, thread, shell);
+			} catch (CoreException e) {
+				AttributeUtils.recordError(e);
+				return null;
+			}
+		}
 	}
-
+	
 	@Override
 	public Image getImage() {
 		ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");

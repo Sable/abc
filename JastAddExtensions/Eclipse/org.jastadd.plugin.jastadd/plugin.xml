@@ -103,6 +103,10 @@
 	</extension>
  <extension
        point="org.eclipse.ui.views">
+    <category
+          id="org.jastadd.plugin.jastadd.debug"
+          name="JastAdd Debug">
+    </category>
     <view
           allowMultiple="false"
           category="org.jastadd.plugin.jastadd.debug"
@@ -110,16 +114,26 @@
           id="org.jastadd.plugin.jastadd.debugger.attributes.AttributeView"
           name="Attribute View">
     </view>
-    <category
-          id="org.jastadd.plugin.jastadd.debug"
-          name="JastAdd Debug">
-    </category>
+    <view
+          allowMultiple="false"
+          category="org.jastadd.plugin.jastadd.debug"
+          class="org.jastadd.plugin.jastadd.debugger.attributes.visualization.AttributeVisualizationView"
+          id="org.jastadd.plugin.jastadd.debugger.attributes.visualization.AttributeVisualizationView"
+          name="Attribute Visualization View">
+    </view>
  </extension>
  <extension
        point="org.eclipse.ui.popupMenus">
     <viewerContribution
           id="org.jastadd.plugin.jastadd.debug.contextmenu"
           targetID="org.eclipse.debug.ui.VariableView">
+       <action
+             class="org.jastadd.plugin.jastadd.debugger.attributes.visualization.ShowAttributeVisualizationAction"
+             id="org.jastadd.plugin.jastadd.debugger.attributes.visualization.ShowAttributeVisualizationAction"
+             label="Show Attribute Visualization"
+             menubarPath="additions"
+             tooltip="Show the visualization view for a particular node.">
+       </action>
        <action
              class="org.jastadd.plugin.jastadd.debugger.attributes.ShowAttributeAction"
              id="org.jastadd.plugin.jastadd.debugger.attributes.ShowAttributeAction"

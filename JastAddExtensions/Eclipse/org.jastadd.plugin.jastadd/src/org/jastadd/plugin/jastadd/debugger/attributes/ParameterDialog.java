@@ -6,10 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -23,7 +19,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.NonPrimitiveTypeException;
 
 /**
@@ -118,8 +113,6 @@ public class ParameterDialog extends Dialog {
 				} catch (NumberFormatException ex) {
 					return false;
 				} catch (NonPrimitiveTypeException e) {
-					ILog log = Platform.getLog(Activator.getInstance().getBundle());
-					log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
 					return false;
 				}
 			}

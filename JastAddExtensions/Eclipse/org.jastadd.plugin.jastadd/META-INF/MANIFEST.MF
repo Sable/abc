@@ -7,7 +7,9 @@ Bundle-Activator: org.jastadd.plugin.jastadd.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.jastadd.plugin.jastaddj,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ org.eclipse.zest.core;bundle-version="1.0.0",
+ org.eclipse.zest.layouts;bundle-version="1.0.0"
 Eclipse-LazyStart: true
 Bundle-ClassPath: libs/beaver.jar,
  libs/JFlex.jar,

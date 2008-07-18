@@ -29,7 +29,7 @@ import org.jastadd.plugin.jastadd.generated.AST.ParameterDeclaration;
  * @author luke
  *
  */
-public class AttributeEvaluationNode extends AttributeNode {
+public class AttributeEvaluation {
 
 	public enum AttributeState {
 		/**
@@ -56,28 +56,26 @@ public class AttributeEvaluationNode extends AttributeNode {
 		 */
 		NOT_CALCULABLE
 	}
-	
+
 	private AttributeDecl attribute;
-	private AttributeNode parent;
+	private IJavaValue parent;
 	private AttributeState state = AttributeState.EMPTY;
 	private IJavaValue result;
 	private IJavaThread thread;
 	private Shell shell;
 
-	public AttributeEvaluationNode(AttributeNode parent, AttributeDecl attribute, IJavaThread thread, Shell shell) {
+	public AttributeEvaluation(IJavaValue parent, AttributeDecl attribute, IJavaThread thread, Shell shell) {
 		this.attribute = attribute;
 		this.parent = parent;
 		this.thread = thread;
-		
-		IJavaValue parentValue = parent.getCurrent();
 
 		// We want to discover the initial state of the attribute
 		try {
-			if (alreadyRunning(parentValue)) {
+			if (alreadyRunning(parent)) {
 				state = AttributeState.BEING_CALCULATED;
 			} else {
 				// Scan the local variables of the parent, to see if this attribute has been pre-calculated
-				for (IVariable child : parentValue.getVariables()) {
+				for (IVariable child : parent.getVariables()) {
 					if (child.getName().startsWith(attribute.name() + "$computed")) {
 						state = child.getValue().getValueString().equals("true") ? AttributeState.CALCULATED : AttributeState.EMPTY;
 					}
@@ -86,7 +84,7 @@ public class AttributeEvaluationNode extends AttributeNode {
 					}
 				}
 			}
-			
+
 			// Check that each parameter is a primitive type, otherwise set the state to be uncomputable, for now.
 			// (unless it has already been calculated)
 			for (ParameterDeclaration param : attribute.getParameterList()){
@@ -95,8 +93,8 @@ public class AttributeEvaluationNode extends AttributeNode {
 					state = (state == AttributeState.CALCULATED) ? AttributeState.PRE_CALCULATED : AttributeState.NOT_CALCULABLE;
 				}
 			}
-			
-			
+
+
 		} catch (DebugException e) {
 			AttributeUtils.recordError(e);
 		}
@@ -132,6 +130,10 @@ public class AttributeEvaluationNode extends AttributeNode {
 		}
 	}
 
+	public AttributeState getState() {
+		return state;
+	}
+
 	/**
 	 * Evaluates the attribute.
 	 * 
@@ -139,38 +141,38 @@ public class AttributeEvaluationNode extends AttributeNode {
 	 * 
 	 * Will not be evaluated if we're already executing this method
 	 */
-	public void eval() {
+	public boolean eval() {
 		try {
 			// Ensure we're not trying to invoke an already running method
 			if (state.equals(AttributeState.EMPTY) || state.equals(AttributeState.CALCULATED)) {
-				IJavaValue current = parent.getCurrent();
+				IJavaValue current = parent;
 				if (current != null && current instanceof IJavaObject) {
 					final IJavaObject object = (IJavaObject) current;
-					
+
 					final ArrayList<IJavaValue> args = new ArrayList<IJavaValue>();
-					
+
 					// Deal with arguments
 					if (attribute.getNumParameter() > 0) {
 
 						IJavaDebugTarget javaDebugTarget = ((IJavaDebugTarget) object.getDebugTarget());
-						
+
 						ParameterDialog dialog = new ParameterDialog(shell, "Enter the parameters for evaluating this attribute", javaDebugTarget);
 						for (ParameterDeclaration param : attribute.getParameterList()) {
 							dialog.addField(param.name(), param.type().name(), "", false);
 						}
 						if (dialog.open() == IDialogConstants.CANCEL_ID) {
 							// Cancel execution
-							return;
+							return false;
 						}
 
 						for (ParameterDeclaration param : attribute.getParameterList()) {
 							String stringValue = dialog.getValue(param.name());
-							
+
 							IJavaValue arg = newPrimitiveValue(javaDebugTarget, stringValue, param.type().name());
 
 							args.add(arg);
 						}
-						
+
 					}
 					
 					try {
@@ -203,15 +205,16 @@ public class AttributeEvaluationNode extends AttributeNode {
 						new ProgressMonitorDialog(shell).run(true, true, op);
 					} catch (InvocationTargetException e) {
 						AttributeUtils.recordError(e);
-						return;
+						return false;
 					} catch (InterruptedException e) {
 						// User cancelled the progress.
-						return;
+						return false;
 					}
-					
-					
-					
+
+
+
 					state = AttributeState.CALCULATED;
+					return true;
 				} else {
 					// error, we've tried to do this on a primitive
 					Exception e = new Exception("Primitive variables can't execute attributes.");
@@ -222,7 +225,8 @@ public class AttributeEvaluationNode extends AttributeNode {
 			}
 		} catch (NonPrimitiveTypeException e) {
 			AttributeUtils.recordError(e);
-		}		
+		}
+		return false;
 	}
 
 	/**
@@ -254,31 +258,25 @@ public class AttributeEvaluationNode extends AttributeNode {
 		} else if (type.equals("char")) {
 			return target.newValue(value.charAt(0));
 		}
-		
+
 		throw new NonPrimitiveTypeException(type);
 	}
-	
+
 	protected static class NonPrimitiveTypeException extends Exception {
 		private static final long serialVersionUID = -8114268132764373368L;
-		
+
 		public NonPrimitiveTypeException(String type) {
 			super(type + " is not a primitive or a string and therefore cannot be instantiated.");
 		}
-		
+
 	}
 
-	@Override
-	public AttributeNode getParent() {
-		return parent;
-	}
-
-	@Override
 	public String getValueString() {
 		switch (state) {
 		case CALCULATED:
-			return super.getValueString();
+			return result.toString();
 		case PRE_CALCULATED:
-			return super.getValueString();
+			return result.toString();
 		case EMPTY:
 			return "Unevaluated, double click to calculate";
 		case BEING_CALCULATED:
@@ -288,8 +286,7 @@ public class AttributeEvaluationNode extends AttributeNode {
 		}
 		return "Invalid state";
 	}
-	
-	@Override
+
 	public String getNameString() {
 		return attribute.name();
 	}

@@ -1,17 +1,16 @@
 package org.jastadd.plugin.jastadd.debugger.attributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.jdt.debug.core.IJavaObject;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
@@ -19,7 +18,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastadd.Model;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
@@ -28,7 +26,7 @@ import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 public abstract class AttributeNode {
-	
+
 	/**
 	 * Gets the java value for this node.
 	 * 
@@ -36,8 +34,8 @@ public abstract class AttributeNode {
 	 * @return
 	 */
 	public abstract IJavaValue getCurrent();
-	
-	
+
+
 	/**
 	 * Produces all children of this node on the tree.
 	 * 
@@ -47,50 +45,26 @@ public abstract class AttributeNode {
 	public List<AttributeNode> getChildren(IJavaThread thread, Shell shell) {
 		// Store current variable to ensure consistency when getting children.
 		IJavaValue current = getCurrent();
-		
+
 		List<AttributeNode> children = new LinkedList<AttributeNode>();
-		
+
 		if (current != null) {
 			try {
-				
+
 				// Get the nodes children
-				children.addAll(getAttributeChildren(current));
-				
-				List<AttributeDecl> atts = getAttributes(current);
-				
+				children.addAll(getAttributeChildrenDirect(current, thread, shell));
+
+				List<AttributeDecl> atts = AttributeUtils.getAttributes(current);
+
 				for (AttributeDecl attribute : atts) {
 					children.add(new AttributeEvaluationNode(this, attribute, thread, shell));
 				}
-				
+
 			} catch (CoreException e) {
-				ILog log = Platform.getLog(Activator.getInstance().getBundle());
-				log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+				AttributeUtils.recordError(e);
 			}
 		}
 		return children;
-	}
-	
-	/**
-	 * Gets the attributes associated with this node
-	 * @param parentValue
-	 * @return
-	 * @throws CoreException
-	 */
-	protected List<AttributeDecl> getAttributes(IJavaValue parentValue) throws CoreException {
-		List<AttributeDecl> atts = new ArrayList<AttributeDecl>();
-		
-		// Get the launch attributes of the launch associated with this variable
-		IProject project = AttributeUtils.getProject(parentValue);
-
-		Model model = getModel(project);
-		
-		if (model != null && parentValue.getJavaType() != null) {
-			synchronized(model) {
-				atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
-			}
-		}
-		
-		return atts;
 	}
 
 	/**
@@ -99,52 +73,92 @@ public abstract class AttributeNode {
 	 * @return
 	 * @throws CoreException
 	 */
-	protected List<AttributeNode> getAttributeChildren(IJavaValue parent) throws CoreException {
+	public List<AttributeNode> getAttributeChildren(IJavaValue parent, IJavaThread thread, Shell shell) throws CoreException {
+		return getAttributeChildrenDirect(parent, thread, shell);
+	}
+
+	/**
+	 * Gets the attribute children of this node.
+	 * @param parent
+	 * @return
+	 * @throws CoreException
+	 */
+	private List<AttributeNode> getAttributeChildrenDirect(final IJavaValue parent, final IJavaThread thread, final Shell shell) throws CoreException {
 		List<AttributeNode> children = new LinkedList<AttributeNode>();
-		
-		for (IVariable variable : parent.getVariables()) {
-			if (variable.getName().equals("children")) {
-				
-				// Get the children
-				IVariable[] listVariables = variable.getValue().getVariables();
-				
-				// Get the launch attributes of the launch associated with this variable
-				IProject project = AttributeUtils.getProject(parent);
 
-				Model model = getModel(project);
-				
-				if (model != null) {
-					synchronized(model) {
-						List<ASTChild> astChildren = model.lookupASTChildren(project, parent.getReferenceTypeName());
-						
-						
-						// This is to deal with the fact "ASTTokenChild" objects don't appear in the children
-						// list. Thus, we need to keep a count of where we are in both the ASTChildren and the variable children
-						int variablePos = 0;
-						for (int astPos = 0; astPos < astChildren.size(); astPos++) {
-							ASTChild child = astChildren.get(astPos);
-							if (child instanceof ASTTokenChild) {
+		// Get the launch attributes of the launch associated with this variable
+		IProject project = AttributeUtils.getProject(parent);
 
-								// If this is a token, the value is stored in memory at token$value
-								IVariable childVariable = getVariable(child.name() + "$value", parent.getVariables());
-								if (childVariable != null) {
-									children.add(new AttributeChildNode((IJavaVariable) childVariable, child, this));
-								}
-								
-							} else {
-								children.add(new AttributeChildNode((IJavaVariable) listVariables[variablePos], child, this));
-								variablePos++;
+		IVariable childrenVariable = AttributeUtils.getVariable("children", parent.getVariables());
+
+		if (childrenVariable == null) {
+			if (parent.getJavaType() != null && AttributeUtils.isSubType("java.lang.Iterable", parent.getJavaType().getName(), project)) {
+				if (parent instanceof IJavaObject) {
+					IJavaObject object = (IJavaObject) parent;
+					int i = 0;
+					final AttributeNode parentAtt = this;
+					for (IJavaValue childValue : new DebugIterable(object, thread)) {
+						final IJavaValue thisValue = childValue;
+						final int j = i;
+						children.add(new AttributeNode() {
+
+							@Override
+							public IJavaValue getCurrent() {
+								return thisValue;
 							}
+
+							@Override
+							public String getNameString() {
+								return "[" + j + "]";
+							}
+
+							@Override
+							public AttributeNode getParent() {
+								return parentAtt;
+							}
+							
+						});
+						i++;
+						
+					}
+				}
+			}
+		} else {
+
+			// Get the children
+			IVariable[] listVariables = childrenVariable.getValue().getVariables();
+
+			Model model = getModel(project);
+
+			if (model != null) {
+				synchronized(model) {
+					List<ASTChild> astChildren = model.lookupASTChildren(project, parent.getReferenceTypeName());
+
+					// This is to deal with the fact "ASTTokenChild" objects don't appear in the children
+					// list. Thus, we need to keep a count of where we are in both the ASTChildren and the variable children
+					int variablePos = 0;
+					for (int astPos = 0; astPos < astChildren.size(); astPos++) {
+						ASTChild child = astChildren.get(astPos);
+						if (child instanceof ASTTokenChild) {
+
+							// If this is a token, the value is stored in memory at token$value
+							IVariable childVariable = getVariable(child.name() + "$value", parent.getVariables());
+							if (childVariable != null) {
+								children.add(new AttributeChildNode((IJavaVariable) childVariable, child, this));
+							}
+
+						} else {
+							children.add(new AttributeChildNode((IJavaVariable) listVariables[variablePos], child, this));
+							variablePos++;
 						}
 					}
 				}
-				break;
 			}
 		}
 		return children;
 	}
-	
-	
+
+
 	/**
 	 * Utility method for getting the model based on the project.
 	 * 
@@ -169,14 +183,34 @@ public abstract class AttributeNode {
 		ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/genericvariable_obj.gif");
 		return imgDesc.createImage();
 	}
-	
+
 	public abstract AttributeNode getParent();
-	
+
 	/**
 	 * @return the value string to display to the user
 	 */
 	public String getValueString() {
 		return getCurrent().toString();
+	}
+
+	/**
+	 * @return the value string to display to the user
+	 */
+	public String getTypeName() {
+		IJavaValue current = getCurrent();
+		try {
+			if (current != null && current.getJavaType() != null && current.getJavaType().getName() != null) {
+				String name = current.getJavaType().getName();
+				if (name.lastIndexOf("$") != -1) {
+					return name.substring(name.lastIndexOf("$") + 1);
+				} else if (name.lastIndexOf(".") != -1) {
+					return name.substring(name.lastIndexOf(".") + 1);
+				}
+			}
+		} catch (DebugException e) {
+			AttributeUtils.recordError(e);
+		}
+		return getValueString();
 	}
 
 	/**
@@ -195,20 +229,62 @@ public abstract class AttributeNode {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return the name string to display to the user
 	 */
 	public abstract String getNameString();
-	
+
+	private Map<AttributeDecl, AttributeEvaluationNode> attributeEvaluationNodes = new HashMap<AttributeDecl, AttributeEvaluationNode>();
+
+	public void addAttributeNode(AttributeDecl decl, AttributeEvaluationNode evaluationNode) {
+		attributeEvaluationNodes.put(decl, evaluationNode);
+	}
+
+	public Map<AttributeDecl, AttributeEvaluationNode> getAttributeEvaluationNodes() {
+		return attributeEvaluationNodes;
+	}
+
+	private List<AttributeNode> nodes = new LinkedList<AttributeNode>();
+
+	public List<AttributeNode> getChildren() {
+		return nodes;
+	}
+
+	/**
+	 * Expands the node, by adding all the children of the node
+	 * to the list of nodes.
+	 * @param thread
+	 * @param shell
+	 */
+	public void expand(IJavaThread thread, Shell shell) {
+		try {
+			nodes = getAttributeChildren(getCurrent(), thread, shell);
+		} catch (CoreException e) {
+			AttributeUtils.recordError(e);
+		}
+		expanded = true;
+	}
+
+	public void contract() {
+		nodes = new ArrayList<AttributeNode>();
+		expanded = false;
+	}
+
+	private boolean expanded = false;
+
+	public boolean expanded() {
+		return expanded;
+	}
+
 	public static class AttributeRoot extends AttributeNode {
 
 		private IJavaValue root;
-		
+
 		public AttributeRoot(IJavaValue root) {
 			this.root = root;
 		}
-		
+
 		@Override
 		public IJavaValue getCurrent() {
 			return root;
@@ -223,7 +299,7 @@ public abstract class AttributeNode {
 		public String getNameString() {
 			return "root";
 		}
-		
+
 	}
 
 }

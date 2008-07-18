@@ -1,4 +1,4 @@
-package org.jastadd.plugin.jastadd.debugger.attributes;
+package org.jastadd.plugin.jastadd.debugger.attributes.visualization;
 
 import org.eclipse.debug.internal.ui.views.variables.VariablesView;
 import org.eclipse.debug.internal.ui.views.variables.details.IDetailPaneContainer;
@@ -10,9 +10,11 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.jastadd.plugin.jastadd.debugger.attributes.AttributeUtils;
 
-public class ShowAttributeAction implements IViewActionDelegate {
+public class ShowAttributeVisualizationAction implements IViewActionDelegate {
 
 	private IViewPart view;
 	
@@ -35,9 +37,15 @@ public class ShowAttributeAction implements IViewActionDelegate {
 					IJavaThread thread = (IJavaThread) ((IJavaStackFrame) ((VariablesView) view).getViewer().getInput()).getThread();
 
 					// We should be able to do this anywhere across the workspace
-					AttributeView attributeView = (AttributeView) view.getSite().getPage().showView("org.jastadd.plugin.jastadd.debugger.attributes.AttributeView");
+					AttributeVisualizationView attributeView = (AttributeVisualizationView) view.getSite().getPage().showView("org.jastadd.plugin.jastadd.debugger.attributes.visualization.AttributeVisualizationView");
 
 					attributeView.setInput(variable, thread);
+					
+					IWorkbenchPage page = attributeView.getSite().getPage();
+					if (!page.isPageZoomed()) {
+						page.toggleZoom(page.getReference(attributeView));
+					}
+					
 				} catch (PartInitException e) {
 					AttributeUtils.recordError(e);
 				}

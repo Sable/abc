@@ -220,7 +220,7 @@ public class Model extends JastAddJModel {
 		return childList;
 	}
 
-	private TypeDecl getTypeDecl(IProject project, String packageName) {
+	public TypeDecl getTypeDecl(IProject project, String packageName) {
 		IProgram p = getProgram(project);
 		if (!(p instanceof Program))
 			return null;
@@ -469,7 +469,11 @@ public class Model extends JastAddJModel {
 			if(fileName != null)
 				changedFileNames.add(fileName);
 			// remove files already built and the current document from work list
-			program.flushSourceFiles(changedFileNames);
+			try {
+				program.flushSourceFiles(changedFileNames);
+			} catch (java.lang.Exception e) {
+				System.out.println("Error flushing caches");
+			}
 			if(fileName != null)
 				program.files().remove(fileName);
 	

@@ -1,9 +1,5 @@
 package org.jastadd.plugin.jastadd.debugger.attributes;
 
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.ui.AbstractDebugView;
 import org.eclipse.debug.ui.DebugUITools;
@@ -33,7 +29,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
-import org.jastadd.plugin.jastadd.Activator;
 import org.jastadd.plugin.jastaddj.builder.ui.UIUtil;
 
 /**
@@ -92,8 +87,7 @@ public class AttributeView extends AbstractDebugView  implements IDebugContextLi
 
 				setContentDescription("Evaluating variable \"" + root.getName() + "\" (" + root.getValue().getReferenceTypeName() + ")");
 			} catch (DebugException e) {
-				ILog log = Platform.getLog(Activator.getInstance().getBundle());
-				log.log(new Status(IStatus.ERROR, Activator.JASTADD_PLUGIN_ID, e.getLocalizedMessage(), e));
+				AttributeUtils.recordError(e);
 				setContentDescription("No element selected.");
 			}
 		} else {
