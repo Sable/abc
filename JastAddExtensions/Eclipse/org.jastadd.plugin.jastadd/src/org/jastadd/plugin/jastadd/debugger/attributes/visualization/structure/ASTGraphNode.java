@@ -167,7 +167,11 @@ public class ASTGraphNode {
 			IVariable parentVariable = AttributeUtils.getVariable("parent", value.getVariables());
 			if (parentVariable != null) {
 				IJavaValue parentValue = (IJavaValue) parentVariable.getValue();
-				edges.add(new Edge.ParentEdge(this, parentValue, decl));
+				if (attributeEdges.containsKey(decl)) {
+					edges.add(attributeEdges.get(decl));
+				} else {
+					edges.add(new Edge.ParentEdge(this, parentValue, decl));
+				}
 			}
 
 		} catch (DebugException e1) {
