@@ -60,16 +60,19 @@ aspect MakeGenericMethod {
 		if(mayDefFinal())
 			throw new RefactoringException("code may assign to a final field");
 		// create declaration of method
+		AdjustmentTable table = new AdjustmentTable();
 		MethodDecl md = createMethodDecl(tvars, static_ctxt, name, vis, parms, 
-				retvar, rettype, blk.uncaughtThrows(), localVars, blk);
+				retvar, rettype, blk.uncaughtThrows(), localVars, blk, table);
 		// insert method invocation and body into type declaration
 		hostType().insertMethod(md, hostblock, pos, parms, retvar, rettype);
+		// make adjustments
+		table.adjust();
 	}
 	
 	private MethodDecl Block.createMethodDecl(List<TypeVariable> tvars, 
 				boolean static_ctxt, String name, String visibility,
 				Collection parms, Opt retvar, TypeDecl rettype, Set exns, 
-				Collection localVariables, Block blk) 
+				Collection localVariables, Block blk, AdjustmentTable table) 
 			throws RefactoringException {
 		// modifiers: visibility, perhaps with a "static"
 		Modifiers mod = new Modifiers();
@@ -95,7 +98,7 @@ aspect MakeGenericMethod {
 				throw new RefactoringException("cannot access type "+exn);
 			throwdecls.add(exnacc);
 		}
-		// body
+		// construct the body
 		int i; Iterator iter;
 		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
 			blk.insertStmt(i, (Stmt)iter.next());
@@ -105,12 +108,28 @@ aspect MakeGenericMethod {
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
 			blk.insertStmt(blk.getNumStmt(), stmt);
 		}
+		// lock type accesses
+		blk.lockTypeAccesses(table);
 		if(tvars == null)
 			return new MethodDecl(mod, acc, name, parmdecls, 
 					throwdecls, new Opt(blk));
 		else
 			return new GenericMethodDecl(mod, acc, name, parmdecls,
 					throwdecls, new Opt(blk), tvars);
+	}
+	
+	/* when locking type accesses, we shouldn't lock accesses that resolve to
+	 * type variables: if the type variable referred to was a type parameter of
+	 * the surrounding method, there will be no way to refer to it in the extracted
+	 * method, but that isn't really the problem, since the extracted method will
+	 * have its own copies of these type variables, and it is the _copies_ that we
+	 * should refer to
+	 * 
+	 * I really don't like this workaround... 
+	 */
+	refine ExtractBlock public void TypeAccess.lockTypeAccesses(AdjustmentTable table) {
+		if(!decl().isTypeVariable())
+			table.add(this);
 	}
 	
 }

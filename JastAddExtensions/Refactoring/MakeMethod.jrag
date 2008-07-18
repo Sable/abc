@@ -136,10 +136,13 @@ aspect MakeMethod {
 		if(mayDefFinal())
 			throw new RefactoringException("code may assign to a final field");
 		// create declaration of method
+		AdjustmentTable table = new AdjustmentTable();
 		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, retvar, rettype, 
-				blk.uncaughtThrows(), localVars, blk);
+				blk.uncaughtThrows(), localVars, blk, table);
 		// insert method invocation and body into type declaration
 		hostType().insertMethod(md, hostblock, pos, parms, retvar, rettype);
+		// make adjustments
+		table.adjust();
 	}
 	
 	private boolean Block.mayDefFinal() {	
@@ -182,7 +185,8 @@ aspect MakeMethod {
 	
 	private MethodDecl Block.createMethodDecl(boolean static_ctxt, String name, String visibility,
 			Collection parms, Opt retvar, TypeDecl rettype, 
-			Set exns, Collection localVariables, Block blk) throws RefactoringException {
+			Set exns, Collection localVariables, Block blk, AdjustmentTable table) 
+			throws RefactoringException {
 		// modifiers: visibility, perhaps with a "static"
 		Modifiers mod = new Modifiers();
 		if(!visibility.equals("default"))
@@ -207,7 +211,7 @@ aspect MakeMethod {
 				throw new RefactoringException("cannot access type "+exn);
 			throwdecls.add(exnacc);
 		}
-		// body
+		// construct the body
 		int i; Iterator iter;
 		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
 			blk.insertStmt(i, (Stmt)iter.next());
@@ -217,6 +221,8 @@ aspect MakeMethod {
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
 			blk.insertStmt(blk.getNumStmt(), stmt);
 		}
+		// lock type accesses
+		blk.lockTypeAccesses(table);
 		return new MethodDecl(mod, acc, name, parmdecls, throwdecls, new Opt(blk));
 	}
 		
