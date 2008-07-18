@@ -76,7 +76,7 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 			totalNodeWidth += getNodeWidth(root, rels, new HashSet<LayoutEntity>()).getWidth();
 		}
 		
-		double nodeWidth = width / totalNodeWidth;
+		double nodeWidth = max(width / totalNodeWidth, 75);
 		
 		double currentX = x;
 		for (LayoutEntity root : roots) {
@@ -88,9 +88,10 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 			double thisHeight = max((height - 75) / (widthDepth.getDepth() - 1), 75);
 			
 			// layout this tree
-			layout(currentX, y, nodeWidth* thisWidth, thisHeight, root, rels, new HashSet<LayoutEntity>(), true);
+			double thisPixelWidth = nodeWidth * thisWidth;
+			layout(currentX, y, thisPixelWidth, thisHeight, root, rels, new HashSet<LayoutEntity>(), true);
 			
-			currentX += nodeWidth* thisWidth;
+			currentX += thisPixelWidth;
 		}
 		
 		running = false;
@@ -123,6 +124,8 @@ public class AttributeGraphLayout implements LayoutAlgorithm {
 		int numberOfChildren = children.size();
 		
 		double newWidth = nodeWidth / numberOfChildren;
+		
+
 		
 		int i = 0;
 		for (LayoutRelationship child : children) {
