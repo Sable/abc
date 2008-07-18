@@ -33,6 +33,11 @@ import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
  */
 public class ASTGraphNode {
 
+	// Purely here to provide a marker for the pretend parent attribute
+	private AttributeDecl decl = new AttributeDecl() {
+
+	};
+
 	private IJavaValue value;
 	private org.jastadd.plugin.jastadd.generated.AST.ASTChild child;
 
@@ -157,6 +162,17 @@ public class ASTGraphNode {
 	 */
 	public List<AttributeEdge> getAllAttributeEdges(IJavaThread thread, Shell shell) {
 		List<AttributeEdge> edges = new LinkedList<AttributeEdge>();
+
+		try {
+			IVariable parentVariable = AttributeUtils.getVariable("parent", value.getVariables());
+			if (parentVariable != null) {
+				IJavaValue parentValue = (IJavaValue) parentVariable.getValue();
+				edges.add(new Edge.ParentEdge(this, parentValue, decl));
+			}
+
+		} catch (DebugException e1) {
+			AttributeUtils.recordError(e1);
+		}
 
 		try {
 			IJavaValue current = getValue();

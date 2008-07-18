@@ -19,6 +19,61 @@ public interface Edge {
 	
 	public ASTGraphNode getParent();
 	
+	public class ParentEdge extends AttributeEdge {
+
+		private ASTGraphNode parent;
+		private IJavaValue value;
+		private AttributeDecl decl;
+		
+		
+		public ParentEdge(ASTGraphNode parent, IJavaValue value, AttributeDecl decl) {
+			this.parent = parent;
+			this.value = value;
+			this.decl = decl;
+		}
+		
+		@Override
+		public IJavaValue getValue() {
+			return value;
+		}
+
+		public AttributeDecl getDecl() {
+			return decl;
+		}
+		
+		@Override
+		public ASTGraphNode getParent() {
+			return parent;
+		}
+		
+		@Override
+		public String toString() {
+			return "parent";
+		}
+
+		public String getNameString() {
+			return "parent";
+		}
+		
+		public String getValueString() {
+			return value.toString();
+		}
+		
+		public boolean eval() {
+			return true;
+		}
+		
+		public AttributeState getState() {
+			return AttributeState.PRE_CALCULATED;
+		}
+		
+		public void close() {
+			parent.removeAttributeEdge(decl);
+		}
+		
+	}
+	
+	
 	public class AttributeEdge implements Edge {
 
 		private ASTGraphNode parent;
@@ -27,6 +82,9 @@ public interface Edge {
 		 */
 		private AttributeEvaluation eval;
 		private AttributeDecl decl;
+		
+		private AttributeEdge() {
+		}
 		
 		public AttributeEdge(ASTGraphNode parent, AttributeDecl decl, IJavaThread thread, Shell shell) {
 			this.parent = parent;
