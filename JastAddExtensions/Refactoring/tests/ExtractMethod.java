@@ -60,7 +60,7 @@ public abstract class ExtractMethod extends TestCase {
         			assertEquals(res, prog+"\n");
         		}
         	} catch(FileNotFoundException fnfe) {
-        		fail(name+" was supposed to fail but yielded result");
+        		fail(name+" was supposed to fail but yielded result: "+prog);
         	}
         } catch(IOException ioe) {
         	fail("unable to read from file "+ioe);

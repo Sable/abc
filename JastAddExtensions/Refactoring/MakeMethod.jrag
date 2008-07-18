@@ -76,7 +76,28 @@ aspect MakeMethod {
 		return parms;
 	}
 	
+	// all branch statements have a body of some kind
+	public abstract Stmt BranchTargetStmt.getStmt();
+	public Stmt SwitchStmt.getStmt() {
+		return getBlock();
+	}
+	
+	// we need to check whether the block to be turned into a method returns a result
+	syn boolean Stmt.returnsValue() = false;
+	eq Block.returnsValue() {
+		for(int i=0;i<getNumStmt();++i)
+			if(getStmt(i).returnsValue())
+				return true;
+		return false;
+	}
+	eq BranchTargetStmt.returnsValue() = getStmt().returnsValue();
+	eq IfStmt.returnsValue() 
+		= getThen().returnsValue() || hasElse() && getElse().returnsValue();
+	eq ReturnStmt.returnsValue() = hasResult();
+	
+	// expose useful attributes
 	inh TypeDecl Block.hostType();
+	inh TypeDecl Block.typeVoid();
 	
 	public void Block.createMethod(String name, String vis, int pos, Block blk, boolean static_ctxt) 
 			throws RefactoringException {
@@ -84,17 +105,41 @@ aspect MakeMethod {
 		Collection parms = blk.inputParameters();      // parameters of extracted method
 		Collection localVars = blk.extraLocalVars();   // local variables of extracted method
 		Collection outparms = blk.outputParameters();
-		Opt ret = new Opt();                       // return value of extracted method
-		if(outparms.size() == 1)
-			ret = new Opt(((ASTNode)outparms.iterator().next()).fullCopy());
+		/* there are two different issues having to do with return values of the extracted method:
+		 *   1) the method could alter a local variable whose new value should be
+		 *   	returned and assigned to the variable
+		 *   2) the method might return a result, which should in turn be returned
+		 *   	by the method it was extracted from (since we have checked for
+		 *      domination already, there will be a _single_ return statement in
+		 *      this case, and all control paths will reach this statement) 
+		 */
+		TypeDecl rettype = typeVoid();    // return type of created method
+		// dealing with case 1)
+		Opt retvar = new Opt();           // variable returned by extracted method
+		if(outparms.size() == 1) {
+			Variable outparm = (Variable)outparms.iterator().next();
+			retvar = new Opt(((ASTNode)outparm).fullCopy());
+			rettype = outparm.type();
+		}
 		if(outparms.size() > 1)
 			throw new RefactoringException("ambiguous return value");
+		// dealing with case 2)
+		if(blk.returnsValue()) {
+			if(!retvar.isEmpty())
+				throw new RefactoringException("ambiguous return value");
+			BodyDecl bd = hostBodyDecl();
+			if(!(bd instanceof MethodDecl))
+				throw new RefactoringException("couldn't determine return type of extracted method");
+			rettype = ((MethodDecl)bd).type();
+		}
+		// one last thing to guard against when extracting from a constructor
 		if(mayDefFinal())
 			throw new RefactoringException("code may assign to a final field");
 		// create declaration of method
-		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, ret, blk.uncaughtThrows(), localVars, blk);
+		MethodDecl md = createMethodDecl(static_ctxt, name, vis, parms, retvar, rettype, 
+				blk.uncaughtThrows(), localVars, blk);
 		// insert method invocation and body into type declaration
-		hostType().insertMethod(md, hostblock, pos, parms, ret);
+		hostType().insertMethod(md, hostblock, pos, parms, retvar, rettype);
 	}
 	
 	private boolean Block.mayDefFinal() {	
@@ -105,7 +150,8 @@ aspect MakeMethod {
 		return false;
 	}
 	
-	private void TypeDecl.insertMethod(MethodDecl md, Block host, int index, Collection parms, Opt ret) 
+	private void TypeDecl.insertMethod(MethodDecl md, Block host, int index, 
+				Collection parms, Opt retvar, TypeDecl rettype) 
 			throws RefactoringException { 
 		// prepare the invocation statement
 		Stmt invocation;
@@ -114,22 +160,28 @@ aspect MakeMethod {
 			args.add(new VarAccess(((LocalDeclaration)iter.next()).getID()));
 		MethodAccess ma = new MethodAccess(md.getID(), args);
 		// add it as an expression statement, or with an assignment
-		if(ret.isEmpty())
-			invocation = new ExprStmt(ma);
-		else {
-			Variable v = (Variable)ret.getChild(0);
+		if(retvar.isEmpty()) {
+			// need to add a return if the extracted block returns something itself
+			if(rettype != typeVoid())
+				invocation = new ReturnStmt(ma);
+			else
+				invocation = new ExprStmt(ma);
+		} else {
+			Variable v = (Variable)retvar.getChild(0);
 			invocation = new ExprStmt(new AssignSimpleExpr(new VarAccess(v.name()), ma));
 		}
 		// insert the method
 		/* it is crucial that this happens first, since the invocation references
 		 * the newly created method, which would make addMethod reject the refactoring */
 		addMethod(md, false, false, false);
+		// unlock the return type access of the method
+		((TypeAccess)md.getTypeAccess()).unlockSafely();
 		// insert the invocation at the position where blk used to be
 		host.setStmt(invocation, index);
 	}
 	
 	private MethodDecl Block.createMethodDecl(boolean static_ctxt, String name, String visibility,
-			Collection parms, Opt ret, 
+			Collection parms, Opt retvar, TypeDecl rettype, 
 			Set exns, Collection localVariables, Block blk) throws RefactoringException {
 		// modifiers: visibility, perhaps with a "static"
 		Modifiers mod = new Modifiers();
@@ -138,13 +190,10 @@ aspect MakeMethod {
 		if(static_ctxt)
 			mod.addModifier(new Modifier("static"));
 		// type access: either "void" or the type of the variable to be assigned to
-		Access acc;
-		if(ret.isEmpty()) {
-			acc = new TypeAccess("void");
-		} else {
-			Variable decl = (Variable)ret.getChild(0);
-			acc = (Access)decl.getTypeAccess().fullCopy(); 
-		}
+		TypeAccess acc = new TypeAccess("void");
+		// lock onto the correct type; we can leave the name as "void", since the
+		// unlocking mechanism will compute a type access anyway
+		acc.lockOn(rettype);
 		// parameter declarations
 		List parmdecls = new List();
 		for(Iterator i=parms.iterator();i.hasNext();)
@@ -162,8 +211,8 @@ aspect MakeMethod {
 		int i; Iterator iter;
 		for(iter=localVariables.iterator(), i=0;iter.hasNext();++i)
 			blk.insertStmt(i, (Stmt)iter.next());
-		if(!ret.isEmpty()) {
-			Variable decl = (Variable)ret.getChild(0);
+		if(!retvar.isEmpty()) {
+			Variable decl = (Variable)retvar.getChild(0);
 			String varname = decl.name();
 			ReturnStmt stmt = new ReturnStmt(new VarAccess(varname));
 			blk.insertStmt(blk.getNumStmt(), stmt);
