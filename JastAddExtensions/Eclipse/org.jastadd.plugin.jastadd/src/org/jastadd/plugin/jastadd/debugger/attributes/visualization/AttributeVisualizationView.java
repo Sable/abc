@@ -601,7 +601,59 @@ public class AttributeVisualizationView extends AbstractDebugView  implements ID
 		if (graphViewer != null) {
 			ISelection selection = graphViewer.getSelection();
 			if (selection instanceof StructuredSelection) {
-				Object element = ((StructuredSelection) selection).getFirstElement();
+				StructuredSelection structuredSelection = (StructuredSelection) selection;
+
+
+				if (structuredSelection.size() > 1) {
+
+					final List<ExpandContractAction> expandActions = new LinkedList<ExpandContractAction>();
+					final List<ExpandContractAction> contractActions = new LinkedList<ExpandContractAction>();
+
+					for (Object object : structuredSelection.toList()) {
+						if (object instanceof ASTGraphNode) {
+							ASTGraphNode node = (ASTGraphNode) object;
+							if (node != rootNode){
+								if (node.expanded()) {
+									contractActions.add(new ExpandContractAction(node, graphViewer, thread, getSite().getShell(), this));
+								} else {
+									expandActions.add(new ExpandContractAction(node, graphViewer, thread, getSite().getShell(), this));
+								}
+							}
+						}
+					}
+
+					// We only implement the multiple expand all if there's more than one ASTGraphNode
+					if (expandActions.size() > 1) {
+						menu.add(new Action() {
+							{
+								setText("Expand All");
+							}
+							@Override
+							public void run() {
+								for (ExpandContractAction action : expandActions) {
+									action.run();
+								}
+							}
+						});
+					}
+
+					// We only implement the multiple contract all if there's more than one ASTGraphNode
+					if (contractActions.size() > 1) {
+						menu.add(new Action() {
+							{
+								setText("Contract All");
+							}
+							@Override
+							public void run() {
+								for (ExpandContractAction action : contractActions) {
+									action.run();
+								}
+							}
+						});
+					}
+				}
+
+				Object element = structuredSelection.getFirstElement();
 				if (element instanceof ASTGraphNode) {
 
 					final ASTGraphNode node = (ASTGraphNode) element;
