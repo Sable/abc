@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluationNode.NonPrimitiveTypeException;
+import org.jastadd.plugin.jastadd.debugger.attributes.AttributeEvaluation.NonPrimitiveTypeException;
 
 /**
  * Displays a list of parameters that are required for a particular method,
@@ -108,7 +108,7 @@ public class ParameterDialog extends Dialog {
 		validators.add(new Validator() {
 			public boolean validate() {
 				try {
-					AttributeEvaluationNode.newPrimitiveValue(target, text.getText(), field.type); //$NON-NLS-1$
+					AttributeEvaluation.newPrimitiveValue(target, text.getText(), field.type); //$NON-NLS-1$
 					return true;
 				} catch (NumberFormatException ex) {
 					return false;
