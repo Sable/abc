@@ -6,6 +6,8 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.jdt.debug.core.IJavaObject;
+import org.eclipse.jdt.debug.core.IJavaPrimitiveValue;
 import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.debug.core.IJavaValue;
 import org.eclipse.jdt.debug.core.IJavaVariable;
@@ -34,11 +36,11 @@ public class AttributeChildNode extends AttributeNode {
 	public ASTChild getChild() {
 		return child;
 	}
-	
+
 	public IJavaVariable getVariable() {
 		return variable;
 	}
-	
+
 	@Override
 	public IJavaValue getCurrent() {
 		try {
@@ -103,7 +105,7 @@ public class AttributeChildNode extends AttributeNode {
 	public List<AttributeNode> getAttributeChildren(IJavaValue current, IJavaThread thread, Shell shell) {
 		return getChildren(current, thread, shell, false);
 	}
-	
+
 	private List<AttributeNode> getChildren(IJavaValue current, IJavaThread thread, Shell shell, boolean getAtts) { 
 		if(child instanceof ASTElementChild) {
 			// A ::= B;
@@ -121,40 +123,52 @@ public class AttributeChildNode extends AttributeNode {
 
 					final AttributeNode parent = this;
 
-					/*
-					 * We iterate over each child of the current ListChild 
-					 */
-					for (int i = 0; i < listVariableChildren.length; i++) {
-						final int j = i;
-						children.add(new AttributeNode() {
+					if (current instanceof IJavaObject) {
 
-							@Override
-							public IJavaValue getCurrent() {
-								try {
-									return (IJavaValue) listVariableChildren[j].getValue();
-								} catch (DebugException e) {
-									AttributeUtils.recordError(e);
-									return null;
-								}
+						// Since the array in memory doesn't always reflect the number of children,
+						// we have to execute "getNumChildren" to find out how many we actually iterate over
+						IJavaObject object = (IJavaObject) current;
+						IJavaValue intNumberOfChildren = object.sendMessage("getNumChild", "()I", new IJavaValue[0], thread, null);
+
+						if (intNumberOfChildren instanceof IJavaPrimitiveValue) {
+							int numberOfChildren = ((IJavaPrimitiveValue) intNumberOfChildren).getIntValue();
+
+							/*
+							 * We iterate over each child of the current ListChild 
+							 */
+							for (int i = 0; i < numberOfChildren; i++) {
+								final int j = i;
+								children.add(new AttributeNode() {
+
+									@Override
+									public IJavaValue getCurrent() {
+										try {
+											return (IJavaValue) listVariableChildren[j].getValue();
+										} catch (DebugException e) {
+											AttributeUtils.recordError(e);
+											return null;
+										}
+									}
+
+									@Override
+									public String getNameString() {
+										return child.name();
+									}
+
+									@Override
+									public AttributeNode getParent() {
+										return parent;
+									}
+
+									@Override
+									public Image getImage() {
+										ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
+										return imgDesc.createImage();		
+									}
+
+								});
 							}
-
-							@Override
-							public String getNameString() {
-								return child.name();
-							}
-
-							@Override
-							public AttributeNode getParent() {
-								return parent;
-							}
-
-							@Override
-							public Image getImage() {
-								ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
-								return imgDesc.createImage();		
-							}
-
-						});
+						}
 					}
 				}
 			} catch (DebugException e) {
@@ -169,7 +183,7 @@ public class AttributeChildNode extends AttributeNode {
 		}
 		else if(child instanceof ASTTokenChild) {
 			// A ::= <ID:String>
-			
+
 			// token might be a value, in which case we need to check for children of the _value_
 		}
 
@@ -184,7 +198,7 @@ public class AttributeChildNode extends AttributeNode {
 			}
 		}
 	}
-	
+
 	@Override
 	public Image getImage() {
 		ImageDescriptor imgDesc = AbstractUIPlugin.imageDescriptorFromPlugin("org.jastadd.plugin.jastadd", "$nl$/icons/obj16/localvariable_obj.gif");
