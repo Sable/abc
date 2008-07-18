@@ -3,9 +3,14 @@ package org.jastadd.plugin.jastadd.debugger.attributes;
 import java.lang.Thread.State;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
@@ -184,8 +189,25 @@ public class AttributeEvaluation {
 									@Override
 									public void run() {
 										try {
+											IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
+											
+											// store the breakpoint state
+											Map<IBreakpoint, Boolean> stateRestore = new HashMap<IBreakpoint, Boolean>();
+											for (IBreakpoint breakpoint : breakpoints) {
+												stateRestore.put(breakpoint, breakpoint.isEnabled());
+												breakpoint.setEnabled(false);
+											}
+											
 											result = object.sendMessage(attribute.name(), attribute.descName(), args.toArray(new IJavaValue[0]), thread, null);
-										} catch (DebugException e) {
+
+											// restore the breakpoint state
+											for (IBreakpoint breakpoint : breakpoints) {
+												// if it's been manually re-enabled, since we disabled it, we respect that
+												if (!breakpoint.isEnabled()) {
+													breakpoint.setEnabled(stateRestore.get(breakpoint));	
+												}
+											}
+										} catch (CoreException e) {
 											AttributeUtils.recordError(e);
 										}
 									}
