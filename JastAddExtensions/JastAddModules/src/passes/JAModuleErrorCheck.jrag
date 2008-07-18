@@ -110,6 +110,9 @@ aspect JAModuleErrorCheck {
 			if (member instanceof ModuleImportDecl) {
 				ModuleImportDecl importDecl = (ModuleImportDecl) member;
 				ModuleCompilationUnit importedCU = getHostProgram().lookupModuleCUNoTransform(importDecl.getImportModule());
+				if (importedCU == null) { //when the imported module does not exist
+					continue;
+				}
 				Collection newVisited = new LinkedList<ModuleCompilationUnit>(visited);
 				newVisited.add(this);
 				noCycles = importedCU.checkModuleCycles(newVisited);

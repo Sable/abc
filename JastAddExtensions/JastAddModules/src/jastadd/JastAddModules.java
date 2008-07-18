@@ -25,8 +25,7 @@ public class JastAddModules extends JastAdd {
 	}
 
 	// needed to change this, since module CU insertion has to be done before
-	// the initial errorcheck
-	// due to module qualified names (e.g. m1.Type)
+	// the initial errorcheck due to module qualified names (e.g. m1.Type)
 	@Override
 	public boolean process(String[] args, BytecodeReader reader,
 			JavaParser parser) {
@@ -179,10 +178,6 @@ public class JastAddModules extends JastAdd {
 		if (!result)
 			return false;
 
-		// flush program cache to get rid of old bindings
-		// TODO: Check if this is enough or if flushCaches is needed
-		// program.flushCaches();
-
 		jastAdd.generate();
 		return true;
 	}
@@ -206,8 +201,7 @@ public class JastAddModules extends JastAdd {
 		super.initOptions();
 		Options options = program.options();
 		// specifies the module that is going to be used to instantiate the
-		// generated
-		// package names
+		// generated package names
 		options.addKeyValueOption(INSTANCE_MODULES_OPTION);
 		options.addKeyOption(DEBUG_OPTION);
 	}
