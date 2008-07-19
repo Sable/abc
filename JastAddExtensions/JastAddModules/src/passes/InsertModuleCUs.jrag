@@ -33,6 +33,8 @@ aspect InsertModuleCUs {
 				//flush to remove old cached info //NOTE: THIS IS NEEDED, BUT THE GODFUCKING SONOFABITCH REWRITES ARE TRIGGERED BECAUSE OF THIS
 				//childCU.flushCaches(); 
 				//Do a fullCopy instead of a cache flush to avoid the rewrites
+				//NOTE: Needing to know not to trigger rewrites here is a VERY BAD SIGN
+				//of a huge flaw in rewrites.
 				moduleCU.getCompilationUnitList().addChild(childCU.fullCopy()); 
 			} else {
 				i++;
