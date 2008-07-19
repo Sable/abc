@@ -1,3 +1,6 @@
+//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
+//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
+//SPAWNED REWRITES
 
 aspect Debug {
 
@@ -50,6 +53,8 @@ aspect Debug {
 			getChild(i).printJAModuleCUAST(level);
 		}
 	}
+	//STANDING NOTE: DO NOT go down below CompilationUnit to avoid
+	//the goddamn rewrites
 	public void CompilationUnit.printJAModuleCUAST(int level) {
 		if (!fromSource()) {
 			return;
@@ -58,10 +63,6 @@ aspect Debug {
 			System.out.print("\t");
 		}
 		System.out.println(this.relativeName() + " package:" + packageName());
-		
-		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).printJAModuleCUAST(level);
-		}
 	}
 	public void ModuleCompilationUnit.printJAModuleCUAST(int level) {
 		for (int i = 0; i < level; i++) {
@@ -80,6 +81,9 @@ aspect Debug {
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).toStringJAModuleCUImports(s);
 		}
+	}
+	//STANDING NOTE: Cut off at CompilationUnit to avoid the f-ing rewrites
+	public void CompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
 	}
 	public void ModuleCompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
 		String contextString = "[";

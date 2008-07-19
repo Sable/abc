@@ -1,4 +1,3 @@
-
 aspect JAModuleLookupType {
 	refine LookupType eq Program.lookupType(String packageName, String typeName) {
 		addPrimitiveTypes();

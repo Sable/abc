@@ -1,3 +1,6 @@
+//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
+//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
+//SPAWNED REWRITES
 package jastadd;
 
 import java.util.Collection;

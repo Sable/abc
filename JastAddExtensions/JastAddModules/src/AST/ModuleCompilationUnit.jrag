@@ -1,4 +1,3 @@
-
 aspect ModuleCompilationUnit {
 
 	//adapted from ASTGrammar.jrag
@@ -43,7 +42,9 @@ aspect ModuleCompilationUnit {
 	}
 	
 	//may be too expensive to cache 
-	syn lazy ModuleCompilationUnit ASTNode.lookupModuleCUNoTransform(ModuleAccess access) {
+	//NOTE: Keep this non-lazy, as this is called both before and after
+	//InsertModuleCUs 
+	syn ModuleCompilationUnit ASTNode.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (access == null) {
 			return null;
 		}
@@ -56,10 +57,10 @@ aspect ModuleCompilationUnit {
 		}
 		return ret;
 	}
-	syn lazy ModuleCompilationUnit CompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
+	syn ModuleCompilationUnit CompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
 		return null;
 	}
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
+	syn ModuleCompilationUnit ModuleCompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (access == null) {
 			return null;
 		}
@@ -72,7 +73,7 @@ aspect ModuleCompilationUnit {
 		}
 		return ret;
 	}
-	syn lazy ModuleCompilationUnit ModuleDecl.lookupModuleCUNoTransform(ModuleAccess access) {
+	syn ModuleCompilationUnit ModuleDecl.lookupModuleCUNoTransform(ModuleAccess access) {
 		if (getModuleAccess().getID().compareTo(access.getID()) == 0) {
 			return getModuleCompilationUnit();
 		} else {

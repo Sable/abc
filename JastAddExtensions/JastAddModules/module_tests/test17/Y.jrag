@@ -1,5 +1,5 @@
 module m2;
 aspect Y {
-	public void Type.g() {
+	public void m3.Type.g() {
 	}
 }

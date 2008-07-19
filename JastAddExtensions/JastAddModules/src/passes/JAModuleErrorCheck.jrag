@@ -1,4 +1,6 @@
-
+//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
+//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
+//SPAWNED REWRITES
 aspect JAModuleErrorCheck {
 	//dependent on Java1.4Frontend/ErrorCheck.CompilationUnit.errors/warnings
 	//adapted from abc-ja-exts/CheckModuleErrors.jrag
@@ -48,6 +50,17 @@ aspect JAModuleErrorCheck {
 			getChild(i).checkModuleErrorsPass1();
 		}
   	}
+  	//STANDING NOTE: Cut off errorcheck at CompilationUnit/ModuleCompilationUnit children
+  	//so that the rewrites are not triggered
+  	public void CompilationUnit.checkModuleErrorsPass1() {
+  		checkModuleDecls();
+  		checkModulePackageDecls();
+  		checkModuleCycles();
+
+		if (getModuleDecl() != null) {
+			getModuleDecl().checkModuleErrorsPass1();  	
+		}
+  	}
   	
   	//CU module access lookup checks 
   	public void ASTNode.checkModuleDecls() {}
@@ -76,6 +89,8 @@ aspect JAModuleErrorCheck {
 			getChild(i).checkDuplicateModuleName();
 		}
 	}
+	//STANDING NOTE: Cut off at compilation unit to avoid the goddamn rewrites
+	public void CompilationUnit.checkDuplicateModuleName() {}
 	public void ModuleCompilationUnit.checkDuplicateModuleName() {
 		if (getHostProgram().moduleNames.contains(this.getModuleName())) {
 			getModuleDecl().error("Duplicate module name: " + this.getModuleName());
@@ -83,7 +98,7 @@ aspect JAModuleErrorCheck {
 		super.checkDuplicateModuleName();
 	}
 	
-	//TODO: Cyclic imports
+	//Cyclic imports
 	public void ASTNode.checkModuleCycles() {}
 	public void ModuleCompilationUnit.checkModuleCycles() {
 		checkModuleCycles(new LinkedList<ModuleCompilationUnit>());

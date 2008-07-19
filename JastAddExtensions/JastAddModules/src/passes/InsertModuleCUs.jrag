@@ -1,3 +1,6 @@
+//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
+//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
+//SPAWNED REWRITES
 
 //a "rewrite" pass done once all the module CUs are collected. 
 //Module CUs are inserted above the CUs that belong to it
@@ -6,6 +9,7 @@
 //in a later pass.
 aspect InsertModuleCUs {
 	
+	//TODO: Can this be changed into a Program rewrite? Or would the parser trigger stupid rewrites?
 	public boolean Program.insertModuleCUs() {
 		List<CompilationUnit> childList = getCompilationUnitList(); //bad, relies on the program child to be the CU list
 		int i = 0;
@@ -26,8 +30,10 @@ aspect InsertModuleCUs {
 				CompilationUnit childCU = (CompilationUnit) child;
 				ModuleCompilationUnit moduleCU = childCU.lookupModuleCUNoTransform(); 
 				childList.removeChild(i); //remove must be here, since the parent node of childCU must not be overwritten
-				childCU.flushCaches(); //flush to remove old cached info
-				moduleCU.getCompilationUnitList().addChild(childCU); 
+				//flush to remove old cached info //NOTE: THIS IS NEEDED, BUT THE GODFUCKING SONOFABITCH REWRITES ARE TRIGGERED BECAUSE OF THIS
+				//childCU.flushCaches(); 
+				//Do a fullCopy instead of a cache flush to avoid the rewrites
+				moduleCU.getCompilationUnitList().addChild(childCU.fullCopy()); 
 			} else {
 				i++;
 				System.out.println("Unexpected program child type: " + child.getClass());

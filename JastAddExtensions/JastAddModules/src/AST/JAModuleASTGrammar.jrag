@@ -55,7 +55,6 @@ aspect JAModuleASTGrammar {
 	
 	
 	public static final String Program.JASTADD_FRAMEWORK_MODULE = "jastadd$framework";	
-	/*
 	//TODO: Check how to modify lookupFrameworkType astNode(), listNode() and optNode() in ASTGrammar.jrag
 	refine ASTGrammar eq CompilationUnit.lookupFrameworkType(String name) {
 		TypeDecl result = null;
@@ -103,5 +102,4 @@ aspect JAModuleASTGrammar {
 		}
 		return false;
 	}
-	*/
 }

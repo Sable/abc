@@ -1,4 +1,3 @@
-
 aspect ModulePackageNames {
 	refine QualifiedNames eq CompilationUnit.packageName() {
 		if (getModuleCompilationUnit() == null) {
