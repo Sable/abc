@@ -80,7 +80,7 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
-				result = program.insertImplicitModuleImports();
+				result = program.inserJAFrameworkModuleImport();
 				if (!result) {
 					return false;
 				}
@@ -99,6 +99,15 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
+				//flush the program cache to take the newly generated modules into consideration
+				//for JAModuleClassPath.Program.modulePackages()
+				program.flushCache();
+				
+				result = program.insertModulePackageImports();
+				if (!result) {
+					return false;
+				}
+
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					System.out
@@ -112,6 +121,8 @@ public class JastAddModules extends JastAdd {
 					System.out.print(msg);
 					System.out.print(program.toStringJAModuleCUImports());
 					
+					System.out.println("----------CU imports after import own----------\n");
+					System.out.print(program.toStringCompilationUnitImports());
 					
 					System.out.print("----------CU iterator----------\n");
 					System.out.print(program.toStringCompilationUnitIterator() + "\n");

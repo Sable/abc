@@ -151,5 +151,27 @@ aspect Debug {
 		}
 		return result;
 	}
+	
+	public StringBuffer Program.toStringCompilationUnitImports() {
+		return toStringCompilationUnitImports(new StringBuffer());
+	}
+	public StringBuffer Program.toStringCompilationUnitImports(StringBuffer s) {
+		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			cu.toStringCompilationUnitImports(s);
+		}
+		return s;
+	}
+	public StringBuffer CompilationUnit.toStringCompilationUnitImports(StringBuffer s) {
+		s.append("CompilationUnit: " + this.relativeName()+ "\n");
+		s.append("Module : " + this.getModuleDecl() + "\n");
+		for (ImportDecl importDecl : getImportDeclList()) {
+			importDecl.toString(s);
+		}
+		return s;
+	}
+	public StringBuffer ModuleCompilationUnit.toStringCompilationUnitImports(StringBuffer s) {
+		return s;
+	}
 
 }

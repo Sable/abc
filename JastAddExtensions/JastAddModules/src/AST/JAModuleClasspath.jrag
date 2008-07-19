@@ -98,4 +98,25 @@ aspect JAModuleClasspath {
 			};
 		}
 	}
+	
+	//make sure to reset the Program cache after generateImportOwn
+	syn lazy Set<String> Program.modulePackages() {
+		HashSet ret = new HashSet();
+		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			if (cu instanceof ModuleCompilationUnit) {
+				ret.add(((ModuleCompilationUnit)cu).getModuleName());
+			}
+		}
+		return ret;
+	}
+
+	//may be to expensive if an iterator	
+	refine ClassPath public boolean Program.isPackage(String name) {
+		if (modulePackages().contains(name)) {
+			return true;
+		} else {
+			return ClassPath.Program.isPackage(name);
+		}
+	}
 }
