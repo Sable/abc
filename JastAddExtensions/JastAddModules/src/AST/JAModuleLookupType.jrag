@@ -41,8 +41,137 @@ aspect JAModuleLookupType {
 		return null;
 	}
 	
+	syn lazy SimpleSet ModuleCompilationUnit.memberTypes() {
+		SimpleSet ret = SimpleSet.emptySet;
+		
+		for (CompilationUnit cu : getCompilationUnitList()) {
+			//TODO: Check if there is already an implementation of the type collection
+		}
+		
+		return ret;
+	}
+	
+	//TODO: see how these can be turned to lazy
+	//TODO: These remain simple to avoid the goddamn non-reentrant
+	//rewrites. Deal with public nested types later.
+	public SimpleSet CompilationUnit.collectTypes(SimpleSet set) {
+		for (TypeDecl typeDecl : getTypeDeclList()) {
+			set = typeDecl.collectTypes(set);
+		}
+		return set;
+	}
+	public SimpleSet TypeDecl.collectTypes(SimpleSet set) {
+		set = set.add(this);
+		for (BodyDecl bodyDecl : getBodyDeclList()) {
+			if (bodyDecl instanceof MemberTypeDecl) {
+				MemberTypeDecl memberTypeDecl = (MemberTypeDecl) bodyDecl;
+				set = memberTypeDecl.collectTypes(set);
+			}
+		}
+		return set;
+	}
+	public SimpleSet MemberTypeDecl.collectTypes(SimpleSet set) {
+		throw new Error("CollectTypes should never be called on the abstract MemberTypeDecl");
+	}
+	public SimpleSet MemberClassDecl.collectTypes(SimpleSet set) {
+		return getClassDecl().collectTypes(set);
+	}
+	public SimpleSet MemberInterfaceDecl.collectTypes(SimpleSet set) {
+		return getInterfaceDecl().collectTypes(set);
+	}
+	
+	SimpleSet CompilationUnit.collectTypes() {
+		return collectTypes(SimpleSet.emptySet);
+	}
+	syn lazy SimpleSet ModuleCompilationUnit.collectTypes() {
+		SimpleSet ret = SimpleSet.emptySet;
+		for (CompilationUnit cu : getCompilationUnitList()) {
+			ret = cu.collectTypes(ret);
+		}
+		return ret;
+	}
+	
+	//Get any types that are imported through the module that match name
+	syn lazy SimpleSet ModuleCompilationUnit.moduleImportedTypes(String name) {
+		return moduleImportedTypes(name, SimpleSet.emptySet);
+	}
+	SimpleSet ModuleCompilationUnit.moduleImportedTypes(String name, SimpleSet set) {
+		//get local module types first
+		set = localModuleTypes(name, set);
+		if (!set.isEmpty()) {
+			return set;
+		}
+		//"imported" types (types that are in CUs that are members of imported modules)
+		for (ModuleCompilationUnit mcu : getImportedModuleMap().values()) {
+			set = mcu.localModuleTypes(name, set);
+		}
+		return set;
+	}
+	SimpleSet ModuleCompilationUnit.localModuleTypes(String name, SimpleSet set) {
+		//"local" module types (types that are in CUs that are members of the module)
+		for (Iterator i = collectTypes().iterator(); i.hasNext() ;) {
+			TypeDecl type = (TypeDecl) i.next();
+			if (type.name().equals(name)) {
+				set = set.add(type);
+			}
+		}
+		return set;
+	}
+	
 	//TODO: Implement module/package disambiguation here
 	refine Generics eq CompilationUnit.getChild().lookupType(String name) {
-		return Generics.CompilationUnit.getChild().lookupType(name);
+		if (isInJAModule()) {
+			//Reimplement Java1.4Frontend/LookupType...lookupType() + Generics
+		    // locally declared types in compilation unit
+			SimpleSet set = localLookupType(name);
+			if(!set.isEmpty()) return addGenericTypes(set);
+			
+			// imported types
+			set = importedTypes(name);
+			if(!set.isEmpty()) return addGenericTypes(set);
+			
+			// types in the same package
+			TypeDecl result = lookupType(packageName(), name);
+			if(result != null && result.accessibleFromPackage(packageName())) 
+			  return addGenericTypes(SimpleSet.emptySet.add(result));
+			
+			// types imported on demand
+			set = importedTypesOnDemand(name);
+			if(!set.isEmpty()) return addGenericTypes(set);
+			
+			//lookup module imports
+			ModuleCompilationUnit mcu = getModuleCompilationUnit();
+			assert (mcu != null) : "Should be a member of a module compilation unit";
+			
+			SimpleSet ret = mcu.moduleImportedTypes(name);
+			if (!ret.isEmpty()) {
+				return addGenericTypes(ret);
+			}
+			
+			// include primitive types
+			result = lookupType(PRIMITIVE_PACKAGE_NAME, name);
+			if(result != null) return addGenericTypes(SimpleSet.emptySet.add(result));
+			
+			// 7.5.5 Automatic Imports
+			result = lookupType("java.lang", name);
+			if(result != null && result.accessibleFromPackage(packageName()))
+			  return addGenericTypes(SimpleSet.emptySet.add(result));
+			return addGenericTypes(lookupType(name));
+		} else {
+			return Generics.CompilationUnit.getChild().lookupType(name);
+		}
+	}
+	
+	//Adapted from generics
+	public SimpleSet CompilationUnit.addGenericTypes(SimpleSet set) {
+    	SimpleSet result = SimpleSet.emptySet;
+		for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+			TypeDecl typeDecl = (TypeDecl)iter.next();
+			if(typeDecl instanceof ParTypeDecl)
+				result = result.add(((ParTypeDecl)typeDecl).genericDecl());
+			else
+				result = result.add(typeDecl);
+		}
+		return result;
 	}
 }

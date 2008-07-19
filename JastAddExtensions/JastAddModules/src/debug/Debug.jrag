@@ -173,5 +173,27 @@ aspect Debug {
 	public StringBuffer ModuleCompilationUnit.toStringCompilationUnitImports(StringBuffer s) {
 		return s;
 	}
+	
+	public String Program.toStringModuleCollectTypes() {
+		String ret = "";
+		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			if (cu instanceof ModuleCompilationUnit) {
+				ret += ((ModuleCompilationUnit) cu).toStringModuleCollectTypes();
+			}
+		}
+		return ret;
+	}
+	public String ModuleCompilationUnit.toStringModuleCollectTypes() {
+		return toStringModuleCollectTypes(new StringBuffer()).toString();
+	}
+	public StringBuffer ModuleCompilationUnit.toStringModuleCollectTypes(StringBuffer s) {
+		s.append("Module: " + getModuleName() + "\n");
+		for (Iterator i = collectTypes().iterator(); i.hasNext(); ) {
+			TypeDecl type = (TypeDecl)i.next();
+			s.append("\t" + type.packageName() + "." + type.name() + "\n");
+		}
+		return s;
+	}
 
 }

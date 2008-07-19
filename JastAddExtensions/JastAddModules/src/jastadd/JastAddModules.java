@@ -103,10 +103,12 @@ public class JastAddModules extends JastAdd {
 				//for JAModuleClassPath.Program.modulePackages()
 				program.flushCache();
 				
+				//does not work in general due to conflicting names
+				/*
 				result = program.insertModulePackageImports();
 				if (!result) {
 					return false;
-				}
+				}*/
 
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
@@ -121,8 +123,11 @@ public class JastAddModules extends JastAdd {
 					System.out.print(msg);
 					System.out.print(program.toStringJAModuleCUImports());
 					
-					System.out.println("----------CU imports after import own----------\n");
-					System.out.print(program.toStringCompilationUnitImports());
+					//System.out.println("----------CU imports after import own----------\n");
+					//System.out.print(program.toStringCompilationUnitImports());
+					
+					System.out.println("----------MCU collectTypes after import own----------\n");
+					System.out.println(program.toStringModuleCollectTypes());
 					
 					System.out.print("----------CU iterator----------\n");
 					System.out.print(program.toStringCompilationUnitIterator() + "\n");

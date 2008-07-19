@@ -74,7 +74,7 @@ aspect JAModuleErrorCheck {
   	//CU package decl (if a module is defined, then a package shouldn't be defined (and vice versa)
   	public void ASTNode.checkModulePackageDecls() {}
   	public void CompilationUnit.checkModulePackageDecls() {
-  		if (getPackageDecl().compareTo("") != 0 && getModuleDecl() != null) {
+  		if (!getPackageDecl().equals("") && getModuleDecl() != null) {
   			getModuleDecl().error("A module declaration cannot be used if there is a package declaration on the compilation unit.");
   		}
   	}
