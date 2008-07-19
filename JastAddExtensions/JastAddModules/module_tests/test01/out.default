@@ -130,7 +130,6 @@ module M2, base:M2, context:[], exported:true, instantiated:false
 	
 module M3, base:M3, context:[], exported:true, instantiated:false
 	
-
 Unrecoverable semantic error(s) found.
 M.module:6,11:
   Semantic Error: Incompatible modules in merge list: M2, M$M3

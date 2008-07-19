@@ -1,20 +1,6 @@
 ----------Module contents----------
-------jastadd$framework.module------
-module jastadd$framework;
-------------------------
-------Y.jrag------
-module: module NonExistentModule;;
-module CU : null
-module name : null
-------------------------
-------AST2.ast------
-module: module M1;;
-Original AST file: AST2.ast
-module CU : M1.module
-module name : M1
-------------------------
-------A.java------
-module: module NonExistentModule;;
+------framework/Opt.java------
+module: null;
 module CU : null
 module name : null
 ------------------------
@@ -22,11 +8,6 @@ module name : null
 module: module M1;;
 module CU : M1.module
 module name : M1
-------------------------
-------Opt.java------
-module: module jastadd$framework;;
-module CU : jastadd$framework.module
-module name : jastadd$framework
 ------------------------
 ------AST.ast------
 module: module NonExistentModule;;
@@ -42,65 +23,107 @@ module: module jastadd$framework;;
 module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------framework/List.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------Y.jrag------
+module: module NonExistentModule;;
+module CU : null
+module name : null
+------------------------
+------AST2.ast------
+module: module M1;;
+Original AST file: AST2.ast
+module CU : M1.module
+module name : M1
+------------------------
+------framework/ASTNode.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------A.java------
+module: module NonExistentModule;;
+module CU : null
+module name : null
+------------------------
+------Opt.java------
+module: module jastadd$framework;;
+module CU : jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ------List.java------
 module: module jastadd$framework;;
 module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
 ----------CU AST before insert----------
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-Y.jrag package:
-AST2.ast package:
-A.java package:
+framework/Opt.java package:
 X.jrag package:
-Opt.java package:
 AST.ast package:
 module: M1, file: M1.module, base module: M1
 ASTNode.java package:
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+framework/List.java package:
+Y.jrag package:
+AST2.ast package:
+framework/ASTNode.java package:
+A.java package:
+Opt.java package:
 List.java package:
 ----------CU AST after insert----------
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-	Opt.java package:jastadd$framework
-	ASTNode.java package:jastadd$framework
-	List.java package:jastadd$framework
-Y.jrag package:
-A.java package:
+framework/Opt.java package:
 AST.ast package:
 module: M1, file: M1.module, base module: M1
-	AST2.ast package:M1
 	X.jrag package:M1
+	AST2.ast package:M1
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+	ASTNode.java package:jastadd$framework
+	Opt.java package:jastadd$framework
+	List.java package:jastadd$framework
+framework/List.java package:
+Y.jrag package:
+framework/ASTNode.java package:
+A.java package:
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
-	
 module M1, base:M1, context:[], exported:true, instantiated:false
 	
-
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
+	
 -------------Instance ModuleCompilationUnit------------
 module M1;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-	Opt.java package:jastadd$framework
-	ASTNode.java package:jastadd$framework
-	List.java package:jastadd$framework
-Y.jrag package:
-A.java package:
+framework/Opt.java package:
 AST.ast package:
 module: M1, file: M1.module, base module: M1
-	AST2.ast package:M1
 	X.jrag package:M1
+	AST2.ast package:M1
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+	ASTNode.java package:jastadd$framework
+	Opt.java package:jastadd$framework
+	List.java package:jastadd$framework
+framework/List.java package:
+Y.jrag package:
+framework/ASTNode.java package:
+A.java package:
+
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
-	
 module M1, base:M1, context:[], exported:true, instantiated:true
 	jastadd$framework:jastadd$framework
-
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
+	
 ----------CU iterator----------
-jastadd$framework.module, Opt.java, ASTNode.java, List.java, Y.jrag, A.java, AST.ast, M1.module, AST2.ast, X.jrag
+framework/Opt.java, AST.ast, M1.module, X.jrag, AST2.ast, jastadd$framework.module, ASTNode.java, Opt.java, List.java, framework/List.java, Y.jrag, framework/ASTNode.java, A.java
+AST.ast:1,8:
+  Semantic Error: Module not found: NonExistentModule
 Y.jrag:1,8:
   Semantic Error: Module not found: NonExistentModule
 A.java:1,8:
-  Semantic Error: Module not found: NonExistentModule
-AST.ast:1,8:
   Semantic Error: Module not found: NonExistentModule

@@ -23,7 +23,6 @@ module jastadd$framework, base:jastadd$framework, context:[], exported:true, ins
 	
 module m1, base:m1, context:[], exported:true, instantiated:false
 	
-
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import  jastadd$framework as none null;
@@ -32,12 +31,12 @@ import  jastadd$framework as none null;
 module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
+
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
 	
 module m1, base:m1, context:[], exported:true, instantiated:true
 	jastadd$framework:jastadd$framework
-
 ----------CU iterator----------
 jastadd$framework.module, m1.module, A.java
 A.java:1:

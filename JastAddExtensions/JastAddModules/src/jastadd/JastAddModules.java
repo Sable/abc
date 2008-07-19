@@ -66,13 +66,12 @@ public class JastAddModules extends JastAdd {
 				// check if moduleDecls on non-ModuleCompilationUnit CUs point
 				// to a valid module
 				program.checkModuleErrorsPass1();
-
+				StringBuffer msg = null;
 				if (program.options().hasOption(DEBUG_OPTION)) {
-					System.out.println("----------Module contents----------");
-					program.printJAModules();
-					System.out
-							.println("----------CU AST before insert----------");
-					program.printJAModuleCUAST(0);
+					msg = new StringBuffer("----------Module contents----------\n");
+					System.out.print(program.toStringJAModules(msg));
+					msg = new StringBuffer("----------CU AST before insert----------\n");
+					System.out.print(program.toStringJAModuleCUAST(0, msg));
 				}
 
 				// insert the ModuleCompilationUnits above the CUs that are a
@@ -87,12 +86,11 @@ public class JastAddModules extends JastAdd {
 				}
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
-					System.out
-							.println("----------CU AST after insert----------");
-					program.printJAModuleCUAST(0);
-					System.out
-							.println("----------Module CU imports before import own----------");
-					System.out.println(program.toStringJAModuleCUImports());
+					msg = new StringBuffer("----------CU AST after insert----------\n");
+					System.out.print(program.toStringJAModuleCUAST(0, msg));
+					msg = new StringBuffer("----------Module CU imports before import own----------\n");
+					System.out.print(msg);
+					System.out.print(program.toStringJAModuleCUImports());
 				}
 
 				// generate the ModuleCompilationUnits created by import
@@ -104,20 +102,19 @@ public class JastAddModules extends JastAdd {
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					System.out
-							.println("-------------Instance ModuleCompilationUnit------------");
-					System.out.println(program.getInstanceModuleCU());
+							.print("-------------Instance ModuleCompilationUnit------------\n");
+					System.out.print(program.getInstanceModuleCU() + "\n");
 					System.out
-							.println("-----------End Instance ModuleCompilationUnit----------");
-					System.out
-							.println("----------CU AST after generateImportOwn----------");
-					program.printJAModuleCUAST(0);
-					System.out
-							.println("----------Module CU imports after import own----------");
-					System.out.println(program.toStringJAModuleCUImports());
+							.print("-----------End Instance ModuleCompilationUnit----------\n");
+					msg = new StringBuffer("----------CU AST after generateImportOwn----------\n");
+					System.out.print(program.toStringJAModuleCUAST(0, msg) + "\n");
+					msg = new StringBuffer("----------Module CU imports after import own----------\n");
+					System.out.print(msg);
+					System.out.print(program.toStringJAModuleCUImports());
 					
 					
-					System.out.println("----------CU iterator----------");
-					System.out.println(program.toStringCompilationUnitIterator());
+					System.out.print("----------CU iterator----------\n");
+					System.out.print(program.toStringCompilationUnitIterator() + "\n");
 				}
 
 				// check if there are any duplicate module names (should never
@@ -125,7 +122,7 @@ public class JastAddModules extends JastAdd {
 				program.checkDuplicateModuleName();
 
 			} catch (UnrecoverableSemanticError e) {
-				System.out.println("Unrecoverable semantic error(s) found.");
+				System.out.print("Unrecoverable semantic error(s) found.\n");
 			}
 
 			program.collectModuleErrors(errors, warnings);

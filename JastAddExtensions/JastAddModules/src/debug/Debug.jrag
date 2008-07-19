@@ -4,34 +4,39 @@
 
 aspect Debug {
 
-	//print JAModule contents
-	public void ASTNode.printJAModules() {
+	//JAModule contents
+	public StringBuffer ASTNode.toStringJAModules(StringBuffer s) {
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).printJAModules();
+			getChild(i).toStringJAModules(s);
 		}
+		return s;
 	}
-	public void ModuleCompilationUnit.printJAModules() {
-		System.out.println("------" + this.relativeName() + "------");
+	public StringBuffer ModuleCompilationUnit.toStringJAModules(StringBuffer s) {
+		s.append("------" + this.relativeName() + "------\n");
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).printJAModules();
+			getChild(i).toStringJAModules(s);
 		}
-		System.out.println("------------------------");
+		s.append("------------------------\n");
+		return s;
 	}
-	public void ModuleDecl.printJAModules() {
-		System.out.println(this.toString());
+	public StringBuffer ModuleDecl.toStringJAModules(StringBuffer s) {
+		s.append(this.toString() + "\n");
+		return s;
 	}
-	public void ModuleImportDecl.printJAModules() {
-		System.out.println(this.toString());
+	public StringBuffer ModuleImportDecl.toStringJAModules(StringBuffer s) {
+		s.append(this.toString() + "\n");
+		return s;
 	}
-	public void ModuleMergeDecl.printJAModules() {
-		System.out.println(this.toString());
+	public StringBuffer ModuleMergeDecl.toStringJAModules(StringBuffer s) {
+		s.append(this.toString() + "\n");
+		return s;
 	}
-	public void CompilationUnit.printJAModules() {
+	public StringBuffer CompilationUnit.toStringJAModules(StringBuffer s) {
 		if (!fromSource()) {
-			return; 
+			return s;  
 		}
-		System.out.println("------" + this.relativeName() + "------");
-		System.out.println("module: " + getModuleDecl() + ";");
+		s.append("------" + this.relativeName() + "------\n");
+		s.append("module: " + getModuleDecl() + ";\n");
 		ModuleCompilationUnit moduleCU = lookupModuleCUNoTransform();
 		String moduleCUPath = null;
 		String moduleName = null;
@@ -40,52 +45,62 @@ aspect Debug {
 			moduleName = moduleCU.getModuleName();
 		}
 		if (isGeneratedFromAST()) {
-			System.out.println("Original AST file: " + getOrigASTCompilationUnit().relativeName());
+			s.append("Original AST file: " + getOrigASTCompilationUnit().relativeName() + "\n");
 		}
-		System.out.println("module CU : " + moduleCUPath);
-		System.out.println("module name : " + moduleName);
-		System.out.println("------------------------");
+		s.append("module CU : " + moduleCUPath + "\n");
+		s.append("module name : " + moduleName + "\n");
+		s.append("------------------------\n");
+		return s;
 	}
 	
-	//print AST consisting of Compilation units
-	public void ASTNode.printJAModuleCUAST(int level) {
+	
+	
+	//AST consisting of Compilation units
+	public StringBuffer ASTNode.toStringJAModuleCUAST(int level, StringBuffer s) {
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).printJAModuleCUAST(level);
+			getChild(i).toStringJAModuleCUAST(level, s);
 		}
+		return s;
 	}
 	//STANDING NOTE: DO NOT go down below CompilationUnit to avoid
 	//the goddamn rewrites
-	public void CompilationUnit.printJAModuleCUAST(int level) {
+	public StringBuffer CompilationUnit.toStringJAModuleCUAST(int level, StringBuffer s) {
 		if (!fromSource()) {
-			return;
+			return s;
 		}
 		for (int i = 0; i < level; i++) {
-			System.out.print("\t");
+			s.append("\t");
 		}
-		System.out.println(this.relativeName() + " package:" + packageName());
+		s.append(this.relativeName() + " package:" + packageName() + "\n");
+		return s;
 	}
-	public void ModuleCompilationUnit.printJAModuleCUAST(int level) {
+	public StringBuffer ModuleCompilationUnit.toStringJAModuleCUAST(int level, StringBuffer s) {
 		for (int i = 0; i < level; i++) {
-			System.out.print("\t");
+			s.append("\t");
 		}
-		System.out.println("module: " + getModuleName() + 
+		s.append("module: " + getModuleName() + 
 			", file: " + this.relativeName() + 
-			", base module: " + this.getBaseCU().getModuleName());
+			", base module: " + this.getBaseCU().getModuleName() + "\n");
 		
 		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).printJAModuleCUAST(level + 1);
+			getChild(i).toStringJAModuleCUAST(level + 1, s);
 		}
+		return s;
 	}
 	
-	public void ASTNode.toStringJAModuleCUImports(StringBuffer s) {
+	
+	
+	public StringBuffer ASTNode.toStringJAModuleCUImports(StringBuffer s) {
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).toStringJAModuleCUImports(s);
 		}
+		return s;
 	}
 	//STANDING NOTE: Cut off at CompilationUnit to avoid the f-ing rewrites
-	public void CompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
+	public StringBuffer CompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
+		return s;
 	}
-	public void ModuleCompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
+	public StringBuffer ModuleCompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
 		String contextString = "[";
 		boolean first = true;
 		for (ModuleCompilationUnit cu : getInstanceContext()) {
@@ -111,12 +126,15 @@ aspect Debug {
 			first = false;
 		} 
 		s.append("\n");
+		return s;
 	}
 	public String ASTNode.toStringJAModuleCUImports() {
 		StringBuffer s = new StringBuffer();
 		toStringJAModuleCUImports(s);
 		return s.toString();
 	}
+	
+	
 	
 	public String Program.toStringCompilationUnitIterator() {
 		String result = "";

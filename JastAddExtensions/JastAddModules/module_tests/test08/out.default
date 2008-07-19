@@ -54,7 +54,6 @@ module M1, base:M1, context:[], exported:true, instantiated:false
 	
 module M3, base:M3, context:[], exported:true, instantiated:false
 	
-
 Unrecoverable semantic error(s) found.
 M1.module:4,10:
   Semantic Error: Incompatible modules in merge list: M2, M1$M3

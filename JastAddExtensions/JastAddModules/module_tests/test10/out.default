@@ -53,7 +53,6 @@ module M1, base:M1, context:[], exported:true, instantiated:false
 	
 module M3, base:M3, context:[], exported:true, instantiated:false
 	
-
 Unrecoverable semantic error(s) found.
 M1.module:3,8:
   Semantic Error: Unable to find module: NonExistent

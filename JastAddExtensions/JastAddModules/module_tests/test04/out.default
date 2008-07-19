@@ -99,7 +99,6 @@ module M2, base:M2, context:[], exported:true, instantiated:false
 	
 module M3, base:M3, context:[], exported:true, instantiated:false
 	
-
 -------------Instance ModuleCompilationUnit------------
 module M1;
 import own M2 as none null;
@@ -126,6 +125,7 @@ module: M1$M2, file: M2.module, base module: M2
 	B.java package:M1$M2
 module: M1$M3, file: M3.module, base module: M3
 	C.java package:M1$M3
+
 ----------Module CU imports after import own----------
 module M1, base:M1, context:[], exported:true, instantiated:true
 	M3:M1$M3, M2:M1$M2, jastadd$framework:jastadd$framework
@@ -147,6 +147,5 @@ module M1$M2, base:M2, context:[M1], exported:false, instantiated:true
 	jastadd$framework:jastadd$framework, M4:M4
 module M1$M3, base:M3, context:[M1], exported:false, instantiated:true
 	jastadd$framework:jastadd$framework, M4:M4
-
 ----------CU iterator----------
 M1.module, A.java, M6.module, F.java, M4.module, D.java, jastadd$framework.module, M5.module, M2.module, M3.module, M5.module, E.java, M2.module, B.java, M3.module, C.java

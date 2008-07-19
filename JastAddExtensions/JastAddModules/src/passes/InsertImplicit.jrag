@@ -12,9 +12,47 @@ aspect InsertImplicit {
 		return true;
 	}
 	public boolean CompilationUnit.insertImplicitModuleImports() {
-		return true;
+		boolean result = false;
+		result = this.insertModulePackageImports();
+		if (!result) {
+			return result;
+		}
+		return result;
 	}
 	public boolean ModuleCompilationUnit.insertImplicitModuleImports() {
+		boolean result = false;
+		result = inserJAFrameworkModuleImport();
+		if (!result) {
+			return result;
+		}
+		return result;
+	}
+
+
+	//add import <imported_module_package_name>.*; to all CU members of the module
+	public boolean CompilationUnit.insertModulePackageImports() {
+		//don't process ModuleCUs 
+		if (this instanceof ModuleCompilationUnit) {
+			return true;
+		}
+		
+		//continue only if in a module
+		if (!isInJAModule()) {
+			return true;
+		}
+		
+		//insert module package import into CUs
+		ModuleCompilationUnit moduleCU = getModuleCompilationUnit();
+		assert (moduleCU != null) : "Compilation unit " + this.relativeName() + " should be a module member.";
+
+		ImportDecl modulePackageImport = new TypeImportOnDemandDecl(moduleCU.createPackageAccess());
+		getImportDeclList().add(modulePackageImport);
+		
+		return true;
+	}
+	
+	//add import jastadd$framwork to all modules
+	public boolean ModuleCompilationUnit.inserJAFrameworkModuleImport() {
 		if (getModuleName().compareTo(Program.JASTADD_FRAMEWORK_MODULE) != 0) {
 			ModuleImportDecl frameworkImport = new ModuleImportDecl(
 				new ModuleImportTypeNorm(),
@@ -24,5 +62,9 @@ aspect InsertImplicit {
 			getModuleMemberDeclList().add(frameworkImport);
 		}
 		return true;
+	}
+	
+	public PackageAccess ModuleCompilationUnit.createPackageAccess() {
+		return new PackageAccess(this.getModuleName(), 0, 0);
 	}
 }

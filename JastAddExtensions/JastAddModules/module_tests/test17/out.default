@@ -1,44 +1,26 @@
 ----------Module contents----------
-------X.jrag------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------m1.module------
-module m1;
-------------------------
-------AST.ast------
-module: module m1;;
-Original AST file: AST.ast
-module CU : m1.module
-module name : m1
-------------------------
-------C.java------
-module: module m3;;
-module CU : m3.module
-module name : m3
-------------------------
-------ASTNode.java------
-module: module jastadd$framework;;
-module CU : jastadd$framework.module
-module name : jastadd$framework
-------------------------
-------jastadd$framework.module------
-module jastadd$framework;
-------------------------
 ------B.java------
 module: module m2;;
 module CU : m2.module
 module name : m2
 ------------------------
-------m3.module------
-module m3;
+------jastadd$framework.module------
+module jastadd$framework;
 ------------------------
 ------AST2.ast------
 module: module m2;;
 Original AST file: AST2.ast
 module CU : m2.module
 module name : m2
+------------------------
+------AST2.ast------
+module: module m2;;
+Original AST file: AST2.ast
+module CU : m2.module
+module name : m2
+------------------------
+------m3.module------
+module m3;
 ------------------------
 ------A.java------
 module: module m1;;
@@ -50,83 +32,102 @@ module: module jastadd$framework;;
 module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
-------m2.module------
-module m2;
+------AST.ast------
+module: module m1;;
+Original AST file: AST.ast
+module CU : m1.module
+module name : m1
+------------------------
+------m1.module------
+module m1;
+import  m2 as none null;
+------------------------
+------ASTNode.java------
+module: module jastadd$framework;;
+module CU : jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
 ------------------------
 ------List.java------
 module: module jastadd$framework;;
 module CU : jastadd$framework.module
 module name : jastadd$framework
 ------------------------
+------m2.module------
+module m2;
+------------------------
 ----------CU AST before insert----------
-X.jrag package:
-module: m1, file: m1.module, base module: m1
-AST.ast package:
-C.java package:
-ASTNode.java package:
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 B.java package:
-module: m3, file: m3.module, base module: m3
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 AST2.ast package:
+AST2.ast package:
+module: m3, file: m3.module, base module: m3
 A.java package:
 Opt.java package:
-module: m2, file: m2.module, base module: m2
-List.java package:
-----------CU AST after insert----------
+AST.ast package:
 module: m1, file: m1.module, base module: m1
-	X.jrag package:m1
-	AST.ast package:m1
-	A.java package:m1
+ASTNode.java package:
+C.java package:
+List.java package:
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
 module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-	ASTNode.java package:jastadd$framework
 	Opt.java package:jastadd$framework
+	ASTNode.java package:jastadd$framework
 	List.java package:jastadd$framework
 module: m3, file: m3.module, base module: m3
 	C.java package:m3
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+	AST.ast package:m1
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
+	AST2.ast package:m2
 	AST2.ast package:m2
 ----------Module CU imports before import own----------
-module m1, base:m1, context:[], exported:true
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
 	
-module jastadd$framework, base:jastadd$framework, context:[], exported:true
+module m3, base:m3, context:[], exported:true, instantiated:false
 	
-module m3, base:m3, context:[], exported:true
+module m1, base:m1, context:[], exported:true, instantiated:false
 	
-module m2, base:m2, context:[], exported:true
+module m2, base:m2, context:[], exported:true, instantiated:false
 	
-
 -------------Instance ModuleCompilationUnit------------
 module m1;
+import  m2 as none null;
+import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: m1, file: m1.module, base module: m1
-	X.jrag package:m1
-	AST.ast package:m1
-	A.java package:m1
 module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-	ASTNode.java package:jastadd$framework
 	Opt.java package:jastadd$framework
+	ASTNode.java package:jastadd$framework
 	List.java package:jastadd$framework
 module: m3, file: m3.module, base module: m3
 	C.java package:m3
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+	AST.ast package:m1
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 	AST2.ast package:m2
-----------Module CU imports after import own----------
-module m1, base:m1, context:[], exported:true
-	
-module jastadd$framework, base:jastadd$framework, context:[], exported:true
-	
-module m3, base:m3, context:[], exported:true
-	
-module m2, base:m2, context:[], exported:true
-	
+	AST2.ast package:m2
 
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
+	
+module m3, base:m3, context:[], exported:true, instantiated:false
+	
+module m1, base:m1, context:[], exported:true, instantiated:true
+	jastadd$framework:jastadd$framework, m2:m2
+module m2, base:m2, context:[], exported:true, instantiated:true
+	jastadd$framework:jastadd$framework
+----------CU iterator----------
+jastadd$framework.module, Opt.java, ASTNode.java, List.java, m3.module, m1.module, A.java, AST.ast, m2.module, B.java, AST2.ast, AST2.ast
 Errors:
-X.jrag:3:
-  Semantic Error: type ASTNode is not visible
-X.jrag:3:
-  Semantic Error: no method named pop() in jastadd$framework.ASTNode.State matches. However, there is a method pop()
-X.jrag:3:
-  Semantic Error: no method named push(int) in jastadd$framework.ASTNode.State matches. However, there is a method push(int)
+AST2.ast:3,9:
+  Semantic Error: no visible type named ASTNode
