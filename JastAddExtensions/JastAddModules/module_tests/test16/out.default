@@ -101,5 +101,19 @@ module m1.alias2, base:m2, context:[m1], exported:true, instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.alias3, base:m3, context:[m1], exported:true, instantiated:true
 	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+Module: m3
+	m3.C
+Module: m1
+	m1.A
+Module: m2
+	m2.B
+Module: m1.alias2
+	m1.alias2.B
+Module: m1.alias3
+	m1.alias3.C
+
 ----------CU iterator----------
 jastadd$framework.module, m3.module, E.java, D.java, m1.module, A.java, m2.module, m2.module, B.java, m3.module, C.java

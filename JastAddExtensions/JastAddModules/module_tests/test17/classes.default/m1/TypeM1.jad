@@ -14,7 +14,6 @@ public class TypeM1 extends Type2
     public TypeM1()
     {
         is$Final = true;
-        is$Final = true;
     }
 
     protected void init$children()
@@ -33,24 +32,7 @@ public class TypeM1 extends Type2
         TypeM1 node = (TypeM1)super.clone();
         node.inCircle = false;
         node.is$Final = false;
-        node.inCircle = false;
-        node.is$Final = false;
         return node;
-    }
-
-    public int getNumChild()
-    {
-        return 0;
-    }
-
-    public boolean mayHaveRewrite()
-    {
-        return false;
-    }
-
-    public ASTNode rewriteTo()
-    {
-        return super.rewriteTo();
     }
 
     public int getNumChild()

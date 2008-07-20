@@ -147,5 +147,27 @@ module M1$M2, base:M2, context:[M1], exported:false, instantiated:true
 	jastadd$framework:jastadd$framework, M4:M4
 module M1$M3, base:M3, context:[M1], exported:false, instantiated:true
 	jastadd$framework:jastadd$framework, M4:M4
+----------MCU collectTypes after import own----------
+
+Module: M1
+	M1.A
+Module: M6
+	M6.F
+Module: M4
+	M4.D
+Module: jastadd$framework
+Module: M5
+	M5.E
+Module: M2
+	M2.B
+Module: M3
+	M3.C
+Module: M4$M5
+	M4$M5.E
+Module: M1$M2
+	M1$M2.B
+Module: M1$M3
+	M1$M3.C
+
 ----------CU iterator----------
 M1.module, A.java, M6.module, F.java, M4.module, D.java, jastadd$framework.module, M5.module, M2.module, M3.module, M5.module, E.java, M2.module, B.java, M3.module, C.java

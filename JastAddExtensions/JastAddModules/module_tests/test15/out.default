@@ -37,6 +37,12 @@ module jastadd$framework, base:jastadd$framework, context:[], exported:true, ins
 	
 module m1, base:m1, context:[], exported:true, instantiated:true
 	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+Module: m1
+	m1.A
+
 ----------CU iterator----------
 jastadd$framework.module, m1.module, A.java
 A.java:1:

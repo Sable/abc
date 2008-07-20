@@ -13,7 +13,6 @@ public class Type1 extends ASTNode
     public Type1()
     {
         is$Final = true;
-        is$Final = true;
     }
 
     protected void init$children()
@@ -32,24 +31,7 @@ public class Type1 extends ASTNode
         Type1 node = (Type1)super.clone();
         node.inCircle = false;
         node.is$Final = false;
-        node.inCircle = false;
-        node.is$Final = false;
         return node;
-    }
-
-    public int getNumChild()
-    {
-        return 0;
-    }
-
-    public boolean mayHaveRewrite()
-    {
-        return false;
-    }
-
-    public ASTNode rewriteTo()
-    {
-        return super.rewriteTo();
     }
 
     public int getNumChild()
