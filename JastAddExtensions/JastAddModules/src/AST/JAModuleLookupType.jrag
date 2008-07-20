@@ -41,6 +41,22 @@ aspect JAModuleLookupType {
 		return null;
 	}
 	
+	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
+		//look at the module aliases
+		for (String localModuleAlias : getImportedModuleMap().keySet()) {
+			if (localModuleAlias.equals(packageName)) {
+				//Dont use collectTypes to avoid reentrant rewrites
+				String modulePackageName = getImportedModule(localModuleAlias).getModuleName();
+				TypeDecl type = getHostProgram().lookupType(modulePackageName, typeName);
+				if (type != null) {
+					return type;
+				}
+			}
+		}
+		//if none found, do CompilationUnit.lookupType
+		return super.lookupType(packageName, typeName);
+	}
+	
 	syn lazy SimpleSet ModuleCompilationUnit.memberTypes() {
 		SimpleSet ret = SimpleSet.emptySet;
 		
