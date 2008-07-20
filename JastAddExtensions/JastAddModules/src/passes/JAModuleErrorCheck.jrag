@@ -1,6 +1,6 @@
-//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
-//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
-//SPAWNED REWRITES
+//STANDING NOTE: Make VERY sure that all JAModule passes DO NOT 
+//TOUCH any AST nodes below CompilationUnit to avoid the REWRITES
+
 aspect JAModuleErrorCheck {
 	//dependent on Java1.4Frontend/ErrorCheck.CompilationUnit.errors/warnings
 	//adapted from abc-ja-exts/CheckModuleErrors.jrag
@@ -89,7 +89,7 @@ aspect JAModuleErrorCheck {
 			getChild(i).checkDuplicateModuleName();
 		}
 	}
-	//STANDING NOTE: Cut off at compilation unit to avoid the goddamn rewrites
+	//STANDING NOTE: Cut off at compilation unit to avoid the rewrites
 	public void CompilationUnit.checkDuplicateModuleName() {}
 	public void ModuleCompilationUnit.checkDuplicateModuleName() {
 		if (getHostProgram().moduleNames.contains(this.getModuleName())) {

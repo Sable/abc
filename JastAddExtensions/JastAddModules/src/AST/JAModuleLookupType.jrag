@@ -68,8 +68,6 @@ aspect JAModuleLookupType {
 	}
 	
 	//TODO: see how these can be turned to lazy
-	//TODO: These remain simple to avoid the goddamn non-reentrant
-	//rewrites. Deal with public nested types later.
 	public SimpleSet CompilationUnit.collectTypes(SimpleSet set) {
 		for (TypeDecl typeDecl : getTypeDeclList()) {
 			set = typeDecl.collectTypes(set);

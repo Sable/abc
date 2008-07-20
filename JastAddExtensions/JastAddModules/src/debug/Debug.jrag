@@ -1,6 +1,6 @@
-//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
-//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
-//SPAWNED REWRITES
+//STANDING NOTE: Make VERY sure that all JAModule passes DO NOT 
+//TOUCH any AST nodes below CompilationUnit to avoid the REWRITES
+
 
 aspect Debug {
 
@@ -63,7 +63,7 @@ aspect Debug {
 		return s;
 	}
 	//STANDING NOTE: DO NOT go down below CompilationUnit to avoid
-	//the goddamn rewrites
+	//the rewrites
 	public StringBuffer CompilationUnit.toStringJAModuleCUAST(int level, StringBuffer s) {
 		if (!fromSource()) {
 			return s;

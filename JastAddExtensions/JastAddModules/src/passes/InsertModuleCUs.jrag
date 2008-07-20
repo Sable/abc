@@ -1,6 +1,6 @@
-//STANDING NOTE: Make GODDAMN sure that all JAModule passes DO NOT FUCKING
-//TOUCH any AST nodes below CompilationUnit to avoid the GODFORSAKEN DEVIL
-//SPAWNED REWRITES
+//STANDING NOTE: Make VERY sure that all JAModule passes DO NOT 
+//TOUCH any AST nodes below CompilationUnit to avoid the REWRITES
+
 
 //a "rewrite" pass done once all the module CUs are collected. 
 //Module CUs are inserted above the CUs that belong to it
@@ -30,11 +30,9 @@ aspect InsertModuleCUs {
 				CompilationUnit childCU = (CompilationUnit) child;
 				ModuleCompilationUnit moduleCU = childCU.lookupModuleCUNoTransform(); 
 				childList.removeChild(i); //remove must be here, since the parent node of childCU must not be overwritten
-				//flush to remove old cached info //NOTE: THIS IS NEEDED, BUT THE GODFUCKING SONOFABITCH REWRITES ARE TRIGGERED BECAUSE OF THIS
-				//childCU.flushCaches(); 
 				//Do a fullCopy instead of a cache flush to avoid the rewrites
 				//NOTE: Needing to know not to trigger rewrites here is a VERY BAD SIGN
-				//of a huge flaw in rewrites.
+				//of a huge flaw 
 				moduleCU.getCompilationUnitList().addChild(childCU.fullCopy()); 
 			} else {
 				i++;
