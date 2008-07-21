@@ -1,0 +1,6 @@
+module m1;
+
+A ::= ;
+A1 : alias1.B ::= A;
+A2 : alias2.B ::= A;
+A3 ::= B:alias1.B* [B2:alias2.B] ;

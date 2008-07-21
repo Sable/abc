@@ -60,29 +60,15 @@ aspect JAModuleLookupType {
 	
 	//TODO: see how these can be turned to lazy
 	public SimpleSet CompilationUnit.memberTypes(SimpleSet set) {
-		for (TypeDecl typeDecl : getTypeDeclList()) {
+		for(int i = 0; i < getNumTypeDecl(); i++) {
+			TypeDecl typeDecl = getTypeDecl(i);
 			set = typeDecl.memberTypes(set);
 		}
 		return set;
 	}
 	public SimpleSet TypeDecl.memberTypes(SimpleSet set) {
 		set = set.add(this);
-		for (BodyDecl bodyDecl : getBodyDeclList()) {
-			if (bodyDecl instanceof MemberTypeDecl) {
-				MemberTypeDecl memberTypeDecl = (MemberTypeDecl) bodyDecl;
-				set = memberTypeDecl.memberTypes(set);
-			}
-		}
 		return set;
-	}
-	public SimpleSet MemberTypeDecl.memberTypes(SimpleSet set) {
-		throw new Error("CollectTypes should never be called on the abstract MemberTypeDecl");
-	}
-	public SimpleSet MemberClassDecl.memberTypes(SimpleSet set) {
-		return getClassDecl().memberTypes(set);
-	}
-	public SimpleSet MemberInterfaceDecl.memberTypes(SimpleSet set) {
-		return getInterfaceDecl().memberTypes(set);
 	}
 	
 	SimpleSet CompilationUnit.memberTypes() {

@@ -1,0 +1,45 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   Main.java
+
+import jastadd$framework.ASTNode;
+import jastadd$framework.List;
+import jastadd$framework.Opt;
+import java.io.PrintStream;
+import m1.A;
+import m1.A1;
+import m1.A2;
+import m1.A3;
+import m1.alias1.B;
+
+public class Main
+{
+
+    public static void main(String args[])
+    {
+        A a = new A();
+        A1 a1 = new A1(a);
+        A2 a2 = new A2(a);
+        B b1 = a1;
+        m1.alias2.B b2 = a2;
+        A3 a3 = new A3((new List()).add(new B()), new Opt(new m1.alias2.B()));
+        ASTNode node = a;
+        node = a1;
+        node = a2;
+        node = b1;
+        node = b2;
+        System.out.println(a.getClass());
+        System.out.println(a1.getClass());
+        System.out.println(a2.getClass());
+        System.out.println(a1.getChild(0).getClass());
+        System.out.println(a2.getChild(0).getClass());
+        System.out.println(a3.getClass());
+        System.out.println(a3.getChild(0).getChild(0).getClass());
+        System.out.println(a3.getChild(1).getChild(0).getClass());
+    }
+
+    public Main()
+    {
+    }
+}
