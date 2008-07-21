@@ -1,6 +1,7 @@
 //STANDING NOTE: Make VERY sure that all JAModule passes before the java 
 //errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
 //the REWRITES
+import jastaddmodules.ImportedModule;
 
 aspect ModuleCompilationUnit {
 
@@ -86,31 +87,31 @@ aspect ModuleCompilationUnit {
 	}
 
 	//String is the local alias of the imported CU
-	protected HashMap<String, ModuleCompilationUnit> ModuleCompilationUnit.importedModules = new HashMap<String, ModuleCompilationUnit>();
-	public void ModuleCompilationUnit.setImportedModules(HashMap<String, ModuleCompilationUnit> modules) {
+	protected HashMap<String, ImportedModule> ModuleCompilationUnit.importedModules = new HashMap<String, ImportedModule>();
+	public void ModuleCompilationUnit.setImportedModules(HashMap<String, ImportedModule> modules) {
 		this.importedModules = modules;
 	}
-	public void ModuleCompilationUnit.addImportedModule(String alias, ModuleCompilationUnit cu) {
-		importedModules.put(alias, cu);
+	public void ModuleCompilationUnit.addImportedModule(String alias, ModuleCompilationUnit cu, boolean isExported) {
+		importedModules.put(alias, new ImportedModule(cu, isExported));
 	}
-	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(String alias) {
+	public ImportedModule ModuleCompilationUnit.removeImportedModule(String alias) {
 		return importedModules.remove(alias);
 	}
-	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
+	public ImportedModule ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
 		return importedModules.remove(getImportedModuleAlias(cu));
 	}
 	public String ModuleCompilationUnit.getImportedModuleAlias(ModuleCompilationUnit cu) {
 		for (String key : importedModules.keySet()) {
-			if (cu == importedModules.get(key)) {
+			if (cu == importedModules.get(key).getModuleCU()) {
 				return key;
 			}
 		}
 		return null;
 	}
-	public Map<String, ModuleCompilationUnit> ModuleCompilationUnit.getImportedModuleMap() {
+	public Map<String, ImportedModule> ModuleCompilationUnit.getImportedModuleMap() {
 		return importedModules;
 	}
-	public ModuleCompilationUnit ModuleCompilationUnit.getImportedModule(String name) {
+	public ImportedModule ModuleCompilationUnit.getImportedModule(String name) {
 		return importedModules.get(name);
 	}
 
@@ -138,14 +139,4 @@ aspect ModuleCompilationUnit {
 		return this.instanceContext;
 	}
 	
-	protected boolean ModuleCompilationUnit.isExported = true;
-	public boolean ModuleCompilationUnit.isExported() {
-		return isExported;
-	}
-	public void ModuleCompilationUnit.setIsExported(boolean b) {
-		this.isExported = b;
-	}
-	
-	
-
 }

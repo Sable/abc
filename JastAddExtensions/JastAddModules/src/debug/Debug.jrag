@@ -115,13 +115,13 @@ aspect Debug {
 		
 		s.append("module " + getModuleName() + 
 			", base:" + getBaseCU().getModuleName() + 
-			", context:" + contextString + ", exported:" + isExported + 
+			", context:" + contextString +  
 			", instantiated:" + moduleInstantiated + "\n");
 		s.append("\t");
 		
 		first = true;
 		for (String localAlias : getImportedModuleMap().keySet()) {
-			ModuleCompilationUnit importedCU = getImportedModule(localAlias);
+			ModuleCompilationUnit importedCU = getImportedModule(localAlias).getModuleCU();
 			if (!first) {s.append(", ");}
 			s.append(localAlias + ":" + importedCU.getModuleName());
 			first = false;

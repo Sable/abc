@@ -86,7 +86,7 @@ aspect JAModuleLookupModule {
 			//	the import was exported
 			if (name.equals(alias)) {
 				if (originalContext == this || getImportedModule(name).isExported()) {
-					return getImportedModule(alias);
+					return getImportedModule(alias).getModuleCU();
 				} 
 				continue;
 			}
@@ -101,7 +101,7 @@ aspect JAModuleLookupModule {
 			//	it is a direct import (this = originalContext)
 			//	or it is exported
 			if (originalContext == this || getImportedModule(alias).isExported()) {
-				ModuleCompilationUnit ret = getImportedModule(alias).lookupModule(originalContext, trimmedName);
+				ModuleCompilationUnit ret = getImportedModule(alias).getModuleCU().lookupModule(originalContext, trimmedName);
 				if (ret != null) {
 					return ret;
 				}

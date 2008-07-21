@@ -71,17 +71,17 @@ module: M1, file: M1.module, base module: M1
 module: M3, file: M3.module, base module: M3
 	C.java package:M3
 ----------Module CU imports before import own----------
-module M4, base:M4, context:[], exported:true, instantiated:false
+module M4, base:M4, context:[], instantiated:false
 	
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 	
-module M5, base:M5, context:[], exported:true, instantiated:false
+module M5, base:M5, context:[], instantiated:false
 	
-module M2, base:M2, context:[], exported:true, instantiated:false
+module M2, base:M2, context:[], instantiated:false
 	
-module M1, base:M1, context:[], exported:true, instantiated:false
+module M1, base:M1, context:[], instantiated:false
 	
-module M3, base:M3, context:[], exported:true, instantiated:false
+module M3, base:M3, context:[], instantiated:false
 	
 -------------Instance ModuleCompilationUnit------------
 module M1;
@@ -111,25 +111,25 @@ module: M1.M3Alias, file: M3.module, base module: M3
 	C.java package:M1.M3Alias
 
 ----------Module CU imports after import own----------
-module M4, base:M4, context:[], exported:true, instantiated:false
+module M4, base:M4, context:[], instantiated:false
 	
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
-module M5, base:M5, context:[], exported:true, instantiated:false
+module M5, base:M5, context:[], instantiated:false
 	
-module M2, base:M2, context:[], exported:true, instantiated:false
+module M2, base:M2, context:[], instantiated:false
 	
-module M1, base:M1, context:[], exported:true, instantiated:true
+module M1, base:M1, context:[], instantiated:true
 	M2:M1$M2, jastadd$framework:jastadd$framework, M3Alias:M1.M3Alias
-module M3, base:M3, context:[], exported:true, instantiated:false
+module M3, base:M3, context:[], instantiated:false
 	
-module M1$M2$M4, base:M4, context:[M1$M2], exported:false, instantiated:true
+module M1$M2$M4, base:M4, context:[M1$M2], instantiated:true
 	jastadd$framework:jastadd$framework
-module M1$M2, base:M2, context:[M1], exported:false, instantiated:true
+module M1$M2, base:M2, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework, M4:M1$M2$M4
-module M1.M3Alias$M5, base:M5, context:[M1.M3Alias], exported:false, instantiated:true
+module M1.M3Alias$M5, base:M5, context:[M1.M3Alias], instantiated:true
 	jastadd$framework:jastadd$framework
-module M1.M3Alias, base:M3, context:[M1], exported:true, instantiated:true
+module M1.M3Alias, base:M3, context:[M1], instantiated:true
 	M5:M1.M3Alias$M5, jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

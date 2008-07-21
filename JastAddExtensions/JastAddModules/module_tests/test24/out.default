@@ -1,0 +1,98 @@
+----------Module contents----------
+------m5.module------
+module m5;
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------E.java------
+module: module m5;;
+module CU : m5.module
+module name : m5
+------------------------
+------m3.module------
+module m3;
+import own m5 export as m5;
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------D.java------
+module: module m4;;
+module CU : m4.module
+module name : m4
+------------------------
+------m4.module------
+module m4;
+import own m5 export as m5;
+------------------------
+------m1.module------
+module m1;
+import own m2 as none null;
+import own m5 as none null;
+merge m5, m2.m4.m5 as mergedalias;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------m2.module------
+module m2;
+import own m3 export as m3;
+import own m4 as none null;
+------------------------
+----------CU AST before insert----------
+module: m5, file: m5.module, base module: m5
+B.java package:
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+E.java package:
+module: m3, file: m3.module, base module: m3
+A.java package:
+D.java package:
+module: m4, file: m4.module, base module: m4
+module: m1, file: m1.module, base module: m1
+Main.java package:
+C.java package:
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: m5, file: m5.module, base module: m5
+	E.java package:m5
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m4, file: m4.module, base module: m4
+	D.java package:m4
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+----------Module CU imports before import own----------
+module m5, base:m5, context:[], instantiated:false
+	
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m3, base:m3, context:[], instantiated:false
+	
+module m4, base:m4, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+Unrecoverable semantic error(s) found.
+m1.module:4,11:
+  Semantic Error: Unable to find module: m2.m4.m5

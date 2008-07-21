@@ -19,9 +19,9 @@ module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 	
-module m1, base:m1, context:[], exported:true, instantiated:false
+module m1, base:m1, context:[], instantiated:false
 	
 -------------Instance ModuleCompilationUnit------------
 module m1;
@@ -33,9 +33,9 @@ module: m1, file: m1.module, base module: m1
 	A.java package:m1
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
-module m1, base:m1, context:[], exported:true, instantiated:true
+module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

@@ -52,13 +52,13 @@ Main.java package:
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 	
-module m3, base:m3, context:[], exported:true, instantiated:false
+module m3, base:m3, context:[], instantiated:false
 	
-module m1, base:m1, context:[], exported:true, instantiated:false
+module m1, base:m1, context:[], instantiated:false
 	
-module m2, base:m2, context:[], exported:true, instantiated:false
+module m2, base:m2, context:[], instantiated:false
 	
 -------------Instance ModuleCompilationUnit------------
 module m1;
@@ -80,17 +80,17 @@ module: m1$m2, file: m2.module, base module: m2
 	B.java package:m1$m2
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], exported:true, instantiated:true
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
-module m3, base:m3, context:[], exported:true, instantiated:false
+module m3, base:m3, context:[], instantiated:false
 	
-module m1, base:m1, context:[], exported:true, instantiated:true
+module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework, m2:m1$m2
-module m2, base:m2, context:[], exported:true, instantiated:false
+module m2, base:m2, context:[], instantiated:false
 	
-module m1$m2.m3, base:m3, context:[m1$m2], exported:true, instantiated:true
+module m1$m2.m3, base:m3, context:[m1$m2], instantiated:true
 	jastadd$framework:jastadd$framework
-module m1$m2, base:m2, context:[m1], exported:false, instantiated:true
+module m1$m2, base:m2, context:[m1], instantiated:true
 	m3:m1$m2.m3, jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

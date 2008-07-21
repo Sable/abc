@@ -105,8 +105,8 @@ aspect JAModuleLookupType {
 			return set;
 		}
 		//"imported" types (types that are in CUs that are members of imported modules)
-		for (ModuleCompilationUnit mcu : getImportedModuleMap().values()) {
-			set = mcu.localModuleTypes(name, set);
+		for (jastaddmodules.ImportedModule mcu : getImportedModuleMap().values()) {
+			set = mcu.getModuleCU().localModuleTypes(name, set);
 		}
 		return set;
 	}
