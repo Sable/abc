@@ -131,5 +131,5 @@ module M2, base:M2, context:[], instantiated:false
 module M3, base:M3, context:[], instantiated:false
 	
 Unrecoverable semantic error(s) found.
-M.module:6,11:
-  Semantic Error: Incompatible modules in merge list: M2, M$M3
+M.module:6,7:
+  Semantic Error: Module being merged is a base module. Merging is only allowed for import own modules.

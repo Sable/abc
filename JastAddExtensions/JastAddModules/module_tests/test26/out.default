@@ -1,0 +1,52 @@
+----------Module contents----------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m1.module------
+module m1;
+import own m2 as alias;
+import  m2 as none null;
+merge alias, m2 as alias2;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------m2.module------
+module m2;
+------------------------
+----------CU AST before insert----------
+B.java package:
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+A.java package:
+module: m1, file: m1.module, base module: m1
+Main.java package:
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+Unrecoverable semantic error(s) found.
+m1.module:4,14:
+  Semantic Error: Module being merged is a base module. Merging is only allowed for import own modules.

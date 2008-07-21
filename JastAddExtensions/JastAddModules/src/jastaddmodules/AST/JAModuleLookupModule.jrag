@@ -64,7 +64,9 @@ aspect JAModuleLookupModule {
 	public ModuleCompilationUnit ModuleCompilationUnit.lookupModule(String name) {
 		return lookupModule(this, name);
 	}
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.lookupModule(ModuleCompilationUnit originalContext, String name) {
+	//non-lazy, since merges use lookup and still rely on up-to-date lookups
+	//TODO: if too slow, add a wrapper method for when it's used in lookupType
+	syn ModuleCompilationUnit ModuleCompilationUnit.lookupModule(ModuleCompilationUnit originalContext, String name) {
 		//matching is greedy. Find the longest match first, try it and return if a match was found
 		SortedSet<String> localAliases = new TreeSet<String>(new Comparator<String>() {
 			public int compare(String x, String y) {

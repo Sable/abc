@@ -134,7 +134,7 @@ aspect GenerateImportOwn {
 			Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
 			ModuleCompilationUnit mergeBaseCU = null; //used in check for base cu compatibility
 			for (ModuleAccess access : mergeMember.getMergeModuleList()) {
-				ModuleCompilationUnit cu = access.lookupModule(); //TODO: Check if it is correct to make lookupModule() lazy
+				ModuleCompilationUnit cu = access.lookupModule(); 
 				
 				if (cu == null) {
 					access.error("Unable to find module: " + access.getID()); 
@@ -143,6 +143,11 @@ aspect GenerateImportOwn {
 				
 				if (mergeBaseCU != null && cu.getBaseCU() != mergeBaseCU) {
 					access.error("Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getModuleName());
+					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
+				}
+				
+				if (!cu.isInstance()) {
+					access.error("Module being merged is a base module. Merging is only allowed for import own modules.");
 					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
 				}
 				

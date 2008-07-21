@@ -138,5 +138,4 @@ aspect ModuleCompilationUnit {
 	public HashSet<ModuleCompilationUnit> ModuleCompilationUnit.getInstanceContext() {
 		return this.instanceContext;
 	}
-	
 }

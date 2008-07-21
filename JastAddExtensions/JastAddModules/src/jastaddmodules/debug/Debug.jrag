@@ -123,7 +123,13 @@ aspect Debug {
 		for (String localAlias : getImportedModuleMap().keySet()) {
 			ModuleCompilationUnit importedCU = getImportedModule(localAlias).getModuleCU();
 			if (!first) {s.append(", ");}
-			s.append(localAlias + ":" + importedCU.getModuleName());
+			String exportStr;
+			if (getImportedModule(localAlias).isExported()) {
+				exportStr = "[export]";
+			} else {
+				exportStr = "";
+			}
+			s.append(exportStr + localAlias + ":" + importedCU.getModuleName());
 			first = false;
 		} 
 		s.append("\n");
