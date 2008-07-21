@@ -1,3 +1,0 @@
-module m1;
-import own m2 as alias1;
-import own m2 as alias2;
