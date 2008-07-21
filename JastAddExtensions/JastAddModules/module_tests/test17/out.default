@@ -171,23 +171,23 @@ module m2.m3, base:m3, context:[m2], exported:true, instantiated:true
 
 Module: m1
 	m1.TypeM13
-	m1.TypeM1
 	m1.Type1
 	m1.A
+	m1.TypeM1
 Module: jastadd$framework
 	jastadd$framework.Opt
 	jastadd$framework.List
-	jastadd$framework.ASTNode
 	jastadd$framework.CircularStackEntry
-	jastadd$framework.CircularEvalEntry
 	jastadd$framework.State
+	jastadd$framework.ASTNode
+	jastadd$framework.CircularEvalEntry
 Module: m3
 	m3.C
 	m3.Type3
 Module: m2
-	m2.B
-	m2.Type2
 	m2.TypeM2
+	m2.Type2
+	m2.B
 Module: m2.m3
 	m2.m3.C
 	m2.m3.Type3

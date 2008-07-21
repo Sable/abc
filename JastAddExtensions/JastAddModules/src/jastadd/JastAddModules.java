@@ -127,7 +127,7 @@ public class JastAddModules extends JastAdd {
 					//System.out.print(program.toStringCompilationUnitImports());
 					
 					System.out.println("----------MCU collectTypes after import own----------\n");
-					System.out.println(program.toStringModuleCollectTypes());
+					System.out.println(program.toStringModuleMemberTypes());
 					
 					System.out.print("----------CU iterator----------\n");
 					System.out.print(program.toStringCompilationUnitIterator() + "\n");

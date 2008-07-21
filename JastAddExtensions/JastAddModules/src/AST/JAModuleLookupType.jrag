@@ -42,65 +42,54 @@ aspect JAModuleLookupType {
 	}
 	
 	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
-		//look at the module aliases
-		for (String localModuleAlias : getImportedModuleMap().keySet()) {
-			if (localModuleAlias.equals(packageName)) {
-				//Dont use collectTypes to avoid reentrant rewrites
-				String modulePackageName = getImportedModule(localModuleAlias).getModuleName();
-				TypeDecl type = getHostProgram().lookupType(modulePackageName, typeName);
-				if (type != null) {
-					return type;
-				}
-			}
+		//treat the package name as a module name and lookup the module
+		ModuleCompilationUnit importedCU = lookupModule(this, packageName);
+		if (importedCU != null) {
+		//lookup the type using the module's module name
+			String modulePackageName = importedCU.getModuleName();
+			TypeDecl type = getHostProgram().lookupType(modulePackageName, typeName);
+			if (type != null) {
+				return type;
+			}			
 		}
 		//if none found, do CompilationUnit.lookupType
 		return super.lookupType(packageName, typeName);
 	}
 	
-	syn lazy SimpleSet ModuleCompilationUnit.memberTypes() {
-		SimpleSet ret = SimpleSet.emptySet;
-		
-		for (CompilationUnit cu : getCompilationUnitList()) {
-			//TODO: Check if there is already an implementation of the type collection
-		}
-		
-		return ret;
-	}
-	
 	//TODO: see how these can be turned to lazy
-	public SimpleSet CompilationUnit.collectTypes(SimpleSet set) {
+	public SimpleSet CompilationUnit.memberTypes(SimpleSet set) {
 		for (TypeDecl typeDecl : getTypeDeclList()) {
-			set = typeDecl.collectTypes(set);
+			set = typeDecl.memberTypes(set);
 		}
 		return set;
 	}
-	public SimpleSet TypeDecl.collectTypes(SimpleSet set) {
+	public SimpleSet TypeDecl.memberTypes(SimpleSet set) {
 		set = set.add(this);
 		for (BodyDecl bodyDecl : getBodyDeclList()) {
 			if (bodyDecl instanceof MemberTypeDecl) {
 				MemberTypeDecl memberTypeDecl = (MemberTypeDecl) bodyDecl;
-				set = memberTypeDecl.collectTypes(set);
+				set = memberTypeDecl.memberTypes(set);
 			}
 		}
 		return set;
 	}
-	public SimpleSet MemberTypeDecl.collectTypes(SimpleSet set) {
+	public SimpleSet MemberTypeDecl.memberTypes(SimpleSet set) {
 		throw new Error("CollectTypes should never be called on the abstract MemberTypeDecl");
 	}
-	public SimpleSet MemberClassDecl.collectTypes(SimpleSet set) {
-		return getClassDecl().collectTypes(set);
+	public SimpleSet MemberClassDecl.memberTypes(SimpleSet set) {
+		return getClassDecl().memberTypes(set);
 	}
-	public SimpleSet MemberInterfaceDecl.collectTypes(SimpleSet set) {
-		return getInterfaceDecl().collectTypes(set);
+	public SimpleSet MemberInterfaceDecl.memberTypes(SimpleSet set) {
+		return getInterfaceDecl().memberTypes(set);
 	}
 	
-	SimpleSet CompilationUnit.collectTypes() {
-		return collectTypes(SimpleSet.emptySet);
+	SimpleSet CompilationUnit.memberTypes() {
+		return memberTypes(SimpleSet.emptySet);
 	}
-	syn lazy SimpleSet ModuleCompilationUnit.collectTypes() {
+	syn lazy SimpleSet ModuleCompilationUnit.memberTypes() {
 		SimpleSet ret = SimpleSet.emptySet;
 		for (CompilationUnit cu : getCompilationUnitList()) {
-			ret = cu.collectTypes(ret);
+			ret = cu.memberTypes(ret);
 		}
 		return ret;
 	}
@@ -123,7 +112,7 @@ aspect JAModuleLookupType {
 	}
 	SimpleSet ModuleCompilationUnit.localModuleTypes(String name, SimpleSet set) {
 		//"local" module types (types that are in CUs that are members of the module)
-		for (Iterator i = collectTypes().iterator(); i.hasNext() ;) {
+		for (Iterator i = memberTypes().iterator(); i.hasNext() ;) {
 			TypeDecl type = (TypeDecl) i.next();
 			if (type.name().equals(name)) {
 				set = set.add(type);
@@ -133,6 +122,8 @@ aspect JAModuleLookupType {
 	}
 	
 	//TODO: Implement module/package disambiguation here
+	//Reimplemented LookupType and Generics since I had to insert the module
+	//imports right above LookupType
 	refine Generics eq CompilationUnit.getChild().lookupType(String name) {
 		if (isInJAModule()) {
 			//Reimplement Java1.4Frontend/LookupType...lookupType() + Generics

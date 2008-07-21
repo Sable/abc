@@ -1,5 +1,7 @@
-//STANDING NOTE: Make VERY sure that all JAModule passes DO NOT 
-//TOUCH any AST nodes below CompilationUnit to avoid the REWRITES
+//STANDING NOTE: Make VERY sure that all JAModule passes before the java 
+//errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
+//the REWRITES
+
 
 
 //a "rewrite" pass done once all the module CUs are collected. 

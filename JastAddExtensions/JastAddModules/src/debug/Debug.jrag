@@ -1,5 +1,6 @@
-//STANDING NOTE: Make VERY sure that all JAModule passes DO NOT 
-//TOUCH any AST nodes below CompilationUnit to avoid the REWRITES
+//STANDING NOTE: Make VERY sure that all JAModule passes before the java 
+//errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
+//the REWRITES
 
 
 aspect Debug {
@@ -174,22 +175,22 @@ aspect Debug {
 		return s;
 	}
 	
-	public String Program.toStringModuleCollectTypes() {
+	public String Program.toStringModuleMemberTypes() {
 		String ret = "";
 		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
 			CompilationUnit cu = (CompilationUnit) i.next();
 			if (cu instanceof ModuleCompilationUnit) {
-				ret += ((ModuleCompilationUnit) cu).toStringModuleCollectTypes();
+				ret += ((ModuleCompilationUnit) cu).toStringModuleMemberTypes();
 			}
 		}
 		return ret;
 	}
-	public String ModuleCompilationUnit.toStringModuleCollectTypes() {
-		return toStringModuleCollectTypes(new StringBuffer()).toString();
+	public String ModuleCompilationUnit.toStringModuleMemberTypes() {
+		return toStringModuleMemberTypes(new StringBuffer()).toString();
 	}
-	public StringBuffer ModuleCompilationUnit.toStringModuleCollectTypes(StringBuffer s) {
+	public StringBuffer ModuleCompilationUnit.toStringModuleMemberTypes(StringBuffer s) {
 		s.append("Module: " + getModuleName() + "\n");
-		for (Iterator i = collectTypes().iterator(); i.hasNext(); ) {
+		for (Iterator i = memberTypes().iterator(); i.hasNext(); ) {
 			TypeDecl type = (TypeDecl)i.next();
 			s.append("\t" + type.packageName() + "." + type.name() + "\n");
 		}
