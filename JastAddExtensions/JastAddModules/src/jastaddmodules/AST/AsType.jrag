@@ -1,0 +1,15 @@
+
+aspect AsType {
+	public abstract boolean AsType.isExported();
+	public boolean AsTypeOwn.isExported() {
+		return false;
+	}
+	public boolean AsTypeExport.isExported() {
+		return true;
+	}
+	public boolean AsTypeNone.isExported() {
+		//set to false so that non-own imports cannot be access through 
+		//an importing module. They should be accessed through the base type
+		return false; 
+	}
+}
