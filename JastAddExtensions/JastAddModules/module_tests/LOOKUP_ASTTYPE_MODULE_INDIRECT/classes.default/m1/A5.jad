@@ -1,0 +1,68 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.ASTNode;
+import m1.m2.m3.C;
+
+public class A5 extends ASTNode
+{
+
+    public C getC()
+    {
+        return (C)getChild(0);
+    }
+
+    public C getCNoTransform()
+    {
+        return (C)getChildNoTransform(0);
+    }
+
+    public void setC(C node)
+    {
+        setChild(node, 0);
+    }
+
+    public A5(C p0)
+    {
+        is$Final = true;
+        setChild(p0, 0);
+    }
+
+    public A5()
+    {
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[1];
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        A5 node = (A5)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 1;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}

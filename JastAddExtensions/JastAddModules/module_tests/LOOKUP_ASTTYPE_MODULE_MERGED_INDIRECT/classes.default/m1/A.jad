@@ -1,0 +1,193 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.*;
+import m1$m2.B;
+import m1$m2.m3.C;
+import m1$mergedalias.E;
+
+public class A extends ASTNode
+{
+
+    public B getB()
+    {
+        return (B)getChild(0);
+    }
+
+    public B getBNoTransform()
+    {
+        return (B)getChildNoTransform(0);
+    }
+
+    public void setB(B node)
+    {
+        setChild(node, 0);
+    }
+
+    public B getB2()
+    {
+        return (B)getChild(1);
+    }
+
+    public B getB2NoTransform()
+    {
+        return (B)getChildNoTransform(1);
+    }
+
+    public void setB2(B node)
+    {
+        setChild(node, 1);
+    }
+
+    public C getC1()
+    {
+        return (C)getChild(2);
+    }
+
+    public C getC1NoTransform()
+    {
+        return (C)getChildNoTransform(2);
+    }
+
+    public void setC1(C node)
+    {
+        setChild(node, 2);
+    }
+
+    public E getE1()
+    {
+        return (E)getChild(3);
+    }
+
+    public E getE1NoTransform()
+    {
+        return (E)getChildNoTransform(3);
+    }
+
+    public void setE1(E node)
+    {
+        setChild(node, 3);
+    }
+
+    public Opt getB3Opt()
+    {
+        return (Opt)getChild(4);
+    }
+
+    public Opt getB3OptNoTransform()
+    {
+        return (Opt)getChildNoTransform(4);
+    }
+
+    public void setB3Opt(Opt opt)
+    {
+        setChild(opt, 4);
+    }
+
+    public boolean hasB3()
+    {
+        return getB3Opt().getNumChild() != 0;
+    }
+
+    public B getB3()
+    {
+        return (B)getB3Opt().getChild(0);
+    }
+
+    public void setB3(B node)
+    {
+        getB3Opt().setChild(node, 0);
+    }
+
+    public List getB4List()
+    {
+        return (List)getChild(5);
+    }
+
+    public List getB4ListNoTransform()
+    {
+        return (List)getChildNoTransform(5);
+    }
+
+    public void setB4List(List list)
+    {
+        setChild(list, 5);
+    }
+
+    public int getNumB4()
+    {
+        return getB4List().getNumChild();
+    }
+
+    public B getB4(int index)
+    {
+        return (B)getB4List().getChild(index);
+    }
+
+    public void setB4(B node, int i)
+    {
+        getB4List().setChild(node, i);
+    }
+
+    public void insertB4(B node, int i)
+    {
+        getB4List().insertChild(node, i);
+    }
+
+    public void addB4(B node)
+    {
+        List list = getB4List();
+        list.setChild(node, list.getNumChild());
+    }
+
+    public A(B p0, B p1, C p2, E p3, Opt p4, List p5)
+    {
+        is$Final = true;
+        setChild(p0, 0);
+        setChild(p1, 1);
+        setChild(p2, 2);
+        setChild(p3, 3);
+        setChild(p4, 4);
+        setChild(p5, 5);
+    }
+
+    public A()
+    {
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[6];
+        setChild(new Opt(), 4);
+        setChild(new List(), 5);
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        A node = (A)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 6;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}

@@ -1,0 +1,85 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.ASTNode;
+import jastadd$framework.Opt;
+import m1.m2.B;
+
+public class A4 extends ASTNode
+{
+
+    public Opt getBOpt()
+    {
+        return (Opt)getChild(0);
+    }
+
+    public Opt getBOptNoTransform()
+    {
+        return (Opt)getChildNoTransform(0);
+    }
+
+    public void setBOpt(Opt opt)
+    {
+        setChild(opt, 0);
+    }
+
+    public boolean hasB()
+    {
+        return getBOpt().getNumChild() != 0;
+    }
+
+    public B getB()
+    {
+        return (B)getBOpt().getChild(0);
+    }
+
+    public void setB(B node)
+    {
+        getBOpt().setChild(node, 0);
+    }
+
+    public A4(Opt p0)
+    {
+        is$Final = true;
+        setChild(p0, 0);
+    }
+
+    public A4()
+    {
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[1];
+        setChild(new Opt(), 0);
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        A4 node = (A4)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 1;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}

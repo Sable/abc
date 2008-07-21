@@ -1,0 +1,96 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.ASTNode;
+import jastadd$framework.List;
+import m1.m2.B;
+
+public class A3 extends ASTNode
+{
+
+    public List getBList()
+    {
+        return (List)getChild(0);
+    }
+
+    public List getBListNoTransform()
+    {
+        return (List)getChildNoTransform(0);
+    }
+
+    public void setBList(List list)
+    {
+        setChild(list, 0);
+    }
+
+    public int getNumB()
+    {
+        return getBList().getNumChild();
+    }
+
+    public B getB(int index)
+    {
+        return (B)getBList().getChild(index);
+    }
+
+    public void setB(B node, int i)
+    {
+        getBList().setChild(node, i);
+    }
+
+    public void insertB(B node, int i)
+    {
+        getBList().insertChild(node, i);
+    }
+
+    public void addB(B node)
+    {
+        List list = getBList();
+        list.setChild(node, list.getNumChild());
+    }
+
+    public A3(List p0)
+    {
+        is$Final = true;
+        setChild(p0, 0);
+    }
+
+    public A3()
+    {
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[1];
+        setChild(new List(), 0);
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        A3 node = (A3)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 1;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}

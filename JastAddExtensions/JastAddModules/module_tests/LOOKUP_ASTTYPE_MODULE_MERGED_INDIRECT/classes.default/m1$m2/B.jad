@@ -1,0 +1,82 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   B.ast
+
+package m1$m2;
+
+import jastadd$framework.ASTNode;
+import m1$mergedalias.E;
+
+public class B extends ASTNode
+{
+
+    public E getE1()
+    {
+        return (E)getChild(0);
+    }
+
+    public E getE1NoTransform()
+    {
+        return (E)getChildNoTransform(0);
+    }
+
+    public void setE1(E node)
+    {
+        setChild(node, 0);
+    }
+
+    public m1$m2$m4.m5.E getE2()
+    {
+        return (m1$m2$m4.m5.E)getChild(1);
+    }
+
+    public m1$m2$m4.m5.E getE2NoTransform()
+    {
+        return (m1$m2$m4.m5.E)getChildNoTransform(1);
+    }
+
+    public void setE2(m1$m2$m4.m5.E node)
+    {
+        setChild(node, 1);
+    }
+
+    public B(E p0, m1$m2$m4.m5.E p1)
+    {
+        setChild(p0, 0);
+        setChild(p1, 1);
+    }
+
+    public B()
+    {
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[2];
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        B node = (B)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 2;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}
