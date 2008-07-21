@@ -1,0 +1,31 @@
+//STANDING NOTE: Make VERY sure that all JAModule passes before the java 
+//errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
+//the REWRITES
+
+
+
+//Inserts implicit module imports to modules
+aspect InsertImplicit {
+
+	//add import jastadd$framwork to all modules
+	public boolean Program.inserJAFrameworkModuleImport() {
+		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
+			CompilationUnit cu = (CompilationUnit) i.next();
+			cu.inserJAFrameworkModuleImport();
+		}
+		return true;
+	}
+	public boolean CompilationUnit.inserJAFrameworkModuleImport() {return true;}
+	public boolean ModuleCompilationUnit.inserJAFrameworkModuleImport() {
+		if (!getModuleName().equals(Program.JASTADD_FRAMEWORK_MODULE)) {
+			ModuleImportDecl frameworkImport = new ModuleImportDecl(
+				new ModuleImportTypeNorm(),
+				new ModuleAccess(Program.JASTADD_FRAMEWORK_MODULE),
+				new AsTypeNone(),
+				new NullModuleAccess());
+			getModuleMemberDeclList().add(frameworkImport);
+		}
+		return true;
+	}
+	
+}

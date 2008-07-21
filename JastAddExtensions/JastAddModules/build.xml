@@ -42,6 +42,7 @@
 			<src path="${basedir}/generated" />
 			<src path="${JastAdd}"/>
 			<include name="jastadd/*.java"/>
+			<include name="jastaddmodules**/*.java"/>
 		</javac>
 	</target>
 

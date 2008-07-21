@@ -1,0 +1,113 @@
+
+aspect JAModuleLookupModule {
+	//lookupModuleCUNoTransform : lookup the base module CU of a compilation unit.
+	//Traverses the tree instead of just going up the parents, so use sparingly
+	//The JastAddModules code should just use this prior to InserModuleCUs 
+	//
+	//NOTE: Keep this non-lazy, as this is called both before and after
+	//InsertModuleCUs 
+	syn ModuleCompilationUnit ASTNode.lookupModuleCUNoTransform(ModuleAccess access) {
+		if (access == null) {
+			return null;
+		}
+		ModuleCompilationUnit ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).lookupModuleCUNoTransform(access);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return ret;
+	}
+	syn ModuleCompilationUnit CompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
+		return null;
+	}
+	syn ModuleCompilationUnit ModuleCompilationUnit.lookupModuleCUNoTransform(ModuleAccess access) {
+		if (access == null) {
+			return null;
+		}
+		ModuleCompilationUnit ret = null;
+		for (int i = 0 ; i < getNumChild(); i++) {
+			ret = getChild(i).lookupModuleCUNoTransform(access);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return ret;
+	}
+	syn ModuleCompilationUnit ModuleDecl.lookupModuleCUNoTransform(ModuleAccess access) {
+		if (getModuleAccess().getID().equals(access.getID())) {
+			return getModuleCompilationUnit();
+		} else {
+			return null;
+		}
+	}
+	public ModuleCompilationUnit CompilationUnit.lookupModuleCUNoTransform() {
+		if (this.getModuleDecl() == null) {
+			return null;
+		}
+		return getHostProgram().lookupModuleCUNoTransform(this.getModuleDecl().getModuleAccess());
+	}
+	public ModuleCompilationUnit Program.lookupModuleCUNoTransform(String moduleName) {
+		return this.lookupModuleCUNoTransform(new ModuleAccess(moduleName));
+	}
+	
+	
+	//module lookup after the ModuleCUs have been rearranged in the tree
+	public ModuleCompilationUnit ModuleAccess.lookupModule() {
+		ModuleCompilationUnit context = getModuleCompilationUnit();
+		if (context == null) {
+			return null;
+		}
+		return context.lookupModule(this.getID());
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.lookupModule(String name) {
+		return lookupModule(this, name);
+	}
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.lookupModule(ModuleCompilationUnit originalContext, String name) {
+		//matching is greedy. Find the longest match first, try it and return if a match was found
+		SortedSet<String> localAliases = new TreeSet<String>(new Comparator<String>() {
+			public int compare(String x, String y) {
+				if (x.length() != y.length()) {
+					return y.length() - x.length();
+				}
+				return x.compareTo(y);
+			}
+		});
+		localAliases.addAll(getImportedModuleMap().keySet());
+		for (String alias : localAliases) {
+			//if alias cannot be a qualifier, proceed to next
+			if (!name.startsWith(alias)) {
+				continue;
+			}
+			//if equal match and is visible from the original context, return entry
+			//it is visible from the original context iff:
+			//	the original context is the same as the current context (i.e. it is a direct import) or
+			//	the import was exported
+			if (name.equals(alias)) {
+				if (originalContext == this || getImportedModule(name).isExported()) {
+					return getImportedModule(alias);
+				} 
+				continue;
+			}
+			//check if alias is a qualifier, then lookup in the module
+			String trimmedName = name.substring(alias.length());
+			if (!trimmedName.startsWith(".")) {
+				continue;
+			}
+			trimmedName = trimmedName.substring(1);
+			
+			//go into imports only iff: 
+			//	it is a direct import (this = originalContext)
+			//	or it is exported
+			if (originalContext == this || getImportedModule(alias).isExported()) {
+				ModuleCompilationUnit ret = getImportedModule(alias).lookupModule(originalContext, trimmedName);
+				if (ret != null) {
+					return ret;
+				}
+			}
+		}
+		return null;
+	}
+
+}
