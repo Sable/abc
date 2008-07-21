@@ -1,5 +1,6 @@
 aspect JAModuleLookupType {
 	refine LookupType eq Program.lookupType(String packageName, String typeName) {
+		assert (isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
 		addPrimitiveTypes();
 		String fullName = packageName.equals("") ? typeName : packageName + "." + typeName;
 		//temporary hack
@@ -42,6 +43,7 @@ aspect JAModuleLookupType {
 	}
 	
 	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
+		assert (getHostProgram().isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
 		//treat the package name as a module name and lookup the module
 		ModuleCompilationUnit importedCU = lookupModule(this, packageName);
 		if (importedCU != null) {
@@ -125,6 +127,7 @@ aspect JAModuleLookupType {
 	//Reimplemented LookupType and Generics since I had to insert the module
 	//imports right above LookupType
 	refine Generics eq CompilationUnit.getChild().lookupType(String name) {
+		assert (getHostProgram().isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
 		if (isInJAModule()) {
 			//Reimplement Java1.4Frontend/LookupType...lookupType() + Generics
 		    // locally declared types in compilation unit

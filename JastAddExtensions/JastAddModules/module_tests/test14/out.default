@@ -101,26 +101,6 @@ module M1$M23alias, base:M2, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M23alias, base:M3, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework
-----------MCU collectTypes after import own----------
-
-Module: jastadd$framework
-Module: M2
-	M2.B
-Module: M1
-	M1.A
-Module: M3
-	M3.C
-Module: M1$M2alias1
-	M1$M2alias1.B
-Module: M1$M2alias1
-	M1$M2alias1.B
-Module: M1$M23alias
-	M1$M23alias.B
-Module: M1$M23alias
-	M1$M23alias.C
-
-----------CU iterator----------
-jastadd$framework.module, M2.module, B.java, M1.module, A.java, M3.module, M2.module, B.java, M2.module, B.java, M2.module, B.java, M3.module, C.java
 M1.module:1:
   Semantic Error: Ambiguous module name M2 in module M1
 M1.module:1:

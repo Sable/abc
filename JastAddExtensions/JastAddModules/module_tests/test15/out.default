@@ -37,13 +37,5 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
-----------MCU collectTypes after import own----------
-
-Module: jastadd$framework
-Module: m1
-	m1.A
-
-----------CU iterator----------
-jastadd$framework.module, m1.module, A.java
 A.java:1:
   Semantic Error: A module declaration cannot be used if there is a package declaration on the compilation unit.

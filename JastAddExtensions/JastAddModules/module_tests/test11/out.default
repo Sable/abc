@@ -119,21 +119,6 @@ module M1, base:M1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
-----------MCU collectTypes after import own----------
-
-Module: M1
-	M1.Type2
-	M1.X
-Module: jastadd$framework
-	jastadd$framework.List
-	jastadd$framework.CircularStackEntry
-	jastadd$framework.Opt
-	jastadd$framework.CircularEvalEntry
-	jastadd$framework.ASTNode
-	jastadd$framework.State
-
-----------CU iterator----------
-framework/Opt.java, AST.ast, M1.module, X.jrag, AST2.ast, jastadd$framework.module, ASTNode.java, Opt.java, List.java, framework/List.java, Y.jrag, framework/ASTNode.java, A.java
 AST.ast:1,8:
   Semantic Error: Module not found: NonExistentModule
 Y.jrag:1,8:

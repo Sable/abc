@@ -68,9 +68,11 @@ public class JastAddModules extends JastAdd {
 				program.checkModuleErrorsPass1();
 				StringBuffer msg = null;
 				if (program.options().hasOption(DEBUG_OPTION)) {
-					msg = new StringBuffer("----------Module contents----------\n");
+					msg = new StringBuffer(
+							"----------Module contents----------\n");
 					System.out.print(program.toStringJAModules(msg));
-					msg = new StringBuffer("----------CU AST before insert----------\n");
+					msg = new StringBuffer(
+							"----------CU AST before insert----------\n");
 					System.out.print(program.toStringJAModuleCUAST(0, msg));
 				}
 
@@ -86,9 +88,11 @@ public class JastAddModules extends JastAdd {
 				}
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
-					msg = new StringBuffer("----------CU AST after insert----------\n");
+					msg = new StringBuffer(
+							"----------CU AST after insert----------\n");
 					System.out.print(program.toStringJAModuleCUAST(0, msg));
-					msg = new StringBuffer("----------Module CU imports before import own----------\n");
+					msg = new StringBuffer(
+							"----------Module CU imports before import own----------\n");
 					System.out.print(msg);
 					System.out.print(program.toStringJAModuleCUImports());
 				}
@@ -99,17 +103,16 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
-				//flush the program cache to take the newly generated modules into consideration
-				//for JAModuleClassPath.Program.modulePackages()
+				// flush the program cache to take the newly generated modules
+				// into consideration
+				// for JAModuleClassPath.Program.modulePackages()
 				program.flushCache();
-				
-				//does not work in general due to conflicting names
-				/*
-				result = program.insertModulePackageImports();
-				if (!result) {
-					return false;
-				}*/
 
+				// does not work in general due to conflicting names
+				/*
+				 * result = program.insertModulePackageImports(); if (!result) {
+				 * return false; }
+				 */
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					System.out
@@ -117,20 +120,15 @@ public class JastAddModules extends JastAdd {
 					System.out.print(program.getInstanceModuleCU() + "\n");
 					System.out
 							.print("-----------End Instance ModuleCompilationUnit----------\n");
-					msg = new StringBuffer("----------CU AST after generateImportOwn----------\n");
-					System.out.print(program.toStringJAModuleCUAST(0, msg) + "\n");
-					msg = new StringBuffer("----------Module CU imports after import own----------\n");
+					msg = new StringBuffer(
+							"----------CU AST after generateImportOwn----------\n");
+					System.out.print(program.toStringJAModuleCUAST(0, msg)
+							+ "\n");
+					msg = new StringBuffer(
+							"----------Module CU imports after import own----------\n");
 					System.out.print(msg);
 					System.out.print(program.toStringJAModuleCUImports());
-					
-					//System.out.println("----------CU imports after import own----------\n");
-					//System.out.print(program.toStringCompilationUnitImports());
-					
-					System.out.println("----------MCU collectTypes after import own----------\n");
-					System.out.println(program.toStringModuleMemberTypes());
-					
-					System.out.print("----------CU iterator----------\n");
-					System.out.print(program.toStringCompilationUnitIterator() + "\n");
+
 				}
 
 				// check if there are any duplicate module names (should never
@@ -150,6 +148,18 @@ public class JastAddModules extends JastAdd {
 			}
 			if (errors.size() > 0) {
 				return false;
+			}
+			program.setModuleProcessingComplete(true);
+
+			if (program.options().hasOption(DEBUG_OPTION)) {
+
+				System.out
+						.println("----------MCU collectTypes after import own----------\n");
+				System.out.println(program.toStringModuleMemberTypes());
+
+				System.out.print("----------CU iterator----------\n");
+				System.out.print(program.toStringCompilationUnitIterator()
+						+ "\n");
 			}
 
 			// Error check

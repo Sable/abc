@@ -1,0 +1,10 @@
+
+aspect JAModuleProgram {
+	protected boolean Program.moduleProcessingComplete = false;
+	public boolean Program.isModuleProcessingComplete() {
+		return moduleProcessingComplete;
+	}
+	public void Program.setModuleProcessingComplete(boolean b) {
+		moduleProcessingComplete = b;
+	}
+}
