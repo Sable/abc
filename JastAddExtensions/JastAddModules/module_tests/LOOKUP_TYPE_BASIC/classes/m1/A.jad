@@ -1,0 +1,39 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.java
+
+package m1;
+
+import jastadd$framework.List;
+import java.util.LinkedList;
+import m2.B;
+import m2.Type2;
+import m2.m3.C;
+import m2.m3.Type3;
+
+// Referenced classes of package m1:
+//            Type1
+
+public class A
+{
+
+    public A()
+    {
+        list = new LinkedList();
+        flist = new List();
+        t1 = new Type1();
+        b = new B();
+        t2 = new Type2();
+        c = new C();
+        t3 = new Type3();
+    }
+
+    java.util.List list;
+    List flist;
+    Type1 t1;
+    B b;
+    Type2 t2;
+    C c;
+    Type3 t3;
+}
