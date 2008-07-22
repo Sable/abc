@@ -1,0 +1,98 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   B.ast
+
+package m1.m2alias;
+
+import jastadd$framework.ASTNode;
+import m1.m2alias.m3alias.CType;
+
+public class BType extends ASTNode
+{
+
+    public CType getC1()
+    {
+        return (CType)getChild(0);
+    }
+
+    public CType getC1NoTransform()
+    {
+        return (CType)getChildNoTransform(0);
+    }
+
+    public void setC1(CType node)
+    {
+        setChild(node, 0);
+    }
+
+    public m1.m2alias$m3c.CType getC2()
+    {
+        return (m1.m2alias$m3c.CType)getChild(1);
+    }
+
+    public m1.m2alias$m3c.CType getC2NoTransform()
+    {
+        return (m1.m2alias$m3c.CType)getChildNoTransform(1);
+    }
+
+    public void setC2(m1.m2alias$m3c.CType node)
+    {
+        setChild(node, 1);
+    }
+
+    public m1.m2alias$m3d.CType getC3()
+    {
+        return (m1.m2alias$m3d.CType)getChild(2);
+    }
+
+    public m1.m2alias$m3d.CType getC3NoTransform()
+    {
+        return (m1.m2alias$m3d.CType)getChildNoTransform(2);
+    }
+
+    public void setC3(m1.m2alias$m3d.CType node)
+    {
+        setChild(node, 2);
+    }
+
+    public BType(CType p0, m1.m2alias$m3c.CType p1, m1.m2alias$m3d.CType p2)
+    {
+        setChild(p0, 0);
+        setChild(p1, 1);
+        setChild(p2, 2);
+    }
+
+    public BType()
+    {
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[3];
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        BType node = (BType)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 3;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}

@@ -1,0 +1,101 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.ASTNode;
+import m1.m2alias.BType;
+import m1.m2alias.m3alias.CType;
+
+public class AType extends ASTNode
+{
+
+    public BType getBType()
+    {
+        return (BType)getChild(0);
+    }
+
+    public BType getBTypeNoTransform()
+    {
+        return (BType)getChildNoTransform(0);
+    }
+
+    public void setBType(BType node)
+    {
+        setChild(node, 0);
+    }
+
+    public BType getB2()
+    {
+        return (BType)getChild(1);
+    }
+
+    public BType getB2NoTransform()
+    {
+        return (BType)getChildNoTransform(1);
+    }
+
+    public void setB2(BType node)
+    {
+        setChild(node, 1);
+    }
+
+    public CType getC()
+    {
+        return (CType)getChild(2);
+    }
+
+    public CType getCNoTransform()
+    {
+        return (CType)getChildNoTransform(2);
+    }
+
+    public void setC(CType node)
+    {
+        setChild(node, 2);
+    }
+
+    public AType(BType p0, BType p1, CType p2)
+    {
+        is$Final = true;
+        setChild(p0, 0);
+        setChild(p1, 1);
+        setChild(p2, 2);
+    }
+
+    public AType()
+    {
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[3];
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        AType node = (AType)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 3;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}
