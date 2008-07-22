@@ -125,12 +125,12 @@ aspect GenerateImportOwn {
 	
 	//This should only be called _after_ the import CUs have been generated.
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
-		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+		for (ModuleMemberDecl member : ret.getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
 			}
 			ModuleMergeDecl mergeMember = (ModuleMergeDecl)member; 
-			//lookup merge targets
+			//lookup merge targets from ret
 			Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
 			ModuleCompilationUnit mergeBaseCU = null; //used in check for base cu compatibility
 			for (ModuleAccess access : mergeMember.getMergeModuleList()) {
@@ -157,7 +157,11 @@ aspect GenerateImportOwn {
 			//create result copy (instantiate from the base types of the merge targets with ret as a context)
 			ModuleCompilationUnit mergedCU = null;
 			String mergeAlias = mergeMember.getAsModule().getID();
-			mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeAlias));
+			if (mergeMember.getAsType() instanceof AsTypeOwn) {
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeAlias));
+			} else if (mergeMember.getAsType() instanceof AsTypeExport) {
+				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias));
+			}
 			getHostProgram().getCompilationUnitList().addChild(mergedCU);
 			
 			//foreach merge target
@@ -169,9 +173,6 @@ aspect GenerateImportOwn {
 					boolean oldIsExported = instanceContextCU.getImportedModule(oldAlias).isExported();
 					assert (oldAlias != null) : "Unable to find old alias";
 					instanceContextCU.removeImportedModule(oldAlias);
-			//		detach the mergeTargetCU from the compilationUnit list of the instancecontext
-					int mergeTargetCUIndex = getHostProgram().getCompilationUnitList().getIndexOfChild(mergeTargetCU);
-					getHostProgram().getCompilationUnitList().removeChild(mergeTargetCUIndex);
 			//		attach the result copy to the context member's import list (use the old alias and isExported)
 					if (ret != instanceContextCU) {
 						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldIsExported);
@@ -179,12 +180,11 @@ aspect GenerateImportOwn {
 			//		add the context member to the result copy's instance context
 					mergedCU.addInstanceContext(instanceContextCU);
 				}
+			//	detach the mergeTargetCU from the compilationUnit list of the instancecontext
+				int mergeTargetCUIndex = getHostProgram().getCompilationUnitList().getIndexOfChild(mergeTargetCU);
+				getHostProgram().getCompilationUnitList().removeChild(mergeTargetCUIndex);
 			//	detach the merge target from ret's import list
-				for (jastaddmodules.ImportedModule impMod : ret.getImportedModuleMap().values()) { 
-					if (impMod.getModuleCU() == mergeTargetCU) {
-						ret.removeImportedModule(mergeTargetCU);
-					}
-				}
+				ret.removeImportedModule(mergeTargetCU);
 			}
 			//attach the result copy to ret's import list
 			ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType().isExported());
