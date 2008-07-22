@@ -8,4 +8,6 @@ aspect JastAddFindEquations {
 	eq SynDecl.equations() = equationCollection();	
 	coll HashSet SynDecl.equationCollection() [new HashSet()] with add;
 	SynEq contributes this to SynDecl.equationCollection() for decl();
+	
+	ContributionDecl contributes this to SynDecl.equationCollection() for decl();
 }

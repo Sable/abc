@@ -22,6 +22,11 @@ aspect Compile {
 
   // flush 
   public void Program.flushSourceFiles(java.util.Collection fileNames) {
+    try {
+      flushAttributes();
+    } catch (NullPointerException e) {
+      setCompilationUnitList(new List());
+    }
     List list = new List();
     for(int i = 0; i < getNumCompilationUnit(); i++) {
     	CompilationUnit cu = getCompilationUnit(i);
@@ -32,7 +37,6 @@ aspect Compile {
     	}
     }
     setCompilationUnitList(list);
-    flushAttributes();
   }
   
   public void ASTNode.flushAttributes() {

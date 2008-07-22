@@ -469,11 +469,7 @@ public class Model extends JastAddJModel {
 			if(fileName != null)
 				changedFileNames.add(fileName);
 			// remove files already built and the current document from work list
-			try {
-				program.flushSourceFiles(changedFileNames);
-			} catch (java.lang.Exception e) {
-				System.out.println("Error flushing caches");
-			}
+			program.flushSourceFiles(changedFileNames);
 			if(fileName != null)
 				program.files().remove(fileName);
 	

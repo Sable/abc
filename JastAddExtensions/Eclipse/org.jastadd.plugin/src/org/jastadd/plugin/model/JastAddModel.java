@@ -232,7 +232,7 @@ public abstract class JastAddModel {
 	}	
 	
 	
-	public synchronized void fullBuild(IProject project) {
+	public void fullBuild(IProject project) {
 		completeBuild(project);
 	}
 
