@@ -138,4 +138,29 @@ aspect ModuleCompilationUnit {
 	public HashSet<ModuleCompilationUnit> ModuleCompilationUnit.getInstanceContext() {
 		return this.instanceContext;
 	}
+
+	public void ModuleCompilationUnit.detachFromProgramList() {
+		this.getInstanceContext().clear();
+		this.detachFromProgramList(null);
+	}	
+	public void ModuleCompilationUnit.detachFromProgramList(ModuleCompilationUnit context) {
+		assert (context == null && getInstanceContext().size() == 0) : "Calls with a null context must have an empty instance context";
+
+		for (ImportedModule cu : getImportedModuleMap().values()) {
+			if (cu.getModuleCU().isInstance()) {
+				cu.getModuleCU().detachFromProgramList();
+			}
+		}
+		
+		if (context != null) {
+			boolean result = removeInstanceContext(context);
+			assert (result) : "Context not found in instance context";
+		}
+		
+		if (context == null || getInstanceContext().size() == 0) {
+			assert (getHostProgram() != null || getParent() != null) : "Unable to find host program in module " + getModuleName();
+			int index = getHostProgram().getCompilationUnitList().getIndexOfChild(this);
+			getHostProgram().getCompilationUnitList().removeChild(index);
+		}
+	}
 }

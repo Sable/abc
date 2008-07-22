@@ -146,6 +146,10 @@ aspect GenerateImportOwn {
 					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
 				}
 				
+				if (mergeTargets.contains(cu)) {
+					access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
+				}
+				
 				if (!cu.isInstance()) {
 					access.error("Module being merged is a base module. Merging is only allowed for import own modules.");
 					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
@@ -180,9 +184,8 @@ aspect GenerateImportOwn {
 			//		add the context member to the result copy's instance context
 					mergedCU.addInstanceContext(instanceContextCU);
 				}
-			//	detach the mergeTargetCU from the compilationUnit list of the instancecontext
-				int mergeTargetCUIndex = getHostProgram().getCompilationUnitList().getIndexOfChild(mergeTargetCU);
-				getHostProgram().getCompilationUnitList().removeChild(mergeTargetCUIndex);
+			//	detach the mergeTargetCU from the compilationUnit list of the program
+				mergeTargetCU.detachFromProgramList();
 			//	detach the merge target from ret's import list
 				ret.removeImportedModule(mergeTargetCU);
 			}

@@ -4,8 +4,12 @@
 package jastadd;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.io.File;
 
 import AST.BytecodeParser;
@@ -231,4 +235,5 @@ public class JastAddModules extends JastAdd {
 		options.addKeyValueOption(INSTANCE_MODULES_OPTION);
 		options.addKeyOption(DEBUG_OPTION);
 	}
+
 }
