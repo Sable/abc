@@ -19,10 +19,15 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -148,6 +153,23 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 				hasChanges = true;
 			}
 		});
+		
+		// Add Browse button here..
+		final Button browseButton = new Button(composite, SWT.RIGHT);
+		SelectionAdapter adapter = new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent event) {
+					DirectoryDialog dialog = new DirectoryDialog (shell);
+					dialog.setFilterPath(project.getRawLocation().toOSString());
+					String dir = dialog.open();
+				    if (dir != null) {
+				      outputFolderControl.setText(dir);
+				    }
+				}
+		};
+		browseButton.addSelectionListener(adapter);
+		browseButton.setText("Browse..");
+
+		
 
 		if (folderList instanceof ParserFolderList) {
 			Label parserNameLabel = new Label(composite, SWT.LEFT);

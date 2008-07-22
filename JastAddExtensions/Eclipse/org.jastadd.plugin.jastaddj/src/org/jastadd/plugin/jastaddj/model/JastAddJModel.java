@@ -25,9 +25,11 @@ import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.ArchiveSourceContainer;
 import org.eclipse.debug.core.sourcelookup.containers.DirectorySourceContainer;
@@ -270,7 +272,7 @@ public class JastAddJModel extends JastAddModel {
 		notifyModelListeners();
 	}
 
-	protected void completeBuild(IProject project) {
+	protected void completeBuild(IProject project, IProgressMonitor monitor) {
 		// Build a new project from saved files only.
 		try {
 			try {
@@ -289,9 +291,28 @@ public class JastAddJModel extends JastAddModel {
 				}
 
 				IProgram program = initProgram(project, buildConfiguration);
-
+		
+				// Parsing source files
 				Map<String, IFile> map = sourceMap(project, buildConfiguration);
+				
+				monitor.beginTask("Building files in project " + project.getName(), 100);
+				SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 50);
+				subMonitor.beginTask("", map.keySet().size());
+				if(map != null) {
+					if (monitor != null) {
+						monitor.beginTask("Building files in " + project.getName(), map.keySet().size()*3);
+					}
+					for (String fileName : map.keySet()) {
+						program.addSourceFile(fileName);
+						subMonitor.worked(1);
+					}
+				}
+				subMonitor.done();
+				
+				// Check semantics
 				boolean build = true;
+				subMonitor = new SubProgressMonitor(monitor, 50);
+				subMonitor.beginTask("", map.keySet().size()*2);
 				for (Iterator iter = program.compilationUnitIterator(); iter
 						.hasNext();) {
 					ICompilationUnit unit = (ICompilationUnit) iter.next();
@@ -303,6 +324,7 @@ public class JastAddJModel extends JastAddModel {
 							// there are no parse errors
 							unit.errorCheck(errors, warnings);
 						}
+						subMonitor.worked(1);					 
 						if (!errors.isEmpty())
 							build = false;
 						errors.addAll(warnings);
@@ -328,12 +350,16 @@ public class JastAddJModel extends JastAddModel {
 								}
 							}
 						}
+						
+						// Generate bytecode
 						if (build) {
 							unit.transformation();
 							unit.generateClassfile();
 						}
+						subMonitor.worked(1);
 					}
 				}
+				subMonitor.done();
 
 				// Use for the bootstrapped version of JastAdd
 				/*
@@ -348,6 +374,8 @@ public class JastAddJModel extends JastAddModel {
 			}
 		} catch (Throwable e) {
 			logError(e, "Build failed!");
+		} finally {
+			monitor.done();
 		}
 	}
 
@@ -611,15 +639,10 @@ public class JastAddJModel extends JastAddModel {
 		});
 		program.options().initOptions();
 		try {
-		program.addKeyValueOption("-classpath");
-		program.addKeyValueOption("-bootclasspath");
-		program.addKeyValueOption("-d");
-		addBuildConfigurationOptions(project, program, buildConfiguration);
-			Map<String, IFile> map = sourceMap(project, buildConfiguration);
-			if(map != null) {
-				for (String fileName : map.keySet())
-					program.addSourceFile(fileName);
-			}
+			program.addKeyValueOption("-classpath");
+			program.addKeyValueOption("-bootclasspath");
+			program.addKeyValueOption("-d");
+			addBuildConfigurationOptions(project, program, buildConfiguration);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

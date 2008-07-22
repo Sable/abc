@@ -13,10 +13,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
@@ -124,13 +127,6 @@ public class Model extends JastAddJModel {
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		program.options().setOption("-verbose");
 
-		try {
-			Map<String,IFile> map = sourceMap(project, buildConfiguration);
-			for(String fileName : map.keySet())
-				program.addSourceFile(fileName);
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
 		return program;	   
 	}
 	
@@ -300,7 +296,9 @@ public class Model extends JastAddJModel {
 		return decl;
 	}
 	
-	protected void completeBuild(IProject project) {
+	@Override
+	protected void completeBuild(IProject project, IProgressMonitor monitor) {
+		
 		// Build a new project from saved files only.
 		try {
 			try {
@@ -318,8 +316,24 @@ public class Model extends JastAddJModel {
 				if (program == null)
 					return;
 				synchronized(program) {
-				Map<String, IFile> map = sourceMap(project, buildConfiguration);
+
+				Map<String,IFile> map = sourceMap(project, buildConfiguration);			
+				
+				monitor.beginTask("Building files in project " + project.getName(), 100);
+				SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 30);
+				subMonitor.beginTask("", map.keySet().size());
+				if (map != null) {
+					for(String fileName : map.keySet()) {
+						program.addSourceFile(fileName);
+						subMonitor.worked(1);
+					}
+				}
+				subMonitor.done();
+				
 				boolean build = true;
+		
+				subMonitor = new SubProgressMonitor(monitor, 30);
+				subMonitor.beginTask("", map.keySet().size());
 				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 					ICompilationUnit unit = (ICompilationUnit) iter.next();
 
@@ -333,6 +347,7 @@ public class Model extends JastAddJModel {
 						if (!errors.isEmpty())
 							build = false;
 						errors.addAll(warnings);
+						subMonitor.worked(1);
 						if (!errors.isEmpty()) {
 							for (Iterator i2 = errors.iterator(); i2.hasNext();) {
 								Problem error = (Problem) i2.next();
@@ -361,21 +376,31 @@ public class Model extends JastAddJModel {
 						}
 					}
 				}
+				subMonitor.done();
 
 				// Use for the bootstrapped version of JastAdd
 
+				subMonitor = new SubProgressMonitor(monitor, 40);
+				subMonitor.beginTask("", map.keySet().size()*3);
 				if (build) {
+					
 					program.generateIntertypeDecls();
+					subMonitor.worked(1);
+					
 					program.transformation();
+					subMonitor.worked(1);
+					
 					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 						CompilationUnit cu = (CompilationUnit)iter.next();
 						if(cu.fromSource()) {
 							for(int i = 0; i < cu.getNumTypeDecl(); i++) {
 								cu.getTypeDecl(i).generateClassfile();
 							}
+							subMonitor.worked(1);
 						}
 					}
 				}
+				subMonitor.done();
 				}
 			} catch (CoreException e) {
 				addErrorMarker(project, "Build failed because: "
@@ -385,6 +410,8 @@ public class Model extends JastAddJModel {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logError(e, "Build failed!");
+		} finally {
+			monitor.done();
 		}
 	}
 	

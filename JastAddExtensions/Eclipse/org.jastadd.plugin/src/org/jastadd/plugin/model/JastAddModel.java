@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
@@ -232,8 +233,8 @@ public abstract class JastAddModel {
 	}	
 	
 	
-	public void fullBuild(IProject project) {
-		completeBuild(project);
+	public void fullBuild(IProject project, IProgressMonitor monitor) {
+		completeBuild(project, monitor);
 	}
 
 	protected abstract void initModel();
@@ -380,7 +381,7 @@ public abstract class JastAddModel {
 
 	protected abstract void updateModel(IDocument document, String fileName, IProject project);
 	protected abstract void updateModel(Collection<IFile> changedFiles, IProject project);
-	protected abstract void completeBuild(IProject project);
+	protected abstract void completeBuild(IProject project, IProgressMonitor monitor);
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
 	protected abstract void discardTree(IProject project);
 	

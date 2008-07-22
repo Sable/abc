@@ -35,11 +35,11 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		buildProject(getProject());
+		buildProject(getProject(), monitor);
 	}
 		
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
-		buildProject(getProject());
+		buildProject(getProject(), monitor);
 		//getProject().accept(new ResourceVisitor());
 	}
 
@@ -48,7 +48,7 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		DeltaVisitor deltaVisitor = new DeltaVisitor();
 		delta.accept(deltaVisitor);
 		if (deltaVisitor.buildRequired)		
-			buildProject(getProject());
+			buildProject(getProject(), monitor);
 		if(!deltaVisitor.changedFiles.isEmpty())
 			updateProjectModel(getProject(), deltaVisitor.changedFiles);
 	}
@@ -95,9 +95,9 @@ public class JastAddBuilder extends IncrementalProjectBuilder {
 		}	
 	}
 
-	protected void buildProject(IProject project) {
+	protected void buildProject(IProject project, IProgressMonitor monitor) {
 		for(JastAddModel m : JastAddModelProvider.getModels(project)) {
-			m.fullBuild(project);
+			m.fullBuild(project, monitor);
 		}	
 	}
 
