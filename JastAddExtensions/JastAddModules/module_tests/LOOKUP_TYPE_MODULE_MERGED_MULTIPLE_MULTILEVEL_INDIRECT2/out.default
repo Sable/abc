@@ -1,0 +1,193 @@
+----------Module contents----------
+------jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------m3.module------
+module m3;
+import own m4 export as m4;
+------------------------
+------Z.java------
+module: module m0;;
+module CU : m0.module
+module name : m0
+------------------------
+------m0.module------
+module m0;
+import own m1 export as m1;
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------D.java------
+module: module m4;;
+module CU : m4.module
+module name : m4
+------------------------
+------m4.module------
+module m4;
+------------------------
+------m1.module------
+module m1;
+import own m2 export as m2a;
+import own m2 export as m2b;
+import own m4 export as m4;
+merge m4, m2a.m4alias2, m2b.m4alias2 export as m4alias1;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------m2.module------
+module m2;
+import own m3 export as m3a;
+import own m3 export as m3b;
+merge m3a.m4, m3b.m4 export as m4alias2;
+------------------------
+----------CU AST before insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+B.java package:
+module: m3, file: m3.module, base module: m3
+Z.java package:
+module: m0, file: m0.module, base module: m0
+A.java package:
+D.java package:
+module: m4, file: m4.module, base module: m4
+module: m1, file: m1.module, base module: m1
+Main.java package:
+C.java package:
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m0, file: m0.module, base module: m0
+	Z.java package:m0
+module: m4, file: m4.module, base module: m4
+	D.java package:m4
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m3, base:m3, context:[], instantiated:false
+	
+module m0, base:m0, context:[], instantiated:false
+	
+module m4, base:m4, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m0;
+import own m1 export as m1;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m0, file: m0.module, base module: m0
+	Z.java package:m0
+module: m4, file: m4.module, base module: m4
+	D.java package:m4
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+module: m0.m1.m2a.m3a, file: m3.module, base module: m3
+	C.java package:m0.m1.m2a.m3a
+module: m0.m1.m2a.m3b, file: m3.module, base module: m3
+	C.java package:m0.m1.m2a.m3b
+module: m0.m1.m2a, file: m2.module, base module: m2
+	B.java package:m0.m1.m2a
+module: m0.m1.m2b.m3a, file: m3.module, base module: m3
+	C.java package:m0.m1.m2b.m3a
+module: m0.m1.m2b.m3b, file: m3.module, base module: m3
+	C.java package:m0.m1.m2b.m3b
+module: m0.m1.m2b, file: m2.module, base module: m2
+	B.java package:m0.m1.m2b
+module: m0.m1.m4alias1, file: m4.module, base module: m4
+	D.java package:m0.m1.m4alias1
+module: m0.m1, file: m1.module, base module: m1
+	A.java package:m0.m1
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m3, base:m3, context:[], instantiated:false
+	
+module m0, base:m0, context:[], instantiated:true
+	[export]m1:m0.m1, jastadd$framework:jastadd$framework
+module m4, base:m4, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+module m0.m1.m2a.m3a, base:m3, context:[m0.m1.m2a], instantiated:true
+	[export]m4:m0.m1.m4alias1, jastadd$framework:jastadd$framework
+module m0.m1.m2a.m3b, base:m3, context:[m0.m1.m2a], instantiated:true
+	[export]m4:m0.m1.m4alias1, jastadd$framework:jastadd$framework
+module m0.m1.m2a, base:m2, context:[m0.m1], instantiated:true
+	jastadd$framework:jastadd$framework, [export]m3b:m0.m1.m2a.m3b, [export]m3a:m0.m1.m2a.m3a, [export]m4alias2:m0.m1.m4alias1
+module m0.m1.m2b.m3a, base:m3, context:[m0.m1.m2b], instantiated:true
+	[export]m4:m0.m1.m4alias1, jastadd$framework:jastadd$framework
+module m0.m1.m2b.m3b, base:m3, context:[m0.m1.m2b], instantiated:true
+	[export]m4:m0.m1.m4alias1, jastadd$framework:jastadd$framework
+module m0.m1.m2b, base:m2, context:[m0.m1], instantiated:true
+	jastadd$framework:jastadd$framework, [export]m3b:m0.m1.m2b.m3b, [export]m3a:m0.m1.m2b.m3a, [export]m4alias2:m0.m1.m4alias1
+module m0.m1.m4alias1, base:m4, context:[m0.m1.m2b, m0.m1.m2b.m3a, m0.m1.m2a.m3b, m0.m1.m2a, m0.m1.m2a.m3a, m0.m1, m0.m1.m2b.m3b], instantiated:true
+	jastadd$framework:jastadd$framework
+module m0.m1, base:m1, context:[m0], instantiated:true
+	[export]m2b:m0.m1.m2b, jastadd$framework:jastadd$framework, [export]m2a:m0.m1.m2a, [export]m4alias1:m0.m1.m4alias1
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+Module: m3
+	m3.C
+Module: m0
+	m0.Z
+Module: m4
+	m4.D
+Module: m1
+	m1.A
+Module: m2
+	m2.B
+Module: m0.m1.m2a.m3a
+	m0.m1.m2a.m3a.C
+Module: m0.m1.m2a.m3b
+	m0.m1.m2a.m3b.C
+Module: m0.m1.m2a
+	m0.m1.m2a.B
+Module: m0.m1.m2b.m3a
+	m0.m1.m2b.m3a.C
+Module: m0.m1.m2b.m3b
+	m0.m1.m2b.m3b.C
+Module: m0.m1.m2b
+	m0.m1.m2b.B
+Module: m0.m1.m4alias1
+	m0.m1.m4alias1.D
+Module: m0.m1
+	m0.m1.A
+
+----------CU iterator----------
+jastadd$framework.module, m3.module, m0.module, Z.java, m4.module, m1.module, Main.java, m2.module, m3.module, C.java, m3.module, C.java, m2.module, B.java, m3.module, C.java, m3.module, C.java, m2.module, B.java, m4.module, D.java, m1.module, A.java

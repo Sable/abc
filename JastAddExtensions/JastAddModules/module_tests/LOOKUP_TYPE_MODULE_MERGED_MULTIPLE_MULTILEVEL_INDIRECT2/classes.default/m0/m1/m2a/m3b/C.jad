@@ -1,0 +1,23 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   C.java
+
+package m0.m1.m2a.m3b;
+
+import java.io.PrintStream;
+import m0.m1.m4alias1.D;
+
+public class C
+{
+
+    public C()
+    {
+        d1 = new D();
+        d2 = new D();
+        System.out.println(getClass());
+    }
+
+    D d1;
+    D d2;
+}
