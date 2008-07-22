@@ -1,0 +1,4 @@
+module m2;
+import own m3 export as m3a;
+import own m3 export as m3b;
+merge m3a.m4, m3b.m4 export as m4alias2;
