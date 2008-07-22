@@ -1,0 +1,8 @@
+module m1;
+
+aspect X {
+	public void A.f() {
+	}
+	public void AType.f() {
+	}
+}
