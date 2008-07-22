@@ -1,0 +1,83 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   C.ast
+
+package m3;
+
+import jastadd$framework.ASTNode;
+import m4.DType;
+import m5.EType;
+
+public class CType extends ASTNode
+{
+
+    public DType getDType()
+    {
+        return (DType)getChild(0);
+    }
+
+    public DType getDTypeNoTransform()
+    {
+        return (DType)getChildNoTransform(0);
+    }
+
+    public void setDType(DType node)
+    {
+        setChild(node, 0);
+    }
+
+    public EType getEType()
+    {
+        return (EType)getChild(1);
+    }
+
+    public EType getETypeNoTransform()
+    {
+        return (EType)getChildNoTransform(1);
+    }
+
+    public void setEType(EType node)
+    {
+        setChild(node, 1);
+    }
+
+    public CType(DType p0, EType p1)
+    {
+        setChild(p0, 0);
+        setChild(p1, 1);
+    }
+
+    public CType()
+    {
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[2];
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        CType node = (CType)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 2;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+}

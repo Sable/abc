@@ -1,0 +1,3 @@
+module m1;
+
+AType::= BType CType DType EType FType;
