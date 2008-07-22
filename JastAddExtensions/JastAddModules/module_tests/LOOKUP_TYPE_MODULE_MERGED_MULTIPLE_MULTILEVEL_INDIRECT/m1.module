@@ -1,0 +1,6 @@
+module m1;
+import own m2 export as m2a;
+import own m2 export as m2b;
+import own m5 export as m5;
+
+merge m2a.m3.m5merged3, m2b.m3.m5merged3, m5 export as m5merged1;
