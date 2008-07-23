@@ -78,6 +78,7 @@ aspect ASTGrammar {
   }
 
   eq ASTDecl.isStatic() = !isTopLevelType();
+  eq ASTDecl.isPublic() = true;
 
   syn String ASTChild.name() = getName();
   syn TypeDecl ASTChild.type() = hasType() ? getType().type() : extractSingleType(lookupType(name()));
