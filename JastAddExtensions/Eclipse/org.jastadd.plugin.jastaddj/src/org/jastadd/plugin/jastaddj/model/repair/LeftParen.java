@@ -7,13 +7,15 @@ public class LeftParen extends Island {
 		super(previous, interval, "(");
 	}
 
-	public boolean bridgeMatch(Island island) {
-		return island instanceof RightParen &&
-			((RightParen)island).indent().equalTo(indent());
+	public boolean bridgeMatch(Island island, int tol) {
+		return tol <= 0 && 
+			island instanceof RightParen &&
+			(((RightParen)island).indent().equalTo(indent()) ||
+			indent().lessThan(((RightParen)island).indent()));
 	}	
-	public Bridge buildBridge(Island target) {
+	public Bridge buildBridge(Island target, int tol) {
 		if (!hasBridge()) {
-			bridge = new ParanBridge(this, (RightParen)target);
+			bridge = new ParenBridge(this, (RightParen)target);
 			target.setBridge(bridge);
 		}
 		return bridge;
@@ -25,22 +27,21 @@ public class LeftParen extends Island {
 		return new LeftParen(previous, getInterval().clone());
 	}
 	public boolean possibleConstructionSite(LexicalNode node) {
-		return node instanceof Water;
-	}
-	public Bridge constructIslandAndBridge(LexicalNode node) {
-		if (!hasBridge()) {
-			Interval nodeInterval = node.getInterval();
-			Interval interval = new Interval(nodeInterval.getEnd(), nodeInterval.getEnd());
-			Island island = new RightParen(null, interval);
-			island.setFake(true);
-			if (node instanceof Water) {
-				Recovery.insertAfter(island, node);
-			} else { 
-				Recovery.insertBefore(island, node);
-			}
-			return buildBridge(island);
+		if (node instanceof Indent) {
+			Indent ind = (Indent)node;
+			return ind.equalTo(indent()) || ind.lessThan(indent());
 		}
-		return bridge;
+		return node instanceof Island;
+	}
+	public Island constructFakeIsland(LexicalNode node, boolean intervalEnd) {
+		Interval nodeInterval = node.getInterval();
+		Interval interval = new Interval(nodeInterval.getEnd(), nodeInterval.getEnd());
+		Island island = new RightParen(null, interval);
+		island.setFake(true);
+		return island;
+	}
+	public void insertFakeIsland(Island island, LexicalNode node) {
+		Recovery.insertBefore(island, node);
 	}
 	public boolean startOfBridge() {
 		return true;
@@ -48,7 +49,7 @@ public class LeftParen extends Island {
 
 
 	public static final char[] TOKEN = {'('};
-	private Indent indent;
+	protected Indent indent;
 
 	public Indent indent() {
 		if (indent == null) {
@@ -62,5 +63,5 @@ public class LeftParen extends Island {
 			}
 		}
 		return indent;
-	}
+	}	
 }

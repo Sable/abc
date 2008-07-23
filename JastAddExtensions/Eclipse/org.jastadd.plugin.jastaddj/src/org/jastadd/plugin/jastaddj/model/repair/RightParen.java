@@ -7,13 +7,15 @@ public class RightParen extends Island {
 		super(previous, interval, ")");
 	}
 
-	public boolean bridgeMatch(Island island) {
-		return island instanceof LeftParen &&
-			((LeftParen)island).indent().equalTo(indent());
+	public boolean bridgeMatch(Island island, int tol) {
+		return tol <= 0 &&
+			island instanceof LeftParen &&
+			(((LeftParen)island).indent().equalTo(indent()) ||
+			((LeftParen)island).indent().lessThan(indent()));
 	}	
-	public Bridge buildBridge(Island target) {
+	public Bridge buildBridge(Island target, int tol) {
 		if (!hasBridge()) {
-			bridge = new ParanBridge((LeftParen)target, this);
+			bridge = new ParenBridge((LeftParen)target, this);
 			target.setBridge(bridge);
 		}
 		return bridge;
@@ -25,30 +27,24 @@ public class RightParen extends Island {
 		return new RightParen(previous, getInterval().clone());
 	}
 	public boolean possibleConstructionSite(LexicalNode node) {
-		return true;
+		return (node instanceof Indent && ((Indent)node).lessThan(indent()));
 	}
-	public Bridge constructIslandAndBridge(LexicalNode node) {
-		if (!hasBridge()) {
-			Interval nodeInterval = node.getInterval();
-			Interval interval = new Interval(nodeInterval.getStart(), nodeInterval.getEnd());
-			Island island = new LeftParen(null, interval);
-			island.setFake(true);
-			if (node instanceof Water) {
-				Recovery.insertBefore(island, node);
-			} else {
-				Recovery.insertAfter(island, node);
-			}
-			return buildBridge(island);
-		}
-		return bridge;
+	public Island constructFakeIsland(LexicalNode node, boolean intervalEnd) {
+		Interval nodeInterval = node.getInterval();
+		Interval interval = new Interval(nodeInterval.getStart(), nodeInterval.getEnd());
+		Island island = new LeftParen(null, interval);
+		island.setFake(true);
+		return island;
+	}
+	public void insertFakeIsland(Island island, LexicalNode node) {
+		Recovery.insertAfter(island, node);
 	}
 	public boolean startOfBridge() {
 		return false;
 	}
 
-
 	public static final char[] TOKEN = {')'};
-	private Indent indent;
+	protected Indent indent;
 
 	public Indent indent() {
 		if (indent == null) {
