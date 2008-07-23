@@ -124,6 +124,8 @@ aspect GenerateImportOwn {
 	}
 	
 	//This should only be called _after_ the import CUs have been generated.
+	//NOTE: This is the hairiest piece of code in all of JastAddModules. Be careful
+	//when changing this
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
 		for (ModuleMemberDecl member : ret.getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleMergeDecl)) {
