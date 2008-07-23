@@ -4,11 +4,11 @@ public class SOF extends Island {
 	public SOF(Interval interval) {
 		super(null, interval, "");
 	}
-	public boolean bridgeMatch(Island island) {
+	public boolean bridgeMatch(Island island, int tol) {
 		return island instanceof EOF;
 	}
-	public Bridge buildBridge(Island target) {
-		if (!hasBridge() && bridgeMatch(target)) {
+	public Bridge buildBridge(Island target, int tol) {
+		if (!hasBridge() && bridgeMatch(target, tol)) {
 			bridge = new FileBridge(this, (EOF)target);
 			target.setBridge(bridge);
 		}
@@ -23,15 +23,13 @@ public class SOF extends Island {
 	public boolean possibleConstructionSite(LexicalNode node) {
 		return node.getNext() == null;
 	}
-	public Bridge constructIslandAndBridge(LexicalNode node) {
-		if (!hasBridge()) {
-			Interval nodeInterval = node.getInterval();
-			Interval interval = new Interval(nodeInterval.getStart(), nodeInterval.getEnd());
-			Island island = new EOF(node, interval);
-			Recovery.insertAfter(island, node);
-			return buildBridge(island);
-		}
-		return bridge;
+	public Island constructFakeIsland(LexicalNode node, boolean intervalEnd) {
+		Interval nodeInterval = node.getInterval();
+		Interval interval = new Interval(nodeInterval.getStart(), nodeInterval.getEnd());
+		return new EOF(node, interval);
+	}
+	public void insertFakeIsland(Island island, LexicalNode node) {
+		Recovery.insertAfter(island, node);
 	}
 	public LexicalNode clone(LexicalNode previous) {
 		return new SOF(getInterval().clone());

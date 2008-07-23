@@ -443,10 +443,6 @@ public class JastAddJModel extends JastAddModel {
 			
 			// recover the current document
 			StringBuffer buf = new StringBuffer(document.get());
-			/* Old recovery
-			new JastAddStructureModel(buf).doRecovery(0);
-			*/
-			/* New recovery */
 			SOF sof = getRecoveryLexer().parse(buf);
 			Recovery.doRecovery(sof);
 			buf = Recovery.prettyPrint(sof);

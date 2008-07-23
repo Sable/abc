@@ -1,17 +1,23 @@
 package org.jastadd.plugin.jastaddj.model.repair;
 
-import org.jastadd.plugin.model.repair.*;
+import org.jastadd.plugin.model.repair.Bridge;
+import org.jastadd.plugin.model.repair.Interval;
+import org.jastadd.plugin.model.repair.Island;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.Recovery;
+import org.jastadd.plugin.model.repair.SOF;
 
 public class RightBrace extends Island {
 	public RightBrace(LexicalNode previous, Interval interval) {
 		super(previous, interval, "}");
 	}
 
-	public boolean bridgeMatch(Island island) {
+	public boolean bridgeMatch(Island island, int tol) {
 		return island instanceof LeftBrace && 
-			((LeftBrace)island).indent().equalTo(indent());
+			(((LeftBrace)island).indent().equalTo(indent()) ||
+			indent().lessThan(((LeftBrace)island).indent(), 1));
 	}
-	public Bridge buildBridge(Island target) {
+	public Bridge buildBridge(Island target, int tol) {
 		if (!hasBridge()) {
 			bridge = new BraceBridge((LeftBrace)target, this);
 			target.setBridge(bridge);
@@ -25,33 +31,40 @@ public class RightBrace extends Island {
 		return new RightBrace(previous, getInterval().clone());
 	}
 	public boolean possibleConstructionSite(LexicalNode node) {
+		/* DEBUG System.out.println("RightBrace: possible match node = " + node); */
 		if (node instanceof Indent) {
-			Indent targetIndent = (Indent)node;
-			if(indent().lessThan(targetIndent)) {
-				/* DEBUG System.out.println("\tFound greater indent targetIndent: " + targetIndent); */
-				LexicalNode previous = targetIndent.getPrevious();
-				/* DEBUG  System.out.println("\tFound previous: " + previous); */
-				if (previous != null) {
-					Indent prevIndent = (Indent)previous.getPreviousOfType(Indent.class);
-					/* DEBUG System.out.println("\tFound prev indent: " + prevIndent); */
-					return prevIndent == null || prevIndent.equalTo(indent);
-				}
-				return false;
-			}
+			Indent ind = (Indent)node;
+			return (ind.lessThan(indent()) || ind.equalTo(indent())) &&
+					ind != indent() && !(ind.getNext() instanceof Indent);
+		}
+		else if (node instanceof LeftBrace) {
+			LeftBrace lb = (LeftBrace)node;
+			return !lb.hasBridge() && indent().lessThan(lb.indent()); 
 		}
 		return false;
 	}
-	public Bridge constructIslandAndBridge(LexicalNode node) {
-		if (!hasBridge()) {
+	public Island constructFakeIsland(LexicalNode node, boolean intervalEnd) {
+		if (!intervalEnd && node instanceof LeftBrace) {
+			return (LeftBrace)node;
+		} else {
 			Interval nodeInterval = node.getInterval();
 			Interval interval = new Interval(nodeInterval.getStart(), nodeInterval.getEnd());
 			Island island = new LeftBrace(null, interval);
 			island.setFake(true);
-			Recovery.insertBefore(island, node);
-			/* DEBUG System.out.println("\tReady to build bridge to fake island"); */
-			return buildBridge(island);
+			return island;
 		}
-		return bridge;
+	}
+	public void insertFakeIsland(Island island, LexicalNode node) {
+		if (island.isFake()) {
+			if (node instanceof Indent) {
+				Indent ind = (Indent)node.getNext().getNextOfType(Indent.class);
+				if (ind != indent()) {
+					Recovery.insertBefore(island, ind);
+					return;
+				}
+			}
+			Recovery.insertAfter(island, node);
+		}
 	}
 	public boolean startOfBridge() {
 		return false;

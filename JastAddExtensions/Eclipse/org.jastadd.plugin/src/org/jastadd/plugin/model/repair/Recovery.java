@@ -1,26 +1,21 @@
 package org.jastadd.plugin.model.repair;
 
 public class Recovery {
-	
-	public static void doRecovery(SOF sof) {
-		buildBridges(sof);
-		recover(sof);
-		System.out.println("Recovered file");
-	}
 
 	public static void buildBridges(SOF sof) {
 		int startTol = 0;
+//		int maxDist = nbrOfIslands(sof);
 		int tol = startTol;
-		while (!sof.hasBridge()){
+		while (!sof.hasBridge()) {// && distance < maxDist) {
 			Island start = sof;
 			boolean change = false;
-			/* DEBUG System.out.println("Starting new iteration with tolerance: " + tol); */
+			/* DEBUG  System.out.println("Starting new iteration with tolerance: " + tol); */
 			while (start != null) {
 				Island end = nextUnmatchedIsland(start, tol);
 				/* DEBUG System.out.println("\tTesting with start: " + start + " with end: " + end + " and tolerance: " + tol); */
-				if (start.bridgeMatch(end)) {
+				if (start.bridgeMatch(end, tol)) {
 					/* DEBUG System.out.println("\t\tMatch found"); */
-					start.buildBridge(end);
+					start.buildBridge(end, tol);
 					change = true;
 					start = nextUnmatchedStartIsland(end);
 				} else {
@@ -71,21 +66,27 @@ public class Recovery {
 
 	public static void recover(SOF sof) {
 		if (!sof.hasBridge()) {
-			sof.buildBridge(eof(sof));
+			sof.buildBridge(eof(sof), -1);
 		}
 		recover(sof.getBridge());
 	}
 
 	public static void recover(Bridge bridge) {
 		/* DEBUG System.out.println("Recovering islands under bridge: " + bridge); */
+		if (bridge.isVisited()) {
+			return;
+		}
+		bridge.setVisited(true);
 		Island start = bridge.getStart();
 		Island end = bridge.getEnd();
 		Island island = nextIsland(start);
 		while (island != end) {
-			if (island.startOfBridge()) {
-				mendRight(island, end);
-			} else {
-				mendLeft(start, island);
+			if (!island.hasBridge()) {
+				if (island.startOfBridge()) {
+					mendRight(island, end);
+				} else {
+					mendLeft(start, island);
+				}
 			}
 			recover(island.getBridge());
 			island = nextIsland(island.getBridge().getEnd());
@@ -96,34 +97,44 @@ public class Recovery {
 		/* DEBUG System.out.println("Mending to the left, start: " + start + ", broken: " + broken); */
 		LexicalNode node = broken.getPrevious();
 		while (node != start) {
-			if (node instanceof Island && ((Island)node).hasBridge()) {
+			if (broken.possibleConstructionSite(node)) {
+				Island island = broken.constructFakeIsland(node, false);
+				broken.insertFakeIsland(island, node);
+				broken.buildBridge(island, -1);
+				return;
+			} else if (node instanceof Island && ((Island)node).hasBridge()) {
 				Bridge bridge = ((Island)node).getBridge();
 				node = bridge.getStart().getPrevious();
-			} else if (broken.possibleConstructionSite(node)) {
-				broken.constructIslandAndBridge(node);
-				return;
-			} else {
+			} else { 
 				node = node.getPrevious();
 			}
 		}
-		broken.constructIslandAndBridge(start.getNext());
+		Island island = broken.constructFakeIsland(start, true);
+		insertAfter(island, start);
+		broken.buildBridge(island, -1);
 	}
 
 	private static void mendRight(Island broken, Island end) {
 		/* DEBUG System.out.println("Mending to the right, broken: " + broken + ", end: " + end); */
 		LexicalNode node  = broken.getNext();
 		while (node != end) {
-			if (node instanceof Island && ((Island)node).hasBridge()) {
+			/* DEBUG System.out.println("mendright: node = " + node); */
+			if (broken.possibleConstructionSite(node)) {
+				Island island = broken.constructFakeIsland(node, false);
+				broken.insertFakeIsland(island, node);
+				broken.buildBridge(island, -1);
+				return;
+			} else if (node instanceof Island && ((Island)node).hasBridge()) {
 				Bridge bridge = ((Island)node).getBridge();
 				node = bridge.getEnd().getNext();
-			} else if (broken.possibleConstructionSite(node)) {
-				broken.constructIslandAndBridge(node);
-				return;
-			} else {
+			} else { 
 				node = node.getNext();
 			}
 		}
-		broken.constructIslandAndBridge(end.getPrevious());
+	
+		Island island = broken.constructFakeIsland(end, true);
+		insertBefore(island, end);
+		broken.buildBridge(island, -1);	
 	}
 
 
@@ -228,8 +239,9 @@ public class Recovery {
 		}
 		return buf;
 	}
-	
+
 	private static String whiteSpaceOfLength(String value) {
+
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < value.length(); i++) {
 			if (value.charAt(i) == '\n') {
@@ -241,6 +253,47 @@ public class Recovery {
 		return buf.toString();
 	}
 
+	public static void printStats(SOF sof, String content, String sample) {
+		System.out.println("-- Statistics for " + sample + " --");
+		int nbrLines = 0;
+		for (int i = 0; i < content.length(); i++) {
+			if (content.charAt(i) == '\n') {
+				nbrLines++;
+			}
+		}
+		System.out.println("Number of lines: " + nbrLines);
+		int nbrIslands = 0;
+		int nbrNodes = 0;
+		LexicalNode node = sof.getNext();
+		while (!(node instanceof EOF)) {
+			nbrNodes++;
+			if (node instanceof Island) {
+				nbrIslands++;
+			}
+			node = node.getNext();
+		}
+		System.out.println("Number of nodes: " + nbrNodes);
+		System.out.println("Number of islands: " + nbrIslands);
+		int maxDepth = 0;
+		int depth = 0;
+		Island island = nextIsland(sof);
+		while (!(island instanceof EOF)) {
+			if (island.hasBridge()) {
+				if (island.startOfBridge()) {
+					depth++;
+					if (depth > maxDepth) {
+						maxDepth = depth;
+					}
+				} else {
+					depth--;
+				}
+			}
+			island = nextIsland(island);
+		}
+		System.out.println("Maximum nesting depth: " + maxDepth);
+		System.out.println("--");
+	}
+	
 	public static LexicalNode findNodeForOffset(SOF sof, int offset) {
 		LexicalNode node = sof.getNext();
 		while (!(node instanceof EOF)) {
@@ -249,5 +302,10 @@ public class Recovery {
 			}
 		}
 		return node;
+	}
+
+	public static void doRecovery(SOF sof) {
+		buildBridges(sof);
+		recover(sof);
 	}
 }

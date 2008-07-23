@@ -1,6 +1,5 @@
 package org.jastadd.plugin.model.repair;
 
-
 public class Water extends LexicalNode {
 	public Water(LexicalNode previous, Interval interval, String value) {
 		super(previous, interval, value);

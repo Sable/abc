@@ -4,7 +4,7 @@ public class Interval {
 	private int start;
 	private int end;
 	private int pushOffset;
-
+	
 	public Interval(int start, int end) {
 		this.start = start;
 		this.end = end;

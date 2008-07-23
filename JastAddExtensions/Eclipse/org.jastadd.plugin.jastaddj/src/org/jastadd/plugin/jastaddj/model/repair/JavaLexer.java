@@ -1,9 +1,13 @@
 package org.jastadd.plugin.jastaddj.model.repair;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
-import org.jastadd.plugin.model.repair.*;
+import org.jastadd.plugin.model.repair.EOF;
+import org.jastadd.plugin.model.repair.Interval;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.RecoveryLexer;
+import org.jastadd.plugin.model.repair.SOF;
+import org.jastadd.plugin.model.repair.Water;
 
 public class JavaLexer implements RecoveryLexer {
 
@@ -16,16 +20,7 @@ public class JavaLexer implements RecoveryLexer {
 		SOF sof = new SOF(new Interval(0,0));
 		nodeList.add(sof);
 		while (start < content.length) {
-			if ((length = matchJavaWater(content, start, buf, nodeList, lastMatch)) > 0 ||
-				/* Islands - Braces */
-				(length = matchLeftBrace(content, start, buf, nodeList, lastMatch)) > 0 ||
-				(length = matchRightBrace(content, start, buf, nodeList, lastMatch)) > 0 ||
-				/* Islands - Parans */
-				(length = matchLeftParan(content, start, buf, nodeList, lastMatch)) > 0 ||
-				(length = matchRightParan(content, start, buf, nodeList, lastMatch)) > 0 ||
-				/* Reefs */
-				(length = matchKeyword(content, start, buf, nodeList, lastMatch)) > 0 ||
-				(length = matchIndent(content, start, buf, nodeList, lastMatch)) > 0) {
+			if ((length = match(content, start, buf, nodeList, lastMatch)) > 0) {
 				start += length;
 				lastMatch = start;
 			} else start++;
@@ -38,7 +33,24 @@ public class JavaLexer implements RecoveryLexer {
 		return sof;
 	}
 
-	private void createWater(StringBuffer buf, int start, int end, ArrayList<LexicalNode> nodeList) {
+	protected int match(char[] content, int start, StringBuffer buf, 
+				ArrayList<LexicalNode> nodeList, int lastMatch) {
+			int length = 0;
+			if ((length = matchJavaWater(content, start, buf, nodeList, lastMatch)) > 0 ||
+				/* Islands - Braces */
+				(length = matchLeftBrace(content, start, buf, nodeList, lastMatch)) > 0 ||
+				(length = matchRightBrace(content, start, buf, nodeList, lastMatch)) > 0 ||
+				/* Islands - Parans */
+				(length = matchLeftParan(content, start, buf, nodeList, lastMatch)) > 0 ||
+				(length = matchRightParan(content, start, buf, nodeList, lastMatch)) > 0 ||
+				/* Reefs */
+				(length = matchIndent(content, start, buf, nodeList, lastMatch)) > 0) {
+				return length;
+			}
+			return 0;
+	}
+
+	protected void createWater(StringBuffer buf, int start, int end, ArrayList<LexicalNode> nodeList) {
 		/* DEBUG System.out.println("createWater, start = " + start + ", end = " + end); */
 		if (end - start <= 0) {
 			return;
@@ -49,7 +61,7 @@ public class JavaLexer implements RecoveryLexer {
 		nodeList.add(new Water(nodeList.get(nodeList.size()-1), new Interval(start, end), water));
 	}
 
-	private int matchJavaWater(char[] content, int start, StringBuffer buf, 
+	protected int matchJavaWater(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchJavaWater, start = " + start + ", lastMatch = " + lastMatch); */
@@ -112,7 +124,7 @@ public class JavaLexer implements RecoveryLexer {
 		return length;
 	}
 
-	private int matchLeftBrace(char[] content, int start, StringBuffer buf, 
+	protected int matchLeftBrace(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchLeftBrace, start = " + start + ", lastMatch = " + lastMatch); */
@@ -133,7 +145,7 @@ public class JavaLexer implements RecoveryLexer {
 		return LeftBrace.TOKEN.length;
 	}
 
-	private int matchRightBrace(char[] content, int start, StringBuffer buf, 
+	protected int matchRightBrace(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchRightBrace, start = " + start + ", lastMatch = " + lastMatch); */
@@ -154,7 +166,7 @@ public class JavaLexer implements RecoveryLexer {
 		return RightBrace.TOKEN.length;
 	}
 
-	private int matchIndent(char[] content, int start, StringBuffer buf, 
+	protected int matchIndent(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchIndent, start = " + start + ", lastMatch = " + lastMatch); */
@@ -179,33 +191,7 @@ public class JavaLexer implements RecoveryLexer {
 		return length;
 	}
 
-	private int matchKeyword(char[] content, int start, StringBuffer buf, 
-				ArrayList<LexicalNode> nodeList, int lastMatch) {
-		int length = 0;
-		if ((length = matchIfKeyword(content, start, buf, nodeList, lastMatch)) > 0)
-			return length;
-		return length;
-	}
-
-	private int matchIfKeyword(char[] content, int start, StringBuffer buf, 
-				ArrayList<LexicalNode> nodeList, int lastMatch) {
-		for (int i = 0; i < content.length && i < IfKeyword.TOKEN.length; i++) {
-			if (content[start+i] != IfKeyword.TOKEN[i]) {
-				return 0;
-			}
-		}
-
-		createWater(buf, lastMatch, start, nodeList);
-
-		int length = IfKeyword.TOKEN.length;
-		Interval interval = new Interval(start, start + length);
-		String value = buf.substring(start, start + length);
-		/* DEBUG System.out.println("-- match Keyword if = " + value.replace("\n", "NEWLINE")); */
-		nodeList.add(new IfKeyword(nodeList.get(nodeList.size()-1), interval, value));
-		return length;
-	}
-
-	private int matchLeftParan(char[] content, int start, StringBuffer buf, 
+	protected int matchLeftParan(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchLeftParan, start = " + start + ", lastMatch = " + lastMatch); */
@@ -226,7 +212,7 @@ public class JavaLexer implements RecoveryLexer {
 		return LeftParen.TOKEN.length;
 	}
 
-	private int matchRightParan(char[] content, int start, StringBuffer buf, 
+	protected int matchRightParan(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchRightParan, start = " + start + ", lastMatch = " + lastMatch); */

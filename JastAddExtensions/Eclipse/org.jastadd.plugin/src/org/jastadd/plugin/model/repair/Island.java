@@ -30,11 +30,12 @@ public abstract class Island extends LexicalNode {
 		return super.toString()  + (isFake()?" (fake)":"");
 	}
 
-	public abstract boolean bridgeMatch(Island target);
-	public abstract Bridge buildBridge(Island target);
+	public abstract boolean bridgeMatch(Island target, int tol);
+	public abstract Bridge buildBridge(Island target, int tol);
 
 	public abstract boolean possibleConstructionSite(LexicalNode node);
-	public abstract Bridge constructIslandAndBridge(LexicalNode node);
+	public abstract Island constructFakeIsland(LexicalNode node, boolean intervalEnd);
+	public abstract void insertFakeIsland(Island island, LexicalNode node);
 
 	public abstract boolean startOfBridge();
 }

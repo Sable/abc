@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -70,7 +72,7 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 
 		Label titleLabel = new Label(composite, SWT.LEFT);
 		titleLabel.setText(title + " File&s:");
-
+		
 		Composite folderComposite = new Composite(composite, SWT.NONE);
 		folderComposite.setFont(parent.getFont());
 		GridLayout folderCompositeLayout = new GridLayout(2, false);
@@ -132,17 +134,22 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 		buttonControlGridData.verticalAlignment = SWT.TOP;
 		buttonControlGridData.verticalSpan = 2;
 		buttonControl.setLayoutData(buttonControlGridData);
+		
+		Composite outputComposite = new Composite(composite, SWT.NONE);
+		outputComposite.setFont(parent.getFont());
+		GridLayout outputCompositeLayout = new GridLayout(3, false);
+		outputCompositeLayout.marginWidth = 0;
+		outputCompositeLayout.marginHeight = 0;
+		outputComposite.setLayout(outputCompositeLayout);
+		
+		Label outputFolderLabel = new Label(outputComposite, SWT.NONE);
+		outputFolderLabel.setText("&Output Folder:");
 
-		Label outputFolderLabel = new Label(composite, SWT.LEFT);
-		outputFolderLabel.setText("&Output folder:");
-
-		final Text outputFolderControl = new Text(composite, SWT.BORDER);
+		final Text outputFolderControl = new Text(outputComposite, SWT.SINGLE | SWT.BORDER);
 		outputFolderControl.setFont(parent.getFont());
 		if (folderList.getOutputFolder() != null)
 			outputFolderControl.setText(folderList.getOutputFolder());
-		
-		outputFolderControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));		
-		
+		outputFolderControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil. stretchControlHorizontal(new GridData()), parent, 50));		
 		outputFolderControl.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				String text = outputFolderControl.getText();
@@ -154,34 +161,41 @@ class FolderListPage implements JastAddBuildConfigurationPropertyPage.IPage {
 			}
 		});
 		
-		// Add Browse button here..
-		final Button browseButton = new Button(composite, SWT.RIGHT);
+		final Button browseButton = new Button(outputComposite, SWT.RIGHT);
 		SelectionAdapter adapter = new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					DirectoryDialog dialog = new DirectoryDialog (shell);
-					dialog.setFilterPath(project.getRawLocation().toOSString());
+					String projectDir = project.getRawLocation().toOSString();
+					dialog.setFilterPath(projectDir);
 					String dir = dialog.open();
 				    if (dir != null) {
-				      outputFolderControl.setText(dir);
+				    	if (dir.contains(dir)) {
+				    		dir = dir.substring(projectDir.length() + 1);
+				    	}
+				    	outputFolderControl.setText(dir);
 				    }
 				}
 		};
 		browseButton.addSelectionListener(adapter);
-		browseButton.setText("Browse..");
-
+		browseButton.setText("&Browse...");
+		GridData browseControlGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		browseButton.setLayoutData(browseControlGridData);
 		
 
 		if (folderList instanceof ParserFolderList) {
-			Label parserNameLabel = new Label(composite, SWT.LEFT);
+			
+			Label parserNameLabel = new Label(outputComposite, SWT.LEFT);
 			parserNameLabel.setText("&Parser Name:");
 			
 			final ParserFolderList parserList = (ParserFolderList) folderList;
-			final Text parserNameControl = new Text(composite, SWT.BORDER);
+			final Text parserNameControl = new Text(outputComposite, SWT.SINGLE | SWT.BORDER);
 			parserNameControl.setFont(parent.getFont());
 			if (parserList.getParserName() != null)
 				parserNameControl.setText(parserList.getParserName());
 			
-			parserNameControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(new GridData()), parent, 50));		
+			GridData parseNameControlData = new GridData();
+			parseNameControlData.horizontalSpan = 2;
+			parserNameControl.setLayoutData(UIUtil.suggestCharWidth(UIUtil.stretchControlHorizontal(parseNameControlData), parent, 50));		
 			
 			parserNameControl.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {

@@ -3,10 +3,20 @@ package org.jastadd.plugin.model.repair;
 public abstract class Bridge {
 	protected Island start;
 	protected Island end;
+	protected boolean visited;
 
 	public Bridge(Island start, Island end) {
 		this.start = start;
 		this.end = end;
+		visited = false;
+	}
+	
+	public void setVisited(boolean value) {
+		visited = value;
+	}
+
+	public boolean isVisited() {
+		return visited;
 	}
 
 	public String toString() {

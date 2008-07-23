@@ -1,6 +1,7 @@
 package org.jastadd.plugin.jastaddj.model.repair;
 
-import org.jastadd.plugin.model.repair.*;
+import org.jastadd.plugin.model.repair.Interval;
+import org.jastadd.plugin.model.repair.LexicalNode;
 
 public class IfKeyword extends JavaKeyword {
 	public IfKeyword(LexicalNode previous, Interval interval, String value) {
