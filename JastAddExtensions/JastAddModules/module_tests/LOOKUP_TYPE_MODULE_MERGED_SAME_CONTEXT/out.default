@@ -1,9 +1,17 @@
 ----------Module contents----------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
 ------C.ast------
 module: module m3;;
 Original AST file: C.ast
 module CU : m3.module
 module name : m3
+------------------------
+------../testlib/Opt.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
 ------------------------
 ------A.ast------
 module: module m1;;
@@ -17,9 +25,9 @@ import own m2 export as m2a;
 import own m2 export as m2b;
 merge m2a, m2b export as m2alias;
 ------------------------
-------ASTNode.java------
+------../testlib/List.java------
 module: module jastadd$framework;;
-module CU : jastadd$framework.module
+module CU : ../testlib/jastadd$framework.module
 module name : jastadd$framework
 ------------------------
 ------C.java------
@@ -32,9 +40,6 @@ module: module m2;;
 module CU : m2.module
 module name : m2
 ------------------------
-------jastadd$framework.module------
-module jastadd$framework;
-------------------------
 ------m3.module------
 module m3;
 ------------------------
@@ -43,26 +48,21 @@ module: module m1;;
 module CU : m1.module
 module name : m1
 ------------------------
-------Opt.java------
-module: module jastadd$framework;;
-module CU : jastadd$framework.module
-module name : jastadd$framework
-------------------------
 ------B.ast------
 module: module m2;;
 Original AST file: B.ast
 module CU : m2.module
 module name : m2
 ------------------------
+------../testlib/ASTNode.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ------Main.java------
 module: null;
 module CU : null
 module name : null
-------------------------
-------List.java------
-module: module jastadd$framework;;
-module CU : jastadd$framework.module
-module name : jastadd$framework
 ------------------------
 ------m2.module------
 module m2;
@@ -73,28 +73,28 @@ import own m3 as m3d;
 merge m3a, m3b export as m3alias;
 ------------------------
 ----------CU AST before insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 C.ast package:
+../testlib/Opt.java package:
 A.ast package:
 module: m1, file: m1.module, base module: m1
-ASTNode.java package:
+../testlib/List.java package:
 C.java package:
 B.java package:
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 module: m3, file: m3.module, base module: m3
 A.java package:
-Opt.java package:
 B.ast package:
+../testlib/ASTNode.java package:
 Main.java package:
-List.java package:
 module: m2, file: m2.module, base module: m2
 ----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
 module: m1, file: m1.module, base module: m1
 	A.ast package:m1
 	A.java package:m1
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-	ASTNode.java package:jastadd$framework
-	Opt.java package:jastadd$framework
-	List.java package:jastadd$framework
 module: m3, file: m3.module, base module: m3
 	C.ast package:m3
 	C.java package:m3
@@ -103,9 +103,9 @@ module: m2, file: m2.module, base module: m2
 	B.java package:m2
 	B.ast package:m2
 ----------Module CU imports before import own----------
-module m1, base:m1, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
 	
 module m3, base:m3, context:[], instantiated:false
 	
@@ -119,13 +119,13 @@ merge m2a, m2b export as m2alias;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
 module: m1, file: m1.module, base module: m1
 	A.ast package:m1
 	A.java package:m1
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-	ASTNode.java package:jastadd$framework
-	Opt.java package:jastadd$framework
-	List.java package:jastadd$framework
 module: m3, file: m3.module, base module: m3
 	C.ast package:m3
 	C.java package:m3
@@ -147,10 +147,10 @@ module: m1.m2alias, file: m2.module, base module: m2
 	B.ast package:m1.m2alias
 
 ----------Module CU imports after import own----------
-module m1, base:m1, context:[], instantiated:true
-	[export]m2alias:m1.m2alias, jastadd$framework:jastadd$framework
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
+module m1, base:m1, context:[], instantiated:true
+	[export]m2alias:m1.m2alias, jastadd$framework:jastadd$framework
 module m3, base:m3, context:[], instantiated:false
 	
 module m2, base:m2, context:[], instantiated:false
@@ -165,13 +165,13 @@ module m1.m2alias, base:m2, context:[m1], instantiated:true
 	[export]m3alias:m1.m2alias.m3alias, jastadd$framework:jastadd$framework, m3c:m1.m2alias$m3c, m3d:m1.m2alias$m3d
 ----------MCU collectTypes after import own----------
 
-Module: m1
-	m1.A
-	m1.AType
 Module: jastadd$framework
-	jastadd$framework.Opt
 	jastadd$framework.List
+	jastadd$framework.Opt
 	jastadd$framework.ASTNode
+Module: m1
+	m1.AType
+	m1.A
 Module: m3
 	m3.C
 	m3.CType
@@ -192,4 +192,4 @@ Module: m1.m2alias
 	m1.m2alias.BType
 
 ----------CU iterator----------
-m1.module, A.ast, A.java, jastadd$framework.module, ASTNode.java, Opt.java, List.java, m3.module, Main.java, m2.module, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m2.module, B.java, B.ast
+../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, A.ast, A.java, m3.module, Main.java, m2.module, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m2.module, B.java, B.ast

@@ -17,7 +17,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   static public Set circularEvalSet = new HashSet();
   static public Stack circularEvalStack = new Stack();
   
-  static class CircularEvalEntry {
+  public static class CircularEvalEntry {
   	ASTNode node;
   	String attrName;
   	Object parameters;
@@ -58,7 +58,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   
   
   
-  static class CircularStackEntry {
+  public static class CircularStackEntry {
   	Set circularEvalSet;
   	boolean changeValue;
   	
@@ -83,7 +83,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   
   public static int boundariesCrossed = 0;
 
-  static class State {
+  public static class State {
     private int[] stack;
     private int pos;
     public State() {

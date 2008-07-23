@@ -1,0 +1,3 @@
+Unrecoverable semantic error(s) found.
+m1.module:1:
+  Semantic Error: Duplicate module name: m1

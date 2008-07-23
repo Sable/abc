@@ -135,10 +135,6 @@ public class JastAddModules extends JastAdd {
 
 				}
 
-				// check if there are any duplicate module names (should never
-				// happen, mainly for debug)
-				program.checkDuplicateModuleName();
-
 			} catch (UnrecoverableSemanticError e) {
 				System.out.print("Unrecoverable semantic error(s) found.\n");
 			}

@@ -5,4 +5,10 @@ aspect X {
 	}
 	public void AType.f() {
 	}
+	public void ASTNode.g() {
+	}
+	public void BType.f() {
+	}
+	public void B.f() {
+	}
 }

@@ -47,6 +47,7 @@ aspect JAModuleErrorCheck {
   		checkModuleDecls();
   		checkModulePackageDecls();
   		checkModuleCycles();
+  		checkDuplicateModuleNames();
   	
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).checkModuleErrorsPass1();
@@ -58,6 +59,7 @@ aspect JAModuleErrorCheck {
   		checkModuleDecls();
   		checkModulePackageDecls();
   		checkModuleCycles();
+  		checkDuplicateModuleNames();
 
 		if (getModuleDecl() != null) {
 			getModuleDecl().checkModuleErrorsPass1();  	
@@ -81,25 +83,6 @@ aspect JAModuleErrorCheck {
   		}
   	}
   	
-  	
-  	
-	//Duplicate module name
-	//should never happen, but check anyway
-	public HashSet<String> Program.moduleNames = new HashSet<String>();
-	public void ASTNode.checkDuplicateModuleName() {
-		for (int i = 0 ; i < getNumChild(); i++) {
-			getChild(i).checkDuplicateModuleName();
-		}
-	}
-	//STANDING NOTE: Cut off at compilation unit to avoid the rewrites
-	public void CompilationUnit.checkDuplicateModuleName() {}
-	public void ModuleCompilationUnit.checkDuplicateModuleName() {
-		if (getHostProgram().moduleNames.contains(this.getModuleName())) {
-			getModuleDecl().error("Duplicate module name: " + this.getModuleName());
-		}
-		super.checkDuplicateModuleName();
-	}
-	
 	//Cyclic imports
 	public void ASTNode.checkModuleCycles() {}
 	public void ModuleCompilationUnit.checkModuleCycles() {
@@ -142,7 +125,25 @@ aspect JAModuleErrorCheck {
 		return noCycles;
 	}
 	
-	//TODO: Visibility checks
+	//TODO: Duplicate module names
+	public void ASTNode.checkDuplicateModuleNames() {
+	}
+	public void ModuleCompilationUnit.checkDuplicateModuleNames() {
+		for (String name : getHostProgram().getModuleNames()) {
+			if (this.getModuleName().compareTo(name) == 0) {
+			getModuleDecl().error("Duplicate module name: " + this.getModuleName());
+			throw new jastadd.UnrecoverableSemanticError("Duplicate module name: " + this.getModuleName());
+			}
+		}
+		getHostProgram().getModuleNames().add(this.getModuleName());
+	}
+
+	//TODO: Find a way to clear this once error checking is done
+	protected Set<String> Program.moduleNames = new HashSet();
+	public Set<String> Program.getModuleNames() {
+		return this.moduleNames;
+	}
+	
 	
 	//refines/implements
 	//from Java1.4Frontend/ErrorCheck.jrag
