@@ -1,0 +1,17 @@
+59, Circular: stack strongly connected components
+Order: c1 before c2
+c1_a() = 5
+c2_a() = 2
+c1_acount 5
+c1_bcount 5
+c3count 5
+c2_acount 3
+c2_bcount 3
+Order: c2 before c1
+c2_a() = 2
+c1_a() = 5
+c1_acount 5
+c1_bcount 5
+c3count 5
+c2_acount 3
+c2_bcount 3

@@ -1,0 +1,3 @@
+Nodecopy: check that getNumChild() works 'as expected'
+Program has 1 children
+SubProgram has 2 children

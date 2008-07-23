@@ -1,0 +1,13 @@
+Circular: avoid recomputation of potentially circular attributes
+Eval a()
+Eval b()
+Eval c()
+Eval a()
+Eval b()
+Eval c()
+Eval a()
+Eval b()
+Eval c()
+a() == true: true
+b() == true: true
+c() == true: true

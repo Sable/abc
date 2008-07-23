@@ -1,0 +1,15 @@
+Circular: two mutually circular paramterized attributes
+Eval x(a)
+Eval y(a)
+Eval x(a)
+Eval y(a)
+x(a) == true: true
+Eval y(a)
+y(a) == true: true
+Eval x(b)
+Eval y(b)
+Eval x(b)
+Eval y(b)
+x(b) == true: true
+Eval y(b)
+y(b) == true: true

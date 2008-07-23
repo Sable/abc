@@ -1,4 +1,4 @@
 #!/bin/sh
-dos2unix out
-dos2unix out.default
+dos2unix out$1
+dos2unix out$1.default
 diff out out.default

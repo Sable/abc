@@ -1,0 +1,66 @@
+WARNING: file "Test.java" does not exist
+----------Module contents----------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------../testlib/Opt.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------m1.module------
+module m1;
+------------------------
+------../testlib/ASTNode.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------../testlib/List.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+----------CU AST before insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+../testlib/Opt.java package:
+module: m1, file: m1.module, base module: m1
+../testlib/ASTNode.java package:
+../testlib/List.java package:
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+module: m1, file: m1.module, base module: m1
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+module: m1, file: m1.module, base module: m1
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m1, base:m1, context:[], instantiated:true
+	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+	jastadd$framework.List
+	jastadd$framework.Opt
+	jastadd$framework.ASTNode
+Module: m1
+
+----------CU iterator----------
+../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/ASTNode.java, ../testlib/List.java, m1.module

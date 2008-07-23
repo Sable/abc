@@ -1,0 +1,16 @@
+AST: adding nodes to a list of children
+Creating list with two children
+size: 2
+First: true
+Second: true
+Adding one child
+size: 3
+First: true
+Second: true
+Third: true
+Adding another child
+size: 4
+First: true
+Second: true
+Third: true
+Fourth: true

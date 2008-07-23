@@ -1,0 +1,2 @@
+Rewrite: rewrite node B into new C using multiple matching rewrite clauses choosing using lexical order
+2
