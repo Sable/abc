@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 my $TEST_MIN = 1;
-my $TEST_MAX = 1;
+my $TEST_MAX = 100;
 if ($#ARGV > -1) {
 	$TEST_MIN = $ARGV[0];
 	$TEST_MAX = $ARGV[0];
@@ -21,7 +21,7 @@ sub trim($)
 
 #clean class, out files
 system "rm -r $TESTDIR/m1 -f";
-system "rm -r $TESTDIR/jastadd\$framework -f";
+system "rm -r $TESTDIR/jastadd\\\$framework -f";
 system "rm $TESTDIR/*.out -f";
 
 #run tests
