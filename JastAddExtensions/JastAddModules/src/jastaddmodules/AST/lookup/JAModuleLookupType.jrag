@@ -1,3 +1,9 @@
+//TODO: The entire type lookup with modules is a hack, using package names
+//and disambiguating them as Strings. This was partially by design (since
+//module instances are mapped to package names and keeping them as
+//package names is more consistent with the output) and partially by convenience
+//(the lookupType method parameters are (packageName, typeName)). The "right"
+//way to do it is to introduce ModuleAccesses into names and do proper disambiguation.
 import jastaddmodules.*;
 
 aspect JAModuleLookupType {

@@ -21,6 +21,7 @@ public class A
         aa = new AA();
         aaa = new AAA();
         aa2 = new AA();
+        aaa2 = new AAA();
         a2 = new m1.m2.A();
         bb = new BB();
         bbb = new BBB();
@@ -34,6 +35,7 @@ public class A
     AA aa;
     AAA aaa;
     AA aa2;
+    AAA aaa2;
     m1.m2.A a2;
     BB bb;
     BBB bbb;
