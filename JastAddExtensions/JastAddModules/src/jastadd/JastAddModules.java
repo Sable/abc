@@ -214,6 +214,9 @@ public class JastAddModules extends JastAdd {
 
 		program.generateIntertypeDecls();
 		program.transformation();
+		
+		program.setFrontEndProcessingComplete(true);
+		
 		for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 			CompilationUnit cu = (CompilationUnit) iter.next();
 			if (cu.fromSource()) {

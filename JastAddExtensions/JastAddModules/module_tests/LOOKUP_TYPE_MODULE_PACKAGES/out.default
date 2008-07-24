@@ -197,34 +197,34 @@ module m1$m2alias, base:m2, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework
-	jastadd$framework.Opt
 	jastadd$framework.ASTNode
 	jastadd$framework.List
+	jastadd$framework.Opt
 Module: m1
-	m1.$a.AA
 	m1.A
 	m1.$a.a.AAA
+	m1.$a.AA
 Module: m3
+	m3.$c.cc.CCC
 	m3.C
 	m3.$c.CC
-	m3.$c.cc.CCC
 Module: m2
-	m2.$b.bb.BBB
 	m2.A
 	m2.B
 	m2.$b.BB
+	m2.$b.bb.BBB
 Module: m1.m2.m3
-	m1.m2.m3.C
 	m1.m2.m3.$c.cc.CCC
 	m1.m2.m3.$c.CC
+	m1.m2.m3.C
 Module: m1.m2
-	m1.m2.$b.bb.BBB
 	m1.m2.A
-	m1.m2.$b.BB
 	m1.m2.B
+	m1.m2.$b.BB
+	m1.m2.$b.bb.BBB
 Module: m1$m2alias.m3
-	m1$m2alias.m3.$c.CC
 	m1$m2alias.m3.C
+	m1$m2alias.m3.$c.CC
 	m1$m2alias.m3.$c.cc.CCC
 Module: m1$m2alias
 	m1$m2alias.$b.BB

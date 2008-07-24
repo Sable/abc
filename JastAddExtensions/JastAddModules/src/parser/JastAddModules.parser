@@ -141,3 +141,9 @@ Access qualified_name =
 	{:
 		return n.moduleQualifiesAccess(sn);
 	:};
+
+Modifier modifier = 
+	MODULE                                     
+	{: 
+		return new Modifier("module"); 
+	:};

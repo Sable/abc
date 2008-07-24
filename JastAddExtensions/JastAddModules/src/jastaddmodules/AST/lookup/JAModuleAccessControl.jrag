@@ -1,2 +1,50 @@
 aspect JAModuleAccessControl {
+
+	protected boolean Program.frontEndProcessingComplete = false;
+	public void Program.setFrontEndProcessingComplete(boolean b) {
+		this.frontEndProcessingComplete = b;
+	}
+	public boolean Program.isFrontEndProcessingComplete() {
+		return this.frontEndProcessingComplete;
+	}
+	
+	//may be too expensive
+	inh lazy Program Modifiers.getHostProgram();
+
+	//module modifier
+	syn lazy boolean Modifiers.isModule() = numModifier("module") != 0;
+	syn boolean TypeDecl.isModule() = getModifiers().isModule(); 
+	syn boolean FieldDeclaration.isModule() = getModifiers().isModule();
+	syn boolean MethodDecl.isModule() = getModifiers().isModule();
+	syn boolean ConstructorDecl.isModule() = getModifiers().isModule();
+	
+	eq Program.getChild().mayBeModule() = false;
+	eq TypeDecl.getBodyDecl().mayBeModule() = false;
+	inh boolean Modifiers.mayBeModule();
+	
+	//may be module
+	eq TypeDecl.getModifiers().mayBeModule() = true; 
+	eq FieldDeclaration.getModifiers().mayBeModule() = true;
+	eq MethodDecl.getModifiers().mayBeModule() = true;
+	eq ConstructorDecl.getModifiers().mayBeModule() = true;
+	
+	//is public. The module modifier becomes public when frontend processing is complete
+	refine Modifiers eq TypeDecl.isPublic() {
+		return Modifiers.TypeDecl.isPublic() || 
+			(getModifiers().isModule() && getModifiers().getHostProgram().isFrontEndProcessingComplete());
+	} 
+	
+	//error check
+	refine Modifiers eq Modifiers.numProtectionModifiers() {
+		return Modifiers.Modifiers.numProtectionModifiers() + numModifier("module");
+	}
+	
+	refine Modifiers public void Modifiers.checkModifiers() {
+		Modifiers.Modifiers.checkModifiers();
+	    if(numModifier("module") > 1)
+      		error("only one module allowed");
+		if (isModule() && !mayBeModule()) {
+			error("modifier module not allowed in this context");
+		}
+	}
 }

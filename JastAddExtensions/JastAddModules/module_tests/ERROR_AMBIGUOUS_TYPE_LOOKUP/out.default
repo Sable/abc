@@ -83,6 +83,6 @@ Module: m1$alias2
 jastadd$framework.module, m1.module, A.java, m2.module, m2.module, B.java, m2.module, B.java
 Errors:
 A.java:4,2:
-  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
+  Semantic Error: several types named B: m1$alias2.B m1$alias1.B
 A.java:4,12:
-  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
+  Semantic Error: several types named B: m1$alias2.B m1$alias1.B

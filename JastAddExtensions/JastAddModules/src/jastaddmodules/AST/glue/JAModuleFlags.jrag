@@ -1,0 +1,33 @@
+
+//refined from Java1.4Backend/Flags
+aspect JAModuleFlags {
+
+	//refined for Java1.5Backend/VariableArityParametersCodegen
+	refine VariableArityParametersCodegen eq MethodDecl.flags() {
+		int res = 0;
+		res = VariableArityParametersCodegen.MethodDecl.flags();
+		if (isModule()) { res |= Modifiers.ACC_PUBLIC; }
+		return res;
+	}
+
+	refine Flags eq ConstructorDecl.flags() {
+		int res = 0;
+		res = Flags.ConstructorDecl.flags();
+		if (isModule()) { res |= Modifiers.ACC_PUBLIC; }
+		return res;
+	}
+
+	refine Flags eq TypeDecl.flags() {
+		int res = 0;
+		res = Flags.TypeDecl.flags();
+		if (isModule()) { res |= Modifiers.ACC_PUBLIC; }
+		return res;
+	}
+
+	refine Flags eq FieldDeclaration.flags() {
+		int res = 0;
+		res = Flags.FieldDeclaration.flags();
+		if (isModule()) { res |= Modifiers.ACC_PUBLIC; }
+		return res;
+	}	
+}
