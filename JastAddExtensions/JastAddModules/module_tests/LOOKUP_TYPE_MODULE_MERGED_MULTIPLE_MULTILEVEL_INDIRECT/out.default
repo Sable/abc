@@ -165,7 +165,7 @@ module m1.m2b.m3, base:m3, context:[m1.m2b], instantiated:true
 	[export]m4b:m1.m2b.m3.m4b, [export]m4a:m1.m2b.m3.m4a, jastadd$framework:jastadd$framework, [export]m5merged3:m1.m5merged1
 module m1.m2b, base:m2, context:[m1], instantiated:true
 	[export]m3:m1.m2b.m3, jastadd$framework:jastadd$framework
-module m1.m5merged1, base:m5, context:[m1.m2b.m3, m1.m2a.m3, m1.m2a.m3.m4b, m1.m2a.m3.m4a, m1.m2b.m3.m4a, m1.m2b.m3.m4b, m1], instantiated:true
+module m1.m5merged1, base:m5, context:[m1.m2a.m3.m4b, m1, m1.m2b.m3.m4b, m1.m2a.m3.m4a, m1.m2a.m3, m1.m2b.m3, m1.m2b.m3.m4a], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

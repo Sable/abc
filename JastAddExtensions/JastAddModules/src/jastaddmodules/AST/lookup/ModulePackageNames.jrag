@@ -1,11 +1,50 @@
+import jastaddmodules.*;
 aspect ModulePackageNames {
+	//from Java1.4/QualifiedNames.jrag
 	refine QualifiedNames eq CompilationUnit.packageName() {
 		if (getModuleCompilationUnit() == null) {
 			return QualifiedNames.CompilationUnit.packageName();
-		} else {
-			return getModuleCompilationUnit().getModuleName();
+		} else if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()) == null) {
+			return getModuleCompilationUnit()
+						.makeExportedPackageName(moduleLocalPackageName());
+		} else if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()) != null) {
+			if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()).isExported()) {
+				return getModuleCompilationUnit()
+							.makeExportedPackageName(moduleLocalPackageName());
+			} else {
+				return getModuleCompilationUnit()
+							.makeNonExportedPackageName(moduleLocalPackageName());
+			}
 		}
+		assert false : "Unexpected case in ModulePackageNames.CompilationUnit.packageName()";
+		return null;
 	}
 	
+	syn lazy String CompilationUnit.moduleLocalPackageName() {
+		return getPackageDecl();
+	}
 	
+	protected HashMap<String, LocalModulePackage> ModuleCompilationUnit.localPackages = 
+		new HashMap<String, LocalModulePackage>();
+	public void ModuleCompilationUnit.addLocalPackage(String name, LocalModulePackage localPackage) {
+		localPackages.put(name, localPackage);
+	}
+	public LocalModulePackage ModuleCompilationUnit.getLocalPackage(String name) {
+		return localPackages.get(name);
+	}
+	
+	public String ModuleCompilationUnit.makeExportedPackageName(String packageName) {
+		if (packageName.equals("")) {
+			return this.getModuleName();
+		} else {
+			return this.getModuleName() + ".." + packageName;
+		}	
+	}
+	public String ModuleCompilationUnit.makeNonExportedPackageName(String packageName) {
+		if (packageName.equals("")) {
+			return this.getModuleName();
+		} else {
+			return this.getModuleName() + "$$" + packageName;
+		}
+	}
 }

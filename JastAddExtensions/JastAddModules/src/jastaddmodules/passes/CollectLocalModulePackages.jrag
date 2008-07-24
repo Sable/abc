@@ -1,0 +1,24 @@
+import jastaddmodules.*;
+aspect CollectLocalModulePackages {
+	public void Program.collectLocalModulePackages() {
+		List<CompilationUnit> cuList = getCompilationUnitList();
+		for (CompilationUnit cu : cuList) {
+			cu.collectLocalModulePackages();
+		}
+	}
+	public void ModuleCompilationUnit.collectLocalModulePackages() {
+		//collect packages from member cus
+		for (CompilationUnit cu : getCompilationUnitList()) {
+			cu.collectLocalModulePackages();
+		}
+		//TODO: process exported pacakges
+	}
+	public void CompilationUnit.collectLocalModulePackages() {
+		ModuleCompilationUnit mcu = getModuleCompilationUnit();
+		if (mcu != null) {
+			if (mcu.getLocalPackage(moduleLocalPackageName()) == null) {
+				mcu.addLocalPackage(moduleLocalPackageName(), new LocalModulePackage(true));
+			}
+		}
+	}
+}

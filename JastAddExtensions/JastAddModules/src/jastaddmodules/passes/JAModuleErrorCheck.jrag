@@ -45,7 +45,7 @@ aspect JAModuleErrorCheck {
   	//Single error checks, done before CU insertions/generatOwn
   	public void ASTNode.checkModuleErrorsPass1() {
   		checkModuleDecls();
-  		checkModulePackageDecls();
+  		//checkModulePackageDecls();
   		checkModuleCycles();
   		checkDuplicateModuleNames();
   	
@@ -57,7 +57,7 @@ aspect JAModuleErrorCheck {
   	//so that the rewrites are not triggered
   	public void CompilationUnit.checkModuleErrorsPass1() {
   		checkModuleDecls();
-  		checkModulePackageDecls();
+  		//checkModulePackageDecls();
   		checkModuleCycles();
   		checkDuplicateModuleNames();
 
@@ -76,6 +76,7 @@ aspect JAModuleErrorCheck {
   	}
   	
   	//CU package decl (if a module is defined, then a package shouldn't be defined (and vice versa)
+  	//unused for now
   	public void ASTNode.checkModulePackageDecls() {}
   	public void CompilationUnit.checkModulePackageDecls() {
   		if (!getPackageDecl().equals("") && getModuleDecl() != null) {

@@ -90,6 +90,8 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
+				
+				program.collectLocalModulePackages();
 
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					msg = new StringBuffer(

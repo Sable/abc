@@ -8,6 +8,7 @@ package jastadd$framework;
 import beaver.Symbol;
 import java.io.PrintStream;
 import java.util.*;
+import m1.X;
 
 // Referenced classes of package jastadd$framework:
 //            List
@@ -319,6 +320,26 @@ public class ASTNode extends Symbol
         return res;
     }
 
+    public static boolean duringX()
+    {
+        return X.impl$body$duringX();
+    }
+
+    public void g()
+    {
+        X.impl$body$g(this);
+    }
+
+    public static State get$state$access$0()
+    {
+        return state;
+    }
+
+    public static int get$REWRITE_INTERRUPT$access$1()
+    {
+        return 3;
+    }
+
     public static boolean IN_CIRCLE = false;
     public static boolean CHANGE = false;
     public static boolean LAST_CYCLE = false;
@@ -335,5 +356,6 @@ public class ASTNode extends Symbol
     protected ASTNode parent;
     protected ASTNode children[];
     protected int numChildren;
+    public static int duringX = 0;
 
 }
