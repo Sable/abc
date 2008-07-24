@@ -1,4 +1,0 @@
-module m1;
-import own m2 export as m2;
-import own m2 as m2alias;
-import m3;
