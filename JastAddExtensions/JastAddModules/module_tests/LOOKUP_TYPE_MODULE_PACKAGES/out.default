@@ -1,0 +1,236 @@
+----------Module contents----------
+------AA.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------CC.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------../testlib/Opt.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------AAA.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------CCC.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------m1.module------
+module m1;
+import own m2 export as m2;
+import own m2 as m2alias;
+import  m3 as none null;
+------------------------
+------../testlib/List.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------BB.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------m2/A.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------m3.module------
+module m3;
+------------------------
+------BBB.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------../testlib/ASTNode.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------m2.module------
+module m2;
+import own m3 export as m3;
+------------------------
+----------CU AST before insert----------
+AA.java package:a
+CC.java package:c
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+../testlib/Opt.java package:
+AAA.java package:a.a
+CCC.java package:c.cc
+module: m1, file: m1.module, base module: m1
+../testlib/List.java package:
+C.java package:
+BB.java package:b
+B.java package:
+m2/A.java package:
+module: m3, file: m3.module, base module: m3
+BBB.java package:b.bb
+A.java package:
+../testlib/ASTNode.java package:
+Main.java package:
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
+module: m1, file: m1.module, base module: m1
+	AA.java package:m1.$a
+	AAA.java package:m1.$a.a
+	A.java package:m1
+module: m3, file: m3.module, base module: m3
+	CC.java package:m3.$c
+	CCC.java package:m3.$c.cc
+	C.java package:m3
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	BB.java package:m2.$b
+	B.java package:m2
+	m2/A.java package:m2
+	BBB.java package:m2.$b.bb
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m3, base:m3, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import own m2 export as m2;
+import own m2 as m2alias;
+import  m3 as none null;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
+module: m1, file: m1.module, base module: m1
+	AA.java package:m1.$a
+	AAA.java package:m1.$a.a
+	A.java package:m1
+module: m3, file: m3.module, base module: m3
+	CC.java package:m3.$c
+	CCC.java package:m3.$c.cc
+	C.java package:m3
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	BB.java package:m2.$b
+	B.java package:m2
+	m2/A.java package:m2
+	BBB.java package:m2.$b.bb
+module: m1.m2.m3, file: m3.module, base module: m3
+	CC.java package:m1.m2.m3.$c
+	CCC.java package:m1.m2.m3.$c.cc
+	C.java package:m1.m2.m3
+module: m1.m2, file: m2.module, base module: m2
+	BB.java package:m1.m2.$b
+	B.java package:m1.m2
+	m2/A.java package:m1.m2
+	BBB.java package:m1.m2.$b.bb
+module: m1$m2alias.m3, file: m3.module, base module: m3
+	CC.java package:m1$m2alias.m3.$c
+	CCC.java package:m1$m2alias.m3.$c.cc
+	C.java package:m1$m2alias.m3
+module: m1$m2alias, file: m2.module, base module: m2
+	BB.java package:m1$m2alias.$b
+	B.java package:m1$m2alias
+	m2/A.java package:m1$m2alias
+	BBB.java package:m1$m2alias.$b.bb
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m1, base:m1, context:[], instantiated:true
+	m2alias:m1$m2alias, m3:m3, jastadd$framework:jastadd$framework, [export]m2:m1.m2
+module m3, base:m3, context:[], instantiated:true
+	jastadd$framework:jastadd$framework
+module m2, base:m2, context:[], instantiated:false
+	
+module m1.m2.m3, base:m3, context:[m1.m2], instantiated:true
+	jastadd$framework:jastadd$framework
+module m1.m2, base:m2, context:[m1], instantiated:true
+	[export]m3:m1.m2.m3, jastadd$framework:jastadd$framework
+module m1$m2alias.m3, base:m3, context:[m1$m2alias], instantiated:true
+	jastadd$framework:jastadd$framework
+module m1$m2alias, base:m2, context:[m1], instantiated:true
+	[export]m3:m1$m2alias.m3, jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+	jastadd$framework.Opt
+	jastadd$framework.ASTNode
+	jastadd$framework.List
+Module: m1
+	m1.$a.AA
+	m1.A
+	m1.$a.a.AAA
+Module: m3
+	m3.C
+	m3.$c.CC
+	m3.$c.cc.CCC
+Module: m2
+	m2.$b.bb.BBB
+	m2.A
+	m2.B
+	m2.$b.BB
+Module: m1.m2.m3
+	m1.m2.m3.C
+	m1.m2.m3.$c.cc.CCC
+	m1.m2.m3.$c.CC
+Module: m1.m2
+	m1.m2.$b.bb.BBB
+	m1.m2.A
+	m1.m2.$b.BB
+	m1.m2.B
+Module: m1$m2alias.m3
+	m1$m2alias.m3.$c.CC
+	m1$m2alias.m3.C
+	m1$m2alias.m3.$c.cc.CCC
+Module: m1$m2alias
+	m1$m2alias.$b.BB
+	m1$m2alias.B
+	m1$m2alias.A
+	m1$m2alias.$b.bb.BBB
+
+----------CU iterator----------
+../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, AA.java, AAA.java, A.java, m3.module, CC.java, CCC.java, C.java, Main.java, m2.module, m3.module, CC.java, CCC.java, C.java, m2.module, BB.java, B.java, m2/A.java, BBB.java, m3.module, CC.java, CCC.java, C.java, m2.module, BB.java, B.java, m2/A.java, BBB.java
