@@ -58,6 +58,7 @@ import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
+import org.jastadd.plugin.jastaddj.AST.IProblem;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfigurationUtil;
@@ -69,7 +70,6 @@ import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.jastaddj.model.repair.JavaLexer;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
-import org.jastadd.plugin.model.repair.JastAddStructureModel;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.RecoveryLexer;
@@ -77,14 +77,15 @@ import org.jastadd.plugin.model.repair.SOF;
 
 import AST.ASTNode;
 import AST.Access;
+import AST.BytecodeParser;
 import AST.CompilationUnit;
 import AST.Expr;
+import AST.IDEProblem;
 import AST.JavaParser;
 import AST.MethodAccess;
 import AST.ParExpr;
 import AST.Problem;
 import AST.Program;
-import AST.BytecodeParser;
 
 public class JastAddJModel extends JastAddModel {
 
@@ -276,9 +277,10 @@ public class JastAddJModel extends JastAddModel {
 		// Build a new project from saved files only.
 		try {
 			try {
-				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
-
+				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				
 				JastAddJBuildConfiguration buildConfiguration;
 				try {
 					buildConfiguration = readBuildConfiguration(project);
@@ -308,51 +310,16 @@ public class JastAddJModel extends JastAddModel {
 					}
 				}
 				subMonitor.done();
-				
-				// Check semantics
-				boolean build = true;
 				subMonitor = new SubProgressMonitor(monitor, 50);
 				subMonitor.beginTask("", map.keySet().size()*2);
 				for (Iterator iter = program.compilationUnitIterator(); iter
 						.hasNext();) {
 					ICompilationUnit unit = (ICompilationUnit) iter.next();
-
 					if (unit.fromSource()) {
-						Collection errors = unit.parseErrors();
-						Collection warnings = new LinkedList();
-						if (errors.isEmpty()) { // only run semantic checks if
-							// there are no parse errors
-							unit.errorCheck(errors, warnings);
-						}
-						subMonitor.worked(1);					 
-						if (!errors.isEmpty())
-							build = false;
-						errors.addAll(warnings);
-						if (!errors.isEmpty()) {
-							for (Iterator i2 = errors.iterator(); i2.hasNext();) {
-								Problem error = (Problem) i2.next();
-								int line = error.line();
-								int column = error.column();
-								String message = error.message();
-								IFile unitFile = map.get(error.fileName());
-								int severity = IMarker.SEVERITY_INFO;
-								if (error.severity() == Problem.Severity.ERROR)
-									severity = IMarker.SEVERITY_ERROR;
-								else if (error.severity() == Problem.Severity.WARNING)
-									severity = IMarker.SEVERITY_WARNING;
-								if (error.kind() == Problem.Kind.LEXICAL
-										|| error.kind() == Problem.Kind.SYNTACTIC) {
-									addParseErrorMarker(unitFile, message,
-											line, column, severity);
-								} else if (error.kind() == Problem.Kind.SEMANTIC) {
-									addErrorMarker(unitFile, message, line,
-											severity);
-								}
-							}
-						}
-						
-						// Generate bytecode
-						if (build) {
+						IFile unitFile = map.get(unit.getFileName());
+						// Check errors and update markers
+						if (updateErrorsInFile(unit, unitFile, true)) {
+							// Generate bytecode 
 							unit.transformation();
 							unit.generateClassfile();
 						}
@@ -360,7 +327,6 @@ public class JastAddJModel extends JastAddModel {
 					}
 				}
 				subMonitor.done();
-
 				// Use for the bootstrapped version of JastAdd
 				/*
 				 * if(build) { program.generateIntertypeDecls();
@@ -390,7 +356,7 @@ public class JastAddJModel extends JastAddModel {
 	}
 	
 	protected void updateModel(Collection<IFile> changedFiles, IProject project) {
-
+		try {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
@@ -402,8 +368,9 @@ public class JastAddJModel extends JastAddModel {
 		program.files().addAll(map.keySet());
 
 		Collection changedFileNames = new ArrayList();
-		for(IFile file : changedFiles) 	
+		for(IFile file : changedFiles) 	{
 			changedFileNames.add(file.getRawLocation().toOSString());
+		}
 
 		// remove files already built unless they have changed		
 		program.flushSourceFiles(changedFileNames);
@@ -411,6 +378,9 @@ public class JastAddJModel extends JastAddModel {
 		for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
 			String name = (String)iter.next();
 			program.addSourceFile(name);
+		}
+		} catch (Exception e) {
+			logError(e, "Problem updating model!");
 		}
 	}
 
@@ -424,6 +394,7 @@ public class JastAddJModel extends JastAddModel {
 			if (program == null)
 				return;
 			program.files().clear();
+			
 			Map<String,IFile> map = sourceMap(project, buildConfiguration);
 			program.files().addAll(map.keySet());
 	
@@ -440,19 +411,63 @@ public class JastAddJModel extends JastAddModel {
 				String name = (String)iter.next();
 				program.addSourceFile(name);
 			}
-			
-			// recover the current document
-			StringBuffer buf = new StringBuffer(document.get());
-			SOF sof = getRecoveryLexer().parse(buf);
-			Recovery.doRecovery(sof);
-			buf = Recovery.prettyPrint(sof);
-			
-			// build the current document
-			program.addSourceFile(fileName, buf.toString());
+		
+			addSourceFileWithRecovery(project, program, document, fileName);
+			 
+		} catch (Exception e) {
+			logError(e, "Failed to update model!");
 		} catch (Throwable e) {
-			logError(e, "Updating model failed!");
+			logError(e, "Failed to update model!");
 		}
 	}
+	
+	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
+		deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, file);
+		if (checkSemantics) {
+			deleteErrorMarkers(ERROR_MARKER_TYPE, file);
+		}
+		Collection errors = unit.parseErrors();
+		Collection warnings = new LinkedList();
+		if (checkSemantics && errors.isEmpty()) { // only run semantic checks if there's no parse errors and if its asked for
+			unit.errorCheck(errors, warnings);
+		}
+		errors.addAll(warnings);
+		if (!errors.isEmpty()) {
+			for (Iterator i2 = errors.iterator(); i2.hasNext();) {
+				org.jastadd.plugin.jastaddj.AST.IProblem error = 
+					(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
+				int line = error.line();
+				int column = error.column();
+				String message = error.message();
+				int severity = IMarker.SEVERITY_INFO;
+				if (error.severity() == IDEProblem.Severity.ERROR)
+					severity = IMarker.SEVERITY_ERROR;
+				else if (error.severity() == IDEProblem.Severity.WARNING)
+					severity = IMarker.SEVERITY_WARNING;
+				if (error.kind() == IDEProblem.Kind.LEXICAL
+						|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
+					addParseErrorMarker(file, message, line, column, severity);
+				} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
+					addErrorMarker(file, message, line, severity);
+				}
+			}		
+			return false;
+		}
+		return true;
+	}
+	
+    protected void addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws Exception {
+    	ICompilationUnit unit = program.addSourceFileWithRecovery(fileName, doc.get(), getRecoveryLexer());
+    	if (unit != null) {
+    		FileInfo info = documentToFileInfo(doc);
+    		IPath path = info.getPath();
+    		IPath projectPath = project.getRawLocation();
+    		int segCount = path.matchingFirstSegments(projectPath);
+    		path = path.removeFirstSegments(segCount);
+    		IFile file = project.getFile(path);
+    		updateErrorsInFile(unit, file, false);
+    	}
+      }
 
 	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
 		if(filePath == null)
@@ -987,21 +1002,11 @@ public class JastAddJModel extends JastAddModel {
 			IJastAddNode node) throws IOException, Exception {
 		if (node == null) {
 			// Try recovery
-			
-			/* Old recovery 
-			documentOffset += (new JastAddStructureModel(buf))
-					.doRecovery(documentOffset); // Return recovery offset
-													// change
-			node = findNodeInDocument(project, fileName, new Document(buf
-					.toString()), documentOffset - 1);
-			*/
-			/* New recovery */
 			SOF sof = getRecoveryLexer().parse(buf);
 			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
 			Recovery.doRecovery(sof);
 			buf = Recovery.prettyPrint(sof);
-			documentOffset += recoveryNode.getInterval().getPushOffset();
-			
+			documentOffset += recoveryNode.getInterval().getPushOffset();			
 			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 			if (node == null) {
 				System.out.println("Structural recovery failed");

@@ -1,3 +1,5 @@
+
+
 package org.jastadd.plugin.jastadd;
 
 import java.io.ByteArrayInputStream;
@@ -302,9 +304,11 @@ public class Model extends JastAddJModel {
 		// Build a new project from saved files only.
 		try {
 			try {
-				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
+				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
 
+				
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
 				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
 
@@ -338,42 +342,12 @@ public class Model extends JastAddJModel {
 					ICompilationUnit unit = (ICompilationUnit) iter.next();
 
 					if (unit.fromSource()) {
-						Collection errors = unit.parseErrors();
-						Collection warnings = new LinkedList();
-						if (errors.isEmpty()) { // only run semantic checks if
-							// there are no parse errors
-							unit.errorCheck(errors, warnings);
-						}
-						if (!errors.isEmpty())
-							build = false;
-						errors.addAll(warnings);
-						subMonitor.worked(1);
-						if (!errors.isEmpty()) {
-							for (Iterator i2 = errors.iterator(); i2.hasNext();) {
-								Problem error = (Problem) i2.next();
-								int line = error.line();
-								int column = error.column();
-								String message = error.message();
-								IFile unitFile = map.get(error.fileName());
-								int severity = IMarker.SEVERITY_INFO;
-								if (error.severity() == Problem.Severity.ERROR)
-									severity = IMarker.SEVERITY_ERROR;
-								else if (error.severity() == Problem.Severity.WARNING)
-									severity = IMarker.SEVERITY_WARNING;
-								if (error.kind() == Problem.Kind.LEXICAL
-										|| error.kind() == Problem.Kind.SYNTACTIC) {
-									addParseErrorMarker(unitFile, message,
-											line, column, severity);
-								} else if (error.kind() == Problem.Kind.SEMANTIC) {
-									addErrorMarker(unitFile, message, line,
-											severity);
-								}
-							}
-						}
-						if (build) {
+						IFile unitFile = map.get(unit.getFileName());
+						build &= updateErrorsInFile(unit, unitFile, true);
+						//if (build) {
 							// unit.java2Transformation();
 							// unit.generateClassfile();
-						}
+						//}
 					}
 				}
 				subMonitor.done();
@@ -468,6 +442,7 @@ public class Model extends JastAddJModel {
 			// completion
 			return n.completion(linePart[1]);
 		}
+	
 		return new ArrayList();
 	}	
 	
@@ -495,8 +470,10 @@ public class Model extends JastAddJModel {
 			Collection changedFileNames = new ArrayList();
 			if(fileName != null)
 				changedFileNames.add(fileName);
+			
 			// remove files already built and the current document from work list
 			program.flushSourceFiles(changedFileNames);
+			
 			if(fileName != null)
 				program.files().remove(fileName);
 	
@@ -505,19 +482,13 @@ public class Model extends JastAddJModel {
 				String name = (String)iter.next();
 				program.addSourceFile(name);
 			}
-			StringBuffer buf = new StringBuffer(document.get());
-			
-			// recover the current document if needed
-			//SOF sof = getRecoveryLexer().parse(buf);
-			//Recovery.doRecovery(sof);
-			//buf = Recovery.prettyPrint(sof);
-			
-			// build the current document
-			program.addSourceFile(fileName, buf.toString());
-			
+			addSourceFileWithRecovery(project, program, document, fileName);
+
 			if(program instanceof Program) {
 				((Program)program).flushIntertypeDecls();
 			}
+		} catch (Exception e) {
+			logError(e, "Failed to update model!");
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logError(e, "Updating model failed!");

@@ -31,6 +31,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		this.model = model;
 	}
 
+	/*
 	@Override
 	public void getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd) {
 		StringBuffer buf = new StringBuffer(doc.get());
@@ -42,6 +43,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 			e.printStackTrace();
 		}
 	}
+	*/
 
 	@Override
 	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {

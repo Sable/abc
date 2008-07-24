@@ -290,7 +290,8 @@ public abstract class JastAddModel {
 	protected void deleteErrorMarkers(String markerType, IResource[] resources) throws CoreException {
 		for (int i = 0; i < resources.length; i++) {
 			IResource res = resources[i];
-			if (res instanceof FileInfo && isModelFor((FileInfo)res)) {
+			//if (res instanceof FileInfo && isModelFor((FileInfo)res)) {
+			if (res instanceof IFile && isModelFor((IFile)res)) {
 				IFile file = (IFile) res;
 				file.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
 			} else if (res instanceof IFolder) {

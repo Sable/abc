@@ -1,3 +1,6 @@
+import org.jastadd.plugin.model.repair.*;
+import org.jastadd.plugin.jastaddj.AST.*;
+import java.io.*;
 aspect Compile {
   Program implements org.jastadd.plugin.jastaddj.AST.IProgram;
   TypeDecl implements org.jastadd.plugin.jastaddj.AST.ITypeDecl;
@@ -59,4 +62,124 @@ aspect Compile {
     } catch(Exception e) {
     }
   }
+  
+   public ICompilationUnit Program.addSourceFileWithRecovery(String name, String contents, RecoveryLexer recLexer) throws Exception {
+   		
+		StringBuffer buf = new StringBuffer(contents);
+		/*
+		BufferedReader reader = new BufferedReader(new FileReader(name));				
+		char[] chars = new char[1024];
+		int read = 0;
+		while((read = reader.read(chars)) > -1){
+			buf.append(String.valueOf(chars, 0, read));
+		}
+		reader.close();
+		*/
+
+		int keepOn = 2;
+		CompilationUnit unit = null;
+		while (keepOn > 0) {
+			java.io.InputStream is = new java.io.ByteArrayInputStream(buf.toString().getBytes());
+      		unit = javaParser.parse(is, name);
+			is.close();
+			is = null;
+			if (unit != null) {
+				File file = new File(name);
+	            unit.setPathName(file.getAbsolutePath());
+	            unit.setRelativeName(name);
+	            unit.setFromSource(true);
+	            
+	            /*
+	        	String packageName = unit.getPackageDecl();
+            	if(packageName != null && !packages.contains(packageName)) {
+              		packages.add(packageName);
+              		int pos = 0;
+              		while(packageName != null && -1 != (pos = packageName.indexOf('.', pos + 1))) {
+                		String n = packageName.substring(0, pos);
+                		if(!packages.contains(n))
+                  			packages.add(n);
+              		}	
+            	}
+            	*/
+	        	addCompilationUnit(unit);
+				return unit;
+			}
+		}
+		if (unit == null) {				
+			SOF sof = recLexer.parse(buf);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			
+			keepOn--;
+		}
+       	return null;
+      }
+      
+      public class IDEProblem implements org.jastadd.plugin.jastaddj.AST.IProblem {
+      	private Problem problem;
+      	private IProblem.Severity severity;
+      	private IProblem.Kind kind;
+      	public IDEProblem(Problem problem) {
+      		this.problem = problem;
+      		Problem.Severity sev = problem.severity();
+      		if (sev == Problem.Severity.ERROR) {
+      			severity = Severity.ERROR;
+      		} else {
+      			severity = Severity.WARNING;
+      		}
+      		Problem.Kind k = problem.kind();
+      		if (k == Problem.Kind.LEXICAL) {
+      			kind = IProblem.Kind.LEXICAL;
+      		} else if (k == Problem.Kind.SYNTACTIC) {
+      			kind = IProblem.Kind.SYNTACTIC;
+      		} else if (k == Problem.Kind.SEMANTIC) {
+      			kind = IProblem.Kind.SEMANTIC;
+      		} else {
+      			kind = IProblem.Kind.OTHER;
+      		}
+      	}
+      	public int line() {
+      		return problem.line();
+      	}
+		public int column() {
+			return problem.column();
+		}
+		public String message() {
+			return problem.message();
+		}
+		public IProblem.Severity severity() {
+			return severity;
+		}
+		public IProblem.Kind kind() {
+			return kind;
+		}
+      }
+      public IDEProblem Problem.createIDEProblem() {
+      	return new IDEProblem(this);
+      }
+      
+      refine ErrorCheck public void CompilationUnit.errorCheck(Collection err, Collection warn) {
+      	collectErrors();
+      	Collection ideErrors = new ArrayList();
+      	for (Iterator itr = errors.iterator(); itr.hasNext();) {
+      		Problem problem = (Problem)itr.next();
+      		ideErrors.add(problem.createIDEProblem());
+      	}
+    	err.addAll(ideErrors);
+    	Collection ideWarnings = new ArrayList();
+    	for (Iterator itr = warnings.iterator(); itr.hasNext();) {
+    		Problem problem = (Problem)itr.next();
+    		ideWarnings.add(problem.createIDEProblem());
+    	}
+    	warn.addAll(ideWarnings);
+      }
+      
+      refine ErrorCheck public Collection CompilationUnit.parseErrors() {
+      	Collection ideErrors = new ArrayList();
+      	for (Iterator itr = parseErrors.iterator(); itr.hasNext();) {
+      		Problem problem = (Problem)itr.next();
+      		ideErrors.add(problem.createIDEProblem());
+      	} 
+      	return ideErrors;
+      }
 }
