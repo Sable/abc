@@ -135,3 +135,9 @@ List module_access_list =
 	{:
 		return mal.add(ma);
 	:};
+
+Access qualified_name = 
+	name.n MODULE_SEPARATOR simple_name.sn
+	{:
+		return n.moduleQualifiesAccess(sn);
+	:};

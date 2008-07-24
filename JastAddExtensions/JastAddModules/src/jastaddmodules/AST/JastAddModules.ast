@@ -28,3 +28,5 @@ ModuleMergeDecl : ModuleMemberDecl ::=
 	MergeModule:ModuleAccess* 
 	AsType 
 	AsModule:ModuleAccess;
+
+ModuleDot : AbstractDot;

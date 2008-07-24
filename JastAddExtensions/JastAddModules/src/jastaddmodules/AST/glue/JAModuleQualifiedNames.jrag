@@ -1,0 +1,29 @@
+
+aspect JAModuleQualifiedNames {
+	public ModuleDot Expr.moduleQualifiesAccess(Access access) {
+		ModuleDot dot = new ModuleDot(this, access);
+		//TODO: check if we need this
+		//dot.lastDot = dot;
+		return dot;
+	}
+	
+	//TODO: This was cut and paste from ResolveAmbiguousNames. Check with Torbjorn if there is a problem
+	private Access ModuleDot.qualifyTailWith(Access expr) {
+		if(getRight/*NoTransform*/() instanceof AbstractDot) {
+			AbstractDot dot = (AbstractDot)getRight/*NoTransform*/();
+			return expr.qualifiesAccess(dot.getRight/*NoTransform*/());
+		}
+		return expr;
+	}
+	
+	rewrite ModuleDot {
+		when(!duringSyntacticClassification() && leftSide().isPackageAccess() && rightSide().isPackageAccess())
+		to Access {
+			PackageAccess left = (PackageAccess)leftSide();
+			PackageAccess right = (PackageAccess)rightSide();
+			left.setPackage(left.getPackage() + "::" + right.getPackage());
+			left.setEnd(right.end());
+			return qualifyTailWith(left);
+		}
+	}
+}

@@ -8,13 +8,9 @@ aspect ModulePackageNames {
 			return getModuleCompilationUnit()
 						.makeExportedPackageName(moduleLocalPackageName());
 		} else if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()) != null) {
-			if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()).isExported()) {
-				return getModuleCompilationUnit()
-							.makeExportedPackageName(moduleLocalPackageName());
-			} else {
-				return getModuleCompilationUnit()
-							.makeNonExportedPackageName(moduleLocalPackageName());
-			}
+			ModuleCompilationUnit mcu = getModuleCompilationUnit();
+			return mcu.makeLocalPackageName(moduleLocalPackageName(),
+							mcu.getLocalPackage(moduleLocalPackageName()));
 		}
 		assert false : "Unexpected case in ModulePackageNames.CompilationUnit.packageName()";
 		return null;
@@ -32,12 +28,15 @@ aspect ModulePackageNames {
 	public LocalModulePackage ModuleCompilationUnit.getLocalPackage(String name) {
 		return localPackages.get(name);
 	}
+	public HashMap<String, LocalModulePackage> ModuleCompilationUnit.getLocalPackageMap() {
+		return this.localPackages;
+	}
 	
 	public String ModuleCompilationUnit.makeExportedPackageName(String packageName) {
 		if (packageName.equals("")) {
 			return this.getModuleName();
 		} else {
-			return this.getModuleName() + ".." + packageName;
+			return this.getModuleName() + ".$" + packageName;
 		}	
 	}
 	public String ModuleCompilationUnit.makeNonExportedPackageName(String packageName) {
@@ -45,6 +44,13 @@ aspect ModulePackageNames {
 			return this.getModuleName();
 		} else {
 			return this.getModuleName() + "$$" + packageName;
+		}
+	}
+	public String ModuleCompilationUnit.makeLocalPackageName(String packageName, LocalModulePackage localModulePackage) {
+		if (localModulePackage.isExported()) {
+			return makeExportedPackageName(packageName);
+		} else {
+			return makeNonExportedPackageName(packageName);
 		}
 	}
 }

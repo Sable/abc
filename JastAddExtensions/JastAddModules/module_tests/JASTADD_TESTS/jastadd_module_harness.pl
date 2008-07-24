@@ -60,7 +60,7 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 	system $javacmdline;
 
 	#diff results
-	system "dos2unix $result_file";
-	system "dos2unix $correct_file";
+	system "dos2unix $result_file 2>/dev/null";
+	system "dos2unix $correct_file 2>/dev/null";
 	system "diff --ignore-space-change $result_file $correct_file | tee $test_name.diff";
 }

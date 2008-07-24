@@ -1,3 +1,5 @@
+import jastaddmodules.*;
+
 aspect JAModuleLookupType {
 	refine LookupType eq Program.lookupType(String packageName, String typeName) {
 		assert (isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
@@ -44,6 +46,44 @@ aspect JAModuleLookupType {
 	
 	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
 		assert (getHostProgram().isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
+		
+		//local package lookup
+		LocalModulePackage localPackage = getLocalPackage(packageName);
+		if (localPackage != null) {
+			String localPackageName = makeLocalPackageName(packageName, localPackage);
+			TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
+			if (type != null) {
+				return type;
+			}
+		}
+		
+		//TODO: greedy left match on package name
+		//Make this more efficient
+		String moduleOrPackageName = packageName;
+		String localPackageName = null;
+		while (moduleOrPackageName.lastIndexOf('.') != -1) {
+			if (localPackageName == null) {
+				localPackageName = moduleOrPackageName.substring(moduleOrPackageName.lastIndexOf('.') + 1);
+			} else {
+				localPackageName = moduleOrPackageName.substring(moduleOrPackageName.lastIndexOf('.') + 1) + "." + localPackageName; 
+			}
+				
+			moduleOrPackageName = moduleOrPackageName.substring(0, moduleOrPackageName.lastIndexOf('.'));
+			ModuleCompilationUnit importedCU = lookupModule(this, moduleOrPackageName);
+			
+			//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
+			if (importedCU != null) {
+				Iterator<CompilationUnit> iter = importedCU.getCompilationUnitList().iterator();
+				if (iter.hasNext()) {
+					TypeDecl type = iter.next().lookupType(localPackageName, typeName);
+					if (type != null) {
+						return type;
+					}
+				}
+			}
+		}
+		
+		//TODO: Is this even needed?
 		//treat the package name as a module name and lookup the module
 		ModuleCompilationUnit importedCU = lookupModule(this, packageName);
 		if (importedCU != null) {

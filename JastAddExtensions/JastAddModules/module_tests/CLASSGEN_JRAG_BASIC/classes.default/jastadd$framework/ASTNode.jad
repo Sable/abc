@@ -47,6 +47,19 @@ public class ASTNode extends Symbol
         }
     }
 
+    public static class CircularStackEntry
+    {
+
+        Set circularEvalSet;
+        boolean changeValue;
+
+        public CircularStackEntry(Set set, boolean change)
+        {
+            circularEvalSet = set;
+            changeValue = change;
+        }
+    }
+
     public static class State
     {
 
@@ -87,19 +100,6 @@ public class ASTNode extends Symbol
         {
             stack = new int[64];
             pos = 0;
-        }
-    }
-
-    public static class CircularStackEntry
-    {
-
-        Set circularEvalSet;
-        boolean changeValue;
-
-        public CircularStackEntry(Set set, boolean change)
-        {
-            circularEvalSet = set;
-            changeValue = change;
         }
     }
 

@@ -126,7 +126,7 @@ module m1.m2alias, base:m2, context:[m1], instantiated:true
 	[export]m4export:m1.m4alias, m4:m1.m2alias$m4, jastadd$framework:jastadd$framework
 module m1.m3alias, base:m3, context:[m1], instantiated:true
 	[export]m4export:m1.m4alias, jastadd$framework:jastadd$framework
-module m1.m4alias, base:m4, context:[m1.m2alias, m1, m1.m3alias], instantiated:true
+module m1.m4alias, base:m4, context:[m1, m1.m2alias, m1.m3alias], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

@@ -101,11 +101,17 @@ aspect JAModuleClasspath {
 	
 	//make sure to reset the Program cache after generateImportOwn
 	syn lazy Set<String> Program.modulePackages() {
+		assert isModuleProcessingComplete() : "modulePackages called before module processing is complete";
 		HashSet ret = new HashSet();
 		for (Iterator i = compilationUnitIterator(); i.hasNext(); ) {
 			CompilationUnit cu = (CompilationUnit) i.next();
 			if (cu instanceof ModuleCompilationUnit) {
-				ret.add(((ModuleCompilationUnit)cu).getModuleName());
+				ModuleCompilationUnit mcu = (ModuleCompilationUnit) cu;
+				ret.add(mcu.getModuleName());
+				for (String localPackage : mcu.getLocalPackageMap().keySet()) {
+					ret.add(mcu.makeLocalPackageName(localPackage, 
+							mcu.getLocalPackage(localPackage)));
+				}
 			}
 		}
 		return ret;

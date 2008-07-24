@@ -226,6 +226,7 @@ BinaryExponent = [pP] [+-]? {Digits}
   
   // NEIL: JastAddModules
   "module" { return sym(Terminals.MODULE); }
+  "::" {return sym(Terminals.MODULE_SEPARATOR); }
 
   // 3.10 Literals
   
