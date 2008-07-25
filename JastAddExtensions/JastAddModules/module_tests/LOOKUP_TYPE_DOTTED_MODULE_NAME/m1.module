@@ -1,0 +1,2 @@
+module com.xyz.m1;
+import com.xyz.m2;

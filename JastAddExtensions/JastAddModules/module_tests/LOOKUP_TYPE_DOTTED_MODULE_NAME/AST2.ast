@@ -1,0 +1,4 @@
+module com.xyz.m2;
+
+Type2 : ASTNode ::=;
+TypeM2 : Type3 ::=;

@@ -1,0 +1,2 @@
+module com.xyz.m2;
+import own com.xyz.m3 export as com.xyz.m3;

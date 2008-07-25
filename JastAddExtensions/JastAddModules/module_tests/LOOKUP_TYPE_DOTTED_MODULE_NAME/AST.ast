@@ -1,0 +1,5 @@
+module com.xyz.m1;
+
+Type1  ::= ;
+TypeM1 : Type2 ::= ;
+TypeM13 : com.xyz.m2::com.xyz.m3::Type3 ::=;

@@ -1,0 +1,50 @@
+----------Module contents----------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m1.module------
+module m1;
+------------------------
+----------CU AST before insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+A.java package:a::b
+module: m1, file: m1.module, base module: m1
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+	A.java package:m1.$a::b
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+	A.java package:m1.$a::b
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m1, base:m1, context:[], instantiated:true
+	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+Module: m1
+	m1.$a::b.A
+
+----------CU iterator----------
+../testlib/jastadd$framework.module, m1.module, A.java
+Errors:
+A.java:1:
+  Semantic Error: Invalid package name: a::b

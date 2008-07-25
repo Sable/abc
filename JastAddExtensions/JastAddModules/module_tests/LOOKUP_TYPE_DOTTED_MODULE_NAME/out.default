@@ -1,0 +1,222 @@
+----------Module contents----------
+------AA.java------
+module: module com.xyz.m1;;
+module CU : m1.module
+module name : com.xyz.m1
+------------------------
+------AST3.ast------
+module: module com.xyz.m3;;
+Original AST file: AST3.ast
+module CU : m3.module
+module name : com.xyz.m3
+------------------------
+------CC.java------
+module: module com.xyz.m3;;
+module CU : m3.module
+module name : com.xyz.m3
+------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------../testlib/Opt.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------m1.module------
+module com.xyz.m1;
+import  com.xyz.m2 as none null;
+------------------------
+------AST.ast------
+module: module com.xyz.m1;;
+Original AST file: AST.ast
+module CU : m1.module
+module name : com.xyz.m1
+------------------------
+------AST.ast------
+module: module com.xyz.m1;;
+Original AST file: AST.ast
+module CU : m1.module
+module name : com.xyz.m1
+------------------------
+------AST.ast------
+module: module com.xyz.m1;;
+Original AST file: AST.ast
+module CU : m1.module
+module name : com.xyz.m1
+------------------------
+------../testlib/List.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------C.java------
+module: module com.xyz.m3;;
+module CU : m3.module
+module name : com.xyz.m3
+------------------------
+------BB.java------
+module: module com.xyz.m2;;
+module CU : m2.module
+module name : com.xyz.m2
+------------------------
+------B.java------
+module: module com.xyz.m2;;
+module CU : m2.module
+module name : com.xyz.m2
+------------------------
+------m3.module------
+module com.xyz.m3;
+------------------------
+------AST2.ast------
+module: module com.xyz.m2;;
+Original AST file: AST2.ast
+module CU : m2.module
+module name : com.xyz.m2
+------------------------
+------AST2.ast------
+module: module com.xyz.m2;;
+Original AST file: AST2.ast
+module CU : m2.module
+module name : com.xyz.m2
+------------------------
+------A.java------
+module: module com.xyz.m1;;
+module CU : m1.module
+module name : com.xyz.m1
+------------------------
+------../testlib/ASTNode.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------m2.module------
+module com.xyz.m2;
+import own com.xyz.m3 export as com.xyz.m3;
+------------------------
+----------CU AST before insert----------
+AA.java package:a
+AST3.ast package:
+CC.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+../testlib/Opt.java package:
+module: com.xyz.m1, file: m1.module, base module: com.xyz.m1
+AST.ast package:
+AST.ast package:
+AST.ast package:
+../testlib/List.java package:
+C.java package:
+BB.java package:b
+B.java package:
+module: com.xyz.m3, file: m3.module, base module: com.xyz.m3
+AST2.ast package:
+AST2.ast package:
+A.java package:
+../testlib/ASTNode.java package:
+Main.java package:
+module: com.xyz.m2, file: m2.module, base module: com.xyz.m2
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
+module: com.xyz.m1, file: m1.module, base module: com.xyz.m1
+	AA.java package:com.xyz.m1.$a
+	AST.ast package:com.xyz.m1
+	AST.ast package:com.xyz.m1
+	AST.ast package:com.xyz.m1
+	A.java package:com.xyz.m1
+module: com.xyz.m3, file: m3.module, base module: com.xyz.m3
+	AST3.ast package:com.xyz.m3
+	CC.java package:com.xyz.m3
+	C.java package:com.xyz.m3
+Main.java package:
+module: com.xyz.m2, file: m2.module, base module: com.xyz.m2
+	BB.java package:com.xyz.m2.$b
+	B.java package:com.xyz.m2
+	AST2.ast package:com.xyz.m2
+	AST2.ast package:com.xyz.m2
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module com.xyz.m1, base:com.xyz.m1, context:[], instantiated:false
+	
+module com.xyz.m3, base:com.xyz.m3, context:[], instantiated:false
+	
+module com.xyz.m2, base:com.xyz.m2, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module com.xyz.m1;
+import  com.xyz.m2 as none null;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+	../testlib/Opt.java package:jastadd$framework
+	../testlib/List.java package:jastadd$framework
+	../testlib/ASTNode.java package:jastadd$framework
+module: com.xyz.m1, file: m1.module, base module: com.xyz.m1
+	AA.java package:com.xyz.m1.$a
+	AST.ast package:com.xyz.m1
+	AST.ast package:com.xyz.m1
+	AST.ast package:com.xyz.m1
+	A.java package:com.xyz.m1
+module: com.xyz.m3, file: m3.module, base module: com.xyz.m3
+	AST3.ast package:com.xyz.m3
+	CC.java package:com.xyz.m3
+	C.java package:com.xyz.m3
+Main.java package:
+module: com.xyz.m2, file: m2.module, base module: com.xyz.m2
+	BB.java package:com.xyz.m2.$b
+	B.java package:com.xyz.m2
+	AST2.ast package:com.xyz.m2
+	AST2.ast package:com.xyz.m2
+module: com.xyz.m2.com.xyz.m3, file: m3.module, base module: com.xyz.m3
+	AST3.ast package:com.xyz.m2.com.xyz.m3
+	CC.java package:com.xyz.m2.com.xyz.m3
+	C.java package:com.xyz.m2.com.xyz.m3
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module com.xyz.m1, base:com.xyz.m1, context:[], instantiated:true
+	jastadd$framework:jastadd$framework, com.xyz.m2:com.xyz.m2
+module com.xyz.m3, base:com.xyz.m3, context:[], instantiated:false
+	
+module com.xyz.m2, base:com.xyz.m2, context:[], instantiated:true
+	[export]com.xyz.m3:com.xyz.m2.com.xyz.m3, jastadd$framework:jastadd$framework
+module com.xyz.m2.com.xyz.m3, base:com.xyz.m3, context:[com.xyz.m2], instantiated:true
+	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+	jastadd$framework.Opt
+	jastadd$framework.ASTNode
+	jastadd$framework.List
+Module: com.xyz.m1
+	com.xyz.m1.$a.AA
+	com.xyz.m1.TypeM13
+	com.xyz.m1.TypeM1
+	com.xyz.m1.Type1
+	com.xyz.m1.A
+Module: com.xyz.m3
+	com.xyz.m3.Type3
+	com.xyz.m3.C
+	com.xyz.m3.CC
+Module: com.xyz.m2
+	com.xyz.m2.B
+	com.xyz.m2.TypeM2
+	com.xyz.m2.$b.BB
+	com.xyz.m2.Type2
+Module: com.xyz.m2.com.xyz.m3
+	com.xyz.m2.com.xyz.m3.Type3
+	com.xyz.m2.com.xyz.m3.CC
+	com.xyz.m2.com.xyz.m3.C
+
+----------CU iterator----------
+../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, AA.java, AST.ast, AST.ast, AST.ast, A.java, m3.module, Main.java, m2.module, BB.java, B.java, AST2.ast, AST2.ast, m3.module, AST3.ast, CC.java, C.java

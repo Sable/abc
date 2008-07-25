@@ -1,0 +1,15 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   AA.java
+
+package com.xyz.m1.$a;
+
+
+public class AA
+{
+
+    public AA()
+    {
+    }
+}
