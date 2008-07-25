@@ -6,4 +6,10 @@ aspect JAModuleNameCheck {
 		}
 		StaticImports.CompilationUnit.nameCheck();
 	} 
+	
+	public void ModuleDecl.nameCheck() {
+		if (getModuleAccess().getID().indexOf("::") != -1) {
+			error("Invalid module name " + getModuleAccess().getID()); 
+		}
+	}
 }

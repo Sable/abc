@@ -156,6 +156,9 @@ aspect JAModuleErrorCheck {
 		checkUnreachableStmt();
 		definiteAssignment();
 		checkModifiers();
+		
+		getModuleDecl().collectErrors();
+		getModuleMemberDeclList().collectErrors();
 		//Don't go down into child CUs, compilationUnitIterator will go through them anyway
 	}
 	

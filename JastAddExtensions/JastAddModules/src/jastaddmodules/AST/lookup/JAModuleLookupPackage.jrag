@@ -1,0 +1,71 @@
+import jastaddmodules.*;
+
+aspect JAModuleLookupPackage {
+	public String ModuleCompilationUnit.lookupPackage(ModuleCompilationUnit context, String packageName) {
+		//local package lookup
+		LocalModulePackage localModulePackage = getLocalPackage(packageName);
+		if (localModulePackage != null&&
+				(localModulePackage.isExported() || 
+					(!localModulePackage.isExported() && context == this)
+				)
+			) {
+			return makeLocalPackageName(packageName, localModulePackage);
+		}
+			
+		String moduleName = packageName;
+		String localPackageName = null;
+		if (moduleName.lastIndexOf("::") != -1) {
+			localPackageName = moduleName.substring(moduleName.lastIndexOf("::") + 2);
+			moduleName = moduleName.substring(0, moduleName.lastIndexOf("::"));
+		} else {
+			localPackageName = ""; //this should be properly looked up in the local package names of the module
+			moduleName = packageName;
+		}
+		if (localPackageName.equals(".")) {
+			localPackageName = ""; //special case for module::.Type
+		}
+				
+		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
+		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
+		if (importedCU != null) {
+			localModulePackage = importedCU.getLocalPackage(localPackageName);
+			//if the package is exported or if it is not exported but lookup is in the same modulecu, return the global package name
+			if (localModulePackage != null &&
+					(localModulePackage.isExported() || 
+						(!localModulePackage.isExported() && context == this)
+					)
+				) {
+				return importedCU.makeLocalPackageName(localPackageName, localModulePackage);
+			}
+		}
+		return null;
+	}
+	
+	inh boolean CompilationUnit.hasPackage(String packageName); //should just call the parent hasPackage
+	eq CompilationUnit.getChild().hasPackage(String packageName) {
+		if ((getModuleCompilationUnit() == null) && 
+			(getHostProgram().getInstanceModuleCU() != null)) {
+			//try a lookup through the instance package
+			boolean ret = (getHostProgram()
+								.getInstanceModuleCU()
+								.lookupPackage(null, packageName) != null
+								);
+			if (ret) {
+				return true;
+			}
+		}
+		return hasPackage(packageName);
+	}
+	
+	syn boolean ModuleCompilationUnit.hasPackage(String packageName) {
+		boolean ret = (this.lookupPackage(this, packageName) != null);
+		if (ret) {
+			return true;
+		} else {
+			return super.hasPackage(packageName);
+		}
+	}
+	eq ModuleCompilationUnit.getChild().hasPackage(String packageName) {
+		return hasPackage(packageName);//should call the method above
+	}
+}
