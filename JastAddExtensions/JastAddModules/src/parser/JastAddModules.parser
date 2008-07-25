@@ -140,7 +140,13 @@ Access qualified_name =
 	name.n MODULE_SEPARATOR simple_name.sn
 	{:
 		return n.moduleQualifiesAccess(sn);
+	:}
+	|
+	MODULE_SEPARATOR name.n //for default module
+	{:
+		return new ParseName("").moduleQualifiesAccess(n);
 	:};
+
 
 Modifier modifier = 
 	MODULE                                     

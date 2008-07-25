@@ -119,7 +119,7 @@ module M1$M2, base:M2, context:[M1], instantiated:true
 	[export]M4Alias2:M1$M4Alias1, jastadd$framework:jastadd$framework
 module M1$M3, base:M3, context:[M1], instantiated:true
 	[export]M4Alias3:M1$M4Alias1, jastadd$framework:jastadd$framework
-module M1$M4Alias1, base:M4, context:[M1$M3, M1$M2, M1], instantiated:true
+module M1$M4Alias1, base:M4, context:[M1, M1$M3, M1$M2], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M4AliasZ, base:M4, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework

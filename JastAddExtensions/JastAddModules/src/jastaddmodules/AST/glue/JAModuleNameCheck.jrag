@@ -8,7 +8,8 @@ aspect JAModuleNameCheck {
 	} 
 	
 	public void ModuleDecl.nameCheck() {
-		if (getModuleAccess().getID().indexOf("::") != -1) {
+		if (getModuleAccess().getID().indexOf("::") != -1 ||
+			getModuleAccess().getID().equals(getHostProgram().DEFAULT_MODULE_NAME)) {
 			error("Invalid module name " + getModuleAccess().getID()); 
 		}
 	}

@@ -17,6 +17,14 @@ public class AA
         }
     }
 
+    public class AAInnerPublic
+    {
+
+        public AAInnerPublic()
+        {
+        }
+    }
+
     public class AAInnerModule
     {
 
@@ -29,14 +37,6 @@ public class AA
     {
 
         public AAModule()
-        {
-        }
-    }
-
-    public class AAInnerPublic
-    {
-
-        public AAInnerPublic()
         {
         }
     }

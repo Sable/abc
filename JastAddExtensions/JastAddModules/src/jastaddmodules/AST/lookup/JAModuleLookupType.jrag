@@ -76,6 +76,11 @@ aspect JAModuleLookupType {
 		if (localPackageName.equals(".")) {
 			localPackageName = ""; //special case for module::.Type
 		}
+		
+		//special case for default module lookups, e.g. ::java.lang
+		if (moduleName.equals(getHostProgram().DEFAULT_MODULE_NAME)) {
+			return getHostProgram().lookupType(localPackageName, typeName);
+		}
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU

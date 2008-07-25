@@ -1,0 +1,3 @@
+aspect DefaultModule {
+	public final String Program.DEFAULT_MODULE_NAME = "";
+}

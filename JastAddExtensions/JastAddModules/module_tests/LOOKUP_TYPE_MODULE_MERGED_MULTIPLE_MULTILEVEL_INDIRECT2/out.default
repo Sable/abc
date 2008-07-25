@@ -155,7 +155,7 @@ module m0.m1.m2b.m3b, base:m3, context:[m0.m1.m2b], instantiated:true
 	[export]m4:m0.m1.m4alias1, jastadd$framework:jastadd$framework
 module m0.m1.m2b, base:m2, context:[m0.m1], instantiated:true
 	jastadd$framework:jastadd$framework, [export]m3b:m0.m1.m2b.m3b, [export]m3a:m0.m1.m2b.m3a, [export]m4alias2:m0.m1.m4alias1
-module m0.m1.m4alias1, base:m4, context:[m0.m1.m2a.m3b, m0.m1.m2b.m3a, m0.m1.m2a, m0.m1.m2b.m3b, m0.m1, m0.m1.m2a.m3a, m0.m1.m2b], instantiated:true
+module m0.m1.m4alias1, base:m4, context:[m0.m1.m2a.m3a, m0.m1.m2b, m0.m1.m2b.m3b, m0.m1.m2a.m3b, m0.m1, m0.m1.m2b.m3a, m0.m1.m2a], instantiated:true
 	jastadd$framework:jastadd$framework
 module m0.m1, base:m1, context:[m0], instantiated:true
 	[export]m2b:m0.m1.m2b, jastadd$framework:jastadd$framework, [export]m2a:m0.m1.m2a, [export]m4alias1:m0.m1.m4alias1
