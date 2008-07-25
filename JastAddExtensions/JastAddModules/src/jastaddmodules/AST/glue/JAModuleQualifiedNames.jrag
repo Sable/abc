@@ -2,12 +2,11 @@
 aspect JAModuleQualifiedNames {
 	public ModuleDot Expr.moduleQualifiesAccess(Access access) {
 		ModuleDot dot = new ModuleDot(this, access);
-		//TODO: check if we need this
-		//dot.lastDot = dot;
+		dot.lastDot = dot;
 		return dot;
 	}
 	
-	//TODO: This was cut and paste from ResolveAmbiguousNames. Check with Torbjorn if there is a problem
+	//This was cut and paste from ResolveAmbiguousNames. Check with Torbjorn if there is a problem
 	private Access ModuleDot.qualifyTailWith(Access expr) {
 		if(getRight/*NoTransform*/() instanceof AbstractDot) {
 			AbstractDot dot = (AbstractDot)getRight/*NoTransform*/();
@@ -16,6 +15,7 @@ aspect JAModuleQualifiedNames {
 		return expr;
 	}
 	
+	//Adapted from Java1.4Frontend/ResolveAmbiguousNames 
 	rewrite ModuleDot {
 		when(!duringSyntacticClassification() && leftSide().isPackageAccess() && rightSide().isPackageAccess())
 		to Access {
@@ -26,4 +26,16 @@ aspect JAModuleQualifiedNames {
 			return qualifyTailWith(left);
 		}
 	}
+	// change a ModuleDot("m1", "Type") into a Dot("m1::", "Type")
+	rewrite ModuleDot {
+		when(!duringSyntacticClassification() && leftSide().isPackageAccess() && !((Access)leftSide()).hasPrevExpr() && rightSide() instanceof TypeAccess)
+		to Access {
+			PackageAccess left = (PackageAccess)leftSide();
+			TypeAccess right = (TypeAccess)rightSide();
+			//change left to left::
+			left.setPackage(left.getPackage() + "::");
+			return qualifyTailWith(left.qualifiesAccess(right));
+			}
+	}
+	
 }

@@ -46,5 +46,74 @@ aspect JAModuleAccessControl {
 		if (isModule() && !mayBeModule()) {
 			error("modifier module not allowed in this context");
 		}
+		if (isModule() && hostType().compilationUnit().getModuleCompilationUnit() == null) {
+			warning("modifier module used in a a compilation unit that is not a module member. ");
+		}
+	}
+	
+	//modify accessibleFrom methods
+	refine AccessControl eq TypeDecl.accessibleFromPackage(String packageName) =
+    	!isPrivate() && 
+    	(	isPublic() || 
+    		(	isModule() && 
+    			compilationUnit().getModuleCompilationUnit() == 
+    				compilationUnit().getHostProgram().getPackageToMCU(packageName)
+    		) ||
+    		hostPackage().equals(packageName)
+    	);
+    
+	refine DeclareParentsAnalysis eq TypeDecl.accessibleFromExtend(TypeDecl type) {
+		if (DeclareParentsAnalysis.TypeDecl.accessibleFromExtend(type)) {
+			return true;
+		}
+		if (isModule()) {
+			return this.compilationUnit().getModuleCompilationUnit() == 
+				type.compilationUnit().getModuleCompilationUnit();
+		}
+		return false;
+	}
+
+	refine DeclareParentsAnalysis eq TypeDecl.accessibleFrom(TypeDecl type) {
+		if (DeclareParentsAnalysis.TypeDecl.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			return this.compilationUnit().getModuleCompilationUnit() == 
+				type.compilationUnit().getModuleCompilationUnit();
+		}
+		return false;
+	}
+
+	refine AccessControl eq MethodDecl.accessibleFrom(TypeDecl type) {
+		if (AccessControl.MethodDecl.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			return this.hostType().compilationUnit().getModuleCompilationUnit() == 
+				type.compilationUnit().getModuleCompilationUnit();
+		}
+		return false;
+	}
+
+	refine DeclareParentsAnalysis eq ConstructorDecl.accessibleFrom(TypeDecl type) {
+		if (DeclareParentsAnalysis.ConstructorDecl.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			return this.hostType().compilationUnit().getModuleCompilationUnit() == 
+				type.compilationUnit().getModuleCompilationUnit();
+		}
+		return false;
+	}
+
+	refine AccessControl eq FieldDeclaration.accessibleFrom(TypeDecl type) {
+		if (AccessControl.FieldDeclaration.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			return this.hostType().compilationUnit().getModuleCompilationUnit() == 
+				type.compilationUnit().getModuleCompilationUnit();
+		}
+		return false;
 	}
 }

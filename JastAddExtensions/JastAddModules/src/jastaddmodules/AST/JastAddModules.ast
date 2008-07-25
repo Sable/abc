@@ -29,4 +29,4 @@ ModuleMergeDecl : ModuleMemberDecl ::=
 	AsType 
 	AsModule:ModuleAccess;
 
-ModuleDot : AbstractDot;
+ModuleDot : Dot;

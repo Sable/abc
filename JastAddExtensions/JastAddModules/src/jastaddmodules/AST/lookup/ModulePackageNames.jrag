@@ -47,6 +47,7 @@ aspect ModulePackageNames {
 		}
 	}
 	public String ModuleCompilationUnit.makeLocalPackageName(String packageName, LocalModulePackage localModulePackage) {
+		assert (localModulePackage != null) : "localModulePackage should not be null"; 
 		if (localModulePackage.isExported()) {
 			return makeExportedPackageName(packageName);
 		} else {

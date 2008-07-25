@@ -12,6 +12,12 @@ aspect CollectLocalModulePackages {
 			cu.collectLocalModulePackages();
 		}
 		//TODO: process exported pacakges
+		//TODO: Add packages to Program.packageToMCU
+		for (String localPackageName : getLocalPackageMap().keySet()) {
+			LocalModulePackage localPackage = getLocalPackage(localPackageName);
+			String globalPackageName = makeLocalPackageName(localPackageName, localPackage);
+			getHostProgram().addPackageToMCU(globalPackageName, this);
+		}
 	}
 	public void CompilationUnit.collectLocalModulePackages() {
 		ModuleCompilationUnit mcu = getModuleCompilationUnit();
@@ -21,4 +27,16 @@ aspect CollectLocalModulePackages {
 			}
 		}
 	}
+	
+	//map needed to refine AccessControl.TypeDecl.accessibleFromPackage
+	protected HashMap<String, ModuleCompilationUnit> Program.packageToMCU = new 
+		HashMap<String, ModuleCompilationUnit>();
+	public void Program.addPackageToMCU(String packageName, ModuleCompilationUnit mcu) {
+		assert (this.packageToMCU.get(packageName) == null) : "Duplicate entry already in Program.packageToMCU";
+		packageToMCU.put(packageName, mcu);
+	}
+	public ModuleCompilationUnit Program.getPackageToMCU(String packageName) {
+		return packageToMCU.get(packageName);
+	}
+	
 }
