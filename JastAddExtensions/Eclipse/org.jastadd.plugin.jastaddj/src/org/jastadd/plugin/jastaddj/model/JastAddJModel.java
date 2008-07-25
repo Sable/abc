@@ -457,13 +457,11 @@ public class JastAddJModel extends JastAddModel {
     protected void addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws Exception {
     	ICompilationUnit unit = program.addSourceFileWithRecovery(fileName, doc.get(), getRecoveryLexer());
     	if (unit != null) {
-    		FileInfo info = documentToFileInfo(doc);
-    		IPath path = info.getPath();
-    		IPath projectPath = project.getRawLocation();
-    		int segCount = path.matchingFirstSegments(projectPath);
-    		path = path.removeFirstSegments(segCount);
-    		IFile file = project.getFile(path);
-    		updateErrorsInFile(unit, file, false);
+    		IPath path = Path.fromOSString(fileName);
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+			.findFilesForLocation(path);
+			if (files.length == 1)
+				updateErrorsInFile(unit, files[0], false);
     	}
       }
 

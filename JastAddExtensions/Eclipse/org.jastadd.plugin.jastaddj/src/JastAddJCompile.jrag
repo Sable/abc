@@ -66,30 +66,24 @@ aspect Compile {
    public ICompilationUnit Program.addSourceFileWithRecovery(String name, String contents, RecoveryLexer recLexer) throws Exception {
    		
 		StringBuffer buf = new StringBuffer(contents);
-		/*
-		BufferedReader reader = new BufferedReader(new FileReader(name));				
-		char[] chars = new char[1024];
-		int read = 0;
-		while((read = reader.read(chars)) > -1){
-			buf.append(String.valueOf(chars, 0, read));
-		}
-		reader.close();
-		*/
-
+		
+		
 		int keepOn = 2;
 		CompilationUnit unit = null;
 		while (keepOn > 0) {
+		
 			java.io.InputStream is = new java.io.ByteArrayInputStream(buf.toString().getBytes());
       		unit = javaParser.parse(is, name);
 			is.close();
 			is = null;
-			if (unit != null) {
-				File file = new File(name);
-	            unit.setPathName(file.getAbsolutePath());
-	            unit.setRelativeName(name);
-	            unit.setFromSource(true);
+			
+			if (unit.getNumTypeDecl() > 0) {
+			  File file = new File(name);
+	           unit.setPathName(file.getAbsolutePath());
+	           unit.setRelativeName(name);
+	           unit.setFromSource(true);
 	            
-	            /*
+	           /* TODO: add package name into global list of packages
 	        	String packageName = unit.getPackageDecl();
             	if(packageName != null && !packages.contains(packageName)) {
               		packages.add(packageName);
@@ -101,17 +95,21 @@ aspect Compile {
               		}	
             	}
             	*/
+            	
 	        	addCompilationUnit(unit);
 				return unit;
 			}
-		}
-		if (unit == null) {				
-			SOF sof = recLexer.parse(buf);
-			Recovery.doRecovery(sof);
-			buf = Recovery.prettyPrint(sof);
 			
+		
+			if (keepOn > 1) {				
+				SOF sof = recLexer.parse(buf);
+				Recovery.doRecovery(sof);
+				buf = Recovery.prettyPrint(sof);
+			
+			}
 			keepOn--;
 		}
+		
        	return null;
       }
       

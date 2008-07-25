@@ -1,0 +1,4 @@
+// Temp error node
+ErrorExpr : VarAccess;
+
+
