@@ -1,0 +1,42 @@
+
+//refined from IntertypeDeclarations/IntertypeConstructorNameAnalysis
+//base code is from Java1.4Frontend/LookupConstructor
+aspect JAModuleConstructorLookup {
+	// add implicit constructor
+	refine IntertypeConstructorNameAnalysis eq TypeDecl.constructors() {
+		Collection c = new ArrayList();
+		for(int i = 0; i < getNumBodyDecl(); i++) {
+			if(getBodyDecl(i).isExactConstructorDecl()) {
+				c.add(getBodyDecl(i));
+			}
+		}
+		if(c.isEmpty() && isClassDecl()) {
+			Modifiers m = new Modifiers();
+			if(isPublic()) {
+				m.addModifier(new Modifier("public"));
+			}
+			else if(isProtected()) {
+				m.addModifier(new Modifier("protected"));
+			}
+			else if(isPrivate()) {
+				m.addModifier(new Modifier("private"));
+			}
+			else if(isModule()) {
+				m.addModifier(new Modifier("module"));
+			}
+			addBodyDecl(
+					new ConstructorDecl(
+						m,
+						name(),
+						new List(),
+						new List(),
+						new Opt(),
+						new Block()
+						)
+					);
+			c.add(getBodyDecl(getNumBodyDecl()-1));
+		}
+		c.addAll(introducedConstructors());
+		return c;
+	}
+}
