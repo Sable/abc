@@ -11,26 +11,18 @@ aspect JAModuleLookupType {
 		assert (isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
 		addPrimitiveTypes();
 		String fullName = packageName.equals("") ? typeName : packageName + "." + typeName;
-		//temporary hack
-		for(int i = 0; i < getNumCompilationUnit(); i++) {
-			if (getCompilationUnit(i) instanceof ModuleCompilationUnit) {
-				ModuleCompilationUnit mcu = (ModuleCompilationUnit)getCompilationUnit(i);
-				for (int j = 0; j < mcu.getCompilationUnitList().getNumChild(); j++) {
-					CompilationUnit currCU = mcu.getCompilationUnit(j);
-					for(int k = 0; k < currCU.getNumTypeDecl(); k++) {
-						TypeDecl type = currCU.getTypeDecl(k);
-						if(type.fullName().equals(fullName)) {
-							return type;
-						}
-					}
-				}
+		
+		//TODO: iterator may be expensive
+		
+		for (Iterator<CompilationUnit> iter = compilationUnitIterator(); iter.hasNext(); ) {
+			CompilationUnit currCU = iter.next();
+			if (currCU instanceof ModuleCompilationUnit) {
+				continue;
 			}
-			else {      
-				for(int j = 0; j < getCompilationUnit(i).getNumTypeDecl(); j++) {
-					TypeDecl type = getCompilationUnit(i).getTypeDecl(j);
-					if(type.fullName().equals(fullName)) {
-						return type;
-					}
+			for(int i = 0; i < currCU.getNumTypeDecl(); i++) {
+				TypeDecl type = currCU.getTypeDecl(i);
+				if(type.fullName().equals(fullName)) {
+					return type;
 				}
 			}
 		}
@@ -66,9 +58,9 @@ aspect JAModuleLookupType {
 		//indirect lookup through an imported module		
 		String moduleName = packageName;
 		String localPackageName = null;
-		if (moduleName.lastIndexOf("::") != -1) {
-			localPackageName = moduleName.substring(moduleName.lastIndexOf("::") + 2);
-			moduleName = moduleName.substring(0, moduleName.lastIndexOf("::"));
+		if (moduleName.lastIndexOf(Program.MODULE_SEPARATOR) != -1) {
+			localPackageName = moduleName.substring(moduleName.lastIndexOf(Program.MODULE_SEPARATOR) + 2);
+			moduleName = moduleName.substring(0, moduleName.lastIndexOf(Program.MODULE_SEPARATOR));
 		} else {
 			localPackageName = ""; //this should be properly looked up in the local package names of the module
 			moduleName = packageName;

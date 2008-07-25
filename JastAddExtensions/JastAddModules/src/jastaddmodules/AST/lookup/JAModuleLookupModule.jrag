@@ -104,7 +104,7 @@ aspect JAModuleLookupModule {
 			}
 			//check if alias is a qualifier, then lookup in the module
 			String trimmedName = name.substring(alias.length());
-			if (!trimmedName.startsWith("::")) {
+			if (!trimmedName.startsWith(Program.MODULE_SEPARATOR)) {
 				continue;
 			}
 			trimmedName = trimmedName.substring(2);

@@ -1,6 +1,8 @@
 import jastaddmodules.*;
 
 aspect JAModuleLookupPackage {
+	//shares cut n paste code with lookupType. Change that if you change this
+	//TODO: Refactor to remove cut and paste code
 	public String ModuleCompilationUnit.lookupPackage(ModuleCompilationUnit context, String packageName) {
 		//local package lookup
 		LocalModulePackage localModulePackage = getLocalPackage(packageName);
@@ -14,9 +16,9 @@ aspect JAModuleLookupPackage {
 			
 		String moduleName = packageName;
 		String localPackageName = null;
-		if (moduleName.lastIndexOf("::") != -1) {
-			localPackageName = moduleName.substring(moduleName.lastIndexOf("::") + 2);
-			moduleName = moduleName.substring(0, moduleName.lastIndexOf("::"));
+		if (moduleName.lastIndexOf(Program.MODULE_SEPARATOR) != -1) {
+			localPackageName = moduleName.substring(moduleName.lastIndexOf(Program.MODULE_SEPARATOR) + 2);
+			moduleName = moduleName.substring(0, moduleName.lastIndexOf(Program.MODULE_SEPARATOR));
 		} else {
 			localPackageName = ""; //this should be properly looked up in the local package names of the module
 			moduleName = packageName;
@@ -24,6 +26,10 @@ aspect JAModuleLookupPackage {
 		if (localPackageName.equals(".")) {
 			localPackageName = ""; //special case for module::.Type
 		}
+		if (moduleName.equals(Program.DEFAULT_MODULE_NAME)) {
+			return localPackageName;
+		}
+		
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU

@@ -1,3 +1,4 @@
 aspect DefaultModule {
-	public final String Program.DEFAULT_MODULE_NAME = "";
+	public static final String Program.DEFAULT_MODULE_NAME = "";
+	public static final String Program.MODULE_SEPARATOR = "::";
 }

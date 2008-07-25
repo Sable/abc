@@ -21,7 +21,7 @@ aspect JAModuleQualifiedNames {
 		to Access {
 			PackageAccess left = (PackageAccess)leftSide();
 			PackageAccess right = (PackageAccess)rightSide();
-			left.setPackage(left.getPackage() + "::" + right.getPackage());
+			left.setPackage(left.getPackage() + Program.MODULE_SEPARATOR + right.getPackage());
 			left.setEnd(right.end());
 			return qualifyTailWith(left);
 		}
@@ -33,7 +33,7 @@ aspect JAModuleQualifiedNames {
 			PackageAccess left = (PackageAccess)leftSide();
 			TypeAccess right = (TypeAccess)rightSide();
 			//change left to left::
-			left.setPackage(left.getPackage() + "::");
+			left.setPackage(left.getPackage() + Program.MODULE_SEPARATOR);
 			return qualifyTailWith(left.qualifiesAccess(right));
 			}
 	}
