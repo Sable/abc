@@ -79,7 +79,7 @@ aspect JAModuleLookupType {
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
-		if (importedCU != null) {
+		if (importedCU != null && importedCU.isModuleInstantiated()) {
 			Iterator<CompilationUnit> iter = importedCU.getCompilationUnitList().iterator();
 			if (iter.hasNext()) {
 				TypeDecl type = iter.next().lookupType(localPackageName, typeName);
@@ -169,6 +169,7 @@ aspect JAModuleLookupType {
 			if(!set.isEmpty()) return addGenericTypes(set);
 			
 			//lookup module imports
+			//TODO: Remove automatic module imports later to make semantics more consistent for non-module classes
 			ModuleCompilationUnit mcu = getModuleCompilationUnit();
 			assert (mcu != null) : "Should be a member of a module compilation unit";
 			

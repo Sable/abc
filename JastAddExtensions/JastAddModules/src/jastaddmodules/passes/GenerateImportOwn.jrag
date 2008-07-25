@@ -221,7 +221,7 @@ aspect GenerateImportOwn {
 	}
 	
 	public void ModuleCompilationUnit.checkedAddImportedModule(String alias, ModuleCompilationUnit cu, boolean isExported) {
-		if (getImportedModule(alias) != null) {
+		if (getImportedModule(alias) != null || alias.equals(getBaseCU().getModuleName())) {
 			getModuleDecl().error("Ambiguous module name " + alias + " in module " + this.getModuleName());
 			//throw new jastadd.UnrecoverableSemanticError("Ambiguous alias " + alias + " in module " + this.getModuleName());
 		}

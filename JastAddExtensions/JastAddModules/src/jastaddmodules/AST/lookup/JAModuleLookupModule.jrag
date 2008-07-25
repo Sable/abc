@@ -1,3 +1,4 @@
+import jastaddmodules.*;
 
 aspect JAModuleLookupModule {
 	//lookupModuleCUNoTransform : lookup the base module CU of a compilation unit.
@@ -80,6 +81,8 @@ aspect JAModuleLookupModule {
 			}
 		});
 		localAliases.addAll(getImportedModuleMap().keySet());
+		//add self name to local aliases
+		localAliases.add(getBaseCU().getModuleName());
 		for (String alias : localAliases) {
 			//if alias cannot be a qualifier, proceed to next
 			if (!name.startsWith(alias)) {
@@ -90,6 +93,10 @@ aspect JAModuleLookupModule {
 			//	the original context is the same as the current context (i.e. it is a direct import) or
 			//	the import was exported
 			if (name.equals(alias)) {
+				//special case for self reference
+				if (alias.equals(getBaseCU().getModuleName())) {
+					return this;
+				}
 				if (originalContext == this || getImportedModule(name).isExported()) {
 					return getImportedModule(alias).getModuleCU();
 				} 
@@ -105,8 +112,16 @@ aspect JAModuleLookupModule {
 			//go into imports only iff: 
 			//	it is a direct import (this = originalContext)
 			//	or it is exported
-			if (originalContext == this || getImportedModule(alias).isExported()) {
-				ModuleCompilationUnit ret = getImportedModule(alias).getModuleCU().lookupModule(originalContext, trimmedName);
+			ImportedModule importedCU = null;
+			if (alias.equals(getBaseCU().getModuleName())) {
+				importedCU = new ImportedModule(this, false); //special case for self reference, false so that it only goes into the imports when it is in the originalContext
+			} else {
+				importedCU = getImportedModule(alias);
+			}
+			//the original context check will make sure that self references only work at 
+			//the front of a module qualified name (this is good, avoids stuff like m1::m2::m2::m2...)
+			if (originalContext == this || importedCU.isExported()) {
+				ModuleCompilationUnit ret = importedCU.getModuleCU().lookupModule(originalContext, trimmedName);
 				if (ret != null) {
 					return ret;
 				}

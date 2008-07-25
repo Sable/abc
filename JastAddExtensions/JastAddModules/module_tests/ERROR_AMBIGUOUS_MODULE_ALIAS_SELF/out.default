@@ -1,0 +1,49 @@
+WARNING: file "*.java" does not exist
+----------Module contents----------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------m1.module------
+module m1;
+import own m2 as m1;
+------------------------
+------m2.module------
+module m2;
+------------------------
+----------CU AST before insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+module: m2, file: m2.module, base module: m2
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import own m2 as m1;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+module: m2, file: m2.module, base module: m2
+module: m1$m1, file: m2.module, base module: m2
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m1, base:m1, context:[], instantiated:true
+	m1:m1$m1, jastadd$framework:jastadd$framework
+module m2, base:m2, context:[], instantiated:false
+	
+module m1$m1, base:m2, context:[m1], instantiated:true
+	jastadd$framework:jastadd$framework
+m1.module:1:
+  Semantic Error: Ambiguous module name m1 in module m1
