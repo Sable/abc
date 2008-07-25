@@ -139,7 +139,10 @@ public abstract class JastAddModel {
 	public void updateProjectModel(IDocument document) {
 		FileInfo fileInfo = documentToFileInfo(document);
 		if(fileInfo == null) return;
-		updateProjectModel(document, fileInfo.getPath().toOSString(), fileInfo.getProject());
+		
+		synchronized (getASTRootForLock(fileInfo.getProject())) {
+			updateProjectModel(document, fileInfo.getPath().toOSString(), fileInfo.getProject());
+		}
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
