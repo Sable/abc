@@ -183,7 +183,7 @@ public class JastAddJModel extends JastAddModel {
 			fullClassPath.add(projectPath);
 	}
 
-	public void popupateSourceContainers(IProject project,
+	public void populateSourceContainers(IProject project,
 			JastAddJBuildConfiguration buildConfiguration,
 			List<ISourceContainer> result) {
 		// Populate VM library source containers
@@ -257,19 +257,17 @@ public class JastAddJModel extends JastAddModel {
 
 
 	public void updateBuildConfiguration(IProject project) {
-		//synchronized (this) {
-			if (!hasProgramInfo(project))
-				return;
+		if (!hasProgramInfo(project))
+			return;
 
-			ProgramInfo programInfo = getProgramInfo(project);
-			try {
-				programInfo.buildConfiguration = readBuildConfiguration(project);
-				reinitProgram(project, programInfo.program,
-						programInfo.buildConfiguration);
-			} catch (CoreException e) {
-				logCoreException(e);
-			}
-		//}
+		ProgramInfo programInfo = getProgramInfo(project);
+		try {
+			programInfo.buildConfiguration = readBuildConfiguration(project);
+			reinitProgram(project, programInfo.program,
+					programInfo.buildConfiguration);
+		} catch (CoreException e) {
+			logCoreException(e);
+		}
 		notifyModelListeners();
 	}
 
@@ -524,14 +522,16 @@ public class JastAddJModel extends JastAddModel {
 	// ***************** Additional public methods
 
 	public IOutlineNode[] getMainTypes(IProject project) {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
-		if (buildConfiguration == null)
-			return null;
-		IProgram program = getProgram(project);
-		if (program != null) {
-			return program.mainTypes();
+		synchronized (getASTRootForLock(project)) {
+			JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+			if (buildConfiguration == null)
+				return null;
+			IProgram program = getProgram(project);
+			if (program != null) {
+				return program.mainTypes();
+			}
+			return new IOutlineNode[0];
 		}
-		return new IOutlineNode[0];
 	}
 
 	public JastAddJBuildConfiguration getBuildConfiguration(IProject project) {
@@ -549,20 +549,22 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	public IFile getFile(IJastAddNode node) {
-		IJastAddNode root = node;
-		while (root != null && !(root instanceof ICompilationUnit))
-			root = root.getParent();
-		if (root == null)
-			return null;
-		ICompilationUnit compilationUnit = (ICompilationUnit) root;
+		synchronized(node.treeLockObject()) {
+			IJastAddNode root = node;
+			while (root != null && !(root instanceof ICompilationUnit))
+				root = root.getParent();
+			if (root == null)
+				return null;
+			ICompilationUnit compilationUnit = (ICompilationUnit) root;
 
-		IPath path = Path.fromOSString(compilationUnit.pathName());
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
-				.findFilesForLocation(path);
-		if (files.length == 1)
-			return files[0];
-		else
-			return null;
+			IPath path = Path.fromOSString(compilationUnit.pathName());
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+			.findFilesForLocation(path);
+			if (files.length == 1)
+				return files[0];
+			else
+				return null;
+		}
 	}
 
 	public JastAddJBuildConfiguration readBuildConfiguration(IProject project)
@@ -663,14 +665,15 @@ public class JastAddJModel extends JastAddModel {
 	protected void reinitProgram(IProject project, IProgram program,
 			JastAddJBuildConfiguration buildConfiguration) {
 		Program realProgram = (Program) program;
-
-		// Init
-		program.initOptions();
-		program.addKeyValueOption("-classpath");
-		program.addKeyValueOption("-bootclasspath");
-		program.addKeyValueOption("-d");
-		if (buildConfiguration != null)
-			addBuildConfigurationOptions(project, realProgram, buildConfiguration);
+		synchronized (program.treeLockObject()) {
+			// Init
+			program.initOptions();
+			program.addKeyValueOption("-classpath");
+			program.addKeyValueOption("-bootclasspath");
+			program.addKeyValueOption("-d");
+			if (buildConfiguration != null)
+				addBuildConfigurationOptions(project, realProgram, buildConfiguration);
+		}
 	}
 
 	protected void addBuildConfigurationOptions(IProject project,
@@ -709,7 +712,9 @@ public class JastAddJModel extends JastAddModel {
 					+ buildConfiguration.outputPath);
 		else
 			options.add(projectPath);
-		program.addOptions(options.toArray(new String[0]));
+		synchronized (program.treeLockObject()) {
+			program.addOptions(options.toArray(new String[0]));
+		}
 	}
 
 	protected Map<String, IFile> sourceMap(IProject project,
@@ -898,7 +903,7 @@ public class JastAddJModel extends JastAddModel {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration != null) {
 			List<ISourceContainer> result= new ArrayList<ISourceContainer>();
-			popupateSourceContainers(project, buildConfiguration, result);
+			populateSourceContainers(project, buildConfiguration, result);
 			
 			IEditorInput targetEditorInput = null;
 			for(ISourceContainer sourceContainer : result) {
@@ -1000,55 +1005,57 @@ public class JastAddJModel extends JastAddModel {
 	public Collection recoverCompletion(int documentOffset, String[] linePart,
 			StringBuffer buf, IProject project, String fileName,
 			IJastAddNode node) throws IOException, Exception {
-		if (node == null) {
-			// Try recovery
-			SOF sof = getRecoveryLexer().parse(buf);
-			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
-			Recovery.doRecovery(sof);
-			buf = Recovery.prettyPrint(sof);
-			documentOffset += recoveryNode.getInterval().getPushOffset();			
-			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+		synchronized (node.treeLockObject()) {
 			if (node == null) {
-				System.out.println("Structural recovery failed");
-				return new ArrayList();
+				// Try recovery
+				SOF sof = getRecoveryLexer().parse(buf);
+				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+				Recovery.doRecovery(sof);
+				buf = Recovery.prettyPrint(sof);
+				documentOffset += recoveryNode.getInterval().getPushOffset();			
+				node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if (node == null) {
+					System.out.println("Structural recovery failed");
+					return new ArrayList();
+				}
 			}
-		}
-		if (node instanceof Access) {
-			Access n = (Access) node;
-			System.out.println("Automatic recovery");
-			System.out.println(n.getParent().getParent().dumpTree());
-			return n.completion(linePart[1]);
-		} else if (node instanceof ASTNode) {
-			ASTNode n = (ASTNode) node;
-			System.out.println("Manual recovery");
-			Expr newNode;
-			if (linePart[0].length() != 0) {
-				String nameWithParan = "(" + linePart[0] + ")";
-				ByteArrayInputStream is = new ByteArrayInputStream(
-						nameWithParan.getBytes());
-				scanner.JavaScanner scanner = new scanner.JavaScanner(
-						new scanner.Unicode(is));
-				newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
-						scanner, parser.JavaParser.AltGoals.expression))
-						.getExprNoTransform();
-				newNode = newNode.qualifiesAccess(new MethodAccess("X",
-						new AST.List()));
-			} else {
-				newNode = new MethodAccess("X", new AST.List());
+			if (node instanceof Access) {
+				Access n = (Access) node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion(linePart[1]);
+			} else if (node instanceof ASTNode) {
+				ASTNode n = (ASTNode) node;
+				System.out.println("Manual recovery");
+				Expr newNode;
+				if (linePart[0].length() != 0) {
+					String nameWithParan = "(" + linePart[0] + ")";
+					ByteArrayInputStream is = new ByteArrayInputStream(
+							nameWithParan.getBytes());
+					scanner.JavaScanner scanner = new scanner.JavaScanner(
+							new scanner.Unicode(is));
+					newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+							scanner, parser.JavaParser.AltGoals.expression))
+							.getExprNoTransform();
+					newNode = newNode.qualifiesAccess(new MethodAccess("X",
+							new AST.List()));
+				} else {
+					newNode = new MethodAccess("X", new AST.List());
+				}
+
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof Access)
+					n = ((Access) n).lastAccess();
+				// System.out.println(node.dumpTreeNoRewrite());
+
+				// Use the connection to the dummy AST to do name
+				// completion
+				return n.completion(linePart[1]);
 			}
-
-			int childIndex = n.getNumChild();
-			n.addChild(newNode);
-			n = n.getChild(childIndex);
-			if (n instanceof Access)
-				n = ((Access) n).lastAccess();
-			// System.out.println(node.dumpTreeNoRewrite());
-
-			// Use the connection to the dummy AST to do name
-			// completion
-			return n.completion(linePart[1]);
+			return new ArrayList();
 		}
-		return new ArrayList();
 	}
 
 	protected JastAddJBuildConfiguration getEmptyBuildConfiguration() {
@@ -1065,5 +1072,14 @@ public class JastAddJModel extends JastAddModel {
 			JastAddJBuildConfiguration buildConfiguration) throws Exception {
 		JastAddJBuildConfigurationUtil.writeBuildConfiguration(project,
 				buildConfiguration);
+	}
+
+	@Override
+	public Object getASTRootForLock(IProject project) {
+		ProgramInfo info = projectToNodeMap.get(project);
+		if (info == null)
+			return JastAddJModel.class;
+		IProgram root = info.program;
+		return ((IJastAddNode)root).treeLockObject();
 	}
 }

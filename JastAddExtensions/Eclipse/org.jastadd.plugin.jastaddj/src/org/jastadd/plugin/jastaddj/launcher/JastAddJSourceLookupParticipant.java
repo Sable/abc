@@ -143,7 +143,7 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 		List<ISourceContainer> result = new ArrayList<ISourceContainer>();		
 		ISourceLookupDirector director = getDirector();		
 		if (director != null) {
-			model.popupateSourceContainers(project, buildConfiguration, result);
+			model.populateSourceContainers(project, buildConfiguration, result);
 		}
 		return result.toArray(new ISourceContainer[0]);
 	}

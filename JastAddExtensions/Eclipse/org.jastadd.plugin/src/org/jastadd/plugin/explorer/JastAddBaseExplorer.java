@@ -97,7 +97,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			}
 		}
 
-		public synchronized void inputChanged(Viewer viewer, Object oldInput,
+		public /*synchronized*/ void inputChanged(Viewer viewer, Object oldInput,
 				Object newInput) {
 			this.viewer = viewer;
 			IWorkspace oldWorkspace = null;
@@ -126,7 +126,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			}
 		}
 
-		public synchronized void dispose() {
+		public /*synchronized*/ void dispose() {
 			if (viewer != null) {
 				IWorkspace workspace = null;
 				Object obj = viewer.getInput();
@@ -141,7 +141,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			}
 		}
 
-		public synchronized void resourceChanged(
+		public /*synchronized*/ void resourceChanged(
 				final IResourceChangeEvent event) {
 			doViewerRefresh();
 		}
@@ -150,7 +150,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			return getChildren(element);
 		}
 
-		public synchronized Object[] getChildren(Object element) {
+		public /*synchronized*/ Object[] getChildren(Object element) {
 			if (element instanceof IJastAddNode)
 				return jastAddContentProvider.getChildren(element);
 
@@ -178,7 +178,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			return getChildren(element).length > 0;
 		}
 
-		public synchronized Object getParent(Object element) {
+		public /*synchronized*/ Object getParent(Object element) {
 			if (element instanceof IJastAddNode) {
 				IJastAddNode node = (IJastAddNode) element;
 				IJastAddNode parent = (IJastAddNode) jastAddContentProvider

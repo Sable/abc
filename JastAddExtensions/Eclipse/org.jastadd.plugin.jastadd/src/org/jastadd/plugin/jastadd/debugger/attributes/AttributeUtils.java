@@ -107,7 +107,7 @@ public class AttributeUtils {
 		Model model = getModel(project);
 		
 		if (model != null && parentValue.getJavaType() != null) {
-			synchronized(model) {
+			synchronized(model.getASTRootForLock(project)) {
 				atts = model.lookupJVMName(project, parentValue.getJavaType().getName());
 			}
 		}

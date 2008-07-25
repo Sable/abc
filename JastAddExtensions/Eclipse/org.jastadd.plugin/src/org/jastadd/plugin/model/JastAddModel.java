@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
-import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.model.repair.RecoveryLexer;
 import org.jastadd.plugin.util.JastAddPair;
@@ -131,7 +130,7 @@ public abstract class JastAddModel {
 	}
 
 	public void updateProjectModel(Collection<IFile> changedFiles, IProject project) {
-		synchronized(this) {
+		synchronized(getASTRootForLock(project)) {
 			updateModel(changedFiles, project);
 		}
 		notifyModelListeners();
@@ -144,7 +143,7 @@ public abstract class JastAddModel {
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
-		synchronized(this) {
+		synchronized(getASTRootForLock(project)) {
 			updateModel(document, fileName, project);
 		}
 		notifyModelListeners();
@@ -174,7 +173,9 @@ public abstract class JastAddModel {
 	
 	public IJastAddNode getTreeRoot(FileInfo fileInfo) {
 		try {
-			return getTreeRoot(fileInfo.getProject(), fileInfo.getPath().toOSString());
+			synchronized (getASTRootForLock(fileInfo.getProject())) {
+				return getTreeRoot(fileInfo.getProject(), fileInfo.getPath().toOSString());
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -183,8 +184,10 @@ public abstract class JastAddModel {
 	
 	public abstract IFile getFile(IJastAddNode node);
 
-	public synchronized IJastAddNode getTreeRoot(IProject project, String filePath) {
-		return getTreeRootNode(project, filePath);
+	public IJastAddNode getTreeRoot(IProject project, String filePath) {
+		synchronized(getASTRootForLock(project)) {
+			return getTreeRootNode(project, filePath);
+		}
 	}
 	
 	
@@ -363,9 +366,12 @@ public abstract class JastAddModel {
 	public abstract List<String> getFileExtensions();
 	public abstract String[] getFilterExtensions();
 	
+	public abstract Object getASTRootForLock(IProject project);
+	
 	
 	private boolean commandsPopulated = false;
 	
+	// Why synchronized ?
 	public synchronized void registerCommands() {
 		if (commandsPopulated) return;
 		try {
@@ -413,5 +419,4 @@ public abstract class JastAddModel {
 		}
 		MessageDialog.openError(shell, title, msg.toString());			
 	}
-	
 }

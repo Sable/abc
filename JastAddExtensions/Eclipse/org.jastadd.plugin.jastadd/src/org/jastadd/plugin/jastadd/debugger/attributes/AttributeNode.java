@@ -132,7 +132,7 @@ public abstract class AttributeNode {
 			Model model = getModel(project);
 
 			if (model != null) {
-				synchronized(model) {
+				synchronized(model.getASTRootForLock(project)) {
 					List<ASTChild> astChildren = model.lookupASTChildren(project, parent.getReferenceTypeName());
 
 					if (parent instanceof IJavaObject) {

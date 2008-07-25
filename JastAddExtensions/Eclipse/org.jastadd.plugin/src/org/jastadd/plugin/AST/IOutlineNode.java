@@ -13,6 +13,4 @@ public interface IOutlineNode {
     public boolean hasVisibleChildren();
 
     public ArrayList outlineChildren();
-
-
 }

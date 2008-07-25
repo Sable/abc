@@ -134,88 +134,93 @@ public class Model extends JastAddJModel {
 	
 	@Override
 	protected void reinitProgram(IProject project, IProgram program, JastAddJBuildConfiguration buildConfiguration) {
-		Program realProgram = (Program)program;
-		// Init
-		realProgram.options().initOptions();
-		realProgram.options().addKeyValueOption("-classpath");
-		realProgram.options().addKeyValueOption("-bootclasspath");
-		realProgram.options().addKeyValueOption("-d");
-		addBuildConfigurationOptions(project, realProgram, buildConfiguration);
-		realProgram.options().setOption("-verbose");
+		synchronized (program.treeLockObject()) {
+			Program realProgram = (Program)program;
+			// Init
+			realProgram.options().initOptions();
+			realProgram.options().addKeyValueOption("-classpath");
+			realProgram.options().addKeyValueOption("-bootclasspath");
+			realProgram.options().addKeyValueOption("-d");
+			addBuildConfigurationOptions(project, realProgram, buildConfiguration);
+			realProgram.options().setOption("-verbose");
+		}
 	}	
 	
 	public ArrayList<AttributeDecl> lookupJVMName(IProject project, String packageName) {
 		ArrayList<AttributeDecl> nameList = new ArrayList<AttributeDecl>();
-		
-		TypeDecl decl = getTypeDecl(project, packageName);
-		
-		if (decl == null) {
-			// We didn't find a match, so we return an empty list
+		synchronized (getASTRootForLock(project)) {
+			TypeDecl decl = getTypeDecl(project, packageName);
+
+			if (decl == null) {
+				// We didn't find a match, so we return an empty list
+				return nameList;
+			}
+
+			// Find attribute declaration
+			AttributeDecl aDecl = null;
+			//if(decl.name().equals("Block") && decl.memberMethods("b").isEmpty())
+			//	System.out.println("Strange");
+			for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
+				MethodDecl mDecl = (MethodDecl)itr.next();
+				//	System.out.println(mDecl.signature());
+				if (mDecl instanceof AttributeDecl) {
+					aDecl = (AttributeDecl)mDecl;
+					nameList.add(aDecl);
+				}
+			}
+			if(decl instanceof ASTDecl) {
+				ASTDecl astDecl = (ASTDecl)decl;
+				for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
+					ASTChild c = (ASTChild)iter.next();
+					if(c instanceof ASTElementChild) {
+						// A ::= B;
+
+					}
+					else if(c instanceof ASTListChild) {
+						// A ::= B*
+
+					}
+					else if(c instanceof ASTOptionalChild) {
+						// A ::= [B]
+
+					}
+					else if(c instanceof ASTTokenChild) {
+						// A ::= <ID:String>
+
+					}
+
+				}
+			}
+			/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+			}*/
 			return nameList;
 		}
-		
-		// Find attribute declaration
-		AttributeDecl aDecl = null;
-		//if(decl.name().equals("Block") && decl.memberMethods("b").isEmpty())
-		//	System.out.println("Strange");
-		for (Iterator itr = decl.methodsIterator(); itr.hasNext();) {
-			MethodDecl mDecl = (MethodDecl)itr.next();
-		//	System.out.println(mDecl.signature());
-			if (mDecl instanceof AttributeDecl) {
-				aDecl = (AttributeDecl)mDecl;
-				nameList.add(aDecl);
-			}
-		}
-		if(decl instanceof ASTDecl) {
-			ASTDecl astDecl = (ASTDecl)decl;
-			for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
-				ASTChild c = (ASTChild)iter.next();
-				if(c instanceof ASTElementChild) {
-					// A ::= B;
-					
-				}
-				else if(c instanceof ASTListChild) {
-					// A ::= B*
-					
-				}
-				else if(c instanceof ASTOptionalChild) {
-					// A ::= [B]
-					
-				}
-				else if(c instanceof ASTTokenChild) {
-					// A ::= <ID:String>
-					
-				}
-				
-			}
-		}
-		/*if(nameList.isEmpty()) {
-			System.out.println("Strange");
-		}*/
-		return nameList;
 	}
 	
 	public LinkedList<ASTChild> lookupASTChildren(IProject project, String packageName) {
 		LinkedList<ASTChild> childList = new LinkedList<ASTChild>();
 		
-		TypeDecl decl = getTypeDecl(project, packageName);
-		
-		if (decl == null) {
-			// We didn't find a match, so we return an empty list
+		synchronized (getASTRootForLock(project)) {
+			TypeDecl decl = getTypeDecl(project, packageName);
+
+			if (decl == null) {
+				// We didn't find a match, so we return an empty list
+				return childList;
+			}
+
+			if(decl instanceof ASTDecl) {
+				ASTDecl astDecl = (ASTDecl)decl;
+				for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
+					ASTChild c = (ASTChild)iter.next();
+					childList.add(c);				
+				}
+			}
+			/*if(nameList.isEmpty()) {
+			System.out.println("Strange");
+			}*/
 			return childList;
 		}
-
-		if(decl instanceof ASTDecl) {
-			ASTDecl astDecl = (ASTDecl)decl;
-			for(Iterator iter = astDecl.components().iterator(); iter.hasNext(); ) {
-				ASTChild c = (ASTChild)iter.next();
-				childList.add(c);				
-			}
-		}
-		/*if(nameList.isEmpty()) {
-			System.out.println("Strange");
-		}*/
-		return childList;
 	}
 
 	public TypeDecl getTypeDecl(IProject project, String packageName) {
@@ -224,78 +229,81 @@ public class Model extends JastAddJModel {
 			return null;
 		Program program = (Program)p;
 		
-		int packageEndIndex = packageName.lastIndexOf('.');
-		String tName = packageName.substring(packageEndIndex+1, packageName.length());
-		if (packageEndIndex > 1) {
-			packageName = packageName.substring(0, packageEndIndex);
-		} else {
-			packageName = "";
-		}
-		String innerName = "";
-		int index = tName.indexOf('$');
-		if (index > 0) {
-			innerName = tName.substring(index + 1, tName.length());
-			tName = tName.substring(0, index);
-		}
-		
-		// Find outermost class
-		TypeDecl decl = null;
-		boolean keepOnLooking = true;
-		while (keepOnLooking) {
-			decl = program.lookupType(packageName, tName);
-			if (decl != null) {
-				keepOnLooking = false;
+		synchronized (p.treeLockObject()) {
+
+			int packageEndIndex = packageName.lastIndexOf('.');
+			String tName = packageName.substring(packageEndIndex+1, packageName.length());
+			if (packageEndIndex > 1) {
+				packageName = packageName.substring(0, packageEndIndex);
 			} else {
-				index = innerName.indexOf('$');
-				if (index < 0) {
-					// Search failed -- Cannot find a type declaration and 
-					// there are no $ left in the type name
-					return null;
-				} else {
-					tName += "$" + innerName.substring(0, index);
-					innerName = innerName.substring(index + 1);
-				}
+				packageName = "";
 			}
-		}
-		
-		// Find innermost class
-		if (innerName.length() > 0) {
-			keepOnLooking = true;
-			String nextInnerName = innerName;
-			innerName = "";
+			String innerName = "";
+			int index = tName.indexOf('$');
+			if (index > 0) {
+				innerName = tName.substring(index + 1, tName.length());
+				tName = tName.substring(0, index);
+			}
+
+			// Find outermost class
+			TypeDecl decl = null;
+			boolean keepOnLooking = true;
 			while (keepOnLooking) {
-				// Try another name if possible
-				if (nextInnerName.length() > 0) {
-					index = nextInnerName.indexOf('$');
-					if (index > 0) {
-						innerName += "$" + nextInnerName.substring(0, index);
-						nextInnerName = nextInnerName.substring(index + 1);
-					} else {
-						innerName = nextInnerName;
-						nextInnerName = "";
-					}
+				decl = program.lookupType(packageName, tName);
+				if (decl != null) {
+					keepOnLooking = false;
 				} else {
-					// No more names to test and we haven't found a match
-					return null;
-				}
-				SimpleSet typeSet = decl.memberTypes(innerName);
-				if (!typeSet.isEmpty()) {
-					if (typeSet.size() > 1) {
-						// TODO This should not happen ... Report this?
-					}
-					for (Iterator itr = typeSet.iterator(); itr.hasNext();) {
-						decl = (TypeDecl)itr.next();
-					}
-					// No more inner classes to find
-					if (nextInnerName.length() == 0) {
-						keepOnLooking = false;
+					index = innerName.indexOf('$');
+					if (index < 0) {
+						// Search failed -- Cannot find a type declaration and 
+						// there are no $ left in the type name
+						return null;
 					} else {
-						innerName = "";
+						tName += "$" + innerName.substring(0, index);
+						innerName = innerName.substring(index + 1);
 					}
-				}	
+				}
 			}
+
+			// Find innermost class
+			if (innerName.length() > 0) {
+				keepOnLooking = true;
+				String nextInnerName = innerName;
+				innerName = "";
+				while (keepOnLooking) {
+					// Try another name if possible
+					if (nextInnerName.length() > 0) {
+						index = nextInnerName.indexOf('$');
+						if (index > 0) {
+							innerName += "$" + nextInnerName.substring(0, index);
+							nextInnerName = nextInnerName.substring(index + 1);
+						} else {
+							innerName = nextInnerName;
+							nextInnerName = "";
+						}
+					} else {
+						// No more names to test and we haven't found a match
+						return null;
+					}
+					SimpleSet typeSet = decl.memberTypes(innerName);
+					if (!typeSet.isEmpty()) {
+						if (typeSet.size() > 1) {
+							// TODO This should not happen ... Report this?
+						}
+						for (Iterator itr = typeSet.iterator(); itr.hasNext();) {
+							decl = (TypeDecl)itr.next();
+						}
+						// No more inner classes to find
+						if (nextInnerName.length() == 0) {
+							keepOnLooking = false;
+						} else {
+							innerName = "";
+						}
+					}	
+				}
+			}
+			return decl;
 		}
-		return decl;
 	}
 	
 	@Override
@@ -319,6 +327,7 @@ public class Model extends JastAddJModel {
 				Program program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
+				// Synchronize in complete build ?
 				synchronized(program) {
 
 				Map<String,IFile> map = sourceMap(project, buildConfiguration);			
@@ -404,45 +413,48 @@ public class Model extends JastAddJModel {
 	
 			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 			if (node == null) {
-				System.out.println("Structural recovery failed");
+				System.out.println("Recovery failed");
 				return new ArrayList();
 			}
 		}
 		if(node instanceof Access) {
-			Access n = (Access)node;
-			System.out.println("Automatic recovery");
-			System.out.println(n.getParent().getParent().dumpTree());
-			return n.completion(linePart[1]);
+			synchronized (node.treeLockObject()) {
+				Access n = (Access)node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion(linePart[1]);
+			}
 		} 
 		else if(node instanceof ASTNode) {
-			ASTNode n = (ASTNode)node;
-			System.out.println("Manual recovery");
-			Expr newNode;
-			if(linePart[0].length() != 0) {
-				String nameWithParan = "(" + linePart[0] + ")";
-				ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
-				org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
-				newNode = ((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
-						scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression)
-				).getExprNoTransform();
-				newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
+			synchronized (node.treeLockObject()) {
+				ASTNode n = (ASTNode)node;
+				System.out.println("Manual recovery");
+				Expr newNode;
+				if(linePart[0].length() != 0) {
+					String nameWithParan = "(" + linePart[0] + ")";
+					ByteArrayInputStream is = new ByteArrayInputStream(nameWithParan.getBytes());
+					org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = new org.jastadd.plugin.jastadd.scanner.JavaScanner(new scanner.Unicode(is));
+					newNode = ((ParExpr)new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
+							scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression)
+					).getExprNoTransform();
+					newNode = newNode.qualifiesAccess(new MethodAccess("X", new List()));
+				}
+				else {
+					newNode = new MethodAccess("X", new List());
+				}
+
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof Access)
+					n = ((Access) n).lastAccess();
+				// System.out.println(node.dumpTreeNoRewrite());
+
+				// Use the connection to the dummy AST to do name
+				// completion
+				return n.completion(linePart[1]);
 			}
-			else {
-				newNode = new MethodAccess("X", new List());
-			}
-	
-			int childIndex = n.getNumChild();
-			n.addChild(newNode);
-			n = n.getChild(childIndex);
-			if (n instanceof Access)
-				n = ((Access) n).lastAccess();
-			// System.out.println(node.dumpTreeNoRewrite());
-	
-			// Use the connection to the dummy AST to do name
-			// completion
-			return n.completion(linePart[1]);
-		}
-	
+		}	
 		return new ArrayList();
 	}	
 	

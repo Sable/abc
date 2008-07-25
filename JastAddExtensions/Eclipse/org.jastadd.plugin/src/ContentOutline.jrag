@@ -9,6 +9,7 @@ aspect ContentOutline {
    syn String ASTNode.contentOutlineLabel() = this.getClass().getName();
    syn org.eclipse.swt.graphics.Image ASTNode.contentOutlineImage() = null;
    
+   
    /**
      hasVisibleChildren
    */

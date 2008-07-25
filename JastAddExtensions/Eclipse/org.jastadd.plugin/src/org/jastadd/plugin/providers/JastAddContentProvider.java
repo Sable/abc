@@ -33,7 +33,9 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object element) {
 		if(element instanceof IOutlineNode) {
 			IOutlineNode node = (IOutlineNode)element;
-			return node.outlineChildren().toArray();
+			synchronized(((IJastAddNode)node).treeLockObject()) {
+				return node.outlineChildren().toArray();
+			}
 		}
 		else if(element instanceof IFile) {
 			try {
@@ -42,7 +44,9 @@ public class JastAddContentProvider implements ITreeContentProvider {
 				if (model != null) {
 					IJastAddNode node = model.getTreeRoot(model.buildFileInfo(file));
 					if (node != null && node instanceof IOutlineNode) {
-						return ((IOutlineNode)node).outlineChildren().toArray();
+						synchronized(node.treeLockObject()) { 
+							return ((IOutlineNode)node).outlineChildren().toArray();
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -54,12 +58,16 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	public Object getParent(Object element) {
 		if(element instanceof IJastAddNode) {
 			try {
-				IJastAddNode parent = ((IJastAddNode)element).getParent();
-				if (parent != null && parent instanceof IOutlineNode && 
-						((IOutlineNode)parent).showInContentOutline())
-					return parent;
-				else 
-					return getParent(parent);
+				IJastAddNode node = (IJastAddNode)element;
+				synchronized(node.treeLockObject()) { 
+					IJastAddNode parent = node.getParent();
+					if (parent != null && parent instanceof IOutlineNode && 
+						((IOutlineNode)parent).showInContentOutline()) {
+						return parent;
+					} else { 
+						return getParent(parent);
+					}
+				}
 			} catch (Exception e) {
 			}
 		}
@@ -69,7 +77,9 @@ public class JastAddContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		try {
 			if(element instanceof IOutlineNode) {
-				return !((IOutlineNode)element).outlineChildren().isEmpty();
+				synchronized (((IJastAddNode)element).treeLockObject()) {
+					return !((IOutlineNode)element).outlineChildren().isEmpty();
+				}
 			}
 			else if(element instanceof IFile) {
 				IFile file = (IFile)element;
@@ -101,8 +111,11 @@ public class JastAddContentProvider implements ITreeContentProvider {
 				JastAddModel model = storageInput.getModel();
 				content = model.getTreeRoot(model.buildFileInfo(storageInput));
 			}
-			if(content != null && content instanceof IOutlineNode)
-				return ((IOutlineNode)content).outlineChildren().toArray();					
+			if(content != null && content instanceof IOutlineNode) {
+				synchronized (((IJastAddNode)content).treeLockObject()) {
+					return ((IOutlineNode)content).outlineChildren().toArray();
+				}
+			}
 		} catch (Exception e) {
 		}
 		return parent.getElements(element);

@@ -2,6 +2,7 @@ package org.jastadd.plugin.providers;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
 
 public class JastAddLabelProvider extends LabelProvider {
@@ -19,7 +20,9 @@ public class JastAddLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		if (element instanceof IOutlineNode) {
 			try {
-				return ((IOutlineNode)element).contentOutlineLabel();
+				synchronized (((IJastAddNode)element).treeLockObject()) {
+					return ((IOutlineNode)element).contentOutlineLabel();
+				}
 			} catch (Exception e) {
 			}
 		}
@@ -29,7 +32,9 @@ public class JastAddLabelProvider extends LabelProvider {
 	public Image getImage(Object element) {
 		if(element instanceof IOutlineNode) {
 			try {
-				return ((IOutlineNode)element).contentOutlineImage();
+				synchronized (((IJastAddNode)element).treeLockObject()) {
+					return ((IOutlineNode)element).contentOutlineImage();
+				}
 			} catch (Exception e) {
 			}
 		}

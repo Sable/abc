@@ -88,18 +88,18 @@ public class JastAddJExplorer extends JastAddBaseExplorer implements
 			loadModelInfo();
 		}
 
-		public synchronized void inputChanged(Viewer viewer, Object oldInput,
+		public /*synchronized*/ void inputChanged(Viewer viewer, Object oldInput,
 				Object newInput) {
 			super.inputChanged(viewer, oldInput, newInput);
 			reloadModelInfo();
 		}
 
-		public synchronized void dispose() {
+		public /*synchronized*/ void dispose() {
 			releaseModelInfo();
 			super.dispose();
 		}
 
-		public synchronized void modelChangedEvent() {
+		public /*synchronized*/ void modelChangedEvent() {
 			reloadModelInfo();
 			doViewerRefresh();
 		}
