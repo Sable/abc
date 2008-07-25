@@ -94,10 +94,10 @@ aspect JAModuleLookupModule {
 			}
 			//check if alias is a qualifier, then lookup in the module
 			String trimmedName = name.substring(alias.length());
-			if (!trimmedName.startsWith(".")) {
+			if (!trimmedName.startsWith("::")) {
 				continue;
 			}
-			trimmedName = trimmedName.substring(1);
+			trimmedName = trimmedName.substring(2);
 			
 			//go into imports only iff: 
 			//	it is a direct import (this = originalContext)

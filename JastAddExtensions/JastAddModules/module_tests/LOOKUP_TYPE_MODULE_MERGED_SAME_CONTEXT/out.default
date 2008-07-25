@@ -170,23 +170,23 @@ Module: jastadd$framework
 	jastadd$framework.List
 	jastadd$framework.Opt
 Module: m1
-	m1.AType
 	m1.A
+	m1.AType
 Module: m3
-	m3.C
 	m3.CType
+	m3.C
 Module: m2
-	m2.B
 	m2.BType
+	m2.B
 Module: m1.m2alias$m3c
-	m1.m2alias$m3c.C
 	m1.m2alias$m3c.CType
+	m1.m2alias$m3c.C
 Module: m1.m2alias$m3d
-	m1.m2alias$m3d.CType
 	m1.m2alias$m3d.C
+	m1.m2alias$m3d.CType
 Module: m1.m2alias.m3alias
-	m1.m2alias.m3alias.C
 	m1.m2alias.m3alias.CType
+	m1.m2alias.m3alias.C
 Module: m1.m2alias
 	m1.m2alias.B
 	m1.m2alias.BType

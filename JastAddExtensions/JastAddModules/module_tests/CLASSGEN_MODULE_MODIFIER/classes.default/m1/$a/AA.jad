@@ -17,30 +17,6 @@ public class AA
         }
     }
 
-    static class AAPackage
-    {
-
-        AAPackage()
-        {
-        }
-    }
-
-    class AAInnerPackage
-    {
-
-        AAInnerPackage()
-        {
-        }
-    }
-
-    public class AAInnerPublic
-    {
-
-        public AAInnerPublic()
-        {
-        }
-    }
-
     public class AAInnerModule
     {
 
@@ -53,6 +29,30 @@ public class AA
     {
 
         public AAModule()
+        {
+        }
+    }
+
+    public class AAInnerPublic
+    {
+
+        public AAInnerPublic()
+        {
+        }
+    }
+
+    class AAInnerPackage
+    {
+
+        AAInnerPackage()
+        {
+        }
+    }
+
+    static class AAPackage
+    {
+
+        AAPackage()
         {
         }
     }

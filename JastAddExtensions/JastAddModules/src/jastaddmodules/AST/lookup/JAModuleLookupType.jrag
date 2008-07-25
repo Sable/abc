@@ -62,44 +62,33 @@ aspect JAModuleLookupType {
 				return type;
 			}
 		}
-		
-		//TODO: greedy left match on package name
-		//Make this more efficient
-		String moduleOrPackageName = packageName;
+
+		//indirect lookup through an imported module		
+		String moduleName = packageName;
 		String localPackageName = null;
-		while (moduleOrPackageName.lastIndexOf('.') != -1) {
-			if (localPackageName == null) {
-				localPackageName = moduleOrPackageName.substring(moduleOrPackageName.lastIndexOf('.') + 1);
-			} else {
-				localPackageName = moduleOrPackageName.substring(moduleOrPackageName.lastIndexOf('.') + 1) + "." + localPackageName; 
-			}
+		if (moduleName.lastIndexOf("::") != -1) {
+			localPackageName = moduleName.substring(moduleName.lastIndexOf("::") + 2);
+			moduleName = moduleName.substring(0, moduleName.lastIndexOf("::"));
+		} else {
+			localPackageName = ""; //this should be properly looked up in the local package names of the module
+			moduleName = packageName;
+		}
+		if (localPackageName.equals(".")) {
+			localPackageName = ""; //special case for module::.Type
+		}
 				
-			moduleOrPackageName = moduleOrPackageName.substring(0, moduleOrPackageName.lastIndexOf('.'));
-			ModuleCompilationUnit importedCU = lookupModule(this, moduleOrPackageName);
-			
-			//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
-			if (importedCU != null) {
-				Iterator<CompilationUnit> iter = importedCU.getCompilationUnitList().iterator();
-				if (iter.hasNext()) {
-					TypeDecl type = iter.next().lookupType(localPackageName, typeName);
-					if (type != null) {
-						return type;
-					}
+		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
+		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
+		if (importedCU != null) {
+			Iterator<CompilationUnit> iter = importedCU.getCompilationUnitList().iterator();
+			if (iter.hasNext()) {
+				TypeDecl type = iter.next().lookupType(localPackageName, typeName);
+				if (type != null) {
+					return type;
 				}
 			}
 		}
 		
-		//TODO: Is this even needed?
-		//treat the package name as a module name and lookup the module
-		ModuleCompilationUnit importedCU = lookupModule(this, packageName);
-		if (importedCU != null) {
-		//lookup the type using the module's module name
-			String modulePackageName = importedCU.getModuleName();
-			TypeDecl type = getHostProgram().lookupType(modulePackageName, typeName);
-			if (type != null) {
-				return type;
-			}			
-		}
 		//if none found, do CompilationUnit.lookupType
 		return super.lookupType(packageName, typeName);
 	}

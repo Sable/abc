@@ -1,3 +1,3 @@
 module m1;
 
-A ::= B B2:m2.B C1:m2.m3.C E1:mergedalias.E [B3:B] B4:B*;
+A ::= B B2:m2::B C1:m2::m3::C E1:mergedalias::E [B3:B] B4:B*;

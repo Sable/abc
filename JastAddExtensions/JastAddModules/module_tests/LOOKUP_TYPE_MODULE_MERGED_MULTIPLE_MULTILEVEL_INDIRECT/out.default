@@ -15,7 +15,7 @@ module m3;
 import own m4 export as m4a;
 import own m4 export as m4b;
 import own m5 export as m5;
-merge m4a.m5, m4b.m5, m5 export as m5merged3;
+merge m4a::m5, m4b::m5, m5 export as m5merged3;
 ------------------------
 ------E.java------
 module: module m5;;
@@ -41,7 +41,7 @@ module m1;
 import own m2 export as m2a;
 import own m2 export as m2b;
 import own m5 export as m5;
-merge m2a.m3.m5merged3, m2b.m3.m5merged3, m5 export as m5merged1;
+merge m2a::m3::m5merged3, m2b::m3::m5merged3, m5 export as m5merged1;
 ------------------------
 ------Main.java------
 module: null;
@@ -101,7 +101,7 @@ module m1;
 import own m2 export as m2a;
 import own m2 export as m2b;
 import own m5 export as m5;
-merge m2a.m3.m5merged3, m2b.m3.m5merged3, m5 export as m5merged1;
+merge m2a::m3::m5merged3, m2b::m3::m5merged3, m5 export as m5merged1;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
@@ -165,7 +165,7 @@ module m1.m2b.m3, base:m3, context:[m1.m2b], instantiated:true
 	[export]m4b:m1.m2b.m3.m4b, [export]m4a:m1.m2b.m3.m4a, jastadd$framework:jastadd$framework, [export]m5merged3:m1.m5merged1
 module m1.m2b, base:m2, context:[m1], instantiated:true
 	[export]m3:m1.m2b.m3, jastadd$framework:jastadd$framework
-module m1.m5merged1, base:m5, context:[m1.m2a.m3, m1.m2a.m3.m4a, m1, m1.m2b.m3.m4a, m1.m2a.m3.m4b, m1.m2b.m3.m4b, m1.m2b.m3], instantiated:true
+module m1.m5merged1, base:m5, context:[m1.m2a.m3, m1.m2b.m3, m1.m2b.m3.m4b, m1, m1.m2b.m3.m4a, m1.m2a.m3.m4a, m1.m2a.m3.m4b], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

@@ -31,7 +31,7 @@ import own M3 as none null;
 import own M4 as none null;
 import own M4 as M4AliasX;
 import own M4 as M4AliasY;
-merge M2.M4Alias2, M3.M4Alias3, M4 as M4Alias1;
+merge M2::M4Alias2, M3::M4Alias3, M4 as M4Alias1;
 merge M4AliasX, M4AliasY as M4AliasZ;
 ------------------------
 ------C.java------
@@ -81,7 +81,7 @@ import own M3 as none null;
 import own M4 as none null;
 import own M4 as M4AliasX;
 import own M4 as M4AliasY;
-merge M2.M4Alias2, M3.M4Alias3, M4 as M4Alias1;
+merge M2::M4Alias2, M3::M4Alias3, M4 as M4Alias1;
 merge M4AliasX, M4AliasY as M4AliasZ;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
@@ -119,7 +119,7 @@ module M1$M2, base:M2, context:[M1], instantiated:true
 	[export]M4Alias2:M1$M4Alias1, jastadd$framework:jastadd$framework
 module M1$M3, base:M3, context:[M1], instantiated:true
 	[export]M4Alias3:M1$M4Alias1, jastadd$framework:jastadd$framework
-module M1$M4Alias1, base:M4, context:[M1, M1$M2, M1$M3], instantiated:true
+module M1$M4Alias1, base:M4, context:[M1$M3, M1$M2, M1], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M4AliasZ, base:M4, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework

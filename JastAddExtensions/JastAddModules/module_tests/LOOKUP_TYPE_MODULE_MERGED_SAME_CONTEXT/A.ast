@@ -1,4 +1,4 @@
 module m1;
 AType ::= BType 
-	B2:m2alias.BType
-	C:m2alias.m3alias.CType; 
+	B2:m2alias::BType
+	C:m2alias::m3alias::CType; 

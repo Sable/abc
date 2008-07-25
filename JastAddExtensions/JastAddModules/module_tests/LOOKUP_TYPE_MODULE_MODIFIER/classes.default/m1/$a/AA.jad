@@ -9,6 +9,22 @@ import java.io.PrintStream;
 
 public class AA
 {
+    static class AAPackage
+    {
+
+        AAPackage()
+        {
+        }
+    }
+
+    class AAInnerPackage
+    {
+
+        AAInnerPackage()
+        {
+        }
+    }
+
     public class AAInnerPublic
     {
 
@@ -33,26 +49,10 @@ public class AA
         }
     }
 
-    static class AAPackage
-    {
-
-        AAPackage()
-        {
-        }
-    }
-
     public static class AAModule
     {
 
         public AAModule()
-        {
-        }
-    }
-
-    class AAInnerPackage
-    {
-
-        AAInnerPackage()
         {
         }
     }

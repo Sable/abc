@@ -11,8 +11,8 @@ aspect X {
 	}
 	public void B.f() {
 	}
-	public void m2.m3.C.f() {
+	public void m2::m3::C.f() {
 	}
-	public void m2.m3.CType.f() {
+	public void m2::m3::CType.f() {
 	}
 }

@@ -86,14 +86,14 @@ module m2, base:m2, context:[], instantiated:true
 Module: jastadd$framework
 Module: m1
 	m1.$a.AAPackage
-	m1.$a.AAModule
-	m1.A
 	m1.$a.AA
+	m1.A
+	m1.$a.AAModule
 Module: m2
-	m2.$b.BBPackage
-	m2.B
 	m2.$b.BB
 	m2.$b.BBModule
+	m2.B
+	m2.$b.BBPackage
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, m1.module, AA.java, A.java, Main.java, m2.module, BB.java, B.java
@@ -105,11 +105,11 @@ A.java:3:
 A.java:3,30:
   Semantic Error: a.AAPackage in m1.A can not access type m1.$a.AAPackage
 A.java:4,2:
-  Semantic Error: m2.b.BBModule in m1.A can not access type m2.$b.BBModule
+  Semantic Error: m2::b.BBModule in m1.A can not access type m2.$b.BBModule
 A.java:4:
   Semantic Error: can not instantiate m2.$b.BBModule no matching constructor found in m2.$b.BBModule
-A.java:4,31:
-  Semantic Error: m2.b.BBModule in m1.A can not access type m2.$b.BBModule
+A.java:4,32:
+  Semantic Error: m2::b.BBModule in m1.A can not access type m2.$b.BBModule
 A.java:7:
   Semantic Error: can not instantiate m2.$b.BB no matching constructor found in m2.$b.BB
 A.java:8:

@@ -230,27 +230,27 @@ module m2, base:m2, context:[], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m5
-	m5.E
 	m5.EType
+	m5.E
 Module: jastadd$framework
-	jastadd$framework.Opt
 	jastadd$framework.ASTNode
 	jastadd$framework.List
+	jastadd$framework.Opt
 Module: m4
-	m4.D
 	m4.DType
+	m4.D
 Module: m1
-	m1.A
 	m1.AType
+	m1.A
 Module: m3
-	m3.C
 	m3.CType
+	m3.C
 Module: m6
 	m6.FType
 	m6.F
 Module: m2
-	m2.BType
 	m2.B
+	m2.BType
 
 ----------CU iterator----------
 m5.module, E.java, E.ast, ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m4.module, D.java, D.ast, m1.module, A.ast, A.java, m3.module, C.ast, C.java, m6.module, F.java, F.ast, Main.java, m2.module, B.java, B.ast

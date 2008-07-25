@@ -5,7 +5,7 @@ public class A {
 	a.AA.AAPublic aa3 = new a.AA.AAPublic();
 	a.AA.AAModule aa4 = new a.AA.AAModule();
 
-	m2.b.BB bb = new m2.b.BB();
+	m2::b.BB bb = new m2::b.BB();
 	B b = new B();
 
 	public A() {

@@ -147,3 +147,10 @@ Modifier modifier =
 	{: 
 		return new Modifier("module"); 
 	:};
+	
+IdUse qualified_name_decl =
+	name_decl.n MODULE_SEPARATOR IDENTIFIER.i 
+	{: 
+		return new IdUse(n.getID() + "::" + i); 
+	:};
+	
