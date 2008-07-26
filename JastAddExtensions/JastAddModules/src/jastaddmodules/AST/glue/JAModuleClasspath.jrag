@@ -109,7 +109,7 @@ aspect JAModuleClasspath {
 				ModuleCompilationUnit mcu = (ModuleCompilationUnit) cu;
 				ret.add(mcu.getModuleName());
 				for (String localPackage : mcu.getLocalPackageMap().keySet()) {
-					ret.add(mcu.makeLocalPackageName(localPackage, 
+					ret.add(mcu.makeGlobalPackageName(localPackage, 
 							mcu.getLocalPackage(localPackage)));
 				}
 			}

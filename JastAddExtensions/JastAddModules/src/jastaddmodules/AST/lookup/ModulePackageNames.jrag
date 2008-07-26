@@ -5,11 +5,13 @@ aspect ModulePackageNames {
 		if (getModuleCompilationUnit() == null) {
 			return QualifiedNames.CompilationUnit.packageName();
 		} else if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()) == null) {
+			//TODO: This could cause problems when exported packages happen. Make sure that
+			//packageName() is not called until collectLocalPackages is done.
 			return getModuleCompilationUnit()
-						.makeExportedPackageName(moduleLocalPackageName());
+						.makeGlobalExportedPackageName(moduleLocalPackageName());
 		} else if (getModuleCompilationUnit().getLocalPackage(moduleLocalPackageName()) != null) {
 			ModuleCompilationUnit mcu = getModuleCompilationUnit();
-			return mcu.makeLocalPackageName(moduleLocalPackageName(),
+			return mcu.makeGlobalPackageName(moduleLocalPackageName(),
 							mcu.getLocalPackage(moduleLocalPackageName()));
 		}
 		assert false : "Unexpected case in ModulePackageNames.CompilationUnit.packageName()";
@@ -19,6 +21,10 @@ aspect ModulePackageNames {
 	syn lazy String CompilationUnit.moduleLocalPackageName() {
 		return getPackageDecl();
 	}
+	eq CompilationUnit.getChild().moduleLocalPackageName() {
+		return moduleLocalPackageName();
+	}
+	inh String TypeDecl.moduleLocalPackageName();
 	
 	protected HashMap<String, LocalModulePackage> ModuleCompilationUnit.localPackages = 
 		new HashMap<String, LocalModulePackage>();
@@ -32,26 +38,28 @@ aspect ModulePackageNames {
 		return this.localPackages;
 	}
 	
-	public String ModuleCompilationUnit.makeExportedPackageName(String packageName) {
+	public String ModuleCompilationUnit.makeGlobalExportedPackageName(String packageName) {
 		if (packageName.equals("")) {
 			return this.getModuleName();
 		} else {
 			return this.getModuleName() + ".$" + packageName;
 		}	
 	}
-	public String ModuleCompilationUnit.makeNonExportedPackageName(String packageName) {
+	public String ModuleCompilationUnit.makeGlobalNonExportedPackageName(String packageName) {
 		if (packageName.equals("")) {
 			return this.getModuleName();
 		} else {
 			return this.getModuleName() + "$$" + packageName;
 		}
 	}
-	public String ModuleCompilationUnit.makeLocalPackageName(String packageName, LocalModulePackage localModulePackage) {
+	public String ModuleCompilationUnit.makeGlobalPackageName(String packageName, LocalModulePackage localModulePackage) {
 		assert (localModulePackage != null) : "localModulePackage should not be null"; 
 		if (localModulePackage.isExported()) {
-			return makeExportedPackageName(packageName);
+			return makeGlobalExportedPackageName(packageName);
 		} else {
-			return makeNonExportedPackageName(packageName);
+			return makeGlobalNonExportedPackageName(packageName);
 		}
 	}
+	
+	
 }

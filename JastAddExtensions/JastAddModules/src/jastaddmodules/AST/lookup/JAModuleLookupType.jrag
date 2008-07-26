@@ -42,13 +42,14 @@ aspect JAModuleLookupType {
 		return null;
 	}
 	
+	//TODO: Shares a lot of cut n paste code with lookupPackage. Refactor to remove common code 
 	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
 		assert (getHostProgram().isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
 		
 		//local package lookup
 		LocalModulePackage localPackage = getLocalPackage(packageName);
 		if (localPackage != null) {
-			String localPackageName = makeLocalPackageName(packageName, localPackage);
+			String localPackageName = makeGlobalPackageName(packageName, localPackage);
 			TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
 			if (type != null) {
 				return type;
@@ -124,17 +125,17 @@ aspect JAModuleLookupType {
 		if (!set.isEmpty()) {
 			return set;
 		}
-		//"imported" types (types that are in CUs that are members of imported modules)
+		//"imported" types (types that are in CUs that are members of imported modules and whose local packages are "")
 		for (jastaddmodules.ImportedModule mcu : getImportedModuleMap().values()) {
 			set = mcu.getModuleCU().localModuleTypes(name, set);
 		}
 		return set;
 	}
 	SimpleSet ModuleCompilationUnit.localModuleTypes(String name, SimpleSet set) {
-		//"local" module types (types that are in CUs that are members of the module)
+		//"local" module types (types that are in CUs that are members of the module and have a module local package name of "")
 		for (Iterator i = memberTypes().iterator(); i.hasNext() ;) {
 			TypeDecl type = (TypeDecl) i.next();
-			if (type.name().equals(name)) {
+			if (type.name().equals(name) && type.moduleLocalPackageName().equals("")) {
 				set = set.add(type);
 			}
 		}

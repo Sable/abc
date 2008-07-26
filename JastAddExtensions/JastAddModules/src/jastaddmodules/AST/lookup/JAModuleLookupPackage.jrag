@@ -3,7 +3,8 @@ import jastaddmodules.*;
 aspect JAModuleLookupPackage {
 	//shares cut n paste code with lookupType. Change that if you change this
 	//TODO: Refactor to remove cut and paste code
-	public String ModuleCompilationUnit.lookupPackage(ModuleCompilationUnit context, String packageName) {
+	public String ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context) {
+		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.lookupPackage called before module processing was complete";
 		//local package lookup
 		LocalModulePackage localModulePackage = getLocalPackage(packageName);
 		if (localModulePackage != null&&
@@ -11,7 +12,7 @@ aspect JAModuleLookupPackage {
 					(!localModulePackage.isExported() && context == this)
 				)
 			) {
-			return makeLocalPackageName(packageName, localModulePackage);
+			return makeGlobalPackageName(packageName, localModulePackage);
 		}
 			
 		String moduleName = packageName;
@@ -41,7 +42,7 @@ aspect JAModuleLookupPackage {
 						(!localModulePackage.isExported() && context == this)
 					)
 				) {
-				return importedCU.makeLocalPackageName(localPackageName, localModulePackage);
+				return importedCU.makeGlobalPackageName(localPackageName, localModulePackage);
 			}
 		}
 		return null;
@@ -54,7 +55,7 @@ aspect JAModuleLookupPackage {
 			//try a lookup through the instance package
 			boolean ret = (getHostProgram()
 								.getInstanceModuleCU()
-								.lookupPackage(null, packageName) != null
+								.lookupPackage(packageName, null) != null
 								);
 			if (ret) {
 				return true;
@@ -64,7 +65,7 @@ aspect JAModuleLookupPackage {
 	}
 	
 	syn boolean ModuleCompilationUnit.hasPackage(String packageName) {
-		boolean ret = (this.lookupPackage(this, packageName) != null);
+		boolean ret = (this.lookupPackage(packageName, this) != null);
 		if (ret) {
 			return true;
 		} else {

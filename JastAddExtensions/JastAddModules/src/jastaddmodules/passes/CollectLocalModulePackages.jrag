@@ -15,7 +15,7 @@ aspect CollectLocalModulePackages {
 		//TODO: Add packages to Program.packageToMCU
 		for (String localPackageName : getLocalPackageMap().keySet()) {
 			LocalModulePackage localPackage = getLocalPackage(localPackageName);
-			String globalPackageName = makeLocalPackageName(localPackageName, localPackage);
+			String globalPackageName = makeGlobalPackageName(localPackageName, localPackage);
 			getHostProgram().addPackageToMCU(globalPackageName, this);
 		}
 	}

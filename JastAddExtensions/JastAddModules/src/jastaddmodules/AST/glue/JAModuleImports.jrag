@@ -1,0 +1,50 @@
+
+aspect JAModuleImports {
+
+	//from Java1.5Backend/StaticImports.jrag
+	refine StaticImports public void SingleStaticImportDecl.typeCheck() {
+		StaticImports.SingleStaticImportDecl.typeCheck();
+	}
+
+	
+	
+	refine NameCheck public void SingleTypeImportDecl.nameCheck() {
+		if(!getAccess().type().globalTypeName().equals(globalTypeName()) &&
+				!getAccess().type().isUnknown()) {
+			error("Single-type import " + typeName() + " is not the canonical name of type " + getAccess().type().typeName());
+		}
+		else if(allImportedTypes(getAccess().type().name()).size() > 1) {
+			error(getAccess().type().name() + " is imported multiple times");
+		}
+	}
+
+	refine NameCheck public void TypeImportOnDemandDecl.nameCheck() {
+		if(getAccess().lastAccess().isTypeAccess() && !getAccess().type().globalTypeName().equals(globalTypeName())) {
+			error("On demand type import " + typeName() + ".* is not the canonical name of type " + getAccess().type().typeName());
+		}
+	}
+
+	//TODO: Change this
+	refine LookupType eq TypeImportOnDemandDecl.importedTypes(String name) {
+		SimpleSet set = SimpleSet.emptySet;
+		if(getAccess() instanceof PackageAccess) {
+			String packageName = ((PackageAccess)getAccess()).getPackage();
+			TypeDecl typeDecl = lookupType(packageName, name);
+			if(typeDecl != null && typeDecl.accessibleFromPackage(packageName()) &&
+					typeDecl.typeName().equals(packageName + "." + name)) {// canonical names match
+				set = set.add(typeDecl);
+			}
+		}
+		else {
+			for(Iterator iter = getAccess().type().memberTypes(name).iterator(); iter.hasNext(); ) {
+				TypeDecl decl = (TypeDecl)iter.next();
+				if(decl.accessibleFromPackage(packageName()) &&
+						decl.typeName().equals(getAccess().typeName() + "." + name)) {// canonical names match
+					set = set.add(decl);
+				}
+			}
+		}
+		return set;
+	}
+
+}

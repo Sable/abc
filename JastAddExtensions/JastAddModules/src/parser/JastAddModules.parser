@@ -160,3 +160,8 @@ IdUse qualified_name_decl =
 		return new IdUse(n.getID() + "::" + i); 
 	:};
 	
+ImportDecl type_import_on_demand_declaration =
+    IMPORT name.n DOT MODULE_SEPARATOR SEMICOLON           
+    {: 
+    	return new TypeImportOnDemandDecl(n); 
+    :};
