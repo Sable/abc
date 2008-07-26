@@ -1,0 +1,351 @@
+----------Module contents----------
+------CC.java------
+module: module m33;;
+module CU : m33.module
+module name : m33
+------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------m31.module------
+module m31;
+import own m33 export as m33;
+------------------------
+------CA.java------
+module: module m31;;
+module CU : m31.module
+module name : m31
+------------------------
+------BB.java------
+module: module m22;;
+module CU : m22.module
+module name : m22
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m12.module------
+module m12;
+import own m13 export as m13;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------AB.java------
+module: module m12;;
+module CU : m12.module
+module name : m12
+------------------------
+------m2.module------
+module m2;
+import  m3 as none null;
+import own m21 export as m21;
+import own m22 export as m22;
+merge m21::m23, m22::m23 export as m23alias;
+------------------------
+------BA.java------
+module: module m21;;
+module CU : m21.module
+module name : m21
+------------------------
+------AA.java------
+module: module m11;;
+module CU : m11.module
+module name : m11
+------------------------
+------m33.module------
+module m33;
+------------------------
+------CB.java------
+module: module m32;;
+module CU : m32.module
+module name : m32
+------------------------
+------m1.module------
+module m1;
+import  m2 as none null;
+import own m11 export as m11;
+import own m12 export as m12;
+merge m11::m13, m12::m13 export as m13alias;
+------------------------
+------m11.module------
+module m11;
+import own m13 export as m13;
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------BC.java------
+module: module m23;;
+module CU : m23.module
+module name : m23
+------------------------
+------m3.module------
+module m3;
+import  m1 as none null;
+import own m31 export as m31;
+import own m32 export as m32;
+merge m31::m33, m32::m33 export as m33alias;
+------------------------
+------m13.module------
+module m13;
+------------------------
+------m32.module------
+module m32;
+import own m33 export as m33;
+------------------------
+------AC.java------
+module: module m13;;
+module CU : m13.module
+module name : m13
+------------------------
+------m22.module------
+module m22;
+import own m23 export as m23;
+------------------------
+------m23.module------
+module m23;
+------------------------
+------m21.module------
+module m21;
+import own m23 export as m23;
+------------------------
+----------CU AST before insert----------
+CC.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m31, file: m31.module, base module: m31
+CA.java package:
+BB.java package:
+B.java package:
+A.java package:
+module: m12, file: m12.module, base module: m12
+Main.java package:
+AB.java package:
+module: m2, file: m2.module, base module: m2
+BA.java package:
+AA.java package:
+module: m33, file: m33.module, base module: m33
+CB.java package:
+module: m1, file: m1.module, base module: m1
+module: m11, file: m11.module, base module: m11
+C.java package:
+BC.java package:
+module: m3, file: m3.module, base module: m3
+module: m13, file: m13.module, base module: m13
+module: m32, file: m32.module, base module: m32
+AC.java package:
+module: m22, file: m22.module, base module: m22
+module: m23, file: m23.module, base module: m23
+module: m21, file: m21.module, base module: m21
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m31, file: m31.module, base module: m31
+	CA.java package:m31
+module: m12, file: m12.module, base module: m12
+	AB.java package:m12
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+module: m33, file: m33.module, base module: m33
+	CC.java package:m33
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m11, file: m11.module, base module: m11
+	AA.java package:m11
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m13, file: m13.module, base module: m13
+	AC.java package:m13
+module: m32, file: m32.module, base module: m32
+	CB.java package:m32
+module: m22, file: m22.module, base module: m22
+	BB.java package:m22
+module: m23, file: m23.module, base module: m23
+	BC.java package:m23
+module: m21, file: m21.module, base module: m21
+	BA.java package:m21
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m31, base:m31, context:[], instantiated:false
+	
+module m12, base:m12, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+module m33, base:m33, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m11, base:m11, context:[], instantiated:false
+	
+module m3, base:m3, context:[], instantiated:false
+	
+module m13, base:m13, context:[], instantiated:false
+	
+module m32, base:m32, context:[], instantiated:false
+	
+module m22, base:m22, context:[], instantiated:false
+	
+module m23, base:m23, context:[], instantiated:false
+	
+module m21, base:m21, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import  m2 as none null;
+import own m11 export as m11;
+import own m12 export as m12;
+merge m11::m13, m12::m13 export as m13alias;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m31, file: m31.module, base module: m31
+	CA.java package:m31
+module: m12, file: m12.module, base module: m12
+	AB.java package:m12
+Main.java package:
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+module: m33, file: m33.module, base module: m33
+	CC.java package:m33
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m11, file: m11.module, base module: m11
+	AA.java package:m11
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m13, file: m13.module, base module: m13
+	AC.java package:m13
+module: m32, file: m32.module, base module: m32
+	CB.java package:m32
+module: m22, file: m22.module, base module: m22
+	BB.java package:m22
+module: m23, file: m23.module, base module: m23
+	BC.java package:m23
+module: m21, file: m21.module, base module: m21
+	BA.java package:m21
+module: m3.m31, file: m31.module, base module: m31
+	CA.java package:m3.m31
+module: m3.m32, file: m32.module, base module: m32
+	CB.java package:m3.m32
+module: m3.m33alias, file: m33.module, base module: m33
+	CC.java package:m3.m33alias
+module: m2.m21, file: m21.module, base module: m21
+	BA.java package:m2.m21
+module: m2.m22, file: m22.module, base module: m22
+	BB.java package:m2.m22
+module: m2.m23alias, file: m23.module, base module: m23
+	BC.java package:m2.m23alias
+module: m1.m11, file: m11.module, base module: m11
+	AA.java package:m1.m11
+module: m1.m12, file: m12.module, base module: m12
+	AB.java package:m1.m12
+module: m1.m13alias, file: m13.module, base module: m13
+	AC.java package:m1.m13alias
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m31, base:m31, context:[], instantiated:false
+	
+module m12, base:m12, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:true
+	[export]m23alias:m2.m23alias, [export]m21:m2.m21, m3:m3, jastadd$framework:jastadd$framework, [export]m22:m2.m22
+module m33, base:m33, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:true
+	[export]m12:m1.m12, [export]m11:m1.m11, jastadd$framework:jastadd$framework, m2:m2, [export]m13alias:m1.m13alias
+module m11, base:m11, context:[], instantiated:false
+	
+module m3, base:m3, context:[], instantiated:true
+	[export]m33alias:m3.m33alias, [export]m32:m3.m32, m1:m1, [export]m31:m3.m31, jastadd$framework:jastadd$framework
+module m13, base:m13, context:[], instantiated:false
+	
+module m32, base:m32, context:[], instantiated:false
+	
+module m22, base:m22, context:[], instantiated:false
+	
+module m23, base:m23, context:[], instantiated:false
+	
+module m21, base:m21, context:[], instantiated:false
+	
+module m3.m31, base:m31, context:[m3], instantiated:true
+	jastadd$framework:jastadd$framework, [export]m33:m3.m33alias
+module m3.m32, base:m32, context:[m3], instantiated:true
+	jastadd$framework:jastadd$framework, [export]m33:m3.m33alias
+module m3.m33alias, base:m33, context:[m3.m32, m3.m31, m3], instantiated:true
+	jastadd$framework:jastadd$framework
+module m2.m21, base:m21, context:[m2], instantiated:true
+	[export]m23:m2.m23alias, jastadd$framework:jastadd$framework
+module m2.m22, base:m22, context:[m2], instantiated:true
+	[export]m23:m2.m23alias, jastadd$framework:jastadd$framework
+module m2.m23alias, base:m23, context:[m2.m21, m2, m2.m22], instantiated:true
+	jastadd$framework:jastadd$framework
+module m1.m11, base:m11, context:[m1], instantiated:true
+	[export]m13:m1.m13alias, jastadd$framework:jastadd$framework
+module m1.m12, base:m12, context:[m1], instantiated:true
+	[export]m13:m1.m13alias, jastadd$framework:jastadd$framework
+module m1.m13alias, base:m13, context:[m1, m1.m11, m1.m12], instantiated:true
+	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+Module: m31
+	m31.CA
+Module: m12
+	m12.AB
+Module: m2
+	m2.B
+Module: m33
+	m33.CC
+Module: m1
+	m1.A
+Module: m11
+	m11.AA
+Module: m3
+	m3.C
+Module: m13
+	m13.AC
+Module: m32
+	m32.CB
+Module: m22
+	m22.BB
+Module: m23
+	m23.BC
+Module: m21
+	m21.BA
+Module: m3.m31
+	m3.m31.CA
+Module: m3.m32
+	m3.m32.CB
+Module: m3.m33alias
+	m3.m33alias.CC
+Module: m2.m21
+	m2.m21.BA
+Module: m2.m22
+	m2.m22.BB
+Module: m2.m23alias
+	m2.m23alias.BC
+Module: m1.m11
+	m1.m11.AA
+Module: m1.m12
+	m1.m12.AB
+Module: m1.m13alias
+	m1.m13alias.AC
+
+----------CU iterator----------
+../testlib/jastadd$framework.module, m31.module, m12.module, Main.java, m2.module, B.java, m33.module, m1.module, A.java, m11.module, m3.module, C.java, m13.module, m32.module, m22.module, m23.module, m21.module, m31.module, CA.java, m32.module, CB.java, m33.module, CC.java, m21.module, BA.java, m22.module, BB.java, m23.module, BC.java, m11.module, AA.java, m12.module, AB.java, m13.module, AC.java

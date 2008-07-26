@@ -1,0 +1,2 @@
+module m12;
+import own m13 export as m13;

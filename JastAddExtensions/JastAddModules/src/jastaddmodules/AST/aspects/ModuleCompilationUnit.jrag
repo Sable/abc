@@ -88,8 +88,8 @@ aspect ModuleCompilationUnit {
 	public void ModuleCompilationUnit.setImportedModules(HashMap<String, ImportedModule> modules) {
 		this.importedModules = modules;
 	}
-	public void ModuleCompilationUnit.addImportedModule(String alias, ModuleCompilationUnit cu, boolean isExported) {
-		importedModules.put(alias, new ImportedModule(cu, isExported));
+	public void ModuleCompilationUnit.addImportedModule(String alias, ModuleCompilationUnit cu, AsType asType, ModuleImportType importType) {
+		importedModules.put(alias, new ImportedModule(cu, asType, importType));
 	}
 	public ImportedModule ModuleCompilationUnit.removeImportedModule(String alias) {
 		return importedModules.remove(alias);

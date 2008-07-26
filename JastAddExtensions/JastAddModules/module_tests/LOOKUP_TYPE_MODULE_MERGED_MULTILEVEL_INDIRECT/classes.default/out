@@ -1,0 +1,8 @@
+class m1$m4alias.D
+class m1$m4alias.D
+class m1$m4alias.D
+class m1$m2.B
+From m2.B: class m1$m4alias.D
+class m1$m3.C
+From m3.C: class m1$m4alias.D
+class m1.A

@@ -1,0 +1,2 @@
+module m22;
+import own m23 export as m23;

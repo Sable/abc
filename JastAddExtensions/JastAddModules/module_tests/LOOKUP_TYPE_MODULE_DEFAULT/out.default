@@ -57,8 +57,8 @@ module m1, base:m1, context:[], instantiated:true
 
 Module: jastadd$framework
 Module: m1
-	m1.$java.lang.String
 	m1.A
+	m1.$java.lang.String
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, m1.module, String.java, A.java, Main.java

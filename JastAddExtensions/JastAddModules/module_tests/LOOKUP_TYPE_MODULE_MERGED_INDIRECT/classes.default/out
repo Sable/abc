@@ -1,0 +1,10 @@
+class m1$mergedalias.E
+class m1$m2$m4.m5.E
+class m1$m2.B
+class m1$mergedalias.E
+class m1$m2$m4.m5.E
+class m1$m2.B
+class m1$m2.m3.C
+From m3.C: class m1$mergedalias.E
+class m1$mergedalias.E
+class m1.A

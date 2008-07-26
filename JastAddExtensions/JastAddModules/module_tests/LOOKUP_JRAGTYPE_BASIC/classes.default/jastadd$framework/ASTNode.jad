@@ -16,16 +16,34 @@ import m1.X;
 public class ASTNode extends Symbol
     implements Cloneable
 {
-    public static class CircularStackEntry
+    public static class CircularEvalEntry
     {
 
-        Set circularEvalSet;
-        boolean changeValue;
-
-        public CircularStackEntry(Set set, boolean change)
+        public boolean equals(Object rhs)
         {
-            circularEvalSet = set;
-            changeValue = change;
+            CircularEvalEntry s = (CircularEvalEntry)rhs;
+            if(parameters == null && s.parameters == null)
+                return node == s.node && attrName.equals(s.attrName);
+            if(parameters != null && s.parameters != null)
+                return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
+            else
+                return false;
+        }
+
+        public int hashCode()
+        {
+            return node.hashCode();
+        }
+
+        ASTNode node;
+        String attrName;
+        Object parameters;
+
+        public CircularEvalEntry(ASTNode node, String attrName, Object parameters)
+        {
+            this.node = node;
+            this.attrName = attrName;
+            this.parameters = parameters;
         }
     }
 
@@ -72,34 +90,16 @@ public class ASTNode extends Symbol
         }
     }
 
-    public static class CircularEvalEntry
+    public static class CircularStackEntry
     {
 
-        public boolean equals(Object rhs)
-        {
-            CircularEvalEntry s = (CircularEvalEntry)rhs;
-            if(parameters == null && s.parameters == null)
-                return node == s.node && attrName.equals(s.attrName);
-            if(parameters != null && s.parameters != null)
-                return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
-            else
-                return false;
-        }
+        Set circularEvalSet;
+        boolean changeValue;
 
-        public int hashCode()
+        public CircularStackEntry(Set set, boolean change)
         {
-            return node.hashCode();
-        }
-
-        ASTNode node;
-        String attrName;
-        Object parameters;
-
-        public CircularEvalEntry(ASTNode node, String attrName, Object parameters)
-        {
-            this.node = node;
-            this.attrName = attrName;
-            this.parameters = parameters;
+            circularEvalSet = set;
+            changeValue = change;
         }
     }
 

@@ -1,0 +1,12 @@
+class m1.$a.AA
+class m1.$a.a.AAA
+class m1.$a.AA
+class m1.$a.a.AAA
+class m1.m2.A
+class m1.m2.$b.BB
+class m1.m2.$b.bb.BBB
+class m1$m2alias.$b.bb.BBB
+class m3.$c.cc.CCC
+class m1.m2.m3.$c.CC
+class m1$m2alias.m3.$c.CC
+class m1.A

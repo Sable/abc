@@ -74,61 +74,13 @@ aspect JAModuleQualifiedNames {
 	//needed for type access
 	inh CompilationUnit TypeAccess.compilationUnit();
 	syn String TypeAccess.nameWithGlobalPackage() {
-		assert (compilationUnit().getModuleCompilationUnit() != null) : "Should be under a ModuleCompilationUnit";
-		if (getPackage().equals("")) {
-			return name();
-		} else {
-			ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
-			String globalPackage = mcu.lookupPackage(getPackage(), mcu);
-			//TODO: find out how this affects things
-			if (globalPackage == null) {
-				globalPackage = getPackage();
-			}
-			return globalPackage + "." + name();
-		}
-	}
-	
-	//refined from QualifiedNames.jrag
-	//typeName() returns the global (mangled) package names
-	//NOTE: Taken out for now, has way too many unintended effects. Just change the 
-	//nameCheck for importDecls
-	/* 
-	refine QualifiedNames eq TypeDecl.typeName() {
-		if (compilationUnit().getModuleCompilationUnit() == null) {
-			return QualifiedNames.TypeDecl.typeName();
-		}
-		
 		ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
-		assert (mcu != null) : "Should have a ModuleCompilationUnit";
-		
-		if(isNestedType())
-			return enclosingType().typeName() + "." + name();
-		
-		//use the global package name when returning typenames
-		String packageName = mcu.lookupPackage(packageName(), mcu);
-		if(packageName.equals("") || packageName.equals(PRIMITIVE_PACKAGE_NAME))
-			return name();
-		return packageName + "." + name();
-	}
-	
-	refine QualifiedNames eq TypeAccess.typeName() {
-		ModuleCompilationUnit mcu = hostType().compilationUnit().getModuleCompilationUnit();
 		if (mcu == null) {
-			return QualifiedNames.TypeAccess.typeName();
+			return nameWithPackage();
 		}
-		if (isQualified()) {
-			return qualifier().typeName() + "." + name();
-		} else {
-			return nameWithGlobalPackage();
-		}
-	}
-	
-	syn String TypeAccess.nameWithGlobalPackage() {
-		assert (hostType().compilationUnit().getModuleCompilationUnit() != null) : "Should be under a ModuleCompilationUnit";
 		if (getPackage().equals("")) {
 			return name();
 		} else {
-			ModuleCompilationUnit mcu = hostType().compilationUnit().getModuleCompilationUnit();
 			String globalPackage = mcu.lookupPackage(getPackage(), mcu);
 			//TODO: find out how this affects things
 			if (globalPackage == null) {
@@ -137,5 +89,4 @@ aspect JAModuleQualifiedNames {
 			return globalPackage + "." + name();
 		}
 	}
-	*/
 }

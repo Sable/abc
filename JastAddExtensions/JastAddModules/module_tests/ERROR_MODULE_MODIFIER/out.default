@@ -87,13 +87,13 @@ Module: jastadd$framework
 Module: m1
 	m1.A
 	m1.$a.AA
-	m1.$a.AAPackage
 	m1.$a.AAModule
+	m1.$a.AAPackage
 Module: m2
-	m2.$b.BBPackage
-	m2.B
 	m2.$b.BBModule
+	m2.$b.BBPackage
 	m2.$b.BB
+	m2.B
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, m1.module, AA.java, A.java, Main.java, m2.module, BB.java, B.java

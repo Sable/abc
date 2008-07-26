@@ -1,6 +1,6 @@
 module m1;
-import a.*;
-import a.a.*;
+import a.AA;
+import a.a.AAA;
 public class A{
 	a.AA aa = new a.AA();
 	a.a.AAA aaa = new a.a.AAA();

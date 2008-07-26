@@ -9,6 +9,22 @@ import java.io.PrintStream;
 
 public class BB
 {
+    public class BBInnerPublic
+    {
+
+        public BBInnerPublic()
+        {
+        }
+    }
+
+    public static class BBPublic
+    {
+
+        public BBPublic()
+        {
+        }
+    }
+
     public class BBInnerModule
     {
 
@@ -25,22 +41,6 @@ public class BB
         }
     }
 
-    public static class BBPublic
-    {
-
-        public BBPublic()
-        {
-        }
-    }
-
-    class BBInnerPackage
-    {
-
-        BBInnerPackage()
-        {
-        }
-    }
-
     static class BBPackage
     {
 
@@ -49,10 +49,10 @@ public class BB
         }
     }
 
-    public class BBInnerPublic
+    class BBInnerPackage
     {
 
-        public BBInnerPublic()
+        BBInnerPackage()
         {
         }
     }

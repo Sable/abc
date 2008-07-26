@@ -63,6 +63,9 @@ aspect GenerateImportOwn {
 			ret = instantiateModuleAs(context, alias); 
 			ret.addInstanceContext(context);
 		}
+		if (ret.isModuleInstantiated()) { //can't rely on laziness, as the cache only adds an entry after generateImportOwn returns
+			return ret;
+		}
 		ret.setModuleInstantiated(true);
 		
 		//process imports
@@ -114,7 +117,7 @@ aspect GenerateImportOwn {
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
-			ret.checkedAddImportedModule(localAccessName, currImport, importDecl.getAsType().isExported());
+			ret.checkedAddImportedModule(localAccessName, currImport, importDecl.getAsType(), importDecl.getModuleImportType());
 			
 			if (instantiated) {
 				getHostProgram().getCompilationUnitList().addChild(currImport);			
@@ -176,12 +179,13 @@ aspect GenerateImportOwn {
 				for (ModuleCompilationUnit instanceContextCU: mergeTargetCU.getInstanceContext()) {
 			//		detach the merge target from the context member's import list
 					String oldAlias = instanceContextCU.getImportedModuleAlias(mergeTargetCU);
-					boolean oldIsExported = instanceContextCU.getImportedModule(oldAlias).isExported();
+					AsType oldAsType = instanceContextCU.getImportedModule(oldAlias).getAsType();
+					ModuleImportType oldImportType = instanceContextCU.getImportedModule(oldAlias).getModuleImportType();
 					assert (oldAlias != null) : "Unable to find old alias";
 					instanceContextCU.removeImportedModule(oldAlias);
 			//		attach the result copy to the context member's import list (use the old alias and isExported)
 					if (ret != instanceContextCU) {
-						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldIsExported);
+						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
 					}
 			//		add the context member to the result copy's instance context
 					mergedCU.addInstanceContext(instanceContextCU);
@@ -192,7 +196,8 @@ aspect GenerateImportOwn {
 				ret.removeImportedModule(mergeTargetCU);
 			}
 			//attach the result copy to ret's import list
-			ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType().isExported());
+			//import type is own. TODO: Check if this is correct
+			ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType(), new ModuleImportTypeOwn());
 		}
 		return ret;
 	}
@@ -204,7 +209,8 @@ aspect GenerateImportOwn {
 		
 		ret = this.fullCopy();
 		
-		//clear ITDs
+		//clear instace related ITDs
+		ret.setModuleInstantiated(false);
 		ret.setImportedModules(new HashMap<String, jastaddmodules.ImportedModule>());
 		ret.setInstanceContext(new HashSet<ModuleCompilationUnit>());
 		
@@ -220,12 +226,12 @@ aspect GenerateImportOwn {
 		return context.getModuleName() + "$" + alias;
 	}
 	
-	public void ModuleCompilationUnit.checkedAddImportedModule(String alias, ModuleCompilationUnit cu, boolean isExported) {
+	public void ModuleCompilationUnit.checkedAddImportedModule(String alias, ModuleCompilationUnit cu, AsType asType, ModuleImportType importType) {
 		if (getImportedModule(alias) != null || alias.equals(getBaseCU().getModuleName())) {
 			getModuleDecl().error("Ambiguous module name " + alias + " in module " + this.getModuleName());
 			//throw new jastadd.UnrecoverableSemanticError("Ambiguous alias " + alias + " in module " + this.getModuleName());
 		}
-		addImportedModule(alias, cu, isExported);
+		addImportedModule(alias, cu, asType, importType);
 	}
 	
 	//Is true if the module was used as an instance in the ModuleCompilationUnit

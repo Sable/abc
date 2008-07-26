@@ -1,0 +1,2 @@
+module m32;
+import own m33 export as m33;

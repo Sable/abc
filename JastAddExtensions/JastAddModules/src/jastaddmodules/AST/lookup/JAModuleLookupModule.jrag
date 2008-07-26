@@ -114,7 +114,7 @@ aspect JAModuleLookupModule {
 			//	or it is exported
 			ImportedModule importedCU = null;
 			if (alias.equals(getBaseCU().getModuleName())) {
-				importedCU = new ImportedModule(this, false); //special case for self reference, false so that it only goes into the imports when it is in the originalContext
+				importedCU = new ImportedModule(this, new AsTypeNone(), new ModuleImportTypeNorm()); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
 			} else {
 				importedCU = getImportedModule(alias);
 			}

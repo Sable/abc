@@ -3,6 +3,7 @@ import jastaddmodules.*;
 aspect JAModuleLookupPackage {
 	//shares cut n paste code with lookupType. Change that if you change this
 	//TODO: Refactor to remove cut and paste code
+	//returns null if it can't find a package that belongs to a module
 	public String ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context) {
 		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.lookupPackage called before module processing was complete";
 		//local package lookup
@@ -45,6 +46,7 @@ aspect JAModuleLookupPackage {
 				return importedCU.makeGlobalPackageName(localPackageName, localModulePackage);
 			}
 		}
+		//if none found, return null (is used in hasPackage check in JAModuleLookupPackage)
 		return null;
 	}
 	
