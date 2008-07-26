@@ -18,6 +18,39 @@ aspect ModulePackageNames {
 		return null;
 	}
 	
+	//change packageaccess package name to use module separator
+	refine QualifiedNames eq PackageAccess.packageName() {
+		StringBuffer s = new StringBuffer();
+		if(hasPrevExpr()) {
+			s.append(prevExpr().packageName());
+			if (prevExpr().parentDot() instanceof ModuleDot) {
+				s.append(Program.MODULE_SEPARATOR);
+			} else if (parentDot() instanceof Dot) {
+				s.append(".");
+			} else {
+				assert false : "Unexpected dot type: " + parentDot().getClass();
+			}
+		}
+		s.append(getPackage());
+		return s.toString();
+	}
+	refine QualifiedNames eq PackageOrTypeAccess.packageName() {
+		StringBuffer s = new StringBuffer();
+		if(hasPrevExpr()) {
+			s.append(prevExpr().packageName());
+			if (prevExpr().parentDot() instanceof ModuleDot) {
+				s.append(Program.MODULE_SEPARATOR);
+			} else if (parentDot() instanceof Dot) {
+				s.append(".");
+			} else {
+				assert false : "Unexpected dot type: " + parentDot().getClass();
+			}
+		}
+		s.append(name());
+		return s.toString();
+	}
+	
+	
 	syn lazy String CompilationUnit.moduleLocalPackageName() {
 		return getPackageDecl();
 	}
