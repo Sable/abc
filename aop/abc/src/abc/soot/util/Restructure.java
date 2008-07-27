@@ -1074,23 +1074,15 @@ public class Restructure {
 	public static Local addParameterToMethod(SootMethod method, Type type, String suggestedName) {
 		//validateMethod(method);
 		Body body=method.getActiveBody();
-		Chain units=body.getUnits().getNonPatchingChain();
+		Chain<Unit> units=body.getUnits().getNonPatchingChain();
 		List params=new LinkedList(method.getParameterTypes());
 		
 		IdentityStmt lastIDStmt=null;
-		if (params.isEmpty()) {
-			if (units.isEmpty()) {
-				if (!method.isStatic())
-					throw new RuntimeException();
-			} else {
-				lastIDStmt=(IdentityStmt)units.getFirst();
-				if (! (lastIDStmt.getRightOp() instanceof ThisRef))
-					if (!method.isStatic())
-						throw new RuntimeException();
-			}
-		} else {
-		//	debug("param id: " + (params.size()-1));
-			lastIDStmt=Restructure.getParameterIdentityStatement(method, params.size()-1);
+		for (Unit u : units) {
+			if(u instanceof IdentityStmt)
+				lastIDStmt = (IdentityStmt) u;
+			else
+				break;
 		}
 		params.add(type);
 		method.setParameterTypes(params);
