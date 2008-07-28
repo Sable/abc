@@ -164,7 +164,7 @@ aspect IntertypeMethodNameAnalysis {
     return c;
   }
 
-  protected void IntertypeConstructorDecl.collectIntertypeDecls(HashMap map) {
+  void IntertypeConstructorDecl.collectIntertypeDecls(HashMap map) {
     super.collectIntertypeDecls(map);
     TypeDecl typeDecl = introducedType();
     if(!map.containsKey(typeDecl))

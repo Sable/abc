@@ -54,11 +54,11 @@ aspect IntertypeDecls {
     return intertypeDecls;
   }
   private HashMap Program.intertypeDecls = null;
-  protected void ASTNode.collectIntertypeDecls(HashMap map) {
+  void ASTNode.collectIntertypeDecls(HashMap map) {
     for(int i = 0; i < getNumChildNoTransform(); i++)
       getChildNoTransform(i).collectIntertypeDecls(map);
   }
-  protected void CompilationUnit.collectIntertypeDecls(HashMap map) {
+  void CompilationUnit.collectIntertypeDecls(HashMap map) {
     // intertype declarations are only available in source files
     if(fromSource())
       super.collectIntertypeDecls(map);

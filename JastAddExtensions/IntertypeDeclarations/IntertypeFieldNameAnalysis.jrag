@@ -90,7 +90,7 @@ aspect IntertypeFieldNameAnalysis {
     return set;
   }
 
-  protected void IntertypeFieldDeclaration.collectIntertypeDecls(HashMap map) {
+  void IntertypeFieldDeclaration.collectIntertypeDecls(HashMap map) {
     super.collectIntertypeDecls(map);
     TypeDecl typeDecl = introducedType();
     if(!map.containsKey(typeDecl))

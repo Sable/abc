@@ -260,7 +260,7 @@ aspect IntertypeMethodNameAnalysis {
   }
 
   // add inter-type methods to generic inter-type collection phase
-  protected void IntertypeMethodDecl.collectIntertypeDecls(HashMap map) {
+  void IntertypeMethodDecl.collectIntertypeDecls(HashMap map) {
     super.collectIntertypeDecls(map);
     TypeDecl typeDecl = introducedType();
     if(!map.containsKey(typeDecl))

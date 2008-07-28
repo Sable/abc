@@ -35,7 +35,7 @@ aspect DeclarePrecedenceNameAnalysis {
   }
 
   // add declare precedences to generic inter-type collection phase
-  protected void DeclarePrecedence.collectIntertypeDecls(HashMap map) {
+  void DeclarePrecedence.collectIntertypeDecls(HashMap map) {
     super.collectIntertypeDecls(map);
     String key = "declare_precedence";
     if(!map.containsKey(key))
