@@ -14,7 +14,7 @@ aspect ASTGrammar {
 
   syn TypeDecl CompilationUnit.lookupFrameworkType(String name) {
     // imported types
-    SimpleSet set = set = importedTypes(name);
+    SimpleSet set = importedTypes(name);
     if(set.isEmpty()) {
       // types in the same package
       TypeDecl result = lookupType(packageName(), name);
@@ -31,10 +31,11 @@ aspect ASTGrammar {
       return unknownType();
   }
 
-  public void AspectDecl.nameCheck() {
-    super.nameCheck();
+  public void AspectDecl.collectErrors() {
     if(astNode().isUnknown())
-      error("type ASTNode is not visible");
+      error("type ASTNode is not visible from " + typeName());
+    else
+      super.collectErrors();
   }
   inh TypeDecl AspectDecl.astNode();
 

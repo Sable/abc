@@ -1,5 +1,20 @@
 aspect GenerateSynCode {
 
+  public static Modifiers Modifiers.create(int flags) {
+    List list = new List();
+    if((flags & ACC_PUBLIC) != 0)
+      list.add(new Modifier("public"));
+    if((flags & ACC_PRIVATE) != 0)
+      list.add(new Modifier("private"));
+    if((flags & ACC_PROTECTED) != 0)
+      list.add(new Modifier("protected"));
+    if((flags & ACC_STATIC) != 0)
+      list.add(new Modifier("static"));
+    if((flags & ACC_SYNTHETIC) != 0)
+      list.add(new Modifier("synthetic"));
+    return new Modifiers(list);
+  }
+
   public boolean AttributeDecl.declaredNTA = false;
   public AttributeDecl AttributeDecl.declareNTA() {
     declaredNTA = true;
@@ -190,7 +205,7 @@ aspect GenerateSynCode {
     //typeDecl.addMemberMethod(
     return
       new MethodDecl(
-        new Modifiers(new List().add(new Modifier("public"))),
+        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
         type().createQualifiedAccess(),
         delegateName(),
         copyParameterList(getParameterList()),
@@ -361,7 +376,7 @@ aspect GenerateSynCode {
     // public type name(p0, ... , pN-1) { ... }
     typeDecl.addMemberMethod(
       new MethodDecl(
-        new Modifiers(new List().add(new Modifier("public"))),
+        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
         type().createQualifiedAccess(),
         delegateName(),
         copyParameterList(getParameterList()),
@@ -462,7 +477,7 @@ aspect GenerateSynCode {
         new List().add(new IntegerLiteral(4))
       );
     FieldDeclaration f = new FieldDeclaration(
-      new Modifiers(new List().add(new Modifier("private"))),
+      Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
       fieldType.createQualifiedAccess(),
       visitedFlagName(),
       fieldInit
@@ -479,14 +494,14 @@ aspect GenerateSynCode {
     FieldDeclaration f;
     if(getNumParameter() == 0)
       f = new FieldDeclaration(
-        new Modifiers(new List().add(new Modifier("private"))),
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
         typeBoolean().createQualifiedAccess(),
         computedFlagName(),
         new BooleanLiteral(false)
       );
     else
       f = new FieldDeclaration(
-        new Modifiers(new List().add(new Modifier("private"))),
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
         lookupType("java.util", "HashSet").createQualifiedAccess(),
         computedFlagName(),
         new ClassInstanceExpr(
@@ -506,13 +521,13 @@ aspect GenerateSynCode {
     FieldDeclaration f;
     if(getNumParameter() == 0)
       f = new FieldDeclaration(
-        new Modifiers(new List().add(new Modifier("private"))),
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
         computedValueType().createQualifiedAccess(),
         computedValueName()
       );
     else
       f = new FieldDeclaration(
-        new Modifiers(new List().add(new Modifier("private"))),
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
         computedValueType().createQualifiedAccess(),
         computedValueName(),
         new ClassInstanceExpr(
@@ -994,7 +1009,7 @@ aspect GenerateSynCode {
 
         MethodDecl m = classDecl.addMethod(definingInterfaceName(),
           new MethodDecl(
-            new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+            Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
             type().createQualifiedAccess(),
             definingInterfaceName(),
             createDefiningInterfaceParameterList(),
@@ -1205,12 +1220,12 @@ aspect GenerateSynCode {
       astNode().addBodyDecl(
           new MemberInterfaceDecl(
             new InterfaceDecl(
-              new Modifiers(new List().add(new Modifier("public"))),
+              Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
               definingInterfaceName(),
               new List(),
               new List().add(
                 new MethodDecl(
-                  new Modifiers(new List().add(new Modifier("public"))),
+                  Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
                   type().createQualifiedAccess(),
                   definingInterfaceName(),
                   createDefiningInterfaceParameterList(),
