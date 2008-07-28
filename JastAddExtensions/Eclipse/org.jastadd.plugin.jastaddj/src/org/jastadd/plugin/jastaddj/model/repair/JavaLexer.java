@@ -12,6 +12,7 @@ import org.jastadd.plugin.model.repair.Water;
 public class JavaLexer implements RecoveryLexer {
 
 	public SOF parse(StringBuffer buf) {
+		Indent.clearStats();
 		ArrayList<LexicalNode> nodeList = new ArrayList<LexicalNode>();
 		char[] content = buf.toString().toCharArray();
 		int start = 0;

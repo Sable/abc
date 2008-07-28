@@ -1,16 +1,14 @@
 package org.jastadd.plugin.jastaddj.model.repair;
 
-import java.util.*;
-
-import org.jastadd.plugin.model.repair.EOF;
 import org.jastadd.plugin.model.repair.Interval;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Reef;
-import org.jastadd.plugin.model.repair.SOF;
 
 public class Indent extends Reef {
+	private static final int TAB_SIZE = 4; // Eclipse default size 
 	private int nbrWS;
 	private int nbrTabs;
+	private int size;
 	public Indent(LexicalNode previous, Interval interval, String value) {
 		super(previous, interval, value);
 		char[] chars = value.toCharArray();
@@ -20,7 +18,54 @@ public class Indent extends Reef {
 				case TAB : nbrTabs++; break;
 			}
 		}
+		size = nbrTabs*TAB_SIZE + nbrWS;
+		collectStats(nbrWS, nbrTabs, size);
 	}
+	
+	private static int maxIndentStatSize = 10;
+	private static int[][][] stats;
+	private static boolean tabStepDeduced;
+	private static int tabStep = TAB_SIZE; // Default
+	
+	public static void clearStats() {
+		stats = null;
+		stats = new int[maxIndentStatSize + 1][2][maxIndentStatSize + 1];
+		tabStepDeduced = false;
+		tabStep = TAB_SIZE; // Default
+	}
+	
+	private static void collectStats(int ws, int tabs, int size) {
+		if (size > maxIndentStatSize || stats == null) {
+			return;
+		}
+		if (stats[size] == null) {
+			stats[size] = new int[2][maxIndentStatSize + 1];
+			stats[size][0] = new int[maxIndentStatSize + 1];
+			stats[size][1] = new int[maxIndentStatSize + 1];
+		}
+		stats[size][0][ws]++;
+		stats[size][1][tabs]++;
+	}
+	
+	private static void deduceTabStep() {
+		if (stats == null) {
+			return;
+		}
+		int minStep = 0;
+		for (;stats.length < minStep && stats[minStep] == null; minStep++);
+		if (minStep > stats.length) {
+			return;
+		}
+		tabStep = minStep;
+		/*
+		int maxWS = 0;
+		for (int i = 0; i < stats[minStep][0].length; i++) {
+			if (maxWS < stats[minStep][0][i]) {
+				maxWS = stats[minStep][0][i];
+			}
+		}*/
+	}
+
 	public String toString() {
 		return "Indent\t" + super.toString();
 	}
@@ -29,8 +74,8 @@ public class Indent extends Reef {
 	public static final char WHITESPACE = ' ';
 	public static final char TAB = '\t';
 
+	/*
 	private static int tabStep = 4;
-
 	private class IndentList {
 		ArrayList<Indent> list = new ArrayList<Indent>();
 		public void insert(Indent indent) {
@@ -79,7 +124,7 @@ public class Indent extends Reef {
 		}
 		tabStep = list.averageTabStep();
 	}
-
+*/
 	public boolean equalTo(Indent indent) {
 		/* DEBUG System.out.println("\t\tEqual? Indent: " + this +" and Indent2: " + indent);  */
 		/*
@@ -88,12 +133,18 @@ public class Indent extends Reef {
 		int diff = Math.abs(nbr-indentNbr);
 		return diff <= (tabStep/2);
 		*/
-		return indent.nbrWS == nbrWS && indent.nbrTabs == nbrTabs;
+	//	return indent.nbrWS == nbrWS && indent.nbrTabs == nbrTabs;
+		return indent.size == size;
 	}
 
 	public boolean lessThan(Indent indent, int dist) {
-		int d = Math.abs(nbrTabs - indent.nbrTabs);
-		return nbrTabs < indent.nbrTabs && d <= dist;
+		//int d = Math.abs(nbrTabs - indent.nbrTabs);
+		//return nbrTabs < indent.nbrTabs && d <= dist;
+		if (!tabStepDeduced) {
+			deduceTabStep();
+		}
+		int d = Math.abs(size - indent.size);
+		return size < indent.size && d <= (dist*tabStep);
 	}
 
 	public boolean lessThan(Indent indent) {
@@ -103,7 +154,8 @@ public class Indent extends Reef {
 		int diff = nbr - indentNbr;
 		return diff < -(tabStep/2);
 		*/
-		return nbrTabs < indent.nbrTabs || nbrWS < indent.nbrWS;
+		//return nbrTabs < indent.nbrTabs || nbrWS < indent.nbrWS;
+		return size < indent.size;
 	}
 
 	public LexicalNode clone(LexicalNode previous) {
