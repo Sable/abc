@@ -192,7 +192,7 @@ aspect GenerateSynCode {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
-        name(),
+        delegateName(),
         copyParameterList(getParameterList()),
         new List(),
         new Opt(new Block(statements))
@@ -363,7 +363,7 @@ aspect GenerateSynCode {
       new MethodDecl(
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
-        name(),
+        delegateName(),
         copyParameterList(getParameterList()),
         new List(),
         new Opt(new Block(statements))
