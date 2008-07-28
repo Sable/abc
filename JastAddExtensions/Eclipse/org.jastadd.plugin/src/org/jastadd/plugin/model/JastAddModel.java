@@ -146,10 +146,6 @@ public abstract class JastAddModel {
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
-		System.out.println("Updating project model for " + project.getName() + ", file: " + fileName);
-		if(fileName.endsWith(".ast")) {
-			System.out.println("Reloading .ast file");
-		}
 		synchronized(getASTRootForLock(project)) {
 			updateModel(document, fileName, project);
 		}
