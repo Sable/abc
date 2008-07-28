@@ -8,10 +8,10 @@
       errors.add(new Problem(null, e.getMessage(), e.line, e.column, Problem.Severity.ERROR, Problem.Kind.LEXICAL));
     }
     public void syntaxError(Symbol token) {
-      int line = token.getLine(token.getStart());
-      int column = token.getColumn(token.getStart());
-      int endLine = token.getLine(token.getEnd());
-      int endColumn = token.getColumn(token.getEnd());
+      int line = Symbol.getLine(token.getStart());
+      int column = Symbol.getColumn(token.getStart());
+      int endLine = Symbol.getLine(token.getEnd());
+      int endColumn = Symbol.getColumn(token.getEnd());
       String value = token.value != null ? token.value.toString() : Terminals.NAMES[token.getId()];
       errors.add(new Problem(null, "unexpected token \"" + value + "\"", line, column, endLine, endColumn, Problem.Severity.ERROR, Problem.Kind.SYNTACTIC));
     }

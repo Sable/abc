@@ -62,7 +62,6 @@
 			<include name="**/*.ast"/>
 			<include name="**/*.jrag"/>
 			<include name="**/*.jadd"/>
-	    	<exclude name="Inter*"/>
 	      	<exclude name="JastAdd.ast"/>
 		</fileset>
 		<fileset file="${Analyses}/LocalDeclaration.jrag"/>

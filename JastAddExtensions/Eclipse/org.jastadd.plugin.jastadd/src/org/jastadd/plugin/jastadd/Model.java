@@ -128,7 +128,8 @@ public class Model extends JastAddJModel {
 		program.options().addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		program.options().setOption("-verbose");
-
+		program.options().addKeyOption("-weave_inline");
+		program.options().setOption("-weave_inline");
 		return program;	   
 	}
 	
@@ -494,7 +495,10 @@ public class Model extends JastAddJModel {
 				String name = (String)iter.next();
 				program.addSourceFile(name);
 			}
-			addSourceFileWithRecovery(project, program, document, fileName);
+			if(fileName.endsWith(".ast"))
+				program.addSourceFile(fileName);
+			else
+				addSourceFileWithRecovery(project, program, document, fileName);
 
 			if(program instanceof Program) {
 				((Program)program).flushIntertypeDecls();

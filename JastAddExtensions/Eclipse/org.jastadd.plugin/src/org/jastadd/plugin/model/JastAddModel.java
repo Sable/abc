@@ -146,6 +146,10 @@ public abstract class JastAddModel {
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
+		System.out.println("Updating project model for " + project.getName() + ", file: " + fileName);
+		if(fileName.endsWith(".ast")) {
+			System.out.println("Reloading .ast file");
+		}
 		synchronized(getASTRootForLock(project)) {
 			updateModel(document, fileName, project);
 		}
@@ -232,7 +236,10 @@ public abstract class JastAddModel {
 	}
 	
 	public IJastAddNode findNodeInDocument(IProject project, String fileName, IDocument document, int line, int column) {
-		IJastAddNode node = buildDocument(document, fileName, project);
+		IJastAddNode node = getTreeRoot(project, fileName);
+		if(node == null) {
+		  node = buildDocument(document, fileName, project);
+		}
 		if(node != null)
 			return findLocation(node, line + 1, column + 1);
 		return null;
