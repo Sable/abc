@@ -66,7 +66,7 @@ public class JavaLexer implements RecoveryLexer {
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
 		/* DEBUG System.out.println("[" + (content[start]=='\n'?"NEWLINE":content[start]) + 
 			"] matchJavaWater, start = " + start + ", lastMatch = " + lastMatch); */
-
+		boolean stringMatch = false;
 		int length = 0;
 		// Comment start
 		if (content[start] == JavaWater.COMMENT[0]) {
@@ -103,12 +103,13 @@ public class JavaLexer implements RecoveryLexer {
 			}
 		}
 		// String
-		else if (content[start] == JavaWater.STRING) {
+		else if (content[start] == StringWater.STRING) {
 			length++;
-			for (int i = start + length + 1; i < content.length; i++) {
+			for (int i = start + 1; i < content.length; i++) {
 				length++;
-				if (content[i] == JavaWater.STRING) {
-					length++;
+				if (content[i] == StringWater.STRING) {
+					stringMatch = true;
+					//length++;
 					break;
 				}
 			}
@@ -121,7 +122,11 @@ public class JavaLexer implements RecoveryLexer {
 		Interval interval = new Interval(start, start + length);
 		String value = buf.substring(start, start + length);
 		/* DEBUG System.out.println("--match JavaWater = " + value); */
-		nodeList.add(new JavaWater(nodeList.get(nodeList.size()-1), interval, value));
+		if (stringMatch) {
+			nodeList.add(new StringWater(nodeList.get(nodeList.size()-1), interval, value));
+		} else {
+			nodeList.add(new JavaWater(nodeList.get(nodeList.size()-1), interval, value));
+		}
 		return length;
 	}
 

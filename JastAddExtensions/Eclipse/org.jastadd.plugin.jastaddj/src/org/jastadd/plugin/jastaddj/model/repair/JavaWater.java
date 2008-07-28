@@ -22,5 +22,4 @@ public class JavaWater extends Water {
 	}
 
 	public static final char[] COMMENT = {'/', '*'};
-	public static final char STRING = '"';
 }

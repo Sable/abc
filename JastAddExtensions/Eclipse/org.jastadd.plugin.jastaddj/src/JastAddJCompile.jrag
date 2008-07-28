@@ -108,7 +108,7 @@ aspect Compile {
 				SOF sof = recLexer.parse(buf);
 				Recovery.doRecovery(sof);
 				buf = Recovery.prettyPrint(sof);
-			
+				//System.out.println("Recovered to:\n" + buf.toString() + "\n-------");
 			}
 			keepOn--;
 		}
