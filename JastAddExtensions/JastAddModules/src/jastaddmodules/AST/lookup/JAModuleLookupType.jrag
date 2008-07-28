@@ -42,18 +42,55 @@ aspect JAModuleLookupType {
 		return null;
 	}
 	
-	//TODO: Shares a lot of cut n paste code with lookupPackage. Refactor to remove common code 
 	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
 		assert (getHostProgram().isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
-		
-		//local package lookup
-		LocalModulePackage localPackage = getLocalPackage(packageName);
-		if (localPackage != null) {
-			String localPackageName = makeGlobalPackageName(packageName, localPackage);
-			TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
+		SimpleSet result = moduleLookupType(packageName, typeName);
+		if (result.size() == 0) {
+			return null;
+		} else if (result.size() == 1) {
+			return (TypeDecl)(result.iterator().next());
+		} else {
+			//would result in undeterministic type lookup, should be checked in namecheck 
+			assert (false) : "non deterministic type lookup";
+			return null;
+		}
+	}
+	
+	//TODO: Shares a lot of cut n paste code with lookupPackage. Refactor to remove common code 
+	public SimpleSet ModuleCompilationUnit.moduleLookupType(String packageName, String typeName) {
+		SimpleSet ret = SimpleSet.emptySet;
+		//special case for java.** packages, always look at the top level first for a match
+		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && packageName.startsWith("java.")) {
+			TypeDecl type = getHostProgram().lookupType(packageName, typeName);
 			if (type != null) {
-				return type;
+				return ret.add(type);
 			}
+		}
+		
+		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
+			//local package lookup
+			LocalModulePackage localPackage = getLocalPackage(packageName);
+			if (localPackage != null) {
+				String localPackageName = makeGlobalPackageName(packageName, localPackage);
+				TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
+				if (type != null) {
+					return ret.add(type);
+				}
+			}
+			//lookup through packages of imported types
+			//TODO: Change lookup package to do this same thing
+			/*
+			for (ImportedModule importedCU : getImportedModuleMap().values()) {
+				localPackage = importedCU.getModuleCU().getLocalPackage(packageName);
+				if (localPackage != null) {
+					String localPackageName = importedCU.getModuleCU().makeGlobalPackageName(packageName, localPackage);
+					TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
+					if (type != null) {
+						return ret.add(type);
+					}
+				}
+			}
+			*/
 		}
 
 		//indirect lookup through an imported module		
@@ -72,7 +109,12 @@ aspect JAModuleLookupType {
 		
 		//special case for default module lookups, e.g. ::java.lang
 		if (moduleName.equals(getHostProgram().DEFAULT_MODULE_NAME)) {
-			return getHostProgram().lookupType(localPackageName, typeName);
+			TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
+			if (type != null) {
+				return ret.add(getHostProgram().lookupType(localPackageName, typeName));
+			} else {
+				return SimpleSet.emptySet;
+			}
 		}
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
@@ -82,13 +124,18 @@ aspect JAModuleLookupType {
 			if (iter.hasNext()) {
 				TypeDecl type = iter.next().lookupType(localPackageName, typeName);
 				if (type != null) {
-					return type;
+					return ret.add(type);
 				}
 			}
 		}
 		
 		//if none found, do CompilationUnit.lookupType
-		return super.lookupType(packageName, typeName);
+		TypeDecl lastType = super.lookupType(packageName, typeName);
+		if (lastType != null) {
+			return ret.add(lastType);
+		} else {
+			return SimpleSet.emptySet;
+		}
 	}
 	
 	//TODO: see how these can be turned to lazy

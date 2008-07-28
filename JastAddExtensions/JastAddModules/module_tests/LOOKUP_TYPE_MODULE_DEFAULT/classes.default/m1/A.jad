@@ -7,12 +7,15 @@ package m1;
 
 import java.io.PrintStream;
 import m1.$java.lang.String;
+import m1.$pack.P;
 
 public class A
 {
 
     public A()
     {
+        p1 = new P();
+        p2 = new pack.P();
         s1 = new String();
         s2 = new String();
         System.out.println(getClass());
@@ -20,6 +23,8 @@ public class A
         System.out.println(s2.getClass());
     }
 
+    P p1;
+    pack.P p2;
     String s1;
     String s2;
 }

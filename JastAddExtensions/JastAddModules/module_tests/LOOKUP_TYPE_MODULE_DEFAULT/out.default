@@ -12,6 +12,16 @@ module: module m1;;
 module CU : m1.module
 module name : m1
 ------------------------
+------m1pack/P.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------pack/P.java------
+module: null;
+module CU : null
+module name : null
+------------------------
 ------m1.module------
 module m1;
 ------------------------
@@ -24,13 +34,17 @@ module name : null
 String.java package:java.lang
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 A.java package:
+m1pack/P.java package:pack
+pack/P.java package:pack
 module: m1, file: m1.module, base module: m1
 Main.java package:
 ----------CU AST after insert----------
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+pack/P.java package:pack
 module: m1, file: m1.module, base module: m1
 	String.java package:m1.$java.lang
 	A.java package:m1
+	m1pack/P.java package:m1.$pack
 Main.java package:
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
@@ -43,9 +57,11 @@ import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+pack/P.java package:pack
 module: m1, file: m1.module, base module: m1
 	String.java package:m1.$java.lang
 	A.java package:m1
+	m1pack/P.java package:m1.$pack
 Main.java package:
 
 ----------Module CU imports after import own----------
@@ -57,8 +73,9 @@ module m1, base:m1, context:[], instantiated:true
 
 Module: jastadd$framework
 Module: m1
+	m1.$pack.P
 	m1.A
 	m1.$java.lang.String
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, m1.module, String.java, A.java, Main.java
+../testlib/jastadd$framework.module, pack/P.java, m1.module, String.java, A.java, m1pack/P.java, Main.java

@@ -6,6 +6,14 @@ aspect JAModuleLookupPackage {
 	//returns null if it can't find a package that belongs to a module
 	public String ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context) {
 		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.lookupPackage called before module processing was complete";
+		
+		//special case for java.** packages, always look at the top level first for a match
+		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && 
+				packageName.startsWith("java.") &&
+				getHostProgram().hasPackage(packageName)) {
+			return packageName;
+		}
+		
 		//local package lookup
 		LocalModulePackage localModulePackage = getLocalPackage(packageName);
 		if (localModulePackage != null&&
@@ -15,6 +23,7 @@ aspect JAModuleLookupPackage {
 			) {
 			return makeGlobalPackageName(packageName, localModulePackage);
 		}
+		//TODO: Add lookups for directly imported modules
 			
 		String moduleName = packageName;
 		String localPackageName = null;
@@ -29,9 +38,12 @@ aspect JAModuleLookupPackage {
 			localPackageName = ""; //special case for module::.Type
 		}
 		if (moduleName.equals(Program.DEFAULT_MODULE_NAME)) {
-			return localPackageName;
+			if (getHostProgram().hasPackage(localPackageName)) {
+				return localPackageName;
+			} else {
+				return null;
+			}
 		}
-		
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
@@ -46,8 +58,12 @@ aspect JAModuleLookupPackage {
 				return importedCU.makeGlobalPackageName(localPackageName, localModulePackage);
 			}
 		}
-		//if none found, return null (is used in hasPackage check in JAModuleLookupPackage)
-		return null;
+		//if none found, return check program (is used in hasPackage check in JAModuleLookupPackage)
+		if (getHostProgram().hasPackage(packageName)) {
+			return packageName;
+		} else {
+			return null;
+		}
 	}
 	
 	inh boolean CompilationUnit.hasPackage(String packageName); //should just call the parent hasPackage
