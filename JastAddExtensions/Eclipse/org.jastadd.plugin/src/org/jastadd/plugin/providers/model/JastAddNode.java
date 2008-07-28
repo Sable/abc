@@ -38,14 +38,20 @@ public class JastAddNode {
 	}
 	
 	public String getLabel() {
-		if (node instanceof IOutlineNode)
-			return ((IOutlineNode)node).contentOutlineLabel();
+		if (node instanceof IOutlineNode) {
+			synchronized (node.treeLockObject()) {
+				return ((IOutlineNode)node).contentOutlineLabel();
+			}
+		}
 		return node.getClass().toString();
 	}
 	
 	public Image getImage() {
-		if (node instanceof IOutlineNode)
-			return ((IOutlineNode)node).contentOutlineImage();
+		if (node instanceof IOutlineNode) {
+			synchronized (node.treeLockObject()) {
+				return ((IOutlineNode)node).contentOutlineImage();
+			}
+		}
 		return null;
 	}
 	

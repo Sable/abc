@@ -13,6 +13,7 @@ import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.providers.model.JastAddNode;
@@ -47,7 +48,7 @@ public class JastAddSearchResultPage extends AbstractTextSearchViewPage implemen
 		private Object[] content = null;
 		
 		public Object[] getChildren(Object parentElement) {
-			if(parentElement instanceof JastAddNode) {
+			if(parentElement instanceof JastAddNode) { 
 				JastAddNode node = (JastAddNode)parentElement;
 				return node.getChildren().toArray();
 			} 

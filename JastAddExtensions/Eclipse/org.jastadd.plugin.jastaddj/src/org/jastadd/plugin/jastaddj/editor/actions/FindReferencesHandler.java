@@ -1,5 +1,6 @@
 package org.jastadd.plugin.jastaddj.editor.actions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.jface.action.IAction;
@@ -23,11 +24,14 @@ public class FindReferencesHandler extends JastAddActionDelegate {
 			IJastAddNode target = node.declaration();
 			if(target instanceof IJastAddJFindReferencesNode) {
 				IJastAddJFindReferencesNode decl = (IJastAddJFindReferencesNode)target;
-				Collection references = decl.references();
+				Collection references = new ArrayList();
 				StringBuffer s = new StringBuffer();
 				s.append("Find references of ");
-				if(node instanceof IOutlineNode) {
-					s.append(((IOutlineNode)node).contentOutlineLabel());
+				synchronized (node.treeLockObject()) {
+					references = decl.references();
+					if(node instanceof IOutlineNode) {
+						s.append(((IOutlineNode)node).contentOutlineLabel());
+					}
 				}
 				JastAddSearchQuery query = new JastAddSearchQuery(references, s.toString());
 				NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);				

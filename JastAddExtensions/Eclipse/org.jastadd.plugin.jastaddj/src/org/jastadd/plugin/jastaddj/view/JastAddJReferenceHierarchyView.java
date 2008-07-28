@@ -31,11 +31,13 @@ public class JastAddJReferenceHierarchyView extends
 			return null;
 		if (!(input instanceof IJastAddJFindDeclarationNode))
 			return null;
-		input = ((IJastAddJFindDeclarationNode) input).declaration();
-		if (input == null
-				|| !((IJastAddJFindReferencesNode) input).canHaveReferences())
-			return null;
-		return input;
+		synchronized (input.treeLockObject()) {
+			input = ((IJastAddJFindDeclarationNode) input).declaration();
+			if (input == null
+					|| !((IJastAddJFindReferencesNode) input).canHaveReferences())
+				return null;
+			return input;
+		}
 	}
 	
 	public static void activate(IJastAddNode input) throws CoreException {
@@ -70,20 +72,22 @@ public class JastAddJReferenceHierarchyView extends
 				JastAddOnDemandTreeItem<IJastAddNode> item) {
 			Collection<JastAddOnDemandTreeItem<IJastAddNode>> result = new ArrayList<JastAddOnDemandTreeItem<IJastAddNode>>();
 			IJastAddNode node = item.value;
-			while (node != null
-					&& !((IJastAddJFindReferencesNode) node)
-							.canHaveReferences()) {
-				node = node.getParent();
-			}
+			synchronized (node.treeLockObject()) {
+				while (node != null
+						&& !((IJastAddJFindReferencesNode) node)
+						.canHaveReferences()) {
+					node = node.getParent();
+				}
 
-			if (node != null) {
-				Collection references = ((IJastAddJFindReferencesNode) node)
-						.references();
+				if (node != null) {
+					Collection references = ((IJastAddJFindReferencesNode) node)
+					.references();
 
-				for (Object reference : references) {
-					JastAddOnDemandTreeItem<IJastAddNode> childItem = new JastAddOnDemandTreeItem<IJastAddNode>(
-							(IJastAddNode) reference, item);
-					result.add(childItem);
+					for (Object reference : references) {
+						JastAddOnDemandTreeItem<IJastAddNode> childItem = new JastAddOnDemandTreeItem<IJastAddNode>(
+								(IJastAddNode) reference, item);
+						result.add(childItem);
+					}
 				}
 			}
 			return result;
@@ -94,13 +98,15 @@ public class JastAddJReferenceHierarchyView extends
 			JastAddBaseOnDemandTreeLabelProvider<IJastAddNode> {
 		protected Image computeImage(JastAddOnDemandTreeItem<IJastAddNode> item) {
 			IJastAddNode node = item.value;
-			while (node != null) {
-				if (node instanceof IOutlineNode) {
-					Image image = ((IOutlineNode) node).contentOutlineImage();
-					if (image != null)
-						return image;
+			synchronized (node.treeLockObject()) {
+				while (node != null) {
+					if (node instanceof IOutlineNode) {
+						Image image = ((IOutlineNode) node).contentOutlineImage();
+						if (image != null)
+							return image;
+					}
+					node = node.getParent();
 				}
-				node = node.getParent();
 			}
 			return null;
 		}
@@ -114,15 +120,17 @@ public class JastAddJReferenceHierarchyView extends
 	private static String formatNode(IJastAddNode node) {
 		StringBuffer buffer = new StringBuffer();
 		boolean hadOutlineNode = false;
-		while (node != null) {
-			if (node instanceof IOutlineNode
-					&& ((IOutlineNode) node).showInContentOutline()) {
-				if (hadOutlineNode)
-					buffer.append(" - ");
-				buffer.append(((IOutlineNode) node).contentOutlineLabel());
-				hadOutlineNode = true;
+		synchronized (node.treeLockObject()) {
+			while (node != null) {
+				if (node instanceof IOutlineNode
+						&& ((IOutlineNode) node).showInContentOutline()) {
+					if (hadOutlineNode)
+						buffer.append(" - ");
+					buffer.append(((IOutlineNode) node).contentOutlineLabel());
+					hadOutlineNode = true;
+				}
+				node = node.getParent();
 			}
-			node = node.getParent();
 		}
 		return buffer.toString();
 	}

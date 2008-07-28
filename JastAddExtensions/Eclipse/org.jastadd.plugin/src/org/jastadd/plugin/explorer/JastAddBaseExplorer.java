@@ -83,18 +83,20 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 				return;
 			Control control = viewer.getControl();
 
+			/*
 			if (control.getDisplay().getThread() == Thread.currentThread()) {
 				viewer.refresh();
 			} else {
-				control.getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						Control ctrl = viewer.getControl();
-						if (ctrl == null || ctrl.isDisposed())
-							return;
-						viewer.refresh();
-					}
-				});
-			}
+			*/
+			control.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					Control ctrl = viewer.getControl();
+					if (ctrl == null || ctrl.isDisposed())
+						return;
+					viewer.refresh();
+				}
+			});
+			//}
 		}
 
 		public /*synchronized*/ void inputChanged(Viewer viewer, Object oldInput,
@@ -164,6 +166,7 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 					IFile file = (IFile) resource;
 					JastAddModel model = JastAddModelProvider.getModel(file);
 					if (model != null) {
+						/* More synchronization here? */
 						IJastAddNode node = model.getTreeRoot(model.buildFileInfo(file));
 						return jastAddContentProvider.getChildren(node);
 					}
@@ -513,14 +516,15 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 				IJastAddNode parent = null;
 				JastAddModel model = JastAddModelProvider.getModel(file);
 				if (model != null) {
-					IJastAddNode node = model.findNodeInDocument(model
-							.buildFileInfo(file), tsel.getOffset());
-					if (node != null) {
-						parent = node;
-						while (parent != null
-								&& !(parent instanceof IOutlineNode && ((IOutlineNode) parent)
-										.showInContentOutline()))
-							parent = parent.getParent();
+					IJastAddNode node = model.findNodeInDocument(model.buildFileInfo(file), tsel.getOffset());
+					synchronized (node.treeLockObject()) {
+						if (node != null) {
+							parent = node;
+							while (parent != null
+									&& !(parent instanceof IOutlineNode && ((IOutlineNode) parent)
+											.showInContentOutline()))
+								parent = parent.getParent();
+						}
 					}
 				}
 				if (parent != null)

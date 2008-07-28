@@ -32,21 +32,23 @@ public class JastAddTreeFactory {
 		Collection<JastAddNode> roots = new HashSet<JastAddNode>();
 		for(IJastAddNode n : results) {
 			IJastAddNode child = n;
-			while(n.getParent() != null) {
-				if(n.getParent() instanceof IOutlineNode && 
-						((IOutlineNode)n.getParent()).showInContentOutline()) {
-					boolean stop = hasNode(n.getParent());
-					JastAddNode node = build(child);
-					JastAddNode parent = build(n.getParent());
-					parent.addChild(node);
-					if(stop)
-						break;
-					child = n.getParent();
+			synchronized (child.treeLockObject()) {
+				while(n.getParent() != null) {
+					if(n.getParent() instanceof IOutlineNode && 
+							((IOutlineNode)n.getParent()).showInContentOutline()) {
+						boolean stop = hasNode(n.getParent());
+						JastAddNode node = build(child);
+						JastAddNode parent = build(n.getParent());
+						parent.addChild(node);
+						if(stop)
+							break;
+						child = n.getParent();
+					}
+					n = n.getParent();
 				}
-				n = n.getParent();
+				if(n.getParent() == null)
+					roots.add(build(child));
 			}
-			if(n.getParent() == null)
-				roots.add(build(child));
 		}
 		return roots;
 	}

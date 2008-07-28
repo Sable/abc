@@ -13,6 +13,8 @@ import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
+import com.sun.corba.se.impl.orbutil.graph.Node;
+
 import AST.TypeDecl;
 
 public class FindDeclarationHandler extends JastAddActionDelegate {
@@ -36,10 +38,12 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 			
 			StringBuffer s = new StringBuffer();
 			s.append("Find declaration of ");
-			if(selectedNode instanceof TypeDecl)
-				s.append(((TypeDecl)selectedNode).typeName());
-			else if (selectedNode instanceof IOutlineNode) {
-				s.append(((IOutlineNode)selectedNode).contentOutlineLabel());
+			synchronized (selectedNode.treeLockObject()) {
+				if(selectedNode instanceof TypeDecl)
+					s.append(((TypeDecl)selectedNode).typeName());
+				else if (selectedNode instanceof IOutlineNode) {
+					s.append(((IOutlineNode)selectedNode).contentOutlineLabel());
+				}
 			}
 	
 			JastAddSearchQuery query = new JastAddSearchQuery(declarations, s.toString());

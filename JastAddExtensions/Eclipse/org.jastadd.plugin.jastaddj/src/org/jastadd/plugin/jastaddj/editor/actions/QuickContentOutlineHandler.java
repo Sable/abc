@@ -1,17 +1,11 @@
 package org.jastadd.plugin.jastaddj.editor.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreePath;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
@@ -45,10 +39,12 @@ public class QuickContentOutlineHandler extends JastAddActionDelegate {
 					public void setInput(Object input) {
 						super.setInput(activeEditorPart().getEditorInput());
 						IJastAddNode node = (IJastAddNode)input;
-						while (node != null && !(node instanceof IOutlineNode && ((IOutlineNode)node).showInContentOutline()))
-							node = node.getParent();					
-						if (node != null) {
-							treeViewer.setSelection(new StructuredSelection(node), true);
+						synchronized (node.treeLockObject()) {
+							while (node != null && !(node instanceof IOutlineNode && ((IOutlineNode)node).showInContentOutline()))
+								node = node.getParent();					
+							if (node != null) {
+								treeViewer.setSelection(new StructuredSelection(node), true);
+							}
 						}
 					}
 				};

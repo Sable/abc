@@ -1,6 +1,7 @@
 package org.jastadd.plugin.jastadd;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.jface.action.IAction;
@@ -10,8 +11,6 @@ import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
 import org.jastadd.plugin.jastadd.AST.IJastAddFindEquationsNode;
-import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
-import org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
 public class FindEquationsHandler extends JastAddActionDelegate {
@@ -22,14 +21,17 @@ public class FindEquationsHandler extends JastAddActionDelegate {
 		IJastAddNode selectedNode = selectedNode();
 		if(selectedNode instanceof IJastAddFindEquationsNode) {
 			IJastAddFindEquationsNode node = (IJastAddFindEquationsNode)selectedNode;
-			Collection equations = node.equations();
+			Collection equations = new ArrayList();
 			StringBuffer s = new StringBuffer();
 			s.append("Find references of ");
-			if(node instanceof IOutlineNode) {
-				s.append(((IOutlineNode)node).contentOutlineLabel());
+			synchronized (((IJastAddNode)node).treeLockObject()) {
+				equations = node.equations();
+				if(node instanceof IOutlineNode) {
+					s.append(((IOutlineNode)node).contentOutlineLabel());
+				}
 			}
 			JastAddSearchQuery query = new JastAddSearchQuery(equations, s.toString());
-			NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);				
+			NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);
 		}
 	}
 }

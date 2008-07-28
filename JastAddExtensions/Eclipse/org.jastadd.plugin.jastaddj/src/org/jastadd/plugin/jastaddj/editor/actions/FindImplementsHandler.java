@@ -1,5 +1,6 @@
 package org.jastadd.plugin.jastaddj.editor.actions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.jface.action.IAction;
@@ -27,11 +28,14 @@ public class FindImplementsHandler extends JastAddActionDelegate {
 			IJastAddNode target = node.declaration();
 			if(target instanceof IJastAddJFindImplementsNode) {
 				IJastAddJFindImplementsNode decl = (IJastAddJFindImplementsNode)target;
-				Collection references = decl.implementors();
+				Collection references = new ArrayList();
 				StringBuffer s = new StringBuffer();
 				s.append("Find implementors of ");
-				if(node instanceof IOutlineNode) {
-					s.append(((IOutlineNode)node).contentOutlineLabel());
+				synchronized (node.treeLockObject()) {
+					references = decl.implementors();
+					if(node instanceof IOutlineNode) {
+						s.append(((IOutlineNode)node).contentOutlineLabel());
+					}
 				}
 				JastAddSearchQuery query = new JastAddSearchQuery(references, s.toString());
 				NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);				

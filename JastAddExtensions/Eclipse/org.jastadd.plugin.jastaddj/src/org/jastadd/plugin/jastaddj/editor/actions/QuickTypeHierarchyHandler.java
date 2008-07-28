@@ -6,11 +6,6 @@ import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.JastAddEditor;
@@ -36,12 +31,9 @@ public class QuickTypeHierarchyHandler extends JastAddActionDelegate {
 				return new JastAddInformationControl(parent,
 						"Type Hierarchy") {
 					protected void configure() {
-						treeViewer
-								.setContentProvider(new JastAddJTypeHierarchyContentProvider());
-						treeViewer
-								.setLabelProvider(new JastAddOnDemandTreeLabelProviderAdapter(
-										new JastAddLabelProvider(
-												new LabelProvider())));
+						treeViewer.setContentProvider(new JastAddJTypeHierarchyContentProvider());
+						treeViewer.setLabelProvider(new JastAddOnDemandTreeLabelProviderAdapter(
+										new JastAddLabelProvider(new LabelProvider())));
 					}
 					
 					protected void gotoSelectedElement() {
