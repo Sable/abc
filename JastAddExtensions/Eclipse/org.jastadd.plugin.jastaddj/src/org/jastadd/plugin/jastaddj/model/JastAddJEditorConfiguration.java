@@ -19,11 +19,16 @@ import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
+import org.jastadd.plugin.jastaddj.model.repair.Indent;
+import org.jastadd.plugin.jastaddj.model.repair.LeftBrace;
 import org.jastadd.plugin.jastaddj.model.repair.LeftParen;
 import org.jastadd.plugin.jastaddj.model.repair.RightBrace;
 import org.jastadd.plugin.jastaddj.model.repair.RightParen;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.Recovery;
+import org.jastadd.plugin.model.repair.SOF;
 
 public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
@@ -31,19 +36,24 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		this.model = model;
 	}
 
-	/*
+	
 	@Override
 	public void getDocInsertionAfterNewline(IDocument doc, DocumentCommand cmd) {
 		StringBuffer buf = new StringBuffer(doc.get());
-		try {
-			JastAddStructureModel structModel = new JastAddStructureModel(buf);
-			int change = structModel.doRecovery(cmd.offset);
-			structModel.insertionAfterNewline(doc, cmd, change);
-		} catch (Exception e) {
-			e.printStackTrace();
+		SOF sof = model.getRecoveryLexer().parse(buf);
+		LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, cmd.offset);
+		Indent nodeIndent = (Indent)recoveryNode.getPrevious().getPreviousOfType(Indent.class);
+		String indentValue = nodeIndent.getValue();
+		LexicalNode nodeBrace = recoveryNode.getPreviousOfType(LeftBrace.class, 2);
+		if (nodeBrace != null) {
+			cmd.caretOffset = cmd.offset + indentValue.length();
+			cmd.shiftsCaret = false;
+			indentValue = indentValue + Indent.getTabStep() + indentValue + RightBrace.TOKEN[0];
 		}
+		cmd.text = indentValue;
+		
 	}
-	*/
+	
 
 	@Override
 	public void getDocInsertionOnKeypress(IDocument doc, DocumentCommand cmd) {
@@ -54,10 +64,10 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		if (content.length() > 0 && previousKeypressOffset > 0) {
 			previousKeypress = content.charAt(previousKeypressOffset);
 		}
-		if (LeftParen.TOKEN[0] == c) { //JastAddStructureModel.OPEN_PARAN == c) {
+		if (LeftParen.TOKEN[0] == c) { 
 			cmd.caretOffset = cmd.offset + 1;
 			cmd.shiftsCaret = false;
-			cmd.text += String.valueOf(RightParen.TOKEN[0]); //JastAddStructureModel.CLOSE_PARAN);
+			cmd.text += String.valueOf(RightParen.TOKEN[0]); 
 		} else if ('[' == c) {
 			cmd.caretOffset = cmd.offset + 1;
 			cmd.shiftsCaret = false;
@@ -82,12 +92,6 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
 			StringBuffer buf = new StringBuffer(doc.get());
 			try {
-				/* Old insertion close brace
-				JastAddStructureModel structModel = new JastAddStructureModel(
-						buf);
-				int change = structModel.doRecovery(cmd.offset);
-				structModel.insertionCloseBrace(doc, cmd, change);
-				*/
 				/* New insertion right brace */
 				/* Not sure this should be here because insertionOnNewline adds
 				 * a right brace after a left brace on newline

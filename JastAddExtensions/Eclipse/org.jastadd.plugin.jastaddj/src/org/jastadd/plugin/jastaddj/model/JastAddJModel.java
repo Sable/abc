@@ -1001,8 +1001,8 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	public Collection recoverCompletion(int documentOffset, String[] linePart,
-			StringBuffer buf, IProject project, String fileName,
-			IJastAddNode node) throws IOException, Exception {
+				StringBuffer buf, IProject project, String fileName,
+				IJastAddNode node) throws IOException, Exception {
 		synchronized (node.treeLockObject()) {
 			if (node == null) {
 				// Try recovery

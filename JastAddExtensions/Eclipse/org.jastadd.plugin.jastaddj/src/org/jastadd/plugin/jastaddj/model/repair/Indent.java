@@ -24,14 +24,19 @@ public class Indent extends Reef {
 	
 	private static int maxIndentStatSize = 10;
 	private static int[][][] stats;
+	private static int[] sizeStats;
 	private static boolean tabStepDeduced;
 	private static int tabStep = TAB_SIZE; // Default
+	private static boolean tabsUsed;
 	
 	public static void clearStats() {
 		stats = null;
+		sizeStats = null;
 		stats = new int[maxIndentStatSize + 1][2][maxIndentStatSize + 1];
+		sizeStats = new int[maxIndentStatSize + 1];
 		tabStepDeduced = false;
 		tabStep = TAB_SIZE; // Default
+		tabsUsed = true;
 	}
 	
 	private static void collectStats(int ws, int tabs, int size) {
@@ -45,25 +50,31 @@ public class Indent extends Reef {
 		}
 		stats[size][0][ws]++;
 		stats[size][1][tabs]++;
+		if (tabs > 0) {
+			tabsUsed = true;
+		}
+		sizeStats[size]++;
 	}
 	
 	private static void deduceTabStep() {
+		// TODO Finish this method
 		if (stats == null) {
 			return;
 		}
-		int minStep = 0;
-		for (;stats.length < minStep && stats[minStep] == null; minStep++);
-		if (minStep > stats.length) {
-			return;
-		}
-		tabStep = minStep;
-		/*
-		int maxWS = 0;
-		for (int i = 0; i < stats[minStep][0].length; i++) {
-			if (maxWS < stats[minStep][0][i]) {
-				maxWS = stats[minStep][0][i];
+		int prevSize = 0;
+		int diffSum = 0;
+		int nbrDiffs = 0;
+		
+		for (int i = 1; i < stats.length; i++) {
+			//System.out.println("Indent " + i + ": " + sizeStats[i]);
+			if (sizeStats[i] != 0) {
+				diffSum += (i - prevSize);
+				nbrDiffs++;
+				prevSize = i;
 			}
-		}*/
+		}
+		tabStep = diffSum/nbrDiffs;
+		tabStepDeduced = true;
 	}
 
 	public String toString() {
@@ -74,57 +85,6 @@ public class Indent extends Reef {
 	public static final char WHITESPACE = ' ';
 	public static final char TAB = '\t';
 
-	/*
-	private static int tabStep = 4;
-	private class IndentList {
-		ArrayList<Indent> list = new ArrayList<Indent>();
-		public void insert(Indent indent) {
-			for (int i = 0; i < list.size(); i++) {
-				Indent ind = list.get(i);
-				if (ind.nbrTabs > indent.nbrTabs) {
-					// Insert before
-					list.add(i, indent);
-					return;
-				} else if (ind.nbrTabs == indent.nbrTabs) {
-					if (ind.nbrWS > indent.nbrWS) {
-						// Insert before
-						list.add(i, indent);
-						return;
-					} else if (ind.nbrWS == indent.nbrWS) {
-						// Don't add an identical indent
-						return;
-					}
-				}
-			}
-			// Insert last
-			list.add(indent);
-		}
-		public int averageTabStep() {
-			if (list.size() > 1) {
-				int[] step = new int[list.size()];
-				Indent prev = list.get(0);	
-				for (int i = 1; i < list.size(); i++) {
-					Indent indent = list.get(i);
-					int tabDiff = indent.nbrTabs - prev.nbrTabs;
-					int wsDiff = indent.nbrWS - prev.nbrWS;
-					// Do something with the step difference
-				}	
-			}
-			return tabStep;
-		}
-	}
-
-	public void collectTabInfo(SOF sof) {
-		IndentList list = new IndentList();
-		LexicalNode node = sof.getNext();
-		while (!(node instanceof EOF)) {
-			if (node instanceof Indent) 
-				list.insert((Indent)node);
-			node = node.getNext();
-		}
-		tabStep = list.averageTabStep();
-	}
-*/
 	public boolean equalTo(Indent indent) {
 		/* DEBUG System.out.println("\t\tEqual? Indent: " + this +" and Indent2: " + indent);  */
 		/*
@@ -160,5 +120,21 @@ public class Indent extends Reef {
 
 	public LexicalNode clone(LexicalNode previous) {
 		return new Indent(previous, getInterval().clone(), getValue());
+	}
+
+	public static String getTabStep() {
+		if (!tabStepDeduced)
+			deduceTabStep();
+		String step = "";
+		int stepRemain = tabStep;
+		
+		while (tabsUsed && stepRemain-- / TAB_SIZE > 0) {
+			step += TAB;
+		}
+		
+		while (stepRemain-- > 0) {
+			step += WHITESPACE;
+		}
+		return step;
 	}
 }

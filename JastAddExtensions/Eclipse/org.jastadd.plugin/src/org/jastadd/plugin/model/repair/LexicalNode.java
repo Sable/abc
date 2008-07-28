@@ -63,4 +63,26 @@ public abstract class LexicalNode {
 	}
 
 	public abstract LexicalNode clone(LexicalNode previous);
+
+	public LexicalNode getPreviousOfType(Class clazz, int distance) {
+		if (distance <= 0)
+			return null;
+		if (getClass().getName().equals(clazz.getName())) {
+			return this;
+		} else if (previous != null) {
+			return previous.getPreviousOfType(clazz, distance - 1);
+		}
+		return null;
+	}
+
+	public LexicalNode getNextOfType(Class clazz, int distance) {
+		if (distance <= 0) 
+			return null;
+		if (getClass().getName().equals(clazz.getName())) {
+			return this;
+		} else if (next != null) {
+			return next.getNextOfType(clazz, distance - 1);
+		}
+		return null;
+	}
 }

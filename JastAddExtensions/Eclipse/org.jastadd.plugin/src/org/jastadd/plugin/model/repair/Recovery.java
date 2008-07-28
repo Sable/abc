@@ -300,6 +300,7 @@ public class Recovery {
 			if (node.getInterval().inside(offset)) {
 				return node;
 			}
+			node = node.getNext();
 		}
 		return node;
 	}
