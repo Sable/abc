@@ -196,7 +196,7 @@ aspect Debug {
 	}
 	public StringBuffer ModuleCompilationUnit.toStringModuleMemberTypes(StringBuffer s) {
 		s.append("Module: " + getModuleName() + "\n");
-		for (Iterator i = memberTypes().iterator(); i.hasNext(); ) {
+		for (Iterator i = moduleMemberTypes().iterator(); i.hasNext(); ) {
 			TypeDecl type = (TypeDecl)i.next();
 			s.append("\t" + type.packageName() + "." + type.name() + "\n");
 		}

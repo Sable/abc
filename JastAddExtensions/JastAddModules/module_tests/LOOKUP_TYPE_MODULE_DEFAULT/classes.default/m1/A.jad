@@ -6,7 +6,6 @@
 package m1;
 
 import java.io.PrintStream;
-import m1.$java.lang.String;
 import m1.$pack.P;
 
 public class A

@@ -17,10 +17,18 @@ public class BB
         }
     }
 
-    public static class BBPublic
+    class BBInnerPackage
     {
 
-        public BBPublic()
+        BBInnerPackage()
+        {
+        }
+    }
+
+    static class BBPackage
+    {
+
+        BBPackage()
         {
         }
     }
@@ -41,18 +49,10 @@ public class BB
         }
     }
 
-    static class BBPackage
+    public static class BBPublic
     {
 
-        BBPackage()
-        {
-        }
-    }
-
-    class BBInnerPackage
-    {
-
-        BBInnerPackage()
+        public BBPublic()
         {
         }
     }

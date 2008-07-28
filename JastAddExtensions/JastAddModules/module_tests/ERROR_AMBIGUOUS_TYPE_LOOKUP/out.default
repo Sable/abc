@@ -1,4 +1,9 @@
 ----------Module contents----------
+------BB.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
 ------B.java------
 module: module m2;;
 module CU : m2.module
@@ -21,6 +26,7 @@ import own m2 as alias2;
 module m2;
 ------------------------
 ----------CU AST before insert----------
+BB.java package:pack
 B.java package:
 module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 A.java package:
@@ -31,6 +37,7 @@ module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: m2, file: m2.module, base module: m2
+	BB.java package:m2.$pack
 	B.java package:m2
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
@@ -50,10 +57,13 @@ module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: m2, file: m2.module, base module: m2
+	BB.java package:m2.$pack
 	B.java package:m2
 module: m1$alias1, file: m2.module, base module: m2
+	BB.java package:m1$alias1.$pack
 	B.java package:m1$alias1
 module: m1$alias2, file: m2.module, base module: m2
+	BB.java package:m1$alias2.$pack
 	B.java package:m1$alias2
 
 ----------Module CU imports after import own----------
@@ -73,16 +83,23 @@ Module: jastadd$framework
 Module: m1
 	m1.A
 Module: m2
+	m2.$pack.BB
 	m2.B
 Module: m1$alias1
+	m1$alias1.$pack.BB
 	m1$alias1.B
 Module: m1$alias2
 	m1$alias2.B
+	m1$alias2.$pack.BB
 
 ----------CU iterator----------
-jastadd$framework.module, m1.module, A.java, m2.module, m2.module, B.java, m2.module, B.java
+jastadd$framework.module, m1.module, A.java, m2.module, m2.module, BB.java, B.java, m2.module, BB.java, B.java
 Errors:
 A.java:4,2:
-  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
+  Semantic Error: several types named B: m1$alias2.B m1$alias1.B
 A.java:4,12:
-  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
+  Semantic Error: several types named B: m1$alias2.B m1$alias1.B
+A.java:5,2:
+  Semantic Error: several types named BB: m1$alias2.$pack.BB m1$alias1.$pack.BB
+A.java:5,19:
+  Semantic Error: several types named BB: m1$alias2.$pack.BB m1$alias1.$pack.BB
