@@ -1,0 +1,79 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.ASTNode;
+
+public class AType4 extends ASTNode
+{
+
+    public AType4()
+    {
+        functionA2$visited = false;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[0];
+    }
+
+    public String functionA2()
+    {
+        boolean interruptedCircle = false;
+        if(functionA2$visited)
+            throw new RuntimeException("Circular definition of attr: functionA2() in class: m1.AType4");
+        functionA2$visited = true;
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        ASTNode n = getParent();
+        ASTNode caller = this;
+        ASTNode child = null;
+        for(; !(n instanceof jastadd$framework.ASTNode.Defines.functionA2); n = n.getParent())
+        {
+            child = caller;
+            caller = n;
+        }
+
+        String functionA2$value = ((jastadd$framework.ASTNode.Defines.functionA2)n).Defines$functionA2(caller, child);
+        functionA2$visited = false;
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return functionA2$value;
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        AType4 node = (AType4)super.clone();
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public int getNumChild()
+    {
+        return 0;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+
+    private boolean functionA2$visited;
+}

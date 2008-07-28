@@ -7,8 +7,12 @@ package jastadd$framework;
 
 import beaver.Symbol;
 import java.io.PrintStream;
-import java.util.*;
-import m1.X;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
+import m1.AAspect;
+import m1.m2.BAspect;
+import m1.m3.CAspect;
 
 // Referenced classes of package jastadd$framework:
 //            List
@@ -16,37 +20,6 @@ import m1.X;
 public class ASTNode extends Symbol
     implements Cloneable
 {
-    public static class CircularEvalEntry
-    {
-
-        public boolean equals(Object rhs)
-        {
-            CircularEvalEntry s = (CircularEvalEntry)rhs;
-            if(parameters == null && s.parameters == null)
-                return node == s.node && attrName.equals(s.attrName);
-            if(parameters != null && s.parameters != null)
-                return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
-            else
-                return false;
-        }
-
-        public int hashCode()
-        {
-            return node.hashCode();
-        }
-
-        ASTNode node;
-        String attrName;
-        Object parameters;
-
-        public CircularEvalEntry(ASTNode node, String attrName, Object parameters)
-        {
-            this.node = node;
-            this.attrName = attrName;
-            this.parameters = parameters;
-        }
-    }
-
     public static class State
     {
 
@@ -90,6 +63,18 @@ public class ASTNode extends Symbol
         }
     }
 
+    public static interface Defines.functionA2
+    {
+
+        public abstract String Defines$functionA2(ASTNode astnode, ASTNode astnode1);
+    }
+
+    public static interface Defines.functionA
+    {
+
+        public abstract String Defines$functionA(ASTNode astnode, ASTNode astnode1);
+    }
+
     public static class CircularStackEntry
     {
 
@@ -103,11 +88,44 @@ public class ASTNode extends Symbol
         }
     }
 
+    public static class CircularEvalEntry
+    {
+
+        public boolean equals(Object rhs)
+        {
+            CircularEvalEntry s = (CircularEvalEntry)rhs;
+            if(parameters == null && s.parameters == null)
+                return node == s.node && attrName.equals(s.attrName);
+            if(parameters != null && s.parameters != null)
+                return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
+            else
+                return false;
+        }
+
+        public int hashCode()
+        {
+            return node.hashCode();
+        }
+
+        ASTNode node;
+        String attrName;
+        Object parameters;
+
+        public CircularEvalEntry(ASTNode node, String attrName, Object parameters)
+        {
+            this.node = node;
+            this.attrName = attrName;
+            this.parameters = parameters;
+        }
+    }
+
 
     public ASTNode()
     {
         inCircle = false;
         is$Final = false;
+        BASTNodeIntro$visited = false;
+        CASTNodeIntro$visited = false;
         init$children();
     }
 
@@ -320,14 +338,73 @@ public class ASTNode extends Symbol
         return res;
     }
 
-    public static boolean duringm1_X()
+    public String BASTNodeIntro()
     {
-        return X.impl$body$duringm1_X();
+        boolean interruptedCircle = false;
+        if(BASTNodeIntro$visited)
+            throw new RuntimeException("Circular definition of attr: BASTNodeIntro() in class: jastadd$framework.ASTNode");
+        BASTNodeIntro$visited = true;
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        String BASTNodeIntro$value = BAspect.impl$body$BASTNodeIntro(this);
+        BASTNodeIntro$visited = false;
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return BASTNodeIntro$value;
     }
 
-    public void g()
+    public String CASTNodeIntro()
     {
-        X.impl$body$g(this);
+        boolean interruptedCircle = false;
+        if(CASTNodeIntro$visited)
+            throw new RuntimeException("Circular definition of attr: CASTNodeIntro() in class: jastadd$framework.ASTNode");
+        CASTNodeIntro$visited = true;
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        String CASTNodeIntro$value = CAspect.impl$body$CASTNodeIntro(this);
+        CASTNodeIntro$visited = false;
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return CASTNodeIntro$value;
+    }
+
+    public static boolean duringm1_m3_CAspect()
+    {
+        return CAspect.impl$body$duringm1_m3_CAspect();
+    }
+
+    public static boolean duringm2_BAspect()
+    {
+        return m2.BAspect.impl$body$duringm2_BAspect();
+    }
+
+    public static boolean duringm3_CAspect()
+    {
+        return m3.CAspect.impl$body$duringm3_CAspect();
+    }
+
+    public static boolean duringm1_m2_BAspect()
+    {
+        return BAspect.impl$body$duringm1_m2_BAspect();
+    }
+
+    public static boolean duringm1_AAspect()
+    {
+        return AAspect.impl$body$duringm1_AAspect();
     }
 
     public static State get$state$access$0()
@@ -356,6 +433,12 @@ public class ASTNode extends Symbol
     protected ASTNode parent;
     protected ASTNode children[];
     protected int numChildren;
-    public static int duringm1_X = 0;
+    public static int duringm1_AAspect = 0;
+    public static int duringm3_CAspect = 0;
+    public static int duringm2_BAspect = 0;
+    public static int duringm1_m2_BAspect = 0;
+    public static int duringm1_m3_CAspect = 0;
+    private boolean BASTNodeIntro$visited;
+    private boolean CASTNodeIntro$visited;
 
 }

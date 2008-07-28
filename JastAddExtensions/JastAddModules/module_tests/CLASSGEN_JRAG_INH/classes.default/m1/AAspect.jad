@@ -1,0 +1,57 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.jrag
+
+package m1;
+
+import jastadd$framework.ASTNode;
+
+// Referenced classes of package m1:
+//            AType, AType2
+
+class AAspect
+{
+
+    AAspect()
+    {
+    }
+
+    public static boolean impl$body$duringm1_AAspect()
+    {
+        if(ASTNode.duringm1_AAspect == 0)
+        {
+            return false;
+        } else
+        {
+            ASTNode.get$state$access$0().pop();
+            ASTNode.get$state$access$0().push(3);
+            return true;
+        }
+    }
+
+    public static String impl$body$functionA(AType this)
+    {
+        return this.getID() + ":AType";
+    }
+
+    public static String impl$body$functionA2(AType2 this)
+    {
+        return "AType2";
+    }
+
+    static String functionA2$AType3(AType2 that)
+    {
+        return that.functionA2();
+    }
+
+    static String functionA$CType(AType that)
+    {
+        return that.functionA();
+    }
+
+    static String functionA$BType(AType that)
+    {
+        return that.functionA();
+    }
+}

@@ -1,0 +1,16 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   ../testlib/ASTNode.java
+
+package jastadd$framework;
+
+
+// Referenced classes of package jastadd$framework:
+//            ASTNode
+
+public static interface ASTNode$Defines$functionA2
+{
+
+    public abstract String Defines$functionA2(ASTNode astnode, ASTNode astnode1);
+}

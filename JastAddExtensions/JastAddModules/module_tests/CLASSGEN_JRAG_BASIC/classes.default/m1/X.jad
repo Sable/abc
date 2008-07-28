@@ -19,15 +19,15 @@ class X
     {
     }
 
-    public static boolean impl$body$duringX()
+    public static boolean impl$body$duringm1_X()
     {
-        if(ASTNode.duringX == 0)
+        if(ASTNode.duringm1_X == 0)
         {
             return false;
         } else
         {
-            ASTNode.state.pop();
-            ASTNode.state.push(3);
+            ASTNode.get$state$access$0().pop();
+            ASTNode.get$state$access$0().push(3);
             return true;
         }
     }

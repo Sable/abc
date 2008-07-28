@@ -12,7 +12,9 @@ public class Main
     public static void main(String args[])
     {
         AType atype = new AType();
-        A a1 = new A();
+        A a = new A();
+        a.f();
+        atype.f();
     }
 
     public Main()

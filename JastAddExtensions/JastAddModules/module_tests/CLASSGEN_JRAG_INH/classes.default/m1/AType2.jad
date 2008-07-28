@@ -1,0 +1,124 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import jastadd$framework.ASTNode;
+
+// Referenced classes of package m1:
+//            AType3, AAspect
+
+public class AType2 extends ASTNode
+    implements jastadd$framework.ASTNode.Defines.functionA2
+{
+
+    public AType3 getAType3()
+    {
+        return (AType3)getChild(0);
+    }
+
+    public AType3 getAType3NoTransform()
+    {
+        return (AType3)getChildNoTransform(0);
+    }
+
+    public void setAType3(AType3 node)
+    {
+        setChild(node, 0);
+    }
+
+    public AType2(AType3 p0)
+    {
+        functionA2$computed = false;
+        functionA2$visited = false;
+        is$Final = true;
+        setChild(p0, 0);
+    }
+
+    public AType2()
+    {
+        functionA2$computed = false;
+        functionA2$visited = false;
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[1];
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        AType2 node = (AType2)super.clone();
+        functionA2$computed = false;
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public String functionA2()
+    {
+        if(functionA2$computed)
+            return functionA2$value;
+        boolean interruptedCircle = false;
+        if(functionA2$visited)
+            throw new RuntimeException("Circular definition of attr: functionA2() in class: m1.AType2");
+        functionA2$visited = true;
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        int num$ = boundariesCrossed;
+        boolean localFinal$ = is$Final;
+        functionA2$value = AAspect.impl$body$functionA2(this);
+        if(localFinal$ && num$ == boundariesCrossed)
+            functionA2$computed = true;
+        functionA2$visited = false;
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return functionA2$value;
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public int getNumChild()
+    {
+        return 1;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+
+    public String Defines$functionA2(ASTNode astnode, ASTNode astnode1)
+    {
+        if(astnode == getAType3NoTransform())
+            return AAspect.functionA2$AType3(this);
+        ASTNode astnode2 = getParent();
+        Object obj = this;
+        Object obj1 = null;
+        for(; !(astnode2 instanceof jastadd$framework.ASTNode.Defines.functionA2); astnode2 = astnode2.getParent())
+        {
+            obj1 = obj;
+            obj = astnode2;
+        }
+
+        return ((jastadd$framework.ASTNode.Defines.functionA2)astnode2).Defines$functionA2(((ASTNode) (obj)), ((ASTNode) (obj1)));
+    }
+
+    private boolean functionA2$computed;
+    private String functionA2$value;
+    private boolean functionA2$visited;
+}

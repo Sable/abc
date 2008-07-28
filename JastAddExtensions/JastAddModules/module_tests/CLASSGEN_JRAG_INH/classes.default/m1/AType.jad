@@ -1,0 +1,183 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   A.ast
+
+package m1;
+
+import beaver.Symbol;
+import jastadd$framework.ASTNode;
+import m1.m2.BType;
+import m1.m3.CType;
+
+// Referenced classes of package m1:
+//            AAspect
+
+public class AType extends ASTNode
+    implements jastadd$framework.ASTNode.Defines.functionA
+{
+
+    public String getID()
+    {
+        return ID$value;
+    }
+
+    public void setID(String value)
+    {
+        ID$value = value;
+    }
+
+    public void setID(Symbol symbol)
+    {
+        if(symbol.value != null && !(symbol.value instanceof String))
+        {
+            throw new UnsupportedOperationException("setID is only valid for String lexemes");
+        } else
+        {
+            ID$value = (String)symbol.value;
+            IDstart = symbol.getStart();
+            IDend = symbol.getEnd();
+            return;
+        }
+    }
+
+    public BType getBType()
+    {
+        return (BType)getChild(0);
+    }
+
+    public BType getBTypeNoTransform()
+    {
+        return (BType)getChildNoTransform(0);
+    }
+
+    public void setBType(BType node)
+    {
+        setChild(node, 0);
+    }
+
+    public CType getCType()
+    {
+        return (CType)getChild(1);
+    }
+
+    public CType getCTypeNoTransform()
+    {
+        return (CType)getChildNoTransform(1);
+    }
+
+    public void setCType(CType node)
+    {
+        setChild(node, 1);
+    }
+
+    public AType(String p0, BType p1, CType p2)
+    {
+        functionA$computed = false;
+        functionA$visited = false;
+        is$Final = true;
+        setID(p0);
+        setChild(p1, 0);
+        setChild(p2, 1);
+    }
+
+    public AType(Symbol p0, BType p1, CType p2)
+    {
+        functionA$computed = false;
+        functionA$visited = false;
+        is$Final = true;
+        setID(p0);
+        setChild(p1, 0);
+        setChild(p2, 1);
+    }
+
+    public AType()
+    {
+        functionA$computed = false;
+        functionA$visited = false;
+        is$Final = true;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[2];
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        AType node = (AType)super.clone();
+        functionA$computed = false;
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public String functionA()
+    {
+        if(functionA$computed)
+            return functionA$value;
+        boolean interruptedCircle = false;
+        if(functionA$visited)
+            throw new RuntimeException("Circular definition of attr: functionA() in class: m1.AType");
+        functionA$visited = true;
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        int num$ = boundariesCrossed;
+        boolean localFinal$ = is$Final;
+        functionA$value = AAspect.impl$body$functionA(this);
+        if(localFinal$ && num$ == boundariesCrossed)
+            functionA$computed = true;
+        functionA$visited = false;
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return functionA$value;
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public int getNumChild()
+    {
+        return 2;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+
+    public String Defines$functionA(ASTNode astnode, ASTNode astnode1)
+    {
+        if(astnode == getCTypeNoTransform())
+            return AAspect.functionA$CType(this);
+        if(astnode == getBTypeNoTransform())
+            return AAspect.functionA$BType(this);
+        ASTNode astnode2 = getParent();
+        Object obj = this;
+        Object obj1 = null;
+        for(; !(astnode2 instanceof jastadd$framework.ASTNode.Defines.functionA); astnode2 = astnode2.getParent())
+        {
+            obj1 = obj;
+            obj = astnode2;
+        }
+
+        return ((jastadd$framework.ASTNode.Defines.functionA)astnode2).Defines$functionA(((ASTNode) (obj)), ((ASTNode) (obj1)));
+    }
+
+    private String ID$value;
+    public int IDstart;
+    public int IDend;
+    private boolean functionA$computed;
+    private String functionA$value;
+    private boolean functionA$visited;
+}

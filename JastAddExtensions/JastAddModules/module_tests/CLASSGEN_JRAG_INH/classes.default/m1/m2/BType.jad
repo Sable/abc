@@ -1,0 +1,119 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   B.ast
+
+package m1.m2;
+
+import jastadd$framework.ASTNode;
+import java.util.*;
+
+// Referenced classes of package m1.m2:
+//            BAspect
+
+public class BType extends ASTNode
+{
+
+    public BType()
+    {
+        functionB_m1$m2$BType$value = new HashMap(4);
+        functionB_m1$m2$BType$visited = new HashSet(4);
+        functionA$visited = false;
+    }
+
+    protected void init$children()
+    {
+        children = new ASTNode[0];
+    }
+
+    public Object clone()
+        throws CloneNotSupportedException
+    {
+        BType node = (BType)super.clone();
+        functionB_m1$m2$BType$value = new HashMap(4);
+        node.inCircle = false;
+        node.is$Final = false;
+        return node;
+    }
+
+    public String functionB(BType b)
+    {
+        Object parameters$ = b;
+        if(this.functionB_m1$m2$BType$value.containsKey(parameters$))
+            return (String)(Object)this.functionB_m1$m2$BType$value.get(parameters$);
+        boolean interruptedCircle = false;
+        if(functionB_m1$m2$BType$visited.contains(parameters$))
+            throw new RuntimeException("Circular definition of attr: functionB(m1.m2.BType) in class: m1.m2.BType");
+        functionB_m1$m2$BType$visited.add(parameters$);
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        int num$ = boundariesCrossed;
+        boolean localFinal$ = is$Final;
+        String functionB_m1$m2$BType$value = BAspect.impl$body$functionB(this, b);
+        if(localFinal$ && num$ == boundariesCrossed)
+        {
+            Object _tmp = (Object)this.functionB_m1$m2$BType$value.put(parameters$, functionB_m1$m2$BType$value);
+        }
+        functionB_m1$m2$BType$visited.remove(parameters$);
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return functionB_m1$m2$BType$value;
+    }
+
+    public String functionA()
+    {
+        boolean interruptedCircle = false;
+        if(functionA$visited)
+            throw new RuntimeException("Circular definition of attr: functionA() in class: m1.m2.BType");
+        functionA$visited = true;
+        if(IN_CIRCLE)
+        {
+            interruptedCircle = true;
+            IN_CIRCLE = false;
+            pushEvalStack();
+        }
+        ASTNode n = getParent();
+        ASTNode caller = this;
+        ASTNode child = null;
+        for(; !(n instanceof jastadd$framework.ASTNode.Defines.functionA); n = n.getParent())
+        {
+            child = caller;
+            caller = n;
+        }
+
+        String functionA$value = ((jastadd$framework.ASTNode.Defines.functionA)n).Defines$functionA(caller, child);
+        functionA$visited = false;
+        if(interruptedCircle)
+        {
+            IN_CIRCLE = true;
+            popEvalStack();
+        }
+        return functionA$value;
+    }
+
+    public ASTNode rewriteTo()
+    {
+        return super.rewriteTo();
+    }
+
+    public int getNumChild()
+    {
+        return 0;
+    }
+
+    public boolean mayHaveRewrite()
+    {
+        return false;
+    }
+
+    private Map functionB_m1$m2$BType$value;
+    private HashSet functionB_m1$m2$BType$visited;
+    private boolean functionA$visited;
+}

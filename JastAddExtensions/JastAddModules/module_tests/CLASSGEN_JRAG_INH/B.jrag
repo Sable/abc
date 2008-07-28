@@ -1,0 +1,10 @@
+module m2;
+
+aspect BAspect {
+	syn String ASTNode.BASTNodeIntro() {
+		return "BASTNodeIntro()";
+	}
+	syn lazy String BType.functionB(BType b) {
+		return "BType";
+	}
+}

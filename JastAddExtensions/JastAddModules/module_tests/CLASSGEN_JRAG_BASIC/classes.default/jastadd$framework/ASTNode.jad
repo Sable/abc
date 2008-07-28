@@ -320,9 +320,9 @@ public class ASTNode extends Symbol
         return res;
     }
 
-    public static boolean duringX()
+    public static boolean duringm1_X()
     {
-        return X.impl$body$duringX();
+        return X.impl$body$duringm1_X();
     }
 
     public void g()
@@ -356,6 +356,6 @@ public class ASTNode extends Symbol
     protected ASTNode parent;
     protected ASTNode children[];
     protected int numChildren;
-    public static int duringX = 0;
+    public static int duringm1_X = 0;
 
 }

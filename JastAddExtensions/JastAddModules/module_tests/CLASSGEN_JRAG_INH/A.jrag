@@ -1,0 +1,21 @@
+module m1;
+
+aspect AAspect {
+	syn lazy String AType.functionA() {
+		return getID() + ":AType";
+	}
+	eq AType.getBType().functionA() = this.functionA();
+	eq AType.getCType().functionA() = this.functionA();
+	//does not work, seems to be a bug in jastadd
+	//eq AType.getChild().functionA() = this.functionA();
+
+	inh String BType.functionA();
+	inh String CType.functionA();
+
+	syn lazy String AType2.functionA2() {
+		return "AType2";
+	}
+	eq AType2.getAType3().functionA2() = this.functionA2();
+	inh String AType3.functionA2();
+	inh String AType4.functionA2();
+}

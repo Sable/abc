@@ -1,0 +1,7 @@
+module m1;
+
+AType ::= <ID:String> BType CType;
+
+AType2 ::= AType3;
+AType3 ::= AType4;
+AType4 ::=;

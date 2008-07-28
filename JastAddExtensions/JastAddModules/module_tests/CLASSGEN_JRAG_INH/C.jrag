@@ -1,0 +1,10 @@
+module m3;
+
+aspect CAspect {
+	syn String ASTNode.CASTNodeIntro() {
+		return "CASTNodeIntro()";
+	}
+	syn lazy String CType.functionC(CType c) {
+		return "CType";
+	}
+}

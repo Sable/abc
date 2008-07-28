@@ -1,6 +1,14 @@
 aspect JAModuleTransformations {
 	//run transformation on each member CU (from Java1.4Backend/Transformations.jrag)
+	//use the compilation unit list
+	public void Program.transformation() {
+		for (Iterator<CompilationUnit> cuIterator = compilationUnitIterator();
+				cuIterator.hasNext();) {
+			CompilationUnit cu = cuIterator.next();
+			cu.transformation();
+		}
+	} 
 	public void ModuleCompilationUnit.transformation() {
-		getCompilationUnitList().transformation();
+		//Do nothing, should be handled by the compilation unit iterator
 	}
 }
