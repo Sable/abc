@@ -65,8 +65,14 @@ ModuleAccess ja_module_access =
 ModuleDecl ja_module_decl =
 	MODULE ja_module_access.ma SEMICOLON
 	{:
-		return new ModuleDecl(ma);
-	:};
+		return new ModuleDecl(ma, new Opt());
+	:}
+	|
+	MODULE ja_module_access.ma EXTENDS ja_module_access.mb SEMICOLON
+	{:
+		return new ModuleDecl(ma, new Opt(mb));
+	:}
+	;
 
 List ja_module_member_list =
 	ja_module_member.mm

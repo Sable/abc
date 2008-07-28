@@ -76,6 +76,12 @@ aspect JAModuleErrorCheck {
   			getModuleDecl().getModuleAccess().error("Module not found: " + getModuleDecl().getModuleAccess().getID()); 
   		} 
   	}
+  	public void ModuleCompilationUnit.checkModuleDecls() {
+  		if (getModuleDecl().hasExtends() && 
+  				getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends()) == null) {
+  			getModuleDecl().getExtends().error("Module not found: " + getModuleDecl().getExtends().getID());
+  		}
+  	}
   	
   	//CU package decl (if a module is defined, then a package shouldn't be defined (and vice versa)
   	//unused for now

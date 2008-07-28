@@ -7,7 +7,7 @@ ModuleCompilationUnit : CompilationUnit ::=
 
 ModuleAccess : Access ::= <ID:String>;
 NullModuleAccess : ModuleAccess; //sentinel value, matches no module
-ModuleDecl ::= ModuleAccess;
+ModuleDecl ::= ModuleAccess [Extends:ModuleAccess];
 
 abstract ModuleMemberDecl;
 ModuleImportDecl : ModuleMemberDecl ::= 
