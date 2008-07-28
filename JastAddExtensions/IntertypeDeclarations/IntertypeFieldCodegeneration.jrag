@@ -303,10 +303,23 @@ aspect IntertypeFieldCodegeneration {
   }
 
   refine InnerClasses eq VarAccess.requiresAccessor() {
-    if (decl() instanceof IntertypeFieldDeclaration) {
+    Variable v = decl();
+    if(!(v instanceof FieldDeclaration))
+      return false;
+    if(v instanceof IntertypeFieldDeclaration) {
+      return false;
+      /*
       IntertypeFieldDeclaration itd = (IntertypeFieldDeclaration) decl();
       if (itd.hostType().isInterfaceDecl())
         return false;
+      */
+    }
+    FieldDeclaration f = (FieldDeclaration)v;
+    if(f.isProtected() && !f.hostPackage().equals(hostPackage())) {
+    	if(hostType() instanceof AspectDecl)
+    		return true;
+    	if(enclosingBodyDecl() instanceof IntroducedMethodDecl)
+    		return true;
     }
     return InnerClasses.VarAccess.requiresAccessor();
   }

@@ -25,7 +25,7 @@ aspect IntertypeDecls {
         cu.generateIntertypeDecls();
     }
   }
-  protected void ASTNode.generateIntertypeDecls() {
+  public void ASTNode.generateIntertypeDecls() {
     for(int i = 0; i < getNumChild(); i++)
       getChild(i).generateIntertypeDecls();
   }
