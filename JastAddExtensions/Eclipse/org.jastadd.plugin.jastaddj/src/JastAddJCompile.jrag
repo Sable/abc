@@ -67,37 +67,40 @@ aspect Compile {
    		
 		StringBuffer buf = new StringBuffer(contents);
 		
-		
 		int keepOn = 2;
 		CompilationUnit unit = null;
 		while (keepOn > 0) {
 		
 			java.io.InputStream is = new java.io.ByteArrayInputStream(buf.toString().getBytes());
-      		unit = javaParser.parse(is, name);
-			is.close();
-			is = null;
+			try {
+      			unit = javaParser.parse(is, name);
+				is.close();
+				is = null;
 			
-			if (unit.getNumTypeDecl() > 0) {
-			  File file = new File(name);
-	           unit.setPathName(file.getAbsolutePath());
-	           unit.setRelativeName(name);
-	           unit.setFromSource(true);
+				if (unit.getNumTypeDecl() > 0) {
+			  		File file = new File(name);
+	           		unit.setPathName(file.getAbsolutePath());
+	           		unit.setRelativeName(name);
+	           		unit.setFromSource(true);
 	            
-	           /* TODO: add package name into global list of packages
-	        	String packageName = unit.getPackageDecl();
-            	if(packageName != null && !packages.contains(packageName)) {
-              		packages.add(packageName);
-              		int pos = 0;
-              		while(packageName != null && -1 != (pos = packageName.indexOf('.', pos + 1))) {
-                		String n = packageName.substring(0, pos);
-                		if(!packages.contains(n))
-                  			packages.add(n);
-              		}	
-            	}
-            	*/
+	    	       	/* TODO: add package name into global list of packages
+	        		String packageName = unit.getPackageDecl();
+            		if(packageName != null && !packages.contains(packageName)) {
+              			packages.add(packageName);
+              			int pos = 0;
+	              		while(packageName != null && -1 != (pos = packageName.indexOf('.', pos + 1))) {
+    	            		String n = packageName.substring(0, pos);
+        	        		if(!packages.contains(n))
+            	      			packages.add(n);
+              			}	
+	            	}
+    	        	*/
             	
-	        	addCompilationUnit(unit);
-				return unit;
+	        		addCompilationUnit(unit);
+					return unit;
+				}
+			} catch (Throwable e) {
+				/* Catch parse exceptions and try to recover */
 			}
 			
 		
