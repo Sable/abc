@@ -1,0 +1,138 @@
+aspect ITDMangledNames {
+
+	//refined from IntertypeDeclarations
+	refine IntertypeFieldCodegeneration eq IntertypeFieldDeclaration.introducedName() {
+		ModuleCompilationUnit mcu = hostAspect().compilationUnit().getModuleCompilationUnit();
+		String modulePrefix = "";
+		if (mcu != null) {
+			modulePrefix = mcu.modulePrefix() + "_";
+		} else {
+			modulePrefix = "";
+		}
+		if(isPrivate()) {
+			return "abc$interField$" + modulePrefix + hostAspect().topLevelType().abcMangledName() + "$" + name();
+		}
+		else if(isPublic()) {
+			return name();
+		}
+		else {
+			return "abc$interField$" + modulePrefix + hostAspect().packageName().replace('.', '_') + "$" + name();
+		}
+	}
+
+	//refined from IntertypeDeclarations
+	refine IntertypeMethodCodegeneration eq IntertypeMethodDecl.delegateName() {
+		ModuleCompilationUnit mcu = hostAspect().compilationUnit().getModuleCompilationUnit();
+		String modulePrefix = "";
+		if (mcu != null) {
+			modulePrefix = mcu.modulePrefix() + "_";
+		} else {
+			modulePrefix = "";
+		}
+		if(isPrivate()) {
+			return "abc$interMethod$" + modulePrefix + hostAspect().topLevelType().abcMangledName() + "$" + name();
+		}
+		else if(isPublic()) {
+			return name();
+		}
+		else {
+			return "abc$interMethod$" + modulePrefix + hostAspect().packageName().replace('.', '_') + "$" + name();
+		}
+	}
+
+
+	//rewrites
+	refine Rewrites eq AspectDecl.duringCounter() {
+		String modulePrefix = "";
+		ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
+		if (mcu != null) {
+			modulePrefix = mcu.modulePrefix() + "_";
+		} else {
+			modulePrefix = "";
+		}
+		// protected static int duringAspectName = 0;
+		if(duringCounter != null) return duringCounter;
+		FieldDeclaration field =
+			new FieldDeclaration(
+					new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
+					new TypeAccess("int"),
+					"during" + modulePrefix + name(),
+					new IntegerLiteral(0)
+					);
+		duringCounter = field;
+		TypeDecl typeDecl = astNode();
+		typeDecl.addMemberField(field);
+		return field;
+	}
+
+	refine Rewrites void AspectDecl.collectIntertypeDecls(HashMap map) {
+		super.collectIntertypeDecls(map);
+		
+		String modulePrefix = "";
+		ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
+		if (mcu != null) {
+			modulePrefix = mcu.modulePrefix() + "_";
+		} else {
+			modulePrefix = "";
+		}
+		
+		TypeDecl typeDecl = astNode();
+		if(!map.containsKey(typeDecl))
+			map.put(typeDecl, new ArrayList());
+		Collection c = (Collection)map.get(typeDecl);
+
+		FieldDeclaration field = duringCounter();
+		MethodDecl m = addMemberMethod(
+				new IntertypeMethodDecl(
+					new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
+					new PrimitiveTypeAccess("boolean"),
+					"during" + modulePrefix + name(),
+					new List(),
+					new List(),
+					new Opt(
+						new Block(
+							new List().add(
+								new IfStmt(
+									new EQExpr(
+										field.createBoundFieldAccess(),
+										new IntegerLiteral(0)
+										),
+									new ReturnStmt(new BooleanLiteral(false)),
+									new Block(
+										new List().add(
+											new ExprStmt(
+												new VarAccess("state").qualifiesAccess(
+													new MethodAccess(
+														"pop",
+														new List()
+														)
+													)
+												)
+											).add(
+												new ExprStmt(
+													new VarAccess("state").qualifiesAccess(
+														new MethodAccess(
+															"push",
+															new List().add(
+																astNode().createQualifiedAccess().qualifiesAccess(
+																	new VarAccess("REWRITE_INTERRUPT")
+																	)
+																)
+															)
+														)
+													)
+												).add(
+													new ReturnStmt(new BooleanLiteral(true))
+													)
+												)
+												)
+												)
+												)
+												),
+			astNode().createQualifiedAccess()
+				)
+				);
+		c.add(m);
+	}
+
+}

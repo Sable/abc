@@ -1,0 +1,6 @@
+
+aspect ModulePrefixes {
+	syn lazy String ModuleCompilationUnit.modulePrefix() {
+		return getModuleName().replace(".", "_");
+	}
+}
