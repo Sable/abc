@@ -112,10 +112,8 @@ aspect Rewrite {
     c.add(m);
   }
 
-  private FieldDeclaration AspectDecl.duringCounter = null; 
-  syn lazy FieldDeclaration AspectDecl.duringCounter() {
-    // protected static int duringAspectName = 0;
-    if(duringCounter != null) return duringCounter;
+  private FieldDeclaration AspectDecl.duringCounter = null;
+  syn FieldDeclaration AspectDecl.createDuringCounterField() {
     FieldDeclaration field =
       new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
@@ -123,6 +121,12 @@ aspect Rewrite {
         "during" + name(),
         new IntegerLiteral(0)
       );
+    return field;
+  } 
+  syn lazy FieldDeclaration AspectDecl.duringCounter() {
+    // protected static int duringAspectName = 0;
+    if(duringCounter != null) return duringCounter;
+    FieldDeclaration field = createDuringCounterField();
     duringCounter = field;
     TypeDecl typeDecl = astNode();
     typeDecl.addMemberField(field);
