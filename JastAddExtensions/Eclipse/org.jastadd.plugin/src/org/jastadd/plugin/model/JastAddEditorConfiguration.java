@@ -94,9 +94,11 @@ public abstract class JastAddEditorConfiguration {
 	public List<Position> getFoldingPositions(IDocument document) {
 		try {
 			IJastAddNode node = model.getTreeRoot(document);
-			synchronized (node.treeLockObject()) {
-				if (node != null && node instanceof IFoldingNode) {
-					return ((IFoldingNode)node).foldingPositions(document);
+			if (node != null) {
+				synchronized (node.treeLockObject()) {
+					if (node != null && node instanceof IFoldingNode) {
+						return ((IFoldingNode)node).foldingPositions(document);
+					}
 				}
 			}
 		} catch (Exception e) {

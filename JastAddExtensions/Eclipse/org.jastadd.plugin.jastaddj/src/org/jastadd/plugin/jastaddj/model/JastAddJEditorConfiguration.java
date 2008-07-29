@@ -25,6 +25,7 @@ import org.jastadd.plugin.jastaddj.model.repair.LeftParen;
 import org.jastadd.plugin.jastaddj.model.repair.RightBrace;
 import org.jastadd.plugin.jastaddj.model.repair.RightParen;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
+import org.jastadd.plugin.model.repair.Island;
 import org.jastadd.plugin.model.repair.JastAddStructureModel;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
@@ -44,14 +45,43 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, cmd.offset);
 		Indent nodeIndent = (Indent)recoveryNode.getPrevious().getPreviousOfType(Indent.class);
 		String indentValue = nodeIndent.getValue();
+		// Check if the previous (distance 2) is a left brace
 		LexicalNode nodeBrace = recoveryNode.getPreviousOfType(LeftBrace.class, 2);
 		if (nodeBrace != null) {
-			cmd.caretOffset = cmd.offset + indentValue.length();
+			LeftBrace lBrace = (LeftBrace)nodeBrace;
+			String lBraceIndent = lBrace.indent().getValue();
+			String posIndent = lBraceIndent + Indent.getTabStep();
+			cmd.caretOffset = cmd.offset + posIndent.length();
 			cmd.shiftsCaret = false;
-			indentValue = indentValue + Indent.getTabStep() + indentValue + RightBrace.TOKEN[0];
+			// Check if the left brace matches the next right brace
+			LexicalNode endBrace = recoveryNode.getNextOfType(RightBrace.class);
+			if (endBrace != null) {
+				RightBrace rBrace = (RightBrace)endBrace;
+				if (!lBrace.indent().equalTo(rBrace.indent())) {
+					// Insert incremented indent plus right brace
+					cmd.text = posIndent + lBraceIndent + RightBrace.TOKEN[0];
+					return;
+				}
+			} 
+			// Insert incremented indent
+			cmd.text = posIndent;
+			return;
 		}
+		// Check if the previous island is a left paren
+		LexicalNode island = Recovery.previousIsland(recoveryNode);
+		if (island instanceof LeftParen) {
+			LeftParen lParen = (LeftParen)island;
+			String lParenIndent = lParen.indent().getValue();
+			String posIndent = lParenIndent + Indent.getTabStep() + Indent.getTabStep();
+			cmd.caretOffset = cmd.offset + posIndent.length();
+			cmd.shiftsCaret = false;
+			cmd.text = posIndent;
+			return;
+		}
+		// Insert indent
+		cmd.caretOffset = cmd.offset + indentValue.length();
+		cmd.shiftsCaret = false;
 		cmd.text = indentValue;
-		
 	}
 	
 
@@ -72,8 +102,8 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 			cmd.caretOffset = cmd.offset + 1;
 			cmd.shiftsCaret = false;
 			cmd.text += "]";
-		} else if (RightParen.TOKEN[0] == c //JastAddStructureModel.CLOSE_PARAN == c
-				&& previousKeypress == LeftParen.TOKEN[0]) { //JastAddStructureModel.OPEN_PARAN) {
+		} else if (RightParen.TOKEN[0] == c
+				&& previousKeypress == LeftParen.TOKEN[0]) {
 			cmd.text = "";
 			cmd.caretOffset = cmd.offset + 1;
 		} else if (']' == c && previousKeypress == '[') {
@@ -88,32 +118,22 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				cmd.text = "";
 				cmd.caretOffset = cmd.offset + 1;
 			}
-		} else if (RightBrace.TOKEN[0] == c) { //JastAddStructureModel.CLOSE_BRACE == c) {
-
+		} else if (RightBrace.TOKEN[0] == c) {
+			/*
 			StringBuffer buf = new StringBuffer(doc.get());
-			try {
-				/* New insertion right brace */
-				/* Not sure this should be here because insertionOnNewline adds
-				 * a right brace after a left brace on newline
-				SOF sof = model.getRecoveryLexer().parse(buf);
-				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, cmd.offset);
-				Indent nodeIndent = (Indent)recoveryNode.getPreviousOfType(Indent.class);
-				while (recoveryNode != sof) {
-					if (recoveryNode instanceof LeftBrace) {
-						LeftBrace lBrace = (LeftBrace)recoveryNode;
-						Indent indent = lBrace.indent();
-						if (indent.equals(nodeIndent))
-						
-					}
-					recoveryNode = recoveryNode.getPrevious();
-				}
-				*/
-				
-			} catch (Exception e) {
-				e.printStackTrace();
+			SOF sof = model.getRecoveryLexer().parse(buf);
+			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, cmd.offset);
+			Indent nodeIndent = (Indent)recoveryNode.getPrevious().getPreviousOfType(Indent.class);
+			String indentValue = nodeIndent.getValue();
+			// Check if the previous (distance 2) is a left brace
+			LexicalNode nodeBrace = recoveryNode.getPreviousOfType(LeftBrace.class);
+			if (nodeBrace != null) {
+				Indent lIndent = ((LeftBrace) nodeBrace).indent();
+				String lIndentValue = lIndent.getValue();
 			}
+			*/
 		}
-		previousKeypress = c;
+		previousKeypress = c;		
 	}
 
 	/*

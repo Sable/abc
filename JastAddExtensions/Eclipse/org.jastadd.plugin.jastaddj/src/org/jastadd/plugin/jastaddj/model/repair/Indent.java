@@ -25,6 +25,7 @@ public class Indent extends Reef {
 	private static int maxIndentStatSize = 10;
 	private static int[][][] stats;
 	private static int[] sizeStats;
+	private static int nbrIndents;
 	private static boolean tabStepDeduced;
 	private static int tabStep = TAB_SIZE; // Default
 	private static boolean tabsUsed;
@@ -36,7 +37,8 @@ public class Indent extends Reef {
 		sizeStats = new int[maxIndentStatSize + 1];
 		tabStepDeduced = false;
 		tabStep = TAB_SIZE; // Default
-		tabsUsed = true;
+		tabsUsed = false;
+		nbrIndents = 0;
 	}
 	
 	private static void collectStats(int ws, int tabs, int size) {
@@ -54,26 +56,41 @@ public class Indent extends Reef {
 			tabsUsed = true;
 		}
 		sizeStats[size]++;
+		nbrIndents++;
 	}
 	
 	private static void deduceTabStep() {
-		// TODO Finish this method
 		if (stats == null) {
 			return;
 		}
-		int prevSize = 0;
-		int diffSum = 0;
-		int nbrDiffs = 0;
+
+		int[] diff = new int[maxIndentStatSize + 1];
+		int tol = (int)Math.ceil(nbrIndents/10.0);
 		
-		for (int i = 1; i < stats.length; i++) {
+		//System.out.println("Nbr indents: " + nbrIndents + ", tol: " + tol);
+		
+		for (int i = 0; i < sizeStats.length; i++) {
 			//System.out.println("Indent " + i + ": " + sizeStats[i]);
-			if (sizeStats[i] != 0) {
-				diffSum += (i - prevSize);
-				nbrDiffs++;
-				prevSize = i;
+			if (sizeStats[i] > tol) {
+				for (int j = i + 1; j < sizeStats.length; j++) {
+					if (sizeStats[j] > tol) {
+						int d = j - i;
+						//System.out.println("Differense " + i + " and " + j + ": " + d);
+						diff[d]++;
+						break;
+					}
+				}
 			}
 		}
-		tabStep = diffSum/nbrDiffs;
+		int step = 0;
+		for (int i = 0; i < diff.length; i++) {
+			//System.out.println("Indent diff " + i + ": " + diff[i]);
+			if (diff[i] > diff[step]) {
+				step = i;
+			}
+		}
+		//System.out.println("TabStep: " + diff[step]);
+		tabStep = diff[step];
 		tabStepDeduced = true;
 	}
 
