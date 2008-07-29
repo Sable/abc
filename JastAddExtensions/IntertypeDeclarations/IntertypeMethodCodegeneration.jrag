@@ -72,7 +72,7 @@ aspect IntertypeMethodCodegeneration {
 
   public MethodDecl IntertypeMethodDecl.createAbstractMethod() {
     return new MethodDecl(
-      getModifiers().makePublicAbstract(),
+      getModifiers().makePublicAbstractSynthetic(),
       type().createQualifiedAccess(),
       delegateName(),
       copyParameterList(getParameterList()),
@@ -386,7 +386,7 @@ aspect IntertypeMethodCodegeneration {
     else
       statements.add(new ReturnStmt(e));
     MethodDecl m = new MethodDecl(
-      new Modifiers(new List().add(new Modifier("public"))),
+      new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
       type().createQualifiedAccess(),
       name,
       copyParameterList(getParameterList()),
@@ -421,7 +421,7 @@ aspect IntertypeMethodCodegeneration {
     	statements.add(new ReturnStmt(aspectMethod.createBoundAccess(args)));
       
     return new MethodDecl(
-      getModifiers().makePublic(),
+      getModifiers().makePublicSynthetic(),
       type().createQualifiedAccess(),
       delegateName(),
       copyParameterList(getParameterList()),
@@ -440,9 +440,19 @@ aspect IntertypeMethodCodegeneration {
     list.add(new Modifier("public"));
     return new Modifiers(list);
   }
+  public Modifiers Modifiers.makePublicSynthetic() {
+    Modifiers m = makePublic();
+    m.addModifier(new Modifier("synthetic"));
+    return m;
+  }
   public Modifiers Modifiers.makePublicAbstract() {
     Modifiers m = makePublic();
     m.addModifier(new Modifier("abstract"));
+    return m;
+  }
+  public Modifiers Modifiers.makePublicAbstractSynthetic() {
+    Modifiers m = makePublicAbstract();
+    m.addModifier(new Modifier("synthetic"));
     return m;
   }
 
