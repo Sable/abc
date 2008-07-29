@@ -4,6 +4,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.ISaveParticipant;
+import org.eclipse.core.resources.ISavedState;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -11,6 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
+import org.jastadd.plugin.save.JastAddSaveParticipant;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -33,9 +38,13 @@ public abstract class BaseJastAddActivator extends AbstractUIPlugin {
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
+	/*
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		ISaveParticipant saveParticipant = new JastAddSaveParticipant();
+        ResourcesPlugin.getWorkspace().addSaveParticipant(this, saveParticipant);
 	}
+	*/
 
 	/*
 	 * (non-Javadoc)

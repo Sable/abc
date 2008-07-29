@@ -373,7 +373,7 @@ public abstract class JastAddModel {
 	public abstract String[] getFilterExtensions();
 	
 	public abstract Object getASTRootForLock(IProject project);
-	
+	public abstract void checkForErrors(IProject project);
 	
 	private boolean commandsPopulated = false;
 	
@@ -425,4 +425,7 @@ public abstract class JastAddModel {
 		}
 		MessageDialog.openError(shell, title, msg.toString());			
 	}
+	
+	
+	
 }

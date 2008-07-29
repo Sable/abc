@@ -524,6 +524,10 @@ public class Model extends JastAddJModel {
 			e.printStackTrace();
 			logError(e, "Updating model failed!");
 		}
+		JastAddJModel.ProgramInfo info = getProgramInfo(project);
+		if (info != null) {
+			info.changed();
+		}
 	}
 
 	private long getTimeStamp(String name, IProject project) {
@@ -650,5 +654,43 @@ public class Model extends JastAddJModel {
   		out.close();
 
   		return true;
-  	}	
+  	}
+  	
+  	public void checkForErrors(IProject project) {	
+		try {
+			try {				
+				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
+				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
+				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
+				
+				// Generate scanner and parser
+				buildJFlexScanner(project, jastAddBuildConfig);
+				buildBeaverParser(project, jastAddBuildConfig);
+				Program program = (Program) initProgram(project, buildConfiguration);
+				if (program == null)
+					return;
+				Map<String,IFile> map = sourceMap(project, buildConfiguration);							
+				if (map != null) {
+					for(String fileName : map.keySet()) {
+						program.addSourceFile(fileName);
+					}
+				}
+				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+					ICompilationUnit unit = (ICompilationUnit) iter.next();
+					if (unit.fromSource()) {
+						IFile unitFile = map.get(unit.getFileName());
+						updateErrorsInFile(unit, unitFile, true);
+					}
+				}
+			} catch (CoreException e) {
+				addErrorMarker(project, "Error check failed because: "
+						+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+				logCoreException(e);
+			}
+		} catch (Throwable e) {
+			e.printStackTrace();
+			logError(e, "Error check failed");
+		}
+	}
 }

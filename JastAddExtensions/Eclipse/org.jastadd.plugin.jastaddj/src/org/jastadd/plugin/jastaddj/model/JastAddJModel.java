@@ -89,9 +89,29 @@ import AST.Program;
 
 public class JastAddJModel extends JastAddModel {
 
-	static class ProgramInfo {
+	public static class ProgramInfo {
 		IProgram program;
 		JastAddJBuildConfiguration buildConfiguration;
+		private boolean changed = false;
+		private boolean generated = false;
+		public void changed() {
+			changed = true;
+		}
+		public void generated() {
+			generated = true;
+		}
+		public void clearChanges() {
+			changed = false;
+		}
+		public void clearGenerated() {
+			generated = false;
+		}
+		public boolean hasChaged() {
+			return changed;
+		}
+		public boolean isGenerated() {
+			return generated;
+		}
 	}
 
 	protected HashMap<IProject, ProgramInfo> projectToNodeMap = new HashMap<IProject, ProgramInfo>();
@@ -322,7 +342,9 @@ public class JastAddJModel extends JastAddModel {
 					if (unit.fromSource()) {
 						IFile unitFile = map.get(unit.getFileName());
 						// Check errors and update markers
-						if (updateErrorsInFile(unit, unitFile, true)) {
+						boolean hasErrors = updateErrorsInFile(unit, unitFile, true);
+						
+						if (!hasErrors) {
 							// Generate bytecode 
 							unit.transformation();
 							unit.generateClassfile();
@@ -389,6 +411,10 @@ public class JastAddJModel extends JastAddModel {
 		} catch (Exception e) {
 			logError(e, "Problem updating model!");
 		}
+		ProgramInfo info = getProgramInfo(project);
+		if (info != null) {
+			info.changed();
+		}
 	}
 
 	
@@ -425,6 +451,10 @@ public class JastAddJModel extends JastAddModel {
 			logError(e, "Failed to update model!");
 		} catch (Throwable e) {
 			logError(e, "Failed to update model!");
+		}
+		ProgramInfo info = getProgramInfo(project);
+		if (info != null) {
+			info.changed();
 		}
 	}
 	
@@ -1088,5 +1118,49 @@ public class JastAddJModel extends JastAddModel {
 			return JastAddJModel.class;
 		IProgram root = info.program;
 		return ((IJastAddNode)root).treeLockObject();
+	}
+
+	@Override
+	public void checkForErrors(IProject project) {
+		try {
+			try {				
+				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
+				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
+				
+				JastAddJBuildConfiguration buildConfiguration;
+				try {
+					buildConfiguration = readBuildConfiguration(project);
+				} catch (CoreException e) {
+					addErrorMarker(project,
+							"Error check failed because build configuration could not be loaded: "
+									+ e.getMessage(), -1,
+							IMarker.SEVERITY_ERROR);
+					return;
+				}
+
+				IProgram program = initProgram(project, buildConfiguration);
+				// Parsing source files
+				Map<String, IFile> map = sourceMap(project, buildConfiguration);				
+				if(map != null) {
+					for (String fileName : map.keySet()) {
+						program.addSourceFile(fileName);
+					}
+				}
+				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+					ICompilationUnit unit = (ICompilationUnit) iter.next();
+					if (unit.fromSource()) {
+						IFile unitFile = map.get(unit.getFileName());
+						updateErrorsInFile(unit, unitFile, true);
+					}
+				}
+
+			} catch (CoreException e) {
+				addErrorMarker(project, "Problem checking errors: "
+						+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+				logCoreException(e);
+			}
+		} catch (Throwable e) {
+			logError(e, "Problem checking errors");
+		}
 	}
 }
