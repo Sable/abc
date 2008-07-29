@@ -1,0 +1,140 @@
+----------Module contents----------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------AX.java------
+module: module m1x;;
+module CU : m1x.module
+module name : m1x
+------------------------
+------m3.module------
+module m3;
+------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m1x.module------
+module m1x;
+import own m3 as none null;
+import own m2 as m2alias;
+merge m2.m3, m2alias3.m3 export as m3alias;
+merge m2alias3, m2alias as m2alias3;
+------------------------
+------m1.module------
+module m1;
+import own m2 as none null;
+import own m2 as m2x;
+merge m2x, m2 export as m2alias3;
+------------------------
+------AXX.java------
+module: module m1xx;;
+module CU : m1xx.module
+module name : m1xx
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------m1xx.module------
+module m1xx;
+import own m3 as m3alias2;
+merge m3alias, m3alias2 as m3breaker;
+------------------------
+------m2.module------
+module m2;
+import own m3 export as m3;
+------------------------
+----------CU AST before insert----------
+B.java package:
+AX.java package:
+module: m3, file: m3.module, base module: m3
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+A.java package:
+module: m1x, file: m1x.module, base module: m1x
+module: m1, file: m1.module, base module: m1
+AXX.java package:
+C.java package:
+module: m1xx, file: m1xx.module, base module: m1xx
+module: m2, file: m2.module, base module: m2
+----------CU AST after insert----------
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1x, file: m1x.module, base module: m1x
+	AX.java package:m1x
+	A.java package:m1x
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m1xx, file: m1xx.module, base module: m1xx
+	AXX.java package:m1xx
+	AX.java package:m1xx
+	A.java package:m1xx
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+----------Module CU imports before import own----------
+module m3, base:m3, context:[], instantiated:false
+	
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+	
+module m1x, base:m1x, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:false
+	
+module m1xx, base:m1xx, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+-------------Instance ModuleCompilationUnit------------
+module m1;
+import own m2 as none null;
+import own m2 as m2x;
+merge m2x, m2 export as m2alias3;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1x, file: m1x.module, base module: m1x
+	AX.java package:m1x
+	A.java package:m1x
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m1xx, file: m1xx.module, base module: m1xx
+	AXX.java package:m1xx
+	AX.java package:m1xx
+	A.java package:m1xx
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+module: m1.m2alias3.m3, file: m3.module, base module: m3
+	C.java package:m1.m2alias3.m3
+module: m1.m2alias3, file: m2.module, base module: m2
+	B.java package:m1.m2alias3
+
+----------Module CU imports after import own----------
+module m3, base:m3, context:[], instantiated:false
+	
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+	
+module m1x, base:m1x, context:[], instantiated:false
+	
+module m1, base:m1, context:[], instantiated:true
+	[export]m2alias3:m1.m2alias3, jastadd$framework:jastadd$framework
+module m1xx, base:m1xx, context:[], instantiated:false
+	
+module m2, base:m2, context:[], instantiated:false
+	
+module m1.m2alias3.m3, base:m3, context:[m1.m2alias3], instantiated:true
+	jastadd$framework:jastadd$framework
+module m1.m2alias3, base:m2, context:[m1], instantiated:true
+	[export]m3:m1.m2alias3.m3, jastadd$framework:jastadd$framework
+m1xx.module:3:
+  Semantic Error: This merge reduces the signature of its supermodule

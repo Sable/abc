@@ -39,6 +39,7 @@ aspect GenerateImportOwn {
 		
 		//generate import owns starting from the instance module
 		getInstanceModuleCU().generateImportOwn(null);
+		getInstanceModuleCU().setSourceStatement("-instance-module"); //debug
 		
 		return true;
 	}
@@ -47,14 +48,15 @@ aspect GenerateImportOwn {
 	//if context is null, it is implicitly exported (i.e. it is one of the base modules
 	//and is visible). If not, then it is not exported (i.e. it was generated from an import own
 	//statement with no export)	
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
+	//NOTE: Keep these non-lazy, the node removal code in merge depends on separate instances of the modules being removed
+	syn ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
 		if (context == null) {
 			return generateImportOwn(context, "");
 		} else {
 			return generateImportOwn(context, createOwnName(context, this.getModuleName()));
 		}
 	}
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
+	syn ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
 		ModuleCompilationUnit ret = null;
 		//if instance module, don't reinstantiate
 		if (context == null) {
@@ -101,12 +103,15 @@ aspect GenerateImportOwn {
 				//if no export name, generate M$M' name
 				if (importDecl.getAsType() instanceof AsTypeNone) {
 					instanceCU = currImport.generateImportOwn(ret);
+					instanceCU.setSourceStatement(importDecl.toString()); //debug
 				} else {
 					localAccessName = importDecl.getAsModule().getID();
 					if (importDecl.getAsType() instanceof AsTypeOwn) {
 						instanceCU = currImport.generateImportOwn(ret, createOwnName(ret, importDecl.getAsModule().getID()));
+						instanceCU.setSourceStatement(importDecl.toString()); //debug
 					} else if (importDecl.getAsType() instanceof AsTypeExport) {
 						instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getAsModule().getID()));
+						instanceCU.setSourceStatement(importDecl.toString()); //debug
 					}
 				}
 				instanceCU.setBaseCU(currImport.getBaseCU());
@@ -114,6 +119,7 @@ aspect GenerateImportOwn {
 			} else {
 				//generate from a null context
 				currImport = currImport.generateImportOwn(null);
+				currImport.setSourceStatement(importDecl.toString()); //debug
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
@@ -146,7 +152,7 @@ aspect GenerateImportOwn {
 					throw new jastadd.UnrecoverableSemanticError("Unable to find module: " + access.getID());
 				}
 				
-				if (mergeBaseCU != null && cu.getBaseCU() != mergeBaseCU) {
+				if (mergeBaseCU != null && mostSpecificModule(cu.getBaseCU(), mergeBaseCU) == null) {
 					access.error("Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getModuleName());
 					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
 				}
@@ -161,7 +167,11 @@ aspect GenerateImportOwn {
 				}
 				
 				mergeTargets.add(cu);
-				mergeBaseCU = cu.getBaseCU();
+				if (mergeBaseCU == null) {
+					mergeBaseCU = cu.getBaseCU();
+				} else {
+					mergeBaseCU = mostSpecificModule(cu.getBaseCU(), mergeBaseCU);
+				}
 			}
 			//create result copy (instantiate from the base types of the merge targets with ret as a context)
 			ModuleCompilationUnit mergedCU = null;
@@ -171,8 +181,10 @@ aspect GenerateImportOwn {
 			} else if (mergeMember.getAsType() instanceof AsTypeExport) {
 				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias));
 			}
+			mergedCU.setSourceStatement(mergeMember.toString()); //debug
 			getHostProgram().getCompilationUnitList().addChild(mergedCU);
 			
+			boolean replaceSelf = false; //is set to true if mergedCU itslef is found in the imports of the instance context
 			//foreach merge target
 			for (ModuleCompilationUnit mergeTargetCU : mergeTargets) {
 			//	foreach context member of the merge target
@@ -204,7 +216,8 @@ aspect GenerateImportOwn {
 	
 	//create a new ModuleCompilationUnit from the current one, using the given alias.
 	//Context will be for generating links in the accessibility graph
-	syn lazy ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
+	//NOTE: Keep this non-lazy, the node removal code in merge depends on separate instances of the modules being removed
+	syn ModuleCompilationUnit ModuleCompilationUnit.instantiateModuleAs(ModuleCompilationUnit context, String alias) {
 		ModuleCompilationUnit ret = null;
 		
 		ret = this.fullCopy();
@@ -244,4 +257,36 @@ aspect GenerateImportOwn {
 		return moduleInstantiated;
 	}
 	
+	public String ModuleCompilationUnit.sourceStatement;
+	public void ModuleCompilationUnit.setSourceStatement(String s) {
+		this.sourceStatement = s;
+	}
+	public String ModuleCompilationUnit.getSourceStatement() {
+		return this.sourceStatement;
+	}
+	
+	public ModuleCompilationUnit ModuleCompilationUnit.mostSpecificModule(
+			ModuleCompilationUnit cu1,
+			ModuleCompilationUnit cu2) {
+		assert (cu1 != null && cu2 != null) : "null parameter passed to mostSpecificModule";
+		ModuleCompilationUnit base1 = cu1.getBaseCU();
+		ModuleCompilationUnit base2 = cu2.getBaseCU();
+		if (base1 == base2) {
+			return base1;
+		}
+		while (base1.getSuperModuleCU() != base2 && base1.getSuperModuleCU() != null) {
+			base1 = base1.getSuperModuleCU();
+		}
+		if (base1.getSuperModuleCU() == base2) {
+			return cu1.getBaseCU();
+		}
+		base1 = cu1.getBaseCU();
+		while (base2.getSuperModuleCU() != base1 && base2.getSuperModuleCU() != null) {
+			base2 = base2.getSuperModuleCU();
+		}
+		if (base2.getSuperModuleCU() == base1) {
+			return cu2.getBaseCU();
+		}
+		return null;
+	} 
 }

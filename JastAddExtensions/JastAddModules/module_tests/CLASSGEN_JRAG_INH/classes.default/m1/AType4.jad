@@ -22,33 +22,33 @@ public class AType4 extends ASTNode
 
     public String functionA2()
     {
-        boolean interruptedCircle = false;
+        boolean flag = false;
         if(functionA2$visited)
             throw new RuntimeException("Circular definition of attr: functionA2() in class: m1.AType4");
         functionA2$visited = true;
         if(IN_CIRCLE)
         {
-            interruptedCircle = true;
+            flag = true;
             IN_CIRCLE = false;
             pushEvalStack();
         }
-        ASTNode n = getParent();
-        ASTNode caller = this;
-        ASTNode child = null;
-        for(; !(n instanceof jastadd$framework.ASTNode.Defines.functionA2); n = n.getParent())
+        ASTNode astnode = getParent();
+        Object obj = this;
+        Object obj1 = null;
+        for(; !(astnode instanceof jastadd$framework.ASTNode.Defines.functionA2); astnode = astnode.getParent())
         {
-            child = caller;
-            caller = n;
+            obj1 = obj;
+            obj = astnode;
         }
 
-        String functionA2$value = ((jastadd$framework.ASTNode.Defines.functionA2)n).Defines$functionA2(caller, child);
+        String s = ((jastadd$framework.ASTNode.Defines.functionA2)astnode).Defines$functionA2(((ASTNode) (obj)), ((ASTNode) (obj1)));
         functionA2$visited = false;
-        if(interruptedCircle)
+        if(flag)
         {
             IN_CIRCLE = true;
             popEvalStack();
         }
-        return functionA2$value;
+        return s;
     }
 
     public ASTNode rewriteTo()

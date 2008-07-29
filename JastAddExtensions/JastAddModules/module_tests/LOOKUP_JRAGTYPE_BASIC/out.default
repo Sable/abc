@@ -156,13 +156,13 @@ module m1$m2, base:m2, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework
-	jastadd$framework.List
-	jastadd$framework.ASTNode
 	jastadd$framework.Opt
+	jastadd$framework.ASTNode
+	jastadd$framework.List
 Module: m1
-	m1.A
 	m1.AType
 	m1.X
+	m1.A
 Module: m3
 	m3.C
 	m3.CType

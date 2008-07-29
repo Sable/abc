@@ -1,0 +1,66 @@
+
+aspect CollectSuperModuleCUs {
+
+	protected ModuleCompilationUnit ModuleCompilationUnit.superModuleCU = null;
+	public void ModuleCompilationUnit.setSuperModuleCU(ModuleCompilationUnit superModuleCU) {
+		this.superModuleCU = superModuleCU;
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.getSuperModuleCU() {
+		return this.superModuleCU;
+	}
+	public boolean ModuleCompilationUnit.hasSuperModule() {
+		return getModuleDecl().hasExtends();
+	}
+	
+	syn lazy ModuleCompilationUnit ModuleCompilationUnit.getSuperModuleCUNoTransform() {
+		if (!hasSuperModule()) {
+			return null;
+		}
+		return getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends());
+	}
+
+	//gets the module's super module, and creates a copy of the CU subtree of that module
+	public boolean Program.collectSuperModules() {
+		List<CompilationUnit> cuList = getCompilationUnitList();
+		for (CompilationUnit cu : cuList) {
+			cu.collectSuperModules();
+		}
+		return true;
+	}
+	public boolean CompilationUnit.collectSuperModules() {
+		//do nothing
+		return true;
+	}
+	public boolean ModuleCompilationUnit.collectSuperModules() {
+		//module decl has no extends, do nothing
+		if (!getModuleDecl().hasExtends()) {
+			return true;
+		}
+		//if the super module is already set, don't collect this node again
+		if (getSuperModuleCU() != null) {
+			return true;
+		}
+		this.setSuperModuleCU(getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends()));
+		assert (this.getSuperModuleCU() != null) : "Supermodule should have been set: " + getModuleDecl().getExtends().toString();
+
+		//collect the super modules of the super module;
+		getSuperModuleCU().collectSuperModules();
+		//copy the CU list of the super module and add it to our own
+		for (CompilationUnit cu : getSuperModuleCU().getCompilationUnitList()) {
+			//make sure this is done BEFORE generate import own
+			this.getCompilationUnitList().add(cu.fullCopy());
+		}
+		//add the memberDecls of the super module to the start of this module (create a new list)
+		List<ModuleMemberDecl> newMemberList = new List<ModuleMemberDecl>();
+		List<ModuleMemberDecl> superMemberList = getSuperModuleCU().getModuleMemberDeclList();
+		for (ModuleMemberDecl memberDecl : superMemberList) {
+			newMemberList.add((ModuleMemberDecl)memberDecl.fullCopy());
+		}
+		for (ModuleMemberDecl memberDecl : getModuleMemberDeclList()) {
+			newMemberList.add(memberDecl);
+		}
+		this.setModuleMemberDeclList(newMemberList);
+		
+		return true;
+	}
+}

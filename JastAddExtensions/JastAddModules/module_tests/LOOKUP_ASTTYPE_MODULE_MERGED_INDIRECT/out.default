@@ -181,8 +181,8 @@ module m1$mergedalias, base:m5, context:[m1$m2.m3, m1], instantiated:true
 Module: m5
 	m5.E
 Module: jastadd$framework
-	jastadd$framework.List
 	jastadd$framework.Opt
+	jastadd$framework.List
 	jastadd$framework.ASTNode
 Module: m4
 	m4.D

@@ -86,6 +86,17 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
+				
+				//check if a submodule reduces the signature of a super module
+				program.checkModuleSignatures();
+				
+				//super modules
+				result = program.collectSuperModules();
+				if (!result) {
+					return false;
+				}
+				
+				//add implicit jastadd$framework imports
 				result = program.inserJAFrameworkModuleImport();
 				if (!result) {
 					return false;

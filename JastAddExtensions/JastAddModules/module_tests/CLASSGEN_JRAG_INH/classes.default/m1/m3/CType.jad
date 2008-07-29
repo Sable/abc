@@ -36,66 +36,66 @@ public class CType extends ASTNode
         return node;
     }
 
-    public String functionC(CType c)
+    public String functionC(CType ctype)
     {
-        Object parameters$ = c;
-        if(this.functionC_m1$m3$CType$value.containsKey(parameters$))
-            return (String)(Object)this.functionC_m1$m3$CType$value.get(parameters$);
-        boolean interruptedCircle = false;
-        if(functionC_m1$m3$CType$visited.contains(parameters$))
+        CType ctype1 = ctype;
+        if(functionC_m1$m3$CType$value.containsKey(ctype1))
+            return (String)(Object)functionC_m1$m3$CType$value.get(ctype1);
+        boolean flag = false;
+        if(functionC_m1$m3$CType$visited.contains(ctype1))
             throw new RuntimeException("Circular definition of attr: functionC(m1.m3.CType) in class: m1.m3.CType");
-        functionC_m1$m3$CType$visited.add(parameters$);
+        functionC_m1$m3$CType$visited.add(ctype1);
         if(IN_CIRCLE)
         {
-            interruptedCircle = true;
+            flag = true;
             IN_CIRCLE = false;
             pushEvalStack();
         }
-        int num$ = boundariesCrossed;
-        boolean localFinal$ = is$Final;
-        String functionC_m1$m3$CType$value = CAspect.impl$body$functionC(this, c);
-        if(localFinal$ && num$ == boundariesCrossed)
+        int i = boundariesCrossed;
+        boolean flag1 = is$Final;
+        String s = CAspect.impl$body$functionC(this, ctype);
+        if(flag1 && i == boundariesCrossed)
         {
-            Object _tmp = (Object)this.functionC_m1$m3$CType$value.put(parameters$, functionC_m1$m3$CType$value);
+            Object _tmp = (Object)functionC_m1$m3$CType$value.put(ctype1, s);
         }
-        functionC_m1$m3$CType$visited.remove(parameters$);
-        if(interruptedCircle)
+        functionC_m1$m3$CType$visited.remove(ctype1);
+        if(flag)
         {
             IN_CIRCLE = true;
             popEvalStack();
         }
-        return functionC_m1$m3$CType$value;
+        return s;
     }
 
     public String functionA()
     {
-        boolean interruptedCircle = false;
+        boolean flag = false;
         if(functionA$visited)
             throw new RuntimeException("Circular definition of attr: functionA() in class: m1.m3.CType");
         functionA$visited = true;
         if(IN_CIRCLE)
         {
-            interruptedCircle = true;
+            flag = true;
             IN_CIRCLE = false;
             pushEvalStack();
         }
-        ASTNode n = getParent();
-        ASTNode caller = this;
-        ASTNode child = null;
-        for(; !(n instanceof jastadd$framework.ASTNode.Defines.functionA); n = n.getParent())
+        ASTNode astnode = getParent();
+        Object obj = this;
+        Object obj1 = null;
+        for(; !(astnode instanceof jastadd$framework.ASTNode.Defines.functionA); astnode = astnode.getParent())
         {
-            child = caller;
-            caller = n;
+            obj1 = obj;
+            obj = astnode;
         }
 
-        String functionA$value = ((jastadd$framework.ASTNode.Defines.functionA)n).Defines$functionA(caller, child);
+        String s = ((jastadd$framework.ASTNode.Defines.functionA)astnode).Defines$functionA(((ASTNode) (obj)), ((ASTNode) (obj1)));
         functionA$visited = false;
-        if(interruptedCircle)
+        if(flag)
         {
             IN_CIRCLE = true;
             popEvalStack();
         }
-        return functionA$value;
+        return s;
     }
 
     public ASTNode rewriteTo()

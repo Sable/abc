@@ -1,0 +1,61 @@
+import java.util.*;
+
+aspect CheckModuleSignature {
+	public void Program.checkModuleSignatures() {
+		List<CompilationUnit> cuList = getCompilationUnitList();  
+		for (CompilationUnit cu: cuList) {
+			cu.checkModuleSignatures();
+		}
+	}
+	public void CompilationUnit.checkModuleSignatures() {
+		//do nothing
+	}
+	public void ModuleCompilationUnit.checkModuleSignatures() {
+		if (hasSuperModule()) {
+			ModuleCompilationUnit superMCU = getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends());
+			assert (superMCU != null) : "Super module should be present by this time";
+			LinkedList<ModuleCompilationUnit> superList = new LinkedList<ModuleCompilationUnit>();
+			ModuleCompilationUnit currMCU = this;
+			while (currMCU.getSuperModuleCUNoTransform() != null) {
+				superList.addFirst(currMCU);
+				currMCU = currMCU.getSuperModuleCUNoTransform();
+			}
+			superList.addFirst(currMCU);
+			
+			HashSet<String> prevSignature = new HashSet<String>();
+			for (ModuleCompilationUnit mcu : superList) {
+				HashSet<String> currSignature = new HashSet<String>(prevSignature);
+				//imports
+				for (ModuleMemberDecl memberDecl : mcu.getModuleMemberDeclList()) {
+					if (!(memberDecl instanceof ModuleImportDecl)) {
+						continue;
+					}
+					ModuleImportDecl importDecl = (ModuleImportDecl) memberDecl;
+					if (importDecl.getAsType() instanceof AsTypeNone) {
+						currSignature.add(importDecl.getImportModule().getID());
+					}
+					else {
+						currSignature.add(importDecl.getAsModule().getID());
+					}
+				}
+				//merges
+				for (ModuleMemberDecl memberDecl : mcu.getModuleMemberDeclList()) {
+					if (!(memberDecl instanceof ModuleMergeDecl)) {
+						continue;
+					}
+					ModuleMergeDecl mergeDecl = (ModuleMergeDecl) memberDecl;
+					for (ModuleAccess mergeModule : mergeDecl.getMergeModuleList()) {
+						currSignature.remove(mergeModule.getID());
+					}
+					currSignature.add(mergeDecl.getAsModule().getID());
+					
+					if (!currSignature.containsAll(prevSignature)) {
+						memberDecl.error("This merge reduces the signature of its supermodule");
+						return;
+					}
+				}
+				prevSignature = currSignature;
+			}
+		}
+	}
+}

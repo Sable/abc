@@ -63,23 +63,23 @@ public class AType2 extends ASTNode
     {
         if(functionA2$computed)
             return functionA2$value;
-        boolean interruptedCircle = false;
+        boolean flag = false;
         if(functionA2$visited)
             throw new RuntimeException("Circular definition of attr: functionA2() in class: m1.AType2");
         functionA2$visited = true;
         if(IN_CIRCLE)
         {
-            interruptedCircle = true;
+            flag = true;
             IN_CIRCLE = false;
             pushEvalStack();
         }
-        int num$ = boundariesCrossed;
-        boolean localFinal$ = is$Final;
+        int i = boundariesCrossed;
+        boolean flag1 = is$Final;
         functionA2$value = AAspect.impl$body$functionA2(this);
-        if(localFinal$ && num$ == boundariesCrossed)
+        if(flag1 && i == boundariesCrossed)
             functionA2$computed = true;
         functionA2$visited = false;
-        if(interruptedCircle)
+        if(flag)
         {
             IN_CIRCLE = true;
             popEvalStack();
