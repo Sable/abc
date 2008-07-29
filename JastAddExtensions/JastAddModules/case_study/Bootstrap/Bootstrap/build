@@ -1,0 +1,2 @@
+#!/bin/sh
+java -Xmx384M -jar ../../JastAdd/JastAdd.jar -package AST -d . @filelist -weave_inline -verbose
