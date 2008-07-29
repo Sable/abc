@@ -339,6 +339,9 @@ public class Model extends JastAddJModel {
 				if (map != null) {
 					for(String fileName : map.keySet()) {
 						program.addSourceFile(fileName);
+						if (monitor.isCanceled()) {
+							return;
+						}
 						subMonitor.worked(1);
 					}
 				}
@@ -358,6 +361,10 @@ public class Model extends JastAddJModel {
 							// unit.java2Transformation();
 							// unit.generateClassfile();
 						//}
+						if (monitor.isCanceled()) {
+							return;
+						}
+						subMonitor.worked(1);
 					}
 				}
 				subMonitor.done();
@@ -367,11 +374,16 @@ public class Model extends JastAddJModel {
 				subMonitor = new SubProgressMonitor(monitor, 40);
 				subMonitor.beginTask("", map.keySet().size()*3);
 				if (build) {
-					
 					program.generateIntertypeDecls();
+					if (monitor.isCanceled()) {
+						return;
+					}
 					subMonitor.worked(1);
 					
 					program.transformation();
+					if (monitor.isCanceled()) {
+						return;
+					}
 					subMonitor.worked(1);
 					
 					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
@@ -379,6 +391,9 @@ public class Model extends JastAddJModel {
 						if(cu.fromSource()) {
 							for(int i = 0; i < cu.getNumTypeDecl(); i++) {
 								cu.getTypeDecl(i).generateClassfile();
+							}
+							if (monitor.isCanceled()) {
+								return;
 							}
 							subMonitor.worked(1);
 						}

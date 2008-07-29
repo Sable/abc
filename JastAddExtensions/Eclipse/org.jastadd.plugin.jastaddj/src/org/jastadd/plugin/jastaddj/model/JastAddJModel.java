@@ -296,6 +296,9 @@ public class JastAddJModel extends JastAddModel {
 				Map<String, IFile> map = sourceMap(project, buildConfiguration);
 				
 				monitor.beginTask("Building files in project " + project.getName(), 100);
+				if (monitor.isCanceled()) {
+					return;
+				}
 				SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 50);
 				subMonitor.beginTask("", map.keySet().size());
 				if(map != null) {
@@ -304,6 +307,9 @@ public class JastAddJModel extends JastAddModel {
 					}
 					for (String fileName : map.keySet()) {
 						program.addSourceFile(fileName);
+						if (monitor.isCanceled()) {
+							return;
+						}
 						subMonitor.worked(1);
 					}
 				}
@@ -320,6 +326,9 @@ public class JastAddJModel extends JastAddModel {
 							// Generate bytecode 
 							unit.transformation();
 							unit.generateClassfile();
+						}
+						if (monitor.isCanceled()) {
+							return;
 						}
 						subMonitor.worked(1);
 					}
