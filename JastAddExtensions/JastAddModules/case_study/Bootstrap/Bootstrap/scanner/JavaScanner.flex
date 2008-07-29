@@ -1,8 +1,9 @@
 module org.jastadd.java14frontend;
 package scanner;
 
-import beaver.Symbol;
-import beaver.Scanner;
+//NEIL: I shouldn't need to do this. Check the imports tests to add this case
+import net.sourceforge.beaver::beaver.Symbol;
+import net.sourceforge.beaver::beaver.Scanner;
 import parser.JavaParser.Terminals;
 import java.io.*;
 

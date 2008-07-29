@@ -8,6 +8,7 @@
  */
 module org.jastadd.java14frontend;
 
+import jastadd$framework::List;
 import java.util.*;
 
 aspect AccessTypes {
