@@ -41,6 +41,15 @@ public class JastAddModules extends JastAdd {
 
 		initOptions();
 		processArgs(args);
+		
+		if (program.options().hasOption("-debug")) {
+			System.out.println("Arguments: ");
+			for (int i = 0; i < args.length; i++) {
+				System.out.print(args[i]);
+				System.out.print(" ");
+			}
+			System.out.println("End arguments");
+		}
 
 		Collection files = program.options().files();
 
