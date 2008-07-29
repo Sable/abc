@@ -1,0 +1,8 @@
+module org.jastadd.java14frontend;
+import java.io.InputStream;
+import java.io.IOException;
+
+public interface JavaParser {
+  public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception;
+}
+

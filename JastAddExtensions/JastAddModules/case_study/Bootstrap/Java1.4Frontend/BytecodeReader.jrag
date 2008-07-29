@@ -1,0 +1,9 @@
+module org.jastadd.java14frontend;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public interface BytecodeReader {
+  public CompilationUnit read(InputStream is, String fullName, Program p) throws FileNotFoundException, IOException;
+}
+

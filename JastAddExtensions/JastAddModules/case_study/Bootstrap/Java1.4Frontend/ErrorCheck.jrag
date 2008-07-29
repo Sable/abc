@@ -1,0 +1,158 @@
+/*
+ * The JastAdd Extensible Java Compiler (http://jastadd.org) is covered
+ * by the modified BSD License. You should have received a copy of the
+ * modified BSD license with this compiler.
+ * 
+ * Copyright (c) 2005-2008, Torbjorn Ekman
+ * All rights reserved.
+ */
+module org.jastadd.java14frontend;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ArrayList;
+
+aspect ErrorCheck {
+
+  String ASTNode.sourceFile() {
+    ASTNode node = this;
+    while(node != null && !(node instanceof CompilationUnit))
+      node = node.getParent();
+    if(node == null)
+      return "Unknown file";
+    CompilationUnit u = (CompilationUnit)node;
+    return u.relativeName();
+  }
+
+  syn int ASTNode.lineNumber() {
+    ASTNode n = this;
+    while(n.getParent() != null && n.getStart() == 0) {
+      n = n.getParent();
+    }
+    return getLine(n.getStart());
+  }
+
+  eq ClassDecl.lineNumber() = getLine(IDstart);
+  eq MethodDecl.lineNumber() = getLine(IDstart);
+
+  // set start and end position to the same as the argument and return self
+  public ASTNode ASTNode.setLocation(ASTNode node) {
+    setStart(node.getStart());
+    setEnd(node.getEnd());
+    return this;
+  }
+
+  public ASTNode ASTNode.setStart(int i) {
+    start = i;
+    return this;
+  }
+  public int ASTNode.start() {
+    return start;
+  }
+  public ASTNode ASTNode.setEnd(int i) {
+    end = i;
+    return this;
+  }
+  public int ASTNode.end() {
+    return end;
+  }
+
+  public String ASTNode.location() {
+    return "" + lineNumber();
+  }
+  public String ASTNode.errorPrefix() {
+    return sourceFile() + ":" + location() + ":\n" + "  *** Semantic Error: ";
+  }
+  public String ASTNode.warningPrefix() {
+    return sourceFile() + ":" + location() + ":\n" + "  *** WARNING: ";
+  }
+
+  java.util.ArrayList CompilationUnit.errors = new java.util.ArrayList();
+  java.util.ArrayList CompilationUnit.warnings = new java.util.ArrayList();
+
+  public Collection CompilationUnit.parseErrors() { return parseErrors; }
+  public void CompilationUnit.addParseError(Problem msg) { parseErrors.add(msg); }
+  Collection CompilationUnit.parseErrors = new ArrayList();
+
+
+  void ASTNode.error(String s) {
+    ASTNode node = this;
+    while(node != null && !(node instanceof CompilationUnit))
+      node = node.getParent();
+    CompilationUnit cu = (CompilationUnit)node;
+    if(getNumChild() == 0 && getStart() != 0 && getEnd() != 0) {  
+      int line = getLine(getStart());
+      int column = getColumn(getStart());
+      int endLine = getLine(getEnd());
+      int endColumn = getColumn(getEnd());
+      cu.errors.add(new Problem(sourceFile(), s, line, column, endLine, endColumn, Problem.Severity.ERROR, Problem.Kind.SEMANTIC));
+    }
+    else
+      cu.errors.add(new Problem(sourceFile(), s, lineNumber(), Problem.Severity.ERROR, Problem.Kind.SEMANTIC));
+  }
+
+  void ASTNode.warning(String s) {
+    ASTNode node = this;
+    while(node != null && !(node instanceof CompilationUnit))
+      node = node.getParent();
+    CompilationUnit cu = (CompilationUnit)node;
+    cu.warnings.add(new Problem(sourceFile(), "WARNING: " + s, lineNumber(), Problem.Severity.WARNING));
+  }
+  
+  public void ASTNode.collectErrors() {
+    nameCheck();
+    typeCheck();
+    accessControl();
+    exceptionHandling();
+    checkUnreachableStmt();
+    definiteAssignment();
+    checkModifiers();
+    for(int i = 0; i < getNumChild(); i++) {
+      getChild(i).collectErrors();
+    }
+  }
+
+  public void Program.errorCheck(Collection collection) {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit cu = (CompilationUnit)iter.next();
+      if(cu.fromSource()) {
+        cu.collectErrors();
+        collection.addAll(cu.errors);
+      }
+    }
+  }
+  public void Program.errorCheck(Collection collection, Collection warn) {
+    for(Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
+      CompilationUnit cu = (CompilationUnit)iter.next();
+      if(cu.fromSource()) {
+        cu.collectErrors();
+        collection.addAll(cu.errors);
+        warn.addAll(cu.warnings);
+      }
+    }
+  }
+
+  public void CompilationUnit.errorCheck(Collection collection) {
+    collectErrors();
+    collection.addAll(errors);
+  }
+  public void CompilationUnit.errorCheck(Collection err, Collection warn) {
+    collectErrors();
+    err.addAll(errors);
+    warn.addAll(warnings);
+  }
+  
+  public boolean Program.errorCheck() {
+    Collection collection = new LinkedList();
+    errorCheck(collection);
+    if(collection.isEmpty())
+      return false;
+    System.out.println("Errors:");
+    for(Iterator iter = collection.iterator(); iter.hasNext(); ) {
+      String s = (String)iter.next();
+      System.out.println(s);
+    }
+    return true;
+  }
+}
