@@ -170,7 +170,8 @@ aspect NameResolution {
     when(hasPackage(name()))
     to Access new PackageAccess(name());
     */
-    when(!duringSyntacticClassification())
+	//NEIL: Temporary
+    when(!duringorg_jastadd_java14compiler_frontend_SyntacticClassification())
     to Access{
       if(!lookupType(name()).isEmpty())
         return new TypeAccess(name(), start(), end());
@@ -189,7 +190,7 @@ aspect NameResolution {
     when(hasPackage(name()))
     to Access new PackageAccess(name());
     */
-    when(!duringSyntacticClassification())
+    when(!duringorg_jastadd_java14compiler_frontend_SyntacticClassification())
     to Access {
       if(!lookupVariable(name()).isEmpty()) {
         return new VarAccess(name(), start(), end());
@@ -205,7 +206,7 @@ aspect NameResolution {
 
   // combine two package access into one node
   rewrite Dot {
-    when(!duringSyntacticClassification() && leftSide().isPackageAccess() && rightSide().isPackageAccess())
+    when(!duringorg_jastadd_java14compiler_frontend_SyntacticClassification() && leftSide().isPackageAccess() && rightSide().isPackageAccess())
     to Access {
       PackageAccess left = (PackageAccess)leftSide();
       PackageAccess right = (PackageAccess)rightSide();
@@ -217,7 +218,7 @@ aspect NameResolution {
         
   // combine PackageAccess + TypeAccess into one qualified TypeAccess
   rewrite Dot {
-    when(!duringSyntacticClassification() && leftSide().isPackageAccess() && !((Access)leftSide()).hasPrevExpr() && rightSide() instanceof TypeAccess)
+    when(!duringorg_jastadd_java14compiler_frontend_SyntacticClassification() && leftSide().isPackageAccess() && !((Access)leftSide()).hasPrevExpr() && rightSide() instanceof TypeAccess)
     to Access {
       PackageAccess left = (PackageAccess)leftSide();
       TypeAccess right = (TypeAccess)rightSide();
