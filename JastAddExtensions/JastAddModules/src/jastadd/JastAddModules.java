@@ -71,6 +71,19 @@ public class JastAddModules extends JastAdd {
 				program.addSourceFile(name);
 			}
 
+			//MODULE PROCESSING STARTS HERE
+			//NOTE TO MAINTAINERS:
+			//Try very hard not to insert anything between the start and the end of the 
+			//module passes. If you do:
+			//  You MUST avoid going down into normal CompilationUnits as that would
+			//    trigger rewrites that use lookupType (which in turn relies on the 
+			//    ModuleCompilationUnits being properly placed and configured above
+			//    their member CUs.
+			//  NEVER CALL flushCaches. See rewrites above.
+			//  Don't call flushCache unless you Really Know What You're Doing (R)
+			//  Try to always use the compilationUnitIterator() instead of doing
+			//    a standard AST traversal. Most passes should not go into uninstantiated
+			//    modules.
 			boolean result = true;
 			Collection errors = new LinkedList();
 			Collection warnings = new LinkedList();
@@ -172,6 +185,7 @@ public class JastAddModules extends JastAdd {
 				return false;
 			}
 			program.setModuleProcessingComplete(true);
+			//MODULE PROCESSING ENDS HERE
 
 			if (program.options().hasOption(DEBUG_OPTION)) {
 

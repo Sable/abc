@@ -1,0 +1,19 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   Main.java
+
+import m1xx.AXX;
+
+public class Main
+{
+
+    public static void main(String args[])
+    {
+        AXX axx1 = new AXX();
+    }
+
+    public Main()
+    {
+    }
+}

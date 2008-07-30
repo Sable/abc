@@ -65,8 +65,17 @@ aspect JAModuleLookupType {
 	//type demand imports to come before lookups to the local packages of the imported
 	//modules. This implementation is extremely suspicious, try to redesign to make it go away. 
 	syn lazy SimpleSet ModuleCompilationUnit.moduleLookupType(String packageName, String typeName, boolean includeImportedModulesLocalPackages) {
-		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.getChild().lookupType called before module processing was complete";
+	
+		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.moduleLookupType called before module processing was complete";
 		assert (isModuleInstantiated()) : "ModuleCompilationUnit.moduleLookupType() is being called on an uninstantiated mdoule";
+		
+		if (this.isSuperInstance()) {
+			return getRealInstance().moduleLookupType(
+						packageName, 
+						typeName, 
+						includeImportedModulesLocalPackages);
+		}
+		
 		SimpleSet ret = SimpleSet.emptySet;
 		//special case for java.** packages, always look at the top level first for a match
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && packageName.startsWith("java.")) {
@@ -78,24 +87,27 @@ aspect JAModuleLookupType {
 		
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
 			//local package lookup
-			LocalModulePackage localPackage = getLocalPackage(packageName);
-			if (localPackage != null) {
-				String localPackageName = makeGlobalPackageName(packageName, localPackage);
-				TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
-				if (type != null) {
-					return ret.add(type);
-				}
+			ret = localModuleLookupType(packageName, typeName);
+			if (!ret.isEmpty()) {
+				return ret;
 			}
+			//local lookup through the superInstances
+			ModuleCompilationUnit superInstance = getSuperInstance();
+			while (superInstance != null) {
+				ret = superInstance.localModuleLookupType(packageName, typeName);
+				if (!ret.isEmpty()) {
+					return ret;
+				}
+				superInstance = superInstance.getSuperInstance();
+			}
+			
 			//lookup through packages of imported types
 			if (includeImportedModulesLocalPackages) {
 				for (ImportedModule importedCU : getImportedModuleMap().values()) {
-					localPackage = importedCU.getModuleCU().getLocalPackage(packageName);
-					if (localPackage != null) {
-						String localPackageName = importedCU.getModuleCU().makeGlobalPackageName(packageName, localPackage);
-						TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
-						if (type != null) {
-							ret = ret.add(type);
-						}
+					SimpleSet localFromImport = 
+						importedCU.getModuleCU().localModuleLookupType(packageName, typeName);
+					for (Iterator iter = localFromImport.iterator(); iter.hasNext(); ) {
+						ret = ret.add(iter.next());
 					}
 				}
 				if (!ret.isEmpty()) {
@@ -149,6 +161,21 @@ aspect JAModuleLookupType {
 		}
 	}
 	
+	syn lazy SimpleSet ModuleCompilationUnit.localModuleLookupType(
+			String packageName, 
+			String typeName) {
+		SimpleSet ret = SimpleSet.emptySet;
+		LocalModulePackage localPackage = getLocalPackage(packageName);
+		if (localPackage != null) {
+			String localPackageName = makeGlobalPackageName(packageName, localPackage);
+			TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
+			if (type != null) {
+				return ret.add(type);
+			}
+		}
+		return ret;
+	}
+	
 	//TODO: see how these can be turned to lazy
 	public SimpleSet CompilationUnit.moduleMemberTypes(SimpleSet set) {
 		for(int i = 0; i < getNumTypeDecl(); i++) {
@@ -191,6 +218,10 @@ aspect JAModuleLookupType {
 			// but not including the local packages of imported modules
 			ModuleCompilationUnit mcu = getModuleCompilationUnit();
 			assert (mcu != null) : "Should be a member of a ModuleCompilationUnit";
+			if (mcu.isSuperInstance()) {
+				mcu = mcu.getRealInstance();
+			}
+			
 			set = mcu.moduleLookupType(moduleLocalPackageName(), name, false);
 			if (!set.isEmpty()) {
 				return addGenericTypes(set);

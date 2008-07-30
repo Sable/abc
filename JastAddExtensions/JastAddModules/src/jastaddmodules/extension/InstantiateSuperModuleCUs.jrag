@@ -1,0 +1,52 @@
+
+aspect InstantiateSuperModuleCUs {
+	//pointer to the real module instance (is not null if this is just a superInstance and
+	//not an actual module instance
+	protected ModuleCompilationUnit ModuleCompilationUnit.realInstance = null;
+	public void ModuleCompilationUnit.setRealInstance(ModuleCompilationUnit realInstance) {
+		this.realInstance = realInstance;
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.getRealInstance() {
+		return this.realInstance;
+	}
+	public boolean ModuleCompilationUnit.isSuperInstance() {
+		return this.realInstance != null && this.realInstance != this;
+	}
+	protected ModuleCompilationUnit ModuleCompilationUnit.superInstance = null;
+	public void ModuleCompilationUnit.setSuperInstance(ModuleCompilationUnit superInstance) {
+		this.superInstance = superInstance;
+	}
+	public ModuleCompilationUnit ModuleCompilationUnit.getSuperInstance() {
+		return this.superInstance;
+	}
+	public boolean ModuleCompilationUnit.hasSuperInstance() {
+		return this.superInstance != null;
+	}
+	
+	public void ModuleCompilationUnit.instantiateSuperModules() {
+		ModuleCompilationUnit currInstance = this;
+		this.setRealInstance(this);
+		//for each base supermodule
+		while (currInstance.hasSuperModule()) {
+		//	create a new instance of the super module using the super module name
+			ModuleCompilationUnit superInstance = 
+				currInstance.getSuperModuleCU().instantiateModuleAs(
+						this, 
+						currInstance.getSuperModuleCU().createSuperName(this));
+		//	set instantiated to true
+			superInstance.setModuleInstantiated(true); 
+		//	set the real instance to this
+			superInstance.setRealInstance(this);
+		//	set the the superinstance of the previous instance to the new superinstance
+			currInstance.setSuperInstance(superInstance);
+		//	add the new superinstance to the Program's CU list
+			getHostProgram().getCompilationUnitList().addChild(superInstance);
+		//	loop
+			currInstance = superInstance;
+		}
+	}
+	
+	public String ModuleCompilationUnit.createSuperName(ModuleCompilationUnit context) {
+		return context.getModuleName() + "$super$" + getModuleName();
+	}
+}

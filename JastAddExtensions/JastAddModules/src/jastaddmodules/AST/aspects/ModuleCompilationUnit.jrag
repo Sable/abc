@@ -156,6 +156,16 @@ aspect ModuleCompilationUnit {
 		
 		if (context == null || getInstanceContext().size() == 0) {
 			assert (getHostProgram() != null || getParent() != null) : "Unable to find host program in module " + getModuleName();
+			
+			//remove the super instances from the Program CU list
+			ModuleCompilationUnit superInstance = this.getSuperInstance();
+			while (superInstance != null) {
+				int index = getHostProgram().getCompilationUnitList().getIndexOfChild(superInstance);
+				getHostProgram().getCompilationUnitList().removeChild(index);
+				superInstance = superInstance.getSuperInstance();
+			}
+			
+			//remove this from the Program CU list
 			int index = getHostProgram().getCompilationUnitList().getIndexOfChild(this);
 			getHostProgram().getCompilationUnitList().removeChild(index);
 		}

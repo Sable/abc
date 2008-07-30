@@ -45,11 +45,6 @@ aspect CollectSuperModuleCUs {
 
 		//collect the super modules of the super module;
 		getSuperModuleCU().collectSuperModules();
-		//copy the CU list of the super module and add it to our own
-		for (CompilationUnit cu : getSuperModuleCU().getCompilationUnitList()) {
-			//make sure this is done BEFORE generate import own
-			this.getCompilationUnitList().add(cu.fullCopy());
-		}
 		//add the memberDecls of the super module to the start of this module (create a new list)
 		List<ModuleMemberDecl> newMemberList = new List<ModuleMemberDecl>();
 		List<ModuleMemberDecl> superMemberList = getSuperModuleCU().getModuleMemberDeclList();

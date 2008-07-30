@@ -18,20 +18,14 @@ aspect JAModuleLookupPackage {
 		
 		//local package lookup
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
-			LocalModulePackage localModulePackage = getLocalPackage(packageName);
-			if (localModulePackage != null&&
-					(localModulePackage.isExported() || 
-						(!localModulePackage.isExported() && context == this)
-					)
-				) {
-				ret.add(makeGlobalPackageName(packageName, localModulePackage));
+			//self first
+			ret = localLookupPackage(packageName, context);
+			if (!ret.isEmpty()) {
 				return ret;
 			}
+			//then try imported modules
 			for (ImportedModule importedCU : getImportedModuleMap().values()) {
-				localModulePackage = importedCU.getModuleCU().getLocalPackage(packageName);
-				if (localModulePackage != null) {
-					ret.add(importedCU.getModuleCU().makeGlobalPackageName(packageName, localModulePackage));
-				}
+				ret.addAll(importedCU.getModuleCU().localLookupPackage(packageName, context));
 			}
 			if (ret.size() > 0) {
 				return ret;
@@ -75,6 +69,19 @@ aspect JAModuleLookupPackage {
 		//if none found, return check program (is used in hasPackage check in JAModuleLookupPackage)
 		if (getHostProgram().hasPackage(packageName)) {
 			ret.add(packageName);
+		}
+		return ret;
+	}
+	
+	public Set<String> ModuleCompilationUnit.localLookupPackage(String packageName, ModuleCompilationUnit context) {
+		Set<String> ret = new HashSet<String>();
+		LocalModulePackage localModulePackage = getLocalPackage(packageName);
+		if (localModulePackage != null&&
+				(localModulePackage.isExported() || 
+					(!localModulePackage.isExported() && context == this)
+				)
+			) {
+			ret.add(makeGlobalPackageName(packageName, localModulePackage));
 		}
 		return ret;
 	}

@@ -6,12 +6,22 @@
 package m1.m3xxx;
 
 import java.io.PrintStream;
+import m1.m3xxx$super$m3.C;
+import m1.m3xxx$super$m3x.CX;
+import m1.m3xxx$super$m3xx.CXX;
 
 public class CXXX
 {
 
     public CXXX()
     {
+        c = new C();
+        cx = new CX();
+        cxx = new CXX();
         System.out.println(getClass());
     }
+
+    C c;
+    CX cx;
+    CXX cxx;
 }

@@ -75,16 +75,12 @@ module: m3, file: m3.module, base module: m3
 	C.java package:m3
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1x, file: m1x.module, base module: m1x
-	A.java package:m1x
 module: z, file: z.module, base module: z
 	Z.java package:z
-	X.java package:z
-	A.java package:z
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: a, file: a.module, base module: a
 	X.java package:a
-	A.java package:a
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
@@ -120,18 +116,19 @@ module: m3, file: m3.module, base module: m3
 	C.java package:m3
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1x, file: m1x.module, base module: m1x
-	A.java package:m1x
 module: z, file: z.module, base module: z
 	Z.java package:z
-	X.java package:z
-	A.java package:z
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: a, file: a.module, base module: a
 	X.java package:a
-	A.java package:a
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
+module: z$super$a, file: a.module, base module: a
+	X.java package:z$super$a
+module: z$super$m1x, file: m1x.module, base module: m1x
+module: z$super$m1, file: m1.module, base module: m1
+	A.java package:z$super$m1
 module: z$m2, file: m2.module, base module: m2
 	B.java package:z$m2
 module: z.m2alias1, file: m2.module, base module: m2
@@ -158,6 +155,12 @@ module a, base:a, context:[], instantiated:false
 	
 module m2, base:m2, context:[], instantiated:false
 	
+module z$super$a, base:a, context:[], instantiated:true
+	
+module z$super$m1x, base:m1x, context:[], instantiated:true
+	
+module z$super$m1, base:m1, context:[], instantiated:true
+	
 module z$m2, base:m2, context:[z], instantiated:true
 	[export]m3:z.m3, jastadd$framework:jastadd$framework
 module z.m2alias1, base:m2, context:[z], instantiated:true
@@ -174,18 +177,19 @@ Module: m3
 	m3.C
 Module: jastadd$framework
 Module: m1x
-	m1x.A
 Module: z
-	z.X
 	z.Z
-	z.A
 Module: m1
 	m1.A
 Module: a
 	a.X
-	a.A
 Module: m2
 	m2.B
+Module: z$super$a
+	z$super$a.X
+Module: z$super$m1x
+Module: z$super$m1
+	z$super$m1.A
 Module: z$m2
 	z$m2.B
 Module: z.m2alias1
@@ -198,4 +202,4 @@ Module: z.m3alias3
 	z.m3alias3.C
 
 ----------CU iterator----------
-m3.module, ../testlib/jastadd$framework.module, m1x.module, z.module, Z.java, X.java, A.java, m1.module, a.module, m2.module, m2.module, B.java, m2.module, B.java, m2.module, B.java, m3.module, C.java, m3.module, C.java
+m3.module, ../testlib/jastadd$framework.module, m1x.module, z.module, Z.java, m1.module, a.module, m2.module, a.module, X.java, m1x.module, m1.module, A.java, m2.module, B.java, m2.module, B.java, m2.module, B.java, m3.module, C.java, m3.module, C.java

@@ -72,13 +72,10 @@ module: m3, file: m3.module, base module: m3
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1x, file: m1x.module, base module: m1x
 	AX.java package:m1x
-	A.java package:m1x
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: m1xx, file: m1xx.module, base module: m1xx
 	AXX.java package:m1xx
-	AX.java package:m1xx
-	A.java package:m1xx
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
@@ -107,13 +104,10 @@ module: m3, file: m3.module, base module: m3
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1x, file: m1x.module, base module: m1x
 	AX.java package:m1x
-	A.java package:m1x
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: m1xx, file: m1xx.module, base module: m1xx
 	AXX.java package:m1xx
-	AX.java package:m1xx
-	A.java package:m1xx
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 module: m1.m2alias3.m3, file: m3.module, base module: m3

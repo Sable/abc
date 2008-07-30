@@ -6,8 +6,8 @@
 package m1;
 
 import java.io.PrintStream;
-import m1.m3xx.C;
-import m1.m3xx.CX;
+import m1.m3xx$super$m3.C;
+import m1.m3xx$super$m3x.CX;
 import m1.m3xx.CXX;
 import m1.m3xxx.CXXX;
 
@@ -19,9 +19,9 @@ public class A
         c = new C();
         cx = new CX();
         cxx = new CXX();
-        c2 = new m1.m3xxx.C();
-        cx2 = new m1.m3xxx.CX();
-        cxx2 = new m1.m3xxx.CXX();
+        c2 = new m1.m3xxx$super$m3.C();
+        cx2 = new m1.m3xxx$super$m3x.CX();
+        cxx2 = new m1.m3xxx$super$m3xx.CXX();
         cxxx = new CXXX();
         System.out.println(getClass());
     }
@@ -29,8 +29,8 @@ public class A
     C c;
     CX cx;
     CXX cxx;
-    m1.m3xxx.C c2;
-    m1.m3xxx.CX cx2;
-    m1.m3xxx.CXX cxx2;
+    m1.m3xxx$super$m3.C c2;
+    m1.m3xxx$super$m3x.CX cx2;
+    m1.m3xxx$super$m3xx.CXX cxx2;
     CXXX cxxx;
 }

@@ -39,7 +39,7 @@ aspect GenerateImportOwn {
 		
 		//generate import owns starting from the instance module
 		getInstanceModuleCU().generateImportOwn(null);
-		getInstanceModuleCU().setSourceStatement("-instance-module"); //debug
+		getInstanceModuleCU().setSourceStatement(null); //debug
 		
 		return true;
 	}
@@ -69,6 +69,9 @@ aspect GenerateImportOwn {
 			return ret;
 		}
 		ret.setModuleInstantiated(true);
+		
+		//create super instances
+		ret.instantiateSuperModules();
 		
 		//process imports
 		ret = generateImportCUs(ret);
@@ -103,15 +106,15 @@ aspect GenerateImportOwn {
 				//if no export name, generate M$M' name
 				if (importDecl.getAsType() instanceof AsTypeNone) {
 					instanceCU = currImport.generateImportOwn(ret);
-					instanceCU.setSourceStatement(importDecl.toString()); //debug
+					instanceCU.setSourceStatement(importDecl);
 				} else {
 					localAccessName = importDecl.getAsModule().getID();
 					if (importDecl.getAsType() instanceof AsTypeOwn) {
 						instanceCU = currImport.generateImportOwn(ret, createOwnName(ret, importDecl.getAsModule().getID()));
-						instanceCU.setSourceStatement(importDecl.toString()); //debug
+						instanceCU.setSourceStatement(importDecl); 
 					} else if (importDecl.getAsType() instanceof AsTypeExport) {
 						instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getAsModule().getID()));
-						instanceCU.setSourceStatement(importDecl.toString()); //debug
+						instanceCU.setSourceStatement(importDecl); 
 					}
 				}
 				instanceCU.setBaseCU(currImport.getBaseCU());
@@ -119,7 +122,7 @@ aspect GenerateImportOwn {
 			} else {
 				//generate from a null context
 				currImport = currImport.generateImportOwn(null);
-				currImport.setSourceStatement(importDecl.toString()); //debug
+				currImport.setSourceStatement(importDecl); 
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
@@ -181,7 +184,7 @@ aspect GenerateImportOwn {
 			} else if (mergeMember.getAsType() instanceof AsTypeExport) {
 				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias));
 			}
-			mergedCU.setSourceStatement(mergeMember.toString()); //debug
+			mergedCU.setSourceStatement(mergeMember); //debug
 			getHostProgram().getCompilationUnitList().addChild(mergedCU);
 			
 			boolean replaceSelf = false; //is set to true if mergedCU itslef is found in the imports of the instance context
@@ -257,11 +260,11 @@ aspect GenerateImportOwn {
 		return moduleInstantiated;
 	}
 	
-	public String ModuleCompilationUnit.sourceStatement;
-	public void ModuleCompilationUnit.setSourceStatement(String s) {
-		this.sourceStatement = s;
+	public ModuleMemberDecl ModuleCompilationUnit.sourceStatement = null;
+	public void ModuleCompilationUnit.setSourceStatement(ModuleMemberDecl decl) {
+		this.sourceStatement = decl;
 	}
-	public String ModuleCompilationUnit.getSourceStatement() {
+	public ModuleMemberDecl ModuleCompilationUnit.getSourceStatement() {
 		return this.sourceStatement;
 	}
 	
