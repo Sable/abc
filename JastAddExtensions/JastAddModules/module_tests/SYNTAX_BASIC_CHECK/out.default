@@ -134,4 +134,4 @@ module M3, base:M3, context:[], instantiated:false
 	
 Unrecoverable semantic error(s) found.
 M.module:6,7:
-  Semantic Error: Module being merged is a base module. Merging is only allowed for import own modules.
+  Semantic Error: Module being merged is a base module or is accessed through a base module. Merging is only allowed for import own modules.
