@@ -27,10 +27,12 @@ import org.jastadd.plugin.model.JastAddModel.FileInfo;
 public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
+		return computeCompletionProposals(viewer.getDocument(), documentOffset);
+	}
+	
+	public ICompletionProposal[] computeCompletionProposals(IDocument document, int documentOffset) {
 		try {
-
 			Collection proposals = new ArrayList();
-			IDocument document = viewer.getDocument();
 			String content = document.get();
 			String[] linePart = extractLineParts(content, documentOffset); // pos 0 - name, pos 1 - filter
 			if(linePart != null) {
@@ -248,4 +250,5 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
+	
 }

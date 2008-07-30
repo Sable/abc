@@ -11,6 +11,7 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.jastaddj.completion.JastAddJCompletionProcessor;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.jastaddj.editor.actions.CompletionHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
@@ -193,7 +194,10 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
 				"Rename", "JastAddJ Rename", "Shift+Alt+R",
 				new RenameRefactoringHandler());
-
+		
+		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
+				"Completion", "JastAddJ Completion", "Ctrl+Space", 
+				new CompletionHandler());
 	}
 
 	@Override
