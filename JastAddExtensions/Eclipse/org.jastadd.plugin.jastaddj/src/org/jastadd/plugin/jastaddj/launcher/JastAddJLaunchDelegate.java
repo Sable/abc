@@ -7,8 +7,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -20,7 +18,6 @@ import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -113,6 +110,4 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 			launch.setSourceLocator(sourceLocator);
 		}
 	}
-
-
 }

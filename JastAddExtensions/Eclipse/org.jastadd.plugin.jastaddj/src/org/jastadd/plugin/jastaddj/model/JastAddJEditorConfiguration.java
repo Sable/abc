@@ -157,11 +157,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	public void populateCommands() throws ParseException, IOException {
 		installSourceCommand(
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
-				"Find Declaration", "JastAddJ Find Declaration", "Ctrl+D",
+				"Find Declaration", "JastAddJ Find Declaration", "F3",
 				new FindDeclarationHandler());
 
 		installSourceCommand("org.jastadd.plugin.jastaddj.find.FindReferences",
-				"Find References", "JastAddJ Find References", "Ctrl+R",
+				"Find References", "JastAddJ Find References", "Ctrl+Shift+G",
 				new FindReferencesHandler());
 
 		installSourceCommand("org.jastadd.plugin.jastaddj.find.FindImplements",
@@ -211,13 +211,13 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 
 		addOrEnhanceTopMenuItem(searchMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindDeclarationTopMenuItem",
-				"Find &Declaration",
+				"Find Declaration",
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
 				new FindDeclarationHandler());
 
 		addOrEnhanceTopMenuItem(searchMenu, actionBuilder,
 				"org.jastadd.plugin.jastaddj.find.FindReferencesTopMenuItem",
-				"Find &References",
+				"Find References",
 				"org.jastadd.plugin.jastaddj.find.FindReferences",
 				new FindReferencesHandler());
 
@@ -274,17 +274,18 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	protected void populateFindContextMenuItems(IMenuManager findMenu,
 			JastAddEditor editor) {
 
-		addContextMenuItem(findMenu, "Find &Declaration",
+		addContextMenuItem(findMenu, "Find Declaration",
 				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
 				new FindDeclarationHandler());
 
-		addContextMenuItem(findMenu, "Find &References",
+		addContextMenuItem(findMenu, "Find References",
 				"org.jastadd.plugin.jastaddj.find.FindReferences",
 				new FindReferencesHandler());
 
 		addContextMenuItem(findMenu, "Find &Implements",
 				"org.jastadd.plugin.jastaddj.find.FindImplements",
 				new FindImplementsHandler());
+		
 	}
 
 	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu,

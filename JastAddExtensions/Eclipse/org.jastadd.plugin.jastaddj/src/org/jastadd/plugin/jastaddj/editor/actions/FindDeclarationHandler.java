@@ -13,8 +13,6 @@ import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.search.JastAddSearchQuery;
 
-import com.sun.corba.se.impl.orbutil.graph.Node;
-
 import AST.TypeDecl;
 
 public class FindDeclarationHandler extends JastAddActionDelegate {
@@ -37,7 +35,7 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 			model.openFile(target);
 			
 			StringBuffer s = new StringBuffer();
-			s.append("Find declaration of ");
+			s.append("Declaration of ");
 			synchronized (selectedNode.treeLockObject()) {
 				if(selectedNode instanceof TypeDecl)
 					s.append(((TypeDecl)selectedNode).typeName());
@@ -46,8 +44,8 @@ public class FindDeclarationHandler extends JastAddActionDelegate {
 				}
 			}
 	
-			JastAddSearchQuery query = new JastAddSearchQuery(declarations, s.toString());
-			NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);
+			//JastAddSearchQuery query = new JastAddSearchQuery(declarations, s.toString());
+			//NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);
 		}
 	}
 	

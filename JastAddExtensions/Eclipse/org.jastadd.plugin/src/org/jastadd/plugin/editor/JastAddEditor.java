@@ -1,7 +1,10 @@
 package org.jastadd.plugin.editor;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -30,6 +33,27 @@ import org.jastadd.plugin.resources.JastAddDocumentProvider;
  */
 public abstract class JastAddEditor extends TextEditor {
 		
+	@Override
+	public void doSave(IProgressMonitor progressMonitor) {
+		super.doSave(progressMonitor);
+		IEditorInput input = getEditorInput();
+		if (input instanceof IFileEditorInput) {
+			IFile file = ((IFileEditorInput)input).getFile();
+			final IProject project = file.getProject();
+			final JastAddModel m = model;
+			IWorkspaceRunnable runnable= new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					m.checkForErrors(project, monitor);
+				}
+			};
+			try {
+				project.getWorkspace().run(runnable, progressMonitor);
+			} catch (CoreException e) {
+				model.logError(e, "Problem with error check on save");
+			}
+		}
+	}
+
 	private JastAddContentOutlinePage fOutlinePage;
 	private ProjectionSupport projectionSupport;
 	private JastAddEditorFolder folder;

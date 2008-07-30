@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -43,7 +42,6 @@ import org.jastadd.plugin.jastadd.generated.AST.List;
 import org.jastadd.plugin.jastadd.generated.AST.MethodAccess;
 import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ParExpr;
-import org.jastadd.plugin.jastadd.generated.AST.Problem;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
@@ -656,7 +654,8 @@ public class Model extends JastAddJModel {
   		return true;
   	}
   	
-  	public void checkForErrors(IProject project) {	
+  	public void checkForErrors(IProject project, IProgressMonitor monitor) {
+  		/*
 		try {
 			try {				
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
@@ -672,16 +671,34 @@ public class Model extends JastAddJModel {
 					return;
 				Map<String,IFile> map = sourceMap(project, buildConfiguration);							
 				if (map != null) {
+					monitor.beginTask("Building files in project " + project.getName(), 100);
+					if (monitor.isCanceled()) {
+						return;
+					}
+					SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 50);
+					subMonitor.beginTask("", map.keySet().size());
 					for(String fileName : map.keySet()) {
 						program.addSourceFile(fileName);
+						subMonitor.worked(1);
+						if (monitor.isCanceled()) {
+							return;
+						}
 					}
-				}
-				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
-					ICompilationUnit unit = (ICompilationUnit) iter.next();
-					if (unit.fromSource()) {
-						IFile unitFile = map.get(unit.getFileName());
-						updateErrorsInFile(unit, unitFile, true);
+					subMonitor.done();
+					subMonitor = new SubProgressMonitor(monitor, 50);
+					subMonitor.beginTask("", map.keySet().size());
+					for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+						ICompilationUnit unit = (ICompilationUnit) iter.next();
+						if (unit.fromSource()) {
+							IFile unitFile = map.get(unit.getFileName());
+							updateErrorsInFile(unit, unitFile, true);
+							subMonitor.worked(1);
+							if (monitor.isCanceled()) {
+								return;
+							}
+						}
 					}
+					subMonitor.done();
 				}
 			} catch (CoreException e) {
 				addErrorMarker(project, "Error check failed because: "
@@ -691,6 +708,9 @@ public class Model extends JastAddJModel {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logError(e, "Error check failed");
+		} finally {
+			monitor.done();
 		}
+		*/
 	}
 }

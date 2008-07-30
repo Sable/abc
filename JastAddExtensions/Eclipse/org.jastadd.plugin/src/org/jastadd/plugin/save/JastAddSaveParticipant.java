@@ -15,12 +15,15 @@ public class JastAddSaveParticipant implements ISaveParticipant {
 
 	@Override
 	public void prepareToSave(ISaveContext context) throws CoreException {
+		/*
+		System.out.println("JastAddSaveP..prepare");
 		if (context.getKind() == ISaveContext.SNAPSHOT) {
 			IProject project = context.getProject();
 			for(JastAddModel m : JastAddModelProvider.getModels(project)) {
 				m.checkForErrors(project);
 			}	
 		}
+		*/
 	}
 
 	@Override
@@ -29,6 +32,6 @@ public class JastAddSaveParticipant implements ISaveParticipant {
 
 	@Override
 	public void saving(ISaveContext context) throws CoreException {
-		System.out.println("JastAddSaveParticipant.saving");
+		//System.out.println("JastAddSaveParticipant.saving");
 	}
 }

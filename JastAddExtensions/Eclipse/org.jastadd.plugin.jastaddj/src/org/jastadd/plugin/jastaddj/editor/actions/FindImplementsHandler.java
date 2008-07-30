@@ -11,11 +11,7 @@ import org.jastadd.plugin.AST.IOutlineNode;
 import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindImplementsNode;
-import org.jastadd.plugin.jastaddj.AST.IJastAddJFindReferencesNode;
 import org.jastadd.plugin.search.JastAddSearchQuery;
-
-import AST.ASTNode;
-import AST.TypeDecl;
 
 public class FindImplementsHandler extends JastAddActionDelegate {
 
@@ -30,7 +26,7 @@ public class FindImplementsHandler extends JastAddActionDelegate {
 				IJastAddJFindImplementsNode decl = (IJastAddJFindImplementsNode)target;
 				Collection references = new ArrayList();
 				StringBuffer s = new StringBuffer();
-				s.append("Find implementors of ");
+				s.append("Implementors of ");
 				synchronized (node.treeLockObject()) {
 					references = decl.implementors();
 					if(node instanceof IOutlineNode) {

@@ -2,8 +2,6 @@ package org.jastadd.plugin.jastaddj.launcher;
 
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 

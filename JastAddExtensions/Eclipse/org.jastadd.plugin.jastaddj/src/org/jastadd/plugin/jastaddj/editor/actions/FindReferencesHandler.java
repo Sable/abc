@@ -26,7 +26,7 @@ public class FindReferencesHandler extends JastAddActionDelegate {
 				IJastAddJFindReferencesNode decl = (IJastAddJFindReferencesNode)target;
 				Collection references = new ArrayList();
 				StringBuffer s = new StringBuffer();
-				s.append("Find references of ");
+				s.append("References of ");
 				synchronized (node.treeLockObject()) {
 					references = decl.references();
 					if(node instanceof IOutlineNode) {
@@ -34,7 +34,7 @@ public class FindReferencesHandler extends JastAddActionDelegate {
 					}
 				}
 				JastAddSearchQuery query = new JastAddSearchQuery(references, s.toString());
-				NewSearchUI.runQueryInForeground(null, (ISearchQuery)query);				
+				NewSearchUI.runQueryInBackground((ISearchQuery)query);				
 			}
 		}
 	}

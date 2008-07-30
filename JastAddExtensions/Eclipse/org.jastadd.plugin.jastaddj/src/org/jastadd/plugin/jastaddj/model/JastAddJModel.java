@@ -93,24 +93,14 @@ public class JastAddJModel extends JastAddModel {
 		IProgram program;
 		JastAddJBuildConfiguration buildConfiguration;
 		private boolean changed = false;
-		private boolean generated = false;
 		public void changed() {
 			changed = true;
-		}
-		public void generated() {
-			generated = true;
 		}
 		public void clearChanges() {
 			changed = false;
 		}
-		public void clearGenerated() {
-			generated = false;
-		}
 		public boolean hasChaged() {
 			return changed;
-		}
-		public boolean isGenerated() {
-			return generated;
 		}
 	}
 
@@ -292,6 +282,13 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	protected void completeBuild(IProject project, IProgressMonitor monitor) {
+		ProgramInfo info = getProgramInfo(project);
+		if (info != null && info.hasChaged()) {
+			info.clearChanges();
+		} else {
+			// Could avoid a rebuild here ..
+		}
+		
 		// Build a new project from saved files only.
 		try {
 			try {
@@ -1119,9 +1116,9 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	@Override
-	public void checkForErrors(IProject project) {
+	public void checkForErrors(IProject project, IProgressMonitor monitor) {
 		try {
-			try {				
+			try {		
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
 				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
 				
@@ -1140,18 +1137,35 @@ public class JastAddJModel extends JastAddModel {
 				// Parsing source files
 				Map<String, IFile> map = sourceMap(project, buildConfiguration);				
 				if(map != null) {
+					monitor.beginTask("Building files in project " + project.getName(), 100);
+					if (monitor.isCanceled()) {
+						return;
+					}
+					SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 50);
+					subMonitor.beginTask("", map.keySet().size());
 					for (String fileName : map.keySet()) {
 						program.addSourceFile(fileName);
+						subMonitor.worked(1);
+						if (monitor.isCanceled()) {
+							return;
+						}
 					}
-				}
-				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
-					ICompilationUnit unit = (ICompilationUnit) iter.next();
-					if (unit.fromSource()) {
-						IFile unitFile = map.get(unit.getFileName());
-						updateErrorsInFile(unit, unitFile, true);
+					subMonitor.done();
+					subMonitor = new SubProgressMonitor(monitor, 50);
+					subMonitor.beginTask("", map.keySet().size());
+					for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
+						ICompilationUnit unit = (ICompilationUnit) iter.next();
+						if (unit.fromSource()) {
+							IFile unitFile = map.get(unit.getFileName());
+							updateErrorsInFile(unit, unitFile, true);
+							subMonitor.worked(1);
+							if (monitor.isCanceled()) {
+								return;
+							}
+						}
 					}
+					subMonitor.done();
 				}
-
 			} catch (CoreException e) {
 				addErrorMarker(project, "Problem checking errors: "
 						+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
@@ -1159,6 +1173,9 @@ public class JastAddJModel extends JastAddModel {
 			}
 		} catch (Throwable e) {
 			logError(e, "Problem checking errors");
+		} finally {
+			monitor.done();
 		}
+		
 	}
 }

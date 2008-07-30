@@ -302,6 +302,7 @@ public abstract class JastAddModel {
 			if (lineNumber == -1) {
 				lineNumber = 1;
 			}
+			/*
 			try {
 				DefaultLineTracker t = new DefaultLineTracker();
 				t.set(readTextFile(file.getRawLocation().toOSString()));
@@ -311,6 +312,7 @@ public abstract class JastAddModel {
 			} catch (IOException e) {
 			} catch (BadLocationException e) {
 			}
+			*/
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 		}
 	}
@@ -396,7 +398,7 @@ public abstract class JastAddModel {
 	public abstract String[] getFilterExtensions();
 	
 	public abstract Object getASTRootForLock(IProject project);
-	public abstract void checkForErrors(IProject project);
+	public abstract void checkForErrors(IProject project, IProgressMonitor monitor);
 	
 	private boolean commandsPopulated = false;
 	
