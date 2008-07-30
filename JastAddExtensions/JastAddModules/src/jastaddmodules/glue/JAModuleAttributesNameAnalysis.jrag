@@ -1,0 +1,8 @@
+
+aspect JAModuleAttributesNameAnalysis {
+	protected void ModuleCompilationUnit.collectInhEquations(Map map) {
+		if (isModuleInstantiated()) {
+			super.collectInhEquations(map);
+		}
+	}
+}
