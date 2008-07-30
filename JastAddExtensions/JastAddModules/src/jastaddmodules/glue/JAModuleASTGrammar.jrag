@@ -70,7 +70,6 @@ aspect JAModuleASTGrammar {
 			}
 		}
 		
-		//TODO: Check if the following are needed
 		//Keep these for backward compatibility (so JastAddModules can compile module-less jastadd)
 		// imported types
 		SimpleSet set = set = importedTypes(name);

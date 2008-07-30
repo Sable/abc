@@ -162,7 +162,6 @@ aspect JAModuleErrorCheck {
 		return CycleType.NO_CYCLE;
 	}
 	
-	//TODO: Duplicate module names
 	public void ASTNode.checkDuplicateModuleNames() {
 	}
 	public void ModuleCompilationUnit.checkDuplicateModuleNames() {
@@ -175,7 +174,6 @@ aspect JAModuleErrorCheck {
 		getHostProgram().getModuleNames().add(this.getModuleName());
 	}
 
-	//TODO: Find a way to clear this once error checking is done
 	protected Set<String> Program.moduleNames = new HashSet();
 	public Set<String> Program.getModuleNames() {
 		return this.moduleNames;

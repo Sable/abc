@@ -87,7 +87,6 @@ aspect JAModuleLookupType {
 				}
 			}
 			//lookup through packages of imported types
-			//TODO: Change lookup package to do this same thing
 			if (includeImportedModulesLocalPackages) {
 				for (ImportedModule importedCU : getImportedModuleMap().values()) {
 					localPackage = importedCU.getModuleCU().getLocalPackage(packageName);
@@ -174,7 +173,6 @@ aspect JAModuleLookupType {
 		return ret;
 	}
 	
-	//TODO: Implement module/package disambiguation here
 	//Reimplemented LookupType and Generics since I had to insert the module
 	//imports right above LookupType
 	refine Generics eq CompilationUnit.getChild().lookupType(String name) {

@@ -27,7 +27,6 @@ aspect JAModuleLookupPackage {
 				ret.add(makeGlobalPackageName(packageName, localModulePackage));
 				return ret;
 			}
-			//TODO: Add lookups for directly imported modules
 			for (ImportedModule importedCU : getImportedModuleMap().values()) {
 				localModulePackage = importedCU.getModuleCU().getLocalPackage(packageName);
 				if (localModulePackage != null) {

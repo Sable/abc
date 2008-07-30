@@ -24,7 +24,6 @@ aspect JAModuleImports {
 		}
 	}
 
-	//TODO: Change this
 	inh CompilationUnit TypeImportOnDemandDecl.compilationUnit();
 	refine LookupType eq TypeImportOnDemandDecl.importedTypes(String name) {
 		SimpleSet set = SimpleSet.emptySet;

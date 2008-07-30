@@ -84,7 +84,6 @@ aspect JAModuleQualifiedNames {
 			String globalPackage = "";
 			Set<String> globalPackageSet = mcu.lookupPackage(getPackage(), mcu);
 			assert (globalPackageSet.size() <= 1) : "Ambiguous package lookups should already have been handled by an error pass"; 
-			//TODO: find out how this affects things
 			if (globalPackageSet.isEmpty()) {
 				globalPackage = getPackage();
 			} else {
