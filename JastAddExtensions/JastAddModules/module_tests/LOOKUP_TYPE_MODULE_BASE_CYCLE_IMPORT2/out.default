@@ -1,3 +1,5 @@
+Arguments: 
+-debug -d classes -instance-module m1 A.java AA.java AB.java AC.java B.java BA.java BB.java BC.java C.java CA.java CB.java CC.java Main.java m1.module m11.module m12.module m13.module m2.module m21.module m22.module m23.module m3.module m31.module m32.module m33.module ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
 ------CC.java------
 module: module m33;;

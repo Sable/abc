@@ -29,21 +29,26 @@ aspect JAModuleImports {
 	refine LookupType eq TypeImportOnDemandDecl.importedTypes(String name) {
 		SimpleSet set = SimpleSet.emptySet;
 		if(getAccess() instanceof PackageAccess) {
-			String packageName = ((PackageAccess)getAccess()).getPackage();
+			String rawPackageName = ((PackageAccess)getAccess()).getPackage();
 			//if in a module, lookup the global package name
 			ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
+			Set<String> packageNames = new HashSet();
 			if (mcu != null) {
 				//try to find a package in a module. if none, continue with the old value
-				String globalPackageName = mcu.lookupPackage(packageName, mcu);
-				if (globalPackageName != null) {
-					packageName = globalPackageName;
+				packageNames = mcu.lookupPackage(rawPackageName, mcu);
+				if (packageNames.isEmpty()) {
+					packageNames.add(rawPackageName);
 				}
+			} else {
+				packageNames.add(rawPackageName);
 			}
 			
-			TypeDecl typeDecl = lookupType(packageName, name);
-			if(typeDecl != null && typeDecl.accessibleFromPackage(packageName()) &&
-					typeDecl.typeName().equals(packageName + "." + name)) {// canonical names match
-				set = set.add(typeDecl);
+			for (String packageName : packageNames) {
+				TypeDecl typeDecl = lookupType(packageName, name);
+				if(typeDecl != null && typeDecl.accessibleFromPackage(packageName()) &&
+						typeDecl.typeName().equals(packageName + "." + name)) {// canonical names match
+					set = set.add(typeDecl);
+				}
 			}
 		}
 		else {

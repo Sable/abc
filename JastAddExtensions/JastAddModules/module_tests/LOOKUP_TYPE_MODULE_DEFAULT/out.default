@@ -1,3 +1,5 @@
+Arguments: 
+-debug -d classes -instance-module m1 m1.module A.java Main.java String.java pack/P.java m1pack/P.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
 ------String.java------
 module: module m1;;

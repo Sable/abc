@@ -7,6 +7,7 @@ package m1;
 
 import java.io.PrintStream;
 import m1.$pack.P;
+import m1.m2.$pack2.Q;
 
 public class ADemand
 {
@@ -17,6 +18,7 @@ public class ADemand
         pinner = new m1.$pack.P.PInner();
         pinner2 = new m1.$pack.P.PInner.PInner2();
         pinner3 = new pack.P.PInner();
+        q = new Q();
         System.out.println(getClass());
     }
 
@@ -24,4 +26,5 @@ public class ADemand
     m1.$pack.P.PInner pinner;
     m1.$pack.P.PInner.PInner2 pinner2;
     pack.P.PInner pinner3;
+    Q q;
 }

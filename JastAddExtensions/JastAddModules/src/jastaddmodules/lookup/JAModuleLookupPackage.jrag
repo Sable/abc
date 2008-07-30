@@ -4,26 +4,40 @@ aspect JAModuleLookupPackage {
 	//shares cut n paste code with lookupType. Change that if you change this
 	//TODO: Refactor to remove cut and paste code
 	//returns null if it can't find a package that belongs to a module
-	public String ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context) {
+	public Set<String> ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context) {
+		Set<String> ret = new HashSet<String>();
 		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.lookupPackage called before module processing was complete";
 		
 		//special case for java.** packages, always look at the top level first for a match
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && 
 				packageName.startsWith("java.") &&
 				getHostProgram().hasPackage(packageName)) {
-			return packageName;
+			ret.add(packageName);
+			return ret;
 		}
 		
 		//local package lookup
-		LocalModulePackage localModulePackage = getLocalPackage(packageName);
-		if (localModulePackage != null&&
-				(localModulePackage.isExported() || 
-					(!localModulePackage.isExported() && context == this)
-				)
-			) {
-			return makeGlobalPackageName(packageName, localModulePackage);
+		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
+			LocalModulePackage localModulePackage = getLocalPackage(packageName);
+			if (localModulePackage != null&&
+					(localModulePackage.isExported() || 
+						(!localModulePackage.isExported() && context == this)
+					)
+				) {
+				ret.add(makeGlobalPackageName(packageName, localModulePackage));
+				return ret;
+			}
+			//TODO: Add lookups for directly imported modules
+			for (ImportedModule importedCU : getImportedModuleMap().values()) {
+				localModulePackage = importedCU.getModuleCU().getLocalPackage(packageName);
+				if (localModulePackage != null) {
+					ret.add(importedCU.getModuleCU().makeGlobalPackageName(packageName, localModulePackage));
+				}
+			}
+			if (ret.size() > 0) {
+				return ret;
+			}
 		}
-		//TODO: Add lookups for directly imported modules
 			
 		String moduleName = packageName;
 		String localPackageName = null;
@@ -39,31 +53,31 @@ aspect JAModuleLookupPackage {
 		}
 		if (moduleName.equals(Program.DEFAULT_MODULE_NAME)) {
 			if (getHostProgram().hasPackage(localPackageName)) {
-				return localPackageName;
-			} else {
-				return null;
-			}
+				ret.add(localPackageName);
+			} 
+			return ret;
 		}
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
 		if (importedCU != null) {
-			localModulePackage = importedCU.getLocalPackage(localPackageName);
+			LocalModulePackage localModulePackage = importedCU.getLocalPackage(localPackageName);
 			//if the package is exported or if it is not exported but lookup is in the same modulecu, return the global package name
 			if (localModulePackage != null &&
 					(localModulePackage.isExported() || 
 						(!localModulePackage.isExported() && context == this)
 					)
 				) {
-				return importedCU.makeGlobalPackageName(localPackageName, localModulePackage);
+				
+				ret.add(importedCU.makeGlobalPackageName(localPackageName, localModulePackage));
+				return ret;
 			}
 		}
 		//if none found, return check program (is used in hasPackage check in JAModuleLookupPackage)
 		if (getHostProgram().hasPackage(packageName)) {
-			return packageName;
-		} else {
-			return null;
+			ret.add(packageName);
 		}
+		return ret;
 	}
 	
 	inh boolean CompilationUnit.hasPackage(String packageName); //should just call the parent hasPackage
@@ -73,7 +87,7 @@ aspect JAModuleLookupPackage {
 			//try a lookup through the instance package
 			boolean ret = (getHostProgram()
 								.getInstanceModuleCU()
-								.lookupPackage(packageName, null) != null
+								.lookupPackage(packageName, null).size() > 0
 								);
 			if (ret) {
 				return true;
@@ -83,7 +97,7 @@ aspect JAModuleLookupPackage {
 	}
 	
 	syn boolean ModuleCompilationUnit.hasPackage(String packageName) {
-		boolean ret = (this.lookupPackage(packageName, this) != null);
+		boolean ret = (this.lookupPackage(packageName, this).size() > 0);
 		if (ret) {
 			return true;
 		} else {
