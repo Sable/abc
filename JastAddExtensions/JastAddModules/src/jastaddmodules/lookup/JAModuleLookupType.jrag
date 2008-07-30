@@ -46,7 +46,8 @@ aspect JAModuleLookupType {
 	}
 	
 	eq ModuleCompilationUnit.getChild().lookupType(String packageName, String typeName) {
-		assert (getHostProgram().isModuleProcessingComplete()) : "Program.lookupType called before module processing was complete";
+		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.getChild().lookupType called before module processing was complete";
+		assert (isModuleInstantiated()) : "ModuleCompilationUnit.getChild().lookupType() is being called on an uninstantiated mdoule";
 		SimpleSet result = moduleLookupType(packageName, typeName, true);
 		if (result.size() == 0) {
 			return null;
@@ -64,6 +65,8 @@ aspect JAModuleLookupType {
 	//type demand imports to come before lookups to the local packages of the imported
 	//modules. This implementation is extremely suspicious, try to redesign to make it go away. 
 	syn lazy SimpleSet ModuleCompilationUnit.moduleLookupType(String packageName, String typeName, boolean includeImportedModulesLocalPackages) {
+		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.getChild().lookupType called before module processing was complete";
+		assert (isModuleInstantiated()) : "ModuleCompilationUnit.moduleLookupType() is being called on an uninstantiated mdoule";
 		SimpleSet ret = SimpleSet.emptySet;
 		//special case for java.** packages, always look at the top level first for a match
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && packageName.startsWith("java.")) {

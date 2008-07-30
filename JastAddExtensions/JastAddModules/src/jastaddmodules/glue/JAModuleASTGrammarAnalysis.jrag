@@ -1,0 +1,8 @@
+aspect JAModuleASTGrammarAnalysis {
+
+	protected void ModuleCompilationUnit.collectAstParentMap(HashMap map) {
+		if (isModuleInstantiated()) {
+			super.collectAstParentMap(map);
+		}
+	}
+}

@@ -1,0 +1,8 @@
+
+aspect JAModuleRewrites {
+	protected void ModuleCompilationUnit.collectRewrites(Map map) {
+		if (isModuleInstantiated()) {
+			super.collectRewrites(map);
+		}
+	}
+}

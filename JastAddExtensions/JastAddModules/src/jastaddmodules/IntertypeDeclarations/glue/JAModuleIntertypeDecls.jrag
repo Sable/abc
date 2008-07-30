@@ -1,0 +1,10 @@
+aspect JAModuleIntertypeDecls {
+	//from IntertypeDeclarations/IntertypeDecls.jrag
+	void ModuleCompilationUnit.collectIntertypeDecls(HashMap map) {
+		//only collect intertypedecls from instantiated modules
+		if (isModuleInstantiated()) {
+			super.collectIntertypeDecls(map);
+		}
+	}
+	
+}
