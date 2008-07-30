@@ -280,13 +280,36 @@ public abstract class JastAddModel {
 		}
 	}
 	
-	protected void addErrorMarker(IResource resource, String message, int lineNumber, int severity) throws CoreException {
+	protected void addErrorMarker(IResource resource, String message, int lineNumber, 
+			int severity) throws CoreException {
 		if (resource != null) {
 			IMarker marker = resource.createMarker(ERROR_MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			if (lineNumber == -1) {
 				lineNumber = 1;
+			}
+			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+		}		
+	}
+	
+	protected void addErrorMarker(IFile file, String message, int lineNumber, 
+			int severity, int columnStart, int columnEnd) throws CoreException {
+		if (file != null) {
+			IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, message);
+			marker.setAttribute(IMarker.SEVERITY, severity);
+			if (lineNumber == -1) {
+				lineNumber = 1;
+			}
+			try {
+				DefaultLineTracker t = new DefaultLineTracker();
+				t.set(readTextFile(file.getRawLocation().toOSString()));
+				int offset = t.getLineOffset(lineNumber-1);
+				marker.setAttribute(IMarker.CHAR_START, offset + columnStart - 1);
+				marker.setAttribute(IMarker.CHAR_END, offset + columnEnd);
+			} catch (IOException e) {
+			} catch (BadLocationException e) {
 			}
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 		}
@@ -302,7 +325,7 @@ public abstract class JastAddModel {
 			//if (res instanceof FileInfo && isModelFor((FileInfo)res)) {
 			if (res instanceof IFile && isModelFor((IFile)res)) {
 				IFile file = (IFile) res;
-				file.deleteMarkers(markerType, false, IResource.DEPTH_ZERO);
+				file.deleteMarkers(markerType, false, IResource.DEPTH_ONE);
 			} else if (res instanceof IFolder) {
 			    IFolder folder = (IFolder) res;
 			    folder.deleteMarkers(markerType, false, IResource.DEPTH_INFINITE);

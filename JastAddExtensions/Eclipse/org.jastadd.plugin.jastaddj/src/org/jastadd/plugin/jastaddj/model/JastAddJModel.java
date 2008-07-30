@@ -460,12 +460,10 @@ public class JastAddJModel extends JastAddModel {
 	
 	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
 		deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, file);
-		if (checkSemantics) {
-			deleteErrorMarkers(ERROR_MARKER_TYPE, file);
-		}
 		Collection errors = unit.parseErrors();
 		Collection warnings = new LinkedList();
 		if (checkSemantics && errors.isEmpty()) { // only run semantic checks if there's no parse errors and if its asked for
+			deleteErrorMarkers(ERROR_MARKER_TYPE, file);
 			unit.errorCheck(errors, warnings);
 		}
 		errors.addAll(warnings);
@@ -485,7 +483,7 @@ public class JastAddJModel extends JastAddModel {
 						|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
 					addParseErrorMarker(file, message, line, column, severity);
 				} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
-					addErrorMarker(file, message, line, severity);
+					addErrorMarker(file, message, line, severity, column, 1);
 				}
 			}		
 			return false;
@@ -500,7 +498,7 @@ public class JastAddJModel extends JastAddModel {
 			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 			.findFilesForLocation(path);
 			if (files.length == 1)
-				updateErrorsInFile(unit, files[0], false);
+				updateErrorsInFile(unit, files[0], true);
     	}
       }
 

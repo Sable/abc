@@ -29,5 +29,6 @@ public class JastAddSaveParticipant implements ISaveParticipant {
 
 	@Override
 	public void saving(ISaveContext context) throws CoreException {
+		System.out.println("JastAddSaveParticipant.saving");
 	}
 }
