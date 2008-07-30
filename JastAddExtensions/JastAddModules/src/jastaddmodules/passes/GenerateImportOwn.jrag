@@ -143,7 +143,7 @@ aspect GenerateImportOwn {
 			ModuleMergeDecl mergeMember = (ModuleMergeDecl)member; 
 			//lookup merge targets from ret
 			Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
-			ModuleCompilationUnit mergeBaseCU = null; //used in check for base cu compatibility
+			ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
 			for (ModuleAccess access : mergeMember.getMergeModuleList()) {
 				ModuleCompilationUnit cu = access.lookupModule(); 
 				
@@ -161,8 +161,8 @@ aspect GenerateImportOwn {
 					access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
 				}
 				
-				if (!cu.isInstance()) {
-					access.error("Module being merged is a base module. Merging is only allowed for import own modules.");
+				if (isAccessedThroughBaseModule(access)) {
+					access.error("Module being merged is a base module or is accessed through a base module. Merging is only allowed for import own modules.");
 					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
 				}
 				
@@ -289,4 +289,35 @@ aspect GenerateImportOwn {
 		}
 		return null;
 	} 
+	
+	//checks if a module is being accessed through a base module (i.e. there is a MCU in path
+	//of the lookup that is a base module
+	public boolean ModuleCompilationUnit.isAccessedThroughBaseModule(ModuleAccess access) {
+		String localModuleName = access.getID();
+		String left = "";
+		String right = localModuleName;
+		//successively lookup each module in the name, return true if the lookup was 
+		do {
+			int separatorIndex = right.indexOf(Program.MODULE_SEPARATOR); 
+			if (separatorIndex == -1) {
+				left = left.equals("") ? 
+					right : 
+					left + Program.MODULE_SEPARATOR + right;
+				right = "";
+			} else {
+				left = left.equals("") ?
+					right.substring(0, separatorIndex) :
+					left + Program.MODULE_SEPARATOR + right.substring(0, separatorIndex);
+				right = right.substring(separatorIndex + 2);
+			}
+			ModuleCompilationUnit mcu = lookupModule(this, left);
+			if (mcu == null) {
+				return false;
+			}
+			if (!mcu.isInstance()) {
+				return true;
+			}
+		} while (!right.equals(""));
+		return false;
+	}
 }

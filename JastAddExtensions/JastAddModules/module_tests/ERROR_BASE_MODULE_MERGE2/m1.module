@@ -1,0 +1,5 @@
+module m1;
+import own m2 as alias;
+import m2;
+import own m3;
+merge m3, m2::m3 as m3alias;
