@@ -7,9 +7,7 @@ package jastadd$framework;
 
 import beaver.Symbol;
 import java.io.PrintStream;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import m1.AAspect;
 import m1.m2.BAspect;
 import m1.m3.CAspect;
@@ -20,6 +18,43 @@ import m1.m3.CAspect;
 public class ASTNode extends Symbol
     implements Cloneable
 {
+    public static interface Defines.functionA2
+    {
+
+        public abstract String Defines$functionA2(ASTNode astnode, ASTNode astnode1);
+    }
+
+    public static class CircularEvalEntry
+    {
+
+        public boolean equals(Object rhs)
+        {
+            CircularEvalEntry s = (CircularEvalEntry)rhs;
+            if(parameters == null && s.parameters == null)
+                return node == s.node && attrName.equals(s.attrName);
+            if(parameters != null && s.parameters != null)
+                return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
+            else
+                return false;
+        }
+
+        public int hashCode()
+        {
+            return node.hashCode();
+        }
+
+        ASTNode node;
+        String attrName;
+        Object parameters;
+
+        public CircularEvalEntry(ASTNode node, String attrName, Object parameters)
+        {
+            this.node = node;
+            this.attrName = attrName;
+            this.parameters = parameters;
+        }
+    }
+
     public static class CircularStackEntry
     {
 
@@ -31,6 +66,12 @@ public class ASTNode extends Symbol
             circularEvalSet = set;
             changeValue = change;
         }
+    }
+
+    public static interface Defines.functionA
+    {
+
+        public abstract String Defines$functionA(ASTNode astnode, ASTNode astnode1);
     }
 
     public static class State
@@ -74,49 +115,6 @@ public class ASTNode extends Symbol
             stack = new int[64];
             pos = 0;
         }
-    }
-
-    public static class CircularEvalEntry
-    {
-
-        public boolean equals(Object rhs)
-        {
-            CircularEvalEntry s = (CircularEvalEntry)rhs;
-            if(parameters == null && s.parameters == null)
-                return node == s.node && attrName.equals(s.attrName);
-            if(parameters != null && s.parameters != null)
-                return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
-            else
-                return false;
-        }
-
-        public int hashCode()
-        {
-            return node.hashCode();
-        }
-
-        ASTNode node;
-        String attrName;
-        Object parameters;
-
-        public CircularEvalEntry(ASTNode node, String attrName, Object parameters)
-        {
-            this.node = node;
-            this.attrName = attrName;
-            this.parameters = parameters;
-        }
-    }
-
-    public static interface Defines.functionA2
-    {
-
-        public abstract String Defines$functionA2(ASTNode astnode, ASTNode astnode1);
-    }
-
-    public static interface Defines.functionA
-    {
-
-        public abstract String Defines$functionA(ASTNode astnode, ASTNode astnode1);
     }
 
 
@@ -387,16 +385,6 @@ public class ASTNode extends Symbol
         return CAspect.impl$body$duringm1_m3_CAspect();
     }
 
-    public static boolean duringm2_BAspect()
-    {
-        return m2.BAspect.impl$body$duringm2_BAspect();
-    }
-
-    public static boolean duringm3_CAspect()
-    {
-        return m3.CAspect.impl$body$duringm3_CAspect();
-    }
-
     public static boolean duringm1_m2_BAspect()
     {
         return BAspect.impl$body$duringm1_m2_BAspect();
@@ -434,8 +422,6 @@ public class ASTNode extends Symbol
     protected ASTNode children[];
     protected int numChildren;
     public static int duringm1_AAspect = 0;
-    public static int duringm3_CAspect = 0;
-    public static int duringm2_BAspect = 0;
     public static int duringm1_m2_BAspect = 0;
     public static int duringm1_m3_CAspect = 0;
     private boolean BASTNodeIntro$visited;
