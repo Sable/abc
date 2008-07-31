@@ -28,12 +28,6 @@ aspect JAModuleAccessControl {
 	eq MethodDecl.getModifiers().mayBeModule() = true;
 	eq ConstructorDecl.getModifiers().mayBeModule() = true;
 	
-	//is public. The module modifier becomes public when frontend processing is complete
-	refine Modifiers eq TypeDecl.isPublic() {
-		return Modifiers.TypeDecl.isPublic() || 
-			(getModifiers().isModule() && getModifiers().getHostProgram().isFrontEndProcessingComplete());
-	} 
-	
 	//error check
 	refine Modifiers eq Modifiers.numProtectionModifiers() {
 		return Modifiers.Modifiers.numProtectionModifiers() + numModifier("module");

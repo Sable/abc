@@ -69,6 +69,7 @@ aspect GenerateImportOwn {
 			return ret;
 		}
 		ret.setModuleInstantiated(true);
+		ret.setRealInstance(ret);
 		
 		//create super instances
 		ret.instantiateSuperModules();

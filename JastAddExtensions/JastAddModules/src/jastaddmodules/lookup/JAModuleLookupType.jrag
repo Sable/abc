@@ -86,26 +86,16 @@ aspect JAModuleLookupType {
 		}
 		
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
-			//local package lookup
-			ret = localModuleLookupType(packageName, typeName);
+			ret = selfThenSuperLocalModuleLookupType(packageName, typeName);
 			if (!ret.isEmpty()) {
 				return ret;
-			}
-			//local lookup through the superInstances
-			ModuleCompilationUnit superInstance = getSuperInstance();
-			while (superInstance != null) {
-				ret = superInstance.localModuleLookupType(packageName, typeName);
-				if (!ret.isEmpty()) {
-					return ret;
-				}
-				superInstance = superInstance.getSuperInstance();
 			}
 			
 			//lookup through packages of imported types
 			if (includeImportedModulesLocalPackages) {
 				for (ImportedModule importedCU : getImportedModuleMap().values()) {
 					SimpleSet localFromImport = 
-						importedCU.getModuleCU().localModuleLookupType(packageName, typeName);
+						importedCU.getModuleCU().selfThenSuperLocalModuleLookupType(packageName, typeName);
 					for (Iterator iter = localFromImport.iterator(); iter.hasNext(); ) {
 						ret = ret.add(iter.next());
 					}
@@ -172,6 +162,38 @@ aspect JAModuleLookupType {
 			if (type != null) {
 				return ret.add(type);
 			}
+		}
+		return ret;
+	}
+	
+	syn lazy SimpleSet ModuleCompilationUnit.superLocalModuleLookupType(
+			String packageName,
+			String typeName) {
+		SimpleSet ret = SimpleSet.emptySet; 
+		ModuleCompilationUnit superInstance = getSuperInstance();
+		while (superInstance != null) {
+			ret = superInstance.localModuleLookupType(packageName, typeName);
+			if (!ret.isEmpty()) {
+				return ret;
+			}
+			superInstance = superInstance.getSuperInstance();
+		}
+		return ret;
+	}
+	
+	syn lazy SimpleSet ModuleCompilationUnit.selfThenSuperLocalModuleLookupType(
+			String packageName,
+			String typeName) {
+		SimpleSet ret = SimpleSet.emptySet;
+		//local package lookup
+		ret = localModuleLookupType(packageName, typeName);
+		if (!ret.isEmpty()) {
+			return ret;
+		}
+		//local lookup through the superInstances
+		ret = superLocalModuleLookupType(packageName, typeName);
+		if (!ret.isEmpty()) {
+			return ret;
 		}
 		return ret;
 	}

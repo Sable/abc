@@ -1,0 +1,98 @@
+
+//refines JAModuleAccessControl in this project
+aspect JAModuleExtendsAccessControl {
+	//modify accessibleFrom methods
+	refine JAModuleAccessControl eq TypeDecl.accessibleFromPackage(String packageName) {
+		if (JAModuleAccessControl.TypeDecl.accessibleFromPackage(packageName)) {
+			return true;
+		}
+		ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
+		ModuleCompilationUnit packageMCU = compilationUnit().getHostProgram().getPackageToMCU(packageName);
+		if (mcu == null || packageMCU == null) {
+			return false;
+		}
+    	return !isPrivate() && 
+		    	(	isPublic() || 
+		    		(	isModule() && 
+		    			mcu.getRealInstance() == 
+		    				packageMCU.getRealInstance()
+		    		) ||
+		    		hostPackage().equals(packageName)
+		    	);
+	}
+    
+	refine JAModuleAccessControl eq TypeDecl.accessibleFromExtend(TypeDecl type) {
+		if (JAModuleAccessControl.TypeDecl.accessibleFromExtend(type)) {
+			return true;
+		}
+		if (isModule()) {
+			ModuleCompilationUnit mcu = this.compilationUnit().getModuleCompilationUnit();
+			ModuleCompilationUnit typeMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (mcu == null || typeMCU == null) {
+				return false;
+			}
+			return mcu.getRealInstance() == typeMCU.getRealInstance();
+		}
+		return false;
+	}
+
+	refine JAModuleAccessControl eq TypeDecl.accessibleFrom(TypeDecl type) {
+		if (JAModuleAccessControl.TypeDecl.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			ModuleCompilationUnit mcu = this.compilationUnit().getModuleCompilationUnit();
+			ModuleCompilationUnit typeMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (mcu == null || typeMCU == null) {
+				return false;
+			}
+			return mcu.getRealInstance() == typeMCU.getRealInstance();
+		}
+		return false;
+	}
+
+	refine JAModuleAccessControl eq MethodDecl.accessibleFrom(TypeDecl type) {
+		if (JAModuleAccessControl.MethodDecl.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			ModuleCompilationUnit mcu = this.hostType().compilationUnit().getModuleCompilationUnit();
+			ModuleCompilationUnit typeMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (mcu == null || typeMCU == null) {
+				return false;
+			}
+			return mcu.getRealInstance() == typeMCU.getRealInstance();
+		}
+		return false;
+	}
+
+	refine JAModuleAccessControl eq ConstructorDecl.accessibleFrom(TypeDecl type) {
+		if (JAModuleAccessControl.ConstructorDecl.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			ModuleCompilationUnit mcu = this.hostType().compilationUnit().getModuleCompilationUnit();
+			ModuleCompilationUnit typeMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (mcu == null || typeMCU == null) {
+				return false;
+			}
+			return mcu.getRealInstance() == typeMCU.getRealInstance();
+		}
+		return false;
+	}
+
+	refine JAModuleAccessControl eq FieldDeclaration.accessibleFrom(TypeDecl type) {
+		if (JAModuleAccessControl.FieldDeclaration.accessibleFrom(type)) {
+			return true;
+		}
+		if (isModule()) {
+			ModuleCompilationUnit mcu = this.hostType().compilationUnit().getModuleCompilationUnit();
+			ModuleCompilationUnit typeMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (mcu == null || typeMCU == null) {
+				return false;
+			}
+			return mcu.getRealInstance() == typeMCU.getRealInstance();
+		}
+		return false;
+	}
+}

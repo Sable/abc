@@ -8,6 +8,11 @@ aspect JAModuleLookupPackage {
 		Set<String> ret = new HashSet<String>();
 		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.lookupPackage called before module processing was complete";
 		
+		//if a super instance, lookup from the real instance
+		if (this.isSuperInstance()) {
+			return getRealInstance().lookupPackage(packageName, context);
+		}
+		
 		//special case for java.** packages, always look at the top level first for a match
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && 
 				packageName.startsWith("java.") &&
@@ -18,14 +23,16 @@ aspect JAModuleLookupPackage {
 		
 		//local package lookup
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
-			//self first
-			ret = localLookupPackage(packageName, context);
+			ret = selfThenSuperLocalLookupPackage(packageName, context);
 			if (!ret.isEmpty()) {
 				return ret;
 			}
+			
 			//then try imported modules
 			for (ImportedModule importedCU : getImportedModuleMap().values()) {
-				ret.addAll(importedCU.getModuleCU().localLookupPackage(packageName, context));
+				ret.addAll(importedCU
+								.getModuleCU()
+								.selfThenSuperLocalLookupPackage(packageName, context));
 			}
 			if (ret.size() > 0) {
 				return ret;
@@ -82,6 +89,34 @@ aspect JAModuleLookupPackage {
 				)
 			) {
 			ret.add(makeGlobalPackageName(packageName, localModulePackage));
+		}
+		return ret;
+	}
+	
+	public Set<String> ModuleCompilationUnit.superLocalLookupPackage(String packageName, ModuleCompilationUnit context) {
+		Set<String> ret = new HashSet<String>();
+		ModuleCompilationUnit superInstance = getSuperInstance();
+		while (superInstance != null) {
+			ret = superInstance.localLookupPackage(packageName, context);
+			if (!ret.isEmpty()) {
+				return ret;
+			}
+			superInstance = superInstance.getSuperInstance();
+		}
+		return ret;
+	}
+	
+	public Set<String> ModuleCompilationUnit.selfThenSuperLocalLookupPackage(String packageName, ModuleCompilationUnit context) {
+		Set<String> ret = new HashSet<String>();
+		//self first
+		ret = localLookupPackage(packageName, context);
+		if (!ret.isEmpty()) {
+			return ret;
+		}
+		//then try superinstances
+		ret = superLocalLookupPackage(packageName, context);
+		if (!ret.isEmpty()) {
+			return ret;
 		}
 		return ret;
 	}
