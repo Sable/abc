@@ -1,0 +1,24 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   pack/CXX.java
+
+package m1.m3xxx$super$m3xx.$pack;
+
+import java.io.PrintStream;
+import m1.m3xxx$super$m3.$pack.C;
+import m1.m3xxx$super$m3x.$pack.CX;
+
+public class CXX
+{
+
+    public CXX()
+    {
+        c = new C();
+        cx = new CX();
+        System.out.println(getClass());
+    }
+
+    C c;
+    CX cx;
+}
