@@ -172,7 +172,7 @@ module m1.m3xx$super$m3x, base:m3x, context:[], instantiated:true
 	
 module m1.m3xx$super$m3, base:m3, context:[], instantiated:true
 	
-module m1.m3xx, base:m3xx, context:[m1$m2a, m1], instantiated:true
+module m1.m3xx, base:m3xx, context:[m1, m1$m2a], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m3xxx$super$m3xx, base:m3xx, context:[], instantiated:true
 	
@@ -180,7 +180,7 @@ module m1.m3xxx$super$m3x, base:m3x, context:[], instantiated:true
 	
 module m1.m3xxx$super$m3, base:m3, context:[], instantiated:true
 	
-module m1.m3xxx, base:m3xxx, context:[m1, m1.m2b], instantiated:true
+module m1.m3xxx, base:m3xxx, context:[m1.m2b, m1], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

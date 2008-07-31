@@ -169,7 +169,7 @@ module z$m2alias2, base:m2, context:[z], instantiated:true
 	[export]m3:z.m3alias3, jastadd$framework:jastadd$framework
 module z.m3, base:m3, context:[z, z$m2], instantiated:true
 	jastadd$framework:jastadd$framework
-module z.m3alias3, base:m3, context:[z, z$m2alias2, z.m2alias1], instantiated:true
+module z.m3alias3, base:m3, context:[z, z.m2alias1, z$m2alias2], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 

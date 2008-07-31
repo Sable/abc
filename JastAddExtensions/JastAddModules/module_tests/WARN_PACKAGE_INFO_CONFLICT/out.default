@@ -1,17 +1,12 @@
 Arguments: 
--debug -d classes -instance-module m1 jastadd$framework.module m1.module m2.module A.java B.java BB.java End arguments
+-debug -d classes -instance-module m1 A.java B.java P.java package-info.java m1.module m2.module ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
-------BB.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
-------------------------
 ------B.java------
 module: module m2;;
 module CU : m2.module
 module name : m2
 ------------------------
-------jastadd$framework.module------
+------../testlib/jastadd$framework.module------
 module jastadd$framework;
 ------------------------
 ------A.java------
@@ -21,26 +16,37 @@ module name : m1
 ------------------------
 ------m1.module------
 module m1;
-import own m2 as alias1;
-import own m2 as alias2;
+import own m2 as none null;
+------------------------
+------P.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
 ------------------------
 ------m2.module------
 module m2;
 ------------------------
+------package-info.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
 ----------CU AST before insert----------
-BB.java package:pack
 B.java package:
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 A.java package:
 module: m1, file: m1.module, base module: m1
+P.java package:pack
 module: m2, file: m2.module, base module: m2
+package-info.java package:pack
 ----------CU AST after insert----------
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
+	package-info.java package:m1.$pack
 module: m2, file: m2.module, base module: m2
-	BB.java package:m2.$pack
 	B.java package:m2
+	P.java package:m2.$pack
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 	
@@ -50,34 +56,29 @@ module m2, base:m2, context:[], instantiated:false
 	
 -------------Instance ModuleCompilationUnit------------
 module m1;
-import own m2 as alias1;
-import own m2 as alias2;
+import own m2 as none null;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
+	package-info.java package:m1.$pack
 module: m2, file: m2.module, base module: m2
-	BB.java package:m2.$pack
 	B.java package:m2
-module: m1$alias1, file: m2.module, base module: m2
-	BB.java package:m1$alias1.$pack
-	B.java package:m1$alias1
-module: m1$alias2, file: m2.module, base module: m2
-	BB.java package:m1$alias2.$pack
-	B.java package:m1$alias2
+	P.java package:m2.$pack
+module: m1$m2, file: m2.module, base module: m2
+	B.java package:m1$m2
+	P.java package:m1$m2.$pack
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
 module m1, base:m1, context:[], instantiated:true
-	alias1:m1$alias1, alias2:m1$alias2, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, m2:m1$m2
 module m2, base:m2, context:[], instantiated:false
 	
-module m1$alias1, base:m2, context:[m1], instantiated:true
-	jastadd$framework:jastadd$framework
-module m1$alias2, base:m2, context:[m1], instantiated:true
+module m1$m2, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
@@ -85,23 +86,13 @@ Module: jastadd$framework
 Module: m1
 	m1.A
 Module: m2
-	m2.$pack.BB
 	m2.B
-Module: m1$alias1
-	m1$alias1.B
-	m1$alias1.$pack.BB
-Module: m1$alias2
-	m1$alias2.B
-	m1$alias2.$pack.BB
+	m2.$pack.P
+Module: m1$m2
+	m1$m2.$pack.P
+	m1$m2.B
 
 ----------CU iterator----------
-jastadd$framework.module, m1.module, A.java, m2.module, m2.module, BB.java, B.java, m2.module, BB.java, B.java
-Errors:
-A.java:4,2:
-  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
-A.java:4,12:
-  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
-A.java:5,2:
-  Semantic Error: several types named BB: m1$alias1.$pack.BB m1$alias2.$pack.BB
-A.java:5,19:
-  Semantic Error: several types named BB: m1$alias1.$pack.BB m1$alias2.$pack.BB
+../testlib/jastadd$framework.module, m1.module, A.java, package-info.java, m2.module, m2.module, B.java, P.java
+P.java:1:
+  WARNING: The module declaration is in conflict with the one defined in d:\user\neil\jaworkspace\JastAddModules\module_tests\WARN_PACKAGE_INFO_CONFLICT\package-info.java

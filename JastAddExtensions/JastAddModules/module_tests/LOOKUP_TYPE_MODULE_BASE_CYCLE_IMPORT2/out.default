@@ -295,7 +295,7 @@ module m2.m21, base:m21, context:[m2], instantiated:true
 	[export]m23:m2.m23alias, jastadd$framework:jastadd$framework
 module m2.m22, base:m22, context:[m2], instantiated:true
 	[export]m23:m2.m23alias, jastadd$framework:jastadd$framework
-module m2.m23alias, base:m23, context:[m2.m22, m2.m21, m2], instantiated:true
+module m2.m23alias, base:m23, context:[m2.m22, m2, m2.m21], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m11, base:m11, context:[m1], instantiated:true
 	[export]m13:m1.m13alias, jastadd$framework:jastadd$framework
