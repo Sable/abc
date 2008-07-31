@@ -16,8 +16,10 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.information.InformationPresenter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -64,12 +66,20 @@ public abstract class JastAddEditor extends TextEditor {
 	@Override
 	protected void createActions() {
 		super.createActions();
-	
+		// This action will fire a CONTENTASSIST_PROPOSALS operation
+		// when executed
+		IAction action = new TextOperationAction(new JastAddResourceBundle(),
+					"ContentAssistProposal", this, SourceViewer.CONTENTASSIST_PROPOSALS);
+		action.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+		setAction("ContentAssistProposal", action);
+		setActionActivationCode("ContentAssistProposal",' ', -1, SWT.CTRL);
+
+		/*
 		IAction a= new TextOperationAction(new JastAddResourceBundle(), 
 				"ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
 		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", a); 
-
+*/
 		/*
 		Action action = new ContentAssistAction(new JastAddResourceBundle(), "ContentAssistProposal.", this); 
 		String id = ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS;
