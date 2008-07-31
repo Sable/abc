@@ -31,17 +31,16 @@ aspect JAModuleErrorCheck {
 		}  		
   	}
 
-  	public void Program.collectModuleErrors(Collection err, Collection warn) {
+  	public void Program.collectModuleErrors(Collection err) {
   		for (Iterator iter = compilationUnitIterator(); iter.hasNext(); ) {
   			CompilationUnit cu = (CompilationUnit)iter.next();
   			if(cu.fromSource()) {
-  				cu.collectModuleErrors(err, warn);
+  				cu.collectModuleErrors(err);
   			}
   		}
   	}
-  	public void CompilationUnit.collectModuleErrors(Collection err, Collection warn) {
+  	public void CompilationUnit.collectModuleErrors(Collection err) {
   		err.addAll(errors);
-  		warn.addAll(warnings);
   	}
   	
   	//Single error checks, done before CU insertions/generatOwn

@@ -1,0 +1,76 @@
+
+aspect CollectPackageInfo {
+
+	public static final String Program.PACKAGE_INFO_FILENAME = "package-info.java";
+	
+	//This takes raw packageDecls, not packageName()
+	protected HashMap<String, CompilationUnit> Program.packageInfoMap = 
+		new HashMap<String, CompilationUnit>();
+	public void Program.addPackageInfo(String packageName, CompilationUnit packageInfo) {
+		packageInfoMap.put(packageName, packageInfo);
+	}
+	public CompilationUnit Program.getPackageInfo(String packageName) {
+		return packageInfoMap.get(packageName);
+	}
+	
+	//the raw filename
+	public String CompilationUnit.nodirFileName() {
+		String nodirFileName = this.relativeName();
+		int index = Math.max(
+			nodirFileName.indexOf('/'),
+			nodirFileName.indexOf('\\')
+			);
+		if (index != -1) {
+			nodirFileName = nodirFileName.substring(index+1);
+		}
+		return nodirFileName;
+	}
+	
+	public boolean CompilationUnit.isPackageInfoFile() {
+		return nodirFileName().equals(Program.PACKAGE_INFO_FILENAME);
+	}
+	 
+	public void Program.collectPackageInfo() {
+		
+		for (Iterator<CompilationUnit> cuIterator = compilationUnitIterator();
+				cuIterator.hasNext(); ) {
+			CompilationUnit cu = cuIterator.next();
+			if (cu.isPackageInfoFile() && !(cu.getPackageDecl().equals(""))) {
+				addPackageInfo(cu.getPackageDecl(), cu);
+			}
+		}
+	}
+
+	//inserts a copy of package-info's moduleDecl (if any) to CUs with the same packageDecl 
+	public void Program.insertPackageInfoModuleDecl() {
+		
+		for (Iterator<CompilationUnit> cuIterator = compilationUnitIterator();
+				cuIterator.hasNext(); ) {
+			CompilationUnit cu = cuIterator.next();
+			if (!(cu.isPackageInfoFile())) {
+				CompilationUnit packageInfo = getPackageInfo(cu.getPackageDecl());
+				if (packageInfo != null && packageInfo.getModuleDecl() != null) {
+					cu.checkedAddModuleDecl(packageInfo);
+				}
+			}
+		}
+	}
+	
+	public void CompilationUnit.checkedAddModuleDecl(CompilationUnit packageInfo) {
+		ModuleDecl moduleDecl = packageInfo.getModuleDecl().fullCopy();
+		assert (moduleDecl != null) : "moduleDecl parameter should not be null";
+		//if already has a module decl and is not equal to the package-info's moduledecl,
+		//add an error
+		if (this.getModuleDecl() != null && 
+				!(this.getModuleDecl().getModuleAccess().getID().equals(
+					moduleDecl.getModuleAccess().getID())
+				)) {
+			this.getModuleDecl().warning("The module declaration is in conflict with the one defined in " + packageInfo.pathName());
+			return; 
+		}
+		
+		//add the moduledecl
+		setModuleDecl(moduleDecl);
+		addChild(moduleDecl); //TODO: This is possibly broken due to hardcoded numbers for getnumchildren
+	}
+}

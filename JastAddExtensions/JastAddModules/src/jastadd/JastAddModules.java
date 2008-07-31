@@ -89,6 +89,10 @@ public class JastAddModules extends JastAdd {
 			Collection warnings = new LinkedList();
 			program.initErrHandling(errors, warnings);
 			try {
+				//collect moduleDecls from package-info.java files
+				program.collectPackageInfo();
+				program.insertPackageInfoModuleDecl();
+				
 				// check if moduleDecls on non-ModuleCompilationUnit CUs point
 				// to a valid module
 				program.checkModuleErrorsPass1();
@@ -174,17 +178,16 @@ public class JastAddModules extends JastAdd {
 				System.out.print("Unrecoverable semantic error(s) found.\n");
 			}
 
-			program.collectModuleErrors(errors, warnings);
+			program.collectModuleErrors(errors);
 			for (Iterator i = errors.iterator(); i.hasNext();) {
 				System.out.println(i.next());
 			}
-			for (Iterator i = warnings.iterator(); i.hasNext();) {
-				System.out.println(i.next());
-			}
+			//warnings will be collected by the errorcheck below
 			if (errors.size() > 0) {
 				return false;
 			}
 			program.setModuleProcessingComplete(true);
+			
 			//MODULE PROCESSING ENDS HERE
 
 			if (program.options().hasOption(DEBUG_OPTION)) {
@@ -215,11 +218,14 @@ public class JastAddModules extends JastAdd {
 						processErrors(errors, unit);
 						return false;
 					} else {
-						processWarnings(warnings, unit);
+						//move to end
+						//processWarnings(warnings, unit);
 						processNoErrors(unit);
 					}
 				}
 			}
+			//cu is unused
+			processWarnings(warnings, null);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
