@@ -122,13 +122,13 @@ module M5, base:M5, context:[], instantiated:false
 module M2, base:M2, context:[], instantiated:false
 	
 module M1, base:M1, context:[], instantiated:true
-	M2:M1$M2, jastadd$framework:jastadd$framework, [export]M3Alias:M1.M3Alias
+	M2:M1$M2, [export]M3Alias:M1.M3Alias, jastadd$framework:jastadd$framework
 module M3, base:M3, context:[], instantiated:false
 	
 module M1$M2$M4, base:M4, context:[M1$M2], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M2, base:M2, context:[M1], instantiated:true
-	jastadd$framework:jastadd$framework, M4:M1$M2$M4
+	M4:M1$M2$M4, jastadd$framework:jastadd$framework
 module M1.M3Alias$M5, base:M5, context:[M1.M3Alias], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1.M3Alias, base:M3, context:[M1], instantiated:true

@@ -114,14 +114,14 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module M2, base:M2, context:[], instantiated:false
 	
 module M1, base:M1, context:[], instantiated:true
-	M3:M1$M3, M4AliasZ:M1$M4AliasZ, M2:M1$M2, M4Alias1:M1$M4Alias1, jastadd$framework:jastadd$framework
+	M2:M1$M2, M3:M1$M3, M4Alias1:M1$M4Alias1, M4AliasZ:M1$M4AliasZ, jastadd$framework:jastadd$framework
 module M3, base:M3, context:[], instantiated:false
 	
 module M1$M2, base:M2, context:[M1], instantiated:true
 	[export]M4Alias2:M1$M4Alias1, jastadd$framework:jastadd$framework
 module M1$M3, base:M3, context:[M1], instantiated:true
 	[export]M4Alias3:M1$M4Alias1, jastadd$framework:jastadd$framework
-module M1$M4Alias1, base:M4, context:[M1$M2, M1, M1$M3], instantiated:true
+module M1$M4Alias1, base:M4, context:[M1, M1$M2, M1$M3], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M4AliasZ, base:M4, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework

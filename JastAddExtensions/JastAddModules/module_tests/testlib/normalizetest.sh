@@ -1,5 +1,8 @@
 #!/bin/sh
 cp out out.default
-cd classes
-cp -r . ../classes.default
-cd ..
+if [ -d classes ]
+	then
+		cd classes
+		cp -r . ../classes.default
+		cd ..
+fi

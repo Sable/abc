@@ -118,7 +118,7 @@ module m3, base:m3, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
 module m1, base:m1, context:[], instantiated:true
-	m3:m1$m3, jastadd$framework:jastadd$framework, m2:m2
+	jastadd$framework:jastadd$framework, m2:m2, m3:m1$m3
 module m2, base:m2, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1$m3, base:m3, context:[m1], instantiated:true

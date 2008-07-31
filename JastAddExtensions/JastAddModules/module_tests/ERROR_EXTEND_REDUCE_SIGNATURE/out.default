@@ -123,7 +123,7 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m1x, base:m1x, context:[], instantiated:false
 	
 module m1, base:m1, context:[], instantiated:true
-	[export]m2alias3:m1.m2alias3, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, [export]m2alias3:m1.m2alias3
 module m1xx, base:m1xx, context:[], instantiated:false
 	
 module m2, base:m2, context:[], instantiated:false
@@ -131,6 +131,6 @@ module m2, base:m2, context:[], instantiated:false
 module m1.m2alias3.m3, base:m3, context:[m1.m2alias3], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m2alias3, base:m2, context:[m1], instantiated:true
-	[export]m3:m1.m2alias3.m3, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, [export]m3:m1.m2alias3.m3
 m1xx.module:3:
   Semantic Error: This merge reduces the signature of its supermodule

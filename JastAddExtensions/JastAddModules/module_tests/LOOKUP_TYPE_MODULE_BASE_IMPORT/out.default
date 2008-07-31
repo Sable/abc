@@ -216,40 +216,40 @@ module: m2, file: m2.module, base module: m2
 
 ----------Module CU imports after import own----------
 module m5, base:m5, context:[], instantiated:true
-	m6:m6, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, m6:m6
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
 module m4, base:m4, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1, base:m1, context:[], instantiated:true
-	m5:m5, m3:m3, m6:m6, m4:m4, jastadd$framework:jastadd$framework, m2:m2
+	jastadd$framework:jastadd$framework, m2:m2, m3:m3, m4:m4, m5:m5, m6:m6
 module m3, base:m3, context:[], instantiated:true
-	m5:m5, m4:m4, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, m4:m4, m5:m5
 module m6, base:m6, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module m2, base:m2, context:[], instantiated:true
-	m4:m4, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, m4:m4
 ----------MCU collectTypes after import own----------
 
 Module: m5
-	m5.EType
 	m5.E
+	m5.EType
 Module: jastadd$framework
+	jastadd$framework.List
 	jastadd$framework.Opt
 	jastadd$framework.ASTNode
-	jastadd$framework.List
 Module: m4
-	m4.D
 	m4.DType
+	m4.D
 Module: m1
-	m1.A
 	m1.AType
+	m1.A
 Module: m3
-	m3.CType
 	m3.C
+	m3.CType
 Module: m6
-	m6.FType
 	m6.F
+	m6.FType
 Module: m2
 	m2.B
 	m2.BType

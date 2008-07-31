@@ -99,7 +99,7 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m3, base:m3, context:[], instantiated:false
 	
 module m1, base:m1, context:[], instantiated:true
-	[export]m2alias:m1.m2alias, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, [export]m2alias:m1.m2alias
 module m2, base:m2, context:[], instantiated:false
 	
 module m1.m2alias$m3c, base:m3, context:[m1.m2alias], instantiated:true
@@ -109,7 +109,7 @@ module m1.m2alias$m3d, base:m3, context:[m1.m2alias], instantiated:true
 module m1.m2alias.m3alias, base:m3, context:[m1.m2alias], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m2alias, base:m2, context:[m1], instantiated:true
-	[export]m3alias:m1.m2alias.m3alias, jastadd$framework:jastadd$framework, m3c:m1.m2alias$m3c, m3d:m1.m2alias$m3d
+	jastadd$framework:jastadd$framework, [export]m3alias:m1.m2alias.m3alias, m3c:m1.m2alias$m3c, m3d:m1.m2alias$m3d
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework

@@ -119,15 +119,15 @@ module m3, base:m3, context:[], instantiated:false
 module m4, base:m4, context:[], instantiated:false
 	
 module m1, base:m1, context:[], instantiated:true
-	[export]m4alias:m1.m4alias, [export]m2alias:m1.m2alias, [export]m4aliasA:m1.m4aliasA, [export]m4aliasB:m1.m4aliasB, [export]m3alias:m1.m3alias, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, [export]m2alias:m1.m2alias, [export]m3alias:m1.m3alias, [export]m4alias:m1.m4alias, [export]m4aliasA:m1.m4aliasA, [export]m4aliasB:m1.m4aliasB
 module m2, base:m2, context:[], instantiated:false
 	
 module m1.m2alias$m4, base:m4, context:[m1.m2alias], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m2alias, base:m2, context:[m1], instantiated:true
-	[export]m4export:m1.m4alias, m4:m1.m2alias$m4, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, m4:m1.m2alias$m4, [export]m4export:m1.m4alias
 module m1.m3alias, base:m3, context:[m1], instantiated:true
-	[export]m4export:m1.m4alias, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, [export]m4export:m1.m4alias
 module m1.m4alias, base:m4, context:[m1, m1.m2alias, m1.m3alias], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------

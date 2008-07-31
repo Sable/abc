@@ -96,7 +96,7 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m3, base:m3, context:[], instantiated:false
 	
 module m1, base:m1, context:[], instantiated:true
-	[export]alias2:m1.alias2, jastadd$framework:jastadd$framework, [export]alias3:m1.alias3
+	[export]alias2:m1.alias2, [export]alias3:m1.alias3, jastadd$framework:jastadd$framework
 module m2, base:m2, context:[], instantiated:false
 	
 module m1.alias2, base:m2, context:[m1], instantiated:true

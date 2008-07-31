@@ -60,7 +60,7 @@ module: m1$m2alias, file: m2.module, base module: m2
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
 module m1, base:m1, context:[], instantiated:true
-	m2alias:m1$m2alias, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, m2alias:m1$m2alias
 module m2, base:m2, context:[], instantiated:false
 	
 module m1$m2alias, base:m2, context:[m1], instantiated:true

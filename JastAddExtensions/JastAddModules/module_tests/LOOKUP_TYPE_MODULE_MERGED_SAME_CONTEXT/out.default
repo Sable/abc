@@ -152,7 +152,7 @@ module: m1.m2alias, file: m2.module, base module: m2
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 	
 module m1, base:m1, context:[], instantiated:true
-	[export]m2alias:m1.m2alias, jastadd$framework:jastadd$framework
+	jastadd$framework:jastadd$framework, [export]m2alias:m1.m2alias
 module m3, base:m3, context:[], instantiated:false
 	
 module m2, base:m2, context:[], instantiated:false
@@ -164,19 +164,19 @@ module m1.m2alias$m3d, base:m3, context:[m1.m2alias], instantiated:true
 module m1.m2alias.m3alias, base:m3, context:[m1.m2alias], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m2alias, base:m2, context:[m1], instantiated:true
-	[export]m3alias:m1.m2alias.m3alias, jastadd$framework:jastadd$framework, m3c:m1.m2alias$m3c, m3d:m1.m2alias$m3d
+	jastadd$framework:jastadd$framework, [export]m3alias:m1.m2alias.m3alias, m3c:m1.m2alias$m3c, m3d:m1.m2alias$m3d
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework
-	jastadd$framework.ASTNode
-	jastadd$framework.List
 	jastadd$framework.Opt
+	jastadd$framework.List
+	jastadd$framework.ASTNode
 Module: m1
-	m1.AType
 	m1.A
+	m1.AType
 Module: m3
-	m3.C
 	m3.CType
+	m3.C
 Module: m2
 	m2.B
 	m2.BType
@@ -190,8 +190,8 @@ Module: m1.m2alias.m3alias
 	m1.m2alias.m3alias.CType
 	m1.m2alias.m3alias.C
 Module: m1.m2alias
-	m1.m2alias.B
 	m1.m2alias.BType
+	m1.m2alias.B
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, A.ast, A.java, m3.module, Main.java, m2.module, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m2.module, B.java, B.ast

@@ -130,7 +130,7 @@ module: M1$M3, file: M3.module, base module: M3
 
 ----------Module CU imports after import own----------
 module M1, base:M1, context:[], instantiated:true
-	M3:M1$M3, M2:M1$M2, jastadd$framework:jastadd$framework
+	M2:M1$M2, M3:M1$M3, jastadd$framework:jastadd$framework
 module M6, base:M6, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module M4, base:M4, context:[], instantiated:true
@@ -146,9 +146,9 @@ module M3, base:M3, context:[], instantiated:false
 module M4$M5, base:M5, context:[M4], instantiated:true
 	M6:M6, jastadd$framework:jastadd$framework
 module M1$M2, base:M2, context:[M1], instantiated:true
-	jastadd$framework:jastadd$framework, M4:M4
+	M4:M4, jastadd$framework:jastadd$framework
 module M1$M3, base:M3, context:[M1], instantiated:true
-	jastadd$framework:jastadd$framework, M4:M4
+	M4:M4, jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
 Module: M1
