@@ -32,7 +32,7 @@ aspect CollectLocalModulePackages {
 	protected HashMap<String, ModuleCompilationUnit> Program.packageToMCU = new 
 		HashMap<String, ModuleCompilationUnit>();
 	public void Program.addPackageToMCU(String packageName, ModuleCompilationUnit mcu) {
-		assert (this.packageToMCU.get(packageName) == null) : "Duplicate entry already in Program.packageToMCU";
+		assert (errorsFound() || this.packageToMCU.get(packageName) == null) : "Duplicate entry already in Program.packageToMCU";
 		packageToMCU.put(packageName, mcu);
 	}
 	public ModuleCompilationUnit Program.getPackageToMCU(String packageName) {

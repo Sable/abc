@@ -42,6 +42,25 @@ aspect JAModuleErrorCheck {
   	public void CompilationUnit.collectModuleErrors(Collection err) {
   		err.addAll(errors);
   	}
+
+	//used in some asserts  	
+  	protected boolean Program.errorsFound = false;
+  	public boolean Program.errorsFound() {
+  		 return this.errorsFound;
+  	}
+  	public void Program.setErrorsFound(boolean b) {
+  		this.errorsFound = b;
+  	}
+  	refine ErrorCheck public void ASTNode.error(String s) {
+  		ErrorCheck.ASTNode.error(s);
+  		
+		ASTNode node = this;
+		while(node != null && !(node instanceof Program)) {
+			node = node.getParent();
+		}
+		Program program = (Program) node;
+		program.setErrorsFound(true);
+  	}
   	
   	//Single error checks, done before CU insertions/generatOwn
   	public void ASTNode.checkModuleErrorsPass1() {
