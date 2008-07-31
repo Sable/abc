@@ -102,16 +102,16 @@ aspect Debug {
 		return s;
 	}
 	public StringBuffer ModuleCompilationUnit.toStringJAModuleCUImports(StringBuffer s) {
-		String contextString = "[";
-		boolean first = true;
-		for (ModuleCompilationUnit cu : getInstanceContext()) {
-			if (!first) {
-				contextString += ", ";
+		String contextString = "";
+		SortedSet<String> instanceContextNames = new TreeSet<String>(new Comparator<String>() {
+			public int compare(String x, String y) {
+				return x.compareTo(y);
 			}
-			contextString += cu.getModuleName();
-			first = false;
+		});
+		for (ModuleCompilationUnit cu : getInstanceContext()) {
+			instanceContextNames.add(cu.getModuleName());
 		}
-		contextString += "]";
+		contextString += instanceContextNames.toString();
 		
 		s.append("module " + getModuleName() + 
 			", base:" + getBaseCU().getModuleName() + 
@@ -119,8 +119,14 @@ aspect Debug {
 			", instantiated:" + moduleInstantiated + "\n");
 		s.append("\t");
 		
-		first = true;
-		for (String localAlias : getImportedModuleMap().keySet()) {
+		boolean first = true;
+		SortedSet<String> localAliasNames = new TreeSet<String>(new Comparator<String>() {
+			public int compare(String x, String y) {
+				return x.compareTo(y);
+			}
+		});
+		localAliasNames.addAll(getImportedModuleMap().keySet());
+		for (String localAlias : localAliasNames) {
 			ModuleCompilationUnit importedCU = getImportedModule(localAlias).getModuleCU();
 			if (!first) {s.append(", ");}
 			String exportStr;

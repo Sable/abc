@@ -128,8 +128,6 @@ public class JastAddModules extends JastAdd {
 					return false;
 				}
 				
-				program.collectLocalModulePackages();
-
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					msg = new StringBuffer(
 							"----------CU AST after insert----------\n");
@@ -151,6 +149,8 @@ public class JastAddModules extends JastAdd {
 				// for JAModuleClassPath.Program.modulePackages()
 				program.flushCache();
 
+				program.collectLocalModulePackages();
+				
 				// does not work in general due to conflicting names
 				/*
 				 * result = program.insertModulePackageImports(); if (!result) {
