@@ -1,0 +1,5 @@
+Arguments: 
+-debug -d classes -instance-module m1 m1.module m2.module A.java ../testlib/jastadd$framework.module End arguments
+Unrecoverable semantic error(s) found.
+m1.module:1,19:
+  Semantic Error: Module m1 involved in an extends cycle with the following modules: m1, m2
