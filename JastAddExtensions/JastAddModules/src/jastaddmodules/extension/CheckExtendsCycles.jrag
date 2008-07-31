@@ -1,0 +1,33 @@
+import jastadd.*;
+import java.util.LinkedList;
+
+aspect CheckExtendsCycles {
+
+	public void ASTNode.checkExtendsCycles(){}
+	public void ModuleCompilationUnit.checkExtendsCycles() {
+		checkExtendsCycles(new LinkedList<ModuleCompilationUnit>());
+	}
+	public void ModuleCompilationUnit.checkExtendsCycles(LinkedList<ModuleCompilationUnit> visited) {
+		if (visited.contains(this)) {
+			String cycleStr = "";
+			boolean first = true;
+			for (ModuleCompilationUnit cycleMember : visited) {
+				if (!first) { cycleStr += ", "; }
+				cycleStr += cycleMember.getModuleName();
+				first = false;
+			}
+			String msg = "Module " + getModuleName() + 
+				" involved in an extends cycle with the following modules: " + cycleStr;
+			getModuleDecl().getExtends().error(msg);
+			throw new UnrecoverableSemanticError(msg);
+		}
+		if (hasSuperModule()) {
+			ModuleCompilationUnit superMCU = 
+				getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends());
+			LinkedList<ModuleCompilationUnit> newList =
+				new LinkedList<ModuleCompilationUnit>(visited);
+			newList.add(this); 
+			superMCU.checkExtendsCycles(newList);
+		}
+	} 
+}
