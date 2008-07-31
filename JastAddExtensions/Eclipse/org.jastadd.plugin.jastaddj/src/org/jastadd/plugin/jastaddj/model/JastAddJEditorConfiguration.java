@@ -26,8 +26,6 @@ import org.jastadd.plugin.jastaddj.model.repair.LeftParen;
 import org.jastadd.plugin.jastaddj.model.repair.RightBrace;
 import org.jastadd.plugin.jastaddj.model.repair.RightParen;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
-import org.jastadd.plugin.model.repair.Island;
-import org.jastadd.plugin.model.repair.JastAddStructureModel;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -198,6 +196,8 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
 				new CompletionHandler());
+		
+		
 	}
 
 	@Override

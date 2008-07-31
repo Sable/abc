@@ -1,10 +1,15 @@
 package org.jastadd.plugin.editor;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -20,6 +25,8 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.jastadd.plugin.editor.folding.JastAddEditorFolder;
 import org.jastadd.plugin.editor.hover.JastAddSourceInformationControl;
@@ -28,11 +35,56 @@ import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.outline.JastAddContentOutlinePage;
 import org.jastadd.plugin.resources.JastAddDocumentProvider;
 
+import sun.util.ResourceBundleEnumeration;
+
 /**
  * JastAdd editor providing various JastAdd related editor features
  */
 public abstract class JastAddEditor extends TextEditor {
+	
+	
+	protected class JastAddResourceBundle extends ResourceBundle {
 		
+		private HashMap<String,String> map = new HashMap<String,String>();
+
+		@Override
+		public Enumeration<String> getKeys() {
+			ResourceBundle parent = this.parent;
+	        return new ResourceBundleEnumeration(map.keySet(),
+	                (parent != null) ? parent.getKeys() : null);
+		}
+
+		@Override
+		protected Object handleGetObject(String key) {
+			return map.get(key);
+		}
+		
+	}
+	
+	@Override
+	protected void createActions() {
+		super.createActions();
+	
+		IAction a= new TextOperationAction(new JastAddResourceBundle(), 
+				"ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
+		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+		setAction("ContentAssistProposal", a); 
+
+		/*
+		Action action = new ContentAssistAction(new JastAddResourceBundle(), "ContentAssistProposal.", this); 
+		String id = ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS;
+		action.setActionDefinitionId(id);
+		
+		IHandlerService handlerServer = (IHandlerService) getEditorSite().getService(IHandlerService.class);
+		IHandler cahandler = new ActionHandler(action);
+		if (handlerServer != null) {
+			handlerServer.activateHandler(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, cahandler);
+		}
+		*/
+	}
+	
+	
+
 	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
 		super.doSave(progressMonitor);
@@ -52,6 +104,10 @@ public abstract class JastAddEditor extends TextEditor {
 				model.logError(e, "Problem with error check on save");
 			}
 		}
+	}
+	
+	public void showContentAssistant() {
+		
 	}
 
 	private JastAddContentOutlinePage fOutlinePage;
@@ -104,9 +160,17 @@ public abstract class JastAddEditor extends TextEditor {
 					fOutlinePage.setInput(getEditorInput());
 			}
 			return fOutlinePage;
-		} 
+		}
 		return super.getAdapter(required);
 	}
+	
+	/*
+	public IContentAssistant getContentAssistant() {
+		SourceViewerConfiguration config = getSourceViewerConfiguration();
+		IContentAssistant ca = config.getContentAssistant(getSourceViewer());
+		return ca;
+	}
+	*/
 	
 	/**
 	 * Overriden method from AbstractDecoratedTextEditor. Adds projection support
