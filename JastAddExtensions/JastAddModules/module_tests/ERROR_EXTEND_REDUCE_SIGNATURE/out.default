@@ -80,17 +80,11 @@ module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
 module m3, base:m3, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1x, base:m1x, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m1xx, base:m1xx, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 as none null;
@@ -117,20 +111,21 @@ module: m1.m2alias3, file: m2.module, base module: m2
 
 ----------Module CU imports after import own----------
 module m3, base:m3, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1x, base:m1x, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m2alias3:m1.m2alias3
+	jastadd$framework:jastadd$framework
+	m2:m1.m2alias3
+	[export]m2alias3:m1.m2alias3
+	m2x:m1.m2alias3
 module m1xx, base:m1xx, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 module m1.m2alias3.m3, base:m3, context:[m1.m2alias3], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m2alias3, base:m2, context:[m1], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m3:m1.m2alias3.m3
-m1xx.module:3:
-  Semantic Error: This merge reduces the signature of its supermodule
+	jastadd$framework:jastadd$framework
+	[export]m3:m1.m2alias3.m3
+m1.module:4:
+  Semantic Error: Merge changes the signature of a merge target: m2x
+m1.module:4:
+  Semantic Error: Merge changes the signature of a merge target: m2

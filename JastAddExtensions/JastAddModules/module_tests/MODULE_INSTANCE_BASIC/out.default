@@ -75,17 +75,11 @@ module: M3, file: M3.module, base module: M3
 	C.java package:M3
 ----------Module CU imports before import own----------
 module M4, base:M4, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module M5, base:M5, context:[], instantiated:false
-	
 module M2, base:M2, context:[], instantiated:false
-	
 module M1, base:M1, context:[], instantiated:false
-	
 module M3, base:M3, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module M1;
 import own M2 as none null;
@@ -119,29 +113,30 @@ module: M1$M3, file: M3.module, base module: M3
 
 ----------Module CU imports after import own----------
 module M4, base:M4, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module M5, base:M5, context:[], instantiated:false
-	
 module M2, base:M2, context:[], instantiated:false
-	
 module M1, base:M1, context:[], instantiated:true
-	M2:M1$M2, M3:M1$M3, jastadd$framework:jastadd$framework
+	M2:M1$M2
+	M3:M1$M3
+	jastadd$framework:jastadd$framework
 module M3, base:M3, context:[], instantiated:false
-	
 module M1$M2$M4$M5, base:M5, context:[M1$M2$M4], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M2$M4, base:M4, context:[M1$M2], instantiated:true
-	M5:M1$M2$M4$M5, jastadd$framework:jastadd$framework
+	M5:M1$M2$M4$M5
+	jastadd$framework:jastadd$framework
 module M1$M2, base:M2, context:[M1], instantiated:true
-	M4:M1$M2$M4, jastadd$framework:jastadd$framework
+	M4:M1$M2$M4
+	jastadd$framework:jastadd$framework
 module M1$M3$M4$M5, base:M5, context:[M1$M3$M4], instantiated:true
 	jastadd$framework:jastadd$framework
 module M1$M3$M4, base:M4, context:[M1$M3], instantiated:true
-	M5:M1$M3$M4$M5, jastadd$framework:jastadd$framework
+	M5:M1$M3$M4$M5
+	jastadd$framework:jastadd$framework
 module M1$M3, base:M3, context:[M1], instantiated:true
-	M4:M1$M3$M4, jastadd$framework:jastadd$framework
+	M4:M1$M3$M4
+	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
 Module: M4

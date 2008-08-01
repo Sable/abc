@@ -58,13 +58,9 @@ module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m3, base:m3, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 Unrecoverable semantic error(s) found.
 m1.module:5,11:
   Semantic Error: Module being merged is a base module or is accessed through a base module. Merging is only allowed for import own modules.

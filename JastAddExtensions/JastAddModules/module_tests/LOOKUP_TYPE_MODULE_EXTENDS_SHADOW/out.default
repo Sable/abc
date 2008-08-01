@@ -74,13 +74,9 @@ module: m1xx, file: m1xx.module, base module: m1xx
 	AXX.java package:m1xx
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1x, base:m1x, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m1xx, base:m1xx, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1xx;
 import  jastadd$framework as none null;
@@ -106,17 +102,12 @@ module: m1xx$super$m1, file: m1.module, base module: m1
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1x, base:m1x, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m1xx, base:m1xx, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1xx$super$m1x, base:m1x, context:[], instantiated:true
-	
 module m1xx$super$m1, base:m1, context:[], instantiated:true
-	
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework

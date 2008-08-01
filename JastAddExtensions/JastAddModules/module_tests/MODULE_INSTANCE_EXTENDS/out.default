@@ -33,14 +33,14 @@ import own m2 export as m2alias1;
 ------------------------
 ------z.module------
 module z;
-import own m3 as m3alias;
+import own m3 export as m3alias;
 merge m3alias, m2alias1::m3, m2alias2::m3 export as m3alias3;
 ------------------------
 ------m1.module------
 module m1;
 import own m2 as none null;
 import own m3 export as m3;
-import own m3 as m3a;
+import own m3 export as m3a;
 merge m2::m3, m3 export as m3;
 merge m3a, m3 export as m3;
 ------------------------
@@ -85,29 +85,22 @@ module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
 module m3, base:m3, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1x, base:m1x, context:[], instantiated:false
-	
 module z, base:z, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module a, base:a, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module z;
 import own m2 as none null;
 import own m3 export as m3;
-import own m3 as m3a;
+import own m3 export as m3a;
 merge m2::m3, m3 export as m3;
 merge m3a, m3 export as m3;
 import own m2 export as m2alias1;
 import own m2 as m2alias2;
-import own m3 as m3alias;
+import own m3 export as m3alias;
 merge m3alias, m2alias1::m3, m2alias2::m3 export as m3alias3;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
@@ -142,31 +135,32 @@ module: z.m3alias3, file: m3.module, base module: m3
 
 ----------Module CU imports after import own----------
 module m3, base:m3, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1x, base:m1x, context:[], instantiated:false
-	
 module z, base:z, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, m2:z$m2, [export]m2alias1:z.m2alias1, m2alias2:z$m2alias2, [export]m3:z.m3, [export]m3alias3:z.m3alias3
+	jastadd$framework:jastadd$framework
+	m2:z$m2
+	[export]m2alias1:z.m2alias1
+	m2alias2:z$m2alias2
+	[export]m3:z.m3
+	[export]m3a:z.m3
+	[export]m3alias:z.m3alias3
+	[export]m3alias3:z.m3alias3
 module m1, base:m1, context:[], instantiated:false
-	
 module a, base:a, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 module z$super$a, base:a, context:[], instantiated:true
-	
 module z$super$m1x, base:m1x, context:[], instantiated:true
-	
 module z$super$m1, base:m1, context:[], instantiated:true
-	
 module z$m2, base:m2, context:[z], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m3:z.m3
+	jastadd$framework:jastadd$framework
+	[export]m3:z.m3
 module z.m2alias1, base:m2, context:[z], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m3:z.m3alias3
+	jastadd$framework:jastadd$framework
+	[export]m3:z.m3alias3
 module z$m2alias2, base:m2, context:[z], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m3:z.m3alias3
+	jastadd$framework:jastadd$framework
+	[export]m3:z.m3alias3
 module z.m3, base:m3, context:[z, z$m2], instantiated:true
 	jastadd$framework:jastadd$framework
 module z.m3alias3, base:m3, context:[z, z$m2alias2, z.m2alias1], instantiated:true

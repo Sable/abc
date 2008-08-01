@@ -131,13 +131,9 @@ module: m2, file: m2.module, base module: m2
 	B.ast package:m2
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m3, base:m3, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 export as m2;
@@ -172,13 +168,12 @@ module: m1.m3, file: m3.module, base module: m3
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1, base:m1, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m2:m1.m2, [export]m3:m1.m3
+	jastadd$framework:jastadd$framework
+	[export]m2:m1.m2
+	[export]m3:m1.m3
 module m3, base:m3, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 module m1.m2, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m3, base:m3, context:[m1], instantiated:true

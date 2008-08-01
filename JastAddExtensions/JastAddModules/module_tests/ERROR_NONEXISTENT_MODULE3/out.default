@@ -94,9 +94,7 @@ Opt.java package:
 List.java package:
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module M1, base:M1, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module M1;
 import  jastadd$framework as none null;
@@ -118,7 +116,6 @@ List.java package:
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module M1, base:M1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 AST.ast:1,8:

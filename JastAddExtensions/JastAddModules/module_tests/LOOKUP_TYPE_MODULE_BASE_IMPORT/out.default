@@ -167,19 +167,12 @@ module: m2, file: m2.module, base module: m2
 	B.ast package:m2
 ----------Module CU imports before import own----------
 module m5, base:m5, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m4, base:m4, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m3, base:m3, context:[], instantiated:false
-	
 module m6, base:m6, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import  m2 as none null;
@@ -216,19 +209,27 @@ module: m2, file: m2.module, base module: m2
 
 ----------Module CU imports after import own----------
 module m5, base:m5, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, m6:m6
+	jastadd$framework:jastadd$framework
+	m6:m6
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m4, base:m4, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1, base:m1, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, m2:m2, m3:m3, m4:m4, m5:m5, m6:m6
+	jastadd$framework:jastadd$framework
+	m2:m2
+	m3:m3
+	m4:m4
+	m5:m5
+	m6:m6
 module m3, base:m3, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, m4:m4, m5:m5
+	jastadd$framework:jastadd$framework
+	m4:m4
+	m5:m5
 module m6, base:m6, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 module m2, base:m2, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, m4:m4
+	jastadd$framework:jastadd$framework
+	m4:m4
 ----------MCU collectTypes after import own----------
 
 Module: m5

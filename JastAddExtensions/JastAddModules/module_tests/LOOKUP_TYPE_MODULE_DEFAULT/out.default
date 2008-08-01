@@ -50,9 +50,7 @@ module: m1, file: m1.module, base module: m1
 Main.java package:
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import  jastadd$framework as none null;
@@ -68,7 +66,6 @@ Main.java package:
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------

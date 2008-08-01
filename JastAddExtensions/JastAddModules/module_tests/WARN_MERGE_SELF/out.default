@@ -36,11 +36,8 @@ module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 as none null;
@@ -58,11 +55,11 @@ module: m1$m2alias, file: m2.module, base module: m2
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1, base:m1, context:[], instantiated:true
-	jastadd$framework:jastadd$framework, m2alias:m1$m2alias
+	jastadd$framework:jastadd$framework
+	m2:m1$m2alias
+	m2alias:m1$m2alias
 module m2, base:m2, context:[], instantiated:false
-	
 module m1$m2alias, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------

@@ -48,13 +48,9 @@ module: M3, file: M3.module, base module: M3
 	C.java package:M3
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module M2, base:M2, context:[], instantiated:false
-	
 module M1, base:M1, context:[], instantiated:false
-	
 module M3, base:M3, context:[], instantiated:false
-	
 Unrecoverable semantic error(s) found.
 M1.module:3,8:
   Semantic Error: Unable to find module: NonExistent

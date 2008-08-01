@@ -77,13 +77,9 @@ module: m2, file: m2.module, base module: m2
 	B.java package:m2
 ----------Module CU imports before import own----------
 module m3, base:m3, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module m1, base:m1, context:[], instantiated:false
-	
 module m2, base:m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 export as alias1;
@@ -115,21 +111,22 @@ module: m1.alias2, file: m2.module, base module: m2
 
 ----------Module CU imports after import own----------
 module m3, base:m3, context:[], instantiated:false
-	
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module m1, base:m1, context:[], instantiated:true
-	[export]alias1:m1.alias1, [export]alias2:m1.alias2, jastadd$framework:jastadd$framework
+	[export]alias1:m1.alias1
+	[export]alias2:m1.alias2
+	jastadd$framework:jastadd$framework
 module m2, base:m2, context:[], instantiated:false
-	
 module m1.alias1.m3, base:m3, context:[m1.alias1], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.alias1, base:m2, context:[m1], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m3:m1.alias1.m3
+	jastadd$framework:jastadd$framework
+	[export]m3:m1.alias1.m3
 module m1.alias2.m3, base:m3, context:[m1.alias2], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.alias2, base:m2, context:[m1], instantiated:true
-	jastadd$framework:jastadd$framework, [export]m3:m1.alias2.m3
+	jastadd$framework:jastadd$framework
+	[export]m3:m1.alias2.m3
 ----------MCU collectTypes after import own----------
 
 Module: m3

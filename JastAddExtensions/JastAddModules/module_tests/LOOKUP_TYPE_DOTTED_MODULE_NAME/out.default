@@ -145,13 +145,9 @@ module: com.xyz.m2, file: m2.module, base module: com.xyz.m2
 	AST2.ast package:com.xyz.m2
 ----------Module CU imports before import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-	
 module com.xyz.m1, base:com.xyz.m1, context:[], instantiated:false
-	
 module com.xyz.m3, base:com.xyz.m3, context:[], instantiated:false
-	
 module com.xyz.m2, base:com.xyz.m2, context:[], instantiated:false
-	
 -------------Instance ModuleCompilationUnit------------
 module com.xyz.m1;
 import  com.xyz.m2 as none null;
@@ -185,13 +181,13 @@ module: com.xyz.m2.com.xyz.m3, file: m3.module, base module: com.xyz.m3
 
 ----------Module CU imports after import own----------
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-	
 module com.xyz.m1, base:com.xyz.m1, context:[], instantiated:true
-	com.xyz.m2:com.xyz.m2, jastadd$framework:jastadd$framework
+	com.xyz.m2:com.xyz.m2
+	jastadd$framework:jastadd$framework
 module com.xyz.m3, base:com.xyz.m3, context:[], instantiated:false
-	
 module com.xyz.m2, base:com.xyz.m2, context:[], instantiated:true
-	[export]com.xyz.m3:com.xyz.m2.com.xyz.m3, jastadd$framework:jastadd$framework
+	[export]com.xyz.m3:com.xyz.m2.com.xyz.m3
+	jastadd$framework:jastadd$framework
 module com.xyz.m2.com.xyz.m3, base:com.xyz.m3, context:[com.xyz.m2], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
