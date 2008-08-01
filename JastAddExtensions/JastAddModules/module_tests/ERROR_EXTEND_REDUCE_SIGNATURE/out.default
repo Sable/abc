@@ -1,5 +1,5 @@
 Arguments: 
--debug -d classes -instance-module m1 m1.module m1x.module m1xx.module m2.module m3.module A.java AX.java AXX.java B.java C.java ../testlib/jastadd$framework.module End arguments
+-debug -d classes -instance-module m1xx m1.module m1x.module m1xx.module m2.module m3.module A.java AX.java AXX.java B.java C.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
 ------B.java------
 module: module m2;;
@@ -26,8 +26,8 @@ module name : m1
 module m1x;
 import own m3 as none null;
 import own m2 as m2alias;
-merge m2.m3, m2alias3.m3 export as m3alias;
-merge m2alias3, m2alias as m2alias3;
+merge m2::m3, m2alias3::m3 export as m3alias;
+merge m2alias3, m2alias as m2alias4;
 ------------------------
 ------m1.module------
 module m1;
@@ -48,7 +48,7 @@ module name : m3
 ------m1xx.module------
 module m1xx;
 import own m3 as m3alias2;
-merge m3alias, m3alias2 as m3breaker;
+merge m3alias, m3alias2 as m3alias;
 ------------------------
 ------m2.module------
 module m2;
@@ -86,10 +86,9 @@ module m1, base:m1, context:[], instantiated:false
 module m1xx, base:m1xx, context:[], instantiated:false
 module m2, base:m2, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
-module m1;
-import own m2 as none null;
-import own m2 as m2x;
-merge m2x, m2 export as m2alias3;
+module m1xx;
+import own m3 as m3alias2;
+merge m3alias, m3alias2 as m3alias;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
@@ -104,28 +103,45 @@ module: m1xx, file: m1xx.module, base module: m1xx
 	AXX.java package:m1xx
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
-module: m1.m2alias3.m3, file: m3.module, base module: m3
-	C.java package:m1.m2alias3.m3
-module: m1.m2alias3, file: m2.module, base module: m2
-	B.java package:m1.m2alias3
+module: m1xx$super$m1x, file: m1x.module, base module: m1x
+	AX.java package:m1xx$super$m1x
+module: m1xx$super$m1, file: m1.module, base module: m1
+	A.java package:m1xx$super$m1
+module: m1xx$m3, file: m3.module, base module: m3
+	C.java package:m1xx$m3
+module: m1xx$m2alias4.m3, file: m3.module, base module: m3
+	C.java package:m1xx$m2alias4.m3
+module: m1xx$m2alias4, file: m2.module, base module: m2
+	B.java package:m1xx$m2alias4
+module: m1xx$m3alias, file: m3.module, base module: m3
+	C.java package:m1xx$m3alias
 
 ----------Module CU imports after import own----------
 module m3, base:m3, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m1x, base:m1x, context:[], instantiated:false
-module m1, base:m1, context:[], instantiated:true
+module m1, base:m1, context:[], instantiated:false
+module m1xx, base:m1xx, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
-	m2:m1.m2alias3
-	[export]m2alias3:m1.m2alias3
-	m2x:m1.m2alias3
-module m1xx, base:m1xx, context:[], instantiated:false
+	m2:m1xx$m2alias4
+	m2alias:m1xx$m2alias4
+	[export]m2alias3:m1xx$m2alias4
+	m2alias4:m1xx$m2alias4
+	m2x:m1xx$m2alias4
+	m3:m1xx$m3
+	m3alias:m1xx$m3alias
+	m3alias2:m1xx$m3alias
 module m2, base:m2, context:[], instantiated:false
-module m1.m2alias3.m3, base:m3, context:[m1.m2alias3], instantiated:true
+module m1xx$super$m1x, base:m1x, context:[m1xx], instantiated:true
+module m1xx$super$m1, base:m1, context:[m1xx], instantiated:true
+module m1xx$m3, base:m3, context:[m1xx], instantiated:true
 	jastadd$framework:jastadd$framework
-module m1.m2alias3, base:m2, context:[m1], instantiated:true
+module m1xx$m2alias4.m3, base:m3, context:[m1xx$m2alias4], instantiated:true
 	jastadd$framework:jastadd$framework
-	[export]m3:m1.m2alias3.m3
-m1.module:4:
-  Semantic Error: Merge changes the signature of a merge target: m2x
-m1.module:4:
-  Semantic Error: Merge changes the signature of a merge target: m2
+module m1xx$m2alias4, base:m2, context:[m1xx], instantiated:true
+	jastadd$framework:jastadd$framework
+	[export]m3:m1xx$m2alias4.m3
+module m1xx$m3alias, base:m3, context:[m1xx], instantiated:true
+	jastadd$framework:jastadd$framework
+m1xx.module:3:
+  Semantic Error: Merge changes the signature of a merge target: m3alias

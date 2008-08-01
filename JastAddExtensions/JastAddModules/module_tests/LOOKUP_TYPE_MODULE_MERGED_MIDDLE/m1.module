@@ -1,0 +1,11 @@
+module m1;
+import own m2 export as m2a;
+import own m2 export as m2b;
+import own m3 export as m3a;
+import own m3 export as m3b;
+
+merge m2a::m4export, m3a::m4export export as m4aliasA;
+merge m2b::m4export, m3b::m4export export as m4aliasB;
+merge m2a, m2b export as m2alias;
+merge m3a, m3b export as m3alias;
+merge m2alias::m4export, m3alias::m4export export as m4alias;

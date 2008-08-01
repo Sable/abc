@@ -210,29 +210,29 @@ module m1$m2a, base:m2, context:[m1], instantiated:true
 module m1.m2b, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]m3:m1.m3xxx
-module m1.m3xx$super$m3x, base:m3x, context:[], instantiated:true
-module m1.m3xx$super$m3, base:m3, context:[], instantiated:true
+module m1.m3xx$super$m3x, base:m3x, context:[m1.m3xx], instantiated:true
+module m1.m3xx$super$m3, base:m3, context:[m1.m3xx], instantiated:true
 module m1.m3xx, base:m3xx, context:[m1, m1$m2a], instantiated:true
 	jastadd$framework:jastadd$framework
-module m1.m3xxx$super$m3xx, base:m3xx, context:[], instantiated:true
-module m1.m3xxx$super$m3x, base:m3x, context:[], instantiated:true
-module m1.m3xxx$super$m3, base:m3, context:[], instantiated:true
+module m1.m3xxx$super$m3xx, base:m3xx, context:[m1.m3xxx], instantiated:true
+module m1.m3xxx$super$m3x, base:m3x, context:[m1.m3xxx], instantiated:true
+module m1.m3xxx$super$m3, base:m3, context:[m1.m3xxx], instantiated:true
 module m1.m3xxx, base:m3xxx, context:[m1, m1.m2b], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework
 Module: m3xxx
-	m3xxx.$pack.CXXX
 	m3xxx.CXXX
+	m3xxx.$pack.CXXX
 Module: m1
 	m1.A
 Module: m3xx
-	m3xx.$pack.CXX
 	m3xx.CXX
+	m3xx.$pack.CXX
 Module: m3x
-	m3x.CX
 	m3x.$pack.CX
+	m3x.CX
 Module: m3
 	m3.$pack.C
 	m3.C
@@ -246,11 +246,11 @@ Module: m1.m3xx$super$m3x
 	m1.m3xx$super$m3x.$pack.CX
 	m1.m3xx$super$m3x.CX
 Module: m1.m3xx$super$m3
-	m1.m3xx$super$m3.C
 	m1.m3xx$super$m3.$pack.C
+	m1.m3xx$super$m3.C
 Module: m1.m3xx
-	m1.m3xx.CXX
 	m1.m3xx.$pack.CXX
+	m1.m3xx.CXX
 Module: m1.m3xxx$super$m3xx
 	m1.m3xxx$super$m3xx.CXX
 	m1.m3xxx$super$m3xx.$pack.CXX

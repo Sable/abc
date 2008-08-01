@@ -82,8 +82,8 @@ Module: jastadd$framework
 Module: m1
 	m1.A
 Module: m2
-	m2.$pack.P
 	m2.B
+	m2.$pack.P
 Module: m1$m2
 	m1$m2.$pack.P
 	m1$m2.B

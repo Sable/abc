@@ -1,0 +1,3 @@
+module m2;
+import own m4 export as m4export;
+import own m4;

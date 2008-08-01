@@ -1,5 +1,5 @@
 module m1x extends m1;
 import own m3;
 import own m2 as m2alias;
-merge m2.m3, m2alias3.m3 export as m3alias;
-merge m2alias3, m2alias as m2alias3;
+merge m2::m3, m2alias3::m3 export as m3alias;
+merge m2alias3, m2alias as m2alias4;

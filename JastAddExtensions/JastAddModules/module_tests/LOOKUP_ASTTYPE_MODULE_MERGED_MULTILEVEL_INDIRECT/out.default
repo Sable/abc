@@ -152,8 +152,8 @@ module m1$m4alias, base:m4, context:[m1, m1$m2, m1$m3], instantiated:true
 
 Module: jastadd$framework
 	jastadd$framework.ASTNode
-	jastadd$framework.Opt
 	jastadd$framework.List
+	jastadd$framework.Opt
 Module: m4
 	m4.D
 Module: m1
