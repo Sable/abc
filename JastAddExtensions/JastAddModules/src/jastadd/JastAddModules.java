@@ -114,7 +114,8 @@ public class JastAddModules extends JastAdd {
 				}
 				
 				//check if a submodule reduces the signature of a super module
-				program.checkModuleSignatures();
+				//NOTE: No need to checking module signatures, as merge now preserves signatures
+				//program.checkModuleSignatures();
 				
 				//super modules
 				result = program.collectSuperModules();

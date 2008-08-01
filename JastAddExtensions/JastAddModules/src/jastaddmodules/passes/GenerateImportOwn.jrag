@@ -188,21 +188,36 @@ aspect GenerateImportOwn {
 			mergedCU.setSourceStatement(mergeMember); //debug
 			getHostProgram().getCompilationUnitList().addChild(mergedCU);
 			
-			boolean replaceSelf = false; //is set to true if mergedCU itslef is found in the imports of the instance context
+			//TODO: These loops are too hairy. Try to turn the innermost loop into a method
 			//foreach merge target
 			for (ModuleCompilationUnit mergeTargetCU : mergeTargets) {
 			//	foreach context member of the merge target
 				for (ModuleCompilationUnit instanceContextCU: mergeTargetCU.getInstanceContext()) {
-			//		detach the merge target from the context member's import list
-					String oldAlias = instanceContextCU.getImportedModuleAlias(mergeTargetCU);
-					AsType oldAsType = instanceContextCU.getImportedModule(oldAlias).getAsType();
-					ModuleImportType oldImportType = instanceContextCU.getImportedModule(oldAlias).getModuleImportType();
-					assert (oldAlias != null) : "Unable to find old alias";
-					instanceContextCU.removeImportedModule(oldAlias);
-			//		attach the result copy to the context member's import list (use the old alias and isExported)
-					if (ret != instanceContextCU) {
-						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
+			//		for each old alias of the mergetargetcu
+					Set<String> oldAliases = instanceContextCU.getImportedModuleAliases(mergeTargetCU);
+					for (String oldAlias : oldAliases) { 
+			//			detach the merge target from the context member's import list
+						AsType oldAsType = instanceContextCU.getImportedModule(oldAlias).getAsType();
+						ModuleImportType oldImportType = instanceContextCU.getImportedModule(oldAlias).getModuleImportType();
+						assert (oldAlias != null) : "Unable to find old alias";
+						assert (oldImportType instanceof ModuleImportTypeOwn) : "Mergetargets should all be imported using own";
+						instanceContextCU.removeImportedModule(oldAlias);
+			//			attach the result copy to the context member's import list (use the old alias and isExported)
+						if (ret == instanceContextCU) {//if the merge replaces an import/previous merge in ret
+							//TODO: bad use of getclass, should add methods to AsTypes
+							if (oldAsType.isExported() != mergeMember.getAsType().isExported()) { //no need to check for import own, as base CUs can't be merged
+								String msg = "Merge changes the signature of a merge target: " + oldAlias;
+								mergeMember.error(msg);
+							}
+							//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
+							if (!(oldAlias.equals(mergeAlias))) {
+								instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
+							}
+						} else {
+							instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
+						}
 					}
+					
 			//		add the context member to the result copy's instance context
 					mergedCU.addInstanceContext(instanceContextCU);
 				}

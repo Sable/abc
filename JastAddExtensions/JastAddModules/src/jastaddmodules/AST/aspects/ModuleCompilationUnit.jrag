@@ -94,16 +94,21 @@ aspect ModuleCompilationUnit {
 	public ImportedModule ModuleCompilationUnit.removeImportedModule(String alias) {
 		return importedModules.remove(alias);
 	}
-	public ImportedModule ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
-		return importedModules.remove(getImportedModuleAlias(cu));
+	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
+		Set<String> aliases = getImportedModuleAliases(cu);
+		for (String alias: aliases) {
+			importedModules.remove(alias);
+		}
+		return cu; 
 	}
-	public String ModuleCompilationUnit.getImportedModuleAlias(ModuleCompilationUnit cu) {
+	public Set<String> ModuleCompilationUnit.getImportedModuleAliases(ModuleCompilationUnit cu) {
+		Set<String> ret = new HashSet<String>();
 		for (String key : importedModules.keySet()) {
 			if (cu == importedModules.get(key).getModuleCU()) {
-				return key;
+				ret.add(key);
 			}
 		}
-		return null;
+		return ret;
 	}
 	public Map<String, ImportedModule> ModuleCompilationUnit.getImportedModuleMap() {
 		return importedModules;
