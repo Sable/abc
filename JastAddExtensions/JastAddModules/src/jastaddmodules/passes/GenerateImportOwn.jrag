@@ -86,7 +86,8 @@ aspect GenerateImportOwn {
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateImportCUs(ModuleCompilationUnit ret) {
 		assert (ret != null) : "ModuleCompilationUnit parameter should not be null";
 		
-		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+		LinkedList<ModuleMemberDecl> memberList = ret.getSelfAndSuperMemberList();
+		for (ModuleMemberDecl member : memberList) {
 			if (!(member instanceof ModuleImportDecl)) {
 				continue;
 			}
@@ -140,7 +141,8 @@ aspect GenerateImportOwn {
 	//NOTE: This is the hairiest piece of code in all of JastAddModules. Be careful
 	//when changing this
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
-		for (ModuleMemberDecl member : ret.getModuleMemberDeclList()) {
+		LinkedList<ModuleMemberDecl> memberList = ret.getSelfAndSuperMemberList();
+		for (ModuleMemberDecl member : memberList) {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
 			}
@@ -204,8 +206,9 @@ aspect GenerateImportOwn {
 						instanceContextCU.removeImportedModule(oldAlias);
 			//			attach the result copy to the context member's import list (use the old alias and isExported)
 						if (ret == instanceContextCU) {//if the merge replaces an import/previous merge in ret
-							//TODO: bad use of getclass, should add methods to AsTypes
-							if (oldAsType.isExported() != mergeMember.getAsType().isExported()) { //no need to check for import own, as base CUs can't be merged
+							//if the mergeCU will replace the current alias and changes its signature, add an error
+							if (oldAsType.isExported() != mergeMember.getAsType().isExported() &&
+									oldAlias.equals(mergeAlias)) { //no need to check for import own, as base CUs can't be merged
 								String msg = "Merge changes the signature of a merge target: " + oldAlias;
 								mergeMember.error(msg);
 							}

@@ -45,17 +45,33 @@ aspect CollectSuperModuleCUs {
 
 		//collect the super modules of the super module;
 		getSuperModuleCU().collectSuperModules();
-		//add the memberDecls of the super module to the start of this module (create a new list)
-		List<ModuleMemberDecl> newMemberList = new List<ModuleMemberDecl>();
-		List<ModuleMemberDecl> superMemberList = getSuperModuleCU().getModuleMemberDeclList();
-		for (ModuleMemberDecl memberDecl : superMemberList) {
-			newMemberList.add((ModuleMemberDecl)memberDecl.fullCopy());
-		}
-		for (ModuleMemberDecl memberDecl : getModuleMemberDeclList()) {
-			newMemberList.add(memberDecl);
-		}
-		this.setModuleMemberDeclList(newMemberList);
 		
 		return true;
+	}
+	
+	//only gets non-implicit members
+	syn lazy LinkedList<ModuleMemberDecl> ModuleCompilationUnit.getSuperMemberList() {
+		LinkedList<ModuleMemberDecl> ret = new LinkedList<ModuleMemberDecl>();
+		if (getSuperInstance() != null) {
+			ret.addAll(getSuperInstance().getSuperMemberList());
+		}
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			//don't get the implicit imports (specifically jastadd$framework)
+			if (!(member instanceof ImplicitModuleImportDecl)) {
+				ret.add(member);
+			}
+		}
+		return ret;
+	}
+	//collects non-implicit members of supers, then all of self
+	syn lazy LinkedList<ModuleMemberDecl> ModuleCompilationUnit.getSelfAndSuperMemberList() {
+		LinkedList<ModuleMemberDecl> ret = new LinkedList<ModuleMemberDecl>();
+		if (getSuperInstance() != null) {
+			ret.addAll(getSuperInstance().getSuperMemberList());
+		}
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			ret.add(member);
+		}
+		return ret;
 	}
 }

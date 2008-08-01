@@ -60,7 +60,7 @@ aspect JAModuleLookupModule {
 		if (context == null) {
 			return null;
 		}
-		return context.lookupModule(this.getID());
+		return context.getRealInstance().lookupModule(this.getID());
 	}
 	public ModuleCompilationUnit ModuleCompilationUnit.lookupModule(String name) {
 		return lookupModule(this, name);

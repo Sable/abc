@@ -1,0 +1,20 @@
+
+aspect JAModuleExtendsLookupModule {
+	refine JAModuleLookupModule public ModuleCompilationUnit ModuleAccess.lookupModule() {
+		ModuleCompilationUnit context = getModuleCompilationUnit();
+		if (context == null) {
+			return null;
+		}
+		//call using the real instance
+		return context.getRealInstance().lookupModule(this.getID());
+	}
+	
+	refine JAModuleLookupModule public ModuleCompilationUnit ModuleCompilationUnit.lookupModule(String name) {
+		assert (!isSuperInstance()) : "Module lookup should not be called in a super instance";
+		return JAModuleLookupModule.ModuleCompilationUnit.lookupModule(name);
+	}
+	refine JAModuleLookupModule eq ModuleCompilationUnit.lookupModule(ModuleCompilationUnit originalContext, String name) {
+		assert (!isSuperInstance()) : "Module lookup should not be called in a super instance";
+		return JAModuleLookupModule.ModuleCompilationUnit.lookupModule(originalContext, name);
+	}	
+}

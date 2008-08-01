@@ -18,7 +18,7 @@ aspect InsertImplicit {
 	public boolean CompilationUnit.inserJAFrameworkModuleImport() {return true;}
 	public boolean ModuleCompilationUnit.inserJAFrameworkModuleImport() {
 		if (!getModuleName().equals(Program.JASTADD_FRAMEWORK_MODULE)) {
-			ModuleImportDecl frameworkImport = new ModuleImportDecl(
+			ModuleImportDecl frameworkImport = new ImplicitModuleImportDecl(
 				new ModuleImportTypeNorm(),
 				new ModuleAccess(Program.JASTADD_FRAMEWORK_MODULE),
 				new AsTypeNone(),

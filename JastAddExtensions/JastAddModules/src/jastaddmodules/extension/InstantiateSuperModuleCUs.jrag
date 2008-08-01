@@ -37,6 +37,8 @@ aspect InstantiateSuperModuleCUs {
 			superInstance.setModuleInstantiated(true); 
 		//	set the real instance to this
 			superInstance.setRealInstance(this);
+		//	add this to the instance context
+			superInstance.addInstanceContext(this);
 		//	set the the superinstance of the previous instance to the new superinstance
 			currInstance.setSuperInstance(superInstance);
 		//	add the new superinstance to the Program's CU list

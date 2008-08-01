@@ -15,7 +15,8 @@ ModuleImportDecl : ModuleMemberDecl ::=
 	ImportModule:ModuleAccess
 	AsType
 	AsModule:ModuleAccess; //if no export, then set to NullModuleAccess 
-	
+ImplicitModuleImportDecl : ModuleImportDecl ::=; // for implicit imports
+
 abstract ModuleImportType; //just a type to distinguish the method of import
 ModuleImportTypeNorm : ModuleImportType;
 ModuleImportTypeOwn : ModuleImportType;
