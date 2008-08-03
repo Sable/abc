@@ -25,7 +25,7 @@ module CU : m3xx.module
 module name : m3xx
 ------------------------
 ------m3xxx.module------
-module m3xxx;
+module m3xxx extends m3xx;
 ------------------------
 ------m1.module------
 module m1;
@@ -49,7 +49,7 @@ module CU : m3.module
 module name : m3
 ------------------------
 ------m3xx.module------
-module m3xx;
+module m3xx extends m3x;
 ------------------------
 ------B.java------
 module: module m2;;
@@ -57,7 +57,7 @@ module CU : m2.module
 module name : m2
 ------------------------
 ------m3x.module------
-module m3x;
+module m3x extends m3;
 ------------------------
 ------m3.module------
 module m3;
@@ -223,19 +223,19 @@ module m1.m3xxx, base:m3xxx, context:[m1, m1.m2b], instantiated:true
 
 Module: jastadd$framework
 Module: m3xxx
-	m3xxx.$pack.CXXX
 	m3xxx.CXXX
+	m3xxx.$pack.CXXX
 Module: m1
 	m1.A
 Module: m3xx
-	m3xx.CXX
 	m3xx.$pack.CXX
+	m3xx.CXX
 Module: m3x
-	m3x.CX
 	m3x.$pack.CX
+	m3x.CX
 Module: m3
-	m3.$pack.C
 	m3.C
+	m3.$pack.C
 Module: m2
 	m2.B
 Module: m1$m2a
@@ -243,26 +243,26 @@ Module: m1$m2a
 Module: m1.m2b
 	m1.m2b.B
 Module: m1.m3xx$super$m3x
-	m1.m3xx$super$m3x.CX
 	m1.m3xx$super$m3x.$pack.CX
+	m1.m3xx$super$m3x.CX
 Module: m1.m3xx$super$m3
-	m1.m3xx$super$m3.$pack.C
 	m1.m3xx$super$m3.C
+	m1.m3xx$super$m3.$pack.C
 Module: m1.m3xx
 	m1.m3xx.$pack.CXX
 	m1.m3xx.CXX
 Module: m1.m3xxx$super$m3xx
-	m1.m3xxx$super$m3xx.$pack.CXX
 	m1.m3xxx$super$m3xx.CXX
+	m1.m3xxx$super$m3xx.$pack.CXX
 Module: m1.m3xxx$super$m3x
-	m1.m3xxx$super$m3x.$pack.CX
 	m1.m3xxx$super$m3x.CX
+	m1.m3xxx$super$m3x.$pack.CX
 Module: m1.m3xxx$super$m3
 	m1.m3xxx$super$m3.C
 	m1.m3xxx$super$m3.$pack.C
 Module: m1.m3xxx
-	m1.m3xxx.$pack.CXXX
 	m1.m3xxx.CXXX
+	m1.m3xxx.$pack.CXXX
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, m3xxx.module, m1.module, A.java, m3xx.module, m3x.module, m3.module, Main.java, m2.module, m2.module, B.java, m2.module, B.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xx.module, pack/CXX.java, CXX.java, m3xx.module, pack/CXX.java, CXX.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xxx.module, CXXX.java, pack/CXXX.java

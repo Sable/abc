@@ -23,7 +23,7 @@ module CU : m1.module
 module name : m1
 ------------------------
 ------m1x.module------
-module m1x;
+module m1x extends m1;
 import own m3 as none null;
 import own m2 as m2alias;
 merge m2::m3, m2alias3::m3 export as m3alias;
@@ -46,7 +46,7 @@ module CU : m3.module
 module name : m3
 ------------------------
 ------m1xx.module------
-module m1xx;
+module m1xx extends m1x;
 import own m3 as m3alias2;
 merge m3alias, m3alias2 as m3alias;
 ------------------------
@@ -86,7 +86,7 @@ module m1, base:m1, context:[], instantiated:false
 module m1xx, base:m1xx, context:[], instantiated:false
 module m2, base:m2, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
-module m1xx;
+module m1xx extends m1x;
 import own m3 as m3alias2;
 merge m3alias, m3alias2 as m3alias;
 import  jastadd$framework as none null;
@@ -144,4 +144,4 @@ module m1xx$m2alias4, base:m2, context:[m1xx], instantiated:true
 module m1xx$m3alias, base:m3, context:[m1xx], instantiated:true
 	jastadd$framework:jastadd$framework
 m1xx.module:3:
-  Semantic Error: Merge changes the signature of a merge target: m3alias
+  Semantic Error: Merge/replace changes the signature of a merge target: m3alias

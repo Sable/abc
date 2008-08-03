@@ -10,7 +10,7 @@ module name : m3xxx
 module jastadd$framework;
 ------------------------
 ------m3xxx.module------
-module m3xxx;
+module m3xxx extends m3xx;
 ------------------------
 ------m1.module------
 module m1;
@@ -34,7 +34,7 @@ module CU : m3.module
 module name : m3
 ------------------------
 ------m3xx.module------
-module m3xx;
+module m3xx extends m3x;
 ------------------------
 ------B.java------
 module: module m2;;
@@ -42,7 +42,7 @@ module CU : m2.module
 module name : m2
 ------------------------
 ------m3x.module------
-module m3x;
+module m3x extends m3;
 ------------------------
 ------m3.module------
 module m3;

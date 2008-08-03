@@ -134,9 +134,9 @@ Module: m3
 	m3.$c.CC
 Module: jastadd$framework
 Module: m1
-	m1.AA
 	m1.$a.AAA
 	m1.A
+	m1.AA
 Module: m2
 	m2.B
 Module: m1.alias1.m3

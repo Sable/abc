@@ -1,0 +1,2 @@
+module m3;
+import own m4int export as m4;

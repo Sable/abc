@@ -1,3 +1,3 @@
-module_fragment frag1;
+module_interface frag1;
 
 import m1;

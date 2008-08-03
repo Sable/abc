@@ -15,7 +15,7 @@ module CU : m1.module
 module name : m1
 ------------------------
 ------m1x.module------
-module m1x;
+module m1x extends m1;
 ------------------------
 ------m1xxpack/P.java------
 module: module m1xx;;
@@ -46,7 +46,7 @@ module CU : null
 module name : null
 ------------------------
 ------m1xx.module------
-module m1xx;
+module m1xx extends m1x;
 ------------------------
 ----------CU AST before insert----------
 AX.java package:
@@ -78,7 +78,7 @@ module m1x, base:m1x, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:false
 module m1xx, base:m1xx, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
-module m1xx;
+module m1xx extends m1x;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
@@ -112,20 +112,20 @@ module m1xx$super$m1, base:m1, context:[m1xx], instantiated:true
 
 Module: jastadd$framework
 Module: m1x
-	m1x.AX
 	m1x.$pack.P
+	m1x.AX
 Module: m1
 	m1.$pack.P
 	m1.A
 Module: m1xx
-	m1xx.$pack.P
 	m1xx.AXX
+	m1xx.$pack.P
 Module: m1xx$super$m1x
-	m1xx$super$m1x.$pack.P
 	m1xx$super$m1x.AX
+	m1xx$super$m1x.$pack.P
 Module: m1xx$super$m1
-	m1xx$super$m1.A
 	m1xx$super$m1.$pack.P
+	m1xx$super$m1.A
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, m1x.module, m1.module, Main.java, m1xx.module, m1xxpack/P.java, AXX.java, m1x.module, AX.java, m1xpack/P.java, m1.module, A.java, m1pack/P.java

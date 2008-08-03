@@ -80,4 +80,4 @@ module frag1, base:frag1, context:[], instantiated:false
 frag1.module:1:
   Semantic Error: Module fragments must not have any imports, merges or replaces.
 frag1.module:1:
-  Semantic Error: Module fragments should have no member compilation units. Offending files: Y.java, X.java
+  Semantic Error: Module interfaces should have no member compilation units. Offending files: Y.java, X.java
