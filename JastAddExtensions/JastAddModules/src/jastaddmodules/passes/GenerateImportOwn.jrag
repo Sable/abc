@@ -150,53 +150,62 @@ aspect GenerateImportOwn {
 			if (!(member instanceof ModuleMergeDecl)) {
 				continue;
 			}
-			ModuleMergeDecl mergeMember = (ModuleMergeDecl)member; 
-			//lookup merge targets from ret
-			Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
-			ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
-			for (ModuleAccess access : mergeMember.getMergeModuleList()) {
-				ModuleCompilationUnit cu = access.lookupModule(); 
-				
-				if (cu == null) {
-					access.error("Unable to find module: " + access.getID()); 
-					throw new jastadd.UnrecoverableSemanticError("Unable to find module: " + access.getID());
-				}
-				
-				if (mergeBaseCU != null && mostSpecificModule(cu.getBaseCU(), mergeBaseCU) == null) {
-					access.error("Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getModuleName());
-					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
-				}
-				
-				if (mergeTargets.contains(cu)) {
-					access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
-				}
-				
-				if (isAccessedThroughBaseModule(access)) {
-					access.error("Module being merged is a base module or is accessed through a base module. Merging is only allowed for import own modules.");
-					throw new jastadd.UnrecoverableSemanticError("Incompatible modules in merge list");
-				}
-				
-				mergeTargets.add(cu);
-				if (mergeBaseCU == null) {
-					mergeBaseCU = cu.getBaseCU();
-				} else {
-					mergeBaseCU = mostSpecificModule(cu.getBaseCU(), mergeBaseCU);
-				}
-			}
-			//create result copy (instantiate from the base types of the merge targets with ret as a context)
-			ModuleCompilationUnit mergedCU = null;
-			String mergeAlias = mergeMember.getAsModule().getID();
-			if (mergeMember.getAsType() instanceof AsTypeOwn) {
-				mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeAlias));
-			} else if (mergeMember.getAsType() instanceof AsTypeExport) {
-				mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias));
-			}
-			mergedCU.setSourceStatement(mergeMember); //debug
-			getHostProgram().getCompilationUnitList().addChild(mergedCU);
+			ModuleMergeDecl mergeMember = (ModuleMergeDecl)member;
 			
-			ret = replaceMergeTargets(ret, mergeMember, mergeTargets, mergedCU,
-					mergeAlias);
+			ret = processMergeMember(mergeMember, ret);
 		}
+		return ret;
+	}
+	
+	protected ModuleCompilationUnit ModuleCompilationUnit.processMergeMember(ModuleMergeDecl mergeMember, ModuleCompilationUnit ret) {
+		//lookup merge targets from ret
+		Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
+		ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
+		for (ModuleAccess access : mergeMember.getMergeModuleList()) {
+			ModuleCompilationUnit cu = access.lookupModule(); 
+			
+			if (cu == null) {
+				String msg = "Unable to find module: " + access.getID();
+				access.error(msg); 
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			if (mergeBaseCU != null && mostSpecificModule(cu.getBaseCU(), mergeBaseCU) == null) {
+				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getModuleName(); 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			if (mergeTargets.contains(cu)) {
+				access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
+			}
+			
+			if (isAccessedThroughBaseModule(access)) {
+				String msg = "Module being merged is a base module or is accessed through a base module. Merging is only allowed for import own modules."; 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			mergeTargets.add(cu);
+			if (mergeBaseCU == null) {
+				mergeBaseCU = cu.getBaseCU();
+			} else {
+				mergeBaseCU = mostSpecificModule(cu.getBaseCU(), mergeBaseCU);
+			}
+		}
+		//create result copy (instantiate from the base types of the merge targets with ret as a context)
+		ModuleCompilationUnit mergedCU = null;
+		String mergeAlias = mergeMember.getAsModule().getID();
+		if (mergeMember.getAsType() instanceof AsTypeOwn) {
+			mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeAlias));
+		} else if (mergeMember.getAsType() instanceof AsTypeExport) {
+			mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias));
+		}
+		mergedCU.setSourceStatement(mergeMember); //debug
+		getHostProgram().getCompilationUnitList().addChild(mergedCU);
+		
+		ret = replaceMergeTargets(ret, mergeMember, mergeTargets, mergedCU,
+				mergeAlias);
 		return ret;
 	}
 	

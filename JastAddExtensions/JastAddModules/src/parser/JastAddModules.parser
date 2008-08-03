@@ -125,6 +125,11 @@ ModuleMemberDecl ja_module_member =
 	ja_module_merge_decl.mmd
 	{:
 		return mmd;
+	:}
+	|
+	ja_module_replace_decl.mrd
+	{:
+		return mrd;
 	:};
 
 ModuleImportDecl ja_module_import_decl =
@@ -159,6 +164,12 @@ ModuleMergeDecl ja_module_merge_decl =
 		return new ModuleMergeDecl(mal, new AsTypeExport(), ma);
 	:};
 
+ModuleReplaceDecl ja_module_replace_decl =
+	REPLACE module_access_list.mal WITH ja_module_access.ma SEMICOLON
+	{:
+		return new ModuleReplaceDecl(mal, new AsTypeNone(), ma);
+	:};
+	
 List module_access_list =
 	ja_module_access.ma COMMA ja_module_access.ma2 
 	{:

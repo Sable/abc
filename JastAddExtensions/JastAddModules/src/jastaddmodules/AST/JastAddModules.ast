@@ -30,5 +30,6 @@ ModuleMergeDecl : ModuleMemberDecl ::=
 	MergeModule:ModuleAccess* 
 	AsType 
 	AsModule:ModuleAccess;
+ModuleReplaceDecl : ModuleMergeDecl ::=; //TODO: Remove subtyping when they diverge too much
 
 ModuleDot : Dot;

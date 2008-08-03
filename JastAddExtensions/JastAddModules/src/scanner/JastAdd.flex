@@ -157,6 +157,9 @@ BinaryExponent = [pP] [+-]? {Digits}
   "export" { return sym(Terminals.EXPORT); }
   "as" { return sym(Terminals.AS); }
   "merge" { return sym(Terminals.MERGE); }
+  "module_fragment" { return sym(Terminals.MODULE_FRAGMENT); }
+  "replace" { return sym(Terminals.REPLACE); }
+  "with" {return sym(Terminals.WITH); }  
 }
 
 
@@ -226,7 +229,6 @@ BinaryExponent = [pP] [+-]? {Digits}
   
   // NEIL: JastAddModules
   "module" { return sym(Terminals.MODULE); }
-  "module_fragment" { return sym(Terminals.MODULE_FRAGMENT); }
   "::" {return sym(Terminals.MODULE_SEPARATOR); }
 
   // 3.10 Literals
