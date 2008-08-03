@@ -78,7 +78,7 @@ aspect GenerateImportOwn {
 		ret = generateImportCUs(ret);
 		
 		//process merges
-		ret = generateMergeCUs(ret);
+		ret = generateMergeReplaceCUs(ret);
 		
 		return ret;
 	}
@@ -144,7 +144,7 @@ aspect GenerateImportOwn {
 	//when changing this
 	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
 	//is worth it 
-	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
+	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeReplaceCUs(ModuleCompilationUnit ret) {
 		LinkedList<ModuleMemberDecl> memberList = ret.getSelfAndSuperMemberList();
 		for (ModuleMemberDecl member : memberList) {
 			if (!(member instanceof ModuleMergeDecl)) {

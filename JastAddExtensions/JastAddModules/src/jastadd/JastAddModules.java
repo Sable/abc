@@ -24,6 +24,7 @@ public class JastAddModules extends JastAdd {
 
 	public static final String INSTANCE_MODULES_OPTION = "-instance-module";
 	public static final String DEBUG_OPTION = "-debug";
+	public static final String JASTADD_FRAMEWORK = "-jastaddframework";
 
 	public static void main(String args[]) {
 		if (!new JastAddModules().compile(args)) {
@@ -42,7 +43,7 @@ public class JastAddModules extends JastAdd {
 		initOptions();
 		processArgs(args);
 		
-		if (program.options().hasOption("-debug")) {
+		if (program.options().hasOption(DEBUG_OPTION)) {
 			System.out.println("Arguments: ");
 			for (int i = 0; i < args.length; i++) {
 				System.out.print(args[i]);
@@ -280,6 +281,7 @@ public class JastAddModules extends JastAdd {
 		// generated package names
 		options.addKeyValueOption(INSTANCE_MODULES_OPTION);
 		options.addKeyOption(DEBUG_OPTION);
+		options.addKeyOption(JASTADD_FRAMEWORK);
 	}
 
 }
