@@ -1,5 +1,5 @@
 Arguments: 
--debug -instance-module m1 -d classes -classpath ./classlib/classes;./classlib/jar/classes/jar.jar A.java Main.java m1.module ../testlib/jastadd$framework.module End arguments
+-jastaddframework -debug -instance-module m1 -d classes -classpath ./classlib/classes;./classlib/jar/classes/jar.jar A.java Main.java m1.module ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
 ------../testlib/jastadd$framework.module------
 module jastadd$framework;

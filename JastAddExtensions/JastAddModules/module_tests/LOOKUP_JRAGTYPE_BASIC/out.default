@@ -1,5 +1,5 @@
 Arguments: 
--debug -d classes -instance-module m1 A.java B.java C.java Main.java A.ast B.ast C.ast m1.module m2.module m3.module X.jrag ../testlib/ASTNode.java ../testlib/List.java ../testlib/Opt.java ../testlib/jastadd$framework.module End arguments
+-jastaddframework -debug -d classes -instance-module m1 A.java B.java C.java Main.java A.ast B.ast C.ast m1.module m2.module m3.module X.jrag ../testlib/ASTNode.java ../testlib/List.java ../testlib/Opt.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
 ------../testlib/jastadd$framework.module------
 module jastadd$framework;

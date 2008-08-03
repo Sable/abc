@@ -47,7 +47,7 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 	$files .= "$TESTLIBDIR/jastadd\\\$framework.module ";
 
 
-	my $cmdline = "java -cp \"$JASTADD_MODULES_BASEDIR/classes;.\" jastadd.JastAddModules -d $TESTDIR -instance-module m1 $options $files";
+	my $cmdline = "java -cp \"$JASTADD_MODULES_BASEDIR/classes;.\" jastadd.JastAddModules -d $TESTDIR -jastaddframework -instance-module m1 $options $files";
 	print "$test_name\n";
 	#print "JastAdd command: $cmdline\n";
 	system $cmdline;
