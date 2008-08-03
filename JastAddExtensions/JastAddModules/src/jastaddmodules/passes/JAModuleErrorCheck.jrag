@@ -104,6 +104,25 @@ aspect JAModuleErrorCheck {
 		}
   	}
   	
+
+  	//Single error checks, done after the CU insert but before the Generate import own
+  	public void ASTNode.checkModuleErrorsPass3() {
+  		checkNoModuleInterfaceInstance();
+  		
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).checkModuleErrorsPass3();
+		}
+  	}
+  	//STANDING NOTE: Cut off errorcheck at CompilationUnit/ModuleCompilationUnit children
+  	//so that the rewrites are not triggered
+  	public void CompilationUnit.checkModuleErrorsPass3() {
+		checkNoModuleInterfaceInstance();
+		
+		if (getModuleDecl() != null) {
+			getModuleDecl().checkModuleErrorsPass3();  	
+		}
+  	}
+
 	//refines/implements
 	//from Java1.4Frontend/ErrorCheck.jrag
 	public void ModuleCompilationUnit.collectErrors() {

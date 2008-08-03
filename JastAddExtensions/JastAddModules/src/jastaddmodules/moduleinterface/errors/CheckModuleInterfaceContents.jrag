@@ -1,7 +1,7 @@
-aspect CheckFragmentContents {
+aspect CheckModuleInterfaceContents {
 	public void ASTNode.checkFragmentContents() {}
 	public void ModuleCompilationUnit.checkFragmentContents() {
-		if (!isFragment()) {
+		if (!isModuleInterface()) {
 			return;
 		}
 		//for now, interfaces should have no member decls, and no member CUs

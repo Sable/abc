@@ -179,6 +179,9 @@ public class JastAddModules extends JastAdd {
 					System.out.print(program.toStringJAModuleCUImports());
 
 				}
+				
+				//last error check, checks the instances created
+				program.checkModuleErrorsPass3();
 
 			} catch (UnrecoverableSemanticError e) {
 				System.out.print("Unrecoverable semantic error(s) found.\n");

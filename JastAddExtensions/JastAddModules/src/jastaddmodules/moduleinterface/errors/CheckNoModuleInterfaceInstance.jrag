@@ -1,0 +1,21 @@
+//should be no instance mcus after generate import own. They should have been replaced already
+//(similar to making sure that an variable with an abstract type is assigned to a
+//concrete instance 
+aspect CheckNoModuleInterfaceInstance {
+	public void ASTNode.checkNoModuleInterfaceInstance() {}
+	public void ModuleCompilationUnit.checkNoModuleInterfaceInstance() {
+		if (isModuleInterface() && isInstance()) {
+			String importString = "";
+			boolean first = true;
+			for (ModuleCompilationUnit mcu : getInstanceContext()) {
+				if (!first) { 
+					importString += ", ";
+				}
+				importString += mcu.getBaseCU().getModuleName();
+				first = false;	
+			}
+			String msg = "Module interface " + getBaseCU().getModuleName() + " used in modules " + importString + " is an interface and was not replaced with a non-interface module.";
+			getModuleDecl().error(msg);
+		}
+	}
+}

@@ -1,19 +1,18 @@
 aspect ModuleInterface {
-	public boolean ModuleCompilationUnit.isFragment() {
+	public boolean ModuleCompilationUnit.isModuleInterface() {
 		return getModuleDecl() instanceof InterfaceModuleDecl;
 	}
 	
 	public boolean ModuleCompilationUnit.isInterfaceOf(ModuleCompilationUnit mcu) {
-		mcu = mcu.getBaseCU();
-		
 		//self test
-		if (this.getBaseCU() == mcu) {
+		if (this.getBaseCU() == mcu.getBaseCU()) {
 			return true;
 		}
 		
-		//implements test
-		for (ModuleAccess access : getModuleDecl().getImplementsList()) {
-			if (getHostProgram().lookupModuleCUNoTransform(access) == mcu) {
+		//implements test (add super test later)
+		for (ModuleAccess access : mcu.getBaseCU().getModuleDecl().getImplementsList()) {
+			ModuleCompilationUnit interfaceMCU = getHostProgram().lookupModuleCUNoTransform(access); 
+			if (interfaceMCU.hasSuperModule(this.getBaseCU())) {
 				return true;
 			}
 		}
