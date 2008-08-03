@@ -8,7 +8,7 @@ ModuleCompilationUnit : CompilationUnit ::=
 ModuleAccess : Access ::= <ID:String>;
 NullModuleAccess : ModuleAccess; //sentinel value, matches no module
 ModuleDecl ::= ModuleAccess [Extends:ModuleAccess] Implements:ModuleAccess*;
-FragmentModuleDecl : ModuleDecl ::= ; //refactor to inherit from abstract module decl if time permits
+InterfaceModuleDecl : ModuleDecl ::= ; //refactor to inherit from abstract module decl if time permits
 
 abstract ModuleMemberDecl;
 ModuleImportDecl : ModuleMemberDecl ::= 
@@ -30,6 +30,9 @@ ModuleMergeDecl : ModuleMemberDecl ::=
 	MergeModule:ModuleAccess* 
 	AsType 
 	AsModule:ModuleAccess;
-ModuleReplaceDecl : ModuleMergeDecl ::=; //TODO: Remove subtyping when they diverge too much
+ModuleReplaceDecl : ModuleMemberDecl ::=
+	ReplaceModule:ModuleAccess*
+	WithModule:ModuleAccess
+	;
 
 ModuleDot : Dot;

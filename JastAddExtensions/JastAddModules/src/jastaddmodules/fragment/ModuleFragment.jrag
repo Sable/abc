@@ -1,5 +1,0 @@
-aspect ModuleFragment {
-	public boolean ModuleCompilationUnit.isFragment() {
-		return getModuleDecl() instanceof FragmentModuleDecl;
-	}
-}

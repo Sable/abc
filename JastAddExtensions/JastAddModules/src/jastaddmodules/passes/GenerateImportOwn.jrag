@@ -147,18 +147,25 @@ aspect GenerateImportOwn {
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeReplaceCUs(ModuleCompilationUnit ret) {
 		LinkedList<ModuleMemberDecl> memberList = ret.getSelfAndSuperMemberList();
 		for (ModuleMemberDecl member : memberList) {
-			if (!(member instanceof ModuleMergeDecl)) {
-				continue;
+			//TODO: Move process methods to mergemember/replacemember to remove instanceof test
+			if (member instanceof ModuleMergeDecl) {
+				ModuleMergeDecl mergeMember = (ModuleMergeDecl)member;
+				ret = processMergeMember(mergeMember, ret);
 			}
-			ModuleMergeDecl mergeMember = (ModuleMergeDecl)member;
-			
-			ret = processMergeMember(mergeMember, ret);
+			else if (member instanceof ModuleReplaceDecl) {
+				ModuleReplaceDecl replaceMember = (ModuleReplaceDecl)member;
+				ret = processReplaceMember(replaceMember, ret);
+			}
+			//else do nothing
 		}
 		return ret;
 	}
 	
 	protected ModuleCompilationUnit ModuleCompilationUnit.processMergeMember(ModuleMergeDecl mergeMember, ModuleCompilationUnit ret) {
 		//lookup merge targets from ret
+		if (mergeMember.getMergeModuleList().getNumChild() < 2) {
+			mergeMember.warning("There are less than two modules to merge. This may be an error.");
+		}
 		Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
 		ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
 		for (ModuleAccess access : mergeMember.getMergeModuleList()) {
@@ -204,16 +211,65 @@ aspect GenerateImportOwn {
 		mergedCU.setSourceStatement(mergeMember); //debug
 		getHostProgram().getCompilationUnitList().addChild(mergedCU);
 		
-		ret = replaceMergeTargets(ret, mergeMember, mergeTargets, mergedCU,
+		ret = replaceTargets(ret, mergeMember, mergeTargets, mergedCU,
 				mergeAlias);
+				
+		//attach the result copy to ret's import list
+		//import type is own. TODO: Check if this is correct
+		ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType(), new ModuleImportTypeOwn());
+				
+		return ret;
+	}
+	
+	protected ModuleCompilationUnit ModuleCompilationUnit.processReplaceMember(ModuleReplaceDecl replaceMember, ModuleCompilationUnit ret) {
+		//lookup merge targets from ret
+		
+		ModuleCompilationUnit replaceCU = replaceMember.getWithModule().lookupModule();
+		if (replaceCU == null) {
+			String msg = "Unable to find module: " + replaceMember.getWithModule().getID();
+			replaceMember.getWithModule().error(msg);
+			throw new jastadd.UnrecoverableSemanticError(msg);
+		} 
+		
+		Collection<ModuleCompilationUnit> replaceTargets = new HashSet<ModuleCompilationUnit>();
+		for (ModuleAccess access : replaceMember.getReplaceModuleList()) {
+			ModuleCompilationUnit cu = access.lookupModule(); 
+			
+			if (cu == null) {
+				String msg = "Unable to find module: " + access.getID();
+				access.error(msg); 
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			//if not type compatible
+			if (!cu.isInterfaceOf(replaceCU) && !replaceCU.hasSuperModule(cu)) {
+				String msg = "Incompatible modules in merge list: " + replaceCU.getModuleName() + ", " + cu.getModuleName(); 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			if (replaceTargets.contains(cu)) {
+				access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
+			}
+			
+			if (isAccessedThroughBaseModule(access)) {
+				String msg = "Module being replaced is a base module or is accessed through a base module. Replacement is only allowed for import own modules."; 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			replaceTargets.add(cu);
+		}
+		ret = replaceTargets(ret, replaceMember, replaceTargets, replaceCU,
+				replaceMember.getWithModule().getID());
 		return ret;
 	}
 	
 	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
 	//is worth it 
 	protected ModuleCompilationUnit 
-		ModuleCompilationUnit.replaceMergeTargets(ModuleCompilationUnit ret,
-			ModuleMergeDecl mergeMember,
+		ModuleCompilationUnit.replaceTargets(ModuleCompilationUnit ret,
+			ModuleMemberDecl moduleMember,
 			Collection<ModuleCompilationUnit> mergeTargets,
 			ModuleCompilationUnit mergedCU, String mergeAlias) {
 		//TODO: These loops are too hairy. Try to turn the innermost loop into a method
@@ -232,15 +288,25 @@ aspect GenerateImportOwn {
 					instanceContextCU.removeImportedModule(oldAlias);
 		//			attach the result copy to the context member's import list (use the old alias and isExported)
 					if (ret == instanceContextCU) {//if the merge replaces an import/previous merge in ret
-						//if the mergeCU will replace the current alias and changes its signature, add an error
-						if (oldAsType.isExported() != mergeMember.getAsType().isExported() &&
-								oldAlias.equals(mergeAlias)) { //no need to check for import own, as base CUs can't be merged
-							String msg = "Merge changes the signature of a merge target: " + oldAlias;
-							mergeMember.error(msg);
-						}
-						//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
-						if (!(oldAlias.equals(mergeAlias))) {
-							instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
+						if (moduleMember instanceof ModuleMergeDecl) {
+							//if the mergeCU will replace the current alias and changes its signature, add an error
+							ModuleMergeDecl mergeMember = (ModuleMergeDecl) moduleMember; 
+							if (oldAsType.isExported() != mergeMember.getAsType().isExported() &&
+									oldAlias.equals(mergeAlias)) { //no need to check for import own, as base CUs can't be merged
+								String msg = "Merge/replace changes the signature of a merge target: " + oldAlias;
+								mergeMember.error(msg);
+							}
+							//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
+							if (!(oldAlias.equals(mergeAlias))) {
+								instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
+							}
+						} else {
+							//check for replace
+							if (!(oldAlias.equals(mergeAlias))) {
+								instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
+							} else {
+								moduleMember.warning("Module is replacing itself: " + oldAlias); 
+							}
 						}
 					} else {
 						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
@@ -255,9 +321,6 @@ aspect GenerateImportOwn {
 		//	detach the merge target from ret's import list
 			ret.removeImportedModule(mergeTargetCU);
 		}
-		//attach the result copy to ret's import list
-		//import type is own. TODO: Check if this is correct
-		ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType(), new ModuleImportTypeOwn());
 		return ret;
 	}
 	

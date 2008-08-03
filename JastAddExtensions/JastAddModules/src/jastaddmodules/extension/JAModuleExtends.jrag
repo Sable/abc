@@ -1,0 +1,13 @@
+aspect JAModuleExtends {
+	//also true for self
+	public boolean ModuleCompilationUnit.hasSuperModule(ModuleCompilationUnit mcu) {
+		ModuleCompilationUnit currentMCU = this.getBaseCU();
+		while (currentMCU != null) {
+			if (currentMCU == mcu.getBaseCU()) {
+				return true;
+			}
+			currentMCU = currentMCU.getSuperModuleCUNoTransform();
+		}
+		return false;
+	}
+}

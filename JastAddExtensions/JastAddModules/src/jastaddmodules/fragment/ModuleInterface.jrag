@@ -1,0 +1,22 @@
+aspect ModuleInterface {
+	public boolean ModuleCompilationUnit.isFragment() {
+		return getModuleDecl() instanceof InterfaceModuleDecl;
+	}
+	
+	public boolean ModuleCompilationUnit.isInterfaceOf(ModuleCompilationUnit mcu) {
+		mcu = mcu.getBaseCU();
+		
+		//self test
+		if (this.getBaseCU() == mcu) {
+			return true;
+		}
+		
+		//implements test
+		for (ModuleAccess access : getModuleDecl().getImplementsList()) {
+			if (getHostProgram().lookupModuleCUNoTransform(access) == mcu) {
+				return true;
+			}
+		}
+		return false;
+	}
+}

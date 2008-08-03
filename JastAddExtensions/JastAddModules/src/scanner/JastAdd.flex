@@ -157,7 +157,7 @@ BinaryExponent = [pP] [+-]? {Digits}
   "export" { return sym(Terminals.EXPORT); }
   "as" { return sym(Terminals.AS); }
   "merge" { return sym(Terminals.MERGE); }
-  "module_fragment" { return sym(Terminals.MODULE_FRAGMENT); }
+  "module_interface" { return sym(Terminals.MODULE_INTERFACE); }
   "replace" { return sym(Terminals.REPLACE); }
   "with" {return sym(Terminals.WITH); }  
 }

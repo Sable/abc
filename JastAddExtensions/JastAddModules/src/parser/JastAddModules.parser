@@ -68,11 +68,10 @@ ModuleDecl ja_module_decl =
 		return new ModuleDecl(ma, extends_opt, impl);
 	:}
 	|
-	MODULE_FRAGMENT ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl SEMICOLON
+	MODULE_INTERFACE ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl SEMICOLON
 	{:
-		return new FragmentModuleDecl(ma, extends_opt, impl);
-	:}
-	;
+		return new InterfaceModuleDecl(ma, extends_opt, impl);
+	:};
 
 Opt ja_module_decl_extends_opt =
 	{:
@@ -89,20 +88,9 @@ List ja_module_decl_implements =
 		return new List();
 	:}
 	|
-	IMPLEMENTS ja_module_decl_implements_list.l
+	IMPLEMENTS module_access_list.l
 	{:
 		return l;
-	:};
-
-List ja_module_decl_implements_list =
-	ja_module_access.ma
-	{:
-		return new List().add(ma);
-	:}
-	|
-	ja_module_decl_implements_list.l COMMA ja_module_access.ma
-	{:
-		return l.add(ma);
 	:};
 
 List ja_module_member_list =
@@ -167,15 +155,14 @@ ModuleMergeDecl ja_module_merge_decl =
 ModuleReplaceDecl ja_module_replace_decl =
 	REPLACE module_access_list.mal WITH ja_module_access.ma SEMICOLON
 	{:
-		return new ModuleReplaceDecl(mal, new AsTypeNone(), ma);
+		return new ModuleReplaceDecl(mal, ma);
 	:};
-	
+
 List module_access_list =
-	ja_module_access.ma COMMA ja_module_access.ma2 
+	ja_module_access.ma 
 	{:
 		List ret = new List();
 		ret.add(ma);
-		ret.add(ma2);
 		return ret;
 	:}
 	|
