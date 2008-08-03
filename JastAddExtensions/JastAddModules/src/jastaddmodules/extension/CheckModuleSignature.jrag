@@ -1,5 +1,8 @@
 import java.util.*;
 
+//NOTE: This is unused now. It used to check that module signatures (set of visible
+//module names) were not shrunk by a submodule. Keep the code, may be useful later
+//when checking for conflicting merges when merge is made less strict
 aspect CheckModuleSignature {
 	public void Program.checkModuleSignatures() {
 		List<CompilationUnit> cuList = getCompilationUnitList();  

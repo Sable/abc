@@ -1,0 +1,72 @@
+aspect CheckModuleCycles {
+ 	
+	//Cyclic imports
+	public void ASTNode.checkModuleCycles() {}
+	public void ModuleCompilationUnit.checkModuleCycles() {
+		LinkedList<ImportedModule> visited = new LinkedList<ImportedModule>();
+		visited.add(new ImportedModule(this, new AsTypeNone(), new ModuleImportTypeNorm()));
+		checkModuleCycles(visited);
+	}
+	public boolean ModuleCompilationUnit.checkModuleCycles(LinkedList<ImportedModule> visited) {
+		boolean noCycles = true;
+		
+		if (getCycleType(visited) == CycleType.BAD_CYCLE) {
+			noCycles = false;
+			String cycleStr = "";
+			boolean first = true;
+			for (ImportedModule cycleMember : visited) {
+				if (!first) {
+					cycleStr += ", ";
+				}
+				if (cycleMember.getModuleImportType() instanceof ModuleImportTypeOwn) {
+					cycleStr += "own ";
+				}
+				cycleStr += cycleMember.getModuleCU().getModuleName();
+				first = false;
+			}
+			getModuleDecl().error("Bad import cycle found: " + cycleStr);
+			throw new jastadd.UnrecoverableSemanticError("Bad import cycle found: " + cycleStr);
+		} else if (getCycleType(visited) == CycleType.CYCLE) {
+			return true;
+		}
+		
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			if (member instanceof ModuleImportDecl) {
+				ModuleImportDecl importDecl = (ModuleImportDecl) member;
+				ModuleCompilationUnit importedCU = getHostProgram().lookupModuleCUNoTransform(importDecl.getImportModule());
+				if (importedCU == null) { //when the imported module does not exist
+					continue;
+				}
+				if (importedCU == this) {
+					importDecl.error("Module imports itself: " + this.getModuleName());
+					throw new jastadd.UnrecoverableSemanticError("Module imports itself: " + this.getModuleName());
+				}
+				LinkedList<ImportedModule> newVisited = new LinkedList<ImportedModule>(visited);
+				newVisited.add(new ImportedModule(importedCU, importDecl.getAsType(), importDecl.getModuleImportType()));
+				noCycles = importedCU.checkModuleCycles(newVisited);
+				if (noCycles == false) {
+					return noCycles;
+				}
+			}
+		}
+		
+		return noCycles;
+	}
+
+	//check if the visited path is a bad cycle	
+	public CycleType ModuleCompilationUnit.getCycleType(LinkedList<ImportedModule> visited) {
+		boolean isBadCycle = false; //true if a member of the cycle is an own type (ModuleImportTypeOwn)
+		HashSet<ModuleCompilationUnit> prev = new HashSet<ModuleCompilationUnit>();
+		for (Iterator<ImportedModule> iter = visited.iterator(); iter.hasNext(); ) {
+			ImportedModule importedModule = iter.next();
+			if (importedModule.getModuleImportType() instanceof ModuleImportTypeOwn) {
+				isBadCycle = true;
+			}
+			if (prev.contains(importedModule.getModuleCU())) {
+				return isBadCycle? CycleType.BAD_CYCLE : CycleType.CYCLE;
+			}
+			prev.add(importedModule.getModuleCU());
+		}
+		return CycleType.NO_CYCLE;
+	}
+}

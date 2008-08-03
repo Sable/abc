@@ -63,16 +63,47 @@ ModuleAccess ja_module_access =
 	:};
 	
 ModuleDecl ja_module_decl =
-	MODULE ja_module_access.ma SEMICOLON
+	MODULE ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl SEMICOLON
 	{:
-		return new ModuleDecl(ma, new Opt());
+		return new ModuleDecl(ma, extends_opt, impl);
 	:}
 	|
-	MODULE ja_module_access.ma EXTENDS ja_module_access.mb SEMICOLON
+	MODULE_FRAGMENT ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl SEMICOLON
 	{:
-		return new ModuleDecl(ma, new Opt(mb));
+		return new FragmentModuleDecl(ma, extends_opt, impl);
 	:}
 	;
+
+Opt ja_module_decl_extends_opt =
+	{:
+		return new Opt();
+	:}
+	|
+	EXTENDS ja_module_access.ma
+	{:
+		return new Opt(ma);
+	:};
+
+List ja_module_decl_implements =
+	{:
+		return new List();
+	:}
+	|
+	IMPLEMENTS ja_module_decl_implements_list.l
+	{:
+		return l;
+	:};
+
+List ja_module_decl_implements_list =
+	ja_module_access.ma
+	{:
+		return new List().add(ma);
+	:}
+	|
+	ja_module_decl_implements_list.l COMMA ja_module_access.ma
+	{:
+		return l.add(ma);
+	:};
 
 List ja_module_member_list =
 	ja_module_member.mm

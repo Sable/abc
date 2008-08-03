@@ -1,0 +1,18 @@
+aspect CheckDuplicateModuleNames {
+	public void ASTNode.checkDuplicateModuleNames() {
+	}
+	public void ModuleCompilationUnit.checkDuplicateModuleNames() {
+		for (String name : getHostProgram().getModuleNames()) {
+			if (this.getModuleName().compareTo(name) == 0) {
+			getModuleDecl().error("Duplicate module name: " + this.getModuleName());
+			throw new jastadd.UnrecoverableSemanticError("Duplicate module name: " + this.getModuleName());
+			}
+		}
+		getHostProgram().getModuleNames().add(this.getModuleName());
+	}
+
+	protected Set<String> Program.moduleNames = new HashSet();
+	public Set<String> Program.getModuleNames() {
+		return this.moduleNames;
+	}
+}
