@@ -1,0 +1,24 @@
+aspect CheckFragmentContents {
+	public void ASTNode.checkFragmentContents() {}
+	public void ModuleCompilationUnit.checkFragmentContents() {
+		if (!isFragment()) {
+			return;
+		}
+		//for now, interfaces should have no member decls, and no member CUs
+		if (getModuleMemberDeclList().getNumChild() > 0) {
+			getModuleDecl().error("Module fragments must not have any imports, merges or replaces.");
+		}
+		if (getCompilationUnitList().getNumChild() > 0) {
+			String fileList = "";
+			boolean first = true;
+			for (CompilationUnit cu : getCompilationUnitList()) {
+				if (!first) {
+					fileList += ", ";
+				}
+				fileList += cu.relativeName();
+				first = false;
+			}
+			getModuleDecl().error("Module fragments should have no member compilation units. Offending files: " + fileList);
+		}
+	}
+}

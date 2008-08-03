@@ -85,6 +85,24 @@ aspect JAModuleErrorCheck {
 			getModuleDecl().checkModuleErrorsPass1();  	
 		}
   	}
+
+  	//Single error checks, done after the CU insert but before the Generate import own
+  	public void ASTNode.checkModuleErrorsPass2() {
+  		checkFragmentContents();
+  		
+		for (int i = 0 ; i < getNumChild(); i++) {
+			getChild(i).checkModuleErrorsPass2();
+		}
+  	}
+  	//STANDING NOTE: Cut off errorcheck at CompilationUnit/ModuleCompilationUnit children
+  	//so that the rewrites are not triggered
+  	public void CompilationUnit.checkModuleErrorsPass2() {
+		checkFragmentContents();
+		
+		if (getModuleDecl() != null) {
+			getModuleDecl().checkModuleErrorsPass2();  	
+		}
+  	}
   	
 	//refines/implements
 	//from Java1.4Frontend/ErrorCheck.jrag

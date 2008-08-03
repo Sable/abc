@@ -93,9 +93,10 @@ public class JastAddModules extends JastAdd {
 				program.collectPackageInfo();
 				program.insertPackageInfoModuleDecl();
 				
-				// check if moduleDecls on non-ModuleCompilationUnit CUs point
-				// to a valid module
+				// first error pass (does not depend on the MCUs being above the CUs
 				program.checkModuleErrorsPass1();
+				
+				
 				StringBuffer msg = null;
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					msg = new StringBuffer(
@@ -112,6 +113,9 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
+				
+				//second error pass (depends on MCUs being above their member CUs
+				program.checkModuleErrorsPass2();
 				
 				//check if a submodule reduces the signature of a super module
 				//NOTE: No need to checking module signatures, as merge now preserves signatures

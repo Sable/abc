@@ -4,12 +4,11 @@ ModuleCompilationUnit : CompilationUnit ::=
 	CompilationUnit*; //CompilationUnit is the list of compilation units that are members of 
 					//this module. These are not filled in at parse time, they are added at 
 					//InsertModuleCUs 
-InterfaceModuleCompilationUnit : ModuleCompilationUnit ::= ;
 
 ModuleAccess : Access ::= <ID:String>;
 NullModuleAccess : ModuleAccess; //sentinel value, matches no module
 ModuleDecl ::= ModuleAccess [Extends:ModuleAccess] Implements:ModuleAccess*;
-FragmentModuleDecl : ModuleDecl ::= ;
+FragmentModuleDecl : ModuleDecl ::= ; //refactor to inherit from abstract module decl if time permits
 
 abstract ModuleMemberDecl;
 ModuleImportDecl : ModuleMemberDecl ::= 
