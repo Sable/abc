@@ -10,8 +10,24 @@ aspect PrettyPrint {
 	public void ModuleDecl.toString(StringBuffer s) {
 		s.append("module ");
 		getModuleAccess().toString(s);
+		if (hasExtends()) {
+			s.append(" extends ");
+			getExtends().toString(s);
+		}
+		if (getImplementsList().getNumChild() > 0) {
+			s.append (" implements ");
+			boolean first = true;
+			for (ModuleAccess ma : getImplementsList()) {
+				if (!first) { 
+					s.append(", ");
+				}
+				ma.toString(s);
+				first = false;
+			}
+		}
 		s.append(";");
 	}
+	
 	
 	public void ModuleAccess.toString(StringBuffer s) {
 		s.append(getID());
@@ -54,6 +70,20 @@ aspect PrettyPrint {
 		getAsType().toString(s);
 		s.append(" ");
 		getAsModule().toString(s);
+		s.append(";");
+	}
+	public void ModuleReplaceDecl.toString(StringBuffer s) {
+		s.append("replace ");
+		boolean first = true;
+		for (ModuleAccess ma : getReplaceModuleList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			ma.toString(s);
+			first = false;
+		}
+		s.append(" with ");
+		getWithModule().toString(s);
 		s.append(";");
 	}
 	public void AsTypeOwn.toString(StringBuffer s) {
