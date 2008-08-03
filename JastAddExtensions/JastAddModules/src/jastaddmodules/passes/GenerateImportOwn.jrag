@@ -83,6 +83,8 @@ aspect GenerateImportOwn {
 		return ret;
 	}
 	
+	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
+	//is worth it 
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateImportCUs(ModuleCompilationUnit ret) {
 		assert (ret != null) : "ModuleCompilationUnit parameter should not be null";
 		
@@ -140,6 +142,8 @@ aspect GenerateImportOwn {
 	//This should only be called _after_ the import CUs have been generated.
 	//NOTE: This is the hairiest piece of code in all of JastAddModules. Be careful
 	//when changing this
+	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
+	//is worth it 
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeCUs(ModuleCompilationUnit ret) {
 		LinkedList<ModuleMemberDecl> memberList = ret.getSelfAndSuperMemberList();
 		for (ModuleMemberDecl member : memberList) {
@@ -190,49 +194,61 @@ aspect GenerateImportOwn {
 			mergedCU.setSourceStatement(mergeMember); //debug
 			getHostProgram().getCompilationUnitList().addChild(mergedCU);
 			
-			//TODO: These loops are too hairy. Try to turn the innermost loop into a method
-			//foreach merge target
-			for (ModuleCompilationUnit mergeTargetCU : mergeTargets) {
-			//	foreach context member of the merge target
-				for (ModuleCompilationUnit instanceContextCU: mergeTargetCU.getInstanceContext()) {
-			//		for each old alias of the mergetargetcu
-					Set<String> oldAliases = instanceContextCU.getImportedModuleAliases(mergeTargetCU);
-					for (String oldAlias : oldAliases) { 
-			//			detach the merge target from the context member's import list
-						AsType oldAsType = instanceContextCU.getImportedModule(oldAlias).getAsType();
-						ModuleImportType oldImportType = instanceContextCU.getImportedModule(oldAlias).getModuleImportType();
-						assert (oldAlias != null) : "Unable to find old alias";
-						assert (oldImportType instanceof ModuleImportTypeOwn) : "Mergetargets should all be imported using own";
-						instanceContextCU.removeImportedModule(oldAlias);
-			//			attach the result copy to the context member's import list (use the old alias and isExported)
-						if (ret == instanceContextCU) {//if the merge replaces an import/previous merge in ret
-							//if the mergeCU will replace the current alias and changes its signature, add an error
-							if (oldAsType.isExported() != mergeMember.getAsType().isExported() &&
-									oldAlias.equals(mergeAlias)) { //no need to check for import own, as base CUs can't be merged
-								String msg = "Merge changes the signature of a merge target: " + oldAlias;
-								mergeMember.error(msg);
-							}
-							//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
-							if (!(oldAlias.equals(mergeAlias))) {
-								instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
-							}
-						} else {
+			ret = replaceMergeTargets(ret, mergeMember, mergeTargets, mergedCU,
+					mergeAlias);
+		}
+		return ret;
+	}
+	
+	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
+	//is worth it 
+	protected ModuleCompilationUnit 
+		ModuleCompilationUnit.replaceMergeTargets(ModuleCompilationUnit ret,
+			ModuleMergeDecl mergeMember,
+			Collection<ModuleCompilationUnit> mergeTargets,
+			ModuleCompilationUnit mergedCU, String mergeAlias) {
+		//TODO: These loops are too hairy. Try to turn the innermost loop into a method
+		//foreach merge target
+		for (ModuleCompilationUnit mergeTargetCU : mergeTargets) {
+		//	foreach context member of the merge target
+			for (ModuleCompilationUnit instanceContextCU: mergeTargetCU.getInstanceContext()) {
+		//		for each old alias of the mergetargetcu
+				Set<String> oldAliases = instanceContextCU.getImportedModuleAliases(mergeTargetCU);
+				for (String oldAlias : oldAliases) { 
+		//			detach the merge target from the context member's import list
+					AsType oldAsType = instanceContextCU.getImportedModule(oldAlias).getAsType();
+					ModuleImportType oldImportType = instanceContextCU.getImportedModule(oldAlias).getModuleImportType();
+					assert (oldAlias != null) : "Unable to find old alias";
+					assert (oldImportType instanceof ModuleImportTypeOwn) : "Mergetargets should all be imported using own";
+					instanceContextCU.removeImportedModule(oldAlias);
+		//			attach the result copy to the context member's import list (use the old alias and isExported)
+					if (ret == instanceContextCU) {//if the merge replaces an import/previous merge in ret
+						//if the mergeCU will replace the current alias and changes its signature, add an error
+						if (oldAsType.isExported() != mergeMember.getAsType().isExported() &&
+								oldAlias.equals(mergeAlias)) { //no need to check for import own, as base CUs can't be merged
+							String msg = "Merge changes the signature of a merge target: " + oldAlias;
+							mergeMember.error(msg);
+						}
+						//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
+						if (!(oldAlias.equals(mergeAlias))) {
 							instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
 						}
+					} else {
+						instanceContextCU.checkedAddImportedModule(oldAlias, mergedCU, oldAsType, oldImportType);
 					}
-					
-			//		add the context member to the result copy's instance context
-					mergedCU.addInstanceContext(instanceContextCU);
 				}
-			//	detach the mergeTargetCU from the compilationUnit list of the program
-				mergeTargetCU.detachFromProgramList();
-			//	detach the merge target from ret's import list
-				ret.removeImportedModule(mergeTargetCU);
+				
+		//		add the context member to the result copy's instance context
+				mergedCU.addInstanceContext(instanceContextCU);
 			}
-			//attach the result copy to ret's import list
-			//import type is own. TODO: Check if this is correct
-			ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType(), new ModuleImportTypeOwn());
+		//	detach the mergeTargetCU from the compilationUnit list of the program
+			mergeTargetCU.detachFromProgramList();
+		//	detach the merge target from ret's import list
+			ret.removeImportedModule(mergeTargetCU);
 		}
+		//attach the result copy to ret's import list
+		//import type is own. TODO: Check if this is correct
+		ret.checkedAddImportedModule(mergeAlias, mergedCU, mergeMember.getAsType(), new ModuleImportTypeOwn());
 		return ret;
 	}
 	
