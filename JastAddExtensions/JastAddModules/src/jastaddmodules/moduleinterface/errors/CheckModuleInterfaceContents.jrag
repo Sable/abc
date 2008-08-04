@@ -7,8 +7,11 @@ aspect CheckModuleInterfaceContents {
 		//for now, interfaces should have no member decls (except package exports), and no member CUs
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleExportDecl)) {
-				getModuleDecl().error("Module fragments must not have any imports, merges or replaces.");
-			} 
+				getModuleDecl().error("Module interfaces must not have any imports, merges or replaces.");
+			}
+			if (member instanceof ModuleExportAllDecl) {
+				getModuleDecl().error("Module interfaces must not have an export all packages declaration.");
+			}
 		} 
 		if (getCompilationUnitList().getNumChild() > 0) {
 			String fileList = "";

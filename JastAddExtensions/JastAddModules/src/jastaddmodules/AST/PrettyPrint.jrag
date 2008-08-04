@@ -95,4 +95,25 @@ aspect PrettyPrint {
 	public void AsTypeNone.toString(StringBuffer s) {
 		s.append("as none");
 	}
+	
+	public void ModuleExportDecl.toString(StringBuffer s) {
+		s.append("export package ");
+		boolean first = true;
+		for (ModulePackageDecl modulePackageDecl : getModulePackageDeclList()) {
+			if (!first) {
+				s.append(", ");
+			}
+			modulePackageDecl.toString(s);
+			first = false;
+		}
+		s.append(";");
+	}
+	
+	public void ModuleExportAllDecl.toString(StringBuffer s) {
+		s.append("export package *;");
+	}
+	
+	public void ModulePackageDecl.toString(StringBuffer s) {
+		s.append(getID());
+	}
 }

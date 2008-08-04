@@ -1,0 +1,64 @@
+
+aspect ExportedPackagesAccessControl {
+	refine JAModuleExtendsAccessControl eq TypeDecl.accessibleFromPackage(String packageName) {
+		if (JAModuleExtendsAccessControl.TypeDecl.accessibleFromPackage(packageName)) {
+			//if this is not in a module, go with previous return
+			ModuleCompilationUnit thisMCU = compilationUnit().getModuleCompilationUnit();
+			if (thisMCU == null) {
+				return true;
+			}
+			//if is in the same super instance chain
+			ModuleCompilationUnit otherMCU = compilationUnit().getHostProgram().getPackageToMCU(packageName);
+			if (otherMCU != null && otherMCU.getRealInstance() == thisMCU.getRealInstance()) {
+				return true;
+			}
+			//else (in separate modules)
+			return thisMCU.getLocalPackageWithSuper(this.moduleLocalPackageName()).isExported();
+		}
+		else {
+			return false;
+		}
+	}
+	
+	refine JAModuleExtendsAccessControl eq TypeDecl.accessibleFromExtend(TypeDecl type) {
+		if (JAModuleExtendsAccessControl.TypeDecl.accessibleFromExtend(type)) {
+			//if this is not in a module, go with previous return
+			ModuleCompilationUnit thisMCU = compilationUnit().getModuleCompilationUnit();
+			if (thisMCU == null) {
+				return true;
+			}
+			//if is in the same super instance chain
+			ModuleCompilationUnit otherMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (otherMCU != null && otherMCU.getRealInstance() == thisMCU.getRealInstance()) {
+				return true;
+			}
+			//else (in separate modules)
+			return thisMCU.getLocalPackageWithSuper(this.moduleLocalPackageName()).isExported();
+		}
+		else {
+			return false;
+		}
+	}
+	
+	refine JAModuleExtendsAccessControl eq TypeDecl.accessibleFrom(TypeDecl type) {
+		if (JAModuleExtendsAccessControl.TypeDecl.accessibleFrom(type)) {
+			//if this is not in a module, go with previous return
+			ModuleCompilationUnit thisMCU = compilationUnit().getModuleCompilationUnit();
+			if (thisMCU == null) {
+				return true;
+			}
+			//if is in the same super instance chain
+			ModuleCompilationUnit otherMCU = type.compilationUnit().getModuleCompilationUnit();
+			if (otherMCU != null && otherMCU.getRealInstance() == thisMCU.getRealInstance()) {
+				return true;
+			}
+			//else (in separate modules)
+			return thisMCU.getLocalPackageWithSuper(this.moduleLocalPackageName()).isExported();
+		}
+		else {
+			return false;
+		}	
+	}
+	
+	
+}

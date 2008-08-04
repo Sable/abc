@@ -20,6 +20,17 @@ aspect CollectLocalModulePackages {
 					continue;
 				}
 				ModuleExportDecl exportDecl = (ModuleExportDecl) member;
+				//TODO: Refactor to remove instanceof test
+				if (exportDecl instanceof ModuleExportAllDecl) {
+					ModuleCompilationUnit currMCU = this;
+					while (currMCU != null) {
+						for (String localPackageName: currMCU.getLocalPackageMap().keySet()) {
+							currMCU.getLocalPackage(localPackageName).setExported(true);
+						}
+						currMCU = currMCU.getSuperInstance();
+					}
+					break; //ignore all other export decls
+				}
 				for (ModulePackageDecl modulePackageDecl : exportDecl.getModulePackageDeclList()) {
 					String localPackageName = modulePackageDecl.getID();
 					LocalModulePackage localPackage = getLocalPackageWithSuper(localPackageName);
@@ -43,7 +54,7 @@ aspect CollectLocalModulePackages {
 		ModuleCompilationUnit mcu = getModuleCompilationUnit();
 		if (mcu != null) {
 			if (mcu.getLocalPackage(moduleLocalPackageName()) == null) {
-				mcu.addLocalPackage(moduleLocalPackageName(), new LocalModulePackage(true));
+				mcu.addLocalPackage(moduleLocalPackageName(), new LocalModulePackage(false));
 			}
 		}
 	}
