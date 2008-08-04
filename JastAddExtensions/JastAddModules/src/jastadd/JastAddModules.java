@@ -81,7 +81,7 @@ public class JastAddModules extends JastAdd {
 			//    ModuleCompilationUnits being properly placed and configured above
 			//    their member CUs.
 			//  NEVER CALL flushCaches. See rewrites above.
-			//  Don't call flushCache unless you Really Know What You're Doing (R)
+			//  Don't call flushCache unless you Really Know What You're Doing (TM)
 			//  Try to always use the compilationUnitIterator() instead of doing
 			//    a standard AST traversal. Most passes should not go into uninstantiated
 			//    modules.
@@ -97,16 +97,9 @@ public class JastAddModules extends JastAdd {
 				// first error pass (does not depend on the MCUs being above the CUs
 				program.checkModuleErrorsPass1();
 				
-				
+				//debug
 				StringBuffer msg = null;
-				if (program.options().hasOption(DEBUG_OPTION)) {
-					msg = new StringBuffer(
-							"----------Module contents----------\n");
-					System.out.print(program.toStringJAModules(msg));
-					msg = new StringBuffer(
-							"----------CU AST before insert----------\n");
-					System.out.print(program.toStringJAModuleCUAST(0, msg));
-				}
+				printCUASTBeforeInsert();
 
 				// insert the ModuleCompilationUnits above the CUs that are a
 				// member
@@ -133,16 +126,8 @@ public class JastAddModules extends JastAdd {
 				if (!result) {
 					return false;
 				}
-				
-				if (program.options().hasOption(DEBUG_OPTION)) {
-					msg = new StringBuffer(
-							"----------CU AST after insert----------\n");
-					System.out.print(program.toStringJAModuleCUAST(0, msg));
-					msg = new StringBuffer(
-							"----------Module CU imports before import own----------\n");
-					System.out.print(msg);
-					System.out.print(program.toStringJAModuleCUImports());
-				}
+				//DEBUG
+				printCUASTAfterInsert();
 
 				// generate the ModuleCompilationUnits created by import
 				// own/merges
@@ -157,22 +142,8 @@ public class JastAddModules extends JastAdd {
 
 				program.collectLocalModulePackages();
 				
-				if (program.options().hasOption(DEBUG_OPTION)) {
-					System.out
-							.print("-------------Instance ModuleCompilationUnit------------\n");
-					System.out.print(program.getInstanceModuleCU() + "\n");
-					System.out
-							.print("-----------End Instance ModuleCompilationUnit----------\n");
-					msg = new StringBuffer(
-							"----------CU AST after generateImportOwn----------\n");
-					System.out.print(program.toStringJAModuleCUAST(0, msg)
-							+ "\n");
-					msg = new StringBuffer(
-							"----------Module CU imports after import own----------\n");
-					System.out.print(msg);
-					System.out.print(program.toStringJAModuleCUImports());
-
-				}
+				//debug
+				printDebugInfoAfterGenerateImportOwn();
 				
 				//last error check, checks the instances created
 				program.checkModuleErrorsPass3();
@@ -193,16 +164,8 @@ public class JastAddModules extends JastAdd {
 			
 			//MODULE PROCESSING ENDS HERE
 
-			if (program.options().hasOption(DEBUG_OPTION)) {
-
-				System.out
-						.println("----------MCU collectTypes after import own----------\n");
-				System.out.println(program.toStringModuleMemberTypes());
-
-				System.out.print("----------CU iterator----------\n");
-				System.out.print(program.toStringCompilationUnitIterator()
-						+ "\n");
-			}
+			//debug
+			printCollectTypesAndIterator();
 
 			// Error check
 			for (Iterator iter = program.compilationUnitIterator(); iter
@@ -234,6 +197,64 @@ public class JastAddModules extends JastAdd {
 			e.printStackTrace();
 		}
 		return true;
+	}
+
+	private void printCollectTypesAndIterator() {
+		if (program.options().hasOption(DEBUG_OPTION)) {
+
+			System.out
+					.println("----------MCU collectTypes after import own----------\n");
+			System.out.println(program.toStringModuleMemberTypes());
+
+			System.out.print("----------CU iterator----------\n");
+			System.out.print(program.toStringCompilationUnitIterator()
+					+ "\n");
+		}
+	}
+
+	private void printDebugInfoAfterGenerateImportOwn() {
+		StringBuffer msg;
+		if (program.options().hasOption(DEBUG_OPTION)) {
+			System.out
+					.print("-------------Instance ModuleCompilationUnit------------\n");
+			System.out.print(program.getInstanceModuleCU() + "\n");
+			System.out
+					.print("-----------End Instance ModuleCompilationUnit----------\n");
+			msg = new StringBuffer(
+					"----------CU AST after generateImportOwn----------\n");
+			System.out.print(program.toStringJAModuleCUAST(0, msg)
+					+ "\n");
+			msg = new StringBuffer(
+					"----------Module CU imports after import own----------\n");
+			System.out.print(msg);
+			System.out.print(program.toStringJAModuleCUImports());
+
+		}
+	}
+
+	private void printCUASTAfterInsert() {
+		StringBuffer msg;
+		if (program.options().hasOption(DEBUG_OPTION)) {
+			msg = new StringBuffer(
+					"----------CU AST after insert----------\n");
+			System.out.print(program.toStringJAModuleCUAST(0, msg));
+			msg = new StringBuffer(
+					"----------Module CU imports before import own----------\n");
+			System.out.print(msg);
+			System.out.print(program.toStringJAModuleCUImports());
+		}
+	}
+
+	private void printCUASTBeforeInsert() {
+		StringBuffer msg;
+		if (program.options().hasOption(DEBUG_OPTION)) {
+			msg = new StringBuffer(
+					"----------Module contents----------\n");
+			System.out.print(program.toStringJAModules(msg));
+			msg = new StringBuffer(
+					"----------CU AST before insert----------\n");
+			System.out.print(program.toStringJAModuleCUAST(0, msg));
+		}
 	}
 
 	public boolean compile(String[] args) {
