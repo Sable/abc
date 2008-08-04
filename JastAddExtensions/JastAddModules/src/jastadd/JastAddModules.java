@@ -140,6 +140,7 @@ public class JastAddModules extends JastAdd {
 				// for JAModuleClassPath.Program.modulePackages()
 				program.flushCache();
 
+				//collect local module packages
 				program.collectLocalModulePackages();
 				
 				//debug

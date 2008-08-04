@@ -4,7 +4,7 @@ aspect CheckModuleInterfaceContents {
 		if (!isModuleInterface()) {
 			return;
 		}
-		//for now, interfaces should have no member decls, and no member CUs
+		//for now, interfaces should have no member decls (except package exports), and no member CUs
 		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
 			if (!(member instanceof ModuleExportDecl)) {
 				getModuleDecl().error("Module fragments must not have any imports, merges or replaces.");

@@ -1,0 +1,15 @@
+aspect CheckInterfaceExtends {
+	public void ASTNode.checkInterfaceExtends() {}
+	public void ModuleCompilationUnit.checkInterfaceExtends() {
+		ModuleCompilationUnit superMCU = getSuperModuleCUNoTransform();
+		if (superMCU == null) {
+			return;
+		}
+		if (isModuleInterface() && !(superMCU.isModuleInterface())) {
+			getModuleDecl().getExtends().error("Interface modules must not extend non-interface modules."); 
+		}
+		if (!isModuleInterface() && superMCU.isModuleInterface()) {
+			getModuleDecl().getExtends().error("Non-interface modules must not extend interface modules. Use implements instead.");
+		}
+	}
+}

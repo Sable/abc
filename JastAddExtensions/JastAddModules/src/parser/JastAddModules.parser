@@ -68,9 +68,9 @@ ModuleDecl ja_module_decl =
 		return new ModuleDecl(ma, extends_opt, impl);
 	:}
 	|
-	MODULE_INTERFACE ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl SEMICOLON
+	MODULE_INTERFACE ja_module_access.ma ja_module_decl_extends_opt.extends_opt SEMICOLON
 	{:
-		return new InterfaceModuleDecl(ma, extends_opt, impl);
+		return new InterfaceModuleDecl(ma, extends_opt, new List());
 	:};
 
 Opt ja_module_decl_extends_opt =
@@ -211,6 +211,11 @@ ModuleExportDecl ja_module_export_package =
 	EXPORT PACKAGE ja_module_package_decl_list.l
 	{:
 		return new ModuleExportDecl(l);
+	:}
+	|
+	EXPORT PACKAGE MULT
+	{:
+		return new ModuleExportAllDecl(new List());
 	:};
 	
 List ja_module_package_decl_list =

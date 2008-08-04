@@ -10,41 +10,25 @@ aspect CheckModuleInterfacePackageImplements {
 			return;
 		}
 		if (isModuleInterface()) {
-			//check if exported packages in implmented interfaces are reexported here
-			LinkedList<ModuleMemberDecl> memberList = getBaseCU().getSelfAndSuperMemberListNoTransform();
-			for (ModuleAccess ma: getModuleDecl().getImplementsList()) {
-				ModuleCompilationUnit interfaceCU = getHostProgram().lookupModuleCUNoTransform(ma);
-				if (ma == null) { //should have already been handled in CheckModuleDecls
-					continue;
-				}
-				if (!(this.getExportedPackages().containsAll(
-						interfaceCU.getExportedPackages())
-						)
-					) {
-					ma.error("Module interface " + this.getModuleName() + " does not export all packages exported in " + interfaceCU.getModuleName()); 
-				}
+			return;
+		} 
+		//check if the exported packages in the implemented interfaces are part of
+		//the exported local packages here
+		for (ModuleAccess ma: getModuleDecl().getImplementsList()) {
+			ModuleCompilationUnit interfaceCU = getHostProgram().lookupModuleCUNoTransform(ma);
+			if (ma == null) { //should have already been handled in CheckModuleDecls
+				continue;
 			}
-		} else {
-			//check if the exported packages in the implemented interfaces are part of
-			//the exported local packages here
-			for (ModuleAccess ma: getModuleDecl().getImplementsList()) {
-				ModuleCompilationUnit interfaceCU = getHostProgram().lookupModuleCUNoTransform(ma);
-				if (ma == null) { //should have already been handled in CheckModuleDecls
-					continue;
-				}
-				for (String packageName : interfaceCU.getExportedPackages()) {
-					if (getLocalPackage(packageName) == null) {
-						ma.error("Implemented module interface " + 
-							interfaceCU.getModuleName() + 
-							" exports package " + 
-							packageName + 
-							" but is not present in module " + 
-							this.getModuleName());
-					}
+			for (String packageName : interfaceCU.getExportedPackages()) {
+				if (getLocalPackageWithSuper(packageName) == null) {
+					ma.error("Implemented module interface " + 
+						interfaceCU.getModuleName() + 
+						" exports package " + 
+						packageName + 
+						" but is not present in module " + 
+						this.getModuleName());
 				}
 			}
 		}
 	}
-	
-	
 }

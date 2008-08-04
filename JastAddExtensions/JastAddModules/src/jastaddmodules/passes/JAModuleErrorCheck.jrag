@@ -68,6 +68,7 @@ aspect JAModuleErrorCheck {
   		checkModuleCycles();
   		checkDuplicateModuleNames();
   		checkExtendsCycles();
+  		checkInterfaceExtends();
   	
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).checkModuleErrorsPass1();
@@ -80,6 +81,7 @@ aspect JAModuleErrorCheck {
   		checkModuleCycles();
   		checkDuplicateModuleNames();
   		checkExtendsCycles();
+  		checkInterfaceExtends();
 
 		if (getModuleDecl() != null) {
 			getModuleDecl().checkModuleErrorsPass1();  	

@@ -11,4 +11,8 @@ public class LocalModulePackage {
 		return exported;
 	}
 	
+	public void setExported(boolean b) {
+		this.exported = b;
+	}
+	
 }

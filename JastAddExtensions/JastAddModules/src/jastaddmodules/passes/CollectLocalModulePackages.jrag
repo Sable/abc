@@ -11,7 +11,27 @@ aspect CollectLocalModulePackages {
 		for (CompilationUnit cu : getCompilationUnitList()) {
 			cu.collectLocalModulePackages();
 		}
-		//TODO: process exported pacakges
+		
+		//process export declarations (for non-interface mcu only)
+		if (!isModuleInterface()) {
+			LinkedList<ModuleMemberDecl> memberList = getSelfAndSuperMemberListNoTransform();
+			for (ModuleMemberDecl member : memberList) {
+				if (!(member instanceof ModuleExportDecl)) {
+					continue;
+				}
+				ModuleExportDecl exportDecl = (ModuleExportDecl) member;
+				for (ModulePackageDecl modulePackageDecl : exportDecl.getModulePackageDeclList()) {
+					String localPackageName = modulePackageDecl.getID();
+					LocalModulePackage localPackage = getLocalPackageWithSuper(localPackageName);
+					if (localPackage == null) {
+						modulePackageDecl.error("Package " + localPackageName + " is exported but there are not types in the module that are a member of that package.");
+					} else {
+						localPackage.setExported(true);
+					}
+				}
+			}
+		}
+		
 		//TODO: Add packages to Program.packageToMCU
 		for (String localPackageName : getLocalPackageMap().keySet()) {
 			LocalModulePackage localPackage = getLocalPackage(localPackageName);

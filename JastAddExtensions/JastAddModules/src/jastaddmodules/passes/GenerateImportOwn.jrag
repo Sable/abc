@@ -183,7 +183,7 @@ aspect GenerateImportOwn {
 			}
 			
 			if (mergeBaseCU != null && mostSpecificModule(cu.getBaseCU(), mergeBaseCU) == null) {
-				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getModuleName(); 
+				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
@@ -253,7 +253,7 @@ aspect GenerateImportOwn {
 			
 			//if not type compatible
 			if (!cu.isInterfaceOf(replaceCU) && !replaceCU.hasSuperModule(cu)) {
-				String msg = "Incompatible modules in merge list: " + replaceCU.getModuleName() + ", " + cu.getModuleName(); 
+				String msg = "Incompatible modules in replace: " + replaceCU.getBaseCU().getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}

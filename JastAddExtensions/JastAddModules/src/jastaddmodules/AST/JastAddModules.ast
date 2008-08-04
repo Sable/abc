@@ -36,6 +36,7 @@ ModuleReplaceDecl : ModuleMemberDecl ::=
 
 ModuleExportDecl : ModuleMemberDecl ::=
 	ModulePackageDecl*;
+ModuleExportAllDecl : ModuleExportDecl ::=;
 
 ModulePackageDecl ::= <ID:String>;
 

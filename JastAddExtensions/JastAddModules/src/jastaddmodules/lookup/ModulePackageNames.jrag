@@ -71,6 +71,17 @@ aspect ModulePackageNames {
 		return this.localPackages;
 	}
 	
+	public LocalModulePackage ModuleCompilationUnit.getLocalPackageWithSuper(String name) {
+		ModuleCompilationUnit currMCU = this;
+		while (currMCU != null) {
+			if (currMCU.getLocalPackage(name) != null) {
+				return currMCU.getLocalPackage(name);
+			}
+			currMCU = currMCU.getSuperInstance();
+		}
+		return null;
+	}
+	
 	public String ModuleCompilationUnit.makeGlobalExportedPackageName(String packageName) {
 		if (packageName.equals("")) {
 			return this.getModuleName();
