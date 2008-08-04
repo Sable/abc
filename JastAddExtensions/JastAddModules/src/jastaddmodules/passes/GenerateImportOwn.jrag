@@ -2,6 +2,7 @@
 //errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
 //the REWRITES
 
+//TODO: Try to refactor this to separate out the handling for merges and replaces
 
 
 import java.util.*;
@@ -230,6 +231,11 @@ aspect GenerateImportOwn {
 			replaceMember.getWithModule().error(msg);
 			throw new jastadd.UnrecoverableSemanticError(msg);
 		} 
+		if (isAccessedThroughBaseModule(replaceMember.getWithModule())) {
+			String msg = "Module used for replacement is a base module or is accessed through a base module. Only import owns are allowed to be used for a replace.";
+			replaceMember.getWithModule().error(msg);
+			throw new jastadd.UnrecoverableSemanticError(msg);
+		}
 		
 		Collection<ModuleCompilationUnit> replaceTargets = new HashSet<ModuleCompilationUnit>();
 		for (ModuleAccess access : replaceMember.getReplaceModuleList()) {
