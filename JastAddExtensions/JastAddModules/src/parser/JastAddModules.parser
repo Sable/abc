@@ -118,6 +118,11 @@ ModuleMemberDecl ja_module_member =
 	ja_module_replace_decl.mrd
 	{:
 		return mrd;
+	:}
+	|
+	ja_module_export_package.med
+	{:
+		return med;
 	:};
 
 ModuleImportDecl ja_module_import_decl =
@@ -194,9 +199,28 @@ IdUse qualified_name_decl =
 	{: 
 		return new IdUse(n.getID() + "::" + i); 
 	:};
-	
+
+//TODO: WTF is this production for?	
 ImportDecl type_import_on_demand_declaration =
     IMPORT name.n DOT MODULE_SEPARATOR SEMICOLON           
     {: 
     	return new TypeImportOnDemandDecl(n); 
     :};
+    
+ModuleExportDecl ja_module_export_package =
+	EXPORT PACKAGE ja_module_package_decl_list.l
+	{:
+		return new ModuleExportDecl(l);
+	:};
+	
+List ja_module_package_decl_list =
+	name_decl.n
+	{:
+		return new List().add(new ModulePackageDecl(n.getID()));
+	:}
+	|
+	ja_module_package_decl_list.l COMMA name_decl.n
+	{:
+		return l.add(new ModulePackageDecl(n.getID()));
+	:};
+	

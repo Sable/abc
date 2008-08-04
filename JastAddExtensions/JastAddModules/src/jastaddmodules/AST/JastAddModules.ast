@@ -32,7 +32,11 @@ ModuleMergeDecl : ModuleMemberDecl ::=
 	AsModule:ModuleAccess;
 ModuleReplaceDecl : ModuleMemberDecl ::=
 	ReplaceModule:ModuleAccess*
-	WithModule:ModuleAccess
-	;
+	WithModule:ModuleAccess;
+
+ModuleExportDecl : ModuleMemberDecl ::=
+	ModulePackageDecl*;
+
+ModulePackageDecl ::= <ID:String>;
 
 ModuleDot : Dot;
