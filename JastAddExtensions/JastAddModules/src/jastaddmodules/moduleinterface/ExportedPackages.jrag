@@ -1,0 +1,17 @@
+aspect ExportedPackages {
+	public Set<String> ModuleCompilationUnit.getExportedPackages() {
+		Set<String> ret = new HashSet<String>();
+		LinkedList<ModuleMemberDecl> memberList = getBaseCU().getSelfAndSuperMemberListNoTransform();
+		
+		for (ModuleMemberDecl member : memberList) {
+			if (!(member instanceof ModuleExportDecl)) {
+				continue;
+			}
+			ModuleExportDecl exportDecl = (ModuleExportDecl) member; 
+			for (ModulePackageDecl packageDecl : exportDecl.getModulePackageDeclList()) {
+				ret.add(packageDecl.getID());
+			}
+		}
+		return ret;
+	}
+}

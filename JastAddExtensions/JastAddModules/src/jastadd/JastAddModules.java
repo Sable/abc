@@ -157,12 +157,6 @@ public class JastAddModules extends JastAdd {
 
 				program.collectLocalModulePackages();
 				
-				// does not work in general due to conflicting names
-				/*
-				 * result = program.insertModulePackageImports(); if (!result) {
-				 * return false; }
-				 */
-
 				if (program.options().hasOption(DEBUG_OPTION)) {
 					System.out
 							.print("-------------Instance ModuleCompilationUnit------------\n");

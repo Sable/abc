@@ -12,5 +12,10 @@ aspect CheckModuleDecls {
   				getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends()) == null) {
   			getModuleDecl().getExtends().error("Module not found: " + getModuleDecl().getExtends().getID());
   		}
+  		for (ModuleAccess ma: getModuleDecl().getImplementsList()) {
+  			if (getHostProgram().lookupModuleCUNoTransform(ma) == null) {
+  				ma.error("Module not found: " + ma.getID());
+  			}
+  		}
   	}
 }

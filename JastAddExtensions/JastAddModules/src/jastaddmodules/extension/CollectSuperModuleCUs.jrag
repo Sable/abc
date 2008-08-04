@@ -74,4 +74,31 @@ aspect CollectSuperModuleCUs {
 		}
 		return ret;
 	}
+	
+	//only gets non-implicit members, using the no transform super lookup
+	syn lazy LinkedList<ModuleMemberDecl> ModuleCompilationUnit.getSuperMemberListNoTransform() {
+		LinkedList<ModuleMemberDecl> ret = new LinkedList<ModuleMemberDecl>();
+		if (getSuperModuleCUNoTransform() != null) {
+			ret.addAll(getSuperModuleCUNoTransform().getSuperMemberListNoTransform());
+		}
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			//don't get the implicit imports (specifically jastadd$framework)
+			if (!(member instanceof ImplicitModuleImportDecl)) {
+				ret.add(member);
+			}
+		}
+		return ret;
+	}
+	//collects non-implicit members of supers, then all of self, using the no transform lookup
+	syn lazy LinkedList<ModuleMemberDecl> ModuleCompilationUnit.getSelfAndSuperMemberListNoTransform() {
+		LinkedList<ModuleMemberDecl> ret = new LinkedList<ModuleMemberDecl>();
+		if (getSuperModuleCUNoTransform() != null) {
+			ret.addAll(getSuperModuleCUNoTransform().getSuperMemberListNoTransform());
+		}
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			ret.add(member);
+		}
+		return ret;
+	}
+	
 }

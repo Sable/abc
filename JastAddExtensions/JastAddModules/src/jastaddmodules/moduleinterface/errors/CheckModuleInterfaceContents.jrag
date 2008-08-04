@@ -5,9 +5,11 @@ aspect CheckModuleInterfaceContents {
 			return;
 		}
 		//for now, interfaces should have no member decls, and no member CUs
-		if (getModuleMemberDeclList().getNumChild() > 0) {
-			getModuleDecl().error("Module fragments must not have any imports, merges or replaces.");
-		}
+		for (ModuleMemberDecl member : getModuleMemberDeclList()) {
+			if (!(member instanceof ModuleExportDecl)) {
+				getModuleDecl().error("Module fragments must not have any imports, merges or replaces.");
+			} 
+		} 
 		if (getCompilationUnitList().getNumChild() > 0) {
 			String fileList = "";
 			boolean first = true;
