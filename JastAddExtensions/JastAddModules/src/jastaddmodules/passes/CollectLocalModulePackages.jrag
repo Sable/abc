@@ -7,13 +7,22 @@ aspect CollectLocalModulePackages {
 		}
 	}
 	public void ModuleCompilationUnit.collectLocalModulePackages() {
-		//collect packages from member cus
-		for (CompilationUnit cu : getCompilationUnitList()) {
-			cu.collectLocalModulePackages();
+		//if superinstance, skip
+		if (isSuperInstance()) {
+			return;
+		}
+
+		//collect packages from member cus and supers
+		ModuleCompilationUnit currMCU = this;
+		while (currMCU != null) {
+			for (CompilationUnit cu : currMCU.getCompilationUnitList()) {
+				cu.collectLocalModulePackages();
+			}
+			currMCU = currMCU.getSuperInstance();
 		}
 		
 		//process export declarations (for non-interface mcu only)
-		if (!isModuleInterface()) {
+		if (!isModuleInterface() && !isSuperInstance() && isModuleInstantiated()) {
 			LinkedList<ModuleMemberDecl> memberList = getSelfAndSuperMemberListNoTransform();
 			for (ModuleMemberDecl member : memberList) {
 				if (!(member instanceof ModuleExportDecl)) {
@@ -22,7 +31,7 @@ aspect CollectLocalModulePackages {
 				ModuleExportDecl exportDecl = (ModuleExportDecl) member;
 				//TODO: Refactor to remove instanceof test
 				if (exportDecl instanceof ModuleExportAllDecl) {
-					ModuleCompilationUnit currMCU = this;
+					currMCU = this;
 					while (currMCU != null) {
 						for (String localPackageName: currMCU.getLocalPackageMap().keySet()) {
 							currMCU.getLocalPackage(localPackageName).setExported(true);
@@ -35,7 +44,7 @@ aspect CollectLocalModulePackages {
 					String localPackageName = modulePackageDecl.getID();
 					LocalModulePackage localPackage = getLocalPackageWithSuper(localPackageName);
 					if (localPackage == null) {
-						modulePackageDecl.error("Package " + localPackageName + " is exported but there are not types in the module that are a member of that package.");
+						modulePackageDecl.error("Package " + localPackageName + " is exported but there are no types in the module that are a member of that package.");
 					} else {
 						localPackage.setExported(true);
 					}
@@ -44,10 +53,14 @@ aspect CollectLocalModulePackages {
 		}
 		
 		//TODO: Add packages to Program.packageToMCU
-		for (String localPackageName : getLocalPackageMap().keySet()) {
-			LocalModulePackage localPackage = getLocalPackage(localPackageName);
-			String globalPackageName = makeGlobalPackageName(localPackageName, localPackage);
-			getHostProgram().addPackageToMCU(globalPackageName, this);
+		currMCU = this;
+		while (currMCU != null) {
+			for (String localPackageName : currMCU.getLocalPackageMap().keySet()) {
+				LocalModulePackage localPackage = currMCU.getLocalPackage(localPackageName);
+				String globalPackageName = currMCU.makeGlobalPackageName(localPackageName, localPackage);
+				currMCU.getHostProgram().addPackageToMCU(globalPackageName, this);
+			}
+			currMCU = currMCU.getSuperInstance();
 		}
 	}
 	public void CompilationUnit.collectLocalModulePackages() {
