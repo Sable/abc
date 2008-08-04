@@ -11,7 +11,7 @@ module org.jastadd.java14frontend;
 import jastadd$framework::List;
 import java.util.*;
 
-aspect AccessTypes {
+public aspect AccessTypes {
   syn boolean Expr.isTypeAccess() = false;
   eq TypeAccess.isTypeAccess() = true;
   eq AbstractDot.isTypeAccess() = getRight().isTypeAccess();
@@ -160,7 +160,7 @@ public aspect ResolveAmbiguousNames {
 
 }
 
-aspect NameResolution {
+public aspect NameResolution {
  
   // Resolve Package or Type name
   rewrite PackageOrTypeAccess {

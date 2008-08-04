@@ -95,7 +95,7 @@ module org.jastadd.java14frontend;
     static Constant create(String s) { return new ConstantString(s); }
   }
 
-aspect ConstantExpression {
+public aspect ConstantExpression {
   syn Constant Expr.constant() {
     throw new UnsupportedOperationException("ConstantExpression operation constant" +
       " not supported for type " + getClass().getName()); 

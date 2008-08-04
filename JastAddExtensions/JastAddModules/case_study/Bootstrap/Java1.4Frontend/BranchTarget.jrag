@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-interface BranchPropagation {
+public interface BranchPropagation {
 }
 
-aspect BranchTarget {
+public aspect BranchTarget {
   
   // public interface
   

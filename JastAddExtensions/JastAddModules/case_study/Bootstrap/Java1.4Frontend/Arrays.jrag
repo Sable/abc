@@ -8,7 +8,7 @@
  */
 module org.jastadd.java14frontend;
 
-aspect Arrays {
+public aspect Arrays {
   syn lazy int TypeDecl.dimension() = 0;
   eq ArrayDecl.dimension() = componentType().dimension() + 1;
   

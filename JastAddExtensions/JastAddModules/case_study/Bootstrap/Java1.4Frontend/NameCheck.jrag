@@ -10,7 +10,7 @@ module org.jastadd.java14frontend;
 
 import java.util.Iterator;
 
-aspect NameCheck {
+public aspect NameCheck {
   public void ASTNode.nameCheck() {
   }
 

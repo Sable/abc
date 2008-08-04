@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-aspect AnonymousClasses {
+public aspect AnonymousClasses {
 
   //eq ParameterDeclaration.getTypeAccess().hostType() = hostType().isAnonymous() ? ((ClassDecl)hostType()).superclass() : hostType();
   

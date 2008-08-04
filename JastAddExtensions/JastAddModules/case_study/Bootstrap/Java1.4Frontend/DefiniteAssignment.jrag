@@ -11,7 +11,7 @@ module org.jastadd.java14frontend;
 import java.util.Iterator;
 import java.util.HashSet;
 
-aspect DefiniteAssignment {
+public aspect DefiniteAssignment {
 
   public void ASTNode.definiteAssignment() {
   }
@@ -232,7 +232,7 @@ aspect DefiniteAssignment {
   }
 }
 
-aspect DA {
+public aspect DA {
   syn lazy boolean ConditionalExpr.booleanOperator() = getTrueExpr().type().isBoolean() && getFalseExpr().type().isBoolean();
   
   inh boolean Stmt.isDAbefore(Variable v);
@@ -698,7 +698,7 @@ aspect DA {
     public boolean isDAafterFinally(Variable v);
   }
 
-aspect DU {
+public aspect DU {
   inh boolean Stmt.isDUbefore(Variable v);
   syn lazy boolean Stmt.isDUafter(Variable v);
   inh boolean Expr.isDUbefore(Variable v);

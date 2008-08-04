@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.*;
 import beaver.*;
 
-aspect ClassPath {
+public aspect ClassPath {
   BytecodeReader Program.bytecodeReader;
   public void Program.initBytecodeReader(BytecodeReader r) { bytecodeReader = r; }
   JavaParser Program.javaParser;

@@ -14,7 +14,7 @@ import java.util.*;
     public SimpleSet lookupVariable(String name);
   }
 
-aspect VariableLookup {
+public aspect VariableLookup {
   // lookupVariable(String name) shows the variables in scope named name
   inh lazy SimpleSet TypeDecl.lookupVariable(String name);
   inh lazy SimpleSet BodyDecl.lookupVariable(String name);
@@ -220,7 +220,7 @@ aspect VariableLookup {
   }
 }
 
-aspect VariableScopePropagation {
+public aspect VariableScopePropagation {
   
   CatchClause implements VariableScope;
   Block implements VariableScope;
@@ -252,7 +252,7 @@ aspect VariableScopePropagation {
   }
 }
 
-aspect Fields {
+public aspect Fields {
 
   syn lazy SimpleSet TypeDecl.localFields(String name) = 
     localFieldsMap().containsKey(name) ? (SimpleSet)localFieldsMap().get(name) : SimpleSet.emptySet;

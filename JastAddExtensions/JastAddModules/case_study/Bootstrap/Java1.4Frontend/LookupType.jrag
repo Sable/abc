@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.zip.*;
 import java.io.*;
 
-aspect SpecialClasses {
+public aspect SpecialClasses {
   syn lazy TypeDecl Program.typeObject() = lookupType("java.lang", "Object");
   syn lazy TypeDecl Program.typeCloneable() = lookupType("java.lang", "Cloneable");
   syn lazy TypeDecl Program.typeSerializable() = lookupType("java.io", "Serializable");
@@ -74,7 +74,7 @@ aspect SpecialClasses {
 
 }
 
-aspect LookupFullyQualifiedTypes {
+public aspect LookupFullyQualifiedTypes {
   syn lazy boolean Program.hasPackage(String packageName) {
     return isPackage(packageName);
   }
@@ -130,7 +130,7 @@ aspect LookupFullyQualifiedTypes {
   }
 }
 
-aspect TypeScopePropagation {
+public aspect TypeScopePropagation {
   inh TypeDecl Access.unknownType();
 
   syn lazy SimpleSet TypeAccess.decls() {

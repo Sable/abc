@@ -34,7 +34,7 @@ interface Variable {
   public Constant constant();
 }
 
-aspect Variables {
+public aspect Variables {
   
   VariableDeclaration implements Variable;
   // 4.5.3
@@ -106,7 +106,7 @@ aspect Variables {
 
 }
 
-aspect VariableDeclarationTransformation {
+public aspect VariableDeclarationTransformation {
   // FieldDecl with single VariableDecl -> FieldDeclaration
   rewrite FieldDecl {
     when(getNumVariableDecl() == 1)

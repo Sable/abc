@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
 
-aspect ExceptionHandling {
+public aspect ExceptionHandling {
 
   // exception types
   eq Program.getChild().typeException() = lookupType("java.lang", "Exception");

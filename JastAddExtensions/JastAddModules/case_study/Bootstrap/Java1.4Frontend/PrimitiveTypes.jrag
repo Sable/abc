@@ -8,7 +8,7 @@
  */
 module org.jastadd.java14frontend;
 
-aspect PrimitiveTypes {
+public aspect PrimitiveTypes {
   static final String ASTNode.PRIMITIVE_PACKAGE_NAME = "@primitive";
 
   private boolean Program.initPrimTypes = false;

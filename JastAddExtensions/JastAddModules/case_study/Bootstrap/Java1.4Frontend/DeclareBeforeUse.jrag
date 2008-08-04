@@ -10,7 +10,7 @@ module org.jastadd.java14frontend;
 
 import java.util.*;
 
-aspect DeclareBeforeUse {
+public aspect DeclareBeforeUse {
   public int ASTNode.varChildIndex(Block b) {
     ASTNode node = this;
     while(node.getParent().getParent() != b) {

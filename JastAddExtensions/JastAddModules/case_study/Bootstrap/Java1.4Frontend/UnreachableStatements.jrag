@@ -10,7 +10,7 @@ module org.jastadd.java14frontend;
 
 import java.util.Iterator;
 
-aspect UnreachableStatements {
+public aspect UnreachableStatements {
 
   void ASTNode.checkUnreachableStmt() {
   }

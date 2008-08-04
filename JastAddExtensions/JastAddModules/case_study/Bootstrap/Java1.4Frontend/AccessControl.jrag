@@ -10,7 +10,7 @@ module org.jastadd.java14frontend;
 
 import java.util.HashSet;
 
-aspect AccessControl {
+public aspect AccessControl {
   // 6.6 Access Control
   
   syn lazy boolean ArrayDecl.accessibleFrom(TypeDecl type) = elementType().accessibleFrom(type);

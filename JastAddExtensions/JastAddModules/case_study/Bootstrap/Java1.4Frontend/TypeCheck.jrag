@@ -9,7 +9,7 @@
 module org.jastadd.java14frontend;
 
 
-aspect TypeCheck {
+public aspect TypeCheck {
   public void ASTNode.typeCheck() {
   }
   

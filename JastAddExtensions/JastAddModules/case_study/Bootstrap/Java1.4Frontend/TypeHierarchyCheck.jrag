@@ -11,7 +11,7 @@ module org.jastadd.java14frontend;
 import java.util.Iterator;
 import java.util.HashSet;
 
-aspect TypeHierarchyCheck {
+public aspect TypeHierarchyCheck {
   inh String Expr.methodHost();
   eq TypeDecl.getBodyDecl().methodHost() = typeName();
   eq AbstractDot.getRight().methodHost() = getLeft().type().typeName();

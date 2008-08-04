@@ -12,7 +12,7 @@ import jastadd$framework::List;
 import java.util.*;
 import java.util.ArrayList;
 
-aspect ConstructScope {
+public aspect ConstructScope {
   inh Collection ConstructorAccess.lookupConstructor();
   eq Program.getChild().lookupConstructor() = Collections.EMPTY_LIST;
   eq TypeDecl.getBodyDecl().lookupConstructor() = constructors();
@@ -86,7 +86,7 @@ aspect ConstructScope {
   inh ConstructorDecl ClassInstanceExpr.unknownConstructor();
 }
 
-aspect ConstructorLookup {
+public aspect ConstructorLookup {
   public ConstructorDecl TypeDecl.lookupConstructor(ConstructorDecl signature) {
     for(Iterator iter = constructors().iterator(); iter.hasNext(); ) {
       ConstructorDecl decl = (ConstructorDecl)iter.next();
@@ -127,7 +127,7 @@ aspect ConstructorLookup {
   
 }
 
-aspect ConstructorDeclSignature {
+public aspect ConstructorDeclSignature {
   syn lazy String ConstructorDecl.name() = getID();
   // 8.8.2
   syn lazy String ConstructorDecl.signature() {
@@ -175,7 +175,7 @@ aspect ConstructorDeclSignature {
     return true;
   }
 }
-aspect ImplicitConstructor {
+public aspect ImplicitConstructor {
   syn lazy boolean ClassDecl.noConstructor() {
     for(int i = 0; i < getNumBodyDecl(); i++)
       if(getBodyDecl(i) instanceof ConstructorDecl)

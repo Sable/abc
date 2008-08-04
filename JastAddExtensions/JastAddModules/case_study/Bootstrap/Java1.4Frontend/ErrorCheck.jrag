@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ArrayList;
 
-aspect ErrorCheck {
+public aspect ErrorCheck {
 
   String ASTNode.sourceFile() {
     ASTNode node = this;

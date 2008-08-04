@@ -11,7 +11,7 @@ module org.jastadd.java14frontend;
 import java.util.*;
 import java.util.ArrayList;
 
-aspect LookupMethod {
+public aspect LookupMethod {
   inh MethodDecl MethodDecl.unknownMethod();
   inh MethodDecl MethodAccess.unknownMethod();
   
@@ -122,7 +122,7 @@ aspect LookupMethod {
   }
 }
 
-aspect MethodDeclSignature {
+public aspect MethodDeclSignature {
   syn String MethodDecl.name() = getID();
 
   // 8.4.2
@@ -190,7 +190,7 @@ aspect MethodDeclSignature {
      hostType().instanceOf(m.hostType()) && m.signature().equals(signature());
 }
 
-aspect MemberMethods {
+public aspect MemberMethods {
   syn Collection TypeDecl.memberMethods(String name) {
     Collection c = (Collection)methodsNameMap().get(name);
     if(c != null) return c;
@@ -356,7 +356,7 @@ aspect MemberMethods {
   }
 }
 
-aspect AncestorMethods {
+public aspect AncestorMethods {
   // methods with the same signature declared in ancestors
   // this is used when checking correct overriding, hiding, and implementation of abstract methods
   syn lazy SimpleSet TypeDecl.ancestorMethods(String signature) = SimpleSet.emptySet;

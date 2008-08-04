@@ -8,7 +8,7 @@
  */
 module org.jastadd.java14frontend;
 
-aspect NodeConstructors {
+public aspect NodeConstructors {
   public ParameterDeclaration.ParameterDeclaration(Access type, String name) {
     this(new Modifiers(new List()), type, name);
   }

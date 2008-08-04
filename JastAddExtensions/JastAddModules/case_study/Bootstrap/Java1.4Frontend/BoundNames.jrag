@@ -8,7 +8,7 @@
  */
 module org.jastadd.java14frontend;
 
-aspect BoundNames {
+public aspect BoundNames {
   public Access FieldDeclaration.createQualifiedBoundAccess() {
     if(isStatic())
       return hostType().createQualifiedAccess().qualifiesAccess(new BoundFieldAccess(this));

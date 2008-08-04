@@ -10,7 +10,7 @@ module org.jastadd.java14frontend;
 
 import java.util.Iterator;
 
-aspect PrettyPrint {
+public aspect PrettyPrint {
   // Helper for indentation
   
   static int ASTNode.indent = 0;

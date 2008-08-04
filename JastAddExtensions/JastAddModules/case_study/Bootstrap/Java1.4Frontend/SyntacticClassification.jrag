@@ -38,7 +38,7 @@ module org.jastadd.java14frontend;
       throw new Error("Can not reclassify ParseName node " + name);
     }
   }
-aspect SyntacticClassification {
+public aspect SyntacticClassification {
   // 6.5.1 Syntactic Classification of Name According to Context
 
   // Replace the parsed name with a name reclassified according to context

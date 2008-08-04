@@ -10,7 +10,7 @@ module org.jastadd.java14frontend;
 
 import java.util.*;
 
-aspect Names {
+public aspect Names {
   // simple names
   syn String ParseName.name() = getID();
   syn String PackageOrTypeAccess.name() = getID();
@@ -65,7 +65,7 @@ aspect Names {
   eq TypeAccess.typeName() = isQualified() ? (qualifier().typeName() + "." + name()) : nameWithPackage();
 }
 
-aspect TypeName {
+public aspect TypeName {
   syn String TypeDecl.name() = getID();
 
   syn lazy String TypeDecl.fullName() {
@@ -93,7 +93,7 @@ aspect TypeName {
   syn lazy String CompilationUnit.packageName() = getPackageDecl();
 }
 
-aspect CreateQualifiedAccesses {
+public aspect CreateQualifiedAccesses {
   public Access TypeDecl.createQualifiedAccess() {
     if(isLocalClass() || isAnonymous()) {
       return new TypeAccess(name());
