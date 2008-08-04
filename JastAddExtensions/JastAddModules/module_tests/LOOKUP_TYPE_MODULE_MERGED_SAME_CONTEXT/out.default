@@ -170,29 +170,29 @@ module m1.m2alias, base:m2, context:[m1], instantiated:true
 
 Module: jastadd$framework
 	jastadd$framework.ASTNode
-	jastadd$framework.Opt
 	jastadd$framework.List
+	jastadd$framework.Opt
 Module: m1
-	m1.A
 	m1.AType
+	m1.A
 Module: m3
 	m3.CType
 	m3.C
 Module: m2
-	m2.BType
 	m2.B
+	m2.BType
 Module: m1.m2alias$m3c
 	m1.m2alias$m3c.CType
 	m1.m2alias$m3c.C
 Module: m1.m2alias$m3d
-	m1.m2alias$m3d.CType
 	m1.m2alias$m3d.C
+	m1.m2alias$m3d.CType
 Module: m1.m2alias.m3alias
-	m1.m2alias.m3alias.CType
 	m1.m2alias.m3alias.C
+	m1.m2alias.m3alias.CType
 Module: m1.m2alias
-	m1.m2alias.B
 	m1.m2alias.BType
+	m1.m2alias.B
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, A.ast, A.java, m3.module, Main.java, m2.module, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m3.module, C.ast, C.java, m2.module, B.java, B.ast
