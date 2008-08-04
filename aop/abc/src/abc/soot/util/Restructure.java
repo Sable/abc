@@ -192,12 +192,12 @@ public class Restructure {
    *  with   L1:nop; return;    or   L1:nop; return(<local>);.
    *  Rewire all other returns in the body to assign to <local> and
    *  goto L1.   Return a reference to the nop at L1.
+   *  Note that this nop and the inserted return may be unreachable if the
+   *  original method never returns (i.e. always throws an exception).
    */
   public static Stmt restructureReturn(SootMethod method) {
 		Body b = method.getActiveBody();
-		//if (returns.containsKey(b)) {			
-		//	return ((Stmt) returns.get(b));
-		//}
+		
 		LocalGenerator localgen = new LocalGenerator(b);
 		
 		Chain units = b.getUnits(); // want a patching chain here, to make sure
@@ -205,23 +205,13 @@ public class Restructure {
 		Stmt last = (Stmt) units.getLast();
 		
 		Stmt endnop;// = Jimple.v().newNopStmt();
-		try { // preserve existing endnop
-			endnop=(NopStmt)units.getPredOf(last);
-			if (endnop==null)
-				throw new RuntimeException();
-		} catch(Throwable e) {
-			endnop=Jimple.v().newNopStmt();
-//			 insert the nop just before the return stmt
-			if (last instanceof ReturnStmt || last instanceof ReturnVoidStmt) {
-				units.insertBefore(endnop, units.getLast());
-			} else {
-				units.insertAfter(endnop, units.getLast());
-			}
-			if (!units.contains(endnop))
-				throw new InternalCompilerError("");
+		endnop=Jimple.v().newNopStmt();
+		// insert the nop just before the return stmt
+		if (last instanceof ReturnStmt || last instanceof ReturnVoidStmt) {
+			units.insertBefore(endnop, units.getLast());
+		} else {
+			units.insertAfter(endnop, units.getLast());
 		}
-		if (!units.contains(endnop))
-			throw new InternalCompilerError("");
 		
 		Local ret = null;
 		if (last instanceof ReturnStmt) {
