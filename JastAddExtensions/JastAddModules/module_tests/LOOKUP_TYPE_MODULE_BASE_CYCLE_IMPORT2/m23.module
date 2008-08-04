@@ -1,1 +1,2 @@
 module m23;
+export package *;

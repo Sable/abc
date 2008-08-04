@@ -1,1 +1,2 @@
 module m1 extends m2;
+export package *;

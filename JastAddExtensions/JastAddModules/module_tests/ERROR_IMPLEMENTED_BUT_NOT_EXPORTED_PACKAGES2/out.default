@@ -52,6 +52,7 @@ module m2, base:m2, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 as none null;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

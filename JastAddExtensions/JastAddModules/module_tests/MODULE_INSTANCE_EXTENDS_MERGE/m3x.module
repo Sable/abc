@@ -1,1 +1,2 @@
 module m3x extends m3;
+export package *;

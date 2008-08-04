@@ -6,3 +6,4 @@ import own M4 as M4AliasX;
 import own M4 as M4AliasY;
 merge M2::M4Alias2, M3::M4Alias3, M4 as M4Alias1;
 merge M4AliasX, M4AliasY as M4AliasZ;
+export package *;

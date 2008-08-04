@@ -1,1 +1,2 @@
 module m4 implements m4int;
+export package *;

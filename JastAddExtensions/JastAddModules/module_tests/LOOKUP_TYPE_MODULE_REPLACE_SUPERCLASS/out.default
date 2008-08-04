@@ -63,6 +63,7 @@ module m1;
 import own m2 as none null;
 import own m2x as none null;
 replace m2 with m2x;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

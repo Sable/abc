@@ -42,6 +42,7 @@ module m2, base:m2, context:[], instantiated:false
 module m1;
 import own m2 as none null;
 merge m2, m2 as m2alias;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

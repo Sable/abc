@@ -3,3 +3,4 @@ import m2;
 import own m2 as m2own;
 
 replace m2own with m2;
+export package *;

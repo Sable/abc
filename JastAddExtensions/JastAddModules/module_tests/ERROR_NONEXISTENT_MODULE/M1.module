@@ -2,3 +2,4 @@ module M1;
 import own M2;
 import own M3;
 merge M2,NonExistentModule as MergedM2M3;
+export package *;

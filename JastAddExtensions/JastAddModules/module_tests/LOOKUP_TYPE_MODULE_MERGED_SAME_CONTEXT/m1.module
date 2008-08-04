@@ -3,3 +3,4 @@ import own m2 export as m2a;
 import own m2 export as m2b;
 
 merge m2a, m2b export as m2alias;
+export package *;

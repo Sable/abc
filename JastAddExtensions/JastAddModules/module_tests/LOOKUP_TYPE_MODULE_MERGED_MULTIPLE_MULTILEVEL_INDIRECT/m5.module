@@ -1,1 +1,2 @@
 module m5;
+export package *;

@@ -1,1 +1,2 @@
 module M3;
+export package *;

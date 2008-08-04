@@ -7,3 +7,4 @@ import own m3xxx export as m3xxx;
 merge m2a::m3, m3x export as m3;
 merge m3, m3xx export as m3xx;
 merge m2b::m3, m3xxx export as m3xxx;
+export package *;

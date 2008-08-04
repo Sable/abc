@@ -5,3 +5,4 @@ import own M4 export as PublicM4;
 import own M.N.O export as MNOPublic;
 merge M2, M3, M4 as MyMs;
 merge M2, M3, M4 export as MyMs;
+export package *;

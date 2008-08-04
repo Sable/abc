@@ -1,2 +1,3 @@
 module M2;
 import own M5 export as Alias;
+export package *;

@@ -3,3 +3,4 @@ import own m2 export as m2;
 import own m3 export as m3;
 import own m4;
 replace m2::m4 with m4;
+export package *;

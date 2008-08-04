@@ -1,1 +1,2 @@
 module M.N.O;
+export package *;

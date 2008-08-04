@@ -1,3 +1,4 @@
 module M1;
 import own M2;
 import NonExistent;
+export package *;

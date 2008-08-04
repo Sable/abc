@@ -4,3 +4,4 @@ import own m31 export as m31;
 import own m32 export as m32;
 
 merge m31::m33, m32::m33 export as m33alias;
+export package *;

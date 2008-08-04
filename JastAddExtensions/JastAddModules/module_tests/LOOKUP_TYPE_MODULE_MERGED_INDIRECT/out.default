@@ -94,6 +94,7 @@ module m1;
 import own m2 as none null;
 import own m5 as none null;
 merge m5, m2::m3::m5 as mergedalias;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

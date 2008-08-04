@@ -4,3 +4,4 @@ import own m3 export as m3b;
 import own m3 as m3c;
 import own m3 as m3d;
 merge m3a, m3b export as m3alias;
+export package *;

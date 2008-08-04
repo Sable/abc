@@ -2,3 +2,4 @@ module M1;
 import own M2;
 import own M3;
 import own M4;
+export package *;

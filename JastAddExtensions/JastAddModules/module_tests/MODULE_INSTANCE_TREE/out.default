@@ -104,6 +104,7 @@ module M1;
 import own M2 as none null;
 import own M3 as none null;
 import own M4 as none null;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

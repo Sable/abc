@@ -135,6 +135,7 @@ module m1;
 import own m2 export as m2;
 import own m2 as m2alias;
 import  m3 as none null;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
@@ -198,40 +199,40 @@ module m1$m2alias, base:m2, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework
-	jastadd$framework.ASTNode
 	jastadd$framework.Opt
 	jastadd$framework.List
+	jastadd$framework.ASTNode
 Module: m1
 	m1.$a.a.AAA
-	m1.A
 	m1.$a.AA
+	m1.A
 Module: m3
-	m3.$c.CC
 	m3.$c.cc.CCC
+	m3.$c.CC
 	m3.C
 Module: m2
-	m2.B
-	m2.$b.BB
 	m2.A
+	m2.$b.BB
 	m2.$b.bb.BBB
+	m2.B
 Module: m1.m2.m3
-	m1.m2.m3.$c.CC
-	m1.m2.m3.$c.cc.CCC
 	m1.m2.m3.C
+	m1.m2.m3.$c.cc.CCC
+	m1.m2.m3.$c.CC
 Module: m1.m2
-	m1.m2.B
 	m1.m2.$b.bb.BBB
-	m1.m2.A
 	m1.m2.$b.BB
+	m1.m2.A
+	m1.m2.B
 Module: m1$m2alias.m3
-	m1$m2alias.m3.C
 	m1$m2alias.m3.$c.CC
+	m1$m2alias.m3.C
 	m1$m2alias.m3.$c.cc.CCC
 Module: m1$m2alias
-	m1$m2alias.A
 	m1$m2alias.$b.bb.BBB
 	m1$m2alias.B
 	m1$m2alias.$b.BB
+	m1$m2alias.A
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, AA.java, AAA.java, A.java, m3.module, CC.java, CCC.java, C.java, Main.java, m2.module, m3.module, CC.java, CCC.java, C.java, m2.module, BB.java, B.java, m2/A.java, BBB.java, m3.module, CC.java, CCC.java, C.java, m2.module, BB.java, B.java, m2/A.java, BBB.java

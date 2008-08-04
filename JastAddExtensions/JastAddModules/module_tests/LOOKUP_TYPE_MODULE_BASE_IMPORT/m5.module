@@ -1,3 +1,4 @@
 module m5;
 
 import m6;
+export package *;

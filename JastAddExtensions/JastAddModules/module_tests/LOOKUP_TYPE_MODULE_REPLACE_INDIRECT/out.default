@@ -88,6 +88,7 @@ import own m4 as m4a;
 import own m4 as m4b;
 replace m2a::m4export, m3a::m4export with m4a;
 replace m2b::m4export, m3b::m4export with m4b;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

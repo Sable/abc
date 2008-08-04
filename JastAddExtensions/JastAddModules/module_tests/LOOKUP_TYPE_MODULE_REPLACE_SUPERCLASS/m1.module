@@ -4,3 +4,4 @@ import own m2;
 import own m2x;
 
 replace m2 with m2x;
+export package *;

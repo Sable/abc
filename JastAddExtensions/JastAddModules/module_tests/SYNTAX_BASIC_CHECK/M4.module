@@ -1,1 +1,2 @@
 module M4;
+export package *;

@@ -1,2 +1,3 @@
 module m1x extends m1;
 import own m2 export as m2alias1;
+export package *;

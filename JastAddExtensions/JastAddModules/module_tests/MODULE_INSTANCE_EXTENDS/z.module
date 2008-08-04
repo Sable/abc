@@ -1,3 +1,4 @@
 module z extends a;
 import own m3 export as m3alias;
 merge m3alias, m2alias1::m3, m2alias2::m3 export as m3alias3;
+export package *;

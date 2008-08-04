@@ -83,6 +83,7 @@ module M3, base:M3, context:[], instantiated:false
 module M1;
 import own M2 as none null;
 import own M3 export as M3Alias;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------

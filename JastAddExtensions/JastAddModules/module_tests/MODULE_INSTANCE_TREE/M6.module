@@ -1,1 +1,2 @@
 module M6;
+export package *;

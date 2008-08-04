@@ -1,1 +1,2 @@
 module m1 extends m1int;
+export package *;

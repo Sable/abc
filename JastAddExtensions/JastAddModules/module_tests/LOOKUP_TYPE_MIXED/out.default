@@ -90,6 +90,7 @@ module m2, base:m2, context:[], instantiated:false
 module m1;
 import  m2 as none null;
 import own m3 as none null;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
@@ -125,8 +126,8 @@ Module: m3
 	m3.C
 Module: jastadd$framework
 Module: m1
-	m1.A
 	m1.A2
+	m1.A
 Module: m2
 	m2.B
 Module: m1$m3

@@ -117,6 +117,7 @@ module m2, base:m2, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 export as m2;
+export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
@@ -157,15 +158,15 @@ module m1.m2, base:m2, context:[m1], instantiated:true
 Module: m3
 	m3.C
 Module: jastadd$framework
-	jastadd$framework.Opt
 	jastadd$framework.ASTNode
 	jastadd$framework.List
+	jastadd$framework.Opt
 Module: m1
-	m1.A5
 	m1.A3
-	m1.A
-	m1.A4
 	m1.A2
+	m1.A4
+	m1.A5
+	m1.A
 Module: m2
 	m2.B
 Module: m1.m2.m3

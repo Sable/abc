@@ -4,3 +4,4 @@ import own m11 export as m11;
 import own m12 export as m12;
 
 merge m11::m13, m12::m13 export as m13alias;
+export package *;

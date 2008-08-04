@@ -1,2 +1,3 @@
 module m4;
 import own m5 export as m5;
+export package *;
