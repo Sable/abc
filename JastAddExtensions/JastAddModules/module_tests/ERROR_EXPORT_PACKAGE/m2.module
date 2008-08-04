@@ -1,0 +1,4 @@
+module m2;
+
+export package expack1, expack2;
+//export package *;

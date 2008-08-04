@@ -1,0 +1,2 @@
+module m2x extends m2;
+export package pack2;
