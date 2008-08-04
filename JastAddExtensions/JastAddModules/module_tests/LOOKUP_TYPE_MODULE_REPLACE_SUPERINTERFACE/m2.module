@@ -1,0 +1,3 @@
+module m2;
+import own m3int export as m3a;
+import own m3intx export as m3b;

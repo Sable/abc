@@ -1,0 +1,6 @@
+module m1;
+import own m2;
+import own m3 as m3a;
+import own m3 as m3b;
+replace m2::m3a with m3a;
+replace m2::m3b with m3b;

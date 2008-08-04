@@ -1,0 +1,3 @@
+module_interface m2intx extends m2int;
+
+export package d.e.f;
