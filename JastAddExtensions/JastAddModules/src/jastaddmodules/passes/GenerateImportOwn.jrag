@@ -2,6 +2,10 @@
 //errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
 //the REWRITES
 
+//This code generates the module instances defined by the import, merge and
+//replace statements in the module files. The merge/replace code here is
+//the most crucial part of the entire system. Be careful when modifying it.
+
 //TODO: Try to refactor this to separate out the handling for merges and replaces
 
 
