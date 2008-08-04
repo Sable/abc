@@ -2,3 +2,5 @@ module org.jastadd.java14compiler;
 import own org.jastadd.java14frontend export as frontend;
 import net.sourceforge.beaver;
 import de.jflex;
+
+export package *;

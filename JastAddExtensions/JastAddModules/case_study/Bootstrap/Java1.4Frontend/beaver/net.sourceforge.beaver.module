@@ -1,1 +1,2 @@
 module net.sourceforge.beaver;
+export package *;
