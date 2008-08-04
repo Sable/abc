@@ -1,0 +1,10 @@
+module m1;
+import own m2 export as m2a;
+import own m2 export as m2b;
+import own m3 export as m3a;
+import own m3 export as m3b;
+import own m4 as m4a;
+import own m4 as m4b;
+
+replace m2a::m4export, m3a::m4export with m4a;
+replace m2b::m4export, m3b::m4export with m4b;
