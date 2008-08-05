@@ -175,4 +175,13 @@ aspect ModuleCompilationUnit {
 			getHostProgram().getCompilationUnitList().removeChild(index);
 		}
 	}
+	
+	//for synthetic CUs created by overrides
+	protected boolean ModuleCompilationUnit.synthetic = false;
+	protected boolean ModuleCompilationUnit.isSynthetic() {
+		return this.synthetic;
+	}
+	protected void ModuleCompilationUnit.setSynthetic(boolean b) {
+		this.synthetic = b;
+	}
 }
