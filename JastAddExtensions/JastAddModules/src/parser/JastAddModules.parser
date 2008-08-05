@@ -26,8 +26,7 @@ CompilationUnit compilation_unit =
     	ret.setModuleDecl(md); 
     	ret.addChild(md); //TODO: this is broken due to hardcoded numChildren for astnodes, find a way to make a moduledecl a packagedecl
 		return ret;
-	:}
-	;
+	:};
 
 //add moduleaccess
 CompilationUnit ast_file =
@@ -63,14 +62,14 @@ ModuleAccess ja_module_access =
 	:};
 	
 ModuleDecl ja_module_decl =
-	MODULE ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl SEMICOLON
+	MODULE ja_module_access.ma ja_module_decl_extends_opt.extends_opt ja_module_decl_implements.impl ja_module_decl_overrides.over SEMICOLON
 	{:
-		return new ModuleDecl(ma, extends_opt, impl);
+		return new ModuleDecl(ma, extends_opt, impl, over);
 	:}
 	|
 	MODULE_INTERFACE ja_module_access.ma ja_module_decl_extends_opt.extends_opt SEMICOLON
 	{:
-		return new InterfaceModuleDecl(ma, extends_opt, new List());
+		return new InterfaceModuleDecl(ma, extends_opt, new List(), new List());
 	:};
 
 Opt ja_module_decl_extends_opt =
@@ -89,6 +88,16 @@ List ja_module_decl_implements =
 	:}
 	|
 	IMPLEMENTS module_access_list.l
+	{:
+		return l;
+	:};
+
+List ja_module_decl_overrides =
+	{:
+		return new List();
+	:}
+	|
+	OVERRIDES module_access_list.l
 	{:
 		return l;
 	:};

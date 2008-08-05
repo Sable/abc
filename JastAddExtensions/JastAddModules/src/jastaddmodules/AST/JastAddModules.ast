@@ -7,7 +7,7 @@ ModuleCompilationUnit : CompilationUnit ::=
 
 ModuleAccess : Access ::= <ID:String>;
 NullModuleAccess : ModuleAccess; //sentinel value, matches no module
-ModuleDecl ::= ModuleAccess [Extends:ModuleAccess] Implements:ModuleAccess*;
+ModuleDecl ::= ModuleAccess [Extends:ModuleAccess] Implements:ModuleAccess* Overrides:ModuleAccess*;
 InterfaceModuleDecl : ModuleDecl ::= ; //refactor to inherit from abstract module decl if time permits
 
 abstract ModuleMemberDecl;

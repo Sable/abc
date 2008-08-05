@@ -27,6 +27,13 @@ aspect CheckModuleInterfacePackageImplements {
 						packageName + 
 						" but is not present in module " + 
 						this.getModuleName());
+				} else if (!(getLocalPackageWithSuper(packageName).isExported())){
+					ma.error("Implemented module interface " + 
+						interfaceCU.getModuleName() + 
+						" exports package " + 
+						packageName + 
+						" but is not exported in module " + 
+						this.getModuleName());
 				}
 			}
 		}

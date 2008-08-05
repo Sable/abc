@@ -160,6 +160,7 @@ BinaryExponent = [pP] [+-]? {Digits}
   "module_interface" { return sym(Terminals.MODULE_INTERFACE); }
   "replace" { return sym(Terminals.REPLACE); }
   "with" {return sym(Terminals.WITH); }  
+  "overrides" {return sym(Terminals.OVERRIDES); }
 }
 
 
