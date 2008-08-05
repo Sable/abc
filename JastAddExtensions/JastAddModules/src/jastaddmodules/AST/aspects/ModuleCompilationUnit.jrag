@@ -27,6 +27,8 @@ aspect ModuleCompilationUnit {
 			cu.setFromSource(true);
 			cu.setRelativeName(name);
 			cu.setPathName(inFile.getAbsolutePath());
+			((ModuleCompilationUnit)cu).setBaseCU((ModuleCompilationUnit)cu); //set base to itself 
+			
 			addCompilationUnit(cu);
 		} catch (Exception e) {
 			throw new Error(e.getMessage());

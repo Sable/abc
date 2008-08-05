@@ -50,7 +50,6 @@ ModuleCompilationUnit jamodule_compilation_unit =
 	ja_module_decl.md ja_module_member_list.jml? 
 	{:
 		ModuleCompilationUnit ret = new ModuleCompilationUnit("", new List(), new List(), md, jml, new List());
-		ret.setBaseCU(ret); //set base to itself 
 		return ret;
 	:};
 

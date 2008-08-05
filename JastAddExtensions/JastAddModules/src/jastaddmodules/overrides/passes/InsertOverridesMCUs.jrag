@@ -39,6 +39,11 @@ aspect InsertOverrideMCUs {
 					new List(),
 					new List()
 					);
+			newMCU.setFromSource(true);
+			newMCU.setRelativeName("synthetic " + access.getID());
+			newMCU.setPathName(".");
+			newMCU.setBaseCU(newMCU);
+					
 			newMCU.setSynthetic(true);
 			ret.add(newMCU);
 		}
