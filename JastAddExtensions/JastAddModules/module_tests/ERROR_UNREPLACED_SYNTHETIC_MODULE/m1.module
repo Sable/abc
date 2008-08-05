@@ -1,0 +1,4 @@
+module m1;
+import own msynthetic;
+import own m2;
+import own m2replace;
