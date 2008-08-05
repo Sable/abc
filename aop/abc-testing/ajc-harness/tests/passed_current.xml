@@ -23,10 +23,6 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
-<ajc-test title="make sure new weaves work inside of packages" num="13" keywords="from-base" dir="base/test106">
-        <compile files="Driver.java,pkg/Obj.java"></compile>
-        <run class="Driver"></run>
-    </ajc-test>
 <ajc-test title="make sure new weaves work inside of packages (again)" num="14" keywords="from-base" dir="base/test107">
         <compile files="Driver.java,C1.java,C2.java,pack1/Foo.java,pack2/Foo.java,pack3/Foo.java"></compile>
         <run class="Driver"></run>
@@ -3092,10 +3088,6 @@
             <message line="71" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="multi-dispatch implemented through around + args" pr="632" num="566" keywords="from-resolved_10x" dir="new">
-        <compile files="MultiDispatchCp.java"></compile>
-        <run class="MultiDispatchCp"></run>
-    </ajc-test>
 <ajc-test title="unrecognized aspect should not net Cloneable and Serializable warnings" num="567" keywords="from-resolved_10x" dir="new">
         <compile files="UnrecognizedAspectCE.java">
             <message line="3" kind="error"></message>
@@ -3259,10 +3251,6 @@
 <ajc-test title="around all execution with double assignment in initializer (simple)" pr="687" num="594" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundDoubleAssignment.java"></compile>
         <run class="AroundDoubleAssignment"></run>
-    </ajc-test>
-<ajc-test title="around all execution with double assignment in initializer (coverage)" pr="687" num="595" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
-        <compile files="AroundDoubleAssignmentC.java"></compile>
-        <run class="AroundDoubleAssignmentC"></run>
     </ajc-test>
 <ajc-test title="changing this in around's proceed reported by Rich Price" num="596" keywords="from-resolved_104" dir="new">
         <compile options="-1.4" files="AroundChangeThis.java"></compile>
@@ -4013,10 +4001,6 @@
             <message text="adviceExecution() &amp;&amp; within(A)" line="72" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
-        <compile files="CflowCycles.java"></compile>
-        <run class="CflowCycles"></run>
-    </ajc-test>
 <ajc-test title="incompatible advice throws clause are a compile-time error" num="763" keywords="from-resolved_10x" dir="new" abccomment="we don't report the advice positions too">
         <compile files="AdviceThrowsCf.java">
             <ajcmessage line="13" kind="error"></ajcmessage>
@@ -4114,20 +4098,6 @@
 <ajc-test title="Inconsistant stack height with around" pr="29665" num="783" dir="bugs">
         <compile files="StackError.java"></compile>
         <run class="StackError"></run>
-    </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" pr="36056" num="78401" dir="abctests/bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-                <ajcmessage line="102" kind="warning"></ajcmessage>
-        	<ajcmessage line="124" kind="warning"></ajcmessage>
-        	<ajcmessage line="138" kind="warning"></ajcmessage>
-		<message line="102" kind="warning"></message>
-        	<message line="124" kind="warning"></message>
-        </compile>
-        <run class="cap.OptionList"></run>
-    </ajc-test>
-<ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
-        <compile files="TryFinallyInAround.java"></compile>
-        <run class="TryFinallyInAround"></run>
     </ajc-test>
 <ajc-test title="advise join points in subclass of empty interface" pr="36778" num="786" dir="new">
         <compile files="EmptyInterface.java"></compile>
@@ -5323,10 +5293,6 @@
     </ajc-test>
 <ajc-test title="double declare parents" num="1002" dir="abctests/bugs/doubledeclareparents">
          <compile files="A.java"></compile>
-    </ajc-test>
-<ajc-test title="interaction of around and after returning at execution shadow" num="1003" dir="abctests/bugs">
-         <compile files="AroundAR.java"></compile>
-         <run class="AroundAR"></run>
     </ajc-test>
 <ajc-test title="around with initialization" num="1004" dir="abctests/around/initialization">
          <compile files="Foo.java"></compile>
