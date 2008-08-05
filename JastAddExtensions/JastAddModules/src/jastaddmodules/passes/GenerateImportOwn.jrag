@@ -252,7 +252,9 @@ aspect GenerateImportOwn {
 			}
 			
 			//if not type compatible
-			if (!cu.isInterfaceOf(replaceCU) && !replaceCU.hasSuperModule(cu)) {
+			if (!cu.isInterfaceOf(replaceCU) && 
+				!replaceCU.hasSuperModule(cu) &&
+				!replaceCU.overridesModule(cu)) {
 				String msg = "Incompatible modules in replace: " + replaceCU.getBaseCU().getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);

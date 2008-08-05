@@ -94,6 +94,9 @@ public class JastAddModules extends JastAdd {
 				program.collectPackageInfo();
 				program.insertPackageInfoModuleDecl();
 				
+				//create synthetic MCUs from overrides
+				program.insertOverrideMCUs();
+				
 				// first error pass (does not depend on the MCUs being above the CUs
 				program.checkModuleErrorsPass1();
 				

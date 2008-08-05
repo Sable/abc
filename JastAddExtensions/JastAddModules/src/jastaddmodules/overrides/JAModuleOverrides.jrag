@@ -1,0 +1,17 @@
+
+aspect JAModuleOverrides {
+	public boolean ModuleCompilationUnit.overridesModule(ModuleCompilationUnit mcu) {
+		ModuleCompilationUnit currMCU = this.getBaseCU();
+		while (currMCU != null) {
+			for (ModuleAccess access : currMCU.getModuleDecl().getOverridesList()) {
+				ModuleCompilationUnit overrideMCU = currMCU.getHostProgram().lookupModuleCUNoTransform(access);
+				assert (overrideMCU != null) : "Override MCUs should have been created by now";
+				if (mcu.getBaseCU().hasSuperModule(overrideMCU)) {
+					return true;
+				}
+			}
+			currMCU = currMCU.getSuperModuleCUNoTransform();
+		}
+		return false;
+	}
+}

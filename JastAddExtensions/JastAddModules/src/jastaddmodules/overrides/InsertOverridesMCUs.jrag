@@ -1,0 +1,47 @@
+
+aspect InsertOverrideMCUs {
+	public void Program.insertOverrideMCUs() {
+		//use a hashmap to weed out modules with duplicate names 
+		HashMap<String, ModuleCompilationUnit> collectedMCUs = 
+				new HashMap<String, ModuleCompilationUnit>();
+		  
+		for (Iterator<CompilationUnit> cuIterator = getCompilationUnitList().iterator();
+				cuIterator.hasNext();) {
+			CompilationUnit cu = cuIterator.next();
+			if (!(cu instanceof ModuleCompilationUnit)) {
+				continue;
+			}
+			ModuleCompilationUnit mcu = (ModuleCompilationUnit) cu; 
+			Set<ModuleCompilationUnit> newMCUs = mcu.createOverrideMCUs();
+			for (ModuleCompilationUnit currMCU : newMCUs) {
+				collectedMCUs.put(currMCU.getModuleName(), currMCU);
+			} 
+		}
+		for (ModuleCompilationUnit mcu : collectedMCUs.values()) {
+			getCompilationUnitList().add(mcu);
+		}
+	}
+	
+	public Set<ModuleCompilationUnit> ModuleCompilationUnit.createOverrideMCUs() {
+		Set<ModuleCompilationUnit> ret = new HashSet<ModuleCompilationUnit>();
+		for (ModuleAccess access : getModuleDecl().getOverridesList()) {
+			if (getHostProgram().lookupModuleCUNoTransform(access) != null) {
+				continue;
+			}
+			ModuleCompilationUnit newMCU = new ModuleCompilationUnit(
+					"", //packagedecl
+					new List(), //imports
+					new List(), //types
+					new ModuleDecl(new ModuleAccess(access.getID()),
+						new Opt(),
+						new List(),
+						new List()),
+					new List(),
+					new List()
+					);
+			newMCU.setSynthetic(true);
+			ret.add(newMCU);
+		}
+		return ret;
+	}
+}
