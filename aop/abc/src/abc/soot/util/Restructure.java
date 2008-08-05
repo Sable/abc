@@ -204,14 +204,22 @@ public class Restructure {
 		// gotos are rewired to go to the inserted nop
 		Stmt last = (Stmt) units.getLast();
 		
-		Stmt endnop;// = Jimple.v().newNopStmt();
-		endnop=Jimple.v().newNopStmt();
-		// insert the nop just before the return stmt
-		if (last instanceof ReturnStmt || last instanceof ReturnVoidStmt) {
-			units.insertBefore(endnop, units.getLast());
+		Stmt endnop;
+		// preserve existing endnop; otherwise the around-weaver will break :-(
+		if((last instanceof ReturnStmt || last instanceof ReturnVoidStmt)
+				&& units.getPredOf(last) instanceof NopStmt) {
+			endnop = (Stmt) units.getPredOf(last);
 		} else {
-			units.insertAfter(endnop, units.getLast());
+			endnop=Jimple.v().newNopStmt();
+			// insert the nop just before the return stmt
+			if (last instanceof ReturnStmt || last instanceof ReturnVoidStmt) {
+				units.insertBefore(endnop, units.getLast());
+			} else {
+				units.insertAfter(endnop, units.getLast());
+			}
 		}
+		if (!units.contains(endnop))
+			throw new InternalCompilerError("");
 		
 		Local ret = null;
 		if (last instanceof ReturnStmt) {
