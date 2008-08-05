@@ -64,7 +64,7 @@ module: m1, file: m1.module, base module: m1
 module: m2, file: m2.module, base module: m2
 	B.java package:m2.$d.e.f
 module: m1$m2, file: m2.module, base module: m2
-	B.java package:m1$m2.$d.e.f
+	B.java package:m1$m2$$d.e.f
 
 ----------Module CU imports after import own----------
 module m2intx, base:m2intx, context:[], instantiated:false
@@ -77,6 +77,10 @@ module m2, base:m2, context:[], instantiated:false
 module m1$m2, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 m2.module:1,22:
+  Semantic Error: Implemented module interface m2intx exports package d.e.f but is not exported in module m2
+m2.module:1,22:
   Semantic Error: Implemented module interface m2intx exports package a.b.c but is not present in module m2
+m2.module:1,22:
+  Semantic Error: Implemented module interface m2intx exports package d.e.f but is not exported in module m2
 m2.module:1,22:
   Semantic Error: Implemented module interface m2intx exports package a.b.c but is not present in module m2

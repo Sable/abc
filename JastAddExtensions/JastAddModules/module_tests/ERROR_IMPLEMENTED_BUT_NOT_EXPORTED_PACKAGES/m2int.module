@@ -1,3 +1,4 @@
 module_interface m2int;
 
 export package a.b.c;
+export package d.e.f;
