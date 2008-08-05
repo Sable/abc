@@ -1,0 +1,4 @@
+module m3 overrides m2, msynthetic;
+import own m4 export as m4;
+
+export package b;

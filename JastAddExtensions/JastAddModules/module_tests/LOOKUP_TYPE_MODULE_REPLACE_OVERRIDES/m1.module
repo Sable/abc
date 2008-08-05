@@ -1,0 +1,8 @@
+module m1;
+import own m2;
+import own m2 as m2other;
+import own msynthetic;
+import own m3;
+replace m2, msynthetic with m3;
+
+export package *;
