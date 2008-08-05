@@ -103,8 +103,9 @@ aspect GenerateImportOwn {
 			ModuleCompilationUnit currImport = null; 
 			currImport = getHostProgram().lookupModuleCUNoTransform(importDecl.getImportModule());
 			if (currImport == null) {
-				importDecl.getImportModule().error("Unable to find module: " + importDecl.getImportModule().getID());
-				throw new jastadd.UnrecoverableSemanticError("Unable to find module: " + importDecl.getImportModule().getID());
+				String msg = "Unable to find module: " + importDecl.getImportModule().getID();
+				importDecl.getImportModule().error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
 			
 			boolean instantiated = false;
@@ -129,6 +130,12 @@ aspect GenerateImportOwn {
 				instanceCU.setBaseCU(currImport.getBaseCU());
 				currImport = instanceCU;
 			} else {
+				//check if a synthetic static instance
+				if (currImport.isSynthetic()) {
+					String msg = "Unable to find module: " + importDecl.getImportModule().getID();
+					importDecl.getImportModule().error(msg);
+					throw new jastadd.UnrecoverableSemanticError(msg);
+				}
 				//generate from a null context
 				currImport = currImport.generateImportOwn(null);
 				currImport.setSourceStatement(importDecl); 

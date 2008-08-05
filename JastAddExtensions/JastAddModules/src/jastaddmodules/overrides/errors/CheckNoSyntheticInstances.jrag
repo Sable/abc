@@ -1,0 +1,19 @@
+
+aspect CheckNoSyntheticInstances {
+	public void ASTNode.checkNoSyntheticInstances() {}
+	public void ModuleCompilationUnit.checkNoSyntheticInstances() {
+		if (isSynthetic() && isInstance()) {
+			String contextString = "";
+			boolean first = true;
+			for (ModuleCompilationUnit mcu : getInstanceContext()) {
+				if (!first) { 
+					contextString += ", ";
+				}
+				contextString += mcu.getBaseCU().getModuleName();
+				first = false;	
+			}
+			String msg = "Synthetic module " + getBaseCU().getModuleName() + " used in modules " + contextString + " was not replaced with a non-interface module.";
+			getModuleDecl().error(msg);
+		}
+	}
+}
