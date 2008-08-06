@@ -1,9 +1,5 @@
 <suite xmlns:ns="http://www.comlab.ox.ac.uk/abc" xmlns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="make sure new weaves work inside of packages" num="13" keywords="from-base" dir="base/test106">
-        <compile files="Driver.java,pkg/Obj.java"></compile>
-        <run class="Driver"></run>
-    </ajc-test>
-<ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
+ <ajc-test title="handle multiple nested inner classes" num="53" keywords="from-java" dir="new" abccomment="can't find constructor for                     javax.swing.JComponent.AccessibleJComponent()                   - works with javac                   - works with soot from class file                   - does not work with j2j                   - does not work with jlc, reported to Nate June 30/04 LJH                   FIXED July 1/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="InnerHell.java"></compile>
         <run class="InnerHell"></run>
@@ -43,14 +39,6 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="multi-dispatch implemented through around + args" pr="632" num="566" keywords="from-resolved_10x" dir="new">
-        <compile files="MultiDispatchCp.java"></compile>
-        <run class="MultiDispatchCp"></run>
-    </ajc-test>
-<ajc-test title="around all execution with double assignment in initializer (coverage)" pr="687" num="595" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
-        <compile files="AroundDoubleAssignmentC.java"></compile>
-        <run class="AroundDoubleAssignmentC"></run>
-    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
@@ -66,10 +54,6 @@
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
-        <compile files="CflowCycles.java"></compile>
-        <run class="CflowCycles"></run>
-    </ajc-test>
 <ajc-test title="illegal name binding in around cflow" pr="660" num="769" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="ajc doesn't report errors either and then breaks at runtime,                   just like we do">
         <compile files="ArgsInCflowCf.java">
             <message line="19" kind="error"></message>
@@ -80,20 +64,6 @@
 <ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 772, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
-    </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" pr="36056" num="78401" dir="abctests/bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-                <ajcmessage line="102" kind="warning"></ajcmessage>
-        	<ajcmessage line="124" kind="warning"></ajcmessage>
-        	<ajcmessage line="138" kind="warning"></ajcmessage>
-		<message line="102" kind="warning"></message>
-        	<message line="124" kind="warning"></message>
-        </compile>
-        <run class="cap.OptionList"></run>
-    </ajc-test>
-<ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
-        <compile files="TryFinallyInAround.java"></compile>
-        <run class="TryFinallyInAround"></run>
     </ajc-test>
 <ajc-test title="declare warnings on binary ajc 1.1 classes" pr="37023" num="795" dir="new/binaryWarnings/src" abccomment="we fail because of an off-by one error on the handler line number info">
         <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
@@ -149,10 +119,6 @@
     </ajc-test>
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
-    </ajc-test>
-<ajc-test title="interaction of around and after returning at execution shadow" num="1003" dir="abctests/bugs">
-         <compile files="AroundAR.java"></compile>
-         <run class="AroundAR"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
