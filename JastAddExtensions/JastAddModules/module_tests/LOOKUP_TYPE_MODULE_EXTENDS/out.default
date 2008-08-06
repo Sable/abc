@@ -232,11 +232,11 @@ Module: m3xx
 	m3xx.CXX
 	m3xx.$pack.CXX
 Module: m3x
-	m3x.CX
 	m3x.$pack.CX
+	m3x.CX
 Module: m3
-	m3.$pack.C
 	m3.C
+	m3.$pack.C
 Module: m2
 	m2.B
 Module: m1$m2a
@@ -244,23 +244,23 @@ Module: m1$m2a
 Module: m1.m2b
 	m1.m2b.B
 Module: m1.m3xx$super$m3x
-	m1.m3xx$super$m3x.CX
 	m1.m3xx$super$m3x.$pack.CX
+	m1.m3xx$super$m3x.CX
 Module: m1.m3xx$super$m3
-	m1.m3xx$super$m3.$pack.C
 	m1.m3xx$super$m3.C
+	m1.m3xx$super$m3.$pack.C
 Module: m1.m3xx
-	m1.m3xx.CXX
 	m1.m3xx.$pack.CXX
+	m1.m3xx.CXX
 Module: m1.m3xxx$super$m3xx
 	m1.m3xxx$super$m3xx.$pack.CXX
 	m1.m3xxx$super$m3xx.CXX
 Module: m1.m3xxx$super$m3x
-	m1.m3xxx$super$m3x.$pack.CX
 	m1.m3xxx$super$m3x.CX
+	m1.m3xxx$super$m3x.$pack.CX
 Module: m1.m3xxx$super$m3
-	m1.m3xxx$super$m3.C
 	m1.m3xxx$super$m3.$pack.C
+	m1.m3xxx$super$m3.C
 Module: m1.m3xxx
 	m1.m3xxx.CXXX
 	m1.m3xxx.$pack.CXXX

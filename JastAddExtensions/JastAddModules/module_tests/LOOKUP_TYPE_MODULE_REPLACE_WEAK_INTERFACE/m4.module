@@ -1,0 +1,2 @@
+module m4;
+export package d, dd;

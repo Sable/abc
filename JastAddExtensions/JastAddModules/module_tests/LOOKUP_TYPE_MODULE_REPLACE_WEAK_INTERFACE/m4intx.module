@@ -1,0 +1,2 @@
+weak_module_interface m4intx extends m4int;
+export package dd;

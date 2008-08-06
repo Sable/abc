@@ -1,0 +1,3 @@
+module m3;
+import own m4intx export as m4;
+export package *;

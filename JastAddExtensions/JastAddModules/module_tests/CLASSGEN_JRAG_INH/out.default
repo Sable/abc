@@ -182,16 +182,16 @@ module m1.m3, base:m3, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework
-	jastadd$framework.ASTNode
-	jastadd$framework.Opt
 	jastadd$framework.List
+	jastadd$framework.Opt
+	jastadd$framework.ASTNode
 Module: m1
-	m1.AAspect
-	m1.AType
-	m1.AType3
-	m1.AType2
-	m1.AType4
 	m1.A
+	m1.AType
+	m1.AAspect
+	m1.AType2
+	m1.AType3
+	m1.AType4
 Module: m3
 	m3.CAspect
 	m3.CType
@@ -199,11 +199,11 @@ Module: m2
 	m2.BType
 	m2.BAspect
 Module: m1.m2
-	m1.m2.BType
 	m1.m2.BAspect
+	m1.m2.BType
 Module: m1.m3
-	m1.m3.CType
 	m1.m3.CAspect
+	m1.m3.CType
 
 ----------CU iterator----------
 ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/List.java, ../testlib/ASTNode.java, m1.module, A.jrag, A.ast, A.ast, A.ast, A.ast, A.java, m3.module, Main.java, m2.module, m2.module, B.jrag, B.ast, m3.module, C.ast, C.jrag

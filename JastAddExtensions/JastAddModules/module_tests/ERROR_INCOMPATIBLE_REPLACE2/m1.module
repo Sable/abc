@@ -1,0 +1,8 @@
+module m1;
+import own m2;
+import own m3;
+import own m4int;
+import own m4wint;
+
+replace m4wint with m3; //error
+export package *;

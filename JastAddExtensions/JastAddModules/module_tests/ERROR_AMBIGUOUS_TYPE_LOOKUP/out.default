@@ -83,23 +83,23 @@ Module: jastadd$framework
 Module: m1
 	m1.A
 Module: m2
-	m2.B
 	m2.$pack.BB
+	m2.B
 Module: m1$alias1
-	m1$alias1.$pack.BB
 	m1$alias1.B
+	m1$alias1.$pack.BB
 Module: m1$alias2
-	m1$alias2.B
 	m1$alias2.$pack.BB
+	m1$alias2.B
 
 ----------CU iterator----------
 jastadd$framework.module, m1.module, A.java, m2.module, m2.module, BB.java, B.java, m2.module, BB.java, B.java
 Errors:
 A.java:4,2:
-  Semantic Error: several types named B: m1$alias2.B m1$alias1.B
+  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
 A.java:4,12:
-  Semantic Error: several types named B: m1$alias2.B m1$alias1.B
+  Semantic Error: several types named B: m1$alias1.B m1$alias2.B
 A.java:5,2:
-  Semantic Error: several types named BB: m1$alias1.$pack.BB m1$alias2.$pack.BB
+  Semantic Error: several types named BB: m1$alias2.$pack.BB m1$alias1.$pack.BB
 A.java:5,19:
-  Semantic Error: several types named BB: m1$alias1.$pack.BB m1$alias2.$pack.BB
+  Semantic Error: several types named BB: m1$alias2.$pack.BB m1$alias1.$pack.BB
