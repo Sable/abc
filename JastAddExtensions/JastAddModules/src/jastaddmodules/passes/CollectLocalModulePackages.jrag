@@ -1,15 +1,17 @@
 import jastaddmodules.*;
 aspect CollectLocalModulePackages {
-	public void Program.collectLocalModulePackages() {
+	//TODO: return type is just so that I can use syn lazy on the MCU method
+	public Object Program.collectLocalModulePackages() {
 		List<CompilationUnit> cuList = getCompilationUnitList();
 		for (CompilationUnit cu : cuList) {
 			cu.collectLocalModulePackages();
 		}
+		return null;
 	}
-	public void ModuleCompilationUnit.collectLocalModulePackages() {
+	syn lazy Object ModuleCompilationUnit.collectLocalModulePackages() {
 		//if superinstance, skip
 		if (isSuperInstance()) {
-			return;
+			return null;
 		}
 
 		//collect packages from member cus and supers
@@ -62,14 +64,16 @@ aspect CollectLocalModulePackages {
 			}
 			currMCU = currMCU.getSuperInstance();
 		}
+		return null;
 	}
-	public void CompilationUnit.collectLocalModulePackages() {
+	public Object CompilationUnit.collectLocalModulePackages() {
 		ModuleCompilationUnit mcu = getModuleCompilationUnit();
 		if (mcu != null) {
 			if (mcu.getLocalPackage(moduleLocalPackageName()) == null) {
 				mcu.addLocalPackage(moduleLocalPackageName(), new LocalModulePackage(false));
 			}
 		}
+		return null;
 	}
 	
 	//map needed to refine AccessControl.TypeDecl.accessibleFromPackage

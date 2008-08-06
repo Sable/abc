@@ -69,6 +69,11 @@ ModuleDecl ja_module_decl =
 	MODULE_INTERFACE ja_module_access.ma ja_module_decl_extends_opt.extends_opt SEMICOLON
 	{:
 		return new InterfaceModuleDecl(ma, extends_opt, new List(), new List());
+	:}
+	|
+	WEAK_MODULE_INTERFACE ja_module_access.ma ja_module_decl_extends_opt.extends_opt SEMICOLON
+	{:
+		return new WeakInterfaceModuleDecl(ma, extends_opt, new List(), new List());
 	:};
 
 Opt ja_module_decl_extends_opt =

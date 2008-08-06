@@ -3,10 +3,18 @@ aspect ModuleInterface {
 		return getModuleDecl() instanceof InterfaceModuleDecl;
 	}
 	
+	public boolean ModuleCompilationUnit.isWeakModuleInterface() {
+		return getModuleDecl() instanceof WeakInterfaceModuleDecl;
+	}
+	
 	public boolean ModuleCompilationUnit.isInterfaceOf(ModuleCompilationUnit mcu) {
 		//self test
 		if (this.getBaseCU() == mcu.getBaseCU()) {
 			return true;
+		}
+		//if not an interface, return false
+		if (!(this.isModuleInterface())) {
+			return false;
 		}
 		
 		//implements test (add super test later)
@@ -16,6 +24,19 @@ aspect ModuleInterface {
 				return true;
 			}
 		}
+		
+		//check the signatures for weak interfaces
+		if (isWeakModuleInterface()) {
+			mcu.collectLocalModulePackages(); //collect first so that it makes sense
+			for (String packageName : getBaseCU().getExportedPackages()) {
+				if (mcu.getLocalPackageWithSuper(packageName) == null ||
+						mcu.getLocalPackageWithSuper(packageName).isExported() == false) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		return false;
 	}
 }

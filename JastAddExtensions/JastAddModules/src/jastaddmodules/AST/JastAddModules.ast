@@ -9,6 +9,7 @@ ModuleAccess : Access ::= <ID:String>;
 NullModuleAccess : ModuleAccess; //sentinel value, matches no module
 ModuleDecl ::= ModuleAccess [Extends:ModuleAccess] Implements:ModuleAccess* Overrides:ModuleAccess*;
 InterfaceModuleDecl : ModuleDecl ::= ; //refactor to inherit from abstract module decl if time permits
+WeakInterfaceModuleDecl : InterfaceModuleDecl ::=;
 
 abstract ModuleMemberDecl;
 ModuleImportDecl : ModuleMemberDecl ::= 
