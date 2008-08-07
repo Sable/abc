@@ -121,6 +121,13 @@
           id="org.jastadd.plugin.jastadd.debugger.attributes.visualization.AttributeVisualizationView"
           name="Attribute Visualization View">
     </view>
+    <view
+		class = "org.jastadd.plugin.jastadd.Explorer"
+		id = "org.jastadd.plugin.jastadd.Explorer"
+		icon = "icons/eview16/package.gif"
+		category="org.eclipse.ui.jastadd.debug"		
+		name = "JastAdd Explorer">
+	</view>
  </extension>
  <extension
        point="org.eclipse.ui.popupMenus">
@@ -158,5 +165,22 @@
 		</action>
 	</editorContribution>
 	</extension>
+	
+	<!-- Core/JastAddJ Perspective -->
+   
+	<extension point = "org.eclipse.ui.perspectives">
+	<perspective
+		class = "org.jastadd.plugin.jastadd.Perspective"
+		id = "org.jastadd.plugin.jastadd.Perspective"
+		name = "JastAdd">
+		
+	</perspective>
+	</extension> 	
+	
+	<extension point="org.eclipse.ui.perspectiveExtensions">
+    	<perspectiveExtension targetID = "org.jastadd.plugin.jastadd.Perspective">
+    		<showInPart id = "org.jastadd.plugin.jastadd.Explorer"/>
+    	</perspectiveExtension>
+    </extension>   
 	
 </plugin>

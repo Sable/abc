@@ -174,7 +174,8 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			}
 			}
 
-			return resourceContentProvider.getChildren(element);
+			Object[] children = resourceContentProvider.getChildren(element);
+			return filter(children);
 		}
 
 		public boolean hasChildren(Object element) {
@@ -453,6 +454,32 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			openFile(file);
 		} else
 			super.handleOpen(event);
+	}
+	
+	protected String[] filterNames = {".project"};
+	
+	protected boolean shouldBeFiltered(String resourceName) {	
+		for (int i = 0; i < filterNames.length; i++) {
+			if (resourceName.equals(filterNames[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected Object[] filter(Object[] children) {
+		ArrayList childList = new ArrayList();
+		for (int i = 0; i < children.length; i++) {
+			if (children[i] instanceof IResource) {
+				IResource res = (IResource)children[i];
+				if (!shouldBeFiltered(res.getName())) {
+					childList.add(res);
+				}
+			} else {
+				childList.add(children[i]);
+			}
+		}
+		return childList.toArray();
 	}
 
 	private void openFile(IFile file) {

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
@@ -124,5 +123,16 @@ public class JastAddJExplorer extends JastAddBaseExplorer implements
 	}
 
 	private class MyProblemLabelDecorator extends BaseProblemLabelDecorator {
+	}
+	
+	protected String[] filterNames = {"bin"};
+	
+	protected boolean shouldBeFiltered(String resourceName) {	
+		for (int i = 0; i < filterNames.length; i++) {
+			if (resourceName.equals(filterNames[i])) {
+				return true;
+			}
+		}
+		return super.shouldBeFiltered(resourceName);
 	}
 }
