@@ -1178,4 +1178,40 @@ public class JastAddJModel extends JastAddModel {
 		}
 		
 	}
+
+	public Collection recoverCompletion(int documentOffset, StringBuffer buf,
+			IProject project, String fileName, IJastAddNode node) {
+		synchronized (node.treeLockObject()) {
+			if (node == null) {
+				// Try recovery
+				SOF sof = getRecoveryLexer().parse(buf);
+				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+				Recovery.doRecovery(sof);
+				buf = Recovery.prettyPrint(sof);
+				documentOffset += recoveryNode.getInterval().getPushOffset();			
+				node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if (node == null) {
+					System.out.println("Structural recovery failed");
+					return new ArrayList();
+				}
+			}
+			if (node instanceof Access) {
+				Access n = (Access) node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion("");
+			} else if (node instanceof ASTNode) {
+				ASTNode n = (ASTNode) node;
+				System.out.println("Manual recovery");
+				Expr newNode = new MethodAccess("X", new AST.List());
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof Access)
+					n = ((Access) n).lastAccess();
+				return n.completion("");
+			}
+			return new ArrayList();
+		}
+	}
 }

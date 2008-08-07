@@ -25,7 +25,7 @@ import org.jastadd.plugin.model.JastAddModelProvider;
 import org.jastadd.plugin.model.JastAddModel.FileInfo;
 
 public class JastAddJCompletionProcessor implements IContentAssistProcessor {
-
+	
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		return computeCompletionProposals(viewer.getDocument(), documentOffset);
 	}
@@ -34,6 +34,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		try {
 			Collection proposals = new ArrayList();
 			String content = document.get();
+			// Activated with a completion character
 			String[] linePart = extractLineParts(content, documentOffset); // pos 0 - name, pos 1 - filter
 			if(linePart != null) {
 				proposals = computeProposal(documentOffset, linePart, document, content);
@@ -46,7 +47,6 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 				}
 				return result;
 			}
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -82,6 +82,26 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 			}			
 		}
 	
+		return new ArrayList();
+	}
+	
+	private Collection computeProposal(int documentOffset, IDocument document, String content)  
+			throws BadLocationException, IOException, Exception, CoreException {
+		
+		StringBuffer buf = new StringBuffer(content);
+
+		JastAddModel model = JastAddModelProvider.getModel(document);
+		if (model != null) {
+			FileInfo fileInfo = model.documentToFileInfo(document);
+			if(fileInfo != null) {
+				IProject project = fileInfo.getProject();
+				String fileName = fileInfo.getPath().toOSString();
+				IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if(model instanceof JastAddJModel)
+					return ((JastAddJModel)model).recoverCompletion(documentOffset, buf, project, fileName, node);
+			}			
+		}
+
 		return new ArrayList();
 	}
 
@@ -121,6 +141,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		while (offset < endOffset && offset < incomingOffset
 				&& !Character.isJavaIdentifierStart(s.charAt(offset + 1)))
 			offset++;
+		
 		return offset;
 	}
 
@@ -131,7 +152,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 	 *            The string to look in
 	 * @param offset
 	 *            the current offset
-	 * @return The offset left of the last pair or -1 of somethings wrong
+	 * @return The offset left of the last pair or -1 of some things wrong
 	 */
 	private int extractParanBracketPairs(String s, int offset) {
 		Stack<Character> stack = new Stack<Character>();

@@ -142,9 +142,14 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 	}
 	*/
 
+	private IContentAssistProcessor completionProcessor;
+	
 	@Override
 	public IContentAssistProcessor getCompletionProcessor() {
-		return new JastAddJCompletionProcessor();
+		if (completionProcessor == null) {
+			completionProcessor = new JastAddJCompletionProcessor();
+		}
+		return completionProcessor;
 	}
 
 	@Override
@@ -192,11 +197,11 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		installSourceCommand("org.jastadd.plugin.jastaddj.refactor.Rename",
 				"Rename", "JastAddJ Rename", "Shift+Alt+R",
 				new RenameRefactoringHandler());
-		
+		/*
 		installSourceCommand("org.jastadd.plugin.jastaddj.completion",
 				"Completion", "JastAddJ Completion", "Ctrl+Space", 
 				new CompletionHandler());
-		
+		*/
 		
 	}
 
