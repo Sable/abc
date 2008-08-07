@@ -52,6 +52,7 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.jastaddj.model.JastAddJModel.ProgramInfo;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -307,7 +308,11 @@ public class Model extends JastAddJModel {
 	
 	@Override
 	protected void completeBuild(IProject project, IProgressMonitor monitor) {
-		
+		ProgramInfo info = getProgramInfo(project);
+		if (info != null && info.hasChaged()) {
+			
+		    // Only build if there was a change
+	
 		// Build a new project from saved files only.
 		try {
 			try {
@@ -391,6 +396,8 @@ public class Model extends JastAddJModel {
 								cu.getTypeDecl(i).generateClassfile();
 							}
 							if (monitor.isCanceled()) {
+								// Remove class files before return
+								removeAllGeneratedClassFiles(project, buildConfiguration, monitor);
 								return;
 							}
 							subMonitor.worked(1);
@@ -398,6 +405,7 @@ public class Model extends JastAddJModel {
 					}
 				}
 				subMonitor.done();
+				info.clearChanges();
 				}
 			} catch (CoreException e) {
 				addErrorMarker(project, "Build failed because: "
@@ -409,6 +417,10 @@ public class Model extends JastAddJModel {
 			logError(e, "Build failed!");
 		} finally {
 			monitor.done();
+		}
+		
+		} else {
+			// Avoiding build because there was no change
 		}
 	}
 	

@@ -161,21 +161,20 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			IContainer sourceRoot = findSourceRoot(resource);
 			if (sourceRoot != null) {
 				if (resource instanceof IContainer) {
-					return getSourceRootItemChildren(resource, sourceRoot);
+					return filter(getSourceRootItemChildren(resource, sourceRoot));
 				} else if (resource instanceof IFile) {
 					IFile file = (IFile) resource;
 					JastAddModel model = JastAddModelProvider.getModel(file);
 					if (model != null) {
 						/* More synchronization here? */
 						IJastAddNode node = model.getTreeRoot(model.buildFileInfo(file));
-						return jastAddContentProvider.getChildren(node);
+						return filter(jastAddContentProvider.getChildren(node));
 					}
 				}
 			}
 			}
 
-			Object[] children = resourceContentProvider.getChildren(element);
-			return filter(children);
+			return filter(resourceContentProvider.getChildren(element));
 		}
 
 		public boolean hasChildren(Object element) {

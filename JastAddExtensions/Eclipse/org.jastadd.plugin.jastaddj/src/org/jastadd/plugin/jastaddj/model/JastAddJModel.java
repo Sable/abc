@@ -15,6 +15,7 @@ import java.util.zip.ZipFile;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -284,10 +285,8 @@ public class JastAddJModel extends JastAddModel {
 	protected void completeBuild(IProject project, IProgressMonitor monitor) {
 		ProgramInfo info = getProgramInfo(project);
 		if (info != null && info.hasChaged()) {
-			info.clearChanges();
-		} else {
-			// Could avoid a rebuild here ..
-		}
+			
+		    // Only build if there was a change
 		
 		// Build a new project from saved files only.
 		try {
@@ -347,12 +346,15 @@ public class JastAddJModel extends JastAddModel {
 							unit.generateClassfile();
 						}
 						if (monitor.isCanceled()) {
+							// Remove class files before return
+							removeAllGeneratedClassFiles(project, buildConfiguration, monitor);
 							return;
 						}
 						subMonitor.worked(1);
 					}
 				}
 				subMonitor.done();
+				info.clearChanges();
 				// Use for the bootstrapped version of JastAdd
 				/*
 				 * if(build) { program.generateIntertypeDecls();
@@ -368,6 +370,21 @@ public class JastAddJModel extends JastAddModel {
 			logError(e, "Build failed!");
 		} finally {
 			monitor.done();
+		}
+		
+		} else {
+			// Could avoid a rebuild here ..
+		}
+	}
+
+	protected void removeAllGeneratedClassFiles(IProject project, 
+			JastAddJBuildConfiguration buildConfiguration, IProgressMonitor monitor) 
+	throws CoreException {
+		String outputPath = buildConfiguration.outputPath;
+		IFolder folder = project.getFolder(outputPath);
+		IResource[] members = folder.members();
+		for (int i = 0; i < members.length; i++) {
+			members[i].delete(true, monitor);
 		}
 	}
 

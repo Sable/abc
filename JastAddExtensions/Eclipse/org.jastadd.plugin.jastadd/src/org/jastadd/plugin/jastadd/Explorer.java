@@ -8,7 +8,10 @@ public class Explorer extends JastAddJExplorer {
 	
 	protected String[] filterNames = {"flex.xml", "parser.xml"};
 	
-	protected boolean shouldBeFiltered(String resourceName) {	
+	protected boolean shouldBeFiltered(String resourceName) {
+		if (resourceName.endsWith("~")) {
+			return true;
+		}
 		for (int i = 0; i < filterNames.length; i++) {
 			if (resourceName.equals(filterNames[i])) {
 				return true;

@@ -82,6 +82,17 @@ public abstract class JastAddModel {
 	public RuleBasedScanner getScanner(IFile file) {
 		return mapFileTypeToScanner.get(file.getFileExtension());
 	}
+	
+	public boolean hasErrors(IProject project) {
+		try {
+			IMarker[] errorMarkers = project.findMarkers(ERROR_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+			IMarker[] parseErrorMarkers = project.findMarkers(PARSE_ERROR_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+			return errorMarkers.length > 0 || errorMarkers.length > 0; 
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 
 	public FileInfo buildFileInfo(IEditorInput input) {
 		if (input instanceof FileEditorInput)

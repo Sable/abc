@@ -3,6 +3,7 @@ package org.jastadd.plugin.jastaddj.launcher;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IProject;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
 public class JastAddJLaunchableTester extends PropertyTester {

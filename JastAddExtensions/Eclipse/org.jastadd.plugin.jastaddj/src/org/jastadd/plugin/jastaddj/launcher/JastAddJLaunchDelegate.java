@@ -36,6 +36,12 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 		
 		buildConfiguration = model.readBuildConfiguration(project);
 
+		if (model != null && project != null && model.hasErrors(project)) {
+			// Show info 
+			System.out.println("Errors in project, cannot launch");
+			return;
+		}
+		
 		super.launch(configuration, mode, launch, monitor);
 	}
 	
@@ -43,6 +49,7 @@ public class JastAddJLaunchDelegate extends JavaLaunchDelegate {
 		if (!saveBeforeLaunch(configuration, mode, monitor)) {
 			return false;
 		}
+		
 		if (mode.equals(ILaunchManager.RUN_MODE) && configuration.supportsMode(ILaunchManager.DEBUG_MODE)) {
 			IBreakpoint[] breakpoints= getBreakpoints(configuration);
             if (breakpoints == null) {
