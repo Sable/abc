@@ -1,0 +1,88 @@
+
+%
+%  $Description: Author guidelines and sample document in LaTeX 2.09$ 
+%
+%  $Author: ienne $
+%  $Date: 1995/09/15 15:20:59 $
+%  $Revision: 1.4 $
+%
+
+\documentclass[times, letterpaper, 10pt,twocolumn]{article} 
+\usepackage{latex8}
+\usepackage{times}
+\usepackage{listings}
+\usepackage[dvips]{graphicx}
+\usepackage{url}
+\usepackage{cite}
+
+%\documentstyle[times,art10,twocolumn,latex8]{article}
+
+%------------------------------------------------------------------------- 
+% take the % away on next line to produce the final camera-ready version 
+\pagestyle{empty}
+
+%------------------------------------------------------------------------- 
+\begin{document}
+
+\title{Modules as Object-Oriented Types}
+
+\author{Neil Ongkingco\\
+Programming Tools Group\\ neil.ongkingco@gmail.com\\
+}
+
+\maketitle
+\thispagestyle{empty}
+
+\input{Text/Abstract}
+
+
+\lstset{numbers=left, columns=flexible, language=[AspectJ]Java, numberstyle=\tiny, frame=tb}
+\lstset{
+morekeywords={module,own,export,as,merge,{module_interface}, replace, with, {overrides}},
+frame=tb,
+numbers=left,
+captionpos=t,
+tabsize=4
+}
+
+%------------------------------------------------------------------------- 
+\Section{Introduction}
+\input{Text/Introduction}
+
+%------------------------------------------------------------------------- 
+\Section{Module Operations}
+\input{Text/ModuleOperations}
+
+\Section{Modules as Types}
+\input{Text/ModulesAsTypes}
+
+\Section{Modeling Current Operations}
+\input{Text/Modelling}
+
+%\Section{Case Study: JHotdraw}
+%\input{Text/CaseStudy}
+
+\Section{Implementation}
+\input{Text/Implementation}
+
+\Section{Implications}
+\input{Text/Implications}
+
+%------------------------------------------------------------------------ 
+\Section{Related work}
+\input{Text/Related}
+
+%\Section{Future work}
+%\input{Text/Future}
+
+%------------------------------------------------------------------------- 
+\SubSection{Conclusions}
+\input{Text/Conclusions}
+
+%------------------------------------------------------------------------- 
+\nocite{ex1,ex2}
+\bibliographystyle{latex8}
+\bibliography{latex8}
+
+\end{document}
+

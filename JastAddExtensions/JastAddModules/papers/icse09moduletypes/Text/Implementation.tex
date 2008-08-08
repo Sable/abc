@@ -1,0 +1,39 @@
+The type system just described has been implemented in a
+module-aware Java Compiler coded in JastAdd \cite{jastadd},
+an extensible aspect-oriented compiler framework. This forms
+only the compile-time component of the module system. However,
+we do not forsee any serious design faults that would preclude
+the implementation of a run-time system using classloaders.
+
+Module instantiation was implemented by mangling
+the package names of the member classes for each instance of 
+a module. An \texttt{import own} generated a name prefixed by 
+the importing instance's name, thereby ensuring the separation
+of the namespaces of different instances of the same module.
+The type lookups within the program were then pointed to the
+name-mangled versions of the class to which they should resolve.
+
+The implementation, as well as a few example programs, is available at : INSERT WEBSITE HERE.
+
+
+%Implemented as name mangling and changes to lookup.
+
+%\SubSection{Name mangling and lookup}
+
+%\SubSection{Subtyping and Shadowing}
+
+%\SubSection{Module Interfaces and Exports}
+
+%\SubSection{Limitations}
+
+%Needs all sources at compile time. But can be resolved once
+%classloader implementation is present.
+
+%Needs to be told which is the instance module. But this is
+%more a constraint added due to resource and time limitations.
+
+%\SubSection{Future Implementation as ClassLoader}
+
+%Mention possible issues with local module qualified imports. However,
+%these will probably be solved by OSGi's one class loader per 
+%bundle instance solution.

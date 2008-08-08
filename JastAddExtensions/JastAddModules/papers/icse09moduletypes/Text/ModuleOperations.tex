@@ -1,0 +1,82 @@
+There are several existing module systems that have been proposed or
+are in use for Java classes and in other similar languages. 
+Several \cite{javajars, OSGi4, netassemblies} have been in use in industry 
+applications for several years now, and common operations on modules
+can be derived from their usage.
+
+\SubSection{Classpath}
+
+In Java, the classpath provides the most basic level of module composition
+for applications. The classpath provides a list of libraries that are
+available during compilation or execution. Classes are looked up in the 
+classpath entries in the order they appear. This is fine as long as the sets 
+of classes that the entries provide are disjoint. However, if a class can 
+be found in multiple entires, java will always look up that class in the 
+first entry on the classpath, which may not be what the developer intends. 
+This is JAR hell, and the most common error caused by this is the loading 
+the incorrect class when there is more than one version of a library in the classpath.
+
+Java module systems have more or less been built as solutions to JAR hell. 
+OSGi \cite{OSGi4} bundles, JSR 277 \cite{JSR277} modules and .NET assemblies \cite{netassemblies}
+use constraints to make sure that the modules used by an application's class satisfy the 
+class' requirements. 
+
+However, the current solutions are still not perfect when there are still multiple
+types that satisfy a type reference even with the constraints holding. In the case
+of OSGi, this occurs as split packages \cite{iJAMComments}, when a package is both contained by
+two visible modules, modules that are not necessarily versions of each other
+and hence not limited by the version import constraints.
+
+\SubSection{Versioning}
+Adding versions as metadata to modules is the common solution to multiple
+versions of a class. OSGi bundles, the JSR 277 Java Module System
+proposal and .NET assemblies 
+have extensive mechanisms for allowing a module's client to specify the
+versions of a module that it supports.
+
+Higher number versions are mainly expected to be backward compatible. If this is not
+the case, the module provider's only resort is to note this in separate documentation,
+and rely on the module's clients to properly update their version constraints
+to reflect this information. The same applies for a module's features. A module's
+supported features are usually documented separately and are linked to the version
+of the module.
+
+\SubSection{Imports and Exports}
+
+The set of a module's imports and exports specify the packages (or types) that
+the module requires and that the module provides, respectively. This affects class
+visibility outside the module and is used to enhance information hiding. 
+
+The most basic form of export is the {\tt public} modifier in Java. Only
+public modified classes, methods or fields are available outside a java package.
+
+OSGi bundles and JSR 277 modules specify a set of package imports 
+and exports that specifies the modules required packages, and the set of packages 
+it makes available outside the module. They also both allow a module
+to explicitly import another bundle/module and its packages.
+
+The JSR 294\cite{JSR294} proposal introduces the {\tt module} modifier, that
+extends visibility to extend to the entire module, which spans multiple java
+packages.
+
+Component Nextgen \cite{componentnextgen} uses interfaces for modules, which
+specify a parameterized signature of classes that a module provides.
+
+\SubSection{Instantiation}
+With increasingly large and complex systems that involve a large number of components,
+each possibly requiring different versions of a common module,
+the ability to allow multiple versions of the same class to coexist become necessary.
+Indeed, a single module may require two versions of a another module because its
+components require different versions. This implies the creation of multiple instances 
+of a module in a repository from which the classes are to be loaded, and the ability
+for a module to load and distinguish multiple versions of that module in its code.
+
+iJAM \cite{iJAM} provides a module instantiation feature that allows a module to create
+separate instances of its imported modules. This was a solution for type lookup
+problems caused by the {\it parent-then-self} class loading scheme proposed for
+JSR 294.
+
+However, type lookup when there are multiple instances of the same module are still
+reliant of fixed lookup orders: {\it self-then-parent} for iJAM and the reverse for JSR 294.
+Real world applications require more flexibility than is provided by a single fixed
+lookup rule \cite{iJAMComments}.

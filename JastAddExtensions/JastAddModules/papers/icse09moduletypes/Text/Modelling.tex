@@ -1,0 +1,159 @@
+The type system just described is very flexible, and not only does it
+allow us to model current operations and constraints on modules, it also
+allows the expression of new constraints using the type system. The following
+sections go into more detail on how the type system can be used.
+
+\SubSection{Classpaths}
+
+A module's classpath is modeled by its module imports. Imports also have the advantage
+of allowing a choice in which class to load, and in causing an
+ambiguous type error  when more than one bundle offers
+a class instead of just loading (or failing to load) the wrong class at runtime.
+
+As mentioned previously, module-less classes are considered to be part 
+of the ``default module'', and its singleton instance is implicitly 
+imported by all modules. Completely module-less builds also work as before.
+
+Special lookups such as the bootclasspath and java.lang classes can be
+modeled as being members of special modules (bootmodule and javalib), 
+which are given preference during lookup (bootmodule first, then javalib,
+then everything else using the lookup rules for modules). Membership
+in these special modules will probably be implemented in a similar way to
+the OSGi \texttt{extends} feature.
+
+Split packages become less of an issue, as they can be detected at
+build time. Class space consistency (in OSGi) can now be violated,
+as long as ambiguous type references are resolved using module qualifiers.
+
+\SubSection{Versioning}
+
+Subtyping and overriding model versioning. It is already done
+implicitly by existing module systems: newer versions are subtypes (or override) of past versions
+as long as they are backward compatible.
+However, the type system allows additional constraints to be specified using
+types. Non-backward compatibility can be modeled as changing to a
+completely new subtype tree:
+
+\begin{lstlisting}[caption=Versioning Using Subtyping]
+//file appv1_1.module
+module appv1_1;
+
+//file appv1_2.module
+//version 1.2 is backward compatible to 1.1
+module appv1_2 extends appv1_1;
+
+//file appv2_0.module
+//but version 2 is no longer backward compatible
+module appv2_0; 
+
+//file appv2_1.module
+module appv2_1 extends appv2_0;
+\end{lstlisting}
+
+In this manner backward compatibility can now be expressed in 
+and checked by the type system, instead of just being written
+down in separate documentation.
+
+Overrides can be used in a similar manner. A module can be declared to only 
+override the previous versions to which it is backward compatible.
+
+In addition, extends allows patch releases that do not contain 
+the entire previous version's classes, as already demonstrated in
+the previous section.
+
+Interfaces can also be used to model version ranges, and even feature
+compatibility across versions. Versions that are in the same version 
+range or are feature compatible implement the same interface.
+
+\begin{lstlisting}[caption=Interfaces as Properties]
+//file appv1.module
+module appv1 implements 
+	appv1to2, 
+	supportsfeature1;
+...
+
+//file appv2.module
+module appv2 implements 
+	appv1to2, 
+	appv2to3, 
+	supportsfeature1;
+...
+
+//file appv3.module
+module appv3 implements 
+	appv2to3, 
+	appv3to4, 
+	supportsfeature1, 
+	supportsfeature2; //supports new feature
+...
+
+//file appv4.module
+module appv4 implements 
+	appv3to4, 
+	supportsfeature2; //no longer supports feature1
+...
+\end{lstlisting}
+
+In general, interfaces can be used as a tag for any arbitrary constraint, 
+in a similar manner that empty interfaces are used in Java to mark classes 
+that satisfy a certain property.
+
+It should be noted that extends, implements and overrides are all orthogonal,
+so a module can be a subtype of another module, override a set of modules and
+implement a set of interfaces. This allows a module author to reuse portions
+of the supertype module, specify certain properties that the module satisfies
+using module interfaces, and specify a set of modules it overrides (which may
+include its supertypes, even though a subtype already implicitly overrides
+its supertype).
+
+These extends, implements and overrides declarations do not have to be explicit.
+Common usage of existing module systems mostly already assume a that a 
+module is a subtype of another module of the same name if its version 
+number is higher. Existing module systems can generate these version-related types 
+internally, while still allowing explicit declarations for patch releases 
+using extends and using module interfaces for expressing non-version
+related constraints.
+
+As shown on the previous section, merge and replace can be used to 
+update references to old versions of a module with a newer version.
+In addition, it is now possible to make sure that modules use
+the exact same version of the module they import.
+
+\SubSection{Imports and Exports}
+
+Imports and exports are directly implemented by module imports and export package.
+OSGi's loose coupling using export and import packages can be simulated by
+the module system internally generating a weak interface that satisfies the import
+module specification, finding a visible module that matches that weak interface, and
+inserting an import module declaration in the module that contained the import package
+declaration.
+
+Module interfaces allow for looser module coupling, allowing for indirect 
+references to modules depending on their export package signature. The module private
+modifier allows for tighter information hiding.
+
+Packages, however, are still just class modifiers. A possibly useful addition to 
+\texttt{package-info.java} is the specification of required classes as annotations
+
+\begin{lstlisting}
+//file package-info.java
+package org.x.y.lib;
+
+@RequiredClass("Main");
+@RequiredClass("Parser");
+@RequiredClass("Scanner");
+\end{lstlisting}
+
+The annotations would cause an error in a build if one of the required classes were not
+found in the package. This would reduce the problems caused by split packages, and it should
+also be possible to use these in a manner similar to module interfaces to specify the kind
+of package that an application requires, without cluttering the already crowded module
+file specifications of current systems.
+
+\SubSection{Instantiation}
+
+Import own is derived directly from iJAM, and is improved with an explicit exporting 
+mechanism and a module lookup system using module qualifiers. Singleton module instances mirror
+OSGi singletons. The module qualifier in type references and
+imports allow fine grained selection of the class to load in contrast
+to fixed loading strategies. 

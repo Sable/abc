@@ -1,0 +1,48 @@
+Implement as a class loader. This will probably bring in a lot of issues related to
+lookup once the class is loaded. This (might) work if the JVM is modified to
+be aware of module qualifiers (fat chance, but who knows?).
+
+Currently, module references are dynamically typed. Their types change if they
+are merged or are replaced with other modules. See if static typing of the 
+references would make more sense, or would just be too restrictive.
+
+Explore looser merge that synthesizes a new module if there are no conflicts
+(but there are problems here due to possibility of introducing class lookup ambiguity
+on existing modules).
+
+Explore recursive merge that actually does merging instead of just creating a
+new instance. Will this break other modules?
+
+Weaken merge/replace inheritance. Allow a super() call and the option not to use it, 
+but guarantee that the signature of the module is not changed so as not to break
+the module's clients
+
+More operations on modules than merge and replace. What about global operations? (e.g.
+change all references to this module/module interface to point to this new module)
+
+Packages are still just class modifiers. Find a way to integrate packages in the type
+system itself. A possibly useful addition to \texttt{package-info.java} is the specification
+of required classes as annotations
+
+\begin{lstlisting}
+//file package-info.java
+package org.x.y.lib;
+
+@RequiredClass("Main");
+@RequiredClass("Parser");
+@RequiredClass("Scanner");
+\end{lstlisting}
+
+The annotations would cause an error in a build if one of the required classes were not
+found in the package. This would reduce the problems caused by split packages, and it should
+also be possible to use these in a manner similar to module interfaces to specify the kind
+of package that an application requires.
+
+The type system is almost a copy of every object-oriented type system. Find more
+operations/relations that are inspired by this similarity.
+
+Implement the module qualified names in reflection.
+
+Find ways to make the merge/replace (or even import) operations possible at run time.
+It would be great to replace an existing version of a module with a dynamically generated
+extended version at run time.

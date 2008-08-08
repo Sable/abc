@@ -1,0 +1,694 @@
+%------------------------------------------------------------------------- 
+
+As the previous section shows, while the problem of java modules have been
+well studied and multiple solutions exist for different aspects of the problem,
+there are still remaining issues such as ambiguous lookups, split packages and
+versioning constraints that remain. We propose that these can be solved by
+defining a type system on modules, which will model the current usage
+of modules while allowing for the expression of constraints and relations
+that were previously not possible.
+
+We now non-formally define a type system over collections of classes. 
+A module is a collection of classes, and we consider it to be the type of 
+the collection of classes that belong to it. We then proceed to define
+relations and operations on modules, and in a later section, show how
+these model current module usage.
+
+\SubSection{Declaration and Membership}
+
+Modules are defined in a {\tt .module} file that begins with a module
+declaration:
+
+\begin{lstlisting}
+//File org.x.y.mymodule.module
+module org.x.y.mymodule;
+\end{lstlisting}
+
+Module membership is declared using syntax that was proposed 
+for JSR 294 \cite{superpackageChange}. Membership of a compilation unit is 
+declared by adding a module declaration. If a package declaration is present, 
+the package name is used as the package name of the file within the module.
+
+\begin{lstlisting}
+//File C.java
+module org.x.y.mymodule;
+package org.x.y;
+public class C { ... }
+\end{lstlisting}
+
+Split packages (packages whose types belong to more than one module) cause hard to 
+find problems in current module systems\cite{iJAMComments}. To avoid this, 
+a way to specify package membership in a module allowed by declaring the module membership
+in the {\tt package-info.java} file of that package.
+
+\begin{lstlisting}
+//File package-info.java
+module org.x.y.mymodule;
+package org.x.y;
+\end{lstlisting}
+
+If the module membership specified in a compilation unit's {\tt package-info.java}
+file is in conflict with that specified in the file itself, the membership
+declared in the file takes precedence, but a warning is issued to flag a possibly
+split package.
+
+%------------------------------------------------------------------------- 
+\SubSection{Imports}
+
+For a module to be able to access any of another module's classes,
+it must first import an instance of that module. This way, imports form
+a hard constraint on the visibility of classes.
+
+There are two ways to import a module. The first is to import the singleton
+instance of the module. This is done in the following manner:
+
+\begin{lstlisting}
+//imports the singleton instance
+import org.x.y.othermodule;
+\end{lstlisting}
+
+Importing the singleton instance of a module allows you to share the classes
+of that module with other modules that also import it.
+
+Similar to iJAM \cite{iJAM}, a module may also import its \textbf{own} instance of
+a module. It is also allowed to rename that instance to allow for multiple
+instances of the same module to exist in the same context.
+
+\begin{lstlisting}
+//imports an own instance
+import own org.x.y.othermodule;
+//imports on own instance with an alias
+import own org.x.y.othermodule as myothermodule;
+\end{lstlisting}
+
+Unlike iJAM, renaming an instance does not implicitly allow other
+modules to access that instance. To allow access to other modules, the import
+must be exported:
+
+\begin{lstlisting}
+//imports an own instance, and makes it available to
+//other modules
+import own org.x.y.othermodule export as othermodule;
+\end{lstlisting}
+
+The visibility of the module instances become important for module
+qualified name lookups and the merge and replace operations described in later
+sections.
+
+\SubSection{Exported packages and the Module Modifier}
+
+We allow exported packages similar to {\tt export-package} in OSGi bundles. Unlike OSGi, however,
+exporting a package does not automatically allow other modules to gain
+access to these packages. A module A must first import another module B
+before gaining access to B's exported packages.
+
+Exported packages are declared in the {\tt .module} file:
+
+\begin{lstlisting}
+module org.x.y.mymodule;
+//allow other modules access to these packages
+export package org.x.y.parser, org.x.y.lexer;
+\end{lstlisting}
+
+You may also export all the packages that belong to a module by using
+the * wildcard. This is the only way to export classes that belong to
+the default package in a module.
+
+\begin{lstlisting}
+module org.x.y.mymodule;
+//export all packages
+export package *;
+\end{lstlisting}
+
+We also allow the \textbf{module} access modifier proposed for JSR294 \cite{JSR294}
+which applies to classes, fields and methods. Module private access only allows
+accesses from classes that belong to the same module.
+
+\begin{lstlisting}
+module class C {
+	public void publicMethod() {...};
+	module void moduleMethod() {...};
+}
+\end{lstlisting}
+
+\SubSection{Module Qualified Type References}
+
+Type references can now be qualified with module names to resolve ambiguous accesses.
+In this example, we have a module {\tt myapplication} importing 
+two instances of module {\tt xmlparser},
+which contains the class {\tt xmlparser.Parser}. 
+A class {\tt }C in {\tt myapplication} can then choose from which 
+instance of {\tt xmlparser} to load the class:
+
+\begin{lstlisting}[caption=Module Qualified Type References,numbers=left]
+//File myapplication.module
+module myapplication;
+//import two instances of xmlparser
+import own xmlparser as parser1; 
+import own xmlparser as parser2;
+
+//File xmlparser.module
+module xmlparser;
+export package xmlparser;
+
+//File XMLParser.java
+//Classes in this file belong to module .xmlparser
+module xmlparser; 
+package xmlparser;
+public class XMLParser{...}
+
+//File C.java
+//Classes in this file belong to module .myapplication
+module myapplication; 
+public class C{
+	//This resolves to the class in the first instance
+	parser1::xmlparser.XMLParser p;
+	
+	//This resolves to the class in the second instance
+	parser2::xmlparser.XMLParser p2;
+		
+	//ambiguous type error 
+	xmlparser.Parser p3 = xmlparser.Parser(); //error
+}
+\end{lstlisting}
+
+Module qualified names are also supported in import declarations,
+and can reference exported modules from indirectly imported modules.
+
+\begin{lstlisting}[caption=Module Qualified Imports,numbers=left]
+//file org.x.y.parserapplication.module
+module org.x.y.parserapplication;
+import own parser;
+
+//file org.x.y.parser.module
+module org.x.y.parser;
+import own org.x.y.scanner export as scanner;
+export package org.x.y.parser;
+
+//file org.x.y.scanner.module
+module org.x.y.scanner;
+export package org.x.y.scanner;
+
+//file Parser.java
+module parser;
+package org.x.y.parser;
+public class Parser{...}
+
+//file Scanner.java
+module scanner;
+package org.x.y.scanner;
+public class Scanner{...}
+
+//file ParserApplication.java
+module parserapplication;
+package org.x.y.parserapplication;
+
+//single type import
+import parser::org.x.y.parser.Parser;
+//on demand import
+import parser::scanner::org.x.y.scanner.*;
+
+public class ParserApplication {
+	//uses the Parser class from module parser
+	Parser p = new Parser(); 
+	//uses the Scanner class from module scanner
+	Scanner s = new Scanner(); 
+	...
+}
+
+\end{lstlisting}
+
+Types and packages from directly imported modules do not need to
+be module qualified. In the example above, one could have used
+\begin{lstlisting}
+import org.x.y.parser.Parser;
+\end{lstlisting}
+on line 29.
+
+Types that do not belong to a module are considered to be members of
+the ``default'' module. This module has a blank name, and its singleton
+instance is implicitly imported by all modules. So, a module-less
+type {\tt javax.swing.Action} can be accessed in this way:
+
+\begin{lstlisting}[caption=Default Module Lookups]
+module somemodule;
+//import from the default module
+import ::javax.swing.Action;
+class MyClass {
+	Action a = new Action();
+}
+\end{lstlisting}
+
+It is not strictly necessary to always module qualify accesses to types in
+the default module, as long as there are no packages in the current module
+or its imported modules that have the same package and type name. However,
+if these do exist, it is necessary to use the module qualified name to access
+these classes to avoid an ambiguous type error.
+
+%------------------------------------------------------------------------ 
+\SubSection{Subtyping}
+
+We now define a subtyping relation on the module type. A module is declared
+to be the subtype of another module by using the \textbf{extends} keyword:
+
+\begin{lstlisting}
+module org.x.y.parserV1_2 
+	extends org.x.y.parserV1_1;
+\end{lstlisting}
+
+A subtype module inherits all the import declarations and export package declarations 
+of its parent module, and can add some more of its own. It also inherits the member 
+compilation units (and the types therein) of its supertype.
+
+If a subtype module contains a type with the identical package and type name
+to another type which is a member of its supertype module, 
+this shadows the type in the supertype module for all type references that
+originate from the subtype module, and any other modules that import an
+instance of the subtype module.
+
+The following example demonstrates module subtyping and shadowing. The module
+{\tt parserv1\_1} contains the type {\tt parser.Parser}, and imports
+the module {\tt scanner} which contains {\tt scanner.Scanner}. The module
+{\tt parserv1\_2} then extends {\tt parserv1\_1}, while having its
+own version of {\tt parser.Parser} and adding a new class {\tt parser.XMLParser}.
+
+\begin{lstlisting}[caption=Module Subtyping]
+//file parserV1_1.module
+module parserV1_1;
+import own scanner export as scanner;
+//say there is a class Parser in this package
+export package parser;
+
+//file parserV1_2.module
+module parserV1_2;
+//say that ParserV1_2 has its own version of 
+//parser.Parser, and an additional class
+//parser.XMLParser
+
+//file scanner.module
+module scanner;
+//say there is a class Scanner in this package
+export package scanner;
+
+//file MainV11.java
+module parserV1_1;
+import parser.Parser;
+import scanner.Scanner;
+public class MainV11 {
+	//this references the v1_1 parser
+	Parser p = new Parser(); 
+	Scanner s = new Scanner();
+	...
+}
+
+//file MainV12.java
+module parserV1_2;
+import parser.Parser;
+import scanner.Scanner;
+public class MainV12 {
+	//this references the v1_2 parser
+	Parser p = new Parser(); 
+	//this references the inherited Scanner class
+	Scanner s = new Scanner();
+	...
+}
+
+//file multiversion.module
+module multiversion;
+import own parserV1_1 as parserV1_1;
+import own parserV1_2 as parserV1_2;
+
+//file MultiversionMain.java
+module multiversion;
+public class Main {
+	//this references the v1_1 parser
+	parserV1_1::parser.Parser p1 = 
+		new parserV1_1::parser.Parser();
+	//this references the v1_2 parser
+	parserV1_2::parser.Parser p2 =
+		new parserV1_2::parser.Parser();
+}
+\end{lstlisting}
+
+%------------------------------------------------------------------------- 
+\SubSection{Merge}
+
+It is often necessary to ensure that the exported modules of a set of modules
+that you import point to the same module instance, to ensure that these
+modules are able to share types. As an example, say you have two database
+backend modules {\tt mysqlbackend} and {\tt postgresbackend} with a method
+{\tt ResultSet runQuery()}. Further suppose that {\tt ResultSet} is
+defined in another module {\tt sqltypes}, which is \textbf{own} imported by both backends.
+In order for the return types of both backends to be type compatible, the
+reference to {\tt sqltypes} in both backends must also point to the same
+instance.
+
+To ensure that the {\tt sqltypes} instances in both {\tt mysqlbackend}
+and {\tt postgresbackend} point to the same instance, we use the 
+\textbf{merge} operation. Merge operations take a set of merge targets,
+and an alias to refer to the merged module:
+
+\begin{lstlisting}
+merge m1,m2,m3 [export] as alias;
+\end{lstlisting}
+
+The merge operation requires that the types
+of the modules being merged be the same or that one is an ancestor of
+the other in the subtyping relation (i.e. they are all on the same subtype path). 
+It then creates a new instance
+of the most general type that is still compatible with the types of the
+modules being merged, and then points those module references to the new 
+merged module. The old module instances are discarded, unless there
+are other references to them that are not part of the merge.
+
+\begin{lstlisting}[caption=Merge]
+//file mysqlbackend.module
+module mysqlbackend;
+import own sqltypes export as sqltypes;
+//say query has a class MySQLQuery
+export package query;
+
+//file postgresbackend.module
+module postgresbackend;
+import own sqltypes export as sqltypes;
+//say query has a class PostgresQuery
+export package query;
+
+//file sqltypes.module
+module sqltypes;
+//say that sqltypes contains types.ResultSet
+export package types;
+
+//file myapplication.module
+module myapplication;
+import own mysqlbackend;
+import own postgresbackend;
+//merge the sqltypes
+merge 
+	mysqlbackend.sqltypes, 
+	postgresbackend.sqltypes 
+export as sqltypes;
+
+//file Main.java
+module myapplication;
+import mysqlbackend::query.MySQLQuery;
+import postgresbackend::query.PostgresQuery;
+import types.ResultSet;
+public class Main {
+	void someMethod(){
+		ResultSet s = null;
+		//this would not be possible if the sqltypes
+		//module instances are different
+		if (mysql) {
+			s = new MySQLQuery(...).query();
+		} else if (postgres) {
+			s = new PostgresQuery(...).query();
+		}
+		...
+	}
+}
+\end{lstlisting}
+
+
+It must also be noted that the merged instance is a direct import of
+the module where the merge was declared and, as the example above shows,
+can be re-exported. This means that types in the merged module {\tt sqltypes} 
+can be accessed in {\tt myapplication} without the need to use module 
+qualifiers unless the type reference is ambiguous. As the example above
+shows, {\tt ResultSet} was imported without a module qualifier in
+{\tt Main.java}.
+
+Merges are also implicitly inherited by subtype modules. The merge sequence for
+a module is given by the list of merge sequences of a module's supertypes, starting
+from the farthest ancestor. There is no way to exclude a supertype's merges, as
+this may reduce the module signature (the set of module references available) of
+the supertype module, which could lead to both internal and external clients of
+the module breaking.
+
+\SubSection{Overrides}
+
+Subtyping allows extension or patching of a module without actually
+rebuilding a completely new module. However, it does have the disadvantage
+of being dependent on the existence of its supertype modules. To get
+around this limitation, we define the \textbf{overrides} relation to allow
+a module to completely replace another module. A module is declared
+to override another using the \textbf{overrides} keyword:
+
+\begin{lstlisting}
+module parserV2 
+	overrides parserV1_1, parserV1_2;
+\end{lstlisting}
+
+Unlike subtyping, an overriding module does not inherit anything from the
+modules it overrides. However, it \textit{must} provide the same exported modules
+and packages as its overridden modules to satisfy the external 
+clients of these modules.
+
+As is expected, override is inherited by subtype modules. This allows a subtype
+of an overriding module to override the same modules as its supertype.
+
+Declaring an overriding module does not automatically change over all references
+to the overridden module to use the overriding module. This is done using the
+\textbf{replace} operation discussed below.
+
+\SubSection{Replace}
+
+While merges can be used to re-bind module references, they are only applicable 
+for modules that are subtypes of each other. As overriding modules are not
+necessarily subtypes of the modules they override, we introduce the \textbf{replace} operation
+to substitute overriding modules for overridden modules. The replace operation
+takes a set of target module references to rebind, and the module reference pointing to the 
+instance to which the targets are to be bound:
+
+\begin{lstlisting}
+replace m1,m2,m3 with m4;
+\end{lstlisting}
+
+The replace operation
+changes the binding of module references to point to an existing
+module instance. A module may replace another if its type is the same or a subtype
+of that module, or if its type overrides that of the other.
+
+Continuing the parser example given in the subtyping section above, say we have two 
+modules, {\tt staticanalyzer} and {\tt javadocgenerator}, each using {\tt parserv1\_1}
+and {\tt parserv1\_2} respectively. We now wish to create a new module that uses these, 
+but updates them to {\tt parserv2}, which overrides both {\tt parserv1\_1} and {\tt parserv1\_2}.
+
+\begin{lstlisting}[caption=Module Replace]
+//file staticanalyzer.module
+module staticanalyzer;
+import own parserv1_1 export as parser;
+...
+
+//file javadocgenerator.module
+module javadocgenerator;
+import own parserv1_2 export as parser;
+...
+
+//file parserv2.module
+module parserv2 
+	overrides parserv1_1, parserv1_2;
+...
+
+//file myapplication.module
+module myapplication;
+import own staticanalyzer;
+import own javadocgenerator;
+import own parserv2;
+
+replace 
+	staticanalyzer::parser,
+	javadocgenerator::parser
+	with parserv2;
+\end{lstlisting}
+
+Note that even though the modules {\tt parserv1\_1} and {\tt parserv1\_2}
+are not present in the build, it is able to compile successfully when the
+module references to these missing modules are replaced with the overriding
+module {\tt parserv2}.
+
+As with merges, replaces are implicitly inherited by subtype modules.
+
+%Merge and replace make different modules sure to use the same
+%set of classes (avoids nondeterministic class loading). Also, can
+%be used to update modules to use newer versions of their imported
+%modules. They can also be used to access the namespace of indirect imports
+%without qualifiers by merging the indirect imports with a directly
+%imported instance of that module.
+
+\SubSection{Module Interfaces}
+
+Extending the object-oriented metaphor, with module types being classes, we 
+now define \textit{module interfaces}, which act similarly to interfaces in Java. A module
+interface contains no imports, replaces, merges or even member classes, but they
+are allowed to have a set of export package declarations. A module implementing
+a module interface must contain and export the packages specified in the interface.
+
+\begin{lstlisting}[caption=Module Interfaces]
+//file org.x.y.math.module
+module org.x.y.math implements 
+	org.x.y.calculus,
+	org.x.y.matrices;
+export package 
+	org.x.y.math.calculus,
+	org.x.y.math.matrices,
+	org.x.y.math.complex;
+	
+//file org.x.y.calculus.module
+module_interface org.x.y.calculus;
+export package org.x.y.math.calculus;
+
+//file org.x.y.matrices.module
+module_interface org.x.y.matrices;
+export package org.x.y.math.matrices;
+
+//file engine3d.module
+module engine3d;
+import own org.x.y.matrices export as matrices;
+
+//file enginephysics.module
+module enginephysics;
+import own org.x.y.calculus export as calculus;
+
+//file myapplication.module
+module myapplication;
+import own engine3d;
+import own enginephysics;
+import own org.x.y.math;
+
+replace 
+	engine3d::matrices, enginephysics::calculus
+	with org.x.y.math;
+\end{lstlisting}
+
+Rules for module interface subtyping are similar to those of interfaces in Java:
+interfaces can only extend interfaces, and they can not implement other
+interfaces. 
+
+Since interfaces do not actually contain any classes, they must be replaced
+by a non-interface module when compiling a fully working system. This would
+have to be relaxed for separate compilation of modules that reference interfaces
+to be possible, and this is discussed a bit more in the section on future work.
+
+\SubSection{Weak Module Interfaces}
+
+It may be the case that an application developer knows the packages that
+he wishes to use, but the provider of the module that contains these packages 
+did not define a module interface that specifically contains those packages. For
+this case, we define a \textit{weak module interface}. Weak module interfaces act similarly
+to normal module interfaces, except that it is also implicitly implemented
+by all modules that satisfy its export package signature \cite{mcdirmid01jiazzi, componentnextgen}, 
+even if these modules did not explicitly declare that they implemented the interface.
+
+Continuing the example given above, weak interfaces allow us to define 
+our own interfaces to a module without the module provider's knowledge:
+
+\begin{lstlisting}[caption=Weak Interfaces]
+//file mymathinterface.module
+weak_module_interface mymathinterface;
+export package 
+	org.x.y.math.calculus, org.x.y.math.complex;
+
+//file myfourier.module
+module myfourier;
+import own mymathinterface export as math;
+
+//file myapplication.module
+module myapplication;
+import own myfourier;
+import own org.x.y.math;
+//replace the interface with an implementing module
+replace myfourier::math with org.x.y.math;
+\end{lstlisting}
+
+\SubSection{Type Lookup Sequence}
+
+This module system, as with any module system for Java, changes the way that type
+references are looked up. The following pseudocode shows how type lookup is done in
+the type system defined above. 
+
+\begin{lstlisting}[caption = Type Lookup, tabsize=2, morekeywords={method}]
+//lookup for unqualified names in a CU
+method CU.lookup(typeName) {
+	//get the module of which the CU is a member
+	Module = CU.getParentModule();
+	if (Module != null) {
+		lookup classes in CU
+		lookup classes in single type imports
+		//lookup in module and its supertypes only
+		Module.lookup(null, CU.package(), typeName, false)
+		lookup classes in on-demand imports
+		//lookup in module, including direct imports
+		Module.lookup(null, CU.package(), typeName, true)
+		lookup primitive types
+		lookup automatic imports (java.lang)
+	} else {
+		normal java lookup
+	}
+}
+
+//lookup for qualified names
+//takes the module qualifier, package
+//qualifier and typeName of a type reference
+//and a boolean value lookInImports
+method Module.lookup(moduleName, packageName, 
+							typeName, lookInImports) {
+	if (special packageName (java.lang)) {
+		lookup in defaultmodule
+	}
+	if (moduleName == null) {
+		lookup in thismodule
+		lookup in each successive supertype
+		if (lookInImports) {
+			lookup in direct imports
+		}
+	} 
+	else {
+	//lookup through the module qualifier
+	contextModule = lookupModule(moduleName);
+	contextModule.lookup(``'', packageName, 
+												typeName, false);
+	}
+}
+\end{lstlisting}
+
+The lookup rules follow the Java way of looking up types,
+starting from the most local proceeding to the most global. Types are looked up
+first in the same compilation unit, then in the single type imports,
+then in the types that belong to the same package in the module and its supertype 
+modules, then the on-demand imports, then the member types of the same package
+in directly imported modules, and finally to the primitive types and the 
+implicit {\tt java.lang} imports. It was a conscious decision to make on-demand imports
+come first before the lookups to directly imported modules. This is because the on-demand import
+is closer to the type reference being resolved, being in the same source file instead of
+on a separate module specification file.
+
+\SubSection{Constraints on Modules}
+
+Cycles involving \texttt{import own} are not allowed, as this leads to an infinite loop of
+module instance creation. However, cycles of singleton imports are allowed.
+
+Subtyping is single inheritance, as in Java. This avoids ambiguous replace and
+merge inheritance order in a subtype module.
+
+Merges cannot be done on singleton instances or modules accessed through a
+singleton instance. This is to make sure that other clients using the singleton
+instance are not affected by the change.
+
+As with merges, replace targets can not be a singleton instance or a module
+accessed through a singleton instance, for similar reasons. 
+
+Merges can only be done on submodules in the same path to the root module in
+the submodule tree. Furthermore, this should not change the module export signature
+of the module being submoduled. This is to guarantee that both internal and external
+clients of the module can still rely on their module qualified lookups.
+
+Exported packages in non-interface modules imply that there are classes that actually 
+belong to that package. Otherwise module interfaces become less useful.
+
+As mentioned, implementing a module interface means exporting the packages the interface
+exports. This is to ensure that the signature contract with the clients of
+the interface are satisfied.
+
+All references to an interface module must be replaced. Otherwise all lookups through 
+that reference will fail as the interface is empty. 
