@@ -142,8 +142,14 @@ aspect Compile {
       	public int line() {
       		return problem.line();
       	}
+      	public int endLine() {
+      		return problem.endLine();
+      	}
 		public int column() {
 			return problem.column();
+		}
+		public int endColumn() {
+			return problem.endColumn();
 		}
 		public String message() {
 			return problem.message();

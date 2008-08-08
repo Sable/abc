@@ -43,6 +43,7 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.LibraryLocation;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.IEditorInput;
@@ -69,6 +70,7 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePath
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.jastaddj.model.repair.JavaLexer;
+import org.jastadd.plugin.jastaddj.model.repair.JavaLexerIII;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.repair.LexicalNode;
@@ -482,24 +484,43 @@ public class JastAddJModel extends JastAddModel {
 		}
 		errors.addAll(warnings);
 		if (!errors.isEmpty()) {
-			for (Iterator i2 = errors.iterator(); i2.hasNext();) {
-				org.jastadd.plugin.jastaddj.AST.IProblem error = 
-					(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
-				int line = error.line();
-				int column = error.column();
-				String message = error.message();
-				int severity = IMarker.SEVERITY_INFO;
-				if (error.severity() == IDEProblem.Severity.ERROR)
-					severity = IMarker.SEVERITY_ERROR;
-				else if (error.severity() == IDEProblem.Severity.WARNING)
-					severity = IMarker.SEVERITY_WARNING;
-				if (error.kind() == IDEProblem.Kind.LEXICAL
-						|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
-					addParseErrorMarker(file, message, line, column, severity);
-				} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
-					addErrorMarker(file, message, line, severity, column, 1);
-				}
-			}		
+			try {
+				DefaultLineTracker tracker = new DefaultLineTracker();
+				tracker.set(readTextFile(file.getRawLocation().toOSString()));
+				for (Iterator i2 = errors.iterator(); i2.hasNext();) {
+					try {
+						org.jastadd.plugin.jastaddj.AST.IProblem error = 
+							(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
+						int line = error.line();
+						int endLine = error.endLine();
+						int column = error.column();
+						int endColumn = error.endColumn();
+						if (line == -1)
+							line = 1;
+						int startOffset = tracker.getLineOffset(line-1) + (column - 1);
+						if (endLine == -1)
+							endLine = 1;
+						int endOffset = tracker.getLineOffset(endLine-1) + (endColumn - 1);
+
+						String message = error.message();
+						int severity = IMarker.SEVERITY_INFO;
+						if (error.severity() == IDEProblem.Severity.ERROR)
+							severity = IMarker.SEVERITY_ERROR;
+						else if (error.severity() == IDEProblem.Severity.WARNING)
+							severity = IMarker.SEVERITY_WARNING;
+						if (error.kind() == IDEProblem.Kind.LEXICAL
+								|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
+							addParseErrorMarker(file, message, line, startOffset, 
+									endOffset, severity, tracker);
+						} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
+							addErrorMarker(file, message, line, startOffset, 
+									endOffset, severity, tracker);
+						}
+					} catch (BadLocationException e) {
+					}
+				}	
+			} catch (IOException e) {
+			}
 			return false;
 		}
 		return true;
@@ -881,7 +902,7 @@ public class JastAddJModel extends JastAddModel {
 	protected RecoveryLexer lexer;
 	public RecoveryLexer getRecoveryLexer() {
 		if (lexer == null) {
-			lexer = new JavaLexer();
+			lexer = new JavaLexerIII();
 		}
 		return lexer;
 	}

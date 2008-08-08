@@ -270,62 +270,50 @@ public abstract class JastAddModel {
 		return sb.toString();
 	}
 
-	protected void addParseErrorMarker(IFile file, String message, int lineNumber, int columnNumber, int severity) {
-		try {
-			IMarker marker = file.createMarker(PARSE_ERROR_MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			if (lineNumber == -1) {
-				lineNumber = 1;
-			}
-			DefaultLineTracker t = new DefaultLineTracker();
-			t.set(readTextFile(file.getRawLocation().toOSString()));
-			int offset = t.getLineOffset(lineNumber-1);
-			offset += columnNumber - 1;
-			marker.setAttribute(IMarker.CHAR_START, offset);
-			marker.setAttribute(IMarker.CHAR_END, offset+1);
-			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-		} catch (CoreException e) {
-		} catch (IOException e) {
-		} catch (BadLocationException e) {
-		}
+	protected void addParseErrorMarker(IFile file, String message, int line, int startOffset, 
+			int endOffset, int severity, DefaultLineTracker tracker) throws CoreException {		
+		if (file == null)
+			return;
+		IMarker marker = file.createMarker(PARSE_ERROR_MARKER_TYPE);
+		marker.setAttribute(IMarker.MESSAGE, message);
+		marker.setAttribute(IMarker.SEVERITY, severity);
+		if (startOffset < 0)
+			startOffset = 1;
+		if (startOffset == endOffset) 
+			endOffset++;
+		else if (endOffset < startOffset)
+			endOffset = startOffset + 1;
+		marker.setAttribute(IMarker.CHAR_START, startOffset);
+		marker.setAttribute(IMarker.CHAR_END, endOffset);
+		marker.setAttribute(IMarker.LINE_NUMBER, line);
 	}
 	
-	protected void addErrorMarker(IResource resource, String message, int lineNumber, 
+	protected void addErrorMarker(IResource resource, String message, int line, 
 			int severity) throws CoreException {
-		if (resource != null) {
-			IMarker marker = resource.createMarker(ERROR_MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			if (lineNumber == -1) {
-				lineNumber = 1;
-			}
-			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-		}		
+		if (resource == null)
+			return;
+		IMarker marker = resource.createMarker(ERROR_MARKER_TYPE);
+		marker.setAttribute(IMarker.MESSAGE, message);
+		marker.setAttribute(IMarker.SEVERITY, severity);
+		marker.setAttribute(IMarker.LINE_NUMBER, line);		
 	}
 	
-	protected void addErrorMarker(IFile file, String message, int lineNumber, 
-			int severity, int columnStart, int columnEnd) throws CoreException {
-		if (file != null) {
-			IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			if (lineNumber == -1) {
-				lineNumber = 1;
-			}
-			/*
-			try {
-				DefaultLineTracker t = new DefaultLineTracker();
-				t.set(readTextFile(file.getRawLocation().toOSString()));
-				int offset = t.getLineOffset(lineNumber-1);
-				marker.setAttribute(IMarker.CHAR_START, offset + columnStart - 1);
-				marker.setAttribute(IMarker.CHAR_END, offset + columnEnd);
-			} catch (IOException e) {
-			} catch (BadLocationException e) {
-			}
-			*/
-			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-		}
+	protected void addErrorMarker(IFile file, String message, int line, int startOffset, 
+			int endOffset, int severity, DefaultLineTracker tracker) throws CoreException {
+		if (file == null)
+			return;
+		IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
+		marker.setAttribute(IMarker.MESSAGE, message);
+		marker.setAttribute(IMarker.SEVERITY, severity);
+		if (startOffset < 0)
+			startOffset = 1;
+		if (startOffset == endOffset) 
+			endOffset++;
+		else if (endOffset < startOffset)
+			endOffset = startOffset + 1;
+		marker.setAttribute(IMarker.CHAR_START, startOffset);
+		marker.setAttribute(IMarker.CHAR_END, endOffset);
+		marker.setAttribute(IMarker.LINE_NUMBER, line);
 	}
 	
 	protected void deleteErrorMarkers(String markerType, IResource resource) throws CoreException {

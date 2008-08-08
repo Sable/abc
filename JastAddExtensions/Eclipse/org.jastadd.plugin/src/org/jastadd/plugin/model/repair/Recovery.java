@@ -304,9 +304,10 @@ public class Recovery {
 		}
 		return node;
 	}
-
+	
 	public static void doRecovery(SOF sof) {
 		buildBridges(sof);
 		recover(sof);
 	}
+
 }

@@ -2,7 +2,9 @@ package org.jastadd.plugin.jastaddj.AST;
 
 public interface IProblem {
 	public int line();
+	public int endLine();
 	public int column();
+	public int endColumn();
 	public String message();
 	public Severity severity();
 	public Kind kind();

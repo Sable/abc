@@ -28,48 +28,8 @@ public class JavaLexerIII extends JavaLexerII {
 
 	protected int matchKeyword(char[] content, int start, StringBuffer buf, 
 				ArrayList<LexicalNode> nodeList, int lastMatch) {
-		int length = 0;
-		if ((length = matchIfKeyword(content, start, buf, nodeList, lastMatch)) > 0 ||
-			(length = matchForKeyword(content, start, buf, nodeList, lastMatch)) > 0) {
-			return length;
-		}
-		return length;
-	}
 
-	protected int matchIfKeyword(char[] content, int start, StringBuffer buf, 
-				ArrayList<LexicalNode> nodeList, int lastMatch) {
-		for (int i = 0; i < content.length && i < IfKeyword.TOKEN.length; i++) {
-			if (content[start+i] != IfKeyword.TOKEN[i]) {
-				return 0;
-			}
-		}
-
-		createWater(buf, lastMatch, start, nodeList);
-
-		int length = IfKeyword.TOKEN.length;
-		Interval interval = new Interval(start, start + length);
-		String value = buf.substring(start, start + length);
-		/* DEBUG System.out.println("-- match Keyword if = " + value.replace("\n", "NEWLINE")); */
-		nodeList.add(new IfKeyword(nodeList.get(nodeList.size()-1), interval, value));
-		return length;
-	}
-
-	protected int matchForKeyword(char[] content, int start, StringBuffer buf, 
-				ArrayList<LexicalNode> nodeList, int lastMatch) {
-		for (int i = 0; i < content.length && i < ForKeyword.TOKEN.length; i++) {
-			if (content[start+i] != ForKeyword.TOKEN[i]) {
-				return 0;
-			}
-		}
-
-		createWater(buf, lastMatch, start, nodeList);
-
-		int length = ForKeyword.TOKEN.length;
-		Interval interval = new Interval(start, start + length);
-		String value = buf.substring(start, start + length);
-		/* DEBUG System.out.println("-- match Keyword for = " + value.replace("\n", "NEWLINE")); */
-		nodeList.add(new ForKeyword(nodeList.get(nodeList.size()-1), interval, value));
-		return length;
+		return JavaKeyword.match(content, start, buf, nodeList, lastMatch);
 	}
 
 	protected int matchLeftParan(char[] content, int start, StringBuffer buf, 

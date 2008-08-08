@@ -11,7 +11,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.jastaddj.completion.JastAddJCompletionProcessor;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
-import org.jastadd.plugin.jastaddj.editor.actions.CompletionHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
@@ -21,11 +20,13 @@ import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
 import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.model.repair.Indent;
+import org.jastadd.plugin.jastaddj.model.repair.JavaKeyword;
 import org.jastadd.plugin.jastaddj.model.repair.LeftBrace;
 import org.jastadd.plugin.jastaddj.model.repair.LeftParen;
 import org.jastadd.plugin.jastaddj.model.repair.RightBrace;
 import org.jastadd.plugin.jastaddj.model.repair.RightParen;
 import org.jastadd.plugin.model.JastAddEditorConfiguration;
+import org.jastadd.plugin.model.repair.Island;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -42,6 +43,71 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		StringBuffer buf = new StringBuffer(doc.get());
 		SOF sof = model.getRecoveryLexer().parse(buf);
 		LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, cmd.offset);
+		
+		// Default
+		String indent = Indent.getTabStep();
+		LexicalNode prev = recoveryNode.getPrevious();
+		while (!(prev instanceof SOF)) {
+			if (prev instanceof Island || prev instanceof Indent) {
+				break;
+			}
+			prev = prev.getPrevious();
+		}
+		if(prev instanceof SOF) {
+			indent = "\n" + Indent.getTabStep();
+			// Insert newline + step
+		} else if (prev instanceof LeftBrace) {
+			// If the previous island is a RightParen locate previous JavaKeyword and use its indent
+			// Default is to use the indent of LeftBrace
+			Indent indentNode = ((LeftBrace)prev).indent();
+			prev = recoveryNode.getPrevious();
+			while (!(prev instanceof SOF)) {
+				if (prev instanceof RightParen || prev instanceof Indent) {
+					break;
+				}
+				prev = prev.getPrevious();
+			}
+			if (prev instanceof RightParen) {
+				prev = recoveryNode.getPrevious();
+				while (!(prev instanceof SOF)) {
+					if (prev instanceof JavaKeyword) {
+						break;
+					}
+					prev = prev.getPrevious();
+				}	
+				if (prev instanceof JavaKeyword) {
+					indentNode = ((JavaKeyword)prev).indent();
+				}
+			}
+			indent = indentNode.getValue() + Indent.getTabStep();
+		} else if (prev instanceof LeftParen) {
+			// Insert newline + left paren indent + step x 2
+			Indent indentNode = ((LeftParen)prev).indent();
+			indent = indentNode.getValue() + Indent.getTabStep() + Indent.getTabStep();
+		} else if (prev instanceof Indent) {
+			Indent indentNode = (Indent)prev;
+			indent = indentNode.getValue();
+			// Check if previous island is of type LeftParen in case double step should be inserted
+			// Insert newline + previous indent
+		} else {
+			prev = recoveryNode.getPrevious();
+			while (!(prev instanceof SOF)) {
+				if (prev instanceof Indent) {
+					break;
+				}
+				prev = prev.getPrevious();
+			}
+			if (prev instanceof Indent)
+				indent = ((Indent)prev).getValue();
+		}
+
+		cmd.caretOffset = cmd.offset + indent.length();
+		cmd.shiftsCaret = false;
+		if (!indent.startsWith("\n"))
+			indent = "\n" + indent;
+		cmd.text = indent;
+
+		/*
 		Indent nodeIndent = (Indent)recoveryNode.getPrevious().getPreviousOfType(Indent.class);
 		String indentValue = nodeIndent.getValue();
 		// Check if the previous (distance 2) is a left brace
@@ -81,6 +147,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 		cmd.caretOffset = cmd.offset + indentValue.length();
 		cmd.shiftsCaret = false;
 		cmd.text = indentValue;
+		*/
 	}
 	
 

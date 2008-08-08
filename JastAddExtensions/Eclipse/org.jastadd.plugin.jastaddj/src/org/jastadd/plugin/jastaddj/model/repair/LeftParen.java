@@ -58,7 +58,7 @@ public class LeftParen extends Island {
 				indent = (Indent)node;
 			} else {
 				SOF sof = (SOF)getPrevious().getPreviousOfType(SOF.class);
-				indent = new Indent(null, sof.getInterval(), "");
+				indent = new Indent(null, sof.getInterval(), "", false);
 				Recovery.insertAfter(indent, sof);
 			}
 		}

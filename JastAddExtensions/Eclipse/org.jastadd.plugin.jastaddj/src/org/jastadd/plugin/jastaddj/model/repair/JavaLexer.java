@@ -190,10 +190,14 @@ public class JavaLexer implements RecoveryLexer {
 			}
 			length++;
 		}
+		boolean emptyLine = false;
+		if (start + length < content.length && content[start + length] == Indent.NEWLINE) {
+			emptyLine = true;
+		}
 		Interval interval = new Interval(start, start + length);
 		String value = buf.substring(start, start + length);
 		/* DEBUG System.out.println("-- match Indent = " + value.replace("\n", "NEWLINE")); */
-		nodeList.add(new Indent(nodeList.get(nodeList.size()-1), interval, value));
+		nodeList.add(new Indent(nodeList.get(nodeList.size()-1), interval, value, emptyLine));
 		return length;
 	}
 

@@ -9,7 +9,8 @@ public class Indent extends Reef {
 	private int nbrWS;
 	private int nbrTabs;
 	private int size;
-	public Indent(LexicalNode previous, Interval interval, String value) {
+	private boolean emptyLine;
+	public Indent(LexicalNode previous, Interval interval, String value, boolean emptyLine) {
 		super(previous, interval, value);
 		char[] chars = value.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
@@ -19,7 +20,10 @@ public class Indent extends Reef {
 			}
 		}
 		size = nbrTabs*TAB_SIZE + nbrWS;
-		collectStats(nbrWS, nbrTabs, size);
+		this.emptyLine = emptyLine;
+		if (!emptyLine) {
+			collectStats(nbrWS, nbrTabs, size);
+		}
 	}
 	
 	private static int maxIndentStatSize = 10;
@@ -90,7 +94,9 @@ public class Indent extends Reef {
 			}
 		}
 		//System.out.println("TabStep: " + diff[step]);
-		tabStep = diff[step];
+		tabStep = step;
+		if (tabStep == 0)
+			tabStep = TAB_SIZE;
 		tabStepDeduced = true;
 	}
 
@@ -136,7 +142,7 @@ public class Indent extends Reef {
 	}
 
 	public LexicalNode clone(LexicalNode previous) {
-		return new Indent(previous, getInterval().clone(), getValue());
+		return new Indent(previous, getInterval().clone(), getValue(), emptyLine);
 	}
 
 	public static String getTabStep() {
