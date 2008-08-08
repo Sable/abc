@@ -7,6 +7,13 @@ public class NullPointerClass {
 		String aaa;
 		int bbb;
 		String foo = null;
+		aaa = foo;
+		
+		String[] array = new String[5];
+		array[2] = null;
+		
+		foo = "";
+		
 		String bar = new String("Hello");
 		String baz = "World";
 		if(foo != null)

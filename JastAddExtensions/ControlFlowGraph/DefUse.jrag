@@ -1,23 +1,43 @@
 aspect DefUse {	
-
-  eq EntryStmt.def() {
-    BodyDecl b = enclosingBodyDecl();
-    if(b instanceof MethodDecl) {
-    }
-    else if(b instanceof ConstructorDecl) {
-    }
-    return empty();
-  }
+	/*	
+	eq EntryStmt.def() {
+		BodyDecl b = enclosingBodyDecl();
+		if(b instanceof MethodDecl) {
+			BitSet set = empty();			
+			for(int i=0;i<((MethodDecl)b).getNumParameter();i++) 
+				set = set.union(((MethodDecl)b).getParameter(i));
+			
+			
+			for(Iterator it = set.iterator();it.hasNext();)
+				System.err.println(it.next());
+			
+			return set;  	
+		}
+		else if(b instanceof ConstructorDecl) {
+			BitSet set = empty();			
+			for(int i=0;i<((ConstructorDecl)b).getNumParameter();i++) 
+				set = set.union(((ConstructorDecl)b).getParameter(i));	
+			return set;
+		}
+		else
+			return empty();
+	}*/
+	
 
 	// create a locally scoped empty bit set for each body decl
 	syn lazy BitSet BodyDecl.empty() = new BitSet();
 	eq BodyDecl.getChild().empty() = empty();
+	
 	eq Program.getChild().empty() {
 		throw new UnsupportedOperationException(); 
 	}
+
+		
 	// make scoped bit set visible from statements and expressions
 	inh BitSet Stmt.empty();
 	inh BitSet Expr.empty();
+	
+	
 
   /*
   // Let each Stmt collect defs from descenfing LocalVarAccess nodes
@@ -29,6 +49,9 @@ aspect DefUse {
   VarAccess contributes decl() when isSource() && decl().isLocalVariable() to Stmt.use() for enclosingStmt();
 
 */
+	
+
+  	
   	// My implementation
   	// def()
   	syn BitSet CFGNode.def();
@@ -36,17 +59,22 @@ aspect DefUse {
   	eq Stmt.def() = empty();
   
   	eq VarAccess.def() {
-  		if(isDest() && decl().isLocalVariable())
+  		if(isDest() && (decl().isLocalVariable() || 
+  			decl().isMethodParameter()))
   			return empty().union(decl());
+  	/*	if(isDest() && decl().isLocalVariable())  	  			
+  	  		return empty().union(decl());*/
   		else
-  			return super.def();
+  			//return super.def();
+  			return empty();
   	}
   
   	eq VariableDeclaration.def() {
   		if(hasInit()) 
   			return empty().union(this);
   		else
-  			return super.def();
+  			//return super.def();
+  			return empty();
   	}
   
   
@@ -56,8 +84,11 @@ aspect DefUse {
   	eq Stmt.use() = empty();
   	
   	eq VarAccess.use() {
-  		if(isSource() && decl().isLocalVariable())
-  			return empty().union(decl());	  
+  		if(isSource() && (decl().isLocalVariable() ||
+  			decl().isMethodParameter()))
+  			return empty().union(decl());	
+  	/*	if(isSource() && decl().isLocalVariable()) 	  			
+  	  		return empty().union(decl());*/
   		else
   			return super.use();
   	}

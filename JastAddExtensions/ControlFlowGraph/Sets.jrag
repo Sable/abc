@@ -163,7 +163,7 @@ class BitSet {
       set = convert(set);
       if(this.equals(set) || set == fullSet)
         return this;
-      int length = Math.max(this.bits.length, set.bits.length);
+      int length = Math.min(this.bits.length, set.bits.length);
       BitSet newSet = new BitSet(elementMap, elementList, new int[length]);
       for(int i = 0; i < length; i++)
         newSet.bits[i] = this.bits[i] & set.bits[i];

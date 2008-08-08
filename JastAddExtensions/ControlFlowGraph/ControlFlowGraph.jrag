@@ -590,6 +590,10 @@ aspect ControlFlowGraph {
     eq TryStmt.succ() = SmallSet.empty().union(getBlock());  
     eq TryStmt.getBlock().following() = hasFinally() ? SmallSet.empty().union(getFinally()) : following();
     eq TryStmt.getCatchClause(int index).following() = hasFinally() ? SmallSet.empty().union(getFinally()) : following();
+    
+    // delete unnecessary edge for catch clause
+    eq ParameterDeclaration.getTypeAccess().following() = SmallSet.empty();
+    
  
     eq TryStmt.getFinally().following() { 
 
@@ -598,11 +602,13 @@ aspect ControlFlowGraph {
     	 	
     	for(Iterator Iter = branchesSet.iterator(); Iter.hasNext(); ) {
     		Object o = Iter.next();
-    		
+    	
+    		/*
     		if(o instanceof EmptyStmt)
     			System.err.println("**Branches in Finally: EmptyStmt");
     		else
     			System.err.println("**Branches in Finally:"+((Stmt)o).dumpString());
+    		*/
     		
             //Stmt tryStmt = this;//(Stmt)(this.getParent().getParent());
             if(o instanceof EmptyStmt) //can complete normally
@@ -660,20 +666,22 @@ aspect ControlFlowGraph {
 		EmptyStmt emptyStmt = new EmptyStmt();
 		if(getBlock().canCompleteNormally()){
 			branchesInTry = branchesInTry.union(emptyStmt); //try_normally
-			System.err.println("-Block "+getBlock().uniqueIndex()+" can complete normally");
+			//System.err.println("-Block "+getBlock().uniqueIndex()+" can complete normally");
 		}
-		else
-			System.err.println("-Block "+getBlock().uniqueIndex()+" can NOT complete normally");
+		//else
+			//System.err.println("-Block "+getBlock().uniqueIndex()+" can NOT complete normally");
 		
 		// Catch
         SmallSet remainingBranches = SmallSet.empty();
         for (Iterator itr = branchesInTry.iterator(); itr.hasNext();) {
         	Object o = itr.next();       	
         	
+        	/*
         	if(o instanceof EmptyStmt)
     			System.err.println("**Branches in Try: EmptyStmt");
         	else
         		System.err.println("**Branches in Try:"+((Stmt)o).dumpString());
+        	*/
         	
         	if(o instanceof ThrowStmt) {
         		ThrowStmt throwStmt = (ThrowStmt)o;
@@ -684,7 +692,7 @@ aspect ControlFlowGraph {
             			remainingBranches = //add catch
             				remainingBranches.union(getCatchClause(i).getBlock().collectBranches());
             			if(getCatchClause(i).getBlock().canCompleteNormally()){
-            				System.err.println("Catch can complete normally!!!");
+            				//System.err.println("Catch can complete normally!!!");
             				remainingBranches = remainingBranches.union(emptyStmt);  //catch_normally
             			}
             		}
@@ -696,7 +704,7 @@ aspect ControlFlowGraph {
         		remainingBranches = remainingBranches.union(o);   	
         }
         
-        
+        /*
         //---test---
         for (Iterator itr = remainingBranches.iterator(); itr.hasNext();) {
         	Object o = itr.next();       	        	
@@ -706,6 +714,7 @@ aspect ControlFlowGraph {
         		System.err.println("**Branches in Remain:"+((Stmt)o).dumpString());
         }       
         //-----------
+        */
         
         if(!hasFinally()) return remainingBranches;
         	    
@@ -726,12 +735,12 @@ aspect ControlFlowGraph {
         	// branches(in Finally) except EmptyStmt can replace the branches above
         	branchesInAll = branchesInAll.union(branchesInFinally);
         	
-        	System.err.println("Finally "+getFinally().uniqueIndex()+" can complete normally");
+        	//System.err.println("Finally "+getFinally().uniqueIndex()+" can complete normally");
         }
         else{
         	//Branches in Finally except EmptyStmt replace all the possible branches above 
         	branchesInAll = branchesInAll.union(branchesInFinally);
-        	System.err.println("Finally "+getFinally().uniqueIndex()+" can NOT complete normally");
+        	//System.err.println("Finally "+getFinally().uniqueIndex()+" can NOT complete normally");
         }        	     
         
         return branchesInAll;
@@ -777,7 +786,7 @@ aspect ControlFlowGraph {
     	if(hasFinally() && child.getChild(0) != getFinally())
     		return SmallSet.empty().union(getFinally());
     	else{  // include child.getChild(0) == getFinally()
-    		System.err.println("super");
+    		//System.err.println("super");
     		return super.followingTarget(branch, this);			
     	}
     	

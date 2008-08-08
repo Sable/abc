@@ -8,6 +8,10 @@ aspect MyAnalysis {
   eq Stmt.uniqueIndex() = uniqueIndex++;
   eq Expr.uniqueIndex() = Stmt.uniqueIndex++;
 
+  
+  
+  
+
   eq Stmt.dumpString() {
     StringBuffer buf = new StringBuffer();
     buf.append(super.dumpString());
@@ -17,36 +21,36 @@ aspect MyAnalysis {
       buf.append(node.uniqueIndex() + " ");
     }
     buf.append("} **>");
-    
-    buf.append(" IN{");
+ /*   
+    //Liveness
+    buf.append(" I_Live{");
     for(Iterator iter = in().iterator(); iter.hasNext(); ) {
-      CFGNode in = (CFGNode)iter.next();
-      buf.append(in + ", ");
-    }
-    buf.append("} ");
-    
-    buf.append(" OUT{");
-    for(Iterator iter = out().iterator(); iter.hasNext(); ) {
-      CFGNode out = (CFGNode)iter.next();
-      buf.append(out + ", ");
-    }
-    buf.append("} ");
-    //Nullness
-    buf.append(" IN{");
-    for(Iterator iter = in_null().iterator(); iter.hasNext(); ) {
       Variable in = (Variable)iter.next();
       buf.append(in.name() + ", ");
     }
     buf.append("} ");
     
-    buf.append(" OUT{");
-    for(Iterator iter = out_null().iterator(); iter.hasNext(); ) {
-      CFGNode out = (CFGNode)iter.next();
-      buf.append(out + ", ");
+    buf.append(" O_Live{");
+    for(Iterator iter = out().iterator(); iter.hasNext(); ) {
+      Variable out = (Variable)iter.next();
+      buf.append(out.name() + ", ");
     }
     buf.append("} ");
     
-    
+    //deadCodeNum();
+    //deadCode
+    if(isDead())
+    	System.err.println("Dead Code: "+this);
+   */ 
+   //CF
+    buf.append("CF{");
+    for(Iterator it = out_cf().keySet().iterator();it.hasNext();){
+    	Variable v = (Variable)it.next();
+    	buf.append(v.name()+"-"+(Long)out_cf().get(v)+", ");
+    }
+    buf.append("}");
+   
+      
     return buf.toString();
   }
   
@@ -59,24 +63,35 @@ aspect MyAnalysis {
       buf.append(node.uniqueIndex() + " ");
     }
     buf.append("} *>");
-    
- /*   //Liveness
-    buf.append(" IN{");
+  /*  //Liveness
+    buf.append(" I_Live{");
     for(Iterator iter = in().iterator(); iter.hasNext(); ) {
-      CFGNode in = (CFGNode)iter.next();
-      buf.append(in + ", ");
+      Variable in = (Variable)iter.next();
+      buf.append(in.name() + ", ");
     }
     buf.append("} ");
     
-    buf.append(" OUT{");
+    buf.append(" O_Live{");
     for(Iterator iter = out().iterator(); iter.hasNext(); ) {
-      CFGNode out = (CFGNode)iter.next();
-      buf.append(out + ", ");
+      Variable out = (Variable)iter.next();
+      buf.append(out.name() + ", ");
     }
     buf.append("} ");
-   */ 
     
+    //deadCodeNum();
+    //deadCode
+    if(isDead())
+    	System.err.println("Dead Code: "+this+" in "+enclosingStmt());
     
+    */
+ /*  //CF
+    buf.append("CF{");
+    for(Iterator it = out_cf().keySet().iterator();it.hasNext();){
+    	Variable v = (Variable)it.next();
+    	buf.append(v.name()+"-"+(Long)out_cf().get(v)+", ");
+    }
+    buf.append("}");
+   */
     
     return buf.toString();
   }
@@ -90,6 +105,35 @@ aspect MyAnalysis {
       buf.append(node.uniqueIndex() + " ");
     }
     buf.append("} *>");
+    
+ /*   //Liveness
+    buf.append(" I_Live{");
+    for(Iterator iter = in().iterator(); iter.hasNext(); ) {
+      Variable in = (Variable)iter.next();
+      buf.append(in.name() + ", ");
+    }
+    buf.append("} ");
+    
+    buf.append(" O_Live{");
+    for(Iterator iter = out().iterator(); iter.hasNext(); ) {
+      Variable out = (Variable)iter.next();
+      buf.append(out.name() + ", ");
+    }
+    buf.append("} ");
+    
+    //deadCodeNum();
+    //deadCode
+    if(isDead())
+    	System.err.println("Dead Code: "+this+" in "+enclosingStmt());
+    */
+ /*   //CF
+    buf.append("CF{");
+    for(Iterator it = out_cf().keySet().iterator();it.hasNext();){
+    	Variable v = (Variable)it.next();
+    	buf.append(v.name()+"-"+(String)out_cf().get(v)+", ");
+    }
+    buf.append("}");
+  */  
     return buf.toString();
   }
   
@@ -103,6 +147,8 @@ aspect MyAnalysis {
 	      buf.append(node.uniqueIndex() + " ");
 	    }
 	    buf.append("} *>");
+	    	    
+	    
 	    return buf.toString();
   }
   
@@ -116,9 +162,20 @@ aspect MyAnalysis {
 	      buf.append(node.uniqueIndex() + " ");
 	    }
 	    buf.append("} *>");
+	/*    
+	    //CF
+	    buf.append("CF{");
+	    for(Iterator it = out_cf().keySet().iterator();it.hasNext();){
+	    	Variable v = (Variable)it.next();
+	    	buf.append(v.name()+"-"+(String)out_cf().get(v)+", ");
+	    }
+	    buf.append("}");
+	 */   
+	    	    
 	    return buf.toString();
   }
-  
+ 
+  //nullness
   refine PrettyPrint eq VariableDeclaration.dumpString() {
 	    StringBuffer buf = new StringBuffer();
 	    buf.append(PrettyPrint.VariableDeclaration.dumpString());
@@ -128,9 +185,44 @@ aspect MyAnalysis {
 	      buf.append(node.uniqueIndex() + " ");
 	    }
 	    buf.append("} *>");
+	   
+	    
+	/*    
+	    //Liveness
+	    buf.append(" I_Live{");
+	    for(Iterator iter = in().iterator(); iter.hasNext(); ) {
+	      Variable in = (Variable)iter.next();
+	      buf.append(in.name() + ", ");
+	    }
+	    buf.append("} ");
+	    
+	    buf.append(" O_Live{");
+	    for(Iterator iter = out().iterator(); iter.hasNext(); ) {
+	      Variable out = (Variable)iter.next();
+	      buf.append(out.name() + ", ");
+	    }
+	    buf.append("} ");
+	    
+	    //deadCodeNum();
+	    //deadCode
+	    if(isDead())
+	    	System.err.println("Dead Code: "+this);
+	    */
+	    
+	/*    //CF
+	    buf.append("CF{");
+	    for(Iterator it = out_cf().keySet().iterator();it.hasNext();){
+	    	Variable v = (Variable)it.next();
+	    	buf.append(v.name()+"-"+(String)out_cf().get(v)+", ");
+	    }
+	    buf.append("}");
+	 */   
+	    
 	    return buf.toString();
   }
-  
+
+
+
   refine PrettyPrint eq TypeAccess.dumpString() {
 	    StringBuffer buf = new StringBuffer();
 	    buf.append(PrettyPrint.TypeAccess.dumpString());
@@ -140,6 +232,7 @@ aspect MyAnalysis {
 	      buf.append(node.uniqueIndex() + " ");
 	    }
 	    buf.append("} *>");
+	    	    
 	    return buf.toString();
   }
   
@@ -155,13 +248,43 @@ aspect MyAnalysis {
 	    return buf.toString();
   }
   
-/*  
-  refine PrettyPrint eq MethodDecl.dumpString() {
+
+  //nullness
+  eq AssignExpr.dumpString() {
 	    StringBuffer buf = new StringBuffer();
-	    buf.append(PrettyPrint.MethodDecl.dumpString());
-	    buf.append(" <* " + uniqueIndex() + " *>");
+	    buf.append(super.dumpString());
+
+	    //CF
+	    buf.append("CF{");
+	    for(Iterator it = out_cf().keySet().iterator();it.hasNext();){
+	    	Variable v = (Variable)it.next();
+	    	buf.append(v.name()+"-"+(Long)out_cf().get(v)+", ");
+	    }
+	    buf.append("}");
+	    
+	    
 	    return buf.toString();
   }
-*/ 
+  
 
+  
+/*
+  //useless comparison  
+  eq EqualityExpr.dumpString() {
+	  	String str = super.dumpString();
+	    
+	  	uselessComparison();
+	  	
+	    
+	    return str;
+  }*/
+  
+  eq RelationalExpr.dumpString() {
+	  String str = super.dumpString();
+	  
+	  constUselessComparison();
+	  
+	  return str;
+  }
+  
 }
