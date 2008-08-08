@@ -150,9 +150,14 @@ aspect ModuleCompilationUnit {
 	public void ModuleCompilationUnit.detachFromProgramList(ModuleCompilationUnit context) {
 		assert (!(context == null) || getInstanceContext().size() == 0) : "Calls with a null context must have an empty instance context";
 
+		//dump the imported module cus into a hashset first to remove duplicates
+		HashSet<ModuleCompilationUnit> importedCUs = new HashSet<ModuleCompilationUnit>();
 		for (ImportedModule cu : getImportedModuleMap().values()) {
-			if (cu.getModuleCU().isInstance()) {
-				cu.getModuleCU().detachFromProgramList(this);
+			importedCUs.add(cu.getModuleCU());
+		}
+		for (ModuleCompilationUnit mcu : importedCUs) {
+			if (mcu.isInstance()) {
+				mcu.detachFromProgramList(this);
 			}
 		}
 		
