@@ -1127,6 +1127,62 @@ public class JastAddJModel extends JastAddModel {
 			return new ArrayList();
 		}
 	}
+	
+	public Collection recoverCompletion(int documentOffset, StringBuffer buf, 
+			IProject project, String fileName, IJastAddNode node, String filter, 
+			String leftContent, boolean withDot) throws IOException, Exception {
+		synchronized (node.treeLockObject()) {
+			if (node == null) {
+				// Try recovery
+				SOF sof = getRecoveryLexer().parse(buf);
+				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+				Recovery.doRecovery(sof);
+				buf = Recovery.prettyPrint(sof);
+				documentOffset += recoveryNode.getInterval().getPushOffset();			
+				node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if (node == null) {
+					System.out.println("Structural recovery failed");
+					return new ArrayList();
+				}
+			}
+			if (node instanceof Access) {
+				Access n = (Access) node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion(filter);
+			} else if (node instanceof ASTNode) {
+				ASTNode n = (ASTNode) node;
+				System.out.println("Manual recovery");
+				Expr newNode;
+				if (leftContent.length() != 0) {
+					String nameWithParan = "(" + leftContent + ")";
+					ByteArrayInputStream is = new ByteArrayInputStream(
+							nameWithParan.getBytes());
+					scanner.JavaScanner scanner = new scanner.JavaScanner(
+							new scanner.Unicode(is));
+					newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+							scanner, parser.JavaParser.AltGoals.expression))
+							.getExprNoTransform();
+					newNode = newNode.qualifiesAccess(new MethodAccess("X",
+							new AST.List()));
+				} else {
+					newNode = new MethodAccess("X", new AST.List());
+				}
+
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof Access)
+					n = ((Access) n).lastAccess();
+				// System.out.println(node.dumpTreeNoRewrite());
+
+				// Use the connection to the dummy AST to do name
+				// completion
+				return n.completion(filter);
+			}
+			return new ArrayList();
+		}
+	}
 
 	protected JastAddJBuildConfiguration getEmptyBuildConfiguration() {
 		return new JastAddJBuildConfiguration();
@@ -1213,43 +1269,6 @@ public class JastAddJModel extends JastAddModel {
 			logError(e, "Problem checking errors");
 		} finally {
 			monitor.done();
-		}
-		
-	}
-
-	public Collection recoverCompletion(int documentOffset, StringBuffer buf,
-			IProject project, String fileName, IJastAddNode node) {
-		synchronized (node.treeLockObject()) {
-			if (node == null) {
-				// Try recovery
-				SOF sof = getRecoveryLexer().parse(buf);
-				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
-				Recovery.doRecovery(sof);
-				buf = Recovery.prettyPrint(sof);
-				documentOffset += recoveryNode.getInterval().getPushOffset();			
-				node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-				if (node == null) {
-					System.out.println("Structural recovery failed");
-					return new ArrayList();
-				}
-			}
-			if (node instanceof Access) {
-				Access n = (Access) node;
-				System.out.println("Automatic recovery");
-				System.out.println(n.getParent().getParent().dumpTree());
-				return n.completion("");
-			} else if (node instanceof ASTNode) {
-				ASTNode n = (ASTNode) node;
-				System.out.println("Manual recovery");
-				Expr newNode = new MethodAccess("X", new AST.List());
-				int childIndex = n.getNumChild();
-				n.addChild(newNode);
-				n = n.getChild(childIndex);
-				if (n instanceof Access)
-					n = ((Access) n).lastAccess();
-				return n.completion("");
-			}
-			return new ArrayList();
-		}
+		}	
 	}
 }

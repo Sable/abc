@@ -43,4 +43,6 @@ Export-Package: org.jastadd.plugin.jastaddj,
  org.jastadd.plugin.jastaddj.nature,
  org.jastadd.plugin.jastaddj.navigator,
  org.jastadd.plugin.jastaddj.perspective,
- org.jastadd.plugin.jastaddj.wizards
+ org.jastadd.plugin.jastaddj.wizards,
+ parser,
+ scanner

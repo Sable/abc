@@ -30,14 +30,74 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		return computeCompletionProposals(viewer.getDocument(), documentOffset);
 	}
 	
+	private final char DOT = '.';
+	
 	public ICompletionProposal[] computeCompletionProposals(IDocument document, int documentOffset) {
+		
+		String content = document.get();
+		StringBuffer buf = new StringBuffer(content);
+		
+		// Filter
+		String filter = extractFilter(content, documentOffset);
+		if (filter.equals(" ")) {
+			filter = "";
+		} else if (filter.equals(".")) {
+			filter = "";
+		}
+		int offset = documentOffset - filter.length();
+		String leftContent = "";
+		boolean withDot = false;
+		// If dot get the rest to the left
+		if (content.charAt(offset) == DOT) {
+			withDot = true;
+			leftContent = extractContentBeforeDot(content, offset);
+			// Mend with dot
+			if(leftContent.equals(""))
+				buf.replace(documentOffset - 1, documentOffset + filter.length(), "X()");  // replace ".abc" with "X()"
+			else if (filter.equals(""))
+				buf.replace(documentOffset - 1, documentOffset, ".X()");  // replace "abc." with "abc.X()"
+			else                             
+				buf.replace(documentOffset - 1, documentOffset, "X()"); // replace "abc.def" with "abc.dX()"			
+		} else {
+			// Mend without dot
+			if (filter.equals("")) {
+				buf.replace(documentOffset, documentOffset, "X()");
+			} else {
+				buf.replace(documentOffset, documentOffset, "()");
+			}
+		}
+		
 		try {
-			Collection proposals = new ArrayList();
-			String content = document.get();
+			// Collect proposals
+			Collection proposals = computeProposal(documentOffset, document, buf, filter, leftContent, withDot);
+			// Bundle up proposals and return
+			ICompletionProposal[] result = new ICompletionProposal[proposals.size()];
+			int i = 0;
+			for (Iterator iter = proposals.iterator(); iter.hasNext(); i++) {
+				ICompletionNode node = (ICompletionNode)iter.next();
+				result[i] = node.getCompletionProposal(filter, documentOffset, leftContent.length() != 0);
+			}
+			return result;
+		} catch (CoreException e) {
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+	/*	
+		try {
 			// Activated with a completion character
+			
 			String[] linePart = extractLineParts(content, documentOffset); // pos 0 - name, pos 1 - filter
 			if(linePart != null) {
-				proposals = computeProposal(documentOffset, linePart, document, content);
+				Collection proposals = computeProposal(documentOffset, linePart, document, content);
 				// Bundle up proposals and return
 				ICompletionProposal[] result = new ICompletionProposal[proposals.size()];
 				int i = 0;
@@ -47,6 +107,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 				}
 				return result;
 			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -54,10 +115,30 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
+	*/			
 		return new ICompletionProposal[] { };
-
 	}
 
+	private Collection computeProposal(int documentOffset, IDocument document, StringBuffer buf, String filter, String leftContent, boolean withDot) 
+			throws BadLocationException, IOException, Exception, CoreException {
+
+		JastAddModel model = JastAddModelProvider.getModel(document);
+		if (model != null) {
+			FileInfo fileInfo = model.documentToFileInfo(document);
+			if(fileInfo != null) {
+				IProject project = fileInfo.getProject();
+				String fileName = fileInfo.getPath().toOSString();
+				IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if(model instanceof JastAddJModel)
+					return ((JastAddJModel)model).recoverCompletion(documentOffset, buf, project, 
+							fileName, node, filter, leftContent, withDot);
+			}			
+		}
+
+		return new ArrayList();
+	}
+
+/*
 	private Collection computeProposal(int documentOffset, String[] linePart, IDocument document, String content) 
 	                                   throws BadLocationException, IOException, Exception, CoreException {
 		StringBuffer buf = new StringBuffer(content);
@@ -84,27 +165,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 	
 		return new ArrayList();
 	}
-	
-	private Collection computeProposal(int documentOffset, IDocument document, String content)  
-			throws BadLocationException, IOException, Exception, CoreException {
-		
-		StringBuffer buf = new StringBuffer(content);
-
-		JastAddModel model = JastAddModelProvider.getModel(document);
-		if (model != null) {
-			FileInfo fileInfo = model.documentToFileInfo(document);
-			if(fileInfo != null) {
-				IProject project = fileInfo.getProject();
-				String fileName = fileInfo.getPath().toOSString();
-				IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-				if(model instanceof JastAddJModel)
-					return ((JastAddJModel)model).recoverCompletion(documentOffset, buf, project, fileName, node);
-			}			
-		}
-
-		return new ArrayList();
-	}
-
+*/	
 	/**
 	 * Extracts name and filter from the content with the given offset.
 	 * 
@@ -125,6 +186,26 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		return linePart;
 	}
 
+	private String extractFilter(String s, int offset) {
+		int endOffset = offset;
+		offset--;
+		offset = extractIdentifier(s, offset, endOffset);
+		return s.substring(offset, endOffset);
+	}
+
+	private String extractContentBeforeDot(String s, int offset) {
+		int endOffset = offset;
+		while (s.charAt(offset) == DOT) {
+			offset--; // remove '.'
+			offset = extractParanBracketPairs(s, offset);
+			if (offset <= 0)
+				return "";
+			offset = extractIdentifier(s, offset, endOffset);
+		}
+		offset++; // exclude delimiting character	
+		return s.substring(offset, endOffset);
+	}
+	
 	/**
 	 * Backwards extracts an identifier
 	 * 
@@ -145,6 +226,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		return offset;
 	}
 
+	
 	/**
 	 * Extracts pairs of parans and brackets
 	 * 
@@ -186,7 +268,8 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		}
 		return offset;
 	}
-
+	
+		
 	/**
 	 * Extracts a name backwards
 	 * 

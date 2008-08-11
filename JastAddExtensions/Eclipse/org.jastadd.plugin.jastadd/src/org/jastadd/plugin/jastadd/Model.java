@@ -52,7 +52,6 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
-import org.jastadd.plugin.jastaddj.model.JastAddJModel.ProgramInfo;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -424,13 +423,16 @@ public class Model extends JastAddJModel {
 		}
 	}
 	
+	
+	
+	/*
 	public Collection recoverCompletion(int documentOffset, String[] linePart, StringBuffer buf, IProject project, String fileName, IJastAddNode node) throws IOException, Exception {
 		if(node == null) { 
 			// Try a structural recovery
-			/* Old recovery 
-			 documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
-			 */
-			/* New recovery */
+			// Old recovery 
+			 //documentOffset += (new JastAddStructureModel(buf)).doRecovery(documentOffset); // Return recovery offset change
+			 
+			// New recovery 
 			SOF sof = getRecoveryLexer().parse(buf);
 			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
 			Recovery.doRecovery(sof);
@@ -483,7 +485,7 @@ public class Model extends JastAddJModel {
 		}	
 		return new ArrayList();
 	}	
-	
+	*/
 	protected void updateModel(IDocument document, String fileName, IProject project) {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
@@ -725,4 +727,63 @@ public class Model extends JastAddJModel {
 		}
 		*/
 	}
+  	
+  	/*
+	public Collection recoverCompletion(int documentOffset, StringBuffer buf, 
+			IProject project, String fileName, IJastAddNode node, String filter, 
+			String leftContent, boolean withDot) throws IOException, Exception {
+		synchronized (node.treeLockObject()) {
+			if (node == null) {
+				// Try recovery
+				SOF sof = getRecoveryLexer().parse(buf);
+				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+				Recovery.doRecovery(sof);
+				buf = Recovery.prettyPrint(sof);
+				documentOffset += recoveryNode.getInterval().getPushOffset();			
+				node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+				if (node == null) {
+					System.out.println("Structural recovery failed");
+					return new ArrayList();
+				}
+			}
+			if (node instanceof Access) {
+				Access n = (Access) node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion(filter);
+			} else if (node instanceof ASTNode) {
+				ASTNode n = (ASTNode) node;
+				System.out.println("Manual recovery");
+				Expr newNode;
+				if (leftContent.length() != 0) {
+					String nameWithParan = "(" + leftContent + ")";
+					ByteArrayInputStream is = new ByteArrayInputStream(
+							nameWithParan.getBytes());
+					scanner.JavaScanner scanner = new scanner.JavaScanner(
+							new scanner.Unicode(is));
+					newNode = (Expr) ((ParExpr) new parser.JavaParser().parse(
+							scanner, parser.JavaParser.AltGoals.expression))
+							.getExprNoTransform();
+					newNode = newNode.qualifiesAccess(new MethodAccess("X",
+							new org.jastadd.plugin.jastadd.generated.AST.List()));
+				} else {
+					newNode = new MethodAccess("X", 
+							new org.jastadd.plugin.jastadd.generated.AST.List());
+				}
+
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof Access)
+					n = ((Access) n).lastAccess();
+				// System.out.println(node.dumpTreeNoRewrite());
+
+				// Use the connection to the dummy AST to do name
+				// completion
+				return n.completion(filter);
+			}
+			return new ArrayList();
+		}
+	}
+	*/
 }

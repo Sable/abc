@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -43,16 +42,13 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 		public boolean updateBuildConfiguration();		
 	}
 		
-	protected List<IPage> buildPages() {
-		List<IPage> list = new ArrayList<IPage>();
-		list.add(new SourcePathPage(getShell(), project, buildConfiguration));
-		list.add(new ClassPathPage(getShell(), buildConfiguration));
-		return list;
+	
+	protected void addPages(List<IPage> pageList) {
+		pageList.add(new SourcePathPage(getShell(), project, buildConfiguration));
+		pageList.add(new ClassPathPage(getShell(), buildConfiguration));
 	}
 	
-	protected Control createContents(Composite parent) {
-		this.noDefaultAndApplyButton();
-
+	protected void initContents() {
 		// Collect data
 		project = (IProject) getElement().getAdapter(IProject.class);
 		model = JastAddModelProvider.getModel(project, JastAddJModel.class);
@@ -63,7 +59,24 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 			buildConfiguration = model.getDefaultBuildConfiguration();
 			needsSave = true;
 		}
+	}
 
+	protected void doSave() throws CoreException {
+		model.writeBuildConfiguration(project, buildConfiguration);
+	}
+
+	
+	protected List<IPage> buildPages() {
+		List<IPage> list = new ArrayList<IPage>();
+		addPages(list);
+		return list;
+	}
+	
+	protected Control createContents(Composite parent) {
+		this.noDefaultAndApplyButton();
+
+		initContents();
+	
 		// Build UI
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setFont(parent.getFont());
@@ -102,7 +115,7 @@ public class JastAddJBuildConfigurationPropertyPage extends PropertyPage {
 				ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor)
 							throws CoreException, OperationCanceledException {
-						model.writeBuildConfiguration(project, buildConfiguration);
+						doSave();
 					}
 				}, new NullProgressMonitor());
 			} catch (CoreException e) {
