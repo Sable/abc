@@ -2,6 +2,7 @@
 
 package org.jastadd.plugin.jastadd;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -20,19 +21,26 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
+import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
 import org.jastadd.plugin.jastadd.generated.AST.ASTOptionalChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
+import org.jastadd.plugin.jastadd.generated.AST.Access;
 import org.jastadd.plugin.jastadd.generated.AST.AttributeDecl;
 import org.jastadd.plugin.jastadd.generated.AST.BytecodeParser;
 import org.jastadd.plugin.jastadd.generated.AST.CompilationUnit;
+import org.jastadd.plugin.jastadd.generated.AST.Expr;
 import org.jastadd.plugin.jastadd.generated.AST.JavaParser;
+import org.jastadd.plugin.jastadd.generated.AST.MethodAccess;
 import org.jastadd.plugin.jastadd.generated.AST.MethodDecl;
+import org.jastadd.plugin.jastadd.generated.AST.ParExpr;
 import org.jastadd.plugin.jastadd.generated.AST.Program;
 import org.jastadd.plugin.jastadd.generated.AST.SimpleSet;
 import org.jastadd.plugin.jastadd.generated.AST.TypeDecl;
@@ -43,6 +51,9 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.model.repair.LexicalNode;
+import org.jastadd.plugin.model.repair.Recovery;
+import org.jastadd.plugin.model.repair.SOF;
 import org.jastadd.plugin.resources.JastAddNature;
 
 import beaver.Parser.Exception;
@@ -730,11 +741,84 @@ public class Model extends JastAddJModel {
 		}
 		*/
 	}
+
+	@Override
+	public Collection recoverAndCompletion(int documentOffset,
+			StringBuffer buf, IProject project, String fileName,
+			IJastAddNode node, String filter, String leftContent)
+			throws IOException, java.lang.Exception {
+		if (node == null) {
+			// Try recovery
+			SOF sof = getRecoveryLexer().parse(buf);
+			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			documentOffset += recoveryNode.getInterval().getPushOffset();			
+			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
+			if (node == null) {
+				System.out.println("Structural recovery failed");
+				return new ArrayList();
+			}
+		}
+
+		synchronized (node.treeLockObject()) {			
+			if (node instanceof org.jastadd.plugin.jastadd.generated.AST.Access) {
+				org.jastadd.plugin.jastadd.generated.AST.Access n = 
+					(org.jastadd.plugin.jastadd.generated.AST.Access) node;
+				System.out.println("Automatic recovery");
+				System.out.println(n.getParent().getParent().dumpTree());
+				return n.completion(filter);
+			} else if (node instanceof org.jastadd.plugin.jastadd.generated.AST.ASTNode) {
+				org.jastadd.plugin.jastadd.generated.AST.ASTNode n = 
+					(org.jastadd.plugin.jastadd.generated.AST.ASTNode) node;
+				System.out.println("Manual recovery");
+				org.jastadd.plugin.jastadd.generated.AST.Expr newNode;
+				
+				if (leftContent.length() != 0) {
+					
+					String nameWithParan = "(" + leftContent + ")";
+					ByteArrayInputStream is = new ByteArrayInputStream(
+							nameWithParan.getBytes());
+					org.jastadd.plugin.jastadd.scanner.JavaScanner scanner = 
+						new org.jastadd.plugin.jastadd.scanner.JavaScanner(
+							new scanner.Unicode(is));
+					
+					Object obj = new org.jastadd.plugin.jastadd.parser.JavaParser().parse(
+							scanner, org.jastadd.plugin.jastadd.parser.JavaParser.AltGoals.expression);
+					newNode = (org.jastadd.plugin.jastadd.generated.AST.Expr) 
+						((org.jastadd.plugin.jastadd.generated.AST.ParExpr)obj)
+						.getExprNoTransform();
+					
+					newNode = newNode.qualifiesAccess(
+							new org.jastadd.plugin.jastadd.generated.AST.MethodAccess("X",
+							new org.jastadd.plugin.jastadd.generated.AST.List()));
+					
+				} else {
+					newNode = new org.jastadd.plugin.jastadd.generated.AST.MethodAccess("X", 
+							new org.jastadd.plugin.jastadd.generated.AST.List());
+				}
+				
+				int childIndex = n.getNumChild();
+				n.addChild(newNode);
+				n = n.getChild(childIndex);
+				if (n instanceof org.jastadd.plugin.jastadd.generated.AST.Access)
+					n = ((org.jastadd.plugin.jastadd.generated.AST.Access) n).lastAccess();
+				// System.out.println(node.dumpTreeNoRewrite());
+
+				// Use the connection to the dummy AST to do name
+				// completion
+				return n.completion(filter);
+			}
+			return new ArrayList();
+		}
+	}
   	
-  	/*
-	public Collection recoverCompletion(int documentOffset, StringBuffer buf, 
+  	
+  	
+/*
+	public Collection recoverAndCompletion(int documentOffset, StringBuffer buf, 
 			IProject project, String fileName, IJastAddNode node, String filter, 
-			String leftContent, boolean withDot) throws IOException, Exception {
+			String leftContent) throws IOException, Exception {
 		synchronized (node.treeLockObject()) {
 			if (node == null) {
 				// Try recovery
@@ -788,5 +872,5 @@ public class Model extends JastAddJModel {
 			return new ArrayList();
 		}
 	}
-	*/
+*/
 }

@@ -32,7 +32,7 @@ public class JastAddJTypeHierarchyView extends JastAddBaseHierarchyView<IJastAdd
 	public static void activate(IJastAddNode input) throws CoreException {
 		input = filterNode(input);
 		if (input == null) return;
-
+		
 		JastAddJTypeHierarchyView view = (JastAddJTypeHierarchyView) activate(VIEW_ID);
 		view.setInput(input);
 	}

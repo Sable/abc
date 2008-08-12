@@ -38,18 +38,23 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 		StringBuffer buf = new StringBuffer(content);
 		
 		// Filter
+		boolean withDot = false;
+		int offset = documentOffset;
 		String filter = extractFilter(content, documentOffset);
 		if (filter.equals(" ")) {
 			filter = "";
-		} else if (filter.equals(".")) {
-			filter = "";
-		}
-		int offset = documentOffset - filter.length();
-		String leftContent = "";
-		boolean withDot = false;
-		// If dot get the rest to the left
-		if (content.charAt(offset) == DOT) {
+		} else if (filter.startsWith(".")) {
 			withDot = true;
+			filter = filter.substring(1);
+			offset -= filter.length() + 1;
+		} else {
+			offset -= filter.length();
+		}
+		
+		String leftContent = "";
+
+		// If dot get the rest to the left
+		if (withDot) {
 			leftContent = extractContentBeforeDot(content, offset);
 			// Mend with dot
 			if(leftContent.equals(""))
@@ -75,7 +80,7 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 			int i = 0;
 			for (Iterator iter = proposals.iterator(); iter.hasNext(); i++) {
 				ICompletionNode node = (ICompletionNode)iter.next();
-				result[i] = node.getCompletionProposal(filter, documentOffset, leftContent.length() != 0);
+				result[i] = node.getCompletionProposal(filter, documentOffset, withDot && leftContent.length() != 0);
 			}
 			return result;
 		} catch (CoreException e) {
@@ -130,8 +135,8 @@ public class JastAddJCompletionProcessor implements IContentAssistProcessor {
 				String fileName = fileInfo.getPath().toOSString();
 				IJastAddNode node = model.findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 				if(model instanceof JastAddJModel)
-					return ((JastAddJModel)model).recoverCompletion(documentOffset, buf, project, 
-							fileName, node, filter, leftContent, withDot);
+					return ((JastAddJModel)model).recoverAndCompletion(documentOffset, buf, project, 
+							fileName, node, filter, leftContent);
 			}			
 		}
 

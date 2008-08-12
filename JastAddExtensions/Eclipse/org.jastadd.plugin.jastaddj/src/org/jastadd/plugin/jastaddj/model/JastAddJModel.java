@@ -1139,23 +1139,30 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 	
-	public Collection recoverCompletion(int documentOffset, StringBuffer buf, 
+	public Collection test(int offset, StringBuffer buf, IProject project, 
+			String name, IJastAddNode node, String filter, String content) {
+		return new ArrayList();
+	}
+	
+	public Collection recoverAndCompletion(int documentOffset, StringBuffer buf, 
 			IProject project, String fileName, IJastAddNode node, String filter, 
-			String leftContent, boolean withDot) throws IOException, Exception {
-		synchronized (node.treeLockObject()) {
+			String leftContent) throws IOException, Exception {
+
+		if (node == null) {
+			// Try recovery
+			SOF sof = getRecoveryLexer().parse(buf);
+			LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
+			Recovery.doRecovery(sof);
+			buf = Recovery.prettyPrint(sof);
+			documentOffset += recoveryNode.getInterval().getPushOffset();			
+			node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
 			if (node == null) {
-				// Try recovery
-				SOF sof = getRecoveryLexer().parse(buf);
-				LexicalNode recoveryNode = Recovery.findNodeForOffset(sof, documentOffset);
-				Recovery.doRecovery(sof);
-				buf = Recovery.prettyPrint(sof);
-				documentOffset += recoveryNode.getInterval().getPushOffset();			
-				node = findNodeInDocument(project, fileName, new Document(buf.toString()), documentOffset - 1);
-				if (node == null) {
-					System.out.println("Structural recovery failed");
-					return new ArrayList();
-				}
+				System.out.println("Structural recovery failed");
+				return new ArrayList();
 			}
+		}
+
+		synchronized (node.treeLockObject()) {
 			if (node instanceof Access) {
 				Access n = (Access) node;
 				System.out.println("Automatic recovery");

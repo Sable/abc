@@ -5,5 +5,6 @@ aspect Selection {
 	syn int ASTNode.selectionLine() = getBeginLine();
 	syn int ASTNode.selectionColumn() = getBeginColumn();
 	syn int ASTNode.selectionLength() = getEndColumn() - selectionColumn() + 1;
-	
+	syn int ASTNode.selectionEndLine() = getEndLine();
+	syn int ASTNode.selectionEndColumn() = getEndColumn();
 }

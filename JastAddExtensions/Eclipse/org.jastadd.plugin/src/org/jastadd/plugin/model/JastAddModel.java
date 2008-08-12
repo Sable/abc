@@ -277,15 +277,15 @@ public abstract class JastAddModel {
 		IMarker marker = file.createMarker(PARSE_ERROR_MARKER_TYPE);
 		marker.setAttribute(IMarker.MESSAGE, message);
 		marker.setAttribute(IMarker.SEVERITY, severity);
-		if (startOffset < 0)
-			startOffset = 1;
-		if (startOffset == endOffset) 
-			endOffset++;
-		else if (endOffset < startOffset)
-			endOffset = startOffset + 1;
-		marker.setAttribute(IMarker.CHAR_START, startOffset);
-		marker.setAttribute(IMarker.CHAR_END, endOffset);
+		if (line < 0)
+			line = 1;
 		marker.setAttribute(IMarker.LINE_NUMBER, line);
+		if (startOffset > 0 && endOffset > 0 && endOffset > startOffset) {
+			marker.setAttribute(IMarker.CHAR_START, startOffset);
+			marker.setAttribute(IMarker.CHAR_END, endOffset);
+		} else {
+			System.out.println("Bad parse error marker: line=" + line + ", startOffset=" + startOffset + ", endOffset=" + endOffset);
+		}
 	}
 	
 	protected void addErrorMarker(IResource resource, String message, int line, 
@@ -305,15 +305,15 @@ public abstract class JastAddModel {
 		IMarker marker = file.createMarker(ERROR_MARKER_TYPE);
 		marker.setAttribute(IMarker.MESSAGE, message);
 		marker.setAttribute(IMarker.SEVERITY, severity);
-		if (startOffset < 0)
-			startOffset = 1;
-		if (startOffset == endOffset) 
-			endOffset++;
-		else if (endOffset < startOffset)
-			endOffset = startOffset + 1;
-		marker.setAttribute(IMarker.CHAR_START, startOffset);
-		marker.setAttribute(IMarker.CHAR_END, endOffset);
+		if (line < 0)
+			line = 1;
 		marker.setAttribute(IMarker.LINE_NUMBER, line);
+		if (startOffset > 0 && endOffset > 0 && endOffset > startOffset) {
+			marker.setAttribute(IMarker.CHAR_START, startOffset);
+			marker.setAttribute(IMarker.CHAR_END, endOffset);
+		} else {
+			System.out.println("Bad error marker: line=" + line + ", startOffset=" + startOffset + ", endOffset=" + endOffset);
+		}
 	}
 	
 	protected void deleteErrorMarkers(String markerType, IResource resource) throws CoreException {
