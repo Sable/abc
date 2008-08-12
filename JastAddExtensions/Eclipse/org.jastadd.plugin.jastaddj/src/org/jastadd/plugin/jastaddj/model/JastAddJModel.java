@@ -171,6 +171,17 @@ public class JastAddJModel extends JastAddModel {
 	public String[] getFilterExtensions() {
 		return new String[] { ".project", "*.java.dummy", "*.class" };
 	}
+	
+	protected String[] filterNames = {"bin",".classpath"};
+	
+	public boolean filterInExplorer(String resourceName) {	
+		for (int i = 0; i < filterNames.length; i++) {
+			if (resourceName.equals(filterNames[i])) {
+				return true;
+			}
+		}
+		return super.filterInExplorer(resourceName);
+	}
 
 	public void openFile(IJastAddNode node) {
 		if (node instanceof IJastAddJFindDeclarationNode) {

@@ -124,15 +124,4 @@ public class JastAddJExplorer extends JastAddBaseExplorer implements
 
 	private class MyProblemLabelDecorator extends BaseProblemLabelDecorator {
 	}
-	
-	protected String[] filterNames = {"bin"};
-	
-	protected boolean shouldBeFiltered(String resourceName) {	
-		for (int i = 0; i < filterNames.length; i++) {
-			if (resourceName.equals(filterNames[i])) {
-				return true;
-			}
-		}
-		return super.shouldBeFiltered(resourceName);
-	}
 }

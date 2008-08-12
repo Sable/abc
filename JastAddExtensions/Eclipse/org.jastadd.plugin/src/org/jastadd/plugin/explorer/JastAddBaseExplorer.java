@@ -1,12 +1,14 @@
 package org.jastadd.plugin.explorer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -455,23 +457,23 @@ public abstract class JastAddBaseExplorer extends ResourceNavigator implements
 			super.handleOpen(event);
 	}
 	
-	protected String[] filterNames = {".project"};
+	protected JastAddModel model;
 	
-	protected boolean shouldBeFiltered(String resourceName) {	
-		for (int i = 0; i < filterNames.length; i++) {
-			if (resourceName.equals(filterNames[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected Object[] filter(Object[] children) {
 		ArrayList childList = new ArrayList();
 		for (int i = 0; i < children.length; i++) {
-			if (children[i] instanceof IResource) {
+			if (model == null || children[i] instanceof IProject) {
+				IProject project = (IProject)children[i];
+				Collection<JastAddModel> modelList = JastAddModelProvider.getModels(project);
+				for (JastAddModel m : modelList) {
+					model = m;
+					// Can there be more than one possible model?
+				}
+			}
+			if (model != null && children[i] instanceof IResource) {
+				
 				IResource res = (IResource)children[i];
-				if (!shouldBeFiltered(res.getName())) {
+				if (!model.filterInExplorer(res.getName())) {
 					childList.add(res);
 				}
 			} else {

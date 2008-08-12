@@ -449,7 +449,15 @@ public abstract class JastAddModel {
 		}
 		MessageDialog.openError(shell, title, msg.toString());			
 	}
+
+	protected String[] filterNames = {".project"};
 	
-	
-	
+	public boolean filterInExplorer(String resourceName) {
+		for (int i = 0; i < filterNames.length; i++) {
+			if (resourceName.equals(filterNames[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
