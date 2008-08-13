@@ -4,7 +4,7 @@ package query;
 import types.ResultSet;
 
 public class MySQLQuery {
-	public ResultSet query() {
+	public ResultSet runQuery() {
 		return new ResultSet("MySQL");
 	}
 }

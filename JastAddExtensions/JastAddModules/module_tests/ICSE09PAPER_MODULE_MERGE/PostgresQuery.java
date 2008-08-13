@@ -4,7 +4,7 @@ package query;
 import types.ResultSet;
 
 public class PostgresQuery {
-	public ResultSet query() {
+	public ResultSet runQuery() {
 		return new ResultSet("Postgres");
 	}
 }

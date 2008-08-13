@@ -10,11 +10,11 @@ public class Main {
 
 		ResultSet s = null;
 		if (mysql) {
-			s = new MySQLQuery().query();
+			s = new MySQLQuery().runQuery();
 		} 
 		System.out.println(s.getSource());
 		if (postgres) {
-			s = new PostgresQuery().query();
+			s = new PostgresQuery().runQuery();
 		}
 		System.out.println(s.getSource());
 	}
