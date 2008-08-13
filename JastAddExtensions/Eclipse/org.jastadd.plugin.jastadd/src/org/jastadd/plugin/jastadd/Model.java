@@ -30,6 +30,7 @@ import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
 import org.jastadd.plugin.jastadd.generated.AST.ASTElementChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTListChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTNode;
+import org.jastadd.plugin.jastadd.generated.AST.List;
 import org.jastadd.plugin.jastadd.generated.AST.ASTOptionalChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTTokenChild;
 import org.jastadd.plugin.jastadd.generated.AST.Access;
@@ -125,8 +126,12 @@ public class Model extends JastAddJModel {
 		program.options().addKeyValueOption("-d");
 		addBuildConfigurationOptions(project, program, buildConfiguration);
 		program.options().setOption("-verbose");
-		program.options().addKeyOption("-weave_inline");
-		program.options().setOption("-weave_inline");
+		program.options().setOption("-no_visit_check");
+		program.options().setOption("-inh_in_astnode");
+		program.options().setOption("-no_cache_cycle");
+		program.options().setOption("-no_component_check");
+		//program.options().addKeyOption("-weave_inline");
+		//program.options().setOption("-weave_inline");
 		return program;	   
 	}
 	
@@ -308,17 +313,22 @@ public class Model extends JastAddJModel {
 	protected void completeBuild(IProject project, IProgressMonitor monitor) {
 		ProgramInfo info = getProgramInfo(project);
 		if (info != null && info.hasChaged()) {
-			
-		    // Only build if there was a change
-	
-		// Build a new project from saved files only.
-		try {
+
+			// Only build if there was a change
+
+			// Build a new project from saved files only.
+			Program program = null;
+			long startTime = System.currentTimeMillis();
+			long newTime;
+			//Runtime.getRuntime().gc();
+			System.out.println("Start rebuilding");
+			System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+			System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
 			try {
-				
 				deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, project);
 				deleteErrorMarkers(ERROR_MARKER_TYPE, project);
 
-				
+
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
 				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
 
@@ -326,16 +336,18 @@ public class Model extends JastAddJModel {
 				buildJFlexScanner(project, jastAddBuildConfig);
 				buildBeaverParser(project, jastAddBuildConfig);
 
-				Program program = (Program) initProgram(project, buildConfiguration);
+				program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
-				// Synchronize in complete build ?
-				synchronized(program) {
+
+				int numSourceFiles = 0;
+
+				long time = System.currentTimeMillis();
 
 				Map<String,IFile> map = sourceMap(project, buildConfiguration);			
-				
+
 				monitor.beginTask("Building files in project " + project.getName(), 100);
-				SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 30);
+				SubProgressMonitor subMonitor = new SubProgressMonitor(monitor, 10);
 				subMonitor.beginTask("", map.keySet().size());
 				if (map != null) {
 					for(String fileName : map.keySet()) {
@@ -344,24 +356,25 @@ public class Model extends JastAddJModel {
 							return;
 						}
 						subMonitor.worked(1);
+						numSourceFiles++;
 					}
 				}
 				subMonitor.done();
-				
+
+				newTime = System.currentTimeMillis();
+				System.out.println("Parsing: " + (newTime-time));
+				time = newTime;
+
 				boolean build = true;
-		
+
 				subMonitor = new SubProgressMonitor(monitor, 30);
-				subMonitor.beginTask("", map.keySet().size());
+				subMonitor.beginTask("", numSourceFiles);
 				for (Iterator iter = program.compilationUnitIterator(); iter.hasNext();) {
 					ICompilationUnit unit = (ICompilationUnit) iter.next();
 
 					if (unit.fromSource()) {
 						IFile unitFile = map.get(unit.getFileName());
 						build &= updateErrorsInFile(unit, unitFile, true);
-						//if (build) {
-							// unit.java2Transformation();
-							// unit.generateClassfile();
-						//}
 						if (monitor.isCanceled()) {
 							return;
 						}
@@ -370,29 +383,49 @@ public class Model extends JastAddJModel {
 				}
 				subMonitor.done();
 
+				newTime = System.currentTimeMillis();
+				System.out.println("ErrorCheck: " + (newTime-time));
+				time = newTime;
+
+
 				// Use for the bootstrapped version of JastAdd
 
-				subMonitor = new SubProgressMonitor(monitor, 40);
-				subMonitor.beginTask("", map.keySet().size()*3);
+				subMonitor = new SubProgressMonitor(monitor, 60);
+				subMonitor.beginTask("", numSourceFiles*3);
 				if (build) {
-					program.generateIntertypeDecls();
-					if (monitor.isCanceled()) {
-						return;
+					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+						CompilationUnit cu = (CompilationUnit)iter.next();
+						if(cu.fromSource()) {
+							cu.generateIntertypeDecls();
+							if(monitor.isCanceled())
+								return;
+							subMonitor.worked(1);
+						}
 					}
-					subMonitor.worked(1);
-					
-					program.transformation();
-					if (monitor.isCanceled()) {
-						return;
+					newTime = System.currentTimeMillis();
+					System.out.println("ITD generation: " + (newTime-time));
+					time = newTime;
+					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
+						CompilationUnit cu = (CompilationUnit)iter.next();
+						if(cu.fromSource()) {
+							cu.transformation();
+							if(monitor.isCanceled())
+								return;
+							subMonitor.worked(1);
+						}
 					}
-					subMonitor.worked(1);
-					
+					newTime = System.currentTimeMillis();
+					System.out.println("Transformation: " + (newTime-time));
+					time = newTime;
 					for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
 						CompilationUnit cu = (CompilationUnit)iter.next();
 						if(cu.fromSource()) {
 							for(int i = 0; i < cu.getNumTypeDecl(); i++) {
 								cu.getTypeDecl(i).generateClassfile();
+								// do not clear type decl since there may be ITD using
+								// matching on introduced parents.
 							}
+							//cu.clear();
 							if (monitor.isCanceled()) {
 								// Remove class files before return
 								removeAllGeneratedClassFiles(project, buildConfiguration, monitor);
@@ -401,25 +434,49 @@ public class Model extends JastAddJModel {
 							subMonitor.worked(1);
 						}
 					}
+					newTime = System.currentTimeMillis();
+					System.out.println("Codegeneration: " + (newTime-time));
+					time = newTime;
 				}
 				subMonitor.done();
 				info.clearChanges();
-				}
 			} catch (CoreException e) {
-				addErrorMarker(project, "Build failed because: "
-						+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
-				logCoreException(e);
+				try {
+					addErrorMarker(project, "Build failed because: "
+							+ e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+					logCoreException(e);
+				} catch(CoreException f) {
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
+				logError(e, "Build failed!");
+			} finally {
+				monitor.done();
+				program.getCompilationUnitList().setParent(null);
+				program.setCompilationUnitList(new List());
+				program.flushAttributes();
+				program = null;
+				newTime = System.currentTimeMillis();
+				System.out.println("Complete Build: " + (newTime-startTime));
+				System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+				System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
+				System.out.println("Running garbage collector");
+				//Runtime.getRuntime().gc();
+				System.out.println("Free memory: " + Runtime.getRuntime().freeMemory());
+				System.out.println("Total memory: " + Runtime.getRuntime().totalMemory());
 			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			logError(e, "Build failed!");
-		} finally {
-			monitor.done();
+		}
+	}
+		
+	private static void clearProgram(ASTNode node) {
+		node.flushCache();
+		for(int i = 0; i < node.getNumChild(); i++) {
+			ASTNode child = node.getChild(i);
+			node.setChild(null, i);
+			child.setParent(null);
+			clearProgram(node.getChild(i));
 		}
 		
-		} else {
-			// Avoiding build because there was no change
-		}
 	}
 	
 	

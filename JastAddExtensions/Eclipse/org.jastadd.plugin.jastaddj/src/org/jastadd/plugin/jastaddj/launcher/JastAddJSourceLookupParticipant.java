@@ -54,7 +54,13 @@ public class JastAddJSourceLookupParticipant extends AbstractSourceLookupPartici
 	 * @exception CoreException if unable to retrieve the source name
 	 */
 	public String getSourceName(Object object) throws CoreException {
-		return JavaDebugUtils.getSourceName(object); 
+		// TODO: if ends with .jrag, .ast, .jadd then we need to do additional search....
+		String name = JavaDebugUtils.getSourceName(object);
+		if(name.endsWith(".jrag") || name.endsWith(".ast") || name.endsWith(".jadd")) {
+			int index = name.lastIndexOf('/');
+			name = name.substring(index + 1);
+		}
+		return name;
 	}	
 
 	/* (non-Javadoc)
