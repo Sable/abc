@@ -43,7 +43,6 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.LibraryLocation;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.IEditorInput;
@@ -60,7 +59,6 @@ import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
 import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IJastAddJFindDeclarationNode;
-import org.jastadd.plugin.jastaddj.AST.IProblem;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfigurationUtil;
@@ -69,7 +67,6 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
-import org.jastadd.plugin.jastaddj.model.repair.JavaLexer;
 import org.jastadd.plugin.jastaddj.model.repair.JavaLexerIII;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.model.JastAddModel;
@@ -87,7 +84,6 @@ import AST.IDEProblem;
 import AST.JavaParser;
 import AST.MethodAccess;
 import AST.ParExpr;
-import AST.Problem;
 import AST.Program;
 
 public class JastAddJModel extends JastAddModel {
@@ -486,6 +482,18 @@ public class JastAddJModel extends JastAddModel {
 	}
 	
 	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
+		String content;
+		try {
+			content = readTextFile(file.getRawLocation().toOSString());
+			return updateErrorsInFile(unit, file, content, checkSemantics);
+		} catch (IOException e) {
+			logError(e, "Problem reading file content when updating errors markers");
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, String content, boolean checkSemantics) throws CoreException {
 		deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, file);
 		Collection errors = unit.parseErrors();
 		Collection warnings = new LinkedList();
@@ -495,39 +503,36 @@ public class JastAddJModel extends JastAddModel {
 		}
 		errors.addAll(warnings);
 		if (!errors.isEmpty()) {
-			try {
-				String content = readTextFile(file.getRawLocation().toOSString());
-				for (Iterator i2 = errors.iterator(); i2.hasNext();) {
-						org.jastadd.plugin.jastaddj.AST.IProblem error = 
-							(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
-						int line = error.line();
-						int endLine = error.endLine();
-						int column = error.column();
-						int endColumn = error.endColumn();
-						if (line == -1)
-							line = 1;
-						int startOffset = lookupOffset(line-1, column-1, content);
-						if (endLine == -1)
-							endLine = 1;
-						int endOffset = lookupOffset(endLine-1, endColumn-1, content); 
 
-						if (startOffset == endOffset)
-							endOffset++;
-						
-						String message = error.message();
-						int severity = IMarker.SEVERITY_INFO;
-						if (error.severity() == IDEProblem.Severity.ERROR)
-							severity = IMarker.SEVERITY_ERROR;
-						else if (error.severity() == IDEProblem.Severity.WARNING)
-							severity = IMarker.SEVERITY_WARNING;
-						if (error.kind() == IDEProblem.Kind.LEXICAL
-								|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
-							addParseErrorMarker(file, message, line, startOffset, endOffset, severity);
-						} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
-							addErrorMarker(file, message, line, startOffset, endOffset, severity);
-						}	
-				}
-			} catch (IOException e) {
+			for (Iterator i2 = errors.iterator(); i2.hasNext();) {
+				org.jastadd.plugin.jastaddj.AST.IProblem error = 
+					(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
+				int line = error.line();
+				int endLine = error.endLine();
+				int column = error.column();
+				int endColumn = error.endColumn();
+				if (line == -1)
+					line = 1;
+				int startOffset = lookupOffset(line-1, column-1, content);
+				if (endLine == -1)
+					endLine = 1;
+				int endOffset = lookupOffset(endLine-1, endColumn-1, content); 
+
+				if (startOffset == endOffset)
+					endOffset++;
+
+				String message = error.message();
+				int severity = IMarker.SEVERITY_INFO;
+				if (error.severity() == IDEProblem.Severity.ERROR)
+					severity = IMarker.SEVERITY_ERROR;
+				else if (error.severity() == IDEProblem.Severity.WARNING)
+					severity = IMarker.SEVERITY_WARNING;
+				if (error.kind() == IDEProblem.Kind.LEXICAL
+						|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
+					addParseErrorMarker(file, message, line, startOffset, endOffset, severity);
+				} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
+					addErrorMarker(file, message, line, startOffset, endOffset, severity);
+				}	
 			}
 			return false;
 		}
@@ -573,7 +578,7 @@ public class JastAddJModel extends JastAddModel {
 			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 			.findFilesForLocation(path);
 			if (files.length == 1)
-				updateErrorsInFile(unit, files[0], true);
+				updateErrorsInFile(unit, files[0], doc.get(), true);
     	}
       }
 
