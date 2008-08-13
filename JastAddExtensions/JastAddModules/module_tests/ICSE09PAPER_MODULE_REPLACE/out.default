@@ -1,0 +1,202 @@
+Arguments: 
+-debug -d classes -instance-module myapplication javadocgenerator.module myapplication.module parserV1_1.module parserV1_2.module parserV2.module scanner.module staticanalyzer.module JavadocGenerator.java Main.java MyApplication.java Scanner.java StaticAnalyzer.java v11/Parser.java v12/Parser.java v12/XMLParser.java v2/Parser.java v2/XMLParser.java End arguments
+----------Module contents----------
+------v2/XMLParser.java------
+module: module parserV2;;
+module CU : parserV2.module
+module name : parserV2
+------------------------
+------v11/Parser.java------
+module: module parserV1_1;;
+module CU : parserV1_1.module
+module name : parserV1_1
+------------------------
+------parserV2.module------
+module parserV2;
+------------------------
+------MyApplication.java------
+module: module myapplication;;
+module CU : myapplication.module
+module name : myapplication
+------------------------
+------v2/Parser.java------
+module: module parserV2;;
+module CU : parserV2.module
+module name : parserV2
+------------------------
+------Scanner.java------
+module: module scanner;;
+module CU : scanner.module
+module name : scanner
+------------------------
+------scanner.module------
+module scanner;
+------------------------
+------v12/XMLParser.java------
+module: module parserV1_2;;
+module CU : parserV1_2.module
+module name : parserV1_2
+------------------------
+------parserV1_1.module------
+module parserV1_1;
+import own scanner export as scanner;
+------------------------
+------staticanalyzer.module------
+module staticanalyzer;
+import own parserV1_1 export as parser;
+------------------------
+------StaticAnalyzer.java------
+module: module staticanalyzer;;
+module CU : staticanalyzer.module
+module name : staticanalyzer
+------------------------
+------JavadocGenerator.java------
+module: module javadocgenerator;;
+module CU : javadocgenerator.module
+module name : javadocgenerator
+------------------------
+------myapplication.module------
+module myapplication;
+import own staticanalyzer as none null;
+import own javadocgenerator as none null;
+import own parserV2 as none null;
+------------------------
+------v12/Parser.java------
+module: module parserV1_2;;
+module CU : parserV1_2.module
+module name : parserV1_2
+------------------------
+------parserV1_2.module------
+module parserV1_2 extends parserV1_1;
+------------------------
+------javadocgenerator.module------
+module javadocgenerator;
+import own parserV1_2 export as parser;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+----------CU AST before insert----------
+v2/XMLParser.java package:parser
+v11/Parser.java package:parser
+module: parserV2, file: parserV2.module, base module: parserV2
+MyApplication.java package:
+v2/Parser.java package:parser
+Scanner.java package:scanner
+module: scanner, file: scanner.module, base module: scanner
+v12/XMLParser.java package:parser
+module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
+module: staticanalyzer, file: staticanalyzer.module, base module: staticanalyzer
+StaticAnalyzer.java package:
+JavadocGenerator.java package:
+module: myapplication, file: myapplication.module, base module: myapplication
+v12/Parser.java package:parser
+module: parserV1_2, file: parserV1_2.module, base module: parserV1_2
+module: javadocgenerator, file: javadocgenerator.module, base module: javadocgenerator
+Main.java package:
+----------CU AST after insert----------
+module: parserV2, file: parserV2.module, base module: parserV2
+	v2/XMLParser.java package:parserV2.$parser
+	v2/Parser.java package:parserV2.$parser
+module: scanner, file: scanner.module, base module: scanner
+	Scanner.java package:scanner.$scanner
+module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
+	v11/Parser.java package:parserV1_1.$parser
+module: staticanalyzer, file: staticanalyzer.module, base module: staticanalyzer
+	StaticAnalyzer.java package:staticanalyzer
+module: myapplication, file: myapplication.module, base module: myapplication
+	MyApplication.java package:myapplication
+module: parserV1_2, file: parserV1_2.module, base module: parserV1_2
+	v12/XMLParser.java package:parserV1_2.$parser
+	v12/Parser.java package:parserV1_2.$parser
+module: javadocgenerator, file: javadocgenerator.module, base module: javadocgenerator
+	JavadocGenerator.java package:javadocgenerator
+Main.java package:
+----------Module CU imports before import own----------
+module parserV2, base:parserV2, context:[], instantiated:false
+module scanner, base:scanner, context:[], instantiated:false
+module parserV1_1, base:parserV1_1, context:[], instantiated:false
+module staticanalyzer, base:staticanalyzer, context:[], instantiated:false
+module myapplication, base:myapplication, context:[], instantiated:false
+module parserV1_2, base:parserV1_2, context:[], instantiated:false
+module javadocgenerator, base:javadocgenerator, context:[], instantiated:false
+-------------Instance ModuleCompilationUnit------------
+module myapplication;
+import own staticanalyzer as none null;
+import own javadocgenerator as none null;
+import own parserV2 as none null;
+replace staticanalyzer::parser, javadocgenerator::parser with parserV2;
+export package *;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: parserV2, file: parserV2.module, base module: parserV2
+	v2/XMLParser.java package:parserV2.$parser
+	v2/Parser.java package:parserV2.$parser
+module: scanner, file: scanner.module, base module: scanner
+	Scanner.java package:scanner.$scanner
+module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
+	v11/Parser.java package:parserV1_1.$parser
+module: staticanalyzer, file: staticanalyzer.module, base module: staticanalyzer
+	StaticAnalyzer.java package:staticanalyzer
+module: myapplication, file: myapplication.module, base module: myapplication
+	MyApplication.java package:myapplication
+module: parserV1_2, file: parserV1_2.module, base module: parserV1_2
+	v12/XMLParser.java package:parserV1_2.$parser
+	v12/Parser.java package:parserV1_2.$parser
+module: javadocgenerator, file: javadocgenerator.module, base module: javadocgenerator
+	JavadocGenerator.java package:javadocgenerator
+Main.java package:
+module: myapplication$staticanalyzer, file: staticanalyzer.module, base module: staticanalyzer
+	StaticAnalyzer.java package:myapplication$staticanalyzer
+module: myapplication$javadocgenerator, file: javadocgenerator.module, base module: javadocgenerator
+	JavadocGenerator.java package:myapplication$javadocgenerator
+module: myapplication$parserV2, file: parserV2.module, base module: parserV2
+	v2/XMLParser.java package:myapplication$parserV2.$parser
+	v2/Parser.java package:myapplication$parserV2.$parser
+
+----------Module CU imports after import own----------
+module parserV2, base:parserV2, context:[], instantiated:false
+module scanner, base:scanner, context:[], instantiated:false
+module parserV1_1, base:parserV1_1, context:[], instantiated:false
+module staticanalyzer, base:staticanalyzer, context:[], instantiated:false
+module myapplication, base:myapplication, context:[], instantiated:true
+	javadocgenerator:myapplication$javadocgenerator
+	parserV2:myapplication$parserV2
+	staticanalyzer:myapplication$staticanalyzer
+module parserV1_2, base:parserV1_2, context:[], instantiated:false
+module javadocgenerator, base:javadocgenerator, context:[], instantiated:false
+module myapplication$staticanalyzer, base:staticanalyzer, context:[myapplication], instantiated:true
+	[export]parser:myapplication$parserV2
+module myapplication$javadocgenerator, base:javadocgenerator, context:[myapplication], instantiated:true
+	[export]parser:myapplication$parserV2
+module myapplication$parserV2, base:parserV2, context:[myapplication, myapplication$javadocgenerator, myapplication$staticanalyzer], instantiated:true
+----------MCU collectTypes after import own----------
+
+Module: parserV2
+	parserV2.$parser.Parser
+	parserV2.$parser.XMLParser
+Module: scanner
+	scanner.$scanner.Scanner
+Module: parserV1_1
+	parserV1_1.$parser.Parser
+Module: staticanalyzer
+	staticanalyzer.StaticAnalyzer
+Module: myapplication
+	myapplication.MyApplication
+Module: parserV1_2
+	parserV1_2.$parser.XMLParser
+	parserV1_2.$parser.Parser
+Module: javadocgenerator
+	javadocgenerator.JavadocGenerator
+Module: myapplication$staticanalyzer
+	myapplication$staticanalyzer.StaticAnalyzer
+Module: myapplication$javadocgenerator
+	myapplication$javadocgenerator.JavadocGenerator
+Module: myapplication$parserV2
+	myapplication$parserV2.$parser.XMLParser
+	myapplication$parserV2.$parser.Parser
+
+----------CU iterator----------
+parserV2.module, scanner.module, parserV1_1.module, staticanalyzer.module, myapplication.module, MyApplication.java, parserV1_2.module, javadocgenerator.module, Main.java, staticanalyzer.module, StaticAnalyzer.java, javadocgenerator.module, JavadocGenerator.java, parserV2.module, v2/XMLParser.java, v2/Parser.java

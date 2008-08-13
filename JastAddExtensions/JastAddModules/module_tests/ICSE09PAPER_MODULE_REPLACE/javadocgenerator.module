@@ -1,0 +1,4 @@
+module javadocgenerator;
+import own parserV1_2 export as parser;
+
+export package *;

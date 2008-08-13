@@ -1,0 +1,11 @@
+module myapplication;
+import own staticanalyzer;
+import own javadocgenerator;
+import own parserV2;
+
+replace
+	staticanalyzer::parser,
+	javadocgenerator::parser
+	with parserV2;
+
+export package *;

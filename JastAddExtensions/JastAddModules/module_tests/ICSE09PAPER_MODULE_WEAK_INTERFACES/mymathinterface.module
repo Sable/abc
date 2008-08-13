@@ -1,0 +1,4 @@
+weak_module_interface mymathinterface;
+export package 
+	org.x.y.math.calculus,
+	org.x.y.math.complex;

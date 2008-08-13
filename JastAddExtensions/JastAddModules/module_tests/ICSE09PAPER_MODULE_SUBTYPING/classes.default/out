@@ -1,0 +1,3 @@
+class multiversion$parserV1_1.$parser.Parser
+class multiversion$parserV1_2.$parser.Parser
+class multiversion.MultiversionMain

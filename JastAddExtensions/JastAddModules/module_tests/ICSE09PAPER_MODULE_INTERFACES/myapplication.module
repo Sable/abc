@@ -1,0 +1,11 @@
+module myapplication;
+import own engine3d;
+import own enginephysics;
+import own org.x.y.math;
+
+replace 
+	engine3d::matrices,
+	enginephysics::calculus
+with org.x.y.math;	
+
+export package *;

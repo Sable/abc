@@ -1,0 +1,3 @@
+module myfourier;
+import own mymathinterface export as math;
+export package *;

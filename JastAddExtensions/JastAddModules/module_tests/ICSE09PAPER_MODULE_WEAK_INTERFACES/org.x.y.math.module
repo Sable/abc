@@ -1,0 +1,8 @@
+module org.x.y.math implements
+	org.x.y.calculus,
+	org.x.y.matrices;
+
+export package 
+	org.x.y.math.calculus, 
+	org.x.y.math.matrices,
+	org.x.y.math.complex;

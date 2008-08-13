@@ -1,0 +1,2 @@
+module xmlparser;
+export package xmlparser;

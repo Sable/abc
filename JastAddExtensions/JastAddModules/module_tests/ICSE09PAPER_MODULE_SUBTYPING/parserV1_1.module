@@ -1,0 +1,4 @@
+module parserV1_1;
+import own scanner export as scanner;
+
+export package parser;

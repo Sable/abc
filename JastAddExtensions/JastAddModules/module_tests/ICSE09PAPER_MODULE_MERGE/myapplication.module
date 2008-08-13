@@ -1,0 +1,10 @@
+module myapplication;
+import own mysqlbackend;
+import own postgresbackend;
+
+merge 
+	mysqlbackend::sqltypes,
+	postgresbackend::sqltypes
+export as sqltypes;
+
+export package *;

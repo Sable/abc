@@ -1,0 +1,2 @@
+module somemodule;
+export package *;

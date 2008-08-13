@@ -1,0 +1,92 @@
+Arguments: 
+-jastaddframework -debug -d classes -instance-module myapplication myapplication.module xmlparser.module C.java Main.java XMLParser.java pack/*.java ../testlib/jastadd$framework.module End arguments
+WARNING: file "pack/*.java" does not exist
+----------Module contents----------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------XMLParser.java------
+module: module xmlparser;;
+module CU : xmlparser.module
+module name : xmlparser
+------------------------
+------myapplication.module------
+module myapplication;
+import own xmlparser as parser1;
+import own xmlparser as parser2;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------C.java------
+module: module myapplication;;
+module CU : myapplication.module
+module name : myapplication
+------------------------
+------xmlparser.module------
+module xmlparser;
+------------------------
+----------CU AST before insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+XMLParser.java package:xmlparser
+module: myapplication, file: myapplication.module, base module: myapplication
+Main.java package:
+C.java package:
+module: xmlparser, file: xmlparser.module, base module: xmlparser
+----------CU AST after insert----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: myapplication, file: myapplication.module, base module: myapplication
+	C.java package:myapplication
+Main.java package:
+module: xmlparser, file: xmlparser.module, base module: xmlparser
+	XMLParser.java package:xmlparser.$xmlparser
+----------Module CU imports before import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+module myapplication, base:myapplication, context:[], instantiated:false
+module xmlparser, base:xmlparser, context:[], instantiated:false
+-------------Instance ModuleCompilationUnit------------
+module myapplication;
+import own xmlparser as parser1;
+import own xmlparser as parser2;
+export package *;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: myapplication, file: myapplication.module, base module: myapplication
+	C.java package:myapplication
+Main.java package:
+module: xmlparser, file: xmlparser.module, base module: xmlparser
+	XMLParser.java package:xmlparser.$xmlparser
+module: myapplication$parser1, file: xmlparser.module, base module: xmlparser
+	XMLParser.java package:myapplication$parser1.$xmlparser
+module: myapplication$parser2, file: xmlparser.module, base module: xmlparser
+	XMLParser.java package:myapplication$parser2.$xmlparser
+
+----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module myapplication, base:myapplication, context:[], instantiated:true
+	jastadd$framework:jastadd$framework
+	parser1:myapplication$parser1
+	parser2:myapplication$parser2
+module xmlparser, base:xmlparser, context:[], instantiated:false
+module myapplication$parser1, base:xmlparser, context:[myapplication], instantiated:true
+	jastadd$framework:jastadd$framework
+module myapplication$parser2, base:xmlparser, context:[myapplication], instantiated:true
+	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: jastadd$framework
+Module: myapplication
+	myapplication.C
+Module: xmlparser
+	xmlparser.$xmlparser.XMLParser
+Module: myapplication$parser1
+	myapplication$parser1.$xmlparser.XMLParser
+Module: myapplication$parser2
+	myapplication$parser2.$xmlparser.XMLParser
+
+----------CU iterator----------
+../testlib/jastadd$framework.module, myapplication.module, C.java, Main.java, xmlparser.module, xmlparser.module, XMLParser.java, xmlparser.module, XMLParser.java

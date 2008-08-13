@@ -1,0 +1,4 @@
+module org.x.y.parserapplication;
+import own org.x.y.parser as parser;
+
+export package *;

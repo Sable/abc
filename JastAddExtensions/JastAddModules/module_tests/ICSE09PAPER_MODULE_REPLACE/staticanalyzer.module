@@ -1,0 +1,4 @@
+module staticanalyzer;
+import own parserV1_1 export as parser;
+
+export package *;

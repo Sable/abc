@@ -1,0 +1,5 @@
+module org.x.y.parser;
+
+import own org.x.y.scanner export as scanner;
+
+export package org.x.y.parser;

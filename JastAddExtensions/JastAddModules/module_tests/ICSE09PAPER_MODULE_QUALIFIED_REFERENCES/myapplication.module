@@ -1,0 +1,5 @@
+module myapplication;
+import own xmlparser as parser1;
+import own xmlparser as parser2;
+
+export package *;

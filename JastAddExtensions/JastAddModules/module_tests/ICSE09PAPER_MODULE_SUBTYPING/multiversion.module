@@ -1,0 +1,4 @@
+module multiversion;
+import own parserV1_1 as parserV1_1;
+import own parserV1_2 as parserV1_2;
+export package *;

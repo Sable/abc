@@ -1,0 +1,5 @@
+class myapplication$org.x.y.math.$org.x.y.math.matrices.Matrices
+class myapplication$engine3d.Engine3d
+class myapplication$org.x.y.math.$org.x.y.math.calculus.Calculus
+class myapplication$enginephysics.EnginePhysics
+class myapplication.MyApplication
