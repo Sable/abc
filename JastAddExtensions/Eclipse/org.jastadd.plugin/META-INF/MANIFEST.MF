@@ -18,7 +18,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.jdt.ui,
  org.eclipse.search,
- org.jastadd.plugin,
  org.eclipse.ui.editors,
  org.eclipse.ui.views,
  org.eclipse.ui.console

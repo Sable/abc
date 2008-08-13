@@ -497,8 +497,6 @@ public class JastAddJModel extends JastAddModel {
 		if (!errors.isEmpty()) {
 			try {
 				String content = readTextFile(file.getRawLocation().toOSString());
-				//DefaultLineTracker tracker = new DefaultLineTracker();
-				//tracker.set(readTextFile(file.getRawLocation().toOSString()));
 				for (Iterator i2 = errors.iterator(); i2.hasNext();) {
 						org.jastadd.plugin.jastaddj.AST.IProblem error = 
 							(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
@@ -508,10 +506,10 @@ public class JastAddJModel extends JastAddModel {
 						int endColumn = error.endColumn();
 						if (line == -1)
 							line = 1;
-						int startOffset = lookupOffset(line-1, column-1, content); // tracker.getLineOffset(line-1) + (column - 1);
+						int startOffset = lookupOffset(line-1, column-1, content);
 						if (endLine == -1)
 							endLine = 1;
-						int endOffset = lookupOffset(endLine-1, endColumn-1, content); // tracker.getLineOffset(endLine-1) + (endColumn - 1);
+						int endOffset = lookupOffset(endLine-1, endColumn-1, content); 
 
 						if (startOffset == endOffset)
 							endOffset++;
