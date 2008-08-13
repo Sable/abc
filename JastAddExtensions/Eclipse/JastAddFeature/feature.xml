@@ -12,13 +12,71 @@
       jastadd.org ...
    </copyright>
 
-   <license url="http://www.example.com/license">
-      JastAdd License ...
+   <license url="http://jastadd.cs.lth.se/web/LICENSE">
+      Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+   3. The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS&apos;&apos; AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    </license>
 
    <url>
       <discovery label="JastAdd" url="http://jastadd.org"/>
    </url>
+
+   <requires>
+      <import feature="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H274A"/>
+      <import feature="org.eclipse.gef.sdk" version="3.4.0.v20080115-7B7E-97OK5c7PDdDMPMcHNPTM3CD"/>
+      <import feature="org.eclipse.gef.source" version="3.4.0.v20080115-677-8082A5696H274A"/>
+      <import feature="org.eclipse.zest" version="1.0.0.v20080115-53-8xB4CE899O274A"/>
+      <import feature="org.eclipse.zest.sdk" version="1.0.0.v20080115-53-8_GACFGHKZGOLXW_WSRQ6FDTE"/>
+      <import feature="org.eclipse.zest.source" version="1.0.0.v20080115-53-8xB4CE899O274A"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.jdt.debug"/>
+      <import plugin="org.eclipse.jdt.debug.ui"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.search"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.ui.console"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.zest.core" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.zest.layouts" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.core.refactoring"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring"/>
+      <import plugin="org.eclipse.core.expressions" version="3.4.0" match="compatible"/>
+      <import plugin="org.eclipse.pde.runtime"/>
+   </requires>
 
    <plugin
          id="org.jastadd.plugin"
