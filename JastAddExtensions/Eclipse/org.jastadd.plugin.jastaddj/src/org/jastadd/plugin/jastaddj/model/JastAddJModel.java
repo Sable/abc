@@ -496,10 +496,10 @@ public class JastAddJModel extends JastAddModel {
 		errors.addAll(warnings);
 		if (!errors.isEmpty()) {
 			try {
-				DefaultLineTracker tracker = new DefaultLineTracker();
-				tracker.set(readTextFile(file.getRawLocation().toOSString()));
+				String content = readTextFile(file.getRawLocation().toOSString());
+				//DefaultLineTracker tracker = new DefaultLineTracker();
+				//tracker.set(readTextFile(file.getRawLocation().toOSString()));
 				for (Iterator i2 = errors.iterator(); i2.hasNext();) {
-					try {
 						org.jastadd.plugin.jastaddj.AST.IProblem error = 
 							(org.jastadd.plugin.jastaddj.AST.IProblem) i2.next();
 						int line = error.line();
@@ -508,11 +508,14 @@ public class JastAddJModel extends JastAddModel {
 						int endColumn = error.endColumn();
 						if (line == -1)
 							line = 1;
-						int startOffset = tracker.getLineOffset(line-1) + (column - 1);
+						int startOffset = lookupOffset(line-1, column-1, content); // tracker.getLineOffset(line-1) + (column - 1);
 						if (endLine == -1)
 							endLine = 1;
-						int endOffset = tracker.getLineOffset(endLine-1) + (endColumn - 1);
+						int endOffset = lookupOffset(endLine-1, endColumn-1, content); // tracker.getLineOffset(endLine-1) + (endColumn - 1);
 
+						if (startOffset == endOffset)
+							endOffset++;
+						
 						String message = error.message();
 						int severity = IMarker.SEVERITY_INFO;
 						if (error.severity() == IDEProblem.Severity.ERROR)
@@ -521,21 +524,49 @@ public class JastAddJModel extends JastAddModel {
 							severity = IMarker.SEVERITY_WARNING;
 						if (error.kind() == IDEProblem.Kind.LEXICAL
 								|| error.kind() == IDEProblem.Kind.SYNTACTIC) {
-							addParseErrorMarker(file, message, line, startOffset, 
-									endOffset, severity, tracker);
+							addParseErrorMarker(file, message, line, startOffset, endOffset, severity);
 						} else if (error.kind() == IDEProblem.Kind.SEMANTIC) {
-							addErrorMarker(file, message, line, startOffset, 
-									endOffset, severity, tracker);
-						}
-					} catch (BadLocationException e) {
-					}
-				}	
+							addErrorMarker(file, message, line, startOffset, endOffset, severity);
+						}	
+				}
 			} catch (IOException e) {
 			}
 			return false;
 		}
 		return true;
 	}
+		
+	protected int lookupOffset(int line, int column, String content) {
+		
+		int curLine = 0;
+		int offset = 0;
+		int previous = 0;
+		int cur = 0;
+		
+		// Find line
+		while (offset < content.length() && curLine < line) {
+			previous = cur;
+			cur = content.charAt(offset);
+			if (isNewline(cur, previous)) {
+				curLine++;
+			}
+			offset++;
+		}
+		
+		// Add Column
+		offset += column;
+		return offset;
+	} 
+	
+	private boolean isNewline(int c, int previous) {
+	     return (c == 0x0a && previous != 0x0d)  // LF
+	       || c == 0x0d // CR
+	       || c == 0x85 // NEL
+	       || c == 0x0c // FF
+	       || c == 0x2028 // LS
+	       || c == 0x2029; // PS
+	   }
+
 	
     protected void addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws Exception {
     	ICompilationUnit unit = program.addSourceFileWithRecovery(fileName, doc.get(), getRecoveryLexer());
