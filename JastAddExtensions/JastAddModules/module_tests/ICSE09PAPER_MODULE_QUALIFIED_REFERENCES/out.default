@@ -1,5 +1,5 @@
 Arguments: 
--jastaddframework -debug -d classes -instance-module myapplication myapplication.module xmlparser.module C.java Main.java XMLParser.java pack/*.java ../testlib/jastadd$framework.module End arguments
+-debug -d classes -instance-module myapplication myapplication.module xmlparser.module C.java Main.java XMLParser.java pack/*.java ../testlib/jastadd$framework.module End arguments
 WARNING: file "pack/*.java" does not exist
 ----------Module contents----------
 ------../testlib/jastadd$framework.module------
@@ -51,7 +51,6 @@ module myapplication;
 import own xmlparser as parser1;
 import own xmlparser as parser2;
 export package *;
-import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
@@ -66,16 +65,13 @@ module: myapplication$parser2, file: xmlparser.module, base module: xmlparser
 	XMLParser.java package:myapplication$parser2.$xmlparser
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module myapplication, base:myapplication, context:[], instantiated:true
-	jastadd$framework:jastadd$framework
 	parser1:myapplication$parser1
 	parser2:myapplication$parser2
 module xmlparser, base:xmlparser, context:[], instantiated:false
 module myapplication$parser1, base:xmlparser, context:[myapplication], instantiated:true
-	jastadd$framework:jastadd$framework
 module myapplication$parser2, base:xmlparser, context:[myapplication], instantiated:true
-	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
 Module: jastadd$framework

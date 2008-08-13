@@ -1,5 +1,5 @@
 Arguments: 
--jastaddframework -debug -d classes -instance-module org.x.y.parserapplication org.x.y.parser.module org.x.y.parserapplication.module org.x.y.scanner.module Main.java Parser.java ParserApplication.java Scanner.java pack/*.java ../testlib/jastadd$framework.module End arguments
+-debug -d classes -instance-module org.x.y.parserapplication org.x.y.parser.module org.x.y.parserapplication.module org.x.y.scanner.module Main.java Parser.java ParserApplication.java Scanner.java pack/*.java ../testlib/jastadd$framework.module End arguments
 WARNING: file "pack/*.java" does not exist
 ----------Module contents----------
 ------org.x.y.scanner.module------
@@ -63,7 +63,6 @@ module org.x.y.parserapplication, base:org.x.y.parserapplication, context:[], in
 module org.x.y.parserapplication;
 import own org.x.y.parser as parser;
 export package *;
-import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
 module: org.x.y.scanner, file: org.x.y.scanner.module, base module: org.x.y.scanner
@@ -81,15 +80,12 @@ module: org.x.y.parserapplication$parser, file: org.x.y.parser.module, base modu
 
 ----------Module CU imports after import own----------
 module org.x.y.scanner, base:org.x.y.scanner, context:[], instantiated:false
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module org.x.y.parser, base:org.x.y.parser, context:[], instantiated:false
 module org.x.y.parserapplication, base:org.x.y.parserapplication, context:[], instantiated:true
-	jastadd$framework:jastadd$framework
 	parser:org.x.y.parserapplication$parser
 module org.x.y.parserapplication$parser.scanner, base:org.x.y.scanner, context:[org.x.y.parserapplication$parser], instantiated:true
-	jastadd$framework:jastadd$framework
 module org.x.y.parserapplication$parser, base:org.x.y.parser, context:[org.x.y.parserapplication], instantiated:true
-	jastadd$framework:jastadd$framework
 	[export]scanner:org.x.y.parserapplication$parser.scanner
 ----------MCU collectTypes after import own----------
 
