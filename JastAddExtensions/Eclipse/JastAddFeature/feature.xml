@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.jastadd.feature"
+      label="JastAdd"
+      version="1.0.0">
+
+   <description url="http://www.example.com/description">
+      JastAdd Festure Description ...
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      jastadd.org ...
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      JastAdd License ...
+   </license>
+
+   <url>
+      <discovery label="JastAdd" url="http://jastadd.org"/>
+   </url>
+
+   <plugin
+         id="org.jastadd.plugin"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jastadd.plugin.jastadd"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jastadd.plugin.jastaddj"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>
