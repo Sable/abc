@@ -6,6 +6,7 @@
 	<extension point = "org.eclipse.ui.newWizards">
 	<wizard id = "org.jastadd.plugin.jastadd.NewProjectWizard"
 		name = "New JastAdd Project"
+		icon = "icons/obj16/ja_fldr_obj.gif"
 		preferredPerspectives = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		project = "true"
 		finalPerspective = "org.jastadd.plugin.jastaddj.JastAddJPerspective"

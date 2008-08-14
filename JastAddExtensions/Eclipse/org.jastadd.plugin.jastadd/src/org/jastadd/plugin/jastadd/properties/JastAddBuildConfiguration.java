@@ -60,11 +60,14 @@ public class JastAddBuildConfiguration {
 
 
 	public FolderList flex = new FolderList(FLEX_RESOURCE, FLEX_FILTER);
-	public FolderList parser = new ParserFolderList(PARSER_RESOURCE, PARSER_FILTER);
+	public ParserFolderList parser = new ParserFolderList(PARSER_RESOURCE, PARSER_FILTER);
 
 	public JastAddBuildConfiguration(IProject project) {
 		flex = readBuildConfiguration(project, FLEX_RESOURCE, FLEX_FILTER, false);
-		parser = readBuildConfiguration(project, PARSER_RESOURCE, PARSER_FILTER, true);
+		FolderList folder = readBuildConfiguration(project, PARSER_RESOURCE, PARSER_FILTER, true);
+		if (folder instanceof ParserFolderList)
+			parser = (ParserFolderList)folder;
+		else parser = new ParserFolderList(PARSER_RESOURCE, PARSER_FILTER);
 	}
 
 	public static FolderList readBuildConfiguration(IProject project, String resource, String filter, boolean parser) {

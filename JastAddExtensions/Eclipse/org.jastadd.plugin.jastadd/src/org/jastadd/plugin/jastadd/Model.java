@@ -332,13 +332,13 @@ public class Model extends JastAddJModel {
 				JastAddJBuildConfiguration buildConfiguration = readBuildConfiguration(project);
 				JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project); 
 
-				// Generate scanner and parser
-				buildJFlexScanner(project, jastAddBuildConfig);
-				buildBeaverParser(project, jastAddBuildConfig);
-
 				program = (Program) initProgram(project, buildConfiguration);
 				if (program == null)
 					return;
+				
+				// Generate scanner and parser
+				buildJFlexScanner(project, jastAddBuildConfig);
+				buildBeaverParser(project, jastAddBuildConfig);
 
 				int numSourceFiles = 0;
 
@@ -572,7 +572,7 @@ public class Model extends JastAddJModel {
 	}
 
 	private void buildBeaverParser(IProject project, JastAddBuildConfiguration buildConfig) {
-		String parserName = ((ParserFolderList)buildConfig.parser).getParserName();
+		String parserName = buildConfig.parser.getParserName();
 		if (parserName == null)
 			parserName = "Parser";
 		String parserFileName = buildConfig.parser.getOutputFolder() + File.separator + "Parser.parser";
