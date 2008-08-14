@@ -1,2 +1,2 @@
 #!/bin/sh
-/bin/find -wholename "*ERROR*/test.sh" -execdir "./test.sh" ';'
+/bin/find -name "test.sh" -execdir "./test.sh" ';'
