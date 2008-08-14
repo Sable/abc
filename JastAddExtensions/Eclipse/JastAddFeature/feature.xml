@@ -2,7 +2,8 @@
 <feature
       id="org.jastadd.feature"
       label="JastAdd"
-      version="1.0.1">
+      version="1.0.1"
+      provider-name="jastadd.org">
 
    <description url="http://jastadd.org">
       JastAdd Feature Description ...
@@ -59,6 +60,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    </license>
 
    <url>
+      <update label="JastAdd Eclipse Update Site" url="http://builds.jastadd.org/eclipse/update"/>
       <discovery label="JastAdd" url="http://jastadd.org"/>
    </url>
 
@@ -98,20 +100,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          id="org.jastadd.plugin"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0"
          unpack="false"/>
 
    <plugin
          id="org.jastadd.plugin.jastadd"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.1"
          unpack="false"/>
 
    <plugin
          id="org.jastadd.plugin.jastaddj"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="1.0.0"/>
 
 </feature>
