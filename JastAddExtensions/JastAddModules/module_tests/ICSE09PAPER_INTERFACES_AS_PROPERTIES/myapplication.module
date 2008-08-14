@@ -1,0 +1,36 @@
+module myapplication;
+
+import own appv1;
+import own appv2;
+import own appv3;
+import own appv4;
+
+import own appv1to2 as app1;
+import own appv1to2 as app2;
+
+replace app1 with appv1;
+replace app2 with appv2;
+
+import own appv2to4 as app3;
+import own appv2to4 as app4;
+import own appv2to4 as app5;
+
+replace app3 with appv2;
+replace app4 with appv3;
+replace app5 with appv4;
+
+import own supportsfeature1 as feature1a;
+import own supportsfeature1 as feature1b;
+import own supportsfeature1 as feature1c;
+
+replace feature1a with appv1;
+replace feature1b with appv2;
+replace feature1c with appv3;
+
+import own supportsfeature2 as feature2a;
+import own supportsfeature2 as feature2b;
+
+replace feature2a with appv3;
+replace feature2b with appv4;
+
+export package *;

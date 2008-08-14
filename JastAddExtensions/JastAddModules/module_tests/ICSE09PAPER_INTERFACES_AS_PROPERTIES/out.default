@@ -1,0 +1,224 @@
+Arguments: 
+-debug -d classes -instance-module myapplication appv1.module appv1to2.module appv2.module appv2to4.module appv3.module appv4.module myapplication.module supportsfeature1.module supportsfeature2.module Main.java MyApp.java v1/App.java v2/App.java v3/App.java v4/App.java End arguments
+----------Module contents----------
+------v1/App.java------
+module: module appv1;;
+module CU : appv1.module
+module name : appv1
+------------------------
+------appv1.module------
+module appv1 implements appv1to2, supportsfeature1;
+------------------------
+------MyApp.java------
+module: module myapplication;;
+module CU : myapplication.module
+module name : myapplication
+------------------------
+------appv3.module------
+module appv3 implements appv2to4, supportsfeature1, supportsfeature2;
+------------------------
+------v4/App.java------
+module: module appv4;;
+module CU : appv4.module
+module name : appv4
+------------------------
+------appv2.module------
+module appv2 implements appv1to2, appv2to4, supportsfeature1;
+------------------------
+------supportsfeature1.module------
+module supportsfeature1;
+------------------------
+------supportsfeature2.module------
+module supportsfeature2;
+------------------------
+------v2/App.java------
+module: module appv2;;
+module CU : appv2.module
+module name : appv2
+------------------------
+------appv4.module------
+module appv4 implements appv2to4, supportsfeature2;
+------------------------
+------v3/App.java------
+module: module appv3;;
+module CU : appv3.module
+module name : appv3
+------------------------
+------myapplication.module------
+module myapplication;
+import own appv1 as none null;
+import own appv2 as none null;
+import own appv3 as none null;
+import own appv4 as none null;
+import own appv1to2 as app1;
+import own appv1to2 as app2;
+import own appv2to4 as app3;
+import own appv2to4 as app4;
+import own appv2to4 as app5;
+import own supportsfeature1 as feature1a;
+import own supportsfeature1 as feature1b;
+import own supportsfeature1 as feature1c;
+import own supportsfeature2 as feature2a;
+import own supportsfeature2 as feature2b;
+------------------------
+------appv2to4.module------
+module appv2to4;
+------------------------
+------appv1to2.module------
+module appv1to2;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+----------CU AST before insert----------
+v1/App.java package:
+module: appv1, file: appv1.module, base module: appv1
+MyApp.java package:
+module: appv3, file: appv3.module, base module: appv3
+v4/App.java package:
+module: appv2, file: appv2.module, base module: appv2
+module: supportsfeature1, file: supportsfeature1.module, base module: supportsfeature1
+module: supportsfeature2, file: supportsfeature2.module, base module: supportsfeature2
+v2/App.java package:
+module: appv4, file: appv4.module, base module: appv4
+v3/App.java package:
+module: myapplication, file: myapplication.module, base module: myapplication
+module: appv2to4, file: appv2to4.module, base module: appv2to4
+module: appv1to2, file: appv1to2.module, base module: appv1to2
+Main.java package:
+----------CU AST after insert----------
+module: appv1, file: appv1.module, base module: appv1
+	v1/App.java package:appv1
+module: appv3, file: appv3.module, base module: appv3
+	v3/App.java package:appv3
+module: appv2, file: appv2.module, base module: appv2
+	v2/App.java package:appv2
+module: supportsfeature1, file: supportsfeature1.module, base module: supportsfeature1
+module: supportsfeature2, file: supportsfeature2.module, base module: supportsfeature2
+module: appv4, file: appv4.module, base module: appv4
+	v4/App.java package:appv4
+module: myapplication, file: myapplication.module, base module: myapplication
+	MyApp.java package:myapplication
+module: appv2to4, file: appv2to4.module, base module: appv2to4
+module: appv1to2, file: appv1to2.module, base module: appv1to2
+Main.java package:
+----------Module CU imports before import own----------
+module appv1, base:appv1, context:[], instantiated:false
+module appv3, base:appv3, context:[], instantiated:false
+module appv2, base:appv2, context:[], instantiated:false
+module supportsfeature1, base:supportsfeature1, context:[], instantiated:false
+module supportsfeature2, base:supportsfeature2, context:[], instantiated:false
+module appv4, base:appv4, context:[], instantiated:false
+module myapplication, base:myapplication, context:[], instantiated:false
+module appv2to4, base:appv2to4, context:[], instantiated:false
+module appv1to2, base:appv1to2, context:[], instantiated:false
+-------------Instance ModuleCompilationUnit------------
+module myapplication;
+import own appv1 as none null;
+import own appv2 as none null;
+import own appv3 as none null;
+import own appv4 as none null;
+import own appv1to2 as app1;
+import own appv1to2 as app2;
+replace app1 with appv1;
+replace app2 with appv2;
+import own appv2to4 as app3;
+import own appv2to4 as app4;
+import own appv2to4 as app5;
+replace app3 with appv2;
+replace app4 with appv3;
+replace app5 with appv4;
+import own supportsfeature1 as feature1a;
+import own supportsfeature1 as feature1b;
+import own supportsfeature1 as feature1c;
+replace feature1a with appv1;
+replace feature1b with appv2;
+replace feature1c with appv3;
+import own supportsfeature2 as feature2a;
+import own supportsfeature2 as feature2b;
+replace feature2a with appv3;
+replace feature2b with appv4;
+export package *;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: appv1, file: appv1.module, base module: appv1
+	v1/App.java package:appv1
+module: appv3, file: appv3.module, base module: appv3
+	v3/App.java package:appv3
+module: appv2, file: appv2.module, base module: appv2
+	v2/App.java package:appv2
+module: supportsfeature1, file: supportsfeature1.module, base module: supportsfeature1
+module: supportsfeature2, file: supportsfeature2.module, base module: supportsfeature2
+module: appv4, file: appv4.module, base module: appv4
+	v4/App.java package:appv4
+module: myapplication, file: myapplication.module, base module: myapplication
+	MyApp.java package:myapplication
+module: appv2to4, file: appv2to4.module, base module: appv2to4
+module: appv1to2, file: appv1to2.module, base module: appv1to2
+Main.java package:
+module: myapplication$appv1, file: appv1.module, base module: appv1
+	v1/App.java package:myapplication$appv1
+module: myapplication$appv2, file: appv2.module, base module: appv2
+	v2/App.java package:myapplication$appv2
+module: myapplication$appv3, file: appv3.module, base module: appv3
+	v3/App.java package:myapplication$appv3
+module: myapplication$appv4, file: appv4.module, base module: appv4
+	v4/App.java package:myapplication$appv4
+
+----------Module CU imports after import own----------
+module appv1, base:appv1, context:[], instantiated:false
+module appv3, base:appv3, context:[], instantiated:false
+module appv2, base:appv2, context:[], instantiated:false
+module supportsfeature1, base:supportsfeature1, context:[], instantiated:false
+module supportsfeature2, base:supportsfeature2, context:[], instantiated:false
+module appv4, base:appv4, context:[], instantiated:false
+module myapplication, base:myapplication, context:[], instantiated:true
+	app1:myapplication$appv1
+	app2:myapplication$appv2
+	app3:myapplication$appv2
+	app4:myapplication$appv3
+	app5:myapplication$appv4
+	appv1:myapplication$appv1
+	appv2:myapplication$appv2
+	appv3:myapplication$appv3
+	appv4:myapplication$appv4
+	feature1a:myapplication$appv1
+	feature1b:myapplication$appv2
+	feature1c:myapplication$appv3
+	feature2a:myapplication$appv3
+	feature2b:myapplication$appv4
+module appv2to4, base:appv2to4, context:[], instantiated:false
+module appv1to2, base:appv1to2, context:[], instantiated:false
+module myapplication$appv1, base:appv1, context:[myapplication], instantiated:true
+module myapplication$appv2, base:appv2, context:[myapplication], instantiated:true
+module myapplication$appv3, base:appv3, context:[myapplication], instantiated:true
+module myapplication$appv4, base:appv4, context:[myapplication], instantiated:true
+----------MCU collectTypes after import own----------
+
+Module: appv1
+	appv1.App
+Module: appv3
+	appv3.App
+Module: appv2
+	appv2.App
+Module: supportsfeature1
+Module: supportsfeature2
+Module: appv4
+	appv4.App
+Module: myapplication
+	myapplication.MyApp
+Module: appv2to4
+Module: appv1to2
+Module: myapplication$appv1
+	myapplication$appv1.App
+Module: myapplication$appv2
+	myapplication$appv2.App
+Module: myapplication$appv3
+	myapplication$appv3.App
+Module: myapplication$appv4
+	myapplication$appv4.App
+
+----------CU iterator----------
+appv1.module, appv3.module, appv2.module, supportsfeature1.module, supportsfeature2.module, appv4.module, myapplication.module, MyApp.java, appv2to4.module, appv1to2.module, Main.java, appv1.module, v1/App.java, appv2.module, v2/App.java, appv3.module, v3/App.java, appv4.module, v4/App.java

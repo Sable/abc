@@ -1,0 +1,5 @@
+module appv3 implements
+	appv2to4,
+	supportsfeature1,
+	supportsfeature2;
+export package *;
