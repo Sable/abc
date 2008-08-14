@@ -1,35 +1,4 @@
-Arguments: 
--jastaddframework -debug -d classes -instance-module m1 m1.module m2replace.module *.java ../testlib/jastadd$framework.module End arguments
 WARNING: file "*.java" does not exist
-----------Module contents----------
-------m2replace.module------
-module m2replace;
-------------------------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
-------------------------
-------m1.module------
-module m1;
-import  m2 as none null;
-------------------------
-------synthetic m2------
-module m2;
-------------------------
-----------CU AST before insert----------
-module: m2replace, file: m2replace.module, base module: m2replace
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m1, file: m1.module, base module: m1
-module: m2, file: synthetic m2, base module: m2
-----------CU AST after insert----------
-module: m2replace, file: m2replace.module, base module: m2replace
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m1, file: m1.module, base module: m1
-module: m2, file: synthetic m2, base module: m2
-----------Module CU imports before import own----------
-module m2replace, base:m2replace, context:[], instantiated:false
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-module m1, base:m1, context:[], instantiated:false
-module m2, base:m2, context:[], instantiated:false
 Unrecoverable semantic error(s) found.
 m1.module:2,8:
   Semantic Error: Unable to find module: m2

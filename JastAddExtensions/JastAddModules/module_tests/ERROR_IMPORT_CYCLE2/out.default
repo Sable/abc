@@ -1,5 +1,3 @@
-Arguments: 
--jastaddframework -debug -d classes -instance-module m1 jastadd$framework.module m1.module m2.module m3.module m4.module A.java B.java C.java D.java End arguments
 Unrecoverable semantic error(s) found.
 m4.module:1:
   Semantic Error: Bad import cycle found: m4, own m1, m2, own m4
