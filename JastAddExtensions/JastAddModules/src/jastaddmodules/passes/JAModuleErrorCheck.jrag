@@ -107,7 +107,7 @@ aspect JAModuleErrorCheck {
   	}
   	
 
-  	//Single error checks, done after the CU insert but before the Generate import own
+  	//Single error checks, done after all the module passes
   	public void ASTNode.checkModuleErrorsPass3() {
   		checkNoModuleInterfaceInstance();
   		checkModuleInterfacePackageImplements();
