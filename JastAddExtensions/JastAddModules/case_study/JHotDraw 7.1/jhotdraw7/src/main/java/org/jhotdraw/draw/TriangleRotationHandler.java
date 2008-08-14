@@ -22,11 +22,10 @@ import static org.jhotdraw.draw.AttributeKeys.*;
 import org.jhotdraw.geom.*;
 
 /**
- * A Handle to rotate a TriangleFigure
- * Based on RadiusHandle
- *
- * @author Werner Randelshofer.
- *         Original code by Doug Lea  (dl at gee, Sun Mar 2 19:15:28 1997)
+ * A Handle to rotate a TriangleFigure Based on RadiusHandle
+ * 
+ * @author Werner Randelshofer. Original code by Doug Lea (dl at gee, Sun Mar 2
+ *         19:15:28 1997)
  * @version 1.0 June 11, 2006 Created.
  */
 public class TriangleRotationHandler extends AbstractHandle {
@@ -47,6 +46,27 @@ public class TriangleRotationHandler extends AbstractHandle {
         Rectangle2D.Double r = getOwner().getBounds();
         Point2D.Double p;
         double offset = getHandlesize();
+        // NEIL: Jastadd has problems with case statements on enums. Replace with if for now
+        if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.NORTH) {
+        	p = new Point2D.Double(r.x + r.width / 2d, r.y + offset);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.NORTH_EAST) {
+        	p = new Point2D.Double(r.x + r.width - offset, r.y + offset);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.EAST) {
+        	p = new Point2D.Double(r.x + r.width - offset, r.y + r.height / 2d);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.SOUTH_EAST) {
+        	p = new Point2D.Double(r.x + r.width - offset, r.y + r.height - offset);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.SOUTH) {
+        	p = new Point2D.Double(r.x + r.width / 2d, r.y + r.height - offset);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.SOUTH_WEST) {
+        	p = new Point2D.Double(r.x + offset, r.y + r.height - offset);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.WEST) {
+        	p = new Point2D.Double(r.x  + offset, r.y + r.height / 2d);
+        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.NORTH_WEST) {
+        	p = new Point2D.Double(r.x + offset, r.y + offset);
+        } else {
+        	p = new Point2D.Double(r.x + r.width / 2d, r.y + offset);
+        }
+        /*
         switch (ORIENTATION.get(getOwner())) {
             case NORTH :
             default :
@@ -73,7 +93,7 @@ public class TriangleRotationHandler extends AbstractHandle {
             case NORTH_WEST :
                 p = new Point2D.Double(r.x + offset, r.y + offset);
                 break;
-        }
+        }*/
         return p;
     }
     

@@ -52,6 +52,26 @@ public class ChopDiamondConnector extends ChopRectangleConnector {
         double growx;
         double growy;
         // FIXME - This code is wrong. Copy correct code from DiamondFigure.
+        //NEIL: Change to if for now
+        if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.INSIDE) {
+        	growx = growy = 0f;
+        } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.OUTSIDE) {
+        	double lineLength = Math.sqrt(r.width * r.width + r.height * r.height);
+            double scale = getStrokeTotalWidth(target) * 2d / lineLength;
+            growx = scale * r.height;
+            growy = scale * r.width;
+        } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.CENTER) {
+        	double lineLength = Math.sqrt(r.width * r.width + r.height * r.height);
+            double scale = getStrokeTotalWidth(target) / lineLength;
+            growx = scale * r.height;
+            growy = scale * r.width;
+        } else {
+        	double lineLength = Math.sqrt(r.width * r.width + r.height * r.height);
+            double scale = getStrokeTotalWidth(target) / lineLength;
+            growx = scale * r.height;
+            growy = scale * r.width;
+        }
+        /*
         switch (STROKE_PLACEMENT.get(target)) {
             case INSIDE : {
                 growx = growy = 0f;
@@ -74,6 +94,7 @@ public class ChopDiamondConnector extends ChopRectangleConnector {
                 //growx = growy = getStrokeTotalWidth() / 2d * SQRT2;
                 break;
         }
+        */
         Geom.grow(r, growx, growy);
         
         // Center point

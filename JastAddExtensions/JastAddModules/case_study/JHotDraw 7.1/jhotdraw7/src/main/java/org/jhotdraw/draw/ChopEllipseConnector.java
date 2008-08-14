@@ -53,6 +53,17 @@ public class ChopEllipseConnector extends ChopRectangleConnector {
         Rectangle2D.Double r = target.getBounds();
         if (getStrokeColor(target) != null) {
             double grow;
+            //NEIL: Change enum switch to if
+            if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.CENTER) {
+            	grow = getStrokeTotalWidth(target) / 2d;
+            } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.OUTSIDE) {
+            	grow = getStrokeTotalWidth(target);
+            } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.INSIDE) {
+            	grow = 0f;
+            } else {
+            	grow = getStrokeTotalWidth(target) / 2d;
+            }
+            /*
             switch (STROKE_PLACEMENT.get(target)) {
                 case CENTER:
                  default :
@@ -64,7 +75,7 @@ public class ChopEllipseConnector extends ChopRectangleConnector {
                 case INSIDE :
                     grow = 0f;
                     break;
-            }
+            }*/
             Geom.grow(r, grow, grow);
         }
         double angle = Geom.pointToAngle(r, from);

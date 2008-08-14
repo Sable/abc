@@ -335,6 +335,15 @@ public class AttributeKeys {
      * STROKE_WIDTH, STROKE_INNER_WIDTH and STROKE_TYPE attributes.
      */
     public static double getStrokeTotalWidth(Figure f) {
+    	//NEIL: Changed to If due to lack of support for switched enums in jastadd
+    	if (STROKE_TYPE.get(f) == StrokeType.BASIC) {
+            return STROKE_WIDTH.get(f);
+    	} else if (STROKE_TYPE.get(f) == StrokeType.DOUBLE) {
+            return STROKE_WIDTH.get(f) * (1d + STROKE_INNER_WIDTH_FACTOR.get(f));
+    	} else {
+            return STROKE_WIDTH.get(f);
+    	}
+    	/*
         switch (STROKE_TYPE.get(f)) {
             case BASIC :
             default :
@@ -343,7 +352,7 @@ public class AttributeKeys {
             case DOUBLE :
                 return STROKE_WIDTH.get(f) * (1d + STROKE_INNER_WIDTH_FACTOR.get(f));
                 // break; not reached
-        }
+        }*/
     }
     /**
      * Convenience method for computing the total stroke miter limit from the
@@ -369,6 +378,29 @@ public class AttributeKeys {
                 dashes[i] = (float) (ddashes[i] * dashFactor);
             }
         }
+        //NEIL: changed to if due to limitations in jastadd codegen
+        if (STROKE_TYPE.get(f) == StrokeType.BASIC) {
+            return new BasicStroke((float) strokeWidth, 
+                    STROKE_CAP.get(f),
+                    STROKE_JOIN.get(f) ,
+                    miterLimit,
+                    dashes, (float) (STROKE_DASH_PHASE.get(f) * dashFactor));
+        } else if (STROKE_TYPE.get(f) == StrokeType.DOUBLE) {
+            return new DoubleStroke(
+                    (float) (STROKE_INNER_WIDTH_FACTOR.get(f) * strokeWidth),
+                    (float) strokeWidth,
+                    STROKE_CAP.get(f),
+                    STROKE_JOIN.get(f),
+                    miterLimit,
+                    dashes, (float) (STROKE_DASH_PHASE.get(f).floatValue() * dashFactor));
+        } else {
+            return new BasicStroke((float) strokeWidth, 
+                    STROKE_CAP.get(f),
+                    STROKE_JOIN.get(f) ,
+                    miterLimit,
+                    dashes, (float) (STROKE_DASH_PHASE.get(f) * dashFactor));
+        }
+        /*
         switch (STROKE_TYPE.get(f)) {
             case BASIC :
             default :
@@ -388,7 +420,7 @@ public class AttributeKeys {
                         miterLimit,
                         dashes, (float) (STROKE_DASH_PHASE.get(f).floatValue() * dashFactor));
                 //not reached
-        }
+        }*/
     }
     
     public static Font getFont(Figure f) {
@@ -419,6 +451,50 @@ public class AttributeKeys {
         double grow;
         double strokeWidth = AttributeKeys.getStrokeTotalWidth(f);
         StrokePlacement placement = STROKE_PLACEMENT.get(f);
+        
+        //NEIL: change enum case into if for now
+        if (FILL_UNDER_STROKE.get(f) == Underfill.FULL) {
+        	if (placement == StrokePlacement.INSIDE) {
+        		grow = 0f;
+        	} else if (placement == StrokePlacement.OUTSIDE) {
+        		grow = strokeWidth;
+        	} else if (placement == StrokePlacement.CENTER) {
+        		grow = strokeWidth / 2d;
+        	} else {
+        		grow = strokeWidth / 2d;
+        	}
+        } else if (FILL_UNDER_STROKE.get(f) == Underfill.NONE) {
+        	if (placement == StrokePlacement.INSIDE) {
+        		grow = -strokeWidth;
+        	} else if (placement == StrokePlacement.OUTSIDE) {
+        		grow = 0f;
+        	} else if (placement == StrokePlacement.CENTER) {
+        		grow = strokeWidth / -2d;
+        	} else {
+        		grow = strokeWidth / -2d;
+        	}
+        } else if (FILL_UNDER_STROKE.get(f) == Underfill.CENTER) {
+        	if (placement == StrokePlacement.INSIDE) {
+        		grow = strokeWidth / -2d;
+        	} else if (placement == StrokePlacement.OUTSIDE) {
+        		grow = strokeWidth / 2d;
+        	} else if (placement == StrokePlacement.CENTER) {
+        		grow = 0d;
+        	} else {
+        		grow = 0d;
+        	}
+        } else {
+        	if (placement == StrokePlacement.INSIDE) {
+        		grow = strokeWidth / -2d;
+        	} else if (placement == StrokePlacement.OUTSIDE) {
+        		grow = strokeWidth / 2d;
+        	} else if (placement == StrokePlacement.CENTER) {
+        		grow = 0d;
+        	} else {
+        		grow = 0d;
+        	}
+        }
+        /*
         switch (FILL_UNDER_STROKE.get(f)) {
             case FULL :
                 switch (placement) {
@@ -463,7 +539,7 @@ public class AttributeKeys {
                         break;
                 }
                 break;
-        }
+        }*/
         return grow;
     }
     /**
@@ -477,6 +553,16 @@ public class AttributeKeys {
         double grow;
         
         double strokeWidth = AttributeKeys.getStrokeTotalWidth(f);
+        if (STROKE_PLACEMENT.get(f) == StrokePlacement.INSIDE) {
+            grow = strokeWidth / -2d;
+        } else if (STROKE_PLACEMENT.get(f) == StrokePlacement.OUTSIDE) {
+            grow = strokeWidth / 2d;
+        } else if (STROKE_PLACEMENT.get(f) == StrokePlacement.CENTER) {
+            grow = 0f;
+        } else {
+            grow = 0f;
+        }
+        /*
         switch (STROKE_PLACEMENT.get(f)) {
             case INSIDE :
                 grow = strokeWidth / -2d;
@@ -488,7 +574,7 @@ public class AttributeKeys {
             default :
                 grow = 0f;
                 break;
-        }
+        }*/
         return grow;
     }
     /**

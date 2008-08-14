@@ -94,6 +94,16 @@ public class ChopRectangleConnector extends AbstractConnector {
         Rectangle2D.Double r = target.getBounds();
         if (STROKE_COLOR.get(target) != null) {
             double grow;
+            if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.CENTER) {
+            	grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
+            } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.OUTSIDE) {
+            	grow = AttributeKeys.getStrokeTotalWidth(target);
+            } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.INSIDE) {
+            	grow = 0d;
+            } else {
+            	grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
+            }
+            /*
             switch (STROKE_PLACEMENT.get(target)) {
                 case CENTER:
                 default :
@@ -105,7 +115,7 @@ public class ChopRectangleConnector extends AbstractConnector {
                 case INSIDE :
                     grow = 0d;
                     break;
-            }
+            }*/
             Geom.grow(r, grow, grow);
         }
         return Geom.angleToPoint(r, Geom.pointToAngle(r, from));
