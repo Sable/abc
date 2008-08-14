@@ -2,7 +2,7 @@
 <feature
       id="org.jastadd.feature"
       label="JastAdd"
-      version="1.0.0">
+      version="1.0.1">
 
    <description url="http://jastadd.org">
       JastAdd Feature Description ...
