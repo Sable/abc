@@ -1,11 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?metadataRepository class='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'?>
-<repository name='file:/home/emma/workspace/JastAddUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
+<repository name='file:/home/emma/workspace/JastAddUpdateSite/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1218721340366'/>
+    <property name='p2.timestamp' value='1218724624396'/>
   </properties>
-  <references size='2'>
+  <references size='4'>
+    <repository url='http://builds.jastadd.org/eclipse/update' type='0' options='0'/>
+    <repository url='http://builds.jastadd.org/eclipse/update' type='1' options='0'/>
     <repository url='http://jastadd.org' type='0' options='0'/>
     <repository url='http://jastadd.org' type='1' options='0'/>
   </references>
@@ -68,7 +70,7 @@
       <touchpointData size='1'>
         <instructions size='2'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-Activator: org.jastadd.plugin.jastaddj.JastAddJActivator&#xA;Bundle-ClassPath: bin/&#xA;Require-Bundle: org.jastadd.plugin;visibility:=reexport,org.eclipse.ui;visibility:=reexport,org.eclipse.core.runtime;visibility:=reexport,org.eclipse.core.resources;visibility:=reexport,org.eclipse.jface.text;visibility:=reexport,org.eclipse.debug.core;visibility:=reexport,org.eclipse.jdt.launching;visibility:=reexport,org.eclipse.debug.ui;visibility:=reexport,org.eclipse.jdt.debug;visibility:=reexport,org.eclipse.jdt.debug.ui;visibility:=reexport,org.eclipse.ui.workbench.texteditor;visibility:=reexport,org.eclipse.ui.ide;visibility:=reexport,org.eclipse.jdt.ui;visibility:=reexport,org.eclipse.search;visibility:=reexport,org.eclipse.ui.editors;visibility:=reexport,org.eclipse.ltk.core.refactoring;visibility:=reexport,org.eclipse.ltk.ui.refactoring;visibility:=reexport,org.eclipse.core.expressions;visibility:=reexport,org.eclipse.jdt.core;visibility:=reexport,org.eclipse.pde.runtime&#xA;Bundle-Name: JastAddJ Plug-in&#xA;Bundle-Localization: plugin&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: org.jastadd.plugin.jastaddj;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;Export-Package: org.jastadd.plugin.jastaddj,org.jastadd.plugin.jastaddj.AST,org.jastadd.plugin.jastaddj.builder,org.jastadd.plugin.jastaddj.builder.ui,org.jastadd.plugin.jastaddj.completion,org.jastadd.plugin.jastaddj.editor,org.jastadd.plugin.jastaddj.editor.actions,org.jastadd.plugin.jastaddj.editor.debug,org.jastadd.plugin.jastaddj.editor.highlight,org.jastadd.plugin.jastaddj.explorer,org.jastadd.plugin.jastaddj.launcher,org.jastadd.plugin.jastaddj.launcher.classpaths,org.jastadd.plugin.jastaddj.model,org.jastadd.plugin.jastaddj.nature,org.jastadd.plugin.jastaddj.navigator,org.jastadd.plugin.jastaddj.perspective,org.jastadd.plugin.jastaddj.wizards,parser,scanner
+            Bundle-ManifestVersion: 2&#xA;Bundle-Activator: org.jastadd.plugin.jastaddj.JastAddJActivator&#xA;Bundle-ClassPath: bin/&#xA;Require-Bundle: org.jastadd.plugin;visibility:=reexport,org.eclipse.ui;visibility:=reexport,org.eclipse.core.runtime;visibility:=reexport,org.eclipse.core.resources;visibility:=reexport,org.eclipse.jface.text;visibility:=reexport,org.eclipse.debug.core;visibility:=reexport,org.eclipse.jdt.launching;visibility:=reexport,org.eclipse.debug.ui;visibility:=reexport,org.eclipse.jdt.debug;visibility:=reexport,org.eclipse.jdt.debug.ui;visibility:=reexport,org.eclipse.ui.workbench.texteditor;visibility:=reexport,org.eclipse.ui.ide;visibility:=reexport,org.eclipse.jdt.ui;visibility:=reexport,org.eclipse.search;visibility:=reexport,org.eclipse.ui.editors;visibility:=reexport,org.eclipse.ltk.core.refactoring;visibility:=reexport,org.eclipse.ltk.ui.refactoring;visibility:=reexport,org.eclipse.core.expressions;visibility:=reexport,org.eclipse.jdt.core;visibility:=reexport,org.eclipse.pde.runtime&#xA;Bundle-Name: JastAddJ Plug-in&#xA;Bundle-Localization: plugin&#xA;Manifest-Version: 1.0&#xA;Bundle-SymbolicName: org.jastadd.plugin.jastaddj;singleton:=true&#xA;Bundle-Version: 1.0.0&#xA;Eclipse-LazyStart: true&#xA;Export-Package: org.jastadd.plugin.jastaddj,org.jastadd.plugin.jastaddj.AST,org.jastadd.plugin.jastaddj.builder,org.jastadd.plugin.jastaddj.builder.ui,org.jastadd.plugin.jastaddj.completion,org.jastadd.plugin.jastaddj.editor,org.jastadd.plugin.jastaddj.editor.actions,org.jastadd.plugin.jastaddj.editor.debug,org.jastadd.plugin.jastaddj.editor.highlight,org.jastadd.plugin.jastaddj.explorer,org.jastadd.plugin.jastaddj.launcher,org.jastadd.plugin.jastaddj.launcher.classpaths,org.jastadd.plugin.jastaddj.model,org.jastadd.plugin.jastaddj.nature,org.jastadd.plugin.jastaddj.navigator,org.jastadd.plugin.jastaddj.perspective,org.jastadd.plugin.jastaddj.wizards,parser,scanner&#xA;
           </instruction>
           <instruction key='zipped'>
             true
@@ -106,8 +108,8 @@
       <update id='org.jastadd.feature.feature.jar' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='3'>
         <property name='org.eclipse.equinox.p2.name' value='JastAdd'/>
-        <property name='org.eclipse.equinox.p2.description' value='JastAdd Festure Description ...'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.description' value='JastAdd Feature Description ...'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://jastadd.org'/>
       </properties>
       <provides size='3'>
         <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.jar' version='1.0.0'/>
@@ -129,12 +131,12 @@
         </instructions>
       </touchpointData>
       <licenses size='1'>
-        <license url='http://www.example.com/license'>
-          JastAdd License ...
+        <license url='http://jastadd.org'>
+          The JastAdd tool (http://jastadd.org) is covered by the&#xA;BSD License.&#xA;Copyright (c) 2008, The JastAdd Team&#xA;The Computing Laboratory, University of Oxford, UK&#xA;Department of Computer Science, Lund University, Sweden&#xA;All rights reserved.&#xA;Redistribution and use in source and binary forms, with or without&#xA;modification, are permitted provided that the following conditions&#xA;are met:&#xA;* Redistributions of source code must retain the above copyright&#xA;notice,&#xA;this list of conditions and the following disclaimer.&#xA;* Redistributions in binary form must reproduce the above copyright&#xA;notice,&#xA;this list of conditions and the following disclaimer in the documentation&#xA;and/or other materials provided with the distribution.&#xA;* Neither the name of the Lund University nor the names of its&#xA;contributors&#xA;may be used to endorse or promote products derived from this&#xA;software&#xA;without specific prior written permission.&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS&quot; AND&#xA;ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED&#xA;TO, THE IMPLIED&#xA;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE&#xA;ARE&#xA;DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS&#xA;BE LIABLE FOR&#xA;ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL&#xA;DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES;&#xA;LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER&#xA;CAUSED AND ON&#xA;ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,&#xA;OR TORT&#xA;(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF&#xA;THE USE OF THIS&#xA;SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </license>
       </licenses>
-      <copyright url='http://www.example.com/copyright'>
-        jastadd.org ...
+      <copyright url='http://jastadd.org'>
+        Copyright (c) 2008, The JastAdd Team&#xA;The Computing Laboratory, University of Oxford, UK&#xA;Department of Computer Science, Lund University, Sweden&#xA;All rights reserved.
       </copyright>
     </unit>
     <unit id='tooling.osgi.bundle.default' version='1.0.0' singleton='false'>
@@ -169,6 +171,35 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='org.jastadd.plugin.jastadd' version='1.0.1'>
+      <update id='org.jastadd.plugin.jastadd' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.name' value='JastAddIDE Plug-in'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' version='1.0.1'/>
+        <provided namespace='osgi.bundle' name='org.jastadd.plugin.jastadd' version='1.0.1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.jastadd.plugin.jastaddj' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.zest.core' range='1.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.zest.layouts' range='1.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.core.runtime,org.jastadd.plugin.jastaddj,org.eclipse.jdt.core,org.eclipse.zest.core;bundle-version=&quot;1.0.0&quot;,org.eclipse.zest.layouts;bundle-version=&quot;1.0.0&quot;&#xA;Bundle-Activator: org.jastadd.plugin.jastadd.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: org.jastadd.plugin.jastadd;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Bundle-ClassPath: libs/beaver.jar,libs/JFlex.jar,.,libs/beaver-rt.jar,libs/JastAddParser.jar&#xA;Bundle-Name: JastAddIDE Plug-in&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='tooling.org.eclipse.update.feature.default' version='1.0.0' singleton='false'>
       <hostRequirements size='1'>
         <required namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' range='0.0.0' optional='true' multiple='true' greedy='false'/>
@@ -197,66 +228,6 @@
           </instruction>
         </instructions>
       </touchpointData>
-    </unit>
-    <unit id='org.jastadd.plugin.jastadd' version='1.0.0'>
-      <update id='org.jastadd.plugin.jastadd' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='1'>
-        <property name='org.eclipse.equinox.p2.name' value='JastAddIDE Plug-in'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' version='1.0.0'/>
-        <provided namespace='osgi.bundle' name='org.jastadd.plugin.jastadd' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-      </provides>
-      <requires size='5'>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.jastadd.plugin.jastaddj' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.zest.core' range='1.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.zest.layouts' range='1.0.0'/>
-      </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.0'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.core.runtime,org.jastadd.plugin.jastaddj,org.eclipse.jdt.core,org.eclipse.zest.core;bundle-version=&quot;1.0.0&quot;,org.eclipse.zest.layouts;bundle-version=&quot;1.0.0&quot;&#xA;Bundle-Activator: org.jastadd.plugin.jastadd.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.0&#xA;Bundle-SymbolicName: org.jastadd.plugin.jastadd;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Bundle-ClassPath: libs/beaver.jar,libs/JFlex.jar,.,libs/beaver-rt.jar,libs/JastAddParser.jar&#xA;Bundle-Name: JastAddIDE Plug-in&#xA;Eclipse-LazyStart: true
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
-    <unit id='org.jastadd.feature.feature.group' version='1.0.0' singleton='false'>
-      <update id='org.jastadd.feature.feature.group' range='[0.0.0,1.0.0)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='JastAdd'/>
-        <property name='org.eclipse.equinox.p2.description' value='JastAdd Festure Description ...'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.group' version='1.0.0'/>
-      </provides>
-      <requires size='4'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastaddj' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.jar' range='[1.0.0,1.0.0]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license url='http://www.example.com/license'>
-          JastAdd License ...
-        </license>
-      </licenses>
-      <copyright url='http://www.example.com/copyright'>
-        jastadd.org ...
-      </copyright>
     </unit>
     <unit id='org.jastadd.plugin' version='1.0.0'>
       <update id='org.jastadd.plugin' range='[0.0.0,1.0.0)' severity='0'/>
@@ -314,32 +285,71 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.jface.text,org.eclipse.debug.core,org.eclipse.jdt.launching,org.eclipse.debug.ui,org.eclipse.jdt.debug,org.eclipse.jdt.debug.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.ide,org.eclipse.jdt.ui,org.eclipse.search,org.eclipse.ui.editors,org.eclipse.ui.views,org.eclipse.ui.console&#xA;Bundle-Activator: org.jastadd.plugin.JastAddActivator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.0&#xA;Export-Package: org.jastadd.plugin,org.jastadd.plugin.AST,org.jastadd.plugin.builder,org.jastadd.plugin.editor,org.jastadd.plugin.editor.actions,org.jastadd.plugin.editor.highlight,org.jastadd.plugin.explorer,org.jastadd.plugin.information,org.jastadd.plugin.model,org.jastadd.plugin.model.repair,org.jastadd.plugin.navigator,org.jastadd.plugin.perspective,org.jastadd.plugin.providers,org.jastadd.plugin.providers.model,org.jastadd.plugin.refactor,org.jastadd.plugin.resources,org.jastadd.plugin.save,org.jastadd.plugin.search,org.jastadd.plugin.util,org.jastadd.plugin.view,org.jastadd.plugin.wizards&#xA;Bundle-SymbolicName: org.jastadd.plugin;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: JastAdd Core Plug-in&#xA;Eclipse-LazyStart: true
+            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.core.resources,org.eclipse.jface.text,org.eclipse.debug.core,org.eclipse.jdt.launching,org.eclipse.debug.ui,org.eclipse.jdt.debug,org.eclipse.jdt.debug.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.ide,org.eclipse.jdt.ui,org.eclipse.search,org.eclipse.ui.editors,org.eclipse.ui.views,org.eclipse.ui.console&#xA;Bundle-Activator: org.jastadd.plugin.JastAddActivator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.0&#xA;Export-Package: org.jastadd.plugin,org.jastadd.plugin.AST,org.jastadd.plugin.builder,org.jastadd.plugin.editor,org.jastadd.plugin.editor.actions,org.jastadd.plugin.editor.highlight,org.jastadd.plugin.explorer,org.jastadd.plugin.information,org.jastadd.plugin.model,org.jastadd.plugin.model.repair,org.jastadd.plugin.navigator,org.jastadd.plugin.perspective,org.jastadd.plugin.providers,org.jastadd.plugin.providers.model,org.jastadd.plugin.refactor,org.jastadd.plugin.resources,org.jastadd.plugin.save,org.jastadd.plugin.search,org.jastadd.plugin.util,org.jastadd.plugin.view,org.jastadd.plugin.wizards&#xA;Bundle-SymbolicName: org.jastadd.plugin;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: JastAdd Core Plug-in&#xA;Eclipse-LazyStart: true&#xA;
           </instruction>
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='config.a.jre' version='1.6.0' singleton='false'>
-      <hostRequirements size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre' range='1.6.0'/>
-      </hostRequirements>
-      <properties size='1'>
-        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+    <unit id='org.jastadd.feature.feature.group' version='1.0.1' singleton='false'>
+      <update id='org.jastadd.feature.feature.group' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='5'>
+        <property name='org.eclipse.equinox.p2.name' value='JastAdd'/>
+        <property name='org.eclipse.equinox.p2.description' value='JastAdd Feature Description ...'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://jastadd.org'/>
+        <property name='org.eclipse.equinox.p2.provider' value='jastadd.org'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
       </properties>
       <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='config.a.jre' version='1.6.0'/>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.group' version='1.0.1'/>
       </provides>
-      <requires size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre' range='1.6.0'/>
+      <requires size='33'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.gef.feature.group' range='[3.4.0.v20080115-677-8082A5696H274A,4.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.gef.sdk.feature.group' range='[3.4.0.v20080115-7B7E-97OK5c7PDdDMPMcHNPTM3CD,4.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.gef.source.feature.group' range='[3.4.0.v20080115-677-8082A5696H274A,4.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.zest.feature.group' range='[1.0.0.v20080115-53-8xB4CE899O274A,2.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.zest.sdk.feature.group' range='[1.0.0.v20080115-53-8_GACFGHKZGOLXW_WSRQ6FDTE,2.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.zest.source.feature.group' range='[1.0.0.v20080115-53-8xB4CE899O274A,2.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface.text' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.debug.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jdt.launching' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.debug.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jdt.debug' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jdt.debug.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.workbench.texteditor' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jdt.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.search' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.editors' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.views' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jdt.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.zest.core' range='1.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.zest.layouts' range='1.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ltk.core.refactoring' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ltk.ui.refactoring' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.expressions' range='[3.4.0,4.0.0)'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.pde.runtime' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin' range='[1.0.0,1.0.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' range='[1.0.1,1.0.1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastaddj' range='[1.0.0,1.0.0]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.jar' range='[1.0.1,1.0.1]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
       </requires>
-      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='install'>
-
-          </instruction>
-        </instructions>
-      </touchpointData>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license url='http://jastadd.org'>
+          The JastAdd tool (http://jastadd.org) is covered by the&#xA;BSD License.&#xA;Copyright (c) 2008, The JastAdd Team&#xA;The Computing Laboratory, University of Oxford, UK&#xA;Department of Computer Science, Lund University, Sweden&#xA;All rights reserved.&#xA;Redistribution and use in source and binary forms, with or without&#xA;modification, are permitted provided that the following conditions&#xA;are met:&#xA;* Redistributions of source code must retain the above copyright&#xA;notice,&#xA;this list of conditions and the following disclaimer.&#xA;* Redistributions in binary form must reproduce the above copyright&#xA;notice,&#xA;this list of conditions and the following disclaimer in the documentation&#xA;and/or other materials provided with the distribution.&#xA;* Neither the name of the Lund University nor the names of its&#xA;contributors&#xA;may be used to endorse or promote products derived from this&#xA;software&#xA;without specific prior written permission.&#xA;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#xA;&quot;AS IS&quot; AND&#xA;ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED&#xA;TO, THE IMPLIED&#xA;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE&#xA;ARE&#xA;DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS&#xA;BE LIABLE FOR&#xA;ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL&#xA;DAMAGES&#xA;(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS&#xA;OR SERVICES;&#xA;LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER&#xA;CAUSED AND ON&#xA;ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,&#xA;OR TORT&#xA;(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF&#xA;THE USE OF THIS&#xA;SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        </license>
+      </licenses>
+      <copyright url='http://jastadd.org'>
+        Copyright (c) 2008, The JastAdd Team&#xA;The Computing Laboratory, University of Oxford, UK&#xA;Department of Computer Science, Lund University, Sweden&#xA;All rights reserved.
+      </copyright>
     </unit>
     <unit id='a.jre' version='1.6.0' singleton='false'>
       <provides size='117'>
@@ -465,10 +475,11 @@
     </unit>
     <unit id='org.jastadd.feature.feature.jar' version='1.0.1'>
       <update id='org.jastadd.feature.feature.jar' range='[0.0.0,1.0.1)' severity='0'/>
-      <properties size='3'>
+      <properties size='4'>
         <property name='org.eclipse.equinox.p2.name' value='JastAdd'/>
         <property name='org.eclipse.equinox.p2.description' value='JastAdd Feature Description ...'/>
         <property name='org.eclipse.equinox.p2.description.url' value='http://jastadd.org'/>
+        <property name='org.eclipse.equinox.p2.provider' value='jastadd.org'/>
       </properties>
       <provides size='3'>
         <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.jar' version='1.0.1'/>
@@ -498,8 +509,37 @@
         Copyright (c) 2008, The JastAdd Team&#xA;The Computing Laboratory, University of Oxford, UK&#xA;Department of Computer Science, Lund University, Sweden&#xA;All rights reserved.
       </copyright>
     </unit>
-    <unit id='org.jastadd.feature.feature.group' version='1.0.1' singleton='false'>
-      <update id='org.jastadd.feature.feature.group' range='[0.0.0,1.0.1)' severity='0'/>
+    <unit id='org.jastadd.plugin.jastadd' version='1.0.0'>
+      <update id='org.jastadd.plugin.jastadd' range='[0.0.0,1.0.0)' severity='0'/>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.name' value='JastAddIDE Plug-in'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' version='1.0.0'/>
+        <provided namespace='osgi.bundle' name='org.jastadd.plugin.jastadd' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.jastadd.plugin.jastaddj' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.zest.core' range='1.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.zest.layouts' range='1.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.core.runtime,org.jastadd.plugin.jastaddj,org.eclipse.jdt.core,org.eclipse.zest.core;bundle-version=&quot;1.0.0&quot;,org.eclipse.zest.layouts;bundle-version=&quot;1.0.0&quot;&#xA;Bundle-Activator: org.jastadd.plugin.jastadd.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.0&#xA;Bundle-SymbolicName: org.jastadd.plugin.jastadd;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Bundle-ClassPath: libs/beaver.jar,libs/JFlex.jar,.,libs/beaver-rt.jar,libs/JastAddParser.jar&#xA;Bundle-Name: JastAddIDE Plug-in&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.jastadd.feature.feature.group' version='1.0.0' singleton='false'>
+      <update id='org.jastadd.feature.feature.group' range='[0.0.0,1.0.0)' severity='0'/>
       <properties size='4'>
         <property name='org.eclipse.equinox.p2.name' value='JastAdd'/>
         <property name='org.eclipse.equinox.p2.description' value='JastAdd Feature Description ...'/>
@@ -507,7 +547,7 @@
         <property name='org.eclipse.equinox.p2.type.group' value='true'/>
       </properties>
       <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.group' version='1.0.1'/>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.group' version='1.0.0'/>
       </provides>
       <requires size='33'>
         <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.gef.feature.group' range='[3.4.0.v20080115-677-8082A5696H274A,4.0.0)'/>
@@ -542,7 +582,7 @@
         <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin' range='[1.0.0,1.0.0]'/>
         <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' range='[1.0.0,1.0.0]'/>
         <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastaddj' range='[1.0.0,1.0.0]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.jar' range='[1.0.1,1.0.1]'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.feature.feature.jar' range='[1.0.0,1.0.0]'>
           <filter>
             (org.eclipse.update.install.features=true)
           </filter>
@@ -558,31 +598,24 @@
         Copyright (c) 2008, The JastAdd Team&#xA;The Computing Laboratory, University of Oxford, UK&#xA;Department of Computer Science, Lund University, Sweden&#xA;All rights reserved.
       </copyright>
     </unit>
-    <unit id='org.jastadd.plugin.jastadd' version='1.0.1'>
-      <update id='org.jastadd.plugin.jastadd' range='[0.0.0,1.0.1)' severity='0'/>
+    <unit id='config.a.jre' version='1.6.0' singleton='false'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre' range='1.6.0'/>
+      </hostRequirements>
       <properties size='1'>
-        <property name='org.eclipse.equinox.p2.name' value='JastAddIDE Plug-in'/>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
       </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='org.jastadd.plugin.jastadd' version='1.0.1'/>
-        <provided namespace='osgi.bundle' name='org.jastadd.plugin.jastadd' version='1.0.1'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='config.a.jre' version='1.6.0'/>
       </provides>
-      <requires size='5'>
-        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.jastadd.plugin.jastaddj' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.jdt.core' range='0.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.zest.core' range='1.0.0'/>
-        <required namespace='osgi.bundle' name='org.eclipse.zest.layouts' range='1.0.0'/>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='a.jre' range='1.6.0'/>
       </requires>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.1'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
       <touchpointData size='1'>
         <instructions size='1'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Require-Bundle: org.eclipse.core.runtime,org.jastadd.plugin.jastaddj,org.eclipse.jdt.core,org.eclipse.zest.core;bundle-version=&quot;1.0.0&quot;,org.eclipse.zest.layouts;bundle-version=&quot;1.0.0&quot;&#xA;Bundle-Activator: org.jastadd.plugin.jastadd.Activator&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 1.0.1&#xA;Bundle-SymbolicName: org.jastadd.plugin.jastadd;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Bundle-ClassPath: libs/beaver.jar,libs/JFlex.jar,.,libs/beaver-rt.jar,libs/JastAddParser.jar&#xA;Bundle-Name: JastAddIDE Plug-in&#xA;Eclipse-LazyStart: true&#xA;
+          <instruction key='install'>
+
           </instruction>
         </instructions>
       </touchpointData>

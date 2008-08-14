@@ -1,60 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
-<repository name='file:/home/emma/workspace/JastAddUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
+<repository name='file:/home/emma/workspace/JastAddUpdateSite/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1218721340364'/>
+    <property name='p2.timestamp' value='1218724624394'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='13'>
-    <artifact classifier='org.eclipse.update.feature' id='org.jastadd.feature' version='1.0.1'>
-      <properties size='2'>
-        <property name='artifact.size' value='1939'/>
-        <property name='download.size' value='1939'/>
+  <artifacts size='6'>
+    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.1'>
+      <properties size='3'>
+        <property name='artifact.size' value='2273242'/>
+        <property name='download.size' value='2273242'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='org.jastadd.feature' version='1.0.0'>
       <properties size='2'>
         <property name='artifact.size' value='1937'/>
         <property name='download.size' value='1937'/>
-      </properties>
-    </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='org.jastadd.feature' version='1.0.1'>
-      <properties size='2'>
-        <property name='artifact.size' value='1942'/>
-        <property name='download.size' value='1942'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='2258702'/>
-        <property name='download.size' value='2258702'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastaddj' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='1648738'/>
-        <property name='download.size' value='1648738'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastaddj' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='1648063'/>
-        <property name='download.size' value='1648063'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='182538'/>
-        <property name='download.size' value='182538'/>
-        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.0'>
@@ -64,18 +31,10 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='2257356'/>
-        <property name='download.size' value='2257356'/>
-        <property name='download.contentType' value='application/zip'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastaddj' version='1.0.0'>
-      <properties size='3'>
-        <property name='artifact.size' value='1647764'/>
-        <property name='download.size' value='1647764'/>
-        <property name='download.contentType' value='application/zip'/>
+    <artifact classifier='org.eclipse.update.feature' id='org.jastadd.feature' version='1.0.1'>
+      <properties size='2'>
+        <property name='artifact.size' value='1992'/>
+        <property name='download.size' value='1992'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='org.jastadd.plugin' version='1.0.0'>
@@ -85,16 +44,10 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
-    <artifact classifier='org.eclipse.update.feature' id='org.jastadd.feature' version='1.0.0'>
-      <properties size='2'>
-        <property name='artifact.size' value='720'/>
-        <property name='download.size' value='720'/>
-      </properties>
-    </artifact>
-    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastadd' version='1.0.1'>
+    <artifact classifier='osgi.bundle' id='org.jastadd.plugin.jastaddj' version='1.0.0'>
       <properties size='3'>
-        <property name='artifact.size' value='2272579'/>
-        <property name='download.size' value='2272579'/>
+        <property name='artifact.size' value='1648738'/>
+        <property name='download.size' value='1648738'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
