@@ -1,5 +1,5 @@
 Arguments: 
--jastaddframework -debug -d classes -instance-module m1 m1.module m2.module m3.module m3x.module m3xx.module m3xxx.module A.java B.java C.java CX.java CXX.java CXXX.java Main.java pack/C.java pack/CX.java pack/CXX.java pack/CXXX.java ../testlib/jastadd$framework.module End arguments
+-jastaddframework -debug -d classes -instance-module m1 m1.module m2.module m3.module m3x.module m3xx.module m3xxx.module m3xxxx.module A.java B.java C.java CX.java CXX.java CXXX.java Main.java pack/C.java pack/CX.java pack/CXX.java pack/CXXX.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
 ------CXXX.java------
 module: module m3xxx;;
@@ -34,6 +34,7 @@ import own m2 export as m2b;
 import own m3x export as m3x;
 import own m3xx export as m3xx;
 import own m3xxx export as m3xxx;
+import own m3xxxx export as m3xxxx;
 merge m2a::m3, m3x export as m3;
 merge m3, m3xx export as m3xx;
 merge m2b::m3, m3xxx export as m3xxx;
@@ -47,6 +48,9 @@ module name : m3xx
 module: module m3;;
 module CU : m3.module
 module name : m3
+------------------------
+------m3xxxx.module------
+module m3xxxx extends m3xxx;
 ------------------------
 ------m3xx.module------
 module m3xx extends m3x;
@@ -96,6 +100,7 @@ module: m3xxx, file: m3xxx.module, base module: m3xxx
 module: m1, file: m1.module, base module: m1
 CXX.java package:
 C.java package:
+module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
 module: m3xx, file: m3xx.module, base module: m3xx
 B.java package:
 module: m3x, file: m3x.module, base module: m3x
@@ -112,6 +117,7 @@ module: m3xxx, file: m3xxx.module, base module: m3xxx
 	pack/CXXX.java package:m3xxx.$pack
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
+module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
 module: m3xx, file: m3xx.module, base module: m3xx
 	pack/CXX.java package:m3xx.$pack
 	CXX.java package:m3xx
@@ -128,6 +134,7 @@ module: m2, file: m2.module, base module: m2
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module m3xxx, base:m3xxx, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:false
+module m3xxxx, base:m3xxxx, context:[], instantiated:false
 module m3xx, base:m3xx, context:[], instantiated:false
 module m3x, base:m3x, context:[], instantiated:false
 module m3, base:m3, context:[], instantiated:false
@@ -139,6 +146,7 @@ import own m2 export as m2b;
 import own m3x export as m3x;
 import own m3xx export as m3xx;
 import own m3xxx export as m3xxx;
+import own m3xxxx export as m3xxxx;
 merge m2a::m3, m3x export as m3;
 merge m3, m3xx export as m3xx;
 merge m2b::m3, m3xxx export as m3xxx;
@@ -152,6 +160,7 @@ module: m3xxx, file: m3xxx.module, base module: m3xxx
 	pack/CXXX.java package:m3xxx.$pack
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
+module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
 module: m3xx, file: m3xx.module, base module: m3xx
 	pack/CXX.java package:m3xx.$pack
 	CXX.java package:m3xx
@@ -168,6 +177,19 @@ module: m1$m2a, file: m2.module, base module: m2
 	B.java package:m1$m2a
 module: m1.m2b, file: m2.module, base module: m2
 	B.java package:m1.m2b
+module: m1.m3xxxx$super$m3xxx, file: m3xxx.module, base module: m3xxx
+	CXXX.java package:m1.m3xxxx$super$m3xxx
+	pack/CXXX.java package:m1.m3xxxx$super$m3xxx.$pack
+module: m1.m3xxxx$super$m3xx, file: m3xx.module, base module: m3xx
+	pack/CXX.java package:m1.m3xxxx$super$m3xx.$pack
+	CXX.java package:m1.m3xxxx$super$m3xx
+module: m1.m3xxxx$super$m3x, file: m3x.module, base module: m3x
+	pack/CX.java package:m1.m3xxxx$super$m3x.$pack
+	CX.java package:m1.m3xxxx$super$m3x
+module: m1.m3xxxx$super$m3, file: m3.module, base module: m3
+	pack/C.java package:m1.m3xxxx$super$m3.$pack
+	C.java package:m1.m3xxxx$super$m3
+module: m1.m3xxxx, file: m3xxxx.module, base module: m3xxxx
 module: m1.m3xx$super$m3x, file: m3x.module, base module: m3x
 	pack/CX.java package:m1.m3xx$super$m3x.$pack
 	CX.java package:m1.m3xx$super$m3x
@@ -201,6 +223,8 @@ module m1, base:m1, context:[], instantiated:true
 	[export]m3x:m1.m3xx
 	[export]m3xx:m1.m3xx
 	[export]m3xxx:m1.m3xxx
+	[export]m3xxxx:m1.m3xxxx
+module m3xxxx, base:m3xxxx, context:[], instantiated:false
 module m3xx, base:m3xx, context:[], instantiated:false
 module m3x, base:m3x, context:[], instantiated:false
 module m3, base:m3, context:[], instantiated:false
@@ -211,6 +235,12 @@ module m1$m2a, base:m2, context:[m1], instantiated:true
 module m1.m2b, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]m3:m1.m3xxx
+module m1.m3xxxx$super$m3xxx, base:m3xxx, context:[m1.m3xxxx], instantiated:true
+module m1.m3xxxx$super$m3xx, base:m3xx, context:[m1.m3xxxx], instantiated:true
+module m1.m3xxxx$super$m3x, base:m3x, context:[m1.m3xxxx], instantiated:true
+module m1.m3xxxx$super$m3, base:m3, context:[m1.m3xxxx], instantiated:true
+module m1.m3xxxx, base:m3xxxx, context:[m1], instantiated:true
+	jastadd$framework:jastadd$framework
 module m1.m3xx$super$m3x, base:m3x, context:[m1.m3xx], instantiated:true
 module m1.m3xx$super$m3, base:m3, context:[m1.m3xx], instantiated:true
 module m1.m3xx, base:m3xx, context:[m1, m1$m2a], instantiated:true
@@ -228,42 +258,56 @@ Module: m3xxx
 	m3xxx.CXXX
 Module: m1
 	m1.A
+Module: m3xxxx
 Module: m3xx
-	m3xx.CXX
 	m3xx.$pack.CXX
+	m3xx.CXX
 Module: m3x
-	m3x.$pack.CX
 	m3x.CX
+	m3x.$pack.CX
 Module: m3
-	m3.C
 	m3.$pack.C
+	m3.C
 Module: m2
 	m2.B
 Module: m1$m2a
 	m1$m2a.B
 Module: m1.m2b
 	m1.m2b.B
+Module: m1.m3xxxx$super$m3xxx
+	m1.m3xxxx$super$m3xxx.$pack.CXXX
+	m1.m3xxxx$super$m3xxx.CXXX
+Module: m1.m3xxxx$super$m3xx
+	m1.m3xxxx$super$m3xx.$pack.CXX
+	m1.m3xxxx$super$m3xx.CXX
+Module: m1.m3xxxx$super$m3x
+	m1.m3xxxx$super$m3x.$pack.CX
+	m1.m3xxxx$super$m3x.CX
+Module: m1.m3xxxx$super$m3
+	m1.m3xxxx$super$m3.C
+	m1.m3xxxx$super$m3.$pack.C
+Module: m1.m3xxxx
 Module: m1.m3xx$super$m3x
 	m1.m3xx$super$m3x.$pack.CX
 	m1.m3xx$super$m3x.CX
 Module: m1.m3xx$super$m3
-	m1.m3xx$super$m3.C
 	m1.m3xx$super$m3.$pack.C
+	m1.m3xx$super$m3.C
 Module: m1.m3xx
-	m1.m3xx.$pack.CXX
 	m1.m3xx.CXX
+	m1.m3xx.$pack.CXX
 Module: m1.m3xxx$super$m3xx
 	m1.m3xxx$super$m3xx.$pack.CXX
 	m1.m3xxx$super$m3xx.CXX
 Module: m1.m3xxx$super$m3x
-	m1.m3xxx$super$m3x.CX
 	m1.m3xxx$super$m3x.$pack.CX
+	m1.m3xxx$super$m3x.CX
 Module: m1.m3xxx$super$m3
-	m1.m3xxx$super$m3.$pack.C
 	m1.m3xxx$super$m3.C
+	m1.m3xxx$super$m3.$pack.C
 Module: m1.m3xxx
 	m1.m3xxx.CXXX
 	m1.m3xxx.$pack.CXXX
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, m3xxx.module, m1.module, A.java, m3xx.module, m3x.module, m3.module, Main.java, m2.module, m2.module, B.java, m2.module, B.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xx.module, pack/CXX.java, CXX.java, m3xx.module, pack/CXX.java, CXX.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xxx.module, CXXX.java, pack/CXXX.java
+../testlib/jastadd$framework.module, m3xxx.module, m1.module, A.java, m3xxxx.module, m3xx.module, m3x.module, m3.module, Main.java, m2.module, m2.module, B.java, m2.module, B.java, m3xxx.module, CXXX.java, pack/CXXX.java, m3xx.module, pack/CXX.java, CXX.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xxxx.module, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xx.module, pack/CXX.java, CXX.java, m3xx.module, pack/CXX.java, CXX.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xxx.module, CXXX.java, pack/CXXX.java

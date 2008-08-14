@@ -17,6 +17,11 @@ public class A{
 	m3xxx::pack.CX pcx2 = new m3xxx::pack.CX();
 	m3xxx::pack.CXX pcxx2 = new m3xxx::pack.CXX();
 	m3xxx::pack.CXXX pcxxx = new m3xxx::pack.CXXX();
+
+	m3xxxx::pack.C pc3 = new m3xxxx::pack.C();
+	m3xxxx::pack.CX pcx3 = new m3xxxx::pack.CX();
+	m3xxxx::pack.CXX pcxx3 = new m3xxxx::pack.CXX();
+	m3xxxx::pack.CXXX pcxxx3 = new m3xxxx::pack.CXXX();
 	public A() {
 		System.out.println(this.getClass());
 	}
