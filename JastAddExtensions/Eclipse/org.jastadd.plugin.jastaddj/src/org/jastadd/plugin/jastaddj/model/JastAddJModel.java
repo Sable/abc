@@ -807,7 +807,7 @@ public class JastAddJModel extends JastAddModel {
 			options.add(buffer.toString());
 		}
 		
-		// Claspath
+		// Classpath
 		List<String> classPath = buildClassPath(project, buildConfiguration);
 		if (classPath.size() > 0) {
 			StringBuffer buffer = new StringBuffer();

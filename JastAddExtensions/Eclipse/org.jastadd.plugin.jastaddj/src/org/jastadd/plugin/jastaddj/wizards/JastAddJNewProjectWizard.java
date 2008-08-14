@@ -1,10 +1,15 @@
 package org.jastadd.plugin.jastaddj.wizards;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfigurationUtil;
+import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathEntry;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
 import org.jastadd.plugin.wizards.JastAddNewProjectWizard;
 
@@ -38,8 +43,19 @@ public class JastAddJNewProjectWizard extends JastAddNewProjectWizard {
 		if (!binFolder.exists()) {
 			binFolder.create(false, true, monitor);
 		}
-		
+		/*
 		// Add things to classpath
+		JastAddJBuildConfiguration config = new JastAddJBuildConfiguration();
+		populateClassPath(config.classPathList);
+		JastAddJBuildConfigurationUtil.writeBuildConfiguration(project, config);
+		*/
+	}
+	
+	protected void populateClassPath(List<ClassPathEntry> classPathList) {
+		ClassPathEntry entry = new ClassPathEntry();
+		entry.classPath = "bin";
+		entry.sourceAttachmentPath = "src";
+		classPathList.add(entry);
 	}
 
 }

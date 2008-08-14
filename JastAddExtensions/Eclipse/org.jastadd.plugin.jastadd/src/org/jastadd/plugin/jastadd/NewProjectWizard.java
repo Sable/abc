@@ -31,6 +31,8 @@ public class NewProjectWizard extends JastAddJNewProjectWizard {
 	protected void populateProject(IProject project, IProgressMonitor monitor) throws CoreException {
 		super.populateProject(project, monitor);
 		
+		// Add JastAdd files
+		
 		// Create src/AST directory
 		IFolder astFolder = project.getFolder(new Path("src/AST"));
 		if (!astFolder.exists()) {
@@ -63,5 +65,45 @@ public class NewProjectWizard extends JastAddJNewProjectWizard {
 		}
 		
 		// TODO Add beaver-rt.jar to classpath
+		
+		// Add beaver files
+		
+		// Create src/beaver directory
+		IFolder beaverFolder = project.getFolder(new Path("src/beaver"));
+		if (!beaverFolder.exists()) {
+			beaverFolder.create(false, true, monitor);
+		} 
+		
+		// Copy Action.java, Parser.java, ParsingTable.java, 
+		// Scanner.java and Symbol.java to beaver dir
+		try {
+			// Copy Action.java
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/Action.java"), false);
+			IFile file = project.getFile(new Path("src/beaver/Action.java"));
+			file.create(in, true, monitor);
+			in.close();
+			// Copy Parser.java
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/Parser.java"), false);
+			file = project.getFile(new Path("src/beaver/Parser.java"));
+			file.create(in, true, monitor);
+			in.close();
+			// Copy ParsingTable.java
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/ParsingTables.java"), false);
+			file = project.getFile(new Path("src/beaver/ParsingTables.java"));
+			file.create(in, true, monitor);
+			in.close();
+			// Copy Scanner.java
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/Scanner.java"), false);
+			file = project.getFile(new Path("src/beaver/Scanner.java"));
+			file.create(in, true, monitor);
+			in.close();
+			// Copy Symbol.java
+			in = FileLocator.openStream(bundle, new Path("plugin-lib/Symbol.java"), false);
+			file = project.getFile(new Path("src/beaver/Symbol.java"));
+			file.create(in, true, monitor);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

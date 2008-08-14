@@ -87,18 +87,18 @@ public class JastAddJExplorer extends JastAddBaseExplorer implements
 			loadModelInfo();
 		}
 
-		public /*synchronized*/ void inputChanged(Viewer viewer, Object oldInput,
+		public void inputChanged(Viewer viewer, Object oldInput,
 				Object newInput) {
 			super.inputChanged(viewer, oldInput, newInput);
 			reloadModelInfo();
 		}
 
-		public /*synchronized*/ void dispose() {
+		public void dispose() {
 			releaseModelInfo();
 			super.dispose();
 		}
 
-		public /*synchronized*/ void modelChangedEvent() {
+		public void modelChangedEvent() {
 			reloadModelInfo();
 			doViewerRefresh();
 		}
@@ -110,8 +110,7 @@ public class JastAddJExplorer extends JastAddBaseExplorer implements
 			super(new WorkbenchLabelProvider(), new JastAddLabelProvider());
 		}
 
-		protected Image getSourceRootItemImage(IContainer sourceRoot,
-				IResource resource) {
+		protected Image getSourceRootItemImage(IContainer sourceRoot, IResource resource) {
 			if (resource instanceof IContainer && !sourceRoot.equals(resource)) {
 				return JavaPluginImages
 						.get(((ITreeContentProvider) getViewer()

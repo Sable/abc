@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -123,13 +124,11 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 
 		// Project created save result
 		newProject = newProjectHandle;
-		
-		addProjectBuilder();
 	}
 	
-	protected void addProjectBuilder() {
+	protected void addProjectBuilder(IProject project, IProgressMonitor monitor) {
 		try {
-			IProjectDescription desc = newProject.getDescription();
+			IProjectDescription desc = project.getDescription();
 			ICommand[] commands = desc.getBuildSpec();
 			boolean found  = false;
 			for(int i = 0; i < commands.length; i++) {
@@ -145,9 +144,11 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 				System.arraycopy(commands, 0, newCommands, 1, commands.length);
 				newCommands[0] = command;
 				desc.setBuildSpec(newCommands);
-				newProject.setDescription(desc, null);
+				project.setDescription(desc, null);
 			}
 		} catch(CoreException c) {
+		} finally {
+			monitor.done();
 		}
 	}
 	
@@ -160,7 +161,7 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 			IProgressMonitor monitor)
 	throws CoreException, OperationCanceledException {
 		try {
-			monitor.beginTask("", 3000); //$NON-NLS-1$
+			monitor.beginTask("", 4000); //$NON-NLS-1$
 
 			projectHandle.create(
 					description,
@@ -170,8 +171,21 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 				throw new OperationCanceledException();
 
 			projectHandle.open(new SubProgressMonitor(monitor, 1000));
-
+			
+			if (monitor.isCanceled())
+				throw new OperationCanceledException();
+			
 			populateProject(projectHandle, new SubProgressMonitor(monitor, 1000));
+			
+			if (monitor.isCanceled())
+				throw new OperationCanceledException();
+			
+			addProjectBuilder(projectHandle, new SubProgressMonitor(monitor, 1000));
+			
+			if (monitor.isCanceled())
+				throw new OperationCanceledException();
+			
+			projectHandle.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 			
 		} finally {
 			monitor.done();
