@@ -59,7 +59,6 @@ aspect JAModuleLookupPackage {
 		}
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
-		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
 		if (importedCU != null) {
 			LocalModulePackage localModulePackage = importedCU.getLocalPackage(localPackageName);
 			//if the package is exported or if it is not exported but lookup is in the same modulecu, return the global package name

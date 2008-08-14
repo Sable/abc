@@ -129,16 +129,13 @@ aspect JAModuleLookupType {
 				return SimpleSet.emptySet;
 			}
 		}
-				
+
+		//lookup in the module specified by the module qualifier				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
-		//TODO: This is a terrible hack so that lookupType is called on a childCU of importedCU
 		if (importedCU != null && importedCU.isModuleInstantiated()) {
-			Iterator<CompilationUnit> iter = importedCU.getCompilationUnitList().iterator();
-			if (iter.hasNext()) {
-				TypeDecl type = iter.next().lookupType(localPackageName, typeName);
-				if (type != null) {
-					return ret.add(type);
-				}
+			ret = importedCU.moduleLookupType(localPackageName, typeName, false);
+			if (!ret.isEmpty()) {
+				return ret;
 			}
 		}
 		

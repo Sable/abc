@@ -152,8 +152,6 @@ aspect GenerateImportOwn {
 	}
 	
 	//This should only be called _after_ the import CUs have been generated.
-	//NOTE: This is the hairiest piece of code in all of JastAddModules. Be careful
-	//when changing this
 	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
 	//is worth it 
 	protected ModuleCompilationUnit ModuleCompilationUnit.generateMergeReplaceCUs(ModuleCompilationUnit ret) {
@@ -284,6 +282,10 @@ aspect GenerateImportOwn {
 		return ret;
 	}
 	
+	//Changes the module references targeted by merge or replace. Detaches
+	//the old instances from the tree if no pointers to them exist
+	//NOTE: This is the hairiest piece of code in all of JastAddModules. Be careful
+	//when changing this
 	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
 	//is worth it 
 	protected ModuleCompilationUnit 
