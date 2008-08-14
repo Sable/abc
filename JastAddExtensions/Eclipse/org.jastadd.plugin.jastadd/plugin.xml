@@ -10,7 +10,7 @@
 		project = "true"
 		finalPerspective = "org.jastadd.plugin.jastaddj.JastAddJPerspective"
 		class = "org.jastadd.plugin.jastadd.NewProjectWizard">
- 		<description>Create a new JastAdd Project</description>
+ 		<description>Create a New JastAdd Project</description>
 		<selection class = "org.eclipse.core.resources.IResource"/>
 	</wizard>
 	</extension>

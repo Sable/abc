@@ -28,13 +28,12 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.jastadd.plugin.builder.JastAddBuilder;
-import org.jastadd.plugin.resources.JastAddNature;
 
 public abstract class JastAddNewProjectWizard extends Wizard implements INewWizard, IExecutableExtension {
 
-	private WizardNewProjectCreationPage projectPage;
-	private IProject newProject;
-	private IConfigurationElement fConfigElement;
+	protected WizardNewProjectCreationPage projectPage;
+	protected IProject newProject;
+	protected IConfigurationElement fConfigElement;
 
 	@Override
 	public boolean performFinish() {
@@ -64,11 +63,12 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 	protected abstract String createProjectPageDescription();
 	protected abstract String getNatureID();
 	
-	private IProject createNewProject() {
+	protected void createNewProject() {
 		if (newProject != null) {
-			return newProject;
+			return;
 		}
 
+		// Get projectHandle from the projectCretionPage
 		final IProject newProjectHandle = projectPage.getProjectHandle();
 		IPath defaultPath = Platform.getLocation();
 		IPath newPath = projectPage.getLocationPath();
@@ -77,10 +77,12 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		final IProjectDescription description =
 			workspace.newProjectDescription(newProjectHandle.getName());
+		
+		// Set location and nature in the description of the project handler
 		description.setLocation(newPath);
 		description.setNatureIds(new String[] { getNatureID() });
 
-		// create the new project operation
+		// Create the new project operation
 		WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
 			protected void execute(IProgressMonitor monitor)
 			throws CoreException {
@@ -88,11 +90,11 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 			}
 		};
 
-		// run the new project creation operation
+		// Run the new project creation operation
 		try {
 			getContainer().run(true, true, op);
 		} catch (InterruptedException e) {
-			return null;
+			return;
 		} catch (InvocationTargetException e) {
 			// ie.- one of the steps resulted in a core exception	
 			Throwable t = e.getTargetException();
@@ -116,11 +118,16 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 								t));
 				MessageDialog.openError(getShell(), "Error", "Error2");
 			}
-			return null;
+			return;
 		}
 
+		// Project created save result
 		newProject = newProjectHandle;
-
+		
+		addProjectBuilder();
+	}
+	
+	protected void addProjectBuilder() {
 		try {
 			IProjectDescription desc = newProject.getDescription();
 			ICommand[] commands = desc.getBuildSpec();
@@ -142,8 +149,10 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 			}
 		} catch(CoreException c) {
 		}
-		return newProject;
 	}
+	
+	protected abstract void populateProject(IProject newProject, IProgressMonitor monitor) throws CoreException;
+	
 
 	private void createProject(
 			IProjectDescription description,
@@ -151,7 +160,7 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 			IProgressMonitor monitor)
 	throws CoreException, OperationCanceledException {
 		try {
-			monitor.beginTask("", 2000); //$NON-NLS-1$
+			monitor.beginTask("", 3000); //$NON-NLS-1$
 
 			projectHandle.create(
 					description,
@@ -162,6 +171,8 @@ public abstract class JastAddNewProjectWizard extends Wizard implements INewWiza
 
 			projectHandle.open(new SubProgressMonitor(monitor, 1000));
 
+			populateProject(projectHandle, new SubProgressMonitor(monitor, 1000));
+			
 		} finally {
 			monitor.done();
 		}
