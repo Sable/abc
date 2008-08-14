@@ -1,0 +1,2 @@
+module appv1_2 extends appv1_1;
+export package *;

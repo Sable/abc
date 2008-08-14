@@ -1,0 +1,8 @@
+module myapplication;
+import own appv1_2;
+import own appv1_1;
+import own appv2;
+
+replace appv1_1 with appv1_2;
+
+export package *;
