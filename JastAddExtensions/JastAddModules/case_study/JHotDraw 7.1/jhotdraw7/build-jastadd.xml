@@ -20,9 +20,9 @@
     <target name="application.compile" depends="init,clean">
         <mkdir dir="${classdir}"/>
 		<jastaddmodules outdir="${classdir}"
-			verbose="true"
+			verbose="false"
 			jastaddframework="false"
-			debug="true"
+			debug="false"
 			classpath="${libdir}/quaqua.jar;${libdir}/MRJAdapter.jar;${libdir}/java_30.zip;${libdir}/swing-layout.jar"
 		>
 			<fileset dir="${srcdir}">

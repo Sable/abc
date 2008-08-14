@@ -153,15 +153,9 @@ public class SVGTextFigure
             
             AffineTransform tx = new AffineTransform();
             tx.translate(coordinates[0].x, coordinates[0].y);
-            //NEIL: Change switch to if
-            if (TEXT_ANCHOR.get(this) == SVGAttributeKeys.TextAnchor.END) {
-            	tx.translate(-textLayout.getAdvance(), 0);
-            } else if (TEXT_ANCHOR.get(this) == SVGAttributeKeys.TextAnchor.MIDDLE) {
-            	tx.translate(-textLayout.getAdvance() / 2d, 0);
-            } else if (TEXT_ANCHOR.get(this) == SVGAttributeKeys.TextAnchor.START) {
-            }
-            /*
-            switch (TEXT_ANCHOR.get(this)) {
+            //NEIL: enum switch workaround
+            SVGAttributeKeys.TextAnchor ta = TEXT_ANCHOR.get(this);
+            switch (ta) {
                 case END :
                     tx.translate(-textLayout.getAdvance(), 0);
                     break;
@@ -170,7 +164,7 @@ public class SVGTextFigure
                     break;
                 case START :
                     break;
-            }*/
+            }
             tx.rotate(rotates[0]);
             
             /*

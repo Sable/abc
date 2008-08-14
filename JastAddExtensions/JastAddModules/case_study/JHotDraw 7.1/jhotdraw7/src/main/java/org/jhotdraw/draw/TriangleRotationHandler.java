@@ -46,28 +46,9 @@ public class TriangleRotationHandler extends AbstractHandle {
         Rectangle2D.Double r = getOwner().getBounds();
         Point2D.Double p;
         double offset = getHandlesize();
-        // NEIL: Jastadd has problems with case statements on enums. Replace with if for now
-        if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.NORTH) {
-        	p = new Point2D.Double(r.x + r.width / 2d, r.y + offset);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.NORTH_EAST) {
-        	p = new Point2D.Double(r.x + r.width - offset, r.y + offset);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.EAST) {
-        	p = new Point2D.Double(r.x + r.width - offset, r.y + r.height / 2d);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.SOUTH_EAST) {
-        	p = new Point2D.Double(r.x + r.width - offset, r.y + r.height - offset);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.SOUTH) {
-        	p = new Point2D.Double(r.x + r.width / 2d, r.y + r.height - offset);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.SOUTH_WEST) {
-        	p = new Point2D.Double(r.x + offset, r.y + r.height - offset);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.WEST) {
-        	p = new Point2D.Double(r.x  + offset, r.y + r.height / 2d);
-        } else if (ORIENTATION.get(getOwner()) == AttributeKeys.Orientation.NORTH_WEST) {
-        	p = new Point2D.Double(r.x + offset, r.y + offset);
-        } else {
-        	p = new Point2D.Double(r.x + r.width / 2d, r.y + offset);
-        }
-        /*
-        switch (ORIENTATION.get(getOwner())) {
+        // NEIL: enum switch workaround
+        AttributeKeys.Orientation orient = ORIENTATION.get(getOwner());
+        switch (orient) {
             case NORTH :
             default :
                 p = new Point2D.Double(r.x + r.width / 2d, r.y + offset);
@@ -93,7 +74,7 @@ public class TriangleRotationHandler extends AbstractHandle {
             case NORTH_WEST :
                 p = new Point2D.Double(r.x + offset, r.y + offset);
                 break;
-        }*/
+        }
         return p;
     }
     

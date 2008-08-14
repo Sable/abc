@@ -49,18 +49,9 @@ public class ChopRoundRectangleConnector extends ChopRectangleConnector {
         Rectangle2D.Double outer = rrf.getBounds();
 
         double grow;
-        //NEIL: Change enum switch to if
-        if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.CENTER) {
-        	grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
-        } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.OUTSIDE) {
-        	grow = AttributeKeys.getStrokeTotalWidth(target);
-        } else if (STROKE_PLACEMENT.get(target) == AttributeKeys.StrokePlacement.INSIDE) {
-        	grow = 0;
-        } else {
-        	grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
-        }
-        /*
-        switch (STROKE_PLACEMENT.get(target)) {
+        //NEIL: enum switch workaround
+        AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(target);
+        switch (sp) {
             case CENTER :
             default :
                 grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
@@ -71,7 +62,7 @@ public class ChopRoundRectangleConnector extends ChopRectangleConnector {
             case INSIDE :
                 grow = 0;
                 break;
-        }*/
+        }
         Geom.grow(outer, grow, grow);
         
         

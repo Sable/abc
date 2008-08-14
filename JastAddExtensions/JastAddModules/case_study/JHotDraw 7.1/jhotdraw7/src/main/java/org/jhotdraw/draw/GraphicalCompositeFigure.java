@@ -412,18 +412,9 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
         Rectangle2D.Double r = getBounds();
         if (STROKE_COLOR.get(this) != null) {
             double grow;
-            //NEIL: Change enum case to if
-            if (STROKE_PLACEMENT.get(this) == AttributeKeys.StrokePlacement.CENTER) {
-            	grow = AttributeKeys.getStrokeTotalWidth(this);
-            } else if (STROKE_PLACEMENT.get(this) == AttributeKeys.StrokePlacement.OUTSIDE) {
-            	grow = AttributeKeys.getStrokeTotalWidth(this);
-            } else if (STROKE_PLACEMENT.get(this) == AttributeKeys.StrokePlacement.INSIDE) {
-            	grow = 0d;
-            } else {
-            	grow = AttributeKeys.getStrokeTotalWidth(this);
-            }
-            /*
-            switch (STROKE_PLACEMENT.get(this)) {
+            //NEIL: enum switch workaround
+            AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(this);
+            switch (sp) {
                 case CENTER:
                 default :
                     grow = AttributeKeys.getStrokeTotalWidth(this);
@@ -434,7 +425,7 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
                 case INSIDE :
                     grow = 0d;
                     break;
-            }*/
+            }
             Geom.grow(r, grow, grow);
         }
         return Geom.angleToPoint(r, Geom.pointToAngle(r, from));

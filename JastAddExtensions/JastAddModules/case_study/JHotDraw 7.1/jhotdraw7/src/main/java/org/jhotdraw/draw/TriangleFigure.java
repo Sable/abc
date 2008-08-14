@@ -131,46 +131,9 @@ public class TriangleFigure extends AbstractAttributedFigure {
         Rectangle2D.Double r = (Rectangle2D.Double) rectangle.clone();
         
         BezierPath triangle = new BezierPath();
-        //NEIL: change enum switch to if
-        if (ORIENTATION.get(this) == AttributeKeys.Orientation.NORTH) {
-        	triangle.moveTo((float) (r.x + r.width / 2), (float) r.y);
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y + r.height));
-            triangle.lineTo((float) r.x, (float) (r.y + r.height));
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.NORTH_EAST) {
-        	triangle.moveTo((float) (r.x), (float) r.y);
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y));
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y + r.height));
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.EAST) {
-        	triangle.moveTo((float) (r.x), (float) (r.y));
-            triangle.lineTo((float) (r.x  + r.width), (float) (r.y + r.height / 2d));
-            triangle.lineTo((float) r.x, (float) (r.y + r.height));
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.SOUTH_EAST) {
-        	triangle.moveTo((float) (r.x + r.width), (float) (r.y));
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y + r.height));
-            triangle.lineTo((float) (r.x), (float) (r.y + r.height));
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.SOUTH) {
-        	triangle.moveTo((float) (r.x + r.width / 2), (float) (r.y + r.height));
-            triangle.lineTo((float) r.x, (float) r.y);
-            triangle.lineTo((float) (r.x + r.width), (float) r.y);
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.SOUTH_WEST) {
-        	triangle.moveTo((float) (r.x + r.width), (float) (r.y + r.height));
-            triangle.lineTo((float) (r.x), (float) (r.y + r.height));
-            triangle.lineTo((float) (r.x), (float) (r.y));
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.WEST) {
-        	triangle.moveTo((float) (r.x), (float) (r.y + r.height / 2));
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y ));
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y + r.height));
-        } else if (ORIENTATION.get(this) == AttributeKeys.Orientation.NORTH_WEST) {
-        	triangle.moveTo((float) (r.x), (float) (r.y + r.height));
-            triangle.lineTo((float) (r.x), (float) (r.y));
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y));
-        } else {
-        	triangle.moveTo((float) (r.x + r.width / 2), (float) r.y);
-            triangle.lineTo((float) (r.x + r.width), (float) (r.y + r.height));
-            triangle.lineTo((float) r.x, (float) (r.y + r.height));
-        }
-        /*
-        switch (ORIENTATION.get(this)) {
+        //NEIL: enum switch workaround
+        AttributeKeys.Orientation orient = ORIENTATION.get(this);
+        switch (orient) {
             case NORTH :
             default :
                 triangle.moveTo((float) (r.x + r.width / 2), (float) r.y);
@@ -212,7 +175,7 @@ public class TriangleFigure extends AbstractAttributedFigure {
                 triangle.lineTo((float) (r.x), (float) (r.y));
                 triangle.lineTo((float) (r.x + r.width), (float) (r.y));
                 break;
-        }*/
+        }
         triangle.setClosed(true);
         return triangle;
     }
@@ -242,26 +205,9 @@ public class TriangleFigure extends AbstractAttributedFigure {
         double totalStrokeWidth = AttributeKeys.getStrokeTotalWidth(this);
         double width = 0d;
         if (STROKE_COLOR.get(this) != null) {
-        	//NEIL: Change enum switch to if
-        	if (STROKE_PLACEMENT.get(this) == AttributeKeys.StrokePlacement.INSIDE) {
-        		width = 0d;
-        	} else if (STROKE_PLACEMENT.get(this) == AttributeKeys.StrokePlacement.OUTSIDE) {
-        		if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
-                    width = totalStrokeWidth * STROKE_MITER_LIMIT.get(this);
-                } else {
-                    width = totalStrokeWidth;
-                }
-        	} else if (STROKE_PLACEMENT.get(this) == AttributeKeys.StrokePlacement.CENTER) {
-        		if (STROKE_JOIN.get(this) == BasicStroke.JOIN_MITER) {
-                    width = totalStrokeWidth / 2d * STROKE_MITER_LIMIT.get(this);
-                } else {
-                    width = totalStrokeWidth / 2d;
-                }
-        	} else {
-        		width = 0d;
-        	}
-        	/*
-            switch (STROKE_PLACEMENT.get(this)) {
+        	//NEIL: enum switch workaround
+        	AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(this);
+            switch (sp) {
                 case INSIDE :
                     width = 0d;
                     break;
@@ -279,7 +225,7 @@ public class TriangleFigure extends AbstractAttributedFigure {
                         width = totalStrokeWidth / 2d;
                     }
                     break;
-            }*/
+            }
         }
         width++;
         Rectangle2D.Double r = getBounds();
