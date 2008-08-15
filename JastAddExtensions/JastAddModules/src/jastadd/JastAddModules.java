@@ -47,7 +47,7 @@ public class JastAddModules extends JastAdd {
 			System.out.println("Arguments: ");
 			for (int i = 0; i < args.length; i++) {
 				System.out.print(args[i]);
-				System.out.print(" ");
+				System.out.print("\n");
 			}
 			System.out.println("End arguments");
 		}

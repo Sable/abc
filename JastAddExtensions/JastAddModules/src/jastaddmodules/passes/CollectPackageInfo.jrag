@@ -17,8 +17,8 @@ aspect CollectPackageInfo {
 	public String CompilationUnit.nodirFileName() {
 		String nodirFileName = this.relativeName();
 		int index = Math.max(
-			nodirFileName.indexOf('/'),
-			nodirFileName.indexOf('\\')
+			nodirFileName.lastIndexOf('/'),
+			nodirFileName.lastIndexOf('\\')
 			);
 		if (index != -1) {
 			nodirFileName = nodirFileName.substring(index+1);
