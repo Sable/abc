@@ -93,6 +93,7 @@ public class JastAddJModel extends JastAddModel {
 		IProgram program;
 		JastAddJBuildConfiguration buildConfiguration;
 		private boolean changed = false;
+		private boolean updateView = true;
 		public void changed() {
 			changed = true;
 		}
@@ -101,6 +102,12 @@ public class JastAddJModel extends JastAddModel {
 		}
 		public boolean hasChaged() {
 			return changed;
+		}
+		public void updateView(boolean b) {
+			updateView = b;
+		}
+		public boolean getUpdateView() {
+			return updateView;
 		}
 	}
 
@@ -408,30 +415,30 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 	
-	protected void updateModel(Collection<IFile> changedFiles, IProject project) {
+	protected boolean updateModel(Collection<IFile> changedFiles, IProject project) {
 		try {
-		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
-		if (buildConfiguration == null)
-			return;
-		IProgram program = getProgram(project);
-		if (program == null)
-			return;
-		program.files().clear();
-		Map<String,IFile> map = sourceMap(project, buildConfiguration);
-		program.files().addAll(map.keySet());
+			JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
+			if (buildConfiguration == null)
+				return false;
+			IProgram program = getProgram(project);
+			if (program == null)
+				return false;
+			program.files().clear();
+			Map<String,IFile> map = sourceMap(project, buildConfiguration);
+			program.files().addAll(map.keySet());
 
-		Collection changedFileNames = new ArrayList();
-		for(IFile file : changedFiles) 	{
-			changedFileNames.add(file.getRawLocation().toOSString());
-		}
+			Collection changedFileNames = new ArrayList();
+			for(IFile file : changedFiles) 	{
+				changedFileNames.add(file.getRawLocation().toOSString());
+			}
 
-		// remove files already built unless they have changed		
-		program.flushSourceFiles(changedFileNames);
-		// build new files
-		for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
-			String name = (String)iter.next();
-			program.addSourceFile(name);
-		}
+			// remove files already built unless they have changed		
+			program.flushSourceFiles(changedFileNames);
+			// build new files
+			for(Iterator iter = program.files().iterator(); iter.hasNext(); ) {
+				String name = (String)iter.next();
+				program.addSourceFile(name);
+			}
 		} catch (Exception e) {
 			logError(e, "Problem updating model!");
 		}
@@ -439,17 +446,19 @@ public class JastAddJModel extends JastAddModel {
 		if (info != null) {
 			info.changed();
 		}
+		return true;
 	}
 
 	
-	protected void updateModel(IDocument document, String fileName, IProject project) {
+	protected boolean updateModel(IDocument document, String fileName, IProject project) {
+		boolean fireEvent = true;
 		try {
 			JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 			if (buildConfiguration == null)
-				return;
+				return false;
 			IProgram program = getProgram(project);
 			if (program == null)
-				return;
+				return false;
 			program.files().clear();
 			
 			Map<String,IFile> map = sourceMap(project, buildConfiguration);
@@ -469,7 +478,7 @@ public class JastAddJModel extends JastAddModel {
 				program.addSourceFile(name);
 			}
 		
-			addSourceFileWithRecovery(project, program, document, fileName);
+			fireEvent = addSourceFileWithRecovery(project, program, document, fileName);	
 			 
 		} catch (Exception e) {
 			logError(e, "Failed to update model!");
@@ -480,6 +489,7 @@ public class JastAddJModel extends JastAddModel {
 		if (info != null) {
 			info.changed();
 		}
+		return fireEvent;
 	}
 	
 	protected boolean updateErrorsInFile(ICompilationUnit unit, IFile file, boolean checkSemantics) throws CoreException {
@@ -498,7 +508,8 @@ public class JastAddJModel extends JastAddModel {
 		deleteErrorMarkers(PARSE_ERROR_MARKER_TYPE, file);
 		Collection errors = unit.parseErrors();
 		Collection warnings = new LinkedList();
-		if (checkSemantics && errors.isEmpty()) { // only run semantic checks if there's no parse errors and if its asked for
+		boolean noParseErrors = errors.isEmpty();
+		if (checkSemantics && noParseErrors) { // only run semantic checks if there's no parse errors and if its asked for
 			deleteErrorMarkers(ERROR_MARKER_TYPE, file);
 			unit.errorCheck(errors, warnings);
 		}
@@ -535,9 +546,9 @@ public class JastAddJModel extends JastAddModel {
 					addErrorMarker(file, message, line, startOffset, endOffset, severity);
 				}	
 			}
-			return false;
+			return noParseErrors;
 		}
-		return true;
+		return noParseErrors;
 	}
 		
 	protected int lookupOffset(int line, int column, String content) {
@@ -572,15 +583,16 @@ public class JastAddJModel extends JastAddModel {
 	   }
 
 	
-    protected void addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws Exception {
+    protected boolean addSourceFileWithRecovery(IProject project, IProgram program, IDocument doc, String fileName) throws Exception {
     	ICompilationUnit unit = program.addSourceFileWithRecovery(fileName, doc.get(), getRecoveryLexer());
     	if (unit != null) {
     		IPath path = Path.fromOSString(fileName);
 			IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 			.findFilesForLocation(path);
 			if (files.length == 1)
-				updateErrorsInFile(unit, files[0], doc.get(), true);
+				return updateErrorsInFile(unit, files[0], doc.get(), true);
     	}
+    	return false;
       }
 
 	@Override protected IJastAddNode getTreeRootNode(IProject project, String filePath) {
