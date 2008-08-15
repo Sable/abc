@@ -1,4 +1,4 @@
-/* CDATAReader.java                                                NanoXML/Java
+/* PIReader.java                                                   NanoXML/Java
  *
  * $Revision: 1.3 $
  * $Date: 2002/01/04 21:03:28 $
@@ -34,13 +34,13 @@ import java.io.IOException;
 
 
 /**
- * This reader reads data from another reader until the end of a CDATA section
- * (]]&gt;) has been encountered.
+ * This reader reads data from another reader until the end of a processing
+ * instruction (?&gt;) has been encountered.
  *
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.3 $
  */
-class CDATAReader
+module class PIReader
    extends Reader
 {
 
@@ -48,13 +48,7 @@ class CDATAReader
     * The encapsulated reader.
     */
    private IXMLReader reader;
-    
-    
-   /**
-    * Saved char.
-    */
-   private char savedChar;
-    
+
 
    /**
     * True if the end of the stream has been reached.
@@ -67,10 +61,9 @@ class CDATAReader
     *
     * @param reader the encapsulated reader
     */
-   CDATAReader(IXMLReader reader)
+   module PIReader(IXMLReader reader)
    {
       this.reader = reader;
-      this.savedChar = 0;
       this.atEndOfData = false;
    }
 
@@ -84,7 +77,7 @@ class CDATAReader
       this.reader = null;
       super.finalize();
    }
-    
+
 
    /**
     * Reads a block of data.
@@ -103,42 +96,30 @@ class CDATAReader
                    int    size)
       throws IOException
    {
-      int charsRead = 0;
-
       if (this.atEndOfData) {
          return -1;
       }
+
+      int charsRead = 0;
 
       if ((offset + size) > buffer.length) {
          size = buffer.length - offset;
       }
 
       while (charsRead < size) {
-         char ch = this.savedChar;
+         char ch = this.reader.read();
 
-         if (ch == 0) {
-            ch = this.reader.read();
-         } else {
-            this.savedChar = 0;
-         }
-
-         if (ch == ']') {
+         if (ch == '?') {
             char ch2 = this.reader.read();
-            
-            if (ch2 == ']') {
-               char ch3 = this.reader.read();
 
-               if (ch3 == '>') {
-                  this.atEndOfData = true;
-                  break;
-               }
-
-               this.savedChar = ch2;
-               this.reader.unread(ch3);
-            } else {
-               this.reader.unread(ch2);
+            if (ch2 == '>') {
+               this.atEndOfData = true;
+               break;
             }
+
+            this.reader.unread(ch2);
          }
+
          buffer[charsRead] = ch;
          charsRead++;
       }
@@ -149,7 +130,7 @@ class CDATAReader
 
       return charsRead;
    }
-    
+
 
    /**
     * Skips remaining data and closes the stream.
@@ -161,33 +142,16 @@ class CDATAReader
       throws IOException
    {
       while (! this.atEndOfData) {
-         char ch = this.savedChar;
+         char ch = this.reader.read();
 
-         if (ch == 0) {
-            ch = this.reader.read();
-         } else {
-            this.savedChar = 0;
-         }
-
-         if (ch == ']') {
+         if (ch == '?') {
             char ch2 = this.reader.read();
 
-            if (ch2 == ']') {
-               char ch3 = this.reader.read();
-
-               if (ch3 == '>') {
-                  break;
-               }
-
-               this.savedChar = ch2;
-               this.reader.unread(ch3);
-            } else {
-               this.reader.unread(ch2);
+            if (ch2 == '>') {
+               this.atEndOfData = true;
             }
          }
       }
-
-      this.atEndOfData = true;
    }
 
 }

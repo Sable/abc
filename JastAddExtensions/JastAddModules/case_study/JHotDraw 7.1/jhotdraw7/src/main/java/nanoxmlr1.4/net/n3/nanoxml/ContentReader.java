@@ -40,7 +40,7 @@ import java.io.IOException;
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.4 $
  */
-class ContentReader
+module class ContentReader
    extends Reader
 {
 
@@ -75,7 +75,7 @@ class ContentReader
     * @param resolver the entity resolver
     * @param buffer data that has already been read from <code>reader</code>
     */
-   ContentReader(IXMLReader         reader,
+   module ContentReader(IXMLReader         reader,
                  IXMLEntityResolver resolver,
                  String             buffer)
    {

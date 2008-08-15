@@ -40,7 +40,7 @@ import java.io.IOException;
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.3 $
  */
-class PIReader
+module class PIReader
    extends Reader
 {
 
@@ -61,7 +61,7 @@ class PIReader
     *
     * @param reader the encapsulated reader
     */
-   PIReader(IXMLReader reader)
+   module PIReader(IXMLReader reader)
    {
       this.reader = reader;
       this.atEndOfData = false;

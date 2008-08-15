@@ -40,7 +40,7 @@ import java.io.CharArrayReader;
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.5 $
  */
-class XMLUtil
+module class XMLUtil
 {
 
    /**
@@ -52,7 +52,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static void skipComment(IXMLReader reader)
+	module static void skipComment(IXMLReader reader)
       throws IOException,
              XMLParseException
    {
@@ -92,7 +92,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static void skipTag(IXMLReader reader)
+	module static void skipTag(IXMLReader reader)
       throws IOException,
              XMLParseException
    {
@@ -125,7 +125,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static String scanPublicID(StringBuffer publicID,
+	module static String scanPublicID(StringBuffer publicID,
                               IXMLReader   reader)
       throws IOException,
              XMLParseException
@@ -151,7 +151,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static String scanSystemID(IXMLReader reader)
+	module static String scanSystemID(IXMLReader reader)
       throws IOException,
             XMLParseException
    {
@@ -172,7 +172,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static String scanIdentifier(IXMLReader reader)
+	module static String scanIdentifier(IXMLReader reader)
       throws IOException,
              XMLParseException
    {
@@ -206,7 +206,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static String scanString(IXMLReader         reader,
+	module static String scanString(IXMLReader         reader,
                             char               entityChar,
                             IXMLEntityResolver entityResolver)
       throws IOException,
@@ -267,7 +267,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static void processEntity(String             entity,
+	module static void processEntity(String             entity,
                              IXMLReader         reader,
                              IXMLEntityResolver entityResolver)
       throws IOException,
@@ -295,7 +295,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static char processCharLiteral(String entity)
+	module static char processCharLiteral(String entity)
       throws IOException,
              XMLParseException
    {
@@ -319,7 +319,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static void skipWhitespace(IXMLReader   reader,
+	module static void skipWhitespace(IXMLReader   reader,
                               StringBuffer buffer)
       throws IOException
    {
@@ -361,7 +361,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static String read(IXMLReader         reader,
+	module static String read(IXMLReader         reader,
                       char               entityChar)
       throws IOException,
              XMLParseException
@@ -388,7 +388,7 @@ class XMLUtil
     * @param entityChar     the escape character (&amp; or %) used to indicate
     *                       an entity
     */
-   static char readChar(IXMLReader reader,
+	module static char readChar(IXMLReader reader,
                         char       entityChar)
       throws IOException,
              XMLParseException
@@ -416,7 +416,7 @@ class XMLUtil
     * @throws java.io.IOException
     *		if an error occurred reading the data
     */
-   static boolean checkLiteral(IXMLReader         reader,
+	module static boolean checkLiteral(IXMLReader         reader,
                                String             literal)
       throws IOException,
              XMLParseException
@@ -439,7 +439,7 @@ class XMLUtil
     * @param lineNr         the line number in the data source
     * @param expectedString the string that is expected
     */
-   static void errorExpectedInput(String systemID,
+	module static void errorExpectedInput(String systemID,
                                   int    lineNr,
                                   String expectedString)
       throws XMLParseException
@@ -457,7 +457,7 @@ class XMLUtil
     * @param lineNr         the line number in the data source
     * @param entity    the name of the entity
     */
-   static void errorInvalidEntity(String systemID,
+	module static void errorInvalidEntity(String systemID,
                                   int    lineNr,
                                   String     entity)
       throws XMLParseException
@@ -475,7 +475,7 @@ class XMLUtil
     * @param lineNr         the line number in the data source
     * @param entity    the name of the entity
     */
-   static void errorUnexpectedEntity(String systemID,
+	module static void errorUnexpectedEntity(String systemID,
                                      int    lineNr,
                                      String entity)
       throws XMLParseException
@@ -493,7 +493,7 @@ class XMLUtil
     * @param systemID       the system ID of the data source
     * @param lineNr         the line number in the data source
     */
-   static void errorUnexpectedCDATA(String systemID,
+	module static void errorUnexpectedCDATA(String systemID,
                                     int    lineNr)
       throws XMLParseException
    {
@@ -510,7 +510,7 @@ class XMLUtil
     * @param lineNr         the line number in the data source
     * @param unexpectedString the string that is unexpected
     */
-   static void errorInvalidInput(String systemID,
+	module static void errorInvalidInput(String systemID,
                                  int    lineNr,
                                  String     unexpectedString)
       throws XMLParseException
@@ -529,7 +529,7 @@ class XMLUtil
     * @param expectedName the name of the opening tag
     * @param wrongName    the name of the closing tag
     */
-   static void errorWrongClosingTag(String systemID,
+	module static void errorWrongClosingTag(String systemID,
                                     int    lineNr,
                                     String     expectedName,
                                     String     wrongName)
@@ -549,7 +549,7 @@ class XMLUtil
     * @param systemID       the system ID of the data source
     * @param lineNr         the line number in the data source
     */
-   static void errorClosingTagNotEmpty(String systemID,
+	module static void errorClosingTagNotEmpty(String systemID,
                                        int    lineNr)
       throws XMLParseException
    {
@@ -566,7 +566,7 @@ class XMLUtil
     * @param parentElementName the name of the parent element
     * @param missingElementName the name of the missing element
     */
-   static void errorMissingElement(String systemID,
+	module static void errorMissingElement(String systemID,
                                    int    lineNr,
                                    String parentElementName,
                                    String missingElementName)
@@ -592,7 +592,7 @@ class XMLUtil
     * @param parentElementName the name of the parent element
     * @param unexpectedElementName the name of the unexpected element
     */
-   static void errorUnexpectedElement(String systemID,
+	module static void errorUnexpectedElement(String systemID,
                                       int    lineNr,
                                       String parentElementName,
                                       String unexpectedElementName)
@@ -618,7 +618,7 @@ class XMLUtil
     * @param elementName    the name of the element
     * @param attributeName  the name of the missing attribute
     */
-   static void errorMissingAttribute(String systemID,
+	module static void errorMissingAttribute(String systemID,
                                      int    lineNr,
                                      String elementName,
                                      String attributeName)
@@ -644,7 +644,7 @@ class XMLUtil
     * @param elementName    the name of the element
     * @param attributeName  the name of the unexpected attribute
     */
-   static void errorUnexpectedAttribute(String systemID,
+	module static void errorUnexpectedAttribute(String systemID,
                                         int    lineNr,
                                         String elementName,
                                         String attributeName)
@@ -671,7 +671,7 @@ class XMLUtil
     * @param attributeName  the name of the attribute
     * @param attributeValue the value of that attribute
     */
-   static void errorInvalidAttributeValue(String systemID,
+	module static void errorInvalidAttributeValue(String systemID,
                                           int    lineNr,
                                           String elementName,
                                           String attributeName,
@@ -696,7 +696,7 @@ class XMLUtil
     * @param lineNr         the line number in the data source
     * @param parentElementName the name of the parent element
     */
-   static void errorMissingPCData(String systemID,
+	module static void errorMissingPCData(String systemID,
                                   int    lineNr,
                                   String parentElementName)
       throws XMLValidationException
@@ -719,7 +719,7 @@ class XMLUtil
     * @param lineNr         the line number in the data source
     * @param parentElementName the name of the parent element
     */
-   static void errorUnexpectedPCData(String systemID,
+	module static void errorUnexpectedPCData(String systemID,
                                      int    lineNr,
                                      String parentElementName)
       throws XMLValidationException
@@ -744,7 +744,7 @@ class XMLUtil
     * @param attributeName  the name of the attribute
     * @param attributeValue the value of that attribute
     */
-   static void validationError(String systemID,
+	module static void validationError(String systemID,
                                int    lineNr,
                                String message,
                                String elementName,

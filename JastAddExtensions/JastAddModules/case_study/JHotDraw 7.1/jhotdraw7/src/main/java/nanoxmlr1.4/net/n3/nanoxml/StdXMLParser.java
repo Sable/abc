@@ -492,10 +492,10 @@ public class StdXMLParser
                                                 extraAttributes,
                                                 this.reader.getSystemID(),
                                                 this.reader.getLineNr());
-      Enumeration enum = extraAttributes.keys();
+      Enumeration enm = extraAttributes.keys();
 
-      while (enum.hasMoreElements()) {
-         String key = (String) enum.nextElement();
+      while (enm.hasMoreElements()) {
+         String key = (String) enm.nextElement();
          String value = extraAttributes.getProperty(key);
          attrNames.addElement(key);
          attrValues.addElement(value);

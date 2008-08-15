@@ -1,0 +1,2 @@
+module net.n3.nanoxmlv2_2_1_4patch implements net.n3.nanoxml overrides_modules net.n3.nanoxmlv2_2_1_4;
+export package net.n3.nanoxml;

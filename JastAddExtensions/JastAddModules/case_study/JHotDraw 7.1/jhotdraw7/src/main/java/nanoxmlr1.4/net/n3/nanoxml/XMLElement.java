@@ -484,9 +484,9 @@ public class XMLElement implements IXMLElement, Serializable {
      * @return the child element, or null if no such child was found.
      */
     public IXMLElement getFirstChildNamed(String name) {
-        Enumeration enum = this.children.elements();
-        while (enum.hasMoreElements()) {
-            IXMLElement child = (IXMLElement) enum.nextElement();
+        Enumeration enm = this.children.elements();
+        while (enm.hasMoreElements()) {
+            IXMLElement child = (IXMLElement) enm.nextElement();
             String childName = child.getFullName();
             if ((childName != null) && childName.equals(name)) {
                 return child;
@@ -506,9 +506,9 @@ public class XMLElement implements IXMLElement, Serializable {
      */
     public IXMLElement getFirstChildNamed(String name,
                                           String namespace) {
-        Enumeration enum = this.children.elements();
-        while (enum.hasMoreElements()) {
-            IXMLElement child = (IXMLElement) enum.nextElement();
+        Enumeration enm = this.children.elements();
+        while (enm.hasMoreElements()) {
+            IXMLElement child = (IXMLElement) enm.nextElement();
             String str = child.getName();
             boolean found = (str != null) && (str.equals(name));
             str = child.getNamespace();
@@ -534,9 +534,9 @@ public class XMLElement implements IXMLElement, Serializable {
      */
     public Vector getChildrenNamed(String name) {
         Vector result = new Vector(this.children.size());
-        Enumeration enum = this.children.elements();
-        while (enum.hasMoreElements()) {
-            IXMLElement child = (IXMLElement) enum.nextElement();
+        Enumeration enm = this.children.elements();
+        while (enm.hasMoreElements()) {
+            IXMLElement child = (IXMLElement) enm.nextElement();
             String childName = child.getFullName();
             if ((childName != null) && childName.equals(name)) {
                 result.addElement(child);
@@ -557,9 +557,9 @@ public class XMLElement implements IXMLElement, Serializable {
     public Vector getChildrenNamed(String name,
                                    String namespace) {
         Vector result = new Vector(this.children.size());
-        Enumeration enum = this.children.elements();
-        while (enum.hasMoreElements()) {
-            IXMLElement child = (IXMLElement) enum.nextElement();
+        Enumeration enm = this.children.elements();
+        while (enm.hasMoreElements()) {
+            IXMLElement child = (IXMLElement) enm.nextElement();
             String str = child.getName();
             boolean found = (str != null) && (str.equals(name));
             str = child.getNamespace();
@@ -585,9 +585,9 @@ public class XMLElement implements IXMLElement, Serializable {
      * @return the attribute, or null if the attribute does not exist.
      */
     private XMLAttribute findAttribute(String fullName) {
-        Enumeration enum = this.attributes.elements();
-        while (enum.hasMoreElements()) {
-            XMLAttribute attr = (XMLAttribute) enum.nextElement();
+        Enumeration enm = this.attributes.elements();
+        while (enm.hasMoreElements()) {
+            XMLAttribute attr = (XMLAttribute) enm.nextElement();
             if (attr.getFullName().equals(fullName)) {
                 return attr;
             }
@@ -606,9 +606,9 @@ public class XMLElement implements IXMLElement, Serializable {
      */
     private XMLAttribute findAttribute(String name,
                                        String namespace) {
-        Enumeration enum = this.attributes.elements();
-        while (enum.hasMoreElements()) {
-            XMLAttribute attr = (XMLAttribute) enum.nextElement();
+        Enumeration enm = this.attributes.elements();
+        while (enm.hasMoreElements()) {
+            XMLAttribute attr = (XMLAttribute) enm.nextElement();
             boolean found = attr.getName().equals(name);
             if (namespace == null) {
                 found &= (attr.getNamespace() == null);
@@ -860,9 +860,9 @@ public class XMLElement implements IXMLElement, Serializable {
      */
     public Enumeration enumerateAttributeNames() {
         Vector result = new Vector();
-        Enumeration enum = this.attributes.elements();
-        while (enum.hasMoreElements()) {
-            XMLAttribute attr = (XMLAttribute) enum.nextElement();
+        Enumeration enm = this.attributes.elements();
+        while (enm.hasMoreElements()) {
+            XMLAttribute attr = (XMLAttribute) enm.nextElement();
             result.addElement(attr.getFullName());
         }
         return result.elements();
@@ -897,9 +897,9 @@ public class XMLElement implements IXMLElement, Serializable {
      */
     public Properties getAttributes() {
         Properties result = new Properties();
-        Enumeration enum = this.attributes.elements();
-        while (enum.hasMoreElements()) {
-            XMLAttribute attr = (XMLAttribute) enum.nextElement();
+        Enumeration enm = this.attributes.elements();
+        while (enm.hasMoreElements()) {
+            XMLAttribute attr = (XMLAttribute) enm.nextElement();
             result.put(attr.getFullName(), attr.getValue());
         }
         return result;
@@ -915,9 +915,9 @@ public class XMLElement implements IXMLElement, Serializable {
      */
     public Properties getAttributesInNamespace(String namespace) {
         Properties result = new Properties();
-        Enumeration enum = this.attributes.elements();
-        while (enum.hasMoreElements()) {
-            XMLAttribute attr = (XMLAttribute) enum.nextElement();
+        Enumeration enm = this.attributes.elements();
+        while (enm.hasMoreElements()) {
+            XMLAttribute attr = (XMLAttribute) enm.nextElement();
             if (namespace == null) {
                 if (attr.getNamespace() == null) {
                     result.put(attr.getName(), attr.getValue());
@@ -1007,9 +1007,9 @@ public class XMLElement implements IXMLElement, Serializable {
         if (this.attributes.size() != elt.getAttributeCount()) {
             return false;
         }
-        Enumeration enum = this.attributes.elements();
-        while (enum.hasMoreElements()) {
-            XMLAttribute attr = (XMLAttribute) enum.nextElement();
+        Enumeration enm = this.attributes.elements();
+        while (enm.hasMoreElements()) {
+            XMLAttribute attr = (XMLAttribute) enm.nextElement();
             if (! elt.hasAttribute(attr.getName(), attr.getNamespace())) {
                 return false;
             }

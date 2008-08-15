@@ -37,7 +37,7 @@ package net.n3.nanoxml;
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.4 $
  */
-class XMLAttribute
+module class XMLAttribute
 {
 
    /**
@@ -79,7 +79,7 @@ class XMLAttribute
     * @param value     the value of the attribute
     * @param type      the type of the attribute
     */
-   XMLAttribute(String fullName,
+   module XMLAttribute(String fullName,
                 String name,
                 String namespace,
                 String value,
@@ -96,7 +96,7 @@ class XMLAttribute
    /**
     * Returns the full name of the attribute.
     */
-   String getFullName()
+   module String getFullName()
    {
       return this.fullName;
    }
@@ -105,7 +105,7 @@ class XMLAttribute
    /**
     * Returns the short name of the attribute.
     */
-   String getName()
+   module String getName()
    {
       return this.name;
    }
@@ -114,7 +114,7 @@ class XMLAttribute
    /**
     * Returns the namespace of the attribute.
     */
-   String getNamespace()
+   module String getNamespace()
    {
       return this.namespace;
    }
@@ -123,7 +123,7 @@ class XMLAttribute
    /**
     * Returns the value of the attribute.
     */
-   String getValue()
+   module String getValue()
    {
       return this.value;
    }
@@ -134,7 +134,7 @@ class XMLAttribute
     *
     * @param value the new value.
     */
-   void setValue(String value)
+   module void setValue(String value)
    {
       this.value = value;
    }
@@ -145,7 +145,7 @@ class XMLAttribute
     *
     * @param type the new type.
     */
-   String getType()
+   module String getType()
    {
       return this.type;
    }

@@ -1,2 +1,0 @@
-module net.n3.nanoxmlv2_2_1_3 implements net.n3.nanoxml;
-export package net.n3.nanoxml;

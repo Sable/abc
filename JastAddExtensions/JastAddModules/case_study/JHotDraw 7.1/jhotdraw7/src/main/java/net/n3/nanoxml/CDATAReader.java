@@ -40,7 +40,7 @@ import java.io.IOException;
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.3 $
  */
-class CDATAReader
+module class CDATAReader
    extends Reader
 {
 
@@ -67,7 +67,7 @@ class CDATAReader
     *
     * @param reader the encapsulated reader
     */
-   CDATAReader(IXMLReader reader)
+   module CDATAReader(IXMLReader reader)
    {
       this.reader = reader;
       this.savedChar = 0;

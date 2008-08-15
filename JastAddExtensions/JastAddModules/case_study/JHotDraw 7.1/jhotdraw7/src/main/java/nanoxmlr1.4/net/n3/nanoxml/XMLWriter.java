@@ -182,10 +182,10 @@ public class XMLWriter
             }
          }
 
-         Enumeration enum = xml.enumerateAttributeNames();
+         Enumeration enm = xml.enumerateAttributeNames();
 
-         while (enum.hasMoreElements()) {
-            String key = (String) enum.nextElement();
+         while (enm.hasMoreElements()) {
+            String key = (String) enm.nextElement();
             int index = key.indexOf(':');
 
             if (index >= 0) {
@@ -203,10 +203,10 @@ public class XMLWriter
             }
          }
 
-         enum = xml.enumerateAttributeNames();
+         enm = xml.enumerateAttributeNames();
 
-         while (enum.hasMoreElements()) {
-            String key = (String) enum.nextElement();
+         while (enm.hasMoreElements()) {
+            String key = (String) enm.nextElement();
             String value = xml.getAttribute(key, null);
             this.writer.print(" " + key + "=\"");
             this.writeEncoded(value);
@@ -229,10 +229,10 @@ public class XMLWriter
                writer.println();
             }
 
-            enum = xml.enumerateChildren();
+            enm = xml.enumerateChildren();
 
-            while (enum.hasMoreElements()) {
-               IXMLElement child = (IXMLElement) enum.nextElement();
+            while (enm.hasMoreElements()) {
+               IXMLElement child = (IXMLElement) enm.nextElement();
                this.write(child, prettyPrint, indent + 4,
                           collapseEmptyElements);
             }

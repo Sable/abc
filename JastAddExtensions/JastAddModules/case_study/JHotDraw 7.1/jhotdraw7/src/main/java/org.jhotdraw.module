@@ -3,4 +3,8 @@ module org.jhotdraw;
 import own net.n3.nanoxml export as nanoxml;
 import own org.apache.batik export as batik;
 
+import own net.n3.nanoxmlv2_2_1_4patch;
+
+replace nanoxml with net.n3.nanoxmlv2_2_1_4patch;
+
 export package *;

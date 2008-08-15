@@ -587,10 +587,10 @@ public class NonValidator
                                           int        lineNr)
    {
       Properties props = (Properties) this.currentElements.pop();
-      Enumeration enum = props.keys();
+      Enumeration enm = props.keys();
 
-      while (enum.hasMoreElements()) {
-         String key = (String) enum.nextElement();
+      while (enm.hasMoreElements()) {
+         String key = (String) enm.nextElement();
          extraAttributes.put(key, props.get(key));
       }
    }

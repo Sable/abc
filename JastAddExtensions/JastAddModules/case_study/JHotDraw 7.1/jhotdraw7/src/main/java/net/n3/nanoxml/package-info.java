@@ -1,2 +1,2 @@
-module net.n3.nanoxmlv2_2_1_3;
+module net.n3.nanoxmlv2_2_1_4patch;
 package net.n3.nanoxml;
