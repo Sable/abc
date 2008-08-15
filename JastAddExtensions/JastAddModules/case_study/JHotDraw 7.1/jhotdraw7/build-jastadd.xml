@@ -22,11 +22,13 @@
 		<jastaddmodules outdir="${classdir}"
 			verbose="false"
 			jastaddframework="false"
-			debug="false"
+			debug="true"
+			instancemodule="org.jhotdraw"
 			classpath="${libdir}/quaqua.jar;${libdir}/MRJAdapter.jar;${libdir}/java_30.zip;${libdir}/swing-layout.jar"
 		>
 			<fileset dir="${srcdir}">
 				<include name="**/*.java"/>
+				<include name="**/*.module"/>
 				<include name="net/n3/nanoxml/*.java"/> 
 				<include name="org/jhotdraw/samples/draw/Main.java"/> 
 				<include name="org/jhotdraw/samples/draw/DrawProject.java"/> 

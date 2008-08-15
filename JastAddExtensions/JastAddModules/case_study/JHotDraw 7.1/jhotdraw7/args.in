@@ -2,8 +2,10 @@
 jastadd-build/classes
 -classpath
 lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
--verbose
+-instance-module
+org.jhotdraw
 -debug
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net.n3.nanoxml.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\CDATAReader.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\ContentReader.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLBuilder.java
@@ -27,6 +29,9 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLUtil.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLValidationException.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLWriter.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batik.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\LinearGradientPaint.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\LinearGradientPaintContext.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\MultipleGradientPaint.java
@@ -34,6 +39,8 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\RadialGradientPaint.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\RadialGradientPaintContext.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\image\GraphicsUtil.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\image\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\AbstractApplication.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\AbstractView.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\Application.java
@@ -85,7 +92,10 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ToggleVisibleAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\UndoAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ViewPropertyAction.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\beans\AbstractBean.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\beans\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractAttributedCompositeFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractAttributedDecoratedFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractAttributedFigure.java
@@ -269,6 +279,8 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\VerticalGridLayout.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ZoomAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ZoomEditorAction.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Bezier.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\BezierPath.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\BezierPathIterator.java
@@ -279,6 +291,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Insets2D.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\QuadTree.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Shapes.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\Arrangeable.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\AttributeField.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\AttributeFieldEventHandler.java
@@ -304,11 +317,15 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\CompositeTransferable.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\ImageTransferable.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\InputStreamTransferable.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\event\SheetEvent.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\event\SheetListener.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\event\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\Base64.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\ExtensionFileFilter.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\StreamPosTokenizer.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawApplet.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawApplicationModel.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawFigureFactory.java
@@ -317,6 +334,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawingPanel.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawingPanelBeanInfo.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\Main.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\ConnectingFiguresSample.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\EditorSample.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\LabeledLineConnectionFigureSample.java
@@ -324,6 +342,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\SelectionToolSample.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\SmartConnectionFigureSample.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\StraightLineFigure.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\Main.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetApplet.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetApplicationModel.java
@@ -331,6 +350,8 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetPanel.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetView.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\figures\NodeFigure.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\figures\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\Gradient.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\Main.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGApplicationModel.java
@@ -346,6 +367,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\CombineAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\SplitAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\TogglePropertiesPanelAction.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGAttributedFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGBezierFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGEllipseFigure.java
@@ -355,10 +377,14 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGPathOutlineHandle.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGRectFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGRectRadiusHandle.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\geom\EnhancedPath.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\geom\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\ODGFigureFactory.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\ODGInputFormat.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\ODGStylesReader.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\Main.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertApplet.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertApplicationModel.java
@@ -368,6 +394,8 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\DependencyFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\SeparatorLineFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\TaskFigure.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Gradient.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\LinearGradient.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Main.java
@@ -386,6 +414,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\SplitAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\TogglePropertiesPanelAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\ViewSourceAction.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGAttributedFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGBezierFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGEllipseFigure.java
@@ -398,6 +427,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGRectRadiusHandle.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGTextAreaFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGTextFigure.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\DefaultSVGFigureFactory.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\ImageMapOutputFormat.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGElementFactory.java
@@ -406,6 +436,8 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGOutputFormat.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGZInputFormat.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGZOutputFormat.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\CharacterSetAccessory.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\FindDialog.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\JEditorArea.java
@@ -416,22 +448,30 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\ToggleLineNumbersAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\ToggleLineWrapAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\ToggleStatusBarAction.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\io\LFWriter.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\io\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\regex\MatchType.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\regex\Matcher.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\regex\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\NumberedEditorKit.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\NumberedParagraphView.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\NumberedViewFactory.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\CompositeEdit.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\NonUndoableEdit.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\UndoRedoManager.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\Images.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\LocaleUtil.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\Methods.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\ResourceBundleUtil.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\ReversedList.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\prefs\PreferencesUtil.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\prefs\ToolBarPrefsHandler.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\prefs\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMFactory.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMInput.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMOutput.java
@@ -445,3 +485,5 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\CSSParser.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\CSSRule.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\StyleManager.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\package-info.java
