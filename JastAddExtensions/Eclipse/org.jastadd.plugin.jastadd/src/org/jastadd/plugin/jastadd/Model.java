@@ -1,5 +1,3 @@
-
-
 package org.jastadd.plugin.jastadd;
 
 import java.io.ByteArrayInputStream;
@@ -479,10 +477,11 @@ public class Model extends JastAddJModel {
 		
 	}
 	
-	protected void updateModel(IDocument document, String fileName, IProject project) {
+	protected boolean updateModel(IDocument document, String fileName, IProject project) {
+		boolean fireEvent = true;
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
-			return;
+			return false;
 		JastAddBuildConfiguration jastAddBuildConfig = new JastAddBuildConfiguration(project);
 		
 		// Regenerate scanner or parser if there was a change in a flex or parser file
@@ -518,7 +517,7 @@ public class Model extends JastAddJModel {
 			if(fileName.endsWith(".ast"))
 				program.addSourceFile(fileName);
 			else
-				addSourceFileWithRecovery(project, program, document, fileName);
+				fireEvent = addSourceFileWithRecovery(project, program, document, fileName);
 
 			if(program instanceof Program) {
 				((Program)program).flushIntertypeDecls();
@@ -533,6 +532,7 @@ public class Model extends JastAddJModel {
 		if (info != null) {
 			info.changed();
 		}
+		return fireEvent;
 	}
 
 	private long getTimeStamp(String name, IProject project) {

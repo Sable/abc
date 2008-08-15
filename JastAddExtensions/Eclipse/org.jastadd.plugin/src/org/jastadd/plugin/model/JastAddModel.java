@@ -141,10 +141,12 @@ public abstract class JastAddModel {
 	}
 
 	public void updateProjectModel(Collection<IFile> changedFiles, IProject project) {
+		boolean fireEvent = true;
 		synchronized(getASTRootForLock(project)) {
-			updateModel(changedFiles, project);
+			fireEvent = updateModel(changedFiles, project);
 		}
-		notifyModelListeners();
+		if (fireEvent)
+			notifyModelListeners();
 	}
 
 	public void updateProjectModel(IDocument document) {
@@ -154,13 +156,16 @@ public abstract class JastAddModel {
 		synchronized (getASTRootForLock(fileInfo.getProject())) {
 			updateProjectModel(document, fileInfo.getPath().toOSString(), fileInfo.getProject());
 		}
+		
 	}
 	
 	public void updateProjectModel(IDocument document, String fileName, IProject project) {
+		boolean fireEvent = true;
 		synchronized(getASTRootForLock(project)) {
-			updateModel(document, fileName, project);
+			fireEvent = updateModel(document, fileName, project);
 		}
-		notifyModelListeners();
+		if (fireEvent)
+			notifyModelListeners();
 	}
 
 	public IJastAddNode buildDocument(IDocument document, String fileName, IProject project) {
@@ -412,8 +417,8 @@ public abstract class JastAddModel {
 	
 	public abstract void registerStopHandler(Runnable stopHandler);
 
-	protected abstract void updateModel(IDocument document, String fileName, IProject project);
-	protected abstract void updateModel(Collection<IFile> changedFiles, IProject project);
+	protected abstract boolean updateModel(IDocument document, String fileName, IProject project);
+	protected abstract boolean updateModel(Collection<IFile> changedFiles, IProject project);
 	protected abstract void completeBuild(IProject project, IProgressMonitor monitor);
 	protected abstract IJastAddNode getTreeRootNode(IProject project, String filePath);
 	protected abstract void discardTree(IProject project);
