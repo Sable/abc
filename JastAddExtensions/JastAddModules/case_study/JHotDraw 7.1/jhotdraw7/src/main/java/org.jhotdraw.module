@@ -1,0 +1,6 @@
+module org.jhotdraw;
+
+import net.n3.nanoxml;
+import org.apache.batik;
+
+export package *;

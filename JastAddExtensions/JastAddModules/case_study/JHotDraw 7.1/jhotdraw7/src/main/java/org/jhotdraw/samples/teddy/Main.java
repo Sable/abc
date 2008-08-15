@@ -36,7 +36,8 @@ public class Main {
         TeddyApplicationModel tam = new TeddyApplicationModel();
         tam.setCopyright("© 2005-2008 Werner Randelshofer");
         tam.setName("Teddy");
-        tam.setViewClassName("org.jhotdraw.samples.teddy.TeddyView");
+        //NEIL: reflection workaround
+        tam.setViewClass(new org.jhotdraw.samples.teddy.TeddyView().getClass());
         tam.setVersion(Main.class.getPackage().getImplementationVersion());
         
         AbstractApplication app;

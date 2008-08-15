@@ -43,7 +43,8 @@ public class Main {
         model.setVersion(Main.class.getPackage().getImplementationVersion());
         model.setCopyright("Copyright 2006-2008 (c) by the authors of JHotDraw\n" +
                 "This software is licensed under LGPL or Creative Commons 3.0 BY");
-        model.setViewClassName("org.jhotdraw.samples.net.NetView");
+        //NEIL: Change to work around refllection
+        model.setViewClass(new org.jhotdraw.samples.net.NetView().getClass());
         app.setModel(model);
         app.launch(args);
     }
