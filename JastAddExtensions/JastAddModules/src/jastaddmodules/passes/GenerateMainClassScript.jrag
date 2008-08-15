@@ -1,0 +1,64 @@
+aspect GenerateMainClassScript {
+	public void Program.generateMainClassScript() {
+		if (!(options().hasValueForOption(jastadd.JastAddModules.MAIN_CLASS_OPTION))) {
+			return;
+		}
+		String mainClassName = options().getValueForOption(jastadd.JastAddModules.MAIN_CLASS_OPTION);
+		String unmodifiedMainClassName = mainClassName;
+		String mainModuleQualifier = "";
+		int index = mainClassName.lastIndexOf(Program.MODULE_SEPARATOR);
+		if (index != -1) {
+			mainModuleQualifier = mainClassName.substring(0, index);
+			mainClassName = mainClassName.substring(index+2); 
+		}
+		String mainPackageQualifier = "";
+		index = mainClassName.lastIndexOf(".");
+		if (index != -1) {
+			mainPackageQualifier = mainClassName.substring(0,index);
+			mainClassName = mainClassName.substring(index+1);
+		}
+		ModuleCompilationUnit context = getInstanceModuleCU().lookupModule(mainModuleQualifier);
+		if (context == null) {
+			System.err.println("Unable to find main class " + unmodifiedMainClassName +
+								", discontinuing script generation.");
+			return;
+		}
+		SimpleSet mainTypes = context.moduleLookupType(mainPackageQualifier, mainClassName, false);
+		if (mainTypes.isEmpty()) {
+			System.err.println("Unable to find main class " + unmodifiedMainClassName +
+								", discontinuing script generation.");
+			return;
+		}
+		Iterator<TypeDecl> iter = mainTypes.iterator();
+		TypeDecl mainType = iter.next();
+		
+		//write the script
+		try {
+			String outdir = "";
+			if (options().hasValueForOption("-d")) {
+				outdir = options().getValueForOption("-d") + java.io.File.separator; 
+			}
+			String classpath = ".";
+			if (options().hasValueForOption("-classpath")) {
+				classpath = options().getValueForOption("-classpath") + java.io.File.pathSeparator + ".";  
+			}
+			
+			FileOutputStream fileout = new FileOutputStream(outdir + "run");
+			PrintWriter out = new PrintWriter(fileout);
+			String mainFullName = mainType.packageName() + "." + mainType.name();
+			StringBuffer fixedMainFullName = new StringBuffer();
+			for (int i = 0; i < mainFullName.length(); i++) {
+				if (mainFullName.charAt(i) == '$') {
+					fixedMainFullName.append("\\$");
+				} else {
+					fixedMainFullName.append(mainFullName.charAt(i));
+				}
+			}
+			out.print("java -cp \"" + classpath + "\" \"" + fixedMainFullName.toString() + "\"");
+			out.close();
+		}
+		catch (Exception e) {
+			System.err.println("Error writing script file: " + e.getMessage());
+		}
+	}
+}

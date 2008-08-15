@@ -24,7 +24,8 @@ public class JastAddModules extends JastAdd {
 
 	public static final String INSTANCE_MODULES_OPTION = "-instance-module";
 	public static final String DEBUG_OPTION = "-debug";
-	public static final String JASTADD_FRAMEWORK = "-jastaddframework";
+	public static final String JASTADD_FRAMEWORK_OPTION = "-jastaddframework";
+	public static final String MAIN_CLASS_OPTION = "-mainclass";
 
 	public static void main(String args[]) {
 		if (!new JastAddModules().compile(args)) {
@@ -281,6 +282,9 @@ public class JastAddModules extends JastAdd {
 
 	public void generate() {
 
+		//minor addition to make running the results easier
+		program.generateMainClassScript();
+		
 		program.generateIntertypeDecls();
 		program.transformation();
 		
@@ -304,7 +308,8 @@ public class JastAddModules extends JastAdd {
 		// generated package names
 		options.addKeyValueOption(INSTANCE_MODULES_OPTION);
 		options.addKeyOption(DEBUG_OPTION);
-		options.addKeyOption(JASTADD_FRAMEWORK);
+		options.addKeyOption(JASTADD_FRAMEWORK_OPTION);
+		options.addKeyValueOption(MAIN_CLASS_OPTION);
 	}
 
 }

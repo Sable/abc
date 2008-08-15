@@ -101,6 +101,12 @@ public class JastAddModulesTask extends Task {
 	public void setJastaddFramework(boolean jastaddframework) {
 		this.jastaddframework = jastaddframework;
 	}
+	
+	private String mainclass = null;
+	
+	public void setMainClass(String mainclass) {
+		this.mainclass = mainclass;
+	}
 
 	private String instanceModule = null;
 
@@ -151,6 +157,10 @@ public class JastAddModulesTask extends Task {
 		}
 		if (jastaddframework) {
 			args.add("-jastaddframework");
+		}
+		if (mainclass != null) {
+			args.add("-mainclass");
+			args.add(mainclass);
 		}
 		if (debug) {
 			args.add("-debug");
