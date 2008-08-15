@@ -1,57 +1,9 @@
 Arguments: 
 -jastaddframework -debug -d classes -instance-module m1 m1.module m2.module m3.module A.java AA.java AAA.java AAADemand.java AADemand.java ADemand.java B.java BB.java BBDemand.java BDemand.java C.java Main.java pack/P.java pack/PP.java m1pack/P.java m2pack/P.java m2pack2/Q.java m3pack/P.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
-------AA.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------BDemand.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
-------------------------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
-------------------------
-------AAA.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------AADemand.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------m1pack/P.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------m1.module------
-module m1;
-import own m2 export as m2;
-------------------------
-------pack/PP.java------
-module: null;
-module CU : null
-module name : null
-------------------------
-------C.java------
-module: module m3;;
-module CU : m3.module
-module name : m3
-------------------------
-------BB.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
-------------------------
-------B.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
+------m2.module------
+module m2;
+import own m3 export as m3;
 ------------------------
 ------m3.module------
 module m3;
@@ -61,17 +13,86 @@ module: module m2;;
 module CU : m2.module
 module name : m2
 ------------------------
-------m3pack/P.java------
+------AA.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------AADemand.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------C.java------
 module: module m3;;
 module CU : m3.module
 module name : m3
+------------------------
+------AAADemand.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m2pack/P.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
 ------------------------
 ------A.java------
 module: module m1;;
 module CU : m1.module
 module name : m1
 ------------------------
-------AAADemand.java------
+------m3pack/P.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------m2pack2/Q.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------BB.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------BDemand.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------m1.module------
+module m1;
+import own m2 export as m2;
+------------------------
+------AAA.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------pack/PP.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------ADemand.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m1pack/P.java------
 module: module m1;;
 module CU : m1.module
 module name : m1
@@ -81,81 +102,60 @@ module: null;
 module CU : null
 module name : null
 ------------------------
-------m2pack/P.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
-------------------------
-------m2pack2/Q.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
-------------------------
-------Main.java------
-module: null;
-module CU : null
-module name : null
-------------------------
-------m2.module------
-module m2;
-import own m3 export as m3;
-------------------------
-------ADemand.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
 ------------------------
 ----------CU AST before insert----------
-AA.java package:
-BDemand.java package:
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-AAA.java package:
-AADemand.java package:
-m1pack/P.java package:pack
-module: m1, file: m1.module, base module: m1
-pack/PP.java package:pack
-C.java package:
-BB.java package:
-B.java package:
+module: m2, file: m2.module, base module: m2
 module: m3, file: m3.module, base module: m3
 BBDemand.java package:
-m3pack/P.java package:pack
-A.java package:
+AA.java package:
+AADemand.java package:
+C.java package:
 AAADemand.java package:
-pack/P.java package:pack
 m2pack/P.java package:pack
+A.java package:
+m3pack/P.java package:pack
 m2pack2/Q.java package:pack2
-Main.java package:
-module: m2, file: m2.module, base module: m2
-ADemand.java package:
-----------CU AST after insert----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+BB.java package:
+BDemand.java package:
 module: m1, file: m1.module, base module: m1
-	AA.java package:m1
-	AAA.java package:m1
-	AADemand.java package:m1
-	m1pack/P.java package:m1.$pack
-	A.java package:m1
-	AAADemand.java package:m1
-	ADemand.java package:m1
+AAA.java package:
+B.java package:
 pack/PP.java package:pack
-module: m3, file: m3.module, base module: m3
-	C.java package:m3
-	m3pack/P.java package:m3.$pack
-pack/P.java package:pack
 Main.java package:
+ADemand.java package:
+m1pack/P.java package:pack
+pack/P.java package:pack
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+----------CU AST after insert----------
 module: m2, file: m2.module, base module: m2
-	BDemand.java package:m2
-	BB.java package:m2
-	B.java package:m2
 	BBDemand.java package:m2
 	m2pack/P.java package:m2.$pack
 	m2pack2/Q.java package:m2.$pack2
+	BB.java package:m2
+	BDemand.java package:m2
+	B.java package:m2
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+	m3pack/P.java package:m3.$pack
+module: m1, file: m1.module, base module: m1
+	AA.java package:m1
+	AADemand.java package:m1
+	AAADemand.java package:m1
+	A.java package:m1
+	AAA.java package:m1
+	ADemand.java package:m1
+	m1pack/P.java package:m1.$pack
+pack/PP.java package:pack
+Main.java package:
+pack/P.java package:pack
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-module m1, base:m1, context:[], instantiated:false
-module m3, base:m3, context:[], instantiated:false
 module m2, base:m2, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
+module m1, base:m1, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 export as m2;
@@ -163,46 +163,46 @@ export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m1, file: m1.module, base module: m1
-	AA.java package:m1
-	AAA.java package:m1
-	AADemand.java package:m1
-	m1pack/P.java package:m1.$pack
-	A.java package:m1
-	AAADemand.java package:m1
-	ADemand.java package:m1
-pack/PP.java package:pack
-module: m3, file: m3.module, base module: m3
-	C.java package:m3
-	m3pack/P.java package:m3.$pack
-pack/P.java package:pack
-Main.java package:
 module: m2, file: m2.module, base module: m2
-	BDemand.java package:m2
-	BB.java package:m2
-	B.java package:m2
 	BBDemand.java package:m2
 	m2pack/P.java package:m2.$pack
 	m2pack2/Q.java package:m2.$pack2
+	BB.java package:m2
+	BDemand.java package:m2
+	B.java package:m2
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+	m3pack/P.java package:m3.$pack
+module: m1, file: m1.module, base module: m1
+	AA.java package:m1
+	AADemand.java package:m1
+	AAADemand.java package:m1
+	A.java package:m1
+	AAA.java package:m1
+	ADemand.java package:m1
+	m1pack/P.java package:m1.$pack
+pack/PP.java package:pack
+Main.java package:
+pack/P.java package:pack
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1.m2.m3, file: m3.module, base module: m3
 	C.java package:m1.m2.m3
 	m3pack/P.java package:m1.m2.m3.$pack
 module: m1.m2, file: m2.module, base module: m2
-	BDemand.java package:m1.m2
-	BB.java package:m1.m2
-	B.java package:m1.m2
 	BBDemand.java package:m1.m2
 	m2pack/P.java package:m1.m2.$pack
 	m2pack2/Q.java package:m1.m2.$pack2
+	BB.java package:m1.m2
+	BDemand.java package:m1.m2
+	B.java package:m1.m2
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module m2, base:m2, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]m2:m1.m2
-module m3, base:m3, context:[], instantiated:false
-module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m1.m2.m3, base:m3, context:[m1.m2], instantiated:true
 	jastadd$framework:jastadd$framework
 module m1.m2, base:m2, context:[m1], instantiated:true
@@ -210,35 +210,35 @@ module m1.m2, base:m2, context:[m1], instantiated:true
 	[export]m3:m1.m2.m3
 ----------MCU collectTypes after import own----------
 
-Module: jastadd$framework
-Module: m1
-	m1.AAA
-	m1.AAADemand
-	m1.A
-	m1.AADemand
-	m1.ADemand
-	m1.AA
-	m1.$pack.P
-Module: m3
-	m3.$pack.P
-	m3.C
 Module: m2
+	m2.$pack.P
+	m2.BB
 	m2.BBDemand
 	m2.BDemand
-	m2.BB
 	m2.$pack2.Q
-	m2.$pack.P
 	m2.B
+Module: m3
+	m3.C
+	m3.$pack.P
+Module: m1
+	m1.AA
+	m1.AAA
+	m1.ADemand
+	m1.AAADemand
+	m1.AADemand
+	m1.A
+	m1.$pack.P
+Module: jastadd$framework
 Module: m1.m2.m3
-	m1.m2.m3.$pack.P
 	m1.m2.m3.C
+	m1.m2.m3.$pack.P
 Module: m1.m2
-	m1.m2.BBDemand
-	m1.m2.BDemand
-	m1.m2.$pack.P
 	m1.m2.B
-	m1.m2.$pack2.Q
 	m1.m2.BB
+	m1.m2.$pack2.Q
+	m1.m2.BDemand
+	m1.m2.BBDemand
+	m1.m2.$pack.P
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, m1.module, AA.java, AAA.java, AADemand.java, m1pack/P.java, A.java, AAADemand.java, ADemand.java, pack/PP.java, m3.module, pack/P.java, Main.java, m2.module, m3.module, C.java, m3pack/P.java, m2.module, BDemand.java, BB.java, B.java, BBDemand.java, m2pack/P.java, m2pack2/Q.java
+m2.module, m3.module, m1.module, AA.java, AADemand.java, AAADemand.java, A.java, AAA.java, ADemand.java, m1pack/P.java, pack/PP.java, Main.java, pack/P.java, ../testlib/jastadd$framework.module, m3.module, C.java, m3pack/P.java, m2.module, BBDemand.java, m2pack/P.java, m2pack2/Q.java, BB.java, BDemand.java, B.java

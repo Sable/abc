@@ -2,12 +2,6 @@ Arguments:
 -jastaddframework -debug -d classes -instance-module somemodule somemodule.module Main.java MyClass.java pack/*.java ../testlib/jastadd$framework.module End arguments
 WARNING: file "pack/*.java" does not exist
 ----------Module contents----------
-------somemodule.module------
-module somemodule;
-------------------------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
-------------------------
 ------MyClass.java------
 module: module somemodule;;
 module CU : somemodule.module
@@ -18,39 +12,45 @@ module: null;
 module CU : null
 module name : null
 ------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------somemodule.module------
+module somemodule;
+------------------------
 ----------CU AST before insert----------
-module: somemodule, file: somemodule.module, base module: somemodule
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 MyClass.java package:
 Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: somemodule, file: somemodule.module, base module: somemodule
 ----------CU AST after insert----------
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: somemodule, file: somemodule.module, base module: somemodule
 	MyClass.java package:somemodule
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-Main.java package:
 ----------Module CU imports before import own----------
-module somemodule, base:somemodule, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+module somemodule, base:somemodule, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module somemodule;
 export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: somemodule, file: somemodule.module, base module: somemodule
 	MyClass.java package:somemodule
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-Main.java package:
 
 ----------Module CU imports after import own----------
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module somemodule, base:somemodule, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 ----------MCU collectTypes after import own----------
 
+Module: jastadd$framework
 Module: somemodule
 	somemodule.MyClass
-Module: jastadd$framework
 
 ----------CU iterator----------
-somemodule.module, MyClass.java, ../testlib/jastadd$framework.module, Main.java
+Main.java, ../testlib/jastadd$framework.module, somemodule.module, MyClass.java

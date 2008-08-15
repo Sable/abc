@@ -1,31 +1,56 @@
 Arguments: 
 -jastaddframework -debug -d classes -instance-module m1 m1.module m2.module m3.module m3x.module m3xx.module m3xxx.module m3xxxx.module A.java B.java C.java CX.java CXX.java CXXX.java Main.java pack/C.java pack/CX.java pack/CXX.java pack/CXXX.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
-------CXXX.java------
-module: module m3xxx;;
-module CU : m3xxx.module
-module name : m3xxx
+------CX.java------
+module: module m3x;;
+module CU : m3x.module
+module name : m3x
 ------------------------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
+------CXX.java------
+module: module m3xx;;
+module CU : m3xx.module
+module name : m3xx
 ------------------------
-------pack/C.java------
-module: module m3;;
-module CU : m3.module
-module name : m3
+------m2.module------
+module m2;
+import own m3 export as m3;
+------------------------
+------m3.module------
+module m3;
 ------------------------
 ------pack/CXXX.java------
 module: module m3xxx;;
 module CU : m3xxx.module
 module name : m3xxx
 ------------------------
-------pack/CXX.java------
-module: module m3xx;;
-module CU : m3xx.module
-module name : m3xx
+------m3xx.module------
+module m3xx extends m3x;
 ------------------------
 ------m3xxx.module------
 module m3xxx extends m3xx;
+------------------------
+------pack/CX.java------
+module: module m3x;;
+module CU : m3x.module
+module name : m3x
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------m3xxxx.module------
+module m3xxxx extends m3xxx;
+------------------------
+------CXXX.java------
+module: module m3xxx;;
+module CU : m3xxx.module
+module name : m3xxx
 ------------------------
 ------m1.module------
 module m1;
@@ -39,106 +64,81 @@ merge m2a::m3, m3x export as m3;
 merge m3, m3xx export as m3xx;
 merge m2b::m3, m3xxx export as m3xxx;
 ------------------------
-------CXX.java------
-module: module m3xx;;
-module CU : m3xx.module
-module name : m3xx
-------------------------
-------C.java------
-module: module m3;;
-module CU : m3.module
-module name : m3
-------------------------
-------m3xxxx.module------
-module m3xxxx extends m3xxx;
-------------------------
-------m3xx.module------
-module m3xx extends m3x;
-------------------------
 ------B.java------
 module: module m2;;
 module CU : m2.module
 module name : m2
 ------------------------
+------pack/CXX.java------
+module: module m3xx;;
+module CU : m3xx.module
+module name : m3xx
+------------------------
 ------m3x.module------
 module m3x extends m3;
-------------------------
-------m3.module------
-module m3;
-------------------------
-------A.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------pack/CX.java------
-module: module m3x;;
-module CU : m3x.module
-module name : m3x
 ------------------------
 ------Main.java------
 module: null;
 module CU : null
 module name : null
 ------------------------
-------m2.module------
-module m2;
-import own m3 export as m3;
+------pack/C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
 ------------------------
-------CX.java------
-module: module m3x;;
-module CU : m3x.module
-module name : m3x
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
 ------------------------
 ----------CU AST before insert----------
-CXXX.java package:
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-pack/C.java package:pack
-pack/CXXX.java package:pack
-pack/CXX.java package:pack
-module: m3xxx, file: m3xxx.module, base module: m3xxx
-module: m1, file: m1.module, base module: m1
-CXX.java package:
-C.java package:
-module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
-module: m3xx, file: m3xx.module, base module: m3xx
-B.java package:
-module: m3x, file: m3x.module, base module: m3x
-module: m3, file: m3.module, base module: m3
-A.java package:
-pack/CX.java package:pack
-Main.java package:
-module: m2, file: m2.module, base module: m2
 CX.java package:
-----------CU AST after insert----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m3xxx, file: m3xxx.module, base module: m3xxx
-	CXXX.java package:m3xxx
-	pack/CXXX.java package:m3xxx.$pack
-module: m1, file: m1.module, base module: m1
-	A.java package:m1
-module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
-module: m3xx, file: m3xx.module, base module: m3xx
-	pack/CXX.java package:m3xx.$pack
-	CXX.java package:m3xx
-module: m3x, file: m3x.module, base module: m3x
-	pack/CX.java package:m3x.$pack
-	CX.java package:m3x
+CXX.java package:
+module: m2, file: m2.module, base module: m2
 module: m3, file: m3.module, base module: m3
-	pack/C.java package:m3.$pack
-	C.java package:m3
+pack/CXXX.java package:pack
+module: m3xx, file: m3xx.module, base module: m3xx
+module: m3xxx, file: m3xxx.module, base module: m3xxx
+pack/CX.java package:pack
+C.java package:
+A.java package:
+module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
+CXXX.java package:
+module: m1, file: m1.module, base module: m1
+B.java package:
+pack/CXX.java package:pack
+module: m3x, file: m3x.module, base module: m3x
 Main.java package:
+pack/C.java package:pack
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+----------CU AST after insert----------
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+	pack/C.java package:m3.$pack
+module: m3xx, file: m3xx.module, base module: m3xx
+	CXX.java package:m3xx
+	pack/CXX.java package:m3xx.$pack
+module: m3xxx, file: m3xxx.module, base module: m3xxx
+	pack/CXXX.java package:m3xxx.$pack
+	CXXX.java package:m3xxx
+module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m3x, file: m3x.module, base module: m3x
+	CX.java package:m3x
+	pack/CX.java package:m3x.$pack
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-module m3xxx, base:m3xxx, context:[], instantiated:false
-module m1, base:m1, context:[], instantiated:false
-module m3xxxx, base:m3xxxx, context:[], instantiated:false
-module m3xx, base:m3xx, context:[], instantiated:false
-module m3x, base:m3x, context:[], instantiated:false
-module m3, base:m3, context:[], instantiated:false
 module m2, base:m2, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
+module m3xx, base:m3xx, context:[], instantiated:false
+module m3xxx, base:m3xxx, context:[], instantiated:false
+module m3xxxx, base:m3xxxx, context:[], instantiated:false
+module m1, base:m1, context:[], instantiated:false
+module m3x, base:m3x, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 as m2a;
@@ -154,67 +154,70 @@ export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m3xxx, file: m3xxx.module, base module: m3xxx
-	CXXX.java package:m3xxx
-	pack/CXXX.java package:m3xxx.$pack
-module: m1, file: m1.module, base module: m1
-	A.java package:m1
-module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
-module: m3xx, file: m3xx.module, base module: m3xx
-	pack/CXX.java package:m3xx.$pack
-	CXX.java package:m3xx
-module: m3x, file: m3x.module, base module: m3x
-	pack/CX.java package:m3x.$pack
-	CX.java package:m3x
-module: m3, file: m3.module, base module: m3
-	pack/C.java package:m3.$pack
-	C.java package:m3
-Main.java package:
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+	pack/C.java package:m3.$pack
+module: m3xx, file: m3xx.module, base module: m3xx
+	CXX.java package:m3xx
+	pack/CXX.java package:m3xx.$pack
+module: m3xxx, file: m3xxx.module, base module: m3xxx
+	pack/CXXX.java package:m3xxx.$pack
+	CXXX.java package:m3xxx
+module: m3xxxx, file: m3xxxx.module, base module: m3xxxx
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m3x, file: m3x.module, base module: m3x
+	CX.java package:m3x
+	pack/CX.java package:m3x.$pack
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1$m2a, file: m2.module, base module: m2
 	B.java package:m1$m2a
 module: m1.m2b, file: m2.module, base module: m2
 	B.java package:m1.m2b
 module: m1.m3xxxx$super$m3xxx, file: m3xxx.module, base module: m3xxx
-	CXXX.java package:m1.m3xxxx$super$m3xxx
 	pack/CXXX.java package:m1.m3xxxx$super$m3xxx.$pack
+	CXXX.java package:m1.m3xxxx$super$m3xxx
 module: m1.m3xxxx$super$m3xx, file: m3xx.module, base module: m3xx
-	pack/CXX.java package:m1.m3xxxx$super$m3xx.$pack
 	CXX.java package:m1.m3xxxx$super$m3xx
+	pack/CXX.java package:m1.m3xxxx$super$m3xx.$pack
 module: m1.m3xxxx$super$m3x, file: m3x.module, base module: m3x
-	pack/CX.java package:m1.m3xxxx$super$m3x.$pack
 	CX.java package:m1.m3xxxx$super$m3x
+	pack/CX.java package:m1.m3xxxx$super$m3x.$pack
 module: m1.m3xxxx$super$m3, file: m3.module, base module: m3
-	pack/C.java package:m1.m3xxxx$super$m3.$pack
 	C.java package:m1.m3xxxx$super$m3
+	pack/C.java package:m1.m3xxxx$super$m3.$pack
 module: m1.m3xxxx, file: m3xxxx.module, base module: m3xxxx
 module: m1.m3xx$super$m3x, file: m3x.module, base module: m3x
-	pack/CX.java package:m1.m3xx$super$m3x.$pack
 	CX.java package:m1.m3xx$super$m3x
+	pack/CX.java package:m1.m3xx$super$m3x.$pack
 module: m1.m3xx$super$m3, file: m3.module, base module: m3
-	pack/C.java package:m1.m3xx$super$m3.$pack
 	C.java package:m1.m3xx$super$m3
+	pack/C.java package:m1.m3xx$super$m3.$pack
 module: m1.m3xx, file: m3xx.module, base module: m3xx
-	pack/CXX.java package:m1.m3xx.$pack
 	CXX.java package:m1.m3xx
+	pack/CXX.java package:m1.m3xx.$pack
 module: m1.m3xxx$super$m3xx, file: m3xx.module, base module: m3xx
-	pack/CXX.java package:m1.m3xxx$super$m3xx.$pack
 	CXX.java package:m1.m3xxx$super$m3xx
+	pack/CXX.java package:m1.m3xxx$super$m3xx.$pack
 module: m1.m3xxx$super$m3x, file: m3x.module, base module: m3x
-	pack/CX.java package:m1.m3xxx$super$m3x.$pack
 	CX.java package:m1.m3xxx$super$m3x
+	pack/CX.java package:m1.m3xxx$super$m3x.$pack
 module: m1.m3xxx$super$m3, file: m3.module, base module: m3
-	pack/C.java package:m1.m3xxx$super$m3.$pack
 	C.java package:m1.m3xxx$super$m3
+	pack/C.java package:m1.m3xxx$super$m3.$pack
 module: m1.m3xxx, file: m3xxx.module, base module: m3xxx
-	CXXX.java package:m1.m3xxx
 	pack/CXXX.java package:m1.m3xxx.$pack
+	CXXX.java package:m1.m3xxx
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module m2, base:m2, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
+module m3xx, base:m3xx, context:[], instantiated:false
 module m3xxx, base:m3xxx, context:[], instantiated:false
+module m3xxxx, base:m3xxxx, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 	m2a:m1$m2a
@@ -224,11 +227,8 @@ module m1, base:m1, context:[], instantiated:true
 	[export]m3xx:m1.m3xx
 	[export]m3xxx:m1.m3xxx
 	[export]m3xxxx:m1.m3xxxx
-module m3xxxx, base:m3xxxx, context:[], instantiated:false
-module m3xx, base:m3xx, context:[], instantiated:false
 module m3x, base:m3x, context:[], instantiated:false
-module m3, base:m3, context:[], instantiated:false
-module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m1$m2a, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]m3:m1.m3xx
@@ -252,31 +252,31 @@ module m1.m3xxx, base:m3xxx, context:[m1, m1.m2b], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
-Module: jastadd$framework
+Module: m2
+	m2.B
+Module: m3
+	m3.C
+	m3.$pack.C
+Module: m3xx
+	m3xx.CXX
+	m3xx.$pack.CXX
 Module: m3xxx
 	m3xxx.$pack.CXXX
 	m3xxx.CXXX
+Module: m3xxxx
 Module: m1
 	m1.A
-Module: m3xxxx
-Module: m3xx
-	m3xx.$pack.CXX
-	m3xx.CXX
 Module: m3x
-	m3x.CX
 	m3x.$pack.CX
-Module: m3
-	m3.$pack.C
-	m3.C
-Module: m2
-	m2.B
+	m3x.CX
+Module: jastadd$framework
 Module: m1$m2a
 	m1$m2a.B
 Module: m1.m2b
 	m1.m2b.B
 Module: m1.m3xxxx$super$m3xxx
-	m1.m3xxxx$super$m3xxx.$pack.CXXX
 	m1.m3xxxx$super$m3xxx.CXXX
+	m1.m3xxxx$super$m3xxx.$pack.CXXX
 Module: m1.m3xxxx$super$m3xx
 	m1.m3xxxx$super$m3xx.$pack.CXX
 	m1.m3xxxx$super$m3xx.CXX
@@ -284,30 +284,30 @@ Module: m1.m3xxxx$super$m3x
 	m1.m3xxxx$super$m3x.$pack.CX
 	m1.m3xxxx$super$m3x.CX
 Module: m1.m3xxxx$super$m3
-	m1.m3xxxx$super$m3.C
 	m1.m3xxxx$super$m3.$pack.C
+	m1.m3xxxx$super$m3.C
 Module: m1.m3xxxx
 Module: m1.m3xx$super$m3x
-	m1.m3xx$super$m3x.$pack.CX
 	m1.m3xx$super$m3x.CX
+	m1.m3xx$super$m3x.$pack.CX
 Module: m1.m3xx$super$m3
 	m1.m3xx$super$m3.$pack.C
 	m1.m3xx$super$m3.C
 Module: m1.m3xx
-	m1.m3xx.CXX
 	m1.m3xx.$pack.CXX
+	m1.m3xx.CXX
 Module: m1.m3xxx$super$m3xx
 	m1.m3xxx$super$m3xx.$pack.CXX
 	m1.m3xxx$super$m3xx.CXX
 Module: m1.m3xxx$super$m3x
-	m1.m3xxx$super$m3x.$pack.CX
 	m1.m3xxx$super$m3x.CX
+	m1.m3xxx$super$m3x.$pack.CX
 Module: m1.m3xxx$super$m3
 	m1.m3xxx$super$m3.C
 	m1.m3xxx$super$m3.$pack.C
 Module: m1.m3xxx
-	m1.m3xxx.CXXX
 	m1.m3xxx.$pack.CXXX
+	m1.m3xxx.CXXX
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, m3xxx.module, m1.module, A.java, m3xxxx.module, m3xx.module, m3x.module, m3.module, Main.java, m2.module, m2.module, B.java, m2.module, B.java, m3xxx.module, CXXX.java, pack/CXXX.java, m3xx.module, pack/CXX.java, CXX.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xxxx.module, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xx.module, pack/CXX.java, CXX.java, m3xx.module, pack/CXX.java, CXX.java, m3x.module, pack/CX.java, CX.java, m3.module, pack/C.java, C.java, m3xxx.module, CXXX.java, pack/CXXX.java
+m2.module, m3.module, m3xx.module, m3xxx.module, m3xxxx.module, m1.module, A.java, m3x.module, Main.java, ../testlib/jastadd$framework.module, m2.module, B.java, m2.module, B.java, m3xxx.module, pack/CXXX.java, CXXX.java, m3xx.module, CXX.java, pack/CXX.java, m3x.module, CX.java, pack/CX.java, m3.module, C.java, pack/C.java, m3xxxx.module, m3x.module, CX.java, pack/CX.java, m3.module, C.java, pack/C.java, m3xx.module, CXX.java, pack/CXX.java, m3xx.module, CXX.java, pack/CXX.java, m3x.module, CX.java, pack/CX.java, m3.module, C.java, pack/C.java, m3xxx.module, pack/CXXX.java, CXXX.java

@@ -1,39 +1,10 @@
 Arguments: 
 -debug -d classes -instance-module myapplication engine3d.module enginephysics.module myapplication.module org.x.y.calculus.module org.x.y.math.module org.x.y.matrices.module Calculus.java Complex.java Engine3d.java EnginePhysics.java Main.java Matrices.java MyApplication.java End arguments
 ----------Module contents----------
-------MyApplication.java------
-module: module myapplication;;
-module CU : myapplication.module
-module name : myapplication
-------------------------
 ------Engine3d.java------
 module: module engine3d;;
 module CU : engine3d.module
 module name : engine3d
-------------------------
-------org.x.y.matrices.module------
-module org.x.y.matrices;
-------------------------
-------enginephysics.module------
-module enginephysics;
-import own org.x.y.calculus export as calculus;
-------------------------
-------engine3d.module------
-module engine3d;
-import own org.x.y.matrices export as matrices;
-------------------------
-------Complex.java------
-module: module org.x.y.math;;
-module CU : org.x.y.math.module
-module name : org.x.y.math
-------------------------
-------org.x.y.calculus.module------
-module org.x.y.calculus;
-------------------------
-------Matrices.java------
-module: module org.x.y.math;;
-module CU : org.x.y.math.module
-module name : org.x.y.math
 ------------------------
 ------myapplication.module------
 module myapplication;
@@ -41,7 +12,38 @@ import own engine3d as none null;
 import own enginephysics as none null;
 import own org.x.y.math as none null;
 ------------------------
+------EnginePhysics.java------
+module: module enginephysics;;
+module CU : enginephysics.module
+module name : enginephysics
+------------------------
+------engine3d.module------
+module engine3d;
+import own org.x.y.matrices export as matrices;
+------------------------
+------org.x.y.matrices.module------
+module org.x.y.matrices;
+------------------------
+------Matrices.java------
+module: module org.x.y.math;;
+module CU : org.x.y.math.module
+module name : org.x.y.math
+------------------------
 ------Calculus.java------
+module: module org.x.y.math;;
+module CU : org.x.y.math.module
+module name : org.x.y.math
+------------------------
+------MyApplication.java------
+module: module myapplication;;
+module CU : myapplication.module
+module name : myapplication
+------------------------
+------enginephysics.module------
+module enginephysics;
+import own org.x.y.calculus export as calculus;
+------------------------
+------Complex.java------
 module: module org.x.y.math;;
 module CU : org.x.y.math.module
 module name : org.x.y.math
@@ -49,51 +51,49 @@ module name : org.x.y.math
 ------org.x.y.math.module------
 module org.x.y.math implements org.x.y.calculus, org.x.y.matrices;
 ------------------------
-------EnginePhysics.java------
-module: module enginephysics;;
-module CU : enginephysics.module
-module name : enginephysics
-------------------------
 ------Main.java------
 module: null;
 module CU : null
 module name : null
 ------------------------
+------org.x.y.calculus.module------
+module org.x.y.calculus;
+------------------------
 ----------CU AST before insert----------
-MyApplication.java package:
 Engine3d.java package:
-module: org.x.y.matrices, file: org.x.y.matrices.module, base module: org.x.y.matrices
-module: enginephysics, file: enginephysics.module, base module: enginephysics
-module: engine3d, file: engine3d.module, base module: engine3d
-Complex.java package:org.x.y.math.complex
-module: org.x.y.calculus, file: org.x.y.calculus.module, base module: org.x.y.calculus
-Matrices.java package:org.x.y.math.matrices
 module: myapplication, file: myapplication.module, base module: myapplication
-Calculus.java package:org.x.y.math.calculus
-module: org.x.y.math, file: org.x.y.math.module, base module: org.x.y.math
 EnginePhysics.java package:
+module: engine3d, file: engine3d.module, base module: engine3d
+module: org.x.y.matrices, file: org.x.y.matrices.module, base module: org.x.y.matrices
+Matrices.java package:org.x.y.math.matrices
+Calculus.java package:org.x.y.math.calculus
+MyApplication.java package:
+module: enginephysics, file: enginephysics.module, base module: enginephysics
+Complex.java package:org.x.y.math.complex
+module: org.x.y.math, file: org.x.y.math.module, base module: org.x.y.math
 Main.java package:
+module: org.x.y.calculus, file: org.x.y.calculus.module, base module: org.x.y.calculus
 ----------CU AST after insert----------
+module: myapplication, file: myapplication.module, base module: myapplication
+	MyApplication.java package:myapplication
+module: engine3d, file: engine3d.module, base module: engine3d
+	Engine3d.java package:engine3d
 module: org.x.y.matrices, file: org.x.y.matrices.module, base module: org.x.y.matrices
 module: enginephysics, file: enginephysics.module, base module: enginephysics
 	EnginePhysics.java package:enginephysics
-module: engine3d, file: engine3d.module, base module: engine3d
-	Engine3d.java package:engine3d
-module: org.x.y.calculus, file: org.x.y.calculus.module, base module: org.x.y.calculus
-module: myapplication, file: myapplication.module, base module: myapplication
-	MyApplication.java package:myapplication
 module: org.x.y.math, file: org.x.y.math.module, base module: org.x.y.math
-	Complex.java package:org.x.y.math.$org.x.y.math.complex
 	Matrices.java package:org.x.y.math.$org.x.y.math.matrices
 	Calculus.java package:org.x.y.math.$org.x.y.math.calculus
+	Complex.java package:org.x.y.math.$org.x.y.math.complex
 Main.java package:
+module: org.x.y.calculus, file: org.x.y.calculus.module, base module: org.x.y.calculus
 ----------Module CU imports before import own----------
+module myapplication, base:myapplication, context:[], instantiated:false
+module engine3d, base:engine3d, context:[], instantiated:false
 module org.x.y.matrices, base:org.x.y.matrices, context:[], instantiated:false
 module enginephysics, base:enginephysics, context:[], instantiated:false
-module engine3d, base:engine3d, context:[], instantiated:false
-module org.x.y.calculus, base:org.x.y.calculus, context:[], instantiated:false
-module myapplication, base:myapplication, context:[], instantiated:false
 module org.x.y.math, base:org.x.y.math, context:[], instantiated:false
+module org.x.y.calculus, base:org.x.y.calculus, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module myapplication;
 import own engine3d as none null;
@@ -103,38 +103,38 @@ replace engine3d::matrices, enginephysics::calculus with org.x.y.math;
 export package *;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
+module: myapplication, file: myapplication.module, base module: myapplication
+	MyApplication.java package:myapplication
+module: engine3d, file: engine3d.module, base module: engine3d
+	Engine3d.java package:engine3d
 module: org.x.y.matrices, file: org.x.y.matrices.module, base module: org.x.y.matrices
 module: enginephysics, file: enginephysics.module, base module: enginephysics
 	EnginePhysics.java package:enginephysics
-module: engine3d, file: engine3d.module, base module: engine3d
-	Engine3d.java package:engine3d
-module: org.x.y.calculus, file: org.x.y.calculus.module, base module: org.x.y.calculus
-module: myapplication, file: myapplication.module, base module: myapplication
-	MyApplication.java package:myapplication
 module: org.x.y.math, file: org.x.y.math.module, base module: org.x.y.math
-	Complex.java package:org.x.y.math.$org.x.y.math.complex
 	Matrices.java package:org.x.y.math.$org.x.y.math.matrices
 	Calculus.java package:org.x.y.math.$org.x.y.math.calculus
+	Complex.java package:org.x.y.math.$org.x.y.math.complex
 Main.java package:
+module: org.x.y.calculus, file: org.x.y.calculus.module, base module: org.x.y.calculus
 module: myapplication$engine3d, file: engine3d.module, base module: engine3d
 	Engine3d.java package:myapplication$engine3d
 module: myapplication$enginephysics, file: enginephysics.module, base module: enginephysics
 	EnginePhysics.java package:myapplication$enginephysics
 module: myapplication$org.x.y.math, file: org.x.y.math.module, base module: org.x.y.math
-	Complex.java package:myapplication$org.x.y.math.$org.x.y.math.complex
 	Matrices.java package:myapplication$org.x.y.math.$org.x.y.math.matrices
 	Calculus.java package:myapplication$org.x.y.math.$org.x.y.math.calculus
+	Complex.java package:myapplication$org.x.y.math.$org.x.y.math.complex
 
 ----------Module CU imports after import own----------
-module org.x.y.matrices, base:org.x.y.matrices, context:[], instantiated:false
-module enginephysics, base:enginephysics, context:[], instantiated:false
-module engine3d, base:engine3d, context:[], instantiated:false
-module org.x.y.calculus, base:org.x.y.calculus, context:[], instantiated:false
 module myapplication, base:myapplication, context:[], instantiated:true
 	engine3d:myapplication$engine3d
 	enginephysics:myapplication$enginephysics
 	org.x.y.math:myapplication$org.x.y.math
+module engine3d, base:engine3d, context:[], instantiated:false
+module org.x.y.matrices, base:org.x.y.matrices, context:[], instantiated:false
+module enginephysics, base:enginephysics, context:[], instantiated:false
 module org.x.y.math, base:org.x.y.math, context:[], instantiated:false
+module org.x.y.calculus, base:org.x.y.calculus, context:[], instantiated:false
 module myapplication$engine3d, base:engine3d, context:[myapplication], instantiated:true
 	[export]matrices:myapplication$org.x.y.math
 module myapplication$enginephysics, base:enginephysics, context:[myapplication], instantiated:true
@@ -142,18 +142,18 @@ module myapplication$enginephysics, base:enginephysics, context:[myapplication],
 module myapplication$org.x.y.math, base:org.x.y.math, context:[myapplication, myapplication$engine3d, myapplication$enginephysics], instantiated:true
 ----------MCU collectTypes after import own----------
 
+Module: myapplication
+	myapplication.MyApplication
+Module: engine3d
+	engine3d.Engine3d
 Module: org.x.y.matrices
 Module: enginephysics
 	enginephysics.EnginePhysics
-Module: engine3d
-	engine3d.Engine3d
-Module: org.x.y.calculus
-Module: myapplication
-	myapplication.MyApplication
 Module: org.x.y.math
 	org.x.y.math.$org.x.y.math.complex.Complex
-	org.x.y.math.$org.x.y.math.matrices.Matrices
 	org.x.y.math.$org.x.y.math.calculus.Calculus
+	org.x.y.math.$org.x.y.math.matrices.Matrices
+Module: org.x.y.calculus
 Module: myapplication$engine3d
 	myapplication$engine3d.Engine3d
 Module: myapplication$enginephysics
@@ -164,4 +164,4 @@ Module: myapplication$org.x.y.math
 	myapplication$org.x.y.math.$org.x.y.math.calculus.Calculus
 
 ----------CU iterator----------
-org.x.y.matrices.module, enginephysics.module, engine3d.module, org.x.y.calculus.module, myapplication.module, MyApplication.java, org.x.y.math.module, Main.java, engine3d.module, Engine3d.java, enginephysics.module, EnginePhysics.java, org.x.y.math.module, Complex.java, Matrices.java, Calculus.java
+myapplication.module, MyApplication.java, engine3d.module, org.x.y.matrices.module, enginephysics.module, org.x.y.math.module, Main.java, org.x.y.calculus.module, engine3d.module, Engine3d.java, enginephysics.module, EnginePhysics.java, org.x.y.math.module, Matrices.java, Calculus.java, Complex.java

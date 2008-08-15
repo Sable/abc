@@ -1,99 +1,99 @@
 Arguments: 
 -jastaddframework -debug -d classes -instance-module M1 A.java B.java C.java D.java E.java F.java M1.module M2.module M3.module M4.module M5.module M6.module jastadd$framework.module End arguments
 ----------Module contents----------
-------F.java------
-module: module M6;;
-module CU : M6.module
-module name : M6
-------------------------
-------M1.module------
-module M1;
-import own M2 as none null;
-import own M3 as none null;
-------------------------
 ------M6.module------
 module M6;
-------------------------
-------C.java------
-module: module M3;;
-module CU : M3.module
-module name : M3
-------------------------
-------M4.module------
-module M4;
-import own M5 as none null;
-------------------------
-------B.java------
-module: module M2;;
-module CU : M2.module
-module name : M2
-------------------------
-------jastadd$framework.module------
-module jastadd$framework;
 ------------------------
 ------E.java------
 module: module M5;;
 module CU : M5.module
 module name : M5
 ------------------------
+------M2.module------
+module M2;
+import  M4 as none null;
+------------------------
+------C.java------
+module: module M3;;
+module CU : M3.module
+module name : M3
+------------------------
 ------A.java------
 module: module M1;;
 module CU : M1.module
 module name : M1
+------------------------
+------M3.module------
+module M3;
+import  M4 as none null;
+------------------------
+------M5.module------
+module M5;
+import own M6 as none null;
+------------------------
+------B.java------
+module: module M2;;
+module CU : M2.module
+module name : M2
+------------------------
+------M1.module------
+module M1;
+import own M2 as none null;
+import own M3 as none null;
+------------------------
+------F.java------
+module: module M6;;
+module CU : M6.module
+module name : M6
 ------------------------
 ------D.java------
 module: module M4;;
 module CU : M4.module
 module name : M4
 ------------------------
-------M5.module------
-module M5;
-import own M6 as none null;
+------jastadd$framework.module------
+module jastadd$framework;
 ------------------------
-------M2.module------
-module M2;
-import  M4 as none null;
-------------------------
-------M3.module------
-module M3;
-import  M4 as none null;
+------M4.module------
+module M4;
+import own M5 as none null;
 ------------------------
 ----------CU AST before insert----------
-F.java package:
-module: M1, file: M1.module, base module: M1
 module: M6, file: M6.module, base module: M6
-C.java package:
-module: M4, file: M4.module, base module: M4
-B.java package:
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
 E.java package:
-A.java package:
-D.java package:
-module: M5, file: M5.module, base module: M5
 module: M2, file: M2.module, base module: M2
+C.java package:
+A.java package:
 module: M3, file: M3.module, base module: M3
-----------CU AST after insert----------
+module: M5, file: M5.module, base module: M5
+B.java package:
 module: M1, file: M1.module, base module: M1
-	A.java package:M1
+F.java package:
+D.java package:
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: M4, file: M4.module, base module: M4
+----------CU AST after insert----------
 module: M6, file: M6.module, base module: M6
 	F.java package:M6
-module: M4, file: M4.module, base module: M4
-	D.java package:M4
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-module: M5, file: M5.module, base module: M5
-	E.java package:M5
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M3, file: M3.module, base module: M3
 	C.java package:M3
+module: M5, file: M5.module, base module: M5
+	E.java package:M5
+module: M1, file: M1.module, base module: M1
+	A.java package:M1
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: M4, file: M4.module, base module: M4
+	D.java package:M4
 ----------Module CU imports before import own----------
-module M1, base:M1, context:[], instantiated:false
 module M6, base:M6, context:[], instantiated:false
-module M4, base:M4, context:[], instantiated:false
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-module M5, base:M5, context:[], instantiated:false
 module M2, base:M2, context:[], instantiated:false
 module M3, base:M3, context:[], instantiated:false
+module M5, base:M5, context:[], instantiated:false
+module M1, base:M1, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+module M4, base:M4, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module M1;
 import own M2 as none null;
@@ -102,19 +102,19 @@ export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: M1, file: M1.module, base module: M1
-	A.java package:M1
 module: M6, file: M6.module, base module: M6
 	F.java package:M6
-module: M4, file: M4.module, base module: M4
-	D.java package:M4
-module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
-module: M5, file: M5.module, base module: M5
-	E.java package:M5
 module: M2, file: M2.module, base module: M2
 	B.java package:M2
 module: M3, file: M3.module, base module: M3
 	C.java package:M3
+module: M5, file: M5.module, base module: M5
+	E.java package:M5
+module: M1, file: M1.module, base module: M1
+	A.java package:M1
+module: jastadd$framework, file: jastadd$framework.module, base module: jastadd$framework
+module: M4, file: M4.module, base module: M4
+	D.java package:M4
 module: M4$M5$M6, file: M6.module, base module: M6
 	F.java package:M4$M5$M6
 module: M4$M5, file: M5.module, base module: M5
@@ -125,18 +125,18 @@ module: M1$M3, file: M3.module, base module: M3
 	C.java package:M1$M3
 
 ----------Module CU imports after import own----------
+module M6, base:M6, context:[], instantiated:false
+module M2, base:M2, context:[], instantiated:false
+module M3, base:M3, context:[], instantiated:false
+module M5, base:M5, context:[], instantiated:false
 module M1, base:M1, context:[], instantiated:true
 	M2:M1$M2
 	M3:M1$M3
 	jastadd$framework:jastadd$framework
-module M6, base:M6, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module M4, base:M4, context:[], instantiated:true
 	M5:M4$M5
 	jastadd$framework:jastadd$framework
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-module M5, base:M5, context:[], instantiated:false
-module M2, base:M2, context:[], instantiated:false
-module M3, base:M3, context:[], instantiated:false
 module M4$M5$M6, base:M6, context:[M4$M5], instantiated:true
 	jastadd$framework:jastadd$framework
 module M4$M5, base:M5, context:[M4], instantiated:true
@@ -150,19 +150,19 @@ module M1$M3, base:M3, context:[M1], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
-Module: M1
-	M1.A
 Module: M6
 	M6.F
-Module: M4
-	M4.D
-Module: jastadd$framework
-Module: M5
-	M5.E
 Module: M2
 	M2.B
 Module: M3
 	M3.C
+Module: M5
+	M5.E
+Module: M1
+	M1.A
+Module: jastadd$framework
+Module: M4
+	M4.D
 Module: M4$M5$M6
 	M4$M5$M6.F
 Module: M4$M5
@@ -173,4 +173,4 @@ Module: M1$M3
 	M1$M3.C
 
 ----------CU iterator----------
-M1.module, A.java, M6.module, M4.module, D.java, jastadd$framework.module, M5.module, M2.module, M3.module, M6.module, F.java, M5.module, E.java, M2.module, B.java, M3.module, C.java
+M6.module, M2.module, M3.module, M5.module, M1.module, A.java, jastadd$framework.module, M4.module, D.java, M6.module, F.java, M5.module, E.java, M2.module, B.java, M3.module, C.java

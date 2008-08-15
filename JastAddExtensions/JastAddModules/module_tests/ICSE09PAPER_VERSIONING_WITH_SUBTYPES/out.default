@@ -2,13 +2,11 @@ Arguments:
 -debug -d classes -instance-module myapplication appv1_1.module appv1_2.module appv2.module myapplication.module Main.java MyApp.java v11/App.java v11/Util.java v12/*.java v2/App.java v2/Util.java End arguments
 WARNING: file "v12/*.java" does not exist
 ----------Module contents----------
-------appv1_1.module------
-module appv1_1;
-------------------------
-------MyApp.java------
-module: module myapplication;;
-module CU : myapplication.module
-module name : myapplication
+------myapplication.module------
+module myapplication;
+import own appv1_2 as none null;
+import own appv1_1 as none null;
+import own appv2 as none null;
 ------------------------
 ------v2/App.java------
 module: module appv2;;
@@ -20,60 +18,62 @@ module: module appv1_1;;
 module CU : appv1_1.module
 module name : appv1_1
 ------------------------
-------myapplication.module------
-module myapplication;
-import own appv1_2 as none null;
-import own appv1_1 as none null;
-import own appv2 as none null;
+------appv2.module------
+module appv2;
 ------------------------
-------appv1_2.module------
-module appv1_2 extends appv1_1;
-------------------------
-------v2/Util.java------
-module: module appv2;;
-module CU : appv2.module
-module name : appv2
-------------------------
-------v11/Util.java------
-module: module appv1_1;;
-module CU : appv1_1.module
-module name : appv1_1
+------appv1_1.module------
+module appv1_1;
 ------------------------
 ------Main.java------
 module: null;
 module CU : null
 module name : null
 ------------------------
-------appv2.module------
-module appv2;
+------v2/Util.java------
+module: module appv2;;
+module CU : appv2.module
+module name : appv2
+------------------------
+------appv1_2.module------
+module appv1_2 extends appv1_1;
+------------------------
+------v11/Util.java------
+module: module appv1_1;;
+module CU : appv1_1.module
+module name : appv1_1
+------------------------
+------MyApp.java------
+module: module myapplication;;
+module CU : myapplication.module
+module name : myapplication
 ------------------------
 ----------CU AST before insert----------
-module: appv1_1, file: appv1_1.module, base module: appv1_1
-MyApp.java package:
+module: myapplication, file: myapplication.module, base module: myapplication
 v2/App.java package:
 v11/App.java package:
-module: myapplication, file: myapplication.module, base module: myapplication
-module: appv1_2, file: appv1_2.module, base module: appv1_2
-v2/Util.java package:
-v11/Util.java package:
-Main.java package:
 module: appv2, file: appv2.module, base module: appv2
-----------CU AST after insert----------
 module: appv1_1, file: appv1_1.module, base module: appv1_1
-	v11/App.java package:appv1_1
-	v11/Util.java package:appv1_1
+Main.java package:
+v2/Util.java package:
+module: appv1_2, file: appv1_2.module, base module: appv1_2
+v11/Util.java package:
+MyApp.java package:
+----------CU AST after insert----------
 module: myapplication, file: myapplication.module, base module: myapplication
 	MyApp.java package:myapplication
-module: appv1_2, file: appv1_2.module, base module: appv1_2
-Main.java package:
 module: appv2, file: appv2.module, base module: appv2
 	v2/App.java package:appv2
 	v2/Util.java package:appv2
+module: appv1_1, file: appv1_1.module, base module: appv1_1
+	v11/App.java package:appv1_1
+	v11/Util.java package:appv1_1
+Main.java package:
+module: appv1_2, file: appv1_2.module, base module: appv1_2
 ----------Module CU imports before import own----------
-module appv1_1, base:appv1_1, context:[], instantiated:false
 module myapplication, base:myapplication, context:[], instantiated:false
-module appv1_2, base:appv1_2, context:[], instantiated:false
 module appv2, base:appv2, context:[], instantiated:false
+module appv1_1, base:appv1_1, context:[], instantiated:false
+module appv1_2, base:appv1_2, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module myapplication;
 import own appv1_2 as none null;
@@ -83,16 +83,16 @@ replace appv1_1 with appv1_2;
 export package *;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: appv1_1, file: appv1_1.module, base module: appv1_1
-	v11/App.java package:appv1_1
-	v11/Util.java package:appv1_1
 module: myapplication, file: myapplication.module, base module: myapplication
 	MyApp.java package:myapplication
-module: appv1_2, file: appv1_2.module, base module: appv1_2
-Main.java package:
 module: appv2, file: appv2.module, base module: appv2
 	v2/App.java package:appv2
 	v2/Util.java package:appv2
+module: appv1_1, file: appv1_1.module, base module: appv1_1
+	v11/App.java package:appv1_1
+	v11/Util.java package:appv1_1
+Main.java package:
+module: appv1_2, file: appv1_2.module, base module: appv1_2
 module: myapplication$appv1_2$super$appv1_1, file: appv1_1.module, base module: appv1_1
 	v11/App.java package:myapplication$appv1_2$super$appv1_1
 	v11/Util.java package:myapplication$appv1_2$super$appv1_1
@@ -102,34 +102,34 @@ module: myapplication$appv2, file: appv2.module, base module: appv2
 	v2/Util.java package:myapplication$appv2
 
 ----------Module CU imports after import own----------
-module appv1_1, base:appv1_1, context:[], instantiated:false
 module myapplication, base:myapplication, context:[], instantiated:true
 	appv1_1:myapplication$appv1_2
 	appv1_2:myapplication$appv1_2
 	appv2:myapplication$appv2
-module appv1_2, base:appv1_2, context:[], instantiated:false
 module appv2, base:appv2, context:[], instantiated:false
+module appv1_1, base:appv1_1, context:[], instantiated:false
+module appv1_2, base:appv1_2, context:[], instantiated:false
 module myapplication$appv1_2$super$appv1_1, base:appv1_1, context:[myapplication$appv1_2], instantiated:true
 module myapplication$appv1_2, base:appv1_2, context:[myapplication], instantiated:true
 module myapplication$appv2, base:appv2, context:[myapplication], instantiated:true
 ----------MCU collectTypes after import own----------
 
-Module: appv1_1
-	appv1_1.App
-	appv1_1.Util
 Module: myapplication
 	myapplication.MyApp
-Module: appv1_2
 Module: appv2
 	appv2.App
 	appv2.Util
+Module: appv1_1
+	appv1_1.App
+	appv1_1.Util
+Module: appv1_2
 Module: myapplication$appv1_2$super$appv1_1
-	myapplication$appv1_2$super$appv1_1.App
 	myapplication$appv1_2$super$appv1_1.Util
+	myapplication$appv1_2$super$appv1_1.App
 Module: myapplication$appv1_2
 Module: myapplication$appv2
 	myapplication$appv2.Util
 	myapplication$appv2.App
 
 ----------CU iterator----------
-appv1_1.module, myapplication.module, MyApp.java, appv1_2.module, Main.java, appv2.module, appv1_1.module, v11/App.java, v11/Util.java, appv1_2.module, appv2.module, v2/App.java, v2/Util.java
+myapplication.module, MyApp.java, appv2.module, appv1_1.module, Main.java, appv1_2.module, appv1_1.module, v11/App.java, v11/Util.java, appv1_2.module, appv2.module, v2/App.java, v2/Util.java

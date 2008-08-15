@@ -1,8 +1,31 @@
 Arguments: 
 -jastaddframework -debug -d classes -instance-module m1 m1.module m2.module m3.module m4.module m4int.module m4intx.module A.java B.java C.java D.java DD.java Main.java ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
+------DD.java------
+module: module m4;;
+module CU : m4.module
+module name : m4
+------------------------
+------m2.module------
+module m2;
+import own m4int export as m4;
+------------------------
+------m3.module------
+module m3;
+import own m4intx export as m4;
+------------------------
+------m4intx.module------
+module m4intx extends m4int;
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
 ------------------------
 ------m4.module------
 module m4;
@@ -13,37 +36,12 @@ import own m2 export as m2;
 import own m3 export as m3;
 import own m4 as none null;
 ------------------------
-------m4intx.module------
-module m4intx extends m4int;
-------------------------
-------C.java------
-module: module m3;;
-module CU : m3.module
-module name : m3
-------------------------
 ------B.java------
 module: module m2;;
 module CU : m2.module
 module name : m2
 ------------------------
-------m3.module------
-module m3;
-import own m4intx export as m4;
-------------------------
-------A.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
 ------D.java------
-module: module m4;;
-module CU : m4.module
-module name : m4
-------------------------
-------m4int.module------
-module m4int;
-------------------------
-------DD.java------
 module: module m4;;
 module CU : m4.module
 module name : m4
@@ -53,46 +51,48 @@ module: null;
 module CU : null
 module name : null
 ------------------------
-------m2.module------
-module m2;
-import own m4int export as m4;
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------m4int.module------
+module m4int;
 ------------------------
 ----------CU AST before insert----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m4, file: m4.module, base module: m4
-module: m1, file: m1.module, base module: m1
+DD.java package:dd
+module: m2, file: m2.module, base module: m2
+module: m3, file: m3.module, base module: m3
 module: m4intx, file: m4intx.module, base module: m4intx
 C.java package:
-B.java package:
-module: m3, file: m3.module, base module: m3
 A.java package:
-D.java package:d
-module: m4int, file: m4int.module, base module: m4int
-DD.java package:dd
-Main.java package:
-module: m2, file: m2.module, base module: m2
-----------CU AST after insert----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m4, file: m4.module, base module: m4
-	D.java package:m4.$d
-	DD.java package:m4.$dd
 module: m1, file: m1.module, base module: m1
-	A.java package:m1
-module: m4intx, file: m4intx.module, base module: m4intx
-module: m3, file: m3.module, base module: m3
-	C.java package:m3
-module: m4int, file: m4int.module, base module: m4int
+B.java package:
+D.java package:d
 Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m4int, file: m4int.module, base module: m4int
+----------CU AST after insert----------
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m4intx, file: m4intx.module, base module: m4intx
+module: m4, file: m4.module, base module: m4
+	DD.java package:m4.$dd
+	D.java package:m4.$d
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m4int, file: m4int.module, base module: m4int
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+module m2, base:m2, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
+module m4intx, base:m4intx, context:[], instantiated:false
 module m4, base:m4, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:false
-module m4intx, base:m4intx, context:[], instantiated:false
-module m3, base:m3, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module m4int, base:m4int, context:[], instantiated:false
-module m2, base:m2, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 export as m2;
@@ -103,39 +103,39 @@ export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m4, file: m4.module, base module: m4
-	D.java package:m4.$d
-	DD.java package:m4.$dd
-module: m1, file: m1.module, base module: m1
-	A.java package:m1
-module: m4intx, file: m4intx.module, base module: m4intx
-module: m3, file: m3.module, base module: m3
-	C.java package:m3
-module: m4int, file: m4int.module, base module: m4int
-Main.java package:
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m4intx, file: m4intx.module, base module: m4intx
+module: m4, file: m4.module, base module: m4
+	DD.java package:m4.$dd
+	D.java package:m4.$d
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m4int, file: m4int.module, base module: m4int
 module: m1.m2, file: m2.module, base module: m2
 	B.java package:m1.m2
 module: m1.m3, file: m3.module, base module: m3
 	C.java package:m1.m3
 module: m1$m4, file: m4.module, base module: m4
-	D.java package:m1$m4.$d
 	DD.java package:m1$m4.$dd
+	D.java package:m1$m4.$d
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module m2, base:m2, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
+module m4intx, base:m4intx, context:[], instantiated:false
 module m4, base:m4, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]m2:m1.m2
 	[export]m3:m1.m3
 	m4:m1$m4
-module m4intx, base:m4intx, context:[], instantiated:false
-module m3, base:m3, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m4int, base:m4int, context:[], instantiated:false
-module m2, base:m2, context:[], instantiated:false
 module m1.m2, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]m4:m1$m4
@@ -146,18 +146,18 @@ module m1$m4, base:m4, context:[m1, m1.m2, m1.m3], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
-Module: jastadd$framework
+Module: m2
+	m2.B
+Module: m3
+	m3.C
+Module: m4intx
 Module: m4
 	m4.$d.D
 	m4.$dd.DD
 Module: m1
 	m1.A
-Module: m4intx
-Module: m3
-	m3.C
+Module: jastadd$framework
 Module: m4int
-Module: m2
-	m2.B
 Module: m1.m2
 	m1.m2.B
 Module: m1.m3
@@ -167,4 +167,4 @@ Module: m1$m4
 	m1$m4.$d.D
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, m4.module, m1.module, A.java, m4intx.module, m3.module, m4int.module, Main.java, m2.module, m2.module, B.java, m3.module, C.java, m4.module, D.java, DD.java
+m2.module, m3.module, m4intx.module, m4.module, m1.module, A.java, Main.java, ../testlib/jastadd$framework.module, m4int.module, m2.module, B.java, m3.module, C.java, m4.module, DD.java, D.java

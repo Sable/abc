@@ -5,60 +5,60 @@ WARNING: file "pack/*.java" does not exist
 ------org.x.y.scanner.module------
 module org.x.y.scanner;
 ------------------------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
-------------------------
-------org.x.y.parser.module------
-module org.x.y.parser;
-import own org.x.y.scanner export as scanner;
-------------------------
 ------Scanner.java------
 module: module org.x.y.scanner;;
 module CU : org.x.y.scanner.module
 module name : org.x.y.scanner
+------------------------
+------org.x.y.parserapplication.module------
+module org.x.y.parserapplication;
+import own org.x.y.parser as parser;
 ------------------------
 ------Parser.java------
 module: module org.x.y.parser;;
 module CU : org.x.y.parser.module
 module name : org.x.y.parser
 ------------------------
-------org.x.y.parserapplication.module------
-module org.x.y.parserapplication;
-import own org.x.y.parser as parser;
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------org.x.y.parser.module------
+module org.x.y.parser;
+import own org.x.y.scanner export as scanner;
 ------------------------
 ------ParserApplication.java------
 module: module org.x.y.parserapplication;;
 module CU : org.x.y.parserapplication.module
 module name : org.x.y.parserapplication
 ------------------------
-------Main.java------
-module: null;
-module CU : null
-module name : null
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
 ------------------------
 ----------CU AST before insert----------
 module: org.x.y.scanner, file: org.x.y.scanner.module, base module: org.x.y.scanner
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: org.x.y.parser, file: org.x.y.parser.module, base module: org.x.y.parser
 Scanner.java package:org.x.y.scanner
-Parser.java package:org.x.y.parser
 module: org.x.y.parserapplication, file: org.x.y.parserapplication.module, base module: org.x.y.parserapplication
-ParserApplication.java package:org.x.y.parserapplication
+Parser.java package:org.x.y.parser
 Main.java package:
+module: org.x.y.parser, file: org.x.y.parser.module, base module: org.x.y.parser
+ParserApplication.java package:org.x.y.parserapplication
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------CU AST after insert----------
 module: org.x.y.scanner, file: org.x.y.scanner.module, base module: org.x.y.scanner
 	Scanner.java package:org.x.y.scanner.$org.x.y.scanner
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: org.x.y.parser, file: org.x.y.parser.module, base module: org.x.y.parser
-	Parser.java package:org.x.y.parser.$org.x.y.parser
 module: org.x.y.parserapplication, file: org.x.y.parserapplication.module, base module: org.x.y.parserapplication
 	ParserApplication.java package:org.x.y.parserapplication.$org.x.y.parserapplication
 Main.java package:
+module: org.x.y.parser, file: org.x.y.parser.module, base module: org.x.y.parser
+	Parser.java package:org.x.y.parser.$org.x.y.parser
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------Module CU imports before import own----------
 module org.x.y.scanner, base:org.x.y.scanner, context:[], instantiated:false
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-module org.x.y.parser, base:org.x.y.parser, context:[], instantiated:false
 module org.x.y.parserapplication, base:org.x.y.parserapplication, context:[], instantiated:false
+module org.x.y.parser, base:org.x.y.parser, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module org.x.y.parserapplication;
 import own org.x.y.parser as parser;
@@ -67,12 +67,12 @@ export package *;
 ----------CU AST after generateImportOwn----------
 module: org.x.y.scanner, file: org.x.y.scanner.module, base module: org.x.y.scanner
 	Scanner.java package:org.x.y.scanner.$org.x.y.scanner
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: org.x.y.parser, file: org.x.y.parser.module, base module: org.x.y.parser
-	Parser.java package:org.x.y.parser.$org.x.y.parser
 module: org.x.y.parserapplication, file: org.x.y.parserapplication.module, base module: org.x.y.parserapplication
 	ParserApplication.java package:org.x.y.parserapplication.$org.x.y.parserapplication
 Main.java package:
+module: org.x.y.parser, file: org.x.y.parser.module, base module: org.x.y.parser
+	Parser.java package:org.x.y.parser.$org.x.y.parser
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: org.x.y.parserapplication$parser.scanner, file: org.x.y.scanner.module, base module: org.x.y.scanner
 	Scanner.java package:org.x.y.parserapplication$parser.scanner.$org.x.y.scanner
 module: org.x.y.parserapplication$parser, file: org.x.y.parser.module, base module: org.x.y.parser
@@ -80,10 +80,10 @@ module: org.x.y.parserapplication$parser, file: org.x.y.parser.module, base modu
 
 ----------Module CU imports after import own----------
 module org.x.y.scanner, base:org.x.y.scanner, context:[], instantiated:false
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
-module org.x.y.parser, base:org.x.y.parser, context:[], instantiated:false
 module org.x.y.parserapplication, base:org.x.y.parserapplication, context:[], instantiated:true
 	parser:org.x.y.parserapplication$parser
+module org.x.y.parser, base:org.x.y.parser, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module org.x.y.parserapplication$parser.scanner, base:org.x.y.scanner, context:[org.x.y.parserapplication$parser], instantiated:true
 module org.x.y.parserapplication$parser, base:org.x.y.parser, context:[org.x.y.parserapplication], instantiated:true
 	[export]scanner:org.x.y.parserapplication$parser.scanner
@@ -91,15 +91,15 @@ module org.x.y.parserapplication$parser, base:org.x.y.parser, context:[org.x.y.p
 
 Module: org.x.y.scanner
 	org.x.y.scanner.$org.x.y.scanner.Scanner
-Module: jastadd$framework
-Module: org.x.y.parser
-	org.x.y.parser.$org.x.y.parser.Parser
 Module: org.x.y.parserapplication
 	org.x.y.parserapplication.$org.x.y.parserapplication.ParserApplication
+Module: org.x.y.parser
+	org.x.y.parser.$org.x.y.parser.Parser
+Module: jastadd$framework
 Module: org.x.y.parserapplication$parser.scanner
 	org.x.y.parserapplication$parser.scanner.$org.x.y.scanner.Scanner
 Module: org.x.y.parserapplication$parser
 	org.x.y.parserapplication$parser.$org.x.y.parser.Parser
 
 ----------CU iterator----------
-org.x.y.scanner.module, ../testlib/jastadd$framework.module, org.x.y.parser.module, org.x.y.parserapplication.module, ParserApplication.java, Main.java, org.x.y.scanner.module, Scanner.java, org.x.y.parser.module, Parser.java
+org.x.y.scanner.module, org.x.y.parserapplication.module, ParserApplication.java, Main.java, org.x.y.parser.module, ../testlib/jastadd$framework.module, org.x.y.scanner.module, Scanner.java, org.x.y.parser.module, Parser.java

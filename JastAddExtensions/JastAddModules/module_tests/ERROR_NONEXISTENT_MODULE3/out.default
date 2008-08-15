@@ -1,6 +1,6 @@
+A.java:1,8:
+  Semantic Error: Module not found: NonExistentModule
 AST.ast:1,8:
   Semantic Error: Module not found: NonExistentModule
 Y.jrag:1,8:
-  Semantic Error: Module not found: NonExistentModule
-A.java:1,8:
   Semantic Error: Module not found: NonExistentModule

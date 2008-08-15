@@ -1,7 +1,14 @@
 Arguments: 
 -jastaddframework -debug -d classes -instance-module m1 A.java AA.java B.java BB.java m1.module m2.module ../testlib/jastadd$framework.module End arguments
 ----------Module contents----------
-------BB.java------
+------m1.module------
+module m1;
+import  m2 as none null;
+------------------------
+------m2.module------
+module m2;
+------------------------
+------B.java------
 module: module m2;;
 module CU : m2.module
 module name : m2
@@ -11,7 +18,12 @@ module: module m1;;
 module CU : m1.module
 module name : m1
 ------------------------
-------B.java------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------BB.java------
 module: module m2;;
 module CU : m2.module
 module name : m2
@@ -19,38 +31,26 @@ module name : m2
 ------../testlib/jastadd$framework.module------
 module jastadd$framework;
 ------------------------
-------A.java------
-module: module m1;;
-module CU : m1.module
-module name : m1
-------------------------
-------m1.module------
-module m1;
-import  m2 as none null;
-------------------------
-------m2.module------
-module m2;
-------------------------
 ----------CU AST before insert----------
-BB.java package:b
-AA.java package:a
-B.java package:
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-A.java package:
 module: m1, file: m1.module, base module: m1
 module: m2, file: m2.module, base module: m2
-----------CU AST after insert----------
+B.java package:
+AA.java package:a
+A.java package:
+BB.java package:b
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+----------CU AST after insert----------
 module: m1, file: m1.module, base module: m1
 	AA.java package:m1.$a
 	A.java package:m1
 module: m2, file: m2.module, base module: m2
-	BB.java package:m2.$b
 	B.java package:m2
+	BB.java package:m2.$b
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:false
 module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import  m2 as none null;
@@ -58,34 +58,34 @@ export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 module: m1, file: m1.module, base module: m1
 	AA.java package:m1.$a
 	A.java package:m1
 module: m2, file: m2.module, base module: m2
-	BB.java package:m2.$b
 	B.java package:m2
+	BB.java package:m2.$b
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
 	m2:m2
 module m2, base:m2, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 ----------MCU collectTypes after import own----------
 
-Module: jastadd$framework
 Module: m1
-	m1.$a.AAPackage
 	m1.$a.AAModule
 	m1.A
 	m1.$a.AA
+	m1.$a.AAPackage
 Module: m2
 	m2.$b.BB
-	m2.$b.BBModule
 	m2.$b.BBPackage
 	m2.B
+	m2.$b.BBModule
+Module: jastadd$framework
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, m1.module, AA.java, A.java, m2.module, BB.java, B.java
+m1.module, AA.java, A.java, m2.module, B.java, BB.java, ../testlib/jastadd$framework.module

@@ -6,8 +6,13 @@ module: module m1;;
 module CU : m1.module
 module name : m1
 ------------------------
-------../testlib/jastadd$framework.module------
-module jastadd$framework;
+------m1.module------
+module m1;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
 ------------------------
 ------A.java------
 module: module m1;;
@@ -24,58 +29,53 @@ module: null;
 module CU : null
 module name : null
 ------------------------
-------m1.module------
-module m1;
-------------------------
-------Main.java------
-module: null;
-module CU : null
-module name : null
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
 ------------------------
 ----------CU AST before insert----------
 String.java package:java.lang
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m1, file: m1.module, base module: m1
+Main.java package:
 A.java package:
 m1pack/P.java package:pack
 pack/P.java package:pack
-module: m1, file: m1.module, base module: m1
-Main.java package:
-----------CU AST after insert----------
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-pack/P.java package:pack
+----------CU AST after insert----------
 module: m1, file: m1.module, base module: m1
 	String.java package:m1.$java.lang
 	A.java package:m1
 	m1pack/P.java package:m1.$pack
 Main.java package:
+pack/P.java package:pack
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------Module CU imports before import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module m1, base:m1, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-pack/P.java package:pack
 module: m1, file: m1.module, base module: m1
 	String.java package:m1.$java.lang
 	A.java package:m1
 	m1pack/P.java package:m1.$pack
 Main.java package:
+pack/P.java package:pack
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 
 ----------Module CU imports after import own----------
-module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 ----------MCU collectTypes after import own----------
 
-Module: jastadd$framework
 Module: m1
+	m1.A
 	m1.$pack.P
 	m1.$java.lang.String
-	m1.A
+Module: jastadd$framework
 
 ----------CU iterator----------
-../testlib/jastadd$framework.module, pack/P.java, m1.module, String.java, A.java, m1pack/P.java, Main.java
+m1.module, String.java, A.java, m1pack/P.java, Main.java, pack/P.java, ../testlib/jastadd$framework.module

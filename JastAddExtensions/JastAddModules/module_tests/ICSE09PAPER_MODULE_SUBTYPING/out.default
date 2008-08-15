@@ -1,52 +1,20 @@
 Arguments: 
 -debug -d classes -instance-module multiversion multiversion.module parserV1_1.module parserV1_2.module scanner.module Main.java MainV11.java MainV12.java MultiversionMain.java Scanner.java v1/Parser.java v2/Parser.java v2/XMLParser.java End arguments
 ----------Module contents----------
-------v2/XMLParser.java------
-module: module parserV1_2;;
-module CU : parserV1_2.module
-module name : parserV1_2
-------------------------
-------v1/Parser.java------
-module: module parserV1_1;;
-module CU : parserV1_1.module
-module name : parserV1_1
-------------------------
-------MainV12.java------
-module: module parserV1_2;;
-module CU : parserV1_2.module
-module name : parserV1_2
-------------------------
 ------MultiversionMain.java------
 module: module multiversion;;
 module CU : multiversion.module
 module name : multiversion
-------------------------
-------multiversion.module------
-module multiversion;
-import own parserV1_1 as parserV1_1;
-import own parserV1_2 as parserV1_2;
-------------------------
-------v2/Parser.java------
-module: module parserV1_2;;
-module CU : parserV1_2.module
-module name : parserV1_2
-------------------------
-------MainV11.java------
-module: module parserV1_1;;
-module CU : parserV1_1.module
-module name : parserV1_1
 ------------------------
 ------Scanner.java------
 module: module scanner;;
 module CU : scanner.module
 module name : scanner
 ------------------------
-------scanner.module------
-module scanner;
-------------------------
-------parserV1_1.module------
-module parserV1_1;
-import own scanner export as scanner;
+------MainV11.java------
+module: module parserV1_1;;
+module CU : parserV1_1.module
+module name : parserV1_1
 ------------------------
 ------parserV1_2.module------
 module parserV1_2 extends parserV1_1;
@@ -56,37 +24,69 @@ module: null;
 module CU : null
 module name : null
 ------------------------
+------MainV12.java------
+module: module parserV1_2;;
+module CU : parserV1_2.module
+module name : parserV1_2
+------------------------
+------scanner.module------
+module scanner;
+------------------------
+------multiversion.module------
+module multiversion;
+import own parserV1_1 as parserV1_1;
+import own parserV1_2 as parserV1_2;
+------------------------
+------v2/XMLParser.java------
+module: module parserV1_2;;
+module CU : parserV1_2.module
+module name : parserV1_2
+------------------------
+------v2/Parser.java------
+module: module parserV1_2;;
+module CU : parserV1_2.module
+module name : parserV1_2
+------------------------
+------v1/Parser.java------
+module: module parserV1_1;;
+module CU : parserV1_1.module
+module name : parserV1_1
+------------------------
+------parserV1_1.module------
+module parserV1_1;
+import own scanner export as scanner;
+------------------------
 ----------CU AST before insert----------
-v2/XMLParser.java package:parser
-v1/Parser.java package:parser
-MainV12.java package:
 MultiversionMain.java package:
-module: multiversion, file: multiversion.module, base module: multiversion
-v2/Parser.java package:parser
-MainV11.java package:
 Scanner.java package:scanner
-module: scanner, file: scanner.module, base module: scanner
-module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
+MainV11.java package:
 module: parserV1_2, file: parserV1_2.module, base module: parserV1_2
 Main.java package:
-----------CU AST after insert----------
-module: multiversion, file: multiversion.module, base module: multiversion
-	MultiversionMain.java package:multiversion
+MainV12.java package:
 module: scanner, file: scanner.module, base module: scanner
-	Scanner.java package:scanner.$scanner
+module: multiversion, file: multiversion.module, base module: multiversion
+v2/XMLParser.java package:parser
+v2/Parser.java package:parser
+v1/Parser.java package:parser
 module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
-	v1/Parser.java package:parserV1_1.$parser
-	MainV11.java package:parserV1_1
+----------CU AST after insert----------
 module: parserV1_2, file: parserV1_2.module, base module: parserV1_2
-	v2/XMLParser.java package:parserV1_2.$parser
 	MainV12.java package:parserV1_2
+	v2/XMLParser.java package:parserV1_2.$parser
 	v2/Parser.java package:parserV1_2.$parser
 Main.java package:
+module: scanner, file: scanner.module, base module: scanner
+	Scanner.java package:scanner.$scanner
+module: multiversion, file: multiversion.module, base module: multiversion
+	MultiversionMain.java package:multiversion
+module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
+	MainV11.java package:parserV1_1
+	v1/Parser.java package:parserV1_1.$parser
 ----------Module CU imports before import own----------
-module multiversion, base:multiversion, context:[], instantiated:false
-module scanner, base:scanner, context:[], instantiated:false
-module parserV1_1, base:parserV1_1, context:[], instantiated:false
 module parserV1_2, base:parserV1_2, context:[], instantiated:false
+module scanner, base:scanner, context:[], instantiated:false
+module multiversion, base:multiversion, context:[], instantiated:false
+module parserV1_1, base:parserV1_1, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module multiversion;
 import own parserV1_1 as parserV1_1;
@@ -94,40 +94,40 @@ import own parserV1_2 as parserV1_2;
 export package *;
 -----------End Instance ModuleCompilationUnit----------
 ----------CU AST after generateImportOwn----------
-module: multiversion, file: multiversion.module, base module: multiversion
-	MultiversionMain.java package:multiversion
-module: scanner, file: scanner.module, base module: scanner
-	Scanner.java package:scanner.$scanner
-module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
-	v1/Parser.java package:parserV1_1.$parser
-	MainV11.java package:parserV1_1
 module: parserV1_2, file: parserV1_2.module, base module: parserV1_2
-	v2/XMLParser.java package:parserV1_2.$parser
 	MainV12.java package:parserV1_2
+	v2/XMLParser.java package:parserV1_2.$parser
 	v2/Parser.java package:parserV1_2.$parser
 Main.java package:
+module: scanner, file: scanner.module, base module: scanner
+	Scanner.java package:scanner.$scanner
+module: multiversion, file: multiversion.module, base module: multiversion
+	MultiversionMain.java package:multiversion
+module: parserV1_1, file: parserV1_1.module, base module: parserV1_1
+	MainV11.java package:parserV1_1
+	v1/Parser.java package:parserV1_1.$parser
 module: multiversion$parserV1_1.scanner, file: scanner.module, base module: scanner
 	Scanner.java package:multiversion$parserV1_1.scanner.$scanner
 module: multiversion$parserV1_1, file: parserV1_1.module, base module: parserV1_1
-	v1/Parser.java package:multiversion$parserV1_1.$parser
 	MainV11.java package:multiversion$parserV1_1
+	v1/Parser.java package:multiversion$parserV1_1.$parser
 module: multiversion$parserV1_2$super$parserV1_1, file: parserV1_1.module, base module: parserV1_1
-	v1/Parser.java package:multiversion$parserV1_2$super$parserV1_1.$parser
 	MainV11.java package:multiversion$parserV1_2$super$parserV1_1
+	v1/Parser.java package:multiversion$parserV1_2$super$parserV1_1.$parser
 module: multiversion$parserV1_2.scanner, file: scanner.module, base module: scanner
 	Scanner.java package:multiversion$parserV1_2.scanner.$scanner
 module: multiversion$parserV1_2, file: parserV1_2.module, base module: parserV1_2
-	v2/XMLParser.java package:multiversion$parserV1_2.$parser
 	MainV12.java package:multiversion$parserV1_2
+	v2/XMLParser.java package:multiversion$parserV1_2.$parser
 	v2/Parser.java package:multiversion$parserV1_2.$parser
 
 ----------Module CU imports after import own----------
+module parserV1_2, base:parserV1_2, context:[], instantiated:false
+module scanner, base:scanner, context:[], instantiated:false
 module multiversion, base:multiversion, context:[], instantiated:true
 	parserV1_1:multiversion$parserV1_1
 	parserV1_2:multiversion$parserV1_2
-module scanner, base:scanner, context:[], instantiated:false
 module parserV1_1, base:parserV1_1, context:[], instantiated:false
-module parserV1_2, base:parserV1_2, context:[], instantiated:false
 module multiversion$parserV1_1.scanner, base:scanner, context:[multiversion$parserV1_1], instantiated:true
 module multiversion$parserV1_1, base:parserV1_1, context:[multiversion], instantiated:true
 	[export]scanner:multiversion$parserV1_1.scanner
@@ -137,31 +137,31 @@ module multiversion$parserV1_2, base:parserV1_2, context:[multiversion], instant
 	[export]scanner:multiversion$parserV1_2.scanner
 ----------MCU collectTypes after import own----------
 
-Module: multiversion
-	multiversion.MultiversionMain
+Module: parserV1_2
+	parserV1_2.MainV12
+	parserV1_2.$parser.XMLParser
+	parserV1_2.$parser.Parser
 Module: scanner
 	scanner.$scanner.Scanner
+Module: multiversion
+	multiversion.MultiversionMain
 Module: parserV1_1
 	parserV1_1.MainV11
 	parserV1_1.$parser.Parser
-Module: parserV1_2
-	parserV1_2.MainV12
-	parserV1_2.$parser.Parser
-	parserV1_2.$parser.XMLParser
 Module: multiversion$parserV1_1.scanner
 	multiversion$parserV1_1.scanner.$scanner.Scanner
 Module: multiversion$parserV1_1
 	multiversion$parserV1_1.$parser.Parser
 	multiversion$parserV1_1.MainV11
 Module: multiversion$parserV1_2$super$parserV1_1
-	multiversion$parserV1_2$super$parserV1_1.MainV11
 	multiversion$parserV1_2$super$parserV1_1.$parser.Parser
+	multiversion$parserV1_2$super$parserV1_1.MainV11
 Module: multiversion$parserV1_2.scanner
 	multiversion$parserV1_2.scanner.$scanner.Scanner
 Module: multiversion$parserV1_2
 	multiversion$parserV1_2.$parser.XMLParser
-	multiversion$parserV1_2.MainV12
 	multiversion$parserV1_2.$parser.Parser
+	multiversion$parserV1_2.MainV12
 
 ----------CU iterator----------
-multiversion.module, MultiversionMain.java, scanner.module, parserV1_1.module, parserV1_2.module, Main.java, scanner.module, Scanner.java, parserV1_1.module, v1/Parser.java, MainV11.java, parserV1_1.module, v1/Parser.java, MainV11.java, scanner.module, Scanner.java, parserV1_2.module, v2/XMLParser.java, MainV12.java, v2/Parser.java
+parserV1_2.module, Main.java, scanner.module, multiversion.module, MultiversionMain.java, parserV1_1.module, scanner.module, Scanner.java, parserV1_1.module, MainV11.java, v1/Parser.java, parserV1_1.module, MainV11.java, v1/Parser.java, scanner.module, Scanner.java, parserV1_2.module, MainV12.java, v2/XMLParser.java, v2/Parser.java
