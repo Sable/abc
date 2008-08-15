@@ -90,7 +90,7 @@ aspect JAModuleErrorCheck {
 
   	//Single error checks, done after the CU insert but before the Generate import own
   	public void ASTNode.checkModuleErrorsPass2() {
-  		checkFragmentContents();
+  		checkModuleInterfaceContents();
   		
 		for (int i = 0 ; i < getNumChild(); i++) {
 			getChild(i).checkModuleErrorsPass2();
@@ -99,7 +99,7 @@ aspect JAModuleErrorCheck {
   	//STANDING NOTE: Cut off errorcheck at CompilationUnit/ModuleCompilationUnit children
   	//so that the rewrites are not triggered
   	public void CompilationUnit.checkModuleErrorsPass2() {
-		checkFragmentContents();
+		checkModuleInterfaceContents();
 		
 		if (getModuleDecl() != null) {
 			getModuleDecl().checkModuleErrorsPass2();  	
@@ -109,6 +109,7 @@ aspect JAModuleErrorCheck {
 
   	//Single error checks, done after all the module passes
   	public void ASTNode.checkModuleErrorsPass3() {
+  		//checkJastAddFramework();
   		checkNoModuleInterfaceInstance();
   		checkModuleInterfacePackageImplements();
   		checkNoSyntheticInstances();
@@ -120,6 +121,7 @@ aspect JAModuleErrorCheck {
   	//STANDING NOTE: Cut off errorcheck at CompilationUnit/ModuleCompilationUnit children
   	//so that the rewrites are not triggered
   	public void CompilationUnit.checkModuleErrorsPass3() {
+  		//checkJastAddFramework();
 		checkNoModuleInterfaceInstance();
 		checkModuleInterfacePackageImplements();
 		checkNoSyntheticInstances();

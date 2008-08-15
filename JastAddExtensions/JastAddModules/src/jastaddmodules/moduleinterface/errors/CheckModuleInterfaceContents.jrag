@@ -1,6 +1,6 @@
 aspect CheckModuleInterfaceContents {
-	public void ASTNode.checkFragmentContents() {}
-	public void ModuleCompilationUnit.checkFragmentContents() {
+	public void ASTNode.checkModuleInterfaceContents() {}
+	public void ModuleCompilationUnit.checkModuleInterfaceContents() {
 		if (!isModuleInterface()) {
 			return;
 		}

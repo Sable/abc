@@ -1,0 +1,29 @@
+
+//TODO: Don't use this yet.
+aspect CheckJastAddFramework {
+	//check existence of module, ASTNode, Opt and List
+	public void ASTNode.checkJastAddFramework() {
+	}
+	public void Program.checkJastAddFramework() {
+		for (Iterator<CompilationUnit> cuIterator = this.compilationUnitIterator();
+				cuIterator.hasNext() ;) {
+			boolean errorFound = false;
+			CompilationUnit cu = cuIterator.next();
+			if (cu.lookupFrameworkType("ASTNode") == null) {
+				cu.error("Unable to find framework type ASTNode");
+				errorFound = true;
+			}			
+			if (cu.lookupFrameworkType("List") == null) {
+				cu.error("Unable to find framework type List");
+				errorFound = true;
+			}			
+			if (cu.lookupFrameworkType("Opt") == null) {
+				cu.error("Unable to find framework type Opt");
+				errorFound = true;
+			}
+			if (errorFound) {
+				throw new jastadd.UnrecoverableSemanticError("Unable to find jastadd framework types");
+			}
+		}
+	}
+}

@@ -164,6 +164,7 @@ public class JastAddModules extends JastAdd {
 			if (errors.size() > 0) {
 				return false;
 			}
+			
 			program.setModuleProcessingComplete(true);
 			
 			//MODULE PROCESSING ENDS HERE
