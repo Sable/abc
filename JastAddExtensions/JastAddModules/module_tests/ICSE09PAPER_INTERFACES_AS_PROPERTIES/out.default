@@ -1,5 +1,25 @@
 Arguments: 
--debug -d classes -instance-module myapplication appv1.module appv1to2.module appv2.module appv2to4.module appv3.module appv4.module myapplication.module supportsfeature1.module supportsfeature2.module Main.java MyApp.java v1/App.java v2/App.java v3/App.java v4/App.java End arguments
+-debug
+-d
+classes
+-instance-module
+myapplication
+appv1.module
+appv1to2.module
+appv2.module
+appv2to4.module
+appv3.module
+appv4.module
+myapplication.module
+supportsfeature1.module
+supportsfeature2.module
+Main.java
+MyApp.java
+v1/App.java
+v2/App.java
+v3/App.java
+v4/App.java
+End arguments
 ----------Module contents----------
 ------appv2to4.module------
 module appv2to4;

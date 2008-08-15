@@ -1,5 +1,20 @@
 Arguments: 
--debug -d classes -instance-module myapplication myapplication.module mysqlbackend.module postgresbackend.module sqltypes.module Main.java MySQLQuery.java PostgresQuery.java ResultSet.java ../testlib/jastadd$framework.module ./myapp/Main.java End arguments
+-debug
+-d
+classes
+-instance-module
+myapplication
+myapplication.module
+mysqlbackend.module
+postgresbackend.module
+sqltypes.module
+Main.java
+MySQLQuery.java
+PostgresQuery.java
+ResultSet.java
+../testlib/jastadd$framework.module
+./myapp/Main.java
+End arguments
 ----------Module contents----------
 ------ResultSet.java------
 module: module sqltypes;;

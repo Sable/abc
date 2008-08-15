@@ -1,5 +1,22 @@
 Arguments: 
--jastaddframework -debug -d classes -instance-module m1xx m1.module m1x.module m1xx.module A.java AX.java AXX.java Main.java ../testlib/jastadd$framework.module m1pack/P.java m1xpack/P.java m1xxpack/P.java End arguments
+-jastaddframework
+-debug
+-d
+classes
+-instance-module
+m1xx
+m1.module
+m1x.module
+m1xx.module
+A.java
+AX.java
+AXX.java
+Main.java
+../testlib/jastadd$framework.module
+m1pack/P.java
+m1xpack/P.java
+m1xxpack/P.java
+End arguments
 ----------Module contents----------
 ------AX.java------
 module: module m1x;;

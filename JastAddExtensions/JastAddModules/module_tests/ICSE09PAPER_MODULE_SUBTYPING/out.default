@@ -1,5 +1,22 @@
 Arguments: 
--debug -d classes -instance-module multiversion multiversion.module parserV1_1.module parserV1_2.module scanner.module Main.java MainV11.java MainV12.java MultiversionMain.java Scanner.java v1/Parser.java v2/Parser.java v2/XMLParser.java End arguments
+-debug
+-d
+classes
+-instance-module
+multiversion
+multiversion.module
+parserV1_1.module
+parserV1_2.module
+scanner.module
+Main.java
+MainV11.java
+MainV12.java
+MultiversionMain.java
+Scanner.java
+v1/Parser.java
+v2/Parser.java
+v2/XMLParser.java
+End arguments
 ----------Module contents----------
 ------MultiversionMain.java------
 module: module multiversion;;

@@ -1,5 +1,26 @@
 Arguments: 
--debug -d classes -instance-module myapplication engine3d.module enginephysics.module myapplication.module myfourier.module mymathinterface.module org.x.y.calculus.module org.x.y.math.module org.x.y.matrices.module Calculus.java Complex.java Engine3d.java EnginePhysics.java Main.java Matrices.java MyApplication.java MyFourier.java End arguments
+-debug
+-d
+classes
+-instance-module
+myapplication
+engine3d.module
+enginephysics.module
+myapplication.module
+myfourier.module
+mymathinterface.module
+org.x.y.calculus.module
+org.x.y.math.module
+org.x.y.matrices.module
+Calculus.java
+Complex.java
+Engine3d.java
+EnginePhysics.java
+Main.java
+Matrices.java
+MyApplication.java
+MyFourier.java
+End arguments
 ----------Module contents----------
 ------Engine3d.java------
 module: module engine3d;;

@@ -1,5 +1,24 @@
 Arguments: 
--jastaddframework -debug -d classes -instance-module M1 A.java B.java C.java D.java E.java F.java M1.module M2.module M3.module M4.module M5.module M6.module jastadd$framework.module End arguments
+-jastaddframework
+-debug
+-d
+classes
+-instance-module
+M1
+A.java
+B.java
+C.java
+D.java
+E.java
+F.java
+M1.module
+M2.module
+M3.module
+M4.module
+M5.module
+M6.module
+jastadd$framework.module
+End arguments
 ----------Module contents----------
 ------M6.module------
 module M6;

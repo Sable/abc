@@ -1,5 +1,21 @@
 Arguments: 
--debug -d classes -instance-module myapplication appv1_1.module appv1_2.module appv2.module myapplication.module Main.java MyApp.java v11/App.java v11/Util.java v12/*.java v2/App.java v2/Util.java End arguments
+-debug
+-d
+classes
+-instance-module
+myapplication
+appv1_1.module
+appv1_2.module
+appv2.module
+myapplication.module
+Main.java
+MyApp.java
+v11/App.java
+v11/Util.java
+v12/*.java
+v2/App.java
+v2/Util.java
+End arguments
 WARNING: file "v12/*.java" does not exist
 ----------Module contents----------
 ------myapplication.module------

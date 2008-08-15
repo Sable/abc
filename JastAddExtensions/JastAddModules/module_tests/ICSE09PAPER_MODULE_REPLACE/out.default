@@ -1,5 +1,27 @@
 Arguments: 
--debug -d classes -instance-module myapplication javadocgenerator.module myapplication.module parserV1_1.module parserV1_2.module parserV2.module scanner.module staticanalyzer.module JavadocGenerator.java Main.java MyApplication.java Scanner.java StaticAnalyzer.java v11/Parser.java v12/Parser.java v12/XMLParser.java v2/Parser.java v2/XMLParser.java End arguments
+-debug
+-d
+classes
+-instance-module
+myapplication
+javadocgenerator.module
+myapplication.module
+parserV1_1.module
+parserV1_2.module
+parserV2.module
+scanner.module
+staticanalyzer.module
+JavadocGenerator.java
+Main.java
+MyApplication.java
+Scanner.java
+StaticAnalyzer.java
+v11/Parser.java
+v12/Parser.java
+v12/XMLParser.java
+v2/Parser.java
+v2/XMLParser.java
+End arguments
 ----------Module contents----------
 ------myapplication.module------
 module myapplication;

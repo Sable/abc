@@ -1,5 +1,16 @@
 Arguments: 
--jastaddframework -debug -d classes -instance-module somemodule somemodule.module Main.java MyClass.java pack/*.java ../testlib/jastadd$framework.module End arguments
+-jastaddframework
+-debug
+-d
+classes
+-instance-module
+somemodule
+somemodule.module
+Main.java
+MyClass.java
+pack/*.java
+../testlib/jastadd$framework.module
+End arguments
 WARNING: file "pack/*.java" does not exist
 ----------Module contents----------
 ------MyClass.java------

@@ -1,5 +1,17 @@
 Arguments: 
--debug -d classes -instance-module myapplication myapplication.module xmlparser.module C.java Main.java XMLParser.java pack/*.java ../testlib/jastadd$framework.module End arguments
+-debug
+-d
+classes
+-instance-module
+myapplication
+myapplication.module
+xmlparser.module
+C.java
+Main.java
+XMLParser.java
+pack/*.java
+../testlib/jastadd$framework.module
+End arguments
 WARNING: file "pack/*.java" does not exist
 ----------Module contents----------
 ------myapplication.module------
