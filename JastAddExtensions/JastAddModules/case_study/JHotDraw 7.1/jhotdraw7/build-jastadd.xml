@@ -24,6 +24,7 @@
 			jastaddframework="false"
 			debug="false"
 			instancemodule="org.jhotdraw.samples.draw"
+			mainclass="org.jhotdraw.samples.draw::org.jhotdraw.samples.draw.Main"
 			classpath="${libdir}/quaqua.jar;${libdir}/MRJAdapter.jar;${libdir}/java_30.zip;${libdir}/swing-layout.jar"
 		>
 			<fileset dir="${srcdir}">
