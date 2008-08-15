@@ -66,6 +66,7 @@ import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.ClassPathE
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.Pattern;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration.SourcePathEntry;
 import org.jastadd.plugin.jastaddj.editor.JastAddJEditor;
+import org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.jastaddj.model.repair.JavaLexerIII;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;

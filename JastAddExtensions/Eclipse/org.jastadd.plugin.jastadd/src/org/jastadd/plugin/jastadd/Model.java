@@ -479,7 +479,7 @@ public class Model extends JastAddJModel {
 		
 	}
 	
-		protected void updateModel(IDocument document, String fileName, IProject project) {
+	protected void updateModel(IDocument document, String fileName, IProject project) {
 		JastAddJBuildConfiguration buildConfiguration = getBuildConfiguration(project);
 		if (buildConfiguration == null)
 			return;
