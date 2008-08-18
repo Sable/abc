@@ -1,16 +1,30 @@
 package org.jastadd.plugin.editor;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.commands.Category;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.bindings.Binding;
+import org.eclipse.jface.bindings.keys.KeyBinding;
+import org.eclipse.jface.bindings.keys.KeySequence;
+import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.information.InformationPresenter;
@@ -22,14 +36,21 @@ import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.handlers.IHandlerActivation;
+import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.jastadd.plugin.editor.JastAddEditorContributor.ITopMenuActionBuilder;
 import org.jastadd.plugin.editor.folding.JastAddEditorFolder;
 import org.jastadd.plugin.editor.hover.JastAddSourceInformationControl;
 import org.jastadd.plugin.model.JastAddModel;
@@ -73,27 +94,7 @@ public abstract class JastAddEditor extends TextEditor {
 		action.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", action);
 		setActionActivationCode("ContentAssistProposal",' ', -1, SWT.CTRL);
-
-		/*
-		IAction a= new TextOperationAction(new JastAddResourceBundle(), 
-				"ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS); //$NON-NLS-1$
-		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction("ContentAssistProposal", a); 
-*/
-		/*
-		Action action = new ContentAssistAction(new JastAddResourceBundle(), "ContentAssistProposal.", this); 
-		String id = ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS;
-		action.setActionDefinitionId(id);
-		
-		IHandlerService handlerServer = (IHandlerService) getEditorSite().getService(IHandlerService.class);
-		IHandler cahandler = new ActionHandler(action);
-		if (handlerServer != null) {
-			handlerServer.activateHandler(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, cahandler);
-		}
-		*/
-	}
-	
-	
+	}	
 
 	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
@@ -116,10 +117,6 @@ public abstract class JastAddEditor extends TextEditor {
 		}
 	}
 	
-	public void showContentAssistant() {
-		
-	}
-
 	private JastAddContentOutlinePage fOutlinePage;
 	private ProjectionSupport projectionSupport;
 	private JastAddEditorFolder folder;
@@ -174,13 +171,6 @@ public abstract class JastAddEditor extends TextEditor {
 		return super.getAdapter(required);
 	}
 	
-	/*
-	public IContentAssistant getContentAssistant() {
-		SourceViewerConfiguration config = getSourceViewerConfiguration();
-		IContentAssistant ca = config.getContentAssistant(getSourceViewer());
-		return ca;
-	}
-	*/
 	
 	/**
 	 * Overriden method from AbstractDecoratedTextEditor. Adds projection support
@@ -207,12 +197,14 @@ public abstract class JastAddEditor extends TextEditor {
 	    folder = new JastAddEditorFolder(viewer.getProjectionAnnotationModel(), this);
 	    if (model != null)
 	    	model.addListener(folder);
-	    
+	    	    
 	    if (model != null) {
 	    	IContextService contextService = (IContextService) getSite().getService(IContextService.class);
-	    	contextActivation = contextService.activateContext(model.getEditorConfiguration().getEditorContextID());
+	    	contextActivation = contextService.activateContext(getEditorContextID());
 	    }
 	}
+	
+	public abstract String getEditorContextID();
 	
 	/**
 	 * Overriden method from TextEditor which removes listeners and contexts. 
@@ -268,13 +260,54 @@ public abstract class JastAddEditor extends TextEditor {
 	  	     return new JastAddSourceInformationControl(shell, model);
 	  	   }
 	}
+
+	
+	
+	public void populateContextMenu(IMenuManager menuManager, JastAddEditor editor) {
+	}
+	
 	
 	@Override
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		
-		if (model == null) return;
-		
-		model.getEditorConfiguration().populateContextMenu(menu, this);
+		populateContextMenu(menu, this);
 	}
+		
+	protected IMenuManager findOrAddMenu(IMenuManager menuManager, String idSuffix, String text) {
+		String id = getEditorContextID() + idSuffix;
+		IMenuManager newMenuManager = menuManager.findMenuUsingPath(id);
+		if (newMenuManager == null)
+			newMenuManager = new MenuManager(text, id);
+		newMenuManager.add(new Separator("additions"));
+		menuManager.insertAfter("additions", newMenuManager);
+		return newMenuManager;
+	}
+	
+	protected IMenuManager findOrAddFindContextMenu(IMenuManager menuManager) {
+		return findOrAddMenu(menuManager, ".find.popup", "F&ind");
+	}
+	
+	protected IMenuManager findOrAddRefactorContextMenu(IMenuManager menuManager) {
+		return findOrAddMenu(menuManager, ".refactor.popup", "Refac&tor");
+	}
+	
+	protected void addContextMenuItem(IMenuManager menuManager, String text, String definitionId, IActionDelegate actionDelegate) {
+		menuManager.add(buildContextMenuItem(text, definitionId, actionDelegate));
+	}
+	
+	protected IAction buildContextMenuItem(String text, String definitionId, final IActionDelegate actionDelegate) {
+		IAction action = new Action() {
+			public void run() {
+				actionDelegate.run(this);
+			}
+		};
+		action.setText(text);
+		action.setActionDefinitionId(definitionId);
+		return action;
+	}	
+
+	
+	
+	
+	
 }

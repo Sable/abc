@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,13 +28,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.editor.highlight.JastAddAutoIndentStrategy;
 import org.jastadd.plugin.model.repair.RecoveryLexer;
 import org.jastadd.plugin.util.JastAddPair;
 
@@ -70,7 +78,7 @@ public abstract class JastAddModel {
 	public JastAddEditorConfiguration getEditorConfiguration() {
 		return editorConfig;
 	}
-	
+		
 	protected void registerScanner(RuleBasedScanner scanner, String fileType) {
 		mapFileTypeToScanner.put(fileType, scanner);
 	}
@@ -400,22 +408,8 @@ public abstract class JastAddModel {
 	public abstract Object getASTRootForLock(IProject project);
 	public abstract void checkForErrors(IProject project, IProgressMonitor monitor);
 	
-	private boolean commandsPopulated = false;
 	
-	// Why synchronized ?
-	public synchronized void registerCommands() {
-		if (commandsPopulated) return;
-		try {
-			getEditorConfiguration().populateCommands();
-			commandsPopulated = true;
-		}
-		catch(Exception e) {
-			logError(e, "Failed registering commands");
-			return;
-		}
-	}
-	
-	public abstract void registerStopHandler(Runnable stopHandler);
+
 
 	protected abstract boolean updateModel(IDocument document, String fileName, IProject project);
 	protected abstract boolean updateModel(Collection<IFile> changedFiles, IProject project);

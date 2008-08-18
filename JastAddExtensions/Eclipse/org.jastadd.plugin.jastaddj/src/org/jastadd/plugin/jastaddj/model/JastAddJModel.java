@@ -54,6 +54,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.AST.IOutlineNode;
+import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastaddj.JastAddJActivator;
@@ -70,6 +71,7 @@ import org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpoint;
 import org.jastadd.plugin.jastaddj.editor.highlight.JastAddJScanner;
 import org.jastadd.plugin.jastaddj.model.repair.JavaLexerIII;
 import org.jastadd.plugin.jastaddj.nature.JastAddJNature;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
@@ -125,7 +127,7 @@ public class JastAddJModel extends JastAddModel {
 	}
 
 	// ************** Implementations of abstract methods
-
+	
 	public boolean isModelFor(IProject project) {
 		try {
 			if (project != null && project.isOpen()
@@ -721,10 +723,6 @@ public class JastAddJModel extends JastAddModel {
 		JastAddJBuildConfiguration buildConfiguration = getEmptyBuildConfiguration();
 		JastAddJBuildConfigurationUtil.populateDefaults(buildConfiguration);
 		return buildConfiguration;
-	}
-
-	public void registerStopHandler(Runnable stopHandler) {
-		JastAddJActivator.INSTANCE.addStopHandler(stopHandler);
 	}
 
 	public IProject getProject(IJastAddNode node) {
@@ -1336,4 +1334,5 @@ public class JastAddJModel extends JastAddModel {
 			monitor.done();
 		}	
 	}
+
 }

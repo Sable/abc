@@ -14,6 +14,7 @@ import org.jastadd.plugin.editor.actions.JastAddActionDelegate;
 import org.jastadd.plugin.information.JastAddInformationControl;
 import org.jastadd.plugin.information.JastAddInformationPresenter;
 import org.jastadd.plugin.information.JastAddInformationProvider;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 
 public class QuickContentOutlineHandler extends JastAddActionDelegate {
 
@@ -25,10 +26,11 @@ public class QuickContentOutlineHandler extends JastAddActionDelegate {
 				return new JastAddInformationControl(parent,
 						"Outline") {
 					protected void configure() {
-						treeViewer
-								.setContentProvider(activeModel().getEditorConfiguration().getContentProvider());
-						treeViewer
-								.setLabelProvider(activeModel().getEditorConfiguration().getLabelProvider());
+						JastAddEditorConfiguration config = activeEditorConfiguration();
+						if (config != null) {
+							treeViewer.setContentProvider(config.getContentProvider());
+							treeViewer.setLabelProvider(config.getLabelProvider());
+						}
 					}
 					
 					protected void gotoSelectedElement() {

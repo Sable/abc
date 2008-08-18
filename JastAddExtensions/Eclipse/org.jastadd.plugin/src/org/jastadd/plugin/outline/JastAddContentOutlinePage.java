@@ -1,8 +1,10 @@
 package org.jastadd.plugin.outline;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
@@ -14,6 +16,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -55,14 +58,17 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 		}
 		TreeViewer viewer = getTreeViewer();
 		if(viewer != null) {
+			ITreeContentProvider cProvider = null;
+			IBaseLabelProvider lProvider = null;
 			if(model != null) {
-				viewer.setContentProvider(model.getEditorConfiguration().getContentProvider());
-				viewer.setLabelProvider(model.getEditorConfiguration().getLabelProvider());
+				JastAddEditorConfiguration config = model.getEditorConfiguration();
+				if (config != null) {
+					cProvider = config.getContentProvider();
+					lProvider = config.getLabelProvider();
+				}
 			}
-			else {
-				viewer.setContentProvider(new JastAddContentProvider());
-				viewer.setLabelProvider(new JastAddLabelProvider());
-			}
+			viewer.setContentProvider(cProvider == null ? new JastAddContentProvider() : cProvider);
+			viewer.setLabelProvider(lProvider == null ? new JastAddLabelProvider() : lProvider);
 		}
 		
 		update();
@@ -72,14 +78,17 @@ public class JastAddContentOutlinePage extends ContentOutlinePage implements Jas
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		TreeViewer viewer = getTreeViewer();
+		ITreeContentProvider cProvider = null;
+		IBaseLabelProvider lProvider = null;
 		if(model != null) {
-			viewer.setContentProvider(model.getEditorConfiguration().getContentProvider());
-			viewer.setLabelProvider(model.getEditorConfiguration().getLabelProvider());
+			JastAddEditorConfiguration config = model.getEditorConfiguration();
+			if (config != null) {
+				cProvider = config.getContentProvider();
+				lProvider = config.getLabelProvider();
+			}
 		}
-		else {
-			viewer.setContentProvider(new JastAddContentProvider());
-			viewer.setLabelProvider(new JastAddLabelProvider());
-		}
+		viewer.setContentProvider(cProvider == null ? new JastAddContentProvider() : cProvider);
+		viewer.setLabelProvider(lProvider == null ? new JastAddLabelProvider() : lProvider);
 		viewer.addSelectionChangedListener(this);
 		if (fInput != null)
 			viewer.setInput(fInput);

@@ -4,6 +4,7 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 
 public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
@@ -30,8 +31,11 @@ public class JastAddAutoIndentStrategy implements IAutoEditStrategy {
 
 	
 	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) {
-		if (model != null)
-			model.getEditorConfiguration().getDocInsertionOnKeypress(doc, cmd);
+		if (model != null) {
+			JastAddEditorConfiguration config = model.getEditorConfiguration();
+			if (config != null)
+				config.getDocInsertionOnKeypress(doc, cmd);
+		}
 	}
 
 	private void smartIndentAfterNewLine(IDocument doc, DocumentCommand cmd) {

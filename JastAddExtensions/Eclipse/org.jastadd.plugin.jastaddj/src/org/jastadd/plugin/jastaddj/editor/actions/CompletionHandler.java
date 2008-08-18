@@ -32,8 +32,10 @@ public class CompletionHandler extends JastAddActionDelegate {
 		//IEditorInput input = editorPart.getEditorInput();
 		//if (input instanceof IFileEditorInput) {
 		//	IFileEditorInput fileInput = (IFileEditorInput)input;
+		/*
 			JastAddModel model = activeModel();
 			if (model != null) {
+				
 				IContentAssistProcessor completionProcessor = model.getEditorConfiguration().getCompletionProcessor();
 				if (completionProcessor != null) {
 					ContentAssistant assistant= new ContentAssistant();
@@ -53,6 +55,7 @@ public class CompletionHandler extends JastAddActionDelegate {
 					assistant.showPossibleCompletions();
 				}
 			}
+			*/
 			/*
 			JastAddModel model = activeModel();
 			FileInfo info = model.buildFileInfo(fileInput);

@@ -20,6 +20,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.jastadd.plugin.AST.IJastAddNode;
 import org.jastadd.plugin.editor.JastAddStorageEditorInput;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelProvider;
 
@@ -113,6 +114,14 @@ public abstract class JastAddActionDelegate extends AbstractHandler implements I
 		if (editorPart == null) return null;
 		selection = provider.getSelection();
 		return selection;
+	}
+	
+	protected JastAddEditorConfiguration activeEditorConfiguration() {
+		JastAddModel model = activeModel();
+		if (model != null) {
+			return model.getEditorConfiguration();
+		}
+		return null;
 	}
 	
 	protected JastAddModel activeModel() {

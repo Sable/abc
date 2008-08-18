@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 import org.jastadd.plugin.model.JastAddModelListener;
 import org.jastadd.plugin.model.JastAddModelProvider;
@@ -56,8 +57,11 @@ public class JastAddEditorFolder implements JastAddModelListener {
 				// run update in the SWT UI thread
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						List<Position> positions = model.getEditorConfiguration().getFoldingPositions(document);
-						updateFoldingStructure(positions);
+						JastAddEditorConfiguration config = model.getEditorConfiguration();
+						if (config != null) {
+							List<Position> positions = config.getFoldingPositions(document);
+							updateFoldingStructure(positions);
+						}
 					}
 				});
 			}

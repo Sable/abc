@@ -1,12 +1,24 @@
 package org.jastadd.plugin.jastaddj.editor;
 
+import java.io.IOException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.commands.IHandler;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.jastadd.plugin.editor.JastAddEditor;
+import org.jastadd.plugin.jastaddj.editor.actions.FindDeclarationHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.FindImplementsHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.FindReferencesHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.QuickContentOutlineHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.QuickTypeHierarchyHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.ReferenceHierarchyHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.RenameRefactoringHandler;
+import org.jastadd.plugin.jastaddj.editor.actions.TypeHierarchyHandler;
 import org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpointAdapter;
 
 public class JastAddJEditor extends JastAddEditor {
@@ -38,4 +50,67 @@ public class JastAddJEditor extends JastAddEditor {
 		markAsStateDependentAction("ContentAssistProposal", true); //$NON-NLS-1$
 		//PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IJavaHelpContextIds.CONTENT_ASSIST_ACTION);
 	}
+
+	@Override
+	public String getEditorContextID() {
+		return JastAddJEditor.EDITOR_CONTEXT_ID;
+	}
+	
+	@Override
+	public void populateContextMenu(IMenuManager menuManager,
+			JastAddEditor editor) {
+		menuManager.insertAfter("group.open", buildContextMenuItem("Quick Out&line",
+				"org.jastadd.plugin.jastaddj.query.QuickContentOutline",
+				new QuickContentOutlineHandler()));
+		
+		menuManager.insertAfter("group.open", buildContextMenuItem("Quick Type H&ierarchy",
+				"org.jastadd.plugin.jastaddj.query.QuickTypeHierarchy",
+				new QuickTypeHierarchyHandler()));
+		
+		menuManager.insertAfter("group.open", buildContextMenuItem("Open Reference &Hierarchy",
+				"org.jastadd.plugin.jastaddj.query.ReferenceHierarchy",
+				new ReferenceHierarchyHandler()));
+		
+		menuManager.insertAfter("group.open", buildContextMenuItem("Open Type &Hierarchy",
+				"org.jastadd.plugin.jastaddj.query.TypeHierarchy",
+				new TypeHierarchyHandler()));
+
+		IMenuManager refactorMenu = findOrAddRefactorContextMenu(menuManager);
+		populateRefactorContextMenuItems(refactorMenu, editor);
+
+		IMenuManager findMenu = findOrAddFindContextMenu(menuManager);
+		populateFindContextMenuItems(findMenu, editor);
+	}
+
+	protected void populateFindContextMenuItems(IMenuManager findMenu,
+			JastAddEditor editor) {
+
+		addContextMenuItem(findMenu, "Find Declaration",
+				"org.jastadd.plugin.jastaddj.find.FindDeclaration",
+				new FindDeclarationHandler());
+
+		addContextMenuItem(findMenu, "Find References",
+				"org.jastadd.plugin.jastaddj.find.FindReferences",
+				new FindReferencesHandler());
+
+		addContextMenuItem(findMenu, "Find &Implements",
+				"org.jastadd.plugin.jastaddj.find.FindImplements",
+				new FindImplementsHandler());
+		
+	}
+
+	protected void populateRefactorContextMenuItems(IMenuManager refactorMenu,
+			JastAddEditor editor) {
+		/*
+		addContextMenuItem(refactorMenu, "Insert &Crap",
+				"org.jastadd.plugin.jastaddj.refactor.InsertCrap",
+				new InsertCrapRefactoringHandler());
+		*/
+		
+		addContextMenuItem(refactorMenu, "Re&name",
+				"org.jastadd.plugin.jastaddj.refactor.Rename",
+				new RenameRefactoringHandler());
+
+	}
+
 }

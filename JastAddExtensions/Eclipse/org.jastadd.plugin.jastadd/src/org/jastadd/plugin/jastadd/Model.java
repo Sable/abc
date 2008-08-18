@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.jastadd.plugin.AST.IJastAddNode;
+import org.jastadd.plugin.editor.JastAddEditor;
 import org.jastadd.plugin.editor.highlight.JastAddColors;
 import org.jastadd.plugin.jastadd.generated.AST.ASTChild;
 import org.jastadd.plugin.jastadd.generated.AST.ASTDecl;
@@ -50,6 +51,7 @@ import org.jastadd.plugin.jastaddj.AST.ICompilationUnit;
 import org.jastadd.plugin.jastaddj.AST.IProgram;
 import org.jastadd.plugin.jastaddj.builder.JastAddJBuildConfiguration;
 import org.jastadd.plugin.jastaddj.model.JastAddJModel;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.repair.LexicalNode;
 import org.jastadd.plugin.model.repair.Recovery;
 import org.jastadd.plugin.model.repair.SOF;
@@ -104,7 +106,7 @@ public class Model extends JastAddJModel {
 		registerScanner(new JFlexScanner(new JastAddColors()), fileType[3]);
 		registerScanner(new ParserScanner(new JastAddColors()), fileType[4]);
 	}	
-
+	
 	@Override
 	protected IProgram initProgram(IProject project, JastAddJBuildConfiguration buildConfiguration) {
 		Program program = new Program();

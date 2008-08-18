@@ -5,4 +5,8 @@ import org.jastadd.plugin.editor.JastAddEditor;
 public class ParserEditor extends JastAddEditor {
 	public static final String EDITOR_ID = "org.jastadd.plugin.jastadd.ParserEditor";
 	public static final String EDITOR_CONTEXT_ID = "org.jastadd.plugin.jastadd.ParserEditorContext";
+	@Override
+	public String getEditorContextID() {
+		return ParserEditor.EDITOR_CONTEXT_ID;
+	}
 }

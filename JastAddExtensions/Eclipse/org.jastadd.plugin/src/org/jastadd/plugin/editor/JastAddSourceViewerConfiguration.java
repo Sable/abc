@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.Drawable;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.jastadd.plugin.model.JastAddEditorConfiguration;
 import org.jastadd.plugin.model.JastAddModel;
 
 /**
@@ -107,7 +108,10 @@ public class JastAddSourceViewerConfiguration extends SourceViewerConfiguration 
 	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		if(model != null) {
-			IContentAssistProcessor completionProcessor = model.getEditorConfiguration().getCompletionProcessor();
+			JastAddEditorConfiguration config = model.getEditorConfiguration();
+			if (config == null)
+				return super.getContentAssistant(sourceViewer);
+			IContentAssistProcessor completionProcessor = config.getCompletionProcessor();
 			if (completionProcessor != null) {
 				ContentAssistant assistant= new ContentAssistant();
 				assistant.enableAutoActivation(true);
