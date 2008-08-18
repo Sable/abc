@@ -124,11 +124,11 @@ aspect Debug {
 				return x.compareTo(y);
 			}
 		});
-		localAliasNames.addAll(getImportedModuleMap().keySet());
+		localAliasNames.addAll(getModuleReferenceMap().keySet());
 		for (String localAlias : localAliasNames) {
-			ModuleCompilationUnit importedCU = getImportedModule(localAlias).getModuleCU();
+			ModuleCompilationUnit importedCU = getModuleReference(localAlias).getModuleCU();
 			String exportStr;
-			if (getImportedModule(localAlias).isExported()) {
+			if (getModuleReference(localAlias).isExported()) {
 				exportStr = "[export]";
 			} else {
 				exportStr = "";

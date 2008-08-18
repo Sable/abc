@@ -4,11 +4,11 @@ import AST.AsType;
 import AST.AsTypeExport;
 import AST.ModuleImportType;
 
-public class ImportedModule {
+public class ModuleReference {
 	protected AST.ModuleCompilationUnit moduleCU = null;
 	protected AsType asType;
 	protected ModuleImportType importType;
-	public ImportedModule(AST.ModuleCompilationUnit importedCU, AsType asType, ModuleImportType importType) {
+	public ModuleReference(AST.ModuleCompilationUnit importedCU, AsType asType, ModuleImportType importType) {
 		this.moduleCU = importedCU;
 		this.asType = asType;
 		this.importType = importType;

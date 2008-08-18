@@ -29,7 +29,7 @@ aspect JAModuleLookupPackage {
 			}
 			
 			//then try imported modules
-			for (ImportedModule importedCU : getImportedModuleMap().values()) {
+			for (ModuleReference importedCU : getModuleReferenceMap().values()) {
 				ret.addAll(importedCU
 								.getModuleCU()
 								.selfThenSuperLocalLookupPackage(packageName, context));

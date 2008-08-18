@@ -3,18 +3,18 @@ aspect CheckModuleCycles {
 	//Cyclic imports
 	public void ASTNode.checkModuleCycles() {}
 	public void ModuleCompilationUnit.checkModuleCycles() {
-		LinkedList<ImportedModule> visited = new LinkedList<ImportedModule>();
-		visited.add(new ImportedModule(this, new AsTypeNone(), new ModuleImportTypeNorm()));
+		LinkedList<ModuleReference> visited = new LinkedList<ModuleReference>();
+		visited.add(new ModuleReference(this, new AsTypeNone(), new ModuleImportTypeNorm()));
 		checkModuleCycles(visited);
 	}
-	public boolean ModuleCompilationUnit.checkModuleCycles(LinkedList<ImportedModule> visited) {
+	public boolean ModuleCompilationUnit.checkModuleCycles(LinkedList<ModuleReference> visited) {
 		boolean noCycles = true;
 		
 		if (getCycleType(visited) == CycleType.BAD_CYCLE) {
 			noCycles = false;
 			String cycleStr = "";
 			boolean first = true;
-			for (ImportedModule cycleMember : visited) {
+			for (ModuleReference cycleMember : visited) {
 				if (!first) {
 					cycleStr += ", ";
 				}
@@ -41,8 +41,8 @@ aspect CheckModuleCycles {
 					importDecl.error("Module imports itself: " + this.getModuleName());
 					throw new jastadd.UnrecoverableSemanticError("Module imports itself: " + this.getModuleName());
 				}
-				LinkedList<ImportedModule> newVisited = new LinkedList<ImportedModule>(visited);
-				newVisited.add(new ImportedModule(importedCU, importDecl.getAsType(), importDecl.getModuleImportType()));
+				LinkedList<ModuleReference> newVisited = new LinkedList<ModuleReference>(visited);
+				newVisited.add(new ModuleReference(importedCU, importDecl.getAsType(), importDecl.getModuleImportType()));
 				noCycles = importedCU.checkModuleCycles(newVisited);
 				if (noCycles == false) {
 					return noCycles;
@@ -54,11 +54,11 @@ aspect CheckModuleCycles {
 	}
 
 	//check if the visited path is a bad cycle	
-	public CycleType ModuleCompilationUnit.getCycleType(LinkedList<ImportedModule> visited) {
+	public CycleType ModuleCompilationUnit.getCycleType(LinkedList<ModuleReference> visited) {
 		boolean isBadCycle = false; //true if a member of the cycle is an own type (ModuleImportTypeOwn)
 		HashSet<ModuleCompilationUnit> prev = new HashSet<ModuleCompilationUnit>();
-		for (Iterator<ImportedModule> iter = visited.iterator(); iter.hasNext(); ) {
-			ImportedModule importedModule = iter.next();
+		for (Iterator<ModuleReference> iter = visited.iterator(); iter.hasNext(); ) {
+			ModuleReference importedModule = iter.next();
 			if (importedModule.getModuleImportType() instanceof ModuleImportTypeOwn) {
 				isBadCycle = true;
 			}

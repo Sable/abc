@@ -80,7 +80,7 @@ aspect JAModuleLookupModule {
 				return x.compareTo(y);
 			}
 		});
-		localAliases.addAll(getImportedModuleMap().keySet());
+		localAliases.addAll(getModuleReferenceMap().keySet());
 		//add self name to local aliases
 		localAliases.add(getBaseCU().getModuleName());
 		for (String alias : localAliases) {
@@ -97,8 +97,8 @@ aspect JAModuleLookupModule {
 				if (alias.equals(getBaseCU().getModuleName())) {
 					return this;
 				}
-				if (originalContext == this || getImportedModule(name).isExported()) {
-					return getImportedModule(alias).getModuleCU();
+				if (originalContext == this || getModuleReference(name).isExported()) {
+					return getModuleReference(alias).getModuleCU();
 				} 
 				continue;
 			}
@@ -112,11 +112,11 @@ aspect JAModuleLookupModule {
 			//go into imports only iff: 
 			//	it is a direct import (this = originalContext)
 			//	or it is exported
-			ImportedModule importedCU = null;
+			ModuleReference importedCU = null;
 			if (alias.equals(getBaseCU().getModuleName())) {
-				importedCU = new ImportedModule(this, new AsTypeNone(), new ModuleImportTypeNorm()); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
+				importedCU = new ModuleReference(this, new AsTypeNone(), new ModuleImportTypeNorm()); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
 			} else {
-				importedCU = getImportedModule(alias);
+				importedCU = getModuleReference(alias);
 			}
 			//the original context check will make sure that self references only work at 
 			//the front of a module qualified name (this is good, avoids stuff like m1::m2::m2::m2...)

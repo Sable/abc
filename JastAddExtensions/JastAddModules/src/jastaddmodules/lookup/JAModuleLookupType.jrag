@@ -61,7 +61,7 @@ aspect JAModuleLookupType {
 	}
 	
 	//TODO: Shares a lot of cut n paste code with lookupPackage. Refactor to remove common code
-	//The condition includeImportedModulesLocalPackages is put in just because I wanted
+	//The condition includeModuleReferencesLocalPackages is put in just because I wanted
 	//type demand imports to come before lookups to the local packages of the imported
 	//modules. This implementation is extremely suspicious, try to redesign to make it go away. 
 	syn lazy SimpleSet ModuleCompilationUnit.moduleLookupType(String packageName, String typeName, boolean includeImportedModulesLocalPackages) {
@@ -93,7 +93,7 @@ aspect JAModuleLookupType {
 			
 			//lookup through packages of imported types
 			if (includeImportedModulesLocalPackages) {
-				for (ImportedModule importedCU : getImportedModuleMap().values()) {
+				for (ModuleReference importedCU : getModuleReferenceMap().values()) {
 					SimpleSet localFromImport = 
 						importedCU.getModuleCU().selfThenSuperLocalModuleLookupType(packageName, typeName);
 					for (Iterator iter = localFromImport.iterator(); iter.hasNext(); ) {

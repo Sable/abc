@@ -2,7 +2,7 @@
 //errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
 //the REWRITES
 
-import jastaddmodules.ImportedModule;
+import jastaddmodules.ModuleReference;
 import jastaddmodules.CycleType;
 
 aspect JAModuleErrorCheck {

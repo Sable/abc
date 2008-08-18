@@ -1,7 +1,7 @@
 //STANDING NOTE: Make VERY sure that all JAModule passes before the java 
 //errorcheck DO NOT TOUCH any AST nodes below CompilationUnit to avoid 
 //the REWRITES
-import jastaddmodules.ImportedModule;
+import jastaddmodules.ModuleReference;
 
 aspect ModuleCompilationUnit {
 
@@ -86,24 +86,24 @@ aspect ModuleCompilationUnit {
 	}
 
 	//String is the local alias of the imported CU
-	protected HashMap<String, ImportedModule> ModuleCompilationUnit.importedModules = new HashMap<String, ImportedModule>();
-	public void ModuleCompilationUnit.setImportedModules(HashMap<String, ImportedModule> modules) {
+	protected HashMap<String, ModuleReference> ModuleCompilationUnit.importedModules = new HashMap<String, ModuleReference>();
+	public void ModuleCompilationUnit.setModuleReferences(HashMap<String, ModuleReference> modules) {
 		this.importedModules = modules;
 	}
-	public void ModuleCompilationUnit.addImportedModule(String alias, ModuleCompilationUnit cu, AsType asType, ModuleImportType importType) {
-		importedModules.put(alias, new ImportedModule(cu, asType, importType));
+	public void ModuleCompilationUnit.addModuleReference(String alias, ModuleCompilationUnit cu, AsType asType, ModuleImportType importType) {
+		importedModules.put(alias, new ModuleReference(cu, asType, importType));
 	}
-	public ImportedModule ModuleCompilationUnit.removeImportedModule(String alias) {
+	public ModuleReference ModuleCompilationUnit.removeModuleReference(String alias) {
 		return importedModules.remove(alias);
 	}
-	public ModuleCompilationUnit ModuleCompilationUnit.removeImportedModule(ModuleCompilationUnit cu) {
-		Set<String> aliases = getImportedModuleAliases(cu);
+	public ModuleCompilationUnit ModuleCompilationUnit.removeModuleReference(ModuleCompilationUnit cu) {
+		Set<String> aliases = getModuleReferenceAliases(cu);
 		for (String alias: aliases) {
 			importedModules.remove(alias);
 		}
 		return cu; 
 	}
-	public Set<String> ModuleCompilationUnit.getImportedModuleAliases(ModuleCompilationUnit cu) {
+	public Set<String> ModuleCompilationUnit.getModuleReferenceAliases(ModuleCompilationUnit cu) {
 		Set<String> ret = new HashSet<String>();
 		for (String key : importedModules.keySet()) {
 			if (cu == importedModules.get(key).getModuleCU()) {
@@ -112,10 +112,10 @@ aspect ModuleCompilationUnit {
 		}
 		return ret;
 	}
-	public Map<String, ImportedModule> ModuleCompilationUnit.getImportedModuleMap() {
+	public Map<String, ModuleReference> ModuleCompilationUnit.getModuleReferenceMap() {
 		return importedModules;
 	}
-	public ImportedModule ModuleCompilationUnit.getImportedModule(String name) {
+	public ModuleReference ModuleCompilationUnit.getModuleReference(String name) {
 		return importedModules.get(name);
 	}
 
@@ -152,7 +152,7 @@ aspect ModuleCompilationUnit {
 
 		//dump the imported module cus into a hashset first to remove duplicates
 		HashSet<ModuleCompilationUnit> importedCUs = new HashSet<ModuleCompilationUnit>();
-		for (ImportedModule cu : getImportedModuleMap().values()) {
+		for (ModuleReference cu : getModuleReferenceMap().values()) {
 			importedCUs.add(cu.getModuleCU());
 		}
 		for (ModuleCompilationUnit mcu : importedCUs) {
@@ -166,7 +166,9 @@ aspect ModuleCompilationUnit {
 			assert (result) : "Context not found in instance context";
 		}
 		
-		if (context == null || getInstanceContext().size() == 0) {
+		if (isInstance() && 
+				(context == null || getInstanceContext().size() == 0)
+			) {
 			assert (getHostProgram() != null || getParent() != null) : "Unable to find host program in module " + getModuleName();
 			
 			//remove the super instances from the Program CU list
