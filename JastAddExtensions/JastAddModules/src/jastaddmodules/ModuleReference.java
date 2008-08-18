@@ -8,8 +8,13 @@ public class ModuleReference {
 	protected AST.ModuleCompilationUnit moduleCU = null;
 	protected AsType asType;
 	protected ModuleImportType importType;
-	public ModuleReference(AST.ModuleCompilationUnit importedCU, AsType asType, ModuleImportType importType) {
+	protected AST.ModuleCompilationUnit staticModuleType = null;
+	public ModuleReference(AST.ModuleCompilationUnit importedCU, 
+			AST.ModuleCompilationUnit staticModuleType, 
+			AsType asType, 
+			ModuleImportType importType) {
 		this.moduleCU = importedCU;
+		this.staticModuleType = staticModuleType;
 		this.asType = asType;
 		this.importType = importType;
 	}
@@ -28,6 +33,9 @@ public class ModuleReference {
 	}
 	public ModuleImportType getModuleImportType() {
 		return importType;
+	}
+	public AST.ModuleCompilationUnit getStaticModuleType() {
+		return staticModuleType;
 	}
 	
 }

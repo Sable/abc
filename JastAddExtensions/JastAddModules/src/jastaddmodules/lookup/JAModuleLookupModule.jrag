@@ -62,15 +62,27 @@ aspect JAModuleLookupModule {
 		}
 		return context.getRealInstance().lookupModule(this.getID());
 	}
+	//module lookup after the ModuleCUs have been rearranged in the tree
+	public ModuleReference ModuleAccess.lookupModuleReference() {
+		ModuleCompilationUnit context = getModuleCompilationUnit();
+		if (context == null) {
+			return null;
+		}
+		return context.getRealInstance().lookupModuleReference(this.getID());
+	}
+	
 	public ModuleCompilationUnit ModuleCompilationUnit.lookupModule(String name) {
 		return lookupModule(this, name);
+	}
+	public ModuleReference ModuleCompilationUnit.lookupModuleReference(String name) {
+		return lookupModuleReference(this, name);
 	}
 	//non-lazy, since merges use lookup and still rely on up-to-date lookups
 	//TODO: if too slow, add a wrapper method for when it's used in lookupType
 	//TODO: this code is unnecessarily complicated since it once had to do
 	//disambiguation when module separators where dots. Clean it up to reflect
 	//the more simple syntax
-	syn ModuleCompilationUnit ModuleCompilationUnit.lookupModule(ModuleCompilationUnit originalContext, String name) {
+	syn ModuleReference ModuleCompilationUnit.lookupModuleReference(ModuleCompilationUnit originalContext, String name) {
 		//matching is greedy. Find the longest match first, try it and return if a match was found
 		SortedSet<String> localAliases = new TreeSet<String>(new Comparator<String>() {
 			public int compare(String x, String y) {
@@ -95,10 +107,11 @@ aspect JAModuleLookupModule {
 			if (name.equals(alias)) {
 				//special case for self reference
 				if (alias.equals(getBaseCU().getModuleName())) {
-					return this;
+					//self reference
+					return new ModuleReference(this, getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm());
 				}
 				if (originalContext == this || getModuleReference(name).isExported()) {
-					return getModuleReference(alias).getModuleCU();
+					return getModuleReference(alias);
 				} 
 				continue;
 			}
@@ -114,18 +127,26 @@ aspect JAModuleLookupModule {
 			//	or it is exported
 			ModuleReference importedCU = null;
 			if (alias.equals(getBaseCU().getModuleName())) {
-				importedCU = new ModuleReference(this, new AsTypeNone(), new ModuleImportTypeNorm()); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
+				importedCU = new ModuleReference(this, getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm()); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
 			} else {
 				importedCU = getModuleReference(alias);
 			}
 			//the original context check will make sure that self references only work at 
 			//the front of a module qualified name (this is good, avoids stuff like m1::m2::m2::m2...)
 			if (originalContext == this || importedCU.isExported()) {
-				ModuleCompilationUnit ret = importedCU.getModuleCU().lookupModule(originalContext, trimmedName);
+				ModuleReference ret = importedCU.getModuleCU().lookupModuleReference(originalContext, trimmedName);
 				if (ret != null) {
 					return ret;
 				}
 			}
+		}
+		return null;
+	}
+	
+	syn ModuleCompilationUnit ModuleCompilationUnit.lookupModule(ModuleCompilationUnit originalContext, String name) {
+		ModuleReference reference = lookupModuleReference(originalContext, name);
+		if (reference != null) {
+			return reference.getModuleCU();
 		}
 		return null;
 	}

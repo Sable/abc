@@ -4,7 +4,7 @@ aspect CheckModuleCycles {
 	public void ASTNode.checkModuleCycles() {}
 	public void ModuleCompilationUnit.checkModuleCycles() {
 		LinkedList<ModuleReference> visited = new LinkedList<ModuleReference>();
-		visited.add(new ModuleReference(this, new AsTypeNone(), new ModuleImportTypeNorm()));
+		visited.add(new ModuleReference(this, this.getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm()));
 		checkModuleCycles(visited);
 	}
 	public boolean ModuleCompilationUnit.checkModuleCycles(LinkedList<ModuleReference> visited) {
@@ -37,12 +37,12 @@ aspect CheckModuleCycles {
 				if (importedCU == null) { //when the imported module does not exist
 					continue;
 				}
-				if (importedCU == this) {
-					importDecl.error("Module imports itself: " + this.getModuleName());
+				if (importedCU.hasSuperModule(this)) {
+					importDecl.error("Module imports itself or a subtype: " + this.getModuleName());
 					throw new jastadd.UnrecoverableSemanticError("Module imports itself: " + this.getModuleName());
 				}
 				LinkedList<ModuleReference> newVisited = new LinkedList<ModuleReference>(visited);
-				newVisited.add(new ModuleReference(importedCU, importDecl.getAsType(), importDecl.getModuleImportType()));
+				newVisited.add(new ModuleReference(importedCU, importedCU.getBaseCU(), importDecl.getAsType(), importDecl.getModuleImportType()));
 				noCycles = importedCU.checkModuleCycles(newVisited);
 				if (noCycles == false) {
 					return noCycles;

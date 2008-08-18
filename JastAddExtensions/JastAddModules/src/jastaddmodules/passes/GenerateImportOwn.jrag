@@ -142,7 +142,7 @@ aspect GenerateImportOwn {
 			}
 			assert (currImport != null) : "Imported module not instantiated";
 			
-			ret.checkedAddModuleReference(localAccessName, currImport, importDecl.getAsType(), importDecl.getModuleImportType());
+			ret.checkedAddModuleReference(localAccessName, currImport, currImport.getBaseCU(), importDecl.getAsType(), importDecl.getModuleImportType());
 			
 			if (instantiated) {
 				getHostProgram().getCompilationUnitList().addChild(currImport);			
@@ -180,6 +180,7 @@ aspect GenerateImportOwn {
 		ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
 		for (ModuleAccess access : mergeMember.getMergeModuleList()) {
 			ModuleCompilationUnit cu = access.lookupModule(); 
+			ModuleReference cuReference = access.lookupModuleReference();
 			
 			if (cu == null) {
 				String msg = "Unable to find module: " + access.getID();
@@ -187,7 +188,14 @@ aspect GenerateImportOwn {
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
 			
-			if (mergeBaseCU != null && mostSpecificModule(cu.getBaseCU(), mergeBaseCU) == null) {
+			//self replace error
+			if (access.getID().equals(ret.getBaseCU().getModuleName())) {
+				String msg = "Cannot merge reference to self"; 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
+			if (mergeBaseCU != null && mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU) == null) {
 				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);
@@ -205,9 +213,9 @@ aspect GenerateImportOwn {
 			
 			mergeTargets.add(cu);
 			if (mergeBaseCU == null) {
-				mergeBaseCU = cu.getBaseCU();
+				mergeBaseCU = cuReference.getStaticModuleType();
 			} else {
-				mergeBaseCU = mostSpecificModule(cu.getBaseCU(), mergeBaseCU);
+				mergeBaseCU = mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU);
 			}
 		}
 		//create result copy (instantiate from the base types of the merge targets with ret as a context)
@@ -226,7 +234,7 @@ aspect GenerateImportOwn {
 				
 		//attach the result copy to ret's import list
 		//import type is own. TODO: Check if this is correct
-		ret.checkedAddModuleReference(mergeAlias, mergedCU, mergeMember.getAsType(), new ModuleImportTypeOwn());
+		ret.checkedAddModuleReference(mergeAlias, mergedCU, mergedCU.getBaseCU(), mergeMember.getAsType(), new ModuleImportTypeOwn());
 				
 		return ret;
 	}
@@ -252,6 +260,7 @@ aspect GenerateImportOwn {
 		Collection<ModuleCompilationUnit> replaceTargets = new HashSet<ModuleCompilationUnit>();
 		for (ModuleAccess access : replaceMember.getReplaceModuleList()) {
 			ModuleCompilationUnit cu = access.lookupModule(); 
+			ModuleReference cuReference = access.lookupModuleReference();
 			
 			if (cu == null) {
 				String msg = "Unable to find module: " + access.getID();
@@ -259,10 +268,17 @@ aspect GenerateImportOwn {
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
 			
+			//self replace error
+			if (access.getID().equals(ret.getBaseCU().getModuleName())) {
+				String msg = "Cannot replace reference to self"; 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			}
+			
 			//if not type compatible
-			if (!cu.isInterfaceOf(replaceCU) && 
-				!replaceCU.hasSuperModule(cu) &&
-				!replaceCU.overridesModule(cu)) {
+			if (!cuReference.getStaticModuleType().isInterfaceOf(replaceCU) && 
+				!replaceCU.hasSuperModule(cuReference.getStaticModuleType()) &&
+				!replaceCU.overridesModule(cuReference.getStaticModuleType())) {
 				String msg = "Incompatible modules in replace: " + replaceCU.getBaseCU().getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);
@@ -307,6 +323,7 @@ aspect GenerateImportOwn {
 		//			detach the merge target from the context member's import list
 					AsType oldAsType = instanceContextCU.getModuleReference(oldAlias).getAsType();
 					ModuleImportType oldImportType = instanceContextCU.getModuleReference(oldAlias).getModuleImportType();
+					ModuleCompilationUnit oldStaticType = instanceContextCU.getModuleReference(oldAlias).getStaticModuleType();
 					assert (oldAlias != null) : "Unable to find old alias";
 					assert (oldImportType instanceof ModuleImportTypeOwn) : "Mergetargets should all be imported using own";
 					instanceContextCU.removeModuleReference(oldAlias);
@@ -322,18 +339,18 @@ aspect GenerateImportOwn {
 							}
 							//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
 							if (!(oldAlias.equals(mergeAlias))) {
-								instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldAsType, oldImportType);
+								instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldStaticType, oldAsType, oldImportType);
 							}
 						} else {
 							//check for replace
 							if (!(oldAlias.equals(mergeAlias))) {
-								instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldAsType, oldImportType);
+								instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldStaticType, oldAsType, oldImportType);
 							} else {
 								moduleMember.warning("Module is replacing itself: " + oldAlias); 
 							}
 						}
 					} else {
-						instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldAsType, oldImportType);
+						instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldStaticType, oldAsType, oldImportType);
 					}
 				}
 				
@@ -373,12 +390,12 @@ aspect GenerateImportOwn {
 		return context.getModuleName() + "$" + alias;
 	}
 	
-	public void ModuleCompilationUnit.checkedAddModuleReference(String alias, ModuleCompilationUnit cu, AsType asType, ModuleImportType importType) {
+	public void ModuleCompilationUnit.checkedAddModuleReference(String alias, ModuleCompilationUnit cu, ModuleCompilationUnit staticType, AsType asType, ModuleImportType importType) {
 		if (getModuleReference(alias) != null || alias.equals(getBaseCU().getModuleName())) {
 			getModuleDecl().error("Ambiguous module name " + alias + " in module " + this.getModuleName());
 			//throw new jastadd.UnrecoverableSemanticError("Ambiguous alias " + alias + " in module " + this.getModuleName());
 		}
-		addModuleReference(alias, cu, asType, importType);
+		addModuleReference(alias, cu, staticType, asType, importType);
 	}
 	
 	//Is true if the module was used as an instance in the ModuleCompilationUnit
