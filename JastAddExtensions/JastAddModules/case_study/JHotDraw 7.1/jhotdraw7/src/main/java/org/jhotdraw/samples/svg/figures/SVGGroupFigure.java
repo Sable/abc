@@ -21,6 +21,10 @@ import java.io.*;
 import java.util.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.samples.svg.*;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
 import org.jhotdraw.xml.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 /**

@@ -145,6 +145,7 @@ public class DefaultOSXApplication extends AbstractApplication {
 
     protected void initLookAndFeel() {
         try {
+        	//NEIL: Work around the reflection
             UIManager.setLookAndFeel(QuaquaManager.getLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();

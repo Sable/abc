@@ -1,7 +1,11 @@
-module org.jhotdraw.samples.draw;
+module org.jhotdraw.samples.svg;
 
 import own org.jhotdraw export as jhotdraw;
 import own net.n3.nanoxmlv2_2_1_4patch;
 replace jhotdraw::nanoxml with net.n3.nanoxmlv2_2_1_4patch;
+
+import own org.apache.batik export as batik;
+
+merge batik, jhotdraw::batik export as batik;
 
 export package *;

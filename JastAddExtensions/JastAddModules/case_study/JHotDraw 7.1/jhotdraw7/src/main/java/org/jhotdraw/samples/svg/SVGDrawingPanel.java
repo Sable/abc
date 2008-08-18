@@ -14,6 +14,10 @@
 package org.jhotdraw.samples.svg;
 
 import org.jhotdraw.gui.JPopupButton;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
 import org.jhotdraw.samples.svg.action.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.undo.*;

@@ -18,6 +18,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.*;
 import org.jhotdraw.app.action.*;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
 import org.jhotdraw.samples.svg.action.*;
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.util.*;
@@ -27,6 +31,11 @@ import org.jhotdraw.app.*;
 import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
+
 /**
  * SVGApplicationModel.
  *

@@ -21,6 +21,10 @@ import org.jhotdraw.draw.*;
 import org.apache.batik.ext.awt.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
+
 /**
  * Represents an SVG RadialGradient.
  *

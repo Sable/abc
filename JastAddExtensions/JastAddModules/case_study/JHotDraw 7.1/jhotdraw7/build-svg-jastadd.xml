@@ -23,16 +23,14 @@
 			verbose="false"
 			jastaddframework="false"
 			debug="false"
-			instancemodule="org.jhotdraw.samples.draw"
-			mainclass="org.jhotdraw.samples.draw::org.jhotdraw.samples.draw.Main"
+			instancemodule="org.jhotdraw.samples.svg"
+			mainclass="org.jhotdraw.samples.svg::org.jhotdraw.samples.svg.Main"
 			classpath="${libdir}/quaqua.jar;${libdir}/MRJAdapter.jar;${libdir}/java_30.zip;${libdir}/swing-layout.jar"
 		>
 			<fileset dir="${srcdir}">
 				<include name="**/*.java"/>
 				<include name="**/*.module"/>
 				<include name="net/n3/nanoxml/*.java"/> 
-				<include name="org/jhotdraw/samples/draw/Main.java"/> 
-				<include name="org/jhotdraw/samples/draw/DrawProject.java"/> 
 			</fileset>
         </jastaddmodules>
         <copy todir="${classdir}/org/jhotdraw/app/action/images">
@@ -61,6 +59,9 @@
         </copy> 
         <copy todir="${classdir}/org/jhotdraw/app">
             <fileset file="${srcdir}/org/jhotdraw/app/Label*.properties"/>
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/samples/svg">
+            <fileset file="${srcdir}/org/jhotdraw/samples/svg/Label*.properties"/>
         </copy>
     </target>
 </project>

@@ -12,6 +12,7 @@
  * the copyright holders. For details see accompanying license terms. 
  */
 
+module org.jhotdraw;
 package org.jhotdraw.samples.svg;
 
 import java.awt.*;

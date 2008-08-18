@@ -25,6 +25,10 @@ import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.samples.svg.*;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
 import org.jhotdraw.samples.svg.SVGConstants;
 import org.jhotdraw.undo.*;
 import org.jhotdraw.util.*;

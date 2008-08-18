@@ -28,6 +28,10 @@ import org.jhotdraw.geom.Dimension2DDouble;
 import org.jhotdraw.gui.*;
 import org.jhotdraw.io.*;
 import org.jhotdraw.draw.InputFormat;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
 import org.jhotdraw.samples.svg.figures.*;
 import org.jhotdraw.samples.svg.io.*;
 import org.jhotdraw.undo.*;

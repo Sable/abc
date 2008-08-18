@@ -1,0 +1,70 @@
+<project name="build-jastadd" default="application.compile" basedir=".">
+
+<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../../../../JastAdd/"/>
+	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="../../../classes"/>
+
+	<target name="init">
+        <property name="libdir" value="lib"/>
+        <property name="srcdir" value="src/main/java"/>
+        <property name="builddir" value="jastadd-build"/>
+        <property name="samplesdir" value="guide/samples/draw"/>
+        <property name="classdir" value="${builddir}/classes"/>
+        <property name="distdir" value="dist/Draw"/>
+        <property name="docdir" value="javadoc"/>
+        <property name="author" value="jhotdraw.org and contributors"/>
+        <property name="version" value="7.1"/>
+	</target>
+    <target name="clean" depends="init">
+        <delete dir="${classdir}" />
+    </target>
+    <target name="application.compile" depends="init,clean">
+        <mkdir dir="${classdir}"/>
+		<jastaddmodules outdir="${classdir}"
+			verbose="false"
+			jastaddframework="false"
+			debug="false"
+			instancemodule="org.jhotdraw.samples.pert"
+			mainclass="org.jhotdraw.samples.pert::org.jhotdraw.samples.pert.Main"
+			classpath="${libdir}/quaqua.jar;${libdir}/MRJAdapter.jar;${libdir}/java_30.zip;${libdir}/swing-layout.jar"
+		>
+			<fileset dir="${srcdir}">
+				<include name="**/*.java"/>
+				<include name="**/*.module"/>
+				<include name="net/n3/nanoxml/*.java"/> 
+			</fileset>
+        </jastaddmodules>
+        <copy todir="${classdir}/org/jhotdraw/app/action/images">
+            <fileset dir="${srcdir}/org/jhotdraw/app/action/images" />
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/app">
+            <fileset dir="${srcdir}/org/jhotdraw/app">
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/draw/action/images">
+            <fileset dir="${srcdir}/org/jhotdraw/draw/action/images" />
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/undo">
+            <fileset dir="${srcdir}/org/jhotdraw/undo">
+                <include name="*.properties"/>
+            </fileset>
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/undo/images">
+            <fileset dir="${srcdir}/org/jhotdraw/undo/images">
+                <include name="*.png"/>
+            </fileset>
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/draw">
+            <fileset file="${srcdir}/org/jhotdraw/draw/Label*.properties"/>
+        </copy> 
+        <copy todir="${classdir}/org/jhotdraw/app">
+            <fileset file="${srcdir}/org/jhotdraw/app/Label*.properties"/>
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/samples/pert">
+            <fileset file="${srcdir}/org/jhotdraw/samples/pert/Label*.properties"/>
+        </copy>
+        <copy todir="${classdir}/org/jhotdraw/samples/pert/images">
+            <fileset file="${srcdir}/org/jhotdraw/samples/pert/images/*.png"/>
+        </copy>
+    </target>
+</project>

@@ -119,7 +119,8 @@
             <classpath path="${libdir}/java_30.zip"/>
             <include name="org/jhotdraw/samples/svg/Main.java"/>
             <include name="org/jhotdraw/samples/svg/DrawProject.java"/> 
-            <include name="net/n3/nanoxml/*.java"/> 
+			<include name="net/n3/nanoxml/*.java"/> 
+			<exclude name="**/package-info.java"/>
         </javac>
         <copy todir="${classdir}/org/jhotdraw/app/action/images">
             <fileset dir="${srcdir}/org/jhotdraw/app/action/images" />

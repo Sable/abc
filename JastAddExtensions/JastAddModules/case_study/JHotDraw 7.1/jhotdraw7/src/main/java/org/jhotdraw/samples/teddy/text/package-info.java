@@ -1,2 +1,2 @@
-module org.jhotdraw;
+module org.jhotdraw.samples.teddy;
 package org.jhotdraw.samples.teddy.text;

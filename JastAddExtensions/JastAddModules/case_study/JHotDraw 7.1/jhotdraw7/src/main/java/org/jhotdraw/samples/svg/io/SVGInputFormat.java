@@ -33,6 +33,10 @@ import org.jhotdraw.xml.*;
 import org.jhotdraw.geom.*;
 import org.jhotdraw.io.*;
 import org.jhotdraw.samples.svg.*;
+
+//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
+import jhotdraw::org.jhotdraw.samples.svg.*;
+
 import org.jhotdraw.samples.svg.figures.*;
 import static org.jhotdraw.samples.svg.SVGConstants.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
