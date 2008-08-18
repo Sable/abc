@@ -1,2 +1,2 @@
-module org.apache.batik;
-package org.apache.batik.ext.awt;
+//module org.jhotdraw.batikfragment;
+//package org.apache.batik.ext.awt;

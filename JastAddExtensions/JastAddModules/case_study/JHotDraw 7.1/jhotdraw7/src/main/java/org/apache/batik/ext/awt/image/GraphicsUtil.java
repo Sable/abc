@@ -15,6 +15,7 @@
    limitations under the License.
 
  */
+module org.jhotdraw.batikfragment;
 package org.apache.batik.ext.awt.image;
 
 import java.awt.Composite;

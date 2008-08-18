@@ -7,4 +7,7 @@ import own net.n3.nanoxmlv2_2_1_4patch;
 
 replace nanoxml with net.n3.nanoxmlv2_2_1_4patch;
 
+import own org.jhotdraw.batikfragment;
+replace batik with org.jhotdraw.batikfragment; //use local version by default
+
 export package *;
