@@ -1,0 +1,7 @@
+module m2 implements mint;
+
+import own mint export as mint;
+
+replace mint with m2;
+
+export package *;

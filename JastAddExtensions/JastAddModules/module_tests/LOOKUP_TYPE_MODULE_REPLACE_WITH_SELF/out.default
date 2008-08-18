@@ -1,0 +1,124 @@
+Arguments: 
+-jastaddframework
+-debug
+-d
+classes
+-instance-module
+m1
+m1.module
+m2.module
+mint.module
+A.java
+A2.java
+A3.java
+Main.java
+../testlib/jastadd$framework.module
+End arguments
+----------Module contents----------
+------m1.module------
+module m1 implements mint;
+import own mint export as mint;
+import own m2 as m2a;
+import own m2 as m2b;
+------------------------
+------m2.module------
+module m2 implements mint;
+import own mint export as mint;
+------------------------
+------A3.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------A2.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------mint.module------
+module mint;
+------------------------
+----------CU AST before insert----------
+module: m1, file: m1.module, base module: m1
+module: m2, file: m2.module, base module: m2
+A3.java package:
+Main.java package:
+A.java package:
+A2.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: mint, file: mint.module, base module: mint
+----------CU AST after insert----------
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+	A2.java package:m1
+module: m2, file: m2.module, base module: m2
+	A3.java package:m2
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: mint, file: mint.module, base module: mint
+----------Module CU imports before import own----------
+module m1, base:m1, context:[], instantiated:false
+module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+module mint, base:mint, context:[], instantiated:false
+-------------Instance ModuleCompilationUnit------------
+module m1 implements mint;
+import own mint export as mint;
+import own m2 as m2a;
+import own m2 as m2b;
+replace mint with m1;
+replace m2b::mint with m1;
+export package *;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+	A2.java package:m1
+module: m2, file: m2.module, base module: m2
+	A3.java package:m2
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: mint, file: mint.module, base module: mint
+module: m1$m2a, file: m2.module, base module: m2
+	A3.java package:m1$m2a
+
+----------Module CU imports after import own----------
+module m1, base:m1, context:[m1, m1$m2b], instantiated:true
+	jastadd$framework:jastadd$framework
+	m2a:m1$m2a
+	m2b:m1
+	[export]mint:m1
+module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module mint, base:mint, context:[], instantiated:false
+module m1$m2a, base:m2, context:[m1, m1$m2a], instantiated:true
+	jastadd$framework:jastadd$framework
+	[export]mint:m1$m2a
+----------MCU collectTypes after import own----------
+
+Module: m1
+	m1.A
+	m1.AX
+Module: m2
+	m2.AX
+Module: jastadd$framework
+Module: mint
+Module: m1$m2a
+	m1$m2a.AX
+
+----------CU iterator----------
+m1.module, A.java, A2.java, m2.module, Main.java, ../testlib/jastadd$framework.module, mint.module, m2.module, A3.java

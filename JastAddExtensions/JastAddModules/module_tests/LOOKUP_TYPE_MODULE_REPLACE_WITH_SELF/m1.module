@@ -1,0 +1,11 @@
+module m1 implements mint;
+
+import own mint export as mint;
+import own m2 as m2a;
+import own m2 as m2b;
+
+replace mint with m1;
+
+replace m2b::mint with m1;
+
+export package *;

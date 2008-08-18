@@ -1,0 +1,6 @@
+module m1;
+import own m2;
+
+merge m1, m2 as merged;
+
+export package *;

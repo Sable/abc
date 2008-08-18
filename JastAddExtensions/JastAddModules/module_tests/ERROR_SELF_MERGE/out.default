@@ -1,0 +1,3 @@
+Unrecoverable semantic error(s) found.
+m1.module:2:
+  Semantic Error: Module imports itself or a subtype: m1

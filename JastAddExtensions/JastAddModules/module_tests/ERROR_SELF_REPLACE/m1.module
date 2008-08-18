@@ -1,0 +1,5 @@
+module m1;
+
+replace m1 with m1;
+
+export package *;
