@@ -1,4 +1,5 @@
 module org.apache.batik1_8pre implements org.apache.batik;
 export package 
 	org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt;
+	org.apache.batik.ext.awt,
+	org.apache.batik;

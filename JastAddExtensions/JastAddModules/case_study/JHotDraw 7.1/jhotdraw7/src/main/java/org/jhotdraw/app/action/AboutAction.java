@@ -21,6 +21,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import org.jhotdraw.app.*;
 
+//NEIL: Add batik import
+import batik::org.apache.batik.Version;
+
 /**
  * Displays a dialog showing information about the application.
  *
@@ -37,12 +40,14 @@ public class AboutAction extends AbstractApplicationAction {
         labels.configureAction(this, ID);
         }
     
+    //NEIL: Add versions of batik to show it works
     public void actionPerformed(ActionEvent evt) {
         Application app = getApplication();
         JOptionPane.showMessageDialog(app.getComponent(),
                 app.getName()+" "+app.getVersion()+"\n"+app.getCopyright()+
                 "\n\nRunning on Java "+System.getProperty("java.vm.version")+
-                ", "+System.getProperty("java.vendor"), 
+                ", "+System.getProperty("java.vendor")+
+                "\n\nBatik version " + Version.version, 
                 "About", JOptionPane.PLAIN_MESSAGE);
     }
 }
