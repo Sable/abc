@@ -30,12 +30,10 @@
 		id = "BreakpointMarker" 
 		name = "JastAddJ Breakpoint">
 	<super type="org.eclipse.debug.core.lineBreakpoint"/>
-	<persistent
-		value = "true">
-	</persistent>
+	<persistent value="true"/>
 	</extension>
 	
-	
+
    <extension point="org.eclipse.ui.editors.annotationTypes">
       <type
          name="org.jastadd.plugin.jastaddj.breakpointAnnotation"
@@ -248,15 +246,13 @@
 	</extension>
 
 	<!-- Marker updater -->
-	
 	<extension point= "org.eclipse.ui.editors.markerUpdaters"> 
     <updater 
-        id="org.eclipse.ui.texteditor.BasicMarkerUpdater" 
-        class="org.eclipse.ui.texteditor.BasicMarkerUpdater"
+        id="org.org.jastadd.plugin.jastaddj.BreakpointUpdater" 
+        class="org.jastadd.plugin.jastaddj.editor.debug.JastAddJBreakpointUpdater"
     	markerType="org.jastadd.plugin.jastaddj.BreakpointMarker">
     </updater>
     </extension>
-	
 	
 	<!-- JastAddJ Resource Filter -->
    

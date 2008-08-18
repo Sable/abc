@@ -275,7 +275,8 @@ public class JastAddJLaunchDelegate extends LaunchConfigurationDelegate {
             // no need to check breakpoints individually.
             return null;
         }
-        return breakpointManager.getBreakpoints(JastAddJBreakpoint.MARKER_ID);
+        //return breakpointManager.getBreakpoints(JastAddJBreakpoint.MARKER_ID);
+        return breakpointManager.getBreakpoints(JastAddJBreakpoint.JAVA_LINE_BREAKPOINT);
     }
 
 	

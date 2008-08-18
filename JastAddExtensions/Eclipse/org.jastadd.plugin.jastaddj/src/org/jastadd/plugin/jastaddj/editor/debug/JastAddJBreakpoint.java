@@ -17,7 +17,7 @@ import org.jastadd.plugin.model.JastAddModel.FileInfo;
 public class JastAddJBreakpoint extends JavaLineBreakpoint {
 
 	public static final String MARKER_ID = "org.jastadd.plugin.jastaddj.BreakpointMarker";
-	private static final String JAVA_LINE_BREAKPOINT = "org.eclipse.jdt.debug.javaLineBreakpointMarker";
+	public static final String JAVA_LINE_BREAKPOINT = "org.eclipse.jdt.debug.javaLineBreakpointMarker";
 	
 	protected FileInfo fileInfo;
 	protected String typeName;
@@ -36,8 +36,8 @@ public class JastAddJBreakpoint extends JavaLineBreakpoint {
 				attributes.put(SUSPEND_POLICY, new Integer(getDefaultSuspendPolicy()));
 				
 				// create the marker
-				//setMarker(resource.createMarker(MARKER_ID));
-				setMarker(resource.createMarker(JAVA_LINE_BREAKPOINT));
+				setMarker(resource.createMarker(MARKER_ID));
+				//setMarker(resource.createMarker(JAVA_LINE_BREAKPOINT));
 				// add attributes
 				attributes.put(IBreakpoint.ID, getModelIdentifier());
 				attributes.put(IBreakpoint.ENABLED, Boolean.valueOf(true));

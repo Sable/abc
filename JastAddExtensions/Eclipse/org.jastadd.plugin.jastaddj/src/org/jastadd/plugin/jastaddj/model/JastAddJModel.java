@@ -1184,11 +1184,6 @@ public class JastAddJModel extends JastAddModel {
 		}
 	}
 	
-	public Collection test(int offset, StringBuffer buf, IProject project, 
-			String name, IJastAddNode node, String filter, String content) {
-		return new ArrayList();
-	}
-	
 	public Collection recoverAndCompletion(int documentOffset, StringBuffer buf, 
 			IProject project, String fileName, IJastAddNode node, String filter, 
 			String leftContent) throws IOException, Exception {

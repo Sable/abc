@@ -62,25 +62,27 @@
 		<provider class="org.jastadd.plugin.jastadd.Model"/>
  	</extension>
  	
- 	<!-- JastAdd Aspect Editor -->
+ 	
  
 	<extension point = "org.eclipse.ui.editors">
+	<!-- JastAdd Aspect Editor -->
+
 	<editor
 		class = "org.jastadd.plugin.jastadd.AspectEditor"
 		extensions = "jrag,jadd"
 		icon = "icons/obj16/jrag.gif"
 		id = "org.jastadd.plugin.jastadd.AspectEditor"
-		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.AspectContributor"  
 		name = "JastAdd Aspect Editor">
 	</editor>
-
+	
     <!-- JastAdd Grammar Editor -->
  	<editor
 		class = "org.jastadd.plugin.jastadd.ASTEditor"
 		extensions = "ast"
 		icon = "icons/obj16/ast.gif"
-		id = "org.jastadd.plugin.jastadd.JastAddGrammarEditor"
-		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		id = "org.jastadd.plugin.jastadd.ASTEditor"
+		contributorClass="org.jastadd.plugin.jastadd.ASTEditorContributor"  
 		name = "JastAdd Grammar Editor">
 	</editor>
 	
@@ -90,7 +92,7 @@
 		extensions = "flex"
 		icon = "icons/obj16/flex.gif"
 		id = "org.jastadd.plugin.jastadd.JFlexEditor"
-		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.JFlexEditorContributor"  
 		name = "JFlex Editor">
 	</editor>
 	
@@ -100,7 +102,7 @@
 		extensions = "parser"
 		icon = "icons/obj16/parser.gif"
 		id = "org.jastadd.plugin.jastadd.ParserEditor"
-		contributorClass="org.jastadd.plugin.jastaddj.editor.JastAddJEditorContributor"  
+		contributorClass="org.jastadd.plugin.jastadd.ParserEditorContributor"  
 		name = "Parser Editor">
 	</editor>
 	</extension>
@@ -152,12 +154,12 @@
 	<extension point = "org.eclipse.ui.editorActions">
 	<editorContribution
 		targetID = "org.jastadd.plugin.jastadd.AspectEditor"
-		id = "org.jastadd.plugin.jastaddj.JastAddJBreakpointRulerActions">
+		id = "org.jastadd.plugin.jastadd.JastAddJBreakpointRulerActions">
 		<action
 			label = "Add Breakpoint"
 			class = "org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
 			actionID = "RulerDoubleClick"
-			id = "org.jastadd.plugin.jastaddj.ManageBreakpointRulerAction">
+			id = "org.jastadd.plugin.jastadd.ManageBreakpointRulerAction">
 		</action>
 	</editorContribution>
 	</extension>

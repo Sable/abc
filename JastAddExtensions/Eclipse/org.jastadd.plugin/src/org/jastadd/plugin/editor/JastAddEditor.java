@@ -134,7 +134,7 @@ public abstract class JastAddEditor extends TextEditor {
 			IFileEditorInput fileInput = (IFileEditorInput)input;
 			IFile file = fileInput.getFile();
 			model = JastAddModelProvider.getModel(file);
-			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model, file));		
+			setSourceViewerConfiguration(new JastAddSourceViewerConfiguration(model, file));
 		}
 		else if (input instanceof JastAddStorageEditorInput) {
 			JastAddStorageEditorInput storageInput = (JastAddStorageEditorInput)input;
