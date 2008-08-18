@@ -12,6 +12,9 @@ aspect CheckModuleInterfacePackageImplements {
 		if (isModuleInterface()) {
 			return;
 		} 
+		if (!isModuleInstantiated()) {
+			return;
+		}
 		//check if the exported packages in the implemented interfaces are part of
 		//the exported local packages here
 		for (ModuleAccess ma: getModuleDecl().getImplementsList()) {
