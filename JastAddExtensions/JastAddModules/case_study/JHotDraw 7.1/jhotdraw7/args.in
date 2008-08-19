@@ -1,12 +1,13 @@
 -d
 jastadd-build/classes
+-verbose
 -classpath
 lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
 -instance-module
-org.jhotdraw.samples.draw
+org.jhotdraw.samples.svg
 -mainclass
-org.jhotdraw.samples.draw::org.jhotdraw.samples.draw.Main
--debug
+org.jhotdraw.samples.svg::org.jhotdraw.samples.svg.Main
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AreaOfInterestHintKey.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AvoidTilingHintKey.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\BufferedImageHintKey.java
@@ -111,6 +112,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.pert.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.svg.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.teddy.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\LinearGradientPaint.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\LinearGradientPaintContext.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\MultipleGradientPaint.java

@@ -4,4 +4,7 @@ import own org.jhotdraw export as jhotdraw;
 import own net.n3.nanoxmlv2_2_1_4patch;
 replace jhotdraw::nanoxml with net.n3.nanoxmlv2_2_1_4patch;
 
+//don't replace default batik version
+//replace jhotdraw::batik with org.apache.batik1_8pre;
+
 export package *;
