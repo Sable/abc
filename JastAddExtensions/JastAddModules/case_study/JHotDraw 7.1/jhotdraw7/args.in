@@ -1,6 +1,5 @@
 -d
 jastadd-build/classes
--verbose
 -classpath
 lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
 -instance-module
