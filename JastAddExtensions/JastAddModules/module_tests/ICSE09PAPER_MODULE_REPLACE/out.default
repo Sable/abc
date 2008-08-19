@@ -199,8 +199,8 @@ module myapplication$parserV2, base:parserV2, context:[myapplication, myapplicat
 Module: myapplication
 	myapplication.MyApplication
 Module: parserV1_2
-	parserV1_2.$parser.Parser
 	parserV1_2.$parser.XMLParser
+	parserV1_2.$parser.Parser
 Module: scanner
 	scanner.$scanner.Scanner
 Module: parserV1_1

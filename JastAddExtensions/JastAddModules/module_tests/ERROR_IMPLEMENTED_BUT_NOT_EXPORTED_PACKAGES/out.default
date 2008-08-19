@@ -1,4 +1,8 @@
 m2.module:1,22:
-  Semantic Error: Implemented module interface m2int exports package d.e.f but is not exported in module m2
+  Semantic Error: Implemented module interface m2int exports package d.e.f but is not exported in module m1$m2
 m2.module:1,22:
-  Semantic Error: Implemented module interface m2int exports package a.b.c but is not present in module m2
+  Semantic Error: Implemented module interface m2int exports package a.b.c but is not present in module m1$m2
+m2.module:1,22:
+  Semantic Error: Implemented module interface m2int exports package d.e.f but is not exported in module m1$m2
+m2.module:1,22:
+  Semantic Error: Implemented module interface m2int exports package a.b.c but is not present in module m1$m2

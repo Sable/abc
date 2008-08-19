@@ -136,8 +136,8 @@ Module: appv2
 	appv2.App
 	appv2.Util
 Module: appv1_1
-	appv1_1.App
 	appv1_1.Util
+	appv1_1.App
 Module: appv1_2
 Module: myapplication$appv1_2$super$appv1_1
 	myapplication$appv1_2$super$appv1_1.Util

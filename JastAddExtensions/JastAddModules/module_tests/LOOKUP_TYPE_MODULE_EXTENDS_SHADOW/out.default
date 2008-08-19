@@ -132,8 +132,8 @@ Module: m1x
 	m1x.AX
 	m1x.$pack.P
 Module: m1
-	m1.A
 	m1.$pack.P
+	m1.A
 Module: m1xx
 	m1xx.$pack.P
 	m1xx.AXX
@@ -142,8 +142,8 @@ Module: m1xx$super$m1x
 	m1xx$super$m1x.$pack.P
 	m1xx$super$m1x.AX
 Module: m1xx$super$m1
-	m1xx$super$m1.$pack.P
 	m1xx$super$m1.A
+	m1xx$super$m1.$pack.P
 
 ----------CU iterator----------
 m1x.module, m1.module, Main.java, m1xx.module, AXX.java, m1xxpack/P.java, ../testlib/jastadd$framework.module, m1x.module, AX.java, m1xpack/P.java, m1.module, A.java, m1pack/P.java

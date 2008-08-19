@@ -111,8 +111,8 @@ module m1$m2a, base:m2, context:[m1, m1$m2a], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.A
 	m1.AX
+	m1.A
 Module: m2
 	m2.AX
 Module: jastadd$framework

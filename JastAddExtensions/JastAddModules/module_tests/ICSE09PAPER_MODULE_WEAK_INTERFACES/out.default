@@ -204,8 +204,8 @@ Module: enginephysics
 	enginephysics.EnginePhysics
 Module: org.x.y.math
 	org.x.y.math.$org.x.y.math.calculus.Calculus
-	org.x.y.math.$org.x.y.math.complex.Complex
 	org.x.y.math.$org.x.y.math.matrices.Matrices
+	org.x.y.math.$org.x.y.math.complex.Complex
 Module: org.x.y.calculus
 Module: myfourier
 	myfourier.MyFourier
@@ -217,8 +217,8 @@ Module: myapplication$enginephysics
 Module: myapplication$myfourier
 	myapplication$myfourier.MyFourier
 Module: myapplication$org.x.y.math
-	myapplication$org.x.y.math.$org.x.y.math.matrices.Matrices
 	myapplication$org.x.y.math.$org.x.y.math.complex.Complex
+	myapplication$org.x.y.math.$org.x.y.math.matrices.Matrices
 	myapplication$org.x.y.math.$org.x.y.math.calculus.Calculus
 
 ----------CU iterator----------

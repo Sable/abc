@@ -286,8 +286,8 @@ Module: m3xx
 	m3xx.CXX
 	m3xx.$pack.CXX
 Module: m3xxx
-	m3xxx.$pack.CXXX
 	m3xxx.CXXX
+	m3xxx.$pack.CXXX
 Module: m3xxxx
 Module: m1
 	m1.A
@@ -309,12 +309,12 @@ Module: m1.m3xxxx$super$m3x
 	m1.m3xxxx$super$m3x.$pack.CX
 	m1.m3xxxx$super$m3x.CX
 Module: m1.m3xxxx$super$m3
-	m1.m3xxxx$super$m3.$pack.C
 	m1.m3xxxx$super$m3.C
+	m1.m3xxxx$super$m3.$pack.C
 Module: m1.m3xxxx
 Module: m1.m3xx$super$m3x
-	m1.m3xx$super$m3x.CX
 	m1.m3xx$super$m3x.$pack.CX
+	m1.m3xx$super$m3x.CX
 Module: m1.m3xx$super$m3
 	m1.m3xx$super$m3.$pack.C
 	m1.m3xx$super$m3.C
@@ -322,8 +322,8 @@ Module: m1.m3xx
 	m1.m3xx.$pack.CXX
 	m1.m3xx.CXX
 Module: m1.m3xxx$super$m3xx
-	m1.m3xxx$super$m3xx.$pack.CXX
 	m1.m3xxx$super$m3xx.CXX
+	m1.m3xxx$super$m3xx.$pack.CXX
 Module: m1.m3xxx$super$m3x
 	m1.m3xxx$super$m3x.CX
 	m1.m3xxx$super$m3x.$pack.CX
@@ -331,8 +331,8 @@ Module: m1.m3xxx$super$m3
 	m1.m3xxx$super$m3.C
 	m1.m3xxx$super$m3.$pack.C
 Module: m1.m3xxx
-	m1.m3xxx.$pack.CXXX
 	m1.m3xxx.CXXX
+	m1.m3xxx.$pack.CXXX
 
 ----------CU iterator----------
 m2.module, m3.module, m3xx.module, m3xxx.module, m3xxxx.module, m1.module, A.java, m3x.module, Main.java, ../testlib/jastadd$framework.module, m2.module, B.java, m2.module, B.java, m3xxx.module, pack/CXXX.java, CXXX.java, m3xx.module, CXX.java, pack/CXX.java, m3x.module, CX.java, pack/CX.java, m3.module, C.java, pack/C.java, m3xxxx.module, m3x.module, CX.java, pack/CX.java, m3.module, C.java, pack/C.java, m3xx.module, CXX.java, pack/CXX.java, m3xx.module, CXX.java, pack/CXX.java, m3x.module, CX.java, pack/CX.java, m3.module, C.java, pack/C.java, m3xxx.module, pack/CXXX.java, CXXX.java

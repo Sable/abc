@@ -116,8 +116,8 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.$m1pack.P
 	m1.A
+	m1.$m1pack.P
 Module: m2
 	m2.B
 	m2.$m2pack.P
