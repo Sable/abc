@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 public class JastAddModulesFileArgs {
 	public static void main(String args[]) {
-		LinkedList<String> fileArgs = new LinkedList<String>();
+		final LinkedList<String> fileArgs = new LinkedList<String>();
 		if (args.length != 1) {
 			System.err.println("Usage: JastAddModulesFileArgs <argsfile>");
 		}
@@ -19,7 +19,12 @@ public class JastAddModulesFileArgs {
 				fileArgs.add(line);
 				System.out.println(line);
 			}
-			new JastAddModules().compile(fileArgs.toArray(new String[0]));
+			Runnable run = new Runnable() {
+				public void run() {
+					new JastAddModules().compile(fileArgs.toArray(new String[0]));
+				}
+			};
+			new Thread(run).start();
 		} catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();

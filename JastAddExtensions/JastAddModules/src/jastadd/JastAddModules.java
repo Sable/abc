@@ -27,9 +27,19 @@ public class JastAddModules extends JastAdd {
 	public static final String JASTADD_FRAMEWORK_OPTION = "-jastaddframework";
 	public static final String MAIN_CLASS_OPTION = "-mainclass";
 
-	public static void main(String args[]) {
-		if (!new JastAddModules().compile(args)) {
-			System.exit(1);
+	public static void main(final String args[]) {
+		Runnable run = new Runnable() {
+			public void run() {
+				if (!new JastAddModules().compile(args)) {
+					System.exit(1);
+				}
+			}
+		};
+		Thread compileThread = new Thread(run);
+		compileThread.start();
+		try {
+			compileThread.join();
+		} catch (Exception e) {
 		}
 	}
 
