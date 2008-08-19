@@ -5,10 +5,6 @@ aspect CheckModuleInterfacePackageImplements {
 	//should be done after collect local module packages
 	public void ASTNode.checkModuleInterfacePackageImplements() {}
 	public void ModuleCompilationUnit.checkModuleInterfacePackageImplements() {
-		//only check for base cus to prevent repetition
-		if (isInstance()) {
-			return;
-		}
 		if (isModuleInterface()) {
 			return;
 		} 

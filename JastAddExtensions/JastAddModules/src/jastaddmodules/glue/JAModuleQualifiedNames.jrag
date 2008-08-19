@@ -2,7 +2,6 @@
 aspect JAModuleQualifiedNames {
 	public ModuleDot Expr.moduleQualifiesAccess(Access access) {
 		ModuleDot dot = new ModuleDot(this, access);
-		dot.lastDot = dot;
 		return dot;
 	}
 	
