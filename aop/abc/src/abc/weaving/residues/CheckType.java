@@ -140,13 +140,12 @@ public class CheckType extends Residue {
         if(sense) test=Jimple.v().newEqExpr(io,IntConstant.v(0));
         else test=Jimple.v().newNeExpr(io,IntConstant.v(0));
         Stmt abort=Jimple.v().newIfStmt(test,fail);
-        if(wc.getKindTag() == null) {
-            wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
-        }
+        wc.setKindTag(InstructionKindTag.ADVICE_TEST);
         Tagger.tagStmt(instancetest, wc);
         units.insertAfter(instancetest,begin);
         Tagger.tagStmt(abort, wc);
         units.insertAfter(abort,instancetest);
+        wc.setKindTag(null); //gpothier. Otherwise the tag gets propagated
         return abort;
     }
 

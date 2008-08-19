@@ -25,16 +25,27 @@ import java.util.List;
 import java.util.Set;
 
 import polyglot.util.InternalCompilerError;
-
-import soot.*;
-import soot.jimple.*;
+import soot.Body;
+import soot.Local;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
+import soot.jimple.Jimple;
+import soot.jimple.NewExpr;
+import soot.jimple.NopStmt;
+import soot.jimple.Stmt;
 import soot.tagkit.Host;
 import soot.util.Chain;
-import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.Residue;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 
 /** A base class for join point shadows that apply to a single statement
  *  (or pair of statements in the case of constructor calls)
@@ -152,6 +163,7 @@ public abstract class StmtShadowMatch extends ShadowMatch {
                                 //lg.generateLocal(type,
                                 //              "uniqueArgLocal" + (nextUniqueID++));
                                 AssignStmt as=Jimple.v().newAssignStmt(l,val);
+                                Tagger.tagStmt(as, InstructionKindTag.PARAMETER_BACKUP);
                                 statements.insertBefore(as, stmt);
                                 invokeEx.getArgBox(i).setValue(l);
                         }

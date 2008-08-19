@@ -219,6 +219,11 @@ public class AdviceInliner { //extends BodyTransformer {
 		public final static int INLINE_DIRECTLY=2;
 		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr);
 		public boolean considerForInlining(String methodName);
+		
+		/**
+		 * Indicates if this option object corresponds to the given option class.
+		 */
+		public boolean hasOption(Class aOptionClass);
 	}
 	
 	public static class CombinedInlineOptions implements InlineOptions {
@@ -238,6 +243,15 @@ public class AdviceInliner { //extends BodyTransformer {
 			for (Iterator it=inlineOptions.iterator(); it.hasNext();) {
 				InlineOptions opts=(InlineOptions)it.next();
 				if (opts.considerForInlining(methodName)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		public boolean hasOption(Class aOptionClass) {
+			for (Iterator it=inlineOptions.iterator(); it.hasNext();) {
+				InlineOptions opts=(InlineOptions)it.next();
+				if (opts.hasOption(aOptionClass)) {
 					return true;
 				}
 			}
@@ -423,15 +437,11 @@ public class AdviceInliner { //extends BodyTransformer {
                             }
                             
                             // are we inlining an advice body?
-                            boolean adviceBody = false;
-                            if(inlineOptions instanceof AroundAdviceMethodInlineOptions
-                                    || inlineOptions instanceof AfterBeforeMethodInlineOptions)
-                            {
-                                adviceBody = true;
-                            }
+                            boolean adviceBody = inlineOptions.hasOption(AroundAdviceMethodInlineOptions.class)
+                            		|| inlineOptions.hasOption(AfterBeforeMethodInlineOptions.class);
                             
                             // are we inlining a proceed method?
-                            if(inlineOptions instanceof ProceedMethodInlineOptions) {
+                            if(inlineOptions.hasOption(ProceedMethodInlineOptions.class)) {
                                 Tagger.tagProceedRange(newStmts);
                             }
 
@@ -700,6 +710,11 @@ public class AdviceInliner { //extends BodyTransformer {
 			
 			return InlineOptions.DONT_INLINE;
 		}
+		
+		public boolean hasOption(Class aOptionClass) {
+			return aOptionClass.isAssignableFrom(getClass());
+		}
+		
 	}
 
 	private static boolean bodyHasRelevantCalls(InlineOptions inlineOptions, Body body, InlineRange range) {
@@ -805,6 +820,11 @@ public class AdviceInliner { //extends BodyTransformer {
 
 			return DONT_INLINE;
 		}
+		
+		public boolean hasOption(Class aOptionClass) {
+			return aOptionClass.isAssignableFrom(getClass());
+		}
+
 	}
 	private class AroundAdviceMethodInlineOptions implements InlineOptions {
 		public boolean considerForInlining(String name) {
@@ -902,6 +922,11 @@ public class AdviceInliner { //extends BodyTransformer {
 			
 			return InlineOptions.DONT_INLINE;
 		}
+		
+		public boolean hasOption(Class aOptionClass) {
+			return aOptionClass.isAssignableFrom(getClass());
+		}
+
 	}
 	private class ProceedMethodInlineOptions implements InlineOptions {
 		public ProceedMethodInlineOptions() {
@@ -995,6 +1020,11 @@ public class AdviceInliner { //extends BodyTransformer {
 
 			return DONT_INLINE;
 		}
+		
+		public boolean hasOption(Class aOptionClass) {
+			return aOptionClass.isAssignableFrom(getClass());
+		}
+
 	}
 	
 
@@ -1042,6 +1072,11 @@ public class AdviceInliner { //extends BodyTransformer {
 			
 			return DONT_INLINE;
 		}
+		
+		public boolean hasOption(Class aOptionClass) {
+			return aOptionClass.isAssignableFrom(getClass());
+		}
+
 	}
 	
 	public void specializeReturnTypesOfInlineMethods() {

@@ -126,6 +126,12 @@ public class InstructionKindTag extends InstructionTag {
     /* Inlined proceed body. Non-overhead, corresponds to BASE_CODE or ASPECT_CODE. */
     public static final InstructionKindTag INLINED_PROCEED = new InstructionKindTag(40);
     
+    /* Exposure of context information to the advice */
+    public static final InstructionKindTag CONTEXT_EXPOSURE = new InstructionKindTag(41);
+    
+    /* backup of call parameter */
+    public static final InstructionKindTag PARAMETER_BACKUP = new InstructionKindTag(42);
+    
     public static final InstructionKindTag TEST1 = new InstructionKindTag(99);
     public static final InstructionKindTag TEST2 = new InstructionKindTag(98);
     public static final InstructionKindTag TEST3 = new InstructionKindTag(97);

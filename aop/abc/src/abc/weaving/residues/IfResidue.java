@@ -43,6 +43,7 @@ import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
+import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.ConstructorInliningMap;
 import abc.weaving.weaver.WeavingContext;
@@ -87,7 +88,10 @@ public class IfResidue extends Residue {
 	(SootMethod method,LocalGeneratorEx localgen,
 	 Chain units,Stmt begin,Stmt fail,boolean sense,
 	 WeavingContext wc) {
-
+    	
+    if(wc.getKindTag() == null) {
+        wc.setKindTag(InstructionKindTag.ADVICE_TEST);
+    }
 	List actuals=new Vector(args.size());
 	Iterator it=args.iterator();
 	Stmt currStmt = begin;

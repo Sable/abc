@@ -40,7 +40,6 @@ import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.Aspect;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Singleton;
 import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.Tagger;
@@ -90,6 +89,7 @@ public class AspectOf extends Residue {
 			throw new InternalCompilerError(
 					"aspectOf residue should never be used negated");
 
+        wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
 		List paramTypes;
 		List params;
 		Local aspectref;
@@ -113,6 +113,7 @@ public class AspectOf extends Residue {
 						aspct.getType(), mangledLocalName);
 				AssignStmt init = Jimple.v().newAssignStmt(aspectref,
 						NullConstant.v());
+				Tagger.tagStmt(init, wc);
 				Stmt s = Restructure.findFirstRealStmtOrNull(method, units);
 				if (s == null)
 					units.addFirst(init);
@@ -120,9 +121,11 @@ public class AspectOf extends Residue {
 					units.insertBefore(init, s);
 			}
 			NopStmt skip = Jimple.v().newNopStmt();
+			Tagger.tagStmt(skip, wc);
 			units.insertAfter(skip, begin);
 			IfStmt check = Jimple.v().newIfStmt(
 					Jimple.v().newNeExpr(aspectref, NullConstant.v()), skip);
+			Tagger.tagStmt(check, wc);
 			units.insertAfter(check, begin);
 			aspectOfInsertionPoint=check; 
 			lastStmt=skip;
@@ -146,10 +149,8 @@ public class AspectOf extends Residue {
 				Jimple.v().newStaticInvokeExpr(
 						Scene.v().makeMethodRef(aspct, "aspectOf", paramTypes,
 								aspct.getType(), true), params));
-		//if(wc.kindTag == null) {
-        wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
-        //}
-        Tagger.tagStmt(stmtAspectOf, wc);
+
+		Tagger.tagStmt(stmtAspectOf, wc);
 		if (lastStmt==null)
 			lastStmt=stmtAspectOf;
 
