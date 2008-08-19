@@ -527,7 +527,8 @@ aspect IntertypeMethodCodegeneration {
       }
     }
     MethodDecl m = decl();
-    if(!(m instanceof IntertypeMethodDecl) && m.isPrivate() && !thisType().hasMethod(name())) {
+    //if(!(m instanceof IntertypeMethodDecl) && m.isPrivate() && !thisType().hasMethod(name())) {
+    if(!(m instanceof IntertypeMethodDecl) && requiresAccessor()) {
       /* Access to private methods in enclosing types:
       The original MethodAccess is replaced with an access to an accessor method
       built by createAccessor(). This method is built lazily and differs from
@@ -544,7 +545,6 @@ aspect IntertypeMethodCodegeneration {
       decl().createSuperAccessor(superAccessorTarget());
     }
     super.transformation();
-
   }
   
   syn String IntertypeMethodDecl.implBodyName() = "impl$body$" + name();
