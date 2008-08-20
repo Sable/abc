@@ -3,9 +3,9 @@ jastadd-build/classes
 -classpath
 lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
 -instance-module
-org.jhotdraw.samples.svg
+org.jhotdraw.samples.draw
 -mainclass
-org.jhotdraw.samples.svg::org.jhotdraw.samples.svg.Main
+org.jhotdraw.samples.draw::org.jhotdraw.samples.draw.Main
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AreaOfInterestHintKey.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AvoidTilingHintKey.java
@@ -105,6 +105,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batikv1_8pre.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.batikfragment.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.draw.drawjhotdraw.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.draw.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.net.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.odg.module
@@ -414,6 +415,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawingPanel.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawingPanelBeanInfo.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\Main.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\drawjhotdraw\AboutAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\ConnectingFiguresSample.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\EditorSample.java

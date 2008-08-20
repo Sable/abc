@@ -1,4 +1,4 @@
-Buildfile: build-svg-jastadd.xml
+Buildfile: build-draw-jastadd.xml
 
 init:
 
@@ -8,34 +8,80 @@ clean:
 application.compile:
     [mkdir] Created dir: D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes
 [jastaddmodules] generating node types and weaving aspects
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Gradient.java:15:
-[jastaddmodules]   WARNING: The module declaration is in conflict with the one defined in D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\package-info.java
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\MultiEditorSample.java:92:
-[jastaddmodules]   WARNING: show() in java.awt.Window has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\SmartConnectionFigureSample.java:95:
-[jastaddmodules]   WARNING: show() in java.awt.Window has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JSheet.java:331:
-[jastaddmodules]   WARNING: hide() in java.awt.Dialog has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JSheet.java:348:
-[jastaddmodules]   WARNING: show() in java.awt.Dialog has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\LabeledLineConnectionFigureSample.java:82:
-[jastaddmodules]   WARNING: show() in java.awt.Window has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGAttributeKeys.java:15:
-[jastaddmodules]   WARNING: The module declaration is in conflict with the one defined in D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\package-info.java
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\ConnectingFiguresSample.java:62:
-[jastaddmodules]   WARNING: show() in java.awt.Window has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\SelectionToolSample.java:96:
-[jastaddmodules]   WARNING: show() in java.awt.Window has been deprecated
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\EditorSample.java:66:
-[jastaddmodules]   WARNING: show() in java.awt.Window has been deprecated
-[jastaddmodules] done
-     [copy] Copying 10 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\app\action\images
-     [copy] Copying 4 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\app
-     [copy] Copying 57 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\draw\action\images
-     [copy] Copying 5 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\undo
-     [copy] Copying 2 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\undo\images
-     [copy] Copying 2 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\draw
-     [copy] Copying 1 file to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\samples\svg
-
-BUILD SUCCESSFUL
-Total time: 1 minute 9 seconds
+[jastaddmodules] Errors:
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:145,36:
+[jastaddmodules]   Semantic Error: NewAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:145,46:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:149,36:
+[jastaddmodules]   Semantic Error: OpenAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:149,47:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:153,36:
+[jastaddmodules]   Semantic Error: LoadAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:153,47:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:157,30:
+[jastaddmodules]   Semantic Error: SaveAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:157,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:159,30:
+[jastaddmodules]   Semantic Error: UndoAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:159,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:161,30:
+[jastaddmodules]   Semantic Error: RedoAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:161,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:164,30:
+[jastaddmodules]   Semantic Error: CutAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:164,40:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:166,30:
+[jastaddmodules]   Semantic Error: CopyAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:166,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:168,30:
+[jastaddmodules]   Semantic Error: PasteAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:168,42:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:189,30:
+[jastaddmodules]   Semantic Error: UndoAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:189,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:191,30:
+[jastaddmodules]   Semantic Error: RedoAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:191,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:194,30:
+[jastaddmodules]   Semantic Error: CutAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:194,40:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:196,30:
+[jastaddmodules]   Semantic Error: CopyAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:196,41:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:198,30:
+[jastaddmodules]   Semantic Error: PasteAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:198,42:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:200,30:
+[jastaddmodules]   Semantic Error: DuplicateAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:200,46:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:202,30:
+[jastaddmodules]   Semantic Error: DeleteAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:202,43:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:205,30:
+[jastaddmodules]   Semantic Error: SelectAllAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:205,46:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:207,23:
+[jastaddmodules]   Semantic Error: FindAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:207,34:
+[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:209,29:
+[jastaddmodules]   Semantic Error: FindAction not found
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:209,40:
+[jastaddmodules]   Semantic Error: no field named ID
