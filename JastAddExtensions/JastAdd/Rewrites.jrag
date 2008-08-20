@@ -12,6 +12,8 @@ aspect Rewrite {
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
 
+  eq RewriteDecl.getRewrite().inStaticContext() = false;
+
   public void RewriteDecl.typeCheck() {
     super.typeCheck();
     if(!(getAccess().type() instanceof ASTDecl))
@@ -61,7 +63,6 @@ aspect Rewrite {
     if(!map.containsKey(typeDecl))
       map.put(typeDecl, new ArrayList());
     Collection c = (Collection)map.get(typeDecl);
-
     MethodDecl m = duringMethod();
   }
 
@@ -118,7 +119,8 @@ aspect Rewrite {
         ),
         astNode().createQualifiedAccess()
       );
-    return (MethodDecl)addMemberMethod(method);
+    duringMethod = (MethodDecl)addMemberMethod(method);
+    return duringMethod;
   }
 
   private FieldDeclaration AspectDecl.duringCounter = null; 

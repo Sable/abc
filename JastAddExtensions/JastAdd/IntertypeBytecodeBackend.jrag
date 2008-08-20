@@ -55,4 +55,13 @@ aspect IntertypeBytecodeBackend {
     }
   }
 
+  public boolean DeclareParentsExtends.clear() {
+    return false;
+  }
+  public boolean DeclareParentsImplements.clear() {
+    return false;
+  }
+  refine GenerateClassfile public boolean AnonymousDecl.clear() {
+    return super.clear();
+  }
 }
