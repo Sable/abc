@@ -27,8 +27,10 @@ import batik::org.apache.batik.Version;
 
 /**
  * Displays a dialog showing information about the application.
+ * Modified for use in the jhotdraw case study for modules
  *
  * @author  Werner Randelshofer
+ * @author 	Neil Ongkingco
  * @version 1.0  04 January 2005  Created.
  */
 public class AboutAction extends AbstractApplicationAction {
