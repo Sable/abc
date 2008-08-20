@@ -164,10 +164,10 @@ public aspect TypeHierarchyCheck {
       MethodDecl m = (MethodDecl)iter1.next();
       ASTNode target = m.hostType() == this ? (ASTNode)m : (ASTNode)this;
       
-      //for(Iterator i2 = overrides(m).iterator(); i2.hasNext(); ) {
+      //for(Iterator i2 = overridesMethod(m).iterator(); i2.hasNext(); ) {
       for(Iterator i2 = ancestorMethods(m.signature()).iterator(); i2.hasNext(); ) {
         MethodDecl decl = (MethodDecl)i2.next();
-        if(m.overrides(decl)) {
+        if(m.overridesMethod(decl)) {
           // 8.4.6.1
           if(!m.isStatic() && decl.isStatic())
             target.error("an instance method may not override a static method");

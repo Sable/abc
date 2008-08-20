@@ -181,7 +181,7 @@ public aspect MethodDeclSignature {
     return true;
   }
   
-  syn lazy boolean MethodDecl.overrides(MethodDecl m) =
+  syn lazy boolean MethodDecl.overridesMethod(MethodDecl m) =
     !isStatic() && !m.isPrivate() && m.accessibleFrom(hostType()) && 
      hostType().instanceOf(m.hostType()) && m.signature().equals(signature());
      

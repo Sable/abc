@@ -249,7 +249,7 @@ aspect Annotations {
         boolean found = false;
         for(Iterator iter = m.hostType().ancestorMethods(m.signature()).iterator(); iter.hasNext(); ) {
           MethodDecl decl = (MethodDecl)iter.next();
-          if(m.overrides(decl) && decl.hostType().isClassDecl())
+          if(m.overridesMethod(decl) && decl.hostType().isClassDecl())
             found = true;
         }
         if(!found)
