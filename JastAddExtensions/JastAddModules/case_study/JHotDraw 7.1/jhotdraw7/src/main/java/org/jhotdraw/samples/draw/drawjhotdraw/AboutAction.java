@@ -49,7 +49,7 @@ public class AboutAction extends AbstractApplicationAction {
                 "\n\nRunning on Java "+System.getProperty("java.vm.version")+
                 ", "+System.getProperty("java.vendor")+
                 "\n\nBatik version " + Version.version +
-                "\n\nThis is from drawjhotdraw", 
+                "\n\nThis about message is created in drawjhotdraw", 
                 "About", JOptionPane.PLAIN_MESSAGE);
     }
 }
