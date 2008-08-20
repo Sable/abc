@@ -51,6 +51,10 @@ aspect Rewrite {
   inh Collection ASTDecl.lookupRewrites(TypeDecl typeDecl);
   eq Program.getCompilationUnit(int i).lookupRewrites(TypeDecl typeDecl) = rewritesMap().containsKey(typeDecl) ? (Collection)rewritesMap().get(typeDecl) : new ArrayList(0);
 
+
+
+  
+
   void AspectDecl.collectIntertypeDecls(HashMap map) {
     super.collectIntertypeDecls(map);
     TypeDecl typeDecl = astNode();
@@ -58,8 +62,14 @@ aspect Rewrite {
       map.put(typeDecl, new ArrayList());
     Collection c = (Collection)map.get(typeDecl);
 
+    MethodDecl m = duringMethod();
+  }
+
+  private MethodDecl AspectDecl.duringMethod = null;
+  syn lazy MethodDecl AspectDecl.duringMethod() {
+    if(duringMethod != null) return duringMethod;
     FieldDeclaration field = duringCounter();
-    MethodDecl m = addMemberMethod(
+    MethodDecl method = 
       new IntertypeMethodDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
         new PrimitiveTypeAccess("boolean"),
@@ -107,9 +117,8 @@ aspect Rewrite {
           )
         ),
         astNode().createQualifiedAccess()
-      )
-    );
-    c.add(m);
+      );
+    return (MethodDecl)addMemberMethod(method);
   }
 
   private FieldDeclaration AspectDecl.duringCounter = null; 
