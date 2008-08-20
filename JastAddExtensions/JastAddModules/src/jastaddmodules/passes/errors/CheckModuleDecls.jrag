@@ -10,11 +10,16 @@ aspect CheckModuleDecls {
   	public void ModuleCompilationUnit.checkModuleDecls() {
   		if (getModuleDecl().hasExtends() && 
   				getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends()) == null) {
-  			getModuleDecl().getExtends().error("Module not found: " + getModuleDecl().getExtends().getID());
+  			String msg = "Module not found: " + getModuleDecl().getExtends().getID(); 
+  			getModuleDecl().getExtends().error(msg);
+  			//need to do this since checkmodulecycles will fail if this does not work
+  			throw new jastadd.UnrecoverableSemanticError(msg);
   		}
   		for (ModuleAccess ma: getModuleDecl().getImplementsList()) {
   			if (getHostProgram().lookupModuleCUNoTransform(ma) == null) {
-  				ma.error("Module not found: " + ma.getID());
+  				String msg = "Module not found: " + ma.getID();
+  				ma.error(msg);
+  				throw new jastadd.UnrecoverableSemanticError(msg);
   			}
   		}
   	}

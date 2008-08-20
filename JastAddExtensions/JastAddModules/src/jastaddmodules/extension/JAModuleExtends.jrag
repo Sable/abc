@@ -9,7 +9,7 @@ aspect JAModuleExtends {
 		return this.superModuleCU;
 	}
 	public boolean ModuleCompilationUnit.hasSuperModule() {
-		return getModuleDecl().hasExtends();
+		return getModuleDecl().hasExtends() && (getHostProgram().lookupModuleCUNoTransform(getModuleDecl().getExtends())!= null);
 	}
 	
 	syn lazy ModuleCompilationUnit ModuleCompilationUnit.getSuperModuleCUNoTransform() {
