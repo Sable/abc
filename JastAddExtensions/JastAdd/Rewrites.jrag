@@ -119,14 +119,17 @@ aspect Rewrite {
         ),
         astNode().createQualifiedAccess()
       );
-    duringMethod = (MethodDecl)addMemberMethod(method);
-    return duringMethod;
+    return duringMethod = addMemberMethod(method);
   }
 
   private FieldDeclaration AspectDecl.duringCounter = null; 
   syn lazy FieldDeclaration AspectDecl.duringCounter() {
     // protected static int duringAspectName = 0;
     if(duringCounter != null) return duringCounter;
+    TypeDecl typeDecl = astNode();
+    for(int i = 0; i < typeDecl.getNumBodyDecl(); i++)
+      if(typeDecl.getBodyDecl(i) instanceof FieldDeclaration && ((FieldDeclaration)typeDecl.getBodyDecl(i)).name().equals("during" + name()))
+        return duringCounter = (FieldDeclaration)typeDecl.getBodyDecl(i);
     FieldDeclaration field =
       new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")).add(new Modifier("synthetic"))),
@@ -134,9 +137,7 @@ aspect Rewrite {
         "during" + name(),
         new IntegerLiteral(0)
       );
-    duringCounter = field;
-    TypeDecl typeDecl = astNode();
-    typeDecl.addMemberField(field);
+    return duringCounter = typeDecl.addMemberField(field);
     /*
     typeDecl.addMemberMethod(
       // protected static boolean duringAspectName() {
@@ -197,7 +198,6 @@ aspect Rewrite {
       )
     );
     */
-    return field;
   }
 
   inh FieldDeclaration Rewrite.duringCounter();
