@@ -82,4 +82,15 @@ aspect JAModuleExtends {
 		}
 		return false;
 	}
+	
+	syn boolean TypeDecl.isOverriden() {
+		ModuleCompilationUnit mcu = compilationUnit().getModuleCompilationUnit();
+		if (mcu == null || !mcu.isSuperInstance()) {
+			return false;
+		}
+		SimpleSet s = mcu.moduleLookupType(this.moduleLocalPackageName(), this.name(), false);
+		assert (s.size() == 1) : "Type looking up itself unable to find a type: " + this.typeName();
+		TypeDecl type = (TypeDecl) (s.iterator().next());
+		return type != this;
+	}
 }

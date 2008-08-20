@@ -1,0 +1,44 @@
+
+aspect JAModuleExtendsModuleImports {
+	/*
+	refine JAModuleImports public void SingleTypeImportDecl.nameCheck() {
+		ModuleCompilationUnit typeMCU = getAccess().type().compilationUnit().getModuleCompilationUnit();
+		//if not in a superinstance
+		if (typeMCU == null || !typeMCU.isSuperInstance()) {
+			JAModuleImports.SingleTypeImportDecl.nameCheck();
+		}
+		//TODO: Add check for superinstance canonical names
+	}
+
+	refine JAModuleImports public void TypeImportOnDemandDecl.nameCheck() {
+		if (getAccess().lastAccess().isTypeAccess()) {
+			ModuleCompilationUnit typeMCU = getAccess().type().compilationUnit().getModuleCompilationUnit();
+			if (typeMCU == null || !typeMCU.isSuperInstance()) {
+				JAModuleImports.TypeImportOnDemandDecl.nameCheck();
+			}
+		}
+		//TODO: Add check for superinstance canonical names
+	}
+	*/
+	
+	refine JAModuleImports eq TypeDecl.canonicalName() {
+		ModuleCompilationUnit mcu = this.compilationUnit().getModuleCompilationUnit();
+		if (mcu == null || !mcu.isSuperInstance()) {
+			return JAModuleImports.TypeAccess.canonicalName();
+		} else {
+			if(isNestedType()) {
+				return enclosingType().canonicalName() + "." + name();
+			}
+			//make the global type name from the realinstance
+			Set<String> globalPackageNames = mcu.getRealInstance().lookupPackage(this.moduleLocalPackageName(), mcu, false);
+			
+			assert (globalPackageNames.size() <= 1) : "Ambiguous package names should have already been processed by an earlier error pass.";
+			assert (globalPackageNames.size() == 1) : "Unable to find package " + this.moduleLocalPackageName();
+			
+			String canonicalPackageName = globalPackageNames.iterator().next();
+			return canonicalPackageName + "." + this.name();
+		}
+	}
+	
+	
+}

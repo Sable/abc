@@ -4,13 +4,13 @@ aspect JAModuleLookupPackage {
 	//shares cut n paste code with lookupType. Change that if you change this
 	//TODO: Refactor to remove cut and paste code
 	//returns null if it can't find a package that belongs to a module
-	public Set<String> ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context) {
+	public Set<String> ModuleCompilationUnit.lookupPackage(String packageName, ModuleCompilationUnit context, boolean includeAllSuperPackages) {
 		Set<String> ret = new HashSet<String>();
 		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.lookupPackage called before module processing was complete";
 		
 		//if a super instance, lookup from the real instance
 		if (this.isSuperInstance()) {
-			return getRealInstance().lookupPackage(packageName, context);
+			return getRealInstance().lookupPackage(packageName, getRealInstance(), includeAllSuperPackages);
 		}
 		
 		//special case for java.** packages, always look at the top level first for a match
@@ -23,7 +23,7 @@ aspect JAModuleLookupPackage {
 		
 		//local package lookup
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
-			ret = selfThenSuperLocalLookupPackage(packageName, context);
+			ret = selfThenSuperLocalLookupPackage(packageName, context, includeAllSuperPackages);
 			if (!ret.isEmpty()) {
 				return ret;
 			}
@@ -32,13 +32,14 @@ aspect JAModuleLookupPackage {
 			for (ModuleReference importedCU : getModuleReferenceMap().values()) {
 				ret.addAll(importedCU
 								.getModuleCU()
-								.selfThenSuperLocalLookupPackage(packageName, context));
+								.selfThenSuperLocalLookupPackage(packageName, context, includeAllSuperPackages));
 			}
 			if (ret.size() > 0) {
 				return ret;
 			}
 		}
-			
+
+		//lookup in imported modules			
 		String moduleName = packageName;
 		String localPackageName = null;
 		if (moduleName.lastIndexOf(Program.MODULE_SEPARATOR) != -1) {
@@ -60,15 +61,8 @@ aspect JAModuleLookupPackage {
 				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		if (importedCU != null) {
-			LocalModulePackage localModulePackage = importedCU.getLocalPackage(localPackageName);
-			//if the package is exported or if it is not exported but lookup is in the same modulecu, return the global package name
-			if (localModulePackage != null &&
-					(localModulePackage.isExported() || 
-						(!localModulePackage.isExported() && context == this)
-					)
-				) {
-				
-				ret.add(importedCU.makeGlobalPackageName(localPackageName, localModulePackage));
+			ret = importedCU.lookupPackage(localPackageName, context, includeAllSuperPackages);
+			if (!ret.isEmpty()) {
 				return ret;
 			}
 		}
@@ -92,12 +86,12 @@ aspect JAModuleLookupPackage {
 		return ret;
 	}
 	
-	public Set<String> ModuleCompilationUnit.superLocalLookupPackage(String packageName, ModuleCompilationUnit context) {
+	public Set<String> ModuleCompilationUnit.superLocalLookupPackage(String packageName, ModuleCompilationUnit context, boolean includeAllSuperPackages) {
 		Set<String> ret = new HashSet<String>();
 		ModuleCompilationUnit superInstance = getSuperInstance();
 		while (superInstance != null) {
-			ret = superInstance.localLookupPackage(packageName, context);
-			if (!ret.isEmpty()) {
+			ret.addAll(superInstance.localLookupPackage(packageName, context));
+			if (!ret.isEmpty() && !includeAllSuperPackages) {
 				return ret;
 			}
 			superInstance = superInstance.getSuperInstance();
@@ -105,16 +99,16 @@ aspect JAModuleLookupPackage {
 		return ret;
 	}
 	
-	public Set<String> ModuleCompilationUnit.selfThenSuperLocalLookupPackage(String packageName, ModuleCompilationUnit context) {
+	public Set<String> ModuleCompilationUnit.selfThenSuperLocalLookupPackage(String packageName, ModuleCompilationUnit context, boolean includeAllSuperPackages) {
 		Set<String> ret = new HashSet<String>();
 		//self first
-		ret = localLookupPackage(packageName, context);
-		if (!ret.isEmpty()) {
+		ret.addAll(localLookupPackage(packageName, context));
+		if (!ret.isEmpty() && !includeAllSuperPackages) {
 			return ret;
 		}
 		//then try superinstances
-		ret = superLocalLookupPackage(packageName, context);
-		if (!ret.isEmpty()) {
+		ret.addAll(superLocalLookupPackage(packageName, context, includeAllSuperPackages));
+		if (!ret.isEmpty() && !includeAllSuperPackages) {
 			return ret;
 		}
 		return ret;
@@ -127,7 +121,7 @@ aspect JAModuleLookupPackage {
 			//try a lookup through the instance package
 			boolean ret = (getHostProgram()
 								.getInstanceModuleCU()
-								.lookupPackage(packageName, null).size() > 0
+								.lookupPackage(packageName, null, false).size() > 0
 								);
 			if (ret) {
 				return true;
@@ -137,7 +131,7 @@ aspect JAModuleLookupPackage {
 	}
 	
 	syn boolean ModuleCompilationUnit.hasPackage(String packageName) {
-		boolean ret = (this.lookupPackage(packageName, this).size() > 0);
+		boolean ret = (this.lookupPackage(packageName, this, false).size() > 0);
 		if (ret) {
 			return true;
 		} else {

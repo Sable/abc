@@ -9,7 +9,7 @@ aspect JAModuleImports {
 	
 	
 	refine NameCheck public void SingleTypeImportDecl.nameCheck() {
-		if(!getAccess().type().globalTypeName().equals(globalTypeName()) &&
+		if(!getAccess().type().canonicalName().equals(canonicalName()) &&
 				!getAccess().type().isUnknown()) {
 			error("Single-type import " + typeName() + " is not the canonical name of type " + getAccess().type().typeName());
 		}
@@ -19,7 +19,7 @@ aspect JAModuleImports {
 	}
 
 	refine NameCheck public void TypeImportOnDemandDecl.nameCheck() {
-		if(getAccess().lastAccess().isTypeAccess() && !getAccess().type().globalTypeName().equals(globalTypeName())) {
+		if(getAccess().lastAccess().isTypeAccess() && !getAccess().type().canonicalName().equals(canonicalName())) {
 			error("On demand type import " + typeName() + ".* is not the canonical name of type " + getAccess().type().typeName());
 		}
 	}
@@ -34,7 +34,8 @@ aspect JAModuleImports {
 			Set<String> packageNames = new HashSet();
 			if (mcu != null) {
 				//try to find a package in a module. if none, continue with the old value
-				packageNames = mcu.lookupPackage(rawPackageName, mcu);
+				//Also includes the packages in the supertype 
+				packageNames = mcu.lookupPackage(rawPackageName, mcu, true);
 				if (packageNames.isEmpty()) {
 					packageNames.add(rawPackageName);
 				}
@@ -45,7 +46,8 @@ aspect JAModuleImports {
 			for (String packageName : packageNames) {
 				TypeDecl typeDecl = lookupType(packageName, name);
 				if(typeDecl != null && typeDecl.accessibleFromPackage(packageName()) &&
-						typeDecl.typeName().equals(packageName + "." + name)) {// canonical names match
+						typeDecl.typeName().equals(packageName + "." + name) &&
+						!typeDecl.isOverriden()) {// canonical names match and type is not overriden
 					set = set.add(typeDecl);
 				}
 			}
@@ -54,12 +56,26 @@ aspect JAModuleImports {
 			for(Iterator iter = getAccess().type().memberTypes(name).iterator(); iter.hasNext(); ) {
 				TypeDecl decl = (TypeDecl)iter.next();
 				if(decl.accessibleFromPackage(packageName()) &&
-						decl.typeName().equals(getAccess().globalTypeName() + "." + name)) {// canonical names match
+						decl.canonicalName().equals(getAccess().canonicalName() + "." + name)) {// canonical names match
 					set = set.add(decl);
 				}
 			}
 		}
 		return set;
 	}
+	
+	syn String TypeDecl.canonicalName() {
+		return this.globalTypeName();
+	}
+	
+	syn String ImportDecl.canonicalName() {
+		return this.globalTypeName();
+	}
+	syn String Expr.canonicalName() {
+		return this.globalTypeName();
+	}
+	syn String TypeAccess.canonicalName() {
+		return this.globalTypeName();
+	} 
 
 }
