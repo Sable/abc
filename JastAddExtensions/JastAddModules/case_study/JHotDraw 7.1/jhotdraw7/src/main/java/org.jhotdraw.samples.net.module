@@ -1,7 +1,3 @@
-module org.jhotdraw.samples.net;
-
-import own org.jhotdraw export as jhotdraw;
-import own net.n3.nanoxmlv2_2_1_4patch;
-replace jhotdraw::nanoxml with net.n3.nanoxmlv2_2_1_4patch;
+module org.jhotdraw.samples.net extends org.jhotdraw.samples.defaultsample;
 
 export package *;

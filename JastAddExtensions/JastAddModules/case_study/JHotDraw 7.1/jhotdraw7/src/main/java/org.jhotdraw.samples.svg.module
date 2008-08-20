@@ -1,8 +1,4 @@
-module org.jhotdraw.samples.svg;
-
-import own org.jhotdraw export as jhotdraw;
-import own net.n3.nanoxmlv2_2_1_4patch;
-replace jhotdraw::nanoxml with net.n3.nanoxmlv2_2_1_4patch;
+module org.jhotdraw.samples.svg extends org.jhotdraw.samples.defaultsample;
 
 //interface
 import own org.apache.batik export as batik;

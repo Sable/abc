@@ -1,4 +1,4 @@
-Buildfile: build-draw-jastadd.xml
+Buildfile: build-pert-jastadd.xml
 
 init:
 
@@ -8,80 +8,607 @@ clean:
 application.compile:
     [mkdir] Created dir: D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes
 [jastaddmodules] generating node types and weaving aspects
-[jastaddmodules] Errors:
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:145,36:
-[jastaddmodules]   Semantic Error: NewAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:145,46:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:149,36:
-[jastaddmodules]   Semantic Error: OpenAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:149,47:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:153,36:
-[jastaddmodules]   Semantic Error: LoadAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:153,47:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:157,30:
-[jastaddmodules]   Semantic Error: SaveAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:157,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:159,30:
-[jastaddmodules]   Semantic Error: UndoAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:159,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:161,30:
-[jastaddmodules]   Semantic Error: RedoAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:161,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:164,30:
-[jastaddmodules]   Semantic Error: CutAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:164,40:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:166,30:
-[jastaddmodules]   Semantic Error: CopyAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:166,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:168,30:
-[jastaddmodules]   Semantic Error: PasteAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:168,42:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:189,30:
-[jastaddmodules]   Semantic Error: UndoAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:189,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:191,30:
-[jastaddmodules]   Semantic Error: RedoAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:191,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:194,30:
-[jastaddmodules]   Semantic Error: CutAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:194,40:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:196,30:
-[jastaddmodules]   Semantic Error: CopyAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:196,41:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:198,30:
-[jastaddmodules]   Semantic Error: PasteAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:198,42:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:200,30:
-[jastaddmodules]   Semantic Error: DuplicateAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:200,46:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:202,30:
-[jastaddmodules]   Semantic Error: DeleteAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:202,43:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:205,30:
-[jastaddmodules]   Semantic Error: SelectAllAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:205,46:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:207,23:
-[jastaddmodules]   Semantic Error: FindAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:207,34:
-[jastaddmodules]   Semantic Error: no field named ID
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:209,29:
-[jastaddmodules]   Semantic Error: FindAction not found
-[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java:209,40:
-[jastaddmodules]   Semantic Error: no field named ID
+[jastaddmodules] Arguments: 
+[jastaddmodules] -d
+[jastaddmodules] jastadd-build/classes
+[jastaddmodules] -classpath
+[jastaddmodules] lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
+[jastaddmodules] -instance-module
+[jastaddmodules] org.jhotdraw.samples.pert
+[jastaddmodules] -mainclass
+[jastaddmodules] org.jhotdraw.samples.pert::org.jhotdraw.samples.pert.Main
+[jastaddmodules] -debug
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\Version.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AreaOfInterestHintKey.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AvoidTilingHintKey.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\BufferedImageHintKey.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\ColorSpaceHintKey.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\LinearGradientPaint.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\LinearGradientPaintContext.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\MultipleGradientPaint.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\MultipleGradientPaintContext.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\RadialGradientPaint.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\RadialGradientPaintContext.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\RenderingHintsKeyExt.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\TranscodingHintKey.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\CompositeRule.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\GraphicsUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\PadMode.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\SVGComposite.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\renderable\PaintRable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\renderable\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\AbstractRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\AbstractTiledRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\AffineRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\Any2LsRGBRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\Any2sRGBRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\BufferedImageCachableRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\CachableRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\FormatRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\LRUCache.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\PadRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\RenderedImageCachableRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileBlock.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileCache.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileGenerator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileGrid.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileLRUMember.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileMap.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileStore.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TranslateRed.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\CleanerThread.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\DoublyLinkedList.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\HaltingThread.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net.n3.nanoxmlv2_2_1_4.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\CDATAReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\ContentReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\IXMLBuilder.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\IXMLElement.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\IXMLEntityResolver.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\IXMLParser.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\IXMLReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\IXMLValidator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\NonValidator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\PIReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\StdXMLBuilder.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\StdXMLParser.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\StdXMLReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\ValidatorPlugin.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLAttribute.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLElement.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLEntityResolver.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLException.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLParseException.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLParserFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLValidationException.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\XMLWriter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net.n3.nanoxml.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net.n3.nanoxmlv2_2_1_4patch.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\CDATAReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\ContentReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLBuilder.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLElement.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLEntityResolver.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLParser.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\IXMLValidator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\NonValidator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\PIReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\StdXMLBuilder.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\StdXMLParser.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\StdXMLReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\ValidatorPlugin.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLAttribute.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLElement.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLEntityResolver.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLException.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLParseException.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLParserFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLValidationException.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLWriter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batik.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batikv1_8pre.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.batikfragment.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.defaultsample.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.draw.drawjhotdraw.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.draw.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.net.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.odg.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.pert.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.svg.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.teddy.module
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\Version.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\LinearGradientPaint.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\LinearGradientPaintContext.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\MultipleGradientPaint.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\MultipleGradientPaintContext.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\RadialGradientPaint.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\RadialGradientPaintContext.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\image\GraphicsUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\image\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\AbstractApplication.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\AbstractView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\Application.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\ApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultAppletApplication.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultMDIApplication.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultOSXApplication.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\DefaultSDIApplication.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\EditableComponent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\ExportableView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\OSXPaletteHandler.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\PrintableView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\View.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\AboutAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\AbstractApplicationAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\AbstractSaveBeforeAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\AbstractViewAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\Actions.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ArrangeAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ClearAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ClearRecentFilesAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\CloseAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\CopyAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\CutAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\DeleteAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\DuplicateAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ExitAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ExportAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\FindAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\FocusAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\LoadAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\LoadRecentAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\MaximizeAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\MinimizeAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\NewAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\OSXDropOnDockAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\OSXTogglePaletteAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\OpenAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\OpenRecentAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\PasteAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\PrintAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\RedoAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\SaveAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\SaveAsAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\SelectAllAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ToggleToolBarAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ToggleViewPropertyAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ToggleVisibleAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\UndoAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\ViewPropertyAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\action\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\beans\AbstractBean.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\beans\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractAttributedCompositeFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractAttributedDecoratedFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractAttributedFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractCompositeFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractConnectionHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractConstrainer.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractDrawing.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractLayouter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractLineDecoration.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractLocator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractRotateHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AbstractTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ArrowTip.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AttributeChangeEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AttributeKey.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\AttributeKeys.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierControlPointHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierLabelLocator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierNodeEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierNodeHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierOutlineHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierPointLocator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierScaleHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BezierTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BidirectionalConnectionTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BorderRectangleFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\BoundsOutlineHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ChopBezierConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ChopDiamondConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ChopEllipseConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ChopRectangleConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ChopRoundRectangleConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ChopTriangleConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CloseHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CompositeFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CompositeFigureEvent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CompositeFigureListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CompositeLineDecoration.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CompositeTransformEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ConnectionEndHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ConnectionFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ConnectionStartHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ConnectionTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Connector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ConnectorHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Constrainer.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\CreationTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DOMStorableInputOutputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DecoratedFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DefaultDrawing.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DefaultDrawingEditor.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DefaultDrawingView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DefaultDrawingViewBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DefaultDrawingViewTransferHandler.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DelegationSelectionTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DiamondFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DragHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DragTracker.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Drawing.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DrawingEditor.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DrawingPageable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\DrawingView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ElbowLiner.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\EllipseFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Figure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FigureAdapter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FigureEvent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FigureLayerComparator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FigureListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FigureSelectionEvent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FigureSelectionListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FloatingTextArea.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FloatingTextField.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FontSizeHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\FontSizeLocator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\GeneralPathTip.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\GeometryEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\GraphicalCompositeFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\GridConstrainer.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\GroupFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Handle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\HandleEvent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\HandleListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\HandleMulticaster.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\HandleTracker.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\HorizontalLayouter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ImageFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ImageHolderFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ImageInputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ImageOutputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ImageTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\InputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LabelFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LabeledLineConnectionFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Layouter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LineConnectionFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LineDecoration.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LineFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Liner.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ListFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Locator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LocatorConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LocatorHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\LocatorLayouter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\MoveHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\NullHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Options.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\OutputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\PerpendicularBar.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\PictImageInputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\QuadTreeCompositeFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\QuadTreeDrawing.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RectangleFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RelativeDecoratorLocator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RelativeLocator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ResizeHandleKit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RestoreDataEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RotateHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RotationDirection.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RoundRectangleFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\RoundRectangleRadiusHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\SelectAreaTracker.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\SelectionTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\SetBoundsEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\SlantedLiner.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\StickyRectangleConnector.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextAreaFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextAreaTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextHolderFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextInputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextOverflowHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TextTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\Tool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ToolEvent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\ToolListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TransformEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TransformHandleKit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TranslationDirection.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TriangleFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\TriangleRotationHandler.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\VerticalLayouter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\AbstractEditorAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\AbstractSelectedAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\AbstractViewAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\AlignAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ApplyAttributesAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\AttributeAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\AttributeToggler.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ButtonFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ColorIcon.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\Colors.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\DefaultAttributeAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\DrawingEditorProxy.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\EditDrawingAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\EditDrawingPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\EditGridAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\EditGridPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\EditorColorChooserAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\EditorColorIcon.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\GenericListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\GroupAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ImageBevelBorder.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\LineDecorationIcon.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\MoveAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\MoveConstrainedAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\MoveToBackAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\MoveToFrontAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\PaletteMenuItemUI.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\PickAttributesAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\SelectSameAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\SelectionColorChooserAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\SelectionColorIcon.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\StrokeIcon.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ToggleGridAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\UngroupAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\VerticalGridLayout.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ZoomAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\ZoomEditorAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\action\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\draw\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Bezier.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\BezierPath.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\BezierPathIterator.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Dimension2DDouble.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\DoubleStroke.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Geom.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\GrowStroke.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Insets2D.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\QuadTree.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\Shapes.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\geom\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\Arrangeable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\AttributeField.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\AttributeFieldEventHandler.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JDoubleAttributeField.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JDoubleAttributeFieldBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JDoubleAttributeSlider.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JDoubleAttributeSliderBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JDoubleTextField.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JDoubleTextFieldBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JIntegerTextField.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JIntegerTextFieldBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JPopupButton.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JPopupButtonBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JSheet.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JStringAttributeArea.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JStringAttributeAreaBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JStringAttributeField.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\JStringAttributeFieldBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\MDIDesktopPane.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\PlacardScrollPaneLayout.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\Worker.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\AbstractTransferable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\CompositeTransferable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\ImageTransferable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\InputStreamTransferable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\datatransfer\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\event\SheetEvent.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\event\SheetListener.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\event\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\gui\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\Base64.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\ExtensionFileFilter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\StreamPosTokenizer.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawApplet.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawFigureFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawLiveConnectApplet.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawingPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawingPanelBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\Main.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\drawjhotdraw\AboutAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\ConnectingFiguresSample.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\EditorSample.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\LabeledLineConnectionFigureSample.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\MultiEditorSample.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\SelectionToolSample.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\SmartConnectionFigureSample.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\StraightLineFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\mini\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\Main.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetApplet.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\NetView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\figures\NodeFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\figures\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\net\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\Gradient.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\Main.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGAttributeKeys.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGConstants.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGDrawing.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGDrawingPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGDrawingPanelBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGPropertiesPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGPropertiesPanelBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\ODGView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\PathTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\CombineAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\SplitAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\TogglePropertiesPanelAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\action\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGAttributedFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGBezierFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGEllipseFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGGroupFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGPathFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGPathOutlineHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGRectFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\ODGRectRadiusHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\figures\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\geom\EnhancedPath.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\geom\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\ODGFigureFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\ODGInputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\ODGStylesReader.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\io\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\odg\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\Main.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertApplet.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\PertView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\DependencyFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\SeparatorLineFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\TaskFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Gradient.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\LinearGradient.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Main.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\PathTool.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\RadialGradient.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGApplet.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGAttributeKeys.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGConstants.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGDrawingPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGDrawingPanelBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGPropertiesPanel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGPropertiesPanelBeanInfo.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\SVGView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\CombineAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\SplitAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\TogglePropertiesPanelAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\ViewSourceAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\action\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGAttributedFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGBezierFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGEllipseFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGGroupFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGImageFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGPathFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGPathOutlineHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGRectFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGRectRadiusHandle.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGTextAreaFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\SVGTextFigure.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\figures\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\DefaultSVGFigureFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\ImageMapOutputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGElementFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGFigureFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGInputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGOutputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGZInputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\SVGZOutputFormat.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\io\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\CharacterSetAccessory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\FindDialog.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\JEditorArea.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\Main.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\TeddyApplicationModel.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\TeddyView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\FindAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\ToggleLineNumbersAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\ToggleLineWrapAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\ToggleStatusBarAction.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\action\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\io\LFWriter.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\io\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\regex\MatchType.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\regex\Matcher.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\regex\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\NumberedEditorKit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\NumberedParagraphView.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\NumberedViewFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\teddy\text\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\CompositeEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\NonUndoableEdit.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\UndoRedoManager.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\undo\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\Images.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\LocaleUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\Methods.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\ResourceBundleUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\ReversedList.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\prefs\PreferencesUtil.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\prefs\ToolBarPrefsHandler.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\util\prefs\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMInput.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMOutput.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DOMStorable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\DefaultDOMFactory.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\JavaxDOMInput.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\JavaxDOMOutput.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\NanoXMLDOMInput.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\NanoXMLDOMOutput.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\XMLTransferable.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\CSSParser.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\CSSRule.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\StyleManager.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\css\package-info.java
+[jastaddmodules] D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\xml\package-info.java
+[jastaddmodules] End arguments
+[jastaddmodules] null
+[jastaddmodules] java.lang.NullPointerException
+[jastaddmodules] 	at AST.ModuleCompilationUnit.checkExtendsCycles(ModuleCompilationUnit.java:609)
+[jastaddmodules] 	at AST.ModuleCompilationUnit.checkExtendsCycles(ModuleCompilationUnit.java:584)
+[jastaddmodules] 	at AST.CompilationUnit.checkModuleErrorsPass1(CompilationUnit.java:471)
+[jastaddmodules] 	at AST.ASTNode.checkModuleErrorsPass1(ASTNode.java:767)
+[jastaddmodules] 	at AST.ASTNode.checkModuleErrorsPass1(ASTNode.java:767)
+[jastaddmodules] 	at jastadd.JastAddModules.process(JastAddModules.java:112)
+[jastaddmodules] 	at jastadd.JastAddModules.compile(JastAddModules.java:278)
+[jastaddmodules] 	at jastadd.JastAddModules$1.run(JastAddModules.java:33)
+[jastaddmodules] 	at java.lang.Thread.run(Thread.java:595)
+[jastaddmodules] Exception in thread "Thread-0" java.lang.NullPointerException
+[jastaddmodules] 	at AST.Program.generateMainClassScript(Program.java:987)
+[jastaddmodules] 	at jastadd.JastAddModules.generate(JastAddModules.java:296)
+[jastaddmodules] 	at jastadd.JastAddModules.compile(JastAddModules.java:289)
+[jastaddmodules] 	at jastadd.JastAddModules$1.run(JastAddModules.java:33)
+[jastaddmodules] 	at java.lang.Thread.run(Thread.java:595)
+[jastaddmodules] done
+     [copy] Copying 10 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\app\action\images
+     [copy] Copying 4 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\app
+     [copy] Copying 57 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\draw\action\images
+     [copy] Copying 5 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\undo
+     [copy] Copying 2 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\undo\images
+     [copy] Copying 2 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\draw
+     [copy] Copying 2 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\samples\pert
+     [copy] Copying 2 files to D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\jastadd-build\classes\org\jhotdraw\samples\pert\images
+
+BUILD SUCCESSFUL
+Total time: 7 seconds
