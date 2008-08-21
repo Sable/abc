@@ -16,6 +16,7 @@
    limitations under the License.
 
  */
+module org.apache.batik1_8pre;
 package org.apache.batik.util;
 
 import java.lang.ref.Reference;

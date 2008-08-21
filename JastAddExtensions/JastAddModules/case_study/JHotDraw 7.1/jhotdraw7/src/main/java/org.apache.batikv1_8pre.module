@@ -1,4 +1,6 @@
-module org.apache.batik1_8pre implements org.apache.batik;
+module org.apache.batik1_8pre 
+	implements org.apache.batik
+	overrides org.apache.batik1_6, org.apache.batik1_7;
 export package 
 	org.apache.batik.ext.awt.image,
 	org.apache.batik.ext.awt,

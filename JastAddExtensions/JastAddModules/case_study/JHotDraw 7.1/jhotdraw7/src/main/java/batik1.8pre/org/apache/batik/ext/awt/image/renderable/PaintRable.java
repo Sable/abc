@@ -16,6 +16,7 @@
    limitations under the License.
 
  */
+module org.apache.batik1_8pre;
 package org.apache.batik.ext.awt.image.renderable;
 
 import java.awt.Graphics2D;
