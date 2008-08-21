@@ -1,1 +1,2 @@
-module org.jhotdraw.samples.draw.drawjhotdraw extends org.jhotdraw;
+module org.jhotdraw.samples.draw.drawjhotdraw extends 
+	org.jhotdraw.samples.defaultsample.defaultjhotdraw;

@@ -1,0 +1,2 @@
+module org.jhotdraw.samples.defaultsample.defaultjhotdraw extends org.jhotdraw;
+export package *;
