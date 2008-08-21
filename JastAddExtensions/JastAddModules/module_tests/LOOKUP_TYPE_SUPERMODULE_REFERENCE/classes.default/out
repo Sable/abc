@@ -1,0 +1,19 @@
+create m2::B
+class m1$m2.B
+m2::B.f()
+class m1$m2.$p.P
+m2::p.P.f()
+create m2x::B
+class m1$m2x.B
+class m1$m2x.B
+from m2x
+m2::B.f()
+m2x::B.f()
+end from m2x
+class m1$m2x.$p.P
+class m1$m2x.$p.P
+from m2x
+m2::p.P.f()
+m2x::p.P.f()
+end from m2x
+class m1.A
