@@ -27,23 +27,18 @@ import batik::org.apache.batik.Version;
 
 /**
  * Displays a dialog showing information about the application.
- * Modified for use in the jhotdraw case study for modules
+ * Modified for use in the jhotdraw case study for modules, extends AboutAction in jhotdraw
  *
  * @author  Werner Randelshofer
  * @author 	Neil Ongkingco
  * @version 1.0  04 January 2005  Created.
  */
-public class AboutAction extends AbstractApplicationAction {
-    public final static String ID = "about";
-    
+public class AboutAction extends supermodule::org.jhotdraw.app.action.AboutAction {
     /** Creates a new instance. */
     public AboutAction(Application app) {
         super(app);
-        ResourceBundleUtil labels = ResourceBundleUtil.getLAFBundle("org.jhotdraw.app.Labels");
-        labels.configureAction(this, ID);
-        }
+    }
     
-    //NEIL: Add versions of batik to show it works
     public void actionPerformed(ActionEvent evt) {
         Application app = getApplication();
         JOptionPane.showMessageDialog(app.getComponent(),
