@@ -279,7 +279,7 @@ aspect GenerateImportOwn {
 			if (!cuReference.getStaticModuleType().isInterfaceOf(replaceCU) && 
 				!replaceCU.hasSuperModule(cuReference.getStaticModuleType()) &&
 				!replaceCU.overridesModule(cuReference.getStaticModuleType()) &&
-				!(replaceCU.isSynthetic() || cuReference.getStaticModuleType().isSynthetic()) //allows synthetic types to be inserted anywhere. I know it's bad, but it's the only way to make synthetic references to work. See if there is a better way around this. 
+				!(replaceCU.isSynthetic()) //allows synthetic types to be inserted anywhere. I know it's bad, but it's the only way to make synthetic references to work. See if there is a better way around this. 
 				) {
 				String msg = "Incompatible modules in replace: " + replaceCU.getBaseCU().getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
