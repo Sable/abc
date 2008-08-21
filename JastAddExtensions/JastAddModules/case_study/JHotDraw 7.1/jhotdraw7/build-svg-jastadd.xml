@@ -25,7 +25,7 @@
 			debug="false"
 			instancemodule="org.jhotdraw.samples.svg"
 			mainclass="org.jhotdraw.samples.svg::org.jhotdraw.samples.svg.Main"
-			classpath="${libdir}/quaqua.jar;${libdir}/MRJAdapter.jar;${libdir}/java_30.zip;${libdir}/swing-layout.jar"
+			classpath="${libdir}/quaqua.jar:${libdir}/MRJAdapter.jar:${libdir}/java_30.zip:${libdir}/swing-layout.jar"
 		>
 			<fileset dir="${srcdir}">
 				<include name="**/*.java"/>
