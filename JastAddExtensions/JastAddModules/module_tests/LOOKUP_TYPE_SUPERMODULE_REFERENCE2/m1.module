@@ -1,0 +1,7 @@
+module m1;
+
+import own m2;
+import own m2x;
+import own m2xx;
+
+export package *;

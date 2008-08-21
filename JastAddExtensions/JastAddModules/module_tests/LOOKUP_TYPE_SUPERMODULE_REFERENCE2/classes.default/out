@@ -1,0 +1,18 @@
+create m2::B
+class m1$m2.B
+m2::B.f()
+class m1$m2.$p.P
+m2::p.P.f()
+create m2x::B
+class m1$m2x$super$m2.B
+m2::B.f()
+class m1$m2x$super$m2.$p.P
+m2::p.P.f()
+create m2xx::B
+class m1$m2xx.B
+class m1$m2xx.B
+m2::B.f()
+class m1$m2xx.$p.P
+class m1$m2xx.$p.P
+m2::p.P.f()
+class m1.A
