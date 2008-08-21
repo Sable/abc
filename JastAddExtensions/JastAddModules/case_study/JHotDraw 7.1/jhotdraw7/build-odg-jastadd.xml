@@ -66,5 +66,8 @@
         <copy todir="${classdir}/org/jhotdraw/samples/svg">
             <fileset file="${srcdir}/org/jhotdraw/samples/svg/Label*.properties"/>
         </copy>
+        <copy todir="${classdir}/lib">
+			<fileset file="${basedir}/lib/*"/>
+        </copy>
     </target>
 </project>
