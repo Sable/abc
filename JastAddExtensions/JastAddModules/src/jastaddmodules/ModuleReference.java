@@ -1,14 +1,21 @@
 package jastaddmodules;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import AST.AsType;
 import AST.AsTypeExport;
+import AST.ModuleAccess;
 import AST.ModuleImportType;
+import AST.ModuleCompilationUnit;
 
 public class ModuleReference {
-	protected AST.ModuleCompilationUnit moduleCU = null;
+	protected ModuleCompilationUnit moduleCU = null;
 	protected AsType asType;
 	protected ModuleImportType importType;
-	protected AST.ModuleCompilationUnit staticModuleType = null;
+	protected ModuleCompilationUnit staticModuleType = null;
+	protected Set<ModuleAccess> mergedAccesses = new HashSet<ModuleAccess>(); 
+	
 	public ModuleReference(AST.ModuleCompilationUnit importedCU, 
 			AST.ModuleCompilationUnit staticModuleType, 
 			AsType asType, 
@@ -38,4 +45,11 @@ public class ModuleReference {
 		return staticModuleType;
 	}
 	
+	public void addMergedAccess(ModuleAccess access) {
+		mergedAccesses.add(access);
+	}
+	
+	public Set<ModuleAccess> getMergedAccesses() {
+		return mergedAccesses;
+	}
 }
