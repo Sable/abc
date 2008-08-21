@@ -1,5 +1,8 @@
 
 aspect JAModuleProgram {
+
+	public static final String Program.SUPERMODULE_KEYWORD = "supermodule";
+
 	protected boolean Program.moduleProcessingComplete = false;
 	public boolean Program.isModuleProcessingComplete() {
 		return moduleProcessingComplete;

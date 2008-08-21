@@ -85,6 +85,7 @@ aspect JAModuleLookupType {
 			}
 		}
 		
+		//local lookup through self and supertype modules
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1) {
 			ret = selfThenSuperLocalModuleLookupType(packageName, typeName);
 			if (!ret.isEmpty()) {
@@ -128,6 +129,16 @@ aspect JAModuleLookupType {
 			} else {
 				return SimpleSet.emptySet;
 			}
+		}
+		
+		//special case for supermodule lookup
+		if (moduleName.equals(Program.SUPERMODULE_KEYWORD)) {
+			ModuleCompilationUnit superInstance = this.getSuperInstance();
+			if (superInstance == null) {
+				return SimpleSet.emptySet;
+			}
+			ret = superInstance.selfThenSuperLocalModuleLookupType(localPackageName, typeName);
+			return ret;
 		}
 
 		//lookup in the module specified by the module qualifier				

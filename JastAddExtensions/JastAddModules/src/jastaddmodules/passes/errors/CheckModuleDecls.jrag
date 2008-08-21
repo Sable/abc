@@ -22,5 +22,11 @@ aspect CheckModuleDecls {
   				throw new jastadd.UnrecoverableSemanticError(msg);
   			}
   		}
+  		if (getModuleDecl().getModuleAccess().getID().equals(Program.SUPERMODULE_KEYWORD)) {
+			String msg = "Invalid module name " + getModuleDecl().getModuleAccess().getID();
+			error(msg);
+			throw new jastadd.UnrecoverableSemanticError(msg);
+		}
+  		
   	}
 }
