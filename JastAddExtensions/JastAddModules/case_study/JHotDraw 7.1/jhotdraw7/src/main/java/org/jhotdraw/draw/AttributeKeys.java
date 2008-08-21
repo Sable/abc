@@ -335,9 +335,7 @@ public class AttributeKeys {
      * STROKE_WIDTH, STROKE_INNER_WIDTH and STROKE_TYPE attributes.
      */
     public static double getStrokeTotalWidth(Figure f) {
-    	//NEIL: Added variable to work around enum switch
-    	StrokeType type = STROKE_TYPE.get(f);
-        switch (type) {
+        switch (STROKE_TYPE.get(f)) {
             case BASIC :
             default :
                 return STROKE_WIDTH.get(f);
@@ -371,9 +369,7 @@ public class AttributeKeys {
                 dashes[i] = (float) (ddashes[i] * dashFactor);
             }
         }
-        //NEIL: changed to if due to limitations in jastadd codegen
-        StrokeType stype = STROKE_TYPE.get(f);
-        switch (stype) {
+        switch (STROKE_TYPE.get(f)) {
             case BASIC :
             default :
                 return new BasicStroke((float) strokeWidth, 
@@ -424,9 +420,7 @@ public class AttributeKeys {
         double strokeWidth = AttributeKeys.getStrokeTotalWidth(f);
         StrokePlacement placement = STROKE_PLACEMENT.get(f);
         
-        //NEIL: changed to enum variable to work around enum switch bug
-        Underfill fill = FILL_UNDER_STROKE.get(f);
-        switch (fill) {
+        switch (FILL_UNDER_STROKE.get(f)) {
             case FULL :
                 switch (placement) {
                     case INSIDE :

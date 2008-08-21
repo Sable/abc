@@ -131,9 +131,7 @@ public class TriangleFigure extends AbstractAttributedFigure {
         Rectangle2D.Double r = (Rectangle2D.Double) rectangle.clone();
         
         BezierPath triangle = new BezierPath();
-        //NEIL: enum switch workaround
-        AttributeKeys.Orientation orient = ORIENTATION.get(this);
-        switch (orient) {
+        switch (ORIENTATION.get(this)) {
             case NORTH :
             default :
                 triangle.moveTo((float) (r.x + r.width / 2), (float) r.y);
@@ -205,9 +203,7 @@ public class TriangleFigure extends AbstractAttributedFigure {
         double totalStrokeWidth = AttributeKeys.getStrokeTotalWidth(this);
         double width = 0d;
         if (STROKE_COLOR.get(this) != null) {
-        	//NEIL: enum switch workaround
-        	AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(this);
-            switch (sp) {
+            switch (STROKE_PLACEMENT.get(this)) {
                 case INSIDE :
                     width = 0d;
                     break;

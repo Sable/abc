@@ -32,9 +32,6 @@ import org.jhotdraw.draw.*;
 import org.jhotdraw.draw.action.*;
 import static org.jhotdraw.samples.svg.SVGAttributeKeys.*;
 
-//NEIL: forced to do this due to a split package caused by SVGAttributeKeys
-import jhotdraw::org.jhotdraw.samples.svg.*;
-
 
 /**
  * SVGApplicationModel.

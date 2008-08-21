@@ -412,9 +412,7 @@ public class GraphicalCompositeFigure extends AbstractCompositeFigure {
         Rectangle2D.Double r = getBounds();
         if (STROKE_COLOR.get(this) != null) {
             double grow;
-            //NEIL: enum switch workaround
-            AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(this);
-            switch (sp) {
+            switch (STROKE_PLACEMENT.get(this)) {
                 case CENTER:
                 default :
                     grow = AttributeKeys.getStrokeTotalWidth(this);

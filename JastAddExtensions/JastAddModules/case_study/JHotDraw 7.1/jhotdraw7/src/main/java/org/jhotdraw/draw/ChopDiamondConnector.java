@@ -52,9 +52,7 @@ public class ChopDiamondConnector extends ChopRectangleConnector {
         double growx;
         double growy;
         // FIXME - This code is wrong. Copy correct code from DiamondFigure.
-        //NEIL: enum switch workaround
-        AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(target);
-        switch (sp) {
+        switch (STROKE_PLACEMENT.get(target)) {
             case INSIDE : {
                 growx = growy = 0f;
                 break;

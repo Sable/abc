@@ -452,9 +452,7 @@ public class Bezier {
      */
     private static double newtonRaphsonRootFind(Point2D.Double[] Q, Point2D.Double P, double u) {
         double 		numerator, denominator;
-        Point2D.Double[] Q1 = new Point2D.Double[3];
-        //NEIL: Changed from list to single variables
-        Point2D.Double[] Q2 = new Point2D.Double[2];	/*  Q' and Q''			*/
+        Point2D.Double[] Q1 = new Point2D.Double[3], Q2 = new Point2D.Double[2];	/*  Q' and Q''			*/
         Point2D.Double	Q_u = new Point2D.Double(), Q1_u = new Point2D.Double(), Q2_u = new Point2D.Double(); /*u evaluated at Q, Q', & Q''	*/
         double 		uPrime;		/*  Improved u	*/
         int 		i;

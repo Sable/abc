@@ -53,9 +53,7 @@ public class ChopEllipseConnector extends ChopRectangleConnector {
         Rectangle2D.Double r = target.getBounds();
         if (getStrokeColor(target) != null) {
             double grow;
-            //NEIL: enum switch workaround
-            AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(target);
-            switch (sp) {
+            switch (STROKE_PLACEMENT.get(target)) {
                 case CENTER:
                  default :
                     grow = getStrokeTotalWidth(target) / 2d;

@@ -46,9 +46,7 @@ public class TriangleRotationHandler extends AbstractHandle {
         Rectangle2D.Double r = getOwner().getBounds();
         Point2D.Double p;
         double offset = getHandlesize();
-        // NEIL: enum switch workaround
-        AttributeKeys.Orientation orient = ORIENTATION.get(getOwner());
-        switch (orient) {
+        switch (ORIENTATION.get(getOwner())) {
             case NORTH :
             default :
                 p = new Point2D.Double(r.x + r.width / 2d, r.y + offset);

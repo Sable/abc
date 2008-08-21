@@ -49,9 +49,7 @@ public class ChopRoundRectangleConnector extends ChopRectangleConnector {
         Rectangle2D.Double outer = rrf.getBounds();
 
         double grow;
-        //NEIL: enum switch workaround
-        AttributeKeys.StrokePlacement sp = STROKE_PLACEMENT.get(target);
-        switch (sp) {
+        switch (STROKE_PLACEMENT.get(target)) {
             case CENTER :
             default :
                 grow = AttributeKeys.getStrokeTotalWidth(target) / 2d;
