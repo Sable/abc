@@ -1,6 +1,5 @@
 <project name="build-jastadd" default="application.compile" basedir=".">
 
-<taskdef name="jastadd" classname="jastadd.JastAddTask" classpath="../../../../JastAdd/"/>
 	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="../../../classes"/>
 
 	<target name="init">
