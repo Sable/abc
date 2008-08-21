@@ -69,6 +69,32 @@ aspect JAModuleLookupType {
 		assert (getHostProgram().isModuleProcessingComplete()) : "ModuleCompilationUnit.moduleLookupType called before module processing was complete";
 		assert (isModuleInstantiated()) : "ModuleCompilationUnit.moduleLookupType() is being called on an uninstantiated mdoule";
 		
+		SimpleSet ret = SimpleSet.emptySet;
+
+		//split into module and package name
+		String moduleName = packageName;
+		String localPackageName = null;
+		if (moduleName.lastIndexOf(Program.MODULE_SEPARATOR) != -1) {
+			localPackageName = moduleName.substring(moduleName.lastIndexOf(Program.MODULE_SEPARATOR) + 2);
+			moduleName = moduleName.substring(0, moduleName.lastIndexOf(Program.MODULE_SEPARATOR));
+		} else {
+			localPackageName = ""; //this should be properly looked up in the local package names of the module
+			moduleName = packageName;
+		}
+		if (localPackageName.equals(".")) {
+			localPackageName = ""; //special case for module::.Type
+		}
+		//special case for supermodule lookup, must be here to come before realInstance call
+		if (moduleName.equals(Program.SUPERMODULE_KEYWORD)) {
+			ModuleCompilationUnit superInstance = this.getSuperInstance();
+			if (superInstance == null) {
+				return SimpleSet.emptySet;
+			}
+			ret = superInstance.selfThenSuperLocalModuleLookupType(localPackageName, typeName);
+			return ret;
+		}
+		
+		//if a superinstance, lookup in real instance to get overriding methods
 		if (this.isSuperInstance()) {
 			return getRealInstance().moduleLookupType(
 						packageName, 
@@ -76,7 +102,6 @@ aspect JAModuleLookupType {
 						includeImportedModulesLocalPackages);
 		}
 		
-		SimpleSet ret = SimpleSet.emptySet;
 		//special case for java.** packages, always look at the top level first for a match
 		if (packageName.indexOf(Program.MODULE_SEPARATOR) == -1 && packageName.startsWith("java.")) {
 			TypeDecl type = getHostProgram().lookupType(packageName, typeName);
@@ -108,19 +133,6 @@ aspect JAModuleLookupType {
 		}
 
 		//indirect lookup through an imported module		
-		String moduleName = packageName;
-		String localPackageName = null;
-		if (moduleName.lastIndexOf(Program.MODULE_SEPARATOR) != -1) {
-			localPackageName = moduleName.substring(moduleName.lastIndexOf(Program.MODULE_SEPARATOR) + 2);
-			moduleName = moduleName.substring(0, moduleName.lastIndexOf(Program.MODULE_SEPARATOR));
-		} else {
-			localPackageName = ""; //this should be properly looked up in the local package names of the module
-			moduleName = packageName;
-		}
-		if (localPackageName.equals(".")) {
-			localPackageName = ""; //special case for module::.Type
-		}
-		
 		//special case for default module lookups, e.g. ::java.lang
 		if (moduleName.equals(getHostProgram().DEFAULT_MODULE_NAME)) {
 			TypeDecl type = getHostProgram().lookupType(localPackageName, typeName);
@@ -131,16 +143,6 @@ aspect JAModuleLookupType {
 			}
 		}
 		
-		//special case for supermodule lookup
-		if (moduleName.equals(Program.SUPERMODULE_KEYWORD)) {
-			ModuleCompilationUnit superInstance = this.getSuperInstance();
-			if (superInstance == null) {
-				return SimpleSet.emptySet;
-			}
-			ret = superInstance.selfThenSuperLocalModuleLookupType(localPackageName, typeName);
-			return ret;
-		}
-
 		//lookup in the module specified by the module qualifier				
 		ModuleCompilationUnit importedCU = lookupModule(this, moduleName);
 		if (importedCU != null && importedCU.isModuleInstantiated()) {
