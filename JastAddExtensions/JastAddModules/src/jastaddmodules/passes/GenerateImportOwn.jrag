@@ -233,8 +233,11 @@ aspect GenerateImportOwn {
 				mergeAlias);
 				
 		//attach the result copy to ret's import list
+		ModuleCompilationUnit mergeStaticType = mostGeneralModule(mergeTargets);
+		assert (mergeStaticType != null) : "Unable to find most general type for merge targets";
+		
 		//import type is own. TODO: Check if this is correct
-		ret.checkedAddModuleReference(mergeAlias, mergedCU, mergedCU.getBaseCU(), mergeMember.getAsType(), new ModuleImportTypeOwn());
+		ret.checkedAddModuleReference(mergeAlias, mergedCU, mergeStaticType, mergeMember.getAsType(), new ModuleImportTypeOwn());
 				
 		return ret;
 	}
@@ -424,24 +427,59 @@ aspect GenerateImportOwn {
 		assert (cu1 != null && cu2 != null) : "null parameter passed to mostSpecificModule";
 		ModuleCompilationUnit base1 = cu1.getBaseCU();
 		ModuleCompilationUnit base2 = cu2.getBaseCU();
+		
+		//equal types
 		if (base1 == base2) {
 			return base1;
 		}
-		while (base1.getSuperModuleCU() != base2 && base1.getSuperModuleCU() != null) {
-			base1 = base1.getSuperModuleCU();
+		//supertypes
+		if (base1.hasSuperModule(base2)) {
+			return base1;
 		}
-		if (base1.getSuperModuleCU() == base2) {
-			return cu1.getBaseCU();
+		if (base2.hasSuperModule(base1)) {
+			return base2;
 		}
-		base1 = cu1.getBaseCU();
-		while (base2.getSuperModuleCU() != base1 && base2.getSuperModuleCU() != null) {
-			base2 = base2.getSuperModuleCU();
+		//interfaces
+		if (base1.isInterfaceOf(base2)) {
+			return base2;
 		}
-		if (base2.getSuperModuleCU() == base1) {
-			return cu2.getBaseCU();
+		if (base2.isInterfaceOf(base1)) {
+			return base1;
 		}
 		return null;
 	} 
+	
+	public ModuleCompilationUnit ModuleCompilationUnit.mostGeneralModule(Collection<ModuleCompilationUnit> cus) {
+		assert (cus != null) : "null parameter passed to mostGeneralModule";
+		
+		ModuleCompilationUnit ret = null;
+		
+		for (ModuleCompilationUnit currCU : cus) {
+			ModuleCompilationUnit baseCU = currCU.getBaseCU();
+			if (ret == null) {
+				ret = baseCU;
+			}
+			else if (baseCU.isInterfaceOf(ret)) {
+				ret = baseCU;
+			}
+			else if (ret.isInterfaceOf(baseCU)) {
+				//do nothing
+				ret = ret;
+			}
+			else if (ret.hasSuperModule(baseCU)) {
+				ret = baseCU;
+			}
+			else if (baseCU.hasSuperModule(ret)) {
+				//do nothing
+				ret = ret;
+			}
+			else {
+				//if not type compatible, return null
+				return null;
+			}
+		}
+		return ret;
+	}
 	
 	//checks if a module is being accessed through a base module (i.e. there is a MCU in path
 	//of the lookup that is a base module

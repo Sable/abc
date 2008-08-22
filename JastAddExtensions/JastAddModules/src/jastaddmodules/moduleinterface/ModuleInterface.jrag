@@ -17,12 +17,16 @@ aspect ModuleInterface {
 			return false;
 		}
 		
-		//implements test (add super test later)
-		for (ModuleAccess access : mcu.getBaseCU().getModuleDecl().getImplementsList()) {
-			ModuleCompilationUnit interfaceMCU = getHostProgram().lookupModuleCUNoTransform(access); 
-			if (interfaceMCU.hasSuperModule(this.getBaseCU())) {
-				return true;
+		//implements test 
+		ModuleCompilationUnit currMCU = mcu.getBaseCU();
+		while (currMCU != null) {
+			for (ModuleAccess access : currMCU.getBaseCU().getModuleDecl().getImplementsList()) {
+				ModuleCompilationUnit interfaceMCU = getHostProgram().lookupModuleCUNoTransform(access); 
+				if (interfaceMCU.hasSuperModule(this.getBaseCU())) {
+					return true;
+				}
 			}
+			currMCU = currMCU.getSuperModuleCUNoTransform();
 		}
 		
 		//check the signatures for weak interfaces
