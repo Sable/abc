@@ -1,5 +1,6 @@
 package jastaddmodules;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,11 @@ public class ModuleReference {
 		mergedAccesses.add(access);
 	}
 	
-	public Set<ModuleAccess> getMergedAccesses() {
+	public void addMergedAccesses(Collection<ModuleAccess> accesses) {
+		mergedAccesses.addAll(accesses);
+	}
+	
+	public Collection<ModuleAccess> getMergedAccesses() {
 		return mergedAccesses;
 	}
 }

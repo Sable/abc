@@ -176,7 +176,12 @@ aspect GenerateImportOwn {
 		if (mergeMember.getMergeModuleList().getNumChild() < 2) {
 			mergeMember.warning("There are less than two modules to merge. This may be an error.");
 		}
+		
 		Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
+		//stores the accesses for the merge cascades. Need to keep the access instead of
+		//the module reference since the references are detached when merges/replaces
+		//occur
+		Set<ModuleAccess> mergeAccesses = new HashSet<ModuleAccess>();
 		ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
 		for (ModuleAccess access : mergeMember.getMergeModuleList()) {
 			ModuleCompilationUnit cu = access.lookupModule(); 
@@ -217,6 +222,8 @@ aspect GenerateImportOwn {
 			} else {
 				mergeBaseCU = mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU);
 			}
+			
+			mergeAccesses.add(access);
 		}
 		//create result copy (instantiate from the base types of the merge targets with ret as a context)
 		ModuleCompilationUnit mergedCU = null;
@@ -229,6 +236,14 @@ aspect GenerateImportOwn {
 		mergedCU.setSourceStatement(mergeMember); //debug
 		getHostProgram().getCompilationUnitList().addChild(mergedCU);
 		
+		//find cascaded merges
+		mergeTargets.addAll(
+			getAccessMCUs(
+				getCascadedMergedAccesses(mergeAccesses, new HashSet<ModuleAccess>())
+			)
+		);
+		
+		//replace the targets in the tree
 		ret = replaceTargets(ret, mergeMember, mergeTargets, mergedCU,
 				mergeAlias);
 				
@@ -238,6 +253,10 @@ aspect GenerateImportOwn {
 		
 		//import type is own. TODO: Check if this is correct
 		ret.checkedAddModuleReference(mergeAlias, mergedCU, mergeStaticType, mergeMember.getAsType(), new ModuleImportTypeOwn());
+		ModuleReference mergeReference = ret.getModuleReference(mergeAlias);
+		if (mergeReference != null) {
+			mergeReference.addMergedAccesses(mergeAccesses);
+		}
 				
 		return ret;
 	}
@@ -261,6 +280,7 @@ aspect GenerateImportOwn {
 		*/
 		
 		Collection<ModuleCompilationUnit> replaceTargets = new HashSet<ModuleCompilationUnit>();
+		Set<ModuleAccess> replaceAccesses = new HashSet<ModuleAccess>();
 		for (ModuleAccess access : replaceMember.getReplaceModuleList()) {
 			ModuleCompilationUnit cu = access.lookupModule(); 
 			ModuleReference cuReference = access.lookupModuleReference();
@@ -279,11 +299,7 @@ aspect GenerateImportOwn {
 			}
 			
 			//if not type compatible
-			if (!cuReference.getStaticModuleType().isInterfaceOf(replaceCU) && 
-				!replaceCU.hasSuperModule(cuReference.getStaticModuleType()) &&
-				!replaceCU.overridesModule(cuReference.getStaticModuleType()) &&
-				!(replaceCU.isSynthetic()) //allows synthetic types to be inserted anywhere. I know it's bad, but it's the only way to make synthetic references to work. See if there is a better way around this. 
-				) {
+			if (!isReplaceCompatible(cuReference.getStaticModuleType(),replaceCU)) {
 				String msg = "Incompatible modules in replace: " + replaceCU.getBaseCU().getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);
@@ -300,7 +316,16 @@ aspect GenerateImportOwn {
 			}
 			
 			replaceTargets.add(cu);
+			replaceAccesses.add(access);
 		}
+		
+		//find cascaded merges
+		replaceTargets.addAll(
+			getAccessMCUs(
+				getCascadedMergedAccesses(replaceAccesses, new HashSet<ModuleAccess>())
+			)
+		);
+		
 		ret = replaceTargets(ret, replaceMember, replaceTargets, replaceCU,
 				replaceMember.getWithModule().getID());
 		return ret;
@@ -510,5 +535,44 @@ aspect GenerateImportOwn {
 			}
 		} while (!right.equals(""));
 		return false;
+	}
+	
+	public static Set<ModuleAccess> ModuleCompilationUnit.getCascadedMergedAccesses(Set<ModuleAccess> accesses, Set<ModuleAccess> visited) {
+		Set<ModuleAccess> ret = new HashSet<ModuleAccess>(accesses);
+		Set<ModuleAccess> newAccesses = new HashSet<ModuleAccess>();
+		Set<ModuleAccess> newVisited = new HashSet<ModuleAccess>(visited);
+		
+		if (accesses.isEmpty()) {
+			return ret;
+		}
+		for (ModuleAccess access: accesses) {
+			if (visited.contains(access)) {
+				continue;
+			}
+			newVisited.add(access);
+			ModuleReference reference = access.lookupModuleReference();
+			assert (reference != null) : "Unable to find reference: " + access.toString();
+			newAccesses.addAll(reference.getMergedAccesses());
+		}
+		ret.addAll(getCascadedMergedAccesses(newAccesses, newVisited));
+		return ret;
+	}
+	
+	public static Set<ModuleCompilationUnit> ModuleCompilationUnit.getAccessMCUs(Set<ModuleAccess> accesses) {
+		Set<ModuleCompilationUnit> ret = new HashSet<ModuleCompilationUnit>();
+		for (ModuleAccess access : accesses) {
+			ModuleCompilationUnit mcu = access.lookupModule();
+			assert (mcu != null) : "Unable to find mcu: " + access.toString();
+			ret.add(mcu);
+		}
+		return ret;
+	}
+	
+	//mcu target is being replaced with mcu
+	public static boolean ModuleCompilationUnit.isReplaceCompatible(ModuleCompilationUnit target, ModuleCompilationUnit source) {
+		return target.isInterfaceOf(source) || 
+				source.hasSuperModule(target) ||
+				source.overridesModule(target) ||
+				source.isSynthetic(); //allows synthetic types to be inserted anywhere. I know it's bad, but it's the only way to make synthetic references to work. See if there is a better way around this.
 	}
 }
