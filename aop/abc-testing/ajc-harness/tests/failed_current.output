@@ -3,7 +3,7 @@ Commandline: abc -d new -warn-unused-advice:off new/InnerHell.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/InnerHell.java:12,4-13:5: No valid constructor found for javax.swing.JComponent.AccessibleJComponent().
-FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1730ms, memory usage: 6910432.
+FAIL: Test 53: "new/handle multiple nested inner classes" failed in 1759ms, memory usage: 7055992.
 
 
 Running test 115: new/Not binding constructor when using more than one compilation
@@ -12,13 +12,44 @@ Commandline: abc -cp new:/usr/local/src/abc-with-tests/abc/lib/abc-complete.jar:
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,8-21: Could not find type "InnerAbstract".
-FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 3182ms, memory usage: 8353992.
+FAIL: Test 115: "new/Not binding constructor when using more than one compilation" failed in 3104ms, memory usage: 7222840.
+
+
+Running test 144: pureJava/Local variables in initializers should not be treated as blank final fields
+Commandline: abc -d pureJava -warn-unused-advice:off pureJava/LocalInitializerVariableNotBlank.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: polyglot.util.InternalCompilerError: pureJava/LocalInitializerVariableNotBlank.java:8,8-27: Error while looking for join point shadow
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:161)
+	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:558)
+	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:275)
+	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:312)
+	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:482)
+	at abc.main.CompileSequence.weave(CompileSequence.java:447)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
+	... 4 more
+Caused by: soot.AbstractSootFieldRef$FieldResolutionFailedException: Class LocalInitializerVariableNotBlank doesn't have field greys : java.awt.Color[]; failed to resolve in superclasses and interfacesLooking in LocalInitializerVariableNotBlank which has fields [<LocalInitializerVariableNotBlank: java.awt.Color[] greys>]
+Looking in java.lang.Object which has fields []
+
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:112)
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:73)
+	at abc.weaving.aspectinfo.MethodCategory.weaveSetGet(MethodCategory.java:531)
+	at abc.weaving.matching.SetFieldShadowMatch.matchesAt(SetFieldShadowMatch.java:85)
+	at abc.weaving.matching.SetFieldShadowType.matchesAt(SetFieldShadowType.java:28)
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:152)
+	... 10 more
+FAIL: Test 144: "pureJava/Local variables in initializers should not be treated as blank final fields" failed in 1952ms, memory usage: 22696904.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts -warn-unused-advice:off pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1864ms, memory usage: 22656888.
+FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed in 1870ms, memory usage: 11070008.
 
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
@@ -26,7 +57,7 @@ Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
-FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 1569ms, memory usage: 10134856.
+FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed in 1564ms, memory usage: 8541088.
 
 
 Running test 190: pureJava/interfaces with non-explicitly static inner classes
@@ -36,22 +67,22 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at pureJava/InterfaceAndInner.java:7,23-48: Class "C" not found in scope of InterfaceAndInnerHelper
 Semantic Error at pureJava/InterfaceAndInner.java:8,34-59: Class "C" not found in scope of InterfaceAndInnerHelper
-FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 3016ms, memory usage: 4268872.
+FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed in 3049ms, memory usage: 4308424.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1b34844.foo calls Outer$Inner@14d7276.mi
+Outer@3d701d.foo calls Outer$Inner@18bb24e.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@14d7276.mi calls java.io.PrintStream@195d1db.println
+Outer$Inner@18bb24e.mi calls java.io.PrintStream@673744.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1b34844.foo calls Outer$InnerRandom@1ea254a.nextHook
+Outer@3d701d.foo calls Outer$InnerRandom@e58bc6.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1ea254a.nextHook calls Outer$InnerRandom@1ea254a.next
+Outer$InnerRandom@e58bc6.nextHook calls Outer$InnerRandom@e58bc6.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1b34844.foo calls X.nextInt
+Outer@3d701d.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Random.next(..)"
@@ -71,7 +102,7 @@ org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..)
 	at abc.testing.TestCase.runTest(TestCase.java:409)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 6305ms, memory usage: 9525752.
+FAIL: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" failed in 5565ms, memory usage: 8791416.
 
 
 Running test 496: new/elaborated into testing of around on all join points
@@ -85,7 +116,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$26$around$1600(AroundAll.java:199)
+	at A.inline$23$around$1600(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -94,7 +125,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.TestCase.runTest(TestCase.java:409)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6385ms, memory usage: 9445752.
+FAIL: Test 496: "new/elaborated into testing of around on all join points" failed in 6353ms, memory usage: 8667240.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -112,7 +143,7 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 	at Sub.getInt(SuperInIntroduction.java)
 	at SuperInIntroduction.main(SuperInIntroduction.java:6)
 	... 7 more
-FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 3898ms, memory usage: 8641608.
+FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed in 3790ms, memory usage: 7048872.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -136,26 +167,68 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.TestCase.runTest(TestCase.java:409)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 4647ms, memory usage: 9029112.
+FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed in 4566ms, memory usage: 7992160.
+
+
+Running test 653: new/nolang/Compiling java.lang.Object with ajc yields non-verifying bytecode
+Commandline: abc -d new/nolang -warn-unused-advice:off new/nolang/java/lang/Object.java new/nolang/java/lang/String.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: polyglot.util.InternalCompilerError: Exception while processing <java.lang.String: void <clinit>()>
+	at abc.main.CompileSequence.weave(CompileSequence.java:414)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
+	... 4 more
+Caused by: soot.AbstractSootFieldRef$FieldResolutionFailedException: Class java.lang.String doesn't have field serialPersistentFields : java.io.ObjectStreamField[]; failed to resolve in superclasses and interfacesLooking in java.lang.String which has fields [<java.lang.String: char[] value>, <java.lang.String: int offset>, <java.lang.String: int count>, <java.lang.String: int hash>, <java.lang.String: long serialVersionUID>, <java.lang.String: java.io.ObjectStreamField[] serialPersistentFields>, <java.lang.String: java.util.Comparator CASE_INSENSITIVE_ORDER>]
+Looking in java.io.Serializable which has fields []
+Looking in java.lang.Comparable which has fields []
+Looking in java.lang.CharSequence which has fields []
+Looking in java.lang.Object which has fields []
+
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:112)
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:73)
+	at soot.jimple.StaticFieldRef.getField(StaticFieldRef.java:75)
+	at soot.jimple.toolkits.typing.fast.UseChecker.caseAssignStmt(UseChecker.java:162)
+	at soot.jimple.internal.JAssignStmt.apply(JAssignStmt.java:221)
+	at soot.jimple.toolkits.typing.fast.UseChecker.check(UseChecker.java:55)
+	at soot.jimple.toolkits.typing.fast.TypeResolver.insertCasts(TypeResolver.java:345)
+	at soot.jimple.toolkits.typing.fast.TypeResolver.minCasts(TypeResolver.java:355)
+	at soot.jimple.toolkits.typing.fast.TypeResolver.inferTypes(TypeResolver.java:116)
+	at soot.jimple.toolkits.typing.TypeAssigner.internalTransform(TypeAssigner.java:93)
+	at soot.BodyTransformer.transform(BodyTransformer.java:51)
+	at soot.Transform.apply(Transform.java:104)
+	at soot.JimpleBodyPack.applyPhaseOptions(JimpleBodyPack.java:66)
+	at soot.JimpleBodyPack.internalApply(JimpleBodyPack.java:89)
+	at soot.Pack.apply(Pack.java:124)
+	at soot.coffi.CoffiMethodSource.getBody(CoffiMethodSource.java:117)
+	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:82)
+	at soot.SootMethod.retrieveActiveBody(SootMethod.java:329)
+	at abc.main.CompileSequence.weave(CompileSequence.java:410)
+	... 5 more
+FAIL: Test 653: "new/nolang/Compiling java.lang.Object with ajc yields non-verifying bytecode" failed in 3947ms, memory usage: 22887832.
 
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
 Failed to find class pack.ImportInnerFromInterfaceImplementor
-FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1838ms, memory usage: 8678624.
+FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed in 1833ms, memory usage: 14345664.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs -warn-unused-advice:off bugs/Finalizer.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 752: "bugs/problems with finalize call" failed in 1882ms, memory usage: 13072288.
+FAIL: Test 752: "bugs/problems with finalize call" failed in 1860ms, memory usage: 6725448.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new -warn-unused-advice:off new/ArgsInCflowCf.java 
 Compilation succeeded but was expected to fail.
-FAIL: Test 769: "new/illegal name binding in around cflow" failed in 2268ms, memory usage: 8873672.
+FAIL: Test 769: "new/illegal name binding in around cflow" failed in 2221ms, memory usage: 9248024.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
@@ -163,7 +236,7 @@ Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ConvertT
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
-FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 2050ms, memory usage: 14249184.
+FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed in 2006ms, memory usage: 13413576.
 
 
 Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
@@ -186,7 +259,7 @@ CODE GENERATOR EXCEPTION: Not expecting a trap to start at, or end just after a 
 	at abc.main.CompileSequence.weave(CompileSequence.java:496)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
 	... 4 more
-FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 2040ms, memory usage: 23689840.
+FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes" failed in 1978ms, memory usage: 25732784.
 
 
 Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
@@ -209,7 +282,7 @@ CODE GENERATOR EXCEPTION: Not expecting a trap to start at, or end just after a 
 	at abc.main.CompileSequence.weave(CompileSequence.java:496)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
 	... 4 more
-FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 1940ms, memory usage: 26565440.
+FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed in 1940ms, memory usage: 19310776.
 
 
 Running test 812: harness/CLE: no dir specified for sourceroots
@@ -225,13 +298,13 @@ Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java
 	at abc.main.Main.loadSourceRoots(Main.java:567)
 	at abc.main.Main.run(Main.java:398)
 	... 3 more
-FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 1622ms, memory usage: 22236696.
+FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed in 1773ms, memory usage: 20764592.
 
 
 Running test 951: bugs/deprecated/-deprecation not working?
 Commandline: abc -d bugs/deprecated -warn-unused-advice:off -deprecation bugs/deprecated/Deprecation.java bugs/deprecated/Deprecated.java 
 Illegal arguments: Unknown option -deprecation
-FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 413ms, memory usage: 8417824.
+FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed in 387ms, memory usage: 7005112.
 
 
 Running test 986: abctests/bugs/Matching int[].clone()
@@ -240,7 +313,7 @@ Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error: unexpected int.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error: unexpected numeric literal 0.
-FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 1653ms, memory usage: 9416912.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed in 1649ms, memory usage: 11957032.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
@@ -265,7 +338,7 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found]
 	at abc.testing.TestCase.runTest(TestCase.java:409)
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
-FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 5516ms, memory usage: 8979848.
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed in 5349ms, memory usage: 7433904.
 
 
 Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
@@ -278,15 +351,15 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.doCase(Main.java:288)
 	at abc.testing.Main.main(Main.java:122)
 Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot-class-path set properly?)
-	at soot.SootResolver.bringToHierarchy(SootResolver.java:174)
-	at soot.SootResolver.bringToSignatures(SootResolver.java:209)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:184)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:219)
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:139)
 	at soot.SootResolver.resolveClass(SootResolver.java:124)
-	at soot.Scene.loadClass(Scene.java:390)
+	at soot.Scene.loadClass(Scene.java:385)
 	at abc.main.CompileSequence.compile(CompileSequence.java:338)
 	at abc.main.CompileSequence.runSequence(CompileSequence.java:100)
 	... 4 more
-FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1857ms, memory usage: 21603344.
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed in 1824ms, memory usage: 24770592.
 
 
 Running test 1032: abctests/tracematches/Tracematches: Testing self-applying around TM-advice
@@ -295,13 +368,45 @@ Compilation produced unexpected warnings:
 Warning at Compiler Generated: Invalid Jimple body for <AdviseSelfTM: void tracematch$3119$body_real(AdviseSelf,java.lang.Integer,Abc$proceed$AdviseSelfTM$tracematch$3119$body,int,int,int,java.lang.Object,java.lang.Object,java.lang.Object[],int)>:
  All identity statements should occur at the start of a Jimple method. abc
 will try to fix this, but really it's a bug in code generation.
-FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 3389ms, memory usage: 18512304.
+FAIL: Test 1032: "abctests/tracematches/Tracematches: Testing self-applying around TM-advice" failed in 2943ms, memory usage: 14379792.
+
+
+Running test 1127: om/omantstest/omants test
+Commandline: abc -d om/omantstest -warn-unused-advice:off -ext abc.om om/omantstest/automaton/Automaton.java om/omantstest/benchmark/Main.java om/omantstest/command/Command.java om/omantstest/command/Comment.java om/omantstest/command/Condition.java om/omantstest/command/Drop.java om/omantstest/command/Flip.java om/omantstest/command/Foe.java om/omantstest/command/FoeHome.java om/omantstest/command/FoeMarker.java om/omantstest/command/FoeWithFood.java om/omantstest/command/Food.java om/omantstest/command/Friend.java om/omantstest/command/FriendWithFood.java om/omantstest/command/Home.java om/omantstest/command/Mark.java om/omantstest/command/Marker.java om/omantstest/command/Move.java om/omantstest/command/PickUp.java om/omantstest/command/Rock.java om/omantstest/command/Sense.java om/omantstest/command/Turn.java om/omantstest/command/Unmark.java om/omantstest/debug/CheckScores.java om/omantstest/debug/CommandTracer.java om/omantstest/debug/LiveAnts.java om/omantstest/debug/WorldDumper.java om/omantstest/main/Main.java om/omantstest/model/Ant.java om/omantstest/model/Cell.java om/omantstest/model/Color.java om/omantstest/model/Combat.java om/omantstest/model/Resting.java om/omantstest/model/World.java om/omantstest/modules/Modules.java om/omantstest/parser/CommandParser.java om/omantstest/profile/NoNewInCmd.java om/omantstest/profile/NoNewInRound.java om/omantstest/style/PublicAccessFields.java om/omantstest/viewer/Board.java om/omantstest/viewer/Bug.java om/omantstest/viewer/Hexagon.java om/omantstest/viewer/Update.java om/omantstest/viewer/Viewer.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+polyglot.util.InternalCompilerError: unhandled exception during weaving/optimisation
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:142)
+	at abc.main.Main.run(Main.java:406)
+	at abc.testing.TestCase.runTest(TestCase.java:289)
+	at abc.testing.Main.doCase(Main.java:288)
+	at abc.testing.Main.main(Main.java:122)
+Caused by: polyglot.util.InternalCompilerError: om/omantstest/automaton/Automaton.java:23,20-32: Error while looking for join point shadow
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:161)
+	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:558)
+	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:275)
+	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:312)
+	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:482)
+	at abc.om.weaving.aspectinfo.OMGlobalAspectInfo.computeAdviceLists(OMGlobalAspectInfo.java:39)
+	at abc.main.CompileSequence.weave(CompileSequence.java:447)
+	at abc.main.CompileSequence.runSequence(CompileSequence.java:115)
+	... 4 more
+Caused by: soot.AbstractSootFieldRef$FieldResolutionFailedException: Class automaton.Automaton doesn't have field instructions : command.Command[]; failed to resolve in superclasses and interfacesLooking in automaton.Automaton which has fields [<automaton.Automaton: command.Command[] instructions>, <automaton.Automaton: int maxCommand>]
+Looking in java.lang.Object which has fields []
+
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:112)
+	at soot.AbstractSootFieldRef.resolve(AbstractSootFieldRef.java:73)
+	at abc.weaving.aspectinfo.MethodCategory.weaveSetGet(MethodCategory.java:531)
+	at abc.weaving.matching.GetFieldShadowMatch.matchesAt(GetFieldShadowMatch.java:78)
+	at abc.weaving.matching.GetFieldShadowType.matchesAt(GetFieldShadowType.java:28)
+	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:152)
+	... 11 more
+FAIL: Test 1127: "om/omantstest/omants test" failed in 7276ms, memory usage: 48156560.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-with-tests/abc-testing/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 1571ms, memory usage: 7821968.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed in 1499ms, memory usage: 17985800.
 
 

@@ -10,6 +10,10 @@
         <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
         <run class="ConstructorNotFound_PR408"></run>
     </ajc-test>
+<ajc-test title="Local variables in initializers should not be treated as blank final fields" num="144" keywords="from-java" dir="pureJava">
+        <compile files="LocalInitializerVariableNotBlank.java"></compile>
+        <run class="LocalInitializerVariableNotBlank"></run>
+    </ajc-test>
 <ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <ajcmessage line="3" kind="error"></ajcmessage>
@@ -43,6 +47,10 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
+<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
+	    <compile files="java/lang/Object.java,java/lang/String.java">
+	    </compile>
+	</ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
@@ -123,6 +131,10 @@
 <ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
         <run class="AdviseSelf"></run>
+    </ajc-test>
+<ajc-test title="omants test" num="1127" keywords="openmod" dir="om/omantstest">
+        <compile options="-ext,abc.om" files="automaton/Automaton.java,       benchmark/Main.java,       command/Command.java,       command/Comment.java,       command/Condition.java,       command/Drop.java,       command/Flip.java,       command/Foe.java,       command/FoeHome.java,       command/FoeMarker.java,       command/FoeWithFood.java,       command/Food.java,       command/Friend.java,       command/FriendWithFood.java,       command/Home.java,       command/Mark.java,       command/Marker.java,       command/Move.java,       command/PickUp.java,       command/Rock.java,       command/Sense.java,       command/Turn.java,       command/Unmark.java,       debug/CheckScores.java,       debug/CommandTracer.java,       debug/LiveAnts.java,       debug/WorldDumper.java,       main/Main.java,       model/Ant.java,       model/Cell.java,       model/Color.java,       model/Combat.java,       model/Resting.java,       model/World.java,       modules/Modules.java,       parser/CommandParser.java,       profile/NoNewInCmd.java,       profile/NoNewInRound.java,       style/PublicAccessFields.java,       viewer/Board.java,       viewer/Bug.java,       viewer/Hexagon.java,       viewer/Update.java,       viewer/Viewer.java">
+        </compile>
     </ajc-test>
 <ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
