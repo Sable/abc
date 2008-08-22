@@ -1,4 +1,4 @@
-module m2x;
+module m2xx;
 package p;
 
 public class P extends supermodule::p.P {
@@ -7,9 +7,9 @@ public class P extends supermodule::p.P {
 	}
 
 	public void f() {
-		System.out.println("from m2x");
+		System.out.println("from m2xx");
 		super.f();
-		System.out.println("m2x::p.P.f()");
-		System.out.println("end from m2x");
+		System.out.println("m2xx::p.P.f()");
+		System.out.println("end from m2xx");
 	}
 }

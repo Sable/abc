@@ -6,13 +6,21 @@ m2::p.P.f()
 create m2x::B
 class m1$m2x$super$m2.B
 m2::B.f()
-class m1$m2x$super$m2.$p.P
+class m1$m2x.$p.P
+class m1$m2x.$p.P
+from m2x
 m2::p.P.f()
+m2x::p.P.f()
+end from m2x
 create m2xx::B
 class m1$m2xx.B
 class m1$m2xx.B
 m2::B.f()
 class m1$m2xx.$p.P
 class m1$m2xx.$p.P
+class m1$m2xx.$p.P
+from m2x
 m2::p.P.f()
+m2x::p.P.f()
+end from m2x
 class m1.A

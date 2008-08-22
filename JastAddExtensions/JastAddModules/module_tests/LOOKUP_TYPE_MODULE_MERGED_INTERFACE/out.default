@@ -7,28 +7,22 @@ classes
 m1
 m1.module
 m2.module
+m2int.module
 m2x.module
 m2xx.module
 A.java
 B.java
-B2.java
 Main.java
-P.java
-P2.java
-P3.java
 ../testlib/jastadd$framework.module
 End arguments
 ----------Module contents----------
-------P.java------
-module: module m2;;
-module CU : m2.module
-module name : m2
-------------------------
 ------m1.module------
 module m1;
 import own m2 as none null;
 import own m2x as none null;
 import own m2xx as none null;
+import own m2int as none null;
+merge m2, m2x, m2xx, m2int as m2merged;
 ------------------------
 ------B.java------
 module: module m2;;
@@ -36,7 +30,7 @@ module CU : m2.module
 module name : m2
 ------------------------
 ------m2.module------
-module m2;
+module m2 implements m2int;
 ------------------------
 ------m2x.module------
 module m2x extends m2;
@@ -49,66 +43,51 @@ module: null;
 module CU : null
 module name : null
 ------------------------
-------P2.java------
-module: module m2x;;
-module CU : m2x.module
-module name : m2x
-------------------------
 ------A.java------
 module: module m1;;
 module CU : m1.module
 module name : m1
 ------------------------
-------P3.java------
-module: module m2xx;;
-module CU : m2xx.module
-module name : m2xx
+------m2int.module------
+module m2int;
 ------------------------
 ------../testlib/jastadd$framework.module------
 module jastadd$framework;
 ------------------------
-------B2.java------
-module: module m2xx;;
-module CU : m2xx.module
-module name : m2xx
-------------------------
 ----------CU AST before insert----------
-P.java package:p
 module: m1, file: m1.module, base module: m1
 B.java package:
 module: m2, file: m2.module, base module: m2
 module: m2x, file: m2x.module, base module: m2x
 module: m2xx, file: m2xx.module, base module: m2xx
 Main.java package:
-P2.java package:p
 A.java package:
-P3.java package:p
+module: m2int, file: m2int.module, base module: m2int
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-B2.java package:
 ----------CU AST after insert----------
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: m2, file: m2.module, base module: m2
-	P.java package:m2.$p
 	B.java package:m2
 module: m2x, file: m2x.module, base module: m2x
-	P2.java package:m2x.$p
 module: m2xx, file: m2xx.module, base module: m2xx
-	P3.java package:m2xx.$p
-	B2.java package:m2xx
 Main.java package:
+module: m2int, file: m2int.module, base module: m2int
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ----------Module CU imports before import own----------
 module m1, base:m1, context:[], instantiated:false
 module m2, base:m2, context:[], instantiated:false
 module m2x, base:m2x, context:[], instantiated:false
 module m2xx, base:m2xx, context:[], instantiated:false
+module m2int, base:m2int, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 as none null;
 import own m2x as none null;
 import own m2xx as none null;
+import own m2int as none null;
+merge m2, m2x, m2xx, m2int as m2merged;
 export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
@@ -116,80 +95,48 @@ import  jastadd$framework as none null;
 module: m1, file: m1.module, base module: m1
 	A.java package:m1
 module: m2, file: m2.module, base module: m2
-	P.java package:m2.$p
 	B.java package:m2
 module: m2x, file: m2x.module, base module: m2x
-	P2.java package:m2x.$p
 module: m2xx, file: m2xx.module, base module: m2xx
-	P3.java package:m2xx.$p
-	B2.java package:m2xx
 Main.java package:
+module: m2int, file: m2int.module, base module: m2int
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m1$m2, file: m2.module, base module: m2
-	P.java package:m1$m2.$p
-	B.java package:m1$m2
-module: m1$m2x$super$m2, file: m2.module, base module: m2
-	P.java package:m1$m2x$super$m2.$p
-	B.java package:m1$m2x$super$m2
-module: m1$m2x, file: m2x.module, base module: m2x
-	P2.java package:m1$m2x.$p
-module: m1$m2xx$super$m2x, file: m2x.module, base module: m2x
-	P2.java package:m1$m2xx$super$m2x.$p
-module: m1$m2xx$super$m2, file: m2.module, base module: m2
-	P.java package:m1$m2xx$super$m2.$p
-	B.java package:m1$m2xx$super$m2
-module: m1$m2xx, file: m2xx.module, base module: m2xx
-	P3.java package:m1$m2xx.$p
-	B2.java package:m1$m2xx
+module: m1$m2merged$super$m2x, file: m2x.module, base module: m2x
+module: m1$m2merged$super$m2, file: m2.module, base module: m2
+	B.java package:m1$m2merged$super$m2
+module: m1$m2merged, file: m2xx.module, base module: m2xx
 
 ----------Module CU imports after import own----------
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
-	m2:m1$m2
-	m2x:m1$m2x
-	m2xx:m1$m2xx
+	m2:m1$m2merged
+	m2int:m1$m2merged
+	m2merged:m1$m2merged
+	m2x:m1$m2merged
+	m2xx:m1$m2merged
 module m2, base:m2, context:[], instantiated:false
 module m2x, base:m2x, context:[], instantiated:false
 module m2xx, base:m2xx, context:[], instantiated:false
+module m2int, base:m2int, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-module m1$m2, base:m2, context:[m1], instantiated:true
-	jastadd$framework:jastadd$framework
-module m1$m2x$super$m2, base:m2, context:[m1$m2x], instantiated:true
-module m1$m2x, base:m2x, context:[m1], instantiated:true
-	jastadd$framework:jastadd$framework
-module m1$m2xx$super$m2x, base:m2x, context:[m1$m2xx], instantiated:true
-module m1$m2xx$super$m2, base:m2, context:[m1$m2xx], instantiated:true
-module m1$m2xx, base:m2xx, context:[m1], instantiated:true
+module m1$m2merged$super$m2x, base:m2x, context:[m1$m2merged], instantiated:true
+module m1$m2merged$super$m2, base:m2, context:[m1$m2merged], instantiated:true
+module m1$m2merged, base:m2xx, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
 Module: m1
 	m1.A
 Module: m2
-	m2.$p.P
 	m2.B
 Module: m2x
-	m2x.$p.P
 Module: m2xx
-	m2xx.$p.P
-	m2xx.B
+Module: m2int
 Module: jastadd$framework
-Module: m1$m2
-	m1$m2.B
-	m1$m2.$p.P
-Module: m1$m2x$super$m2
-	m1$m2x$super$m2.B
-	m1$m2x$super$m2.$p.P
-Module: m1$m2x
-	m1$m2x.$p.P
-Module: m1$m2xx$super$m2x
-	m1$m2xx$super$m2x.$p.P
-Module: m1$m2xx$super$m2
-	m1$m2xx$super$m2.B
-	m1$m2xx$super$m2.$p.P
-Module: m1$m2xx
-	m1$m2xx.B
-	m1$m2xx.$p.P
+Module: m1$m2merged$super$m2x
+Module: m1$m2merged$super$m2
+	m1$m2merged$super$m2.B
+Module: m1$m2merged
 
 ----------CU iterator----------
-m1.module, A.java, m2.module, m2x.module, m2xx.module, Main.java, ../testlib/jastadd$framework.module, m2.module, P.java, B.java, m2.module, P.java, B.java, m2x.module, P2.java, m2x.module, P2.java, m2.module, P.java, B.java, m2xx.module, P3.java, B2.java
+m1.module, A.java, m2.module, m2x.module, m2xx.module, Main.java, m2int.module, ../testlib/jastadd$framework.module, m2x.module, m2.module, B.java, m2xx.module

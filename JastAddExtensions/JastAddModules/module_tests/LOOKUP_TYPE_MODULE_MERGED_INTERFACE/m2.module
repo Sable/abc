@@ -1,0 +1,2 @@
+module m2 implements m2int;
+export package *;

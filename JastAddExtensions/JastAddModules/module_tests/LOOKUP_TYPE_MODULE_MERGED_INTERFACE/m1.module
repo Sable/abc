@@ -1,0 +1,8 @@
+module m1;
+import own m2;
+import own m2x;
+import own m2xx;
+import own m2int;
+
+merge m2, m2x, m2xx, m2int as m2merged;
+export package *;
