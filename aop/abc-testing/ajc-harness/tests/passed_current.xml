@@ -593,6 +593,10 @@
         <compile files="ConstantValueConversion.java"></compile>
         <run class="ConstantValueConversion"></run>
     </ajc-test>
+<ajc-test title="Local variables in initializers should not be treated as blank final fields" num="144" keywords="from-java" dir="pureJava">
+        <compile files="LocalInitializerVariableNotBlank.java"></compile>
+        <run class="LocalInitializerVariableNotBlank"></run>
+    </ajc-test>
 <ajc-test title="Binops aren't allowed as update stmts in for loops" num="145" keywords="from-java" dir="pureJava">
         <compile files="NonStmtInFor.java">
             <message line="3" kind="error"></message>
@@ -3590,6 +3594,10 @@
         <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
         <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
     </ajc-test>
+<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
+	    <compile files="java/lang/Object.java,java/lang/String.java">
+	    </compile>
+	</ajc-test>
 <ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
         <run class="MethodLocalAroundReturns"></run>
@@ -5677,6 +5685,10 @@
 			<message line="7" kind="warning"></message>
         </compile>
         <run class="ToTestMain"></run>
+    </ajc-test>
+<ajc-test title="omants test" num="1127" keywords="openmod" dir="om/omantstest">
+        <compile options="-ext,abc.om" files="automaton/Automaton.java,       benchmark/Main.java,       command/Command.java,       command/Comment.java,       command/Condition.java,       command/Drop.java,       command/Flip.java,       command/Foe.java,       command/FoeHome.java,       command/FoeMarker.java,       command/FoeWithFood.java,       command/Food.java,       command/Friend.java,       command/FriendWithFood.java,       command/Home.java,       command/Mark.java,       command/Marker.java,       command/Move.java,       command/PickUp.java,       command/Rock.java,       command/Sense.java,       command/Turn.java,       command/Unmark.java,       debug/CheckScores.java,       debug/CommandTracer.java,       debug/LiveAnts.java,       debug/WorldDumper.java,       main/Main.java,       model/Ant.java,       model/Cell.java,       model/Color.java,       model/Combat.java,       model/Resting.java,       model/World.java,       modules/Modules.java,       parser/CommandParser.java,       profile/NoNewInCmd.java,       profile/NoNewInRound.java,       style/PublicAccessFields.java,       viewer/Board.java,       viewer/Bug.java,       viewer/Hexagon.java,       viewer/Update.java,       viewer/Viewer.java">
+        </compile>
     </ajc-test>
 <ajc-test title="Second inherit precedence test (checks for precedence of aspects of included modules)" num="1128" keywords="openmod" dir="om/inheritprectest2">
         <compile options="-ext,abc.om" files="Modules.java,             InheritPrecTestMain2.java">
