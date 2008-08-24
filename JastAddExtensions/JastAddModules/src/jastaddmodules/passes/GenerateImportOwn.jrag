@@ -337,12 +337,8 @@ aspect GenerateImportOwn {
 		return ret;
 	}
 	
-	//Changes the module references targeted by merge or replace. Detaches
+	//Changes the module references targeted by merge. Detaches
 	//the old instances from the tree if no pointers to them exist
-	//NOTE: This is the hairiest piece of code in all of JastAddModules. Be careful
-	//when changing this
-	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
-	//is worth it 
 	protected ModuleCompilationUnit 
 		ModuleCompilationUnit.mergeTargets(ModuleMergeDecl mergeDecl,
 			Collection<ModuleReference> mergeTargets,
