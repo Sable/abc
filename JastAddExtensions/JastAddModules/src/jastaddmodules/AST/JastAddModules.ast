@@ -30,6 +30,7 @@ AsTypeNone : AsType;
 ModuleMergeDecl : ModuleMemberDecl ::= 
 	MergeModule:ModuleAccess* 
 	AsType 
+	AsModuleStaticType:ModuleAccess
 	AsModule:ModuleAccess;
 ModuleReplaceDecl : ModuleMemberDecl ::=
 	ReplaceModule:ModuleAccess*

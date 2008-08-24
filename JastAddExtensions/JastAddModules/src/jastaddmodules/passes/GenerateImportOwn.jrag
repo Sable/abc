@@ -179,6 +179,16 @@ aspect GenerateImportOwn {
 			mergeMember.warning("There are less than two modules to merge. This may be an error.");
 		}
 		
+		//check static type
+		ModuleCompilationUnit mergeStaticType = 
+			getHostProgram()
+				.lookupModuleCUNoTransform(mergeMember.getAsModuleStaticType());
+		if (mergeStaticType == null) {
+			String msg = "Unable to find module: " + mergeMember.getAsModuleStaticType().getID();
+			mergeMember.getAsModuleStaticType().error(msg);
+			throw new UnrecoverableSemanticError(msg);
+		}
+		
 		Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
 		Collection<ModuleReference> mergeTargetReferences = new HashSet<ModuleReference>();
 		//stores the accesses for the merge cascades. Need to keep the access instead of
@@ -203,11 +213,22 @@ aspect GenerateImportOwn {
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
 			
+			//check against other modules
 			if (mergeBaseCU != null && mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU) == null) {
-				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cu.getBaseCU().getModuleName(); 
+				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cuReference.getStaticModuleType().getModuleName(); 
 				access.error(msg);
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
+			
+			//check against merge static type
+			if (!isReplaceCompatible(mergeStaticType, cuReference.getStaticModuleType())) {
+				String msg = "Incompatible modules in merge list: " + 
+					cuReference.getStaticModuleType().getModuleName() + 
+					", " + 
+					mergeStaticType.getModuleName(); 
+				access.error(msg);
+				throw new jastadd.UnrecoverableSemanticError(msg);
+			} 
 			
 			if (mergeTargets.contains(cu)) {
 				access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
@@ -246,9 +267,6 @@ aspect GenerateImportOwn {
 			)
 		);
 
-		ModuleCompilationUnit mergeStaticType = mostGeneralModule(mergeTargets);
-		assert (mergeStaticType != null) : "Unable to find most general type for merge targets";
-		
 		ModuleReference mergedModuleRef = 
 			new ModuleReference(mergeAlias, 
 					mergedCU, 
@@ -510,6 +528,16 @@ aspect GenerateImportOwn {
 		if (base2.isInterfaceOf(base1)) {
 			return base1;
 		}
+		//synthetics
+		if (base1.isSynthetic() && !base2.isSynthetic()) {
+			return base2;
+		}
+		if (!base1.isSynthetic() && base2.isSynthetic()) {
+			return base1;
+		}
+		if (base1.isSynthetic() && base2.isSynthetic()) {
+			return null;
+		}
 		return null;
 	} 
 	
@@ -534,6 +562,10 @@ aspect GenerateImportOwn {
 				ret = baseCU;
 			}
 			else if (baseCU.hasSuperModule(ret)) {
+				//do nothing
+				ret = ret;
+			}
+			else if (baseCU.isSynthetic()) {
 				//do nothing
 				ret = ret;
 			}
