@@ -1,2 +1,5 @@
 module org.jhotdraw.samples.draw.drawjhotdraw extends 
 	org.jhotdraw.samples.defaultsample.defaultjhotdraw;
+
+//replace with newer version
+replace batik with own org.apache.batik1_6;

@@ -5,7 +5,4 @@ import own org.jhotdraw.samples.draw.drawjhotdraw as drawjhotdraw;
 //replace with extended version of jhotdraw
 replace jhotdraw with drawjhotdraw;
 
-//don't replace default batik version
-//replace jhotdraw::batik with org.apache.batik1_8pre;
-
 export package *;
