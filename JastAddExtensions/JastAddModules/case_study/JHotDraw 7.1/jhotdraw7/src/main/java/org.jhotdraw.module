@@ -3,10 +3,7 @@ module org.jhotdraw;
 import own net.n3.nanoxml export as nanoxml;
 import own org.apache.batik export as batik;
 
-import own net.n3.nanoxmlv2_2_1_4patch;
-
-merge nanoxml, net.n3.nanoxmlv2_2_1_4patch 
-	export as net.n3.nanoxml nanoxml;
+replace nanoxml with own net.n3.nanoxmlv2_2_1_4patch;
 
 import own org.jhotdraw.batikfragment;
 replace batik with org.jhotdraw.batikfragment; //use local version by default
