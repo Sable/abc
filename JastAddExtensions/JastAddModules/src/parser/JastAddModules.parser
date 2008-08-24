@@ -171,9 +171,9 @@ ModuleMergeDecl ja_module_merge_decl =
 	:};
 
 ModuleReplaceDecl ja_module_replace_decl =
-	REPLACE module_access_list.mal WITH ja_module_access.ma SEMICOLON
+	REPLACE module_access_list.mal WITH ja_module_expr.me SEMICOLON
 	{:
-		return new ModuleReplaceDecl(mal, ma);
+		return new ModuleReplaceDecl(mal, me);
 	:};
 
 List module_access_list =
@@ -242,3 +242,8 @@ List ja_module_package_decl_list =
 		return l.add(new ModulePackageDecl(n.getID()));
 	:};
 	
+ModuleExpr ja_module_expr =
+	ja_module_access.ma
+	{:
+		return new ModuleAccessExpr(ma);
+	:};

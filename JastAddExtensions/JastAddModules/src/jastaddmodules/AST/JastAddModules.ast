@@ -34,7 +34,14 @@ ModuleMergeDecl : ModuleMemberDecl ::=
 	AsModule:ModuleAccess;
 ModuleReplaceDecl : ModuleMemberDecl ::=
 	ReplaceModule:ModuleAccess*
-	WithModule:ModuleAccess;
+	WithExpr:ModuleExpr;
+
+//for use in the with clause of replacedecl
+abstract ModuleExpr;
+ModuleAccessExpr : ModuleExpr ::= ModuleAccess;
+ModuleSingletonAccessExpr : ModuleExpr ::= ModuleAccess;
+ModuleOwnExpr : ModuleExpr ::= ModuleAccess;
+
 
 ModuleExportDecl : ModuleMemberDecl ::=
 	ModulePackageDecl*;

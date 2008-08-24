@@ -83,7 +83,7 @@ aspect PrettyPrint {
 			first = false;
 		}
 		s.append(" with ");
-		getWithModule().toString(s);
+		getWithExpr().toString(s);
 		s.append(";");
 	}
 	public void AsTypeOwn.toString(StringBuffer s) {
@@ -115,5 +115,18 @@ aspect PrettyPrint {
 	
 	public void ModulePackageDecl.toString(StringBuffer s) {
 		s.append(getID());
+	}
+	
+	public void ModuleExpr.toString(StringBuffer s) {
+		throw new Error("toString should not be called on abstract ModuleExpr");
+	}
+	
+	public void ModuleAccessExpr.toString(StringBuffer s) {
+		getModuleAccess().toString(s);
+	}
+	
+	public void ModuleOwnExpr.toString(StringBuffer s) {
+		s.append("own ");
+		getModuleAccess().toString(s);
 	}
 }

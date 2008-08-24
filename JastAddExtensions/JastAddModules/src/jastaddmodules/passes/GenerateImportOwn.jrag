@@ -285,20 +285,12 @@ aspect GenerateImportOwn {
 	protected ModuleCompilationUnit ModuleCompilationUnit.processReplaceMember(ModuleReplaceDecl replaceMember, ModuleCompilationUnit ret) {
 		//lookup merge targets from ret
 		
-		ModuleCompilationUnit replaceCU = replaceMember.getWithModule().lookupModule();
+		ModuleCompilationUnit replaceCU = replaceMember.getWithExpr().getModuleInstance();
 		if (replaceCU == null) {
-			String msg = "Unable to find module: " + replaceMember.getWithModule().getID();
-			replaceMember.getWithModule().error(msg);
+			String msg = "Unable to get module instance: " + replaceMember.getWithExpr().toString();
+			replaceMember.getWithExpr().error(msg);
 			throw new jastadd.UnrecoverableSemanticError(msg);
 		} 
-		//Comment out, allow replacement with base modules
-		/*
-		if (isAccessedThroughBaseModule(replaceMember.getWithModule())) {
-			String msg = "Module used for replacement is a base module or is accessed through a base module. Only import owns are allowed to be used for a replace.";
-			replaceMember.getWithModule().error(msg);
-			throw new jastadd.UnrecoverableSemanticError(msg);
-		}
-		*/
 		
 		//TODO: See if replaceTargets can be completely removed
 		Collection<ModuleCompilationUnit> replaceTargets = new HashSet<ModuleCompilationUnit>();

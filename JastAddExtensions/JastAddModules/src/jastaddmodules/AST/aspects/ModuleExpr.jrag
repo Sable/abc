@@ -1,0 +1,9 @@
+
+aspect ModuleExpr {
+	public ModuleCompilationUnit ModuleExpr.getModuleInstance() {
+		throw new Error("getModuleInstance called on abstract ModuleExpr");
+	}
+	public ModuleCompilationUnit ModuleAccessExpr.getModuleInstance() {
+		return getModuleAccess().lookupModule();
+	}
+}
