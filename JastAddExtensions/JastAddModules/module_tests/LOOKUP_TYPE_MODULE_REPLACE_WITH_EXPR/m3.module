@@ -1,0 +1,10 @@
+module m3 implements mint;
+
+import own mint export as mint3;
+import own mint export as mint3b;
+
+replace mint3 with own m4;
+replace mint3b with own m4;
+
+
+export package *;

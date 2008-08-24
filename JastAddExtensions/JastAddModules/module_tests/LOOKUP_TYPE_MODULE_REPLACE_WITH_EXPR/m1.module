@@ -1,0 +1,17 @@
+module m1;
+
+import own mint export as mint1a;
+import own mint export as mint1b;
+import own mint export as mint1c;
+
+import own m2 export as m2a;
+import own m3 export as m3a;
+
+replace mint1a with m2a;
+replace mint1b with singleton m3;
+replace mint1c with own m4;
+
+import own m2 export as m2b;
+import own m3 export as m3b;
+
+export package *;

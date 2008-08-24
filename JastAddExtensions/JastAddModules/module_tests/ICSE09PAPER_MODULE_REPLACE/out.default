@@ -199,8 +199,8 @@ module myapplication$parserV2, base:parserV2, context:[myapplication, myapplicat
 Module: myapplication
 	myapplication.MyApplication
 Module: parserV1_2
-	parserV1_2.$parser.XMLParser
 	parserV1_2.$parser.Parser
+	parserV1_2.$parser.XMLParser
 Module: scanner
 	scanner.$scanner.Scanner
 Module: parserV1_1
@@ -217,8 +217,8 @@ Module: myapplication$staticanalyzer
 Module: myapplication$javadocgenerator
 	myapplication$javadocgenerator.JavadocGenerator
 Module: myapplication$parserV2
-	myapplication$parserV2.$parser.Parser
 	myapplication$parserV2.$parser.XMLParser
+	myapplication$parserV2.$parser.Parser
 
 ----------CU iterator----------
 myapplication.module, MyApplication.java, parserV1_2.module, scanner.module, parserV1_1.module, parserV2.module, staticanalyzer.module, Main.java, javadocgenerator.module, staticanalyzer.module, StaticAnalyzer.java, javadocgenerator.module, JavadocGenerator.java, parserV2.module, v2/XMLParser.java, v2/Parser.java
