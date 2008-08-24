@@ -14,5 +14,6 @@ aspect JAModuleProgram {
 	eq Program.getChild(int index).getHostProgram() = this;
 	inh Program CompilationUnit.getHostProgram();
 	inh Program ModuleDecl.getHostProgram();
+	inh Program ModuleExpr.getHostProgram();
 	
 }

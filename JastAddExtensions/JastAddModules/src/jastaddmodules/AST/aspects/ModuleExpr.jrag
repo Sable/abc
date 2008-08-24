@@ -6,4 +6,17 @@ aspect ModuleExpr {
 	public ModuleCompilationUnit ModuleAccessExpr.getModuleInstance() {
 		return getModuleAccess().lookupModule();
 	}
+	public ModuleCompilationUnit ModuleOwnExpr.getModuleInstance() {
+		ModuleCompilationUnit baseCU = getHostProgram().lookupModuleCUNoTransform(getModuleAccess());
+		ModuleCompilationUnit context = getModuleCompilationUnit();
+		
+		ModuleCompilationUnit instance = baseCU.generateModuleInstance(context, context.createAnonName(context)); 
+		getHostProgram().getCompilationUnitList().addChild(instance);			
+		 
+		return instance;
+	}
+	public ModuleCompilationUnit ModuleSingletonAccessExpr.getModuleInstance() {
+		ModuleCompilationUnit baseCU = getHostProgram().lookupModuleCUNoTransform(getModuleAccess());
+		return baseCU.generateModuleInstance(null);
+	}
 }

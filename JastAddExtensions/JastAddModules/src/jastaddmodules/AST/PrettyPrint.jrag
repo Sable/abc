@@ -125,6 +125,11 @@ aspect PrettyPrint {
 		getModuleAccess().toString(s);
 	}
 	
+	public void ModuleSingletonAccessExpr.toString(StringBuffer s) {
+		s.append("singleton ");
+		getModuleAccess().toString(s);
+	}
+	
 	public void ModuleOwnExpr.toString(StringBuffer s) {
 		s.append("own ");
 		getModuleAccess().toString(s);

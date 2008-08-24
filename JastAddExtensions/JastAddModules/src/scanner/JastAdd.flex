@@ -162,6 +162,7 @@ BinaryExponent = [pP] [+-]? {Digits}
   "replace" { return sym(Terminals.REPLACE); }
   "with" {return sym(Terminals.WITH); }  
   "overrides" {return sym(Terminals.OVERRIDES); }
+  "singleton" {return sym(Terminals.SINGLETON); }
 }
 
 

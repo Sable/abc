@@ -145,7 +145,7 @@ public class JastAddModules extends JastAdd {
 
 				// generate the ModuleCompilationUnits created by import
 				// own/merges
-				result = program.generateImportOwn();
+				result = program.generateModuleInstances();
 				if (!result) {
 					return false;
 				}

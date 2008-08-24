@@ -26,7 +26,7 @@ aspect GenerateImportOwn {
 		this.instanceModule = instanceModule;
 	}
 
-	public boolean Program.generateImportOwn() {
+	public boolean Program.generateModuleInstances() {
 		if (!hasJAModules()) {
 			return true;
 		}
@@ -45,7 +45,7 @@ aspect GenerateImportOwn {
 		}
 		
 		//generate import owns starting from the instance module
-		getInstanceModuleCU().generateImportOwn(null);
+		getInstanceModuleCU().generateModuleInstance(null);
 		getInstanceModuleCU().setSourceStatement(null); //debug
 		
 		return true;
@@ -56,14 +56,14 @@ aspect GenerateImportOwn {
 	//and is visible). If not, then it is not exported (i.e. it was generated from an import own
 	//statement with no export)	
 	//NOTE: Keep these non-lazy, the node removal code in merge depends on separate instances of the modules being removed
-	syn ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context) {
+	syn ModuleCompilationUnit ModuleCompilationUnit.generateModuleInstance(ModuleCompilationUnit context) {
 		if (context == null) {
-			return generateImportOwn(context, "");
+			return generateModuleInstance(context, "");
 		} else {
-			return generateImportOwn(context, createOwnName(context, this.getModuleName()));
+			return generateModuleInstance(context, createOwnName(context, this.getModuleName()));
 		}
 	}
-	syn ModuleCompilationUnit ModuleCompilationUnit.generateImportOwn(ModuleCompilationUnit context, String alias) {
+	syn ModuleCompilationUnit ModuleCompilationUnit.generateModuleInstance(ModuleCompilationUnit context, String alias) {
 		ModuleCompilationUnit ret = null;
 		//if instance module, don't reinstantiate
 		if (context == null) {
@@ -117,21 +117,21 @@ aspect GenerateImportOwn {
 				instantiated = true;
 				//if no export name, generate M$M' name
 				if (importDecl.getAsType() instanceof AsTypeNone) {
-					instanceCU = currImport.generateImportOwn(ret);
+					instanceCU = currImport.generateModuleInstance(ret);
 					instanceCU.setSourceStatement(importDecl);
 				} else {
 					localAccessName = importDecl.getAsModule().getID();
 					if (importDecl.getAsType() instanceof AsTypeOwn) {
-						instanceCU = currImport.generateImportOwn(ret, createOwnName(ret, importDecl.getAsModule().getID()));
+						instanceCU = currImport.generateModuleInstance(ret, createOwnName(ret, importDecl.getAsModule().getID()));
 						instanceCU.setSourceStatement(importDecl); 
 					} else if (importDecl.getAsType() instanceof AsTypeExport) {
-						instanceCU = currImport.generateImportOwn(ret, createExportName(ret, importDecl.getAsModule().getID()));
+						instanceCU = currImport.generateModuleInstance(ret, createExportName(ret, importDecl.getAsModule().getID()));
 						instanceCU.setSourceStatement(importDecl); 
 					}
 				}
 				instanceCU.setBaseCU(currImport.getBaseCU());
 				currImport = instanceCU;
-			} else {
+			} else {//not an own import
 				//check if a synthetic static instance
 				if (currImport.isSynthetic()) {
 					String msg = "Unable to find module: " + importDecl.getImportModule().getID();
@@ -139,7 +139,7 @@ aspect GenerateImportOwn {
 					throw new jastadd.UnrecoverableSemanticError(msg);
 				}
 				//generate from a null context
-				currImport = currImport.generateImportOwn(null);
+				currImport = currImport.generateModuleInstance(null);
 				currImport.setSourceStatement(importDecl); 
 			}
 			assert (currImport != null) : "Imported module not instantiated";
@@ -253,9 +253,9 @@ aspect GenerateImportOwn {
 		ModuleCompilationUnit mergedCU = null;
 		String mergeAlias = mergeMember.getAsModule().getID();
 		if (mergeMember.getAsType() instanceof AsTypeOwn) {
-			mergedCU = mergeBaseCU.generateImportOwn(ret, createOwnName(ret, mergeAlias));
+			mergedCU = mergeBaseCU.generateModuleInstance(ret, createOwnName(ret, mergeAlias));
 		} else if (mergeMember.getAsType() instanceof AsTypeExport) {
-			mergedCU = mergeBaseCU.generateImportOwn(ret, createExportName(ret, mergeAlias));
+			mergedCU = mergeBaseCU.generateModuleInstance(ret, createExportName(ret, mergeAlias));
 		}
 		mergedCU.setSourceStatement(mergeMember); //debug
 		getHostProgram().getCompilationUnitList().addChild(mergedCU);
@@ -449,6 +449,7 @@ aspect GenerateImportOwn {
 		ret.setModuleInstantiated(false);
 		ret.setModuleReferences(new HashMap<String, jastaddmodules.ModuleReference>());
 		ret.setInstanceContext(new HashSet<ModuleCompilationUnit>());
+		ret.lastAnon = 0;
 		
 		ret.setModuleName(alias);
 		
@@ -460,6 +461,11 @@ aspect GenerateImportOwn {
 	}
 	public String ModuleCompilationUnit.createOwnName(ModuleCompilationUnit context, String alias) {
 		return context.getModuleName() + "$" + alias;
+	}
+	protected int ModuleCompilationUnit.lastAnon = 0;
+	public String ModuleCompilationUnit.createAnonName(ModuleCompilationUnit context) {
+		lastAnon++;
+		return context.getModuleName() + "$" + Integer.toString(lastAnon);
 	}
 	
 	public void ModuleCompilationUnit.checkedAddModuleReference(String alias, ModuleCompilationUnit cu, ModuleCompilationUnit staticType, AsType asType, ModuleImportType importType) {

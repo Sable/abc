@@ -246,4 +246,14 @@ ModuleExpr ja_module_expr =
 	ja_module_access.ma
 	{:
 		return new ModuleAccessExpr(ma);
+	:}
+	|
+	SINGLETON ja_module_access.ma
+	{:
+		return new ModuleSingletonAccessExpr(ma);
+	:}
+	|
+	OWN ja_module_access.ma
+	{:
+		return new ModuleOwnExpr(ma);
 	:};
