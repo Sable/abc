@@ -144,15 +144,15 @@ Module: m1
 	m1.X
 	m1.A
 Module: m2
-	m2.B
 	m2.BType
+	m2.B
 Module: jastadd$framework
-	jastadd$framework.List
 	jastadd$framework.ASTNode
+	jastadd$framework.List
 	jastadd$framework.Opt
 Module: m1$m2
-	m1$m2.BType
 	m1$m2.B
+	m1$m2.BType
 
 ----------CU iterator----------
 m1.module, A.ast, A.java, X.jrag, m2.module, Main.java, ../testlib/jastadd$framework.module, ../testlib/ASTNode.java, ../testlib/Opt.java, ../testlib/List.java, m2.module, B.java, B.ast

@@ -203,8 +203,8 @@ Module: org.x.y.matrices
 Module: enginephysics
 	enginephysics.EnginePhysics
 Module: org.x.y.math
-	org.x.y.math.$org.x.y.math.matrices.Matrices
 	org.x.y.math.$org.x.y.math.complex.Complex
+	org.x.y.math.$org.x.y.math.matrices.Matrices
 	org.x.y.math.$org.x.y.math.calculus.Calculus
 Module: org.x.y.calculus
 Module: myfourier
@@ -217,9 +217,9 @@ Module: myapplication$enginephysics
 Module: myapplication$myfourier
 	myapplication$myfourier.MyFourier
 Module: myapplication$org.x.y.math
-	myapplication$org.x.y.math.$org.x.y.math.matrices.Matrices
-	myapplication$org.x.y.math.$org.x.y.math.calculus.Calculus
 	myapplication$org.x.y.math.$org.x.y.math.complex.Complex
+	myapplication$org.x.y.math.$org.x.y.math.calculus.Calculus
+	myapplication$org.x.y.math.$org.x.y.math.matrices.Matrices
 
 ----------CU iterator----------
 myapplication.module, MyApplication.java, engine3d.module, org.x.y.matrices.module, enginephysics.module, org.x.y.math.module, Main.java, org.x.y.calculus.module, myfourier.module, mymathinterface.module, engine3d.module, Engine3d.java, enginephysics.module, EnginePhysics.java, myfourier.module, MyFourier.java, org.x.y.math.module, Matrices.java, Calculus.java, Complex.java

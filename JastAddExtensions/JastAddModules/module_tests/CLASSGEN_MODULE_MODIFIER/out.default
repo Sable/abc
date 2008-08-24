@@ -90,9 +90,9 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 
 Module: m1
 	m1.A
-	m1.$a.AA
-	m1.$a.AAPackage
 	m1.$a.AAModule
+	m1.$a.AAPackage
+	m1.$a.AA
 Module: m2
 	m2.B
 	m2.$b.BBPackage

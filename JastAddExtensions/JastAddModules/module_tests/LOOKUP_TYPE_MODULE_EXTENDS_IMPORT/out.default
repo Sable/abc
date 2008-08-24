@@ -156,12 +156,12 @@ Module: m2x
 Module: jastadd$framework
 Module: m1$m2x$super$m2
 	m1$m2x$super$m2.B
-	m1$m2x$super$m2.$p.P2
 	m1$m2x$super$m2.$p.P
+	m1$m2x$super$m2.$p.P2
 	m1$m2x$super$m2.$q.Q
 Module: m1$m2x
-	m1$m2x.$p.P2
 	m1$m2x.BX
+	m1$m2x.$p.P2
 
 ----------CU iterator----------
 m1.module, A.java, m2.module, m2x.module, Main.java, ../testlib/jastadd$framework.module, m2.module, P.java, B.java, Q.java, P2.java, m2x.module, P2X.java, BX.java

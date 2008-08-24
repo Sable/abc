@@ -177,8 +177,8 @@ Module: multiversion$parserV1_2.scanner
 	multiversion$parserV1_2.scanner.$scanner.Scanner
 Module: multiversion$parserV1_2
 	multiversion$parserV1_2.$parser.Parser
-	multiversion$parserV1_2.MainV12
 	multiversion$parserV1_2.$parser.XMLParser
+	multiversion$parserV1_2.MainV12
 
 ----------CU iterator----------
 parserV1_2.module, Main.java, scanner.module, multiversion.module, MultiversionMain.java, parserV1_1.module, scanner.module, Scanner.java, parserV1_1.module, MainV11.java, v1/Parser.java, parserV1_1.module, MainV11.java, v1/Parser.java, scanner.module, Scanner.java, parserV1_2.module, MainV12.java, v2/XMLParser.java, v2/Parser.java

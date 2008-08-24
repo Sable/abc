@@ -141,15 +141,15 @@ module m2xx$super$m2, base:m2, context:[m2xx], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
+	m1.$a.AA
 	m1.$a.AAModule
 	m1.$a.AAPackage
-	m1.$a.AA
 	m1.A
 Module: m2
 	m2.$b.BBModule
+	m2.$b.BBPackage
 	m2.B
 	m2.$b.BB
-	m2.$b.BBPackage
 Module: m2x
 	m2x.BX
 Module: m2xx
@@ -159,9 +159,9 @@ Module: m2xx$super$m2x
 	m2xx$super$m2x.BX
 Module: m2xx$super$m2
 	m2xx$super$m2.$b.BB
-	m2xx$super$m2.B
-	m2xx$super$m2.$b.BBModule
 	m2xx$super$m2.$b.BBPackage
+	m2xx$super$m2.$b.BBModule
+	m2xx$super$m2.B
 
 ----------CU iterator----------
 m1.module, AA.java, A.java, m2.module, m2x.module, m2xx.module, BXX.java, Main.java, ../testlib/jastadd$framework.module, m2x.module, BX.java, m2.module, B.java, BB.java

@@ -185,8 +185,8 @@ Module: m1$m2x
 Module: m1$m2xx$super$m2x
 	m1$m2xx$super$m2x.$p.P
 Module: m1$m2xx$super$m2
-	m1$m2xx$super$m2.B
 	m1$m2xx$super$m2.$p.P
+	m1$m2xx$super$m2.B
 Module: m1$m2xx
 	m1$m2xx.B
 	m1$m2xx.$p.P

@@ -141,8 +141,8 @@ module m1$m3, base:m3, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.A
 	m1.A2
+	m1.A
 Module: m3
 	m3.C
 Module: m2

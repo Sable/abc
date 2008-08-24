@@ -137,12 +137,12 @@ Module: m2
 	m2.B
 	m2.$p.P
 Module: m2x
-	m2x.B
 	m2x.$p.P
+	m2x.B
 Module: jastadd$framework
 Module: m1$m2x$super$m2
-	m1$m2x$super$m2.B
 	m1$m2x$super$m2.$p.P
+	m1$m2x$super$m2.B
 Module: m1$m2x
 	m1$m2x.$p.P
 	m1$m2x.B

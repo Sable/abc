@@ -144,8 +144,8 @@ Module: myapplication$appv1_2$super$appv1_1
 	myapplication$appv1_2$super$appv1_1.App
 Module: myapplication$appv1_2
 Module: myapplication$appv2
-	myapplication$appv2.App
 	myapplication$appv2.Util
+	myapplication$appv2.App
 
 ----------CU iterator----------
 myapplication.module, MyApp.java, appv2.module, appv1_1.module, Main.java, appv1_2.module, appv1_1.module, v11/App.java, v11/Util.java, appv1_2.module, appv2.module, v2/App.java, v2/Util.java
