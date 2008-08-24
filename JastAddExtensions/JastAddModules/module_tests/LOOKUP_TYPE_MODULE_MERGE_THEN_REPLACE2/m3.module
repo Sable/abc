@@ -1,0 +1,5 @@
+module m3;
+
+import own m4 export as m4;
+
+export package *;

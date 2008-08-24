@@ -1,5 +1,5 @@
 module m1;
 import own m2 as alias;
 import m2;
-merge alias, m2 as alias2;
+merge alias, m2 as m2 alias2;
 export package *;

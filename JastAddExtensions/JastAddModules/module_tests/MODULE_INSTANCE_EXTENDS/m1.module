@@ -2,6 +2,6 @@ module m1;
 import own m2;
 import own m3 export as m3;
 import own m3 export as m3a;
-merge m2::m3, m3 export as m3;
-merge m3a, m3 export as m3;
+merge m2::m3, m3 export as m3 m3;
+merge m3a, m3 export as m3 m3;
 export package *;

@@ -1,0 +1,19 @@
+module m1;
+
+import own m2 as m2a;
+import own m2 as m2b;
+import own m2 as m2new;
+
+merge m2a, m2b as m2 m2merged;
+
+replace m2merged with m2new;
+
+import own m2 as m2new2;
+
+replace m2b with m2new2;
+
+import own m4 export as m4;
+
+merge m2merged::m4, m2new2::m4, m4 export as m4 m4;
+
+export package *;

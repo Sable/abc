@@ -5,6 +5,6 @@ import own postgresbackend;
 merge 
 	mysqlbackend::sqltypes,
 	postgresbackend::sqltypes
-export as sqltypes;
+export as sqltypes sqltypes;
 
 export package *;

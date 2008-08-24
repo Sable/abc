@@ -4,7 +4,8 @@ import own m2 as m2a;
 import own m2 as m2b;
 import own m2 as m2new;
 
-merge m2a, m2b as m2merged;
+merge m2a, m2b 
+	as m2 m2merged;
 
 replace m2merged with m2new;
 

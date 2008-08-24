@@ -3,5 +3,5 @@ import own m2 export as m2a;
 import own m2 export as m2b;
 import own m4 export as m4;
 
-merge m4, m2a::m4alias2, m2b::m4alias2 export as m4alias1;
+merge m4, m2a::m4alias2, m2b::m4alias2 export as m4 m4alias1;
 export package *;

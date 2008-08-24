@@ -3,5 +3,5 @@ import m3;
 import own m21 export as m21;
 import own m22 export as m22;
 
-merge m21::m23, m22::m23 export as m23alias;
+merge m21::m23, m22::m23 export as m23 m23alias;
 export package *;

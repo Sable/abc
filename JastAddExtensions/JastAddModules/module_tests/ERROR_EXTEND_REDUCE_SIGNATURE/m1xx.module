@@ -1,4 +1,4 @@
 module m1xx extends m1x;
 import own m3 as m3alias2;
-merge m3alias, m3alias2 as m3alias; //should break, as m3alias is exported in m1x
+merge m3alias, m3alias2 as m3 m3alias; //should break, as m3alias is exported in m1x
 export package *;

@@ -2,5 +2,5 @@ module m1;
 import own m2;
 import own m3;
 import own m4 ;
-merge m2::m4, m3::m4, m4 as m4alias;
+merge m2::m4, m3::m4, m4 as m4 m4alias;
 export package *;

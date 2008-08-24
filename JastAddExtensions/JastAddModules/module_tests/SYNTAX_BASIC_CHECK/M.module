@@ -3,6 +3,6 @@ import M2;
 import own M3;
 import own M4 export as PublicM4;
 import own M.N.O export as MNOPublic;
-merge M2, M3, M4 as MyMs;
-merge M2, M3, M4 export as MyMs;
+merge M2, M3, M4 as M2 MyMs;
+merge M2, M3, M4 export as M2 MyMs;
 export package *;

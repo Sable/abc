@@ -1,5 +1,5 @@
 module m1;
 import own m2;
 import own m5;
-merge m5, m2.m4.m5 as mergedalias;
+merge m5, m2.m4.m5 as m5 mergedalias;
 export package *;
