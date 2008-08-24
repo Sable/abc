@@ -8,7 +8,12 @@ aspect ModuleExpr {
 	}
 	public ModuleCompilationUnit ModuleOwnExpr.getModuleInstance() {
 		ModuleCompilationUnit baseCU = getHostProgram().lookupModuleCUNoTransform(getModuleAccess());
+		if (baseCU == null) {
+			return null;
+		}
+		
 		ModuleCompilationUnit context = getModuleCompilationUnit();
+		assert (context != null) : "Unable to get context mcu";
 		
 		ModuleCompilationUnit instance = baseCU.generateModuleInstance(context, context.createAnonName(context)); 
 		getHostProgram().getCompilationUnitList().addChild(instance);			
@@ -17,6 +22,10 @@ aspect ModuleExpr {
 	}
 	public ModuleCompilationUnit ModuleSingletonAccessExpr.getModuleInstance() {
 		ModuleCompilationUnit baseCU = getHostProgram().lookupModuleCUNoTransform(getModuleAccess());
+		if (baseCU == null) {
+			return null;
+		}
+		
 		return baseCU.generateModuleInstance(null);
 	}
 }
