@@ -11,20 +11,26 @@ import AST.ModuleImportType;
 import AST.ModuleCompilationUnit;
 
 public class ModuleReference {
+	protected String alias = null;
 	protected ModuleCompilationUnit moduleCU = null;
 	protected AsType asType;
 	protected ModuleImportType importType;
 	protected ModuleCompilationUnit staticModuleType = null;
-	protected Set<ModuleAccess> mergedAccesses = new HashSet<ModuleAccess>(); 
+	protected Set<ModuleAccess> mergedAccesses = new HashSet<ModuleAccess>();
+	protected ModuleCompilationUnit context = null;
 	
-	public ModuleReference(AST.ModuleCompilationUnit importedCU, 
-			AST.ModuleCompilationUnit staticModuleType, 
+	public ModuleReference(String alias,
+			ModuleCompilationUnit importedCU, 
+			ModuleCompilationUnit staticModuleType, 
 			AsType asType, 
-			ModuleImportType importType) {
+			ModuleImportType importType,
+			ModuleCompilationUnit context) {
+		this.alias = alias;
 		this.moduleCU = importedCU;
 		this.staticModuleType = staticModuleType;
 		this.asType = asType;
 		this.importType = importType;
+		this.context = context;
 	}
 	public AST.ModuleCompilationUnit getModuleCU() {
 		return moduleCU;
@@ -57,4 +63,14 @@ public class ModuleReference {
 	public Collection<ModuleAccess> getMergedAccesses() {
 		return mergedAccesses;
 	}
+	public String getAlias() {
+		return alias;
+	}
+	public ModuleCompilationUnit getContext() {
+		return context;
+	}
+	public void setModuleCU(ModuleCompilationUnit moduleCU) {
+		this.moduleCU = moduleCU;
+	}
+	
 }

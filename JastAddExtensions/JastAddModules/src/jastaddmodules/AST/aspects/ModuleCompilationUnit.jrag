@@ -91,7 +91,7 @@ aspect ModuleCompilationUnit {
 		this.importedModules = modules;
 	}
 	public void ModuleCompilationUnit.addModuleReference(String alias, ModuleCompilationUnit cu, ModuleCompilationUnit staticType, AsType asType, ModuleImportType importType) {
-		importedModules.put(alias, new ModuleReference(cu, staticType, asType, importType));
+		importedModules.put(alias, new ModuleReference(alias, cu, staticType, asType, importType, this));
 	}
 	public ModuleReference ModuleCompilationUnit.removeModuleReference(String alias) {
 		return importedModules.remove(alias);
@@ -161,7 +161,8 @@ aspect ModuleCompilationUnit {
 			}
 		}
 		
-		if (context != null) {
+		if (context != null && 
+			context!= this) { //for self references, no need to remove as these references are generated and are not part of the import structures
 			boolean result = removeInstanceContext(context);
 			assert (result) : "Context not found in instance context";
 		}

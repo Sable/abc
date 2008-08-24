@@ -4,7 +4,12 @@ aspect CheckModuleCycles {
 	public void ASTNode.checkModuleCycles() {}
 	public void ModuleCompilationUnit.checkModuleCycles() {
 		LinkedList<ModuleReference> visited = new LinkedList<ModuleReference>();
-		visited.add(new ModuleReference(this, this.getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm()));
+		visited.add(new ModuleReference(this.getBaseCU().getModuleName(), 
+			this, 
+			this.getBaseCU(), 
+			new AsTypeNone(), 
+			new ModuleImportTypeNorm(), 
+			this));
 		checkModuleCycles(visited);
 	}
 	public boolean ModuleCompilationUnit.checkModuleCycles(LinkedList<ModuleReference> visited) {
@@ -42,7 +47,12 @@ aspect CheckModuleCycles {
 					throw new jastadd.UnrecoverableSemanticError("Module imports itself: " + this.getModuleName());
 				}
 				LinkedList<ModuleReference> newVisited = new LinkedList<ModuleReference>(visited);
-				newVisited.add(new ModuleReference(importedCU, importedCU.getBaseCU(), importDecl.getAsType(), importDecl.getModuleImportType()));
+				newVisited.add(new ModuleReference(importDecl.getAlias(), 
+					importedCU, 
+					importedCU.getBaseCU(), 
+					importDecl.getAsType(), 
+					importDecl.getModuleImportType(), 
+					this));
 				noCycles = importedCU.checkModuleCycles(newVisited);
 				if (noCycles == false) {
 					return noCycles;

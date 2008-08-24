@@ -178,6 +178,7 @@ aspect GenerateImportOwn {
 		}
 		
 		Collection<ModuleCompilationUnit> mergeTargets = new HashSet<ModuleCompilationUnit>();
+		Collection<ModuleReference> mergeTargetReferences = new HashSet<ModuleReference>();
 		//stores the accesses for the merge cascades. Need to keep the access instead of
 		//the module reference since the references are detached when merges/replaces
 		//occur
@@ -222,7 +223,7 @@ aspect GenerateImportOwn {
 			} else {
 				mergeBaseCU = mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU);
 			}
-			
+			mergeTargetReferences.add(cuReference);
 			mergeAccesses.add(access);
 		}
 		//create result copy (instantiate from the base types of the merge targets with ret as a context)
@@ -244,7 +245,7 @@ aspect GenerateImportOwn {
 		);
 		
 		//replace the targets in the tree
-		ret = replaceTargets(ret, mergeMember, mergeTargets, mergedCU,
+		ret = mergeTargets(ret, mergeMember, mergeTargets, mergedCU,
 				mergeAlias);
 				
 		//attach the result copy to ret's import list
@@ -279,8 +280,10 @@ aspect GenerateImportOwn {
 		}
 		*/
 		
+		//TODO: See if replaceTargets can be completely removed
 		Collection<ModuleCompilationUnit> replaceTargets = new HashSet<ModuleCompilationUnit>();
 		Set<ModuleAccess> replaceAccesses = new HashSet<ModuleAccess>();
+		Set<ModuleReference> replaceTargetReferences = new HashSet<ModuleReference>();
 		for (ModuleAccess access : replaceMember.getReplaceModuleList()) {
 			ModuleCompilationUnit cu = access.lookupModule(); 
 			ModuleReference cuReference = access.lookupModuleReference();
@@ -306,7 +309,7 @@ aspect GenerateImportOwn {
 			}
 			
 			if (replaceTargets.contains(cu)) {
-				access.warning("Module " + cu.getModuleName() + " is being merged with itself. This may be a sign of a wrong merge");
+				access.warning("Module " + cu.getModuleName() + " is being replaced with itself. This may be a sign of a wrong replace");
 			}
 			
 			if (isAccessedThroughBaseModule(access)) {
@@ -316,17 +319,19 @@ aspect GenerateImportOwn {
 			}
 			
 			replaceTargets.add(cu);
+			replaceTargetReferences.add(cuReference);
 			replaceAccesses.add(access);
+			
 		}
 		
 		//find cascaded merges
-		replaceTargets.addAll(
-			getAccessMCUs(
+		replaceTargetReferences.addAll(
+			getAccessReferences(
 				getCascadedMergedAccesses(replaceAccesses, new HashSet<ModuleAccess>())
 			)
 		);
 		
-		ret = replaceTargets(ret, replaceMember, replaceTargets, replaceCU,
+		ret = replaceTargets(ret, replaceMember, replaceTargetReferences, replaceCU,
 				replaceMember.getWithModule().getID());
 		return ret;
 	}
@@ -338,7 +343,7 @@ aspect GenerateImportOwn {
 	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
 	//is worth it 
 	protected ModuleCompilationUnit 
-		ModuleCompilationUnit.replaceTargets(ModuleCompilationUnit ret,
+		ModuleCompilationUnit.mergeTargets(ModuleCompilationUnit ret,
 			ModuleMemberDecl moduleMember,
 			Collection<ModuleCompilationUnit> mergeTargets,
 			ModuleCompilationUnit mergedCU, String mergeAlias) {
@@ -393,6 +398,32 @@ aspect GenerateImportOwn {
 			ret.removeModuleReference(mergeTargetCU);
 		}
 		return ret;
+	}
+	
+	
+	//change the imported CU of the reference
+	protected ModuleCompilationUnit 
+		ModuleCompilationUnit.replaceTargets(ModuleCompilationUnit ret,
+			ModuleMemberDecl moduleMember,
+			Collection<ModuleReference> replaceTargets,
+			ModuleCompilationUnit replaceCU, String mergeAlias) {
+		for (ModuleReference mref : replaceTargets) {
+			//get the old CU
+			ModuleCompilationUnit replaceTargetCU = mref.getModuleCU();
+			
+			//point the reference to the replace CU
+			mref.setModuleCU(replaceCU);
+			
+			//add to instance context
+			replaceCU.addInstanceContext(mref.getContext());
+			
+			//check if there are any references left to the replaced CU in the 
+			//reference's context, detach from Program if none
+			if (mref.getContext().getModuleReferenceAliases(replaceTargetCU).size() == 0) {
+				replaceTargetCU.detachFromProgramList(mref.getContext());
+			}
+		}
+		return ret; 
 	}
 	
 	//create a new ModuleCompilationUnit from the current one, using the given alias.
@@ -555,6 +586,16 @@ aspect GenerateImportOwn {
 			newAccesses.addAll(reference.getMergedAccesses());
 		}
 		ret.addAll(getCascadedMergedAccesses(newAccesses, newVisited));
+		return ret;
+	}
+	
+	public static Set<ModuleReference> ModuleCompilationUnit.getAccessReferences(Set<ModuleAccess> accesses) {
+		Set<ModuleReference> ret = new HashSet<ModuleReference>();
+		for (ModuleAccess access : accesses) {
+			ModuleReference mref = access.lookupModuleReference();
+			assert (mref != null) : "Unable to find module reference: " + access.toString();
+			ret.add(mref);
+		}
 		return ret;
 	}
 	

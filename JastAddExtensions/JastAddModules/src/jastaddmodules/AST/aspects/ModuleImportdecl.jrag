@@ -2,4 +2,12 @@ aspect ModuleImportDecl {
 	public boolean ModuleImportDecl.isOwnImport() {
 		return (getModuleImportType() instanceof ModuleImportTypeOwn);
 	}
+	
+	public String ModuleImportDecl.getAlias() {
+		if (getAsType() instanceof AsTypeNone) {
+			return getImportModule().getID();
+		} else {
+			return getAsModule().getID();
+		}
+	}
 }

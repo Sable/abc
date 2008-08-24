@@ -108,7 +108,7 @@ aspect JAModuleLookupModule {
 				//special case for self reference
 				if (alias.equals(getBaseCU().getModuleName())) {
 					//self reference
-					return new ModuleReference(this, getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm());
+					return new ModuleReference(alias, this, getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm(), this);
 				}
 				if (originalContext == this || getModuleReference(name).isExported()) {
 					return getModuleReference(alias);
@@ -127,7 +127,7 @@ aspect JAModuleLookupModule {
 			//	or it is exported
 			ModuleReference importedCU = null;
 			if (alias.equals(getBaseCU().getModuleName())) {
-				importedCU = new ModuleReference(this, getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm()); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
+				importedCU = new ModuleReference(alias, this, getBaseCU(), new AsTypeNone(), new ModuleImportTypeNorm(), this); //special case for self reference, not exported so that it only goes into the imports when it is in the originalContext
 			} else {
 				importedCU = getModuleReference(alias);
 			}
