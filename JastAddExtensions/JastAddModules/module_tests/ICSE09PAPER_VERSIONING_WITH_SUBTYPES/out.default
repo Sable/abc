@@ -133,8 +133,8 @@ module myapplication$appv2, base:appv2, context:[myapplication], instantiated:tr
 Module: myapplication
 	myapplication.MyApp
 Module: appv2
-	appv2.App
 	appv2.Util
+	appv2.App
 Module: appv1_1
 	appv1_1.Util
 	appv1_1.App
@@ -144,8 +144,8 @@ Module: myapplication$appv1_2$super$appv1_1
 	myapplication$appv1_2$super$appv1_1.App
 Module: myapplication$appv1_2
 Module: myapplication$appv2
-	myapplication$appv2.Util
 	myapplication$appv2.App
+	myapplication$appv2.Util
 
 ----------CU iterator----------
 myapplication.module, MyApp.java, appv2.module, appv1_1.module, Main.java, appv1_2.module, appv1_1.module, v11/App.java, v11/Util.java, appv1_2.module, appv2.module, v2/App.java, v2/Util.java

@@ -17,7 +17,7 @@ End arguments
 ----------Module contents----------
 ------m1.module------
 module m1 implements mint;
-import own mint export as mint;
+import own mint export as mintA;
 import own m2 as m2a;
 import own m2 as m2b;
 ------------------------
@@ -76,10 +76,10 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 module mint, base:mint, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1 implements mint;
-import own mint export as mint;
+import own mint export as mintA;
 import own m2 as m2a;
 import own m2 as m2b;
-replace mint with m1;
+replace mintA with m1;
 replace m2b::mint with m1;
 export package *;
 import  jastadd$framework as none null;
@@ -95,30 +95,37 @@ module: jastadd$framework, file: ../testlib/jastadd$framework.module, base modul
 module: mint, file: mint.module, base module: mint
 module: m1$m2a, file: m2.module, base module: m2
 	A3.java package:m1$m2a
+module: m1$m2b, file: m2.module, base module: m2
+	A3.java package:m1$m2b
 
 ----------Module CU imports after import own----------
 module m1, base:m1, context:[m1, m1$m2b], instantiated:true
 	jastadd$framework:jastadd$framework
 	m2a:m1$m2a
-	m2b:m1
-	[export]mint:m1
+	m2b:m1$m2b
+	[export]mintA:m1
 module m2, base:m2, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 module mint, base:mint, context:[], instantiated:false
 module m1$m2a, base:m2, context:[m1, m1$m2a], instantiated:true
 	jastadd$framework:jastadd$framework
 	[export]mint:m1$m2a
+module m1$m2b, base:m2, context:[m1, m1$m2b], instantiated:true
+	jastadd$framework:jastadd$framework
+	[export]mint:m1
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.AX
 	m1.A
+	m1.AX
 Module: m2
 	m2.AX
 Module: jastadd$framework
 Module: mint
 Module: m1$m2a
 	m1$m2a.AX
+Module: m1$m2b
+	m1$m2b.AX
 
 ----------CU iterator----------
-m1.module, A.java, A2.java, m2.module, Main.java, ../testlib/jastadd$framework.module, mint.module, m2.module, A3.java
+m1.module, A.java, A2.java, m2.module, Main.java, ../testlib/jastadd$framework.module, mint.module, m2.module, A3.java, m2.module, A3.java

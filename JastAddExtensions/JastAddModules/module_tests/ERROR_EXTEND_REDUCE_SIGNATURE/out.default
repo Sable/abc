@@ -1,2 +1,3 @@
+Unrecoverable semantic error(s) found.
 m1xx.module:3:
-  Semantic Error: Merge/replace changes the signature of a merge target: m3alias
+  Semantic Error: Merge changes the export signature of an existing module reference m3alias

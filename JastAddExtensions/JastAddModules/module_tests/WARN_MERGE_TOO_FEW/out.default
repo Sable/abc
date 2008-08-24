@@ -15,7 +15,7 @@ End arguments
 ------m1.module------
 module m1;
 import own m2 as none null;
-merge m2 as m2;
+merge m2 as m2alias;
 ------------------------
 ------m2.module------
 module m2;
@@ -52,7 +52,7 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
 -------------Instance ModuleCompilationUnit------------
 module m1;
 import own m2 as none null;
-merge m2 as m2;
+merge m2 as m2alias;
 export package *;
 import  jastadd$framework as none null;
 -----------End Instance ModuleCompilationUnit----------
@@ -62,16 +62,17 @@ module: m1, file: m1.module, base module: m1
 module: m2, file: m2.module, base module: m2
 	B.java package:m2
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
-module: m1$m2, file: m2.module, base module: m2
-	B.java package:m1$m2
+module: m1$m2alias, file: m2.module, base module: m2
+	B.java package:m1$m2alias
 
 ----------Module CU imports after import own----------
 module m1, base:m1, context:[], instantiated:true
 	jastadd$framework:jastadd$framework
-	m2:m1$m2
+	m2:m1$m2alias
+	m2alias:m1$m2alias
 module m2, base:m2, context:[], instantiated:false
 module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
-module m1$m2, base:m2, context:[m1], instantiated:true
+module m1$m2alias, base:m2, context:[m1], instantiated:true
 	jastadd$framework:jastadd$framework
 ----------MCU collectTypes after import own----------
 
@@ -80,8 +81,8 @@ Module: m1
 Module: m2
 	m2.B
 Module: jastadd$framework
-Module: m1$m2
-	m1$m2.B
+Module: m1$m2alias
+	m1$m2alias.B
 
 ----------CU iterator----------
 m1.module, A.java, m2.module, ../testlib/jastadd$framework.module, m2.module, B.java
