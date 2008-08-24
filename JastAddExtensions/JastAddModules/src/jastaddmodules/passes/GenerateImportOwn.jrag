@@ -10,6 +10,8 @@
 
 
 import java.util.*;
+import jastadd.*;
+import jastaddmodules.*;
 
 //generates module CUs and clones subtrees as necessary
 //for import owns. Is done after InsertModuleCUs
@@ -238,27 +240,27 @@ aspect GenerateImportOwn {
 		getHostProgram().getCompilationUnitList().addChild(mergedCU);
 		
 		//find cascaded merges
-		mergeTargets.addAll(
-			getAccessMCUs(
+		mergeTargetReferences.addAll(
+			getAccessReferences(
 				getCascadedMergedAccesses(mergeAccesses, new HashSet<ModuleAccess>())
 			)
 		);
-		
-		//replace the targets in the tree
-		ret = mergeTargets(ret, mergeMember, mergeTargets, mergedCU,
-				mergeAlias);
-				
-		//attach the result copy to ret's import list
+
 		ModuleCompilationUnit mergeStaticType = mostGeneralModule(mergeTargets);
 		assert (mergeStaticType != null) : "Unable to find most general type for merge targets";
 		
-		//import type is own. TODO: Check if this is correct
-		ret.checkedAddModuleReference(mergeAlias, mergedCU, mergeStaticType, mergeMember.getAsType(), new ModuleImportTypeOwn());
-		ModuleReference mergeReference = ret.getModuleReference(mergeAlias);
-		if (mergeReference != null) {
-			mergeReference.addMergedAccesses(mergeAccesses);
-		}
-				
+		ModuleReference mergedModuleRef = 
+			new ModuleReference(mergeAlias, 
+					mergedCU, 
+					mergeStaticType, 
+					mergeMember.getAsType(), 
+					new ModuleImportTypeOwn(), 
+					ret);
+		mergedModuleRef.addMergedAccesses(mergeAccesses);
+		
+		//replace the targets in the tree
+		ret = ret.mergeTargets(mergeMember, mergeTargetReferences, mergedModuleRef);
+		
 		return ret;
 	}
 	
@@ -331,8 +333,7 @@ aspect GenerateImportOwn {
 			)
 		);
 		
-		ret = replaceTargets(ret, replaceMember, replaceTargetReferences, replaceCU,
-				replaceMember.getWithModule().getID());
+		ret = ret.replaceTargets(replaceMember, replaceTargetReferences, replaceCU);
 		return ret;
 	}
 	
@@ -343,70 +344,74 @@ aspect GenerateImportOwn {
 	//TODO: Should really be static, except for the call to getHostProgram(). See if refactoring
 	//is worth it 
 	protected ModuleCompilationUnit 
-		ModuleCompilationUnit.mergeTargets(ModuleCompilationUnit ret,
-			ModuleMemberDecl moduleMember,
-			Collection<ModuleCompilationUnit> mergeTargets,
-			ModuleCompilationUnit mergedCU, String mergeAlias) {
-		//TODO: These loops are too hairy. Try to turn the innermost loop into a method
-		//foreach merge target
-		for (ModuleCompilationUnit mergeTargetCU : mergeTargets) {
-		//	foreach context member of the merge target
-			for (ModuleCompilationUnit instanceContextCU: mergeTargetCU.getInstanceContext()) {
-		//		for each old alias of the mergetargetcu
-				Set<String> oldAliases = instanceContextCU.getModuleReferenceAliases(mergeTargetCU);
-				for (String oldAlias : oldAliases) { 
-		//			detach the merge target from the context member's import list
-					AsType oldAsType = instanceContextCU.getModuleReference(oldAlias).getAsType();
-					ModuleImportType oldImportType = instanceContextCU.getModuleReference(oldAlias).getModuleImportType();
-					ModuleCompilationUnit oldStaticType = instanceContextCU.getModuleReference(oldAlias).getStaticModuleType();
-					assert (oldAlias != null) : "Unable to find old alias";
-					assert (oldImportType instanceof ModuleImportTypeOwn) : "Mergetargets should all be imported using own";
-					instanceContextCU.removeModuleReference(oldAlias);
-		//			attach the result copy to the context member's import list (use the old alias and isExported)
-					if (ret == instanceContextCU) {//if the merge replaces an import/previous merge in ret
-						if (moduleMember instanceof ModuleMergeDecl) {
-							//if the mergeCU will replace the current alias and changes its signature, add an error
-							ModuleMergeDecl mergeMember = (ModuleMergeDecl) moduleMember; 
-							if (oldAsType.isExported() != mergeMember.getAsType().isExported() &&
-									oldAlias.equals(mergeAlias)) { //no need to check for import own, as base CUs can't be merged
-								String msg = "Merge/replace changes the signature of a merge target: " + oldAlias;
-								mergeMember.error(msg);
-							}
-							//only add if the aliases are not the same. Otherwise the add will happen later using mergeAlias
-							if (!(oldAlias.equals(mergeAlias))) {
-								instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldStaticType, oldAsType, oldImportType);
-							}
-						} else {
-							//check for replace
-							if (!(oldAlias.equals(mergeAlias))) {
-								instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldStaticType, oldAsType, oldImportType);
-							} else {
-								moduleMember.warning("Module is replacing itself: " + oldAlias); 
-							}
-						}
-					} else {
-						instanceContextCU.checkedAddModuleReference(oldAlias, mergedCU, oldStaticType, oldAsType, oldImportType);
-					}
-				}
+		ModuleCompilationUnit.mergeTargets(ModuleMergeDecl mergeDecl,
+			Collection<ModuleReference> mergeTargets,
+			ModuleReference mergedModuleRef) {
+		ModuleCompilationUnit mergedStaticType = mergedModuleRef.getStaticModuleType();
+		ModuleCompilationUnit mergedCU = mergedModuleRef.getModuleCU();
+		String mergeAlias = mergedModuleRef.getAlias();
+					
+		for (ModuleReference mref : mergeTargets) {
+			ModuleCompilationUnit oldCU =  mref.getModuleCU();
+
+			//if not in the the same module
+			if (mref.getContext() != this) {
+				//point to the new merged CU			
+				mref.setModuleCU(mergedCU);
 				
-		//		add the context member to the result copy's instance context
-				mergedCU.addInstanceContext(instanceContextCU);
+				//add to instance context
+				mergedCU.addInstanceContext(mref.getContext());
 			}
-		//	detach the mergeTargetCU from the compilationUnit list of the program
-			mergeTargetCU.detachFromProgramList();
-		//	detach the merge target from ret's import list
-			ret.removeModuleReference(mergeTargetCU);
+			// if in the same module 
+			else {
+				//if overrides an existing merge or import
+				ModuleReference overridenMRef = this.getModuleReference(mergeAlias);
+				if (overridenMRef != null) {
+					if (overridenMRef.getStaticModuleType() != mergedStaticType) {
+						String msg = 
+							"Merge changes the type of an existing module reference " + 
+							overridenMRef.getAlias() +
+							" from " +
+							overridenMRef.getStaticModuleType().getModuleName() +
+							" to " +
+							mergedStaticType.getModuleName();
+						mergeDecl.error(msg);
+						throw new UnrecoverableSemanticError(msg);
+					} 
+					if (overridenMRef.getAsType().isExported() != mergeDecl.getAsType().isExported()) {
+						String msg = "Merge changes the export signature of an existing module reference " + overridenMRef.getAlias();
+						mergeDecl.error(msg);
+						throw new UnrecoverableSemanticError(msg);
+					}
+					//add the old reference's cascaded merges to the mergedModuleRef
+					mergedModuleRef.addMergedAccesses(overridenMRef.getMergedAccesses());
+					//remove the old instance, it will be added in the checked add below
+					this.removeModuleReference(mergeAlias);
+				}
+				//else does not override an import 
+				else {
+					mref.setModuleCU(mergedCU);
+				}
+				mergedCU.addInstanceContext(mref.getContext());
+			}
+			
+			//detach from program list if no more references to it exist
+			if (mref.getContext().getModuleReferenceAliases(oldCU).size() == 0) {
+				oldCU.detachFromProgramList(mref.getContext());
+			}
 		}
-		return ret;
+		//attach the result copy to ret's import list
+		this.checkedAddModuleReference(mergedModuleRef);
+				
+		return this;
 	}
 	
 	
 	//change the imported CU of the reference
 	protected ModuleCompilationUnit 
-		ModuleCompilationUnit.replaceTargets(ModuleCompilationUnit ret,
-			ModuleMemberDecl moduleMember,
+		ModuleCompilationUnit.replaceTargets(ModuleMemberDecl moduleMember,
 			Collection<ModuleReference> replaceTargets,
-			ModuleCompilationUnit replaceCU, String mergeAlias) {
+			ModuleCompilationUnit replaceCU) {
 		for (ModuleReference mref : replaceTargets) {
 			//get the old CU
 			ModuleCompilationUnit replaceTargetCU = mref.getModuleCU();
@@ -423,7 +428,7 @@ aspect GenerateImportOwn {
 				replaceTargetCU.detachFromProgramList(mref.getContext());
 			}
 		}
-		return ret; 
+		return this; 
 	}
 	
 	//create a new ModuleCompilationUnit from the current one, using the given alias.
@@ -457,6 +462,13 @@ aspect GenerateImportOwn {
 			//throw new jastadd.UnrecoverableSemanticError("Ambiguous alias " + alias + " in module " + this.getModuleName());
 		}
 		addModuleReference(alias, cu, staticType, asType, importType);
+	}
+	
+	public void ModuleCompilationUnit.checkedAddModuleReference(ModuleReference mref) {
+		if (getModuleReference(mref.getAlias()) != null || mref.getAlias().equals(getBaseCU().getModuleName())) {
+			getModuleDecl().error("Ambiguous module name " + mref.getAlias() + " in module " + this.getModuleName());
+		}
+		importedModules.put(mref.getAlias(), mref);
 	}
 	
 	//Is true if the module was used as an instance in the ModuleCompilationUnit
