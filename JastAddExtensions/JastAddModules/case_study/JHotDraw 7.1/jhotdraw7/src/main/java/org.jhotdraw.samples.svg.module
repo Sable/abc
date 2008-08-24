@@ -1,11 +1,3 @@
 module org.jhotdraw.samples.svg extends org.jhotdraw.samples.defaultsample;
 
-//interface
-import own org.apache.batik export as batik;
-
-//replace with newer version of batik
-import own org.apache.batik1_6;
-
-replace batik, jhotdraw::batik with org.apache.batik1_6;
-
 export package *;

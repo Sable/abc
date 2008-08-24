@@ -5,7 +5,48 @@ lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
 -instance-module
 org.jhotdraw.samples.draw
 -mainclass
-org.jhotdraw.samples.draw::org.jhotdraw.samples.draw.Main
+org.jhotdraw.samples.net::org.jhotdraw.samples.net.Main
+-debug
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\Version.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\AreaOfInterestHintKey.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\AvoidTilingHintKey.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\BufferedImageHintKey.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\ColorSpaceHintKey.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\LinearGradientPaint.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\LinearGradientPaintContext.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\MultipleGradientPaint.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\MultipleGradientPaintContext.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\RadialGradientPaint.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\RadialGradientPaintContext.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\RenderingHintsKeyExt.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\TranscodingHintKey.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\CompositeRule.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\GraphicsUtil.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\PadMode.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\SVGComposite.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\renderable\PaintRable.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\AbstractRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\AbstractTiledRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\AffineRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\Any2LsRGBRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\Any2sRGBRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\BufferedImageCachableRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\CachableRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\FormatRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\LRUCache.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\PadRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\RenderedImageCachableRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileBlock.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileCache.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileGenerator.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileGrid.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileLRUMember.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileMap.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TileStore.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\image\rendered\TranslateRed.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\util\CleanerThread.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\util\DoublyLinkedList.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\util\HaltingThread.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AreaOfInterestHintKey.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\AvoidTilingHintKey.java
@@ -23,9 +64,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\GraphicsUtil.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\PadMode.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\SVGComposite.java
-D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\renderable\PaintRable.java
-D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\renderable\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\AbstractRed.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\AbstractTiledRed.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\AffineRed.java
@@ -45,12 +84,9 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileMap.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TileStore.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\TranslateRed.java
-D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\image\rendered\package-info.java
-D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\ext\awt\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\CleanerThread.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\DoublyLinkedList.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\HaltingThread.java
-D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.8pre\org\apache\batik\util\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net.n3.nanoxmlv2_2_1_4.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\CDATAReader.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\nanoxmlr1.4\net\n3\nanoxml\ContentReader.java
@@ -102,12 +138,16 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLWriter.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batik.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batikv1_6.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.apache.batikv1_8pre.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.batikfragment.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.defaultsample.defaultjhotdraw.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.defaultsample.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.draw.drawjhotdraw.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.draw.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.net.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.netold.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.odg.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.pert.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.svg.module
@@ -407,6 +447,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\ExtensionFileFilter.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\StreamPosTokenizer.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\io\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\default\app\action\AboutAction.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawApplet.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawApplicationModel.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\draw\DrawFigureFactory.java
