@@ -1,2 +1,4 @@
 module org.jhotdraw.samples.defaultsample.defaultjhotdraw extends org.jhotdraw;
+
+//this module contains the override to AboutAction that adds the batik info
 export package *;

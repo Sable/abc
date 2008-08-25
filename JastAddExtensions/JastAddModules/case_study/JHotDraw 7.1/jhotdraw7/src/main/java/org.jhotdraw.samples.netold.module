@@ -1,9 +1,6 @@
 module org.jhotdraw.samples.netold extends org.jhotdraw.samples.defaultsample;
 
-//replace with newer version of batik
-import own org.apache.batik1_7;
-
-merge org.apache.batik1_7, jhotdraw::batik export as 
-	org.apache.batik batik;
+replace jhotdraw::batik export with own 
+	org.apache.batik1_7;
 
 export package *;

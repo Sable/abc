@@ -1,7 +1,7 @@
 module org.jhotdraw.samples.net extends org.jhotdraw.samples.netold;
 
 //replace the merged reference
-replace batik
+replace jhotdraw::batik
 	with own org.apache.batik1_8pre;
 
 export package *;

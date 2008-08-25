@@ -56,5 +56,8 @@
         <copy todir="${classdir}/org/jhotdraw/app">
             <fileset file="${srcdir}/org/jhotdraw/app/Label*.properties"/>
         </copy>
+        <copy todir="${classdir}/lib">
+			<fileset file="${basedir}/lib/*"/>
+        </copy>
     </target>
 </project>
