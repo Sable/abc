@@ -1,0 +1,5 @@
+module m1 extends m1old;
+
+replace m2::m3int with own m3;
+
+export package *;

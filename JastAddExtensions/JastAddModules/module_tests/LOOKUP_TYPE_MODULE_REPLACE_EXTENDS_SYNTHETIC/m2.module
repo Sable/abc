@@ -1,0 +1,5 @@
+module m2;
+
+import own m3int export as m3int;
+
+export package *;

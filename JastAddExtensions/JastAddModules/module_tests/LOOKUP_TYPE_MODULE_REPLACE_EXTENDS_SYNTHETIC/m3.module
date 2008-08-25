@@ -1,0 +1,3 @@
+module m3 implements m3int overrides m3old;
+
+export package *;

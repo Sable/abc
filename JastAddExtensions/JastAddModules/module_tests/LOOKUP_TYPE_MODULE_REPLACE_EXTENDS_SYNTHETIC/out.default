@@ -1,0 +1,154 @@
+Arguments: 
+-jastaddframework
+-debug
+-d
+classes
+-instance-module
+m1
+m1.module
+m1old.module
+m2.module
+m3.module
+m3int.module
+A.java
+B.java
+C.java
+Main.java
+../testlib/jastadd$framework.module
+End arguments
+----------Module contents----------
+------m1.module------
+module m1 extends m1old;
+------------------------
+------B.java------
+module: module m2;;
+module CU : m2.module
+module name : m2
+------------------------
+------m3.module------
+module m3 implements m3int;
+------------------------
+------m2.module------
+module m2;
+import own m3int export as m3int;
+------------------------
+------Main.java------
+module: null;
+module CU : null
+module name : null
+------------------------
+------C.java------
+module: module m3;;
+module CU : m3.module
+module name : m3
+------------------------
+------A.java------
+module: module m1;;
+module CU : m1.module
+module name : m1
+------------------------
+------../testlib/jastadd$framework.module------
+module jastadd$framework;
+------------------------
+------m3int.module------
+module m3int;
+------------------------
+------m1old.module------
+module m1old;
+import own m2 export as m2;
+------------------------
+------synthetic m3old------
+module m3old;
+------------------------
+----------CU AST before insert----------
+module: m1, file: m1.module, base module: m1
+B.java package:
+module: m3, file: m3.module, base module: m3
+module: m2, file: m2.module, base module: m2
+Main.java package:
+C.java package:
+A.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m3int, file: m3int.module, base module: m3int
+module: m1old, file: m1old.module, base module: m1old
+module: m3old, file: synthetic m3old, base module: m3old
+----------CU AST after insert----------
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m3int, file: m3int.module, base module: m3int
+module: m1old, file: m1old.module, base module: m1old
+module: m3old, file: synthetic m3old, base module: m3old
+----------Module CU imports before import own----------
+module m1, base:m1, context:[], instantiated:false
+module m3, base:m3, context:[], instantiated:false
+module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:false
+module m3int, base:m3int, context:[], instantiated:false
+module m1old, base:m1old, context:[], instantiated:false
+module m3old, base:m3old, context:[], instantiated:false
+-------------Instance ModuleCompilationUnit------------
+module m1 extends m1old;
+replace m2::m3int with own m3;
+export package *;
+import  jastadd$framework as none null;
+-----------End Instance ModuleCompilationUnit----------
+----------CU AST after generateImportOwn----------
+module: m1, file: m1.module, base module: m1
+	A.java package:m1
+module: m3, file: m3.module, base module: m3
+	C.java package:m3
+module: m2, file: m2.module, base module: m2
+	B.java package:m2
+Main.java package:
+module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
+module: m3int, file: m3int.module, base module: m3int
+module: m1old, file: m1old.module, base module: m1old
+module: m3old, file: synthetic m3old, base module: m3old
+module: m1$super$m1old, file: m1old.module, base module: m1old
+module: m1.m2, file: m2.module, base module: m2
+	B.java package:m1.m2
+module: m1$2, file: m3.module, base module: m3
+	C.java package:m1$2
+
+----------Module CU imports after import own----------
+module m1, base:m1, context:[], instantiated:true
+	jastadd$framework:jastadd$framework
+	[export]m2:m1.m2
+module m3, base:m3, context:[], instantiated:false
+module m2, base:m2, context:[], instantiated:false
+module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
+module m3int, base:m3int, context:[], instantiated:false
+module m1old, base:m1old, context:[], instantiated:false
+module m3old, base:m3old, context:[], instantiated:false
+module m1$super$m1old, base:m1old, context:[m1], instantiated:true
+module m1.m2, base:m2, context:[m1], instantiated:true
+	jastadd$framework:jastadd$framework
+	[export]m3int:m1$2
+module m1$2, base:m3, context:[m1.m2], instantiated:true
+	jastadd$framework:jastadd$framework
+----------MCU collectTypes after import own----------
+
+Module: m1
+	m1.A
+Module: m3
+	m3.C
+Module: m2
+	m2.B
+Module: jastadd$framework
+Module: m3int
+Module: m1old
+Module: m3old
+Module: m1$super$m1old
+Module: m1.m2
+	m1.m2.B
+Module: m1$2
+	m1$2.C
+
+----------CU iterator----------
+m1.module, A.java, m3.module, m2.module, Main.java, ../testlib/jastadd$framework.module, m3int.module, m1old.module, synthetic m3old, m1old.module, m2.module, B.java, m3.module, C.java

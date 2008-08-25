@@ -1,0 +1,7 @@
+module m1old;
+
+import own m2 export as m2;
+
+replace m2::m3int with own m3old;
+
+export package *;
