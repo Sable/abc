@@ -44,7 +44,8 @@ public class XMLParserFactory {
     /**
      * The class name of the default XML parser.
      */
-    public static final String DEFAULT_CLASS = "net.n3.nanoxml.StdXMLParser";
+	//NEIL: Changed to work around reflection
+    public static final String DEFAULT_CLASS = net.n3.nanoxml.StdXMLParser.class.getName();
     
     
     /**
