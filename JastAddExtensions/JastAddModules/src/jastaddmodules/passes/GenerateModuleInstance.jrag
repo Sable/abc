@@ -295,9 +295,8 @@ aspect GenerateModuleInstance {
 	}
 	
 	protected ModuleCompilationUnit ModuleCompilationUnit.processReplaceMember(ModuleReplaceDecl replaceMember, ModuleCompilationUnit ret) {
-		//lookup merge targets from ret
 		
-		ModuleCompilationUnit replaceCU = replaceMember.getWithExpr().getModuleInstance();
+		ModuleCompilationUnit replaceCU = replaceMember.getWithExpr().getModuleInstance(ret);
 		if (replaceCU == null) {
 			String msg = "Unable to get module instance: " + replaceMember.getWithExpr().toString();
 			replaceMember.getWithExpr().error(msg);

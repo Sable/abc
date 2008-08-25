@@ -1,26 +1,26 @@
 
 aspect ModuleExpr {
-	public ModuleCompilationUnit ModuleExpr.getModuleInstance() {
+	public ModuleCompilationUnit ModuleExpr.getModuleInstance(ModuleCompilationUnit context) {
 		throw new Error("getModuleInstance called on abstract ModuleExpr");
 	}
-	public ModuleCompilationUnit ModuleAccessExpr.getModuleInstance() {
-		return getModuleAccess().lookupModule();
+	public ModuleCompilationUnit ModuleAccessExpr.getModuleInstance(ModuleCompilationUnit context) {
+		return context.lookupModule(getModuleAccess().getID());
 	}
-	public ModuleCompilationUnit ModuleOwnExpr.getModuleInstance() {
+	public ModuleCompilationUnit ModuleOwnExpr.getModuleInstance(ModuleCompilationUnit context) {
 		ModuleCompilationUnit baseCU = getHostProgram().lookupModuleCUNoTransform(getModuleAccess());
 		if (baseCU == null) {
 			return null;
 		}
 		
-		ModuleCompilationUnit context = getModuleCompilationUnit();
-		assert (context != null) : "Unable to get context mcu";
-		
 		ModuleCompilationUnit instance = baseCU.generateModuleInstance(context, context.createAnonName(context)); 
-		getHostProgram().getCompilationUnitList().addChild(instance);			
+		getHostProgram().getCompilationUnitList().addChild(instance);
+		
+		//remove context from the instance, the context will be added later on the replaces
+		instance.removeInstanceContext(context);
 		 
 		return instance;
 	}
-	public ModuleCompilationUnit ModuleSingletonAccessExpr.getModuleInstance() {
+	public ModuleCompilationUnit ModuleSingletonAccessExpr.getModuleInstance(ModuleCompilationUnit context) {
 		ModuleCompilationUnit baseCU = getHostProgram().lookupModuleCUNoTransform(getModuleAccess());
 		if (baseCU == null) {
 			return null;
