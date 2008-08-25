@@ -1,0 +1,5 @@
+module m1;
+
+import own m2;
+
+replace m2 with NonExistentModule;

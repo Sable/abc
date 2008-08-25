@@ -1,0 +1,3 @@
+Unrecoverable semantic error(s) found.
+m1.module:10,7:
+  Semantic Error: Reference m2a::m3a already merged.

@@ -1,0 +1,7 @@
+module m1;
+
+import own m2 as m2a;
+import own m2 as m2b;
+
+merge m2a, m2b export as m2 m2mergeda;
+merge m2a, m2mergeda export as m2 m2mergedb;

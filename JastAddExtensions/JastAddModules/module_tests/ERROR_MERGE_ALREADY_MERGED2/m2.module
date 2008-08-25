@@ -1,0 +1,7 @@
+module m2;
+import own m3 export as m3a;
+import own m3 export as m3b;
+
+merge m3a, m3b export as m3 m3merged;
+
+export package *;

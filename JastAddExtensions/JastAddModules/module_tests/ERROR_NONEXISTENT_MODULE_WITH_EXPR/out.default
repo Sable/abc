@@ -1,0 +1,3 @@
+Unrecoverable semantic error(s) found.
+m1.module:5:
+  Semantic Error: Unable to get module instance: own NonExistentModule
