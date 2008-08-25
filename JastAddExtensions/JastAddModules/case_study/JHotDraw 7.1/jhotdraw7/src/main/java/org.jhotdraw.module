@@ -5,7 +5,6 @@ import own org.apache.batik export as batik;
 
 replace nanoxml with own net.n3.nanoxmlv2_2_1_4patch;
 
-import own org.jhotdraw.batikfragment;
-replace batik with org.jhotdraw.batikfragment; //use local version by default
+replace batik with own org.jhotdraw.batikfragment; //use local version by default
 
 export package *;
