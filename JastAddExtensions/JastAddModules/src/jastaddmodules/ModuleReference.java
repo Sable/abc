@@ -9,6 +9,7 @@ import AST.AsTypeExport;
 import AST.ModuleAccess;
 import AST.ModuleImportType;
 import AST.ModuleCompilationUnit;
+import AST.ModuleMergeDecl;
 
 public class ModuleReference {
 	protected String alias = null;
@@ -18,6 +19,7 @@ public class ModuleReference {
 	protected ModuleCompilationUnit staticModuleType = null;
 	protected Set<ModuleAccess> mergedAccesses = new HashSet<ModuleAccess>();
 	protected ModuleCompilationUnit context = null;
+	protected ModuleMergeDecl cascadedMergeDecl = null;
 	
 	public ModuleReference(String alias,
 			ModuleCompilationUnit importedCU, 
@@ -73,4 +75,14 @@ public class ModuleReference {
 		this.moduleCU = moduleCU;
 	}
 	
+	//the merge declaration that points to this access
+	public ModuleMergeDecl getCascadedMergeDecl() {
+		return cascadedMergeDecl;
+	}
+	public void setCascadedMergeDecl(ModuleMergeDecl cascadedMergeDecl) {
+		this.cascadedMergeDecl = cascadedMergeDecl;
+	}
+	public boolean isMerged() {
+		return cascadedMergeDecl != null;
+	}
 }

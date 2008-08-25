@@ -206,6 +206,13 @@ aspect GenerateModuleInstance {
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
 			
+			//check if already merged
+			if (cuReference.isMerged()) {
+				String msg = "Reference " + access.getID() + " already merged.";
+				access.error(msg);
+				throw new UnrecoverableSemanticError(msg);
+			}
+			
 			//self replace error
 			if (access.getID().equals(ret.getBaseCU().getModuleName())) {
 				String msg = "Cannot merge reference to self"; 
@@ -278,6 +285,11 @@ aspect GenerateModuleInstance {
 		
 		//replace the targets in the tree
 		ret = ret.mergeTargets(mergeMember, mergeTargetReferences, mergedModuleRef);
+		
+		//set the merge decl
+		for (ModuleReference mref : mergeTargetReferences) {
+			mref.setCascadedMergeDecl(mergeMember);
+		}
 		
 		return ret;
 	}
