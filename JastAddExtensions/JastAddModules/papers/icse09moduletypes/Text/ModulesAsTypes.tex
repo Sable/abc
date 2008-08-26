@@ -12,7 +12,7 @@ We now non-formally define a type system over collections of classes.
 A module is a collection of classes, and we consider it to be the type of 
 the collection of classes that belong to it. We then proceed to define
 relations and operations on modules and, in a later section, show how
-these model current module usage. Some of the examples are abridged versions 
+these model current module usage. Most of the examples are abridged versions 
 taken from the Jhotdraw case study, which is available at INSERT WEBSITE HERE.
 
 \SubSection{Declaration and Membership}
@@ -140,95 +140,93 @@ export package *;
 
 \SubSection{Module Qualified Type References}
 
-Type references can now be qualified with module names to resolve ambiguous accesses.
-In this example, we have a module {\tt myapplication} importing 
-two instances of module {\tt xmlparser},
-which contains the class {\tt xmlparser.Parser}. 
-A class {\tt }C in {\tt myapplication} can then choose from which 
-instance of {\tt xmlparser} to load the class:
+Type references can now be qualified with module names to explicitly
+identify the module that contains the class. Module qualifiers
+are separated from package and type names by the \texttt{::} separator,
+and also allows for indirection. For example, given the following module:
+
+\begin{lstlisting}
+module org.jhotdraw;
+import own net.n3.nanoxml export as nanoxml;
+import own org.apache.batik export as batik;
+export package *;
+\end{lstlisting}
+
+The class \texttt{org.jhotdraw.Version} in the module \texttt{org.jhotdraw}
+can be accessed as
+\begin{lstlisting}
+org.jhotdraw::org.jhotdraw.Version
+\end{lstlisting}
+Classes in \texttt{nanoxml} and \texttt{batik} can be accessed by indirection:
+\begin{lstlisting}
+org.jhotdraw::nanoxml::net.n3.nanoxml.Version
+org.jhotdraw::batik::org.apache.batik.Version
+\end{lstlisting}
+
+In this example, a sample application Simple with the module \texttt{org.jhotdraw.samples.simple}
+uses the Jhotdraw framework by importing its own instance of the module
+\texttt{org.jhotdraw}. The module \texttt{org.jhotdraw} itself uses the 
+two libraries \texttt{net.n3.nanoxml} and \texttt{org.apache.batik}, and
+exports them so that other modules can also access their classes. The 
+application then gets the versions of JHotdraw and its dependencies.
 
 \begin{lstlisting}[caption=Module Qualified Type References,numbers=left]
-//File myapplication.module
-module myapplication;
-//import two instances of xmlparser
-import own xmlparser as parser1; 
-import own xmlparser as parser2;
+//File org.jhotdraw.module
+module org.jhotdraw;
+import own net.n3.nanoxml export as nanoxml;
+import own org.apache.batik export as batik;
+export package *;
 
-//File xmlparser.module
-module xmlparser;
-export package xmlparser;
+//File org.apache.batik.module
+module org.apache.batik;
+export package 
+	org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt,
+	org.apache.batik;
 
-//File XMLParser.java
-//Classes in this file belong to module xmlparser
-module xmlparser; 
-package xmlparser;
-public class XMLParser{...}
+//File net.n3.nanoxml
+module net.n3.nanoxml;
+export package net.n3.nanoxml;
 
-//File C.java
-//Classes in this file belong to module myapplication
-module myapplication; 
-public class C{
-	//This resolves to the class in the first instance
-	parser1::xmlparser.XMLParser p;
-	//This resolves to the class in the second instance
-	parser2::xmlparser.XMLParser p2;
-	//ambiguous type error 
-	xmlparser.Parser p3 = xmlparser.Parser(); //error
+//File org.jhotdraw.samples.simple.module
+module org.jhotdraw.samples.simple;
+//import own instance of jhotdraw
+import own org.jhotdraw export as jhotdraw;
+export package *;
+
+//File Main.java
+//classes in this file belong to this module
+module org.jhotdraw.samples.simple;
+package org.jhotdraw.samples.simple;
+//on-demand import of indirect import
+//accesses jhotdraw's batik import
+import jhotdraw::batik::org.apache.batik.*;
+
+public class Main {
+	//direct imports don't need a qualifier
+	String jhotdrawVersion = 
+		org.jhotdraw.Version.version;
+	//module qualified type name
+	String nanoXMLVersion = 
+		jhotdraw::nanoxml::net.n3.nanoxml.Version.version;
+	//from the on-demand import
+	String batikVersion = Version.version;
 }
 \end{lstlisting}
 
-Module qualified names are also supported in normal Java import declarations,
-and can reference exported modules from indirectly imported modules.
+The class \texttt{org.jhotdraw.Version} can be accessed without
+a module qualifier since it is a member of the JHotdraw module, 
+which is directly imported by the application Simple. To access
+the versions of JHotdraw's dependencies, the type names have to
+be qualified with the module qualifier that denotes their parent
+module. As \texttt{net.n3.nanoxml.Version} is not a direct import,
+it needs to be qualified with \texttt{jhotdraw::nanoxml::}, which
+points to the \texttt{nanoxml} import of JHotdraw. The same is
+true for \texttt{org.apache.batik.Version}, and as the example shows,
+the module qualified names can also be used in import declarations.
 
-\begin{lstlisting}[caption=Module Qualified Imports,numbers=left]
-//file org.x.y.parserapplication.module
-module org.x.y.parserapplication;
-import own org.x.y.parser as parser;
-
-//file org.x.y.parser.module
-module org.x.y.parser;
-import own org.x.y.scanner export as scanner;
-export package org.x.y.parser;
-
-//file org.x.y.scanner.module
-module org.x.y.scanner;
-export package org.x.y.scanner;
-
-//file Parser.java
-module org.x.y.parser;
-package org.x.y.parser;
-public class Parser{...}
-
-//file Scanner.java
-module org.x.y.scanner;
-package org.x.y.scanner;
-public class Scanner{...}
-
-//file ParserApplication.java
-module org.x.y.parserapplication;
-package org.x.y.parserapplication;
-
-//single type import
-import parser::org.x.y.parser.Parser;
-//on demand import
-import parser::scanner::org.x.y.scanner.*;
-
-public class ParserApplication {
-	//uses the Parser class from module parser
-	Parser p = new Parser(); 
-	//uses the Scanner class from module scanner
-	Scanner s = new Scanner(); 
-	...
-}
-
-\end{lstlisting}
-
-Types and packages from directly imported modules do not need to
-be module qualified. In the example above, one could have used
-\begin{lstlisting}
-import org.x.y.parser.Parser;
-\end{lstlisting}
-in line 29.
+The module qualifiers are relative and are looked up in the context 
+of the module that contains them. This is necessary to maintain
 
 Types that do not belong to a module are considered to be members of
 the ``default'' module. This module has a blank name, and its singleton
@@ -237,6 +235,7 @@ type {\tt javax.swing.Action} can be accessed in this way:
 
 \begin{lstlisting}[caption=Default Module Lookups]
 module somemodule;
+package mypackage;
 //import from the default module
 import ::javax.swing.Action;
 class MyClass {
@@ -257,8 +256,8 @@ We now define a subtyping relation on the module type. A module is declared
 to be the subtype of another module by using the \textbf{extends} keyword:
 
 \begin{lstlisting}
-module org.x.y.parserV1_2 
-	extends org.x.y.parserV1_1;
+module defaultsample.defaultjhotdraw 
+	extends org.jhotdraw;
 \end{lstlisting}
 
 A subtype module inherits all the import declarations and export package declarations 
@@ -272,68 +271,68 @@ originate from the subtype module, and any other modules that import an
 instance of the subtype module.
 
 The following example demonstrates module subtyping and shadowing. The module
-{\tt parserv1\_1} contains the type {\tt parser.Parser}, and imports
-the module {\tt scanner} which contains {\tt scanner.Scanner}. The module
-{\tt parserv1\_2} then extends {\tt parserv1\_1}, while having its
-own version of {\tt parser.Parser} and adding a new class {\tt parser.XMLParser}.
+\texttt{defaultsample.defaultjhotdraw} extends the module \texttt{org.jhotdraw}. 
+It also contains the class \texttt{org.jhotdraw.app.action.AboutAction},
+which overrides a class with the same package and name in the supertype module.
+The new \texttt{AboutAction} extends the version in the supertype module and
+changes the message of the about dialog.
 
 \begin{lstlisting}[caption=Module Subtyping]
-//file parserV1_1.module
-module parserV1_1;
-import own scanner export as scanner;
-//say there is a class Parser in this package
-export package parser;
+//file defaultsample.defaultjhotdraw.module 
+module defaultsample.defaultjhotdraw 
+	extends org.jhotdraw;
+//the batik and nanoxml imports are 
+//inherited from org.jhotdraw
+export package *;
 
-//file parserV1_2.module
-module parserV1_2 extends parserV1_1;
-//say that ParserV1_2 has its own version of 
-//parser.Parser, and an additional class
-//parser.XMLParser
-
-//file scanner.module
-module scanner;
-//say there is a class Scanner in this package
-export package scanner;
-
-//file MainV11.java
-module parserV1_1;
-import parser.Parser;
-import scanner.Scanner;
-public class MainV11 {
-	//this references the v1_1 parser
-	Parser p = new Parser(); 
-	Scanner s = new Scanner();
+//file org/jhotdraw/app/action/AboutAction.java
+module org.jhotdraw;
+package org.jhotdraw.app.action;
+//this class will be overriden
+public class AboutAction extends AbstractApplicationAction {
 	...
+	public void actionPerformed(ActionEvent evt) {
+		...
+		JOptionPane.showMessageDialog(...);
+	}
 }
 
-//file MainV12.java
-module parserV1_2;
-import parser.Parser;
-import scanner.Scanner;
-public class MainV12 {
-	//this references the v1_2 parser
-	Parser p = new Parser(); 
-	//this references the inherited Scanner class
-	Scanner s = new Scanner();
+//file defaultjhotdraw/app/action/AboutAction.java
+module defaultsample.defaultjhotdraw;
+package org.jhotdraw.app.action;
+
+import batik::org.apache.batik.Version;
+//This class shadows the class
+//jhotdraw::org.jhotdraw.app.action.AboutAction
+public class AboutAction 
+	extends 
+	supermodule::org.jhotdraw.app.action.AboutAction {
 	...
+	public void actionPerformed(ActionEvent evt) {
+		...
+		//add batik version to about message
+		JOptionPane.showMessageDialog(...
+			+ "Batik version " + Version.version,
+			...);
+	}
 }
 
-//file multiversion.module
-module multiversion;
-import own parserV1_1 as parserV1_1;
-import own parserV1_2 as parserV1_2;
-
-//file MultiversionMain.java
-module multiversion;
-public class Main {
-	//this references the v1_1 parser
-	parserV1_1::parser.Parser p1 = 
-		new parserV1_1::parser.Parser();
-	//this references the v1_2 parser
-	parserV1_2::parser.Parser p2 =
-		new parserV1_2::parser.Parser();
-}
 \end{lstlisting}
+
+As the example shows, the overriding \texttt{AboutAction} class extends the
+overriden class in the supertype module by using the special 
+\texttt{supermodule::} module qualifier to access the overriden class. It
+then redefines the only method required to change the behavior as required.
+All lookups for the class \texttt{AboutAction} now resolve to the overriding
+class, including those in the classes that belong to the supertype module.
+
+Without module subtyping, changing \texttt{AboutAction} without access to the
+would require extending the class and reimplementing the method 
+that instantiates it. Module extension allows the same extension without
+any reimplementation except for the implementation of the actual change of behavior.
+In cases such as that above, extension using module subtyping could result in savings in
+terms of reimplemented framework code by moving extension and
+composition to the higher level of abstraction provided by the module.
 
 %------------------------------------------------------------------------- 
 \SubSection{Merge}
