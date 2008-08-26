@@ -41,6 +41,7 @@ public class AboutAction extends supermodule::org.jhotdraw.app.action.AboutActio
     
     public void actionPerformed(ActionEvent evt) {
         Application app = getApplication();
+        //Add batik version to about message
         JOptionPane.showMessageDialog(app.getComponent(),
                 app.getName()+" "+app.getVersion()+"\n"+app.getCopyright()+
                 "\n\nRunning on Java "+System.getProperty("java.vm.version")+

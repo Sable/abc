@@ -12,25 +12,29 @@ import jhotdraw::batik::org.apache.batik.*;
 
 public class Main {
     public static void main(String[] args) {
+    	//references batik version in jhotdraw
+        final String batikVersion = Version.version;
+        final String nanoXMLVersion = new jhotdraw::nanoxml::net.n3.nanoxml.Version().version;
+        final String jhotdrawVersion = new org.jhotdraw.Version().version;
+        
     	//code is taken from EditorSample
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	//references batik version in jhotdraw
-                String batikVersion = Version.version;
-                String nanoXMLVersion = new jhotdraw::nanoxml::net.n3.nanoxml.Version().version;
                 
                 // Create a simple drawing consisting of three
                 // text areas and an elbow connection.
-                TextAreaFigure ta = new TextAreaFigure(batikVersion);
+                TextAreaFigure ta = new TextAreaFigure(jhotdrawVersion);
                 ta.setBounds(new Point2D.Double(10,10),new Point2D.Double(100,100));
                 TextAreaFigure tb = new TextAreaFigure(nanoXMLVersion);
                 tb.setBounds(new Point2D.Double(220,120),new Point2D.Double(310,210));
-                TextAreaFigure tc = new TextAreaFigure();
+                TextAreaFigure tc = new TextAreaFigure(batikVersion);
                 tc.setBounds(new Point2D.Double(220,10),new Point2D.Double(310,100));
+                
                 ConnectionFigure cf = new LineConnectionFigure();
                 cf.setLiner(new ElbowLiner());
                 cf.setStartConnector(ta.findConnector(Geom.center(ta.getBounds()), cf));
                 cf.setEndConnector(tb.findConnector(Geom.center(tb.getBounds()), cf));
+                
                 Drawing drawing = new DefaultDrawing();
                 drawing.add(ta);
                 drawing.add(tb);
