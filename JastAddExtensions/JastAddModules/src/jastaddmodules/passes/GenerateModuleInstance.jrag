@@ -228,8 +228,8 @@ aspect GenerateModuleInstance {
 			}
 			
 			//check against merge static type
-			if (!isReplaceCompatible(mergeStaticType, cuReference.getStaticModuleType())) {
-				String msg = "Incompatible modules in merge list: " + 
+			if (!isReplaceCompatible(cuReference.getStaticModuleType()), mergeStaticType) {
+				String msg = "Incompatible modules in merge: " + 
 					cuReference.getStaticModuleType().getModuleName() + 
 					", " + 
 					mergeStaticType.getModuleName(); 
