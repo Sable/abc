@@ -326,13 +326,107 @@ then redefines the only method required to change the behavior as required.
 All lookups for the class \texttt{AboutAction} now resolve to the overriding
 class, including those in the classes that belong to the supertype module.
 
-Without module subtyping, changing \texttt{AboutAction} without access to the
+Without module subtyping, changing \texttt{AboutAction} without access to the source
 would require extending the class and reimplementing the method 
 that instantiates it. Module extension allows the same extension without
-any reimplementation except for the implementation of the actual change of behavior.
+any reimplementation except for the code that actually changes the behavior of the overriden class.
 In cases such as that above, extension using module subtyping could result in savings in
 terms of reimplemented framework code by moving extension and
 composition to the higher level of abstraction provided by the module.
+
+%------------------------------------------------------------------------- 
+\SubSection{Overrides}
+
+Subtyping allows extension or patching of a module without actually
+rebuilding a completely new module. However, it does have the disadvantage
+of being dependent on the existence of its supertype modules. To get
+around this limitation, we define the \textbf{overrides} relation to allow
+a module to completely replace another module. A module is declared
+to override another using the \textbf{overrides} keyword:
+
+\begin{lstlisting}
+module org.apache.batik1_8pre 
+	overrides org.apache.batik1_6, org.apache.batik1_7;
+\end{lstlisting}
+
+Unlike subtyping, an overriding module does not inherit anything from the
+modules it overrides. However, it \textit{must} provide the same exported modules
+and packages as its overridden modules to satisfy the external 
+clients of these modules.
+
+As is expected, override is inherited by subtype modules. This allows a subtype
+of an overriding module to override the same modules as its supertype.
+
+Declaring an overriding module does not automatically change over all references
+to the overridden module to use the overriding module. This is done using the
+\textbf{replace} operation discussed below.
+
+%------------------------------------------------------------------------- 
+\SubSection{Replace}
+
+While merges can be used to re-bind module references, they are only applicable 
+for modules that are subtypes of each other. As overriding modules are not
+necessarily subtypes of the modules they override, we introduce the \textbf{replace} operation
+to substitute overriding modules for overridden modules. The replace operation
+takes a set of target module references to rebind, and the module reference pointing to the 
+instance to which the targets are to be bound:
+
+\begin{lstlisting}
+replace m1,m2,m3 with m4;
+\end{lstlisting}
+
+The replace operation
+changes the binding of module references to point to an existing
+module instance. A module may replace another if its type is the same or a subtype
+of that module, or if its type overrides that of the other.
+
+Continuing the parser example given in the subtyping section above, say we have two 
+modules, {\tt staticanalyzer} and {\tt javadocgenerator}, each using {\tt parserv1\_1}
+and {\tt parserv1\_2} respectively. We now wish to create a new module that uses these, 
+but updates them to {\tt parserv2}, which overrides both {\tt parserv1\_1} and {\tt parserv1\_2}.
+
+\begin{lstlisting}[caption=Module Replace]
+//file staticanalyzer.module
+module staticanalyzer;
+import own parserv1_1 export as parser;
+...
+
+//file javadocgenerator.module
+module javadocgenerator;
+import own parserv1_2 export as parser;
+...
+
+//file parserv2.module
+module parserv2 
+	overrides parserv1_1, parserv1_2;
+...
+
+//file myapplication.module
+module myapplication;
+import own staticanalyzer;
+import own javadocgenerator;
+import own parserv2;
+//replace with newer parser
+replace 
+	staticanalyzer::parser,
+	javadocgenerator::parser
+	with parserv2;
+\end{lstlisting}
+
+Note that even though the modules {\tt parserv1\_1} and {\tt parserv1\_2}
+are not present in the build, it is able to compile successfully when the
+module references to these missing modules are replaced with the overriding
+module {\tt parserv2}.
+
+As with merges, replaces are implicitly inherited by subtype modules.
+
+%Merge and replace make different modules sure to use the same
+%set of classes (avoids nondeterministic class loading). Also, can
+%be used to update modules to use newer versions of their imported
+%modules. They can also be used to access the namespace of indirect imports
+%without qualifiers by merging the indirect imports with a directly
+%imported instance of that module.
+
 
 %------------------------------------------------------------------------- 
 \SubSection{Merge}
@@ -429,96 +523,7 @@ this may reduce the module signature (the set of module references available) of
 the supertype module, which could lead to both internal and external clients of
 the module breaking.
 
-\SubSection{Overrides}
 
-Subtyping allows extension or patching of a module without actually
-rebuilding a completely new module. However, it does have the disadvantage
-of being dependent on the existence of its supertype modules. To get
-around this limitation, we define the \textbf{overrides} relation to allow
-a module to completely replace another module. A module is declared
-to override another using the \textbf{overrides} keyword:
-
-\begin{lstlisting}
-module parserV2 
-	overrides parserV1_1, parserV1_2;
-\end{lstlisting}
-
-Unlike subtyping, an overriding module does not inherit anything from the
-modules it overrides. However, it \textit{must} provide the same exported modules
-and packages as its overridden modules to satisfy the external 
-clients of these modules.
-
-As is expected, override is inherited by subtype modules. This allows a subtype
-of an overriding module to override the same modules as its supertype.
-
-Declaring an overriding module does not automatically change over all references
-to the overridden module to use the overriding module. This is done using the
-\textbf{replace} operation discussed below.
-
-\SubSection{Replace}
-
-While merges can be used to re-bind module references, they are only applicable 
-for modules that are subtypes of each other. As overriding modules are not
-necessarily subtypes of the modules they override, we introduce the \textbf{replace} operation
-to substitute overriding modules for overridden modules. The replace operation
-takes a set of target module references to rebind, and the module reference pointing to the 
-instance to which the targets are to be bound:
-
-\begin{lstlisting}
-replace m1,m2,m3 with m4;
-\end{lstlisting}
-
-The replace operation
-changes the binding of module references to point to an existing
-module instance. A module may replace another if its type is the same or a subtype
-of that module, or if its type overrides that of the other.
-
-Continuing the parser example given in the subtyping section above, say we have two 
-modules, {\tt staticanalyzer} and {\tt javadocgenerator}, each using {\tt parserv1\_1}
-and {\tt parserv1\_2} respectively. We now wish to create a new module that uses these, 
-but updates them to {\tt parserv2}, which overrides both {\tt parserv1\_1} and {\tt parserv1\_2}.
-
-\begin{lstlisting}[caption=Module Replace]
-//file staticanalyzer.module
-module staticanalyzer;
-import own parserv1_1 export as parser;
-...
-
-//file javadocgenerator.module
-module javadocgenerator;
-import own parserv1_2 export as parser;
-...
-
-//file parserv2.module
-module parserv2 
-	overrides parserv1_1, parserv1_2;
-...
-
-//file myapplication.module
-module myapplication;
-import own staticanalyzer;
-import own javadocgenerator;
-import own parserv2;
-//replace with newer parser
-replace 
-	staticanalyzer::parser,
-	javadocgenerator::parser
-	with parserv2;
-\end{lstlisting}
-
-Note that even though the modules {\tt parserv1\_1} and {\tt parserv1\_2}
-are not present in the build, it is able to compile successfully when the
-module references to these missing modules are replaced with the overriding
-module {\tt parserv2}.
-
-As with merges, replaces are implicitly inherited by subtype modules.
-
-%Merge and replace make different modules sure to use the same
-%set of classes (avoids nondeterministic class loading). Also, can
-%be used to update modules to use newer versions of their imported
-%modules. They can also be used to access the namespace of indirect imports
-%without qualifiers by merging the indirect imports with a directly
-%imported instance of that module.
 
 \SubSection{Module Interfaces}
 
