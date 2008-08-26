@@ -6,15 +6,12 @@ can be derived from their usage.
 
 \SubSection{Composition}
 
-In Java, the classpath provides the most basic level of module composition
-for applications. The classpath provides a list of libraries that are
+In Java, the classpath provides the most basic level of module composition. 
+The classpath provides a list of libraries that are
 available during compilation or execution. Classes are looked up in the 
 classpath entries in the order they appear. This is fine as long as the sets 
-of classes that the entries provide are disjoint. However, if a class can 
-be found in multiple entires, Java will always look up that class in the 
-first entry on the classpath, which may not be what the developer intends. 
-This is JAR hell, and the most common error caused by this is loading 
-the incorrect class when there is more than one version of a library in the classpath.
+of classes that the entries provide are disjoint. If this is not the case, the class may
+be loaded from the wrong library. This is JAR hell.
 
 Java module systems have more or less been built as solutions to JAR hell. 
 OSGi \cite{OSGi4} bundles, JSR 277 modules \cite{JSR277} and .NET assemblies \cite{netassemblies}

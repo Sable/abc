@@ -3,10 +3,10 @@ to deal with the shortcomings of the package as a modularity construct
 and the deeper problem of JAR hell, that is, the problems caused
 by wrong class lookup when there are multiple versions of a library
 in the classpath. There are several module systems that exist or are
-proposed for Java-like languages \cite{OSGi4, netassemblies, JSR294, JSR277}
+proposed for Java-like languages \cite{javajars, OSGi4, netassemblies, JSR294, JSR277}
 that address these problems, and the design of these systems have
 revolved around the premise of a module as a container for classes
-and additional metadata to distinguish different versions of a class.
+and additional metadata to distinguish different versions of a module.
 
 However, the existing module systems still have limitations under 
 certain circumstances. Split packages \cite{iJAMComments} occur when 
@@ -21,7 +21,7 @@ This information is usually found in release documentation and
 it becomes the responsibility of a module's clients to update 
 their applications based on this information. Similarly, a module's 
 supported features are not part of the module's metadata, and it 
-is up to the module's clients, who have limited 
+is up to the module's users, who have limited 
 information on the module compared to the module's providers, to 
 keep track of these to keep their application's dependencies correct.
 
@@ -42,5 +42,5 @@ to avoid pitfalls such as split packages.
 Furthermore, we show that the type system also allows for the
 definition of constraints and patterns not previously possible, such
 as backward compatibility and module extension. The type system
-itself is implemented in a compiler using the JastAdd compiler construction
+itself is implemented in a compiler made using the JastAdd compiler construction
 framework, and is demonstrated on a small case study on JHotdraw 7.1.
