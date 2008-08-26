@@ -91,11 +91,4 @@ R.~Strni{\v s}a.
   programming language.
 \newblock http://jcp.org/en/jsr/detail?id=294.
 
-\bibitem{szyperski92import}
-C.~A. Szyperski.
-\newblock Import is not inheritance: Why we need both: modules and classes.
-\newblock In O.~L. Madsen, editor, {\em Proceedings of the 6th European
-  Conference on Object-Oriented Programming ({ECOOP})}, volume 615, pages
-  19--32, Berlin, Heidelberg, New York, Tokyo, 1992. Springer-Verlag.
-
 \end{thebibliography}

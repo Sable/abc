@@ -1,35 +1,46 @@
-The definition of modules at different levels of abstraction
-has always driven the development of programming languages.
-The transition from unstructured assembly to structured programming,
-and from there to object-oriented programming has shown that
-as programs have grown, new modularization structures have
-been designed to handle increased program complexity.
+Module systems for Java and similar languages have been designed 
+to deal with the shortcomings of the package as a modularity construct
+and the deeper problem of JAR hell, that is, the problems caused
+by wrong class lookup when there are multiple versions of a library
+in the classpath. There are several module systems that exist or are
+proposed for Java-like languages \cite{OSGi4, netassemblies, JSR294, JSR277}
+that address these problems, and the design of these systems have
+revolved around the premise of a module as a container for classes
+and additional metadata to distinguish different versions of a class.
 
-In object-oriented programming, the need for modules as separate
-entities from classes is well understood \cite{szyperski92import}.
-Java$^{TM}$ provides the package as the basic module construct for the language, but
-this has fallen short of expectations when composing programs at
-the level of components. The package is too small a construct
-to contain whole components, and the access control capabilities
-of the default Java access modifiers do not provide enough
-information hiding at the component level. Packages also do not
-support any meta-data such as versions, which has become important
-in the current envirnonment of multiple components requiring
-specific versions of their dependencies.
+However, the existing module systems still have limitations under 
+certain circumstances. Split packages \cite{iJAMComments} occur when 
+a package and its classes occur in more than one visible module. This
+causes the same ambiguous class lookup problems caused by JAR hell.
 
-Thus several module systems that include classes across multiple 
-packages have been developed and are in relatively widespread use 
-for Java and similar languages \cite{OSGi4, netassemblies} There are also several
-proposals for adding module constructs to the Java language itself
-\cite{JSR294, JSR277}.
+While substantial support for version constraints are supported
+for a module's clients at the point of import, current module 
+systems do not have a way for module providers to specify backward 
+compatibility (or lack thereof) in the module specification. 
+This information is usually found in release documentation and 
+it becomes the responsibility of a module's clients to update 
+their applications based on this information. Similarly, a module's 
+supported features are not part of the module's metadata, and it 
+is up to the module's clients, who have limited 
+information on the module compared to the module's providers, to 
+keep track of these to keep their application's dependencies correct.
 
-In this paper we show that though the existing proposals solve
-several different problems involved in creating a module system
-for Java, there are still some, such as declaring backward
-compatibility and disambiguation of classes in the presence of
-split packages, that have not been sufficiently addressed in a
-satisfactory manner. We then propose a module system that
-views modules as types that have object-oriented properties,
-and show that this system can model existing operations on modules,
-while allowing the expression of constraints and operations that
-are not possible with existing module systems.
+Existing module systems also have limited extension capabilities. Extending
+a module's functionality without access to its source code usually 
+requires predefined extensibility support coded in by the module's 
+providers, usually in the form of access to the points of a class' 
+instantiation. Without such explicit support, a client's only option
+is usually reimplementation of the parts that contain the instantiation, 
+and the use of wrapper classes to reuse and extend behavior.
+
+In this paper we present a different approach to module systems, 
+that of treating modules as types over a set of classes. We non-formally
+define a type system that contains relations and operations on module types 
+that closely resemble object-oriented types, and demonstrate that the type
+system is able to express existing usage of modules while providing means 
+to avoid pitfalls such as split packages. 
+Furthermore, we show that the type system also allows for the
+definition of constraints and patterns not previously possible, such
+as backward compatibility and module extension. The type system
+itself is implemented in a compiler using the JastAdd compiler construction
+framework, and is demonstrated on a small case study on JHotdraw 7.1.
