@@ -1,0 +1,5 @@
+module org.jhotdraw.samples.simple;
+
+import own org.jhotdraw export as jhotdraw;
+
+export package *;
