@@ -34,7 +34,6 @@ the package name is used as the package name of the file within the module.
 //File Gradient.java
 module org.jhotdraw;
 package org.jhotdraw.samples.svg;
-
 public interface Gradient extends Cloneable { ... }
 \end{lstlisting}
 
@@ -67,7 +66,7 @@ instance of the module. This is done in the following manner:
 
 \begin{lstlisting}
 //imports the singleton instance
-import org.x.y.othermodule;
+import org.jhotdraw;
 \end{lstlisting}
 
 Importing the singleton instance of a module allows you to share the classes
@@ -79,9 +78,9 @@ instances of the same module to exist in the same context.
 
 \begin{lstlisting}
 //imports an own instance
-import own org.x.y.othermodule;
+import own org.jhotdraw;
 //imports on own instance with an alias
-import own org.x.y.othermodule as myothermodule;
+import own org.jhotdraw as jhotdraw;
 \end{lstlisting}
 
 Unlike iJAM, renaming an instance does not implicitly allow other
@@ -91,14 +90,14 @@ must be exported:
 \begin{lstlisting}
 //imports an own instance, and makes it available to
 //other modules
-import own org.x.y.othermodule export as othermodule;
+import own org.jhotdraw export as jhotdraw;
 \end{lstlisting}
 
 The visibility of the module instances become important for module
 qualified name lookups and the merge and replace operations described in later
 sections.
 
-\SubSection{Exported packages and the Module Modifier}
+\SubSection{Exported packages}
 
 We allow exported packages similar to {\tt export-package} in OSGi bundles. Unlike OSGi, however,
 exporting a package does not automatically allow other modules to gain
@@ -108,9 +107,12 @@ before gaining access to B's exported packages.
 Exported packages are declared in the {\tt .module} file:
 
 \begin{lstlisting}
-module org.x.y.mymodule; 
-//allow other modules access to these packages
-export package org.x.y.parser, org.x.y.lexer;
+module org.apache.batik1_6;
+//allow other modules to access this package
+export package 
+	org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt,
+	org.apache.batik;
 \end{lstlisting}
 
 You may also export all the packages that belong to a module by using
@@ -118,22 +120,23 @@ the * wildcard. This is the only way to export classes that belong to
 the default package in a module.
 
 \begin{lstlisting}
-module org.x.y.mymodule;
+module org.jhotdraw;
+...
 //export all packages
 export package *;
 \end{lstlisting}
 
-We also allow the \textbf{module} access modifier proposed for JSR294 \cite{JSR294}
-which applies to classes, fields and methods. Module private access only allows
-accesses from classes that belong to the same module.
+%We also allow the \textbf{module} access modifier proposed for JSR294 \cite{JSR294}
+%which applies to classes, fields and methods. Module private access only allows
+%accesses from classes that belong to the same module.
 
-\begin{lstlisting}
-module org.x.y; //module membership
-module class C { //only visible in org.x.y
-	public void publicMethod() {...};
-	module void moduleMethod() {...}; //same here
-}
-\end{lstlisting}
+%\begin{lstlisting}
+%module org.x.y; //module membership
+%module class C { //only visible in org.x.y
+%	public void publicMethod() {...};
+%	module void moduleMethod() {...}; //same here
+%}
+%\end{lstlisting}
 
 \SubSection{Module Qualified Type References}
 
