@@ -15,8 +15,9 @@ be loaded from the wrong library. This is JAR hell.
 
 Java module systems have more or less been built as solutions to JAR hell. 
 OSGi \cite{OSGi4} bundles, JSR 277 modules \cite{JSR277} and .NET assemblies \cite{netassemblies}
-use constraints to make sure that the modules used by an application's class satisfy the 
-class' requirements. 
+have import declarations to define required modules or packages, and use constraints 
+to make sure that the modules used by an application satisfy the 
+application's requirements. 
 
 However, the current solutions are still not completely satisfactory when there are still multiple
 types that satisfy a type reference even with version constraints. In the case
@@ -27,16 +28,12 @@ and hence not limited by the version import constraints.
 \SubSection{Versioning}
 Adding versions as metadata to modules is the common solution to multiple
 versions of a class. OSGi bundles, the JSR 277 Java Module System
-proposal and .NET assemblies 
-have extensive mechanisms for allowing a module's client to specify the
-versions of a module that it supports.
+proposal and .NET assemblies have extensive mechanisms for allowing a 
+module's client to specify the versions of a module that it supports.
 
-Higher number versions are expected to be backward compatible. If this is not
-the case, the module provider's only resort is to note this in separate documentation,
-and rely on the module's clients to properly update their version constraints
-to reflect this information. The same applies for a module's features. A module's
-supported features are usually documented separately and are linked to the version
-of the module.
+However, as previously stated, these constraints are defined at the module's
+clients. There is currenly no mechanism for a module's providers to define
+backward compatibility or feature support in the module specification.
 
 \SubSection{Imports and Exports}
 

@@ -2,8 +2,8 @@
 
 As the previous section shows, while the problem of Java modules have been
 well studied and multiple solutions exist for different aspects of the problem,
-there are still remaining issues such as ambiguous lookups, split packages and
-versioning constraints that remain. We propose that these can be solved by
+there are still remaining issues such as split packages, versioning constraints 
+and extension that remain. We propose that these can be solved by
 defining a type system on modules, which will model the current usage
 of modules while allowing for the expression of constraints and relations
 that were previously not possible.
@@ -12,7 +12,8 @@ We now non-formally define a type system over collections of classes.
 A module is a collection of classes, and we consider it to be the type of 
 the collection of classes that belong to it. We then proceed to define
 relations and operations on modules and, in a later section, show how
-these model current module usage.
+these model current module usage. Some of the examples are abridged versions 
+taken from the Jhotdraw case study, which is available at INSERT WEBSITE HERE.
 
 \SubSection{Declaration and Membership}
 
@@ -20,8 +21,8 @@ Modules are defined in a {\tt .module} file that begins with a module
 declaration:
 
 \begin{lstlisting}
-//File org.x.y.mymodule.module
-module org.x.y.mymodule;
+//File org.jhotdraw.module
+module org.jhotdraw; ...
 \end{lstlisting}
 
 Module membership is declared using syntax that was proposed 
@@ -30,23 +31,23 @@ declared by adding a module declaration. If a package declaration is present,
 the package name is used as the package name of the file within the module.
 
 \begin{lstlisting}
-//File C.java
-module org.x.y.mymodule; //module membership
-package org.x.y;
-public class C { ... } //member of org.x.y.mymodule
+//File Gradient.java
+module org.jhotdraw;
+package org.jhotdraw.samples.svg;
+
+public interface Gradient extends Cloneable { ... }
 \end{lstlisting}
 
-Split packages (packages whose types belong to more than one module) cause hard to 
-find problems in current module systems\cite{iJAMComments}. To avoid this, 
+Split packages cause hard to find problems in current module systems\cite{iJAMComments}. To avoid this, 
 a way to specify package membership in a module allowed by declaring the module membership
 in the {\tt package-info.java} file of that package.
 
 \begin{lstlisting}
-//File package-info.java
-//all classes in package org.x.y also
+//File org/jhotdraw/app/action/package-info.java
+//all classes in package org.jhotdraw.app.action also
 //belong to module org.x.y.mymodule
-module org.x.y.mymodule;
-package org.x.y;
+module org.jhotdraw;
+package org.jhotdraw.app.action;
 \end{lstlisting}
 
 If the module membership specified in a compilation unit's {\tt package-info.java}

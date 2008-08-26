@@ -1,30 +1,27 @@
-Treating modules as types provide a more elegant solution to JAR hell, as it removes the dependence
-on classpath order and allows disambiguation of multiple visible types with
-module qualifiers. In addition, we have shown that the type system can express
-constraints such as backward compatibility that were previously only documented 
-and not checked at build or load time.
+Treating modules as types provide a more elegant solution to JAR hell, as the module
+type errors occur at compile time, and load time errors will occur at the module level
+instead of the class level. This would make it a lot easier to diagnose and
+fix problems caused by wrong class lookups.
 
 Note that the syntax only represents the type system, it is not the only way
-to implement it. As mentioned, subtyping is already implicitly implemented
+to implement it. As mentioned, overriding is already implicitly implemented
 by versions. Other existing features such as loose coupling in OSGi can
 also be modeled, i.e. by using weak interfaces and a generated import and replace
 declaration. The type system is also not limited to
 the current implementation. For example, the import declaration can be 
 extended to use OSGi's extensive constraint features for packages and bundles.
 
-Conflicts from possibly split packages can now be handled as an ambiguous type error 
-instead of nondeterministically choosing the class to load.
-
 Separate compilation of modules with module interface dependencies would require
 the ability to compile and lookup module qualified names during runtime. We believe
-it is possible to do so with a classloader implementation of the module system, and
-this is left as future work.
+it is possible to do so with a classloader implementation of the module system. Reflection
+APIs would also require the context in which the lookup should be done in addition to
+the class' package and name. These are left as future work.
 
-The merge operator at present is relatively simple, it just picks the most specific module
-among the merge targets. A natural extension of this is for a merge to create a 
-synthesized module that merges the contents of its merge targets, assuming there are no
-conflicts. Conflict analysis and resolution as well as the relation of the synthesized module
-to existing modules is left as future work.
+The overrides declaration creates synthetic types for the overriden modules 
+if they are not present in the compilation. These types are currently very loose,
+in that they can be assigned to a module reference of any type. Tightening the
+constraints on synthetic types using information from overriding types is left
+as future work.
 
 Merge and replace are currently just used in the module's ``constructor'', that is, in
 the module's instantiation instructions. These may be extended to be executed in the context
@@ -33,14 +30,4 @@ of a running repository, and may provide the basis for a language for module upg
 Merge and replace are imperative operations on modules. As the module system
 is now not entirely declarative, a method of viewing the results of these operations
 for debugging becomes desirable, perhaps even necessary.
-
-Collections of classes are now typed. If aspects in aspect-oriented programming are viewed as program transformations,
-modules can be used as types to limit the kinds of programs that an aspect may modify, even though 
-this contradicts the standard view that aspects are not program transformations. 
-Aspects are already dependent on the structure of the programs they affect (i.e. 
-an advice or intertype declaration that introduces code to type C most likely
-depends on the existence of C), and typing will allow checks on an aspect's applicability
-and extent.
-This may lead to a saner use of aspects that will preserve the modularity properties
-that have made object-orientation so well-accepted.
 

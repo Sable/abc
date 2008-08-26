@@ -5,7 +5,7 @@ Version=2
 [SessionInfo]
 ActiveTab=2
 FrameCount=15
-ActiveFrame=6
+ActiveFrame=13
 
 [Frame0]
 Columns=1
@@ -32,9 +32,9 @@ cxCur=869
 cxMin=10
 
 [Frame0_View0,0]
-Cursor.row=170
-Cursor.column=0
-TopSubLine=145
+Cursor.row=14
+Cursor.column=33
+TopSubLine=0
 
 [Frame1]
 Columns=1
@@ -61,9 +61,9 @@ cxCur=869
 cxMin=10
 
 [Frame1_View0,0]
-Cursor.row=147
-Cursor.column=19
-TopSubLine=122
+Cursor.row=28
+Cursor.column=0
+TopSubLine=3
 
 [Frame2]
 Columns=1
@@ -90,8 +90,8 @@ cxCur=869
 cxMin=10
 
 [Frame2_View0,0]
-Cursor.row=2
-Cursor.column=21
+Cursor.row=0
+Cursor.column=0
 TopSubLine=0
 
 [Frame3]
@@ -184,8 +184,8 @@ TopSubLine=0
 [Frame6]
 Columns=1
 Rows=1
-Flags=2
-ShowCmd=3
+Flags=0
+ShowCmd=1
 MinPos.x=-1
 MinPos.y=-1
 MaxPos.x=-4
@@ -198,17 +198,17 @@ Class=CLatexEdit
 Document=Text\Implementation.tex
 
 [Frame6_Row0]
-cyCur=608
+cyCur=343
 cyMin=10
 
 [Frame6_Col0]
-cxCur=1053
+cxCur=913
 cxMin=10
 
 [Frame6_View0,0]
-Cursor.row=23
-Cursor.column=0
-TopSubLine=0
+Cursor.row=38
+Cursor.column=26
+TopSubLine=3
 
 [Frame7]
 Columns=1
@@ -264,9 +264,9 @@ cxCur=913
 cxMin=10
 
 [Frame8_View0,0]
-Cursor.row=0
-Cursor.column=1
-TopSubLine=0
+Cursor.row=46
+Cursor.column=0
+TopSubLine=26
 
 [Frame9]
 Columns=1
@@ -322,8 +322,8 @@ cxCur=891
 cxMin=10
 
 [Frame10_View0,0]
-Cursor.row=0
-Cursor.column=0
+Cursor.row=14
+Cursor.column=14
 TopSubLine=0
 
 [Frame11]
@@ -380,15 +380,15 @@ cxCur=891
 cxMin=10
 
 [Frame12_View0,0]
-Cursor.row=0
-Cursor.column=0
-TopSubLine=0
+Cursor.row=166
+Cursor.column=14
+TopSubLine=145
 
 [Frame13]
 Columns=1
 Rows=1
-Flags=0
-ShowCmd=1
+Flags=2
+ShowCmd=3
 MinPos.x=-1
 MinPos.y=-1
 MaxPos.x=-4
@@ -401,17 +401,17 @@ Class=CLatexEdit
 Document=icse09moduletypes.tex
 
 [Frame13_Row0]
-cyCur=371
+cyCur=608
 cyMin=10
 
 [Frame13_Col0]
-cxCur=891
+cxCur=1020
 cxMin=10
 
 [Frame13_View0,0]
-Cursor.row=0
-Cursor.column=0
-TopSubLine=0
+Cursor.row=24
+Cursor.column=16
+TopSubLine=39
 
 [Frame14]
 Columns=1
@@ -438,7 +438,7 @@ cxCur=891
 cxMin=10
 
 [Frame14_View0,0]
-Cursor.row=0
-Cursor.column=0
+Cursor.row=2
+Cursor.column=18
 TopSubLine=0
 

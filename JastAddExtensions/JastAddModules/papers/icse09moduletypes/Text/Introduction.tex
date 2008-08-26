@@ -34,13 +34,17 @@ is usually reimplementation of the parts that contain the instantiation,
 and the use of wrapper classes to reuse and extend behavior.
 
 In this paper we present a different approach to module systems, 
-that of treating modules as types over a set of classes. We non-formally
+by treating modules as types over a set of classes. First we describe 
+usage of existing module systems in section \ref{moduleops}. We then non-formally
 define a type system that contains relations and operations on module types 
-that closely resemble object-oriented types, and demonstrate that the type
+that closely resemble object-oriented types in section \ref{moduleops}. 
+In section \ref{eval} we demonstrate that the type
 system is able to express existing usage of modules while providing means 
 to avoid pitfalls such as split packages. 
 Furthermore, we show that the type system also allows for the
 definition of constraints and patterns not previously possible, such
 as backward compatibility and module extension. The type system
-itself is implemented in a compiler made using the JastAdd compiler construction
+itself is implemented in a compiler made using the JastAdd\cite{jastadd} compiler construction
 framework, and is demonstrated on a small case study on JHotdraw 7.1.
+A short description of the implementation is included in section \ref{implementation}.
+The paper then ends with sections on related work and conclusions.

@@ -129,9 +129,9 @@ Packages, however, are still just class modifiers. A possibly useful addition to
 
 \begin{lstlisting}
 //file package-info.java
+@RequiredClass("Parser")
+@RequiredClass("Scanner")
 package org.x.y.lib;
-@RequiredClass("Parser");
-@RequiredClass("Scanner");
 \end{lstlisting}
 
 The annotations would cause an error in a build if one of the required classes were not
