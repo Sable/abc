@@ -32,7 +32,19 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Application app = new DefaultOSXApplication();
+    	//fix to choose the correct app
+    	//may not necessarily be correct, as the app seems to be
+    	//written with the assumption of a mac platform.
+        Application app;
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.startsWith("mac")) {
+            app = new DefaultOSXApplication();
+        } else if (os.startsWith("win")) {
+          //  app = new DefaultMDIApplication();
+            app = new DefaultSDIApplication();
+        } else {
+            app = new DefaultSDIApplication();
+        }
         ApplicationModel appModel = new ODGApplicationModel();
         app.setModel(appModel);
         app.launch(args);
