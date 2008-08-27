@@ -59,6 +59,7 @@ aspect ModuleCompilationUnit {
 	inh ModuleCompilationUnit ModuleAccess.getModuleCompilationUnit();
 	inh ModuleCompilationUnit CompilationUnit.getModuleCompilationUnit();
 	inh ModuleCompilationUnit ModuleExpr.getModuleCompilationUnit();
+	inh ModuleCompilationUnit ModuleMemberDecl.getModuleCompilationUnit();
 	
 	//TODO: check if cached result remains consistent (don't call before all CUs have been parsed
 	syn lazy boolean Program.hasJAModules() {

@@ -324,6 +324,15 @@ aspect GenerateModuleInstance {
 				access.warning("Module " + cu.getModuleName() + " is being replaced with itself. This may be a sign of a wrong replace");
 			}
 			
+			//check if part of a merge
+			if (cuReference.isMerged()) {
+				access.warning("The module reference " + access.getID() + 
+					" is already merged. It is advisable to use the merged reference instead: \n" +
+					"\t" + cuReference.getCascadedMergeDecl().toString() +
+					"\nwhich is declared in module " + 
+					cuReference.getCascadedMergeDecl().getModuleCompilationUnit().getBaseCU().getModuleName());
+			}
+			
 			if (isAccessedThroughBaseModule(access)) {
 				String msg = "Module being replaced is a base module or is accessed through a base module. Replacement is only allowed for import own modules."; 
 				access.error(msg);
