@@ -185,3 +185,7 @@ Module: m1.m4
 
 ----------CU iterator----------
 m1.module, A.java, m3.module, m2.module, Main.java, m4.module, ../testlib/jastadd$framework.module, m3.module, C.java, m2.module, B.java, m3.module, C.java, m2.module, B.java, m4.module, D.java
+m1.module:13:
+  WARNING: The module reference m2b is already merged. It is advisable to use the merged reference instead: 
+	merge m2a, m2b as m2merged;
+which is declared in module m1
