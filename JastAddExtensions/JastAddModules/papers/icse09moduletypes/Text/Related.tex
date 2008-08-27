@@ -47,7 +47,8 @@ Component Nextgen \cite{componentnextgen} has parameterized interfaces for modul
 and Jiazzi \cite{mcdirmid01jiazzi} uses class import and export signatures, 
 both of which inspired the design of the weak module interface. Smart modules
 \cite{Ancona05smartmodules} and Hyper/J \cite{hyperj} proposed the merge operation, 
-but in the context of mixin and aspect composition.
+but in the context of mixin and aspect composition. Module extension and shadowing is inspired by 
+virtual classes \cite{virtualclasses89}, which allows the extension of nested classes in a subclass.
 
 The implementation of the type system as a module-aware compiler was done in JastAdd \cite{jastadd},
 an aspect-oriented compiler construction framework. This has allowed for relatively

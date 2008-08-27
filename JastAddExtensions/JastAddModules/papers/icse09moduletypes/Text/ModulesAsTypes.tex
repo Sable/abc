@@ -93,6 +93,12 @@ must be exported:
 import own org.jhotdraw export as jhotdraw;
 \end{lstlisting}
 
+An import declaration creates a typed module reference that points to the module
+instance specified. The type of the reference created is the module
+in the import declaration. The module reference can later be pointed to another
+instance using the operations \textbf{replace} and \textbf{merge} described
+in the following sections.
+
 The visibility of the module instances become important for module
 qualified name lookups and the merge and replace operations described in later
 sections.
@@ -359,7 +365,8 @@ of an overriding module to override the same modules as its supertype.
 
 Declaring an overriding module does not automatically change over all references
 to the overridden module to use the overriding module. This is done using the
-\textbf{replace} operation discussed below.
+\textbf{replace} operation described in the section below, which also contains
+an example of the use of \textbf{overrides}.
 
 %------------------------------------------------------------------------- 
 \SubSection{Replace}
@@ -417,8 +424,6 @@ Note that even though the modules {\tt parserv1\_1} and {\tt parserv1\_2}
 are not present in the build, it is able to compile successfully when the
 module references to these missing modules are replaced with the overriding
 module {\tt parserv2}.
-
-As with merges, replaces are implicitly inherited by subtype modules.
 
 %Merge and replace make different modules sure to use the same
 %set of classes (avoids nondeterministic class loading). Also, can
@@ -577,7 +582,7 @@ interfaces.
 Since interfaces do not actually contain any classes, they must be replaced
 by a non-interface module when compiling a fully working system. This would
 have to be relaxed for separate compilation of modules that reference interfaces
-to be possible, and this is discussed a bit more in the section on implications.
+to be possible, and this is expounded a bit more in the section on implications.
 
 \SubSection{Weak Module Interfaces}
 
