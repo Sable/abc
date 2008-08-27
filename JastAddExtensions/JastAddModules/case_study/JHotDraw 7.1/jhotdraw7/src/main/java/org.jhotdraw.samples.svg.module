@@ -1,13 +1,12 @@
 module org.jhotdraw.samples.svg extends org.jhotdraw.samples.defaultsample;
 
-import own org.apache.batik export as batik;
+import own org.apache.batik1_6 export as batik;
 import own net.n3.nanoxml export as nanoxml;
 
 //plumbing
-merge jhotdraw::batik, batik export as org.apache.batik batik;
+merge jhotdraw::batik, batik export as org.apache.batik1_6 batik;
 merge jhotdraw::nanoxml, nanoxml export as net.n3.nanoxml nanoxml;
 
-replace batik with own org.apache.batik1_6;
 replace nanoxml with own net.n3.nanoxmlv2_2_1_4patch;
 
 export package *;
