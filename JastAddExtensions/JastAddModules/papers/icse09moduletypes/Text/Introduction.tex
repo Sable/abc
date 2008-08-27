@@ -6,7 +6,7 @@ in the classpath. There are several module systems that exist or are
 proposed for Java-like languages \cite{javajars, OSGi4, netassemblies, JSR294, JSR277}
 that address these problems, and the design of these systems have
 revolved around the premise of a module as a container for classes
-and additional metadata to distinguish different versions of a module.
+and additional meta-data to distinguish different versions of a module.
 
 However, the existing module systems still have limitations under 
 certain circumstances. Split packages \cite{iJAMComments} occur when 
@@ -20,7 +20,7 @@ compatibility (or lack thereof) in the module specification.
 This information is usually found in release documentation and 
 it becomes the responsibility of a module's clients to update 
 their applications based on this information. Similarly, a module's 
-supported features are not part of the module's metadata, and it 
+supported features are not part of the module's meta-data, and it 
 is up to the module's users, who have limited 
 information on the module compared to the module's providers, to 
 keep track of these to keep their application's dependencies correct.
@@ -37,7 +37,7 @@ In this paper we present a different approach to module systems,
 by treating modules as types over a set of classes. First we describe 
 usage of existing module systems in section \ref{moduleops}. We then non-formally
 define a type system that contains relations and operations on module types 
-that closely resemble object-oriented types in section \ref{moduleops}. 
+that closely resemble object-oriented types in section \ref{moduletypes}. 
 In section \ref{eval} we demonstrate that the type
 system is able to express existing usage of modules while providing means 
 to avoid pitfalls such as split packages. 
@@ -45,6 +45,6 @@ Furthermore, we show that the type system also allows for the
 definition of constraints and patterns not previously possible, such
 as backward compatibility and module extension. The type system
 itself is implemented in a compiler made using the JastAdd\cite{jastadd} compiler construction
-framework, and is demonstrated on a small case study on JHotdraw 7.1.
+framework, and is demonstrated on a small case study on JHotdraw 7.1 \cite{jhotdraw}.
 A short description of the implementation is included in section \ref{implementation}.
 The paper then ends with sections on related work and conclusions.

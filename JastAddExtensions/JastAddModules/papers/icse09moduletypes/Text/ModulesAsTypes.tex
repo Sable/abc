@@ -12,8 +12,10 @@ We now non-formally define a type system over collections of classes.
 A module is a collection of classes, and we consider it to be the type of 
 the collection of classes that belong to it. We then proceed to define
 relations and operations on modules and, in a later section, show how
-these model current module usage. Most of the examples are abridged versions 
-taken from the Jhotdraw case study, which is available at INSERT WEBSITE HERE.
+these model current module usage. 
+
+Most of the examples are abridged versions taken from the JHotdraw case study, 
+which is available at \textit{http://progtools.comlab.ox.ac.uk/members/neil}. 
 
 \SubSection{Declaration and Membership}
 
@@ -44,7 +46,7 @@ in the {\tt package-info.java} file of that package.
 \begin{lstlisting}
 //File org/jhotdraw/app/action/package-info.java
 //all classes in package org.jhotdraw.app.action also
-//belong to module org.x.y.mymodule
+//belong to module org.jhotdraw
 module org.jhotdraw;
 package org.jhotdraw.app.action;
 \end{lstlisting}
@@ -93,6 +95,10 @@ must be exported:
 import own org.jhotdraw export as jhotdraw;
 \end{lstlisting}
 
+The visibility of the module instances become important for module
+qualified name lookups and the merge and replace operations described in later
+sections.
+
 An import declaration creates a typed module reference that points to the module
 instance specified. The type of the reference created is the module
 in the import declaration. The module reference can later be pointed to another
@@ -100,12 +106,8 @@ instance using the operations \textbf{replace} and \textbf{merge} described
 in the following sections.
 
 Import cycles involving \textbf{own} instances are not allowed, as this would 
-cause an infinite loop of module instantiation. Import cycles involving
+cause an infinite loop of module instantiation. Import cycles involving only
 singleton modules, however, are allowed.
-
-The visibility of the module instances become important for module
-qualified name lookups and the merge and replace operations described in later
-sections.
 
 \SubSection{Exported packages}
 
@@ -117,8 +119,8 @@ before gaining access to B's exported packages.
 Exported packages are declared in the {\tt .module} file:
 
 \begin{lstlisting}
-module org.apache.batik1_6;
-//allow other modules to access this package
+module org.jhotdraw.batikfragment;
+//allow other modules access to types in these packages
 export package 
 	org.apache.batik.ext.awt.image,
 	org.apache.batik.ext.awt,
@@ -173,7 +175,7 @@ org.jhotdraw::nanoxml::net.n3.nanoxml.Version
 org.jhotdraw::batik::org.apache.batik.Version
 \end{lstlisting}
 
-In this example, a sample application Simple with the module \texttt{org.jhotdraw.samples.simple}
+In the following example, a sample application \texttt{org.jhotdraw.samples.simple}
 uses the Jhotdraw framework by importing its own instance of the module
 \texttt{org.jhotdraw}. The module \texttt{org.jhotdraw} itself uses the 
 two libraries \texttt{net.n3.nanoxml} and \texttt{org.apache.batik}, and
@@ -205,13 +207,10 @@ import own org.jhotdraw export as jhotdraw;
 export package *;
 
 //File Main.java
-//classes in this file belong to this module
 module org.jhotdraw.samples.simple;
 package org.jhotdraw.samples.simple;
-//on-demand import of indirect import
-//accesses jhotdraw's batik import
+//on-demand import of indirect import batik
 import jhotdraw::batik::org.apache.batik.*;
-
 public class Main {
 	//direct imports don't need a qualifier
 	String jhotdrawVersion = 
@@ -309,8 +308,9 @@ export package *;
 //file org/jhotdraw/app/action/AboutAction.java
 module org.jhotdraw;
 package org.jhotdraw.app.action;
-//this class will be overriden
-public class AboutAction extends AbstractApplicationAction {
+//this class will be overridden
+public class AboutAction 
+		extends AbstractApplicationAction {
 	...
 	public void actionPerformed(ActionEvent evt) {
 		...
@@ -321,14 +321,12 @@ public class AboutAction extends AbstractApplicationAction {
 //file defaultjhotdraw/app/action/AboutAction.java
 module defaultsample.defaultjhotdraw;
 package org.jhotdraw.app.action;
-
 import batik::org.apache.batik.Version;
 //This class shadows the class
-//jhotdraw::org.jhotdraw.app.action.AboutAction
+//org.jhotdraw::org.jhotdraw.app.action.AboutAction
 public class AboutAction 
 	extends 
 	supermodule::org.jhotdraw.app.action.AboutAction {
-	...
 	public void actionPerformed(ActionEvent evt) {
 		...
 		//add batik version to about message
@@ -341,8 +339,8 @@ public class AboutAction
 \end{lstlisting}
 
 As the example shows, the overriding \texttt{AboutAction} class extends the
-overriden class in the supertype module by using the special 
-\texttt{supermodule::} module qualifier to access the overriden class. It
+overridden class in the supertype module by using the special 
+\texttt{supermodule::} module qualifier to access the overridden class. It
 then redefines the only method required to change the behavior as required.
 All lookups for the class \texttt{AboutAction} now resolve to the overriding
 class, including those in the classes that belong to the supertype module.
@@ -350,7 +348,7 @@ class, including those in the classes that belong to the supertype module.
 Without module subtyping, changing \texttt{AboutAction} without access to the source
 would require extending the class and reimplementing the method 
 that instantiates it. Module extension allows the same extension without
-any reimplementation except for the code that actually changes the behavior of the overriden class.
+any reimplementation except for the code that actually changes the behavior of the overridden class.
 In cases such as that above, extension using module subtyping could result in savings in
 terms of reimplemented framework code by moving extension and
 composition to the higher level of abstraction provided by the module.
@@ -414,7 +412,7 @@ replace jhotdraw::batik with own org.apache.batik1_6;
 \end{lstlisting}
 
 A module reference can be replaced with a module expression if its static type
-is the same, is a supertype or is overriden by the type of the module expression.
+is the same, is a supertype or is overridden by the type of the module expression.
 
 Replace declarations are also inherited by subtype modules. The replace sequence for a
 module is given by a list of its supertype's replaces, starting from the farthest
@@ -481,7 +479,7 @@ replace jhotdraw::batik
 \end{lstlisting}
 
 The example shows how a subtype module can replace a supertype module
-reference, and how an overriding module can replace a overriden module
+reference, and how an overriding module can replace a overridden module
 that is not part of the build.
 
 In addition to the type rules for replace, it is also not allowed to 
@@ -517,7 +515,7 @@ points this to a \textbf{own} instance of type type, and then replaces all
 the module references in the list with the newly created instance. Furthermore,
 any further replaces that target \texttt{alias} will also update all
 the references in the list. This also works recursively: if \texttt{alias}
-is targetted by another merge 
+is targeted by another merge 
 \begin{lstlisting}
 merge alias, anotheralias export as newmerge;
 \end{lstlisting}
@@ -569,11 +567,11 @@ replace svg::batik with own org.apache.batik1_8pre;
 \end{lstlisting}
 
 
-The \textbf{merge} in line 12 allows the clients of \texttt{samples.svg}s
+The merge in line 12 allows the clients of \texttt{samples.svg}s
 the ability to update all of its \texttt{batik} dependencies
 in a single replace declaration, as the \texttt{samples.odg}
 application does in line 27. Similarly, the \texttt{samples.odg} application
-uses merge in a similar manner in line 22, alllowing any importers
+uses merge in a similar manner in line 22, allowing any importers
 to merge its own \texttt{jhotdraw} import with that of \texttt{samples.odg}.
 The recursive nature of merge allows replaces to propagate through deep
 import graphs of real applications.
@@ -596,40 +594,30 @@ are allowed to have a set of export package declarations. A module implementing
 a module interface must contain and export the packages specified in the interface.
 
 \begin{lstlisting}[caption=Module Interfaces]
-//file org.x.y.math.module
-module org.x.y.math implements 
-	org.x.y.calculus,
-	org.x.y.matrices;
+//file org.apache.batik.module
+module_interface org.apache.batik;
 export package 
-	org.x.y.math.calculus,
-	org.x.y.math.matrices,
-	org.x.y.math.complex;
-	
-//file org.x.y.calculus.module
-module_interface org.x.y.calculus;
-export package org.x.y.math.calculus;
+	org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt,
+	org.apache.batik;
 
-//file org.x.y.matrices.module
-module_interface org.x.y.matrices;
-export package org.x.y.math.matrices;
+//file org.jhotdraw.batikfragment.module
+//this implements the interface above
+module org.jhotdraw.batikfragment 
+	implements org.apache.batik;
+export package 
+	org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt,
+	org.apache.batik;
 
-//file engine3d.module
-module engine3d;
-import own org.x.y.matrices export as matrices;
-
-//file enginephysics.module
-module enginephysics;
-import own org.x.y.calculus export as calculus;
-
-//file myapplication.module
-module myapplication;
-import own engine3d;
-import own enginephysics;
-import own org.x.y.math;
-
-replace 
-	engine3d::matrices, enginephysics::calculus
-	with org.x.y.math;
+//file org.jhotdraw.module
+module org.jhotdraw;
+//import the interface instead of the module itself
+import own org.apache.batik export as batik;
+...
+//replace the interface with an instance of
+//the implementing module
+replace batik with own org.jhotdraw.batikfragment; 
 \end{lstlisting}
 
 Rules for module interface subtyping are similar to those of interfaces in Java:
@@ -639,7 +627,7 @@ interfaces.
 Since interfaces do not actually contain any classes, they must be replaced
 by a non-interface module when compiling a fully working system. This would
 have to be relaxed for separate compilation of modules that reference interfaces
-to be possible, and this is expounded a bit more in the section on implications.
+to be possible, and this is expounded a bit more in section \ref{eval}.
 
 \SubSection{Weak Module Interfaces}
 
@@ -651,30 +639,34 @@ to normal module interfaces, except that it is also implicitly implemented
 by all modules that satisfy its export package signature \cite{mcdirmid01jiazzi, componentnextgen}, 
 even if these modules did not explicitly declare that they implemented the interface.
 
-Continuing the example given above, weak interfaces allow us to define 
-our own interfaces to a module without the module provider's knowledge:
+The interface in the example above can be weakened, which allows the use
+of the \texttt{batik} libraries without them explicitly implementing the interface.
 
 \begin{lstlisting}[caption=Weak Interfaces]
-//file mymathinterface.module
-weak_module_interface mymathinterface;
-export package 
-	org.x.y.math.calculus, org.x.y.math.complex;
+//file org.apache.batik.module
+weak_module_interface org.apache.batik;
+export package org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt,	org.apache.batik;
 
-//file myfourier.module
-module myfourier;
-import own mymathinterface export as math;
-
-//file myapplication.module
-module myapplication;
-import own myfourier;
-import own org.x.y.math;
-//replace the interface with an implementing module
-replace myfourier::math with org.x.y.math;
+//file org.jhotdraw.batikfragment.module
+//no longer explicitly implements the interface
+module org.jhotdraw.batikfragment;
+export package org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt, org.apache.batik;
+	
+//file org.jhotdraw.module
+module org.jhotdraw;
+//import the weak interface 
+import own org.apache.batik export as batik;
+...
+//replace the interface with an instance module
+replace batik with own org.jhotdraw.batikfragment; 
 \end{lstlisting}
 
 %Type lookup subsection, excised for lack of space
 %\input{Text/TypeLookupSubSection}
 
+%section on constraints, now part of the indivudual sections where they apply
 %\SubSection{Constraints on Modules}
 
 %Cycles involving \texttt{import own} are not allowed, as this leads to an infinite loop of

@@ -22,25 +22,28 @@ in these special modules will probably be implemented in a similar way to
 the OSGi \texttt{extends} feature.
 
 Split packages become less of an issue, as they can be detected at
-build time. Class space consistency (in OSGi) can now be violated,
-as long as ambiguous type references are resolved using module qualifiers.
+build time and can be avoided by using module qualified type references.
+
+Errors in composition would now occur at the module level, instead of
+class cast or invalid method invocation exceptions. This would make it
+easier to identify and debug.
 
 \SubSection{Versioning}
 
-Subtyping and overriding can be used to model versioning. It is already done
+Overriding can be used to model versioning. It is already done
 implicitly by current usage of existing module systems: newer versions are 
-subtypes of (or override) past versions as long as they are backward compatible.
+override past versions as long as they are backward compatible.
 However, the type system allows additional constraints to be specified using
-types. Non-backward compatibility can be modeled as changing to a
-completely new subtype tree:
+types. Non-backward compatibility can be modeled by not specifying a
+previous version in the overrides list.
 
-\begin{lstlisting}[caption=Versioning Using Subtyping]
+\begin{lstlisting}[caption=Versioning Using Overrides]
 //file appv1_1.module
 module appv1_1;
 
 //file appv1_2.module
 //version 1.2 is backward compatible to 1.1
-module appv1_2 extends appv1_1;
+module appv1_2 overrides appv1_1;
 
 //file appv2_0.module
 //but version 2 is no longer backward compatible
@@ -51,13 +54,9 @@ In this manner backward compatibility can now be expressed in
 and checked by the type system, instead of just being written
 down in separate documentation.
 
-Overrides can be used in a similar manner. A module can be declared to only 
-override the previous versions to which it is backward compatible.
-
-In addition, extends allows patch releases that do not contain 
+Extends allows specialization and patch releases that do not contain 
 the entire previous version's classes, as already demonstrated in
-the previous section. A module system may also internally generate
-a subtype module to add to an existing module's classes.
+the previous section. 
 
 Interfaces can also be used to model version ranges, and even feature
 compatibility across versions. Versions that are in the same version 
@@ -65,24 +64,18 @@ range or are feature compatible implement the same interface.
 
 \begin{lstlisting}[caption=Interfaces as Properties]
 //file appv1.module
-module appv1 implements 
-	appv1to2, 
-	supportsfeature1;
+module appv1 implements appv1to2, supportsfeature1;
 
 //file appv2.module
-module appv2 implements 
-	appv1to2, appv2to4, 
+module appv2 implements appv1to2, appv2to4, 
 	supportsfeature1;
 
 //file appv3.module
-module appv3 implements 
-	appv2to4, 
-	supportsfeature1, 
-	supportsfeature2; //supports new feature
+module appv3 implements appv2to4, 
+	supportsfeature1, supportsfeature2; //new feature
 
 //file appv4.module
-module appv4 implements 
-	appv2to4, 
+module appv4 implements appv2to4, 
 	supportsfeature2; //no longer supports feature1
 \end{lstlisting}
 
@@ -100,16 +93,24 @@ its supertype).
 
 These extends, implements and overrides declarations do not have to be explicit.
 Common usage of existing module systems mostly already assume a that a 
-module is a subtype of another module of the same name if its version 
+module overrides another module of the same name if its version 
 number is higher. Existing module systems can generate these version-related types 
 internally, while still allowing explicit declarations for patch releases 
 using extends and using module interfaces for expressing non-version
-related constraints.
+related constraints. Alternatively, weak interfaces can be modified to include
+versions as part of its constraints, instead of just the set of exposed packages.
 
 As shown on the previous section, merge and replace can be used to 
 update references to old versions of a module with a newer version.
-In addition, it is now possible to make sure that modules use
-the exact same version of the module they import.
+Having \texttt{own} instances together with merges and replace allows
+fine-grained definition of the instance equalities of a module's dependencies.
+
+Merge and replace, however, are imperative operations, and would require
+some sort of debugging environment when errors arise. Given their flexibility,
+there are many anti-patterns for the use of merge and replace, one of which
+is directly replacing a merged member instead of using the merged reference.
+Developing patterns and identifying anti-patterns for these operations will be
+crucial for the successful deployment of the type system for real-world applications.
 
 \SubSection{Imports and Exports}
 
@@ -120,25 +121,9 @@ package specification, finding a visible module that matches that weak interface
 inserting an import and replace module declaration in the module that contained the import package
 declaration.
 
-Module interfaces allow for looser module coupling, allowing for indirect 
-references to modules depending on their export package signature. The module private
-modifier allows for tighter information hiding.
-
 Packages, however, are still just class modifiers. A possibly useful addition to 
-\texttt{package-info.java} is the specification of required classes as annotations:
-
-\begin{lstlisting}
-//file package-info.java
-@RequiredClass("Parser")
-@RequiredClass("Scanner")
-package org.x.y.lib;
-\end{lstlisting}
-
-The annotations would cause an error in a build if one of the required classes were not
-found in the package. This would reduce the problems caused by split packages, and it should
-also be possible to use these in a manner similar to module interfaces to specify the kind
-of package that an application requires, without cluttering the already crowded module
-file specifications of current systems. 
+\texttt{package-info.java} is the addition of an annotation \texttt{@RequiredClass("classname")}
+that checks the existence of a class in a package.
 
 \SubSection{Instantiation}
 
@@ -146,4 +131,32 @@ Import own is derived directly from iJAM, and is improved with an explicit expor
 mechanism and a module lookup system using module qualifiers. Singleton module instances mirror
 OSGi singletons. The module qualifier in type references and
 imports allow fine-grained selection of the class to load in contrast
-to fixed loading strategies. 
+to fixed loading strategies. They also allow for module lookups relative to
+a module's context, decoupling modules from globally named module instances.
+
+However, instantiation as currently implemented is still done eagerly, pulling in all
+of an imports dependencies the moment the import is instantiated. This may not be necessary,
+especially when interfaces are used. A way to instantiate a module and its dependencies 
+lazily would be required to reduce the number of dependencies, and is left as future work.
+
+\SubSection{Further Implications}
+
+Note that the syntax only represents the type system, it is not the only way
+to implement it. As mentioned, overriding is already implicitly implemented
+by versions. Other existing features such as loose coupling in OSGi can
+also be modeled, i.e. by using weak interfaces and a generated import and replace
+declaration. The type system is also not limited to
+the current implementation. For example, the import declaration can be 
+extended to use OSGi's extensive constraint features for packages and bundles.
+
+Separate compilation of modules with module interface dependencies would require
+the ability to compile and lookup module qualified names during runtime. We believe
+it is possible to do so with a classloader implementation of the module system. Reflection
+APIs would also require the context in which the lookup should be done in addition to
+the class' package and name. These are left as future work.
+
+The overrides declaration creates synthetic types for the overridden modules 
+if they are not present in the compilation. These types are currently very loose,
+in that they can be assigned to a module reference of any type. Tightening the
+constraints on synthetic types using information from overriding types is left
+as future work.
