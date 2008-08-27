@@ -6,7 +6,7 @@ Version=4
 MainFile=icse09moduletypes.tex
 UseBibTeX=0
 UseMakeIndex=0
-ActiveProfile=LaTeX => PDF
+ActiveProfile=LaTeX => DVI
 ProjectLanguage=
 ProjectDialect=
 
