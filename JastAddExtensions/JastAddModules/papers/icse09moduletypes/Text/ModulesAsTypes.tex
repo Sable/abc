@@ -99,6 +99,10 @@ in the import declaration. The module reference can later be pointed to another
 instance using the operations \textbf{replace} and \textbf{merge} described
 in the following sections.
 
+Import cycles involving \textbf{own} instances are not allowed, as this would 
+cause an infinite loop of module instantiation. Import cycles involving
+singleton modules, however, are allowed.
+
 The visibility of the module instances become important for module
 qualified name lookups and the merge and replace operations described in later
 sections.
@@ -231,8 +235,19 @@ points to the \texttt{nanoxml} import of JHotdraw. The same is
 true for \texttt{org.apache.batik.Version}, and as the example shows,
 the module qualified names can also be used in import declarations.
 
+Module qualifiers allow a developer to explicitly define from which module
+to load the class. This enables to disambiguation of ambiguous type
+lookups that are caused by split packages, or by a module importing
+two different versions of the same module.
+
 The module qualifiers are relative and are looked up in the context 
-of the module that contains them. This is necessary to maintain
+of the module that contains them. This removes the need for globally
+unique names which would have been difficult if not impossible in the
+presence of \textbf{own} module instances. Also, a module can only
+access a module reference of its imported module if the imported module
+exported that reference. This allows a module to hide dependencies from
+its clients. This becomes useful when module interfaces are introduced
+in a later section.
 
 Types that do not belong to a module are considered to be members of
 the ``default'' module. This module has a blank name, and its singleton
@@ -357,7 +372,7 @@ module org.apache.batik1_8pre
 
 Unlike subtyping, an overriding module does not inherit anything from the
 modules it overrides. However, it \textit{must} provide the same exported modules
-and packages as its overridden modules to satisfy the external 
+and packages as its overridden modules to satisfy the external and internal
 clients of these modules.
 
 As is expected, override is inherited by subtype modules. This allows a subtype
@@ -371,59 +386,109 @@ an example of the use of \textbf{overrides}.
 %------------------------------------------------------------------------- 
 \SubSection{Replace}
 
-While merges can be used to re-bind module references, they are only applicable 
-for modules that are subtypes of each other. As overriding modules are not
-necessarily subtypes of the modules they override, we introduce the \textbf{replace} operation
-to substitute overriding modules for overridden modules. The replace operation
-takes a set of target module references to rebind, and the module reference pointing to the 
-instance to which the targets are to be bound:
+One of the common operations on modules is replacing an older version of a
+dependency with a newer one. In current module systems, this is a global operation,
+the new versions are added to the repository and the clients then use the latest
+compatible version available. Since the proposed module type system allows for instances
+of a module that are local to its client, we define an operation \textbf{replace} which
+changes the target of a list of module references in the context of a module:
 
 \begin{lstlisting}
-replace m1,m2,m3 with m4;
+replace m1, m2::m3, m4, ... with <moduleexpr>;
 \end{lstlisting}
 
-The replace operation
-changes the binding of module references to point to an existing
-module instance. A module may replace another if its type is the same or a subtype
-of that module, or if its type overrides that of the other.
+The replace operation changes a list of module references to point to an instance
+defined by a module expression. A module expression may be a module reference to
+an existing instance, a reference to the singleton instance of a module type, or
+a new \textbf{own} instance of a module type.
 
-Continuing the parser example given in the subtyping section above, say we have two 
-modules, {\tt staticanalyzer} and {\tt javadocgenerator}, each using {\tt parserv1\_1}
-and {\tt parserv1\_2} respectively. We now wish to create a new module that uses these, 
-but updates them to {\tt parserv2}, which overrides both {\tt parserv1\_1} and {\tt parserv1\_2}.
-
-\begin{lstlisting}[caption=Module Replace]
-//file staticanalyzer.module
-module staticanalyzer;
-import own parserv1_1 export as parser;
-...
-
-//file javadocgenerator.module
-module javadocgenerator;
-import own parserv1_2 export as parser;
-...
-
-//file parserv2.module
-module parserv2 
-	overrides parserv1_1, parserv1_2;
-...
-
-//file myapplication.module
-module myapplication;
-import own staticanalyzer;
-import own javadocgenerator;
-import own parserv2;
-//replace with newer parser
-replace 
-	staticanalyzer::parser,
-	javadocgenerator::parser
-	with parserv2;
+\begin{lstlisting}[caption=Module Expressions for Replace]
+//replace with an existing reference
+import own org.apache.batik1_6 as batik;
+replace jhotdraw::batik with batik;
+//replace with a the singleton instance
+replace jhotdraw::batik 
+	with singleton org.apache.batik1_6;
+//replace with a new instance of a module
+replace jhotdraw::batik with own org.apache.batik1_6;
 \end{lstlisting}
 
-Note that even though the modules {\tt parserv1\_1} and {\tt parserv1\_2}
-are not present in the build, it is able to compile successfully when the
-module references to these missing modules are replaced with the overriding
-module {\tt parserv2}.
+A module reference can be replaced with a module expression if its static type
+is the same, is a supertype or is overriden by the type of the module expression.
+
+Replace declarations are also inherited by subtype modules. The replace sequence for a
+module is given by a list of its supertype's replaces, starting from the farthest
+ancestor. There is no way to exclude a supertype's replaces, as
+this may reduce the module signature (the set of module references available) of
+the supertype module, which could cause the internal and external clients of
+the supertype to break.
+
+It should be noted that an instance created using the \textbf{own} module expression is not
+implicitly imported by the module to which the replace declaration belongs. This
+is useful when updating the dependencies of an import when the module itself
+does not require the same dependency.
+
+The following example taken from the JHotdraw case study shows how replace can
+be used to update a dependency to a more recent version. The example contains
+the sample JHotdraw applications \texttt{samples.net} and \texttt{samples.netold}, 
+where \texttt{samples.net} is a newer version of the other application. They both 
+derive from \texttt{samples.defaultsample}, which imports \texttt{defaultsample.defaultjhotdraw} 
+from the extends example in the previous section. The sample \texttt{netold} updates 
+the \texttt{batik} dependency of \texttt{jhotdraw} to the 1.7 version of batik.
+The newer \texttt{net} then re-updates the same dependency to the 1.8pre version of batik.
+It should be noted that in this compile, the 1.7 version of batik does not exist, and
+is expected to be replaced by the 1.8pre version.
+
+\begin{lstlisting}[caption=Replace]
+//file net.n3.nanoxmlv2_2_1_4patch.module
+module net.n3.nanoxmlv2_2_1_4patch 
+	extends net.n3.nanoxml;
+
+//file org.apache.batik1_6.module
+module org.apache.batik1_6;
+...
+
+//file org.apache.batik1_8pre.module
+module org.apache.batik1_8pre 
+	overrides org.apache.batik1_6, org.apache.batik1_7;
+...
+
+//file org.jhotdraw.module
+module org.jhotdraw;
+import own org.apache.batik1_6 export as batik;
+...
+
+//file samples.defaultsample.module
+module samples.defaultsample;
+import own defaultsample.defaultjhotdraw 
+	export as jhotdraw;
+//replace nanoxml with a patched version
+replace jhotdraw::nanoxml 
+	with own net.n3.nanoxmlv2_2_1_4patch;
+export package *;
+
+//file samples.netold.module
+module samples.netold extends samples.defaultsample;
+//update to batik version 1.7, which is not in the build
+replace jhotdraw::batik 
+	with own org.apache.batik1_7;
+
+//file samples.net.module
+module samples.net extends samples.netold;
+//update to batik version 1.8
+replace jhotdraw::batik
+	with own org.apache.batik1_8pre;
+\end{lstlisting}
+
+The example shows how a subtype module can replace a supertype module
+reference, and how an overriding module can replace a overriden module
+that is not part of the build.
+
+In addition to the type rules for replace, it is also not allowed to 
+replace a module reference that points to a singleton module or
+is or at any point indirects through a singleton module. This is to ensure that other
+modules that depend on the singleton instance can correctly keep their
+assumptions about the unmodified state of the singleton.
 
 %Merge and replace make different modules sure to use the same
 %set of classes (avoids nondeterministic class loading). Also, can
@@ -438,97 +503,89 @@ module {\tt parserv2}.
 
 It is often necessary to make sure that two or more modules use the same
 instance of a dependency, to ensure that these
-modules are able to share types. As an example, say you have two database
-backend modules {\tt mysqlbackend} and {\tt postgresbackend} with a method
-{\tt runQuery()} that returns a \texttt{ResultSet}. Further suppose that {\tt ResultSet} is
-defined in another module {\tt sqltypes}, which is \textbf{own} imported by both backends.
-In order for the return types of both backends to be type compatible, the
-reference to {\tt sqltypes} in both backends must also point to the same
-instance.
-
-To ensure that the {\tt sqltypes} instances in both {\tt mysqlbackend}
-and {\tt postgresbackend} point to the same instance, we use the 
-\textbf{merge} operation. Merge operations take a set of merge targets,
-and an alias to refer to the merged module:
+modules are able to share types. Furthermore, it should be possible for
+the importers of a module to easily maintain this condition on a module's
+instance. For this, we define the \textbf{merge} operation.
 
 \begin{lstlisting}
-merge m1,m2,m3 [export] as alias;
+merge m1,m2::m3,m4 [export] as type alias;
 \end{lstlisting}
 
-The merge operation requires that the types
-of the modules being merged be the same or that one is an ancestor of
-the other in the subtyping relation (i.e. they are all on the same subtype path). 
-It then creates a new instance
-of the most general type that is still compatible with the types of the
-modules being merged, and then points those module references to the new 
-merged module. The old module instances are discarded, unless there
-are other references to them that are not part of the merge.
+Similar to an \textbf{own} import declaration, a merge declaration creates
+a module reference named \textbf{merge.alias} with type \textbf{type},
+points this to a \textbf{own} instance of type type, and then replaces all
+the module references in the list with the newly created instance. Furthermore,
+any further replaces that target \texttt{alias} will also update all
+the references in the list. This also works recursively: if \texttt{alias}
+is targetted by another merge 
+\begin{lstlisting}
+merge alias, anotheralias export as newmerge;
+\end{lstlisting}
+then any replace that targets \texttt{newmerge} also update the references
+in the merge declaration of \texttt{alias}.
+
+The merge operation requires that the type of the created reference be replace
+compatible with all the references in the merge list, as the instance will
+have to be assigned to each of the references.
+
+The following example taken from the JHotdraw case study shows \textbf{merge}
+can be used to make sure that common dependencies between an importer and
+an imported module can be made to point to the same module instance. The
+application \texttt{samples.svg} imports the jhotdraw framework through
+it's supertype module \texttt{samples.defaultsample}, and then merges
+its own \texttt{batik} dependency with that of the imported \texttt{jhotdraw}.
+Another application \texttt{samples.odg} imports \texttt{samples.svg}, 
+and then merges its own instance of jhotdraw with that of the SVG application, 
+while also updating the import's \texttt{batik} dependency with a newer version.
 
 \begin{lstlisting}[caption=Merge]
-//file mysqlbackend.module
-module mysqlbackend;
-import own sqltypes export as sqltypes;
-//say package query has a class MySQLQuery
-export package query;
+//file org.jhotdraw.module
+module org.jhotdraw;
+import own org.apache.batik export as batik;
+...
 
-//file postgresbackend.module
-module postgresbackend;
-import own sqltypes export as sqltypes;
-//say package query has a class PostgresQuery
-export package query;
+//file samples.svg.module
+module samples.svg extends samples.defaultsample;
+import own org.apache.batik1_6 export as batik;
+...
+//merge this module's batik import with
+//that of the imported jhotdraw's
+merge jhotdraw::batik, batik 
+	export as org.apache.batik1_6 batik;
+...
 
-//file sqltypes.module
-module sqltypes;
-//say package types has a class ResultSet
-export package types;
-
-//file myapplication.module
-module myapplication;
-import own mysqlbackend;
-import own postgresbackend;
-//merge the sqltypes
-merge 
-	mysqlbackend::sqltypes, 
-	postgresbackend::sqltypes 
-export as sqltypes;
-
-//file Main.java
-module myapplication;
-import mysqlbackend::query.MySQLQuery;
-import postgresbackend::query.PostgresQuery;
-import types.ResultSet;
-public class Main {
-	void someMethod(){
-		ResultSet s = null;
-		//this would not be possible if the sqltypes
-		//module instances are different
-		if (mysql) {
-			s = new MySQLQuery(...).runQuery();
-		} else if (postgres) {
-			s = new PostgresQuery(...).runQuery();
-		}
-		...
-	}
-}
+//file samples.odg.module
+module samples.odg extends samples.defaultsample;
+import own samples.svg as svg;
+...
+//merge this module's jhotdraw with svg's
+//jhotdraw
+merge svg::jhotdraw, jhotdraw 
+	export as defaultsample.defaultjhotdraw jhotdraw;
+//replace svg's batik with a new version
+//this also updates jhotdraw's batik through
+//the merge declaration in svg
+replace svg::batik with own org.apache.batik1_8pre;
 \end{lstlisting}
 
 
-It must be noted that the merged instance is a direct import of
-the module where the merge was declared and, as the example above shows,
-can be re-exported. This means that types in the merged module {\tt sqltypes} 
-can be accessed in {\tt myapplication} without the need to use module 
-qualifiers unless the type reference is ambiguous. As the example above
-shows, {\tt ResultSet} was imported without a module qualifier in
-{\tt Main.java}.
+The \textbf{merge} in line 12 allows the clients of \texttt{samples.svg}s
+the ability to update all of its \texttt{batik} dependencies
+in a single replace declaration, as the \texttt{samples.odg}
+application does in line 27. Similarly, the \texttt{samples.odg} application
+uses merge in a similar manner in line 22, alllowing any importers
+to merge its own \texttt{jhotdraw} import with that of \texttt{samples.odg}.
+The recursive nature of merge allows replaces to propagate through deep
+import graphs of real applications.
 
-Merges are also implicitly inherited by subtype modules. The merge sequence for
-a module is given by the list of merge sequences of a module's supertypes, starting
-from the farthest ancestor. There is no way to exclude a supertype's merges, as
-this may reduce the module signature (the set of module references available) of
-the supertype module, which could lead to both internal and external clients of
-the module breaking.
+Similar to replaces, merges are also implicitly inherited by subtype modules.
 
-
+Once merged, a module reference can no longer be used in another merge. This
+enforces the constraint that all the modules in the merge list point to the
+same instance. Replace is still allowed to target the individual 
+references in the merge, possibly pointing it to an instance different from
+the other references. This is not advised, however, and will cause a warning to be
+issued.
 
 \SubSection{Module Interfaces}
 
@@ -618,32 +675,32 @@ replace myfourier::math with org.x.y.math;
 %Type lookup subsection, excised for lack of space
 %\input{Text/TypeLookupSubSection}
 
-\SubSection{Constraints on Modules}
+%\SubSection{Constraints on Modules}
 
-Cycles involving \texttt{import own} are not allowed, as this leads to an infinite loop of
-module instance creation. However, cycles of singleton imports are allowed.
+%Cycles involving \texttt{import own} are not allowed, as this leads to an infinite loop of
+%module instance creation. However, cycles of singleton imports are allowed.
 
-Subtyping is single inheritance, as in Java. This avoids ambiguous replace and
-merge inheritance order in a subtype module.
+%Subtyping is single inheritance, as in Java. This avoids ambiguous replace and
+%merge inheritance order in a subtype module.
 
-Merges cannot be done on singleton instances or modules accessed through a
-singleton instance. This is to make sure that other clients using the singleton
-instance are not affected by the change.
+%Merges cannot be done on singleton instances or modules accessed through a
+%singleton instance. This is to make sure that other clients using the singleton
+%instance are not affected by the change.
 
-As with merges, replace targets can not be a singleton instance or a module
-accessed through a singleton instance, for similar reasons. 
+%As with merges, replace targets can not be a singleton instance or a module
+%accessed through a singleton instance, for similar reasons. 
 
-Merges can only be done on subtype modules in the same path to the root module in
-the subtype tree. Furthermore, this should not change the module export signature
-of the module being subtyped. This is to guarantee that both internal and external
-clients of the module can still rely on their module qualified lookups.
+%Merges can only be done on subtype modules in the same path to the root module in
+%the subtype tree. Furthermore, this should not change the module export signature
+%of the module being subtyped. This is to guarantee that both internal and external
+%clients of the module can still rely on their module qualified lookups.
 
-Exported packages in non-interface modules imply that there are classes that actually 
-belong to that package. Otherwise module interfaces become less useful.
+%Exported packages in non-interface modules imply that there are classes that actually 
+%belong to that package. Otherwise module interfaces become less useful.
 
-As mentioned, implementing a module interface means exporting the packages the interface
-exports. This is to ensure that the signature contract with the clients of
-the interface are satisfied.
+%As mentioned, implementing a module interface means exporting the packages the interface
+%exports. This is to ensure that the signature contract with the clients of
+%the interface are satisfied.
 
-All references to an interface module must be replaced. Otherwise all lookups through 
-that reference will fail as the interface is empty. 
+%All references to an interface module must be replaced. Otherwise all lookups through 
+%that reference will fail as the interface is empty. 
