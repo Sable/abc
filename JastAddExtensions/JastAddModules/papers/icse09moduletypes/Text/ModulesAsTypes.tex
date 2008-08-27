@@ -14,8 +14,15 @@ the collection of classes that belong to it. We then proceed to define
 relations and operations on modules and, in a later section, show how
 these model current module usage. 
 
-Most of the examples are abridged versions taken from the JHotdraw case study, 
-which is available at \textit{http://progtools.comlab.ox.ac.uk/members/neil}. 
+Most of the examples in this section are abridged versions taken from the JHotdraw case study. 
+JHotdraw\cite{jhotdraw} is a small framework for drawing applications. It
+uses the \texttt{net.n3.nanoxml} library for xml parsing, and part of the
+\texttt{org.apache.batik} for scalable vector graphics support. It also
+provides a set of sample applications that demonstrate use of the framework.
+Handling JHotdraw's dependencies on the two libraries as well as the dependencies
+of the sample applications on JHotdraw and each other provide a small but
+suitable testbed to evaluate the usefulness of the module type system.
+The case study is available at \textit{http://progtools.comlab.ox.ac.uk/members/neil}. 
 
 \SubSection{Declaration and Membership}
 
@@ -506,18 +513,18 @@ the importers of a module to easily maintain this condition on a module's
 instance. For this, we define the \textbf{merge} operation.
 
 \begin{lstlisting}
-merge m1,m2::m3,m4 [export] as type alias;
+merge m1,m2::m3,m4 [export] as mtype alias;
 \end{lstlisting}
 
 Similar to an \textbf{own} import declaration, a merge declaration creates
-a module reference named \textbf{merge.alias} with type \textbf{type},
-points this to a \textbf{own} instance of type type, and then replaces all
+a module reference named \texttt{alias} with type \texttt{mtype},
+points this to a \textbf{own} instance of type \texttt{mtype}, and then replaces all
 the module references in the list with the newly created instance. Furthermore,
 any further replaces that target \texttt{alias} will also update all
 the references in the list. This also works recursively: if \texttt{alias}
 is targeted by another merge 
 \begin{lstlisting}
-merge alias, anotheralias export as newmerge;
+merge alias, anotheralias export as m1 newmerge;
 \end{lstlisting}
 then any replace that targets \texttt{newmerge} also update the references
 in the merge declaration of \texttt{alias}.
@@ -530,7 +537,7 @@ The following example taken from the JHotdraw case study shows \textbf{merge}
 can be used to make sure that common dependencies between an importer and
 an imported module can be made to point to the same module instance. The
 application \texttt{samples.svg} imports the jhotdraw framework through
-it's supertype module \texttt{samples.defaultsample}, and then merges
+its supertype module \texttt{samples.defaultsample}, and then merges
 its own \texttt{batik} dependency with that of the imported \texttt{jhotdraw}.
 Another application \texttt{samples.odg} imports \texttt{samples.svg}, 
 and then merges its own instance of jhotdraw with that of the SVG application, 
@@ -574,7 +581,12 @@ application does in line 27. Similarly, the \texttt{samples.odg} application
 uses merge in a similar manner in line 22, allowing any importers
 to merge its own \texttt{jhotdraw} import with that of \texttt{samples.odg}.
 The recursive nature of merge allows replaces to propagate through deep
-import graphs of real applications.
+import graphs of real applications. 
+
+Without the merge, \texttt{samples.odg}
+would have been forced to perform replace both references to the \texttt{batik} dependency
+in JHotdraw and the SVG sample, a system that would be infeasible in larger projects
+with more shared dependencies.
 
 Similar to replaces, merges are also implicitly inherited by subtype modules.
 
@@ -645,14 +657,18 @@ of the \texttt{batik} libraries without them explicitly implementing the interfa
 \begin{lstlisting}[caption=Weak Interfaces]
 //file org.apache.batik.module
 weak_module_interface org.apache.batik;
-export package org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt,	org.apache.batik;
+export package 
+	org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt,	
+	org.apache.batik;
 
 //file org.jhotdraw.batikfragment.module
 //no longer explicitly implements the interface
 module org.jhotdraw.batikfragment;
-export package org.apache.batik.ext.awt.image,
-	org.apache.batik.ext.awt, org.apache.batik;
+export package 
+	org.apache.batik.ext.awt.image,
+	org.apache.batik.ext.awt, 
+	org.apache.batik;
 	
 //file org.jhotdraw.module
 module org.jhotdraw;
