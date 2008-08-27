@@ -173,6 +173,7 @@ aspect GenerateModuleInstance {
 		return ret;
 	}
 	
+	//TODO: Refactor, move to ModuleMergeDecl and remove MCU parameter
 	protected ModuleCompilationUnit ModuleCompilationUnit.processMergeMember(ModuleMergeDecl mergeMember, ModuleCompilationUnit ret) {
 		//lookup merge targets from ret
 		if (mergeMember.getMergeModuleList().getNumChild() < 2) {
@@ -195,7 +196,6 @@ aspect GenerateModuleInstance {
 		//the module reference since the references are detached when merges/replaces
 		//occur
 		Set<ModuleAccess> mergeAccesses = new HashSet<ModuleAccess>();
-		ModuleCompilationUnit mergeBaseCU = null; //will be the base module of the merged module when it is instantiated 
 		for (ModuleAccess access : mergeMember.getMergeModuleList()) {
 			ModuleCompilationUnit cu = access.lookupModule(); 
 			ModuleReference cuReference = access.lookupModuleReference();
@@ -220,15 +220,8 @@ aspect GenerateModuleInstance {
 				throw new jastadd.UnrecoverableSemanticError(msg);
 			}
 			
-			//check against other modules
-			if (mergeBaseCU != null && mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU) == null) {
-				String msg = "Incompatible modules in merge list: " + mergeBaseCU.getModuleName() + ", " + cuReference.getStaticModuleType().getModuleName(); 
-				access.error(msg);
-				throw new jastadd.UnrecoverableSemanticError(msg);
-			}
-			
 			//check against merge static type
-			if (!isReplaceCompatible(cuReference.getStaticModuleType()), mergeStaticType) {
+			if (!isReplaceCompatible(cuReference.getStaticModuleType(), mergeStaticType)) {
 				String msg = "Incompatible modules in merge: " + 
 					cuReference.getStaticModuleType().getModuleName() + 
 					", " + 
@@ -248,11 +241,6 @@ aspect GenerateModuleInstance {
 			}
 			
 			mergeTargets.add(cu);
-			if (mergeBaseCU == null) {
-				mergeBaseCU = cuReference.getStaticModuleType();
-			} else {
-				mergeBaseCU = mostSpecificModule(cuReference.getStaticModuleType(), mergeBaseCU);
-			}
 			mergeTargetReferences.add(cuReference);
 			mergeAccesses.add(access);
 		}
@@ -260,9 +248,9 @@ aspect GenerateModuleInstance {
 		ModuleCompilationUnit mergedCU = null;
 		String mergeAlias = mergeMember.getAsModule().getID();
 		if (mergeMember.getAsType() instanceof AsTypeOwn) {
-			mergedCU = mergeBaseCU.generateModuleInstance(ret, createOwnName(ret, mergeAlias));
+			mergedCU = mergeStaticType.generateModuleInstance(ret, createOwnName(ret, mergeAlias));
 		} else if (mergeMember.getAsType() instanceof AsTypeExport) {
-			mergedCU = mergeBaseCU.generateModuleInstance(ret, createExportName(ret, mergeAlias));
+			mergedCU = mergeStaticType.generateModuleInstance(ret, createExportName(ret, mergeAlias));
 		}
 		mergedCU.setSourceStatement(mergeMember); //debug
 		getHostProgram().getCompilationUnitList().addChild(mergedCU);
@@ -294,6 +282,7 @@ aspect GenerateModuleInstance {
 		return ret;
 	}
 	
+	//TODO: Refactor, move to ModuleReplaceDecl and remove MCU parameter
 	protected ModuleCompilationUnit ModuleCompilationUnit.processReplaceMember(ModuleReplaceDecl replaceMember, ModuleCompilationUnit ret) {
 		
 		ModuleCompilationUnit replaceCU = replaceMember.getWithExpr().getModuleInstance(ret);
