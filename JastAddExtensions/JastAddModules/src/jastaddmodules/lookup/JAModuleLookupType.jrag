@@ -81,9 +81,6 @@ aspect JAModuleLookupType {
 			localPackageName = ""; //this should be properly looked up in the local package names of the module
 			moduleName = packageName;
 		}
-		if (localPackageName.equals(".")) {
-			localPackageName = ""; //special case for module::.Type
-		}
 		//special case for supermodule lookup, must be here to come before realInstance call
 		if (moduleName.equals(Program.SUPERMODULE_KEYWORD)) {
 			ModuleCompilationUnit superInstance = this.getSuperInstance();

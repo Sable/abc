@@ -5,6 +5,13 @@ aspect JAModuleQualifiedNames {
 		return dot;
 	}
 	
+	public ModuleDot ModuleDot.moduleQualifiesAccess(Access access) {
+	    Dot lastDot = lastDot();
+	    ModuleDot dot = new ModuleDot(lastDot.getRightNoTransform(), access);
+	    lastDot.setRight(dot);
+	    return this;
+	}
+	
 	//This was cut and paste from ResolveAmbiguousNames. Check with Torbjorn if there is a problem
 	private Access ModuleDot.qualifyTailWith(Access expr) {
 		if(getRight/*NoTransform*/() instanceof AbstractDot) {
