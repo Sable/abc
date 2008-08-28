@@ -1,0 +1,5 @@
+class m1$m2.$org.x.y.B
+class m1$m2.m3.$org.x.y.C
+class m1.A
+m2::org.x.y.B.field
+m3::org.x.y.C.field
