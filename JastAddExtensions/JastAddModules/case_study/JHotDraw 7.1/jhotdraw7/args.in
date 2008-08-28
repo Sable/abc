@@ -3,10 +3,9 @@ jastadd-build/classes
 -classpath
 lib/quaqua.jar;lib/MRJAdapter.jar;lib/java_30.zip;lib/swing-layout.jar
 -instance-module
-org.jhotdraw.samples.draw
+org.jhotdraw.samples.simple
 -mainclass
-org.jhotdraw.samples.net::org.jhotdraw.samples.net.Main
--debug
+org.jhotdraw.samples.simple::org.jhotdraw.samples.simple.Main
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\AreaOfInterestHintKey.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\batik1.6\org\apache\batik\ext\awt\AvoidTilingHintKey.java
@@ -127,6 +126,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\StdXMLParser.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\StdXMLReader.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\ValidatorPlugin.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLAttribute.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLElement.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\net\n3\nanoxml\XMLEntityResolver.java
@@ -150,6 +150,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.netold.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.odg.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.pert.module
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.simple.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.svg.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org.jhotdraw.samples.teddy.module
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\Version.java
@@ -162,6 +163,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\image\GraphicsUtil.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\image\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\apache\batik\ext\awt\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\Version.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\AbstractApplication.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\AbstractView.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\app\Application.java
@@ -519,6 +521,7 @@ D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\ma
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\TaskFigure.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\figures\package-info.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\pert\package-info.java
+D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\simple\Main.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Gradient.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\LinearGradient.java
 D:\user\neil\jaworkspace\JastAddModules\case_study\JHotDraw 7.1\jhotdraw7\src\main\java\org\jhotdraw\samples\svg\Main.java
