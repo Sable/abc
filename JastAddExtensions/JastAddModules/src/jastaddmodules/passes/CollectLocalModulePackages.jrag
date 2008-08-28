@@ -56,7 +56,6 @@ aspect CollectLocalModulePackages {
 					}
 				}
 			}
-			this.packagesCollected = false;
 		}
 		
 		//TODO: Add packages to Program.packageToMCU
@@ -85,7 +84,9 @@ aspect CollectLocalModulePackages {
 	protected HashMap<String, ModuleCompilationUnit> Program.packageToMCU = new 
 		HashMap<String, ModuleCompilationUnit>();
 	public void Program.addPackageToMCU(String packageName, ModuleCompilationUnit mcu) {
-		assert (errorsFound() || this.packageToMCU.get(packageName) == null) : "Duplicate entry already in Program.packageToMCU";
+		assert (errorsFound() || this.packageToMCU.get(packageName) == null) : 
+			"Duplicate entry already in Program.packageToMCU: " + 
+			packageName + ", " + mcu.getModuleName() + " : " + this.packageToMCU.get(packageName).getModuleName();
 		packageToMCU.put(packageName, mcu);
 	}
 	public ModuleCompilationUnit Program.getPackageToMCU(String packageName) {
