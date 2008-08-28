@@ -89,7 +89,7 @@ aspect GenerateSynCode {
 
   public List InhEq.createParameterList() {
     List list = new List();
-    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "this"));
     for(int i = 0; i < getNumParameter(); i++)
       list.add(getParameter(i).qualifiedCopy());
     if(hasChildParameter())
@@ -407,12 +407,14 @@ aspect GenerateSynCode {
       else {
         list.add(
           new ExprStmt(
-            new CastExpr(
-              type().createQualifiedAccess(),
-              fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
-                new MethodAccess(
-                  "get",
-                  new List().add(new VarAccess("parameters$"))
+            new ParExpr(
+              new CastExpr(
+                type().createQualifiedAccess(),
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
+                  new MethodAccess(
+                    "get",
+                    new List().add(new VarAccess("parameters$"))
+                  )
                 )
               )
             ).qualifiesAccess(
@@ -447,12 +449,12 @@ aspect GenerateSynCode {
     Expr expr = null;
     if(getNumParameter() == 0) {
       // node.computed = false;
-      fieldAccess = fieldComputedFlag(type).createQualifiedBoundAccess();
+      fieldAccess = new BoundFieldAccess(fieldComputedFlag(type));
       expr = new BooleanLiteral(false);
     }
     else {
       // node.computed_value = new java.util.HashMap(4);
-      fieldAccess = fieldComputedValue(type).createQualifiedBoundAccess();
+      fieldAccess = new BoundFieldAccess(fieldComputedValue(type));
       expr = new ClassInstanceExpr(
         lookupType("java.util", "HashMap").createQualifiedAccess(),
         new List().add(new IntegerLiteral(4))
@@ -1030,6 +1032,8 @@ aspect GenerateSynCode {
 
         // statements in delegation method
         List statements = new List(); 
+    
+        boolean canCompleteNormally = true;
 
         // Foreach inh equation in this type
         for(Iterator i2 = ((Collection)map.get(typeDecl)).iterator(); i2.hasNext(); ) {
@@ -1040,12 +1044,14 @@ aspect GenerateSynCode {
           modifierList.add(new Modifier("static"));
           methodDecl.setModifiers(new Modifiers(modifierList));
 
-          if(inhEq.getChildName().equals("getChild")) 
-          statements.add(
-            new ReturnStmt(
-              methodDecl.createBoundAccess(createArgumentList(inhEq))
-            )
-          );
+          if(inhEq.getChildName().equals("getChild")) {
+            statements.add(
+              new ReturnStmt(
+                methodDecl.createBoundAccess(createArgumentList(inhEq))
+              )
+            );
+            canCompleteNormally = false;
+          }
           else if(!inhEq.getChildName().startsWith("get"))
           statements.add(
             new IfStmt(
@@ -1071,42 +1077,44 @@ aspect GenerateSynCode {
           
         }
 
-        // Add last statement
-        // use the previously built MethodDecl as a template for the super method access
-        // since it may not have been built yet
-        boolean eqInSuperClass = false;
-        TypeDecl searchType = typeDecl;
-        while(!eqInSuperClass && searchType != null && searchType instanceof ASTDecl) {
-          ASTDecl astDecl = (ASTDecl)searchType;
-          if(astDecl.hasSuperclass())
-            searchType = astDecl.superclass();
-          if(map.containsKey(searchType) && !((Collection)map.get(searchType)).isEmpty())
-            eqInSuperClass = true;
-        }
-        
-        if(eqInSuperClass) {
-          List args = new List();
-          args.add(new VarAccess("caller"));
-          args.add(new VarAccess("child"));
-          for(int i = 0; i < getNumParameter(); i++) {
-            args.add(new VarAccess("arg" + i));
-            //args.add(getParameter(i).createAccess());
+        if(canCompleteNormally) {
+          // Add last statement
+          // use the previously built MethodDecl as a template for the super method access
+          // since it may not have been built yet
+          boolean eqInSuperClass = false;
+          TypeDecl searchType = typeDecl;
+          while(!eqInSuperClass && searchType != null && searchType instanceof ASTDecl) {
+            ASTDecl astDecl = (ASTDecl)searchType;
+            if(astDecl.hasSuperclass())
+              searchType = astDecl.superclass();
+            if(map.containsKey(searchType) && !((Collection)map.get(searchType)).isEmpty())
+              eqInSuperClass = true;
           }
 
-          MethodDecl superM = (MethodDecl)methodMap.get(searchType);
+          if(eqInSuperClass) {
+            List args = new List();
+            args.add(new VarAccess("caller"));
+            args.add(new VarAccess("child"));
+            for(int i = 0; i < getNumParameter(); i++) {
+              args.add(new VarAccess("arg" + i));
+              //args.add(getParameter(i).createAccess());
+            }
 
-          statements.add(
-            new ReturnStmt(
-              new SuperAccess(
-                "super"
-              ).qualifiesAccess(
-                superM.createBoundAccess(args)
-              )
-            )
-          );
-        }
-        else {
-          addDelegateToAncestorDefinition(statements);
+            MethodDecl superM = (MethodDecl)methodMap.get(searchType);
+
+            statements.add(
+                new ReturnStmt(
+                  new SuperAccess(
+                    "super"
+                    ).qualifiesAccess(
+                      superM.createBoundAccess(args)
+                      )
+                  )
+                );
+          }
+          else {
+            addDelegateToAncestorDefinition(statements);
+          }
         }
 
         MethodDecl m = (MethodDecl)methodMap.get(classDecl);
@@ -1278,7 +1286,30 @@ aspect GenerateSynCode {
         new NullLiteral("null")
       )
     );
-    
+    addSearchAncestorForEquationLoop(list);
+  }
+  protected void InhDecl.addSearchAncestorForEquationNoDecl(List list) {
+    if(options().hasOption("-inh_in_astnode")) {
+      return;
+    }
+    // TODO: make this only call getParent() when other policy for inherited attributes
+    // ASTNode n = getParent();
+    // ASTNode caller = this;
+    // ASTNode child = null;
+    list.add(
+      new VariableDeclaration(
+        astNode().createQualifiedAccess(),
+        "n",
+        new MethodAccess("getParent", new List())
+      )
+    ).add(
+      AssignExpr.asStmt(new VarAccess("caller"), new ThisAccess("this"))
+    ).add(
+      AssignExpr.asStmt(new VarAccess("child"), new NullLiteral("null"))
+    );
+    addSearchAncestorForEquationLoop(list);
+  }
+  protected void InhDecl.addSearchAncestorForEquationLoop(List list) {
     // while(!(n instanceof definingInterfaceName)) {
     //   child = caller;
     //   caller = n;
@@ -1404,7 +1435,7 @@ aspect GenerateSynCode {
   }
 
   protected void InhDecl.addDelegateToAncestorDefinition(List list) {
-    addSearchAncestorForEquation(list);
+    addSearchAncestorForEquationNoDecl(list);
     list.add(new ReturnStmt(createComputeCallInDelegate()));
   }
   

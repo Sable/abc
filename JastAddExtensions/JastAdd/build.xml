@@ -145,6 +145,10 @@
 		<java classname="RunTests" fork="true" />
 	</target>
 
+	<target name="test-source" depends="build">
+		<java classname="RunTestsSource" fork="true" classpath=".:${tools}/tools.jar"/>
+	</target>
+
 	<target name="jar" depends="build">
 		<jar destfile="JastAdd.jar" basedir="." includes="**/*.class" excludes="test/**">
 			<manifest>

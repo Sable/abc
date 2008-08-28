@@ -58,12 +58,12 @@ aspect Rewrite {
   
 
   void AspectDecl.collectIntertypeDecls(HashMap map) {
-    super.collectIntertypeDecls(map);
     TypeDecl typeDecl = astNode();
     if(!map.containsKey(typeDecl))
       map.put(typeDecl, new ArrayList());
     Collection c = (Collection)map.get(typeDecl);
     MethodDecl m = duringMethod();
+    super.collectIntertypeDecls(map);
   }
 
   private MethodDecl AspectDecl.duringMethod = null;
@@ -347,7 +347,7 @@ aspect Rewrite {
   syn lazy MethodDecl Rewrite.createTransformMethod() {
     Modifiers m = new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static")));
     String name = "rewrite$transform$" + hostType().rewriteCounter++;
-    List parameters = new List().add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "self"));
+    List parameters = new List().add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "this$"));
     Access returnType = (isListRewrite() ? listNode() : astNode()).createQualifiedAccess();
     // public static ASTNode rewrite$transform$1(ASTNode self) ... BLOCK ...
     MethodDecl decl = new IntroducedMethodDecl(m, returnType, name, parameters, new List(), new Opt(getBlock().fullCopy()), introducedType(), enclosingBodyDecl());
@@ -539,22 +539,27 @@ aspect Rewrite {
 
 
   public void RewriteDecl.toString(StringBuffer s) {
-    s.append(indent() + "rewrite ");
+    s.append(indent());
+    s.append("/*");
+    s.append("rewrite ");
     getAccess().toString(s);
     s.append(" {");
     for(int i = 0; i < getNumRewrite(); i++)
       getRewrite(i).toString(s);
     s.append(indent() + "}");
+    s.append("*/");
   }
 
   public void UnconditionalRewrite.toString(StringBuffer s) {
-    s.append(indent() + "to ");
+    s.append(indent());
+    s.append("to ");
     getAccess().toString(s);
     s.append(" ");
     getBlock().toString(s);
   }
   public void ConditionalRewrite.toString(StringBuffer s) {
-    s.append(indent() + "when(");
+    s.append(indent());
+    s.append("when(");
     getExpr().toString(s);
     s.append(")\n");
     s.append(indent() + "to ");

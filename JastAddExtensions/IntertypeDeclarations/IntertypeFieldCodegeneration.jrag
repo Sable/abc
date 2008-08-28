@@ -125,7 +125,7 @@ aspect IntertypeFieldCodegeneration {
     if(m != null) return m;
 
     Modifiers modifiers = createAccessorModifiers(true);
-    List parameters = !isStatic() ? new List().add(new ParameterDeclaration(introducedType(), "that")) : new List();
+    List parameters = !isStatic() ? new List().add(new ParameterDeclaration(introducedType(), "this")) : new List();
     Expr returnValue;
     if(getInit() instanceof ArrayInit) {
       TypeAccess access = type().elementType().createBoundAccess();
@@ -164,11 +164,11 @@ aspect IntertypeFieldCodegeneration {
       result = introducedType().createQualifiedAccess().qualifiesAccess(new VarAccess(introducedName()));
     }
     else {
-      parameters = new List().add(new ParameterDeclaration(introducedType(), "that"));
+      parameters = new List().add(new ParameterDeclaration(introducedType(), "this"));
       if(introducedType().isInterfaceDecl())
-        result = new VarAccess("that").qualifiesAccess(new BoundMethodAccess(interfaceGetterName(), new List(), createInterfaceGetter()));
+        result = new VarAccess("this").qualifiesAccess(new BoundMethodAccess(interfaceGetterName(), new List(), createInterfaceGetter()));
       else
-        result = new VarAccess("that").qualifiesAccess(new VarAccess(introducedName()));
+        result = new VarAccess("this").qualifiesAccess(new VarAccess(introducedName()));
     }
     return buildAccessor(m, type(), getDispatchName(), parameters, new ReturnStmt(new Opt(result)));
   }
@@ -200,12 +200,12 @@ aspect IntertypeFieldCodegeneration {
       );
     }
     else {
-      parameters = new List().add(new ParameterDeclaration(introducedType(), "that")).add(new ParameterDeclaration(type(), "v"));
+      parameters = new List().add(new ParameterDeclaration(introducedType(), "this")).add(new ParameterDeclaration(type(), "v"));
       if(introducedType().isInterfaceDecl())
-        result = new VarAccess("that").qualifiesAccess(new BoundMethodAccess(interfaceSetterName(), new List().add(new VarAccess("v")), createInterfaceSetter()));
+        result = new VarAccess("this").qualifiesAccess(new BoundMethodAccess(interfaceSetterName(), new List().add(new VarAccess("v")), createInterfaceSetter()));
       else
         result = new AssignSimpleExpr(
-          new VarAccess("that").qualifiesAccess(new VarAccess(introducedName())),
+          new VarAccess("this").qualifiesAccess(new VarAccess(introducedName())),
           new VarAccess("v")
         );
     }
@@ -315,10 +315,17 @@ aspect IntertypeFieldCodegeneration {
       */
     }
     FieldDeclaration f = (FieldDeclaration)v;
+    if(enclosingBodyDecl() instanceof IntroducedMethodDecl) {
+      TypeDecl hostType = enclosingBodyDecl().hostType();
+      if(f.isPrivate() && f.hostType() != hostType)
+        return true;
+      else if(f.isProtected() && !f.hostPackage().equals(hostPackage()))
+        return true;
+      else
+        return false;
+    }
     if(f.isProtected() && !f.hostPackage().equals(hostPackage())) {
     	if(hostType() instanceof AspectDecl)
-    		return true;
-    	if(enclosingBodyDecl() instanceof IntroducedMethodDecl)
     		return true;
     }
     return InnerClasses.VarAccess.requiresAccessor();
@@ -326,7 +333,7 @@ aspect IntertypeFieldCodegeneration {
 
   public void IntroducedFieldDeclaration.toString(StringBuffer s) {
     s.append(indent());
-     s.append("@AspectType(" + aspectType().typeName() + ") ");
+    s.append("/*@AspectType(" + aspectType().typeName() + ")*/ ");
     getModifiers().toString(s);
     getTypeAccess().toString(s);
     s.append(" " + name());

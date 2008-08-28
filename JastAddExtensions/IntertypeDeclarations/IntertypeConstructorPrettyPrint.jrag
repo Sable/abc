@@ -10,6 +10,7 @@
 aspect IntertypeConstructorPrettyPrint {
   public void IntertypeConstructorDecl.toString(StringBuffer s) {
     s.append(indent());
+    s.append("/*");
     getModifiers().toString(s);
     getTargetType().toString(s);
     s.append("." + name() + "(");
@@ -38,6 +39,7 @@ aspect IntertypeConstructorPrettyPrint {
     }
     s.append(indent());
     s.append("}");
+    s.append("*/");
   }
 
 }

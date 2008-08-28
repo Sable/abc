@@ -55,6 +55,9 @@ public class JastAddTask extends Task {
 
   private String packageName = null;
   public void setPackage(String packageName) { this.packageName = packageName; }
+
+  private boolean sourceOutput = false;
+  public void setSourceOutput(boolean b) { sourceOutput = b; }
   
   public void execute() throws BuildException {
     if(files.size() == 0)
@@ -93,6 +96,7 @@ public class JastAddTask extends Task {
       args.add("-package");
       args.add(packageName);
     }
+    if(sourceOutput) args.add("-source_output");
     args.addAll(files);
 
     int i = 0;

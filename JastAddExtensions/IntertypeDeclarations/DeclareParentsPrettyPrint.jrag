@@ -10,6 +10,7 @@
 aspect DeclareParentsPrettyPrint {
   public void DeclareParentsExtends.toString(StringBuffer s) {
     s.append(indent());
+    s.append("/*");
     s.append("declare parents: ");
     getPattern().toString(s);
     s.append(" extends ");
@@ -18,9 +19,11 @@ aspect DeclareParentsPrettyPrint {
       getTypeAccess(i).toString(s);
     }
     s.append(";\n");
+    s.append("*/");
   }
   public void DeclareParentsImplements.toString(StringBuffer s) {
     s.append(indent());
+    s.append("/*");
     s.append("declare parents: ");
     getPattern().toString(s);
     s.append(" implements ");
@@ -29,6 +32,7 @@ aspect DeclareParentsPrettyPrint {
       getTypeAccess(i).toString(s);
     }
     s.append(";\n");
+    s.append("*/");
   }
 
 }

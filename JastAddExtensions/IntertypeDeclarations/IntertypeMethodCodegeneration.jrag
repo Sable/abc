@@ -442,16 +442,25 @@ aspect IntertypeMethodCodegeneration {
   }
   public Modifiers Modifiers.makePublicSynthetic() {
     Modifiers m = makePublic();
+    for(int i = 0; i < m.getNumModifier(); i++)
+      if(m.getModifier(i).getID().equals("synthetic"))
+        return m;
     m.addModifier(new Modifier("synthetic"));
     return m;
   }
   public Modifiers Modifiers.makePublicAbstract() {
     Modifiers m = makePublic();
+    for(int i = 0; i < m.getNumModifier(); i++)
+      if(m.getModifier(i).getID().equals("abstract"))
+        return m;
     m.addModifier(new Modifier("abstract"));
     return m;
   }
   public Modifiers Modifiers.makePublicAbstractSynthetic() {
     Modifiers m = makePublicAbstract();
+    for(int i = 0; i < m.getNumModifier(); i++)
+      if(m.getModifier(i).getID().equals("synthetic"))
+        return m;
     m.addModifier(new Modifier("synthetic"));
     return m;
   }
@@ -546,6 +555,19 @@ aspect IntertypeMethodCodegeneration {
     }
     super.transformation();
   }
+
+  refine InnerClasses eq MethodAccess.requiresAccessor() {
+    if(enclosingBodyDecl() instanceof IntroducedMethodDecl) {
+      MethodDecl m = decl();
+      TypeDecl hostType = enclosingBodyDecl().hostType();
+      if(m.isPrivate() && m.hostType() != hostType)
+        return true;
+      if(m.isProtected() && !m.hostPackage().equals(hostPackage()))
+        return true;
+      return false;
+    }
+    return InnerClasses.MethodAccess.requiresAccessor();
+  }
   
   syn String IntertypeMethodDecl.implBodyName() = "impl$body$" + name();
   syn String IntertypeMethodDecl.delegateName() {
@@ -559,7 +581,7 @@ aspect IntertypeMethodCodegeneration {
 
   public void IntroducedMethodDecl.toString(StringBuffer s) {
     s.append(indent());
-    s.append("@IntroducedType(" + getIntroducedType().typeName() + ") ");
+    s.append("/*@IntroducedType(" + getIntroducedType().typeName() + ")*/ ");
     //s.append("@ITDBodyDecl(" + getITDBodyDecl().typeName() + ") ");
 
     getModifiers().toString(s);

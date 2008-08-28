@@ -64,4 +64,7 @@ aspect IntertypeBytecodeBackend {
   refine GenerateClassfile public boolean AnonymousDecl.clear() {
     return super.clear();
   }
+
+  public void IntertypeMethodDecl.transformation() {
+  }
 }

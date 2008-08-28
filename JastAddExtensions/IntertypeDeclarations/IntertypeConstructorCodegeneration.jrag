@@ -141,7 +141,7 @@ aspect IntertypeMethodCodegeneration {
 
   public void IntroducedConstructorDecl.toString(StringBuffer s) {
     s.append(indent());
-    s.append("@IntroducedType(" + introducedType().typeName() + ") ");
+    s.append("/*@IntroducedType(" + introducedType().typeName() + ")*/ ");
     //s.append("@ITDBodyDecl(" + getITDBodyDecl().typeName() + ") ");
 
     getModifiers().toString(s);

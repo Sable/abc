@@ -10,7 +10,7 @@
 aspect JastAddPrettyPrint {
   public void AspectDecl.toString(StringBuffer s) {
     getModifiers().toString(s);
-    s.append("aspect " + name());
+    s.append("/*aspect*/ class " + name());
     if(hasSuperClassAccess()) {
       s.append(" extends ");
       getSuperClassAccess().toString(s);

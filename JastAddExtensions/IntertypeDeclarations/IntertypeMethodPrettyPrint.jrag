@@ -10,6 +10,7 @@
 aspect IntertypeMethodPrettyPrint {
   public void IntertypeMethodDecl.toString(StringBuffer s) {
     s.append(indent());
+    s.append("/*");
     getModifiers().toString(s);
     getTypeAccess().toString(s);
     s.append(" ");
@@ -38,6 +39,7 @@ aspect IntertypeMethodPrettyPrint {
     else {
       s.append(";\n");
     }
+    s.append("*/");
   }
 
 

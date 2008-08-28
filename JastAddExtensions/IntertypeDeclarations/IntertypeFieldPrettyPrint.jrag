@@ -10,6 +10,7 @@
 aspect IntertypeFieldPrettyPrint {
  public void IntertypeFieldDeclaration.toString(StringBuffer s) {
     s.append(indent());
+    s.append("/*");
     getModifiers().toString(s);
     getTypeAccess().toString(s);
     s.append(" ");
@@ -20,6 +21,7 @@ aspect IntertypeFieldPrettyPrint {
       getInit().toString(s);
     }
     s.append(";\n");
+    s.append("*/");
   }
 
 

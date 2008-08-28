@@ -157,7 +157,7 @@ aspect CollectionAttributes {
       new WhileStmt(
         new AndLogicalExpr(
           new NEExpr(new VarAccess("node").qualifiesAccess(new MethodAccess("getParent", new List())), new NullLiteral("null")),
-          new LogNotExpr(new InstanceOfExpr(new VarAccess("node"), rootNodeType().createQualifiedAccess()))
+          new LogNotExpr(new ParExpr(new InstanceOfExpr(new VarAccess("node"), rootNodeType().createQualifiedAccess())))
         ),
         AssignExpr.asStmt(new VarAccess("node"), new VarAccess("node").qualifiesAccess(new MethodAccess("getParent", new List())))
       )

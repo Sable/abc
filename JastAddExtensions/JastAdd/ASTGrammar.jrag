@@ -982,9 +982,11 @@ aspect ASTGrammar {
               new NullLiteral("null")
             ),
             new LogNotExpr(
+              new ParExpr(
               new InstanceOfExpr(
                 new VarAccess("symbol").qualifiesAccess(new VarAccess("value")),
                 stringType.createQualifiedAccess()
+              )
               )
             )
           );
@@ -1114,5 +1116,11 @@ aspect ASTGrammar {
         )
       )
     );
+  }
+
+  public void ASTDecl.transformation() {
+    super.transformation();
+    getImplementsList().transformation();
+    getBodyDeclList().transformation();
   }
 }
