@@ -1,0 +1,106 @@
+package test;
+
+import java.util.Stack;
+
+public class Main {
+	public static final boolean DEBUG = true;
+	
+	private static Stack<MemoLine> memostack = new Stack<MemoLine>();
+	private static MemoLine curline;
+	static { memostack.push(curline=new MemoLine()); }
+	
+	public static void pushMemoLine(MemoLine line) {
+		memostack.push(curline=line);
+	}
+	public static void popMemoLine() {
+		memostack.pop();
+		curline = memostack.peek();
+	}
+	public static void registerDependency(Dependency dep, Object val) {
+		curline.add(dep, val);
+	}
+
+	public static void main(String[] args) {
+    /*
+		int SZ = 500000;
+		BasicBox[] boxes = new BasicBox[SZ];
+		for(int i=0;i<SZ;++i)
+			boxes[i] = new BasicBox("", 1, 1);
+		BoundingBox bb = new BoundingBox("", new HBox("", boxes));
+		// initial run
+		long s = System.currentTimeMillis();
+		boxes[SZ-1].getX();
+		long e = System.currentTimeMillis();
+		System.out.println(e-s);
+		// change height of 0th box and recompute
+		boxes[0].setHeight(2);
+		s = System.currentTimeMillis();
+		boxes[SZ-1].getX();
+		e = System.currentTimeMillis();
+		System.out.println(e-s);
+		// change width of 0th box and recompute
+		boxes[0].setWidth(2);
+		s = System.currentTimeMillis();
+		boxes[SZ-1].getX();
+		e = System.currentTimeMillis();
+		System.out.println(e-s);
+		// change width of second-to-last box and recompute
+		boxes[SZ-2].setWidth(2);
+		s = System.currentTimeMillis();
+		boxes[SZ-1].getX();
+		e = System.currentTimeMillis();
+		System.out.println(e-s);
+    */
+		// build up a scenario
+		BasicBox b1 = new BasicBox("b1", 1, 1);
+		BasicBox b2 = new BasicBox("b2", 1, 1);
+		Box v1 = new VBox("v1", new List().add(b1).add(b2));
+		BasicBox b3 = new BasicBox("b3", 2, 1);
+		Box v2 = new VBox("v2", new List().add(v1).add(b3));
+		
+		BasicBox b4 = new BasicBox("b4", 2, 2);
+		Box h1 = new HBox("h1", new List());
+		BasicBox b5 = new BasicBox("b5", 2, 3);
+		Box v3 = new VBox("v3", new List().add(b4).add(h1).add(b5));
+		
+		Box h2 = new HBox("h2", new List().add(v2).add(v3));
+		
+		Box b6 = new BasicBox("b6", 1, 1);
+		BasicBox b7 = new BasicBox("b7", 1, 2);
+		Box b8 = new BasicBox("b8", 1, 1);
+		Box h3 = new HBox("h3", new List().add(b8));
+		Box v4 = new VBox("v4", new List().add(b6).add(b7).add(h3));
+		
+		Box h4 = new HBox("h4", new List());
+		
+		BasicBox b9 = new BasicBox("b9", 1, 7);
+		
+		Box h5 = new HBox("h5", new List().add(h2).add(v4).add(h4).add(b9));
+		
+		Box r = new BoundingBox("r", h5);
+		
+		System.out.println("Computing width of bounding box");
+		System.out.println(r.width());
+		// change 1: should not impact overall width
+		b7.setHeight(20);
+		System.out.println(r.width());
+		// change 2: should impact overall width
+		b7.setWidth(20);
+		System.out.println(r.width());
+		
+		System.out.println();
+		
+		System.out.println("Computing position of box b8");
+		System.out.println(b8.getX());
+		// change 1: should not impact position
+		b9.setWidth(10);
+		System.out.println(b8.getX());
+		// change 2: should not impact position, but some recomputation has to be performed
+		b1.setWidth(2);
+		System.out.println(b8.getX());
+		// change 3: should impact position
+		b4.setWidth(3);
+		System.out.println(b8.getX());
+	}
+
+}

@@ -1,0 +1,7 @@
+package test;
+
+abstract Box ::= <Name:String>;
+BoundingBox : Box ::= Box;
+HBox : Box ::= Box*;
+VBox : Box ::= Box*;
+BasicBox : Box ::= <Width:int> <Height:int>;

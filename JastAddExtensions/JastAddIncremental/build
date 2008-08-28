@@ -1,0 +1,3 @@
+#!/bin/sh
+java jastadd.JastAdd -weave_inline -no_visit_check -no_cache_cycle -no_component_check -inh_in_astnode -d debug -source_output test/*.java test/*.jadd test/*.ast beaver/*.java -verbose
+#java jastadd.JastAdd -weave_inline -no_visit_check -no_cache_cycle -no_component_check -inh_in_astnode test/*.java test/*.jadd test/*.ast beaver/*.java -verbose

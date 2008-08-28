@@ -1,0 +1,428 @@
+package test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+aspect AG {
+
+  static final int MARGIN = 0;
+
+  syn lazy int Box.width();
+  syn lazy int Box.height();
+
+  eq BasicBox.width() = getWidth();
+  eq BasicBox.height() = getHeight();
+
+  eq BoundingBox.width() = getBox().width();
+  eq BoundingBox.height() = getBox().height();
+
+  eq HBox.width() {
+		int w= MARGIN;
+		int n=getNumBox();
+		for(int i=0;i<n;++i)
+			w += getBox(i).width() + MARGIN;
+    return w;
+  }
+
+  eq HBox.height() {
+	  int h = 0;
+		int n=getNumBox();
+		for(int i=0;i<n;++i)
+			h = Math.max(h, getBox(i).height());
+		h += 2 * MARGIN;
+    return h;
+  }
+
+  eq VBox.width() {
+	  int w = 0;
+		int n=getNumBox();
+		for(int i=0;i<n;++i)
+			w = Math.max(w, getBox(i).width());
+		w += 2 * MARGIN;
+    return w;
+  }
+
+  eq VBox.height() {
+		int h= MARGIN;
+		int n=getNumBox();
+		for(int i=0;i<n;++i)
+			h += getBox(i).height() + MARGIN;
+    return h;
+  }
+
+  inh lazy int Box.getX();
+  inh lazy int Box.getY();
+
+  eq BoundingBox.getBox().getX() = 0;
+  eq BoundingBox.getBox().getY() = 0;
+
+  eq HBox.getBox(int index).getX() {
+		int x = getX() + MARGIN;
+		for(int i=0;i < index;++i)
+			x += getBox(i).width() + MARGIN;
+		return x;
+	}
+  eq HBox.getBox(int index).getY() =
+    getY() + MARGIN;
+
+  eq VBox.getBox(int index).getX() =
+    getX() + MARGIN;
+
+  eq VBox.getBox(int index).getY() {
+		int y = getY() + MARGIN;
+		for(int i=0;i < index;++i)
+			y += getBox(i).height() + MARGIN;
+		return y;
+	}
+
+  /*
+  // BasicBox
+	public int BasicBox.Define_getX(Box box) {
+		return -1;
+	}
+
+	public int BasicBox.Define_getY(Box box) {
+		return -1;
+	}
+
+	public int BasicBox.compute_height() {
+		return getHeight();
+	}
+	
+	public int BasicBox.compute_width() {
+		return getWidth();
+	}
+
+  // BoundingBox
+
+	public Box BoundingBox.compute_getRoot() {
+		return getBox();
+	}
+	
+	public Box BoundingBox.getRoot() {
+		Box res = compute_getRoot();
+		Main.registerDependency(new Dependency(this, Attribute.Root), getBox());
+		return res;
+	}
+
+	public int BoundingBox.Define_getX(Box box) {
+		return box == getRoot() ? 0 : -1;
+	}
+
+	public int BoundingBox.Define_getY(Box box) {
+		return box == getRoot() ? 0 : -1;
+	}
+
+	public int BoundingBox.compute_getX() {
+		return 0;
+	}
+
+	public int BoundingBox.compute_getY() {
+		return 0;
+	}
+
+	private Map<MemoLine, Integer> BoundingBox.height_cache = new HashMap<MemoLine, Integer>();
+	public int BoundingBox.compute_height() {
+		for(Map.Entry<MemoLine, Integer> e : height_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Height cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing height for "+getName());
+		MemoLine line = Main.pushMemoLine();
+		Integer res = getRoot().height();
+		Main.popMemoLine();
+		height_cache.put(line, res);
+		return res;
+	}
+
+	private Map<MemoLine, Integer> BoundingBox.width_cache = new HashMap<MemoLine, Integer>();
+	public int BoundingBox.compute_width() {
+		for(Map.Entry<MemoLine, Integer> e : width_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Width cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing width for "+getName());
+		MemoLine line = Main.pushMemoLine();
+		Integer res = getRoot().width();
+		Main.popMemoLine();
+		width_cache.put(line, res);
+		return res;
+	}
+
+  // Box
+	private Map<MemoLine, Integer> Box.getX_cache = new HashMap<MemoLine, Integer>();
+	public final int Box.getX() {
+		int res = compute_getX();
+		Main.registerDependency(new Dependency(this, Attribute.X), res);
+		return res;
+	}
+	
+	public int Box.compute_getX() {
+		for(Map.Entry<MemoLine, Integer> e : getX_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("X cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing X for "+getName());
+		getX_cache.clear();
+		MemoLine line = Main.pushMemoLine();
+		//
+			int res = getParent().Define_getX(this);
+		//
+		Main.popMemoLine();
+		getX_cache.put(line, res);
+		return res;
+	}
+
+	private Map<MemoLine, Integer> Box.getY_cache = new HashMap<MemoLine, Integer>();
+	public final int Box.getY() {
+		int res = compute_getY();
+		Main.registerDependency(new Dependency(this, Attribute.Y), res);
+		return res;
+	}
+	
+	public int Box.compute_getY() {
+		for(Map.Entry<MemoLine, Integer> e : getY_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Y cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing Y for "+getName());
+		getY_cache.clear();
+		MemoLine line = Main.pushMemoLine();
+		//
+			int res = getParent().Define_getY(this);
+		//
+		Main.popMemoLine();
+		getY_cache.put(line, res);
+		return res;
+	}
+
+	public final int Box.width() {
+		int res = compute_width();
+		Main.registerDependency(new Dependency(this, Attribute.Width), res);
+		return res;
+	}
+	public abstract int Box.compute_width();
+	
+	public final int Box.height() {
+		int res = compute_height();
+		Main.registerDependency(new Dependency(this, Attribute.Height), res);
+		return res;
+	}
+	public abstract int Box.compute_height();
+
+  //refine public ASTNode ASTNode.getParent() {
+  //  ASTNode res = refined();
+  //  Main.registerDependency(new Dependency(this, Attribute.Parent), res);
+  //  return res;
+  //}
+  */
+  public String Box.toString() {
+		return "["+getName()+"]";
+	}
+/*
+	public int ASTNode.Define_getX(Box box) {
+    return getParent().Define_getX(box);
+  }
+	public int ASTNode.Define_getY(Box box) {
+    return getParent().Define_getY(box);
+  }
+
+  // HBox
+
+//  refine public ASTNode ASTNode.getChild(int index) {
+//    ASTNode res = refined(index);
+//    Main.registerDependency(new Dependency(this, Attribute.Child, i), res);
+//    return res;
+//  }
+
+//  refine public int ASTNode.getNumChild(int index) {
+//    int res = refined(index);
+//    Main.registerDependency(new Dependency(this, Attribute.NumChild), res);
+//    return res;
+//  }
+
+	private Map<MemoLine, Integer> HBox.height_cache = new HashMap<MemoLine, Integer>();
+	// height of an HBox is the maximum of all child heights 
+	public int HBox.compute_height() {
+		for(Map.Entry<MemoLine, Integer> e : height_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Height cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing height for "+getName());
+		height_cache.clear();
+		MemoLine line = Main.pushMemoLine();
+		//
+			int h =0;
+			int n = getNumBox();
+			for(int i=0;i<n;++i)
+				h = Math.max(h, getBox(i).height());
+				h += 2 * MARGIN;
+		//
+		Main.popMemoLine();
+		height_cache.put(line, h);
+		return h;
+	}
+
+	private Map<MemoLine, Integer> HBox.width_cache = new HashMap<MemoLine, Integer>();	
+	// width of an HBox is the sum of all child heights
+	public int HBox.compute_width() {
+		for(Map.Entry<MemoLine, Integer> e : width_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Width cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing width for "+getName());
+		width_cache.clear();
+		MemoLine line = Main.pushMemoLine();
+		//
+			int w= MARGIN;
+			int n=getNumBox();
+			for(int i=0;i<n;++i)
+				w += getBox(i).width() + MARGIN;
+		//
+		Main.popMemoLine();
+		width_cache.put(line, w);
+		return w;
+	}
+
+	// the X coordinate of a child box is the parent's plus the width of all
+	// boxes before it 
+	public int HBox.Define_getX(Box box) {
+		int x = getX() + MARGIN;
+		int n = getNumBox();
+		for(int i=0;i<n;++i)
+			if(getBox(i) == box)
+				return x;
+			else
+				x += getBox(i).width() + MARGIN;
+		return -1;
+	}
+
+	// the Y coordinate of all child boxes is the same as the parent's 
+	public int HBox.Define_getY(Box box) {
+		return getY() + MARGIN;
+	}
+
+  // VBox
+  private Map<MemoLine, Integer> VBox.height_cache = new HashMap<MemoLine, Integer>();
+	// height of a VBox is the sum of all contained boxes 
+	public int VBox.compute_height() {
+		for(Map.Entry<MemoLine, Integer> e : height_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Height cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing height for "+getName());
+		height_cache.clear();
+		MemoLine line = Main.pushMemoLine();
+		//
+			int h= MARGIN;
+			int n = getNumBox();
+			for(int i=0;i<n;++i)
+				h += getBox(i).height() + MARGIN;
+		//
+		Main.popMemoLine();
+		height_cache.put(line, h);
+		return h;
+	}
+
+	private Map<MemoLine, Integer> VBox.width_cache = new HashMap<MemoLine, Integer>();
+	// width of a VBox is the maximum of all contained boxes 
+	public int VBox.compute_width() {
+		for(Map.Entry<MemoLine, Integer> e : width_cache.entrySet())
+			if(e.getKey().hit()) {
+				if(Main.DEBUG)
+					System.out.println("Width cached for "+getName());
+				return e.getValue();
+			}
+		if(Main.DEBUG)
+			System.out.println("Recomputing width for "+getName());
+		width_cache.clear();
+		MemoLine line = Main.pushMemoLine();
+		//
+			int w = 0;
+			int n=getNumBox();
+			for(int i=0;i<n;++i)
+				w = Math.max(w, getBox(i).width());
+			w += 2 * MARGIN;
+		//
+		Main.popMemoLine();
+		width_cache.put(line, w);
+		return w;
+	}
+
+	// the X coordinate of all child boxes is the same as the parent's 
+	public int VBox.Define_getX(Box box) {
+		return getX() + MARGIN;
+	}
+
+	// the Y coordinate of a child box is the parent's plus the height of all
+	// boxes above it 
+	public int VBox.Define_getY(Box box) {
+		int y = getY() + MARGIN;
+		int n = getNumBox();
+		for(int i=0;i<n;++i)
+			if(getBox(i) == box)
+				return y;
+			else
+				y += getBox(i).height() + MARGIN;
+		return -1;
+	}
+
+  public Object Box.eval(Attribute attr, Object args) {
+    switch(attr) {
+      case Width:
+        return compute_width();
+      case Height:
+        return compute_height();
+      case X:
+        return compute_getX();
+      case Y:
+        return compute_getY();
+      default:
+        return super.eval(attr, args);
+    }
+  }
+
+  public Object BoundingBox.eval(Attribute attr, Object args) {
+    switch(attr) {
+      case Root:
+        return compute_getRoot();
+      default:
+        return super.eval(attr, args);
+    }
+  }
+  */
+
+  syn lazy String Box.lazyName1(int x) = getName();
+  syn lazy String Box.lazyName2(int x, int y) = getName();
+
+/*
+  syn String Box.name() = getName();
+  syn lazy String Box.lazyName() = getName();
+
+  syn lazy String Box.lazyName2(int x, int y) = getName();
+
+  inh lazy boolean Box.hasBoundingBox();
+  eq BoundingBox.getBox().hasBoundingBox() = true;
+*/
+}

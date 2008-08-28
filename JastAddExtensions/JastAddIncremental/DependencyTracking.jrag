@@ -1,0 +1,596 @@
+aspect DependencyTracking {
+
+  
+  refine Rewrites public void ASTDecl.generateIntertypeDecls() {
+    Rewrites.ASTDecl.generateIntertypeDecls();
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(child instanceof ASTTokenChild && !child.isNTA()) {
+        for(Iterator i2 = memberMethods("get" + child.name()).iterator(); i2.hasNext(); ) {
+          MethodDecl m = (MethodDecl)i2.next();
+          if(m.getNumParameter() == 0) {
+            ClassInstanceExpr expr = new ClassInstanceExpr(
+              new TypeAccess("Dependency"),
+              new List().add(
+                new ThisAccess("this")
+              ).add(
+                new IntegerLiteral(m.evalIndex())
+              ),
+              new Opt()
+            );
+  
+            m.getBlock().getStmtList().insertChild(
+              new ExprStmt(
+                new TypeAccess("Main").qualifiesAccess(
+                  new MethodAccess(
+                    "registerDependency",
+                    new List().add(
+                      expr
+                    ).add(
+                      new VarAccess(child.name() + "$value")
+                    )
+                  )
+                )
+              ),
+              0
+            );
+
+            MethodDecl evalMethod = createEvalMethod();
+            SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
+            List list = switchStmt.getBlock().getStmtList();
+            list.add(new ConstCase(new IntegerLiteral(m.evalIndex())));
+            list.add(new ReturnStmt(new VarAccess(child.name() + "$value")));
+          }
+        }
+      }
+    }
+  }
+
+  refine AttributesCodegeneration public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
+    // check cached value, compute new value, store in cache, return value
+    List statements = new List();
+    if(isLazy) {
+      addParameterStructure(statements);
+        
+      List args = new List();
+      args.add(new ThisAccess("this"));
+      for(int i = 0; i < getNumParameter(); i++) {
+        args.add(getParameter(i).createAccess());
+      }
+      if(getNumParameter() > 0)
+        args.add(new VarAccess("parameters$"));
+      
+      MethodDecl cacheMethod = generateCacheAttributeDecl(typeDecl, aspectMethod, lineNum);
+
+      statements.add(
+          new VariableDeclaration(
+            type().createQualifiedAccess(),
+            "res",
+            cacheMethod.createBoundAccess(args)
+          )
+      );
+
+      ClassInstanceExpr expr;
+      if(getNumParameter() == 0) {
+        expr = new ClassInstanceExpr(
+          new TypeAccess("Dependency"),
+          new List().add(
+            new ThisAccess("this")
+          ).add(
+            new IntegerLiteral(evalIndex())
+          ),
+          new Opt()
+        );
+      }
+      else {
+        expr = new ClassInstanceExpr(
+          new TypeAccess("Dependency"),
+          new List().add(
+            new ThisAccess("this")
+          ).add(
+            new IntegerLiteral(evalIndex())
+          ).add(
+            new VarAccess("parameters$")
+          ),
+          new Opt()
+        );
+      }
+      statements.add(
+        new ExprStmt(
+          new TypeAccess("Main").qualifiesAccess(
+            new MethodAccess(
+              "registerDependency",
+              new List().add(
+                expr
+              ).add(
+                new VarAccess("res")
+              )
+            )
+          )
+        )
+      );
+
+      statements.add(
+        new ReturnStmt(new VarAccess("res"))
+      );
+
+      // add case entry in typeDecl, for evalIndex, and cacheMethod
+      MethodDecl evalMethod = typeDecl.createEvalMethod();
+      SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
+      List caseList = switchStmt.getBlock().getStmtList();
+      typeDecl.addCaseFor(caseList, evalIndex(), cacheMethod);
+    }
+    else {
+      addComputeCall(statements, aspectMethod);
+      addReturnStmt(statements, typeDecl, isLazy);
+    }
+
+    statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
+
+    return
+      new MethodDecl(
+        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
+        type().createQualifiedAccess(),
+        delegateName(),
+        copyParameterList(getParameterList()),
+        new List(),
+        new Opt(new Block(statements))
+     );
+  }
+
+  Stmt AttributeDecl.debugPrint(String s) {
+    return new IfStmt(
+      new TypeAccess("Main").qualifiesAccess(
+        new VarAccess("DEBUG")
+      ),
+      new ExprStmt(
+        new TypeAccess("java.lang", "System").qualifiesAccess(
+          new VarAccess("out")
+        ).qualifiesAccess(
+          new MethodAccess(
+            "println", 
+            new List().add(
+              new AddExpr(
+                new StringLiteral(s), 
+                new ThisAccess("this").qualifiesAccess(
+                  new MethodAccess("getClass", new List())
+                ).qualifiesAccess(
+                  new MethodAccess("getName", new List())
+                )
+              )
+            )
+          )
+        )
+      ),
+      new Opt()
+    );
+  }
+
+
+  private MethodDecl SynDecl.generateCacheAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
+    List statements = new List();
+    FieldDeclaration f = generateBeginCache(statements, typeDecl, uniqueSignatureName() + "$cache");
+    List args = new List();
+    args.add(new VarAccess("this"));
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(new VarAccess(getParameter(i).name()));
+    }
+    statements.add(
+        new VariableDeclaration(
+          type().createQualifiedAccess(),
+          "res",
+          aspectMethod.createBoundAccess(args)
+        )
+    );
+  
+    if(declaredNTA()) {
+      statements.add(
+        new ExprStmt(
+          new VarAccess("res").qualifiesAccess(
+            new MethodAccess(
+              "setParent",
+              new List().add(new ThisAccess("this"))
+            )
+          )
+        )
+      );
+    }
+    else if(isNTA()) {
+      statements.add(
+        new ExprStmt(
+          new ThisAccess("this").qualifiesAccess(
+            new MethodAccess(
+              "set" + name().substring(3), // replace initial get with set
+              new List().add(
+                new VarAccess("res")
+              )
+            )
+          )
+        )
+      );
+    }
+
+    generateEndCache(statements, typeDecl);
+    statements.add(
+      new ReturnStmt(new VarAccess("res"))
+    );
+
+    statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
+
+    List parameterList = new List();
+    parameterList.add(new ParameterDeclaration(typeDecl.createQualifiedAccess(), "this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      parameterList.add(new ParameterDeclaration(getParameter(i).type().createQualifiedAccess(), getParameter(i).name()));
+    if(getNumParameter() > 0)
+      parameterList.add(new ParameterDeclaration(new TypeAccess("java.lang", "Object"), "args"));
+
+    return
+    typeDecl.addMemberMethod(
+      new MethodDecl(
+        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC | Modifiers.ACC_STATIC),
+        type().createQualifiedAccess(),
+        delegateName() + "$cache",
+        parameterList,
+        new List(),
+        new Opt(new Block(statements))
+     )
+    );
+  }
+
+  refine AttributesCodegeneration public void InhDecl.generateAttributeDecl(TypeDecl typeDecl, int lineNum) {
+    // check cached value, compute new value, store in cache, return value
+    List statements = new List();
+    if(isLazy()) {
+      addParameterStructure(statements);
+        
+      List args = new List();
+      args.add(new ThisAccess("this"));
+      for(int i = 0; i < getNumParameter(); i++) {
+        args.add(getParameter(i).createAccess());
+      }
+      if(getNumParameter() > 0)
+        args.add(new VarAccess("parameters$"));
+      
+      MethodDecl cacheMethod = generateCacheAttributeDecl(lineNum);
+
+      statements.add(
+          new VariableDeclaration(
+            type().createQualifiedAccess(),
+            "res",
+            cacheMethod.createBoundAccess(args)
+          )
+      );
+
+      ClassInstanceExpr expr;
+      if(getNumParameter() == 0) {
+        expr = new ClassInstanceExpr(
+          new TypeAccess("Dependency"),
+          new List().add(
+            new ThisAccess("this")
+          ).add(
+            new IntegerLiteral(evalIndex())
+          ),
+          new Opt()
+        );
+      }
+      else {
+        expr = new ClassInstanceExpr(
+          new TypeAccess("Dependency"),
+          new List().add(
+            new ThisAccess("this")
+          ).add(
+            new IntegerLiteral(evalIndex())
+          ).add(
+            new VarAccess("parameters$")
+          ),
+          new Opt()
+        );
+      }
+      statements.add(
+        new ExprStmt(
+          new TypeAccess("Main").qualifiesAccess(
+            new MethodAccess(
+              "registerDependency",
+              new List().add(
+                expr
+              ).add(
+                new VarAccess("res")
+              )
+            )
+          )
+        )
+      );
+
+      statements.add(
+        new ReturnStmt(new VarAccess("res"))
+      );
+
+      // add case entry in typeDecl, for evalIndex, and cacheMethod
+      MethodDecl evalMethod = typeDecl.createEvalMethod();
+      SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
+      List caseList = switchStmt.getBlock().getStmtList();
+      typeDecl.addCaseFor(caseList, evalIndex(), cacheMethod);
+    }
+    else {
+      addComputeCall(statements);
+      addReturnStmt(statements, typeDecl, isLazy());
+    }
+
+    statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
+
+    // public type name(p0, ... , pN-1) { ... }
+    typeDecl.addMemberMethod(
+      new MethodDecl(
+        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC),
+        type().createQualifiedAccess(),
+        delegateName(),
+        copyParameterList(getParameterList()),
+        new List(),
+        new Opt(new Block(statements))
+      )
+    );
+  }
+
+  private MethodDecl InhDecl.generateCacheAttributeDecl(int lineNum) {
+    TypeDecl typeDecl = introducedType();
+    List statements = new List();
+    FieldDeclaration f = generateBeginCache(statements, typeDecl, uniqueSignatureName() + "$cache");
+
+    List args = new List();
+    args.add(new VarAccess("this"));
+    args.add(new NullLiteral("null"));
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(new VarAccess(getParameter(i).name()));
+    }
+
+    statements.add(
+        new VariableDeclaration(
+          type().createQualifiedAccess(),
+          "res",
+          new ThisAccess("this").qualifiesAccess(
+            new MethodAccess("getParent", new List()).qualifiesAccess(
+              new BoundMethodAccess(definingInterfaceName(), args, inhEqDelegate())
+            )
+          )
+        )
+    );
+
+    generateEndCache(statements, typeDecl);
+    statements.add(
+      new ReturnStmt(new VarAccess("res"))
+    );
+
+    statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
+
+    List parameterList = new List();
+    parameterList.add(new ParameterDeclaration(typeDecl.createQualifiedAccess(), "this"));
+    for(int i = 0; i < getNumParameter(); i++)
+      parameterList.add(new ParameterDeclaration(getParameter(i).type().createQualifiedAccess(), getParameter(i).name()));
+    if(getNumParameter() > 0)
+      parameterList.add(new ParameterDeclaration(new TypeAccess("java.lang", "Object"), "args"));
+
+    return
+    typeDecl.addMemberMethod(
+      new MethodDecl(
+        Modifiers.create(Modifiers.ACC_PUBLIC | Modifiers.ACC_SYNTHETIC | Modifiers.ACC_STATIC),
+        type().createQualifiedAccess(),
+        definingInterfaceName() + "$cache",
+        parameterList,
+        new List(),
+        new Opt(new Block(statements))
+     )
+    );
+  }
+
+
+
+  FieldDeclaration AttributeDecl.generateBeginCache(List statements, TypeDecl typeDecl, String fieldName) {
+    TypeDecl returnType = type();
+    if(returnType.isPrimitive())
+      returnType = returnType.boxed();
+
+    FieldDeclaration f = generateCacheField(typeDecl, fieldName);
+    if(getNumParameter() == 0) {
+      FieldDeclaration computedFlag = fieldComputedFlag(typeDecl);
+      FieldDeclaration value = fieldComputedValue(typeDecl);
+ 
+      Stmt thenBranch =
+        new Block(
+          new List().add(
+            debugPrint(name() + " cached for ")
+          ).add(
+            new ReturnStmt(
+              value.createQualifiedBoundAccess()
+            )
+          )
+        );
+      Stmt ifStmt = 
+        new IfStmt(
+          new AndLogicalExpr(
+            computedFlag.createQualifiedBoundAccess(),
+            f.createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess("hit", new List())
+            )
+          ),
+          thenBranch,
+          new Opt()
+        );
+      statements.add(ifStmt);
+    }
+    else {
+      statements.add(
+        new VariableDeclaration(
+          new TypeAccess("CachedValue"),
+          "v$"
+        )
+      );
+      Stmt thenBlock =
+        new Block(
+          new List().add(
+            AssignExpr.asStmt(
+              new VarAccess("v$"),
+              f.createQualifiedBoundAccess().qualifiesAccess(
+                new MethodAccess(
+                  "get",
+                  new List().add(new VarAccess("args"))
+                )
+              )
+            )
+          ).add(
+            new IfStmt(
+              new VarAccess("v$").qualifiesAccess(
+                new VarAccess("line")
+              ).qualifiesAccess(
+                new MethodAccess("hit", new List())
+              ),
+              new ReturnStmt(
+                new CastExpr(
+                  returnType.createQualifiedAccess(),
+                  new VarAccess("v$").qualifiesAccess(new VarAccess("value"))
+                )
+              ),
+              new ExprStmt(
+                new VarAccess("v$").qualifiesAccess(
+                  new VarAccess("line")
+                ).qualifiesAccess(
+                  new MethodAccess("clear", new List())
+                )
+              )
+            )
+          )
+        );
+      Stmt elseBlock =
+        new Block(
+          new List().add(
+            AssignExpr.asStmt(
+              new VarAccess("v$"),
+              new ClassInstanceExpr(
+                new TypeAccess("CachedValue"),
+                new List(),
+                new Opt()
+              )
+            )
+          ).add(
+            new ExprStmt(
+              f.createQualifiedBoundAccess().qualifiesAccess(
+                new MethodAccess(
+                  "put",
+                  new List().add(new VarAccess("args")).add(new VarAccess("v$"))
+                )
+              )
+            )
+          )
+        );
+            
+      Stmt outerIf =
+        new IfStmt(
+          f.createQualifiedBoundAccess().qualifiesAccess(
+            new MethodAccess(
+              "containsKey",
+              new List().add(new VarAccess("args"))
+            )
+          ),
+          thenBlock,
+          elseBlock
+        );
+      statements.add(outerIf);
+    }
+    statements.add(debugPrint("Recomputing " + name() + " for "));
+    if(getNumParameter() == 0) {
+      statements.add(
+        new ExprStmt(
+          new TypeAccess("Main").qualifiesAccess(
+            new MethodAccess(
+              "pushMemoLine", 
+              new List().add(f.createQualifiedBoundAccess())
+            )
+          )
+        )
+      );
+    }
+    else {
+      statements.add(
+        new ExprStmt(
+          new TypeAccess("Main").qualifiesAccess(
+            new MethodAccess(
+              "pushMemoLine", 
+              new List().add(new VarAccess("v$").qualifiesAccess(new VarAccess("line")))
+            )
+          )
+        )
+      );
+    }
+    return f;
+  }
+  void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl) {
+    statements.add(
+      new ExprStmt(
+        new TypeAccess("Main").qualifiesAccess(new MethodAccess("popMemoLine", new List()))
+      )
+    );
+    if(getNumParameter() == 0) {
+      statements.add(
+        AssignExpr.asStmt(
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+          new VarAccess("res")
+        )
+      );
+    }
+    else {
+      statements.add(
+        AssignExpr.asStmt(
+          new VarAccess("v$").qualifiesAccess(new VarAccess("value")),
+          new VarAccess("res")
+        )
+      );
+    }
+  }
+
+  FieldDeclaration AttributeDecl.generateCacheField(TypeDecl typeDecl, String fieldName) {
+    TypeDecl returnType = type();
+    if(returnType.isPrimitive())
+      returnType = returnType.boxed();
+
+    FieldDeclaration f;
+    if(getNumParameter() == 0) {
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        new TypeAccess("MemoLine"),
+        fieldName,
+        new ClassInstanceExpr(
+          new TypeAccess("MemoLine"),
+          new List(),
+          new Opt()
+        )
+      );
+    }
+    else {
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        new ParTypeAccess(
+          new TypeAccess("java.util", "Map"),
+          new List().add(
+            new TypeAccess("java.lang", "Object")
+          ).add(
+            new TypeAccess("CachedValue")
+          )
+        ),
+        fieldName,
+        new ClassInstanceExpr(
+          new ParTypeAccess(
+            new TypeAccess("java.util", "HashMap"),
+            new List().add(
+              new TypeAccess("java.lang", "Object")
+            ).add(
+              new TypeAccess("CachedValue")
+            )
+          ),
+          new List(),
+          new Opt()
+        )
+      );
+    }
+    return typeDecl.addMemberField(f);
+  }
+
+}
