@@ -1,0 +1,2 @@
+weak_module_interface mint;
+export package pack;

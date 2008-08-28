@@ -1,0 +1,7 @@
+module m1;
+
+import own mint;
+
+replace mint with own m2;
+
+export package *;

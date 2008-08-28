@@ -1,0 +1,2 @@
+module m3;
+export package pack;
