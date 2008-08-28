@@ -14,8 +14,8 @@ public class Main {
     public static void main(String[] args) {
     	//references batik version in jhotdraw
         final String batikVersion = Version.version;
-        final String nanoXMLVersion = new jhotdraw::nanoxml::net.n3.nanoxml.Version().version;
-        final String jhotdrawVersion = new org.jhotdraw.Version().version;
+        final String nanoXMLVersion = jhotdraw::nanoxml::net.n3.nanoxml.Version.version;
+        final String jhotdrawVersion = org.jhotdraw.Version.version;
         
     	//code is taken from EditorSample
         SwingUtilities.invokeLater(new Runnable() {
