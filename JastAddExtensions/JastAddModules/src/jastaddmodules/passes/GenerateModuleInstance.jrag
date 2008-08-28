@@ -459,6 +459,7 @@ aspect GenerateModuleInstance {
 		ret.setModuleReferences(new HashMap<String, jastaddmodules.ModuleReference>());
 		ret.setInstanceContext(new HashSet<ModuleCompilationUnit>());
 		ret.lastAnon = 0;
+		ret.packagesCollected = false;
 		
 		ret.setModuleName(alias);
 		
