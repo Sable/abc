@@ -36,7 +36,7 @@
 
 	<!-- compile sources -->
 	<target name="build" depends="gen">
-		<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" excludes="test/**,BoxesPlugin/**,backup/**,debug/**" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar" />
+		<javac debug="true" nowarn="true" srcdir="." includes="**/*.java" excludes="test/**,BoxesPlugin/**,backup/**,debug/**,lib/**" classpath=".:${tools}/beaver-rt.jar:${tools}/junit.jar" />
 	</target>
 
 	<!-- generate compiler source files and compile sources -->

@@ -1,4 +1,4 @@
-package test;
+package AST;
 
 import java.util.Stack;
 import java.util.*;
@@ -17,7 +17,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   static public Set circularEvalSet = new HashSet();
   static public Stack circularEvalStack = new Stack();
   
-  static class CircularEvalEntry {
+  public static class CircularEvalEntry {
   	ASTNode node;
   	String attrName;
   	Object parameters;
@@ -58,7 +58,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   
   
   
-  static class CircularStackEntry {
+  public static class CircularStackEntry {
   	Set circularEvalSet;
   	boolean changeValue;
   	
@@ -83,7 +83,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   
   public static int boundariesCrossed = 0;
 
-  static class State {
+  public static class State {
     private int[] stack;
     private int pos;
     public State() {
@@ -172,6 +172,9 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     Main.registerDependency(new Dependency(this, 2), numChildren);
     return numChildren;
   }
+  public int getNumChildNoTransform() {
+    return numChildren;
+  }
   public void setChild(ASTNode node, int i) {
     if(children == null) {
       children = new ASTNode[i + 1];
@@ -252,33 +255,18 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     }
     return res;
   }
-  
-  /*
-  public Object eval(Attribute attr, Object args) {
-    switch(attr) {
-      case Parent:
-        return parent;
-      case Child:
-        return getChild(this, (Integer)args);
-      case NumChild:
-        return numChildren;
-    }
-    throw new RuntimeException("message not understood in " + getClass().getName());
+
+  public static void reset() {
   }
-  */
-  /*
-  public  java.lang.Object eval(int attr, java.lang.Object args) {
-    switch (attr){
-      case 1:
-        return parent;
-      case 2:
-        return getChild(this, (java.lang.Integer)args);
-      case 3:
-        return numChildren;
-      default:
-      throw new java.lang.UnsupportedOperationException("Can not find method to dispatch in ASTNode: " + attr);
-    }
-  }*/
-  public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }
+
+  public void flushCache() {
+  }
+  public void in$Circle(boolean value) {
+    this.inCircle = value;
+  }
+
+  
+  
+ public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }
 
 }

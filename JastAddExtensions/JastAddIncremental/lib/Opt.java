@@ -1,4 +1,4 @@
-package test;
+package AST;
 public class Opt extends ASTNode implements Cloneable {
   public Opt() {
     super();
