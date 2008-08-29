@@ -160,7 +160,7 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   }
 
   public void addChild(ASTNode node) {
-    setChild(node, getNumChild());
+    setChild(node, numChildren);
   }
   public ASTNode getChildNoTransform(int i) {
     return children[i];

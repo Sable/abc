@@ -12,9 +12,10 @@ public class MemoLine {
     public boolean hit() {
 	for(Map.Entry<Dependency, Object> e : pairs.entrySet()) {
 	    Object v = e.getKey().eval();
-	    if(v == null && e.getValue() != null) 
-		return false;
-	    else if(!v.equals(e.getValue()))
+	    if(v == null) {
+		if(e.getValue() != null) 
+		    return false;
+	    } else if(!v.equals(e.getValue()))
 		return false;
 	}
 	return true;
