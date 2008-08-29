@@ -1,6 +1,25 @@
 aspect DependencyTracking {
 
-  
+  /** For every lexeme, adapt its getter method to register a dependency. 
+
+      Take, for example, the grammar production
+      
+        BasicBox : Box ::= <Width:int> <Height:int>
+
+      Remember that JastAdd creates a class <code>BasicBox</code> containing, 
+      among others, a field <code>Width$value</code> and an accessor method 
+      <code>getWidth</code>.
+
+      Assuming that the eval index of <code>Width</code> is 29, the definition
+      of <code>getWidth</code> should be made to look like this:
+
+      <pre>
+        public int getWidth() {
+	  Main.registerDependency(new Dependency(this, 29), Width$value);
+	  return Width$value;
+	}
+      </pre>
+    */
   refine Rewrites public void ASTDecl.generateIntertypeDecls() {
     Rewrites.ASTDecl.generateIntertypeDecls();
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
@@ -35,6 +54,7 @@ aspect DependencyTracking {
               0
             );
 
+	    // insert a clause into the [switch] statement in method [eval]
             MethodDecl evalMethod = createEvalMethod();
             SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
             List list = switchStmt.getBlock().getStmtList();
@@ -46,12 +66,36 @@ aspect DependencyTracking {
     }
   }
 
+  /** Generates methods corresponding to a synthesised attribute.
+
+      A lazy attribute is implemented by three methods: A wrapper method
+      having the same name as the attribute, a cache method whose name
+      ends in <code>$cache</code>, and a an implementation method whose
+      name starts with <code>impl$body$</code>.
+
+      The wrapper method calls the cache method, registers a dependency,
+      and then returns the result of the cache method. The cache method,
+      in turn, provides a caching wrapper around the implementation method.
+
+      We need to distinguish the cache method from the implementation method:
+      When determining whether a <code>MemoLine</code> hits, i.e. whether the
+      cached value of some attribute is still valid, we may need to evaluate
+      other attributes to find out whether their value has changed. During
+      this evaluation, however, we are not interested in creating new
+      dependencies (after all, these dependencies are already in the memo
+      line), thus the <code>eval</code> method calls the cache method
+      instead of the wrapper method.
+   */
   refine AttributesCodegeneration public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
     if(isLazy) {
+      // wrap parameters into an Object to facilitate caching and dependency tracking
       addParameterStructure(statements);
         
+      /* build parameter list to call cache method: since the cache method is
+	 static, the first argument is a this pointer, then come the arguments
+	 of the wrapper method, followed by their wrapped representation */
       List args = new List();
       args.add(new ThisAccess("this"));
       for(int i = 0; i < getNumParameter(); i++) {
@@ -60,8 +104,10 @@ aspect DependencyTracking {
       if(getNumParameter() > 0)
         args.add(new VarAccess("parameters$"));
       
+      // generate cache method
       MethodDecl cacheMethod = generateCacheAttributeDecl(typeDecl, aspectMethod, lineNum);
 
+      // add call to cache method and assignment to store its result in local variable res
       statements.add(
           new VariableDeclaration(
             type().createQualifiedAccess(),
@@ -70,6 +116,7 @@ aspect DependencyTracking {
           )
       );
 
+      // add dependency tracking
       ClassInstanceExpr expr;
       if(getNumParameter() == 0) {
         expr = new ClassInstanceExpr(
@@ -110,6 +157,7 @@ aspect DependencyTracking {
         )
       );
 
+      // and finally a return statement for res
       statements.add(
         new ReturnStmt(new VarAccess("res"))
       );
@@ -121,6 +169,7 @@ aspect DependencyTracking {
       typeDecl.addCaseFor(caseList, evalIndex(), cacheMethod);
     }
     else {
+      // non-lazy are done as before
       addComputeCall(statements, aspectMethod);
       addReturnStmt(statements, typeDecl, isLazy);
     }
@@ -138,6 +187,11 @@ aspect DependencyTracking {
      );
   }
 
+  /** Creates a conditional print statement of the form
+      <pre>
+        if(Main.DEBUG)
+	  System.out.println(...messag... + getClass().getName());
+      </pre> */
   Stmt AttributeDecl.debugPrint(String s) {
     return new IfStmt(
       new TypeAccess("Main").qualifiesAccess(
@@ -166,10 +220,14 @@ aspect DependencyTracking {
     );
   }
 
-
+  /** Generates the cache method for a lazy synthesised attribute. */
   private MethodDecl SynDecl.generateCacheAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
     List statements = new List();
+
+    // generate caching prologue
     FieldDeclaration f = generateBeginCache(statements, typeDecl, uniqueSignatureName() + "$cache");
+
+    // add call to implementation method
     List args = new List();
     args.add(new VarAccess("this"));
     for(int i = 0; i < getNumParameter(); i++) {
@@ -183,6 +241,7 @@ aspect DependencyTracking {
         )
     );
   
+    // NTAs need to be put into the tree
     if(declaredNTA()) {
       statements.add(
         new ExprStmt(
@@ -210,13 +269,20 @@ aspect DependencyTracking {
       );
     }
 
+    // generate caching epilogue
     generateEndCache(statements, typeDecl);
+
+    // and return statement
     statements.add(
       new ReturnStmt(new VarAccess("res"))
     );
 
     statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
 
+    // the parameter list of the cache method contains a this pointer,
+    // the attribute arguments, and (if there are any arguments) their
+    // wrapped up representation
+    // thus, the cache method either has exactly one argument, or more than two
     List parameterList = new List();
     parameterList.add(new ParameterDeclaration(typeDecl.createQualifiedAccess(), "this"));
     for(int i = 0; i < getNumParameter(); i++)
@@ -224,6 +290,7 @@ aspect DependencyTracking {
     if(getNumParameter() > 0)
       parameterList.add(new ParameterDeclaration(new TypeAccess("java.lang", "Object"), "args"));
 
+    // return _and_ add the cache method
     return
     typeDecl.addMemberMethod(
       new MethodDecl(
@@ -237,6 +304,8 @@ aspect DependencyTracking {
     );
   }
 
+  /** Generates methods corresponding to an inherited attribute. Basically
+      the same as for synthesised attributes. */
   refine AttributesCodegeneration public void InhDecl.generateAttributeDecl(TypeDecl typeDecl, int lineNum) {
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
@@ -331,6 +400,9 @@ aspect DependencyTracking {
     );
   }
 
+  /** Generates cache method for inherited attributes. Again, this is
+      basically the same as for synthesised attributes, except for
+      the invocation of the implementation method. */
   private MethodDecl InhDecl.generateCacheAttributeDecl(int lineNum) {
     TypeDecl typeDecl = introducedType();
     List statements = new List();
@@ -343,6 +415,7 @@ aspect DependencyTracking {
       args.add(new VarAccess(getParameter(i).name()));
     }
 
+    // implementation method is invoked on parent
     statements.add(
         new VariableDeclaration(
           type().createQualifiedAccess(),
@@ -383,7 +456,64 @@ aspect DependencyTracking {
   }
 
 
+  /** Generates caching prologue.
 
+      If the attribute has no parameters, we create three fields: A cache field,
+      which is of type <code>MemoLine</code>; a flag to indicate whether the
+      value has been computed; a value field to contain the cached value.
+
+      For a non-parameterised integer attribute <code>height</code>, for 
+      example, we create the three fields
+      <pre>
+        private MemoLine height$cache = new MemoLine();
+	private  boolean height$computed = false;
+	private  int height$value;
+      </pre>
+
+      The caching prologue then looks like this:
+      <pre>
+        if(height$computed &amp;&amp; height$cache.hit()) {
+	  if(Main.DEBUG) 
+	    System.out.println("height cached for " + getClass().getName());
+	  return this$.height$value;
+        }
+	if(Main.DEBUG) 
+	  System.out.println("Recomputing height for " + getClass().getName());
+	Main.pushMemoLine(height$cache);
+      </pre>
+
+      If there are parameters, we instead create a single cache field, which is
+      a map from Objects (representing parameter tuples) to CachedValues.
+
+      For an attribute <code>lookupVar</code> with a <code>String</code>
+      parameter which returns a <code>Variable</code>, that field would be
+      declared as
+      <pre>
+          private Map&lt;Object, CachedValue&gt; lookup$cache 
+	    = new HashMap&lt;Object, CachedValue&gt;();
+      </pre>
+
+      The caching prologue then becomes:
+      <pre>
+        CachedValue v$;
+	if(lookup$cache.containsKey(args)) {
+	  v$ = lookup$cache.get(args);
+	  if(v$.line.hit()) 
+	    return (java.lang.String)v$.value;
+	  else 
+	    v$.line.clear();
+	} else {
+	  v$ = new test.CachedValue();
+	  lookup$cache.put(args, v$);
+	}
+	if(test.Main.DEBUG) 
+	  System.out.println("Recomputing lookup for " + getClass().getName());
+	Main.pushMemoLine(v$.line);
+      </pre>
+
+      (Actually, since the caching method is static, some method calls
+      have to be qualified with an explicit <code>this</code> pointer.)
+   */
   FieldDeclaration AttributeDecl.generateBeginCache(List statements, TypeDecl typeDecl, String fieldName) {
     TypeDecl returnType = type();
     if(returnType.isPrimitive())
@@ -404,6 +534,8 @@ aspect DependencyTracking {
             )
           )
         );
+
+      // check whether the cache is valid, and whether the memoline hits
       Stmt ifStmt = 
         new IfStmt(
           new AndLogicalExpr(
@@ -424,6 +556,10 @@ aspect DependencyTracking {
           "v$"
         )
       );
+      // check whether the cache contains an entry for the current arguments,
+      // and whether the corresponding memoline hits; if so, return the
+      // value; if not, either allocate a fresh entry (if there was none),
+      // or clear the memoline
       Stmt thenBlock =
         new Block(
           new List().add(
@@ -495,7 +631,11 @@ aspect DependencyTracking {
         );
       statements.add(outerIf);
     }
+
+    // print a debugging message
     statements.add(debugPrint("Recomputing " + name() + " for "));
+
+    // push the memo line
     if(getNumParameter() == 0) {
       statements.add(
         new ExprStmt(
@@ -522,6 +662,13 @@ aspect DependencyTracking {
     }
     return f;
   }
+
+  /** Generates caching epilogue.
+
+      First, the memo line is popped. Then, for an unparameterised attribute,
+      the value field is written and the computed flag is set. For a
+      parameterised attribute, the value field of the CachedValue object
+      is set. */
   void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl) {
     statements.add(
       new ExprStmt(
@@ -535,6 +682,12 @@ aspect DependencyTracking {
           new VarAccess("res")
         )
       );
+      statements.add(
+        AssignExpr.asStmt(
+	  fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+	  new BooleanLiteral("true")
+        )
+      );
     }
     else {
       statements.add(
@@ -546,6 +699,7 @@ aspect DependencyTracking {
     }
   }
 
+  /** Generates the cache field. */
   FieldDeclaration AttributeDecl.generateCacheField(TypeDecl typeDecl, String fieldName) {
     TypeDecl returnType = type();
     if(returnType.isPrimitive())
