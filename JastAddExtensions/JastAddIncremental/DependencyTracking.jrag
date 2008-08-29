@@ -477,6 +477,7 @@ aspect DependencyTracking {
 	    System.out.println("height cached for " + getClass().getName());
 	  return this$.height$value;
         }
+	height$cache.clear();
 	if(Main.DEBUG) 
 	  System.out.println("Recomputing height for " + getClass().getName());
 	Main.pushMemoLine(height$cache);
@@ -548,6 +549,15 @@ aspect DependencyTracking {
           new Opt()
         );
       statements.add(ifStmt);
+
+      // add statement to clear memoline
+      statements.add(
+        new ExprStmt(
+	  f.createQualifiedBoundAccess().qualifiesAccess(
+	    new MethodAccess("clear", new List())
+          )
+        )
+		     );
     }
     else {
       statements.add(
