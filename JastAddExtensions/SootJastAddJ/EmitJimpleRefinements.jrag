@@ -17,8 +17,9 @@ import soot.coffi.CONSTANT_Utf8_info;
 
 aspect EmitJimpleRefinements {
 
-  refine GenericsCodegen eq TypeDecl.getSootType() =
-    RefType.v(erasure().jvmName());
+  refine GenericsCodegen eq TypeDecl.getSootType() {
+    return RefType.v(erasure().jvmName());
+  }
 
   refine EmitJimple eq ClassDecl.sootClass() {
     boolean needAddclass = false;

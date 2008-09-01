@@ -22,7 +22,7 @@ aspect ClassLoading {
     return (CompilationUnit)loadedCompilationUnit.get(fileName);
   }
 
-  refine java void Program.addCompilationUnit(CompilationUnit unit) {
+  refine void Program.addCompilationUnit(CompilationUnit unit) {
     try {
       if(unit.pathName() != null) {
         String fileName = new File(unit.pathName()).getCanonicalPath();
@@ -30,7 +30,7 @@ aspect ClassLoading {
       }
     } catch (IOException e) {
     }
-    java.Program.addCompilationUnit(unit);
+    refined(unit);
   }
 
   refine ClassPath public CompilationUnit Program.getCompilationUnit(String name) {
