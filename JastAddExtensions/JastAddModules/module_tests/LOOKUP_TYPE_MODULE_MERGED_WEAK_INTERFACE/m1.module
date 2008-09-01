@@ -1,0 +1,9 @@
+module m1;
+
+import own mint;
+import own m2;
+import own m3;
+
+merge mint, m2, m3 as m3 merged;
+
+export package *;
