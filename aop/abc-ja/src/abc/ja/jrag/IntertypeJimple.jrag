@@ -40,7 +40,7 @@ aspect IntertypeJimple {
           f.introducedSootRef(fieldQualifierType()));
       }
     }
-    return Expressions.VarAccess.eval(b);
+    return refined(b);
   }
 
   refine Expressions public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue) {
@@ -61,7 +61,7 @@ aspect IntertypeJimple {
         }
       }
     }
-    return Expressions.VarAccess.emitStore(b, lvalue, rvalue);
+    return refined(b, lvalue, rvalue);
   }
 
   SootFieldRef IntertypeFieldDeclaration.introducedSootRef(TypeDecl base)
@@ -89,7 +89,7 @@ aspect IntertypeJimple {
       );
       return ref;
     }
-    return Expressions.MethodAccess.sootRef();
+    return refined();
   }
 
   eq AspectDecl.sootTypeModifiers() {

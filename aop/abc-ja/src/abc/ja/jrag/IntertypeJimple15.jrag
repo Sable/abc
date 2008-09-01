@@ -40,7 +40,7 @@ aspect IntertypeJimple15 {
           f.introducedSootRef(fieldQualifierType()));
       }
     }
-    return GenericsCodegen.VarAccess.eval(b);
+    return refined(b);
 
   }
   refine IntertypeJimple public soot.Value VarAccess.emitStore(Body b, soot.Value lvalue, soot.Value rvalue)
@@ -62,7 +62,7 @@ aspect IntertypeJimple15 {
         }
       }
     }
-    return GenericsCodegen.VarAccess.emitStore(b, lvalue, rvalue);
+    return refined(b, lvalue, rvalue);
   }
 
   refine VariableArityParametersCodegen public void MethodAccess.transformation()
@@ -84,7 +84,7 @@ aspect IntertypeJimple15 {
       // replace argument list with augemented argument list
       setArgList(list);
     }
-    IntertypeMethodCodegeneration.MethodAccess.transformation();
+    refined();
   }
 
   refine IntertypeJimple private SootMethodRef MethodAccess.sootRef()
@@ -103,19 +103,19 @@ aspect IntertypeJimple15 {
       );
       return ref;
     }
-    return GenericsCodegen.MethodAccess.sootRef();
+    return refined();
   }
 
   refine IntertypeConstructorNameAnalysis eq SuperConstructorAccess.decls()
-  to refine MethodSignature eq SuperConstructorAccess.decls() {
+  to refine MethodSignature15 eq SuperConstructorAccess.decls() {
     Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?
       thisType().lookupSuperConstructor() : lookupSuperConstructor();
     return chooseConstructor(c, getArgList());
   }
 
-  refine Generics public void TypeDecl.typeCheck()
+  refine GenericsTypeCheck public void TypeDecl.typeCheck()
   to refine Pointcuts public void TypeDecl.typeCheck() {
-    Pointcuts.TypeDecl.typeCheck();
+    refined();
     ArrayList list = new ArrayList();
     list.addAll(implementedInterfaces());
     for(int i = 0; i < list.size(); i++) {
@@ -135,28 +135,30 @@ aspect IntertypeJimple15 {
     }
   }
 
-  refine Generics eq ThisAccess.decl()
+  refine GenericsTypeAnalysis eq ThisAccess.decl()
   to refine IntertypeConstructorNameAnalysis eq ThisAccess.decl() {
-   TypeDecl typeDecl = IntertypeConstructorNameAnalysis.ThisAccess.decl();
+   TypeDecl typeDecl = refined();
     if(typeDecl instanceof ParTypeDecl)
       typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
     return typeDecl;
   }
 
-  refine Generics eq SuperAccess.decl()
+  refine GenericsTypeAnalysis eq SuperAccess.decl()
   to refine IntertypeConstructorNameAnalysis eq SuperAccess.decl() {
-   TypeDecl typeDecl = IntertypeConstructorNameAnalysis.SuperAccess.decl();
+   TypeDecl typeDecl = refined();
     if(typeDecl instanceof ParTypeDecl)
       typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
     return typeDecl;
   }
 
   refine GenericsCodegen eq TypeDecl.getSootClassDecl()
-  to refine AspectJCodegen eq TypeDecl.getSootClassDecl() = erasure() != this ? 
-    erasure().getSootClassDecl() : AspectJCodegen.TypeDecl.getSootClassDecl();
+  to refine AspectJCodegen eq TypeDecl.getSootClassDecl() {
+    return erasure() != this ? 
+    erasure().getSootClassDecl() : refined();
+  }
 
   refine IntertypeMethodNameAnalysis eq ClassDecl.methodsSignatureMap()
-  to refine MethodSignature eq ClassDecl.methodsSignatureMap() {
+  to refine MethodSignature15 eq ClassDecl.methodsSignatureMap() {
     HashMap map = new HashMap(localMethodsSignatureMap());
     if(hasSuperclass()) {
       // we only inherit methods that are not overridden locally

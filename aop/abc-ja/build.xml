@@ -64,7 +64,7 @@
 		<!-- create AST node types and weave aspect modules -->
 		<echo message="Generating to ${basedir}/generated..." />
 		<mkdir dir="${basedir}/generated" />
-		<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true" outdir="${basedir}/generated" lazyMaps="true" suppressWarnings="false" parentInterface="false">
+		<jastadd package="${package}" rewrite="true" beaver="true" noVisitCheck="true" noCacheCycle="true" noComponentCheck="true" outdir="${basedir}/generated" lazyMaps="true" suppressWarnings="false" parentInterface="false" refineLegacy="false">
 			<fileset dir="${frontend}">
 				<include name="**/*.ast" />
 				<include name="**/*.jrag" />

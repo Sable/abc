@@ -135,7 +135,7 @@ aspect DeclarePrecedence {
 
   refine DeclarePrecedenceNameAnalysis public void DeclarePrecedence.typeCheck()
   {
-    DeclarePrecedenceNameAnalysis.DeclarePrecedence.typeCheck();
+    refined();
     if (numStars() > 1)
       error("multiple * patterns not allowed");
 

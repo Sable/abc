@@ -32,7 +32,7 @@ aspect AspectJNameAnalysis {
 
   refine IntertypeMethodErrorCheck eq AspectDecl.localMethodsSignatureMap() {
     addImplicitMethods();
-    return IntertypeMethodErrorCheck.AspectDecl.localMethodsSignatureMap();
+    return refined();
   }
 
   private boolean AspectDecl.addImplicitMethods = true;

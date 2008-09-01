@@ -464,7 +464,7 @@ aspect Pointcuts
     // check for abstract pointcuts which should be overridden
     refine IntertypeMethodErrorCheck public void TypeDecl.typeCheck()
     {
-        IntertypeMethodErrorCheck.TypeDecl.typeCheck();
+        refined();
 
         if (isAbstract()) return;
 

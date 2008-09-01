@@ -27,7 +27,7 @@ aspect Privileged {
   syn boolean TypeDecl.isPrivileged() = getModifiers().isPrivileged() || isNestedType() && enclosingType().isPrivileged();
 
   refine Modifiers public void Modifiers.checkModifiers() {
-    Modifiers.Modifiers.checkModifiers();
+    refined();
     if(numModifier("privileged") > 1)
       error("only one privileged allowed");
     else if(isPrivileged() && !mayBePrivileged())
@@ -37,32 +37,32 @@ aspect Privileged {
   refine DeclareParentsAnalysis eq TypeDecl.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return DeclareParentsAnalysis.TypeDecl.accessibleFrom(type);
+    return refined(type);
   }
 
   refine IntertypeFieldNameAnalysis eq IntertypeFieldDeclaration.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return IntertypeFieldNameAnalysis.IntertypeFieldDeclaration.accessibleFrom(type);
+    return refined(type);
   }
 
   refine AccessControl eq FieldDeclaration.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return AccessControl.FieldDeclaration.accessibleFrom(type);
+    return refined(type);
   }
 
 
   refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return IntertypeMethodNameAnalysis.IntertypeMethodDecl.accessibleFrom(type);
+    return refined(type);
   }
 
   refine AccessControl eq MethodDecl.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return AccessControl.MethodDecl.accessibleFrom(type);
+    return refined(type);
   }
 
 
@@ -70,17 +70,17 @@ aspect Privileged {
   refine IntertypeConstructorNameAnalysis eq IntertypeConstructorDecl.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return IntertypeConstructorNameAnalysis.IntertypeConstructorDecl.accessibleFrom(type);
+    return refined(type);
   }
 
   refine DeclareParentsAnalysis eq ConstructorDecl.accessibleFrom(TypeDecl type) {
     if(type.isPrivileged())
       return true;
-    return DeclareParentsAnalysis.ConstructorDecl.accessibleFrom(type);
+    return refined(type);
   }
 
 
-  refine LookupType eq PackageAccess.qualifiedLookupType(String name) {
+  refine TypeScopePropagation eq PackageAccess.qualifiedLookupType(String name) {
     SimpleSet c = SimpleSet.emptySet;
     TypeDecl typeDecl = lookupType(packageName(), name);
     if(nextAccess() instanceof ClassInstanceExpr) {
@@ -99,7 +99,7 @@ aspect Privileged {
     }
   }
     
-  refine LookupType public SimpleSet Expr.keepAccessibleTypes(SimpleSet oldSet) {
+  refine TypeScopePropagation public SimpleSet Expr.keepAccessibleTypes(SimpleSet oldSet) {
     SimpleSet newSet = SimpleSet.emptySet;
     TypeDecl hostType = visibilityContext();
     for(Iterator iter = oldSet.iterator(); iter.hasNext(); ) {
@@ -110,7 +110,7 @@ aspect Privileged {
     return newSet;
   }
 
-  refine LookupMethod eq MethodAccess.accessible(MethodDecl m) {
+  refine MethodDecl eq MethodAccess.accessible(MethodDecl m) {
     if(visibilityContext().isPrivileged())
       return true;
     if(!isQualified())
@@ -137,7 +137,7 @@ aspect Privileged {
   refine IntertypeFieldNameAnalysis private boolean Expr.mayAccess(FieldDeclaration f) {
     if(visibilityContext() != null && visibilityContext().isPrivileged())
       return true;
-    return IntertypeFieldNameAnalysis.Expr.mayAccess(f);
+    return refined(f);
   }
 
 }

@@ -38,7 +38,7 @@ aspect AspectJCodegen {
 
   public int MethodDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void MethodDecl.jimplify2() {
-    EmitJimple.MethodDecl.jimplify2();
+    refined();
     MethodCategory.register(sootMethod(), category);
     if (category == MethodCategory.ACCESSOR_GET
         || category == MethodCategory.ACCESSOR_SET) {
@@ -87,18 +87,18 @@ aspect AspectJCodegen {
   }
   public int ConstructorDecl.category = MethodCategory.NORMAL;
   refine EmitJimple public void ConstructorDecl.jimplify2() {
-    EmitJimple.ConstructorDecl.jimplify2();
+    refined();
     if(generate())
       MethodCategory.register(sootMethod(), category);
   }
 
   refine IntertypeMethodCodegeneration eq IntertypeMethodDecl.createAspectMethod() {
-    MethodDecl m = IntertypeMethodCodegeneration.IntertypeMethodDecl.createAspectMethod();
+    MethodDecl m = refined();
     m.category = MethodCategory.INTERTYPE_METHOD_SOURCE;
     return m;
   }
   refine IntertypeMethodCodegeneration public MethodDecl IntertypeMethodDecl.createDelegateMethod(MethodDecl aspectMethod) {
-    MethodDecl m = IntertypeMethodCodegeneration.IntertypeMethodDecl.createDelegateMethod(aspectMethod);
+    MethodDecl m = refined(aspectMethod);
     m.category = MethodCategory.INTERTYPE_METHOD_DELEGATOR;
     return m;
   }
@@ -115,45 +115,45 @@ aspect AspectJCodegen {
   }*/
 
   refine IntertypeConstructorCodegeneration public ConstructorDecl IntertypeConstructorDecl.createDelegate() {
-    ConstructorDecl c = IntertypeConstructorCodegeneration.IntertypeConstructorDecl.createDelegate();
+    ConstructorDecl c = refined();
     c.category = MethodCategory.INTERTYPE_CONSTRUCTOR_DELEGATOR;
     return c;
   }
   refine IntertypeConstructorCodegeneration public MethodDecl IntertypeConstructorDecl.createBodyDelegate() {
-    MethodDecl m = IntertypeConstructorCodegeneration.IntertypeConstructorDecl.createBodyDelegate();
+    MethodDecl m = refined();
     m.category = MethodCategory.INTERTYPE_CONSTRUCTOR_BODY;
     return m;
   }
 
   refine IntertypeFieldCodegeneration protected MethodDecl BodyDecl.buildAccessor(Modifiers modifiers, TypeDecl type, 
                                                              String name, List parameters, Opt body, TypeDecl typeDecl) {
-    MethodDecl m = IntertypeFieldCodegeneration.BodyDecl.buildAccessor(modifiers, type, name, parameters, body, typeDecl);
+    MethodDecl m = refined(modifiers, type, name, parameters, body, typeDecl);
     m.category = MethodCategory.INTERTYPE_INITIALIZER_DELEGATE;
     return m;
   }
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInit() {
-    MethodDecl m = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInit();
+    MethodDecl m = refined();
     m.category = MethodCategory.INTERTYPE_FIELD_INITIALIZER;
     return m;
   }
   
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createGetter() {
-    MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createGetter();
+    MethodDecl m  = refined();
     m.category = MethodCategory.ACCESSOR_GET;
     return m;
   }
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createSetter() {
-    MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createSetter();
+    MethodDecl m  = refined();
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceGetter() {
-    MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceGetter();
+    MethodDecl m  = refined();
     m.category = MethodCategory.ACCESSOR_GET;
     return m;
   }
   refine IntertypeFieldCodegeneration public MethodDecl IntertypeFieldDeclaration.createInterfaceSetter() {
-    MethodDecl m  = IntertypeFieldCodegeneration.IntertypeFieldDeclaration.createInterfaceSetter();
+    MethodDecl m  = refined();
     m.category = MethodCategory.ACCESSOR_SET;
     return m;
   }
