@@ -112,7 +112,7 @@ aspect AutoBoxingCodegen {
 
     }
     else
-      BooleanExpressions.Expr.emitEvalBranch(b);
+      refined(b);
   }
 
   // 14.11 Switch

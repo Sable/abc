@@ -31,7 +31,7 @@ aspect VariableArityParametersCodegen {
       // replace argument list with augemented argument list
       setArgList(list);
     }
-    Transformations.MethodAccess.transformation();
+    refined();
   }
   refine Transformations public void ClassInstanceExpr.transformation() {
     if(decl().isVariableArity() && !invokesVariableArityAsArray()) {
@@ -51,7 +51,7 @@ aspect VariableArityParametersCodegen {
       // replace argument list with augemented argument list
       setArgList(list);
     }
-    Transformations.ClassInstanceExpr.transformation();
+    refined();
   }
 
   refine Transformations public void ConstructorAccess.transformation() {
@@ -72,13 +72,13 @@ aspect VariableArityParametersCodegen {
       // replace argument list with augemented argument list
       setArgList(list);
     }
-    Transformations.ConstructorAccess.transformation();
+    refined();
   }
 
   public static final int Modifiers.ACC_VARARGS = 0x0080;
   
   refine EmitJimple eq MethodDecl.sootTypeModifiers() {
-    int res = EmitJimple.MethodDecl.sootTypeModifiers();
+    int res = refined();
     if(isVariableArity())
       res |= Modifiers.ACC_VARARGS;
     return res;

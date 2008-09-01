@@ -16,7 +16,9 @@ aspect GenericsCodegen {
 
 
 
-  refine InnerClasses eq ClassDecl.superEnclosing() = superclass().erasure().enclosing();
+  refine InnerClasses eq ClassDecl.superEnclosing() {
+    return superclass().erasure().enclosing();
+  }
 
   public ConstructorDecl ConstructorDeclSubstituted.createAccessor() {
     return erasedConstructor().createAccessor();
@@ -68,7 +70,7 @@ aspect GenericsCodegen {
       return result;
     }
     else
-      return Expressions.VarAccess.eval(b);
+      return refined(b);
   }
   refine Expressions private SootFieldRef VarAccess.sootRef() {
     FieldDeclaration decl = ((FieldDeclaration)decl()).erasedField();
@@ -100,7 +102,7 @@ aspect GenericsCodegen {
         }
       }
     }
-    return Expressions.VarAccess.emitStore(b, lvalue, rvalue);
+    return refined(b, lvalue, rvalue);
   }
 
   refine Expressions public soot.Local VarAccess.createLoadQualifier(Body b) {
@@ -294,7 +296,7 @@ aspect GenericsCodegen {
   }
 
   refine InnerClasses protected TypeDecl MethodAccess.methodQualifierType() {
-    TypeDecl typeDecl = InnerClasses.MethodAccess.methodQualifierType();
+    TypeDecl typeDecl = refined();
     if(typeDecl == null)
       return null;
     typeDecl = typeDecl.erasure();
@@ -306,7 +308,7 @@ aspect GenericsCodegen {
   }
 
   refine InnerClasses protected TypeDecl VarAccess.fieldQualifierType() {
-    TypeDecl typeDecl = InnerClasses.VarAccess.fieldQualifierType();
+    TypeDecl typeDecl = refined();
     return typeDecl == null ? null : typeDecl.erasure();
   }
 
@@ -402,13 +404,18 @@ aspect GenericsCodegen {
   public void ParTypeDecl.transformation() {
   }
 
-  refine EmitJimple eq TypeDecl.getSootClassDecl() = erasure() != this ? 
-    erasure().getSootClassDecl() : EmitJimple.TypeDecl.getSootClassDecl();
-  refine EmitJimple eq TypeDecl.sootClass() = erasure() != this ?
-    erasure().sootClass() : EmitJimple.TypeDecl.sootClass();
-
-  refine EmitJimple eq TypeDecl.getSootType() = erasure() != this ?
-    erasure().getSootType() : EmitJimple.TypeDecl.getSootType();
+  refine EmitJimple eq TypeDecl.getSootClassDecl() {
+    return erasure() != this ? 
+    erasure().getSootClassDecl() : refined();
+  }
+  refine EmitJimple eq TypeDecl.sootClass() {
+    return erasure() != this ?
+    erasure().sootClass() : refined();
+  }
+  refine EmitJimple eq TypeDecl.getSootType() { 
+    return erasure() != this ?
+    erasure().getSootType() : refined();
+  }
 
   eq LUBType.getSootClassDecl() = typeObject().getSootClassDecl();
   eq GLBType.getSootClassDecl() = typeObject().getSootClassDecl();
