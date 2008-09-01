@@ -1,7 +1,16 @@
 aspect ExportedPackages {
-	public Set<String> ModuleCompilationUnit.getExportedPackages() {
+	syn lazy Set<String> ModuleCompilationUnit.getExportedPackages() {
 		Set<String> ret = new HashSet<String>();
+		Set<String> allPackages = new HashSet<String>();
 		LinkedList<ModuleMemberDecl> memberList = getBaseCU().getSelfAndSuperMemberListNoTransform();
+		
+		ModuleCompilationUnit currCU = this;
+		while (currCU != null) {
+			for (CompilationUnit cu : currCU.getCompilationUnitList()) {
+				allPackages.add(cu.moduleLocalPackageName());
+			}
+			currCU = currCU.getSuperModuleCUNoTransform();
+		}
 		
 		for (ModuleMemberDecl member : memberList) {
 			if (!(member instanceof ModuleExportDecl)) {
@@ -10,6 +19,9 @@ aspect ExportedPackages {
 			ModuleExportDecl exportDecl = (ModuleExportDecl) member; 
 			for (ModulePackageDecl packageDecl : exportDecl.getModulePackageDeclList()) {
 				ret.add(packageDecl.getID());
+			}
+			if (exportDecl instanceof ModuleExportAllDecl) {
+				ret.addAll(allPackages);
 			}
 		}
 		return ret;

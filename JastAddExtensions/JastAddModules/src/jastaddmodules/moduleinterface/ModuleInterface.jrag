@@ -31,14 +31,9 @@ aspect ModuleInterface {
 		
 		//check the signatures for weak interfaces
 		if (isWeakModuleInterface()) {
-			mcu.collectLocalModulePackages(); //collect first so that it makes sense
-			for (String packageName : getBaseCU().getExportedPackages()) {
-				if (mcu.getLocalPackageWithSuper(packageName) == null ||
-						mcu.getLocalPackageWithSuper(packageName).isExported() == false) {
-					return false;
-				}
+			if (mcu.getExportedPackages().containsAll(getBaseCU().getExportedPackages())) {
+				return true;
 			}
-			return true;
 		}
 		
 		return false;
