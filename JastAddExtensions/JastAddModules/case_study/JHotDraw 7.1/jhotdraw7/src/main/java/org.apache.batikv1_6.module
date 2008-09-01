@@ -1,5 +1,4 @@
 module org.apache.batik1_6 
-	//implements org.apache.batik
 	overrides org.jhotdraw.batikfragment;
 export package 
 	org.apache.batik.ext.awt.image.renderable,
