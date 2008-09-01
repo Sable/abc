@@ -57,9 +57,9 @@ aspect IntertypeMethodNameAnalysis {
   }
   
   // include introduced methods in local methods map
-  refine LookupMethod eq TypeDecl.localMethodsSignatureMap() {
+  refine MemberMethods eq TypeDecl.localMethodsSignatureMap() {
     // Locally declared methods
-    HashMap map = LookupMethod.TypeDecl.localMethodsSignatureMap();
+    HashMap map = refined();
     // Add intertype methods if there is no local declaration
     for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
       MethodDecl decl = (MethodDecl)iter.next();
@@ -88,7 +88,7 @@ aspect IntertypeMethodNameAnalysis {
     }
     return map;
   }
-  refine LookupMethod eq ClassDecl.methodsSignatureMap() {
+  refine MemberMethods eq ClassDecl.methodsSignatureMap() {
     HashMap map = new HashMap(localMethodsSignatureMap());
     if(hasSuperclass()) {
       // we only inherit methods that are not overridden locally
@@ -249,8 +249,8 @@ aspect IntertypeMethodNameAnalysis {
     return c;
   }
 
-  refine LookupMethod eq ClassDecl.ancestorMethods(String signature) {
-    SimpleSet set = LookupMethod.ClassDecl.ancestorMethods(signature);
+  refine AncestorMethods eq ClassDecl.ancestorMethods(String signature) {
+    SimpleSet set = refined(signature);
     for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
       IntertypeMethodDecl m = (IntertypeMethodDecl)iter.next();
       if(m.signature().equals(signature) && m.zapped())

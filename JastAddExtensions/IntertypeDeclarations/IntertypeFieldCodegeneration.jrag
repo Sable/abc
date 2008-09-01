@@ -11,14 +11,14 @@ aspect IntertypeFieldCodegeneration {
 
   // make sure that fields added using addMemberField are visible without having to flush all name binding attributes
   refine BoundNames public FieldDeclaration TypeDecl.addMemberField(FieldDeclaration f) {
-    f = BoundNames.TypeDecl.addMemberField(f);
+    f = refined(f);
     if(localFieldsMap_value != null)
       localFieldsMap_value.put(f.name(), f);
     return f;
   }
 
   refine IntertypeMethodCodegeneration public void ClassDecl.generateIntertypeDecls() {
-    IntertypeMethodCodegeneration.ClassDecl.generateIntertypeDecls();
+    refined();
     for(Iterator iter = introducedFieldsFromInterfaces().iterator(); iter.hasNext(); ) {
       // add fields, introduced through interfaces, that are not visible in the super class
       IntertypeFieldDeclaration f = (IntertypeFieldDeclaration)iter.next();
@@ -80,7 +80,7 @@ aspect IntertypeFieldCodegeneration {
         return;
       }
     }
-    Transformations.VarAccess.transformation();
+    refined();
   }
 
 
@@ -328,7 +328,7 @@ aspect IntertypeFieldCodegeneration {
     	if(hostType() instanceof AspectDecl)
     		return true;
     }
-    return InnerClasses.VarAccess.requiresAccessor();
+    return refined();
   }
 
   public void IntroducedFieldDeclaration.toString(StringBuffer s) {

@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-aspect IntertypeMethodCodegeneration {
+aspect IntertypeConstructorCodegeneration {
   //eq IntertypeConstructorDecl.isBytecodeMethod() = false;
   
   eq IntertypeConstructorDecl.generate() = false;

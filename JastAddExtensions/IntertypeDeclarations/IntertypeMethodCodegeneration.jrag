@@ -242,7 +242,8 @@ aspect IntertypeMethodCodegeneration {
       MethodDecl m = superDispatchDelegate();
       List args = (List)getArgList().boundCopy();
       Access a = superDispatchQualifier().createBoundAccess().qualifiesAccess(new ThisAccess()).qualifiesAccess(m.createBoundAccess(args));
-      replace(getParent()).with(a);
+      replace(unqualifiedScope()).with(hasNextAccess() ? a.qualifiesAccess(nextAccess()) : a);
+      //replace(getParent()).with(a);
       a.generateIntertypeDecls();
     }
     else
@@ -566,7 +567,7 @@ aspect IntertypeMethodCodegeneration {
         return true;
       return false;
     }
-    return InnerClasses.MethodAccess.requiresAccessor();
+    return refined();
   }
   
   syn String IntertypeMethodDecl.implBodyName() = "impl$body$" + name();

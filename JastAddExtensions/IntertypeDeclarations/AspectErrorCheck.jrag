@@ -44,6 +44,6 @@ aspect AspectErrorCheck
     if (hostType().isAspectDecl() && getNumParameter() > 0)
       error(hostType().typeName() + " is an aspect, so its " +
             "constructor must have no parameters.");
-    TypeCheck.ConstructorDecl.typeCheck();
+    refined();
   }
 }

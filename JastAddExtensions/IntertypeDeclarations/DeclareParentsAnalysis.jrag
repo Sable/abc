@@ -49,7 +49,7 @@ aspect DeclareParentsAnalysis {
  */
 
   refine AccessControl eq TypeDecl.accessibleFrom(TypeDecl type) {
-    if(AccessControl.TypeDecl.accessibleFrom(type))
+    if(refined(type))
       return true;
     if(type instanceof ClassDecl && ((ClassDecl)type).introducedSuperclass() == this)
       return true;
@@ -59,14 +59,14 @@ aspect DeclareParentsAnalysis {
     return false;
   }
   refine AccessControl eq TypeDecl.accessibleFromExtend(TypeDecl type) {
-    if(AccessControl.TypeDecl.accessibleFromExtend(type))
+    if(refined(type))
       return true;
     if(type instanceof ClassDecl && ((ClassDecl)type).introducedSuperclass() == this)
       return true;
     return false;
   }
   refine AccessControl eq ConstructorDecl.accessibleFrom(TypeDecl type) {
-    if(AccessControl.ConstructorDecl.accessibleFrom(type))
+    if(refined(type))
       return true;
     if(type instanceof ClassDecl && ((ClassDecl)type).introducedSuperclass() == hostType())
       return true;
@@ -74,7 +74,7 @@ aspect DeclareParentsAnalysis {
   }
 
   refine AspectErrorCheck public void ClassDecl.typeCheck() {
-    AspectErrorCheck.ClassDecl.typeCheck();
+    refined();
     if(introducedSuperclass() != null && superclassWithoutDeclareParents() != null) {
        if(!introducedSuperclass().instanceOf(superclassWithoutDeclareParents())
        && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass()))
@@ -140,7 +140,7 @@ aspect DeclareParentsAnalysis {
     return (ClassDecl)typeObject();
   }
 
-  refine LookupType eq ClassDecl.memberTypes(String name) {
+  refine TypeScopePropagation eq ClassDecl.memberTypes(String name) {
     SimpleSet set = localTypeDecls(name);
     if(!set.isEmpty()) return set;
     for(Iterator outerIter = interfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
@@ -172,13 +172,13 @@ aspect DeclareParentsAnalysis {
     return set;
   }
 
-  refine TypeAnalysis public ClassDecl ClassDecl.superclass() {
+  refine SuperClasses public ClassDecl ClassDecl.superclass() {
     if(introducedSuperclass() != null && !superclassWithoutDeclareParents().instanceOf(introducedSuperclass()))
       return introducedSuperclass();
-    return TypeAnalysis.ClassDecl.superclass();
+    return refined();
   }
 
-  refine TypeAnalysis public Iterator ClassDecl.interfacesIterator() {
+  refine SuperClasses public Iterator ClassDecl.interfacesIterator() {
     return new Iterator() {
       public boolean hasNext() {
         computeNextCurrent();
@@ -275,7 +275,7 @@ aspect DeclareParentsAnalysis {
     return false;
   }
 
-  refine LookupType eq InterfaceDecl.memberTypes(String name) {
+  refine TypeScopePropagation eq InterfaceDecl.memberTypes(String name) {
     SimpleSet set = localTypeDecls(name);
     if(!set.isEmpty()) return set;
     for(Iterator outerIter = superinterfacesIteratorWithoutDeclareParents(); outerIter.hasNext(); ) {
@@ -289,7 +289,7 @@ aspect DeclareParentsAnalysis {
     return set;
   }
 
-  refine TypeAnalysis public Iterator InterfaceDecl.superinterfacesIterator() {
+  refine SuperClasses public Iterator InterfaceDecl.superinterfacesIterator() {
     return new Iterator() {
       public boolean hasNext() {
         computeNextCurrent();
@@ -327,8 +327,8 @@ aspect DeclareParentsAnalysis {
     };
   }
 
-  refine TypeAnalysis eq InterfaceDecl.isCircular() {
-    if(TypeAnalysis.InterfaceDecl.isCircular())
+  refine Circularity eq InterfaceDecl.isCircular() {
+    if(refined())
       return true;
     for(Iterator iter = introducedInterfaces().iterator(); iter.hasNext(); ) {
       TypeDecl typeDecl = (TypeDecl)iter.next();
@@ -337,8 +337,8 @@ aspect DeclareParentsAnalysis {
     }
     return false;
   }
-  refine TypeAnalysis eq ClassDecl.isCircular() {
-    if(TypeAnalysis.ClassDecl.isCircular())
+  refine Circularity eq ClassDecl.isCircular() {
+    if(refined())
       return true;
     if(introducedSuperclass() != null && introducedSuperclass().isCircular())
       return true;

@@ -55,8 +55,8 @@ aspect IntertypeFieldNameAnalysis {
 
 
   // add all introduced fields
-  refine LookupVariable eq TypeDecl.localFields(String name) {
-    SimpleSet fields = LookupVariable.TypeDecl.localFields(name);
+  refine Fields eq TypeDecl.localFields(String name) {
+    SimpleSet fields = refined(name);
     for(Iterator iter = introducedFields().iterator(); iter.hasNext(); ) {
       FieldDeclaration f = (FieldDeclaration)iter.next();
       if(f.name().equals(name))
@@ -66,7 +66,7 @@ aspect IntertypeFieldNameAnalysis {
   }
 
   // filter fields that are not accessible from this context
-  refine LookupVariable eq VarAccess.decls() {
+  refine VariableScopePropagation eq VarAccess.decls() {
     SimpleSet set = lookupVariable(name());
     if(set.size() > 1) {
       SimpleSet s = SimpleSet.emptySet;
@@ -143,7 +143,7 @@ aspect IntertypeFieldNameAnalysis {
       return hostPackage().equals(type.hostPackage());
   }
 
-  refine LookupVariable public boolean Expr.mayAccess(FieldDeclaration f) {
+  refine VariableScope public boolean Expr.mayAccess(FieldDeclaration f) {
     if(f instanceof IntertypeFieldDeclaration) {
       IntertypeFieldDeclaration d = (IntertypeFieldDeclaration)f;
       // intertype field declarations can not be protected

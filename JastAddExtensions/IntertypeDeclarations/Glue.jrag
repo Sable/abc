@@ -20,16 +20,16 @@ aspect Glue {
   syn boolean Access.matchesType(TypeDecl t) = type() == t;
 
 
-    refine IntertypeConstructorNameAnalysis eq SuperConstructorAccess.decls()
-  to refine MethodSignature eq SuperConstructorAccess.decls() {
+  refine IntertypeConstructorNameAnalysis eq SuperConstructorAccess.decls()
+  to refine MethodSignature15 eq SuperConstructorAccess.decls() {
     Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?
       thisType().lookupSuperConstructor() : lookupSuperConstructor();
     return chooseConstructor(c, getArgList());
   }
 
-  refine Generics public void TypeDecl.typeCheck()
+  refine GenericsTypeCheck public void TypeDecl.typeCheck()
   to refine IntertypeMethodErrorCheck public void TypeDecl.typeCheck() {
-    IntertypeMethodErrorCheck.TypeDecl.typeCheck();
+    refined();
     ArrayList list = new ArrayList();
     list.addAll(implementedInterfaces());
     for(int i = 0; i < list.size(); i++) {
@@ -49,24 +49,24 @@ aspect Glue {
     }
   }
 
-  refine Generics eq ThisAccess.decl()
+  refine GenericsTypeAnalysis eq ThisAccess.decl()
   to refine IntertypeConstructorNameAnalysis eq ThisAccess.decl() {
-    TypeDecl typeDecl = IntertypeConstructorNameAnalysis.ThisAccess.decl();
+    TypeDecl typeDecl = refined();
     if(typeDecl instanceof ParTypeDecl)
       typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
     return typeDecl;
   }
 
-  refine Generics eq SuperAccess.decl() 
+  refine GenericsTypeAnalysis eq SuperAccess.decl() 
   to refine IntertypeConstructorNameAnalysis eq SuperAccess.decl() {
-    TypeDecl typeDecl = IntertypeConstructorNameAnalysis.SuperAccess.decl();
+    TypeDecl typeDecl = refined();
     if(typeDecl instanceof ParTypeDecl)
       typeDecl = ((ParTypeDecl)typeDecl).genericDecl();
     return typeDecl;
   }
 
-    refine IntertypeMethodNameAnalysis eq ClassDecl.methodsSignatureMap()
-  to refine MethodSignature eq ClassDecl.methodsSignatureMap() {
+  refine IntertypeMethodNameAnalysis eq ClassDecl.methodsSignatureMap()
+  to refine MethodSignature15 eq ClassDecl.methodsSignatureMap() {
     HashMap map = new HashMap(localMethodsSignatureMap());
     if(hasSuperclass()) {
       // we only inherit methods that are not overridden locally
@@ -150,5 +150,16 @@ aspect Glue {
     }
     return map;
   }
+
+  refine IntertypeConstructorNameAnalysis eq IntertypeConstructorDecl.introducedType() {
+    return refined().sourceTypeDecl();
+  }
+  refine IntertypeFieldNameAnalysis eq IntertypeFieldDeclaration.introducedType() {
+    return refined().sourceTypeDecl();
+  }
+  refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.introducedType() {
+    return refined().sourceTypeDecl();
+  }
+
 
 }

@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-aspect IntertypeMethodNameAnalysis {
+aspect IntertypeConstructorNameAnalysis {
   eq IntertypeConstructorDecl.getTargetType().nameType() = NameType.TYPE_NAME;
 
   syn TypeDecl IntertypeConstructorDecl.hostAspect() = (TypeDecl)getParent().getParent();
@@ -48,7 +48,7 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeMethodDecl.getChild().thisType() = introducedType();
   eq Program.getChild().thisType() = null;
 
-  refine LookupConstructor eq SuperConstructorAccess.decls() {
+  refine ConstructScope eq SuperConstructorAccess.decls() {
     Collection c = hasPrevExpr() && !prevExpr().isTypeAccess() ?
       thisType().lookupSuperConstructor() : lookupSuperConstructor();
     return mostSpecificConstructor(c);
@@ -68,10 +68,12 @@ aspect IntertypeMethodNameAnalysis {
     }
   }
 
-  refine LookupType eq ThisAccess.decl() =
-    isQualified() ? qualifier().type() : thisType();
-  refine LookupType eq SuperAccess.decl() =
-    isQualified() ? qualifier().type() : thisType();
+  refine TypeScopePropagation eq ThisAccess.decl() {
+    return isQualified() ? qualifier().type() : thisType();
+  }
+  refine TypeScopePropagation eq SuperAccess.decl() {
+    return isQualified() ? qualifier().type() : thisType();
+  }
 
   refine TypeAnalysis eq SuperAccess.type() {
     TypeDecl typeDecl = decl();
@@ -136,7 +138,7 @@ aspect IntertypeMethodNameAnalysis {
   eq ConstructorDecl.isExactConstructorDecl() = true;
   eq IntertypeConstructorDecl.isExactConstructorDecl() = false;
 
-  refine LookupConstructor eq TypeDecl.constructors() {
+  refine ConstructorLookup eq TypeDecl.constructors() {
     Collection c = new ArrayList();
     for(int i = 0; i < getNumBodyDecl(); i++) {
       if(getBodyDecl(i).isExactConstructorDecl()) {

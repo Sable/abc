@@ -118,7 +118,7 @@ aspect IntertypeMethodErrorCheck {
 
   
   refine DeclareParentsAnalysis public void ClassDecl.typeCheck() {
-    DeclareParentsAnalysis.ClassDecl.typeCheck();
+    refined();
     // method implementations introduced through interfaces may not
     // override other method implementations
     /*
@@ -155,7 +155,7 @@ aspect IntertypeMethodErrorCheck {
   inh TypeDecl MethodDecl.visibilityContext();
 
   refine TypeHierarchyCheck public void TypeDecl.typeCheck() {
-    TypeHierarchyCheck.TypeDecl.typeCheck();
+    refined();
     for(Iterator iter = methodsSignatureMap().values().iterator(); iter.hasNext(); ) {
       SimpleSet set = (SimpleSet)iter.next();
       if(set.size() > 1) {
@@ -240,7 +240,7 @@ aspect IntertypeMethodErrorCheck {
 
   refine TypeHierarchyCheck private void ClassDecl.interfaceMethodCompatibleWithInherited(MethodDecl m, MethodDecl n) {
     if(m.isAbstract())
-      TypeHierarchyCheck.ClassDecl.interfaceMethodCompatibleWithInherited(m, n);
+      refined(m, n);
   }
 
   syn boolean IntertypeMethodDecl.visibleOrZapped() {
