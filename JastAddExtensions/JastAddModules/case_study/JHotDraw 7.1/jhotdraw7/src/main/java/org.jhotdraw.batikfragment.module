@@ -1,4 +1,4 @@
-module org.jhotdraw.batikfragment;// implements org.apache.batik;
+module org.jhotdraw.batikfragment;
 export package 
 	org.apache.batik.ext.awt.image,
 	org.apache.batik.ext.awt,
