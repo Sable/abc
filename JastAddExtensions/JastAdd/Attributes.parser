@@ -17,12 +17,12 @@ BodyDecl syn_decl =
 
   | modifiers.mod? SYN NTA type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN method_body.b 
     {: return new SynDecl(new Modifiers(mod), false, type, hostType, IDENTIFIER, p, b).declareNTA(); :}
-  | modifiers.mod? SYN LAZY NTA type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN method_body.b 
-    {: return new SynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, b).declareNTA(); :}
+  | modifiers.mod? SYN LAZY FINAL type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN method_body.b 
+    {: return new SynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, b).declareFinal(); :}
   | modifiers.mod? SYN NTA type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
     {: return new SynDecl(new Modifiers(mod), false, type, hostType, IDENTIFIER, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))).declareNTA(); :}
-  | modifiers.mod? SYN LAZY NTA type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
-    {: return new SynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))).declareNTA(); :}
+  | modifiers.mod? SYN LAZY FINAL type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN EQ expression SEMICOLON
+    {: return new SynDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))).declareFinal(); :}
 
   ;
 

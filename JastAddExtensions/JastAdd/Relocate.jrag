@@ -1,6 +1,6 @@
 aspect Relocate {
-  refine java public String CompilationUnit.getPackageDecl() {
-    String s = java.CompilationUnit.getPackageDecl();
+  refine public String CompilationUnit.getPackageDecl() {
+    String s = refined();
     if(s == null || s.equals("")) {
       String n = relativeName();
       if(n != null && (n.endsWith(".ast") || n.endsWith(".jrag") || n.endsWith(".jadd"))

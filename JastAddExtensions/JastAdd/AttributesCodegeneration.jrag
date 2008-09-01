@@ -1,4 +1,4 @@
-aspect GenerateSynCode {
+aspect AttributesCodegeneration {
 
   public static Modifiers Modifiers.create(int flags) {
     List list = new List();
@@ -22,6 +22,14 @@ aspect GenerateSynCode {
   }
   public boolean AttributeDecl.declaredNTA() {
     return declaredNTA;
+  }
+  public boolean AttributeDecl.declaredFinal = false;
+  public AttributeDecl AttributeDecl.declareFinal() {
+    declaredFinal = true;
+    return this;
+  }
+  public boolean AttributeDecl.declaredFinal() {
+    return declaredFinal;
   }
 
   // override behavior in IntertypeMethodCodegeneration
@@ -237,7 +245,7 @@ aspect GenerateSynCode {
   	// IN_CIRCLE = FALSE;
   	ifStatements.add(
   	  AssignExpr.asStmt(
-  	    new VarAccess("IN_CIRCLE"),
+  	    new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("IN_CIRCLE")),
   	    new BooleanLiteral(false)
   	  )
   	);
@@ -262,16 +270,15 @@ aspect GenerateSynCode {
   	);*/
   	ifStatements.add(
   	  new ExprStmt(
-  	    new MethodAccess(
-  	      "pushEvalStack",
-  	      new List()
+  	    new MethodAccess("state", new List()).qualifiesAccess(
+          new MethodAccess("pushEvalStack", new List())
   	    )
   	  )
   	);
   	
   	list.add(
   	  new IfStmt(
-  	    new VarAccess("IN_CIRCLE"),
+  	    new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("IN_CIRCLE")),
   	    new Block(
   	      ifStatements
   	    )
@@ -284,7 +291,7 @@ aspect GenerateSynCode {
   	List ifStatements = new List();
   	ifStatements.add(
       AssignExpr.asStmt(
-  	    new VarAccess("IN_CIRCLE"),
+  	    new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("IN_CIRCLE")),
   	    new BooleanLiteral(true)
   	  )
   	);
@@ -305,10 +312,9 @@ aspect GenerateSynCode {
   	);*/
   	ifStatements.add(
   	  new ExprStmt(
-  	    new MethodAccess(
-  	      "popEvalStack",
-  	      new List()
-  	    )
+  	    new MethodAccess("state", new List()).qualifiesAccess(
+          new MethodAccess("popEvalStack", new List())
+        )
   	  )
   	);
   	list.add(
@@ -391,7 +397,7 @@ aspect GenerateSynCode {
 
   protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
     // setNNN(computedValueName());
-    if(declaredNTA())
+    if(declaredNTA()) {
       if(getNumParameter() == 0) {
         list.add(
           new ExprStmt(
@@ -405,27 +411,50 @@ aspect GenerateSynCode {
         );
       }
       else {
+        FieldDeclaration f = ntaListField(typeDecl);
         list.add(
-          new ExprStmt(
-            new ParExpr(
-              new CastExpr(
-                type().createQualifiedAccess(),
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
-                  new MethodAccess(
-                    "get",
-                    new List().add(new VarAccess("parameters$"))
+          new IfStmt(
+            new EQExpr(
+              f.createQualifiedBoundAccess(),
+              new NullLiteral("null")
+            ),
+            new Block(
+              new List().add(
+                AssignExpr.asStmt(
+                  f.createQualifiedBoundAccess(),
+                  new ClassInstanceExpr(listNode().createQualifiedAccess(), new List(), new Opt())
+                )
+              ).add(
+                new ExprStmt(
+                  f.createQualifiedBoundAccess().qualifiesAccess(
+                    new MethodAccess("is$Final", new List().add(new BooleanLiteral("true")))
+                  )
+                )
+              ).add(
+                new ExprStmt(
+                  f.createQualifiedBoundAccess().qualifiesAccess(
+                    new MethodAccess("setParent", new List().add(new ThisAccess("this")))
                   )
                 )
               )
-            ).qualifiesAccess(
-              new MethodAccess(
-                "setParent",
-                new List().add(new ThisAccess("this"))
-              )
+            ),
+            new Opt()
+          )
+        ).add(
+          new ExprStmt(
+            new VarAccess(computedValueName()).qualifiesAccess(
+              new MethodAccess("is$Final", new List().add(new BooleanLiteral("true")))
+            )
+          )
+        ).add(
+          new ExprStmt(
+            f.createQualifiedBoundAccess().qualifiesAccess(
+              new MethodAccess("addChild", new List().add(new VarAccess(computedValueName())))
             )
           )
         );
       }
+    }
     else
       list.add(
         new ExprStmt(
@@ -488,6 +517,22 @@ aspect GenerateSynCode {
     );
     typeDecl.addMemberField(f);
     fieldVisitedFlagAdded.put(typeDecl, f);
+    return f;
+  }
+
+  private HashMap AttributeDecl.ntaListFieldAdded = new HashMap();
+  protected FieldDeclaration AttributeDecl.ntaListField(TypeDecl typeDecl) {
+    if(ntaListFieldAdded.containsKey(typeDecl))
+      return (FieldDeclaration)ntaListFieldAdded.get(typeDecl);
+    FieldDeclaration f =
+      new FieldDeclaration(
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
+        listNode().createQualifiedAccess(),
+        ntaListName(),
+        new Opt()
+      );
+    typeDecl.addMemberField(f);
+    ntaListFieldAdded.put(typeDecl, f);
     return f;
   }
 
@@ -861,25 +906,29 @@ aspect GenerateSynCode {
       new VariableDeclaration(
         new TypeAccess("int"),
         "num$",
-        new VarAccess("boundariesCrossed")
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed"))
       )
     );
-    // boolean localFinal$ = this.is$Final
+    // boolean localFinal$ = this.is$Final()
     list.add(
       new VariableDeclaration(
         new TypeAccess("boolean"),
         "localFinal$",
-        new VarAccess("is$Final")
+        new MethodAccess("is$Final", new List())
       )
     );
     // localFinal$ && num$ == boundariesCrossed
-    Expr cond = new AndLogicalExpr(
-      new VarAccess("localFinal$"),
-      new EQExpr(
-        new VarAccess("num$"),
-        new VarAccess("boundariesCrossed")
-      )
-    );
+    Expr cond;
+    if(declaredFinal() || declaredNTA())
+      cond = new BooleanLiteral("true");
+    else 
+      cond = new AndLogicalExpr(
+        new VarAccess("localFinal$"),
+        new EQExpr(
+          new VarAccess("num$"),
+          new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed"))
+        )
+      );
     List args = new List();
     args.add(new ThisAccess("this"));
     for(int i = 0; i < getNumParameter(); i++) {
@@ -1052,29 +1101,53 @@ aspect GenerateSynCode {
             );
             canCompleteNormally = false;
           }
-          else if(!inhEq.getChildName().startsWith("get"))
-          statements.add(
-            new IfStmt(
-              new EQExpr(
-                new VarAccess("caller"),
-                new MethodAccess(inhEq.getChildName(), new List())
-              ),
-              new ReturnStmt(
-                methodDecl.createBoundAccess(createArgumentList(inhEq))
-              )
-            )
-          );
-          else
-          // Add conditional delegation 
-          statements.add(
-            new IfStmt(
-              inhEq.child().createFromCorrectChildCheck(),
-              new ReturnStmt(
-                methodDecl.createBoundAccess(createArgumentList(inhEq))
-              )
-            )
-          );
-          
+          else {
+            boolean done = false;
+            for(Iterator i3 = inhEq.introducedType().memberMethods(inhEq.getChildName()).iterator(); i3.hasNext(); ) {
+              MethodDecl m = (MethodDecl)i3.next();
+              if(m instanceof AttributeDecl) {
+                if(inhEq.getNumChildParameter() < 2 && m.getNumParameter() == 1 && m.getParameter(0).type().isInt()) {
+                  statements.add(
+                    new IfStmt(
+                      new EQExpr(
+                        new VarAccess("caller"),
+                        ((AttributeDecl)m).ntaListField(classDecl).createQualifiedBoundAccess()
+                      ),
+                      new ReturnStmt(
+                        methodDecl.createBoundAccess(createArgumentList(inhEq))
+                      )
+                    )
+                  );
+                  done = true;
+                }
+                else if(inhEq.getNumChildParameter() == 0 && m.getNumParameter() == 0) {
+                  statements.add(
+                    new IfStmt(
+                      new EQExpr(
+                        new VarAccess("caller"),
+                        new MethodAccess(inhEq.getChildName(), new List())
+                      ),
+                      new ReturnStmt(
+                        methodDecl.createBoundAccess(createArgumentList(inhEq))
+                      )
+                    )
+                  );
+                  done = true;
+                }
+              }
+            }
+            if(!done) {
+              // Add conditional delegation 
+              statements.add(
+                new IfStmt(
+                  inhEq.child().createFromCorrectChildCheck(),
+                  new ReturnStmt(
+                    methodDecl.createBoundAccess(createArgumentList(inhEq))
+                  )
+                )
+              );
+            }
+          }
         }
 
         if(canCompleteNormally) {
@@ -1554,4 +1627,6 @@ aspect GenerateSynCode {
   syn String AttributeDecl.computedFlagName() = uniqueSignatureName() + "$computed";
   syn String AttributeDecl.computedValueName() = uniqueSignatureName() + "$value";
   syn TypeDecl AttributeDecl.computedValueType() = getNumParameter() == 0 ? type() : lookupType("java.util", "Map");
+
+  syn String AttributeDecl.ntaListName() = uniqueSignatureName() + "$list";
 }

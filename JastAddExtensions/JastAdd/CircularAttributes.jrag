@@ -106,9 +106,8 @@ aspect CircularAttributes {
   	  	new AndLogicalExpr(
   	  		fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
   	  		new LogNotExpr(
-  	  			new MethodAccess(
-  	  				"containsEvalEntry",
-  	  				parameterList
+  	  			new MethodAccess("state", new List()).qualifiesAccess(
+              new MethodAccess("containsEvalEntry",	parameterList)
   	  			)
   	  		)
   	 	 );
@@ -123,9 +122,8 @@ aspect CircularAttributes {
   	         )
   	       ),
   	       new LogNotExpr(
-  	  			new MethodAccess(
-  	  				"containsEvalEntry",
-  	  				parameterList
+  	  			new MethodAccess("state", new List()).qualifiesAccess(
+              new MethodAccess("containsEvalEntry", parameterList)
   	  			)
   	  	   )
   	     );
@@ -153,7 +151,7 @@ aspect CircularAttributes {
       // if(!IN_CIRCLE) { BLOCK }
       new IfStmt(
         new LogNotExpr(
-          new VarAccess("IN_CIRCLE")
+          new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("IN_CIRCLE"))
         ),
         new Block(
           list
@@ -177,7 +175,7 @@ aspect CircularAttributes {
         new Block(
           doList
         ),
-        new VarAccess("CHANGE")
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("CHANGE"))
       )
     );
     // visited = false;
@@ -218,9 +216,8 @@ aspect CircularAttributes {
     	  paramList.add(new VarAccess("parameters$"));
     list.add(
       new ExprStmt(
-    	    new MethodAccess(
-    	  	  "addEvalEntry",
-    	  	  paramList
+    	    new MethodAccess("state", new List()).qualifiesAccess(
+            new MethodAccess("addEvalEntry", paramList)
     	    )
     	  )
     );
@@ -472,7 +469,7 @@ aspect CircularAttributes {
         new IfStmt(
           computeNotEquals(new VarAccess(computedValueName() + "$new"), fieldComputedValue(typeDecl).createQualifiedBoundAccess()),
           AssignExpr.asStmt(
-            new VarAccess("CHANGE"),
+            new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("CHANGE")),
             new BooleanLiteral(true)
           )
         )
@@ -494,7 +491,7 @@ aspect CircularAttributes {
             )
           ),
           AssignExpr.asStmt(
-            new VarAccess("CHANGE"),
+            new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("CHANGE")),
             new BooleanLiteral(true)
           )
         )
@@ -552,7 +549,7 @@ aspect CircularAttributes {
     // LAST_CYCLE = true; compute(this, p0, ..., pN-1); LAST_CYCLE = false;
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("LAST_CYCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("LAST_CYCLE")),
         new BooleanLiteral(true)
       )
     );
@@ -563,7 +560,7 @@ aspect CircularAttributes {
     );
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("LAST_CYCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("LAST_CYCLE")),
         new BooleanLiteral(false)
       )
     );
@@ -572,7 +569,7 @@ aspect CircularAttributes {
     // LAST_CYCLE = true; compute(this, p0, ..., pN-1); LAST_CYCLE = false;
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("LAST_CYCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("LAST_CYCLE")),
         new BooleanLiteral(true)
       )
     );
@@ -584,7 +581,7 @@ aspect CircularAttributes {
     );
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("LAST_CYCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("LAST_CYCLE")),
         new BooleanLiteral(false)
       )
     );
@@ -595,7 +592,7 @@ aspect CircularAttributes {
     List statements = new List();
     list.add(
       new IfStmt(
-        new VarAccess("LAST_CYCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("LAST_CYCLE")),
         new Block(
           statements
         )
@@ -612,7 +609,7 @@ aspect CircularAttributes {
     List statements = new List();
     list.add(
       new IfStmt(
-        new VarAccess("LAST_CYCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("LAST_CYCLE")),
         new Block(
           statements
         )
@@ -629,7 +626,7 @@ aspect CircularAttributes {
   protected void AttributeDecl.addSetIN_CIRCLE(List list) {
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("IN_CIRCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("IN_CIRCLE")),
         new BooleanLiteral(true)
       )
     );
@@ -637,7 +634,7 @@ aspect CircularAttributes {
   protected void AttributeDecl.addClearIN_CIRCLE(List list) {
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("IN_CIRCLE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("IN_CIRCLE")),
         new BooleanLiteral(false)
       )
     );
@@ -645,7 +642,7 @@ aspect CircularAttributes {
   protected void AttributeDecl.addClearCHANGE(List list) {
     list.add(
       AssignExpr.asStmt(
-        new VarAccess("CHANGE"),
+        new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("CHANGE")),
         new BooleanLiteral(false)
       )
     );

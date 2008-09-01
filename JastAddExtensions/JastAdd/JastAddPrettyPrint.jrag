@@ -122,15 +122,15 @@ aspect JastAddPrettyPrint {
       s.append("static ");
     s.append("class " + name());
     if(hasSuperclass()) {
-      s.append(" extends " + superclass().fullName());
+      s.append(" extends " + superclass().typeName());
     }
     Iterator iter = interfacesIterator();
     if(iter.hasNext()) {
       TypeDecl interfaceDecl = (TypeDecl)iter.next();
-      s.append(" implements " + interfaceDecl.fullName());
+      s.append(" implements " + interfaceDecl.typeName());
       while(iter.hasNext()) {
         interfaceDecl = (TypeDecl)iter.next();
-        s.append(", " + interfaceDecl.fullName());
+        s.append(", " + interfaceDecl.typeName());
       }
     }
 
@@ -172,14 +172,14 @@ aspect JastAddPrettyPrint {
   refine PrettyPrint public void Modifier.toString(StringBuffer s) {
     // remove synthetic rather than commenting out due to no support for nested comments
     if(!getID().equals("synthetic")) {
-      PrettyPrint.Modifier.toString(s);
+      refined(s);
     }
   }
 
   refine PrettyPrint public void ParameterDeclaration.toString(StringBuffer s) {
     if(name().equals("this"))
       s.append("final ");
-    PrettyPrint.ParameterDeclaration.toString(s);
+    refined(s);
     if(name().equals("this"))
       s.append("$");
   }
@@ -212,29 +212,31 @@ aspect JastAddPrettyPrint {
       FieldDeclaration f = (FieldDeclaration)decl();
       if(!isQualified() && !(type().isEnumDecl() && getParent() instanceof ConstCase)) {
         if(f.isStatic())
-          s.append(f.hostType().fullName() + ".");
+          s.append(f.hostType().typeName() + ".");
         else
           s.append("this$.");
       }
     }
-    if(decl() instanceof IntertypeFieldDeclaration)
-      s.append(((IntertypeFieldDeclaration)decl()).introducedName());
+    Variable v = decl().sourceVariableDecl();
+    if(v instanceof IntertypeFieldDeclaration)
+      s.append(((IntertypeFieldDeclaration)v).introducedName());
     else
-      s.append(name());
+      s.append(v.name());
     if(name().equals("this"))
       s.append("$");
   }
   refine PrettyPrint public void MethodAccess.toString(StringBuffer s) {
+    MethodDecl m = decl().sourceMethodDecl();
     if(!isQualified() && usesThisInITDbody()) {
       if(decl().isStatic())
-        s.append(decl().hostType().fullName() + ".");
+        s.append(decl().hostType().typeName() + ".");
       else
         s.append("this$.");
     }
-    if(decl() instanceof IntertypeMethodDecl)
-      s.append(((IntertypeMethodDecl)decl()).delegateName());
+    if(m instanceof IntertypeMethodDecl)
+      s.append(((IntertypeMethodDecl)m).delegateName());
     else
-      s.append(name());
+      s.append(m.name());
     s.append("(");
     if(getNumArg() > 0) {
       getArg(0).toString(s);
@@ -245,11 +247,16 @@ aspect JastAddPrettyPrint {
     }
     s.append(")");
   }
+
+	syn boolean ThisAccess.inAnonymousClassInITDbody() =
+    isQualified() && hostType().isAnonymous() &&
+    type() != hostType() && hostType().enclosingBodyDecl() instanceof IntertypeMethodDecl;
+
   refine PrettyPrint public void ThisAccess.toString(StringBuffer s) {
-    if(inITDbody() || inStaticContext())
+    if(inITDbody() || inStaticContext() || inAnonymousClassInITDbody())
       s.append("this$");
     else
-      PrettyPrint.ThisAccess.toString(s);
+      refined(s);
   }
 
   syn boolean TypeDecl.printsFullName() = true;
@@ -260,13 +267,30 @@ aspect JastAddPrettyPrint {
 
   refine PrettyPrint public void TypeAccess.toString(StringBuffer s) {
     if(!isQualified() && type().printsFullName())
-      s.append(type().fullName());
+      s.append(type().typeName());
     else
-      PrettyPrint.TypeAccess.toString(s);
+      refined(s);
+  }
+  eq RawClassDecl.typeName() {
+    if(isNestedType())
+      return enclosingType().typeName() + "." + name();
+    String packageName = packageName();
+    if(packageName.equals("") || packageName.equals(PRIMITIVE_PACKAGE_NAME))
+      return name();
+    return packageName + "." + name();
+  }
+  eq RawInterfaceDecl.typeName() {
+    if(isNestedType())
+      return enclosingType().typeName() + "." + name();
+    String packageName = packageName();
+    if(packageName.equals("") || packageName.equals(PRIMITIVE_PACKAGE_NAME))
+      return name();
+    return packageName + "." + name();
   }
 
   refine PrettyPrint public void AbstractDot.toString(StringBuffer s) {
-    if(!(nextAccess() instanceof ThisAccess) || !inITDbody()) {
+    if(!(nextAccess() instanceof ThisAccess && 
+         (inITDbody() || ((ThisAccess)nextAccess()).inAnonymousClassInITDbody()))) {
       getLeft().toString(s);
       if(!nextAccess().isArrayAccess())
         s.append(".");
@@ -279,9 +303,9 @@ aspect JastAddPrettyPrint {
       AnonymousDecl decl = (AnonymousDecl)type();
       s.append("new ");
       if(decl.getNumImplements() > 0)
-        s.append(decl.getImplements(0).type().fullName());
+        s.append(decl.getImplements(0).type().typeName());
       else
-        s.append(decl.superclass().fullName());
+        s.append(decl.superclass().typeName());
           s.append("(");
       if(getNumArg() > 0) {
         getArg(0).toString(s);
@@ -301,6 +325,6 @@ aspect JastAddPrettyPrint {
       s.append("}");
     }
     else
-      PrettyPrint.ClassInstanceExpr.toString(s);
+      refined(s);
   }
 }

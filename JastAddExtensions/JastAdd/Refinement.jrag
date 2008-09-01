@@ -31,13 +31,15 @@ aspect Refinement {
   refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.zappedByMethodDecl(MethodDecl m) {
     if(isRefinement())
       return false;
-    return IntertypeMethodNameAnalysis.IntertypeMethodDecl.zappedByMethodDecl(m);
+    return refined(m);
   }
 
-  refine IntertypeMethodNameAnalysis eq MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) =
-    m.isRefinement() || IntertypeMethodNameAnalysis.MethodDecl.zappedByIntertypeMethodDecl(m);
-  refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) =
-    m.refinesAspect(hostAspect()) || IntertypeMethodNameAnalysis.IntertypeMethodDecl.zappedByIntertypeMethodDecl(m);
+  refine IntertypeMethodNameAnalysis eq MethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
+    return m.isRefinement() || refined(m);
+  }
+  refine IntertypeMethodNameAnalysis eq IntertypeMethodDecl.zappedByIntertypeMethodDecl(IntertypeMethodDecl m) {
+    return m.refinesAspect(hostAspect()) || refined(m);
+  }
 
   syn boolean MethodDecl.refines(MethodDecl m) = false;
   eq IntertypeMethodDecl.refines(MethodDecl m) =
@@ -145,6 +147,10 @@ aspect Refinement {
 
   // override behavior in MethodDecl to change the condition for multiply declared
   refine IntertypeMethodErrorCheck public void IntertypeMethodDecl.nameCheck() {
+    newNameCheck();
+  }
+
+  private void IntertypeMethodDecl.newNameCheck() {
       for(Iterator iter = introducedType().methodsSignature(signature()).iterator(); iter.hasNext(); ) {
         MethodDecl v = (MethodDecl)iter.next();
         if(v != this && v.accessibleFrom(hostAspect()) && !isAbstract()) {
@@ -311,7 +317,7 @@ aspect Refinement {
         }
       }
     }
-    AttributesCodegeneration.SynDecl.createIntertypeMethod(introducedType);
+    refined(introducedType);
   }
 
   syn nta Opt InhEq.refinedOpt() = refined;

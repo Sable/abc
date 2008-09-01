@@ -122,8 +122,14 @@ aspect JastAdd {
 
   public void AttributeDecl.typeCheck() {
     super.typeCheck();
+    //if(!(introducedType().subtype(astNode())))
+    //  error("attributes can only be introduced in AST nodes");
+  }
+
+  public void InhEq.typeCheck() {
+    super.typeCheck();
     if(!(introducedType().subtype(astNode())))
-      error("attributes can only be introduced in AST nodes");
+      error("inh equations can only be introduced in AST nodes");
   }
   
   syn SynDecl SynEq.decl() {

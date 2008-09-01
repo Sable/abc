@@ -7,6 +7,8 @@ aspect ASTGrammar {
   inh TypeDecl CompilationUnit.unknownType();
   eq CompilationUnit.getChild().astNode() =
     lookupFrameworkType("ASTNode");
+  eq CompilationUnit.getChild().astNodeState() =
+    lookupFrameworkType("ASTNode$State");
   eq CompilationUnit.getChild().listNode() =
     lookupFrameworkType("List");
   eq CompilationUnit.getChild().optNode() =
@@ -38,18 +40,22 @@ aspect ASTGrammar {
       super.collectErrors();
   }
   inh TypeDecl AspectDecl.astNode();
+  inh TypeDecl AspectDecl.astNodeState();
+  inh TypeDecl ClassDecl.astNodeState();
 
   inh lazy TypeDecl ASTDecl.astNode();
   inh lazy TypeDecl AttributeDecl.astNode();
+  inh lazy TypeDecl InhEq.astNode();
   inh lazy TypeDecl ClassDecl.astNode();
   inh lazy TypeDecl Rewrite.astNode();
   inh lazy TypeDecl Rewrite.listNode();
+  inh lazy TypeDecl AttributeDecl.listNode();
   
   refine ClassPath public void Program.addSourceFile(String name) {
     if(name.endsWith(".ast"))
       loadASTFile(name);
     else
-      ClassPath.Program.addSourceFile(name);
+      refined(name);
   }
 
   private void Program.loadASTFile(String name) {
@@ -478,8 +484,10 @@ aspect ASTGrammar {
   }
 
   public void ASTListChild.addAccessors(List bodyDeclList, int index) {
-    if(!isNTA())
-      addGetterList(bodyDeclList, index);
+    if(!isNTA()) {
+      addGetterList(bodyDeclList, index, "get" + name() + "List");
+      addGetterList(bodyDeclList, index, "get" + name() + "s");
+    }
     addGetterListNoTransform(bodyDeclList, index);
     addSetterList(bodyDeclList, index);
     addNumElements(bodyDeclList, index);
@@ -501,15 +509,20 @@ aspect ASTGrammar {
     );
   }
 
-  public void ASTListChild.addGetterList(List bodyDeclList, int index) {
+  public void ASTListChild.addGetterList(List bodyDeclList, int index, String name) {
     // public List getNameList() { return (List)getChild(index); }
+    Access returnType =
+      new ParTypeAccess(
+        listNode().createQualifiedAccess(),
+        new List().add(type().createQualifiedAccess())
+      );
     bodyDeclList.add(
-      createMethodDecl("List", "get" + name() + "List", 
+      createMethodDecl(returnType, name, 
         new List(),
         new List().add(
           new ReturnStmt(
             new CastExpr(
-              new TypeAccess("List"),
+              listNode().createQualifiedAccess(),
               new MethodAccess(
                 "getChild",
                 new List().add(new IntegerLiteral(index))
@@ -522,13 +535,18 @@ aspect ASTGrammar {
   }
   public void ASTListChild.addGetterListNoTransform(List bodyDeclList, int index) {
     // public List getNameListNoTransform() { return (List)getChildNoTransform(index); }
+    Access returnType =
+      new ParTypeAccess(
+        listNode().createQualifiedAccess(),
+        new List().add(type().createQualifiedAccess())
+      );
     bodyDeclList.add(
-      createMethodDecl("List", "get" + name() + "ListNoTransform", 
+      createMethodDecl(returnType, "get" + name() + "ListNoTransform", 
         new List(),
         new List().add(
           new ReturnStmt(
             new CastExpr(
-              new TypeAccess("List"),
+              listNode().createQualifiedAccess(),
               new MethodAccess(
                 "getChildNoTransform",
                 new List().add(new IntegerLiteral(index))
@@ -543,7 +561,7 @@ aspect ASTGrammar {
     // public void setNameList(List list) { setChild(list, index); }
     bodyDeclList.add(
       createMethodDecl("void", "set" + name() + "List", 
-        new List().add(new ParameterDeclaration(new TypeAccess("List"), "list")),
+        new List().add(new ParameterDeclaration(listNode().createQualifiedAccess(), "list")),
         new List().add(
           new ExprStmt(
             new MethodAccess(
@@ -667,7 +685,7 @@ aspect ASTGrammar {
 		),
         new List().add(
           new VariableDeclaration(
-            new TypeAccess("List"),
+            listNode().createQualifiedAccess(),
             "list",
             new MethodAccess(
               "get" + name() + "List",
@@ -711,12 +729,12 @@ aspect ASTGrammar {
   public void ASTOptionalChild.addGetterOpt(List bodyDeclList, int index) {
     // public Opt getNameOpt() { return (Opt)getChild(index); }
     bodyDeclList.add(
-      createMethodDecl("Opt", "get" + name() + "Opt", 
+      createMethodDecl(optNode().createQualifiedAccess(), "get" + name() + "Opt", 
         new List(),
         new List().add(
           new ReturnStmt(
             new CastExpr(
-              new TypeAccess("Opt"),
+              optNode().createQualifiedAccess(),
               new MethodAccess(
                 "getChild",
                 new List().add(new IntegerLiteral(index))
@@ -730,12 +748,12 @@ aspect ASTGrammar {
   public void ASTOptionalChild.addGetterOptNoTransform(List bodyDeclList, int index) {
     // public Opt getNameOptNoTransform() { return (Opt)getChildNoTransform(index); }
     bodyDeclList.add(
-      createMethodDecl("Opt", "get" + name() + "OptNoTransform", 
+      createMethodDecl(optNode().createQualifiedAccess(), "get" + name() + "OptNoTransform", 
         new List(),
         new List().add(
           new ReturnStmt(
             new CastExpr(
-              new TypeAccess("Opt"),
+              optNode().createQualifiedAccess(),
               new MethodAccess(
                 "getChildNoTransform",
                 new List().add(new IntegerLiteral(index))
@@ -750,7 +768,7 @@ aspect ASTGrammar {
     // public void setNameOpt(Opt opt) { setChild(opt, index); }
     bodyDeclList.add(
       createMethodDecl("void", "set" + name() + "Opt", 
-        new List().add(new ParameterDeclaration(new TypeAccess("Opt"), "opt")),
+        new List().add(new ParameterDeclaration(optNode().createQualifiedAccess(), "opt")),
         new List().add(
           new ExprStmt(
             new MethodAccess(
