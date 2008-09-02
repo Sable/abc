@@ -9,14 +9,22 @@ import java.util.Map;
 public class MemoLine {
     protected final java.util.Map<Dependency, Object> pairs 
 	= new HashMap<Dependency, Object>();
+    private boolean checkingHit = false;
     public boolean hit() {
-	for(Map.Entry<Dependency, Object> e : pairs.entrySet()) {
-	    Object v = e.getKey().eval();
-	    if(v == null) {
-		if(e.getValue() != null) 
+	if(checkingHit)
+	    throw new RuntimeException("Circular dependency detected");
+	checkingHit = true;
+	try {
+	    for(Map.Entry<Dependency, Object> e : pairs.entrySet()) {
+		Object v = e.getKey().eval();
+		if(v == null) {
+		    if(e.getValue() != null) 
+			return false;
+		} else if(!v.equals(e.getValue()))
 		    return false;
-	    } else if(!v.equals(e.getValue()))
-		return false;
+	    }
+	} finally {
+	    checkingHit = false;
 	}
 	return true;
     }
@@ -29,7 +37,9 @@ public class MemoLine {
     public void clear() {
 	pairs.clear();
     }
-    public MemoLine() {
+    ASTNode node;
+    public MemoLine(ASTNode node) {
 	super();
+	this.node = node;
     }
 }

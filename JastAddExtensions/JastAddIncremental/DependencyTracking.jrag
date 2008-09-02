@@ -1,5 +1,23 @@
 aspect DependencyTracking {
 
+  // refine to make sure that every equation gets its own eval index
+  refine AttributesCodegeneration public void SynEq.createIntertypeMethod(TypeDecl introducedType) {
+    if(introducedType.isInterfaceDecl()) {
+      // equations do never generate code in interfaces
+    }
+    else {
+      generateIntertypeDecls();
+      MethodDecl aspectMethod = createAspectMethod();
+      int lineNum = getParameterList().sourceLineNumber();
+      MethodDecl delegateMethod = decl().generateAttributeDecl(introducedType, aspectMethod, lineNum, shouldBeCached(), this.evalIndex());
+      introducedType.addMemberMethod(delegateMethod);
+      if(hostType() != introducedType) {
+        aspectMethod.generateSuperDispatchDelegate(introducedType);
+      }
+    }
+  }
+
+
   /** For every lexeme, adapt its getter method to register a dependency. 
 
       Take, for example, the grammar production
@@ -87,6 +105,10 @@ aspect DependencyTracking {
       instead of the wrapper method.
    */
   refine AttributesCodegeneration public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
+      return generateAttributeDecl(typeDecl, aspectMethod, lineNum, isLazy, evalIndex());
+  }
+
+  public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy, int evalIndex) {
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
     if(isLazy) {
@@ -124,7 +146,7 @@ aspect DependencyTracking {
           new List().add(
             new ThisAccess("this")
           ).add(
-            new IntegerLiteral(evalIndex())
+	    new IntegerLiteral(evalIndex)
           ),
           new Opt()
         );
@@ -135,7 +157,7 @@ aspect DependencyTracking {
           new List().add(
             new ThisAccess("this")
           ).add(
-            new IntegerLiteral(evalIndex())
+            new IntegerLiteral(evalIndex)
           ).add(
             new VarAccess("parameters$")
           ),
@@ -166,7 +188,7 @@ aspect DependencyTracking {
       MethodDecl evalMethod = typeDecl.createEvalMethod();
       SwitchStmt switchStmt = (SwitchStmt)evalMethod.getBlock().getStmt(0);
       List caseList = switchStmt.getBlock().getStmtList();
-      typeDecl.addCaseFor(caseList, evalIndex(), cacheMethod);
+      typeDecl.addCaseFor(caseList, evalIndex, cacheMethod);
     }
     else {
       // non-lazy are done as before
@@ -612,7 +634,7 @@ aspect DependencyTracking {
               new VarAccess("v$"),
               new ClassInstanceExpr(
                 new TypeAccess("CachedValue"),
-                new List(),
+                new List().add(new ThisAccess("this")), // HERE
                 new Opt()
               )
             )
@@ -723,7 +745,7 @@ aspect DependencyTracking {
         fieldName,
         new ClassInstanceExpr(
           new TypeAccess("MemoLine"),
-          new List(),
+          new List().add(new ThisAccess("this")),  // HERE
           new Opt()
         )
       );

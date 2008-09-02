@@ -148,8 +148,9 @@ aspect CreateEvalMethods {
       for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
         MethodDecl m = (MethodDecl)iter.next();
         if(!m.type().isVoid() && (!hasSuperclass() || superclass().ancestorMethods(m.signature()).isEmpty())) {
-          if(!list.contains(m))
+	    if(!list.contains(m)) {
             list.add(m);
+	    }
         }
       }
     }
@@ -157,8 +158,9 @@ aspect CreateEvalMethods {
       for(Iterator iter = localMethodsIterator(); iter.hasNext(); ) {
         MethodDecl m = (MethodDecl)iter.next();
         /*if(m instanceof AttributeDecl && ((AttributeDecl)m).isLazy()) {*/
-          if(!m.type().isVoid() && (!hasSuperclass() || superclass().ancestorMethods(m.signature()).isEmpty()))
+	if(!m.type().isVoid() /*&& (!hasSuperclass() || superclass().ancestorMethods(m.signature()).isEmpty())*/) {
             list.add(m);
+	}
         //}
       }
     }
@@ -191,18 +193,19 @@ aspect CreateEvalMethods {
   }
 
   syn lazy int MethodDecl.evalIndex() {
-    ArrayList<MethodDecl> evalTable = hostType().evalTable();
-    for(int i = 0; i < evalTable.size(); i++)
-      if(evalTable.get(i).signature().equals(signature()))
-        return i;
-    throw new UnsupportedOperationException("Did not find method with signature " + signature() + " in evalTable for " + hostType().typeName());
+    int i = hostType().evalTable().indexOf(this);
+    if(i == -1)
+	throw new UnsupportedOperationException("Did not find method "+
+            hostType().typeName() + "." + signature() + " in eval table");
+    return i;
   }
+
   eq AttributeDecl.evalIndex() {
-    ArrayList<MethodDecl> evalTable = introducedType().evalTable();
-    for(int i = 0; i < evalTable.size(); i++)
-      if(evalTable.get(i).signature().equals(signature()))
-        return i;
-    throw new UnsupportedOperationException("Did not find method with signature " + signature() + " in evalTable for " + introducedType().typeName());
+    int i = introducedType().evalTable().indexOf(this);
+    if(i == -1)
+	throw new UnsupportedOperationException("Did not find attribute "+
+            introducedType().typeName()+ "." + signature() + " in eval table");
+    return i;
   }
 
 
