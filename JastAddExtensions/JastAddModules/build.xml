@@ -189,5 +189,13 @@
 		</jar>
 	</target>
 
+	<target name="bin" depends="clean, build">
+		<jar destfile="JastAddModules-bin.jar">
+			<fileset dir="classes">
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
 </project>
 
