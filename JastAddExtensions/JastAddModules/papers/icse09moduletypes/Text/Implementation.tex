@@ -1,7 +1,8 @@
 The type system just described has been implemented in a
-module-aware Java Compiler coded in JastAdd \cite{jastadd},
+module-aware Java compiler coded in JastAdd \cite{jastadd},
 an extensible aspect-oriented compiler framework. This forms
-only the compile-time component of the module system. However,
+only the compile-time component of the module system. Run-time
+loading is simulated by package name mangling. However,
 we do not foresee any serious design faults that would preclude
 the implementation of a run-time system using classloaders.
 
@@ -12,12 +13,6 @@ the importing instance's name, thereby ensuring the separation
 of the namespaces of different instances of the same module.
 The type lookups within the program were then pointed to the
 name-mangled versions of the class to which they should resolve.
-
-The current implementation is only the compile-time side of
-the system, and simulates run-time module loading by generating 
-name-mangled versions of the instantiated modles. 
-The run-time component will be implemented through
-classloaders, and is left as future work.
 
 The implementation of the module type system and the 
 JHotdraw 7.1 case study are available at : 
