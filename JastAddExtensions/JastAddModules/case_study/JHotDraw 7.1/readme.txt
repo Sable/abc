@@ -36,7 +36,8 @@ Make sure that your ANT_OPTS environment variable is set to at least:
 	-Xmx512M
 	
 Builds are tested and should work with the Java 1.6 SDK on cygwin (winxp). It
-should also work on Linux machines.
+should also work on Linux machines, and on Java1.5, but the module system implementation
+has not been extensively tested in these environments.
 	
 The builds should create the class files in the directory
 
