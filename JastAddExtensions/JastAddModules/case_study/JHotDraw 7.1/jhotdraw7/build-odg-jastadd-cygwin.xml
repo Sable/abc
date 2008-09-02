@@ -1,6 +1,8 @@
 <project name="build-jastadd" default="application.compile" basedir=".">
 
-	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="../../../classes"/>
+	<property file="ant.properties"/>
+
+	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="${jastaddtaskcp}"/>
 
 	<target name="init">
         <property name="libdir" value="lib"/>
