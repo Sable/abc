@@ -154,6 +154,6 @@ svg's batik dependency to org.apache.batik1_8pre.
 Notes: 
 
 Reflection for classes inside modules is not yet supported in the current JastAddModules
-implementation. Several parts of the implementation have been rewritten to use 
+implementation. Several parts of the JHotdraw case study have been rewritten to use 
 .getClass() or .class instead of the String of the class' fully qualified name.
 
