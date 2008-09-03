@@ -7,20 +7,19 @@ The binary distribution of JastAddModules can be found in
 
 An ant task is also provided as part of the distribution. The following shows
 an example of the use of the jastaddmodules task:
-	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="JastAddModules-bin.jar"/>		
 
-	<jastaddmodules outdir="${classdir}"
+	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="../../JastAddModules-bin.jar"/>
+	<jastaddmodules outdir="${outdir}"
 		verbose="false"
 		jastaddframework="false"
 		debug="false"
-		instancemodule="org.jhotdraw.samples.draw"
-		mainclass="org.jhotdraw.samples.draw::org.jhotdraw.samples.draw.Main"
-		classpath="${libdir}/quaqua.jar:${libdir}/MRJAdapter.jar:${libdir}/java_30.zip:${libdir}/swing-layout.jar"
+		instancemodule="myapplication"
+		mainclass="myapplication::Main"
+		classpath=""
 	>
-		<fileset dir="${srcdir}">
+		<fileset dir=".">
 			<include name="**/*.java"/>
 			<include name="**/*.module"/>
-			<include name="net/n3/nanoxml/*.java"/> 
 		</fileset>
     </jastaddmodules>
 
@@ -49,7 +48,5 @@ Limitations:
 The current implementation requires all classes that belong to a
 module to be in source, not a class file. 
 
-No support for reflection is provided for classes inside a module. This will be supported
-when the runtime component of the module system is implemented using classloaders.
-
-	
+No support for forName(String) class loading is provided for classes inside a module. 
+One can still use .getClass() and .class for those classes. 
