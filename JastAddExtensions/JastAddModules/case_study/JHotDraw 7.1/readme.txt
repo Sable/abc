@@ -16,8 +16,6 @@ There are 7 samples that can be built:
 	build-svg-jastadd.xml
 	build-teddy-jastadd.xml
 
-There are also cygwin versions of the above build files (just insert -cygwin before .xml).
-
 The source for the jhotdraw case study can be found in
 
 	JHotDraw 7.1/jhotdraw7/src/main/java
@@ -29,9 +27,8 @@ To build a sample, do:
 
 	ant -f <buildfile>
 
-Make sure that you use the appropriate version of the build file for your OS.
-	
-Make sure that your ANT_OPTS environment variable is set to at least:
+The build files were tested with ant version 1.65. Also, make sure that 
+your ANT_OPTS environment variable is set to at least:
 
 	-Xmx512M
 	
