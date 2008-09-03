@@ -150,3 +150,10 @@ The odg sample (org.jhotdraw.samples.odg) adds basic support for reading OpenDoc
 ODG files. This sample depends on the svg sample, and in the case study the odg module
 imports svg, merges its own JHotdraw instance with that of svg, while also updating
 svg's batik dependency to org.apache.batik1_8pre.
+
+Notes: 
+
+Reflection for classes inside modules is not yet supported in the current JastAddModules
+implementation. Several parts of the implementation have been rewritten to use 
+.getClass() or .class instead of the String of the class' fully qualified name.
+
