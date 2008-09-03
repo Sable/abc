@@ -4,8 +4,11 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 import java.util.*;
 import java.io.*;
+
+import javax.swing.Box.Filler;
 
 public class JastAddModulesTask extends Task {
 	public JastAddModulesTask() {
@@ -25,7 +28,7 @@ public class JastAddModulesTask extends Task {
 		for (int i = 0; i < files.length; i++)
 			this.files.add(baseDir + File.separator + files[i]);
 	}
-
+	
 	// place the generated files in this directory
 	private String outdir = null;
 
@@ -33,9 +36,9 @@ public class JastAddModulesTask extends Task {
 		outdir = dir;
 	}
 
-	private String classpath = null;
+	private Path classpath = null;
 
-	public void setClasspath(String dir) {
+	public void setClasspath(Path dir) {
 		classpath = dir;
 	}
 
@@ -133,7 +136,16 @@ public class JastAddModulesTask extends Task {
 		}
 		if (classpath != null) {
 			args.add("-classpath");
-			args.add(classpath);
+			String classpathStr = "";
+			boolean first = true;
+			for (String elem : classpath.list()) {
+				if (!first) {
+					classpathStr += File.pathSeparator;
+				}
+				classpathStr += elem;
+				first = false;
+			}
+			args.add(classpathStr);
 		}
 		if (verbose)
 			args.add("-verbose");
