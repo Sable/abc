@@ -31,6 +31,10 @@ BodyDecl inh_decl =
                                                          {: return new InhDecl(new Modifiers(mod), false, type, hostType, IDENTIFIER, p); :}
   | modifiers.mod? INH LAZY type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN SEMICOLON 
                                                          {: return new InhDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p); :}
+  | modifiers.mod? INH LAZY FINAL type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN SEMICOLON 
+                                                         {: return new InhDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p).declareFinal(); :}
+  | modifiers.mod? INH NTA type name.hostType DOT IDENTIFIER LPAREN formal_parameter_list.p? RPAREN SEMICOLON 
+                                                         {: return new InhDecl(new Modifiers(mod), true, type, hostType, IDENTIFIER, p).declareNTA(); :}
   ;
 
 BodyDecl syn_eq =

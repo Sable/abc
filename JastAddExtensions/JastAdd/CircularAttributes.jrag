@@ -1,4 +1,16 @@
 aspect CircularAttributes {
+  eq CircularSynDecl.getBottomValue().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    if(!c.isEmpty()) return c;
+    return lookupMethod(name);
+  }
+
+  eq CircularInhDecl.getBottomValue().lookupMethod(String name) {
+    Collection c = introducedType().memberMethods(name);
+    if(!c.isEmpty()) return c;
+    return lookupMethod(name);
+  }
+
   eq CircularSynDecl.isLazy() = true;
   eq CircularInhDecl.isLazy() = true;
 
@@ -353,22 +365,23 @@ aspect CircularAttributes {
 
   syn lazy MethodDecl AttributeDecl.bottomValueInitMethod() {
     List parameters = new List();
-    parameters.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    parameters.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "this"));
     for(int i = 0; i < getNumParameter(); i++)
       parameters.add(getParameter(i).qualifiedCopy());
     
     List statements = new List();
     statements.add(new ReturnStmt((Expr)getBottomValue().fullCopy()));
-    MethodDecl m = new MethodDecl(
+    MethodDecl m = new IntroducedMethodDecl(
       new Modifiers(new List().add(new Modifier("public")).add(new Modifier("static"))),
       getBottomValue().type().createQualifiedAccess(),
       name() + "$bottom",
       parameters,
       new List(),
-      new Opt(new Block(statements))
+      new Opt(new Block(statements)),
+      introducedType(),
+      this
     );
-    hostAspect().addMemberMethod(m);
-    return m;
+    return hostAspect().addMemberMethod(m);
   }
   public Access AttributeDecl.accessBottomValue() {
    List args = new List();

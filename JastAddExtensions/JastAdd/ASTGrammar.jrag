@@ -485,9 +485,9 @@ aspect ASTGrammar {
 
   public void ASTListChild.addAccessors(List bodyDeclList, int index) {
     if(!isNTA()) {
-      addGetterList(bodyDeclList, index, "get" + name() + "List");
-      addGetterList(bodyDeclList, index, "get" + name() + "s");
+      addGetterList(bodyDeclList, index);
     }
+    addGetterListJava5(bodyDeclList, index);
     addGetterListNoTransform(bodyDeclList, index);
     addSetterList(bodyDeclList, index);
     addNumElements(bodyDeclList, index);
@@ -509,7 +509,7 @@ aspect ASTGrammar {
     );
   }
 
-  public void ASTListChild.addGetterList(List bodyDeclList, int index, String name) {
+  public void ASTListChild.addGetterList(List bodyDeclList, int index) {
     // public List getNameList() { return (List)getChild(index); }
     Access returnType =
       new ParTypeAccess(
@@ -517,7 +517,7 @@ aspect ASTGrammar {
         new List().add(type().createQualifiedAccess())
       );
     bodyDeclList.add(
-      createMethodDecl(returnType, name, 
+      createMethodDecl(returnType, "get" + name() + "List", 
         new List(),
         new List().add(
           new ReturnStmt(
@@ -526,6 +526,30 @@ aspect ASTGrammar {
               new MethodAccess(
                 "getChild",
                 new List().add(new IntegerLiteral(index))
+              )
+            )
+          ).setLocation(this)
+        )
+      )
+    );
+  }
+  public void ASTListChild.addGetterListJava5(List bodyDeclList, int index) {
+    // public List getNameList() { return (List)getChild(index); }
+    Access returnType =
+      new ParTypeAccess(
+        listNode().createQualifiedAccess(),
+        new List().add(type().createQualifiedAccess())
+      );
+    bodyDeclList.add(
+      createMethodDecl(returnType, "get" + name() + "s", 
+        new List(),
+        new List().add(
+          new ReturnStmt(
+            new CastExpr(
+              listNode().createQualifiedAccess(),
+              new MethodAccess(
+                "get" + name() + "List",
+                new List()
               )
             )
           ).setLocation(this)

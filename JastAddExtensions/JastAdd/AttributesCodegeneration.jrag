@@ -462,7 +462,7 @@ aspect AttributesCodegeneration {
             new MethodAccess(
               "set" + name().substring(3), // replace initial get with set
               new List().add(
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess()
+                new VarAccess(computedValueName())
               )
             )
           )

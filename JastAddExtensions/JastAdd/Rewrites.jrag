@@ -271,8 +271,8 @@ aspect Rewrites {
     int n = 0;
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild c = (ASTChild)iter.next();
-      //if(!c.isNTA() && !(c instanceof ASTTokenChild))
-      if(!(c instanceof ASTTokenChild))
+      if(!c.isNTA() && !(c instanceof ASTTokenChild)) // For consistency with old version of JastAdd
+      //if(!(c instanceof ASTTokenChild))
         n++;
     }
     addMemberMethod(
