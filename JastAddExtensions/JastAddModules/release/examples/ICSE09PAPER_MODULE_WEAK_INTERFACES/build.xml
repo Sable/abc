@@ -1,0 +1,25 @@
+<project name="build-jastadd" default="build" basedir=".">
+	<taskdef name="jastaddmodules" classname="jastadd.JastAddModulesTask" classpath="../../JastAddModules-bin.jar"/>
+
+	<property name="outdir" value="classes"/>
+	
+    <target name="clean">
+        <delete dir="${outdir}" />
+    </target>
+    <target name="build" depends="clean">
+        <mkdir dir="${outdir}"/>
+		<jastaddmodules outdir="${outdir}"
+			verbose="false"
+			jastaddframework="false"
+			debug="false"
+			instancemodule="myapplication"
+			mainclass="myapplication::Main"
+			classpath=""
+		>
+			<fileset dir=".">
+				<include name="**/*.java"/>
+				<include name="**/*.module"/>
+			</fileset>
+        </jastaddmodules>
+    </target>
+</project>

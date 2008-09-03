@@ -38,6 +38,10 @@ Attributes:
 	classpath - classpath to be used in the compilation. Both : and ; path separators are allowed.
 	fileset - the set of files that are to be included in the compilation.
 
+A small example of the use of the jastaddmodules task is also provided in
+
+	examples/ICSE09PAPER_MODULE_WEAK_INTERFACES
+
 The jastaddmodules ant task is tested with ant 1.6.5.
 
 Limitations:
