@@ -1,6 +1,7 @@
 This release contains the following:
 	JastAddModules-bin.jar - the implementation of the module type system
 	case_study - contains the JHotdraw 7.1 case study
+	examples - contains small examples using the module type system.
 	
 The JHotdraw case study itself is found in
 
