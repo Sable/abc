@@ -139,12 +139,28 @@ aspect JAModuleErrorCheck {
 		accessControl();
 		exceptionHandling();
 		checkUnreachableStmt();
-		definiteAssignment();
+		//NEIL: Disable due to stack overflow in svg case study
+		//definiteAssignment();
 		checkModifiers();
 		
 		getModuleDecl().collectErrors();
 		getModuleMemberDeclList().collectErrors();
 		//Don't go down into child CUs, compilationUnitIterator will go through them anyway
+	}
+	
+	//NEIL: Removed definite assignment due to stack overflow heisenbug.
+	refine ErrorCheck public void ASTNode.collectErrors() {
+		nameCheck();
+		typeCheck();
+		accessControl();
+		exceptionHandling();
+		checkUnreachableStmt();
+		//NEIL: Disable due to error caused by stack overflow in release case study
+		//definiteAssignment();
+		checkModifiers();
+		for(int i = 0; i < getNumChild(); i++) {
+		  getChild(i).collectErrors();
+		}
 	}
 	
 }
