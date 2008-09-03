@@ -38,22 +38,30 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 			}
 			prev = prev.getPrevious();
 		}
+		boolean insertEndBrace = false;
+		String endBrace = "";
 		if(prev instanceof SOF) {
-			indent = "\n" + Indent.getTabStep();
+			indent = "\n"; // + Indent.getTabStep();
 			// Insert newline + step
 		} else if (prev instanceof LeftBrace) {
+			insertEndBrace = true;
 			// If the previous island is a RightParen locate previous JavaKeyword and use its indent
 			// Default is to use the indent of LeftBrace
 			Indent indentNode = ((LeftBrace)prev).indent();
 			prev = recoveryNode.getPrevious();
+			boolean openEndParen = false;
 			while (!(prev instanceof SOF)) {
-				if (prev instanceof RightParen || prev instanceof Indent) {
+				if (prev instanceof RightParen) {
+					openEndParen = true;
+				} else if (prev instanceof LeftParen) {
+					openEndParen = false;
+				} else if (prev instanceof Indent) {
 					break;
 				}
 				prev = prev.getPrevious();
 			}
-			if (prev instanceof RightParen) {
-				prev = recoveryNode.getPrevious();
+			if (openEndParen) {
+				prev = prev.getPrevious();
 				while (!(prev instanceof SOF)) {
 					if (prev instanceof JavaKeyword) {
 						break;
@@ -65,6 +73,7 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				}
 			}
 			indent = indentNode.getValue() + Indent.getTabStep();
+			endBrace = indentNode.getValue() + RightBrace.TOKEN[0]; 
 		} else if (prev instanceof LeftParen) {
 			// Insert newline + left paren indent + step x 2
 			Indent indentNode = ((LeftParen)prev).indent();
@@ -86,10 +95,14 @@ public class JastAddJEditorConfiguration extends JastAddEditorConfiguration {
 				indent = ((Indent)prev).getValue();
 		}
 
+		
 		cmd.caretOffset = cmd.offset + indent.length();
 		cmd.shiftsCaret = false;
 		if (!indent.startsWith("\n"))
 			indent = "\n" + indent;
+		if (insertEndBrace) {
+			indent += endBrace;
+		}
 		cmd.text = indent;
 
 		/*
