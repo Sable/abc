@@ -39,7 +39,7 @@ aspect DependencyTracking {
       </pre>
     */
   refine Rewrites public void ASTDecl.generateIntertypeDecls() {
-    Rewrites.ASTDecl.generateIntertypeDecls();
+    refined();
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
       if(child instanceof ASTTokenChild && !child.isNTA()) {
@@ -105,7 +105,10 @@ aspect DependencyTracking {
       instead of the wrapper method.
    */
   refine AttributesCodegeneration public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy) {
-      return generateAttributeDecl(typeDecl, aspectMethod, lineNum, isLazy, evalIndex());
+    if(isNTA() || declaredNTA()) {
+      return refined(typeDecl, aspectMethod, lineNum, isLazy);
+    }
+    return generateAttributeDecl(typeDecl, aspectMethod, lineNum, isLazy, evalIndex());
   }
 
   public MethodDecl SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum, boolean isLazy, int evalIndex) {
@@ -129,6 +132,7 @@ aspect DependencyTracking {
       // generate cache method
       MethodDecl cacheMethod = generateCacheAttributeDecl(typeDecl, aspectMethod, lineNum);
 
+      recordRewriteState(statements);
       // add call to cache method and assignment to store its result in local variable res
       statements.add(
           new VariableDeclaration(
@@ -164,7 +168,7 @@ aspect DependencyTracking {
           new Opt()
         );
       }
-      statements.add(
+      Stmt registerDependency =
         new ExprStmt(
           new TypeAccess("Main").qualifiesAccess(
             new MethodAccess(
@@ -176,9 +180,9 @@ aspect DependencyTracking {
               )
             )
           )
-        )
-      );
+        );
 
+      conditionalOnRewrite(statements, registerDependency, null);
       // and finally a return statement for res
       statements.add(
         new ReturnStmt(new VarAccess("res"))
@@ -292,7 +296,7 @@ aspect DependencyTracking {
     }
 
     // generate caching epilogue
-    generateEndCache(statements, typeDecl);
+    generateEndCache(statements, typeDecl, f);
 
     // and return statement
     statements.add(
@@ -329,6 +333,11 @@ aspect DependencyTracking {
   /** Generates methods corresponding to an inherited attribute. Basically
       the same as for synthesised attributes. */
   refine AttributesCodegeneration public void InhDecl.generateAttributeDecl(TypeDecl typeDecl, int lineNum) {
+    if(isNTA() || declaredNTA()) {
+      refined(typeDecl, lineNum);
+      return;
+    }
+
     // check cached value, compute new value, store in cache, return value
     List statements = new List();
     if(isLazy()) {
@@ -343,6 +352,8 @@ aspect DependencyTracking {
         args.add(new VarAccess("parameters$"));
       
       MethodDecl cacheMethod = generateCacheAttributeDecl(lineNum);
+
+      recordRewriteState(statements);
 
       statements.add(
           new VariableDeclaration(
@@ -377,7 +388,7 @@ aspect DependencyTracking {
           new Opt()
         );
       }
-      statements.add(
+      Stmt registerDependency = 
         new ExprStmt(
           new TypeAccess("Main").qualifiesAccess(
             new MethodAccess(
@@ -389,8 +400,8 @@ aspect DependencyTracking {
               )
             )
           )
-        )
-      );
+        );
+      conditionalOnRewrite(statements, registerDependency, null);
 
       statements.add(
         new ReturnStmt(new VarAccess("res"))
@@ -421,6 +432,42 @@ aspect DependencyTracking {
       )
     );
   }
+  void AttributeDecl.recordRewriteState(List list) {
+    // int num$ = this.state().boundariesCrossed;
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("int"),
+        "num$",
+        new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed")))
+      )
+    );
+    // boolean localFinal$ = this.is$Final()
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("boolean"),
+        "localFinal$",
+        new ThisAccess("this").qualifiesAccess(new MethodAccess("is$Final", new List()))
+      )
+    );
+  }
+  void AttributeDecl.conditionalOnRewrite(List list, Stmt thenBranch, Stmt elseBranch) {
+    // localFinal$ && num$ == this.state().boundariesCrossed
+    Expr cond = new AndLogicalExpr(
+      new VarAccess("localFinal$"),
+      new EQExpr(
+        new VarAccess("num$"),
+        new ThisAccess("this").qualifiesAccess(new MethodAccess("state", new List()).qualifiesAccess(new VarAccess("boundariesCrossed")))
+      )
+    );
+    list.add(
+      new IfStmt(
+        cond,
+        thenBranch,
+        elseBranch == null ? new Opt() : new Opt(elseBranch)
+      )
+    );
+  }
+
 
   /** Generates cache method for inherited attributes. Again, this is
       basically the same as for synthesised attributes, except for
@@ -450,7 +497,7 @@ aspect DependencyTracking {
         )
     );
 
-    generateEndCache(statements, typeDecl);
+    generateEndCache(statements, typeDecl, f);
     statements.add(
       new ReturnStmt(new VarAccess("res"))
     );
@@ -666,6 +713,7 @@ aspect DependencyTracking {
 
     // print a debugging message
     statements.add(debugPrint("Recomputing " + name() + " for "));
+    recordRewriteState(statements);
 
     // push the memo line
     if(getNumParameter() == 0) {
@@ -701,34 +749,46 @@ aspect DependencyTracking {
       the value field is written and the computed flag is set. For a
       parameterised attribute, the value field of the CachedValue object
       is set. */
-  void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl) {
+  void AttributeDecl.generateEndCache(List statements, TypeDecl typeDecl, FieldDeclaration f) {
     statements.add(
       new ExprStmt(
         new TypeAccess("Main").qualifiesAccess(new MethodAccess("popMemoLine", new List()))
       )
     );
+    Stmt thenBranch;
+    Stmt elseBranch = null;
     if(getNumParameter() == 0) {
-      statements.add(
-        AssignExpr.asStmt(
-          fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-          new VarAccess("res")
-        )
-      );
-      statements.add(
-        AssignExpr.asStmt(
-	  fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
-	  new BooleanLiteral("true")
+      thenBranch = new Block(
+        new List().add(
+          AssignExpr.asStmt(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+            new VarAccess("res")
+          )
+        ).add(
+          AssignExpr.asStmt(
+            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+            new BooleanLiteral("true")
+          )
         )
       );
     }
     else {
-      statements.add(
+      thenBranch =
         AssignExpr.asStmt(
           new VarAccess("v$").qualifiesAccess(new VarAccess("value")),
           new VarAccess("res")
-        )
-      );
+        );
+      elseBranch =
+        new ExprStmt(
+          f.createQualifiedBoundAccess().qualifiesAccess(
+            new MethodAccess(
+              "remove",
+              new List().add(new VarAccess("args"))
+            )
+          )
+        );
     }
+    conditionalOnRewrite(statements, thenBranch, elseBranch);
   }
 
   /** Generates the cache field. */

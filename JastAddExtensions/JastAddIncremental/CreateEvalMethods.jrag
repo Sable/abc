@@ -213,6 +213,6 @@ aspect CreateEvalMethods {
     if(this instanceof ASTDecl || this == astNode()) {
       createEvalMethod();
     }
-    IntertypeFieldCodegeneration.ClassDecl.generateIntertypeDecls();
+    refined();
   }
 }
