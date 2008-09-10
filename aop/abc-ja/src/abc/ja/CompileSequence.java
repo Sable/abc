@@ -110,6 +110,7 @@ public class CompileSequence extends abc.main.CompileSequence {
       Program program = new Program();
       program.state().reset();
 
+      // select parser/scanner
       program.initBytecodeReader(new BytecodeParser());
       program.initJavaParser(
         new JavaParser() {
@@ -119,6 +120,7 @@ public class CompileSequence extends abc.main.CompileSequence {
         }
       );
 
+      // init jastadd options
       Options options = program.options();
       options.initOptions();
       options.addKeyValueOption("-classpath");
@@ -128,6 +130,7 @@ public class CompileSequence extends abc.main.CompileSequence {
 
       //options.addOptions(new String[] { "-verbose" });
 
+      // load source files
       for(Iterator iter = files.iterator(); iter.hasNext(); ) {
         String name = (String)iter.next();
         File file = new File(name);
@@ -142,13 +145,30 @@ public class CompileSequence extends abc.main.CompileSequence {
         program.addSourceFile(name);
       }
       
+      // load weavable jar files
       for(Iterator iter = jar_classes.iterator(); iter.hasNext(); ) {
     	  String name = (String)iter.next();
-    	  CompilationUnit u = program.getCompilationUnit(name);
+    	  int i = name.lastIndexOf('.');
+    	  String pack = i < 0 ? "" : name.substring(0, i);
+    	  String type = name.substring(i+1);
+    	  String[] strs = type.split("\\$");
+    	  StringBuilder b = new StringBuilder();
+    	  for(int j = 0; j < strs.length; j++) {
+    		  if(j != 0)
+    			  b.append('.');
+    		  b.append(strs[j]);
+    		  TypeDecl t = program.lookupType(pack, b.toString());
+    		  if(t != null)
+    			  t.compilationUnit().weavableClass = true;
+    	  }
+    	  /*CompilationUnit u = program.getCompilationUnit(name);
     	  u.weavableClass = true;
-    	  program.addCompilationUnit(u);
+    	  if(u.getParent() == null)
+    		  program.addCompilationUnit(u);
+    	  */
       }
 
+      // check for errors
       for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
         CompilationUnit unit = (CompilationUnit)iter.next();
         if(unit.fromSource()) {
@@ -178,9 +198,11 @@ public class CompileSequence extends abc.main.CompileSequence {
           }
       }
 
+      // weave ITDs
       if(options.verbose())
         System.out.println("Weaving inter-type declarations");
       program.generateIntertypeDecls();
+      // flatten
       if(options.verbose())
         System.out.println("Flattening Nested Classes");
       program.transformation();
