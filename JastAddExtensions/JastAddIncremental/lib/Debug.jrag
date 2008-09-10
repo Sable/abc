@@ -1,0 +1,15 @@
+package AST;
+
+aspect Debug {
+    public String ASTNode.getDebugID() {
+	return getClass().getName();
+    }
+
+    public String CompilationUnit.getDebugID() {
+	return "CU "+pathName();
+    }
+
+    public String TypeDecl.getDebugID() {
+	return "type "+name();
+    }
+}
