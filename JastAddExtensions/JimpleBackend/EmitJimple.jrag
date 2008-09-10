@@ -144,7 +144,7 @@ aspect EmitJimple {
   public SootMethod TypeDecl.clinit = null;
 
   public void TypeDecl.jimplify1phase2() {
-    if(hasClinit()) {
+    if(needsClinit() && !getSootClassDecl().declaresMethod("<clinit>", new ArrayList())) {
       clinit = new SootMethod("<clinit>", new ArrayList(), soot.VoidType.v(), soot.Modifier.STATIC, new ArrayList());
       getSootClassDecl().addMethod(clinit);
     }
@@ -577,7 +577,7 @@ aspect EmitJimple {
 
   inh TypeDecl CatchClause.hostType();
   
-  syn lazy boolean TypeDecl.hasClinit() {
+  syn lazy boolean TypeDecl.needsClinit() {
     for(int i = 0; i < getNumBodyDecl(); i++) {
       BodyDecl b = getBodyDecl(i);
       if(b instanceof FieldDeclaration) {
