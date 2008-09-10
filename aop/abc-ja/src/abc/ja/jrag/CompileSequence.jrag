@@ -1,0 +1,158 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2008 Pavel Avgustinov
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+import abc.main.CompilerFailedException;
+import abc.main.options.OptionsParser;
+
+import polyglot.util.ErrorQueue;
+import polyglot.util.Position;
+import polyglot.util.ErrorInfo;
+
+aspect CompileSequence {
+	
+  private void Program.addError(Problem problem, ErrorQueue error_queue) {
+	    Position p;
+	    if(problem.column() != -1)
+	      p = new Position(problem.fileName(), problem.line(), problem.column());
+	    else
+	      p = new Position(problem.fileName(), problem.line());
+	    error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR, problem.message(), p);
+	  }
+
+	  private void Program.addWarning(Problem problem, ErrorQueue error_queue) {
+		    Position p;
+		    if(problem.column() != -1)
+		      p = new Position(problem.fileName(), problem.line(), problem.column());
+		    else
+		      p = new Position(problem.fileName(), problem.line());
+		    error_queue.enqueue(ErrorInfo.WARNING, problem.message(), p);
+	  }
+
+	public void Program.setupParser(final ErrorQueue error_queue) {
+		// select parser/scanner
+	    this.initBytecodeReader(new BytecodeParser());
+	    this.initJavaParser(
+	      new JavaParser() {
+	        public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
+	          return new abc.ja.parse.JavaParser().parse(is, fileName, error_queue);
+	        }
+	      }
+	    );
+	}
+
+	public Options Program.initOptions(Collection<String> aspect_sources) {
+		// init jastadd options
+	      Collection<String> c = new ArrayList<String>();
+	      c.addAll(aspect_sources);
+	      if(abc.main.options.OptionsParser.v().verbose())
+	        c.add("-verbose");
+	      c.add("-classpath");
+	      c.add(OptionsParser.v().classpath());
+	      String[] args = new String[c.size()];
+	      int index = 0;
+	      for(Iterator<String> iter = c.iterator(); iter.hasNext(); index++) {
+	        String s = iter.next();
+	        args[index] = s;
+	      }
+	      Options options = this.options();
+	      options.initOptions();
+	      options.addKeyValueOption("-classpath");
+	      options.addKeyOption("-verbose");
+	      options.addOptions(args);
+
+	      //options.addOptions(new String[] { "-verbose" });
+		return options;
+	}
+
+	public void Program.checkErrors(Options options, ErrorQueue error_queue)
+			throws CompilerFailedException {
+		// check for errors
+	      for(Iterator iter = this.compilationUnitIterator(); iter.hasNext(); ) {
+	        CompilationUnit unit = (CompilationUnit)iter.next();
+	        if(unit.fromSource()) {
+	          // abort if there were syntax or lexical errors
+	          if(error_queue.errorCount() > 0)
+	            throw new CompilerFailedException("There were errors.");
+	        }
+	      }
+	      if(options.verbose())
+	        System.out.println("Error checking");
+	      ArrayList errors = new ArrayList();
+	      ArrayList warnings = new ArrayList();
+	      this.errorCheck(errors, warnings);
+	      if(!errors.isEmpty()) {
+	        Collections.sort(errors);
+	        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
+	          Problem p = (Problem)iter2.next();
+	          addError(p, error_queue);
+	        }
+	        throw new CompilerFailedException("There were errors.");
+	      }
+	      if(!warnings.isEmpty()) {
+	          Collections.sort(warnings);
+	          for(Iterator iter2 = warnings.iterator(); iter2.hasNext(); ) {
+	            Problem p = (Problem)iter2.next();
+	            addWarning(p, error_queue);
+	          }
+	      }
+	}
+
+	public void Program.loadWeavableJarFiles(Collection<String> jar_classes) {
+		// load weavable jar files
+	      for(Iterator iter = jar_classes.iterator(); iter.hasNext(); ) {
+	    	  String name = (String)iter.next();
+	    	  int i = name.lastIndexOf('.');
+	    	  String pack = i < 0 ? "" : name.substring(0, i);
+	    	  String type = name.substring(i+1);
+	    	  String[] strs = type.split("\\$");
+	    	  StringBuilder b = new StringBuilder();
+	    	  for(int j = 0; j < strs.length; j++) {
+	    		  if(j != 0)
+	    			  b.append('.');
+	    		  b.append(strs[j]);
+	    		  TypeDecl t = this.lookupType(pack, b.toString());
+	    		  if(t != null)
+	    			  t.compilationUnit().weavableClass = true;
+	    	  }
+	    	  /*CompilationUnit u = this.getCompilationUnit(name);
+	    	  u.weavableClass = true;
+	    	  if(u.getParent() == null)
+	    		  this.addCompilationUnit(u);
+	    	  */
+	      }
+	}
+
+	public void Program.loadSourceFiles(Collection<String> files, ErrorQueue error_queue)
+			throws CompilerFailedException {
+		// load source files
+	      for(Iterator<String> iter = files.iterator(); iter.hasNext(); ) {
+	        String name = iter.next();
+	        File file = new File(name);
+	        if(!file.exists()) {
+	          error_queue.enqueue(
+	              ErrorInfo.IO_ERROR,
+	              "Cannot find source file \"" + name + "\"",
+	              new Position("NoSuchFile.java")
+	          );
+	          throw new CompilerFailedException("There were errors.");
+	        }
+	        this.addSourceFile(name);
+	      }
+	}
+}

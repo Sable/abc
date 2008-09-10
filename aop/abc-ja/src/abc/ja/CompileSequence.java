@@ -21,35 +21,31 @@
 
 package abc.ja;
 
-import abc.main.AbcExtension;
-import abc.main.AbcTimer;
-import abc.main.CompilerFailedException;
-import abc.main.Debug;
-import abc.main.options.OptionsParser;
-import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.matching.MethodAdviceList;
-import abc.weaving.weaver.DeclareParentsConstructorFixup;
-import abc.weaving.weaver.DeclareParentsWeaver;
-import abc.weaving.weaver.IntertypeAdjuster;
-
-import java.util.*;
+import java.util.Iterator;
 import java.util.List;
 
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
-import polyglot.util.StdErrorQueue;
-import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
+import polyglot.util.StdErrorQueue;
 import soot.Scene;
 import soot.SootField;
 import soot.SootMethod;
-import abc.aspectj.visit.PatternMatcher;
-import abc.ja.jrag.*;
-
-import java.io.*;
+import abc.ja.jrag.Options;
+import abc.ja.jrag.Problem;
+import abc.ja.jrag.Program;
+import abc.main.AbcExtension;
+import abc.main.AbcTimer;
+import abc.main.CompilerFailedException;
+import abc.main.Debug;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.weaver.DeclareParentsConstructorFixup;
+import abc.weaving.weaver.IntertypeAdjuster;
 
 public class CompileSequence extends abc.main.CompileSequence {
   public CompileSequence(AbcExtension ext) {
@@ -94,109 +90,19 @@ public class CompileSequence extends abc.main.CompileSequence {
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
 
-    try {
-      Collection c = new ArrayList();
-      c.addAll(aspect_sources);
-      if(abc.main.options.OptionsParser.v().verbose())
-        c.add("-verbose");
-      c.add("-classpath");
-      c.add(OptionsParser.v().classpath());
-      String[] args = new String[c.size()];
-      int index = 0;
-      for(Iterator iter = c.iterator(); iter.hasNext(); index++) {
-        String s = (String)iter.next();
-        args[index] = s;
-      }
-      Program program = new Program();
-      program.state().reset();
+    Program program = new Program();
+    program.state().reset();
 
-      // select parser/scanner
-      program.initBytecodeReader(new BytecodeParser());
-      program.initJavaParser(
-        new JavaParser() {
-          public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
-            return new abc.ja.parse.JavaParser().parse(is, fileName, error_queue);
-          }
-        }
-      );
+    program.setupParser(error_queue);
 
-      // init jastadd options
-      Options options = program.options();
-      options.initOptions();
-      options.addKeyValueOption("-classpath");
-      options.addKeyOption("-verbose");
-      options.addOptions(args);
-      Collection files = options.files();
+   try {
+      Options options = program.initOptions(aspect_sources);
 
-      //options.addOptions(new String[] { "-verbose" });
-
-      // load source files
-      for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-        String name = (String)iter.next();
-        File file = new File(name);
-        if(!file.exists()) {
-          error_queue().enqueue(
-              ErrorInfo.IO_ERROR,
-              "Cannot find source file \"" + name + "\"",
-              new Position("NoSuchFile.java")
-          );
-          throw new CompilerFailedException("There were errors.");
-        }
-        program.addSourceFile(name);
-      }
+      program.loadSourceFiles(options.files(), error_queue);
       
-      // load weavable jar files
-      for(Iterator iter = jar_classes.iterator(); iter.hasNext(); ) {
-    	  String name = (String)iter.next();
-    	  int i = name.lastIndexOf('.');
-    	  String pack = i < 0 ? "" : name.substring(0, i);
-    	  String type = name.substring(i+1);
-    	  String[] strs = type.split("\\$");
-    	  StringBuilder b = new StringBuilder();
-    	  for(int j = 0; j < strs.length; j++) {
-    		  if(j != 0)
-    			  b.append('.');
-    		  b.append(strs[j]);
-    		  TypeDecl t = program.lookupType(pack, b.toString());
-    		  if(t != null)
-    			  t.compilationUnit().weavableClass = true;
-    	  }
-    	  /*CompilationUnit u = program.getCompilationUnit(name);
-    	  u.weavableClass = true;
-    	  if(u.getParent() == null)
-    		  program.addCompilationUnit(u);
-    	  */
-      }
+      program.loadWeavableJarFiles(jar_classes);
 
-      // check for errors
-      for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-        CompilationUnit unit = (CompilationUnit)iter.next();
-        if(unit.fromSource()) {
-          // abort if there were syntax or lexical errors
-          if(error_queue().errorCount() > 0)
-            throw new CompilerFailedException("There were errors.");
-        }
-      }
-      if(options.verbose())
-        System.out.println("Error checking");
-      ArrayList errors = new ArrayList();
-      ArrayList warnings = new ArrayList();
-      program.errorCheck(errors, warnings);
-      if(!errors.isEmpty()) {
-        Collections.sort(errors);
-        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
-          Problem p = (Problem)iter2.next();
-          addError(p);
-        }
-        throw new CompilerFailedException("There were errors.");
-      }
-      if(!warnings.isEmpty()) {
-          Collections.sort(warnings);
-          for(Iterator iter2 = warnings.iterator(); iter2.hasNext(); ) {
-            Problem p = (Problem)iter2.next();
-            addWarning(p);
-          }
-      }
+      program.checkErrors(options, error_queue);
 
       // weave ITDs
       if(options.verbose())
@@ -228,7 +134,7 @@ public class CompileSequence extends abc.main.CompileSequence {
     
     Scene.v().loadDynamicClasses();
   }
-	
+
   public void weave() throws CompilerFailedException {
     try {
       // Perform the declare parents
