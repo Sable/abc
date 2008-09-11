@@ -255,6 +255,8 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
         lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(Terminals.PC_LET),
                 new Integer(lexer.pointcutifexpr_state())));
  
+        
+        
         // keywords for the "monitorenter/monitorexit" pointcut extension
         if(Debug.v().enableLockPointcuts) {
 	        lexer.addPointcutKeyword("lock", new LexerAction_c(new Integer(Terminals.PC_LOCK)));
@@ -280,6 +282,8 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension
                             new Integer(Terminals.PERTHREAD)));
         lexer.addAspectJKeyword("frequent", new LexerAction_c(
                             new Integer(Terminals.FREQUENT)));
+        lexer.addAspectJKeyword("distinct", new LexerAction_c(
+        					new Integer(Terminals.DISTINCT)));
         lexer.addAspectJKeyword("filtermatch", new LexerAction_c(
 				new Integer(Terminals.FILTERMATCH)));
         lexer.addAspectJKeyword("skipmatch", new LexerAction_c(

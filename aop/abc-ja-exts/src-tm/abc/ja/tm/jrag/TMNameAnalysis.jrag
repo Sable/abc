@@ -21,11 +21,19 @@
 
 aspect TMNameAnalysis
 {
-    eq TraceMatchDecl.getSymbolDecl().lookupVariable(String name)
-    {
+	protected SimpleSet TraceMatchDecl.lookupTracematchVariable(String name)
+	{
         SimpleSet result = getAdviceSpec().localLookupVariable(name);
         if (!result.isEmpty())
             return result;
         return lookupVariable(name);
+	}
+    eq TraceMatchDecl.getSymbolDecl().lookupVariable(String name)
+    {
+    	return lookupTracematchVariable(name);
+    }
+    eq TraceMatchDecl.getDistinctGroup(int i).lookupVariable(String name)
+    {
+    	return lookupTracematchVariable(name);
     }
 }

@@ -214,7 +214,9 @@ aspect TMCodegen
                            bodyAdviceFormals(),
                            getPointcutExpr().regex().stateMachine(),
                            isPerThread(), symbolToFormalNameList(),
-                           frequentSymbolNames(), symbolToAdviceName(),
+                           frequentSymbolNames(), 
+                           distinctGroups(),
+                           symbolToAdviceName(),
                            syncAdviceName(), someAdviceName(),
                            proceedName(), aspectClass(), pos());
         ((TMGlobalAspectInfo) globalAspectInfo()).addTraceMatch(tm);

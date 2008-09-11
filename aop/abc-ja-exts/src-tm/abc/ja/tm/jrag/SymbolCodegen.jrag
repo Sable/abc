@@ -26,6 +26,9 @@ aspect SymbolCodegen
     inh String SymbolDecl.traceMatchName();
     eq TraceMatchDecl.getSymbolDecl().traceMatchName() = traceMatchName();
 
+    inh TraceMatchDecl SymbolDecl.enclosingTracematch();
+    eq TraceMatchDecl.getSymbolDecl().enclosingTracematch() = this;
+    
     inh polyglot.util.Position SymbolDecl.traceMatchPosition();
     eq TraceMatchDecl.getSymbolDecl().traceMatchPosition() = pos();
 

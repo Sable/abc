@@ -68,10 +68,41 @@ aspect TMPointcutCodegen
             return next;
         return OrPointcut.construct(current, next, pos());
     }
-
+    
     // returns an aspectinfo-representation of the pointcut for this
     // symbol, with the variables it binds existentially quantified.
-    syn Pointcut SymbolDecl.closedPointcut() =
-        new LocalPointcutVars(
-            getPointcutExpr().pointcut(), perSymbolAdviceFormals(), pos());
+    syn Pointcut SymbolDecl.closedPointcut() {
+        return new LocalPointcutVars(getPointcutExpr().pointcut(), 
+        		perSymbolAdviceFormals(), pos());
+    }
+    
+    // When a tracematch has DistinctGroups, we rewrite symbol pointcuts to take
+    // these into account
+    public boolean SymbolDecl.distinctGroupsReflected = false;
+    rewrite SymbolDecl {
+    	when(!distinctGroupsReflected && enclosingTracematch().getNumDistinctGroup() > 0)
+    	to SymbolDecl {
+    		this.distinctGroupsReflected = true;
+        	Expr ifExpr = new BooleanLiteral("true");
+        	for(DistinctGroup g : enclosingTracematch().getDistinctGroups()) {
+        		// Determine which of the distinct group's variables are bound by this symbol
+            	Set<VarAccess> distinctAndBound = new HashSet<VarAccess>();
+            	for(VarAccess v : g.getVarAccessList())
+            		if(this.binds(v.name()))
+            			distinctAndBound.add(v);
+            			
+            	// Add the right inequalities
+            	for(int left = 0; left < distinctAndBound.size(); left++)
+        			for(int right = left + 1; right < distinctAndBound.size(); right++)
+        				ifExpr = new AndLogicalExpr(ifExpr, new NEExpr(g.getVarAccess(left), g.getVarAccess(right)));
+        	}
+
+        	// Check if we actually have something to put in an if() pointcut
+        	if(!(ifExpr instanceof BooleanLiteral)) {
+        		PointcutExpr ifPc = new IfPointcutExpr(ifExpr);
+        		this.setPointcutExpr(new AndPointcutExpr(this.getPointcutExpr(), ifPc));
+        	}
+    		return this;
+    	}
+    }
 }

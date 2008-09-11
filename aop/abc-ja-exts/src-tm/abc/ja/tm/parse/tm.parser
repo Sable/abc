@@ -19,27 +19,6 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* abc - The AspectBench Compiler
- * Copyright (C) 2008 Pavel Avgustinov
- * Copyright (C) 2008 Torbjörn Ekman
- *
- * This compiler is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL;
- * if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
-
-
 BodyDecl aspect_body_declaration =
     tracematch.a
     {:
@@ -57,13 +36,14 @@ TraceMatchDecl tracematch =
     LBRACE
         symbol_declaration_list.s
         frequent_symbols_declaration.f?
+        distinct_group_list.d
         tm_pattern.r
         block.b
     RBRACE.y
     {:
         ParserTrace.parserTrace("tracematch definition");
         TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
-            new TMAdviceSpec(p), r, e, b, s, f);
+            new TMAdviceSpec(p), r, e, b, s, f, d);
     	return tcd;
     :}
 |
@@ -72,13 +52,14 @@ TraceMatchDecl tracematch =
     LBRACE
         symbol_declaration_list.s
         frequent_symbols_declaration.f?
+        distinct_group_list.d
         tm_pattern.r
         block.b
     RBRACE.y
     {:
         ParserTrace.parserTrace("tracematch definition");
         TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
-            new TMAroundSpec(p, type), r, e, b, s, f);
+            new TMAroundSpec(p, type), r, e, b, s, f, d);
     	return tcd;
     :}
 |
@@ -87,6 +68,7 @@ TraceMatchDecl tracematch =
     LBRACE
         symbol_declaration_list.s
         frequent_symbols_declaration.f?
+        distinct_group_list.d
         tm_pattern.r
         block.b
     RBRACE.y
@@ -94,7 +76,7 @@ TraceMatchDecl tracematch =
         ParserTrace.parserTrace("tracematch definition");
         TraceMatchDecl tcd = new TraceMatchDecl(new Modifiers(m),
             new TMAroundSpec(p, new PrimitiveTypeAccess("void")),
-            r, e, b, s, f);
+            r, e, b, s, f, d);
     	return tcd;
     :}
 ;
@@ -207,6 +189,27 @@ List frequent_symbols_declaration =
     :}
 ; 
 
+List distinct_group_list =
+	distinct_group_list.l distinct_group.g
+	{:
+		ParserTrace.parserTrace("Distinct group (step)");
+		return l.add(g);
+	:}
+|
+	/* EPSILON */
+	{:
+		ParserTrace.parserTrace("Distinct group (empty)");
+		return new List<DistinctGroup>();
+	:}
+;
+
+DistinctGroup distinct_group =
+	DISTINCT.x name_list.l SEMICOLON.y
+	{:
+		ParserTrace.parserTrace("Distinct group");
+		return new DistinctGroup(l);
+	:}
+;
 
 List symbol_list =
     IDENTIFIER.a

@@ -102,6 +102,7 @@ aspect TMInfo
         return vars;
     }
 
+    syn boolean SymbolDecl.binds(String name) = getPointcutExpr().binds(name) > 0;
 
     syn Map TraceMatchDecl.symbolToAdviceName()
     {
@@ -111,5 +112,19 @@ aspect TMInfo
                             getSymbolDecl(i).perSymbolAdviceName());
         }
         return sym_to_advice;
+    }
+    
+    syn Set<Set<String>> TraceMatchDecl.distinctGroups() {
+    	Set<Set<String>> result = new LinkedHashSet<Set<String>>();
+    	for(DistinctGroup g : getDistinctGroups())
+    		result.add(g.asSet());
+    	return result;
+    }
+    
+    syn Set<String> DistinctGroup.asSet() {
+    	Set<String> result = new LinkedHashSet<String>();
+    	for(VarAccess v : getVarAccessList())
+    		result.add(v.name());
+    	return result;
     }
 }

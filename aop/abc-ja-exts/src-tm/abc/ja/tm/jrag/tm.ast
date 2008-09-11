@@ -1,5 +1,5 @@
 TraceMatchDecl : AdviceDecl ::=
-    SymbolDecl* Frequent:SymbolAccess*;
+    SymbolDecl* Frequent:SymbolAccess* DistinctGroup*;
 
 TMAdviceSpec : AdviceSpec;
 TMAroundSpec : AroundSpec;
@@ -15,6 +15,8 @@ AfterThrowingSymbol : SymbolKind ::= [VarAccess];
 AroundSymbol : SymbolKind ::= VarAccess*;
 
 FrequentSymbols ::= SymbolAccess*;
+
+DistinctGroup ::= VarAccess*;
 
 SymbolAccess : Access ::= <ID:String>;
 
