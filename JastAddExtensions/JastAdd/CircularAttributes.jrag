@@ -740,7 +740,10 @@ aspect CircularAttributes {
       initializedFlagName(),
       fieldInit
     );
-    typeDecl.addMemberField(f);
+    f = typeDecl.addMemberField(f);
+
+    typeDecl.addFlushCode(f, (Expr)fieldInit.fullCopy());
+
     fieldInitializedFlagAdded.put(typeDecl, f);
     return f;
   }

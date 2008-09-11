@@ -515,9 +515,18 @@ aspect AttributesCodegeneration {
       visitedFlagName(),
       fieldInit
     );
-    typeDecl.addMemberField(f);
+    f = typeDecl.addMemberField(f);
+
+    typeDecl.addFlushCode(f, (Expr)fieldInit.fullCopy());
+
     fieldVisitedFlagAdded.put(typeDecl, f);
     return f;
+  }
+
+  void TypeDecl.addFlushCode(FieldDeclaration f, Expr init) {
+    MethodDecl m = flushCacheMethod();
+    List list = m.getBlock().getStmtList();
+    list.add(AssignExpr.asStmt(f.createQualifiedBoundAccess(), init));
   }
 
   private HashMap AttributeDecl.ntaListFieldAdded = new HashMap();
@@ -531,7 +540,7 @@ aspect AttributesCodegeneration {
         ntaListName(),
         new Opt()
       );
-    typeDecl.addMemberField(f);
+    f = typeDecl.addMemberField(f);
     ntaListFieldAdded.put(typeDecl, f);
     return f;
   }
@@ -540,25 +549,28 @@ aspect AttributesCodegeneration {
   protected FieldDeclaration AttributeDecl.fieldComputedFlag(TypeDecl typeDecl) {
     if(fieldComputedFlagAdded.containsKey(typeDecl))
       return (FieldDeclaration)fieldComputedFlagAdded.get(typeDecl);
-    FieldDeclaration f;
-    if(getNumParameter() == 0)
-      f = new FieldDeclaration(
-        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
-        typeBoolean().createQualifiedAccess(),
-        computedFlagName(),
-        new BooleanLiteral(false)
-      );
-    else
-      f = new FieldDeclaration(
-        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
-        lookupType("java.util", "HashSet").createQualifiedAccess(),
-        computedFlagName(),
+
+    Expr init;
+    if(getNumParameter() == 0) {
+      init = new BooleanLiteral(false);
+    }
+    else {
+      init = 
         new ClassInstanceExpr(
           lookupType("java.util", "HashSet").createQualifiedAccess(),
           new List().add(new IntegerLiteral(4))
-        )
+        );
+    }
+
+    FieldDeclaration f =
+      new FieldDeclaration(
+        Modifiers.create(Modifiers.ACC_PRIVATE | Modifiers.ACC_SYNTHETIC),
+        getNumParameter() == 0 ? typeBoolean().createQualifiedAccess() : lookupType("java.util", "HashSet").createQualifiedAccess(),
+        computedFlagName(),
+        init
       );
-    typeDecl.addMemberField(f);
+    f = typeDecl.addMemberField(f);
+    typeDecl.addFlushCode(f, (Expr)init.fullCopy());
     fieldComputedFlagAdded.put(typeDecl, f);
     return f;
   }
@@ -584,7 +596,16 @@ aspect AttributesCodegeneration {
           new List().add(new IntegerLiteral(4))
         )
       );
-    typeDecl.addMemberField(f);
+    f = typeDecl.addMemberField(f);
+    if(getNumParameter() != 0) {
+      typeDecl.addFlushCode(
+        f,
+        new ClassInstanceExpr(
+          lookupType("java.util", "HashMap").createQualifiedAccess(),
+          new List().add(new IntegerLiteral(4))
+        )
+      );
+    }
     fieldComputedValueAdded.put(typeDecl, f);
     return f;
   }
@@ -1629,4 +1650,9 @@ aspect AttributesCodegeneration {
   syn TypeDecl AttributeDecl.computedValueType() = getNumParameter() == 0 ? type() : lookupType("java.util", "Map");
 
   syn String AttributeDecl.ntaListName() = uniqueSignatureName() + "$list";
+
+  syn MethodDecl TypeDecl.flushCacheMethod() =
+    (MethodDecl)memberMethods("flushCache").iterator().next();
+
+
 }

@@ -11,6 +11,8 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   protected void init$children() { }
 
+  public void flushCache() { }
+
   /* Alternative implementation for no static
   private ASTNode$State state = null;
   public final ASTNode$State state() {

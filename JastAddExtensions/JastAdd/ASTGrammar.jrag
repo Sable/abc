@@ -390,6 +390,26 @@ aspect ASTGrammar {
       )
     );
     //}
+    bodyDeclList.add(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new PrimitiveTypeAccess("void"),
+        "flushCache",
+        new List(),
+        new List(),
+        new Opt(
+          new Block(
+            new List().add(
+              new ExprStmt(
+                new SuperAccess("super").qualifiesAccess(
+                  new MethodAccess("flushCache", new List())
+                )
+              )
+            )
+          )
+        )
+      )
+    );
     return bodyDeclList;
   }
 

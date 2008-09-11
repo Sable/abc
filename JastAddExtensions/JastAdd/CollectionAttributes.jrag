@@ -326,6 +326,9 @@ aspect CollectionAttributes {
     );
 
     f = introducedType().addMemberField(f);
+
+    introducedType().addFlushCode(f, (new ClassInstanceExpr(new TypeAccess("java.util", "HashSet"), new List(), new Opt())));
+
     introducedType().addAccessor(this, "contributors_field", f);
     return f;
   }
