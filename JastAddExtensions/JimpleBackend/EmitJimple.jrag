@@ -339,6 +339,8 @@ aspect EmitJimple {
           f.addTag(new soot.tagkit.IntegerConstantValueTag(constant().intValue()));
       }
       sootField = f;
+    } else {
+	sootField = hostType.getSootClassDecl().getFieldByName(name);
     }
     addAttributes();
   }
