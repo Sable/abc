@@ -72,13 +72,41 @@
         </javac>
 </target>
 	
+<target name="build-tm" depends="settings,gen-tm">
+        <antcall target="build-ja"/>
+        <mkdir dir="${basedir}/classes"/>
+        <!-- compile sources compiler="jikes" nowarn="true" -->
+        <javac debug="true"
+               fork="true" memoryMaximumSize="256M" destdir="classes">
+	<classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="${abc.loc}/classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+              <pathelement location="${abc.loc}/testing-classes"/>
+              <pathelement location="${abc-ja.loc}/classes"/>
+	      <pathelement location="${basedir}"/>
+            </classpath>
+                <src path="${basedir}/src-tm"/>
+                <src path="${basedir}/src-eaj"/>
+                <src path="${basedir}/generated"/>
+        </javac>
+</target>
+
 <!-- generate compiler source files -->
-<target name="gen" depends="settings,tm-parser,eaj-parser,da-parser,om-parser,tm-jrag,eaj-jrag,da-jrag,om-jrag">
+<target name="gen" depends="settings,gen-tm,da-parser,om-parser,da-jrag,om-jrag">
   <!-- copy library files-->
   <copy todir="${basedir}/generated/beaver" preservelastmodified="true">
     <fileset dir="${frontend}/beaver"/>
   </copy>
 </target>
+
+<target name="gen-tm" depends="gen-eaj,tm-parser,tm-jrag"/>
+
+<target name="gen-eaj" depends="eaj-parser,eaj-jrag"/>
 
 <target name="tm-jrag">
   <!-- create AST node types and weave aspect modules -->
