@@ -1,9 +1,9 @@
 package AST;
 
 public class CachedValue {
-  public final MemoLine line;
+  public final ASTNode node;
   public Object value;
-public CachedValue(ASTNode node) {
-  line = new MemoLine(node);
-}
+  public CachedValue(ASTNode node) {
+    this.node = node;
+  }
 }

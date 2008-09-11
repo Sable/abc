@@ -7,12 +7,20 @@ import java.util.Map;
  * A memo line records dependencies and their expected values.
  */
 public class MemoLine {
-    protected final java.util.Map<Dependency, Object> pairs 
-	= new HashMap<Dependency, Object>();
+    protected final java.util.Map<Dependency, Object> pairs;
+    private ASTNode node;
+    public MemoLine(ASTNode node) {
+	super();
+	this.node = node;
+	this.pairs = new HashMap<Dependency, Object>();
+    }
+
+    /** flag to indicate whether we are checking a cyclic dependency */
     private boolean checkingHit = false;
+
     public boolean hit() {
 	if(checkingHit)
-	    throw new RuntimeException("Circular dependency detected");
+	    return true;
 	checkingHit = true;
 	try {
 	    for(Map.Entry<Dependency, Object> e : pairs.entrySet()) {
@@ -28,18 +36,16 @@ public class MemoLine {
 	}
 	return true;
     }
-    public  <T extends java.lang.Object> void add(AST.Dependency dep, T val) {
+
+    public <T> void add(AST.Dependency dep, T val) {
 	pairs.put(dep, val);
     }
+
     public java.lang.String toString() {
 	return pairs.toString();
     }
+
     public void clear() {
 	pairs.clear();
-    }
-    ASTNode node;
-    public MemoLine(ASTNode node) {
-	super();
-	this.node = node;
     }
 }

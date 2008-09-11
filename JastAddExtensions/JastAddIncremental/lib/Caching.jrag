@@ -1,0 +1,34 @@
+aspect Caching {
+
+  private MemoLine CompilationUnit.memoline = new MemoLine(this);
+  public MemoLine CompilationUnit.getMemoLine() {
+    return memoline;
+  }
+  public boolean CompilationUnit.memoValid() {
+    if(memoline.hit())
+      return true;
+    invalidate();
+    return false;
+  }
+  public void CompilationUnit.invalidate() {
+    flushCaches();
+    memoline.clear();
+  }
+
+  // same thing again, for Program
+  private MemoLine Program.memoline = new MemoLine(this);
+  public MemoLine Program.getMemoLine() {
+    return memoline;
+  }
+  public boolean Program.memoValid() {
+    if(memoline.hit())
+      return true;
+    invalidate();
+    return false;
+  }
+  public void Program.invalidate() {
+    flushCaches();
+    memoline.clear();
+  }
+
+}

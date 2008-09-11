@@ -1,33 +1,33 @@
 package AST;
 
 public class Dependency {
-  protected final AST.ASTNode box;
+  protected final AST.ASTNode node;
   protected final int offset;
   protected final java.lang.Object args;
 
-  public Dependency(AST.ASTNode box, int offset) {
+  public Dependency(AST.ASTNode node, int offset) {
     super();
-    this.box = box;
+    this.node = node;
     this.offset = offset;
     this.args = null;
   }
 
-  public Dependency(AST.ASTNode box, int offset, java.lang.Object args) {
+  public Dependency(AST.ASTNode node, int offset, java.lang.Object args) {
     super();
-    this.box = box;
+    this.node = node;
     this.offset = offset;
     this.args = args;
   }
 
   public java.lang.Object eval() {
-    return box.eval(offset, args);
+    return node.eval(offset, args);
   }
 
   public boolean equals(Object o) {
     if(!(o instanceof Dependency))
       return false;
     Dependency d = (Dependency)o;
-    if(!box.equals(d.box))
+    if(!node.equals(d.node))
       return false;
     if(offset != d.offset)
        return false;
@@ -37,6 +37,6 @@ public class Dependency {
   }
 
   public int hashCode() {
-    return box.hashCode() * offset * (args == null ? 1 : args.hashCode());
+    return node.hashCode() * offset * (args == null ? 1 : args.hashCode());
   }
 }

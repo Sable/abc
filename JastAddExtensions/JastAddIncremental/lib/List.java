@@ -22,6 +22,12 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     list$touched = true;
     super.removeChild(i);
   }
+
+  public int numChildren() {
+    int res = super.numChildren();
+    Main.registerDependency(new Dependency(this, 2), numChildren());
+    return res;
+  }
   public int getNumChild() {
     if(list$touched) {
       for(int i = 0; i < getNumChildNoTransform(); i++)

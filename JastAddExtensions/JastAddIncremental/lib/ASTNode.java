@@ -122,7 +122,10 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   }
 
   public int getNumChild() {
-    Main.registerDependency(new Dependency(this, 2), numChildren());
+    // no need to register dependency here: most ASTNodes have a fixed number
+    // of children, the only exceptions are List and Opt, so we only need to
+    // register dependencies there
+    //Main.registerDependency(new Dependency(this, 2), numChildren());
     return numChildren();
   }
   public final int getNumChildNoTransform() {
@@ -141,6 +144,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     children[i] = node;
     if(i >= numChildren) numChildren = i+1;
     if(node != null) { node.setParent(this); node.childIndex = i; }
+    invalidate();
   }
 
   public void insertChild(T node, int i) {
@@ -160,6 +164,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
     numChildren++;
     if(node != null) { node.setParent(this); node.childIndex = i; }
+    invalidate();
   }
 
   public void removeChild(int i) {
@@ -171,6 +176,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       }
       System.arraycopy(children, i+1, children, i, children.length-i-1);
       numChildren--;
+      invalidate();
     }
   }
 
@@ -184,6 +190,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   public void setParent(ASTNode node) {
     parent = node;
+    invalidate();
   }
   protected boolean debugNodeAttachmentIsRoot() { return false; }
   private static void debugNodeAttachment(ASTNode node) {
@@ -265,4 +272,24 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   public static void reset() {
   }
+
+  /** gets the memo line associated with this node; node
+      types that have their own memo lines will override this */
+  public MemoLine getMemoLine() {
+    return parent.getMemoLine();
+  }
+
+  /** determines whether the memo line associated with this
+      node is valid */
+  public boolean memoValid() {
+    return parent.memoValid();
+  }
+
+  /** invalidates all caches; this means we first need to
+      dispatch upwards until we reach the root of the
+      subtree, and then call flushCaches() from these */
+  public void invalidate() {
+    return parent.invalidate();
+  }
+
 }

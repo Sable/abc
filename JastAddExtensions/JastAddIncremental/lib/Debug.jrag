@@ -12,4 +12,9 @@ aspect Debug {
     public String TypeDecl.getDebugID() {
 	return "type "+name();
     }
+
+    public String Dependence.toString() {
+        return node.getDebugID() + "." + offset +
+	  (args == null ? "()" : "(" + args + ")");
+    }
 }
