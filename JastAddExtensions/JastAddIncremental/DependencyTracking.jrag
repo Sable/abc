@@ -539,12 +539,11 @@ aspect DependencyTracking {
 
       The caching prologue then looks like this:
       <pre>
-        if(height$computed &amp;&amp; height$cache.hit()) {
+        if(height$computed &amp;&amp; this.memoValid()) {
 	  if(Main.DEBUG) 
 	    System.out.println("height cached for " + getDebugID());
 	  return this$.height$value;
         }
-	height$cache.clear();
 	if(Main.DEBUG) 
 	  System.out.println("Recomputing height for " + getDebugID());
 	Main.pushMemoLine(height$cache);
@@ -608,23 +607,14 @@ aspect DependencyTracking {
         new IfStmt(
           new AndLogicalExpr(
             computedFlag.createQualifiedBoundAccess(),
-            f.createQualifiedBoundAccess().qualifiesAccess(
-              new MethodAccess("hit", new List())
+            new ThisAccess("this").qualifiesAccess(
+              new MethodAccess("memoValid", new List())
             )
           ),
           thenBranch,
           new Opt()
         );
       statements.add(ifStmt);
-
-      // add statement to clear memoline
-      statements.add(
-        new ExprStmt(
-	  f.createQualifiedBoundAccess().qualifiesAccess(
-	    new MethodAccess("clear", new List())
-          )
-        )
-		     );
     }
     else {
       statements.add(
@@ -652,21 +642,14 @@ aspect DependencyTracking {
           ).add(
             new IfStmt(
               new VarAccess("v$").qualifiesAccess(
-                new VarAccess("line")
+                new VarAccess("node")
               ).qualifiesAccess(
-                new MethodAccess("hit", new List())
+                new MethodAccess("memoValid", new List())
               ),
               new ReturnStmt(
                 new CastExpr(
                   returnType.createQualifiedAccess(),
                   new VarAccess("v$").qualifiesAccess(new VarAccess("value"))
-                )
-              ),
-              new ExprStmt(
-                new VarAccess("v$").qualifiesAccess(
-                  new VarAccess("line")
-                ).qualifiesAccess(
-                  new MethodAccess("clear", new List())
                 )
               )
             )
@@ -720,7 +703,11 @@ aspect DependencyTracking {
           new TypeAccess("Main").qualifiesAccess(
             new MethodAccess(
               "pushMemoLine", 
-              new List().add(f.createQualifiedBoundAccess())
+              new List().add(
+                new ThisAccess("this").qualifiesAccess(
+                  new MethodAccess("getMemoLine", new List())
+                )
+              )
             )
           )
         )
@@ -732,7 +719,13 @@ aspect DependencyTracking {
           new TypeAccess("Main").qualifiesAccess(
             new MethodAccess(
               "pushMemoLine", 
-              new List().add(new VarAccess("v$").qualifiesAccess(new VarAccess("line")))
+              new List().add(
+                new VarAccess("v$").qualifiesAccess(
+                  new VarAccess("node")
+                ).qualifiesAccess(
+                  new MethodAccess("getMemoLine", new List())
+                )
+              )
             )
           )
         )
@@ -795,21 +788,11 @@ aspect DependencyTracking {
     if(returnType.isPrimitive())
       returnType = returnType.boxed();
 
-    FieldDeclaration f;
     if(getNumParameter() == 0) {
-      f = new FieldDeclaration(
-        new Modifiers(new List().add(new Modifier("private"))),
-        new TypeAccess("MemoLine"),
-        fieldName,
-        new ClassInstanceExpr(
-          new TypeAccess("MemoLine"),
-          new List().add(new ThisAccess("this")),  // HERE
-          new Opt()
-        )
-      );
+      return null;
     }
     else {
-      f = new FieldDeclaration(
+      FieldDeclaration f = new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("private"))),
         new ParTypeAccess(
           new TypeAccess("java.util", "Map"),
@@ -833,8 +816,24 @@ aspect DependencyTracking {
           new Opt()
         )
       );
+      f = typeDecl.addMemberField(f);
+      typeDecl.addFlushCode(
+        f,
+        new ClassInstanceExpr(
+          new ParTypeAccess(
+            new TypeAccess("java.util", "HashMap"),
+            new List().add(
+              new TypeAccess("java.lang", "Object")
+            ).add(
+              new TypeAccess("CachedValue")
+            )
+          ),
+          new List(),
+          new Opt()
+        )
+      );
+      return f;
     }
-    return typeDecl.addMemberField(f);
   }
 
 }

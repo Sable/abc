@@ -122,10 +122,7 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   }
 
   public int getNumChild() {
-    // no need to register dependency here: most ASTNodes have a fixed number
-    // of children, the only exceptions are List and Opt, so we only need to
-    // register dependencies there
-    //Main.registerDependency(new Dependency(this, 2), numChildren());
+    Main.registerDependency(new Dependency(this, 2), numChildren());
     return numChildren();
   }
   public final int getNumChildNoTransform() {
@@ -266,6 +263,12 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   }
 
   public void flushCache() {
+  }
+
+  public void flushCaches() {
+    flushCache();
+    for(int i = 0; i < getNumChildNoTransform(); i++)
+      getChildNoTransform(i).flushCaches();
   }
 
   public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }

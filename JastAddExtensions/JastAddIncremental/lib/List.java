@@ -25,7 +25,6 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
 
   public int numChildren() {
     int res = super.numChildren();
-    Main.registerDependency(new Dependency(this, 2), numChildren());
     return res;
   }
   public int getNumChild() {
