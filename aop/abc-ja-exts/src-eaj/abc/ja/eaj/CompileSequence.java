@@ -21,34 +21,34 @@
 
 package abc.ja.eaj;
 
-import abc.main.AbcExtension;
-import abc.main.AbcTimer;
-import abc.main.CompilerFailedException;
-import abc.main.Debug;
-import abc.main.options.OptionsParser;
-import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.matching.MethodAdviceList;
-import abc.weaving.weaver.DeclareParentsConstructorFixup;
-import abc.weaving.weaver.DeclareParentsWeaver;
-import abc.weaving.weaver.IntertypeAdjuster;
-
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
-import polyglot.util.StdErrorQueue;
-import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
+import polyglot.util.StdErrorQueue;
 import soot.Scene;
 import soot.SootMethod;
-import abc.aspectj.visit.PatternMatcher;
-import abc.ja.eaj.jrag.*;
-
-import java.io.*;
+import abc.ja.eaj.jrag.BytecodeParser;
+import abc.ja.eaj.jrag.CompilationUnit;
+import abc.ja.eaj.jrag.JavaParser;
+import abc.ja.eaj.jrag.Problem;
+import abc.ja.eaj.jrag.Program;
+import abc.main.AbcExtension;
+import abc.main.AbcTimer;
+import abc.main.CompilerFailedException;
+import abc.main.Debug;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.weaver.DeclareParentsConstructorFixup;
+import abc.weaving.weaver.IntertypeAdjuster;
 
 public class CompileSequence extends abc.ja.CompileSequence {
   public CompileSequence(AbcExtension ext) {
@@ -79,6 +79,19 @@ public class CompileSequence extends abc.ja.CompileSequence {
     return error_queue;
   }
 
+	public void setupParser(Program program) {
+		// select parser/scanner
+		program.initBytecodeReader(new BytecodeParser());
+		program.initJavaParser(
+	      new JavaParser() {
+	        public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
+	          return new abc.ja.eaj.parse.JavaParser().parse(is, fileName, error_queue);
+	        }
+	      }
+	    );
+	}
+
+
   // throw CompilerFailedException if there are errors
   // place errors in error_queue
   public void compile() throws CompilerFailedException, IllegalArgumentException {
@@ -86,96 +99,12 @@ public class CompileSequence extends abc.ja.CompileSequence {
     if(error_queue == null)
       error_queue = new StdErrorQueue(System.out, 100, "JastAdd");
 
-    try {
-      Collection c = new ArrayList();
-      c.addAll(aspect_sources);
-      c.add("-classpath");
-      c.add(OptionsParser.v().classpath());
-      String[] args = new String[c.size()];
-      int index = 0;
-      for(Iterator iter = c.iterator(); iter.hasNext(); index++) {
-        String s = (String)iter.next();
-        args[index] = s;
-      }
-      Program program = new Program();
-      program.state().reset();
+    Program program = new Program();
+    program.state().reset();
 
-      program.initBytecodeReader(new BytecodeParser());
-      program.initJavaParser(
-        new JavaParser() {
-          public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
-            return new abc.ja.eaj.parse.JavaParser().parse(is, fileName, error_queue);
-          }
-        }
-      );
-
-      Options options = program.options();
-      options.initOptions();
-      options.addKeyValueOption("-classpath");
-      options.addKeyOption("-verbose");
-      options.addOptions(args);
-      Collection files = options.files();
-
-      for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-        String name = (String)iter.next();
-        program.addSourceFile(name);
-      }
-      
-      for(Iterator iter = jar_classes.iterator(); iter.hasNext(); ) {
-    	  String name = (String)iter.next();
-    	  CompilationUnit u = program.getCompilationUnit(name);
-    	  u.weavableClass = true;
-    	  program.addCompilationUnit(u);
-      }
-
-      for(Iterator iter = program.compilationUnitIterator(); iter.hasNext(); ) {
-        CompilationUnit unit = (CompilationUnit)iter.next();
-        if(unit.fromSource()) {
-          // abort if there were syntax or lexical errors
-          if(error_queue().errorCount() > 0)
-            throw new CompilerFailedException("There were errors.");
-        }
-      }
-      if(options.verbose())
-        System.out.println("Error checking");
-      ArrayList errors = new ArrayList();
-      ArrayList warnings = new ArrayList();
-      program.errorCheck(errors, warnings);
-      if(!errors.isEmpty()) {
-        Collections.sort(errors);
-        for(Iterator iter2 = errors.iterator(); iter2.hasNext(); ) {
-          Problem p = (Problem)iter2.next();
-          addError(p);
-        }
-        throw new CompilerFailedException("There were errors.");
-      }
-      if(!warnings.isEmpty()) {
-          Collections.sort(warnings);
-          for(Iterator iter2 = warnings.iterator(); iter2.hasNext(); ) {
-            Problem p = (Problem)iter2.next();
-            addWarning(p);
-          }
-      }
-
-      program.generateIntertypeDecls();
-      program.transformation();
-
-      program.jimplify1();
-      program.jimplify2();
-
-      abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();
-      abc.main.AbcTimer.mark("Aspect inheritance");
-      abc.main.Debug.phaseDebug("Aspect inheritance");
-
-    } catch (Error /*polyglot.main.UsageError*/ e) {
-      throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
-    }
-
-    // Output the aspect info
-    if (abc.main.Debug.v().aspectInfo)
-      abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
+    setupParser(program);
     
-    Scene.v().loadDynamicClasses();
+    program.doCompileSequence(error_queue, aspect_sources, jar_classes);
   }
 	
   public void weave() throws CompilerFailedException {
