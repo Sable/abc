@@ -340,7 +340,7 @@ aspect EmitJimple {
       }
       sootField = f;
     } else {
-	sootField = hostType.getSootClassDecl().getFieldByName(name);
+	sootField = hostType().getSootClassDecl().getFieldByName(name);
     }
     addAttributes();
   }
