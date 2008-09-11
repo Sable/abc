@@ -21,6 +21,8 @@
 
 package abc.ja;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +35,9 @@ import polyglot.util.StdErrorQueue;
 import soot.Scene;
 import soot.SootField;
 import soot.SootMethod;
-import abc.ja.jrag.Options;
+import abc.ja.jrag.BytecodeParser;
+import abc.ja.jrag.CompilationUnit;
+import abc.ja.jrag.JavaParser;
 import abc.ja.jrag.Problem;
 import abc.ja.jrag.Program;
 import abc.main.AbcExtension;
@@ -83,6 +87,18 @@ public class CompileSequence extends abc.main.CompileSequence {
     return error_queue;
   }
 
+	public void setupParser(Program program) {
+		// select parser/scanner
+		program.initBytecodeReader(new BytecodeParser());
+		program.initJavaParser(
+	      new JavaParser() {
+	        public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
+	          return new abc.ja.parse.JavaParser().parse(is, fileName, error_queue);
+	        }
+	      }
+	    );
+	}
+
   // throw CompilerFailedException if there are errors
   // place errors in error_queue
   public void compile() throws CompilerFailedException, IllegalArgumentException {
@@ -93,46 +109,9 @@ public class CompileSequence extends abc.main.CompileSequence {
     Program program = new Program();
     program.state().reset();
 
-    program.setupParser(error_queue);
-
-   try {
-      Options options = program.initOptions(aspect_sources);
-
-      program.loadSourceFiles(options.files(), error_queue);
-      
-      program.loadWeavableJarFiles(jar_classes);
-
-      program.checkErrors(options, error_queue);
-
-      // weave ITDs
-      if(options.verbose())
-        System.out.println("Weaving inter-type declarations");
-      program.generateIntertypeDecls();
-      // flatten
-      if(options.verbose())
-        System.out.println("Flattening Nested Classes");
-      program.transformation();
-
-      if(options.verbose())
-        System.out.println("Jimplify1");
-      program.jimplify1();
-      if(options.verbose())
-        System.out.println("Jimplify2");
-      program.jimplify2();
-
-      abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();
-      abc.main.AbcTimer.mark("Aspect inheritance");
-      abc.main.Debug.phaseDebug("Aspect inheritance");
-
-    } catch (Error /*polyglot.main.UsageError*/ e) {
-      throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
-    }
-
-    // Output the aspect info
-    if (abc.main.Debug.v().aspectInfo)
-      abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
+    setupParser(program);
     
-    Scene.v().loadDynamicClasses();
+    program.doCompileSequence(error_queue, aspect_sources, jar_classes);
   }
 
   public void weave() throws CompilerFailedException {

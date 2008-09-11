@@ -44,18 +44,6 @@ aspect CompileSequence {
 		    error_queue.enqueue(ErrorInfo.WARNING, problem.message(), p);
 	  }
 
-	public void Program.setupParser(final ErrorQueue error_queue) {
-		// select parser/scanner
-	    this.initBytecodeReader(new BytecodeParser());
-	    this.initJavaParser(
-	      new JavaParser() {
-	        public CompilationUnit parse(InputStream is, String fileName) throws IOException, beaver.Parser.Exception {
-	          return new abc.ja.parse.JavaParser().parse(is, fileName, error_queue);
-	        }
-	      }
-	    );
-	}
-
 	public Options Program.initOptions(Collection<String> aspect_sources) {
 		// init jastadd options
 	      Collection<String> c = new ArrayList<String>();
@@ -154,5 +142,47 @@ aspect CompileSequence {
 	        }
 	        this.addSourceFile(name);
 	      }
+	}
+	
+	public void Program.doCompileSequence(ErrorQueue error_queue, Collection<String> aspect_sources,
+						Collection<String> jar_classes) throws CompilerFailedException {
+	    try {
+	       Options options = this.initOptions(aspect_sources);
+
+	       this.loadSourceFiles(options.files(), error_queue);
+	       
+	       this.loadWeavableJarFiles(jar_classes);
+
+	       this.checkErrors(options, error_queue);
+
+	       // weave ITDs
+	       if(options.verbose())
+	         System.out.println("Weaving inter-type declarations");
+	       this.generateIntertypeDecls();
+	       // flatten
+	       if(options.verbose())
+	         System.out.println("Flattening Nested Classes");
+	       this.transformation();
+
+	       if(options.verbose())
+	         System.out.println("Jimplify1");
+	       this.jimplify1();
+	       if(options.verbose())
+	         System.out.println("Jimplify2");
+	       this.jimplify2();
+
+	       abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();
+	       abc.main.AbcTimer.mark("Aspect inheritance");
+	       abc.main.Debug.phaseDebug("Aspect inheritance");
+
+	     } catch (Error /*polyglot.main.UsageError*/ e) {
+	       throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
+	     }
+
+	     // Output the aspect info
+	     if (abc.main.Debug.v().aspectInfo)
+	       abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
+	     
+	     Scene.v().loadDynamicClasses();
 	}
 }

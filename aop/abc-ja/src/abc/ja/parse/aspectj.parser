@@ -423,10 +423,12 @@ PointcutExpr basic_pointcut_expr =
             AbstractDot dot = (AbstractDot) a;
             ParseName pn = (ParseName) dot.extractLast();
             dot.replaceLast(new PointcutAccess(pn.getID()));
+            ParserTrace.parserTrace("NAMED pointcut: " + pn.getID());
             pc_access = dot;
           } else {
             ParseName pn = (ParseName) a;
             pc_access = new PointcutAccess(pn.getID());
+            ParserTrace.parserTrace("NAMED pointcut: " + pn.getID());
           }
           return new NamedPointcutExpr(pc_access, b);
        :}
