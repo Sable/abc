@@ -1,5 +1,8 @@
 module m1;
 public class A{
+	m3x::C c0 = new m3::C();
+	m3x::CX cx0 = new m3::CX();
+	
 	m3xx::C c = new m3xx::C();
 	m3xx::CX cx = new m3xx::CX();
 	m3xx::CXX cxx = new m3xx::CXX();

@@ -381,7 +381,7 @@ aspect GenerateModuleInstance {
 			else {
 				//if overrides an existing merge or import
 				ModuleReference overridenMRef = this.getModuleReference(mergeAlias);
-				if (overridenMRef != null) {
+				if (overridenMRef != null && mref.getAlias().equals(mergeAlias)) {
 					if (overridenMRef.getStaticModuleType() != mergedStaticType) {
 						String msg = 
 							"Merge changes the type of an existing module reference " + 
