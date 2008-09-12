@@ -1,0 +1,19 @@
+Errors:
+test/Test72.java:18:
+  Semantic Error: keyword with expected rather than woth
+test/Test72.java:18:
+  Semantic Error: keyword root expected rather than ruot
+test/Test72.java:18:
+  Semantic Error: Initial value of type java.util.HashSet<test.Test72.A> is not assign convertible to java.util.Collection<test.Test72.B>
+test/Test72.java:18,63:
+  Semantic Error: no visible type named X
+test/Test72.java:22:
+  Semantic Error: reference must bind to a node of type test.Test72.A
+test/Test72.java:23:
+  Semantic Error: boolean condition expected rather than int
+test/Test72.java:23:
+  Semantic Error: contribution must be subtype of test.Test72.B which int is not
+test/Test72.java:26:
+  Semantic Error: could not find collection attribute set2 in test.Test72.A
+test/Test72.java:31:
+  Semantic Error: could not find method adds taking a single argument in java.util.Collection<test.Test72.B>
