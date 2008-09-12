@@ -95,7 +95,7 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
 
     protected boolean canRewriteThisJoinPoint=false;
     
-    protected Set/*<CodeInstance>*/ methodsInAdvice;
+    protected Set<CodeInstance> methodsInAdvice = new HashSet<CodeInstance>();
  
     protected boolean isAroundAdvice;
 
@@ -105,7 +105,6 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
                         Block body, boolean isAroundAdvice)
     {
         super(pos, flags, return_type, name, formals, throwTypes, body);
-            this.methodsInAdvice = new HashSet();
         this.isAroundAdvice = isAroundAdvice;
     }
 

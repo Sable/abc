@@ -38,7 +38,7 @@ public interface SymbolDecl extends Node
     
     public SymbolKind getSymbolKind();
 
-    Collection binds();
+    Collection<String> binds();
 
     public Block body(TMNodeFactory nf, String debug_msg, TypeNode ret_type);
 
@@ -47,5 +47,5 @@ public interface SymbolDecl extends Node
 
     Pointcut generateClosedPointcut(TMNodeFactory nf, List formals);
 
-    List aroundVars();
+    List<Local> aroundVars();
 }

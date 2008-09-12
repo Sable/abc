@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import soot.DoubleType;
 import soot.FloatType;
 import soot.IntType;
 import soot.LongType;
+import soot.PrimType;
 import soot.RefLikeType;
 import soot.Scene;
 import soot.ShortType;
@@ -57,6 +59,7 @@ import abc.tm.weaving.weaver.CodeGenHelper;
 import abc.tm.weaving.weaver.IndexedCodeGenHelper;
 import abc.tm.weaving.weaver.itds.ITDAnalysisResults;
 import abc.tm.weaving.weaver.itds.ITDOptimisation;
+import abc.util.Pair;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.Formal;
@@ -75,17 +78,19 @@ public class TraceMatch
     protected boolean per_thread;
 
     protected List formals;
-    protected Map formal_name_to_type;
+    protected Map<String, Type> formal_name_to_type;
     protected List new_advice_body_formals;
-    protected Map param_name_to_body_pos = null;
+    protected Map<String, Integer> param_name_to_body_pos = null;
     protected int[] formal_pos_to_body_pos = new int[0];
     protected int non_around_formals;
 
     protected StateMachine state_machine;
     protected IndexingScheme indexing_scheme;
 
-    protected List frequent_symbols;
-    protected Map sym_to_vars;
+    protected Set<Set<String>> distinctGroups;
+    
+    protected List<String> frequent_symbols;
+    protected Map<String, List<String>> sym_to_vars;
     protected Map sym_to_advice_name;
     protected String synch_advice_name;
     protected String some_advice_name;
@@ -100,7 +105,7 @@ public class TraceMatch
     protected SootClass labels_thread_local = null;
     protected SootClass tm_weak_ref;
     protected SootClass tm_persistent_weak_ref;
-    protected Map primitive_to_box = null;
+    protected Map<PrimType, SootClass> primitive_to_box = null;
  
     protected CodeGenHelper helper;
     protected Position position;
@@ -109,13 +114,28 @@ public class TraceMatch
 	   
     protected Map advice_name_to_sym_name;
 
-    protected static Map idToTracematch = new HashMap();
+    protected static Map<String, TraceMatch> idToTracematch = new HashMap<String, TraceMatch>();
     
     protected ITDAnalysisResults itdresults = null;
 
     public TraceMatch(String name, List formals, List new_advice_body_formals,
+            StateMachine state_machine, boolean per_thread,
+            Map sym_to_vars, List<String> frequent_symbols,
+            Map sym_to_advice_name, String synch_advice_name,
+            String some_advice_name, String dummy_proceed_name,
+            Aspect container, Position pos) {
+	this(name, formals, new_advice_body_formals, state_machine, 
+			per_thread, sym_to_vars, frequent_symbols, 
+			new HashSet<Set<String>>(), sym_to_advice_name, 
+			synch_advice_name, some_advice_name, 
+			dummy_proceed_name, container, pos);
+    }
+
+    	
+    public TraceMatch(String name, List formals, List new_advice_body_formals,
                         StateMachine state_machine, boolean per_thread,
-                        Map sym_to_vars, List frequent_symbols,
+                        Map sym_to_vars, List<String> frequent_symbols,
+                        Set<Set<String>> distinct,
                         Map sym_to_advice_name, String synch_advice_name,
                         String some_advice_name, String dummy_proceed_name,
                         Aspect container, Position pos)
@@ -124,9 +144,10 @@ public class TraceMatch
         this.per_thread = per_thread;
 
         this.formals = formals;
-        this.formal_name_to_type = new HashMap();
+        this.formal_name_to_type = new HashMap<String, Type>();
         this.new_advice_body_formals = new_advice_body_formals;
 
+        this.distinctGroups = new HashSet<Set<String>>(distinct);
         this.state_machine = state_machine;
         this.sym_to_vars = sym_to_vars;
         this.frequent_symbols = frequent_symbols;
@@ -159,7 +180,7 @@ public class TraceMatch
 
     public static TraceMatch forId(String id)
     {
-        TraceMatch res = (TraceMatch) idToTracematch.get(id);
+        TraceMatch res = idToTracematch.get(id);
         if (res == null) {
             throw new RuntimeException("No such tracematch: "+id);
         }
@@ -223,7 +244,7 @@ public class TraceMatch
 
     protected void makeFormalMaps()
     {
-        param_name_to_body_pos = new HashMap();
+        param_name_to_body_pos = new HashMap<String, Integer>();
 
         for (int i = 0; i < new_advice_body_formals.size(); i++)
         {
@@ -232,7 +253,7 @@ public class TraceMatch
             param_name_to_body_pos.put(f.getName(), new Integer(i));
         }
 
-        Set thisjp_vars = new HashSet(param_name_to_body_pos.keySet());
+        Set<String> thisjp_vars = new HashSet<String>(param_name_to_body_pos.keySet());
 
         formal_pos_to_body_pos = new int[formals.size() + 3];
 
@@ -258,7 +279,7 @@ public class TraceMatch
         if (!param_name_to_body_pos.containsKey(name))
             return -1;
 
-        return ((Integer) param_name_to_body_pos.get(name)).intValue();
+        return param_name_to_body_pos.get(name).intValue();
     }
 
     public int getBodyParameterIndex(int formal_pos)
@@ -289,6 +310,55 @@ public class TraceMatch
         return (List<String>) sym_to_vars.get(symbol);
     }
 
+    public boolean symbolBinds(String symbol, String var) {
+    	return sym_to_vars.get(symbol).contains(var);
+    }
+    
+    /**
+     * Get pairs of names of variables that the given symbol binds and
+     * that should be distinct.
+     */
+    public Set<Pair<String, String>> getDistinctVariables(String symbol) {
+    	LinkedHashSet<Pair<String, String>> result = new LinkedHashSet<Pair<String, String>>();
+    	for(Set<String> group : distinctGroups) {
+    		List<String> tmp = new ArrayList<String>(group);
+    		tmp.retainAll(getVariableOrder(symbol));
+    		for(int i = 0; i < tmp.size(); i++)
+    			for(int j = i + 1; j < tmp.size(); j++)
+    				result.add(Pair.make(tmp.get(i), tmp.get(j)));
+    	}
+    	return result;
+    }
+    
+    /**
+     * Get the names of all variables that should be distinct from a given
+     * variable.
+     * @param var the variable we're interested in
+     * @return A set of all variables (different from var) that occur in some
+     * 		distinct group with var.
+     */
+    public Set<String> getVariablesDistinctFrom(String var) {
+    	LinkedHashSet<String> result = new LinkedHashSet<String>();
+    	for(Set<String> group : distinctGroups)
+    		if(group.contains(var))
+    			result.addAll(group);
+    	result.remove(var);
+    	return result;
+    }
+    
+    /**
+     * For a particular symbol and a particular variable, get all variables that
+     * require runtime checks to guarantee distinctness. Those are, concretely,
+     * the variables distinct from var that are not bound by the symbol. For more
+     * details, see the note on distinctness annotations [ask PA].
+     * @return The set of variables distinct from var that aren't bound by symbol.
+     */
+    public Set<String> getVariablesToCheckForDistinctness(String symbol, String var) {
+    	Set<String> result = getVariablesDistinctFrom(var);
+    	result.removeAll(getVariableOrder(symbol));
+    	return result;
+    }
+    
     public void createIndexingScheme()
     {
         indexing_scheme = new IndexingScheme(this);
@@ -451,7 +521,7 @@ public class TraceMatch
 
     public Type bindingType(String name)
     {
-        return (Type) formal_name_to_type.get(name);
+        return formal_name_to_type.get(name);
     }
 
     public SootClass weakBindingClass(String name)
@@ -461,7 +531,7 @@ public class TraceMatch
         if (type instanceof RefLikeType)
             return tm_weak_ref;
         else
-            return (SootClass) primitive_to_box.get(type);
+            return primitive_to_box.get(type);
     }
     
     public SootClass persistentWeakRefClass() {
@@ -480,7 +550,7 @@ public class TraceMatch
 
     protected void makePrimitiveMaps()
     {
-        primitive_to_box = new HashMap();
+        primitive_to_box = new HashMap<PrimType, SootClass>();
 
         primitive_to_box.put(BooleanType.v(),
                              Scene.v().getSootClass("java.lang.Boolean"));
@@ -516,7 +586,7 @@ public class TraceMatch
     protected SootMethod getConstructor(SootClass constructed, Type param)
     {
         String init_name = SootMethod.constructorName;
-        List type_list = new LinkedList();
+        List<Type> type_list = new LinkedList<Type>();
         type_list.add(param);
 
         return constructed.getMethod(init_name, type_list);
@@ -553,7 +623,7 @@ public class TraceMatch
         // determine all symbols for which there exists a per-symbol advice
         // declaration with an application counter of more than 0 ; such
         // symbols need to be retained
-        Set symbolsToRetain = new HashSet();
+        Set<String> symbolsToRetain = new HashSet<String>();
 		
         // for all advice declarations
         for (Iterator iter = gai.getAdviceDecls().iterator(); iter.hasNext();) {
@@ -577,7 +647,7 @@ public class TraceMatch
         }
 		
         // all symbols which do not have to be retained can be removed
-        Set symbolsToRemove = new HashSet(sym_to_vars.keySet());
+        Set<String> symbolsToRemove = new HashSet<String>(sym_to_vars.keySet());
         symbolsToRemove.removeAll(symbolsToRetain);
 		
         if(symbolsToRemove.size()>0 && Debug.v().debugTmAnalysis) {
@@ -586,12 +656,12 @@ public class TraceMatch
                                 symbolsToRemove);
         }
 		
-        Set edgesToRemove = new HashSet();
+        Set<SMEdge> edgesToRemove = new HashSet<SMEdge>();
         // remove all edges for those symbols, including skip-loops
         // labelled that way
-        Iterator symIter = symbolsToRemove.iterator();
+        Iterator<String> symIter = symbolsToRemove.iterator();
         while (symIter.hasNext()) {
-            String symbolName = (String) symIter.next();
+            String symbolName = symIter.next();
 	
             // for all edges in the state machine
             Iterator iterator = sm.getEdgeIterator();
@@ -633,9 +703,9 @@ public class TraceMatch
             // loops for those symbols,
             // which is safe cause we know the symbol can never occur anyway
 	
-            Iterator symbolIter = symbolsToRemove.iterator();
+            Iterator<String> symbolIter = symbolsToRemove.iterator();
             while (symbolIter.hasNext()) {
-                String symbolName = (String) symbolIter.next();
+                String symbolName = symbolIter.next();
                 sym_to_advice_name.remove(symbolName);
                 sym_to_vars.remove(symbolName);
             }

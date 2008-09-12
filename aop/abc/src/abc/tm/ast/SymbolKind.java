@@ -37,10 +37,10 @@ public interface SymbolKind extends Node
     final public String AROUND = "around";
 
     String kind();
-    Collection binds();
+    Collection<String> binds();
 
-    AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
+    AdviceSpec generateAdviceSpec(TMNodeFactory nf, List<Formal> formals,
                                     TypeNode voidn);
 
-    public List aroundVars();
+    public List<Local> aroundVars();
 }

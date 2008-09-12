@@ -37,14 +37,14 @@ public interface Regex extends Node
      * bound by any string which matches this regular
      * expression.
      */
-    Collection mustBind(Map sym_to_vars) throws SemanticException;
+    Collection<String> mustBind(Map sym_to_vars) throws SemanticException;
 
     /**
      * Return the set containing each symbol which occurs
      * as the final symbol of a string which matches this
      * regular expresion.
      */
-    Collection finalSymbols();
+    Collection<String> finalSymbols();
 
     /**
      * Return the set containing each symbol which occurs
@@ -54,7 +54,7 @@ public interface Regex extends Node
      * n.b. this set will not, in general, be disjoint from
      *      the set returned by finalSymbols()
      */
-    Collection nonFinalSymbols();
+    Collection<String> nonFinalSymbols();
 
     /**
      * Returns true or false if the regular expression
@@ -73,7 +73,7 @@ public interface Regex extends Node
      * expression, given a start and finish node.
      *
      * @see #makeSM()
-     * @parm sm         the state machine under construction
+     * @param sm        the state machine under construction
      * @param start     the start node
      * @param finish    the finish node
      * @param own_start true if, and only if, the current

@@ -2099,7 +2099,7 @@ public class ClassGenHelper {
      *          goto checkNextVar;
      *  curVarNotBound:
      *          LinkedHashSet notSet = this.not$X;
-     *          if(notSet == null) goto CheckNextVar;
+     *        	if(notSet == null) goto CheckDistinctness;
      *          if(notSet.contains(new #WeakRef(X))) goto returnFalse;
      *  checkNextVar:
      *      #}
@@ -2112,6 +2112,16 @@ public class ClassGenHelper {
      *                  }
      *              #}
      *              result = new Disjunct$tm(this);
+     *         		#for(each distinct pair(X, y) such that S doesn't bind y) {
+     *         			if(this.y$isBound) goto checkNextDistinct;
+     *         			notSet = this.not$y;
+     *         			if(notSet != null) goto recordDistinctness;
+     *         			notSet = new LinkedHashSet();
+     *         			this.not$y = notSet;
+     *  recordDistinctness:
+     *  				notSet.add(X);
+     *  checkNextDistinct:
+     *      		#}
      *              #if(there are variables which may have changed) {
      *                  switch(from) {
      *                      case M: // #for each state M that has a transition that may change variable state
@@ -2328,7 +2338,29 @@ public class ClassGenHelper {
                 
                 // We create a copy of this, add the new bindings and return it
                 Local result = getNewObject(disjunct, singleDisjunct, thisLocal);
-                
+
+                // Now maintain distinctness information:
+                // For each variable bound by the symbol, for each variable not bound by the result
+                // disjunct, add the runtime value of the former to the notSet of the latter.
+                bindIt = bindings.iterator();
+                varIt = variables.iterator();
+                while(bindIt.hasNext()) {
+                    String varName = (String)varIt.next();
+                    Local curVar = (Local)bindIt.next();
+	                for(String otherVar : curTraceMatch.getVariablesToCheckForDistinctness(symbol, varName)) {
+	                	Stmt labelRecordDistinctness = getNewLabel();
+	                	Stmt labelCheckNextDistinct = getNewLabel();
+	                	doJumpIfTrue(getFieldLocal(result, otherVar + "$isBound", BooleanType.v()), labelCheckNextDistinct);
+	                	Local otherVarNotSet = getFieldLocal(result, "not$" + otherVar, setType);
+	                	doJumpIfNotNull(otherVarNotSet, labelRecordDistinctness);
+	                	doAssign(otherVarNotSet, getNewObject(setClass));
+	                	doSetField(result, "not$" + otherVar, setType, otherVarNotSet);
+	                	doAddLabel(labelRecordDistinctness);
+	                	doMethodCall(otherVarNotSet, "add", singleObjectType, BooleanType.v(), getWeakRef(curVar, varName));
+	                	doAddLabel(labelCheckNextDistinct);
+	                }
+                }
+
                 if(!varsForState.keySet().isEmpty()) {
                     Stmt labelReturnResult = getNewLabel();
                     doLookupSwitch(stateFrom, switchValues, switchLabels, labelReturnResult);

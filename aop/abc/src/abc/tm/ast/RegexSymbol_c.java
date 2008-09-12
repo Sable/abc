@@ -51,14 +51,14 @@ public class RegexSymbol_c extends Regex_c
         return new HashSet((Collection) sym_to_vars.get(name));
     }
 
-    public Collection finalSymbols()
+    public Collection<String> finalSymbols()
     {
         Collection a = new HashSet();
         a.add(name);
         return a;
     }
 
-    public Collection nonFinalSymbols()
+    public Collection<String> nonFinalSymbols()
     {
         return new HashSet();
     }

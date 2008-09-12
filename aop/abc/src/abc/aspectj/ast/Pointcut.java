@@ -42,8 +42,8 @@ public interface Pointcut extends Node
     void printSubExpr(Pointcut pc, boolean associative,
                       CodeWriter w, PrettyPrinter pp);
                       
-    Collection/*<String>*/ mayBind() throws SemanticException;
-    Collection/*<String>*/ mustBind();
+    Collection<String> mayBind() throws SemanticException;
+    Collection<String> mustBind();
     void checkFormals(List formals) throws SemanticException;
 
 	boolean isDynamic();
