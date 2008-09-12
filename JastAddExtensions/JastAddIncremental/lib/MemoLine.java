@@ -2,6 +2,7 @@ package AST;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A memo line records dependencies and their expected values.
@@ -17,6 +18,8 @@ public class MemoLine {
 
     /** flag to indicate whether we are checking a cyclic dependency */
     private boolean checkingHit = false;
+
+    public boolean busy() { return checkingHit; }
 
     public boolean hit() {
 	if(checkingHit)

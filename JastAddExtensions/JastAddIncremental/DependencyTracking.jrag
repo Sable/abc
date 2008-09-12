@@ -544,6 +544,7 @@ aspect DependencyTracking {
 	    System.out.println("height cached for " + getDebugID());
 	  return this$.height$value;
         }
+	this.invalidate();
 	if(Main.DEBUG) 
 	  System.out.println("Recomputing height for " + getDebugID());
 	Main.pushMemoLine(height$cache);
@@ -615,6 +616,15 @@ aspect DependencyTracking {
           new Opt()
         );
       statements.add(ifStmt);
+
+      // add statement to clear memoline
+      statements.add(
+        new ExprStmt(
+	  new ThisAccess("this").qualifiesAccess(
+	    new MethodAccess("invalidate", new List())
+	  )
+	)
+      );
     }
     else {
       statements.add(
@@ -651,7 +661,12 @@ aspect DependencyTracking {
                   returnType.createQualifiedAccess(),
                   new VarAccess("v$").qualifiesAccess(new VarAccess("value"))
                 )
-              )
+              ),
+              new ExprStmt(
+	        new ThisAccess("this").qualifiesAccess(
+		  new MethodAccess("invalidate", new List())
+		)
+	      )
             )
           )
         );

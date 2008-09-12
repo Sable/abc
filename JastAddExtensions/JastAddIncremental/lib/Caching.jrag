@@ -5,14 +5,15 @@ aspect Caching {
     return memoline;
   }
   public boolean CompilationUnit.memoValid() {
-    if(memoline.hit())
-      return true;
-    invalidate();
-    return false;
+    return memoline.hit();
   }
   public void CompilationUnit.invalidate() {
-    flushCaches();
-    memoline.clear();
+    if(parent != null) {
+      flushCaches();
+      if(memoline != null) {
+        memoline.clear();
+      }
+    }
   }
 
   // same thing again, for Program
@@ -21,14 +22,13 @@ aspect Caching {
     return memoline;
   }
   public boolean Program.memoValid() {
-    if(memoline.hit())
-      return true;
-    invalidate();
-    return false;
+    return memoline.hit();
   }
   public void Program.invalidate() {
     flushCaches();
-    memoline.clear();
+    if(memoline != null) {
+      memoline.clear();
+    }
   }
 
 }

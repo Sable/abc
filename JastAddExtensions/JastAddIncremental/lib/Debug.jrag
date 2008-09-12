@@ -13,7 +13,7 @@ aspect Debug {
 	return "type "+name();
     }
 
-    public String Dependence.toString() {
+    public String Dependency.toString() {
         return node.getDebugID() + "." + offset +
 	  (args == null ? "()" : "(" + args + ")");
     }

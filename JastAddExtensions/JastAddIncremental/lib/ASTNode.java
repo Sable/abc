@@ -140,8 +140,11 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
     }
     children[i] = node;
     if(i >= numChildren) numChildren = i+1;
-    if(node != null) { node.setParent(this); node.childIndex = i; }
-    invalidate();
+    if(node != null) { 
+      node.setParent(this); node.childIndex = i; 
+    } else {
+      invalidate();
+    }
   }
 
   public void insertChild(T node, int i) {
@@ -160,8 +163,11 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
       children = c;
     }
     numChildren++;
-    if(node != null) { node.setParent(this); node.childIndex = i; }
-    invalidate();
+    if(node != null) { 
+      node.setParent(this); node.childIndex = i; 
+    } else {
+      invalidate();
+    }
   }
 
   public void removeChild(int i) {
@@ -187,7 +193,8 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   public void setParent(ASTNode node) {
     parent = node;
-    invalidate();
+    if(node != null)
+      invalidate();
   }
   protected boolean debugNodeAttachmentIsRoot() { return false; }
   private static void debugNodeAttachment(ASTNode node) {
@@ -267,8 +274,11 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
 
   public void flushCaches() {
     flushCache();
-    for(int i = 0; i < getNumChildNoTransform(); i++)
-      getChildNoTransform(i).flushCaches();
+    for(int i = 0; i < getNumChildNoTransform(); i++) {
+      ASTNode child = getChildNoTransform(i);
+      if(child != null)
+        child.flushCaches();
+    }
   }
 
   public  java.lang.Object eval(int attr, java.lang.Object args) { return null; }
@@ -279,20 +289,21 @@ public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Clonea
   /** gets the memo line associated with this node; node
       types that have their own memo lines will override this */
   public MemoLine getMemoLine() {
-    return parent.getMemoLine();
+    return parent == null ? null : parent.getMemoLine();
   }
 
   /** determines whether the memo line associated with this
       node is valid */
   public boolean memoValid() {
-    return parent.memoValid();
+    return parent == null ? false : parent.memoValid();
   }
 
   /** invalidates all caches; this means we first need to
       dispatch upwards until we reach the root of the
       subtree, and then call flushCaches() from these */
   public void invalidate() {
-    return parent.invalidate();
+    if(parent != null)
+      parent.invalidate();
   }
 
 }
