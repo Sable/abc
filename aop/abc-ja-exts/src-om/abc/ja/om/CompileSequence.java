@@ -49,6 +49,10 @@ import soot.SootMethod;
 import abc.aspectj.visit.PatternMatcher;
 import abc.ja.om.AbcExtension.OMDebug;
 import abc.ja.om.jrag.*;
+import abc.ja.om.jrag.BytecodeParser;
+import abc.ja.om.jrag.CompilationUnit;
+import abc.ja.om.jrag.JavaParser;
+import abc.ja.om.jrag.Program;
 
 import java.io.*;
 
@@ -83,6 +87,19 @@ public class CompileSequence extends abc.ja.CompileSequence {
 		return error_queue;
 	}
 
+	public void setupParser(Program program) {
+		assert (error_queue != null) : "Error queue should have been already initialized";
+		// select parser/scanner
+		program.initBytecodeReader(new BytecodeParser());
+		program.initJavaParser(new JavaParser() {
+			public CompilationUnit parse(InputStream is, String fileName)
+					throws IOException, beaver.Parser.Exception {
+				return new abc.ja.om.parse.JavaParser().parse(is, fileName,
+						error_queue);
+			}
+		});
+	}
+
 	// throw CompilerFailedException if there are errors
 	// place errors in error_queue
 	public void compile() throws CompilerFailedException,
@@ -94,7 +111,7 @@ public class CompileSequence extends abc.ja.CompileSequence {
 		Program program = new Program();
 		program.state().reset();
 
-		program.setupParser(error_queue);
+		setupParser(program);
 
 		try {
 			Options options = program.initOptions(aspect_sources);

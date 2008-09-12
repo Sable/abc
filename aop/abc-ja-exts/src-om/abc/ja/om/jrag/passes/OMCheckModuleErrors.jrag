@@ -30,7 +30,9 @@ aspect OMCheckModuleErrors {
   		err.clear();
   		warn.clear();
   		
-  		for (CompilationUnit cu : getCompilationUnitList()) {
+  		for (Iterator<CompilationUnit> cuIterator = getCompilationUnitList().iterator();
+  				cuIterator.hasNext();) {
+  			CompilationUnit cu = cuIterator.next();
   			if(cu.fromSource()) {
   				cu.initErrHandling();
   			}
