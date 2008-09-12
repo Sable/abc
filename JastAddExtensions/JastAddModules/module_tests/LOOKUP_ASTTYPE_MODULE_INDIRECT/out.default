@@ -13,6 +13,7 @@ m1.module
 m2.module
 m3.module
 ../testlib/jastadd$framework.module
+../testlib/ASTNode$State.java
 ../testlib/ASTNode.java
 ../testlib/List.java
 ../testlib/Opt.java
@@ -69,6 +70,11 @@ module: null;
 module CU : null
 module name : null
 ------------------------
+------../testlib/ASTNode$State.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ------../testlib/Opt.java------
 module: module jastadd$framework;;
 module CU : ../testlib/jastadd$framework.module
@@ -105,6 +111,7 @@ A.ast package:
 A.ast package:
 A.ast package:
 Main.java package:
+../testlib/ASTNode$State.java package:
 ../testlib/Opt.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 B.ast package:
@@ -124,6 +131,7 @@ module: m2, file: m2.module, base module: m2
 Main.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 ----------Module CU imports before import own----------
@@ -151,6 +159,7 @@ module: m2, file: m2.module, base module: m2
 Main.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 module: m1.m2.m3, file: m3.module, base module: m3
@@ -173,23 +182,24 @@ module m1.m2, base:m2, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.A3
+	m1.A5
 	m1.A4
 	m1.A
 	m1.A2
-	m1.A5
+	m1.A3
 Module: m3
 	m3.C
 Module: m2
 	m2.B
 Module: jastadd$framework
+	jastadd$framework.ASTNode$State
 	jastadd$framework.ASTNode
-	jastadd$framework.Opt
 	jastadd$framework.List
+	jastadd$framework.Opt
 Module: m1.m2.m3
 	m1.m2.m3.C
 Module: m1.m2
 	m1.m2.B
 
 ----------CU iterator----------
-m1.module, A.ast, A.ast, A.ast, A.ast, A.ast, m3.module, m2.module, Main.java, ../testlib/jastadd$framework.module, ../testlib/ASTNode.java, ../testlib/Opt.java, ../testlib/List.java, m3.module, C.ast, m2.module, B.ast
+m1.module, A.ast, A.ast, A.ast, A.ast, A.ast, m3.module, m2.module, Main.java, ../testlib/jastadd$framework.module, ../testlib/ASTNode.java, ../testlib/ASTNode$State.java, ../testlib/Opt.java, ../testlib/List.java, m3.module, C.ast, m2.module, B.ast

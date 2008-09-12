@@ -171,8 +171,8 @@ Module: m3
 	m3.C
 Module: m4intx
 Module: m4
-	m4.$d.D
 	m4.$dd.DD
+	m4.$d.D
 Module: m1
 	m1.A
 Module: jastadd$framework

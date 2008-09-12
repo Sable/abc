@@ -1,10 +1,10 @@
 Errors:
 A.java:7,2:
-  Semantic Error: B in m1.A can not access type m1$m2.B
+  Semantic Error: m1$m2.B in m1.A can not access type m1$m2.B
 A.java:7:
   Semantic Error: can not instantiate m1$m2.B no matching constructor found in m1$m2.B
 A.java:7,12:
-  Semantic Error: B in m1.A can not access type m1$m2.B
+  Semantic Error: m1$m2.B in m1.A can not access type m1$m2.B
 A.java:10,2:
   Semantic Error: no visible type named P
 A.java:10,12:

@@ -3,7 +3,7 @@ module jastadd$framework;
 import java.util.Stack;
 import java.util.*;
 
-public class ASTNode extends beaver.Symbol  implements Cloneable {
+public class ASTNode<T extends ASTNode> extends beaver.Symbol  implements Cloneable, Iterable<T> {
   public ASTNode() {
     super();
     init$children();
@@ -11,145 +11,95 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
 
   protected void init$children() { }
 
-  static public boolean IN_CIRCLE = false;
-  static public boolean CHANGE = false;
-  static public boolean LAST_CYCLE = false;
-  static public Set circularEvalSet = new HashSet();
-  static public Stack circularEvalStack = new Stack();
-  
-  public static class CircularEvalEntry {
-  	ASTNode node;
-  	String attrName;
-  	Object parameters;
-  	
-  	public CircularEvalEntry(ASTNode node, String attrName, Object parameters) {
-  		this.node = node;
-  		this.attrName = attrName;
-  		this.parameters = parameters;
-  	}
-  	
-  	public boolean equals(Object rhs) {
-  		CircularEvalEntry s = (CircularEvalEntry) rhs;
-  		if (parameters == null && s.parameters == null)
-  			return node == s.node && attrName.equals(s.attrName);
-  		else if (parameters != null && s.parameters != null)
-  			return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
-  		else
-  			return false;
-  	} 
-  
-  	
-  	public int hashCode() {
-  		return node.hashCode();
-  	}
-  	
-  	
-  }
-  
-  public void addEvalEntry(ASTNode node, String attrName, Object parameters) {
-  	circularEvalSet.add(new CircularEvalEntry(node,attrName,parameters));
-  }
-  
- 
-  
-  public boolean containsEvalEntry(ASTNode node, String attrName, Object parameters) {
-  	return circularEvalSet.contains(new CircularEvalEntry(node,attrName,parameters));
-  }
-  
-  
-  
-  public static class CircularStackEntry {
-  	Set circularEvalSet;
-  	boolean changeValue;
-  	
-  	public CircularStackEntry(Set set, boolean change) {
-  		circularEvalSet = set;
-  		changeValue = change;
-  	}
-  }
-  
-  public void pushEvalStack() {
-  	circularEvalStack.push(new CircularStackEntry(circularEvalSet, CHANGE));
-  	circularEvalSet = new HashSet();
-  	CHANGE = false;
-  }
-  
-  public void popEvalStack() {
-  	CircularStackEntry c = (CircularStackEntry) circularEvalStack.pop();
-  	circularEvalSet = c.circularEvalSet;
-  	CHANGE = c.changeValue;
-  }
- 
-  
-  public static int boundariesCrossed = 0;
+  public void flushCache() { }
 
-  public static class State {
-    private int[] stack;
-    private int pos;
-    public State() {
-      stack = new int[64];
-      pos = 0;
+  /* Alternative implementation for no static
+  private ASTNode$State state = null;
+  public final ASTNode$State state() {
+    if(state == null)
+      state = parent == null ? new ASTNode$State() : parent.state();
+    return state;
+  }
+  */
+  protected static ASTNode$State state = new ASTNode$State();
+  public final ASTNode$State state() {
+    return state;
+  };
+
+  // begin rewriteEnabled
+  // begin rewriteLimit > 0
+  public void debugRewrite(String info) {
+    if(!parent.is$Final()) return;
+    java.util.ArrayList key = new java.util.ArrayList(2);
+    key.add(getParent());
+    key.add(new Integer(getParent().getIndexOfChild(this)));
+    java.util.ArrayList list;
+    if(state().debugRewrite.containsKey(key))
+      list = (java.util.ArrayList)state().debugRewrite.get(key);
+    else {
+      list = new java.util.ArrayList();
+      state().debugRewrite.put(key, list);
     }
-    private void ensureSize(int size) {
-      if(size < stack.length)
-        return;
-      int[] newStack = new int[stack.length * 2];
-      System.arraycopy(stack, 0, newStack, 0, stack.length);
-      stack = newStack;
-    }
-    public void push(int i) {
-      ensureSize(pos+1);
-      stack[pos++] = i;
-    }
-    public int pop() {
-      return stack[--pos];
-    }
-    public int peek() {
-      return stack[pos-1];
+    list.add(info);
+    if(list.size() > 100) { // Set rewrite limit here
+      StringBuffer buf = new StringBuffer("Iteration count exceeded for rewrite:");
+      for(java.util.Iterator iter = list.iterator(); iter.hasNext(); ) buf.append("\n" + iter.next());
+      throw new RuntimeException(buf.toString());
     }
   }
-  protected static State state = new State();
-  public boolean inCircle = false;
+  public void debugRewriteRemove() {
+    java.util.ArrayList key = new java.util.ArrayList(2);
+    key.add(getParent());
+    key.add(new Integer(getParent().getIndexOfChild(this)));
+    state().debugRewrite.remove(key);
+  }
+  // end rewriteLimit > 0
+  public boolean in$Circle = false;
+  public boolean in$Circle() { return in$Circle; }
+  public void in$Circle(boolean b) { in$Circle = b; }
   public boolean is$Final = false;
-  protected static final int REWRITE_CHANGE = 1;
-  protected static final int REWRITE_NOCHANGE = 2;
-  protected static final int REWRITE_INTERRUPT = 3;
-  public ASTNode getChild(int i) {
-    return ASTNode.getChild(this, i);
+  public boolean is$Final() { return is$Final; }
+  public void is$Final(boolean b) { is$Final = b; }
+  /*@SuppressWarnings("cast")*/ public T getChild(int i) {
+    return (T)ASTNode.getChild(this, i);
   }
+
   public static ASTNode getChild(ASTNode that, int i) {
     ASTNode node = that.getChildNoTransform(i);
-    if(node.is$Final) return node;
+    if(node.is$Final()) return node;
     if(!node.mayHaveRewrite()) {
-      node.is$Final = that.is$Final;
+      node.is$Final(that.is$Final());
       return node;
     }
-    if(!node.inCircle) {
+    if(!node.in$Circle()) {
       int rewriteState;
-      int num = ASTNode.boundariesCrossed;
+      int num = that.state().boundariesCrossed;
       do {
-        ASTNode.state.push(ASTNode.REWRITE_CHANGE);
+        that.state().push(ASTNode$State.REWRITE_CHANGE);
         ASTNode oldNode = node;
-        oldNode.inCircle = true;
+        oldNode.in$Circle(true);
         node = node.rewriteTo();
-        oldNode.inCircle = false;
-        that.setChild(node, i);
-        rewriteState = state.pop();
-      } while(rewriteState == ASTNode.REWRITE_CHANGE);
-      if(rewriteState == ASTNode.REWRITE_NOCHANGE && that.is$Final) {
-        node.is$Final = true;
-        ASTNode.boundariesCrossed = num;
+        if(node != oldNode)
+          that.setChild(node, i);
+        oldNode.in$Circle(false);
+        rewriteState = that.state().pop();
+      } while(rewriteState == ASTNode$State.REWRITE_CHANGE);
+      if(rewriteState == ASTNode$State.REWRITE_NOCHANGE && that.is$Final()) {
+        node.is$Final(true);
+        that.state().boundariesCrossed = num;
+        // node.debugRewriteRemove()
       }
     }
-    else if(that.is$Final != node.is$Final) boundariesCrossed++;
+    else if(that.is$Final() != node.is$Final()) that.state().boundariesCrossed++;
     return node;
   }
+  // end rewriteEnabled
 
   private int childIndex;
   public int getIndexOfChild(ASTNode node) {
-    if(node.childIndex < getNumChild() && node == getChildNoTransform(node.childIndex))
+    if(node != null && node.childIndex < getNumChildNoTransform() && node == getChildNoTransform(node.childIndex))
       return node.childIndex;
-    for(int i = 0; i < getNumChild(); i++)
+    for(int i = 0; i < getNumChildNoTransform(); i++)
       if(getChildNoTransform(i) == node) {
         node.childIndex = i;
         return i;
@@ -157,19 +107,29 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     return -1;
   }
 
-  public void addChild(ASTNode node) {
-    setChild(node, getNumChild());
+  public void addChild(T node) {
+    setChild(node, getNumChildNoTransform());
   }
-  public ASTNode getChildNoTransform(int i) {
-    return children[i];
+  /*@SuppressWarnings("cast")*/ public final T getChildNoTransform(int i) {
+    return (T)children[i];
   }
+
   protected ASTNode parent;
   protected ASTNode[] children;
   protected int numChildren;
-  public int getNumChild() {
+  protected int numChildren() {
     return numChildren;
   }
-  public void setChild(ASTNode node, int i) {
+
+  public int getNumChild() {
+    return numChildren();
+  }
+  public final int getNumChildNoTransform() {
+    return numChildren();
+  }
+
+  public void setChild(T node, int i) {
+    // debugNodeAttachment(node);
     if(children == null) {
       children = new ASTNode[i + 1];
     } else if (i >= children.length) {
@@ -181,9 +141,11 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     if(i >= numChildren) numChildren = i+1;
     if(node != null) { node.setParent(this); node.childIndex = i; }
   }
-  public void insertChild(ASTNode node, int i) {
+
+  public void insertChild(T node, int i) {
     if(i > numChildren)
       throw new Error("insertChild error: can not insert child at position outside list of elements");
+    // debugNodeAttachment(node);
     if(children == null) {
       children = new ASTNode[i + 1];
       children[i] = node;
@@ -199,27 +161,72 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
     if(node != null) { node.setParent(this); node.childIndex = i; }
   }
 
-  public ASTNode insertList(List newList, int i) {
-    // insert list newlist at position i and return first element in newlist
-    setChild(newList.getChildNoTransform(0), i);
-    for(int j = 1; j < newList.getNumChild(); j++)
-      insertChild(newList.getChildNoTransform(j), ++i);
-    return newList.getChildNoTransform(0);
-  }
-  
-  public ASTNode getParent() {
-    if(parent != null && parent.is$Final != is$Final) {
-      boundariesCrossed++;
+  public void removeChild(int i) {
+    if(children != null) {
+      ASTNode child = children[i];
+      if(child != null) {
+        child.setParent(null);
+        child.childIndex = -1;
+      }
+      System.arraycopy(children, i+1, children, i, children.length-i-1);
+      numChildren--;
     }
-    return parent;
   }
+
+  public ASTNode getParent() {
+    if(parent != null && ((ASTNode)parent).is$Final() != is$Final()) {
+      state().boundariesCrossed++;
+    }
+    return (ASTNode)parent;
+  }
+
   public void setParent(ASTNode node) {
     parent = node;
   }
+  protected boolean debugNodeAttachmentIsRoot() { return false; }
+  private static void debugNodeAttachment(ASTNode node) {
+      if(node == null) throw new RuntimeException("Trying to assign null to a tree child node");
+      while(node != null && !node.debugNodeAttachmentIsRoot()) {
+          if(node.in$Circle()) return;
+          ASTNode parent = node.parent;
+          if(parent != null && parent.getIndexOfChild(node) == -1) return;
+          node = parent;
+      }
+      if(node == null) return;
+      throw new RuntimeException("Trying to insert the same tree at multiple tree locations");
+  }
+  
+
+  public ASTNode insertList(List newList, int i) {
+    // insert list newlist at position i and return first element in newlist
+    setChild((T)newList.getChildNoTransform(0), i);
+    for(int j = 1; j < newList.getNumChild(); j++)
+      insertChild((T)newList.getChildNoTransform(j), ++i);
+    return newList.getChildNoTransform(0);
+  }
+
+  public java.util.Iterator<T> iterator() {
+    return new java.util.Iterator<T>() {
+      private int counter = 0;
+      public boolean hasNext() {
+        return counter < getNumChild();
+      }
+      /*@SuppressWarnings("unchecked")*/ public T next() {
+         if(hasNext())
+           return (T)getChild(counter++);
+         else
+           return null;
+      }
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+  
   public ASTNode rewriteTo() {
-    if(state.peek() == ASTNode.REWRITE_CHANGE) {
-      state.pop();
-      state.push(ASTNode.REWRITE_NOCHANGE);
+    if(state().peek() == ASTNode$State.REWRITE_CHANGE) {
+      state().pop();
+      state().push(ASTNode$State.REWRITE_NOCHANGE);
     }
     return this;
   }

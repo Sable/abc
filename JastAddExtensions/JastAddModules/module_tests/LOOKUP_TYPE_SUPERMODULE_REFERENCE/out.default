@@ -134,8 +134,8 @@ module m1$m2, base:m2, context:[m1], instantiated:true
 Module: m1
 	m1.A
 Module: m2
-	m2.B
 	m2.$p.P
+	m2.B
 Module: m2x
 	m2x.$p.P
 	m2x.B
@@ -144,11 +144,11 @@ Module: m1$m2x$super$m2
 	m1$m2x$super$m2.$p.P
 	m1$m2x$super$m2.B
 Module: m1$m2x
-	m1$m2x.$p.P
 	m1$m2x.B
+	m1$m2x.$p.P
 Module: m1$m2
-	m1$m2.$p.P
 	m1$m2.B
+	m1$m2.$p.P
 
 ----------CU iterator----------
 m1.module, A.java, m2.module, m2x.module, Main.java, ../testlib/jastadd$framework.module, m2.module, P.java, B.java, m2x.module, P2.java, B2.java, m2.module, P.java, B.java

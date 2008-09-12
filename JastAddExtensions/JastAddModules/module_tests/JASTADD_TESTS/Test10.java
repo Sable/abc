@@ -1,4 +1,4 @@
-module m1;
+package test;
 
 public aspect Test10 {
   ast Node ::= Left:Node Right:Node;

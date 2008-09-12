@@ -14,6 +14,7 @@ m1.module
 m2.module
 m3.module
 m4.module
+../testlib/ASTNode$State.java
 ../testlib/ASTNode.java
 ../testlib/List.java
 ../testlib/Opt.java
@@ -71,6 +72,11 @@ module: null;
 module CU : null
 module name : null
 ------------------------
+------../testlib/ASTNode$State.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ------D.ast------
 module: module m4;;
 Original AST file: D.ast
@@ -96,6 +102,7 @@ module: m1, file: m1.module, base module: m1
 ../testlib/ASTNode.java package:
 A.ast package:
 Main.java package:
+../testlib/ASTNode$State.java package:
 D.ast package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ../testlib/List.java package:
@@ -112,6 +119,7 @@ Main.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 ----------Module CU imports before import own----------
 module m2, base:m2, context:[], instantiated:false
@@ -141,6 +149,7 @@ Main.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 module: m1$m2, file: m2.module, base module: m2
 	B.ast package:m1$m2
@@ -179,8 +188,9 @@ Module: m4
 Module: m1
 	m1.A
 Module: jastadd$framework
-	jastadd$framework.List
 	jastadd$framework.ASTNode
+	jastadd$framework.ASTNode$State
+	jastadd$framework.List
 	jastadd$framework.Opt
 Module: m1$m2
 	m1$m2.B
@@ -190,4 +200,4 @@ Module: m1$m4alias
 	m1$m4alias.D
 
 ----------CU iterator----------
-m2.module, m3.module, m4.module, m1.module, A.ast, Main.java, ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/ASTNode.java, ../testlib/List.java, m2.module, B.ast, m3.module, C.ast, m4.module, D.ast
+m2.module, m3.module, m4.module, m1.module, A.ast, Main.java, ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/ASTNode.java, ../testlib/ASTNode$State.java, ../testlib/List.java, m2.module, B.ast, m3.module, C.ast, m4.module, D.ast

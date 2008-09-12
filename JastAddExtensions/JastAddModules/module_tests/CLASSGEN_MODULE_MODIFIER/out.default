@@ -89,15 +89,15 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.A
-	m1.$a.AAModule
-	m1.$a.AAPackage
 	m1.$a.AA
+	m1.$a.AAModule
+	m1.A
+	m1.$a.AAPackage
 Module: m2
-	m2.B
-	m2.$b.BBPackage
 	m2.$b.BBModule
 	m2.$b.BB
+	m2.$b.BBPackage
+	m2.B
 Module: jastadd$framework
 
 ----------CU iterator----------

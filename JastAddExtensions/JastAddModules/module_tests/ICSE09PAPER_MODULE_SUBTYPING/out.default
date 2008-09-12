@@ -155,9 +155,9 @@ module multiversion$parserV1_2, base:parserV1_2, context:[multiversion], instant
 ----------MCU collectTypes after import own----------
 
 Module: parserV1_2
-	parserV1_2.$parser.XMLParser
 	parserV1_2.$parser.Parser
 	parserV1_2.MainV12
+	parserV1_2.$parser.XMLParser
 Module: scanner
 	scanner.$scanner.Scanner
 Module: multiversion
@@ -171,14 +171,14 @@ Module: multiversion$parserV1_1
 	multiversion$parserV1_1.$parser.Parser
 	multiversion$parserV1_1.MainV11
 Module: multiversion$parserV1_2$super$parserV1_1
-	multiversion$parserV1_2$super$parserV1_1.$parser.Parser
 	multiversion$parserV1_2$super$parserV1_1.MainV11
+	multiversion$parserV1_2$super$parserV1_1.$parser.Parser
 Module: multiversion$parserV1_2.scanner
 	multiversion$parserV1_2.scanner.$scanner.Scanner
 Module: multiversion$parserV1_2
-	multiversion$parserV1_2.$parser.Parser
-	multiversion$parserV1_2.$parser.XMLParser
 	multiversion$parserV1_2.MainV12
+	multiversion$parserV1_2.$parser.XMLParser
+	multiversion$parserV1_2.$parser.Parser
 
 ----------CU iterator----------
 parserV1_2.module, Main.java, scanner.module, multiversion.module, MultiversionMain.java, parserV1_1.module, scanner.module, Scanner.java, parserV1_1.module, MainV11.java, v1/Parser.java, parserV1_1.module, MainV11.java, v1/Parser.java, scanner.module, Scanner.java, parserV1_2.module, MainV12.java, v2/XMLParser.java, v2/Parser.java

@@ -1,14 +1,18 @@
 module m1;
 
-aspect X {
+public aspect X {
 	public void A.f() {
+		System.out.println("A.f");
 	}
 	public void AType.f() {
+		System.out.println("AType.f");
 	}
 	public void ASTNode.g() {
 	}
 	public void BType.f() {
+		System.out.println("BType.f");
 	}
 	public void B.f() {
+		System.out.println("B.f");
 	}
 }

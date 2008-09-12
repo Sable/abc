@@ -18,6 +18,7 @@ M.module
 M2.module
 M3.module
 M4.module
+../testlib/ASTNode$State.java
 ../testlib/ASTNode.java
 ../testlib/List.java
 ../testlib/Opt.java
@@ -78,6 +79,11 @@ Original AST file: AST.ast
 module CU : M.module
 module name : M
 ------------------------
+------../testlib/ASTNode$State.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ------M.module------
 module M;
 import  M2 as none null;
@@ -118,6 +124,7 @@ AST3.ast package:
 B.java package:
 ../testlib/ASTNode.java package:
 AST.ast package:
+../testlib/ASTNode$State.java package:
 module: M, file: M.module, base module: M
 module: M4, file: M4.module, base module: M4
 module: M.N.O, file: M.N.O.module, base module: M.N.O
@@ -141,6 +148,7 @@ module: M.N.O, file: M.N.O.module, base module: M.N.O
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 ----------Module CU imports before import own----------
 module M2, base:M2, context:[], instantiated:false

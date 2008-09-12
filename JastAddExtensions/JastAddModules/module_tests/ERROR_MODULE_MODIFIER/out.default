@@ -1,16 +1,16 @@
 Errors:
 A.java:3,2:
-  Semantic Error: a.AAPackage in m1.A can not access type m1.$a.AAPackage
+  Semantic Error: m1.$a.AAPackage in m1.A can not access type m1.$a.AAPackage
 A.java:3:
   Semantic Error: can not instantiate m1.$a.AAPackage no matching constructor found in m1.$a.AAPackage
 A.java:3,30:
-  Semantic Error: a.AAPackage in m1.A can not access type m1.$a.AAPackage
+  Semantic Error: m1.$a.AAPackage in m1.A can not access type m1.$a.AAPackage
 A.java:4,2:
-  Semantic Error: m2::b.BBModule in m1.A can not access type m2.$b.BBModule
+  Semantic Error: m2.$b.BBModule in m1.A can not access type m2.$b.BBModule
 A.java:4:
   Semantic Error: can not instantiate m2.$b.BBModule no matching constructor found in m2.$b.BBModule
 A.java:4,32:
-  Semantic Error: m2::b.BBModule in m1.A can not access type m2.$b.BBModule
+  Semantic Error: m2.$b.BBModule in m1.A can not access type m2.$b.BBModule
 A.java:7:
   Semantic Error: can not instantiate m2.$b.BB no matching constructor found in m2.$b.BB
 A.java:8:

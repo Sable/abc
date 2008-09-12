@@ -19,6 +19,7 @@ C.java
 CC.java
 Main.java
 ../testlib/jastadd$framework.module
+../testlib/ASTNode$State.java
 ../testlib/ASTNode.java
 ../testlib/List.java
 ../testlib/Opt.java
@@ -116,6 +117,11 @@ module: module com.xyz.m3;;
 module CU : m3.module
 module name : com.xyz.m3
 ------------------------
+------../testlib/ASTNode$State.java------
+module: module jastadd$framework;;
+module CU : ../testlib/jastadd$framework.module
+module name : jastadd$framework
+------------------------
 ------../testlib/jastadd$framework.module------
 module jastadd$framework;
 ------------------------
@@ -143,6 +149,7 @@ AST.ast package:
 AST.ast package:
 Main.java package:
 CC.java package:
+../testlib/ASTNode$State.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 ../testlib/List.java package:
 ----------CU AST after insert----------
@@ -165,6 +172,7 @@ Main.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 ----------Module CU imports before import own----------
 module com.xyz.m2, base:com.xyz.m2, context:[], instantiated:false
@@ -197,6 +205,7 @@ Main.java package:
 module: jastadd$framework, file: ../testlib/jastadd$framework.module, base module: jastadd$framework
 	../testlib/Opt.java package:jastadd$framework
 	../testlib/ASTNode.java package:jastadd$framework
+	../testlib/ASTNode$State.java package:jastadd$framework
 	../testlib/List.java package:jastadd$framework
 module: com.xyz.m2.com.xyz.m3, file: m3.module, base module: com.xyz.m3
 	C.java package:com.xyz.m2.com.xyz.m3
@@ -217,28 +226,29 @@ module com.xyz.m2.com.xyz.m3, base:com.xyz.m3, context:[com.xyz.m2], instantiate
 ----------MCU collectTypes after import own----------
 
 Module: com.xyz.m2
-	com.xyz.m2.B
-	com.xyz.m2.$b.BB
 	com.xyz.m2.Type2
 	com.xyz.m2.TypeM2
+	com.xyz.m2.$b.BB
+	com.xyz.m2.B
 Module: com.xyz.m3
 	com.xyz.m3.Type3
-	com.xyz.m3.CC
 	com.xyz.m3.C
+	com.xyz.m3.CC
 Module: com.xyz.m1
+	com.xyz.m1.$a.AA
+	com.xyz.m1.TypeM13
 	com.xyz.m1.TypeM1
 	com.xyz.m1.Type1
-	com.xyz.m1.TypeM13
-	com.xyz.m1.$a.AA
 	com.xyz.m1.A
 Module: jastadd$framework
-	jastadd$framework.Opt
+	jastadd$framework.ASTNode$State
 	jastadd$framework.List
 	jastadd$framework.ASTNode
+	jastadd$framework.Opt
 Module: com.xyz.m2.com.xyz.m3
+	com.xyz.m2.com.xyz.m3.CC
 	com.xyz.m2.com.xyz.m3.Type3
 	com.xyz.m2.com.xyz.m3.C
-	com.xyz.m2.com.xyz.m3.CC
 
 ----------CU iterator----------
-m2.module, AST2.ast, AST2.ast, BB.java, B.java, m3.module, m1.module, AA.java, A.java, AST.ast, AST.ast, AST.ast, Main.java, ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/ASTNode.java, ../testlib/List.java, m3.module, C.java, AST3.ast, CC.java
+m2.module, AST2.ast, AST2.ast, BB.java, B.java, m3.module, m1.module, AA.java, A.java, AST.ast, AST.ast, AST.ast, Main.java, ../testlib/jastadd$framework.module, ../testlib/Opt.java, ../testlib/ASTNode.java, ../testlib/ASTNode$State.java, ../testlib/List.java, m3.module, C.java, AST3.ast, CC.java

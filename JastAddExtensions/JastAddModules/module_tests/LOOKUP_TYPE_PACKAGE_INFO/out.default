@@ -119,8 +119,8 @@ Module: m1
 	m1.$m1pack.P
 	m1.A
 Module: m2
-	m2.$m2pack.P
 	m2.B
+	m2.$m2pack.P
 Module: jastadd$framework
 
 ----------CU iterator----------

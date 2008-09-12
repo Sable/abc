@@ -86,8 +86,8 @@ module jastadd$framework, base:jastadd$framework, context:[], instantiated:true
 
 Module: m1
 	m1.A
-	m1.$pack.P
 	m1.$java.lang.String
+	m1.$pack.P
 Module: jastadd$framework
 
 ----------CU iterator----------

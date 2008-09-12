@@ -1,4 +1,4 @@
-module m1;
+package test;
 
 public aspect Test31 {
   ast Program ::= A;

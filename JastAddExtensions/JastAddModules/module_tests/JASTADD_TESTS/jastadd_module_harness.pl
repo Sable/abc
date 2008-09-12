@@ -41,7 +41,9 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 
 	my $files = "$test_file ";
 	$files .= "$TESTDIR/m1.module ";
+	$files .= "$TESTDIR/package-info.java ";
 	$files .= "$TESTLIBDIR/ASTNode.java ";
+	$files .= "$TESTLIBDIR/ASTNode\\\$State.java ";
 	$files .= "$TESTLIBDIR/List.java ";
 	$files .= "$TESTLIBDIR/Opt.java ";
 	$files .= "$TESTLIBDIR/jastadd\\\$framework.module ";
@@ -55,7 +57,7 @@ for (my $i = $TEST_MIN; $i <= $TEST_MAX; $i++) {
 	#run generated file
 	my $result_file = "$TESTDIR/$test_name.out";
 	my $correct_file = "$TESTDIR/$test_name.result";
-	my $javacmdline = "java -cp \"$JASTADD_MODULES_BASEDIR/classes;$TESTDIR\" m1.$test_name 2>&1 > $result_file";
+	my $javacmdline = "java -cp \"$JASTADD_MODULES_BASEDIR/classes;$TESTDIR\" m1.\\\$test.$test_name 2>&1 > $result_file";
 	#print "Java command: $javacmdline\n";
 	system $javacmdline;
 

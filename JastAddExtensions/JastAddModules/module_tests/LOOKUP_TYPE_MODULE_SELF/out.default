@@ -148,9 +148,9 @@ module m1.alias2, base:m2, context:[m1], instantiated:true
 ----------MCU collectTypes after import own----------
 
 Module: m1
-	m1.AA
 	m1.A
 	m1.$a.AAA
+	m1.AA
 Module: m3
 	m3.$c.CC
 	m3.C
@@ -163,8 +163,8 @@ Module: m1.alias1.m3
 Module: m1.alias1
 	m1.alias1.B
 Module: m1.alias2.m3
-	m1.alias2.m3.$c.CC
 	m1.alias2.m3.C
+	m1.alias2.m3.$c.CC
 Module: m1.alias2
 	m1.alias2.B
 

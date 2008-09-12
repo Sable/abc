@@ -1,4 +1,4 @@
-module m1;
+package test;
 
 public aspect Test35 {
   ast A ::= B;

@@ -199,15 +199,15 @@ module myapplication$parserV2, base:parserV2, context:[myapplication, myapplicat
 Module: myapplication
 	myapplication.MyApplication
 Module: parserV1_2
-	parserV1_2.$parser.XMLParser
 	parserV1_2.$parser.Parser
+	parserV1_2.$parser.XMLParser
 Module: scanner
 	scanner.$scanner.Scanner
 Module: parserV1_1
 	parserV1_1.$parser.Parser
 Module: parserV2
-	parserV2.$parser.XMLParser
 	parserV2.$parser.Parser
+	parserV2.$parser.XMLParser
 Module: staticanalyzer
 	staticanalyzer.StaticAnalyzer
 Module: javadocgenerator

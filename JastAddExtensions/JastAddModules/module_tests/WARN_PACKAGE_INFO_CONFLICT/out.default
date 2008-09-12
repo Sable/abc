@@ -99,8 +99,8 @@ Module: m2
 	m2.B
 Module: jastadd$framework
 Module: m1$m2
-	m1$m2.B
 	m1$m2.$pack.P
+	m1$m2.B
 
 ----------CU iterator----------
 m1.module, A.java, package-info.java, m2.module, ../testlib/jastadd$framework.module, m2.module, P.java, B.java
